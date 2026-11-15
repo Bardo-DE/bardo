@@ -9,6 +9,7 @@ repository = "https://github.com/Bardo-DE/ferry"
 publish = false
 
 [dependencies]
+zbus-ready = { path = "../../../zbus-ready" }
 ferry-bus = {path = "../ferry-bus"}
 ferry-drive = {path = "../ferry-drive"}
 ferry-drive-fuse = {path = "../ferry-drive-fuse"}

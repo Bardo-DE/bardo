@@ -66,6 +66,9 @@ impl Syncd {
             .at(SYNC_PATH, self.clone())
             .await
             .expect("serves");
+        zbus_ready::serving(&connection)
+            .await
+            .expect("the object server answers");
         connection.request_name(SYNC_BUS).await.expect("name");
         connection
     }
@@ -79,6 +82,9 @@ impl Syncd {
             .at(SYNC_PATH, self.clone())
             .await
             .expect("serves");
+        zbus_ready::serving(&connection)
+            .await
+            .expect("the object server answers");
         connection
     }
 

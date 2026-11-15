@@ -211,6 +211,9 @@ async fn the_outputs_are_read_and_a_change_is_followed() {
         .at("/org/quire/Outputs1", FakeOutputs(vec![row(1, 32)]))
         .await
         .expect("exports the object");
+    zbus_ready::serving(&shell)
+        .await
+        .expect("the object server answers");
     shell
         .request_name("org.quire.Outputs1")
         .await
@@ -276,6 +279,9 @@ async fn hold_outputs(bus: &PrivateBus, answer: Answer) -> zbus::Connection {
         .at("/org/quire/Outputs1", Shell(answer))
         .await
         .expect("served");
+    zbus_ready::serving(&holder)
+        .await
+        .expect("the object server answers");
     holder
         .request_name("org.quire.Outputs1")
         .await

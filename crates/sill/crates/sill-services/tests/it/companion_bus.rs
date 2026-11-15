@@ -67,6 +67,9 @@ async fn a_serving_app_takes_the_summon_and_the_launcher_stays_shut() {
         )
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&mail)
+        .await
+        .expect("the object server answers");
     let companion = desk.peer(COMPANION_BUS).await;
     companion
         .object_server()
@@ -82,6 +85,9 @@ async fn a_serving_app_takes_the_summon_and_the_launcher_stays_shut() {
         )
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&companion)
+        .await
+        .expect("the object server answers");
     // The app has all the time it needs: this test is about an app that answers.
     desk.send(CompanionCommand::Params(CompanionParams {
         summon: SummonParams {
@@ -131,6 +137,9 @@ async fn summon_falls_back_to_launcher_after_app_wait() {
         )
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&mail)
+        .await
+        .expect("the object server answers");
     desk.send(CompanionCommand::Params(fast()));
     desk.send(CompanionCommand::Summon(focus(
         Some("org.quire.Mail"),
@@ -155,6 +164,9 @@ async fn an_ask_opens_a_session_records_the_turn_and_follows_the_answer() {
         .at("/org/quire/Intents1", StandInSession(desk.log.clone()))
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&intentd)
+        .await
+        .expect("the object server answers");
     let view = Arc::new(Mutex::new(json(&wire(AnswerPhase::Thinking, ""))));
     let companiond = desk.peer(COMPANION_BUS).await;
     companiond
@@ -171,6 +183,9 @@ async fn an_ask_opens_a_session_records_the_turn_and_follows_the_answer() {
         )
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&companiond)
+        .await
+        .expect("the object server answers");
     desk.seated().await;
     desk.send(CompanionCommand::Ask(AskInput {
         prompt: "forward the receipts".to_owned(),
@@ -258,6 +273,9 @@ async fn a_search_answers_for_its_generation_and_late_hits_extend_it() {
         .at("/org/quire/Intents1", search)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&intentd)
+        .await
+        .expect("the object server answers");
     let rows = Arc::new(Mutex::new(vec![entry(
         1,
         "Archived 3 threads",
@@ -340,6 +358,9 @@ async fn the_journal_is_read_and_follows_the_intentd_signal_and_an_undo_reads_it
         .at("/org/quire/Intents1", StandInRun(desk.log.clone()))
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&intentd)
+        .await
+        .expect("the object server answers");
     desk.seated().await;
     let first = desk
         .state(|c| (!c.journal.is_empty()).then(|| c.journal.clone()))
@@ -389,6 +410,9 @@ async fn runs_follow_cuad_and_are_steered_through_their_objects() {
         )
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&cuad)
+        .await
+        .expect("the object server answers");
     let object = StandInRunObject {
         id: "r-1",
         log: desk.log.clone(),
@@ -482,6 +506,9 @@ async fn a_run_is_named_by_its_id_property_and_removed_by_the_path_it_was_added_
         )
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&cuad)
+        .await
+        .expect("the object server answers");
     desk.seated().await;
     let run = RunId::parse("r-9").unwrap_or_else(|e| panic!("{e}"));
     let known = desk.state(|c| c.runs.keys().next().cloned()).await;
@@ -512,6 +539,9 @@ async fn stop_all_pauses_each_run_that_is_going_and_no_other() {
         )
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&cuad)
+        .await
+        .expect("the object server answers");
     for (id, state) in [("r_1", "acting"), ("r_2", "paused")] {
         cuad.object_server()
             .at(
@@ -545,6 +575,9 @@ async fn the_timeline_is_read_for_the_generation_that_asked() {
         )
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&memoryd)
+        .await
+        .expect("the object server answers");
     desk.seated().await;
     desk.send(CompanionCommand::Timeline {
         generation: Generation(3),
@@ -596,6 +629,9 @@ async fn keeping_sends_the_shells_receipt_and_not_keeping_sends_a_discard() {
         )
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&memoryd)
+        .await
+        .expect("the object server answers");
     desk.seated().await;
     desk.send(CompanionCommand::Timeline {
         generation: Generation(1),

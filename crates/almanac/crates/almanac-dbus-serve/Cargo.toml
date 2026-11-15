@@ -14,6 +14,7 @@ almanac-dbus = {path = "../almanac-dbus"}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 serde = {version = "1", features = ["derive"]}
 serde_json = {version = "1"}
+zbus-ready = { path = "../../../zbus-ready" }
 
 [lints.rust]
 unsafe_code = "deny"

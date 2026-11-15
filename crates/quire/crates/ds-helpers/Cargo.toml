@@ -26,6 +26,7 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]
 # handler). Named here so `cargo test -p ds-helpers` alone builds it so, not only when another
 # workspace member happens to turn the feature on.
 zbus = {version = "5.19", features = ["tokio"]}
+zbus-ready = { path = "../../../zbus-ready" }
 
 [features]
 default = ["quire-desktop"]

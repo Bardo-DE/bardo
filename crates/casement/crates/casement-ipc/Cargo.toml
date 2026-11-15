@@ -33,6 +33,7 @@ casement-protocols = {path = "../../../casement-protocols"}
 tracing = {version = "0.1"}
 # Keysym names in the inject grammar (`key Return down`).
 xkbcommon = {version = "0.9", features = ["wayland"]}
+zbus-ready = { path = "../../../zbus-ready" }
 
 [dev-dependencies]
 # `BusPeers::introduce`, `FixtureProc`: the tests make a sender stand as a chosen caller on a

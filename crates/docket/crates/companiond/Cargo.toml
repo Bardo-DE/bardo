@@ -45,6 +45,7 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros",
 toml = {version = "1"}
 tracing = {version = "0.1"}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus-ready = { path = "../../../zbus-ready" }
 
 [features]
 # Span export over OTLP (docket-log's `otlp`), switched on at run time by `OTEL_EXPORTER_OTLP_ENDPOINT`.

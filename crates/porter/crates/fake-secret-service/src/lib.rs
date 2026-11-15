@@ -640,6 +640,7 @@ pub async fn serve(connection: &Connection) -> Result<Shared, Error> {
             },
         )
         .await?;
+    zbus_ready::serving(connection).await?;
     connection.request_name(BUS_NAME).await?;
     Ok(shared)
 }

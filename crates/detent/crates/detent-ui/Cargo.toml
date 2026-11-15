@@ -56,6 +56,7 @@ docket-settings = {path = "../../../docket/crates/docket-settings"}
 inferd-client = {path = "../../../steward/crates/inferd-client", features = ["lending"]}
 # The Keyboard test names chords.
 chordkit = {path = "../../../chordkit/crates/chordkit"}
+zbus-ready = { path = "../../../zbus-ready" }
 
 [lints.rust]
 unsafe_code = "deny"

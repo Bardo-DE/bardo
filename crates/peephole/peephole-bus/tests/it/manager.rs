@@ -98,6 +98,9 @@ pub async fn serve(connection: &zbus::Connection, unit: FakeUnit) {
         .at(UNIT_PATH, ServiceProps(unit))
         .await
         .expect("serve the service");
+    zbus_ready::serving(connection)
+        .await
+        .expect("the object server answers");
     connection
         .request_name("org.freedesktop.systemd1")
         .await

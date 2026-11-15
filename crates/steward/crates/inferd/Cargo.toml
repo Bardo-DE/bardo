@@ -15,6 +15,7 @@ publish = false
 test-proc-root = ["porter-callers/test-proc-root"]
 
 [dependencies]
+zbus-ready = { path = "../../../zbus-ready" }
 porter-core = {path = "../../../porter/crates/porter-core"}
 porter-match = {path = "../../../porter/crates/porter-match"}
 porter-capability = {path = "../../../porter/crates/porter-capability"}

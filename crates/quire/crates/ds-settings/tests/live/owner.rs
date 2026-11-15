@@ -90,9 +90,12 @@ async fn a_refused_owner_is_sent_nothing_and_no_secret() {
     let bus = PrivateBus::start("owner-refused");
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
-    daemon.request_name(NAME).await.expect("name");
     let witness = Witness::default();
     serve(&daemon, PATH, witness.clone()).await.expect("serves");
+    zbus_ready::serving(&daemon)
+        .await
+        .expect("the object server answers");
+    daemon.request_name(NAME).await.expect("name");
 
     let roster = Roster::default();
     let client = LiveClient::new(&settings, NAME, PATH, roster.clone()).expect("client");
@@ -131,11 +134,17 @@ async fn a_new_owner_of_the_name_is_checked_again() {
     let second = bus.connect().await;
     let settings = bus.connect().await;
     let (at_first, at_second) = (Witness::default(), Witness::default());
-    first.request_name(NAME).await.expect("name");
     serve(&first, PATH, at_first.clone()).await.expect("serves");
+    zbus_ready::serving(&first)
+        .await
+        .expect("the object server answers");
+    first.request_name(NAME).await.expect("name");
     serve(&second, PATH, at_second.clone())
         .await
         .expect("serves");
+    zbus_ready::serving(&second)
+        .await
+        .expect("the object server answers");
 
     let roster = Roster::default();
     roster.vouch_for(&first);
@@ -227,9 +236,12 @@ async fn a_schema_over_a_cap_is_refused_and_one_at_the_cap_is_read() {
     for (n, (case, key)) in cases.into_iter().enumerate() {
         let daemon = bus.connect().await;
         let name = format!("org.quire.Caps{n}");
-        daemon.request_name(name.as_str()).await.expect("name");
         let module = Accounts::with_schema(None, LiveSchema { version: 1, key });
         serve(&daemon, PATH, module).await.expect("serves");
+        zbus_ready::serving(&daemon)
+            .await
+            .expect("the object server answers");
+        daemon.request_name(name.as_str()).await.expect("name");
         let client = LiveClient::new(&settings, &name, PATH, AnyOwner).expect("client");
         let (described, snapshot) = (client.describe().await, client.snapshot().await);
         match case.starts_with("at the") {
@@ -272,8 +284,11 @@ async fn a_value_over_the_cap_is_refused() {
     let bus = PrivateBus::start("bulky");
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
-    daemon.request_name(NAME).await.expect("name");
     serve(&daemon, PATH, Bulky).await.expect("serves");
+    zbus_ready::serving(&daemon)
+        .await
+        .expect("the object server answers");
+    daemon.request_name(NAME).await.expect("name");
     let client = LiveClient::new(&settings, NAME, PATH, AnyOwner).expect("client");
     assert!(matches!(
         client.get(&key("accounts.k0")).await,

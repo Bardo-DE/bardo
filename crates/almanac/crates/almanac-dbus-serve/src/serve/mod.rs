@@ -108,6 +108,7 @@ pub async fn serve_on<S: Serve>(connection: &Connection, handler: Arc<S>) -> zbu
         .at(MEMORY_PATH, RecallObject(handler.clone()))
         .await?;
     server.at(MEMORY_PATH, ControlObject(handler)).await?;
+    zbus_ready::serving(connection).await?;
     connection.request_name(MEMORY_BUS).await
 }
 

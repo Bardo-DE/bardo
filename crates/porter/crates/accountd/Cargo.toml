@@ -9,6 +9,7 @@ repository = "https://github.com/Bardo-DE/porter"
 publish = false
 
 [dependencies]
+zbus-ready = { path = "../../../zbus-ready" }
 porter-core = {path = "../porter-core"}
 porter-match = {path = "../porter-match"}
 porter-capability = {path = "../porter-capability"}

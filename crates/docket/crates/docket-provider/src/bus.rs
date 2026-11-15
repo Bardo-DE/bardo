@@ -214,6 +214,7 @@ where
         callers,
     };
     connection.object_server().at(PROVIDER_PATH, object).await?;
+    zbus_ready::serving(connection).await?;
     let reply = connection
         .request_name_with_flags(name.as_str(), fdo::RequestNameFlags::DoNotQueue.into())
         .await?;

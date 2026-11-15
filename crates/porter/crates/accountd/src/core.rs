@@ -199,7 +199,7 @@ pub async fn serve_with<H: Host, C: Callers>(
     }
     // Every object is registered; the name is the promise that calls are taken: claim it only
     // once they are.
-    porter_dbus::serve_ready(connection).await?;
+    zbus_ready::serving(connection).await?;
     connection.request_name(ACCOUNTS_BUS).await?;
     Ok(())
 }

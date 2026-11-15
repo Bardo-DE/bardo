@@ -78,6 +78,9 @@ async fn bench_on(session: Option<&str>, router: Router, handle: Handle) -> Opti
         )
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&companiond)
+        .await
+        .expect("the object server answers");
     let intentd = desk.peer(INTENTS_BUS).await;
     let served = intentd.object_server();
     match router {
@@ -90,6 +93,9 @@ async fn bench_on(session: Option<&str>, router: Router, handle: Handle) -> Opti
             .await
             .unwrap_or_else(|e| panic!("{e}")),
     };
+    zbus_ready::serving(&intentd)
+        .await
+        .expect("the object server answers");
     desk.seated().await;
     Some(Bench {
         desk,

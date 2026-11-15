@@ -15,15 +15,13 @@
 //! are the portal shape of a sheet's answer, shared by both sides: the request path, the
 //! response codes and results, and the caller's listener. The Request interface is one shape for
 //! the services that show sheets; [`ServiceRoot`] says which service's bus name, request
-//! path root and error prefix a call is under. [`serve_ready`] is the daemons' start: the wait
-//! between registering their objects and claiming their name.
+//! path root and error prefix a call is under.
 //!
 //! The interfaces are [`accounts`], accountd's (`Manager`, `Account`, `Request`, `AccountsSheet`,
 //! `Identities`, `Spaces`, `Tailnet`, `Keys`, `Launcher`, `Broker`), a module with their bus
 //! names, keys and row codecs. What every daemon's interfaces share is at the root: [`Details`],
-//! the call a server method answers, the failure of a bus call, [`BusTarget`] and
-//! [`serve_ready`]. The portal shape of a sheet's answer is [`accounts::sheet`]. Who is calling
-//! is `porter-callers`.
+//! the call a server method answers, the failure of a bus call and [`BusTarget`]. The portal
+//! shape of a sheet's answer is [`accounts::sheet`]. Who is calling is `porter-callers`.
 
 extern crate self as porter_dbus;
 
@@ -31,7 +29,6 @@ mod args;
 mod destination;
 mod failure;
 mod json_value;
-mod ready;
 mod serve;
 mod target;
 
@@ -41,7 +38,6 @@ pub use args::Details;
 pub use destination::Destination;
 pub use failure::{BusFailure, classify, is_invalid_args, is_limits_exceeded, is_unknown_object};
 pub use json_value::{from_vardict, to_vardict};
-pub use ready::serve_ready;
 pub use serve::{Call, Document, Unserved};
 pub use target::BusTarget;
 /// The session-bus connection transports and daemons hold.

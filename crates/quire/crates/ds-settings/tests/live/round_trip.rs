@@ -27,10 +27,13 @@ async fn set_get_describe_and_changed_round_trip() {
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     let role = settings.unique_name().expect("named").to_string();
-    daemon.request_name(NAME).await.expect("name");
     serve(&daemon, PATH, Accounts::new(Some(role)))
         .await
         .expect("serves");
+    zbus_ready::serving(&daemon)
+        .await
+        .expect("the object server answers");
+    daemon.request_name(NAME).await.expect("name");
 
     let client = LiveClient::new(&settings, NAME, PATH, AnyOwner).expect("proxy");
     assert_eq!(client.describe().await.expect("describe"), schema());
@@ -83,10 +86,13 @@ async fn a_daemon_originated_change_reaches_the_reader() {
     let bus = PrivateBus::start("served");
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
-    daemon.request_name(NAME).await.expect("name");
     let served = serve(&daemon, PATH, Accounts::new(None))
         .await
         .expect("serves");
+    zbus_ready::serving(&daemon)
+        .await
+        .expect("the object server answers");
+    daemon.request_name(NAME).await.expect("name");
     let client = LiveClient::new(&settings, NAME, PATH, AnyOwner).expect("proxy");
     let mut changes = client.changes().await.expect("subscribed");
     served
@@ -112,11 +118,14 @@ async fn an_action_key_runs_through_set() {
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     let role = settings.unique_name().expect("named").to_string();
-    daemon.request_name(NAME).await.expect("name");
     let module = std::sync::Arc::new(Accounts::new(Some(role)));
     serve(&daemon, PATH, Shared(module.clone()))
         .await
         .expect("serves");
+    zbus_ready::serving(&daemon)
+        .await
+        .expect("the object server answers");
+    daemon.request_name(NAME).await.expect("name");
     let client = LiveClient::new(&settings, NAME, PATH, AnyOwner).expect("proxy");
     client.invoke(&key(REMOVE)).await.expect("allowed");
     assert_eq!(*module.removed.lock().unwrap(), 1);
@@ -127,11 +136,14 @@ async fn set_from_a_caller_without_the_role_is_refused_by_name() {
     let bus = PrivateBus::start("refused");
     let daemon = bus.connect().await;
     let agent = bus.connect().await;
-    daemon.request_name(NAME).await.expect("name");
     let module = std::sync::Arc::new(Accounts::new(Some(":1.nobody".to_owned())));
     serve(&daemon, PATH, Shared(module.clone()))
         .await
         .expect("serves");
+    zbus_ready::serving(&daemon)
+        .await
+        .expect("the object server answers");
+    daemon.request_name(NAME).await.expect("name");
 
     let client = LiveClient::new(&agent, NAME, PATH, AnyOwner).expect("proxy");
     // Reading is allowed to anyone; writing is not.
@@ -175,10 +187,13 @@ async fn unknown_keys_and_bad_values_have_their_own_names() {
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     let role = settings.unique_name().expect("named").to_string();
-    daemon.request_name(NAME).await.expect("name");
     serve(&daemon, PATH, Accounts::new(Some(role)))
         .await
         .expect("serves");
+    zbus_ready::serving(&daemon)
+        .await
+        .expect("the object server answers");
+    daemon.request_name(NAME).await.expect("name");
     let client = LiveClient::new(&settings, NAME, PATH, AnyOwner).expect("proxy");
     assert!(matches!(
         client.get(&key("accounts.nope")).await,
@@ -239,7 +254,6 @@ async fn a_set_to_an_unavailable_choice_is_refused_with_its_reason() {
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     let role = settings.unique_name().expect("named").to_string();
-    daemon.request_name(NAME).await.expect("name");
     let mut schema = schema();
     let pick = schema
         .key
@@ -253,6 +267,10 @@ async fn a_set_to_an_unavailable_choice_is_refused_with_its_reason() {
     serve(&daemon, PATH, Accounts::with_schema(Some(role), schema))
         .await
         .expect("serves");
+    zbus_ready::serving(&daemon)
+        .await
+        .expect("the object server answers");
+    daemon.request_name(NAME).await.expect("name");
     let client = LiveClient::new(&settings, NAME, PATH, AnyOwner).expect("proxy");
 
     let refused = client

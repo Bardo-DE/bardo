@@ -185,6 +185,9 @@ async fn the_copy_waits_for_an_inferd_that_keeps_its_own_keys_and_is_made_when_i
         .at("/org/quire/Inference1", OldInferd)
         .await
         .expect("object");
+    zbus_ready::serving(&inferd)
+        .await
+        .expect("the object server answers");
     inferd
         .request_name("org.quire.Inference1")
         .await

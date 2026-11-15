@@ -69,6 +69,7 @@ pub async fn open(connection: Connection) -> Result<BtSession, Absence> {
         connection: connection.clone(),
         adapter: adapter.clone(),
     };
+    zbus_ready::serving(&connection).await.map_err(failed)?;
     let manager = AgentManager1Proxy::new(&connection).await.map_err(failed)?;
     manager
         .register_agent(

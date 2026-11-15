@@ -35,6 +35,7 @@ toml = {version = "1"}
 thiserror = {version = "2"}
 tracing = {version = "0.1"}
 docket-log = {path = "../docket-log"}
+zbus-ready = { path = "../../../zbus-ready" }
 
 [features]
 default = ["pipewire"]

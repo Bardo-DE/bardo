@@ -42,6 +42,9 @@ pub(crate) async fn connect(
         .at(AGENT_PATH, Agent { calls })
         .await
         .map_err(|e| BusTrouble::Refused(message_of(&e)))?;
+    zbus_ready::serving(&connection)
+        .await
+        .map_err(|e| BusTrouble::Refused(message_of(&e)))?;
     let id = session_id(&setup.session, &connection)
         .await
         .map_err(|e| BusTrouble::Refused(format!("no logind session: {}", message_of(&e))))?;

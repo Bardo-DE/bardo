@@ -69,6 +69,7 @@ almanac-seal = {path = "../almanac-seal", features = ["oo7", "testing"]}
 recall = {path = "../recall", features = ["testing"]}
 tar = {version = "0.4"}
 tempfile = {version = "3"}
+zbus-ready = { path = "../../../zbus-ready" }
 
 [lints.rust]
 unsafe_code = "deny"

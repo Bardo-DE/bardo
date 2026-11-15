@@ -34,6 +34,7 @@ zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 tracing = {version = "0.1"}
 docket-log = {path = "../docket-log"}
+zbus-ready = { path = "../../../zbus-ready" }
 
 [dev-dependencies]
 porter-ids = {path = "../../../porter/crates/porter-ids"}

@@ -32,6 +32,7 @@ dev-rows = ["peephole/dev-rows"]
 [dev-dependencies]
 peephole = {path = "../peephole", features = ["fake"]}
 tempfile = {version = "3"}
+zbus-ready = { path = "../../zbus-ready" }
 
 # One integration binary that needs the `fake` seams (an introduced standing, a fixture tree).
 [[test]]

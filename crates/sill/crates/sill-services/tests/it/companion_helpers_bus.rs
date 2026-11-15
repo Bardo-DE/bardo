@@ -191,6 +191,9 @@ async fn companion_with(desk: &Desk, view: HelpersView) -> (Connection, Held) {
         )
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&companion)
+        .await
+        .expect("the object server answers");
     (companion, held)
 }
 

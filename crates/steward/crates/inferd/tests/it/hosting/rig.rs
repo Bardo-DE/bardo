@@ -613,13 +613,16 @@ impl World {
                 let tailscale = FakeTailscale::start(&scratch.join("ts"), tp.network).await;
                 // accountd keeps listing the computers (Tailnet1); this connection is its stand-in.
                 let held = bus.connect().await;
-                held.request_name("org.quire.Accounts1")
-                    .await
-                    .expect("own org.quire.Accounts1");
                 held.object_server()
                     .at(porter_wire::names::TAILNET_PATH, tailscale.object())
                     .await
                     .expect("serve the fake Tailnet1");
+                zbus_ready::serving(&held)
+                    .await
+                    .expect("the object server answers");
+                held.request_name("org.quire.Accounts1")
+                    .await
+                    .expect("own org.quire.Accounts1");
                 let (guests, said) = porter_tailnet::Guests::open(&state.join("guests.toml"));
                 assert_eq!(said, None);
                 let tailnet = Tailnet::start(

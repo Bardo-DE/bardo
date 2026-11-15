@@ -317,6 +317,7 @@ members = [
     "crates/turnstile/crates/turnstile",
     "crates/turnstile/crates/turnstile-client",
     "crates/turnstile/crates/turnstile-wire",
+    "crates/zbus-ready",
     "xtask",
 ]
 exclude = [

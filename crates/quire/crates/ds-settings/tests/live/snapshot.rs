@@ -127,10 +127,13 @@ async fn snapshot_over_the_bus_equals_describe_and_get() {
     let bus = PrivateBus::start("snapshot");
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
-    daemon.request_name(NAME).await.expect("name");
     serve(&daemon, PATH, Accounts::new(None))
         .await
         .expect("serves");
+    zbus_ready::serving(&daemon)
+        .await
+        .expect("the object server answers");
+    daemon.request_name(NAME).await.expect("name");
 
     let client = LiveClient::new(&settings, NAME, PATH, AnyOwner).expect("proxy");
     let snapshot = client.snapshot().await.expect("snapshot");
@@ -148,12 +151,15 @@ async fn a_vanished_key_is_absent_from_the_bus_snapshot_too() {
     let bus = PrivateBus::start("snapshot-gone");
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
-    daemon.request_name(NAME).await.expect("name");
     let module = Vanishing {
         inner: Accounts::new(None),
         gone: CLIENT,
     };
     serve(&daemon, PATH, module).await.expect("serves");
+    zbus_ready::serving(&daemon)
+        .await
+        .expect("the object server answers");
+    daemon.request_name(NAME).await.expect("name");
 
     let client = LiveClient::new(&settings, NAME, PATH, AnyOwner).expect("proxy");
     let snapshot = client.snapshot().await.expect("snapshot");
@@ -167,10 +173,13 @@ async fn a_refused_reader_gets_not_permitted() {
     let bus = PrivateBus::start("snapshot-refused");
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
-    daemon.request_name(NAME).await.expect("name");
     serve(&daemon, PATH, Closed(Accounts::new(None)))
         .await
         .expect("serves");
+    zbus_ready::serving(&daemon)
+        .await
+        .expect("the object server answers");
+    daemon.request_name(NAME).await.expect("name");
 
     let client = LiveClient::new(&settings, NAME, PATH, AnyOwner).expect("proxy");
     match client.snapshot().await {
@@ -184,12 +193,15 @@ async fn a_module_without_snapshot_is_read_by_the_client() {
     let bus = PrivateBus::start("snapshot-legacy");
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
-    daemon.request_name(NAME).await.expect("name");
     daemon
         .object_server()
         .at(PATH, Legacy(Accounts::new(None)))
         .await
         .expect("exports");
+    zbus_ready::serving(&daemon)
+        .await
+        .expect("the object server answers");
+    daemon.request_name(NAME).await.expect("name");
 
     // The raw call fails the way an old module fails it.
     let raw = zbus::Proxy::new(&settings, NAME, PATH, INTERFACE)

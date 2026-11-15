@@ -32,6 +32,7 @@ thiserror = {version = "2"}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process"]}
 toml = {version = "1"}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus-ready = { path = "../../../zbus-ready" }
 
 [dev-dependencies]
 files-desktop = { path = ".", features = ["testing"] }

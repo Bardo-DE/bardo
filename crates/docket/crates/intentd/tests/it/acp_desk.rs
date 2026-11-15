@@ -69,6 +69,9 @@ impl Fixture {
             )
             .await
             .expect("served");
+        zbus_ready::serving(&acp)
+            .await
+            .expect("the object server answers");
         acp.request_name(ACP).await.expect("name");
         let sill_connection = bus.connect().await;
         // A sill that would answer if it were asked.

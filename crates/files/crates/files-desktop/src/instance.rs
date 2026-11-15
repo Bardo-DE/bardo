@@ -57,6 +57,7 @@ pub async fn session() -> Result<Connection, InstanceError> {
 pub async fn claim(connection: &Connection, sink: Sink) -> Result<Claim, InstanceError> {
     // The object goes up before the names, so a call right after the name appears is answered.
     file_manager::serve(connection, sink).await?;
+    zbus_ready::serving(connection).await?;
     match ask_for(connection, APP_NAME).await? {
         NameAnswer::Got => {}
         NameAnswer::Taken => {

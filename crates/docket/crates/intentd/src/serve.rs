@@ -115,6 +115,7 @@ pub async fn serve_on_gated<S: Seams + 'static>(
         Peers::gated(connection.clone(), config, who, proc_root, acp),
     );
     export(connection, &gateway).await.map_err(bus)?;
+    zbus_ready::serving(connection).await.map_err(bus)?;
     // Never queued behind another intentd: two routers would be two breakers and two journals.
     let reply = connection
         .request_name_with_flags(INTENTS_BUS, RequestNameFlags::DoNotQueue.into())

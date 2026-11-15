@@ -103,6 +103,9 @@ impl FakeInferd {
             .at(steward_dbus::inference::INFERENCE_PATH, self)
             .await
             .expect("serve the object");
+        zbus_ready::serving(connection)
+            .await
+            .expect("the object server answers");
         connection
             .request_name(steward_dbus::inference::INFERENCE_BUS)
             .await

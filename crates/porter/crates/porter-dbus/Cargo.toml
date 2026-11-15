@@ -18,13 +18,13 @@ zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 serde = {version = "1", features = ["derive"]}
 serde_json = {version = "1"}
 thiserror = {version = "2"}
-# `serve_ready`'s deadline; zbus already runs on tokio here.
+# The caller's runtime (`accounts::pending`); zbus already runs on tokio here.
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [dev-dependencies]
 test-kit = {path = "../test-kit"}
 proptest = {version = "1"}
-# A paused clock for `serve_ready`'s timing tests.
+# The test runtime.
 tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
 porter-capability = {path = "../porter-capability"}
 

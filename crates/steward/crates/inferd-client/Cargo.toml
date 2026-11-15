@@ -47,6 +47,7 @@ steward-dbus = {path = "../steward-dbus"}
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus-ready = { path = "../../../zbus-ready" }
 
 # The daemon the bus tests start (Linux only, as the transport is).
 [target.'cfg(target_os = "linux")'.dev-dependencies]

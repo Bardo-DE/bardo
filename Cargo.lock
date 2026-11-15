@@ -153,6 +153,7 @@ dependencies = [
  "tokio",
  "toml 1.1.6+spec-1.1.0",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -483,6 +484,7 @@ dependencies = [
  "serde",
  "serde_json",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -2152,6 +2154,7 @@ dependencies = [
  "tracing",
  "xkbcommon 0.9.0",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -2790,6 +2793,7 @@ dependencies = [
  "toml 1.1.6+spec-1.1.0",
  "tracing",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -3881,6 +3885,7 @@ dependencies = [
  "tokio",
  "toml 1.1.6+spec-1.1.0",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -3919,6 +3924,7 @@ dependencies = [
  "tokio",
  "toml 1.1.6+spec-1.1.0",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -4335,6 +4341,7 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -4408,6 +4415,7 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -5132,6 +5140,7 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.21",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -5548,6 +5557,7 @@ dependencies = [
  "ds-peer",
  "tokio",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -5624,6 +5634,7 @@ dependencies = [
  "tokio",
  "toml 1.1.6+spec-1.1.0",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -5684,6 +5695,7 @@ dependencies = [
  "toml 1.1.6+spec-1.1.0",
  "toml_edit",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -6090,6 +6102,7 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -6351,6 +6364,7 @@ dependencies = [
  "tokio",
  "toml 1.1.6+spec-1.1.0",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -7706,6 +7720,7 @@ dependencies = [
  "toml 1.1.6+spec-1.1.0",
  "vision-prep",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -7742,6 +7757,7 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -7906,6 +7922,7 @@ dependencies = [
  "tokio",
  "toml 1.1.6+spec-1.1.0",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -9290,6 +9307,7 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -10701,6 +10719,7 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -12464,6 +12483,7 @@ dependencies = [
  "tokio",
  "tracing",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -13812,6 +13832,7 @@ dependencies = [
  "wayland-client",
  "wayland-protocols",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -14011,6 +14032,7 @@ dependencies = [
  "tracing-subscriber",
  "ureq",
  "zbus",
+ "zbus-ready",
  "zstd",
 ]
 
@@ -14911,6 +14933,7 @@ dependencies = [
  "toml 1.1.6+spec-1.1.0",
  "windows-zones",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -14923,6 +14946,7 @@ dependencies = [
  "test-kit",
  "tokio",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -16120,6 +16144,7 @@ dependencies = [
  "voice-pipewire",
  "voice-wire",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]
@@ -17763,6 +17788,15 @@ dependencies = [
  "zbus-lockstep",
  "zbus_xml",
  "zvariant",
+]
+
+[[package]]
+name = "zbus-ready"
+version = "0.1.0"
+dependencies = [
+ "tempfile",
+ "tokio",
+ "zbus",
 ]
 
 [[package]]

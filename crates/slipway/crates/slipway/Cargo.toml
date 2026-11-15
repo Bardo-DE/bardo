@@ -25,6 +25,7 @@ peephole-bus = {default-features = false, features = ["tokio", "desktop"], path 
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "fs", "signal"]}
 tracing = {version = "0.1"}
 tracing-subscriber = {version = "0.3", default-features = false, features = ["fmt", "std", "env-filter"]}
+zbus-ready = { path = "../../../zbus-ready" }
 
 [dev-dependencies]
 peephole-bus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../../peephole/peephole-bus"}

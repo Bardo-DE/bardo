@@ -129,6 +129,7 @@ async fn serve_on(
         )
         .await
         .map_err(bus)?;
+    zbus_ready::serving(&connection).await.map_err(bus)?;
     connection.request_name(BUS_NAME).await.map_err(bus)?;
     let shell = AppName::parse(SHELL).map_err(|_| LiveFault::App(SHELL.to_owned()))?;
     let companion = Companion::new(

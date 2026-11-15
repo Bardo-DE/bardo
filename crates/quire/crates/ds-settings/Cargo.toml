@@ -35,6 +35,7 @@ objc2-core-foundation = {version = "0.3.2", default-features = false, features =
 ds = {path = "../ds"}
 # The tests' runtime and the `Spawner` they hand the watches; the crate itself names no runtime.
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+zbus-ready = { path = "../../../zbus-ready" }
 
 [features]
 default = ["quire-desktop"]

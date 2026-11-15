@@ -150,6 +150,7 @@ where
         .object_server()
         .at(VOICE_PATH, VoiceSkeleton::serving(handle))
         .await?;
+    zbus_ready::serving(&connection).await?;
     let reply = connection
         .request_name_with_flags(VOICE_BUS, RequestNameFlags::DoNotQueue.into())
         .await?;

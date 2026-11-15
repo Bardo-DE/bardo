@@ -220,6 +220,9 @@ async fn desk_on(
         .at("/org/quire/Intents1", StandInControl(held.clone()))
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&intentd)
+        .await
+        .unwrap_or_else(|e| panic!("{e}"));
     intentd
         .request_name(INTENTS_BUS)
         .await

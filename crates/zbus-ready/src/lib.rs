@@ -1,18 +1,24 @@
-//! A daemon's start on the bus: its well-known name is the promise that its calls are answered,
-//! so it claims the name only once they are.
+//! Wait until a connection's object server takes calls, before anyone is told to call it.
 //!
 //! zbus starts a connection's object server on a task of its own the first time the server is
 //! used, and that task listens for calls only once it has run. A call that reaches the connection
-//! before then is dropped: no answer, no error, and the caller waits for ever. A daemon that
-//! claimed its name at once lost such calls (the first caller after a start, or one that D-Bus
-//! activation queued for the name). Every porter daemon registers all its objects, then waits on
-//! [`serve_ready`], then calls `request_name`.
+//! before then matches no subscriber and is dropped: no answer, no error, and the caller waits
+//! for ever (zbus 5.19 and 6.3, `Connection::start_object_server`; only
+//! `connection::Builder::serve_at` waits for the task). A service that claimed its name at once
+//! lost such calls: the first caller after a start, or one D-Bus activation queued for the name.
+//!
+//! So a service registers all its objects, then waits on [`serving`], then calls `request_name`
+//! (or hands its unique name to anyone).
+//!
+//! This crate is a workaround. When zbus waits for its own object server task, delete the crate
+//! and its calls (`grep -rn zbus_ready::`).
 
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::task::Poll;
 use std::time::Duration;
+
 use zbus::Connection;
 
 /// How long after a look the next one is sent; it doubles up to [`LOOK_MAX`].
@@ -22,37 +28,36 @@ const LOOK: Duration = Duration::from_millis(50);
 const LOOK_MAX: Duration = Duration::from_secs(1);
 
 /// How long the connection may take to start taking calls. A starved computer (a big build, swap
-/// full) takes tens of seconds to run a task; a daemon that gave up at 30 s would exit on exactly
-/// the machine that needs it to wait.
+/// full) takes tens of seconds to run a task; a service that gave up at 30 s would exit on
+/// exactly the machine that needs it to wait.
 const BOUND: Duration = Duration::from_secs(300);
 
-/// Waits until `connection`'s object server answers method calls. The look is
-/// `org.freedesktop.DBus.Peer.Ping` to the connection itself, through the bus, sent again after
-/// 50 ms, then at growing gaps up to a second, until one is answered. A look is never cancelled
-/// for the next: on a slow machine an answer can take longer than the gap, and a look dropped
-/// just before its answer would be asked again for ever. An error after five minutes with none
-/// answered.
+/// Waits until `connection`'s object server answers method calls, starting the server if nothing
+/// has yet. The look is `org.freedesktop.DBus.Peer.Ping` to the connection itself (zbus answers
+/// `Peer` on every path), sent again after 50 ms, then at growing gaps up to a second, until one
+/// is answered. A look is never cancelled for the next: on a slow machine an answer can take
+/// longer than the gap, and a look dropped just before its answer would be asked again for ever.
 ///
 /// # Errors
-/// The connection has no unique name (it is not on a bus), a look failed outright, or none was
-/// answered in time.
-pub async fn serve_ready(connection: &Connection) -> zbus::Result<()> {
-    ready_within(connection, LOOK, BOUND).await
+///
+/// A look failed outright, or none was answered within five minutes.
+pub async fn serving(connection: &Connection) -> zbus::Result<()> {
+    serving_within(connection, LOOK, BOUND).await
 }
 
-async fn ready_within(
+async fn serving_within(
     connection: &Connection,
     look: Duration,
     bound: Duration,
 ) -> zbus::Result<()> {
+    connection.object_server();
+    // A peer-to-peer connection has no unique name; its calls need no destination.
     let me = connection
         .unique_name()
-        .ok_or_else(|| zbus::Error::Failure("the connection has no unique name".into()))?
-        .as_str()
-        .to_owned();
+        .map(|name| name.as_str().to_owned());
     let answer = first_answer(look, bound, || {
         connection.call_method(
-            Some(me.as_str()),
+            me.as_deref(),
             "/",
             Some("org.freedesktop.DBus.Peer"),
             "Ping",
@@ -61,10 +66,13 @@ async fn ready_within(
     })
     .await;
     match answer {
-        Some(answer) => answer.map(|_| ()),
+        Some(answer) => answer.map(drop),
         None => Err(zbus::Error::InputOutput(Arc::new(std::io::Error::new(
             std::io::ErrorKind::TimedOut,
-            format!("the connection {me} took no calls"),
+            format!(
+                "the connection {} took no calls",
+                me.as_deref().unwrap_or("(peer)")
+            ),
         )))),
     }
 }

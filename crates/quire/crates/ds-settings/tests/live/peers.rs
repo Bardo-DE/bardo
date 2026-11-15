@@ -34,7 +34,6 @@ async fn changed_reaches_the_peers_that_may_read_and_not_one_that_was_refused() 
     let spy = bus.connect().await;
     let role = settings.unique_name().expect("named").to_string();
     let spy_name = spy.unique_name().expect("named").to_string();
-    daemon.request_name(NAME).await.expect("name");
     let served = serve(
         &daemon,
         PATH,
@@ -42,6 +41,10 @@ async fn changed_reaches_the_peers_that_may_read_and_not_one_that_was_refused() 
     )
     .await
     .expect("serves");
+    zbus_ready::serving(&daemon)
+        .await
+        .expect("the object server answers");
+    daemon.request_name(NAME).await.expect("name");
 
     // The spy asks the bus for every `Changed`, as any app may.
     let rule = MatchRule::builder()
@@ -108,8 +111,11 @@ async fn a_module_that_does_not_answer_ends_every_call_as_a_timeout() {
     let bus = PrivateBus::start("hangs");
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
-    daemon.request_name(NAME).await.expect("name");
     serve(&daemon, PATH, Hanging).await.expect("serves");
+    zbus_ready::serving(&daemon)
+        .await
+        .expect("the object server answers");
+    daemon.request_name(NAME).await.expect("name");
     let wait = Deadline::of(Duration::from_millis(150));
     let client = LiveClient::new(&settings, NAME, PATH, AnyOwner)
         .expect("proxy")

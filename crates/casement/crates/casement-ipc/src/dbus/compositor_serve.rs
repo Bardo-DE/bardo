@@ -188,6 +188,7 @@ async fn connect(
     if let Some(link) = privacy {
         serve_privacy(&connection, for_privacy, link).await?;
     }
+    zbus_ready::serving(&connection).await?;
     connection
         .request_name_with_flags(BUS_NAME, RequestNameFlags::DoNotQueue.into())
         .await?;

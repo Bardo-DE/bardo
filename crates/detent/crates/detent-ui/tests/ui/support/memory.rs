@@ -153,6 +153,9 @@ pub async fn serve(bus: &PrivateBus, file: PathBuf, confinement: &'static str) -
         )
         .await
         .expect("memory served");
+    zbus_ready::serving(&connection)
+        .await
+        .expect("the object server answers");
     connection
         .request_name("org.quire.Memory1")
         .await

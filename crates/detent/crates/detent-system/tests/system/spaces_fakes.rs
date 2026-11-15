@@ -97,6 +97,9 @@ async fn registry_holding(
         )
         .await
         .expect("registry served");
+    zbus_ready::serving(&registry)
+        .await
+        .expect("the object server answers");
     registry
 }
 
@@ -120,6 +123,9 @@ pub async fn serve(bus: &PrivateBus, spaces: &[(&str, &str)], memory: bool) -> F
             )
             .await
             .expect("memory served");
+        zbus_ready::serving(&connection)
+            .await
+            .expect("the object server answers");
         connection
             .request_name("org.quire.Memory1")
             .await

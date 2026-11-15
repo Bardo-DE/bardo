@@ -95,6 +95,7 @@ where
         .at(READER_PATH, object)
         .await
         .map_err(bus)?;
+    zbus_ready::serving(connection).await.map_err(bus)?;
     let reply = connection
         .request_name_with_flags(READER_BUS, RequestNameFlags::DoNotQueue.into())
         .await

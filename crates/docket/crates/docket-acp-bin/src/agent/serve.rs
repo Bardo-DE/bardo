@@ -353,6 +353,7 @@ pub async fn run_with(
         )
         .await
         .map_err(bus_fault)?;
+    zbus_ready::serving(&bus).await.map_err(bus_fault)?;
     bus.request_name(AGENT_HOST_BUS).await.map_err(bus_fault)?;
     service.until_done().await;
     service.close().await;

@@ -1109,7 +1109,7 @@ pub fn refusal_slug(refusal: &InferRefusal) -> String {
 }
 
 /// Serves `daemon` on `connection` under the bus name and path, and announces engine changes. The
-/// name is claimed once the connection takes calls ([`porter_dbus::serve_ready`]). The daemon
+/// name is claimed once the connection takes calls ([`zbus_ready::serving`]). The daemon
 /// itself serves its settings module too: [`serve_with_settings`].
 pub async fn serve_on<P, O, C>(
     connection: &zbus::Connection,
@@ -1174,7 +1174,7 @@ where
     also.await?;
     // Every object is registered; the name is the promise that calls are taken: claim it only
     // once they are.
-    porter_dbus::serve_ready(connection).await?;
+    zbus_ready::serving(connection).await?;
     connection.request_name(INFERENCE_BUS).await?;
     let iface: zbus::object_server::InterfaceRef<InferenceServed<Inference<P, O, C>>> =
         connection.object_server().interface(INFERENCE_PATH).await?;

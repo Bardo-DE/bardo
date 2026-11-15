@@ -114,6 +114,10 @@ impl Bus {
             eprintln!("sill: notifications: serving {OBJECT_PATH}: {error}");
             return;
         }
+        if let Err(error) = zbus_ready::serving(&self.connection).await {
+            eprintln!("sill: notifications: serving {OBJECT_PATH}: {error}");
+            return;
+        }
         match serve::take_name(&self.connection, BUS_NAME).await {
             // Taken is not an error: the holder is read back and shown.
             Ok(()) | Err(ClaimError::NameTaken(_)) => {}

@@ -155,7 +155,7 @@ impl World {
             .at(porter_wire::names::SHEET_PATH, host)
             .await
             .expect("host object");
-        porter_dbus::serve_ready(&host_connection)
+        zbus_ready::serving(&host_connection)
             .await
             .expect("the host takes calls");
         host_connection

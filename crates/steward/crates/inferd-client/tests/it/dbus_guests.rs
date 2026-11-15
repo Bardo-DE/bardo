@@ -214,6 +214,9 @@ impl World {
             )
             .await
             .expect("serve");
+        zbus_ready::serving(&daemon)
+            .await
+            .expect("the object server answers");
         daemon
             .request_name(steward_dbus::inference::INFERENCE_BUS)
             .await
@@ -674,6 +677,9 @@ async fn calls_aimed_at_the_checked_owner_never_reach_a_program_that_takes_the_n
         )
         .await
         .expect("serve");
+    zbus_ready::serving(&squatter)
+        .await
+        .expect("the object server answers");
     squatter
         .request_name(steward_dbus::inference::INFERENCE_BUS)
         .await

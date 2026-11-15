@@ -432,7 +432,9 @@ async fn a_daemon_that_errors_on_open_is_not_unreachable() {
     let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     // The connection answers for the objects it serves, none here, once its object server runs.
-    let _ = daemon.object_server();
+    zbus_ready::serving(&daemon)
+        .await
+        .expect("the object server answers");
     daemon
         .request_name(steward_dbus::inference::INFERENCE_BUS)
         .await

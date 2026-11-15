@@ -20,10 +20,11 @@ serde = {version = "1", features = ["derive"], optional = true}
 serde_json = {version = "1", optional = true}
 thiserror = {version = "2"}
 zbus = {version = "5.19", default-features = false, features = ["tokio"], optional = true}
+zbus-ready = {path = "../../../zbus-ready", optional = true}
 
 [features]
 # `serve` and `serve_on`: the provider on the session bus (Linux, the desktop's intentd calls it).
-dbus = ["dep:docket-dbus", "dep:futures-util", "dep:serde", "dep:serde_json", "dep:zbus"]
+dbus = ["dep:docket-dbus", "dep:futures-util", "dep:serde", "dep:serde_json", "dep:zbus", "dep:zbus-ready"]
 
 [lints.rust]
 unsafe_code = "deny"

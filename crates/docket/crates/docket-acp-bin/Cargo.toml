@@ -65,6 +65,7 @@ prov = {path = "../../../prov/prov"}
 thiserror = {version = "2"}
 tokio = {version = "1", features = ["io-std", "io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"]}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus-ready = { path = "../../../zbus-ready" }
 
 [dev-dependencies]
 docket-fake = {path = "../docket-fake"}

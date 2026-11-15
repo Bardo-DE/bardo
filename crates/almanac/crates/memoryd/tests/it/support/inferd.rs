@@ -58,6 +58,9 @@ impl FakeInferd {
             .at(INFERENCE_PATH, self)
             .await
             .expect("serve the object");
+        zbus_ready::serving(connection)
+            .await
+            .expect("the object server answers");
         connection
             .request_name(INFERENCE_BUS)
             .await

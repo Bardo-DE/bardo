@@ -302,6 +302,9 @@ impl FakeSill {
             .at("/org/quire/Confirm1", ConfirmServer(sill.clone()))
             .await
             .expect("export Confirm1");
+        zbus_ready::serving(connection)
+            .await
+            .expect("the object server answers");
         for name in names {
             connection.request_name(*name).await.expect("claim a name");
         }

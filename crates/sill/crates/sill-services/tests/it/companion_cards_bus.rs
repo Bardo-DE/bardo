@@ -128,12 +128,18 @@ async fn bench(acts: ActsAs, first: &AnswerWire) -> Option<Bench> {
         )
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&companiond)
+        .await
+        .expect("the object server answers");
     let intentd = desk.peer(INTENTS_BUS).await;
     intentd
         .object_server()
         .at("/org/quire/Intents1", StandInSession(desk.log.clone()))
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&intentd)
+        .await
+        .expect("the object server answers");
     desk.seated().await;
     desk.send(CompanionCommand::Ask(ask_input()));
     // The follower reads the view once it has subscribed to `Updated`: when the card is in the
@@ -478,6 +484,9 @@ async fn the_apps_that_declare_an_open_action_are_known_and_a_perform_is_the_lau
     ] {
         object.unwrap_or_else(|e| panic!("{e}"));
     }
+    zbus_ready::serving(&intentd)
+        .await
+        .expect("the object server answers");
     desk.seated().await;
     let opens = desk
         .state(|c| (!c.openers.is_empty()).then(|| c.openers.clone()))
@@ -540,6 +549,9 @@ async fn something_said_to_a_subagent_is_recorded_sent_and_told_to_the_companion
         )
         .await
         .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(&companiond)
+        .await
+        .expect("the object server answers");
     let intentd = desk.peer(INTENTS_BUS).await;
     for object in [
         intentd
@@ -553,6 +565,9 @@ async fn something_said_to_a_subagent_is_recorded_sent_and_told_to_the_companion
     ] {
         object.unwrap_or_else(|e| panic!("{e}"));
     }
+    zbus_ready::serving(&intentd)
+        .await
+        .expect("the object server answers");
     desk.seated().await;
     let worker = AgentRef::Worker { task: task() };
     let work = SpaceId::parse("work").unwrap_or_else(|e| panic!("{e}"));

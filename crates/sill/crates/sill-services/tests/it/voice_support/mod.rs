@@ -347,6 +347,9 @@ pub async fn desk_with(answer: BeginAnswer, is: VoicedIs) -> Option<Desk> {
             .await
             .unwrap_or_else(|e| panic!("{e}"));
     }
+    zbus_ready::serving(&voiced)
+        .await
+        .unwrap_or_else(|e| panic!("{e}"));
     voiced
         .request_name("org.quire.Voice1")
         .await

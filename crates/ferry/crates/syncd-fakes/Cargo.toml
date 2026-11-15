@@ -17,6 +17,7 @@ clap = {version = "4", features = ["derive"]}
 # `signal` and `io-std`: SIGTERM ends the binary, and it reads its commands from stdin.
 tokio = {version = "1", features = ["io-std", "io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus-ready = { path = "../../../zbus-ready" }
 
 [dev-dependencies]
 test-kit = {path = "../../../porter/crates/test-kit"}

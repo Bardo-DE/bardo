@@ -204,6 +204,9 @@ async fn rig() -> Rig {
         )
         .await
         .expect("serve");
+    zbus_ready::serving(&daemon)
+        .await
+        .expect("the object server answers");
     daemon
         .request_name(porter_wire::names::ACCOUNTS_BUS)
         .await

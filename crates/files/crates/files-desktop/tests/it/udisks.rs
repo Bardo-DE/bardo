@@ -243,6 +243,9 @@ pub async fn serve(connection: &Connection, devices: &[Device]) -> Shared {
         .at(ROOT, zbus::fdo::ObjectManager)
         .await
         .unwrap();
+    zbus_ready::serving(connection)
+        .await
+        .expect("the object server answers");
     connection
         .request_name("org.freedesktop.UDisks2")
         .await

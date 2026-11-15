@@ -256,7 +256,7 @@ impl<C: Callers> SyncServer for SyncObject<C> {
 }
 
 /// Serves `org.quire.Sync1` on `connection` over `hub`, with `callers` saying who calls, and
-/// claims `org.quire.Sync1` once the connection takes calls ([`porter_dbus::serve_ready`]). Any
+/// claims `org.quire.Sync1` once the connection takes calls ([`zbus_ready::serving`]). Any
 /// other object on `connection` (the Photos picker) is registered before this is called.
 pub async fn serve<C: Callers>(connection: &Connection, hub: Hub, callers: C) -> zbus::Result<()> {
     let core = Arc::new(Core {
@@ -302,7 +302,7 @@ pub async fn serve<C: Callers>(connection: &Connection, hub: Hub, callers: C) ->
     });
     // Every object is registered (the Photos picker, when it runs, before this); the name is the
     // promise that calls are taken: claim it only once they are.
-    porter_dbus::serve_ready(connection).await?;
+    zbus_ready::serving(connection).await?;
     connection.request_name(SYNC_BUS).await?;
     Ok(())
 }

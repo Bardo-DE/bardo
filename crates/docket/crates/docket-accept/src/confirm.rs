@@ -238,6 +238,7 @@ pub async fn serve(
             },
         )
         .await?;
+    zbus_ready::serving(connection).await?;
     connection.request_name(CONFIRM_BUS).await?;
     connection.request_name("org.quire.Shell").await?;
     Ok((sheet, requests))

@@ -41,6 +41,7 @@ pub async fn run(ctx: Context) -> Result<(), RunError> {
         .object_server()
         .at(PATH, Updates::new(Arc::clone(&engine), gate))
         .await?;
+    zbus_ready::serving(&connection).await?;
     connection.request_name(BUS_NAME).await?;
     engine.connect(connection.clone());
     if health == Health::Restored
