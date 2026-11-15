@@ -472,7 +472,7 @@ fn input_devices_are_configured_and_their_keys_reach_the_bindings() {
     assert_eq!(applied[0].0, touchpad);
     assert_eq!(
         applied[0].1.natural_scroll,
-        casement_core::settings::true,
+        true,
         "the touchpad profile's default"
     );
 

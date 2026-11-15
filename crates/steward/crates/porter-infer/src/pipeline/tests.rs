@@ -1,7 +1,7 @@
 use super::*;
 use crate::choice::LicenceClass;
 use crate::pick::SwapCost;
-use crate::policy::{ClassFloor, Floor, LocalOnly};
+use crate::policy::{ClassFloor, Floor};
 use crate::route::{Permit, RouteCandidate, TierChoice};
 use crate::spend::SpendVerdict;
 use porter_capability::ModelId;

@@ -45,6 +45,13 @@ const fn num(
     }
 }
 
+const fn toggle(path: &'static str, set: fn(&mut AgentSettings, bool)) -> Key {
+    Key {
+        path,
+        rule: Rule::Toggle { set },
+    }
+}
+
 /// Reads `word` into `slot` by the type's serde name; whether it was one.
 fn parse_into<T: DeserializeOwned>(slot: &mut T, word: &str) -> bool {
     let de: StrDeserializer<'_, DeError> = word.into_deserializer();
