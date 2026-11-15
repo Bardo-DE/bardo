@@ -12,7 +12,7 @@ use crate::host::Host;
 use crate::state::Core;
 use porter_capability::AgentProgram;
 use porter_capability::{LoginOutcome, LoginRequestId};
-use porter_core::AgentState;
+use porter_core::AccountState;
 use porter_core::SessionToken;
 use porter_dbus::accounts::LauncherServer;
 use porter_dbus::{Call, Details};
@@ -204,8 +204,8 @@ impl<H: Host, C: Callers> LauncherObject<H, C> {
         let pending = self.0.launchers.take(&sender, &request, kind)?;
         // The state first, so whoever waits finds the account as the report left it.
         let state = match (kind, outcome) {
-            (AskKind::Login, LoginOutcome::Ready) => Some(AgentState::Ready),
-            (AskKind::Logout, LoginOutcome::Ready) => Some(AgentState::NeedsLogin),
+            (AskKind::Login, LoginOutcome::Ready) => Some(AccountState::Ok),
+            (AskKind::Logout, LoginOutcome::Ready) => Some(AccountState::NeedsLogin),
             _ => None,
         };
         let saved = match state {

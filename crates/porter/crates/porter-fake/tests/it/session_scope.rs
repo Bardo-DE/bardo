@@ -284,7 +284,7 @@ fn a_session_owns_exactly_the_grants_scoped_to_it() {
 
 #[test]
 fn an_accounts_capabilities_are_its_claims_with_its_own_toggles_applied() {
-    use porter_capability::{AbsentReason, Offer, Toggle};
+    use porter_capability::{AbsentReason, Offer};
     use porter_core::store::AccountToggle;
     let account = llm_account();
     let claims = account.capabilities.clone();
@@ -294,7 +294,7 @@ fn an_accounts_capabilities_are_its_claims_with_its_own_toggles_applied() {
         toggles: vec![AccountToggle {
             account: account.id.clone(),
             kind,
-            toggle: Toggle::Off,
+            toggle: false,
         }],
         ..Registry::default()
     };

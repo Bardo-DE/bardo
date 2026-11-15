@@ -6,7 +6,7 @@ use crate::launcher_rig::*;
 
 use accountd::launcher::LoginTiming;
 use porter_callers::CallerRole;
-use porter_capability::{CapabilityKind, Toggle};
+use porter_capability::{CapabilityKind};
 use porter_core::consent::{Decision, GrantScope, Verdict};
 use porter_core::{AccountState, AppId, AppName, Isolation};
 use porter_dbus::accounts::{BrokerProxy, verdict_from_dbus};
@@ -143,7 +143,7 @@ async fn a_permit_that_does_not_open_a_key_is_refused_and_a_once_permit_is_spent
         .set_toggle(
             &porter_core::AccountId::parse(KEYED).expect("id"),
             CapabilityKind::Llm,
-            Toggle::Off,
+            false,
         )
         .await
         .expect("off");
@@ -155,7 +155,7 @@ async fn a_permit_that_does_not_open_a_key_is_refused_and_a_once_permit_is_spent
         .set_toggle(
             &porter_core::AccountId::parse(KEYED).expect("id"),
             CapabilityKind::Llm,
-            Toggle::On,
+            true,
         )
         .await
         .expect("on");
@@ -183,7 +183,7 @@ async fn a_runtime_is_reported_as_an_account_and_the_broker_is_told_of_changes()
         .set_toggle(
             &porter_core::AccountId::parse(KEYED).expect("id"),
             CapabilityKind::Llm,
-            Toggle::Off,
+            false,
         )
         .await
         .expect("off");

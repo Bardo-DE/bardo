@@ -5,23 +5,13 @@ use crate::CapabilityKind;
 use crate::offer::{AbsentReason, Claim, Offer};
 use serde::{Deserialize, Serialize};
 
-/// Whether the user lets an account use one of its kinds (Settings' per-account toggle).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Toggle {
-    /// In use.
-    On,
-    /// Turned off by the user.
-    Off,
-}
-
 /// A user's toggle for one kind of one account. Kinds without one are on.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct KindToggle {
     /// The kind.
     pub kind: CapabilityKind,
-    /// On or off.
-    pub toggle: Toggle,
+    /// Whether the kind is in use (`false` is turned off by the user).
+    pub toggle: bool,
 }
 
 /// The claims that hold: one per (subject, kind), the highest [`crate::Provenance`] winning
@@ -47,7 +37,7 @@ fn apply_toggle(claim: Claim, toggles: &[KindToggle]) -> Claim {
     let kind = claim.offer.kind();
     let off = toggles
         .iter()
-        .any(|t| t.kind == kind && t.toggle == Toggle::Off);
+        .any(|t| t.kind == kind && !t.toggle);
     if off {
         Claim {
             offer: Offer::Absent {

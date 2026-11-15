@@ -5,7 +5,7 @@
 
 use crate::pkce::Pkce;
 use porter_provider::{
-    ClientEntry, ConsentHistory, Issuer, IssuerEndpoints, LoginHint, SignInStart,
+    ClientEntry, Issuer, IssuerEndpoints, LoginHint, SignInStart,
 };
 
 /// What Google's `prompt` asks for.
@@ -23,12 +23,11 @@ pub enum GooglePrompt {
 impl GooglePrompt {
     /// The prompt for a sign-in: consent on a client's first sign-in for the identity; after
     /// that none when the address is known (one click), and the account chooser when it is not.
-    pub fn choose(consent: ConsentHistory, hint: Option<&LoginHint>) -> Self {
-        match (consent, hint) {
-            (ConsentHistory::SignedInBefore, Some(_)) => Self::Unspecified,
-            (ConsentHistory::SignedInBefore, None) => Self::SelectAccount,
-            // `ConsentHistory` grows: a history this code does not know is read as a first one.
-            _ => Self::Consent,
+    pub fn choose(signed_in_before: bool, hint: Option<&LoginHint>) -> Self {
+        match (signed_in_before, hint) {
+            (true, Some(_)) => Self::Unspecified,
+            (true, None) => Self::SelectAccount,
+            (false, _) => Self::Consent,
         }
     }
 
@@ -47,7 +46,7 @@ pub struct AuthorizeAsk {
     /// The address to open the page on (`login_hint`), when known.
     pub login_hint: Option<LoginHint>,
     /// Whether the person agreed to this client before.
-    pub consent: ConsentHistory,
+    pub signed_in_before: bool,
 }
 
 impl AuthorizeAsk {
@@ -55,7 +54,7 @@ impl AuthorizeAsk {
     pub fn of(start: &SignInStart) -> Self {
         Self {
             login_hint: start.login_hint.clone(),
-            consent: start.consent,
+            signed_in_before: start.signed_in_before,
         }
     }
 }
@@ -113,7 +112,7 @@ pub fn authorize_url_for(
     }
     if client.issuer == Issuer::Google {
         pairs.push(("access_type", "offline"));
-        if let Some(prompt) = GooglePrompt::choose(ask.consent, ask.login_hint.as_ref()).value() {
+        if let Some(prompt) = GooglePrompt::choose(ask.signed_in_before, ask.login_hint.as_ref()).value() {
             pairs.push(("prompt", prompt));
         }
         pairs.push(("include_granted_scopes", "true"));
@@ -221,47 +220,47 @@ mod tests {
         let pkce = Pkce::from_random([5; 32], [6; 16]);
         let ada = LoginHint::parse("ada+tag@gmail.com").expect("an address");
         let cases = [
-            // (issuer, consent, hint, prompt, login_hint)
+            // (issuer, signed in before, hint, prompt, login_hint)
             (
                 Issuer::Google,
-                ConsentHistory::FirstSignIn,
+                false,
                 None,
                 Some("consent"),
                 None,
             ),
             (
                 Issuer::Google,
-                ConsentHistory::FirstSignIn,
+                false,
                 Some(&ada),
                 Some("consent"),
                 Some("ada+tag@gmail.com"),
             ),
             (
                 Issuer::Google,
-                ConsentHistory::SignedInBefore,
+                true,
                 Some(&ada),
                 None,
                 Some("ada+tag@gmail.com"),
             ),
             (
                 Issuer::Google,
-                ConsentHistory::SignedInBefore,
+                true,
                 None,
                 Some("select_account"),
                 None,
             ),
             (
                 Issuer::Microsoft,
-                ConsentHistory::SignedInBefore,
+                true,
                 Some(&ada),
                 None,
                 Some("ada+tag@gmail.com"),
             ),
         ];
-        for (issuer, consent, hint, prompt, login_hint) in cases {
+        for (issuer, signed_in_before, hint, prompt, login_hint) in cases {
             let ask = AuthorizeAsk {
                 login_hint: hint.cloned(),
-                consent,
+                signed_in_before,
             };
             let url = authorize_url_for(
                 &issuer.endpoints(),
@@ -273,8 +272,8 @@ mod tests {
             );
             let q = query(&url);
             let get = |k: &str| q.iter().find(|(n, _)| n == k).map(|(_, v)| v.as_str());
-            assert_eq!(get("prompt"), prompt, "{issuer:?} {consent:?} {hint:?}");
-            assert_eq!(get("login_hint"), login_hint, "{issuer:?} {consent:?}");
+            assert_eq!(get("prompt"), prompt, "{issuer:?} {signed_in_before:?} {hint:?}");
+            assert_eq!(get("login_hint"), login_hint, "{issuer:?} {signed_in_before:?}");
         }
     }
 

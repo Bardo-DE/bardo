@@ -12,26 +12,26 @@ use porter_http::HttpError;
 use porter_http::http::Request;
 use porter_http::http::header::{AUTHORIZATION, HeaderValue};
 use porter_provider::{Presented, ProviderError, ProviderSpec};
-use porter_sheet::{Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, Presence, SignInFault};
+use porter_sheet::{Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, SignInFault};
 
 /// A form field.
-pub fn field(kind: FieldKind, entry: Entry, presence: Presence) -> FieldSpec {
+pub fn field(kind: FieldKind, entry: Entry, required: bool) -> FieldSpec {
     FieldSpec {
         kind,
         entry,
-        presence,
+        required,
         prefill: None,
     }
 }
 
 /// The required, shown field of this kind.
 pub fn plain(kind: FieldKind) -> FieldSpec {
-    field(kind, Entry::Plain, Presence::Required)
+    field(kind, Entry::Plain, true)
 }
 
 /// The required, hidden password field.
 pub fn password() -> FieldSpec {
-    field(FieldKind::Password, Entry::Secret, Presence::Required)
+    field(FieldKind::Password, Entry::Secret, true)
 }
 
 /// The password field a provider asks for: an app password when its sign-in is `app_password`
@@ -40,7 +40,7 @@ pub fn password() -> FieldSpec {
 pub fn password_for(spec: &ProviderSpec) -> FieldSpec {
     match spec.auth.kind {
         porter_core::AuthKind::AppPassword => {
-            field(FieldKind::AppPassword, Entry::Secret, Presence::Required)
+            field(FieldKind::AppPassword, Entry::Secret, true)
         }
         _ => password(),
     }

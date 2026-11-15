@@ -29,18 +29,11 @@ use porter_core::{Account, EndpointUrl, Family, PathReach, Reach, ReachMethods, 
 use porter_provider::ProviderSpec;
 use porter_wire::Refusal;
 
-/// The other origins a provider file may declare for a row.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Declared {
-    /// `auth_origins`: relayed with the bearer.
-    Auth,
-    /// `linked_origins`: relayed with nothing added.
-    Linked,
-}
-
 /// The endpoint of `account` for a relay to `origin`, an origin that is not one of the account's
 /// endpoints but that a row of `kind` declares: the home endpoint's own endpoint with the
 /// origin's address, so the family and login are the row's and nothing else changes.
+/// `linked` says which declaration it is: `linked_origins` (relayed with nothing added), or
+/// `auth_origins` (relayed with the bearer).
 /// `EndpointNotGranted` for any origin the file does not declare, one with a path, or one on
 /// another scheme than the endpoint it belongs to.
 pub fn declared_endpoint(
@@ -48,7 +41,7 @@ pub fn declared_endpoint(
     spec: &ProviderSpec,
     kind: CapabilityKind,
     origin: &EndpointUrl,
-    declared: Declared,
+    linked: bool,
 ) -> Result<ServiceEndpoint, Refusal> {
     let dialled = origin.origin();
     let bare = origin.path() == "/" && !origin.as_str().ends_with('/');
@@ -56,9 +49,9 @@ pub fn declared_endpoint(
         spec.capabilities
             .iter()
             .filter(|row| row.family == endpoint.family && row.capability.kind() == kind)
-            .any(|row| match declared {
-                Declared::Auth => row.auth_origins.iter().any(|o| o.allows(&dialled)),
-                Declared::Linked => row.linked_origins.iter().any(|o| o.allows(&dialled)),
+            .any(|row| match linked {
+                false => row.auth_origins.iter().any(|o| o.allows(&dialled)),
+                true => row.linked_origins.iter().any(|o| o.allows(&dialled)),
             })
     };
     let home = account

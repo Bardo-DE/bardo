@@ -1,8 +1,7 @@
 use super::*;
-use crate::fields::{Entry, FieldKind, FieldSpec, Presence};
+use crate::fields::{Entry, FieldKind, FieldSpec};
 use crate::progress::{ServiceRow, ServiceState};
 use porter_capability::CapabilityKind;
-use porter_capability::Toggle;
 use porter_core::AccountLabel;
 
 fn provider(text: &str) -> ProviderId {
@@ -26,7 +25,7 @@ fn review() -> Review {
         label: AccountLabel("ada@cloud.example.org".into()),
         services: vec![ServiceRow {
             kind: CapabilityKind::Storage,
-            state: ServiceState::Offered(Toggle::On),
+            state: ServiceState::Offered(true),
             limit: None,
             access: None,
         }],
@@ -75,7 +74,7 @@ fn every_stage_has_its_view() {
     let field = FieldSpec {
         kind: FieldKind::Password,
         entry: Entry::Secret,
-        presence: Presence::Required,
+        required: true,
         prefill: None,
     };
     let sheet = |stage| Sheet {

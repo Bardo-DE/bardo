@@ -1,7 +1,7 @@
 use super::rig::*;
 use porter_capability::CapabilityKind as K;
 use porter_capability::KindToggle;
-use porter_capability::{AbsentReason, Offer, Provenance, Toggle};
+use porter_capability::{AbsentReason, Offer, Provenance};
 use porter_core::AccountId;
 use porter_core::{Credential, Family, SecretPurpose, TenantConsent};
 use porter_fake_servers::{Consent, IssuerEvent, TokenResult};
@@ -138,7 +138,7 @@ async fn a_loopback_sign_in_reviews_what_graph_allows_then_hands_over_the_creden
     assert!(matches!(again, SignInStep::Review { .. }));
     let choices = vec![KindToggle {
         kind: K::Notes,
-        toggle: Toggle::Off,
+        toggle: false,
     }];
     let SignInStep::Done(signed) = signin.next(SignInInput::Confirm(choices)).await else {
         panic!("expected done")
@@ -287,10 +287,7 @@ async fn a_client_id_written_after_start_is_used_by_the_next_sign_in() {
         porter_family_oauth::OAuthProvider::with_env(porter_family_oauth::Microsoft, spec(), env);
 
     // ux-1: the add list leaves it out until then.
-    assert_eq!(
-        provider.readiness(),
-        porter_provider::Readiness::NeedsClient
-    );
+    assert!(!provider.ready());
     let mut before = provider.sign_in(start()).expect("sign in");
     assert_eq!(
         before.next(SignInInput::Start).await,
@@ -301,7 +298,7 @@ async fn a_client_id_written_after_start_is_used_by_the_next_sign_in() {
         "[[client]]\nissuer = \"microsoft\"\nchannel = \"development\"\nclient_id = \"set-in-settings\"\n",
     )
     .expect("write");
-    assert_eq!(provider.readiness(), porter_provider::Readiness::Ready);
+    assert!(provider.ready());
     let mut after = provider.sign_in(start()).expect("sign in");
     let SignInStep::OpenBrowser { url } = after.next(SignInInput::Start).await else {
         panic!("expected the browser once a client id is set")
@@ -456,7 +453,7 @@ async fn asking_for_the_whole_drive_asks_it_alone_and_records_it_with_the_rest()
     );
     let choices = vec![KindToggle {
         kind: K::Storage,
-        toggle: Toggle::On,
+        toggle: true,
     }];
     let SignInStep::Done(signed) = signin.next(SignInInput::Confirm(choices)).await else {
         panic!("expected done")

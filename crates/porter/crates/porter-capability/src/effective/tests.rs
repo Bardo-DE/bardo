@@ -30,7 +30,7 @@ struct Case {
 fn cases() -> Vec<Case> {
     let off = KindToggle {
         kind: CapabilityKind::Storage,
-        toggle: Toggle::Off,
+        toggle: false,
     };
     vec![
         Case {
@@ -84,7 +84,7 @@ fn cases() -> Vec<Case> {
             claims: vec![claim(poll(), Provenance::Declared)],
             toggles: vec![KindToggle {
                 kind: CapabilityKind::Storage,
-                toggle: Toggle::On,
+                toggle: true,
             }],
             expected: vec![claim(poll(), Provenance::Declared)],
         },

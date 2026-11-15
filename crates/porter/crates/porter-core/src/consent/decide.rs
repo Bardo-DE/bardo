@@ -38,16 +38,6 @@ pub fn decide<K: Eq>(grants: &[Grant<K>], key: &K) -> Verdict {
     }
 }
 
-/// Whether any installed provider declares a capability that meets the need.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Catalog {
-    /// At least one provider could serve it, so adding an account helps.
-    Offers,
-    /// No provider can.
-    Offerless,
-}
-
 /// What an app may learn about a need without holding a grant: no identities (design/31 §4.4).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -65,7 +55,9 @@ pub enum Availability {
 }
 
 /// The availability for one app, from the verdicts of the accounts whose offer fits.
-pub fn availability(fitting: &[Verdict], catalog: Catalog) -> Availability {
+/// `offered` is whether any installed provider declares a capability that meets the need, so
+/// adding an account helps.
+pub fn availability(fitting: &[Verdict], offered: bool) -> Availability {
     let any = |want: fn(&Verdict) -> bool| fitting.iter().any(want);
     if any(|v| matches!(v, Verdict::Granted { .. })) {
         Availability::Granted
@@ -73,7 +65,7 @@ pub fn availability(fitting: &[Verdict], catalog: Catalog) -> Availability {
         Availability::AvailableNeedsConsent
     } else if !fitting.is_empty() {
         Availability::Denied
-    } else if catalog == Catalog::Offers {
+    } else if offered {
         Availability::NeedsAccount
     } else {
         Availability::Unsupported

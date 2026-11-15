@@ -5,7 +5,7 @@ use porter_capability::CapabilityKind;
 use porter_capability::KindToggle;
 use porter_capability::StorageScope;
 use porter_capability::{Access, Capability, Delta, LabelModel, MailCap, MailTransport};
-use porter_capability::{Claim, Offer, Provenance, Subject, Toggle};
+use porter_capability::{Claim, Offer, Provenance, Subject};
 use porter_core::ProviderHint;
 use porter_core::{
     Account, AccountLabel, AccountState, AppId, AppName, AuthKind, Credential, DataClass,
@@ -21,7 +21,7 @@ use porter_fake::{MemoryStore, RecordingAudit, ScriptedSheets};
 use porter_ids::clock::FixedClock;
 use porter_ids::{UnixSeconds, WebUrl};
 use porter_provider::{
-    ConsentHistory, LoginHint, Presented, Provider, ProviderError, ProviderSession, ProviderSpec,
+    LoginHint, Presented, Provider, ProviderError, ProviderSession, ProviderSpec,
     RevokeOutcome, SignIn, SignInMode, SignInStart, SignInStep, Signed, parse_provider,
 };
 use porter_secrets::{MemorySecrets, Secrets, SecretsError};
@@ -31,7 +31,7 @@ use porter_service_core::audit::AuditEvent;
 use porter_service_core::registry::Registry;
 use porter_sheet::host::{SheetFault, SheetLink, SheetOpen, Sheets};
 use porter_sheet::{
-    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, Presence, SheetInput, SheetView,
+    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, SheetInput, SheetView,
     SignInFault, SignInInput, UserCode,
 };
 use porter_wire::{AccountsReply, AccountsRequest};
@@ -73,8 +73,8 @@ kind = "llm"
 v = { features = ["chat"], context = 2048, max_output = 2048, wire = "ollama_native" }
 "#;
 
-/// The address and consent history one sign-in was started with.
-type Start = (Option<LoginHint>, ConsentHistory);
+/// The address and whether the client was signed in before, one sign-in was started with.
+type Start = (Option<LoginHint>, bool);
 
 /// What the sign-in was told, by name, and the steps it will answer with, in order.
 #[derive(Debug, Clone, Default)]
@@ -88,8 +88,8 @@ struct Script {
     revoked: Arc<Mutex<Vec<Account>>>,
     /// Whether the provider fails when asked to revoke.
     revoke_fails: Arc<Mutex<bool>>,
-    /// What the provider answers `readiness` with (`None`: ready).
-    readiness: Arc<Mutex<Option<porter_provider::Readiness>>>,
+    /// What the provider answers `ready` with (`None`: ready).
+    readiness: Arc<Mutex<Option<bool>>>,
     /// When set, `discover` says it is in (`entered`) and waits to be let go (`release`).
     hold: Arc<Mutex<Option<Hold>>>,
     /// The credential a session says it renewed (`None`: it renewed nothing).
@@ -179,7 +179,7 @@ impl Provider for ScriptedProvider {
     }
 
     fn sign_in(&self, start: SignInStart) -> Result<ScriptedSignIn, ProviderError> {
-        let begun = (start.login_hint.clone(), start.consent);
+        let begun = (start.login_hint.clone(), start.signed_in_before);
         self.script.starts.lock().expect("starts").push(begun);
         self.script.modes.lock().expect("modes").push(start.mode);
         match self.refuses_to_start {
@@ -188,12 +188,12 @@ impl Provider for ScriptedProvider {
         }
     }
 
-    fn readiness(&self) -> porter_provider::Readiness {
+    fn ready(&self) -> bool {
         self.script
             .readiness
             .lock()
             .expect("readiness")
-            .unwrap_or(porter_provider::Readiness::Ready)
+            .unwrap_or(true)
     }
 
     async fn revoke(
@@ -326,7 +326,7 @@ fn typist() -> Reactor {
                 .iter()
                 .map(|r| KindToggle {
                     kind: r.kind,
-                    toggle: Toggle::On,
+                    toggle: true,
                 })
                 .collect(),
         )),
@@ -490,7 +490,7 @@ fn ask() -> SignInStep {
     SignInStep::AskFields(vec![FieldSpec {
         kind: FieldKind::Address,
         entry: Entry::Plain,
-        presence: Presence::Required,
+        required: true,
         prefill: None,
     }])
 }
@@ -609,7 +609,7 @@ async fn a_service_turned_off_on_the_review_is_stored_off() {
                 .iter()
                 .map(|row| KindToggle {
                     kind: row.kind,
-                    toggle: Toggle::Off,
+                    toggle: false,
                 })
                 .collect(),
         )),
@@ -655,34 +655,33 @@ async fn a_failed_sign_in_ends_with_the_refusal_the_fault_means() {
 /// sign-in that comes back unreadable (no refresh token to keep) is started once more as a first.
 #[tokio::test]
 async fn a_sign_in_as_an_identity_passes_the_hint_and_retries_a_repeat_once_as_a_first() {
-    use ConsentHistory::{FirstSignIn, SignedInBefore};
     let hint = LoginHint::parse("ada@example.org").expect("hint");
     let unreadable = || SignInStep::Failed(SignInFault::Unreadable);
     let done = || vec![ask(), review("ada"), SignInStep::Done(signed("ada"))];
     let cases = [
-        // (history, steps, ends added, histories the sign-in was started with)
-        ("first", FirstSignIn, done(), true, vec![FirstSignIn]),
-        ("repeat", SignedInBefore, done(), true, vec![SignedInBefore]),
+        // (signed in before, steps, ends added, what the sign-in was started with)
+        ("first", false, done(), true, vec![false]),
+        ("repeat", true, done(), true, vec![true]),
         (
             "repeat, nothing kept",
-            SignedInBefore,
+            true,
             [vec![ask(), unreadable()], done()].concat(),
             true,
-            vec![SignedInBefore, FirstSignIn],
+            vec![true, false],
         ),
         (
             "first, unreadable is final",
-            FirstSignIn,
+            false,
             vec![ask(), unreadable()],
             false,
-            vec![FirstSignIn],
+            vec![false],
         ),
     ];
-    for (name, history, steps, added, starts) in cases {
+    for (name, signed_in_before, steps, added, starts) in cases {
         let script = Script::answering(steps);
         let (service, kept) = service(&script, vec![typist()]);
         let provider = ProviderId::parse("scripted").expect("id");
-        let identity = SignInAs::new(provider, hint.clone(), history);
+        let identity = SignInAs::new(provider, hint.clone(), signed_in_before);
         let reply = service
             .sign_in_as(&app("org.quire.Mail"), identity, ParentWindow::Unparented)
             .await;
@@ -710,7 +709,7 @@ async fn a_sign_in_as_an_identity_passes_the_hint_and_retries_a_repeat_once_as_a
     added(&service, &app("org.quire.Mail")).await;
     assert_eq!(
         script.starts.lock().expect("starts").clone(),
-        [(None, FirstSignIn)]
+        [(None, false)]
     );
 }
 
@@ -1185,7 +1184,7 @@ async fn a_provider_with_no_client_is_not_listed_until_one_is_set() {
     let script = Script::default();
     let oauth_script = Script::default();
     *oauth_script.readiness.lock().expect("readiness") =
-        Some(porter_provider::Readiness::NeedsClient);
+        Some(false);
     let oauth = ScriptedProvider {
         spec: parse_provider(
             &SPEC

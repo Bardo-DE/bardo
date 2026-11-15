@@ -3,7 +3,7 @@
 //! until `Done` or `Failed`. The credential comes out only in `Done(Signed)`, which the host
 //! keeps: it is never drawn, never sent to a sheet and never serialised.
 
-use porter_capability::{CapabilityKind, Claim, Offer, Toggle};
+use porter_capability::{CapabilityKind, Claim, Offer};
 use porter_core::AccountId;
 use porter_core::{
     AccountLabel, AuthKind, Credential, EndpointUrl, Restriction, SecretPurpose, SecretText,
@@ -109,19 +109,6 @@ impl LoginHint {
     }
 }
 
-/// Whether the person already agreed to what this client asks, for this identity.
-///
-/// Google shows its consent page, and sends a refresh token, only for a first authorization
-/// unless it is forced to; forcing it on every sign-in is the extra screen "Continue as" avoids.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum ConsentHistory {
-    /// The first sign-in of this client for this identity, or not known: ask for consent.
-    #[default]
-    FirstSignIn,
-    /// This client was signed in for this identity before: do not ask for consent again.
-    SignedInBefore,
-}
-
 /// What a sign-in begins with.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SignInStart {
@@ -129,8 +116,12 @@ pub struct SignInStart {
     pub mode: SignInMode,
     /// The address to open the provider's page on, when the host knows it.
     pub login_hint: Option<LoginHint>,
-    /// Whether the person agreed to this client before, for this identity.
-    pub consent: ConsentHistory,
+    /// Whether this client was signed in for this identity before, so consent need not be asked
+    /// again. Google shows its consent page, and sends a refresh token, only for a first
+    /// authorization unless it is forced to; forcing it on every sign-in is the extra screen
+    /// "Continue as" avoids. `false` is the first sign-in of this client for this identity, or
+    /// not known: ask for consent.
+    pub signed_in_before: bool,
 }
 
 impl SignInStart {
@@ -139,7 +130,7 @@ impl SignInStart {
         Self {
             mode,
             login_hint: None,
-            consent: ConsentHistory::default(),
+            signed_in_before: false,
         }
     }
 
@@ -152,8 +143,8 @@ impl SignInStart {
 
     /// Says whether this client was signed in for this identity before.
     #[must_use]
-    pub fn with_consent(mut self, consent: ConsentHistory) -> Self {
-        self.consent = consent;
+    pub fn with_signed_in_before(mut self, signed_in_before: bool) -> Self {
+        self.signed_in_before = signed_in_before;
         self
     }
 }
@@ -262,7 +253,7 @@ fn service_row(claim: &Claim, restriction: &Restriction) -> ServiceRow {
     ServiceRow {
         kind,
         state: match &claim.offer {
-            Offer::Present(_) => ServiceState::Offered(Toggle::On),
+            Offer::Present(_) => ServiceState::Offered(true),
             Offer::Absent { reason, .. } => ServiceState::Absent(*reason),
         },
         limit: restriction

@@ -7,9 +7,9 @@ use crate::agent::AgentFault;
 use crate::edit::EditError;
 use crate::launcher::Launchers;
 use crate::local::LocalFault;
-use porter_capability::{CapabilityKind, Claim, Toggle};
+use porter_capability::{CapabilityKind, Claim};
 use porter_core::{
-    AccountId, AccountState, AgentState, AppId, OwnServerRow, ProviderHint, ProviderId, SecretText,
+    AccountId, AccountState, AppId, OwnServerRow, ProviderHint, ProviderId, SecretText,
 };
 use porter_provider::RevokeOutcome;
 use porter_secrets::SecretsError;
@@ -143,7 +143,7 @@ pub trait AccountsApi {
     fn set_agent_state(
         &self,
         account: &AccountId,
-        state: AgentState,
+        state: AccountState,
     ) -> impl Future<Output = Result<bool, AgentFault>> + Send;
 
     /// Asks for an agent account's login for an app that holds a grant for it.
@@ -202,7 +202,7 @@ pub trait AccountsApi {
         &self,
         id: &AccountId,
         kind: CapabilityKind,
-        toggle: Toggle,
+        toggle: bool,
     ) -> impl Future<Output = Result<(), Refusal>> + Send;
 }
 
@@ -297,7 +297,7 @@ impl<E: Ports> AccountsApi for Accounts<'_, E> {
     fn set_agent_state(
         &self,
         account: &AccountId,
-        state: AgentState,
+        state: AccountState,
     ) -> impl Future<Output = Result<bool, AgentFault>> + Send {
         Accounts::set_agent_state(self, account, state)
     }
@@ -349,7 +349,7 @@ impl<E: Ports> AccountsApi for Accounts<'_, E> {
         &self,
         id: &AccountId,
         kind: CapabilityKind,
-        toggle: Toggle,
+        toggle: bool,
     ) -> impl Future<Output = Result<(), Refusal>> + Send {
         Accounts::set_toggle(self, id, kind, toggle)
     }

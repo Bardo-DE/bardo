@@ -131,7 +131,7 @@ async fn a_login_goes_to_the_registrant_alone_and_ready_sets_the_account_ok() {
 async fn a_failure_and_a_cancel_leave_the_state_and_a_logout_done_needs_a_login() {
     let rig = Rig::start(vec![], vec![], LoginTiming::new()).await;
     rig.service
-        .set_agent_state(&agent(), porter_core::AgentState::Ready)
+        .set_agent_state(&agent(), porter_core::AccountState::Ok)
         .await
         .expect("ready");
     let launcher = rig.launcher("org.example.Launcher").await;

@@ -8,7 +8,7 @@ use porter_capability::{CapabilityKind, Claim};
 use porter_core::AccountId;
 use porter_core::{Account, Audience, Credential, IssuedToken};
 use porter_provider::{
-    Presented, Provider, ProviderError, ProviderSession, ProviderSpec, Readiness, RevokeOutcome,
+    Presented, Provider, ProviderError, ProviderSession, ProviderSpec, RevokeOutcome,
     SignIn, SignInStart, SignInStep,
 };
 use porter_sheet::SignInInput;
@@ -44,8 +44,8 @@ pub trait DynProvider: Debug + Send + Sync {
     /// What [`Provider::sign_in`] refuses with.
     fn sign_in(&self, start: SignInStart) -> Result<Box<dyn DynSignIn>, ProviderError>;
 
-    /// [`Provider::readiness`].
-    fn readiness(&self) -> Readiness;
+    /// [`Provider::ready`].
+    fn ready(&self) -> bool;
 
     /// [`Provider::revoke`].
     fn revoke<'a>(
@@ -122,8 +122,8 @@ where
         Provider::sign_in(self, start).map(|sign_in| Box::new(sign_in) as Box<dyn DynSignIn>)
     }
 
-    fn readiness(&self) -> Readiness {
-        Provider::readiness(self)
+    fn ready(&self) -> bool {
+        Provider::ready(self)
     }
 
     fn revoke<'a>(
@@ -193,8 +193,8 @@ impl Provider for Box<dyn DynProvider> {
         DynProvider::sign_in(&**self, start)
     }
 
-    fn readiness(&self) -> Readiness {
-        DynProvider::readiness(&**self)
+    fn ready(&self) -> bool {
+        DynProvider::ready(&**self)
     }
 
     async fn revoke(

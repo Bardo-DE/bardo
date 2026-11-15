@@ -98,56 +98,6 @@ impl MachineOwner {
     }
 }
 
-/// Whether a machine is connected now.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum MachineLink {
-    /// Connected now.
-    Online,
-    /// Not connected now.
-    Offline,
-}
-
-impl MachineLink {
-    /// The link a yes or no from the bus or from Tailscale's status stands for.
-    pub fn of(online: bool) -> Self {
-        match online {
-            true => MachineLink::Online,
-            false => MachineLink::Offline,
-        }
-    }
-
-    /// Whether it is connected now, for a wire that carries a yes or no.
-    pub fn is_online(self) -> bool {
-        self == MachineLink::Online
-    }
-}
-
-/// Whether Tailscale's own SSH is on for a machine.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum MachineSsh {
-    /// The machine advertises SSH host keys.
-    On,
-    /// It does not.
-    Off,
-}
-
-impl MachineSsh {
-    /// The state a yes or no from the bus stands for.
-    pub fn of(on: bool) -> Self {
-        match on {
-            true => MachineSsh::On,
-            false => MachineSsh::Off,
-        }
-    }
-
-    /// Whether it is on, for a wire that carries a yes or no.
-    pub fn is_on(self) -> bool {
-        self == MachineSsh::On
-    }
-}
-
 /// One computer on the person's Tailscale network, as `Tailnet1.Machines` lists it.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Machine {
@@ -162,11 +112,11 @@ pub struct Machine {
     /// Its operating system as Tailscale says it (`linux`, `macOS`); empty when unknown.
     pub os: String,
     /// Whether it is connected now.
-    pub link: MachineLink,
+    pub online: bool,
     /// When it was last connected: absent while it is online, and when Tailscale does not know.
     pub last_seen: Option<UnixSeconds>,
     /// Whether Tailscale's own SSH is on (the machine advertises SSH host keys).
-    pub ssh: MachineSsh,
+    pub ssh: bool,
     /// The SSH host keys it advertises.
     pub ssh_host_keys: Vec<String>,
     /// Whose it is.
@@ -183,9 +133,9 @@ impl Machine {
             dns,
             addresses: Vec::new(),
             os: String::new(),
-            link: MachineLink::Offline,
+            online: false,
             last_seen: None,
-            ssh: MachineSsh::Off,
+            ssh: false,
             ssh_host_keys: Vec::new(),
             owner,
         }
@@ -204,8 +154,8 @@ impl Machine {
     }
 
     /// The same machine, connected or not.
-    pub fn with_link(mut self, link: MachineLink) -> Self {
-        self.link = link;
+    pub fn with_online(mut self, online: bool) -> Self {
+        self.online = online;
         self
     }
 
@@ -218,13 +168,13 @@ impl Machine {
     /// The same machine with the SSH host keys it advertises; Tailscale's SSH is on when there
     /// are any.
     pub fn with_ssh_host_keys(mut self, keys: Vec<String>) -> Self {
-        self.ssh = MachineSsh::of(!keys.is_empty());
+        self.ssh = !keys.is_empty();
         self.ssh_host_keys = keys;
         self
     }
 
     /// The same machine with Tailscale's SSH on or off, whatever keys it lists.
-    pub fn with_ssh(mut self, ssh: MachineSsh) -> Self {
+    pub fn with_ssh(mut self, ssh: bool) -> Self {
         self.ssh = ssh;
         self
     }

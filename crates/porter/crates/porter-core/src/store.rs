@@ -7,7 +7,6 @@
 use crate::AccountId;
 use crate::account::Account;
 use crate::consent::Grant;
-use porter_capability::Toggle;
 use porter_capability::{CapabilityKind, VocabVersion};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -39,7 +38,7 @@ pub struct AccountToggle {
     /// The kind.
     pub kind: CapabilityKind,
     /// On or off.
-    pub toggle: Toggle,
+    pub toggle: bool,
 }
 
 /// Why a stored document was refused. accountd refuses to start over a file it cannot read

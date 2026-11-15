@@ -32,7 +32,7 @@ use porter_http::Http;
 use porter_http_reqwest::ReqwestHttp;
 use porter_oauth::{ExchangeFault, endpoints_of, revoke};
 use porter_provider::{
-    Presented, Provider, ProviderError, ProviderSession, ProviderSpec, Readiness, RevokeOutcome,
+    Presented, Provider, ProviderError, ProviderSession, ProviderSpec, RevokeOutcome,
     SignInStart,
 };
 use std::collections::HashMap;
@@ -153,15 +153,11 @@ impl<R: BrowserIssuer, H: Http + 'static> Provider for OAuthProvider<R, H> {
 
     /// Ready while a client of the issuer is registered for this build's channel (shipped, or set
     /// in Settings: the files are read now).
-    fn readiness(&self) -> Readiness {
-        match self
-            .env
+    fn ready(&self) -> bool {
+        self.env
             .clients()
             .lookup(self.rules.issuer(), self.env.channel)
-        {
-            Some(_) => Readiness::Ready,
-            None => Readiness::NeedsClient,
-        }
+            .is_some()
     }
 
     /// Revokes the refresh token at the issuer's revoke endpoint, which ends the access tokens

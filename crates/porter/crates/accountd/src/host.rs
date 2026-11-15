@@ -1,11 +1,11 @@
 //! The service as the bus objects use it: one request in, one reply out, for a caller already
 //! identified. [`AccountService`] is the implementation.
 
-use porter_capability::{CapabilityKind, Claim, Toggle};
+use porter_capability::{CapabilityKind, Claim};
 use porter_core::consent::{Availability, Grant, Usage};
 use porter_core::store::RegistryStore;
 use porter_core::{AccountId, EndpointUrl, GrantId, LlmVerdict, OwnServerRow, ProviderId};
-use porter_core::{AccountState, AgentState, AppId, Candidate, DataClass, SessionToken};
+use porter_core::{AccountState, AppId, Candidate, DataClass, SessionToken};
 use porter_core::{RelayPlan, SecretText};
 use porter_ids::clock::Clock;
 use porter_match::Need;
@@ -93,7 +93,7 @@ pub trait Host: Send + Sync + 'static {
         &self,
         id: &AccountId,
         kind: CapabilityKind,
-        toggle: Toggle,
+        toggle: bool,
     ) -> impl Future<Output = Result<(), Refusal>> + Send;
 
     /// Withdraws any grant, whoever holds it (Settings' "Revoke").
@@ -222,7 +222,7 @@ pub trait Host: Send + Sync + 'static {
     fn set_agent_state(
         &self,
         account: &AccountId,
-        state: AgentState,
+        state: AccountState,
     ) -> impl Future<Output = Result<bool, AgentFault>> + Send;
 
     /// Signs an agent account in through its launcher, with a sheet that shows the wait.
@@ -327,7 +327,7 @@ where
         &self,
         id: &AccountId,
         kind: CapabilityKind,
-        toggle: Toggle,
+        toggle: bool,
     ) -> impl Future<Output = Result<(), Refusal>> + Send {
         AccountService::set_toggle(self, id, kind, toggle)
     }
@@ -467,7 +467,7 @@ where
     fn set_agent_state(
         &self,
         account: &AccountId,
-        state: AgentState,
+        state: AccountState,
     ) -> impl Future<Output = Result<bool, AgentFault>> + Send {
         AccountService::set_agent_state(self, account, state)
     }

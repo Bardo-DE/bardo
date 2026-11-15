@@ -18,7 +18,7 @@
 //! mailo's form showed them greyed; the answers decide.
 
 use super::fields::{
-    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, Presence, first_missing,
+    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, first_missing,
 };
 use super::view::{FieldProblem, ProblemKind};
 use porter_core::{AuthKind, Direction, SecretText, Tls};
@@ -142,14 +142,14 @@ fn guess_label(protocol: Protocol) -> &'static str {
     }
 }
 
-fn spec(kind: FieldKind, presence: Presence, prefill: Option<String>) -> FieldSpec {
+fn spec(kind: FieldKind, required: bool, prefill: Option<String>) -> FieldSpec {
     FieldSpec {
         kind,
         entry: match kind {
             FieldKind::Token => Entry::Secret,
             _ => Entry::Plain,
         },
-        presence,
+        required,
         prefill,
     }
 }
@@ -160,7 +160,7 @@ pub fn manual_form(protocol: Protocol, domain: Option<&str>) -> Vec<FieldSpec> {
     let guess = |label: &str| domain.map(|d| format!("{label}.{d}"));
     let mut fields = vec![spec(
         FieldKind::Protocol,
-        Presence::Required,
+        true,
         Some(word(&protocol).to_owned()),
     )];
     let port = |direction| Some(usual_port(protocol, direction, Tls::Implicit).to_string());
@@ -168,42 +168,42 @@ pub fn manual_form(protocol: Protocol, domain: Option<&str>) -> Vec<FieldSpec> {
         Protocol::Jmap => fields.extend([
             spec(
                 FieldKind::SessionUrl,
-                Presence::Required,
+                true,
                 domain.map(|d| format!("https://{d}/.well-known/jmap")),
             ),
             // Empty: the password typed before is the credential.
-            spec(FieldKind::Token, Presence::Optional, None),
+            spec(FieldKind::Token, false, None),
         ]),
         _ => fields.extend([
             spec(
                 FieldKind::Server,
-                Presence::Required,
+                true,
                 guess(guess_label(protocol)),
             ),
             spec(
                 FieldKind::Security,
-                Presence::Required,
+                true,
                 Some(Tls::Implicit.word().to_owned()),
             ),
             spec(
                 FieldKind::Port,
-                Presence::Optional,
+                false,
                 port(Direction::Incoming),
             ),
-            spec(FieldKind::OutgoingServer, Presence::Required, guess("smtp")),
+            spec(FieldKind::OutgoingServer, true, guess("smtp")),
             spec(
                 FieldKind::OutgoingSecurity,
-                Presence::Required,
+                true,
                 Some(Tls::Implicit.word().to_owned()),
             ),
             spec(
                 FieldKind::OutgoingPort,
-                Presence::Optional,
+                false,
                 port(Direction::Outgoing),
             ),
         ]),
     }
-    fields.push(spec(FieldKind::Username, Presence::Optional, None));
+    fields.push(spec(FieldKind::Username, false, None));
     fields
 }
 
@@ -233,7 +233,7 @@ pub fn edit_form(auth: AuthKind, current: &Manual, name: Option<&str>) -> Vec<Fi
     if let Some(name) = name {
         fields.push(spec(
             FieldKind::Name,
-            Presence::Optional,
+            false,
             Some(name.to_owned()).filter(|n| !n.is_empty()),
         ));
     }
@@ -276,7 +276,7 @@ pub fn edit_form(auth: AuthKind, current: &Manual, name: Option<&str>) -> Vec<Fi
             _ => FieldKind::Password,
         },
         entry: Entry::Secret,
-        presence: Presence::Optional,
+        required: false,
         prefill: None,
     });
     fields

@@ -17,7 +17,7 @@ use porter_core::ProviderHint;
 use porter_core::{AccountId, ProviderId};
 use porter_core::{AccountLabel, AppId, AuthKind, SecretText, ServiceEndpoint};
 use porter_provider::{
-    ConsentHistory, LoginHint, Provider, ProviderError, ProviderSpec, Readiness, SignIn,
+    LoginHint, Provider, ProviderError, ProviderSpec, SignIn,
     SignInMode, SignInStart, SignInStep, Signed,
 };
 use porter_service_core::Ports;
@@ -41,19 +41,19 @@ pub struct SignInAs {
     pub provider: ProviderId,
     /// The address to open the provider's page on.
     pub hint: LoginHint,
-    /// Whether the person agreed to this client for this identity before. `SignedInBefore` asks
-    /// for no consent screen; if the provider then returns nothing to keep, the sign-in is
-    /// started once more as `FirstSignIn`.
-    pub history: ConsentHistory,
+    /// Whether the person agreed to this client for this identity before. When it is, the
+    /// sign-in asks for no consent screen; if the provider then returns nothing to keep, the
+    /// sign-in is started once more as a first one.
+    pub signed_in_before: bool,
 }
 
 impl SignInAs {
-    /// A sign-in with `provider` as the person at `hint`, with this `history`.
-    pub fn new(provider: ProviderId, hint: LoginHint, history: ConsentHistory) -> Self {
+    /// A sign-in with `provider` as the person at `hint`, `signed_in_before` or not.
+    pub fn new(provider: ProviderId, hint: LoginHint, signed_in_before: bool) -> Self {
         Self {
             provider,
             hint,
-            history,
+            signed_in_before,
         }
     }
 }
@@ -408,7 +408,7 @@ fn signable(spec: &ProviderSpec) -> bool {
 /// Settings, or a launcher that registers, shows its row at the next one.
 fn listed<P: Provider>(provider: &P, roster: Option<&Roster>) -> bool {
     signable(provider.spec())
-        && provider.readiness() == Readiness::Ready
+        && provider.ready()
         && !launcherless(provider.spec(), roster)
 }
 
@@ -437,7 +437,7 @@ struct Run<S, D> {
     signed: Option<Signed>,
     /// Whether the sign-in is to be polled while the sheet is idle.
     polling: bool,
-    /// Who the sign-in is for and with which consent history: what a retry changes.
+    /// Who the sign-in is for and with whether the client was signed in before: what a retry changes.
     identity: Option<SignInAs>,
     stored: Option<D>,
     /// The last answers the person sent, for a job that stores from them.
@@ -636,7 +636,7 @@ impl<E: Ports> Accounts<'_, E> {
     }
 
     /// What a sign-in's step is to the machine. A sign-in that skipped the consent screen
-    /// (`SignedInBefore`) and ended `Unreadable` (the provider handed back nothing to keep) is a
+    /// (`signed_in_before`) and ended `Unreadable` (the provider handed back nothing to keep) is a
     /// fact of its own, told once: whether it is tried again is the machine's to say.
     async fn settled<J: Job>(
         &self,
@@ -650,13 +650,13 @@ impl<E: Ports> Accounts<'_, E> {
                 SignInStep::Failed(SignInFault::Unreadable),
                 true,
                 Some(SignInAs {
-                    history: ConsentHistory::SignedInBefore,
+                    signed_in_before: true,
                     ..
                 })
             )
         );
         if before && let Some(identity) = run.identity.as_mut() {
-            identity.history = ConsentHistory::FirstSignIn;
+            identity.signed_in_before = false;
             return SheetEvent::SignedInBefore;
         }
         said(run, step)
@@ -667,7 +667,7 @@ impl<E: Ports> Accounts<'_, E> {
     /// replaces.
     async fn restart<J: Job>(&self, sheet: &Sheet, job: &J, run: &mut RunOf<E, J>) -> SheetEvent {
         if let Some(identity) = run.identity.as_mut() {
-            identity.history = ConsentHistory::FirstSignIn;
+            identity.signed_in_before = false;
         }
         let started = sheet
             .provider()
@@ -692,8 +692,8 @@ impl<E: Ports> Accounts<'_, E> {
         self.ctx.provider_of(provider).map(|provider| {
             let start = SignInStart::new(job.mode());
             provider.sign_in(match (identity, job.hint()) {
-                (Some(SignInAs { hint, history, .. }), _) => {
-                    start.with_login_hint(hint.clone()).with_consent(*history)
+                (Some(SignInAs { hint, signed_in_before, .. }), _) => {
+                    start.with_login_hint(hint.clone()).with_signed_in_before(*signed_in_before)
                 }
                 (None, Some(hint)) => start.with_login_hint(hint),
                 (None, None) => start,

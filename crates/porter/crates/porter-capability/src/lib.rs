@@ -29,7 +29,7 @@ pub use ai::{
 };
 pub use ai_props::{Billing, Locality, Region, Tier};
 pub use cua::{CuaBatching, CuaCap, CuaEnv};
-pub use effective::{KindToggle, Toggle, effective};
+pub use effective::{KindToggle, effective};
 pub use kinds::{Capability, CapabilityKind, Service, service};
 pub use mail::{IdentityCap, LabelModel, MailCap, MailTransport};
 pub use model_id::ModelId;

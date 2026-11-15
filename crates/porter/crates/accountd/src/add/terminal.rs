@@ -7,35 +7,26 @@
 //! in tests.
 
 use porter_capability::KindToggle;
-use porter_capability::Toggle;
 use porter_core::AccountId;
 use porter_core::SecretText;
 use porter_core::consent::{ConsentAnswer, ConsentAsk, GrantScope};
 use porter_sheet::host::{SheetFault, SheetLink, SheetOpen, Sheets};
 use porter_sheet::{
-    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, Presence, ServiceState, SheetInput,
+    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, ServiceState, SheetInput,
     SheetView, refit,
 };
 use porter_wire::ParentWindow;
 use std::io::{BufRead, IsTerminal, Write};
 use std::sync::{Arc, Mutex, PoisonError};
 
-/// Whether what is typed is echoed.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Echo {
-    /// Shown as typed.
-    On,
-    /// Hidden: a key or a password.
-    Off,
-}
-
 /// The person's terminal. Its calls block; the sheet runs them off the async threads.
 pub trait Terminal: Send + Sync + 'static {
     /// Shows one line.
     fn say(&self, line: &str);
 
-    /// Shows `label` and reads one line, or `None` when the input has ended.
-    fn ask(&self, label: &str, echo: Echo) -> Option<String>;
+    /// Shows `label` and reads one line, or `None` when the input has ended. What is typed is not
+    /// echoed when `hidden` (a key or a password).
+    fn ask(&self, label: &str, hidden: bool) -> Option<String>;
 
     /// Opens `url` in the person's browser, as best it can; the url has been shown already.
     fn open_browser(&self, url: &str);
@@ -82,13 +73,13 @@ impl Terminal for StdTerminal {
         println!("{line}");
     }
 
-    fn ask(&self, label: &str, echo: Echo) -> Option<String> {
-        let _hidden = (echo == Echo::Off).then(EchoOff::new).flatten();
+    fn ask(&self, label: &str, hidden: bool) -> Option<String> {
+        let _echo_off = hidden.then(EchoOff::new).flatten();
         eprint!("{label}: ");
         let _ = std::io::stderr().flush();
         let mut line = String::new();
         let read = std::io::stdin().lock().read_line(&mut line).ok()?;
-        if echo == Echo::Off {
+        if hidden {
             eprintln!();
         }
         (read > 0).then(|| line.trim_end_matches(['\r', '\n']).to_owned())
@@ -218,7 +209,7 @@ fn label_of(kind: FieldKind) -> &'static str {
 /// an empty answer means when the form prefilled one.
 fn prompt_of(field: &FieldSpec) -> String {
     let mut label = label_of(field.kind).to_owned();
-    if field.presence == Presence::Optional {
+    if !field.required {
         label.push_str(" (optional)");
     }
     if let Some((last, rest)) = field.kind.choices().split_last() {
@@ -232,9 +223,9 @@ fn prompt_of(field: &FieldSpec) -> String {
 }
 
 impl<T: Terminal> TerminalLink<T> {
-    async fn ask(&self, label: String, echo: Echo) -> Result<String, SheetFault> {
+    async fn ask(&self, label: String, hidden: bool) -> Result<String, SheetFault> {
         let inner = Arc::clone(&self.inner);
-        tokio::task::spawn_blocking(move || inner.terminal.ask(&label, echo))
+        tokio::task::spawn_blocking(move || inner.terminal.ask(&label, hidden))
             .await
             .ok()
             .flatten()
@@ -252,11 +243,8 @@ impl<T: Terminal> TerminalLink<T> {
             let Some(field) = fields.get(at).cloned() else {
                 break;
             };
-            let echo = match field.entry {
-                Entry::Plain => Echo::On,
-                Entry::Secret => Echo::Off,
-            };
-            let typed = self.ask(prompt_of(&field), echo).await?;
+            let hidden = field.entry == Entry::Secret;
+            let typed = self.ask(prompt_of(&field), hidden).await?;
             let typed = match (typed.trim().is_empty(), &field.prefill) {
                 (true, Some(default)) if field.entry == Entry::Plain => default.clone(),
                 _ => typed,
@@ -275,7 +263,7 @@ impl<T: Terminal> TerminalLink<T> {
 
     async fn review(&self, view: porter_sheet::ReviewView) -> Result<SheetInput, SheetFault> {
         let typed = self
-            .ask("Add this account? [Y/n]".to_owned(), Echo::On)
+            .ask("Add this account? [Y/n]".to_owned(), false)
             .await?;
         let no = matches!(typed.trim().to_ascii_lowercase().as_str(), "n" | "no");
         Ok(match no {
@@ -287,7 +275,7 @@ impl<T: Terminal> TerminalLink<T> {
                     .filter(|row| matches!(row.state, ServiceState::Offered(_)))
                     .map(|row| KindToggle {
                         kind: row.kind,
-                        toggle: Toggle::On,
+                        toggle: true,
                     })
                     .collect(),
             ),

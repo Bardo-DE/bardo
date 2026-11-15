@@ -32,7 +32,7 @@ pub mod store;
 pub mod stream;
 pub mod token;
 
-pub use account::{Account, AccountLabel, AccountState, AgentState};
+pub use account::{Account, AccountLabel, AccountState};
 pub use app_id::{AppId, AppLabel, AppName, Isolation};
 pub use auth_kind::{AuthFacts, AuthKind, SignInWay};
 pub use candidate::Candidate;

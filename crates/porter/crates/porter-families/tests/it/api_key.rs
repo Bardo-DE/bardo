@@ -18,7 +18,7 @@ use porter_provider::{
     Presented, Provider, ProviderError, ProviderSession, RevokeOutcome, SignIn, SignInMode,
     SignInStart, SignInStep, Signed,
 };
-use porter_sheet::{Entry, FieldAnswer, FieldKind, FieldValue, Presence, SignInFault, SignInInput};
+use porter_sheet::{Entry, FieldAnswer, FieldKind, FieldValue, SignInFault, SignInInput};
 use std::time::Duration;
 
 const PASTED: &str = "sk-live-pasted-key-0001";
@@ -162,8 +162,8 @@ async fn a_pasted_key_is_asked_for_hidden_checked_the_documented_way_and_reviewe
         };
         assert_eq!(fields.len(), 1, "{id}");
         assert_eq!(
-            (fields[0].kind, fields[0].entry, fields[0].presence),
-            (FieldKind::ApiKey, Entry::Secret, Presence::Required),
+            (fields[0].kind, fields[0].entry, fields[0].required),
+            (FieldKind::ApiKey, Entry::Secret, true),
             "{id}"
         );
         // A paste brings spaces along.
@@ -402,13 +402,13 @@ async fn a_server_of_the_persons_own_is_asked_for_its_address_and_an_optional_ke
     };
     let asked: Vec<_> = fields
         .iter()
-        .map(|f| (f.kind, f.entry, f.presence))
+        .map(|f| (f.kind, f.entry, f.required))
         .collect();
     assert_eq!(
         asked,
         [
-            (FieldKind::ServerUrl, Entry::Plain, Presence::Required),
-            (FieldKind::ApiKey, Entry::Secret, Presence::Optional),
+            (FieldKind::ServerUrl, Entry::Plain, true),
+            (FieldKind::ApiKey, Entry::Secret, false),
         ]
     );
     // A bad address is a problem on the address field, found before anything is sent.

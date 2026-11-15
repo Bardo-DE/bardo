@@ -73,16 +73,6 @@ pub enum Entry {
     Secret,
 }
 
-/// Whether the person may leave a field empty.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Presence {
-    /// The sign-in cannot go on without it.
-    Required,
-    /// May stay empty.
-    Optional,
-}
-
 /// One field a sign-in asks for.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct FieldSpec {
@@ -90,8 +80,8 @@ pub struct FieldSpec {
     pub kind: FieldKind,
     /// Shown or hidden.
     pub entry: Entry,
-    /// Required or optional.
-    pub presence: Presence,
+    /// Whether the sign-in cannot go on without it (`false`: it may stay empty).
+    pub required: bool,
     /// What it starts with (the address typed a moment ago); never a secret.
     pub prefill: Option<String>,
 }
@@ -108,7 +98,7 @@ pub(super) fn is_empty(value: &FieldValue) -> bool {
 pub fn first_missing(fields: &[FieldSpec], answers: &[FieldAnswer]) -> Option<FieldKind> {
     fields
         .iter()
-        .filter(|spec| spec.presence == Presence::Required)
+        .filter(|spec| spec.required)
         .find(|spec| {
             answers
                 .iter()

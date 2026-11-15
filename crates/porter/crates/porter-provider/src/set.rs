@@ -3,7 +3,6 @@
 use crate::spec::{DomainMatch, DomainName, ProviderSpec};
 use porter_capability::Offer;
 use porter_core::ProviderId;
-use porter_core::consent::Catalog;
 use porter_match::{Match, Need, matches};
 
 /// Every provider accountd knows, by id.
@@ -55,15 +54,10 @@ impl ProviderSet {
 
     /// Whether any provider declares a capability that meets `need`, so adding an account
     /// could help.
-    pub fn catalog(&self, need: &Need) -> Catalog {
+    pub fn offers(&self, need: &Need) -> bool {
         let declared = self.specs.iter().flat_map(|spec| &spec.capabilities);
-        let fits = declared
+        declared
             .map(|row| Offer::Present(row.capability.clone()))
-            .any(|offer| matches(need, &offer) == Match::Fits);
-        if fits {
-            Catalog::Offers
-        } else {
-            Catalog::Offerless
-        }
+            .any(|offer| matches(need, &offer) == Match::Fits)
     }
 }

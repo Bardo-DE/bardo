@@ -7,7 +7,7 @@
 
 use crate::error::TailscaleError;
 use crate::time::unix_seconds;
-use crate::{Machine, MachineLink, MachineOwner, NodeId};
+use crate::{Machine, MachineOwner, NodeId};
 use porter_ids::UnixSeconds;
 use serde::Deserialize;
 use std::collections::BTreeMap;
@@ -162,7 +162,7 @@ impl Node {
         )
         .with_addresses(self.addresses.clone())
         .with_os(self.os.clone())
-        .with_link(MachineLink::of(self.online))
+        .with_online(self.online)
         .with_ssh_host_keys(self.ssh_host_keys.clone());
         machine.last_seen = self.last_seen.filter(|_| !self.online);
         machine
@@ -435,9 +435,9 @@ mod tests {
         assert_eq!(by("pi").dns, "pi.tail1234.ts.net", "no dot at the end");
         assert_eq!(by("pi").addresses.len(), 2);
         assert_eq!(by("pi").owner, MachineOwner::Mine);
-        assert!(by("pi").ssh.is_on());
+        assert!(by("pi").ssh);
         assert_eq!(by("pi").ssh_host_keys, ["ssh-ed25519 AAAA"]);
-        assert!(!by("old-laptop").ssh.is_on());
+        assert!(!by("old-laptop").ssh);
         assert_eq!(by("build-box").owner, MachineOwner::Tagged);
         assert_eq!(by("friends-pc").owner, MachineOwner::Shared);
         // Another user's node on the same network is shared, not mine.
@@ -451,7 +451,7 @@ mod tests {
             .iter()
             .find(|m| m.name == "old-laptop")
             .expect("old");
-        assert!(!old.link.is_online());
+        assert!(!old.online);
         assert_eq!(old.last_seen, Some(UnixSeconds(1_790_000_000)));
         let pi = machines.iter().find(|m| m.name == "pi").expect("pi");
         assert_eq!(pi.last_seen, None, "online, and Go's zero time is never");

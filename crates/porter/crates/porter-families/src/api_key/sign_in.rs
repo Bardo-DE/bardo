@@ -10,7 +10,7 @@ use porter_http_reqwest::ReqwestHttp;
 use porter_ids::UrlScheme;
 use porter_provider::{ProviderSpec, SignInMode, SignInStep, Signed};
 use porter_sheet::{
-    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, Presence, SignInFault, SignInInput,
+    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, SignInFault, SignInInput,
 };
 use std::sync::Arc;
 
@@ -47,23 +47,23 @@ impl<H> ApiKeyFlow<H> {
     /// The form: the key, and for a file that names no server the server's address before it.
     /// A server of the person's own may need no key.
     fn form(&self) -> Vec<FieldSpec> {
-        let key = |presence| FieldSpec {
+        let key = |required| FieldSpec {
             kind: FieldKind::ApiKey,
             entry: Entry::Secret,
-            presence,
+            required,
             prefill: None,
         };
         match (asks_server(&self.spec), self.held_server()) {
-            (false, _) => vec![key(Presence::Required)],
-            (true, Some(_)) => vec![key(Presence::Optional)],
+            (false, _) => vec![key(true)],
+            (true, Some(_)) => vec![key(false)],
             (true, None) => vec![
                 FieldSpec {
                     kind: FieldKind::ServerUrl,
                     entry: Entry::Plain,
-                    presence: Presence::Required,
+                    required: true,
                     prefill: None,
                 },
-                key(Presence::Optional),
+                key(false),
             ],
         }
     }

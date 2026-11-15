@@ -9,7 +9,7 @@
 
 use crate::Accounts;
 use porter_capability::{
-    Capability, Claim, KindToggle, Offer, Provenance, Subject, Toggle, effective,
+    Capability, Claim, KindToggle, Offer, Provenance, Subject, effective,
 };
 use porter_core::consent::{ConsentAnswer, GrantScope, Usage};
 use porter_core::store::AccountToggle;
@@ -177,10 +177,10 @@ impl<E: Ports> Accounts<'_, E> {
         }
         let off: Vec<KindToggle> = choices
             .iter()
-            .filter(|c| c.toggle == Toggle::Off)
+            .filter(|c| c.toggle == false)
             .map(|c| KindToggle {
                 kind: c.kind,
-                toggle: Toggle::Off,
+                toggle: false,
             })
             .collect();
         // The id is chosen and reserved first, the secrets are filed under it, and only then

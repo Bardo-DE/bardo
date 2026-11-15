@@ -387,13 +387,12 @@ async fn a_client_id_is_written_to_the_users_file_only_by_settings() {
         toml::Value::String(String::new())
     );
     // Both changes are audited, never with the id (sec-5); the refused one is not.
-    use porter_service_core::audit::ClientIdChange;
     let changed: Vec<_> = rig
         .audit
         .entries()
         .into_iter()
         .filter_map(|e| match e.event {
-            AuditEvent::ClientIdChanged { issuer, change } => Some((issuer, change)),
+            AuditEvent::ClientIdChanged { issuer, cleared } => Some((issuer, cleared)),
             _ => None,
         })
         .collect();
@@ -401,8 +400,8 @@ async fn a_client_id_is_written_to_the_users_file_only_by_settings() {
     assert_eq!(
         changed,
         [
-            (microsoft.clone(), ClientIdChange::Set),
-            (microsoft, ClientIdChange::Cleared)
+            (microsoft.clone(), false),
+            (microsoft, true)
         ]
     );
     assert!(

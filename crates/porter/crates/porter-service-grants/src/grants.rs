@@ -51,7 +51,7 @@ impl<E: Ports> Grants<'_, E> {
             usage,
         };
         let verdicts = self.ctx.lock().verdicts(need, asker);
-        availability(&verdicts, self.ctx.catalog().catalog(need))
+        availability(&verdicts, self.ctx.catalog().offers(need))
     }
 
     /// The grants `caller` holds.

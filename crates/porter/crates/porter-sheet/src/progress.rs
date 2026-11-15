@@ -5,7 +5,6 @@ use super::fields::{FieldAnswer, FieldSpec};
 use porter_capability::AbsentReason;
 use porter_capability::CapabilityKind;
 use porter_capability::KindToggle;
-use porter_capability::Toggle;
 use porter_core::AccountLabel;
 use porter_core::LimitReason;
 use porter_core::{EndpointUrl, ServiceEndpoint};
@@ -77,7 +76,7 @@ pub struct ServiceRow {
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum ServiceState {
     /// The provider offers it; the person may switch it.
-    Offered(Toggle),
+    Offered(bool),
     /// The provider offers none, for this reason.
     Absent(AbsentReason),
 }

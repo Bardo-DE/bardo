@@ -19,16 +19,16 @@ use ds_settings::live::{
 };
 use ds_settings::schema::KeyPath;
 use porter_callers::CallerRole;
-use porter_capability::{CapabilityKind, Toggle};
+use porter_capability::{CapabilityKind};
 use porter_core::ProviderId;
 use porter_core::{
-    Account, AccountId, AgentState, AppId, AppName, AuthKind, GrantId, IdentityId, Isolation,
+    Account, AccountId, AccountState, AppId, AppName, AuthKind, GrantId, IdentityId, Isolation,
 };
 use porter_families::set::ProviderNames;
 use porter_fs::atomic::AtomicFile;
 use porter_provider::{ClientChannel, ClientsFile, Issuer, parse_clients};
 use porter_service_accounts::{Launchers as _, program_of};
-use porter_service_core::audit::{AuditEvent, ClientIdChange};
+use porter_service_core::audit::AuditEvent;
 use porter_service_core::registry::Registry;
 use porter_settings::accounts::{Directory, Key, UsedBy, listed, parse, read, schema};
 use porter_settings::clients::{RowEdit, RowRefused, edited};
@@ -258,10 +258,7 @@ impl<H: Host, C: Callers> LiveModule for AccountsSettings<H, C> {
                     .unwrap_or_default();
                 self.0.host.audit_settings(AuditEvent::ClientIdChanged {
                     issuer: slug,
-                    change: match text.is_empty() {
-                        true => ClientIdChange::Cleared,
-                        false => ClientIdChange::Set,
-                    },
+                    cleared: text.is_empty(),
                 });
             }
             Key::ClientSecret(issuer) => {
@@ -344,7 +341,7 @@ impl<H: Host, C: Callers> Acts for AccountsSettings<H, C> {
         &'a self,
         id: &'a AccountId,
         kind: CapabilityKind,
-        to: Toggle,
+        to: bool,
     ) -> Boxed<'a, Result<(), LiveError>> {
         Box::pin(async move { self.0.host.set_toggle(id, kind, to).await.map_err(refused) })
     }
@@ -374,7 +371,7 @@ impl<H: Host, C: Callers> AccountsSettings<H, C> {
         let key = Key::row(id.clone(), SIGN_OUT);
         let Some(waiting) = waiting else {
             core.host
-                .set_agent_state(id, AgentState::NeedsLogin)
+                .set_agent_state(id, AccountState::NeedsLogin)
                 .await
                 .map_err(|fault| {
                     eprintln!("accountd: signing an assistant out was refused: {fault:?}");

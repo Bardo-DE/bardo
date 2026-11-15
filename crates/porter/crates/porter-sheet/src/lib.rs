@@ -25,7 +25,7 @@ mod view;
 pub mod words;
 
 pub use edit::{EditServers, EditedServers, ServersFixed, servers_editable, servers_fixed};
-pub use fields::{Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, Presence, first_missing};
+pub use fields::{Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, first_missing};
 pub use group::ProviderGroup;
 pub use input::SheetInput;
 pub use manual::{

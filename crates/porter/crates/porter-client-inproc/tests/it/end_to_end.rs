@@ -217,7 +217,6 @@ async fn revoking_a_grant_ends_it() {
 #[tokio::test]
 async fn an_app_adds_an_account_through_a_family_is_granted_it_and_signs_it_in_again() {
     use porter_capability::KindToggle;
-    use porter_capability::Toggle;
     use porter_capability::{Access, Delta};
     use porter_core::ProviderId;
     use porter_core::SecretText;
@@ -262,11 +261,11 @@ async fn an_app_adds_an_account_through_a_family_is_granted_it_and_signs_it_in_a
     let review = SheetInput::Confirm(vec![
         KindToggle {
             kind: porter_capability::CapabilityKind::Calendar,
-            toggle: Toggle::On,
+            toggle: true,
         },
         KindToggle {
             kind: porter_capability::CapabilityKind::Contacts,
-            toggle: Toggle::Off,
+            toggle: false,
         },
     ]);
     let sheets =
@@ -348,7 +347,6 @@ async fn an_app_adds_an_account_through_a_family_is_granted_it_and_signs_it_in_a
 #[tokio::test]
 async fn adding_an_account_that_is_already_here_tells_the_app_which_one_it_is() {
     use porter_capability::KindToggle;
-    use porter_capability::Toggle;
     use porter_core::ProviderId;
     use porter_core::SecretText;
     use porter_fake::NOW;
@@ -389,7 +387,7 @@ async fn adding_an_account_that_is_already_here_tells_the_app_which_one_it_is() 
     ]);
     let review = SheetInput::Confirm(vec![KindToggle {
         kind: porter_capability::CapabilityKind::Calendar,
-        toggle: Toggle::On,
+        toggle: true,
     }]);
     let sheets = ScriptedSheets::answering([]).conversing([
         vec![pick.clone(), form.clone(), review],
@@ -443,7 +441,6 @@ impl porter_http::Http for NothingPublished {
 #[tokio::test]
 async fn a_typed_pop3_server_is_added_through_the_sheet_and_found_by_a_mail_need() {
     use porter_capability::KindToggle;
-    use porter_capability::Toggle;
     use porter_core::ProviderId;
     use porter_core::{Family, SecretText};
     use porter_fake::NOW;
@@ -500,7 +497,7 @@ async fn a_typed_pop3_server_is_added_through_the_sheet_and_found_by_a_mail_need
     ]);
     let review = SheetInput::Confirm(vec![KindToggle {
         kind: porter_capability::CapabilityKind::Mail,
-        toggle: Toggle::On,
+        toggle: true,
     }]);
     let sheets =
         ScriptedSheets::answering([Scripted::AllowFirst(GrantScope::Always)]).conversing([vec![

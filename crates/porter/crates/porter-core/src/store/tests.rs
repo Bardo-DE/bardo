@@ -69,7 +69,7 @@ fn filled() -> Persisted {
         toggles: vec![AccountToggle {
             account: AccountId::parse("cloud").expect("id"),
             kind: CapabilityKind::Notes,
-            toggle: Toggle::Off,
+            toggle: false,
         }],
     }
 }
@@ -92,7 +92,7 @@ fn the_document_names_its_vocabulary_and_keeps_its_slugs() {
     assert_eq!(document["vocab"], Value::from(VocabVersion::CURRENT.0));
     assert_eq!(
         document["toggles"][0],
-        serde_json::json!({"account": "cloud", "kind": "notes", "toggle": "off"})
+        serde_json::json!({"account": "cloud", "kind": "notes", "toggle": false})
     );
     assert_eq!(
         document["accounts"][0]["endpoints"][0],
@@ -208,7 +208,7 @@ const AT_THREE: &str = r#"{
   "grants": [
     {"id": "g-once", "key": {"app": {"name": "org.quire.Photos", "isolation": "flatpak"}, "account": "cloud", "kind": "storage", "class": "photos", "usage": "interactive", "space": {"kind": "any"}}, "decision": "allow", "scope": "once", "at": 1790000000}
   ],
-  "toggles": [{"account": "cloud", "kind": "notes", "toggle": "off"}]
+  "toggles": [{"account": "cloud", "kind": "notes", "toggle": false}]
 }"#;
 
 const AT_FOUR: &str = r#"{
@@ -220,7 +220,7 @@ const AT_FOUR: &str = r#"{
   "grants": [
     {"id": "g-once", "key": {"app": {"name": "org.quire.Photos", "isolation": "flatpak"}, "account": "cloud", "kind": "storage", "class": "photos", "usage": "interactive", "space": {"kind": "any"}}, "decision": "allow", "scope": "once", "at": 1790000000}
   ],
-  "toggles": [{"account": "cloud", "kind": "notes", "toggle": "off"}]
+  "toggles": [{"account": "cloud", "kind": "notes", "toggle": false}]
 }"#;
 
 const AT_FIVE: &str = r#"{
@@ -232,7 +232,7 @@ const AT_FIVE: &str = r#"{
   "grants": [
     {"id": "g-once", "key": {"app": {"name": "org.quire.Photos", "isolation": "flatpak"}, "account": "cloud", "kind": "storage", "class": "photos", "usage": "interactive", "space": {"kind": "any"}}, "decision": "allow", "scope": "once", "at": 1790000000}
   ],
-  "toggles": [{"account": "cloud", "kind": "notes", "toggle": "off"}]
+  "toggles": [{"account": "cloud", "kind": "notes", "toggle": false}]
 }"#;
 
 const AT_SIX: &str = r#"{

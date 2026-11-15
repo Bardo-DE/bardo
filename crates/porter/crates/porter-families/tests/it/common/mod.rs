@@ -6,7 +6,6 @@
 pub mod mail;
 
 use porter_capability::KindToggle;
-use porter_capability::Toggle;
 use porter_core::SecretText;
 use porter_http::http::{Request, Response};
 use porter_http::{Http, HttpError};
@@ -105,7 +104,7 @@ pub fn all_on(
         .into_iter()
         .map(|kind| KindToggle {
             kind,
-            toggle: Toggle::On,
+            toggle: true,
         })
         .collect()
 }
@@ -210,10 +209,7 @@ impl TestLink {
                     .iter()
                     .map(|row| KindToggle {
                         kind: row.kind,
-                        toggle: match self.person.off.contains(&row.kind) {
-                            true => Toggle::Off,
-                            false => Toggle::On,
-                        },
+                        toggle: !self.person.off.contains(&row.kind),
                     })
                     .collect(),
             )),

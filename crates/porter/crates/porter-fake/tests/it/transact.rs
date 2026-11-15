@@ -5,9 +5,9 @@
 //! with no audit line, and the person is told `Unavailable`. (These began as pins of the code
 //! before it, whose behaviour is in the history of this file.)
 
-use porter_capability::{CapabilityKind, Toggle};
+use porter_capability::{CapabilityKind};
 use porter_core::consent::{ConsentAnswer, ConsentAsk, GrantScope, Usage};
-use porter_core::{AccountState, AgentState, AppId, AppName, DataClass, Isolation, SessionToken};
+use porter_core::{AccountState, AppId, AppName, DataClass, Isolation, SessionToken};
 use porter_core::{AuthKind, GrantId};
 use porter_fake::{
     FakeProvider, MemoryStore, RecordingAudit, Scripted, ScriptedLink, ScriptedSheets,
@@ -218,7 +218,7 @@ async fn a_toggle_that_cannot_be_saved() {
     let before = rig.stop_saving();
     assert_eq!(
         rig.service
-            .set_toggle(&storage_account().id, CapabilityKind::Calendar, Toggle::Off)
+            .set_toggle(&storage_account().id, CapabilityKind::Calendar, false)
             .await,
         Err(Refusal::Unavailable)
     );
@@ -232,7 +232,7 @@ async fn a_toggle_that_changes_nothing_still_saves() {
     let rig = rig([]).await;
     let id = storage_account().id;
     rig.service
-        .set_toggle(&id, CapabilityKind::Calendar, Toggle::On)
+        .set_toggle(&id, CapabilityKind::Calendar, true)
         .await
         .expect("toggled");
     assert_eq!(rig.store.saves(), 0, "the kind was already on");
@@ -300,7 +300,7 @@ async fn an_agent_state_that_cannot_be_saved() {
     store.refusing(true);
     let before = service.registry();
     assert_eq!(
-        service.set_agent_state(&id, AgentState::NeedsLogin).await,
+        service.set_agent_state(&id, AccountState::NeedsLogin).await,
         Err(AgentFault::Unavailable)
     );
     assert_eq!(service.registry(), before);
@@ -385,7 +385,7 @@ fn toggle_row(kind: CapabilityKind) -> porter_core::store::AccountToggle {
     porter_core::store::AccountToggle {
         account: storage_account().id,
         kind,
-        toggle: Toggle::Off,
+        toggle: false,
     }
 }
 
@@ -535,7 +535,7 @@ async fn the_service_tells_of_a_change_only_once_it_is_in_the_registry() {
 
     store.refusing(true);
     let id = storage_account().id;
-    let off = || service.set_toggle(&id, CapabilityKind::Calendar, Toggle::Off);
+    let off = || service.set_toggle(&id, CapabilityKind::Calendar, false);
     assert_eq!(off().await, Err(Refusal::Unavailable));
     assert!(tokio::time::timeout(wake, told.notified()).await.is_err());
 

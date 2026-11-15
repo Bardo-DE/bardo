@@ -149,7 +149,7 @@ async fn the_terminal_reads_typed_machines_and_hears_of_changes() {
     );
     let pi = machines.iter().find(|m| m.name == "pi").expect("pi");
     assert_eq!(pi.node.as_str(), "nPI");
-    assert!(pi.ssh.is_on() && pi.link.is_online());
+    assert!(pi.ssh && pi.online);
     assert_eq!(pi.dns, "pi.tail1234.ts.net");
 
     world.fake.edit(|net| net.peers[0].online = false);
@@ -163,14 +163,7 @@ async fn the_terminal_reads_typed_machines_and_hears_of_changes() {
     assert_eq!(told, Some(Ok(())));
     let again = tailnet.machines().await.expect("machines");
     // The first of the fake's computers (`pi`) went offline.
-    assert!(
-        !again
-            .iter()
-            .find(|m| m.name == "pi")
-            .expect("pi")
-            .link
-            .is_online()
-    );
+    assert!(!again.iter().find(|m| m.name == "pi").expect("pi").online);
 }
 
 #[tokio::test(flavor = "multi_thread")]

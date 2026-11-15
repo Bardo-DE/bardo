@@ -1,13 +1,13 @@
 //! The service: one request in, one reply out, for a caller the transport has identified. The
 //! facade a host holds; what it does is the domains', over the shared [`Ctx`].
 
-use porter_capability::{CapabilityKind, Claim, Toggle};
+use porter_capability::{CapabilityKind, Claim};
 use porter_core::ProviderHint;
 use porter_core::consent::{Availability, Grant, Usage};
 use porter_core::store::{NoStore, RegistryStore};
 use porter_core::{AccountId, GrantId, ProviderId};
 use porter_core::{
-    AccountState, AgentState, AppId, Candidate, DataClass, EndpointUrl, LlmVerdict, OwnServerRow,
+    AccountState, AppId, Candidate, DataClass, EndpointUrl, LlmVerdict, OwnServerRow,
     RelayPlan, SecretText, SessionToken,
 };
 use porter_ids::clock::Clock;
@@ -359,7 +359,7 @@ where
     pub async fn set_agent_state(
         &self,
         account: &AccountId,
-        state: AgentState,
+        state: AccountState,
     ) -> Result<bool, AgentFault> {
         self.accounts().set_agent_state(account, state).await
     }
@@ -431,7 +431,7 @@ where
         &self,
         id: &AccountId,
         kind: CapabilityKind,
-        toggle: Toggle,
+        toggle: bool,
     ) -> Result<(), Refusal> {
         self.accounts().set_toggle(id, kind, toggle).await
     }

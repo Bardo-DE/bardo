@@ -5,7 +5,7 @@
 
 use crate::Accounts;
 use porter_core::AccountId;
-use porter_core::{AgentState, AuthKind};
+use porter_core::{AccountState, AuthKind};
 use porter_service_core::audit::AuditEvent;
 use porter_service_core::{Audited, Ports};
 
@@ -25,7 +25,7 @@ impl<E: Ports> Accounts<'_, E> {
     pub(crate) async fn set_agent_state(
         &self,
         account: &AccountId,
-        state: AgentState,
+        state: AccountState,
     ) -> Result<bool, AgentFault> {
         let written = self
             .ctx
@@ -36,8 +36,7 @@ impl<E: Ports> Accounts<'_, E> {
                 if row.auth != AuthKind::AgentLogin {
                     return Ok((Vec::new(), Err(AgentFault::NotAnAgent)));
                 }
-                let changed = std::mem::replace(&mut row.state, state.account_state())
-                    != state.account_state();
+                let changed = std::mem::replace(&mut row.state, state) != state;
                 let lines = match changed {
                     true => vec![Audited::new(
                         None,

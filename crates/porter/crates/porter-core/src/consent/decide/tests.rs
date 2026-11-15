@@ -28,35 +28,35 @@ fn decide_is_generic_over_the_key() {
 #[test]
 fn availability_reveals_only_the_best_state() {
     let yes = granted("g1", GrantScope::Always);
-    let cases: Vec<(&str, Vec<Verdict>, Catalog, Availability)> = vec![
+    let cases: Vec<(&str, Vec<Verdict>, bool, Availability)> = vec![
         (
             "a granted account",
             vec![Verdict::Ask, yes.clone()],
-            Catalog::Offers,
+            true,
             Availability::Granted,
         ),
         (
             "an undecided account",
             vec![Verdict::Denied, Verdict::Ask],
-            Catalog::Offers,
+            true,
             Availability::AvailableNeedsConsent,
         ),
         (
             "only refused accounts",
             vec![Verdict::Denied],
-            Catalog::Offers,
+            true,
             Availability::Denied,
         ),
         (
             "no account, a provider could",
             vec![],
-            Catalog::Offers,
+            true,
             Availability::NeedsAccount,
         ),
         (
             "no account, no provider",
             vec![],
-            Catalog::Offerless,
+            false,
             Availability::Unsupported,
         ),
     ];

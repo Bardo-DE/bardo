@@ -20,7 +20,7 @@
 
 mod terminal;
 
-pub use terminal::{Echo, StdTerminal, Terminal, TerminalLink, TerminalSheets};
+pub use terminal::{StdTerminal, Terminal, TerminalLink, TerminalSheets};
 
 use crate::daemon::{Config, families_of};
 use crate::{FileAudit, StartError};

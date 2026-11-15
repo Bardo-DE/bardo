@@ -1,12 +1,12 @@
 use super::rig::*;
 use porter_capability::CapabilityKind as K;
 use porter_capability::KindToggle;
-use porter_capability::{AbsentReason, Offer, Provenance, Toggle};
+use porter_capability::{AbsentReason, Offer, Provenance};
 use porter_core::{Credential, Family, LimitReason, SecretPurpose, TokenLifetime, Verification};
 use porter_fake_servers::{Consent, IssuerEvent, TokenResult};
 use porter_ids::Count;
 use porter_provider::{
-    ConsentHistory, LoginHint, Provider, SignIn, SignInMode, SignInStart, SignInStep,
+    LoginHint, Provider, SignIn, SignInMode, SignInStart, SignInStep,
 };
 use porter_sheet::{SignInFault, SignInInput};
 
@@ -163,7 +163,7 @@ async fn a_loopback_sign_in_reviews_what_google_allows_then_hands_over_the_crede
     ));
     let choices = vec![KindToggle {
         kind: K::Tasks,
-        toggle: Toggle::Off,
+        toggle: false,
     }];
     let SignInStep::Done(signed) = signin.next(SignInInput::Confirm(choices)).await else {
         panic!("expected done")
@@ -197,14 +197,14 @@ async fn a_loopback_sign_in_reviews_what_google_allows_then_hands_over_the_crede
 async fn a_known_address_is_sent_as_the_hint_and_consent_is_asked_only_the_first_time() {
     let ada = LoginHint::parse("ada@gmail.com").expect("an address");
     let cases = [
-        (Some(&ada), ConsentHistory::FirstSignIn, Some("consent")),
-        (Some(&ada), ConsentHistory::SignedInBefore, None),
-        (None, ConsentHistory::SignedInBefore, Some("select_account")),
-        (None, ConsentHistory::FirstSignIn, Some("consent")),
+        (Some(&ada), false, Some("consent")),
+        (Some(&ada), true, None),
+        (None, true, Some("select_account")),
+        (None, false, Some("consent")),
     ];
-    for (hint, consent, prompt) in cases {
+    for (hint, signed_in_before, prompt) in cases {
         let rig = Rig::new(PLAIN).await;
-        let mut begun = start().with_consent(consent);
+        let mut begun = start().with_signed_in_before(signed_in_before);
         if let Some(hint) = hint {
             begun = begun.with_login_hint(hint.clone());
         }
@@ -212,9 +212,9 @@ async fn a_known_address_is_sent_as_the_hint_and_consent_is_asked_only_the_first
         assert!(matches!(step, SignInStep::Review { .. }), "{step:?}");
         let q = query_of(&rig);
         let want_hint = hint.map(LoginHint::as_str);
-        assert_eq!(get(&q, "login_hint"), want_hint, "{hint:?} {consent:?}");
-        assert_eq!(get(&q, "prompt"), prompt, "{hint:?} {consent:?}");
-        assert_eq!(get(&q, "access_type"), Some("offline"), "{consent:?}");
+        assert_eq!(get(&q, "login_hint"), want_hint, "{hint:?} {signed_in_before:?}");
+        assert_eq!(get(&q, "prompt"), prompt, "{hint:?} {signed_in_before:?}");
+        assert_eq!(get(&q, "access_type"), Some("offline"), "{signed_in_before:?}");
     }
 }
 
@@ -494,7 +494,7 @@ async fn asking_for_the_whole_drive_asks_it_alone_and_records_it_with_the_rest()
     assert!(endpoints.iter().all(|e| e.login.0 == "ada@gmail.com"));
     let choices = vec![KindToggle {
         kind: K::Storage,
-        toggle: Toggle::On,
+        toggle: true,
     }];
     let SignInStep::Done(signed) = signin.next(SignInInput::Confirm(choices)).await else {
         panic!("expected done")

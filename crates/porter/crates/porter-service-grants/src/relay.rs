@@ -16,7 +16,7 @@ use porter_ids::word::word as word_of;
 use porter_provider::Provider;
 use porter_secrets::{Secrets, SecretsError};
 use porter_service_core::Ports;
-use porter_service_core::reach::{Declared, declared_endpoint, reach_for};
+use porter_service_core::reach::{declared_endpoint, reach_for};
 use porter_service_core::refusal::secrets_refusal;
 use porter_wire::Refusal;
 
@@ -128,7 +128,7 @@ impl<E: Ports> Grants<'_, E> {
             .catalog()
             .get(&account.provider)
             .ok_or(Refusal::EndpointNotGranted)?;
-        let endpoint = declared_endpoint(account, spec, kind, origin, Declared::Auth)?;
+        let endpoint = declared_endpoint(account, spec, kind, origin, false)?;
         Ok((account.clone(), endpoint, (kind, reach)))
     }
 
@@ -149,7 +149,7 @@ impl<E: Ports> Grants<'_, E> {
             .catalog()
             .get(&account.provider)
             .ok_or(Refusal::Unavailable)?;
-        let endpoint = declared_endpoint(account, spec, kind, origin, Declared::Linked)?;
+        let endpoint = declared_endpoint(account, spec, kind, origin, true)?;
         let reach = reach_for(&endpoint);
         let plan = RelayPlan::new(endpoint, kind, RelayAuth::Anonymous, reach);
         Ok((plan, account.clone()))

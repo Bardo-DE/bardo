@@ -59,24 +59,3 @@ impl AccountState {
         matches!(self, AccountState::NeedsReauth | AccountState::NeedsLogin)
     }
 }
-
-/// What an agent program says of its own sign-in, as the launcher reports it. It is the only
-/// thing porter holds for an `AgentLogin` account.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum AgentState {
-    /// The agent says it is signed in (a session started, or its `authenticate` succeeded).
-    Ready,
-    /// The agent says it needs a login.
-    NeedsLogin,
-}
-
-impl AgentState {
-    /// The state an account in this agent state has.
-    pub fn account_state(self) -> AccountState {
-        match self {
-            AgentState::Ready => AccountState::Ok,
-            AgentState::NeedsLogin => AccountState::NeedsLogin,
-        }
-    }
-}

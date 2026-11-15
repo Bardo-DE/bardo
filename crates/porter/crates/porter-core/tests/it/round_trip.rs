@@ -470,12 +470,6 @@ fn agent_values_keep_their_slugs_and_hold_no_secret() {
     let cases = [
         ("auth kind", json(&AuthKind::AgentLogin), r#""agent_login""#),
         ("state", json(&AccountState::NeedsLogin), r#""needs_login""#),
-        ("agent state", json(&AgentState::Ready), r#""ready""#),
-        (
-            "agent state",
-            json(&AgentState::NeedsLogin),
-            r#""needs_login""#,
-        ),
         ("kind", json(&CapabilityKind::Agent), r#""agent""#),
         ("family", json(&Family::AcpAgent), r#""acp_agent""#),
         (
@@ -509,11 +503,6 @@ fn agent_values_keep_their_slugs_and_hold_no_secret() {
     assert!(serde_json::from_str::<AgentProgram>("\"Not Ok\"").is_err());
     assert!(AccountState::NeedsLogin.needs_person() && AccountState::NeedsReauth.needs_person());
     assert!(!AccountState::Ok.needs_person() && !AccountState::Offline.needs_person());
-    assert_eq!(AgentState::Ready.account_state(), AccountState::Ok);
-    assert_eq!(
-        AgentState::NeedsLogin.account_state(),
-        AccountState::NeedsLogin
-    );
 }
 
 #[test]

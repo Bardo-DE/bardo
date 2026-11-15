@@ -187,7 +187,7 @@ impl Registry {
         let off = self.toggles.iter().any(|t| {
             t.account == account.id
                 && t.kind == CapabilityKind::Llm
-                && t.toggle == porter_capability::Toggle::Off
+                && t.toggle == porter_capability::false
         });
         match (off, account.state) {
             (true, _) => Err(Refusal::Denied),

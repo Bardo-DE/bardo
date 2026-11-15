@@ -32,7 +32,7 @@ pub use rows::{
 use accounts::{Directory, UsedBy};
 use ds_settings::live::LiveError;
 use ds_settings::schema::KeySpec;
-use porter_capability::{CapabilityKind, Toggle};
+use porter_capability::{CapabilityKind};
 use porter_core::consent::Grant;
 use porter_core::{Account, AccountId, AppName, GrantId};
 use porter_service_core::registry::Registry;
@@ -120,7 +120,7 @@ pub trait Acts: Sync {
         &'a self,
         id: &'a AccountId,
         kind: CapabilityKind,
-        to: Toggle,
+        to: bool,
     ) -> Boxed<'a, Result<(), LiveError>>;
     /// Takes a permit back.
     fn revoke<'a>(&'a self, grant: &'a GrantId) -> Boxed<'a, Result<(), LiveError>>;
@@ -179,12 +179,12 @@ impl std::fmt::Debug for Row {
 }
 
 /// The text of `value` as the switch of a service says it, `on` or `off`.
-pub(crate) fn toggle_of(value: &toml::Value) -> Option<Toggle> {
+pub(crate) fn toggle_of(value: &toml::Value) -> Option<bool> {
     match value {
-        toml::Value::String(s) if s == "on" => Some(Toggle::On),
-        toml::Value::String(s) if s == "off" => Some(Toggle::Off),
-        toml::Value::Boolean(true) => Some(Toggle::On),
-        toml::Value::Boolean(false) => Some(Toggle::Off),
+        toml::Value::String(s) if s == "on" => Some(true),
+        toml::Value::String(s) if s == "off" => Some(false),
+        toml::Value::Boolean(true) => Some(true),
+        toml::Value::Boolean(false) => Some(false),
         _ => None,
     }
 }

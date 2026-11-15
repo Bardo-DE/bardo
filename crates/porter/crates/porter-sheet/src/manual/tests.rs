@@ -226,7 +226,7 @@ fn a_form_that_is_not_the_server_form_is_not_reshaped() {
     let other = vec![FieldSpec {
         kind: FieldKind::Address,
         entry: Entry::Plain,
-        presence: Presence::Required,
+        required: true,
         prefill: None,
     }];
     assert_eq!(refit(&other, &[plain(FieldKind::Protocol, "jmap")]), other);
@@ -458,8 +458,8 @@ fn an_old_sign_in_view_still_reads() {
     // The JSON of a view written before the server form: only the first six kinds, a problem
     // with the two kinds it had.
     let old = r#"{"provider":"generic-imap","fields":[
-        {"kind":"server","entry":"plain","presence":"required","prefill":null},
-        {"kind":"password","entry":"secret","presence":"required","prefill":null}],
+        {"kind":"server","entry":"plain","required":true,"prefill":null},
+        {"kind":"password","entry":"secret","required":true,"prefill":null}],
         "problem":{"field":"server","problem":"refused"}}"#;
     let view: SignInView = serde_json::from_str(old).expect("an old view reads");
     assert_eq!(
@@ -493,13 +493,13 @@ fn an_ai_servers_address_is_marked_when_it_cannot_be_right() {
         FieldSpec {
             kind: FieldKind::ServerUrl,
             entry: Entry::Plain,
-            presence: Presence::Required,
+            required: true,
             prefill: None,
         },
         FieldSpec {
             kind: FieldKind::ApiKey,
             entry: Entry::Secret,
-            presence: Presence::Optional,
+            required: false,
             prefill: None,
         },
     ];

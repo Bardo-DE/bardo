@@ -8,11 +8,10 @@
 pub use porter_core::audit::CredentialEnd;
 
 use porter_capability::LoginRequestId;
-use porter_capability::Toggle;
 use porter_capability::{AgentProgram, CapabilityKind};
 use porter_core::SessionToken;
 use porter_core::{AccountId, GrantId};
-use porter_core::{AgentState, AppId, Audience, DesktopSpace, EndpointUrl};
+use porter_core::{AccountState, AppId, Audience, DesktopSpace, EndpointUrl};
 use porter_ids::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
@@ -161,7 +160,7 @@ pub enum AuditEvent {
     /// state changed.
     AgentStateSet {
         /// The state it is now.
-        state: AgentState,
+        state: AccountState,
     },
     /// accountd sent the launcher of `program` a request to sign the agent in. Nothing of the
     /// login is ever recorded, only that it was asked.
@@ -206,7 +205,7 @@ pub enum AuditEvent {
         /// The kind.
         kind: CapabilityKind,
         /// What it is now.
-        toggle: Toggle,
+        toggle: bool,
     },
     /// The person's own client id for an issuer was set or cleared (Settings' client row), so
     /// the next sign-ins with that issuer present another app. Never the id itself.
@@ -214,8 +213,9 @@ pub enum AuditEvent {
         /// The issuer's slug, as its Settings row names it (`microsoft`, `google`). porter-core
         /// does not know the issuers (porter-provider's `Issuer` does); this is its word.
         issuer: String,
-        /// Set or cleared.
-        change: ClientIdChange,
+        /// Whether the id was cleared (the shipped one, if any, is used again) and not set or
+        /// replaced.
+        cleared: bool,
     },
     /// A desktop-wide Space was made (`Spaces1.Create`). The entry's `app` is the app that made
     /// it. Never the name.
@@ -242,16 +242,6 @@ pub enum AuditEvent {
     /// crash between filing them and adding the row left them). The entry's `account` is that
     /// id; `app` is absent. Never a value.
     SecretsSwept,
-}
-
-/// What became of a client id.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum ClientIdChange {
-    /// A client id of the person's own is set (or replaced).
-    Set,
-    /// The person's own client id is removed; the shipped one, if any, is used again.
-    Cleared,
 }
 
 #[cfg(test)]
@@ -335,7 +325,7 @@ mod tests {
                 audience: Audience("org.quire.Agent.claude-code".into()),
             },
             AuditEvent::AgentStateSet {
-                state: AgentState::NeedsLogin,
+                state: AccountState::NeedsLogin,
             },
             AuditEvent::AgentLoginAsked {
                 request: LoginRequestId::parse("login-1").expect("id"),
@@ -362,11 +352,11 @@ mod tests {
             },
             AuditEvent::ServiceToggled {
                 kind: CapabilityKind::Contacts,
-                toggle: Toggle::Off,
+                toggle: false,
             },
             AuditEvent::ClientIdChanged {
                 issuer: "microsoft".to_owned(),
-                change: ClientIdChange::Cleared,
+                cleared: true,
             },
             AuditEvent::PasswordHandedOver,
             AuditEvent::SecretsSwept,
@@ -414,9 +404,9 @@ mod tests {
         };
         assert_eq!(
             at(AuditEvent::AgentStateSet {
-                state: AgentState::Ready
+                state: AccountState::Ok
             }),
-            r#"{"at":1,"app":null,"account":null,"event":{"kind":"agent_state_set","v":{"state":"ready"}}}"#
+            r#"{"at":1,"app":null,"account":null,"event":{"kind":"agent_state_set","v":{"state":"ok"}}}"#
         );
         assert_eq!(
             at(AuditEvent::ProcessCredentialIssued {
@@ -448,16 +438,16 @@ mod tests {
         assert_eq!(
             at(AuditEvent::ServiceToggled {
                 kind: CapabilityKind::Calendar,
-                toggle: Toggle::On,
+                toggle: true,
             }),
-            r#"{"at":1,"app":null,"account":null,"event":{"kind":"service_toggled","v":{"kind":"calendar","toggle":"on"}}}"#
+            r#"{"at":1,"app":null,"account":null,"event":{"kind":"service_toggled","v":{"kind":"calendar","toggle":true}}}"#
         );
         assert_eq!(
             at(AuditEvent::ClientIdChanged {
                 issuer: "microsoft".to_owned(),
-                change: ClientIdChange::Set,
+                cleared: false,
             }),
-            r#"{"at":1,"app":null,"account":null,"event":{"kind":"client_id_changed","v":{"issuer":"microsoft","change":"set"}}}"#
+            r#"{"at":1,"app":null,"account":null,"event":{"kind":"client_id_changed","v":{"issuer":"microsoft","cleared":false}}}"#
         );
         assert_eq!(
             at(AuditEvent::PasswordHandedOver),

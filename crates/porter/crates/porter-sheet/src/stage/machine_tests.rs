@@ -4,14 +4,13 @@
 //! a password goes to the sign-in and nowhere else), restated over porter's stages.
 
 use super::*;
-use crate::fields::{Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, Presence};
+use crate::fields::{Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue};
 use crate::input::SheetInput;
 use crate::progress::{
     Progress, Review, ServiceRow, ServiceState, SignInFault, SignInInput, UserCode,
 };
 use crate::view::{FieldProblem, ProblemKind, ProviderKind, ProviderRow, RowKind, SheetView};
 use porter_capability::CapabilityKind;
-use porter_capability::Toggle;
 use porter_core::AccountLabel;
 use porter_core::ProviderHint;
 use porter_core::SecretText;
@@ -53,20 +52,20 @@ fn page() -> WebUrl {
     WebUrl::parse("https://login.example.org/authorize?client_id=a&state=b").expect("url")
 }
 
-fn spec(kind: FieldKind, entry: Entry, presence: Presence) -> FieldSpec {
+fn spec(kind: FieldKind, entry: Entry, required: bool) -> FieldSpec {
     FieldSpec {
         kind,
         entry,
-        presence,
+        required,
         prefill: None,
     }
 }
 
 fn form() -> Vec<FieldSpec> {
     vec![
-        spec(FieldKind::Address, Entry::Plain, Presence::Required),
-        spec(FieldKind::Username, Entry::Plain, Presence::Optional),
-        spec(FieldKind::Password, Entry::Secret, Presence::Required),
+        spec(FieldKind::Address, Entry::Plain, true),
+        spec(FieldKind::Username, Entry::Plain, false),
+        spec(FieldKind::Password, Entry::Secret, true),
     ]
 }
 
@@ -75,7 +74,7 @@ fn review() -> Review {
         label: AccountLabel("ada@cloud.example.org".into()),
         services: vec![ServiceRow {
             kind: CapabilityKind::Storage,
-            state: ServiceState::Offered(Toggle::On),
+            state: ServiceState::Offered(true),
             limit: None,
             access: None,
         }],
@@ -86,7 +85,7 @@ fn review() -> Review {
 fn choices() -> Vec<KindToggle> {
     vec![KindToggle {
         kind: CapabilityKind::Storage,
-        toggle: Toggle::Off,
+        toggle: false,
     }]
 }
 

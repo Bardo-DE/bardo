@@ -7,17 +7,17 @@ use std::collections::VecDeque;
 #[derive(Debug, Default)]
 struct Script {
     answers: Mutex<VecDeque<String>>,
-    asked: Mutex<Vec<(String, Echo)>>,
+    asked: Mutex<Vec<(String, bool)>>,
 }
 
 impl Terminal for Script {
     fn say(&self, _line: &str) {}
 
-    fn ask(&self, label: &str, echo: Echo) -> Option<String> {
+    fn ask(&self, label: &str, hidden: bool) -> Option<String> {
         self.asked
             .lock()
             .expect("asked")
-            .push((label.to_owned(), echo));
+            .push((label.to_owned(), hidden));
         self.answers.lock().expect("answers").pop_front()
     }
 
@@ -82,5 +82,5 @@ async fn an_empty_answer_takes_the_default_and_a_hidden_field_is_typed_hidden() 
     );
     let asked = link.inner.terminal.asked.lock().expect("asked");
     assert_eq!(asked[2].0, "API token (hidden) (optional)");
-    assert_eq!(asked[2].1, Echo::Off, "a token is typed hidden");
+    assert!(asked[2].1, "a token is typed hidden");
 }

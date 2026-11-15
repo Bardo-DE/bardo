@@ -6,7 +6,7 @@ use crate::Details;
 use crate::json_value::bad;
 use porter_core::CoreError;
 use porter_ids::UnixSeconds;
-use porter_tailscale::{Machine, MachineLink, MachineOwner, MachineSsh, NodeId};
+use porter_tailscale::{Machine, MachineOwner, NodeId};
 use std::net::IpAddr;
 use zbus::zvariant::{OwnedValue, Value};
 
@@ -56,9 +56,9 @@ pub fn machine_to_dbus(machine: &Machine) -> (String, Details) {
         (MACHINE_KEY_OS, owned(Value::from(machine.os.clone()))),
         (
             MACHINE_KEY_ONLINE,
-            owned(Value::from(machine.link.is_online())),
+            owned(Value::from(machine.online)),
         ),
-        (MACHINE_KEY_SSH, owned(Value::from(machine.ssh.is_on()))),
+        (MACHINE_KEY_SSH, owned(Value::from(machine.ssh))),
         (
             MACHINE_KEY_SSH_HOST_KEYS,
             owned(strings(machine.ssh_host_keys.iter().cloned())),
@@ -102,13 +102,9 @@ pub fn machine_from_dbus(row: &(String, Details)) -> Result<Machine, CoreError> 
                 .collect(),
         )
         .with_os(text(MACHINE_KEY_OS).unwrap_or_default())
-        .with_link(MachineLink::of(
-            get::<bool>(details, MACHINE_KEY_ONLINE).unwrap_or(false),
-        ))
+        .with_online(get::<bool>(details, MACHINE_KEY_ONLINE).unwrap_or(false))
         .with_ssh_host_keys(list(MACHINE_KEY_SSH_HOST_KEYS))
-        .with_ssh(MachineSsh::of(
-            get::<bool>(details, MACHINE_KEY_SSH).unwrap_or(false),
-        ));
+        .with_ssh(get::<bool>(details, MACHINE_KEY_SSH).unwrap_or(false));
     machine.last_seen = get::<i64>(details, MACHINE_KEY_LAST_SEEN).map(UnixSeconds);
     Ok(machine)
 }
@@ -143,7 +139,7 @@ mod tests {
     #[test]
     fn the_lists_are_string_arrays_and_last_seen_is_absent_while_online() {
         let mut online = machine();
-        online.link = MachineLink::Online;
+        online.online = true;
         online.last_seen = None;
         let (_, details) = machine_to_dbus(&online);
         assert!(!details.contains_key(MACHINE_KEY_LAST_SEEN));

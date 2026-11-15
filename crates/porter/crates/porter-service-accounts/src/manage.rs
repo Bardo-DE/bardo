@@ -3,7 +3,7 @@
 //! on or off. The transport (accountd's settings module) decides who may ask.
 
 use crate::Accounts;
-use porter_capability::{AbsentReason, CapabilityKind, Claim, Offer, Provenance, Subject, Toggle};
+use porter_capability::{AbsentReason, CapabilityKind, Claim, Offer, Provenance, Subject};
 use porter_core::store::AccountToggle;
 use porter_core::{AccountId, SecretKey};
 use porter_provider::Provider;
@@ -128,7 +128,7 @@ impl<E: Ports> Accounts<'_, E> {
         &self,
         id: &AccountId,
         kind: CapabilityKind,
-        toggle: Toggle,
+        toggle: bool,
     ) -> Result<(), Refusal> {
         self.ctx
             .transact(|registry| {
@@ -138,8 +138,8 @@ impl<E: Ports> Accounts<'_, E> {
                     .iter()
                     .any(|t| t.account == *id && t.kind == kind)
                 {
-                    true => Toggle::Off,
-                    false => Toggle::On,
+                    true => false,
+                    false => true,
                 };
                 let spec = registry
                     .accounts
@@ -159,7 +159,7 @@ impl<E: Ports> Accounts<'_, E> {
                 registry
                     .toggles
                     .retain(|t| !(t.account == *id && t.kind == kind));
-                if toggle == Toggle::Off {
+                if toggle == false {
                     registry.toggles.push(AccountToggle {
                         account: id.clone(),
                         kind,
