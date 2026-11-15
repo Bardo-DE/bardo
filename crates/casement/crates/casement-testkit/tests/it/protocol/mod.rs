@@ -2,7 +2,6 @@
 //! bind every version, happy paths, every protocol error, destruction order, a transcript
 //! golden (11 §3.2). Every test drives the real `State` through the `Fixture`. `sandbox` is
 //! the one table that is not a protocol: the globals a sandboxed client never sees (I7).
-
 mod alpha_modifier;
 mod background_effect;
 mod capture_cursor;
@@ -15,10 +14,10 @@ mod consent;
 mod consent_store;
 mod content_type;
 mod cursor_shape;
+mod data_control;
 mod data_device;
 mod dead_focus;
 mod dmabuf;
-mod ext_data_control;
 mod fifo;
 mod foreign_toplevel_list;
 mod fractional_scale;
@@ -65,7 +64,6 @@ mod tablet;
 mod text_input;
 mod viewporter;
 mod virtual_keyboard;
-mod wlr_data_control;
 mod wlr_toplevel;
 mod workspace;
 mod xdg_activation;
