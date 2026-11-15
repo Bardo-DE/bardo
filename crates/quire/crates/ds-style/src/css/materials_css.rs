@@ -3,7 +3,7 @@
 //! points `--m-tint` at the solid one.
 //!
 //! The paint rules come last: a root or `Surface` with a material paints the solid tint
-//! unless it says `data-blur=on`, which is the safe default of [`crate::BlurState`]. The
+//! unless it says `data-blur=on`, which is the safe default of `blur: false`. The
 //! material's edge and drop are painted as one `box-shadow` naming only the layers that are not
 //! `none` (a `var(--m-edge),var(--m-shadow)` list would be invalid whenever either is), so the
 //! colours stay in the `--m-*` declarations. That list is `--m-box`, so a card inside a

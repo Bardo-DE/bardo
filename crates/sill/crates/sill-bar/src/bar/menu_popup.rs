@@ -15,7 +15,6 @@ use ds::base::press::Press;
 use ds::host::measure::Anchor;
 use ds::prelude::*;
 use ds::stack::menu_track::types::MenuTiming;
-use ds::style::appearance::blur::BlurState;
 use shell_host::{PopupPlacement, use_surface, use_watch};
 use sill_model::ids::OutputName;
 use sill_settings::ControlCenterModule;
@@ -140,7 +139,7 @@ pub(crate) fn PopupDocument(current: PopupView) -> Element {
                 appearance: look.appearance,
                 system: look.system,
                 material: Material::Popover,
-                blur: BlurState::Unavailable,
+                blur: false,
                 surface: root.surface,
                 styles: root.styles,
                 custom_styles: root.custom_styles,

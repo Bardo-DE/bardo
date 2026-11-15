@@ -12,7 +12,6 @@ use ds::base::geometry::placement::Side;
 use ds::components::controls::button_model::ImagePosition;
 use ds::host::measure::Anchor;
 use ds::prelude::*;
-use ds::style::appearance::blur::BlurState;
 use ds::style::space::frame_vars::FrameVars;
 use ds::style::space::palette::derive;
 use ds::style::space::presets::PRESETS;
@@ -85,7 +84,7 @@ fn pixel(frame: &RgbaImage, x: u32, y: u32) -> [u8; 4] {
     frame.get_pixel(x, y).0
 }
 
-fn bar(blur: BlurState, index: usize) -> Element {
+fn bar(blur: bool, index: usize) -> Element {
     rsx! {
         Ds { appearance: light(), look: look(index), material: Material::Bar, blur,
             style { {PROBE_CSS} }
@@ -96,12 +95,12 @@ fn bar(blur: BlurState, index: usize) -> Element {
 
 #[allow(non_snake_case)]
 fn BarOverBlur() -> Element {
-    bar(BlurState::Available, 0)
+    bar(true, 0)
 }
 
 #[allow(non_snake_case)]
 fn BarSolid() -> Element {
-    bar(BlurState::Unavailable, 0)
+    bar(false, 0)
 }
 
 // ---- The tint at rest -----------------------------------------------------------------------
@@ -137,7 +136,7 @@ fn the_bar_at_rest_is_the_first_stop_at_the_material_alpha() {
 fn SwitchingBar() -> Element {
     let mut index = use_signal(|| 0usize);
     rsx! {
-        Ds { sheet: Some(sill_shell_kit::stylesheet()), appearance: light(), look: look(index()), material: Material::Bar, blur: BlurState::Available,
+        Ds { sheet: Some(sill_shell_kit::stylesheet()), appearance: light(), look: look(index()), material: Material::Bar, blur: true,
             style { {PROBE_CSS} }
             div { class: "bar-fill",
                 MenuBarItem {

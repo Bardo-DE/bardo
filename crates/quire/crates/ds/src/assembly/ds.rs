@@ -71,7 +71,8 @@ use ds_core::vocab::modality_word;
 use ds_core::word::Word;
 use ds_motion::hover_intent::HoverWarmth;
 use ds_style::appearance::{appearance::Appearance, resolve::resolve, system::SystemPrefs};
-use ds_style::appearance::{blur::BlurState, material::Material};
+use ds_style::appearance::blur::blur_word;
+use ds_style::appearance::material::Material;
 use ds_style::kit::{CustomStyles, Styles};
 use ds_style::scale::use_root_scale;
 use ds_style::scope::{Scope, use_scope_provider};
@@ -97,7 +98,7 @@ pub fn Ds(
     #[props(default)] system: SystemPrefs,
     #[props(default)] look: SpaceLook,
     material: Material,
-    #[props(default)] blur: BlurState,
+    #[props(default)] blur: bool,
     #[props(default)] stylesheet: Inject,
     #[props(default)] sheet: Option<&'static str>,
     #[props(default)] chrome: Option<RootChrome>,
@@ -164,7 +165,7 @@ pub fn Ds(
             "data-transparency": resolved.transparency.attribute(),
             "data-motion": resolved.motion.slug(),
             "data-material": material.slug(),
-            "data-blur": blur.slug(),
+            "data-blur": blur_word(blur),
             "data-modality": modality_word(modality),
             "data-activity": (!activity).then_some("inactive"),
             "data-hover": hover,

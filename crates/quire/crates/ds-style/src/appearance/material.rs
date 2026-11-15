@@ -1,6 +1,5 @@
 //! The eight materials (design/03-COLOR.md sections 17.1 and 17.3).
 
-use super::blur::Blur;
 use ds_core::word::Word;
 use serde::{Deserialize, Serialize};
 
@@ -29,16 +28,16 @@ pub enum Material {
 impl Material {
     /// Whether the surface asks the compositor to blur behind it (design/03-COLOR.md section
     /// 17.2's Blur column: the window paints its own gradient, everything else is "behind").
-    pub fn blur(self) -> Blur {
+    pub fn blur(self) -> bool {
         match self {
-            Material::Window => Blur::None,
+            Material::Window => false,
             Material::Bar
             | Material::Dock
             | Material::Popover
             | Material::Sheet
             | Material::Toast
             | Material::Osd
-            | Material::Widget => Blur::Behind,
+            | Material::Widget => true,
         }
     }
 }

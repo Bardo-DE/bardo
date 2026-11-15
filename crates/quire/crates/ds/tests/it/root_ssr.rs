@@ -7,8 +7,6 @@ use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
 use ds::prelude::*;
 use ds_lint::{LintConfig, Rule, markup};
-use ds_style::appearance::blur::BlurState;
-use ds_style::appearance::system::ReducedMotion;
 use ds_style::space::frame_vars::FrameVars;
 use std::collections::BTreeMap;
 
@@ -18,7 +16,7 @@ struct Setup {
     system: SystemPrefs,
     look: SpaceLook,
     material: Material,
-    blur: BlurState,
+    blur: bool,
     stylesheet: Inject,
     modality: Option<bool>,
     activity: Option<bool>,
@@ -32,7 +30,7 @@ impl Default for Setup {
             system: SystemPrefs::default(),
             look: SpaceLook::default(),
             material: Material::Popover,
-            blur: BlurState::default(),
+            blur: false,
             stylesheet: Inject::Host,
             modality: None,
             activity: None,
@@ -107,7 +105,7 @@ fn expected(pairs: &[(&str, String)]) -> BTreeMap<String, String> {
 fn the_root_stamps_exactly_its_attributes() {
     let dark_reduced = SystemPrefs::default()
         .with_scheme(Scheme::Dark)
-        .with_motion(ReducedMotion::Reduce);
+        .with_reduced_motion(true);
     struct Case {
         name: &'static str,
         setup: Setup,
@@ -134,7 +132,7 @@ fn the_root_stamps_exactly_its_attributes() {
                     ..Appearance::default()
                 },
                 system: dark_reduced,
-                blur: BlurState::Available,
+                blur: true,
                 ..Setup::default()
             },
             theme: "dark",

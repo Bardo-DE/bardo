@@ -6,7 +6,6 @@
 
 use dioxus::prelude::*;
 use ds::prelude::*;
-use ds::style::appearance::blur::BlurState;
 use shell_host::OutputInfo;
 
 use crate::hooks::use_appearance;
@@ -35,7 +34,7 @@ pub fn SurfaceRoot(
             material,
             chrome,
             extent,
-            blur: BlurState::Available,
+            blur: true,
             surface: root.surface,
             styles: root.styles,
             custom_styles: root.custom_styles,

@@ -4,17 +4,6 @@
 use crate::appearance::theme::Scheme;
 use serde::{Deserialize, Serialize};
 
-/// The desktop's reduced-motion preference.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Copy, Hash, Default)]
-#[serde(rename_all = "snake_case")]
-pub enum ReducedMotion {
-    /// The desktop has no preference.
-    #[default]
-    NoPreference,
-    /// The desktop asks for reduced motion.
-    Reduce,
-}
-
 /// The desktop's contrast preference.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Copy, Hash, Default)]
 #[serde(rename_all = "snake_case")]
@@ -46,8 +35,8 @@ impl Contrast {
 pub struct SystemPrefs {
     /// The desktop's colour scheme.
     pub scheme: Scheme,
-    /// The desktop's reduced-motion preference.
-    pub motion: ReducedMotion,
+    /// Whether the desktop asks for reduced motion.
+    pub reduced_motion: bool,
     /// The desktop's contrast preference.
     pub contrast: Contrast,
 }
@@ -60,10 +49,10 @@ impl SystemPrefs {
         self
     }
 
-    /// These preferences with the reduced-motion preference `motion`.
+    /// These preferences with the desktop's reduced-motion preference `reduced`.
     #[must_use]
-    pub const fn with_motion(mut self, motion: ReducedMotion) -> Self {
-        self.motion = motion;
+    pub const fn with_reduced_motion(mut self, reduced: bool) -> Self {
+        self.reduced_motion = reduced;
         self
     }
 

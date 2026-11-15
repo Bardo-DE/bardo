@@ -37,7 +37,7 @@ impl Default for IconLook {
 
 /// The look `icons` asks for on a Space drawn as `space` in `scheme`.
 pub fn icon_look(icons: &IconsSettings, space: &SpaceLook, scheme: Scheme) -> IconLook {
-    let style = style_of(icons.style);
+    let style = icons.style;
     let tint = match style {
         IconStyle::Monochrome => Tint::space(&space.dots),
         IconStyle::Colour | IconStyle::Muted => Tint::NEUTRAL,
@@ -50,15 +50,6 @@ pub fn icon_look(icons: &IconsSettings, space: &SpaceLook, scheme: Scheme) -> Ic
         style,
         tint,
         scheme,
-    }
-}
-
-/// `icons.style` in `ds::style::icon`'s words.
-fn style_of(style: ds_settings::IconStyle) -> IconStyle {
-    match style {
-        ds_settings::IconStyle::Colour => IconStyle::Colour,
-        ds_settings::IconStyle::Muted => IconStyle::Muted,
-        ds_settings::IconStyle::Monochrome => IconStyle::Monochrome,
     }
 }
 

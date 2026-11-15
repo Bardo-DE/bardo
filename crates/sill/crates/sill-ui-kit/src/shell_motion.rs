@@ -3,7 +3,6 @@
 //! own resolve reads it.
 
 use ds::prelude::Motion;
-use ds::style::appearance::system::ReducedMotion;
 use ds_settings::Environment;
 use sill_model::desktop::Motion as ShellMotion;
 
@@ -11,10 +10,10 @@ use sill_model::desktop::Motion as ShellMotion;
 pub fn shell_motion(environment: &Environment) -> ShellMotion {
     match (
         environment.settings.appearance.motion_level,
-        environment.system.motion,
+        environment.system.reduced_motion,
     ) {
-        (Motion::Standard, ReducedMotion::NoPreference) => ShellMotion::Full,
-        (Motion::Reduced, _) | (Motion::Standard, ReducedMotion::Reduce) => ShellMotion::Reduced,
+        (Motion::Standard, false) => ShellMotion::Full,
+        (Motion::Reduced, _) | (Motion::Standard, true) => ShellMotion::Reduced,
     }
 }
 
@@ -22,35 +21,22 @@ pub fn shell_motion(environment: &Environment) -> ShellMotion {
 mod tests {
     use super::shell_motion;
     use ds::prelude::Motion;
-    use ds::style::appearance::system::ReducedMotion;
-    use ds_settings::Environment;
+        use ds_settings::Environment;
     use sill_model::desktop::Motion as ShellMotion;
 
     #[test]
     fn either_the_person_or_the_desktop_reduces_motion() {
         // (the person's level, the desktop's preference, what the compositor hears)
         let cases = [
-            (
-                Motion::Standard,
-                ReducedMotion::NoPreference,
-                ShellMotion::Full,
-            ),
-            (
-                Motion::Reduced,
-                ReducedMotion::NoPreference,
-                ShellMotion::Reduced,
-            ),
-            (
-                Motion::Standard,
-                ReducedMotion::Reduce,
-                ShellMotion::Reduced,
-            ),
-            (Motion::Reduced, ReducedMotion::Reduce, ShellMotion::Reduced),
+            (Motion::Standard, false, ShellMotion::Full),
+            (Motion::Reduced, false, ShellMotion::Reduced),
+            (Motion::Standard, true, ShellMotion::Reduced),
+            (Motion::Reduced, true, ShellMotion::Reduced),
         ];
         for (level, system, want) in cases {
             let mut environment = Environment::default();
             environment.settings.appearance.motion_level = level;
-            environment.system.motion = system;
+            environment.system.reduced_motion = system;
             assert_eq!(shell_motion(&environment), want, "{level:?} {system:?}");
         }
     }

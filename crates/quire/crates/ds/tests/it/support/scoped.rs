@@ -3,7 +3,6 @@
 
 use dioxus::prelude::*;
 use ds::prelude::*;
-use ds_style::appearance::blur::BlurState;
 use ds_style::appearance::resolve::Resolved;
 use ds_style::appearance::system::Contrast;
 use ds_style::appearance::transparency::Transparency;
@@ -22,7 +21,7 @@ pub fn scope() -> Scope {
         },
         scheme: Scheme::Light,
         material: Material::Window,
-        blur: BlurState::default(),
+        blur: false,
         modality: false,
         activity: true,
     }

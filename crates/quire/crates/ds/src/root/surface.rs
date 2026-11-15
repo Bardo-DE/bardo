@@ -5,7 +5,8 @@ use super::chrome::{Ground, RootChrome};
 use dioxus::prelude::*;
 use ds_core::word::Word;
 use ds_style::appearance::{accent::Accent, resolve::Resolved, theme::Scheme};
-use ds_style::appearance::{blur::BlurState, material::Material};
+use ds_style::appearance::blur::blur_word;
+use ds_style::appearance::material::Material;
 use ds_style::scope::{Scope, use_scope, use_scope_provider};
 use ds_style::tokens::accent_band::text_grounds::{TextOn, text_on};
 use ds_style::tokens::shape::Corner;
@@ -29,7 +30,7 @@ pub fn Surface(
     material: Material,
     #[props(default)] theme: Option<Scheme>,
     #[props(default)] accent: Option<Accent>,
-    #[props(default)] blur: Option<BlurState>,
+    #[props(default)] blur: Option<bool>,
     #[props(default)] on: Option<Ground>,
     #[props(default)] radius: Option<Corner>,
     #[props(default)] chrome: Option<RootChrome>,
@@ -47,7 +48,7 @@ pub fn Surface(
             "data-transparency": env.resolved.transparency.attribute(),
             "data-motion": env.resolved.motion.slug(),
             "data-material": env.material.slug(),
-            "data-blur": env.blur.slug(),
+            "data-blur": blur_word(env.blur),
             "data-ground": ground.attribute(),
             "data-corner": radius.and_then(Corner::attribute),
             "data-chrome": chrome.and_then(RootChrome::attribute),
@@ -79,7 +80,7 @@ pub(crate) fn ClassedScope(
             "data-transparency": env.resolved.transparency.attribute(),
             "data-motion": env.resolved.motion.slug(),
             "data-material": env.material.slug(),
-            "data-blur": env.blur.slug(),
+            "data-blur": blur_word(env.blur),
             "data-ground": Ground::of(material).attribute(),
             "data-chrome": RootChrome::Transparent.attribute(),
             style: scope_style(env.material, None),
@@ -120,7 +121,7 @@ fn scope(
     material: Material,
     theme: Option<Scheme>,
     accent: Option<Accent>,
-    blur: Option<BlurState>,
+    blur: Option<bool>,
 ) -> Scope {
     Scope {
         scheme: theme.unwrap_or(parent.scheme),

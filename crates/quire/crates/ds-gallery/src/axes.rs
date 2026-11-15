@@ -7,7 +7,6 @@
 
 use crate::page::Page;
 use ds::prelude::*;
-use ds::style::appearance::blur::BlurState;
 use ds::style::space::presets::default_look;
 use ds_settings::AppearanceSettings;
 use std::cell::RefCell;
@@ -52,7 +51,7 @@ pub struct Axes {
     /// The root's material.
     pub material: Material,
     /// Whether the root paints its translucent tint (`data-blur=on`) or the solid one.
-    pub blur: BlurState,
+    pub blur: bool,
     /// The preset the Space started from.
     pub preset: PresetIndex,
     /// The Space the root is drawn with: the preset, as the Space editor has changed it.
@@ -83,7 +82,7 @@ impl Default for Axes {
             accent: settings.accent,
             motion: settings.motion_level,
             material: Material::Window,
-            blur: BlurState::default(),
+            blur: false,
             preset: PresetIndex::default(),
             look: PresetIndex::default().look(),
             showcase: Showcase::Live,

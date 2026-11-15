@@ -22,7 +22,6 @@
 
 use dioxus::prelude::*;
 use ds::prelude::*;
-use ds::style::appearance::blur::BlurState;
 use shell_host::{LockHandle, LockPhase, OutputInfo, use_lock, use_lock_phase, use_modifiers};
 use sill_shell_kit::lock::vocab::CapsLock;
 
@@ -82,7 +81,7 @@ fn Stage(
             system: environment.system,
             material: Material::Window,
             extent: RootExtent::Viewport,
-            blur: BlurState::Unavailable,
+            blur: false,
             surface: root.surface,
             styles: root.styles,
             custom_styles: root.custom_styles,

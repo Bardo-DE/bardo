@@ -10,14 +10,13 @@ use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
 use ds::prelude::*;
 use ds::root::chrome::Ground;
-use ds_style::appearance::blur::BlurState;
 use ds_style::space::presets::PRESETS;
 use ds_style::tokens::shape::Corner;
 
 #[derive(Props, Clone, PartialEq)]
 struct Setup {
     material: Material,
-    blur: BlurState,
+    blur: bool,
     chrome: Option<RootChrome>,
     ground: Option<Ground>,
     surface: Option<Ground>,
@@ -59,7 +58,7 @@ fn render(setup: Setup) -> String {
 fn setup(material: Material) -> Setup {
     Setup {
         material,
-        blur: BlurState::Available,
+        blur: true,
         chrome: None,
         ground: None,
         surface: None,

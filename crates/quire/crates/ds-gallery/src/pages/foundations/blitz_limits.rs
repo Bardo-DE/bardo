@@ -9,7 +9,6 @@ use dioxus::prelude::*;
 use ds::host::measure::use_rect;
 use ds::prelude::*;
 use ds::root::chrome::FrameTint;
-use ds::style::appearance::blur::BlurState;
 use ds::style::icon::render::Glyph;
 use ds_core::text::clip::clip_chars;
 use ds_core::time::clock::sleep;
@@ -192,10 +191,10 @@ fn BlurOff() -> Element {
     rsx! {
         Section { title: "S15: no backdrop blur", note: "Both panels sit over one-pixel stripes. With blur on the stripes show through the tint unblurred (the compositor blurs on the desktop, Blitz cannot); with blur off the solid tint hides them.",
             div { class: "g-wall g-grid2", style: "background-image:url(\"{wallpaper::uri()}\")",
-                for blur in [BlurState::Available, BlurState::Unavailable] {
+                for blur in [true, false] {
                     Scope { scheme, accent, material: Material::Popover, blur, frame: Some(FrameTint::None),
                         div { class: "g-panel",
-                            span { class: "g-name", "data-blur={blur.slug()}" }
+                            span { class: "g-name", "data-blur={ds::style::appearance::blur::blur_word(blur)}" }
                             span { "Popover tint over the wallpaper." }
                         }
                     }

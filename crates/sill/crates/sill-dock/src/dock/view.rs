@@ -15,7 +15,6 @@
 use dioxus::prelude::*;
 use ds::prelude::*;
 use ds::root::chrome::Ground;
-use ds::style::appearance::blur::BlurState;
 use shell_host::OutputInfo;
 use sill_model::desktop::Shown;
 use sill_model::ids::OutputName;
@@ -162,7 +161,7 @@ pub(super) fn dock(output: OutputInfo) -> Element {
                 material: Material::Dock,
                 radius: Some(pill_corner(&tokens)),
                 ground: Some(Ground::Paper),
-                blur: BlurState::Available,
+                blur: true,
                 surface: root.surface,
                 styles: root.styles,
                 custom_styles: root.custom_styles,

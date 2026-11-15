@@ -10,7 +10,7 @@
 use super::SystemPrefs;
 use crate::latest::{self, Receiver, Sender};
 use ds_core::spawner::Spawner;
-use ds_style::appearance::system::{Contrast, ReducedMotion};
+use ds_style::appearance::system::Contrast;
 use ds_style::appearance::theme::Scheme;
 use objc2_core_foundation::{
     CFBoolean, CFNumber, CFPreferencesAppSynchronize, CFPreferencesCopyAppValue, CFPropertyList,
@@ -41,11 +41,7 @@ fn scheme_from_style(style: Option<&str>) -> Scheme {
 fn prefs_from(style: Option<&str>, reduce_motion: bool, increase_contrast: bool) -> SystemPrefs {
     SystemPrefs::default()
         .with_scheme(scheme_from_style(style))
-        .with_motion(if reduce_motion {
-            ReducedMotion::Reduce
-        } else {
-            ReducedMotion::NoPreference
-        })
+        .with_reduced_motion(reduce_motion)
         .with_contrast(if increase_contrast {
             Contrast::High
         } else {
@@ -145,7 +141,7 @@ mod tests {
                 true,
                 true,
                 SystemPrefs::default()
-                    .with_motion(ReducedMotion::Reduce)
+                    .with_reduced_motion(true)
                     .with_contrast(Contrast::High),
             ),
         ];

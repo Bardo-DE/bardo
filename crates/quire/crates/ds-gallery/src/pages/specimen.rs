@@ -5,7 +5,6 @@ use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
 use ds::prelude::*;
 use ds::root::chrome::FrameTint;
-use ds::style::appearance::blur::BlurState;
 
 /// A titled group of specimens, with an optional note under the title.
 #[component]
@@ -63,7 +62,7 @@ pub fn Scope(
     scheme: Scheme,
     accent: Accent,
     material: Material,
-    #[props(default)] blur: BlurState,
+    #[props(default)] blur: bool,
     #[props(default)] frame: Option<FrameTint>,
     children: Element,
 ) -> Element {

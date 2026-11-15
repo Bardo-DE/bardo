@@ -13,7 +13,6 @@ use ds::components::content::level_glyph::vocab::LevelGlyph;
 use ds::components::controls::level_indicator::LevelStyle;
 use ds::components::controls::slider_model::SliderLook;
 use ds::prelude::*;
-use ds::style::appearance::blur::BlurState;
 use ds::style::space::presets::PRESETS;
 use ds_harness::{Clock, Harness, HarnessConfig, Viewport};
 use probe::rect;
@@ -77,7 +76,7 @@ fn Specimen() -> Element {
         Ground::WorkOsd => rsx! {
             Ds { sheet: Some(sill_shell_kit::stylesheet()), appearance, look: work(theme), material: Material::Window,
                 Ds { appearance, look: work(theme), material: Material::Osd, chrome: Some(RootChrome::Transparent),
-                     blur: BlurState::Available, stylesheet: Inject::Host,
+                     blur: true, stylesheet: Inject::Host,
                     Osd { shown: true, label: "Sound", style: LevelStyle::Continuous,
                           level: OsdLevel { value: Fraction(500), glyph: LevelGlyph::Volume(false) } }
                 }

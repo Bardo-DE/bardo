@@ -7,14 +7,13 @@ use crate::support::golden;
 use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
 use ds::prelude::*;
-use ds_style::appearance::blur::BlurState;
 use ds_style::tokens::shape::{Corner, Radius};
 
 #[derive(Props, Clone, PartialEq)]
 struct Setup {
     theme: Option<Scheme>,
     accent: Option<Accent>,
-    blur: Option<BlurState>,
+    blur: Option<bool>,
     radius: Option<Corner>,
 }
 
@@ -22,9 +21,10 @@ struct Setup {
 #[component]
 fn Reads() -> Element {
     let env = use_scope();
+    let blur = if env.blur { "on" } else { "off" };
     rsx! {
         p {
-            "{env.scheme.slug()} {env.resolved.accent.slug()} {env.material.slug()} {env.blur.slug()}"
+            "{env.scheme.slug()} {env.resolved.accent.slug()} {env.material.slug()} {blur}"
         }
     }
 }
@@ -35,7 +35,7 @@ fn Root(setup: Setup) -> Element {
         Ds {
             appearance: Appearance { accent: Accent::Blue, ..Appearance::default() },
             material: Material::Popover,
-            blur: BlurState::Unavailable,
+            blur: false,
             Surface {
                 material: Material::Sheet,
                 theme: setup.theme,
@@ -91,7 +91,7 @@ fn each_override_is_stamped_and_read() {
             Setup {
                 theme: None,
                 accent: None,
-                blur: Some(BlurState::Available),
+                blur: Some(true),
                 radius: None,
             },
             "light blue sheet on",
@@ -101,7 +101,7 @@ fn each_override_is_stamped_and_read() {
             Setup {
                 theme: Some(Scheme::Dark),
                 accent: Some(Accent::Purple),
-                blur: Some(BlurState::Available),
+                blur: Some(true),
                 radius: None,
             },
             "dark purple sheet on",

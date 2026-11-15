@@ -7,7 +7,6 @@
 use dioxus::prelude::*;
 use ds::host::measure::Anchor;
 use ds::prelude::*;
-use ds::style::appearance::blur::BlurState;
 
 use super::frame::PopupFrame;
 use super::look::{PopupLook, PopupRoom};
@@ -35,7 +34,7 @@ pub fn MenuPopup<Model: MenuModel>(
                 appearance: look.appearance,
                 system: look.system,
                 material: Material::Popover,
-                blur: BlurState::Unavailable,
+                blur: false,
                 surface: root.surface,
                 styles: root.styles,
                 custom_styles: root.custom_styles,

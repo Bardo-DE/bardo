@@ -10,7 +10,6 @@ use ds::components::content::avatar::{AvatarSize, AvatarTone};
 use ds::components::controls::button_model::{Bezel, ImagePosition};
 use ds::components::controls::chip::{Chip, ChipVariant};
 use ds::prelude::*;
-use ds::style::appearance::blur::BlurState;
 use ds::style::icon::render::Glyph;
 use ds::style::material::recipe::DEFAULT_TINT_ALPHA;
 use ds::style::tokens::control_size::ControlSize;
@@ -62,7 +61,7 @@ fn Chrome(material: Material) -> Element {
                         Panel { material }
                     }
                 } else {
-                    for blur in [BlurState::Available, BlurState::Unavailable] {
+                    for blur in [true, false] {
                         Scope { scheme, accent, material, blur,
                             Panel { material }
                         }
@@ -91,8 +90,8 @@ fn Panel(material: Material) -> Element {
     let blur = use_scope().blur;
     let state = match (material, blur) {
         (Material::Window, _) => "no blur, ever",
-        (_, BlurState::Available) => "data-blur=on",
-        (_, BlurState::Unavailable) => "data-blur=off",
+        (_, true) => "data-blur=on",
+        (_, false) => "data-blur=off",
     };
     match material {
         Material::Bar => rsx! {

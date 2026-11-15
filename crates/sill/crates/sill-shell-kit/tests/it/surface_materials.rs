@@ -15,7 +15,6 @@ use ds::components::menus::palette::palette_group::PaletteRow;
 use ds::host::measure::Anchor;
 use ds::prelude::*;
 use ds::root::common::Common;
-use ds::style::appearance::blur::BlurState;
 use ds::style::icon::family::PlateFamily;
 use ds::style::tokens::shape::Corner;
 use ds::style::tokens::shell_type::ShellType;
@@ -298,7 +297,7 @@ fn DockPill() -> Element {
                 Ds { sheet: Some(sill_shell_kit::stylesheet()),
                     appearance: Appearance::default(),
                     material: Material::Dock,
-                    blur: BlurState::Available,
+                    blur: true,
                     radius: Some(Corner::Squircle(Px(18.0))),
                     div { style: "width:300px; height:60px" }
                 }
@@ -354,7 +353,7 @@ fn Launcher() -> Element {
         }],
     )];
     rsx! {
-        Ds { sheet: Some(sill_shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Sheet, blur: BlurState::Available,
+        Ds { sheet: Some(sill_shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Sheet, blur: true,
             div { class: "panel", style: "width:600px; height:400px",
                 CommandPalette::<u8> {
                     label: "Launch".to_owned(),

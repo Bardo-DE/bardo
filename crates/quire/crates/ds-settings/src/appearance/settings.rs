@@ -5,7 +5,7 @@
 
 use crate::region::RegionSettings;
 use crate::schema::{Page, Provided};
-use ds_core::word::Word;
+pub use ds_style::icon::retint::IconStyle;
 use ds_style::appearance::accent::Accent;
 use ds_style::appearance::appearance::Appearance;
 use ds_style::appearance::motion::Motion;
@@ -113,20 +113,6 @@ impl AppearanceSettings {
             transparency: self.transparency,
         }
     }
-}
-
-/// Which dialect our app icons are drawn in (`icons.style`, design/08-ICONS.md section 2.10).
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]
-#[serde(rename_all = "snake_case")]
-#[word(case = snake)]
-pub enum IconStyle {
-    /// Each app in the dialect its icon was designed in.
-    #[default]
-    Colour,
-    /// The same icons with their colour held further down (a lower chroma cap).
-    Muted,
-    /// Every icon in one hue, tone on tone; third-party icons desaturated and re-tinted to match.
-    Monochrome,
 }
 
 /// `icons.*`: how our app icons are drawn (design/08-ICONS.md section 2.10).

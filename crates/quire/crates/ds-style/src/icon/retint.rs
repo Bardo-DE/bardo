@@ -24,9 +24,14 @@ use crate::appearance::theme::Scheme;
 use crate::space::palette::{Dot, derive};
 use ds_core::colour::oklab::{Oklab, Oklch};
 use ds_core::colour::srgb::{LinearRgb, Srgb};
+use ds_core::word::Word;
 
-/// The style an app icon is drawn in: `icons.style`, which `sill` maps onto this.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+/// Which dialect our app icons are drawn in (`icons.style`, design/08-ICONS.md section 2.10).
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Hash, Default, serde::Serialize, serde::Deserialize, Word,
+)]
+#[serde(rename_all = "snake_case")]
+#[word(case = snake)]
 pub enum IconStyle {
     /// Each app as designed; third-party icons as they come.
     #[default]

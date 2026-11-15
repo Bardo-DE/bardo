@@ -6,7 +6,7 @@ use crate::appearance::{
     accent::Accent,
     appearance::Appearance,
     motion::{Motion, MotionLevel},
-    system::{Contrast, ReducedMotion, SystemPrefs},
+    system::{Contrast, SystemPrefs},
     theme::{Scheme, Theme},
     transparency::Transparency,
 };
@@ -51,9 +51,9 @@ pub fn resolve(app: Appearance, look_theme: Theme, system: SystemPrefs) -> Resol
     let scheme = explicit(look_theme)
         .or_else(|| explicit(app.theme))
         .unwrap_or(system.scheme);
-    let motion = match (app.motion, system.motion) {
-        (Motion::Reduced, _) | (Motion::Standard, ReducedMotion::Reduce) => MotionLevel::Reduced,
-        (Motion::Standard, ReducedMotion::NoPreference) => MotionLevel::Standard,
+    let motion = match (app.motion, system.reduced_motion) {
+        (Motion::Reduced, _) | (Motion::Standard, true) => MotionLevel::Reduced,
+        (Motion::Standard, false) => MotionLevel::Standard,
     };
     Resolved {
         scheme,
@@ -80,31 +80,32 @@ mod tests {
         accent::Accent,
         appearance::Appearance,
         motion::{Motion, MotionLevel},
-        system::{Contrast, ReducedMotion, SystemPrefs},
+        system::{Contrast, SystemPrefs},
         theme::{Scheme, Theme},
         transparency::Transparency,
     };
 
-    const fn prefs(scheme: Scheme, motion: ReducedMotion) -> SystemPrefs {
+    const fn prefs(scheme: Scheme, reduced_motion: bool) -> SystemPrefs {
         SystemPrefs {
             scheme,
-            motion,
+            reduced_motion,
             contrast: Contrast::Normal,
         }
     }
 
     #[test]
     fn the_space_then_the_app_then_the_desktop_decide() {
-        use ReducedMotion::{NoPreference, Reduce};
+        const NO_PREFERENCE: bool = false;
+        const REDUCE: bool = true;
         #[rustfmt::skip]
         const CASES: &[(&str, Theme, Motion, Theme, SystemPrefs, Scheme, MotionLevel)] = &[
-            ("all follow: desktop dark", Theme::System, Motion::Standard, Theme::System, prefs(Scheme::Dark, NoPreference), Scheme::Dark, MotionLevel::Standard),
-            ("app light over a dark desktop", Theme::Light, Motion::Standard, Theme::System, prefs(Scheme::Dark, NoPreference), Scheme::Light, MotionLevel::Standard),
-            ("space dark over an app light", Theme::Light, Motion::Standard, Theme::Dark, prefs(Scheme::Light, NoPreference), Scheme::Dark, MotionLevel::Standard),
-            ("space light over a dark desktop", Theme::System, Motion::Standard, Theme::Light, prefs(Scheme::Dark, Reduce), Scheme::Light, MotionLevel::Reduced),
-            ("standard under the desktop's reduce", Theme::System, Motion::Standard, Theme::System, prefs(Scheme::Light, Reduce), Scheme::Light, MotionLevel::Reduced),
-            ("explicit reduced over a desktop with no preference", Theme::Dark, Motion::Reduced, Theme::System, prefs(Scheme::Light, NoPreference), Scheme::Dark, MotionLevel::Reduced),
-            ("explicit reduced under reduce", Theme::System, Motion::Reduced, Theme::System, prefs(Scheme::Light, Reduce), Scheme::Light, MotionLevel::Reduced),
+            ("all follow: desktop dark", Theme::System, Motion::Standard, Theme::System, prefs(Scheme::Dark, NO_PREFERENCE), Scheme::Dark, MotionLevel::Standard),
+            ("app light over a dark desktop", Theme::Light, Motion::Standard, Theme::System, prefs(Scheme::Dark, NO_PREFERENCE), Scheme::Light, MotionLevel::Standard),
+            ("space dark over an app light", Theme::Light, Motion::Standard, Theme::Dark, prefs(Scheme::Light, NO_PREFERENCE), Scheme::Dark, MotionLevel::Standard),
+            ("space light over a dark desktop", Theme::System, Motion::Standard, Theme::Light, prefs(Scheme::Dark, REDUCE), Scheme::Light, MotionLevel::Reduced),
+            ("standard under the desktop's reduce", Theme::System, Motion::Standard, Theme::System, prefs(Scheme::Light, REDUCE), Scheme::Light, MotionLevel::Reduced),
+            ("explicit reduced over a desktop with no preference", Theme::Dark, Motion::Reduced, Theme::System, prefs(Scheme::Light, NO_PREFERENCE), Scheme::Dark, MotionLevel::Reduced),
+            ("explicit reduced under reduce", Theme::System, Motion::Reduced, Theme::System, prefs(Scheme::Light, REDUCE), Scheme::Light, MotionLevel::Reduced),
         ];
         for &(name, theme, motion, look, system, scheme, level) in CASES {
             let app = Appearance {

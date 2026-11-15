@@ -497,13 +497,12 @@ fn RootApp() -> Element {
 /// Section 4, `Surface`.
 #[component]
 fn Nested() -> Element {
-    use ds::style::appearance::blur::BlurState;
 
     rsx! {
         Surface { material: Material::Popover, theme: Some(Scheme::Dark),
             YourPage {}
         }
-        Surface { material: Material::Widget, accent: Some(Accent::Green), blur: Some(BlurState::Unavailable),
+        Surface { material: Material::Widget, accent: Some(Accent::Green), blur: Some(false),
             YourPage {}
         }
     }

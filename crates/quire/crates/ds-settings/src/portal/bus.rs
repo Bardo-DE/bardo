@@ -39,7 +39,7 @@ fn prefs_from_namespace(namespace: &HashMap<String, OwnedValue>) -> SystemPrefs 
                 .map(scheme_from_portal)
                 .unwrap_or_default(),
         )
-        .with_motion(
+        .with_reduced_motion(
             namespace
                 .get(KEY_REDUCED_MOTION)
                 .and_then(as_u32)
@@ -71,7 +71,7 @@ fn apply_setting_changed(
     };
     match key {
         KEY_COLOR_SCHEME => prefs.with_scheme(scheme_from_portal(raw)),
-        KEY_REDUCED_MOTION => prefs.with_motion(reduced_motion_from_portal(raw)),
+        KEY_REDUCED_MOTION => prefs.with_reduced_motion(reduced_motion_from_portal(raw)),
         KEY_CONTRAST => prefs.with_contrast(contrast_from_portal(raw)),
         _ => prefs,
     }
@@ -176,7 +176,7 @@ pub(super) async fn start(spawn: &dyn Spawner) -> Receiver<SystemPrefs> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ds_style::appearance::system::{Contrast, ReducedMotion};
+    use ds_style::appearance::system::Contrast;
     use ds_style::appearance::theme::Scheme;
 
     fn namespace(entries: &[(&str, u32)]) -> HashMap<String, OwnedValue> {
@@ -199,7 +199,7 @@ mod tests {
                 namespace(&[("color-scheme", 1), ("reduced-motion", 1), ("contrast", 1)]),
                 SystemPrefs::default()
                     .with_scheme(Scheme::Dark)
-                    .with_motion(ReducedMotion::Reduce)
+                    .with_reduced_motion(true)
                     .with_contrast(Contrast::High),
             ),
             (
@@ -207,7 +207,7 @@ mod tests {
                 namespace(&[("color-scheme", 1)]),
                 SystemPrefs::default()
                     .with_scheme(Scheme::Dark)
-                    .with_motion(ReducedMotion::NoPreference)
+                    .with_reduced_motion(false)
                     .with_contrast(Contrast::Normal),
             ),
             (
@@ -215,7 +215,7 @@ mod tests {
                 namespace(&[("accent-color", 1), ("contrast", 1)]),
                 SystemPrefs::default()
                     .with_scheme(Scheme::Light)
-                    .with_motion(ReducedMotion::NoPreference)
+                    .with_reduced_motion(false)
                     .with_contrast(Contrast::High),
             ),
         ];

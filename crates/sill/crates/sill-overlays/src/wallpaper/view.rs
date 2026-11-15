@@ -3,7 +3,6 @@
 
 use dioxus::prelude::*;
 use ds::prelude::*;
-use ds::style::appearance::blur::BlurState;
 use shell_host::OutputInfo;
 use sill_model::ids::OutputName;
 
@@ -38,7 +37,7 @@ pub(super) fn wallpaper(output: OutputInfo) -> Element {
             system: environment.system,
             material: Material::Widget,
             extent: RootExtent::Viewport,
-            blur: BlurState::Unavailable,
+            blur: false,
             surface: root.surface,
             styles: root.styles,
             custom_styles: root.custom_styles,

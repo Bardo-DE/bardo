@@ -10,7 +10,6 @@
 use crate::latest::{self, Receiver};
 use ds_core::spawner::Spawner;
 use ds_style::appearance::system::Contrast;
-use ds_style::appearance::system::ReducedMotion;
 use ds_style::appearance::system::SystemPrefs;
 use ds_style::appearance::theme::Scheme;
 
@@ -38,11 +37,8 @@ pub fn scheme_from_portal(value: u32) -> Scheme {
 }
 
 /// `reduced-motion`: 0 no preference, 1 reduce.
-pub fn reduced_motion_from_portal(value: u32) -> ReducedMotion {
-    match value {
-        1 => ReducedMotion::Reduce,
-        _ => ReducedMotion::NoPreference,
-    }
+pub fn reduced_motion_from_portal(value: u32) -> bool {
+    value == 1
 }
 
 /// `contrast`: 0 no preference, 1 higher contrast.
@@ -112,7 +108,6 @@ mod tests {
 
     use super::SystemPrefsSource;
     use ds_style::appearance::system::Contrast;
-    use ds_style::appearance::system::ReducedMotion;
     use ds_style::appearance::system::SystemPrefs;
     use ds_style::appearance::theme::Scheme;
 
@@ -131,11 +126,7 @@ mod tests {
 
     #[test]
     fn the_reduced_motion_table_matches_the_portal_spec() {
-        const CASES: &[(u32, ReducedMotion)] = &[
-            (0, ReducedMotion::NoPreference),
-            (1, ReducedMotion::Reduce),
-            (7, ReducedMotion::NoPreference),
-        ];
+        const CASES: &[(u32, bool)] = &[(0, false), (1, true), (7, false)];
         for &(value, want) in CASES {
             assert_eq!(
                 reduced_motion_from_portal(value),
@@ -161,7 +152,7 @@ mod tests {
     async fn a_fixed_source_answers_its_own_preferences_and_never_touches_the_bus() {
         let fixed = SystemPrefs::default()
             .with_scheme(Scheme::Dark)
-            .with_motion(ReducedMotion::Reduce)
+            .with_reduced_motion(true)
             .with_contrast(Contrast::High);
         assert_eq!(SystemPrefsSource::Fixed(fixed).read().await, fixed);
     }

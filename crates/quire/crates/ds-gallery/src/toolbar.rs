@@ -9,7 +9,6 @@ use dioxus::prelude::*;
 use ds::components::controls::segmented::Tracking;
 use ds::components::menus::pop_up_button::{PopUpButton, PopUpKind};
 use ds::prelude::*;
-use ds::style::appearance::blur::BlurState;
 use ds::style::tokens::control_size::ControlSize;
 
 /// The toolbar.
@@ -43,10 +42,7 @@ pub fn Toolbar() -> Element {
     let presets = PresetIndex::all()
         .map(|preset| (preset, preset.label()))
         .collect::<Vec<_>>();
-    let blur = match now.blur {
-        BlurState::Available => Check::On,
-        BlurState::Unavailable => Check::Off,
-    };
+    let blur = if now.blur { Check::On } else { Check::Off };
     rsx! {
         div { class: "g-toolbar",
             Tool { name: "Theme",
@@ -76,10 +72,7 @@ pub fn Toolbar() -> Element {
                 Toggle {
                     label: "Compositor blur (data-blur)",
                     value: blur,
-                    onchange: move |next| axes.with_mut(|axes| axes.blur = match next {
-                        Check::On => BlurState::Available,
-                        Check::Off | Check::Mixed => BlurState::Unavailable,
-                    }),
+                    onchange: move |next| axes.with_mut(|axes| axes.blur = next == Check::On),
                 }
             }
             Tool { name: "Space",

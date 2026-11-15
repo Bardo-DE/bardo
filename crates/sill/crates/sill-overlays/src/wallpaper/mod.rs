@@ -7,7 +7,7 @@
 //! one wrong choice regardless — its own frame paints the Space's gradient
 //! (`--m-tint-solid:var(--f-grad)`, `materials_css.rs`), which is exactly the per-workspace tint
 //! design/21 §8 says the wallpaper must not have. `Material::Widget` is used instead (closest
-//! in kind: a background-level surface, not a bar/menu/sheet one) with `BlurState::Unavailable`
+//! in kind: a background-level surface, not a bar/menu/sheet one) with `false`
 //! (design's "blur none"): its own paper tint never shows, since the two image layers (or, with
 //! no source, `.sill-wallpaper`'s own `--paper`) cover the root completely. A quire gap: no
 //! material variant paints nothing at all.

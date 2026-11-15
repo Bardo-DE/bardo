@@ -1,7 +1,7 @@
 //! What every component under a `Ds` can read: the resolved appearance, the material and the
 //! blur state of the scope it is in.
 
-use crate::appearance::{blur::BlurState, material::Material};
+use crate::appearance::material::Material;
 use crate::appearance::{resolve::Resolved, theme::Scheme};
 use dioxus::prelude::*;
 
@@ -15,7 +15,7 @@ pub struct Scope {
     /// The nearest material.
     pub material: Material,
     /// Whether the compositor blurs behind this surface.
-    pub blur: BlurState,
+    pub blur: bool,
     /// Whether the person last drove the surface with the keyboard (focus rings show); `false`
     /// after a pointer.
     pub modality: bool,

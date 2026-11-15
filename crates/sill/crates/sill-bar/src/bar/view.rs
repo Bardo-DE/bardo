@@ -5,7 +5,6 @@
 
 use dioxus::prelude::*;
 use ds::prelude::*;
-use ds::style::appearance::blur::BlurState;
 use shell_host::OutputInfo;
 
 use super::app_name::AppName;
@@ -85,7 +84,7 @@ pub(super) fn bar(output: OutputInfo) -> Element {
             system: popup_look.system,
             look,
             material: Material::Bar,
-            blur: BlurState::Available,
+            blur: true,
             surface: root.surface,
             styles: root.styles,
             custom_styles: root.custom_styles,
