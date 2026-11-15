@@ -17,7 +17,6 @@ tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-m
 
 [dev-dependencies]
 porter-core = {path = "../porter-core"}
-test-kit = {path = "../test-kit"}
 porter-fake-servers = {path = "../porter-fake-servers"}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 

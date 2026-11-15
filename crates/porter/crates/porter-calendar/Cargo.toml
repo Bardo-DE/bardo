@@ -26,7 +26,6 @@ eds = ["dep:zbus"]
 base64 = {version = "0.22"}
 porter-fake-servers = {path = "../porter-fake-servers"}
 porter-http-relay = {path = "../porter-http-relay"}
-test-kit = {path = "../test-kit"}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints.rust]

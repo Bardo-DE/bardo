@@ -22,7 +22,6 @@ zeroize = {version = "1"}
 [dev-dependencies]
 porter-match = {path = "../porter-match"}
 porter-capability = {path = "../porter-capability", features = ["testing"]}
-test-kit = {path = "../test-kit"}
 
 [lints.rust]
 unsafe_code = "deny"

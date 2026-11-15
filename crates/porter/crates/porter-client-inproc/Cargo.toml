@@ -27,7 +27,6 @@ porter-proxy = {path = "../porter-proxy", optional = true, features = ["io", "tl
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"], optional = true}
 
 [dev-dependencies]
-test-kit = {path = "../test-kit"}
 porter-fake = {path = "../porter-fake"}
 porter-fake-servers = {path = "../porter-fake-servers"}
 porter-families = {path = "../porter-families"}

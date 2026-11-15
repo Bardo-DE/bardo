@@ -19,7 +19,6 @@ thiserror = {version = "2"}
 toml = {version = "1"}
 
 [dev-dependencies]
-test-kit = {path = "../test-kit"}
 
 [lints.rust]
 unsafe_code = "deny"

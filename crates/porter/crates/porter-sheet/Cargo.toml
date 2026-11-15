@@ -20,7 +20,6 @@ thiserror = {version = "2"}
 [dev-dependencies]
 proptest = {version = "1"}
 serde_json = {version = "1"}
-test-kit = {path = "../test-kit"}
 
 [lints.rust]
 unsafe_code = "deny"

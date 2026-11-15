@@ -18,7 +18,6 @@ thiserror = {version = "2"}
 
 [dev-dependencies]
 porter-ids = {path = "../porter-ids"}
-test-kit = {path = "../test-kit"}
 
 [lints.rust]
 unsafe_code = "deny"
