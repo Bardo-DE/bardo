@@ -3350,6 +3350,7 @@ dependencies = [
  "model-replay",
  "model-wire",
  "proptest",
+ "serde",
  "serde_json",
  "vision-prep",
 ]
@@ -9469,6 +9470,7 @@ dependencies = [
  "cua-action",
  "genai-names",
  "iso_currency",
+ "model-http",
  "model-provider",
  "proptest",
  "rust_decimal",
@@ -11478,7 +11480,10 @@ version = "0.1.0"
 dependencies = [
  "base64 0.22.1",
  "cua-action",
+ "cua-parse",
+ "cua-session",
  "iso_currency",
+ "model-catalog",
  "model-provider",
  "porter-capability",
  "porter-core",
@@ -11493,6 +11498,7 @@ dependencies = [
  "test-kit",
  "thiserror 2.0.21",
  "tokio",
+ "vision-prep",
 ]
 
 [[package]]
