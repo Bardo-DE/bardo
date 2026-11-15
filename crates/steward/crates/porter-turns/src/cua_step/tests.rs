@@ -196,7 +196,7 @@ async fn the_request_is_set_from_the_catalog_entry() {
     let sent = &provider.requests()[0];
     let scratch = Scratch::new("cua-settings");
     let model = cua_model(&scratch);
-    let entry = model.entry.sampling.expect("sampling");
+    let entry = model.sampling().expect("sampling");
     assert_eq!(
         sent.sampling, entry.reasoning_off,
         "greedy: the same screen, the same click"
@@ -214,8 +214,8 @@ async fn the_request_is_set_from_the_catalog_entry() {
 async fn a_model_trained_to_think_before_it_acts_is_run_with_its_reasoning() {
     let scratch = Scratch::new("cua-think");
     let mut model = cua_model(&scratch);
-    let caps = model.entry.caps.as_mut().expect("caps");
-    let CuaSupport::Dialect { profile, .. } = &mut caps.computer_use else {
+    let Some(CuaSupport::Dialect { profile, .. }) = &mut model.entry.capabilities.actions_out
+    else {
         panic!("the fixture has a dialect");
     };
     profile.answer = cua_action::AnswerShape::ThinkActionCall;
@@ -232,7 +232,7 @@ async fn a_model_trained_to_think_before_it_acts_is_run_with_its_reasoning() {
     )
     .await;
     let sent = &provider.requests()[0];
-    let entry = model.entry.sampling.expect("sampling");
+    let entry = model.sampling().expect("sampling");
     assert_eq!(sent.reasoning, model_provider::Reasoning::EngineDefault);
     assert_eq!(
         sent.sampling,
@@ -347,12 +347,12 @@ fn a_session_opens_for_a_tool_or_text_dialect_and_for_nothing_else() {
         open(&models[0], &begin(), Tokens(u32::MAX)).is_none(),
         "a chat model has no dialect"
     );
-    models[2].entry.caps.as_mut().expect("caps").computer_use = CuaSupport::Dialect {
+    models[2].entry.capabilities.actions_out = Some(CuaSupport::Dialect {
         dialect: CuaDialect::Wire(cua_action::WireDialect::OpenAiComputer),
         batching: Batching::One,
         zoom: model_provider::Zoom::Absent,
         profile: cua_action::ActionProfile::default(),
-    };
+    });
     assert!(open(&models[2], &begin(), Tokens(u32::MAX)).is_none());
 }
 

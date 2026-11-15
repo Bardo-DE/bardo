@@ -13,7 +13,7 @@ use crate::attached::{Attached, AttachedEntry, AttachedError, Target};
 use crate::catalog::claims_of;
 use engine_spec::{ENGINES, EnginePaths, ProgramPath, engine};
 use engine_supervisor::{EngineSpec, EnvPair, SocketPath, UnitSpec, command};
-use model_catalog::{EngineKind, EngineProfile, ModelEntry};
+use model_catalog::{EngineKind, EngineProfile, ModelEntry, SamplingDefaults};
 use model_http::{AuthHeader, HostName, HttpEndpoint, HttpTarget, Port, Proxy, Timeouts, UrlPath};
 use model_openai_compat::Flavor;
 use model_provider::{Caps, EmbedCaps, ModelName, Tokens};
@@ -187,14 +187,19 @@ impl LocalModel {
         }
     }
 
-    /// The chat capabilities of the entry (sampling defaults, context, images, dialect).
-    pub fn caps(&self) -> Option<&Caps> {
-        self.entry.caps.as_ref()
+    /// The chat capabilities of the entry (context, images, dialect).
+    pub fn caps(&self) -> Option<Caps> {
+        self.entry.capabilities.chat_caps()
+    }
+
+    /// The entry's default sampling, when it is a chat model.
+    pub fn sampling(&self) -> Option<SamplingDefaults> {
+        self.entry.capabilities.sampling()
     }
 
     /// The embedding capabilities of the entry (width, limits, prefixes), when it embeds.
     pub fn embed(&self) -> Option<&EmbedCaps> {
-        self.entry.embed.as_ref()
+        self.entry.capabilities.vector_out.as_ref()
     }
 }
 
@@ -300,7 +305,7 @@ fn one(entry: &ModelEntry, engines: &EngineConfig, sockets: &Path) -> Option<Loc
         engines,
     );
     // An embedding-only entry has no chat context: its longest input is what the cache holds.
-    let context = match (&entry.caps, &entry.embed) {
+    let context = match (entry.capabilities.chat_caps(), &entry.capabilities.vector_out) {
         (Some(caps), _) => caps.context,
         (None, Some(embed)) => embed.max_input,
         (None, None) => Tokens::default(),

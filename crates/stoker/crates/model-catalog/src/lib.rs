@@ -25,7 +25,6 @@ mod modality;
 mod parse;
 mod reach;
 mod slot;
-mod view;
 
 pub use capabilities::{Capabilities, DetailTable, Side, TextOut};
 pub use engine::{
@@ -33,7 +32,7 @@ pub use engine::{
     ServedName, Serving, WeightFiles,
 };
 pub use entry::{
-    CatalogId, CatalogKind, ColdStartEstimateS, Family, GitRevision, GpuNeed, HfRepo, Licence,
+    CatalogId, ColdStartEstimateS, Family, GitRevision, GpuNeed, HfRepo, Licence,
     Locality, MiB, ModelEntry, ProviderId, Reach, ReasoningDefault, RemoteModelId,
     SamplingDefaults, Spdx, VramEstimate, WeightSource, Wire,
 };

@@ -29,22 +29,14 @@ family = "replay"
 cold_start_estimate_s = 0
 source = {{ kind = "hugging_face", v = {{ repo = "replay/{name}", revision = "0000000000000000000000000000000000000000" }} }}
 vram = {{ weights_mib = 0, kv_per_1k_ctx_mib = 0, overhead_mib = 0 }}
-roles = ["llm"]
 inputs = ["text"]
-tools = "server_parsed"
-output = ["json_schema"]
-reasoning = "absent"
-streaming = "present"
-context = {}
-max_output = 4096
-{SAMPLING}
-images = {{ per_prompt = 1, rule = {{ kind = "identity" }}, space = {{ kind = "image" }} }}
-computer_use = {{ kind = "absent" }}
+outputs = ["text"]
+text_out = {{ tools = "server_parsed", structured = ["json_schema"], reasoning = "absent", streaming = "present", context = {}, max_output = 4096, {SAMPLING} }}
 
 [[engine]]
 kind = "llama_server"
 args = []
-weights = {{ kind = "gguf", v = {{ model = "replay.gguf", mmproj = "" }} }}
+weights = {{ kind = "gguf", v = {{ model = "replay.gguf" }} }}
 "#,
         context.0
     )

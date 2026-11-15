@@ -1,10 +1,7 @@
 //! One model's entry.
 
-use std::collections::BTreeSet;
-
-use model_provider::{Caps, EmbedCaps, Reasoning, Sampling, Tokens};
+use model_provider::{Reasoning, Sampling, Tokens};
 use serde::{Deserialize, Serialize};
-use speech_provider::{SpeechCaps, SpeechDir};
 
 use crate::{Capabilities, EngineProfile, Serving};
 
@@ -154,39 +151,6 @@ impl VramEstimate {
     }
 }
 
-/// The kinds of AI work a model is offered for. Deprecated: use `Slot` (the slots are derived from
-/// capabilities; this set is derived the same way). The catalog's own copy of porter's `AiKind`
-/// (stoker does not depend on porter); inferd's bridge maps one to the other, and the two
-/// slugs are the same.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum CatalogKind {
-    Llm,
-    ComputerUse,
-    Embeddings,
-    /// Speech to text (porter's `AiKind` splits the old `Speech` row the same way).
-    SpeechIn,
-    /// Text to speech.
-    SpeechOut,
-    ImageGen,
-    Rerank,
-}
-
-impl CatalogKind {
-    /// The direction of a speech role; `None` for every chat-side role.
-    pub fn speech_dir(self) -> Option<SpeechDir> {
-        match self {
-            CatalogKind::SpeechIn => Some(SpeechDir::In),
-            CatalogKind::SpeechOut => Some(SpeechDir::Out),
-            CatalogKind::Llm
-            | CatalogKind::ComputerUse
-            | CatalogKind::Embeddings
-            | CatalogKind::ImageGen
-            | CatalogKind::Rerank => None,
-        }
-    }
-}
-
 /// A model's default sampling, one set per reasoning mode: Qwen-family models want different
 /// temperatures with thinking on and off. Written in full in every chat entry; a request carries
 /// the values it uses, taken from here when the caller has no opinion.
@@ -228,12 +192,6 @@ impl SamplingDefaults {
 ///
 /// `capabilities` is the truth: what the model takes in and gives out, with a detail table for
 /// each declared modality. The slots a person picks from are derived from it (`slot_members`).
-///
-/// `roles`, `caps`, `sampling`, `speech` and `embed` are the older view that porter's inferd still
-/// reads; they are derived from `capabilities` when the file is read (`parse_entry`), never
-/// declared beside it. Deprecated: use `Slot`. They go once porter reads slots. `caps` exists when
-/// a chat role does (`llm`, `computer_use`), `speech` is the audio table (in preferred), `embed`
-/// the vector table.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ModelEntry {
     pub id: CatalogId,
@@ -249,15 +207,5 @@ pub struct ModelEntry {
     /// Who starts the engine; `Launched` unless the file says `serving`.
     pub serving: Serving,
     pub capabilities: Capabilities,
-    /// Deprecated: use `Slot`.
-    pub roles: BTreeSet<CatalogKind>,
-    /// Deprecated: use `capabilities`.
-    pub caps: Option<Caps>,
-    /// Deprecated: use `capabilities.text_out`.
-    pub sampling: Option<SamplingDefaults>,
-    /// Deprecated: use `capabilities.audio_in` and `audio_out`.
-    pub speech: Option<SpeechCaps>,
-    /// Deprecated: use `capabilities.vector_out`.
-    pub embed: Option<EmbedCaps>,
     pub engines: Vec<EngineProfile>,
 }

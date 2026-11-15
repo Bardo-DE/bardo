@@ -13,17 +13,10 @@ family = "test"
 cold_start_estimate_s = 0
 source = {{ kind = "hugging_face", v = {{ repo = "test/tiny-chat", revision = "0000000000000000000000000000000000000001" }} }}
 vram = {{ weights_mib = 100, kv_per_1k_ctx_mib = 1, overhead_mib = 50 }}
-roles = ["llm"]
 inputs = ["text", "image"]
-tools = "server_parsed"
-output = ["json_schema"]
-reasoning = "absent"
-streaming = "present"
-context = 8192
-max_output = 1024
-{SAMPLING}
-images = {{ per_prompt = 1, rule = {{ kind = "identity" }}, space = {{ kind = "image" }} }}
-computer_use = {{ kind = "absent" }}
+outputs = ["text"]
+text_out = {{ tools = "server_parsed", structured = ["json_schema"], reasoning = "absent", streaming = "present", context = 8192, max_output = 1024, {SAMPLING} }}
+image_in = {{ per_prompt = 1, rule = {{ kind = "identity" }}, space = {{ kind = "image" }} }}
 
 [[engine]]
 kind = "llama_server"
@@ -33,7 +26,7 @@ weights = {{ kind = "gguf", v = {{ model = "m.gguf", mmproj = "p.gguf" }} }}
     )
 }
 
-/// An embedding-only entry: the `embed` table is all it needs (no chat fields).
+/// An embedding-only entry: the `vector_out` table is all it needs (no chat fields).
 pub fn embed() -> String {
     r#"id = "tiny-embed"
 label = "Tiny embedder"
@@ -42,8 +35,9 @@ family = "test"
 cold_start_estimate_s = 0
 source = { kind = "hugging_face", v = { repo = "test/tiny-embed", revision = "0000000000000000000000000000000000000002" } }
 vram = { weights_mib = 50, kv_per_1k_ctx_mib = 1, overhead_mib = 50 }
-roles = ["embeddings"]
-embed = { dims = 4, max_batch = 2, max_input = 512, prompts = { query = "search_query: ", document = "search_document: " } }
+inputs = ["text"]
+outputs = ["vector"]
+vector_out = { dims = 4, max_batch = 2, max_input = 512, prompts = { query = "search_query: ", document = "search_document: " } }
 
 [[engine]]
 kind = "llama_server"
@@ -62,17 +56,11 @@ family = "test"
 cold_start_estimate_s = 0
 source = {{ kind = "hugging_face", v = {{ repo = "test/tiny-cua", revision = "0000000000000000000000000000000000000003" }} }}
 vram = {{ weights_mib = 100, kv_per_1k_ctx_mib = 1, overhead_mib = 50 }}
-roles = ["llm", "computer_use"]
 inputs = ["text", "image"]
-tools = "server_parsed"
-output = ["json_schema"]
-reasoning = "absent"
-streaming = "present"
-context = 8192
-max_output = 1024
-{SAMPLING}
-images = {{ per_prompt = 3, rule = {{ kind = "smart_resize", v = {{ factor = 32, min_pixels = 65536, max_pixels = 1048576 }} }}, space = {{ kind = "grid", v = 1000 }} }}
-computer_use = {{ kind = "dialect", v = {{ dialect = {{ kind = "tool", v = "holo31" }}, batching = "one", zoom = "absent" }} }}
+outputs = ["text", "actions"]
+text_out = {{ tools = "server_parsed", structured = ["json_schema"], reasoning = "absent", streaming = "present", context = 8192, max_output = 1024, {SAMPLING} }}
+image_in = {{ per_prompt = 3, rule = {{ kind = "smart_resize", v = {{ factor = 32, min_pixels = 65536, max_pixels = 1048576 }} }}, space = {{ kind = "grid", v = 1000 }} }}
+actions_out = {{ kind = "dialect", v = {{ dialect = {{ kind = "tool", v = "holo31" }}, batching = "one", zoom = "absent" }} }}
 
 [[engine]]
 kind = "vllm"

@@ -10,7 +10,7 @@ use model_provider::Tokens;
 use support::*;
 
 #[test]
-fn a_multimodal_entry_parses_and_derives_the_older_view() {
+fn a_multimodal_entry_parses() {
     let entry = parse_entry(&multimodal("mm", ENGINE)).unwrap();
     let caps = &entry.capabilities;
     assert_eq!(
@@ -20,11 +20,7 @@ fn a_multimodal_entry_parses_and_derives_the_older_view() {
     assert_eq!(caps.outputs, [Modality::Text].into());
     assert!(caps.audio_in.is_some() && caps.image_in.is_some() && caps.text_out.is_some());
     assert!(caps.audio_out.is_none() && caps.vector_out.is_none() && caps.actions_out.is_none());
-    // The older view: a chat model that also hears.
-    use model_catalog::CatalogKind::{Llm, SpeechIn};
-    assert_eq!(entry.roles, [Llm, SpeechIn].into());
-    assert!(entry.caps.is_some() && entry.sampling.is_some() && entry.speech.is_some());
-    assert_eq!(entry.embed, None);
+    assert!(caps.chat_caps().is_some() && caps.sampling().is_some());
 }
 
 #[test]
@@ -230,8 +226,7 @@ fn computer_use_output_needs_text_and_image_input() {
         ENGINE,
     );
     let entry = parse_entry(&fine).unwrap();
-    use model_catalog::CatalogKind::{ComputerUse, Llm};
-    assert_eq!(entry.roles, [Llm, ComputerUse].into());
+    assert!(entry.capabilities.chat_caps().is_some());
 }
 
 #[test]

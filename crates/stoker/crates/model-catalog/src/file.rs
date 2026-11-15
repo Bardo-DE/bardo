@@ -5,7 +5,6 @@ use model_provider::{CuaSupport, EmbedCaps, ImageLimits};
 use serde::{Deserialize, Serialize, Serializer};
 use speech_provider::SpeechCaps;
 
-use crate::view::derive;
 use crate::{
     Capabilities, CatalogId, ColdStartEstimateS, EngineProfile, Family, Licence, Locality,
     Modalities, ModelEntry, Serving, TextOut, VramEstimate, WeightSource,
@@ -60,10 +59,9 @@ impl EntryFile {
         }
     }
 
-    /// The entry, with the older fields derived from its capabilities.
+    /// The entry.
     pub fn into_entry(self) -> ModelEntry {
         let capabilities = self.capabilities();
-        let view = derive(&capabilities);
         ModelEntry {
             id: self.id,
             label: self.label,
@@ -75,11 +73,6 @@ impl EntryFile {
             locality: self.locality,
             serving: self.serving,
             capabilities,
-            roles: view.roles,
-            caps: view.caps,
-            sampling: view.sampling,
-            speech: view.speech,
-            embed: view.embed,
             engines: self.engines,
         }
     }

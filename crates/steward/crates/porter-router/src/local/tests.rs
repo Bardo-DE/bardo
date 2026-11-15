@@ -28,13 +28,13 @@ fn each_entry_with_a_capability_and_a_configured_engine_becomes_a_model() {
 }
 
 #[test]
-fn an_embedding_model_carries_its_catalog_table_and_without_one_it_is_not_a_model() {
+fn an_embedding_model_carries_its_catalog_table() {
     let scratch = Scratch::new("local-embed");
     let models = models(&scratch);
     assert_eq!(
         models[1].embed().map(|embed| embed.dims.0),
         Some(4),
-        "read from the entry's `embed` table"
+        "read from the entry's `vector_out` table"
     );
     assert_eq!(
         models[1].caps(),
@@ -43,19 +43,6 @@ fn an_embedding_model_carries_its_catalog_table_and_without_one_it_is_not_a_mode
     );
     // The cache of an embedding-only entry is sized for its longest input (512 tokens).
     assert_eq!(models[1].spec.need.0, 50 + 1 + 50);
-    let config = EngineConfig {
-        llama_server: Some(PathBuf::from("/x")),
-        hf_cache: scratch.path().join("hf"),
-        ..EngineConfig::default()
-    };
-    // The same entry without its table, kept as an embeddings role with chat fields, makes no
-    // claim and so no model.
-    let chat_fields = parse_entry_text(
-        &entries::chat().replace(r#"roles = ["llm"]"#, r#"roles = ["embeddings"]"#),
-    )
-    .expect("entry");
-    assert!(chat_fields.embed.is_none());
-    assert!(build(&[chat_fields], &config, scratch.path()).is_empty());
 }
 
 #[test]

@@ -3,15 +3,14 @@
 //! (`Discovery::Supervised`). The parsing and the merge are stoker's `model-catalog`; this module
 //! reads the directories and maps an entry's capabilities to porter's vocabulary.
 //!
-//! An entry with the `embeddings` role makes a claim when it has the `embed` table
-//! (`ModelEntry.embed`: the vector length, the batch and input limits, the query and document
-//! prefixes); without the table it makes none. inferd keeps no override of its own: the catalog is
+//! An entry that gives vectors makes a claim from its `vector_out` table (the vector length, the
+//! batch and input limits, the query and document prefixes). inferd keeps no override of its own: the catalog is
 //! the one place a model's details are written, and a user who needs other prefixes writes a
 //! catalog file of the same id in `$XDG_DATA_HOME/stoker/catalog`.
 
 use cua_action::CuaDialect;
 use engine_spec::{SpecError, check_entry, engine};
-use model_catalog::{CatalogError, CatalogKind, ModelEntry, merge_catalogs, parse_entry};
+use model_catalog::{CatalogError, Modality as CatalogModality, ModelEntry, merge_catalogs, parse_entry};
 use model_provider::{
     Caps, Constraint, CuaSupport, EmbedCaps, InputKind, Support, ToolSupport, Zoom,
 };
@@ -142,22 +141,35 @@ pub fn claims_of(entry: &ModelEntry) -> Vec<Claim> {
         .collect()
 }
 
-/// What the entry's roles make of it, in role order.
+/// What the entry's capabilities make of it: a language model, a computer-use model, an
+/// embedding model, a speech model. A model with both audio tables keeps the transcription
+/// side only (its slots say the rest).
 pub fn capabilities_of(entry: &ModelEntry) -> Vec<Capability> {
-    entry
-        .roles
-        .iter()
-        .filter_map(|role| match (role, &entry.caps) {
-            (CatalogKind::Llm, Some(caps)) => Some(Capability::Llm(llm_cap(caps, entry))),
-            (CatalogKind::ComputerUse, Some(caps)) => cua_cap(caps).map(Capability::ComputerUse),
-            (CatalogKind::Embeddings, _) => entry
-                .embed
-                .as_ref()
-                .map(|embed| Capability::Embeddings(embed_cap(embed))),
-            (CatalogKind::SpeechIn | CatalogKind::SpeechOut, _) => speech_cap(entry),
-            _ => None,
-        })
-        .collect()
+    let c = &entry.capabilities;
+    let takes = |modality| c.inputs.contains(modality);
+    let gives = |modality| c.outputs.contains(modality);
+    let chat = c.chat_caps();
+    let mut offered = Vec::new();
+    if let Some(caps) = &chat {
+        if takes(CatalogModality::Text) && gives(CatalogModality::Text) {
+            offered.push(Capability::Llm(llm_cap(caps, entry)));
+        }
+        if takes(CatalogModality::Image) && gives(CatalogModality::Actions) {
+            offered.extend(cua_cap(caps).map(Capability::ComputerUse));
+        }
+    }
+    if takes(CatalogModality::Text) && gives(CatalogModality::Vector) {
+        offered.extend(c.vector_out.as_ref().map(|embed| Capability::Embeddings(embed_cap(embed))));
+    }
+    let speech_in = takes(CatalogModality::Audio) && gives(CatalogModality::Text) && c.audio_in.is_some();
+    let speech_out = takes(CatalogModality::Text)
+        && gives(CatalogModality::Audio)
+        && c.audio_out.is_some()
+        && c.audio_in.is_none();
+    if speech_in || speech_out {
+        offered.extend(speech_cap(entry));
+    }
+    offered
 }
 
 fn llm_cap(caps: &Caps, entry: &ModelEntry) -> LlmCap {
@@ -230,7 +242,8 @@ fn longest_side(rule: &ResizeRule) -> u32 {
 }
 
 fn speech_cap(entry: &ModelEntry) -> Option<Capability> {
-    let speech = entry.speech.as_ref()?;
+    let c = &entry.capabilities;
+    let speech = c.audio_in.as_ref().or(c.audio_out.as_ref())?;
     let mode = match speech.dir() {
         SpeechDir::In => SpeechMode::Stt,
         SpeechDir::Out => SpeechMode::Tts,

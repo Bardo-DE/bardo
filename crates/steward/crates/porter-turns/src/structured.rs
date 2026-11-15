@@ -80,7 +80,7 @@ pub fn shaping(model: &LocalModel, request: &pi::ChatRequest, limits: Limits) ->
     else {
         return Shaping::Unchecked;
     };
-    let mode = choose(caps, &shape, ToolsPresent::No, flavor.shape_with_tools());
+    let mode = choose(&caps, &shape, ToolsPresent::No, flavor.shape_with_tools());
     Shaping::Checked(Box::new(Checked {
         session: ShapedSession::new(shape, mode, limits.repairs),
         kind,

@@ -1,5 +1,5 @@
 //! The vocabulary of the rows: slugs, the classes, slots and tiers they range over, and the
-//! `ai.model.<slot>.<tier>` paths (the old `<kind>` segments still read).
+//! `ai.model.<slot>.<tier>` paths.
 
 use porter_capability::Tier;
 use porter_core::DataClass;

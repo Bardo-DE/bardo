@@ -87,7 +87,7 @@ pub fn open(model: &LocalModel, begin: &CuaBegin, ceiling: Tokens) -> Option<Cua
         _ => Reasoning::Off,
     };
     let settings = TurnSettings {
-        sampling: *model.entry.sampling?.for_reasoning(reasoning),
+        sampling: *model.sampling()?.for_reasoning(reasoning),
         limits: Limits {
             max_output: caps.max_output.min(ceiling),
             stop: Vec::new(),

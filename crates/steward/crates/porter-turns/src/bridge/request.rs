@@ -14,7 +14,7 @@ use porter_router::local::LocalModel;
 pub fn local_target(model: &LocalModel) -> Target {
     Target {
         name: model.name.clone(),
-        sampling: DefaultSampling::Entry(model.entry.sampling),
+        sampling: DefaultSampling::Entry(model.sampling()),
         max_output: model.caps().map(|caps| caps.max_output).unwrap_or_default(),
         flavor: model.flavor,
         json: model

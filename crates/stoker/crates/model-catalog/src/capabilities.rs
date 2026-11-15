@@ -4,7 +4,8 @@
 use std::collections::BTreeSet;
 
 use model_provider::{
-    Constraint, CuaSupport, EmbedCaps, ImageLimits, Support, Tokens, ToolSupport,
+    Caps, Constraint, CuaSupport, EmbedCaps, ImageCount, ImageLimits, InputKind, ModelSpace,
+    ResizeRule, Support, Tokens, ToolSupport,
 };
 use serde::{Deserialize, Serialize};
 use speech_provider::SpeechCaps;
@@ -95,7 +96,44 @@ pub struct Capabilities {
     pub actions_out: Option<CuaSupport>,
 }
 
+/// What a model without an image input reports as its image limits: no images, no resizing.
+const NO_IMAGES: ImageLimits = ImageLimits {
+    per_prompt: ImageCount(0),
+    rule: ResizeRule::Identity,
+    space: ModelSpace::Image,
+};
+
 impl Capabilities {
+    /// The chat side as a provider's `Caps`: what a turn on this model may carry and ask. `None`
+    /// when the model has no text output table.
+    pub fn chat_caps(&self) -> Option<Caps> {
+        let text = self.text_out.as_ref()?;
+        let inputs = [
+            (Modality::Text, InputKind::Text),
+            (Modality::Image, InputKind::Image),
+        ]
+        .into_iter()
+        .filter(|(modality, _)| self.inputs.contains(*modality))
+        .map(|(_, kind)| kind)
+        .collect();
+        Some(Caps {
+            inputs,
+            tools: text.tools,
+            output: text.structured.clone(),
+            reasoning: text.reasoning,
+            streaming: text.streaming,
+            images: self.image_in.unwrap_or(NO_IMAGES),
+            context: text.context,
+            max_output: text.max_output,
+            computer_use: self.actions_out.unwrap_or(CuaSupport::Absent),
+        })
+    }
+
+    /// The model's default sampling, when it has a chat side.
+    pub fn sampling(&self) -> Option<SamplingDefaults> {
+        self.text_out.as_ref().and_then(|text| text.sampling)
+    }
+
     /// Whether the table of `table` is written.
     pub fn has_table(&self, table: DetailTable) -> bool {
         match table {

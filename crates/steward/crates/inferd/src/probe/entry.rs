@@ -26,18 +26,14 @@ fn quoted(text: &str) -> String {
     serde_json::to_string(text).unwrap_or_else(|_| "\"\"".to_owned())
 }
 
-/// What the probe read of a model's chat side, as the catalog's fields.
-fn chat_fields(cap: &LlmCap) -> String {
+/// What the probe read of a model's chat side, as the catalog's tables.
+fn chat_tables(cap: &LlmCap) -> String {
     let has = |feature| cap.features.contains(&feature);
-    let inputs = match has(LlmFeature::Vision) {
-        true => r#"["text", "image"]"#,
-        false => r#"["text"]"#,
-    };
     let tools = match has(LlmFeature::Tools) {
         true => "server_parsed",
         false => "absent",
     };
-    let output = match has(LlmFeature::StructuredOutput) {
+    let structured = match has(LlmFeature::StructuredOutput) {
         true => r#"["json_schema"]"#,
         false => "[]",
     };
@@ -45,25 +41,23 @@ fn chat_fields(cap: &LlmCap) -> String {
         true => "present",
         false => "absent",
     };
-    format!(
-        r#"inputs = {inputs}
-tools = "{tools}"
-output = {output}
-reasoning = "{reasoning}"
-streaming = "present"
-context = {}
-max_output = {}
-{SAMPLING}
-images = {{ per_prompt = 1, rule = {{ kind = "identity" }}, space = {{ kind = "image" }} }}
-computer_use = {{ kind = "absent" }}
+    let mut tables = format!(
+        r#"text_out = {{ tools = "{tools}", structured = {structured}, reasoning = "{reasoning}", streaming = "present", context = {}, max_output = {}, {SAMPLING} }}
 "#,
         cap.context.0, cap.max_output.0
-    )
+    );
+    if has(LlmFeature::Vision) {
+        tables.push_str(
+            r#"image_in = { per_prompt = 1, rule = { kind = "identity" }, space = { kind = "image" } }
+"#,
+        );
+    }
+    tables
 }
 
-fn embed_fields(cap: &EmbedCap) -> String {
+fn embed_table(cap: &EmbedCap) -> String {
     format!(
-        "embed = {{ dims = {}, max_batch = {}, max_input = {}, prompts = {{ query = {}, document = {} }} }}\n",
+        "vector_out = {{ dims = {}, max_batch = {}, max_input = {}, prompts = {{ query = {}, document = {} }} }}\n",
         cap.dims.0,
         cap.max_batch.0.max(1),
         cap.max_input.0,
@@ -74,7 +68,13 @@ fn embed_fields(cap: &EmbedCap) -> String {
 
 /// The catalog text of a probed model.
 fn entry_text(model: &Probed, llm: Option<&LlmCap>, embed: Option<&EmbedCap>) -> String {
-    let roles: Vec<&str> = [llm.map(|_| "\"llm\""), embed.map(|_| "\"embeddings\"")]
+    let sees = llm.is_some_and(|cap| cap.features.contains(&LlmFeature::Vision));
+    let inputs = if sees {
+        r#"["text", "image"]"#
+    } else {
+        r#"["text"]"#
+    };
+    let outputs: Vec<&str> = [llm.map(|_| "\"text\""), embed.map(|_| "\"vector\"")]
         .into_iter()
         .flatten()
         .collect();
@@ -86,17 +86,18 @@ family = "probed"
 cold_start_estimate_s = 0
 source = {{ kind = "hugging_face", v = {{ repo = "probed/{}", revision = "0000000000000000000000000000000000000000" }} }}
 vram = {{ weights_mib = 0, kv_per_1k_ctx_mib = 0, overhead_mib = 0 }}
-roles = [{}]
+inputs = {inputs}
+outputs = [{}]
 "#,
         quoted(model.id.as_str()),
         quoted(&model.name),
         model.id.as_str(),
-        roles.join(", "),
+        outputs.join(", "),
     );
-    text.push_str(&llm.map(chat_fields).unwrap_or_default());
-    text.push_str(&embed.map(embed_fields).unwrap_or_default());
+    text.push_str(&llm.map(chat_tables).unwrap_or_default());
+    text.push_str(&embed.map(embed_table).unwrap_or_default());
     text.push_str(
-        "\n[[engine]]\nkind = \"llama_server\"\nargs = []\nweights = { kind = \"gguf\", v = { model = \"probed.gguf\", mmproj = \"\" } }\n",
+        "\n[[engine]]\nkind = \"llama_server\"\nargs = []\nweights = { kind = \"gguf\", v = { model = \"probed.gguf\" } }\n",
     );
     text
 }
