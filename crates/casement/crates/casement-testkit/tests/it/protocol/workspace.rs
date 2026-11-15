@@ -9,7 +9,7 @@ use casement_core::Event;
 use casement_core::policy::ConnectionRole;
 use casement_core::privilege::{UnixSeconds, Verdict};
 use casement_protocols::vocab::{Answer, Power};
-use casement_testclient::manage::workspace::{Shown, WorkspaceWatch};
+use casement_testclient::manage::workspace::WorkspaceWatch;
 use casement_testkit::fakes::MemorySpaceStore;
 use casement_testkit::{ASKED_PROGRAM, ClientId, Fixture, FixtureSpec};
 
@@ -58,7 +58,7 @@ fn the_workspace_id_is_the_minted_space_id() {
     assert_eq!(groups[0].capabilities, 1, "workspaces can be created");
     let workspaces = watch.workspaces();
     assert_eq!(workspaces[0].group, Some(0));
-    assert_eq!(workspaces[0].shown, Shown::Yes, "the output shows it");
+    assert!(workspaces[0].active, "the output shows it");
     assert_eq!(workspaces[0].name, "Desktop 1");
     assert_eq!(workspaces[0].coordinates, [0]);
     assert!(watch.dones() >= 1);
@@ -135,17 +135,16 @@ fn requests_reach_the_model() {
         "activated"
     );
     let seen = watch.workspaces();
-    assert_eq!(seen[0].shown, Shown::No);
-    assert_eq!(seen[1].shown, Shown::Yes);
+    assert!(!seen[0].active);
+    assert!(seen[1].active);
 
     watch.remove(1).expect("request");
     watch.commit().expect("commit");
     settle(&mut fixture, &mut watch);
     assert_eq!(row(&fixture), 1, "removed");
     assert_eq!(watch.workspaces().len(), 1);
-    assert_eq!(
-        watch.workspaces()[0].shown,
-        Shown::Yes,
+    assert!(
+        watch.workspaces()[0].active,
         "the neighbour is shown again"
     );
 }

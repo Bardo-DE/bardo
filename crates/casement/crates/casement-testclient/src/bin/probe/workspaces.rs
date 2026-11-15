@@ -4,7 +4,7 @@
 
 use crate::Failure;
 use casement_testclient::TestClient;
-use casement_testclient::manage::workspace::{Shown, WorkspaceSeen, WorkspaceWatch};
+use casement_testclient::manage::workspace::{WorkspaceSeen, WorkspaceWatch};
 use serde_json::{Value, json};
 use std::time::Duration;
 
@@ -41,7 +41,7 @@ fn line(workspace: &WorkspaceSeen) -> Value {
         "id": workspace.id,
         "name": workspace.name,
         "group": workspace.group,
-        "active": workspace.shown == Shown::Yes,
+        "active": workspace.active,
     })
 }
 
@@ -56,7 +56,7 @@ mod tests {
                 WorkspaceSeen {
                     id: Some("abc".to_owned()),
                     name: "Main".to_owned(),
-                    shown: Shown::Yes,
+                    active: true,
                     group: Some(0),
                     ..WorkspaceSeen::default()
                 },

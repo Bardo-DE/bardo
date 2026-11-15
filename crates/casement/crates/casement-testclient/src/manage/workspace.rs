@@ -15,16 +15,6 @@ use wayland_protocols::ext::workspace::v1::client::{
     ext_workspace_manager_v1::{self, ExtWorkspaceManagerV1},
 };
 
-/// Whether a workspace is the one its group shows.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum Shown {
-    /// Not active.
-    #[default]
-    No,
-    /// The `active` state bit is set.
-    Yes,
-}
-
 /// One workspace as announced.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct WorkspaceSeen {
@@ -34,8 +24,8 @@ pub struct WorkspaceSeen {
     pub name: String,
     /// The `coordinates` event, as unsigned words.
     pub coordinates: Vec<u32>,
-    /// The `state` event's active bit.
-    pub shown: Shown,
+    /// The `state` event's active bit: whether its group shows it.
+    pub active: bool,
     /// The `capabilities` event's bits (1 activate, 2 deactivate, 4 remove, 8 assign).
     pub capabilities: u32,
     /// The index (in [`WorkspaceWatch::groups`]) of the group it is in.
@@ -335,10 +325,7 @@ impl Dispatch<ExtWorkspaceHandleV1, ()> for Roster {
                     WEnum::Value(bits) => bits.contains(State::Active),
                     WEnum::Unknown(raw) => raw & State::Active.bits() != 0,
                 };
-                space.seen.shown = match active {
-                    true => Shown::Yes,
-                    false => Shown::No,
-                };
+                space.seen.active = active;
             }
             ext_workspace_handle_v1::Event::Capabilities { capabilities } => {
                 space.seen.capabilities = match capabilities {
