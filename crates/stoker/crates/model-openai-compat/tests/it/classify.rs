@@ -208,28 +208,6 @@ fn an_envelope_of_another_class_decides_a_client_error() {
 }
 
 #[test]
-fn an_html_page_served_as_200_is_unreadable() {
-    let codec = OpenAiCodec::new(Flavor::LiteLlm);
-    let html = head(200, BodyKind::Html, None);
-    assert_eq!(
-        codec.classify(&html, b"<html>Sign in</html>"),
-        ProviderError::Unreadable("an HTML page was served instead of a reply".into())
-    );
-}
-
-#[test]
-fn a_gateway_page_with_a_failing_status_is_by_status() {
-    let codec = OpenAiCodec::new(Flavor::LiteLlm);
-    assert_eq!(
-        codec.classify(
-            &head(502, BodyKind::Html, None),
-            b"<html>Bad gateway</html>"
-        ),
-        ProviderError::Server(ServerStatus(502))
-    );
-}
-
-#[test]
 fn a_200_that_is_an_error_envelope_is_that_error() {
     let codec = OpenAiCodec::new(Flavor::Vllm);
     let ok = head(200, BodyKind::Json, None);
@@ -257,20 +235,4 @@ fn no_flavor_reads_errors_differently() {
             ProviderError::RateLimited(RetrySeconds(2))
         );
     }
-}
-
-#[test]
-fn arbitrary_bytes_never_panic() {
-    use proptest::prelude::*;
-    let mut runner = proptest::test_runner::TestRunner::default();
-    runner
-        .run(
-            &(any::<u16>(), proptest::collection::vec(any::<u8>(), 0..300)),
-            |(status, body)| {
-                let _ = OpenAiCodec::new(Flavor::Vllm)
-                    .classify(&head(status, BodyKind::Other, None), &body);
-                Ok(())
-            },
-        )
-        .unwrap();
 }

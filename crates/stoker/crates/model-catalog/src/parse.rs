@@ -1,8 +1,7 @@
 //! Reading catalog files.
 
-use crate::CatalogKind;
 use crate::file::EntryFile;
-use crate::{DetailTable, Locality, Modality, ModelEntry, Serving, check, legacy};
+use crate::{DetailTable, Locality, Modality, ModelEntry, Serving, check};
 
 /// Why a catalog file was refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -21,24 +20,10 @@ pub enum CatalogError {
     OutputExceedsModelMax,
     #[error("the entry's minimum context is larger than the model's maximum")]
     MinimumExceedsModelMax,
-    #[error("the entry lists no role")]
-    NoRoles,
-    #[error("the entry lists both speech_in and speech_out; a speech table has one direction")]
-    BothSpeechDirections,
-    #[error("a speech role needs the `speech` table")]
-    SpeechRoleWithoutSpeechTable,
-    #[error("the `speech` table needs a speech_in or speech_out role")]
-    SpeechTableWithoutSpeechRole,
-    #[error("role {role:?} does not match the direction of the `speech` table")]
-    SpeechDirectionMismatch { role: CatalogKind },
-    #[error("the entry has chat capability fields but no chat role")]
-    ChatFieldsWithoutChatRole,
     #[error("a chat role needs the `sampling` table")]
     ChatRoleWithoutSampling,
     #[error("the `sampling` table needs a chat role")]
     SamplingWithoutChatRole,
-    #[error("the `embed` table needs the embeddings role")]
-    EmbedTableWithoutEmbeddingsRole,
     #[error("a remote entry runs on the providers and lists no engine")]
     RemoteWithEngines,
     #[error("a remote entry lists no way to reach it")]
@@ -78,20 +63,8 @@ pub enum CatalogError {
 /// Beyond the file format: the declared inputs and outputs and the detail tables agree (see
 /// `check::capabilities`) and an engine's subset stays inside its model's sets. What an entry
 /// needs of its engines (a GPU estimate, weights the engine reads) is `engine_spec::check_entry`,
-/// which the caller runs next. A file with a `roles` key is in the older shape and is read by
-/// `legacy`.
+/// which the caller runs next.
 pub fn parse_entry(text: &str) -> Result<ModelEntry, CatalogError> {
-    let table: toml::Table = text
-        .parse()
-        .map_err(|e: toml::de::Error| CatalogError::Toml(e.to_string()))?;
-    let entry = match table.contains_key("roles") {
-        true => legacy::parse(text)?,
-        false => parse_new(text)?,
-    };
-    Ok(entry)
-}
-
-fn parse_new(text: &str) -> Result<ModelEntry, CatalogError> {
     let file: EntryFile = toml::from_str(text).map_err(|e| CatalogError::Toml(e.to_string()))?;
     match (&file.serving, &file.locality, file.engines.is_empty()) {
         (Serving::Attached(_), Locality::Remote { .. }, _) => {

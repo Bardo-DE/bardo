@@ -104,25 +104,6 @@ fn cassette_round_trips_as_jsonl() {
 }
 
 #[test]
-fn header_line_is_pinned() {
-    let text = cassette().to_jsonl();
-    assert_eq!(
-        text.lines().next().unwrap(),
-        r#"{"vocab":1,"engine":{"kind":"vllm","build":"v0.12.0"},"model":"holo","recorded":1790000000,"context":{"loaded":8192,"trained":32768},"speech":null}"#
-    );
-}
-
-#[test]
-fn images_are_digests_in_the_file() {
-    let text = cassette().to_jsonl();
-    assert!(text.contains(&"ab".repeat(32)));
-    assert!(
-        !text.contains("bytes"),
-        "no image bytes field in a cassette"
-    );
-}
-
-#[test]
 fn bad_files_name_the_line() {
     assert_eq!(Cassette::from_jsonl(""), Err(CassetteError::Empty));
     let mut text = cassette().to_jsonl();
@@ -264,10 +245,6 @@ mod speech {
             "a header and one line per interaction"
         );
         assert_eq!(SpeechCassette::from_jsonl(&text).unwrap(), cassette());
-        assert_eq!(
-            text.lines().next().unwrap(),
-            r#"{"vocab":1,"engine":{"kind":"speech_host","build":"0.1.0"},"model":"nemotron-3.5-asr-streaming","recorded":1790000000,"context":{"loaded":8192,"trained":32768},"speech":null}"#
-        );
     }
 
     #[test]

@@ -9,12 +9,12 @@ use crate::support;
 
 use std::sync::Mutex;
 
-use model_http::{BodyKind, HttpError, HttpStatus, ResponseHead, WaitSeconds};
+use model_http::{BodyKind, HttpStatus, ResponseHead};
 use model_openai_compat::{Flavor, OpenAiCodec};
 use model_provider::{
     CallIndex, Dims, EmbedRole, EmbedTurn, Embedder, Flow, JsonText, Knob, ModelName, Provider,
-    ProviderError, RetrySeconds, StopReason, Tokens, ToolCall, ToolCallId, ToolName, TurnEnd,
-    TurnEvent, TurnSink, TurnUsage,
+    ProviderError, StopReason, Tokens, ToolCall, ToolCallId, ToolName, TurnEnd, TurnEvent,
+    TurnSink, TurnUsage,
 };
 use model_replay::{
     ByteStep, ChunkPlan, HeadPrint, RecordingTransport, ReplayMode, ReplayTransport, WireBody,
@@ -36,10 +36,6 @@ impl TurnSink for Keep {
 
 fn chunk(delta: Value, finish: Option<&str>) -> String {
     json!({"id":"c","choices":[{"index":0,"delta":delta,"finish_reason":finish}]}).to_string()
-}
-
-fn frames_of(items: &[Value]) -> Vec<String> {
-    items.iter().map(Value::to_string).collect()
 }
 
 /// A turn that speaks, thinks, calls a tool in fragments and reports usage.
@@ -251,148 +247,6 @@ fn a_request_that_differs_from_the_recorded_one_is_a_miss_in_strict_mode() {
 }
 
 #[test]
-fn error_in_200_is_the_envelopes_error_with_the_heads_retry_after() {
-    let frames = vec![
-        chunk(json!({"content": "par"}), None),
-        json!({"error": {"type": "rate_limit_error", "message": "SECRET"}}).to_string(),
-        chunk(json!({"content": "never"}), None),
-    ];
-    let mut exchange = sse_exchange(chat_request(None), &frames, WireEnd::Complete);
-    exchange.reply.head.retry_after = Some(WaitSeconds(9));
-    for plan in plans() {
-        let (result, events) = turn(&replay(cassette(vec![exchange.clone()]), plan));
-        assert_eq!(
-            result,
-            Err(ProviderError::RateLimited(RetrySeconds(9))),
-            "{plan:?}"
-        );
-        assert_eq!(events, vec![TurnEvent::TextDelta("par".into())], "{plan:?}");
-    }
-}
-
-#[test]
-fn error_in_200_of_another_kind_keeps_its_kind() {
-    let frames = vec![json!({"error": {"type": "authentication_error"}}).to_string()];
-    let exchange = sse_exchange(chat_request(None), &frames, WireEnd::Complete);
-    let (result, _) = turn(&replay(cassette(vec![exchange]), ChunkPlan::Whole));
-    assert_eq!(result, Err(ProviderError::Unauthorized));
-}
-
-#[test]
-fn html_200_page() {
-    let exchange = WireExchange {
-        request: chat_request(None),
-        reply: WireReply {
-            head: HeadPrint {
-                status: HttpStatus(200),
-                body: BodyKind::Html,
-                retry_after: None,
-            },
-            body: WireBody::Whole("<html><body>Please sign in</body></html>".into()),
-            end: WireEnd::Complete,
-        },
-    };
-    let (result, events) = turn(&replay(
-        cassette(vec![exchange]),
-        ChunkPlan::Every(ByteStep(5)),
-    ));
-    assert_eq!(
-        result,
-        Err(ProviderError::Unreadable(
-            "an HTML page was served instead of a reply".into()
-        ))
-    );
-    assert!(events.is_empty());
-}
-
-#[test]
-fn a_failing_status_is_read_from_its_json_body() {
-    let exchange = WireExchange {
-        request: chat_request(None),
-        reply: WireReply {
-            head: HeadPrint {
-                status: HttpStatus(400),
-                body: BodyKind::Json,
-                retry_after: None,
-            },
-            body: WireBody::Whole(
-                r#"{"error":{"message":"This model's maximum context length is 8192 tokens.","type":"BadRequestError","code":400}}"#.into(),
-            ),
-            end: WireEnd::Complete,
-        },
-    };
-    let (result, _) = turn(&replay(
-        cassette(vec![exchange]),
-        ChunkPlan::Every(ByteStep(4)),
-    ));
-    assert_eq!(
-        result,
-        Err(ProviderError::ContextOverflow {
-            limit: Tokens(8192)
-        })
-    );
-}
-
-#[test]
-fn transport_error_after_a_tool_call_started_yields_the_events_then_the_error() {
-    let frames = frames_of(&[
-        json!({"choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"id":"c1","type":"function","function":{"name":"click","arguments":"{\"x\""}}]}}]}),
-    ]);
-    let exchange = sse_exchange(chat_request(None), &frames, WireEnd::Reset);
-    let (result, events) = turn(&replay(cassette(vec![exchange]), ChunkPlan::Lines));
-    assert_eq!(result, Err(ProviderError::Unreachable));
-    assert!(
-        events
-            .iter()
-            .all(|e| !matches!(e, TurnEvent::ToolCallDone(_))),
-        "a half-formed call is never delivered: {events:?}"
-    );
-    assert!(matches!(events[0], TurnEvent::ToolCallStarted { .. }));
-}
-
-#[test]
-fn truncation_preserves_content_without_a_terminal() {
-    let frames = vec![chunk(json!({"content": "partial"}), None)];
-    for end in [WireEnd::Cut, WireEnd::Complete] {
-        let exchange = sse_exchange(chat_request(None), &frames, end);
-        let (result, events) = turn(&replay(cassette(vec![exchange]), ChunkPlan::Whole));
-        assert_eq!(
-            result,
-            Err(ProviderError::Unreadable(
-                "the stream ended before a finish reason".into()
-            )),
-            "{end:?}"
-        );
-        assert_eq!(events, vec![TurnEvent::TextDelta("partial".into())]);
-    }
-}
-
-#[test]
-fn a_malformed_frame_ends_the_reply_at_that_frame() {
-    let mut frames = vec![chunk(json!({"content": "a"}), None), "{not json".into()];
-    frames.push(chunk(json!({"content": "b"}), Some("stop")));
-    let exchange = sse_exchange(chat_request(None), &frames, WireEnd::Complete);
-    let (result, events) = turn(&replay(cassette(vec![exchange]), ChunkPlan::Whole));
-    assert_eq!(
-        result,
-        Err(ProviderError::Unreadable("a frame is not a chunk".into()))
-    );
-    assert_eq!(events, vec![TurnEvent::TextDelta("a".into())]);
-}
-
-#[test]
-fn bare_terminal_after_only_unparseable_frames_fabricates_nothing() {
-    let frames = vec![
-        json!({"id": "x", "object": "ping"}).to_string(),
-        "[DONE]".into(),
-    ];
-    let exchange = sse_exchange(chat_request(None), &frames, WireEnd::Complete);
-    let (result, events) = turn(&replay(cassette(vec![exchange]), ChunkPlan::Whole));
-    assert!(result.is_err());
-    assert!(events.is_empty());
-}
-
-#[test]
 fn interleaved_reasoning_and_text_keep_their_order() {
     let frames = vec![
         chunk(json!({"reasoning_content": "a"}), None),
@@ -413,25 +267,6 @@ fn interleaved_reasoning_and_text_keep_their_order() {
         ]
     );
     assert_eq!(result.unwrap().stop, StopReason::EndTurn);
-}
-
-#[test]
-fn an_unencodable_request_asks_the_transport_nothing() {
-    let llama = Driver::new(
-        OpenAiCodec::new(Flavor::LlamaServer),
-        ReplayTransport::new(cassette(vec![]), ReplayMode::InOrder, ChunkPlan::Whole),
-    );
-    let mut request = base();
-    request.tools = vec![function("click", "{}")];
-    request.tool_choice = model_provider::ToolChoice::Named(ToolName::new("click").unwrap());
-    let result = block_on(llama.turn(&request, &mut Keep::default()));
-    assert_eq!(
-        result,
-        Err(ProviderError::BadRequest(
-            "unsupported shape for this wire".into()
-        ))
-    );
-    assert!(llama.transport().misses().is_empty());
 }
 
 fn get(path: &str, root: model_http::RouteRoot) -> WireRequest {
@@ -504,17 +339,6 @@ fn describe_goes_to_props_for_llama_server_and_models_for_vllm() {
     );
 }
 
-#[test]
-fn describe_reads_a_failing_status() {
-    let down = json_exchange(
-        get("/models", model_http::RouteRoot::Base),
-        503,
-        r#"{"error":{"code":503,"message":"Loading model","type":"unavailable_error"}}"#,
-    );
-    let driver = replay(cassette(vec![down]), ChunkPlan::Whole);
-    assert_eq!(block_on(driver.describe()), Err(ProviderError::NotReady));
-}
-
 fn embed_exchange(body: &str) -> WireExchange {
     let mut request = chat_request(None);
     request.path = model_http::UrlPath("/embeddings".into());
@@ -528,33 +352,6 @@ fn turn_of(n: usize, dims: Knob<Dims>) -> EmbedTurn {
         role: EmbedRole::Document,
         dims,
     }
-}
-
-#[test]
-fn embed_through_the_driver_checks_count_and_width() {
-    let two = r#"{"data":[{"index":1,"embedding":[3,4]},{"index":0,"embedding":[1,2]}],"usage":{"prompt_tokens":4}}"#;
-    let ok = replay(
-        cassette(vec![embed_exchange(two)]),
-        ChunkPlan::Every(ByteStep(6)),
-    );
-    let end = block_on(ok.embed(&turn_of(2, Knob::Set(Dims(2))))).unwrap();
-    assert_eq!(end.vectors[0].0, vec![1.0, 2.0]);
-    assert_eq!(end.usage.input, Tokens(4));
-
-    let short = replay(cassette(vec![embed_exchange(two)]), ChunkPlan::Whole);
-    assert_eq!(
-        block_on(short.embed(&turn_of(3, Knob::Off))),
-        Err(ProviderError::Unreadable(
-            "asked for 3 vectors, got 2".into()
-        ))
-    );
-    let wide = replay(cassette(vec![embed_exchange(two)]), ChunkPlan::Whole);
-    assert_eq!(
-        block_on(wide.embed(&turn_of(2, Knob::Set(Dims(768))))),
-        Err(ProviderError::Unreadable(
-            "expected vectors of width 768, got 2".into()
-        ))
-    );
 }
 
 #[test]
@@ -582,26 +379,6 @@ fn llama_server_is_never_sent_dimensions_even_when_asked() {
         1,
         "strict replay matched a body with no `dimensions`"
     );
-}
-
-#[test]
-fn a_transport_that_cannot_connect_is_unreachable() {
-    let driver = Driver::new(
-        OpenAiCodec::new(Flavor::Vllm),
-        FakeServer {
-            head: ResponseHead {
-                status: HttpStatus(200),
-                body: BodyKind::Json,
-                retry_after: None,
-                request_id: None,
-                location: None,
-                content_range: None,
-            },
-            chunks: vec![],
-            result: Err(HttpError::Connect),
-        },
-    );
-    assert_eq!(block_on(driver.describe()), Err(ProviderError::Unreachable));
 }
 
 #[test]

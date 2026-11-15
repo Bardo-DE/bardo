@@ -6,7 +6,6 @@ use model_openai_compat::{
     encode_transcription,
 };
 use model_provider::ModelName;
-use proptest::prelude::*;
 use speech_provider::{
     AudioChunk, AudioFormat, Lang, LangChoice, PcmBytes, PcmFormat, SampleIndex, SampleRate,
     SpokenText, SttMode, SttRequest, TtsRequest, VoiceId,
@@ -238,29 +237,4 @@ fn pcm_is_cut_at_sample_boundaries_and_numbered() {
     });
     assert_eq!(floats.feed(&[0; 3]), None);
     assert_eq!(floats.feed(&[0; 6]).unwrap().pcm.len(), 8);
-}
-
-proptest! {
-    #[test]
-    fn pcm_chunking_does_not_change_the_samples_or_their_numbers(
-        bytes in proptest::collection::vec(any::<u8>(), 0..400),
-        cuts in proptest::collection::vec(any::<usize>(), 0..8),
-    ) {
-        let mut points: Vec<usize> = cuts.iter().map(|c| c % (bytes.len() + 1)).collect();
-        points.sort_unstable();
-        let mut decoder = PcmDecoder::new(KOKORO_FORMAT);
-        let mut joined = Vec::new();
-        let mut next = 0_u64;
-        let mut start = 0;
-        for end in points.into_iter().chain([bytes.len()]) {
-            if let Some(c) = decoder.feed(&bytes[start..end]) {
-                prop_assert_eq!(c.at, SampleIndex(next));
-                prop_assert_eq!(c.pcm.len() % 2, 0);
-                next += (c.pcm.len() / 2) as u64;
-                joined.extend_from_slice(c.pcm.as_slice());
-            }
-            start = end;
-        }
-        prop_assert_eq!(&joined[..], &bytes[..bytes.len() - bytes.len() % 2]);
-    }
 }

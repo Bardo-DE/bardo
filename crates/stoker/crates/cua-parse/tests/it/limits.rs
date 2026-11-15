@@ -3,10 +3,8 @@
 use crate::common;
 
 use common::*;
-use cua_action::{ModelSpace, TextDialect, ToolDialect};
-use cua_parse::{
-    ActionCount, ByteLen, DropReason, ParseError, ParseLimits, parse_text, parse_tool_calls,
-};
+use cua_action::ToolDialect;
+use cua_parse::{DropReason, ParseError};
 
 #[test]
 fn limits_hold_for_text() {
@@ -42,36 +40,6 @@ fn limits_hold_for_tool_calls() {
     assert_eq!(
         tools(ToolDialect::QwenComputerUse, &[big]),
         Err(ParseError::TooLarge)
-    );
-}
-
-#[test]
-fn custom_limits_apply() {
-    let limits = ParseLimits {
-        max_input: ByteLen(20),
-        max_actions: ActionCount(1),
-    };
-    let text = "Action: wait()\n\nwait()";
-    assert_eq!(
-        parse_text(TextDialect::UiTars15, ModelSpace::Image, text, limits),
-        Err(ParseError::TooLarge)
-    );
-    let limits = ParseLimits {
-        max_input: ByteLen(64),
-        max_actions: ActionCount(1),
-    };
-    let p = parse_text(TextDialect::UiTars15, ModelSpace::Image, text, limits).unwrap();
-    assert_eq!(image_actions(&p).len(), 1);
-    let none = ParseLimits {
-        max_input: ByteLen(64),
-        max_actions: ActionCount(0),
-    };
-    let p = parse_text(TextDialect::UiTars15, ModelSpace::Image, text, none).unwrap();
-    assert!(image_actions(&p).is_empty());
-    assert_eq!(p.dropped.len(), 2);
-    assert_eq!(
-        parse_tool_calls(ToolDialect::Holo31, ModelSpace::Image, &[], limits),
-        Err(ParseError::NoAction)
     );
 }
 

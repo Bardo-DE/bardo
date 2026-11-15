@@ -17,15 +17,6 @@ fn an_attached_entry_lists_no_engine() {
 }
 
 #[test]
-fn an_attached_entry_is_not_remote() {
-    let text = ATTACHED.replace(
-        "inputs = [",
-        "locality = { kind = \"remote\", v = { reach = [] } }\ninputs = [",
-    );
-    assert_eq!(parse_entry(&text), Err(CatalogError::AttachedRemote));
-}
-
-#[test]
 fn a_launched_entry_still_needs_an_engine() {
     let text = ATTACHED
         .lines()

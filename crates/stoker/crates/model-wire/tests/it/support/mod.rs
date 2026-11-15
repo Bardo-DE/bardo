@@ -168,9 +168,6 @@ impl ChatCodec for LineCodec {
         if request.model.0 == "unsupported" {
             return Err(CodecError::UnsupportedShape);
         }
-        if request.model.0 == "native" {
-            return Err(CodecError::NativeToolUnsupported);
-        }
         Ok(Exchange {
             verb: Verb::PostJson,
             root: RouteRoot::Base,

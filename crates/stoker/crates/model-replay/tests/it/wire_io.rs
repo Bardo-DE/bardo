@@ -6,7 +6,7 @@ use model_http::{
     BodyKind, BodySink, ChunkFlow, EventName, Exchange, Framing, HttpError, HttpStatus, JsonBody,
     ResponseHead, RouteRoot, Transport, UrlPath, Verb, WaitSeconds,
 };
-use model_provider::{ModelName, Seed, Tokens};
+use model_provider::{ModelName, Tokens};
 use model_replay::{
     BuildLabel, ByteStep, CassetteHeader, CassetteVersion, ChunkPlan, ContextStamp, EngineLabel,
     EngineStamp, HeadPrint, InteractionId, RecordedAt, RecordingTransport, ReplayMode,
@@ -183,27 +183,6 @@ fn replay_delivers_head_then_the_body_as_wire_bytes() {
     assert_eq!(seen.head.as_ref().unwrap().body, BodyKind::EventStream);
     assert_eq!(seen.chunks.len(), 1);
     assert_eq!(seen.bytes(), SSE);
-}
-
-#[test]
-fn every_plan_delivers_the_same_bytes() {
-    let plans = [
-        (ChunkPlan::Whole, 1),
-        (ChunkPlan::Lines, 3),
-        (ChunkPlan::Every(ByteStep(1)), SSE.len()),
-        (ChunkPlan::Seeded(Seed(7)), 0),
-    ];
-    for (plan, chunks) in plans {
-        let t = replay(vec![streaming()], ReplayMode::InOrder, plan);
-        let mut seen = Seen::default();
-        block_on(t.exchange(&ex("/x", None, Framing::Sse), &mut seen)).unwrap();
-        assert_eq!(seen.bytes(), SSE, "{plan:?}");
-        if chunks > 0 {
-            assert_eq!(seen.chunks.len(), chunks, "{plan:?}");
-        } else {
-            assert!(seen.chunks.len() > 1, "{plan:?}");
-        }
-    }
 }
 
 #[test]

@@ -234,10 +234,6 @@ impl SamplingDefaults {
 /// declared beside it. Deprecated: use `Slot`. They go once porter reads slots. `caps` exists when
 /// a chat role does (`llm`, `computer_use`), `speech` is the audio table (in preferred), `embed`
 /// the vector table.
-///
-/// An entry in the older file shape (`roles`, `speech`, `embed`, chat fields at the top) is read
-/// into the same struct: its `roles` and chat fields are kept as written and its capabilities are
-/// converted from them. `Serialize` always writes the new shape.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ModelEntry {
     pub id: CatalogId,

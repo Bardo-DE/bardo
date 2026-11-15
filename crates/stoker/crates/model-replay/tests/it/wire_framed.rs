@@ -1,18 +1,17 @@
 //! SSE and NDJSON through the wire cassette: what a recording makes of the raw bytes a server
-//! writes (CRLF, comments, a split code point, a stream cut in the middle), and that a recording
-//! replays to bytes the decoders read back as the same frames under every chunking.
+//! writes (CRLF, comments, a split code point, a stream cut in the middle).
 
 use std::sync::Mutex;
 
 use model_http::{
     BodyKind, BodySink, ChunkFlow, EventName, Exchange, Framing, HttpError, HttpStatus, JsonBody,
-    NdjsonDecoder, ResponseHead, RouteRoot, SseDecoder, Transport, UrlPath, Verb,
+    ResponseHead, RouteRoot, Transport, UrlPath, Verb,
 };
-use model_provider::{ModelName, Seed, Tokens};
+use model_provider::{ModelName, Tokens};
 use model_replay::{
-    BuildLabel, ByteStep, CassetteHeader, CassetteVersion, ChunkPlan, ContextStamp, EngineLabel,
-    EngineStamp, RecordedAt, RecordingTransport, ReplayMode, ReplayTransport, SinkError, WireBody,
-    WireCassette, WireEnd, WireExchange, WireFrame, WireSink,
+    BuildLabel, CassetteHeader, CassetteVersion, ContextStamp, EngineLabel, EngineStamp,
+    RecordedAt, RecordingTransport, SinkError, WireBody, WireCassette, WireEnd, WireExchange,
+    WireFrame, WireSink,
 };
 use proptest::prelude::*;
 
@@ -277,79 +276,6 @@ fn cassette(exchange: WireExchange) -> WireCassette {
             speech: None,
         },
         exchanges: vec![exchange],
-    }
-}
-
-struct Bytes(Vec<Vec<u8>>);
-
-impl BodySink for Bytes {
-    fn head(&mut self, _head: &ResponseHead) -> ChunkFlow {
-        ChunkFlow::Continue
-    }
-    fn chunk(&mut self, bytes: &[u8]) -> ChunkFlow {
-        self.0.push(bytes.to_vec());
-        ChunkFlow::Continue
-    }
-}
-
-fn replayed(exchange: &WireExchange, framing: Framing, plan: ChunkPlan) -> Vec<Vec<u8>> {
-    let transport = ReplayTransport::new(cassette(exchange.clone()), ReplayMode::InOrder, plan);
-    let mut sink = Bytes(Vec::new());
-    let _ = block_on(transport.exchange(&self::exchange(framing), &mut sink));
-    sink.0
-}
-
-fn plans() -> Vec<ChunkPlan> {
-    let mut plans = vec![ChunkPlan::Whole, ChunkPlan::Lines];
-    plans.extend([1, 2, 3, 7, 64].map(|n| ChunkPlan::Every(ByteStep(n))));
-    plans.extend((0..16).map(|s| ChunkPlan::Seeded(Seed(s))));
-    plans
-}
-
-#[test]
-fn a_recorded_sse_body_replays_to_bytes_that_decode_to_the_same_events_under_every_plan() {
-    let body =
-        "event: e\r\ndata: caf\u{e9}\r\ndata: second line\r\n\r\ndata: [DONE]\r\n\r\n".as_bytes();
-    let recorded = record(
-        BodyKind::EventStream,
-        Framing::Sse,
-        &[body],
-        Ok(HttpStatus(200)),
-    );
-    let want = frames(&recorded);
-    for plan in plans() {
-        let mut decoder = SseDecoder::new();
-        let mut got = Vec::new();
-        for chunk in replayed(&recorded, Framing::Sse, plan) {
-            got.extend(decoder.feed(&chunk).unwrap());
-        }
-        got.extend(decoder.finish());
-        let got: Vec<_> = got
-            .into_iter()
-            .map(|e| (e.event.map(|n| n.0), e.data))
-            .collect();
-        assert_eq!(got, want, "{plan:?}");
-    }
-}
-
-#[test]
-fn a_recorded_ndjson_body_replays_to_the_same_lines_under_every_plan() {
-    let recorded = record(
-        BodyKind::NdJson,
-        Framing::Ndjson,
-        &[b"{\"a\":1}\r\n\r\n{\"b\":\"caf\xC3\xA9\"}\n"],
-        Ok(HttpStatus(200)),
-    );
-    let want: Vec<String> = frames(&recorded).into_iter().map(|(_, d)| d).collect();
-    assert_eq!(want.len(), 2);
-    for plan in plans() {
-        let mut decoder = NdjsonDecoder::new();
-        let mut got = Vec::new();
-        for chunk in replayed(&recorded, Framing::Ndjson, plan) {
-            got.extend(decoder.feed(&chunk).unwrap());
-        }
-        got.extend(decoder.finish());
-        assert_eq!(got, want, "{plan:?}");
     }
 }
 

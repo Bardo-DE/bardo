@@ -110,7 +110,7 @@ stoker.
 | `cua-vendors` | `step_result`, `args`, `safety`, `results` < `anthropic`, `openai`, `gemini` < `codec` |
 | `cua-session` | `model`, `history`, `shown`, `prompt`, `dialect` (`ui_tars`, `tool`, `wire`), `window`, `transcript` < `session` |
 | `model-replay` | `print` < `cassette` < `sequence` < `provider`, `speech`, `wire` |
-| `model-catalog` | `modality`, `engine` < `capabilities` < `slot`, `view` < `entry` < `reach`, `file`, `check`, `legacy` < `parse` |
+| `model-catalog` | `modality`, `engine` < `capabilities` < `slot`, `view` < `entry` < `reach`, `file`, `check` < `parse` |
 | `engine-spec` | `package`, `cache`, `paths` < `engine` < `vllm`, `llama`, `strata`, `speech_host`, `kokoro` < `check` |
 | `engine-supervisor` | `state` < `unit`, `budget` < `step` < `host` < `fakes` (feature `testing`) |
 | `engine-manifest` | `engine`, `host`, `release`, `failure`, `seal` < `manifest` < `rows` |

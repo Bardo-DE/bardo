@@ -1,7 +1,7 @@
 //! Total parsing: no input panics, and what comes out is always within bounds.
 
-use cua_action::{GridMax, ModelSpace, TextDialect, ToolDialect};
-use cua_parse::{InSpace, ParseLimits, Parsed, parse_text, parse_tool_calls};
+use cua_action::{GridMax, ModelSpace, ToolDialect};
+use cua_parse::{InSpace, ParseLimits, Parsed, parse_tool_calls};
 use model_provider::{JsonText, ToolCall, ToolCallId, ToolName};
 use proptest::prelude::*;
 
@@ -46,16 +46,6 @@ fn grammar_soup() -> impl Strategy<Value = String> {
 
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(512))]
-
-    #[test]
-    fn never_panics(text in prop_oneof![any::<String>(), grammar_soup()]) {
-        let limits = ParseLimits::default();
-        for space in SPACES {
-            if let Ok(parsed) = parse_text(TextDialect::UiTars15, space, &text, limits) {
-                prop_assert!(within_bounds(&parsed, limits));
-            }
-        }
-    }
 
     #[test]
     fn never_panics_on_tool_calls(

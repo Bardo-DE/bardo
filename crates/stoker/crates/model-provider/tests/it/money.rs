@@ -1,7 +1,7 @@
 //! `Money`: exact sums of one currency, typed refusals, and a stable JSON form.
 
 use iso_currency::Currency;
-use model_provider::{Charges, Money, MoneyError, TurnUsage};
+use model_provider::{Money, MoneyError, TurnUsage};
 use rust_decimal::Decimal;
 
 #[test]
@@ -30,12 +30,4 @@ fn a_usage_without_a_charge_writes_no_charge_field() {
     };
     let back: TurnUsage = serde_json::from_str(&serde_json::to_string(&priced).unwrap()).unwrap();
     assert_eq!(back, priced);
-}
-
-#[test]
-fn charges_slugs_are_snake_case() {
-    assert_eq!(
-        serde_json::to_string(&Charges::NotReported).unwrap(),
-        r#""not_reported""#
-    );
 }

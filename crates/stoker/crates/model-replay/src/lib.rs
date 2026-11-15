@@ -31,8 +31,8 @@ mod wire_record;
 mod wire_replay;
 
 pub use cassette::{
-    BackendLabel, BuildLabel, Cassette, CassetteError, CassetteHeader, CassetteVersion,
-    ContextStamp, EngineLabel, EngineStamp, Interaction, InteractionId, RecordedAt,
+    BuildLabel, Cassette, CassetteError, CassetteHeader, CassetteVersion, ContextStamp,
+    EngineLabel, EngineStamp, Interaction, InteractionId, RecordedAt,
 };
 pub use print::{
     ByteCount, ImageDigest, ImagePrint, MessagePrint, PartPrint, PrintHash, RequestPrint,

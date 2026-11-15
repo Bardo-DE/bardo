@@ -27,9 +27,6 @@ pub struct RecordedAt(pub i64);
 #[serde(transparent)]
 pub struct EngineLabel(pub String);
 
-/// The label of a backend before the header carried a stamp.
-pub type BackendLabel = EngineLabel;
-
 /// The build of the engine (`b10964-b29c606e2`): a fixture is only as good as the build it came
 /// from, and a replay that fails says which build to record again.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]

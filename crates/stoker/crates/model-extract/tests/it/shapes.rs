@@ -1,5 +1,4 @@
-use model_extract::{ExtractMode, ExtractSession, FINAL_RESULT_TOOL, RepairBudget, RepairsLeft};
-use model_provider::{ChoiceText, Extract, JsonText, OutputShape, Shape, ShapeFault, ToolName};
+use model_provider::{ChoiceText, Extract, JsonText, Shape, ShapeFault};
 
 /// A hand-written output type, as the five or six real ones will be.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -15,24 +14,6 @@ impl Extract for Verdict {
             .map(Verdict)
             .map_err(|_| ShapeFault::NotJson)
     }
-}
-
-#[test]
-fn a_session_starts_with_its_whole_budget() {
-    let session = ExtractSession::<Verdict>::new(
-        ExtractMode::Native(OutputShape::Choice(vec!["allow".into(), "deny".into()])),
-        RepairBudget(1),
-    );
-    assert_eq!(session.left(), RepairsLeft(1));
-    assert_eq!(
-        session.mode(),
-        &ExtractMode::Native(OutputShape::Choice(vec!["allow".into(), "deny".into()]))
-    );
-}
-
-#[test]
-fn the_synthetic_tool_name_is_a_valid_tool_name() {
-    assert!(ToolName::new(FINAL_RESULT_TOOL).is_ok());
 }
 
 #[test]

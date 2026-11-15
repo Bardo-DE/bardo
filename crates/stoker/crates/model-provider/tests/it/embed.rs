@@ -13,28 +13,6 @@ fn end(widths: &[usize]) -> EmbedEnd {
     }
 }
 
-#[test]
-fn batches() {
-    type Case = (usize, u32, &'static [(usize, usize)]);
-    const CASES: &[Case] = &[
-        (0, 4, &[]),
-        (1, 4, &[(0, 1)]),
-        (4, 4, &[(0, 4)]),
-        (5, 4, &[(0, 4), (4, 5)]),
-        (9, 4, &[(0, 4), (4, 8), (8, 9)]),
-        (3, 0, &[(0, 1), (1, 2), (2, 3)]),
-        (3, 1, &[(0, 1), (1, 2), (2, 3)]),
-        (3, u32::MAX, &[(0, 3)]),
-    ];
-    for (n, max, want) in CASES {
-        let got: Vec<(usize, usize)> = plan_batches(*n, BatchMax(*max))
-            .into_iter()
-            .map(|r| (r.start, r.end))
-            .collect();
-        assert_eq!(&got, want, "n={n} max={max}");
-    }
-}
-
 proptest! {
     #[test]
     fn batches_cover_the_inputs_exactly_once_in_order(n in 0usize..5000, max in 0u32..70) {

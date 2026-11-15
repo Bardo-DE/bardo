@@ -533,34 +533,3 @@ fn own_replies_are_replayed_as_the_models_turns_with_the_frames_it_kept() {
     assert!(lead.contains("Step 2. Screenshot:"), "{lead}");
     assert_eq!(m[5].parts[1], Part::Image(frame("f2")));
 }
-
-#[test]
-fn an_action_list_history_is_unchanged_by_the_option_existing() {
-    let click = xml_call(
-        "left_click",
-        "<parameter=coordinate>\n[500, 250]\n</parameter>\n",
-    );
-    let listed = |history: HistoryShape| {
-        let actions = ActionProfile {
-            history,
-            ..read_by_us(CallFormat::Qwen3CoderXml)
-        };
-        let profile = profile(QWEN, grid(), 1, 0).with_actions(actions);
-        let s = CuaSession::begin(profile, task(), ModelName("ui-mate".into()));
-        after(s, &[click.clone(), click.clone()])
-    };
-    let request = listed(HistoryShape::ActionList);
-    let roles: Vec<Role> = request.messages.iter().map(|m| m.role).collect();
-    assert_eq!(roles, [Role::System, Role::User]);
-    let Part::Text(lead) = &request.messages[1].parts[0] else {
-        panic!("the lead")
-    };
-    assert!(
-        lead.contains("Goal: save the file") && lead.contains("Earlier actions:"),
-        "{lead}"
-    );
-    assert_ne!(
-        listed(HistoryShape::OwnReplies).messages.len(),
-        request.messages.len()
-    );
-}

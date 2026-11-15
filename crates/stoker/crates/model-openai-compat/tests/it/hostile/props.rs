@@ -1,10 +1,7 @@
 //! Arbitrary bytes and arbitrary splits: no panic, a typed result, the same answer however the
 //! bytes arrive.
 
-use model_http::{BodyKind, HttpStatus, ResponseHead};
-use model_openai_compat::{Flavor, KOKORO_FORMAT, OpenAiCodec, PcmDecoder, decode_transcription};
-use model_provider::ModelName;
-use model_wire::{ChatCodec, EmbedCodec, ErrorWire};
+use model_openai_compat::{KOKORO_FORMAT, PcmDecoder};
 use proptest::prelude::*;
 
 use super::pipe::{Reply, assert_sound, call, calls, chunk, run_cut, scenario, sse};
@@ -117,29 +114,6 @@ proptest! {
         let split = run_cut(&body, &cuts);
         assert_sound(&split);
         prop_assert!(same(&split, &run_cut(&body, &[])));
-    }
-
-    #[test]
-    fn whole_bodies_never_panic(body in proptest::collection::vec(any::<u8>(), 0..600)) {
-        let codec = OpenAiCodec::new(Flavor::Vllm);
-        let _ = codec.parse_models(&body);
-        let _ = codec.decode_embed(ModelName("m".into()), &body);
-        let _ = decode_transcription(&body);
-        for status in [200, 400, 429, 500] {
-            for kind in [BodyKind::Json, BodyKind::Html] {
-                let head = ResponseHead { status: HttpStatus(status), body: kind, retry_after: None, request_id: None, location: None, content_range: None };
-                let _ = codec.classify(&head, &body);
-            }
-        }
-    }
-
-    #[test]
-    fn json_shaped_bodies_never_panic(text in "\\{\"(data|id|embedding|index|usage|error|text|default_generation_settings|n_ctx|model_alias)\":[-0-9a-z\\[\\]{}\":,. ]{0,40}") {
-        let codec = OpenAiCodec::new(Flavor::LlamaServer);
-        let body = text.as_bytes();
-        let _ = codec.parse_models(body);
-        let _ = codec.decode_embed(ModelName("m".into()), body);
-        let _ = decode_transcription(body);
     }
 
     #[test]

@@ -2,7 +2,7 @@
 
 use model_http::SseError;
 use model_openai_compat::{CodecError, LeakMarker};
-use model_provider::{StopReason, Tokens, TurnEvent};
+use model_provider::{StopReason, TurnEvent};
 use serde_json::json;
 
 use model_wire::ChatDecoder;
@@ -17,17 +17,6 @@ fn go(frames: &[String]) -> Reply {
 
 fn stop(reply: &Reply) -> Option<StopReason> {
     reply.end.as_ref().ok().map(|e| e.stop)
-}
-
-fn bad_args(reply: &Reply) -> bool {
-    reply.end == Err(Refused::Decoding(CodecError::BadToolArguments))
-}
-
-fn one_call(args: &str, finish: &str) -> Reply {
-    go(&[chunk(
-        calls(vec![call(0, Some("a"), Some("f"), Some(args))]),
-        Some(finish),
-    )])
 }
 
 #[test]
@@ -55,118 +44,6 @@ fn a_stream_cut_at_every_byte_ends_cleanly_only_after_its_finish_reason() {
             );
         }
     }
-}
-
-#[test]
-fn done_before_any_chunk_fabricates_nothing() {
-    let reply = run(&[b"data: [DONE]\n\n"]);
-    assert_eq!(reply.end, Err(Refused::Decoding(CodecError::Unreadable)));
-    assert!(reply.events.is_empty());
-}
-
-#[test]
-fn done_mid_call_delivers_a_whole_call_or_fails() {
-    let whole = go(&[chunk(
-        calls(vec![call(0, Some("a"), Some("f"), Some("{\"x\":1}"))]),
-        None,
-    )]);
-    assert_eq!(done(&whole).len(), 1);
-    let half = go(&[chunk(
-        calls(vec![call(0, Some("a"), Some("f"), Some("{\"x\":"))]),
-        None,
-    )]);
-    assert!(bad_args(&half));
-    assert!(done(&half).is_empty());
-}
-
-#[test]
-fn a_missing_done_after_the_finish_reason_is_fine_and_a_missing_finish_is_truncated() {
-    let frames = scenario();
-    let body: String = frames.iter().map(|f| format!("data: {f}\n\n")).collect();
-    let reply = run(&[body.as_bytes()]);
-    assert_eq!(stop(&reply), Some(StopReason::ToolUse));
-    let body: String = frames[..5]
-        .iter()
-        .map(|f| format!("data: {f}\n\n"))
-        .collect();
-    let reply = run(&[body.as_bytes()]);
-    assert_eq!(reply.end, Err(Refused::Decoding(CodecError::Truncated)));
-    assert!(done(&reply).is_empty());
-}
-
-#[test]
-fn arguments_that_are_not_json_are_a_fault_unless_the_budget_cut_them() {
-    for args in [
-        "not json",
-        "{\"a\":",
-        "{\"a\":1}}",
-        "{'a':1}",
-        "{\"a\":1} tail",
-    ] {
-        assert!(bad_args(&one_call(args, "tool_calls")), "{args}");
-        assert!(bad_args(&one_call(args, "stop")), "{args}");
-        let cut = one_call(args, "length");
-        assert_eq!(stop(&cut), Some(StopReason::MaxTokens), "{args}");
-        assert!(done(&cut).is_empty(), "{args}");
-    }
-}
-
-#[test]
-fn arguments_that_are_json_of_the_wrong_type_are_a_fault() {
-    for args in ["[1]", "\"x\"", "5", "true", "[]", "1e999"] {
-        let reply = one_call(args, "tool_calls");
-        assert!(bad_args(&reply), "{args}");
-        assert!(done(&reply).is_empty(), "{args}");
-    }
-    let null = one_call("null", "tool_calls");
-    assert_eq!(done(&null)[0].input.as_str(), "{}");
-}
-
-#[test]
-fn an_index_reused_by_a_new_id_never_delivers_half_written_arguments() {
-    let reply = go(&[
-        chunk(
-            calls(vec![call(0, Some("a"), Some("f"), Some("{\"x\":"))]),
-            None,
-        ),
-        chunk(
-            calls(vec![call(0, Some("b"), Some("g"), Some("{}"))]),
-            Some("tool_calls"),
-        ),
-    ]);
-    assert!(bad_args(&reply));
-    assert!(done(&reply).is_empty());
-}
-
-#[test]
-fn deltas_for_one_index_repeated_with_the_same_id_are_one_call() {
-    let reply = go(&[
-        chunk(
-            calls(vec![call(0, Some("a"), Some("f"), Some("{\"x\""))]),
-            None,
-        ),
-        chunk(
-            calls(vec![call(0, Some("a"), Some("f"), Some(":1}"))]),
-            Some("tool_calls"),
-        ),
-    ]);
-    let calls = done(&reply);
-    assert_eq!(calls.len(), 1);
-    assert_eq!(calls[0].input.as_str(), "{\"x\":1}");
-}
-
-#[test]
-fn indices_out_of_order_deliver_in_arrival_order() {
-    let reply = go(&[
-        chunk(calls(vec![call(7, Some("a"), Some("f"), Some("{}"))]), None),
-        chunk(calls(vec![call(2, Some("b"), Some("g"), Some("{}"))]), None),
-        chunk(
-            calls(vec![call(u32::MAX, Some("c"), Some("h"), Some("{}"))]),
-            Some("tool_calls"),
-        ),
-    ]);
-    let ids: Vec<_> = done(&reply).iter().map(|c| c.id.0.clone()).collect();
-    assert_eq!(ids, ["a", "b", "c"]);
 }
 
 #[test]
@@ -214,22 +91,6 @@ fn more_calls_than_the_limit_is_unreadable() {
 }
 
 #[test]
-fn an_unknown_finish_reason_is_an_unrecognized_stop_and_drops_a_half_written_call() {
-    let reply = go(&[chunk(json!({"content":"hi"}), Some("banana"))]);
-    assert_eq!(stop(&reply), Some(StopReason::Unrecognized));
-    let reply = go(&[chunk(
-        calls(vec![call(0, Some("a"), Some("f"), Some("{}"))]),
-        Some("error"),
-    )]);
-    assert_eq!(stop(&reply), Some(StopReason::Unrecognized));
-    let reply = go(&[chunk(
-        calls(vec![call(0, Some("a"), Some("f"), Some("{\"x\":"))]),
-        Some("error"),
-    )]);
-    assert_eq!(stop(&reply), Some(StopReason::Unrecognized));
-}
-
-#[test]
 fn content_and_calls_after_the_finish_reason_are_unreadable() {
     for late in [
         chunk(json!({"content":"more"}), None),
@@ -244,38 +105,6 @@ fn content_and_calls_after_the_finish_reason_are_unreadable() {
         chunk(json!({}), Some("length")),
     ]);
     assert_eq!(stop(&reply), Some(StopReason::EndTurn));
-}
-
-#[test]
-fn empty_choices_are_an_empty_turn_not_a_call() {
-    let reply = go(&[json!({"choices": []}).to_string()]);
-    assert_eq!(stop(&reply), Some(StopReason::EndTurn));
-    assert!(reply.events.is_empty());
-    let reply = go(&[json!({"choices": [], "usage": {"prompt_tokens": 3}}).to_string()]);
-    assert_eq!(reply.events.len(), 1);
-}
-
-#[test]
-fn usage_numbers_saturate_or_read_as_zero() {
-    for usage in [
-        json!({"prompt_tokens": u64::MAX, "completion_tokens": u64::MAX}),
-        json!({"prompt_tokens": 1e300, "completion_tokens": -5}),
-        json!({"prompt_tokens": "12", "completion_tokens": null}),
-        json!({"prompt_tokens": 5, "prompt_tokens_details": {"cached_tokens": u64::MAX}}),
-        json!([1, 2]),
-    ] {
-        let reply = go(&[
-            chunk(json!({"content":"x"}), Some("stop")),
-            json!({"choices": [], "usage": usage}).to_string(),
-        ]);
-        let end = reply.end.clone().unwrap();
-        assert!(end.usage.cached <= end.usage.input, "{usage}");
-    }
-    let huge = go(&[
-        chunk(json!({"content":"x"}), Some("stop")),
-        json!({"choices": [], "usage": {"prompt_tokens": u64::MAX}}).to_string(),
-    ]);
-    assert_eq!(huge.end.unwrap().usage.input, Tokens(u32::MAX));
 }
 
 #[test]

@@ -2,7 +2,11 @@
 
 use crate::support;
 
-use model_catalog::{CatalogError, DetailTable, EngineKind, Modalities, Modality, parse_entry};
+use model_catalog::{
+    CatalogError, CatalogId, DetailTable, EngineKind, MiB, Modalities, Modality, VramEstimate,
+    merge_catalogs, parse_entry,
+};
+use model_provider::Tokens;
 use support::*;
 
 #[test]
@@ -257,15 +261,6 @@ fn sampling_goes_with_text_in_and_text_out() {
 }
 
 #[test]
-fn the_older_keys_are_not_new_shape_keys() {
-    let text = text_only("x").replace("inputs = ", "roles = [\"llm\"]\ninputs = ");
-    // `roles` routes the file to the older reader, which wants its own fields.
-    assert!(matches!(parse_entry(&text), Err(CatalogError::Toml(_))));
-    let stray = text_only("x").replace("family = ", "speech = 1\nfamily = ");
-    assert!(matches!(parse_entry(&stray), Err(CatalogError::Toml(_))));
-}
-
-#[test]
 fn an_engine_narrows_what_its_model_passes_through() {
     let engines = format!(
         "{}{}",
@@ -383,4 +378,49 @@ fn an_engine_names_how_it_takes_the_window_or_nothing() {
             "{line}"
         );
     }
+}
+
+#[test]
+fn missing_field_refuses() {
+    let text = text_only("x");
+    for field in [
+        "label",
+        "licence",
+        "family",
+        "cold_start_estimate_s",
+        "source",
+        "vram",
+    ] {
+        let without: String = text
+            .lines()
+            .filter(|l| !l.starts_with(&format!("{field} ")))
+            .collect::<Vec<_>>()
+            .join("\n");
+        assert!(
+            matches!(parse_entry(&without), Err(CatalogError::Toml(_))),
+            "a file without {field} must be refused"
+        );
+    }
+}
+
+#[test]
+fn user_file_replaces_system() {
+    let system = parse_entry(&text_only("holo")).unwrap();
+    let mut user = system.clone();
+    user.label = "My Holo".into();
+    let mut extra = system.clone();
+    extra.id = CatalogId("mine".into());
+    let merged = merge_catalogs(vec![system.clone()], vec![user.clone(), extra.clone()]);
+    assert_eq!(merged, vec![user, extra]);
+}
+
+#[test]
+fn vram_need_adds_weights_kv_and_overhead() {
+    let vram = VramEstimate {
+        weights: MiB(10_400),
+        kv_per_1k_ctx: MiB(32),
+        overhead: MiB(1500),
+    };
+    assert_eq!(vram.need(Tokens(32_768)), MiB(10_400 + 1049 + 1500)); // 32 * 32.768 = 1048.6 rounds up
+    assert_eq!(vram.need(Tokens(0)), MiB(11_900));
 }

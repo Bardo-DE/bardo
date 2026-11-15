@@ -21,7 +21,6 @@ mod check;
 mod engine;
 mod entry;
 mod file;
-mod legacy;
 mod modality;
 mod parse;
 mod reach;

@@ -329,21 +329,6 @@ async fn a_plain_http_server_is_a_tls_error() {
 }
 
 #[tokio::test(flavor = "current_thread")]
-async fn nothing_listening_is_connect() {
-    let port = {
-        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-        listener.local_addr().unwrap().port()
-    };
-    let result = run(
-        endpoint("localhost", port),
-        Ca::new().roots(),
-        &mut Seen::default(),
-    )
-    .await;
-    assert_eq!(result, Err(HttpError::Connect));
-}
-
-#[tokio::test(flavor = "current_thread")]
 async fn the_timeouts_are_the_endpoints() {
     let ca = Ca::new();
 

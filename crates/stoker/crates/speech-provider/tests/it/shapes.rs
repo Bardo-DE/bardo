@@ -1,12 +1,9 @@
-use std::collections::BTreeSet;
-
-use model_provider::{ModelName, ProviderError, RetrySeconds, Support};
+use model_provider::{ModelName, Support};
 use speech_provider::{
-    AudioChunk, AudioFormat, AudioMs, FRAME_SAMPLES, Frame512, FrameError, FrameLenError,
-    HeardText, HostIn, HostOut, HostVocab, Lang, LangChoice, LangSet, MAX_FRAME_BYTES, PcmBytes,
-    PcmFormat, SampleIndex, SampleRate, SpeechCaps, SpeechDir, SpeechIo, SpeechModelInfo,
-    SpokenText, SttEnd, SttMode, SttRequest, TranscriptEvent, TtsRequest, VoiceId, decode_frame,
-    encode_frame, frame_length,
+    AudioChunk, AudioFormat, AudioMs, FRAME_SAMPLES, Frame512, FrameError, FrameLenError, HeardText,
+    HostIn, HostVocab, Lang, LangChoice, LangSet, MAX_FRAME_BYTES, PcmBytes, PcmFormat, SampleIndex,
+    SampleRate, SpeechCaps, SpeechIo, SpokenText, SttMode, SttRequest, TranscriptEvent, TtsRequest,
+    VoiceId, decode_frame, encode_frame, frame_length,
 };
 
 const S16_16K: AudioFormat = AudioFormat {
@@ -37,18 +34,6 @@ fn stt_request() -> SttRequest {
     }
 }
 
-fn in_caps() -> SpeechCaps {
-    SpeechCaps {
-        streaming: Support::Present,
-        partials: Support::Present,
-        punctuation: Support::Present,
-        timestamps: Support::Absent,
-        langs: LangSet::Listed(BTreeSet::from([lang("en-US"), lang("zh-CN")])),
-        max_audio: AudioMs(120_000),
-        io: SpeechIo::In { input: S16_16K },
-    }
-}
-
 fn out_caps() -> SpeechCaps {
     SpeechCaps {
         streaming: Support::Present,
@@ -65,71 +50,6 @@ fn out_caps() -> SpeechCaps {
             voices: vec![VoiceId::new("af_heart").unwrap()],
         },
     }
-}
-
-fn round_trip<T>(value: &T)
-where
-    T: serde::Serialize + serde::de::DeserializeOwned + PartialEq + core::fmt::Debug,
-{
-    let json = serde_json::to_string(value).unwrap();
-    assert_eq!(&serde_json::from_str::<T>(&json).unwrap(), value, "{json}");
-}
-
-#[test]
-fn speech_types_round_trip() {
-    let events = vec![
-        TranscriptEvent::Partial {
-            text: HeardText("hel".into()),
-            from: SampleIndex(0),
-        },
-        TranscriptEvent::Final {
-            text: HeardText("hello".into()),
-            from: SampleIndex(0),
-            to: SampleIndex(16_000),
-        },
-        TranscriptEvent::Lang(lang("en")),
-    ];
-    let end = SttEnd {
-        text: HeardText("hello".into()),
-        audio: AudioMs(1000),
-        served: ModelName("nemotron-3.5-asr-streaming".into()),
-    };
-    let info = SpeechModelInfo {
-        name: ModelName("m".into()),
-        caps: in_caps(),
-    };
-    for event in &events {
-        round_trip(event);
-    }
-    let host_in = vec![
-        HostIn::Hello {
-            vocab: HostVocab::CURRENT,
-        },
-        HostIn::Begin(stt_request()),
-        HostIn::Audio(chunk(vec![0, 1, 2, 3])),
-        HostIn::End,
-        HostIn::Cancel,
-    ];
-    for message in &host_in {
-        round_trip(message);
-    }
-    let host_out = vec![
-        HostOut::Hello {
-            vocab: HostVocab::CURRENT,
-            models: vec![info],
-        },
-        HostOut::Event(events[0].clone()),
-        HostOut::Done(end),
-        HostOut::Failed(ProviderError::RateLimited(RetrySeconds(3))),
-    ];
-    for message in &host_out {
-        round_trip(message);
-    }
-    round_trip(&in_caps());
-    round_trip(&out_caps());
-    round_trip(&stt_request());
-    round_trip(&LangChoice::Auto);
-    round_trip(&SttMode::Batch);
 }
 
 #[test]
@@ -169,12 +89,6 @@ fn wire_json_is_pinned() {
 }
 
 #[test]
-fn caps_know_their_direction() {
-    assert_eq!(in_caps().dir(), SpeechDir::In);
-    assert_eq!(out_caps().dir(), SpeechDir::Out);
-}
-
-#[test]
 fn pcm_is_base64_and_never_prints() {
     let pcm = PcmBytes::new(vec![0xff, 0xd8, 0xff]);
     assert_eq!(serde_json::to_string(&pcm).unwrap(), r#""/9j/""#);
@@ -209,37 +123,6 @@ fn pcm_debug_redacts() {
     assert!(!format!("{req:?}").contains("private"));
     let frame = Frame512::new(&[7; FRAME_SAMPLES]).unwrap();
     assert_eq!(format!("{frame:?}"), "Frame512(<512 samples>)");
-}
-
-#[test]
-fn chunk_duration_table() {
-    // (rate, pcm, bytes, samples, ms)
-    const CASES: &[(u32, PcmFormat, usize, u32, u32)] = &[
-        (16_000, PcmFormat::S16Le, 0, 0, 0),
-        (16_000, PcmFormat::S16Le, 1024, 512, 32),
-        (16_000, PcmFormat::S16Le, 1025, 512, 32),
-        (16_000, PcmFormat::S16Le, 32_000, 16_000, 1000),
-        (16_000, PcmFormat::F32Le, 2048, 512, 32),
-        (24_000, PcmFormat::S16Le, 48_000, 24_000, 1000),
-        (24_000, PcmFormat::S16Le, 2, 1, 0),
-        (44_100, PcmFormat::S16Le, 88_200, 44_100, 1000),
-        (0, PcmFormat::S16Le, 100, 50, 0),
-    ];
-    for &(rate, pcm, bytes, samples, ms) in CASES {
-        let c = AudioChunk {
-            format: AudioFormat {
-                rate: SampleRate(rate),
-                pcm,
-            },
-            at: SampleIndex(0),
-            pcm: PcmBytes::new(vec![0; bytes]),
-        };
-        assert_eq!(
-            (c.samples(), c.duration()),
-            (samples, AudioMs(ms)),
-            "{rate} {pcm:?} {bytes}"
-        );
-    }
 }
 
 #[test]

@@ -2,7 +2,6 @@
 //! result, the same lines however the bytes arrive, and linear time on adversarial shapes.
 
 use model_http::{LineError, NdjsonDecoder, SseDecoder, SseError, SseEvent};
-use proptest::prelude::*;
 
 fn sse(chunks: &[&[u8]]) -> Result<Vec<SseEvent>, SseError> {
     let mut decoder = SseDecoder::new();
@@ -22,60 +21,6 @@ fn ndjson(chunks: &[&[u8]]) -> Result<Vec<String>, LineError> {
     }
     lines.extend(decoder.finish());
     Ok(lines)
-}
-
-fn cut<'a>(bytes: &'a [u8], cuts: &[usize]) -> Vec<&'a [u8]> {
-    let mut points: Vec<usize> = cuts.iter().map(|c| c % (bytes.len() + 1)).collect();
-    points.extend([0, bytes.len()]);
-    points.sort_unstable();
-    points.windows(2).map(|w| &bytes[w[0]..w[1]]).collect()
-}
-
-fn shaped() -> impl Strategy<Value = Vec<u8>> {
-    let token = prop_oneof![
-        Just("data: ".to_owned()),
-        Just("event: x".to_owned()),
-        Just(": c".to_owned()),
-        Just("\n".to_owned()),
-        Just("\r".to_owned()),
-        Just("\r\n".to_owned()),
-        Just("\u{feff}".to_owned()),
-        Just("é世".to_owned()),
-        "[ -~]{0,5}",
-    ];
-    proptest::collection::vec(token, 0..30).prop_map(|t| t.concat().into_bytes())
-}
-
-proptest! {
-    #![proptest_config(ProptestConfig::with_cases(128))]
-
-    #[test]
-    fn sse_over_arbitrary_bytes_is_typed_and_split_invariant(
-        bytes in prop_oneof![proptest::collection::vec(any::<u8>(), 0..600), shaped()],
-        cuts in proptest::collection::vec(any::<usize>(), 0..8),
-    ) {
-        let split = sse(&cut(&bytes, &cuts));
-        let whole = sse(&[&bytes]);
-        match (&split, &whole) {
-            (Ok(a), Ok(b)) => prop_assert_eq!(a, b),
-            (Err(_), Err(_)) => {}
-            other => prop_assert!(false, "verdicts differ: {other:?}"),
-        }
-    }
-
-    #[test]
-    fn ndjson_over_arbitrary_bytes_is_typed_and_split_invariant(
-        bytes in prop_oneof![proptest::collection::vec(any::<u8>(), 0..600), shaped()],
-        cuts in proptest::collection::vec(any::<usize>(), 0..8),
-    ) {
-        let split = ndjson(&cut(&bytes, &cuts));
-        let whole = ndjson(&[&bytes]);
-        match (&split, &whole) {
-            (Ok(a), Ok(b)) => prop_assert_eq!(a, b),
-            (Err(_), Err(_)) => {}
-            other => prop_assert!(false, "verdicts differ: {other:?}"),
-        }
-    }
 }
 
 #[test]

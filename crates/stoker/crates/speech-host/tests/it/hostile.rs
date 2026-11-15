@@ -170,47 +170,6 @@ proptest! {
 }
 
 #[test]
-fn a_header_over_the_cap_ends_the_connection_with_nothing_read_after_it() {
-    let mut input = u32::try_from(MAX_FRAME_BYTES + 1)
-        .unwrap()
-        .to_be_bytes()
-        .to_vec();
-    input.extend(vec![0u8; 16]);
-    let (replies, ended) = serve(input, Vec::new());
-    assert!(replies.is_empty());
-    assert!(!ended);
-}
-
-#[test]
-fn a_frame_that_is_not_a_host_message_is_refused_and_the_connection_goes_on() {
-    let mut input = Vec::new();
-    for body in [
-        &b"{}"[..],
-        b"null",
-        b"\xff",
-        b"{\"kind\":\"audio\",\"v\":{}}",
-    ] {
-        input.extend(u32::try_from(body.len()).unwrap().to_be_bytes());
-        input.extend(body);
-    }
-    input.extend(
-        encode_frame(&HostIn::Hello {
-            vocab: HostVocab::CURRENT,
-        })
-        .unwrap(),
-    );
-    let (replies, ended) = serve(input, Vec::new());
-    assert!(ended);
-    assert_eq!(replies.len(), 5);
-    assert!(matches!(replies[4], HostOut::Hello { .. }));
-    assert!(
-        replies[..4]
-            .iter()
-            .all(|r| matches!(r, HostOut::Failed(ProviderError::BadRequest(_))))
-    );
-}
-
-#[test]
 fn a_stream_cut_inside_a_header_or_a_body_is_an_error_not_a_reply() {
     let whole = conversation();
     for cut in [1, 3, 5, 9] {

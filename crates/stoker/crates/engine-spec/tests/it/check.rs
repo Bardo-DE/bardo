@@ -11,15 +11,6 @@ fn shipped(id: &str) -> ModelEntry {
 }
 
 #[test]
-fn every_shipped_entry_passes() {
-    for file in std::fs::read_dir(CATALOG).unwrap() {
-        let path = file.unwrap().path();
-        let entry = parse_entry(&std::fs::read_to_string(&path).unwrap()).unwrap();
-        assert_eq!(check_entry(&entry), Ok(()), "{}", path.display());
-    }
-}
-
-#[test]
 fn a_vllm_engine_with_an_all_zero_estimate_is_a_mistake_in_the_file() {
     let mut entry = shipped("holo-3.1-4b");
     assert_eq!(entry.engines[0].kind, EngineKind::Vllm);

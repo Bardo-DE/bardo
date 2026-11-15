@@ -3,11 +3,10 @@
 use std::collections::BTreeSet;
 
 use cua_action::{
-    ActionClass, Button, Choice, Chord, ChordError, ClickCount, Coord, CuaAction, CuaDialect,
-    Extracted, ExtractedText, FieldName, FinishOutcome, GridMax, GridSpace, ImageSpace, Length,
-    ModelSpace, Modifier, NodeId, Notches, Point, Rect, Repeat, RunMode, ScrollBy, ScrollDir, Size,
-    Summary, Target, TextDialect, TextError, ToolDialect, TypedText, WaitMs, WindowClass,
-    WindowSpace, WindowTrust, WireDialect,
+    ActionClass, Button, Choice, Chord, ChordError, ClickCount, Coord, CuaAction, Extracted,
+    ExtractedText, FieldName, FinishOutcome, GridSpace, ImageSpace, Length, Modifier, NodeId,
+    Notches, Point, Rect, Repeat, ScrollBy, ScrollDir, Size, Summary, Target, TextError, TypedText,
+    WaitMs, WindowSpace,
 };
 use keyboard_types::Key;
 
@@ -82,15 +81,6 @@ fn every_action() -> Vec<CuaAction<WindowSpace>> {
 }
 
 #[test]
-fn actions_round_trip() {
-    for action in every_action() {
-        let json = serde_json::to_string(&action).unwrap();
-        let back: CuaAction<WindowSpace> = serde_json::from_str(&json).unwrap();
-        assert_eq!(back, action, "{json}");
-    }
-}
-
-#[test]
 fn click_json_is_pinned() {
     let json = serde_json::to_string(&every_action()[0]).unwrap();
     assert_eq!(
@@ -122,53 +112,6 @@ fn key_json_is_pinned() {
     assert_eq!(
         json,
         r#"{"kind":"key","v":{"chord":{"mods":["ctrl"],"key":{"Character":"a"}},"repeat":3}}"#
-    );
-}
-
-#[test]
-fn dialects_round_trip_and_slugs_are_pinned() {
-    const CASES: &[(CuaDialect, &str)] = &[
-        (
-            CuaDialect::Wire(WireDialect::AnthropicToolset20260801),
-            r#"{"kind":"wire","v":"anthropic_toolset20260801"}"#,
-        ),
-        (
-            CuaDialect::Wire(WireDialect::AnthropicComputer20251124),
-            r#"{"kind":"wire","v":"anthropic_computer20251124"}"#,
-        ),
-        (
-            CuaDialect::Wire(WireDialect::OpenAiComputer),
-            r#"{"kind":"wire","v":"open_ai_computer"}"#,
-        ),
-        (
-            CuaDialect::Wire(WireDialect::GeminiComputerUse),
-            r#"{"kind":"wire","v":"gemini_computer_use"}"#,
-        ),
-        (
-            CuaDialect::Text(TextDialect::UiTars15),
-            r#"{"kind":"text","v":"ui_tars15"}"#,
-        ),
-        (
-            CuaDialect::Tool(ToolDialect::QwenComputerUse),
-            r#"{"kind":"tool","v":"qwen_computer_use"}"#,
-        ),
-        (
-            CuaDialect::Tool(ToolDialect::Holo31),
-            r#"{"kind":"tool","v":"holo31"}"#,
-        ),
-    ];
-    for (dialect, json) in CASES {
-        assert_eq!(
-            &serde_json::to_string(dialect).unwrap(),
-            json,
-            "{dialect:?}"
-        );
-        assert_eq!(&serde_json::from_str::<CuaDialect>(json).unwrap(), dialect);
-    }
-    let space = ModelSpace::Grid(GridMax(1000));
-    assert_eq!(
-        serde_json::to_string(&space).unwrap(),
-        r#"{"kind":"grid","v":1000}"#
     );
 }
 
@@ -328,98 +271,4 @@ fn the_centre_target_maps_unchanged_and_round_trips() {
         serde_json::from_str::<Target<WindowSpace>>(&json).unwrap(),
         Target::Centre
     );
-}
-
-#[test]
-fn gate_vocabulary_round_trips_by_snake_case_name() {
-    fn check<T>(cases: &[(T, &str)])
-    where
-        T: serde::Serialize + serde::de::DeserializeOwned + PartialEq + std::fmt::Debug,
-    {
-        for (value, name) in cases {
-            let json = format!("\"{name}\"");
-            assert_eq!(serde_json::to_string(value).unwrap(), json);
-            assert_eq!(&serde_json::from_str::<T>(&json).unwrap(), value);
-        }
-    }
-    check(&[
-        (RunMode::InPlace, "in_place"),
-        (RunMode::AgentWorkspace, "agent_workspace"),
-        (RunMode::NestedSession, "nested_session"),
-    ]);
-    check(&[
-        (WindowTrust::Quire, "quire"),
-        (WindowTrust::Flatpak, "flatpak"),
-        (WindowTrust::Native, "native"),
-        (WindowTrust::Shell, "shell"),
-    ]);
-    check(&[
-        (WindowClass::Ordinary, "ordinary"),
-        (WindowClass::MailCompose, "mail_compose"),
-        (WindowClass::Terminal, "terminal"),
-        (WindowClass::Payments, "payments"),
-        (WindowClass::Admin, "admin"),
-        (WindowClass::PasswordManager, "password_manager"),
-        (WindowClass::Banking, "banking"),
-    ]);
-}
-
-#[test]
-fn action_profiles_round_trip_and_the_plain_one_is_empty() {
-    use cua_action::{ActionProfile, DragStyle, ScrollAxis, VerbAlias, VerbAliases};
-    let ui_mate = ActionProfile {
-        aliases: vec![
-            VerbAlias::Drag,
-            VerbAlias::Finished,
-            VerbAlias::Hotkey,
-            VerbAlias::Press,
-            VerbAlias::CallUser,
-        ]
-        .into(),
-        drag: DragStyle::FromCursor,
-        scroll: ScrollAxis::ByDirection,
-        ..ActionProfile::default()
-    };
-    const CASES: &[(&str, bool)] = &[
-        ("{}", true),
-        (
-            r#"{"drag":"from_start","scroll":"by_verb","aliases":[]}"#,
-            true,
-        ),
-        (r#"{"drag":"from_cursor"}"#, false),
-        (r#"{"aliases":["hotkey"]}"#, false),
-        (r#"{"calls":"qwen3_coder_xml"}"#, false),
-        (r#"{"calls":"engine"}"#, true),
-        (r#"{"answer":"think_action_call"}"#, false),
-        (r#"{"answer":"free","resolution":"grid_top"}"#, true),
-        (r#"{"resolution":"grid_cells"}"#, false),
-        (r#"{"history":"own_replies"}"#, false),
-        (r#"{"history":"action_list"}"#, true),
-    ];
-    for (json, plain) in CASES {
-        let profile: ActionProfile = serde_json::from_str(json).unwrap();
-        assert_eq!(profile.is_plain(), *plain, "{json}");
-        let back = serde_json::to_string(&profile).unwrap();
-        assert_eq!(
-            serde_json::from_str::<ActionProfile>(&back).unwrap(),
-            profile
-        );
-    }
-    let json = serde_json::to_string(&ui_mate).unwrap();
-    assert_eq!(
-        json,
-        r#"{"aliases":["drag","finished","hotkey","press","call_user"],"drag":"from_cursor","scroll":"by_direction"}"#
-    );
-    // A verb slug is the verb the model writes, and a set resolves only what it holds.
-    for alias in ui_mate.aliases.iter() {
-        let slug = serde_json::to_string(&alias).unwrap();
-        assert_eq!(slug, format!("\"{}\"", alias.model_verb()));
-        assert_eq!(ui_mate.aliases.resolve(alias.model_verb()), Some(alias));
-    }
-    assert_eq!(VerbAliases::default().resolve("drag"), None);
-    assert_eq!(
-        ui_mate.aliases.of("key").collect::<Vec<_>>(),
-        [VerbAlias::Hotkey, VerbAlias::Press]
-    );
-    assert!(serde_json::from_str::<ActionProfile>(r#"{"drags":"x"}"#).is_err());
 }

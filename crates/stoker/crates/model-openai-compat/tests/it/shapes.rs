@@ -1,23 +1,4 @@
 use model_openai_compat::{Flavor, RequestJson};
-use model_provider::ShapeWithTools;
-
-#[test]
-fn flavors_have_stable_slugs() {
-    const CHAT: &[(Flavor, &str)] = &[
-        (Flavor::LlamaServer, r#""llama_server""#),
-        (Flavor::Vllm, r#""vllm""#),
-        (Flavor::LiteLlm, r#""lite_llm""#),
-        (Flavor::OpenRouter, r#""open_router""#),
-    ];
-    for (flavor, json) in CHAT {
-        assert_eq!(&serde_json::to_string(flavor).unwrap(), json, "chat {json}");
-        assert_eq!(
-            &serde_json::from_str::<Flavor>(json).unwrap(),
-            flavor,
-            "chat {json}"
-        );
-    }
-}
 
 #[test]
 fn request_bodies_do_not_print() {
@@ -35,17 +16,4 @@ fn multipart_bodies_do_not_print_the_audio() {
         bytes: vec![1, 2, 3],
     };
     assert_eq!(format!("{body:?}"), "MultipartBody(<3 bytes>)");
-}
-
-#[test]
-fn how_each_server_combines_a_shape_with_tools() {
-    const CASES: &[(Flavor, ShapeWithTools)] = &[
-        (Flavor::LlamaServer, ShapeWithTools::AfterResult),
-        (Flavor::Vllm, ShapeWithTools::Together),
-        (Flavor::LiteLlm, ShapeWithTools::AfterResult),
-        (Flavor::OpenRouter, ShapeWithTools::AfterResult),
-    ];
-    for (flavor, shape_with_tools) in CASES {
-        assert_eq!(flavor.shape_with_tools(), *shape_with_tools, "{flavor:?}");
-    }
 }

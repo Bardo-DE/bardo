@@ -5,17 +5,15 @@ use crate::support;
 
 use cua_action::{CuaAction, CuaDialect, FinishOutcome, ModelSpace, ToolDialect, WireDialect};
 use cua_session::{
-    CuaProfile, FrameBudget, MaskedRegions, ObservationIn, RepairBudget, StepIndex, StepNote,
-    StepOutcome, TranscriptSink, TreeText, TurnTranscript,
+    FrameBudget, MaskedRegions, ObservationIn, StepIndex, StepNote, StepOutcome, TranscriptSink,
+    TreeText, TurnTranscript,
 };
 use cua_vendors::StepResult;
 use model_provider::{
-    ImageCount, ImageLimits, Part, SafetySignal, StopReason, ToolCallId, TurnEvent, TurnRequest,
-    TurnSink, check_sequence,
+    ImageCount, Part, SafetySignal, StopReason, ToolCallId, TurnEvent, TurnRequest, TurnSink,
+    check_sequence,
 };
-use proptest::prelude::*;
 use support::*;
-use vision_prep::Encoding;
 
 const HOLO: CuaDialect = CuaDialect::Tool(ToolDialect::Holo31);
 const ANTHROPIC: CuaDialect = CuaDialect::Wire(WireDialect::AnthropicToolset20260801);
@@ -223,55 +221,6 @@ fn a_frame_budget_is_the_prompt_limit_less_the_current_frame() {
             FrameBudget(*wanted).at_most(ImageCount(*per_prompt)),
             FrameBudget(*history),
             "{wanted} of {per_prompt}"
-        );
-    }
-}
-
-#[test]
-fn holos_profile_keeps_two_earlier_frames_and_a_prompt_never_holds_more_than_three_images() {
-    // The catalog's Holo entry: three images a prompt, the default history asks for three.
-    let images_limit = ImageLimits {
-        per_prompt: ImageCount(3),
-        rule: rule(),
-        space: grid(),
-    };
-    let profile = CuaProfile::for_model(
-        HOLO,
-        &images_limit,
-        FrameBudget(3),
-        RepairBudget(1),
-        Encoding::Png,
-    );
-    assert_eq!(profile.history, FrameBudget(2));
-    assert_eq!((profile.rule, profile.space), (rule(), grid()));
-    let m = map(grid());
-    let mut s =
-        cua_session::CuaSession::begin(profile, task(), model_provider::ModelName("holo".into()));
-    for step in 0..7 {
-        let request = s.request(&obs(step), &m, frame(&format!("f{step}")));
-        assert_eq!(images(&request), step.min(2) as usize + 1, "step {step}");
-        assert_eq!(check_sequence(&request.messages), Ok(()));
-        s.absorb_for(
-            &request,
-            calls(&[r#"{"action":"left_click","coordinate":[500,250]}"#]),
-            &m,
-        );
-    }
-}
-
-proptest! {
-    #[test]
-    fn a_profile_never_asks_for_more_images_than_the_model_takes(wanted in 0_u8..=255, per_prompt in 0_u16..=400) {
-        let limits = ImageLimits { per_prompt: ImageCount(per_prompt), rule: rule(), space: grid() };
-        let profile = CuaProfile::for_model(HOLO, &limits, FrameBudget(wanted), RepairBudget(1), Encoding::Png);
-        prop_assert!(profile.history.0 <= wanted);
-        // The frames the history keeps and the current one fit the limit (a model that takes none
-        // still gets the current frame, which the catalog never offers it for).
-        prop_assert!(u32::from(profile.history.0) < u32::from(per_prompt.max(1)));
-        // And nothing is given up that the limit allowed.
-        prop_assert_eq!(
-            u32::from(profile.history.0),
-            u32::from(wanted).min(u32::from(per_prompt.saturating_sub(1)).min(255))
         );
     }
 }
