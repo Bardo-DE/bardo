@@ -36,7 +36,7 @@ pub fn turn_on_agents(home: &ConfigHome) -> Result<(), FilesError> {
         home,
         &file()?,
         &KeyPath(SWITCH.to_owned()),
-        &toml::Value::String("on".to_owned()),
+        &toml::Value::Boolean(true),
     )
 }
 

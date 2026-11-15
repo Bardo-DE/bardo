@@ -63,7 +63,7 @@ pub(crate) fn use_sharing(files: Signal<Files>) -> SharingSwitch {
 }
 
 fn turned_on(edit: &Edit) -> bool {
-    edit.value.as_str() == Some("on")
+    edit.value.as_bool() == Some(true)
 }
 
 impl SharingSwitch {

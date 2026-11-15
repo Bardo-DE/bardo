@@ -97,12 +97,12 @@ fn choosing_a_model_shows_loading_it_until_inferd_answers_then_sets_it() {
 
 #[test]
 fn the_footer_says_why_when_it_is_on_and_is_gone_when_it_is_off() {
-    for (name, setting, shown) in [("on", None, true), ("off", Some("off"), false)] {
+    for (name, setting, shown) in [("on", None, true), ("off", Some(false), false)] {
         let sandbox = Sandbox::new(&format!("intelligence-reason-{name}"));
-        if let Some(word) = setting {
+        if let Some(on) = setting {
             sandbox.write(
                 "inferd/inferd.toml",
-                &format!("[ai.auto]\nshow_reason = \"{word}\"\n"),
+                &format!("[ai.auto]\nshow_reason = {on}\n"),
             );
         }
         let fake = Inferd::new(Verdict::Allow);

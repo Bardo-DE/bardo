@@ -11,7 +11,7 @@ async fn an_agent_cannot_turn_local_only_off_or_choose_a_model() {
         let refusal = world
             .perform(
                 "settings.key.set",
-                &[("key", key(path)), ("value", text("off"))],
+                &[("key", key(path)), ("value", text("false"))],
             )
             .await
             .expect_err("refused");

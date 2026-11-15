@@ -113,7 +113,7 @@ kind = "appearance"
 
 [[key]]
 path = "appearance.custom_styles"
-default = "use"
+default = true
 label = "Use my styles"
 help = "Draws the look you chose and your own style sheets."
 section = "Style"
@@ -122,10 +122,7 @@ agent = "settable"
 note = "Turn this off if a style makes something hard to use."
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["use", "off"]
+kind = "toggle"
 
 [key.page]
 kind = "appearance"

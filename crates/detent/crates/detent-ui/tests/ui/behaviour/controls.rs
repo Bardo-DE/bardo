@@ -28,7 +28,7 @@ fn clicking_a_page_shows_it() {
 }
 
 #[test]
-fn choosing_the_other_word_of_a_pair_writes_the_file_and_the_value_round_trips() {
+fn toggling_a_switch_writes_the_file_and_the_value_round_trips() {
     let sandbox = Sandbox::new("toggle-writes");
     let mut harness = sandbox.harness(opening("dock"));
     assert_eq!(
@@ -36,34 +36,33 @@ fn choosing_the_other_word_of_a_pair_writes_the_file_and_the_value_round_trips()
         None,
         "nothing is written by looking"
     );
-    let (on, off) = (segment("Magnification", 1), segment("Magnification", 2));
     assert_eq!(
-        harness.attr(&on, "aria-checked").as_deref(),
+        harness.attr(".ds-toggle", "aria-checked").as_deref(),
         Some("true"),
         "magnification starts on, its default"
     );
 
-    click(&mut harness, &off);
+    click(&mut harness, ".ds-toggle");
     assert_eq!(
-        harness.attr(&off, "aria-checked").as_deref(),
-        Some("true"),
-        "the choice moved to off"
+        harness.attr(".ds-toggle", "aria-checked").as_deref(),
+        Some("false"),
+        "the switch turned off"
     );
     let text = sandbox
         .read("sill/settings.toml")
         .expect("the file was written");
-    assert!(text.contains("magnification = \"off\""), "{text}");
+    assert!(text.contains("magnification = false"), "{text}");
 
     // Read back the way the owning program reads it, and by a second run of the app.
     let spec = harness_spec(&sandbox);
     let loaded = load(&sandbox.config_home(), &spec);
     let key = detent_model_key("dock.magnification");
-    assert_eq!(
-        loaded.value.get(&key),
-        Some(&toml::Value::String("off".to_owned()))
-    );
+    assert_eq!(loaded.value.get(&key), Some(&toml::Value::Boolean(false)));
     let again = sandbox.harness(opening("dock"));
-    assert_eq!(again.attr(&off, "aria-checked").as_deref(), Some("true"));
+    assert_eq!(
+        again.attr(".ds-toggle", "aria-checked").as_deref(),
+        Some("false")
+    );
 }
 
 #[test]
@@ -181,7 +180,7 @@ fn a_write_that_fails_says_so_and_leaves_the_file_alone() {
     let sandbox = Sandbox::new("write-refused");
     sandbox.write("sill/settings.toml", "[dock\nmagnification = ");
     let mut harness = sandbox.harness(opening("dock"));
-    click(&mut harness, &segment("Magnification", 2));
+    click(&mut harness, ".ds-toggle");
     assert_eq!(harness.count(".ds-toast"), 1, "a toast reports the refusal");
     assert_eq!(
         sandbox.read("sill/settings.toml").as_deref(),

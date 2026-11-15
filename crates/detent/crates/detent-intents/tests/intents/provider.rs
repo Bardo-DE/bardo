@@ -126,11 +126,11 @@ async fn reading_a_key_answers_the_file_then_the_default_and_trusts_neither() {
         }
     };
     let default = read(MAGNIFICATION).await;
-    assert_eq!(default.value, text("on"), "no file: the key's default");
+    assert_eq!(default.value, text("true"), "no file: the key's default");
     assert_eq!(default.label.integrity, Integrity::Untrusted);
 
-    world.write(SILL, "[dock]\nmagnification = \"off\"\ntile_size_px = 60\n");
-    assert_eq!(read(MAGNIFICATION).await.value, text("off"));
+    world.write(SILL, "[dock]\nmagnification = false\ntile_size_px = 60\n");
+    assert_eq!(read(MAGNIFICATION).await.value, text("false"));
     assert_eq!(read(TILE_SIZE).await.value, text("60"));
 }
 
@@ -154,12 +154,12 @@ async fn a_value_longer_than_the_manifest_allows_is_cut_to_one_line() {
 #[tokio::test(flavor = "multi_thread")]
 async fn any_key_can_be_read_even_one_an_agent_may_not_set() {
     let world = world("read-hands-off").await;
-    world.write(SILL, "[dock]\nautohide = \"on\"\n");
+    world.write(SILL, "[dock]\nautohide = true\n");
     let out = world
         .perform("settings.key.read", &[("key", key(HANDS_OFF))])
         .await
         .expect("read");
-    assert_eq!(out.value.expect("a value").value, text("on"));
+    assert_eq!(out.value.expect("a value").value, text("true"));
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -192,7 +192,7 @@ async fn a_key_the_schema_does_not_mark_is_not_set() {
     let refusal = world
         .perform(
             "settings.key.set",
-            &[("key", key(HANDS_OFF)), ("value", text("on"))],
+            &[("key", key(HANDS_OFF)), ("value", text("true"))],
         )
         .await
         .expect_err("refused");
@@ -204,20 +204,20 @@ async fn a_key_the_schema_does_not_mark_is_not_set() {
 #[tokio::test(flavor = "multi_thread")]
 async fn setting_a_key_writes_the_file_tells_the_window_and_hands_back_an_undo() {
     let world = world("set-a-key").await;
-    let before = "# mine\n[dock]\nautohide = \"off\" # kept\n[mystery]\nx = 1\n";
+    let before = "# mine\n[dock]\nautohide = false # kept\n[mystery]\nx = 1\n";
     world.write(SILL, before);
     let out = world
         .perform(
             "settings.key.set",
-            &[("key", key(MAGNIFICATION)), ("value", text("off"))],
+            &[("key", key(MAGNIFICATION)), ("value", text("false"))],
         )
         .await
         .expect("set");
     assert!(matches!(out.undo, Undoable::Yes(_)), "{:?}", out.undo);
     let file = world.read(SILL).expect("written");
-    assert!(file.contains("magnification = \"off\""), "{file}");
+    assert!(file.contains("magnification = false"), "{file}");
     assert!(
-        file.contains("autohide = \"off\" # kept"),
+        file.contains("autohide = false # kept"),
         "kept as it was: {file}"
     );
     assert!(file.contains("[mystery]\nx = 1"), "{file}");
@@ -227,14 +227,14 @@ async fn setting_a_key_writes_the_file_tells_the_window_and_hands_back_an_undo()
         .perform("settings.key.read", &[("key", key(MAGNIFICATION))])
         .await
         .expect("read");
-    assert_eq!(read.value.expect("a value").value, text("off"));
+    assert_eq!(read.value.expect("a value").value, text("false"));
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_value_the_control_cannot_hold_is_refused_with_what_it_takes() {
     let world = world("set-bad-values").await;
     let cases = [
-        (MAGNIFICATION, "maybe", "one of: on, off"),
+        (MAGNIFICATION, "maybe", "one of: true, false"),
         (TILE_SIZE, "huge", "takes a number"),
         (TILE_SIZE, "500", "from 32 to 80"),
         (TILE_SIZE, "4.5", "takes a number"),
@@ -305,7 +305,7 @@ async fn undoing_a_key_the_file_never_had_writes_its_default() {
     let out = world
         .perform(
             "settings.key.set",
-            &[("key", key(MAGNIFICATION)), ("value", text("off"))],
+            &[("key", key(MAGNIFICATION)), ("value", text("false"))],
         )
         .await
         .expect("set");
@@ -319,7 +319,7 @@ async fn undoing_a_key_the_file_never_had_writes_its_default() {
         .expect("read");
     assert_eq!(
         read.value.expect("a value").value,
-        text("on"),
+        text("true"),
         "the old value is back"
     );
 }
@@ -330,14 +330,14 @@ async fn undo_does_not_overwrite_a_change_made_since() {
     let out = world
         .perform(
             "settings.key.set",
-            &[("key", key(MAGNIFICATION)), ("value", text("off"))],
+            &[("key", key(MAGNIFICATION)), ("value", text("false"))],
         )
         .await
         .expect("set");
     let Undoable::Yes(token) = out.undo else {
         panic!("a setting is undoable")
     };
-    world.write(SILL, "[dock]\nmagnification = \"on\"\ntile_size_px = 33\n");
+    world.write(SILL, "[dock]\nmagnification = true\ntile_size_px = 33\n");
     assert_eq!(world.undo(&token).await, Err(UndoFault::Conflict));
     let file = world.read(SILL).expect("file");
     assert!(
@@ -382,7 +382,7 @@ async fn a_dry_run_shows_the_change_and_makes_none() {
     let refusal = world
         .dry_run(
             "settings.key.set",
-            &[("key", key(HANDS_OFF)), ("value", text("on"))],
+            &[("key", key(HANDS_OFF)), ("value", text("true"))],
         )
         .await
         .expect_err("a refused change has no preview either");

@@ -27,7 +27,7 @@ pub(crate) fn show_reason(env: &Env, files: &Files) -> bool {
         .entries()
         .map(|(_, entry)| entry)
         .find(|entry| entry.spec.path.0 == SHOW_REASON)
-        .is_none_or(|entry| value_of(files, entry).as_str() == Some("on"))
+        .is_none_or(|entry| value_of(files, entry).as_bool() == Some(true))
 }
 
 /// inferd's model rows, or why they are not there. `reasons` is whether the footer is shown.

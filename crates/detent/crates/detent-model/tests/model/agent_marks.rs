@@ -234,10 +234,7 @@ fn quires_schema_marks_theme_accent_look_file_icons_and_use_my_styles_and_use_my
     let entry = found
         .entry(&KeyPath("appearance.custom_styles".to_owned()))
         .expect("the key is in the catalogue");
-    assert_eq!(
-        entry.control,
-        Control::Segmented(vec!["use".to_owned(), "off".to_owned()])
-    );
+    assert_eq!(entry.control, Control::Toggle);
     let page = found
         .page(&PageSlug("appearance".to_owned()))
         .expect("page");

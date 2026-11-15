@@ -1,12 +1,13 @@
 //! The Appearance page's "Use my styles" switch and the notes under it, over scratch style files.
 
 use crate::support::Sandbox;
-use crate::support::drive::{click, segment};
+use crate::support::drive::click;
 use detent_model::PageSlug;
 use detent_ui::Opening;
 use ds_harness::Harness;
 use std::time::Duration;
 
+const SWITCH: &str = ".section .ds-toggle[*|aria-label=\"Use my styles\"]";
 const LINE: &str = ".style-notes";
 const SHEET_ROWS: &str = ".style-notes-sheet .ds-field-row";
 
@@ -30,27 +31,29 @@ fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
 }
 
 #[test]
-fn use_my_styles_is_two_segments_that_write_off_and_use() {
+fn use_my_styles_is_a_switch_that_writes_false_and_true() {
     let sandbox = Sandbox::new("use-my-styles");
     let mut harness = sandbox.harness(appearance());
-    let (used, off) = (segment("Use my styles", 1), segment("Use my styles", 2));
-    assert_eq!(harness.count(&used), 1, "a use/off key is two segments");
+    assert_eq!(harness.count(SWITCH), 1, "a bool key is one switch");
     assert_eq!(
-        harness.attr(&used, "aria-checked").as_deref(),
+        harness.attr(SWITCH, "aria-checked").as_deref(),
         Some("true"),
-        "Use is the default"
+        "Use is the default, and on"
     );
-    click(&mut harness, &off);
+    click(&mut harness, SWITCH);
     let text = sandbox
         .read("quire/appearance.toml")
         .expect("the file was written");
-    assert!(text.contains("custom_styles = \"off\""), "{text}");
-    assert_eq!(harness.attr(&off, "aria-checked").as_deref(), Some("true"));
-    click(&mut harness, &used);
+    assert!(text.contains("custom_styles = false"), "{text}");
+    assert_eq!(
+        harness.attr(SWITCH, "aria-checked").as_deref(),
+        Some("false")
+    );
+    click(&mut harness, SWITCH);
     let text = sandbox
         .read("quire/appearance.toml")
         .expect("the file was written");
-    assert!(text.contains("custom_styles = \"use\""), "{text}");
+    assert!(text.contains("custom_styles = true"), "{text}");
 }
 
 #[test]

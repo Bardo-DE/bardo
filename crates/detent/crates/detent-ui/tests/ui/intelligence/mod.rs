@@ -30,9 +30,8 @@ fn intelligence() -> Opening {
 fn stand_in(app: &str, file: &str, path: &str, section: &str) -> String {
     format!(
         "app = \"{app}\"\nfile = \"{file}\"\nversion = 1\n\n[[key]]\npath = \"{path}\"\n\
-         default = \"on\"\nlabel = \"{path}\"\nhelp = \"\"\nsection = \"{section}\"\n\
-         exposure = \"basic\"\n\n[key.kind]\nkind = \"toggle\"\n\n[key.kind.v]\n\
-         variants = [\"on\", \"off\"]\n\n[key.page]\nkind = \"intelligence\"\n"
+         default = true\nlabel = \"{path}\"\nhelp = \"\"\nsection = \"{section}\"\n\
+         exposure = \"basic\"\n\n[key.kind]\nkind = \"toggle\"\n\n[key.page]\nkind = \"intelligence\"\n"
     )
 }
 

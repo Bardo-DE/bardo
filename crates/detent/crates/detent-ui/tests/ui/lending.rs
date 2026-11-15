@@ -4,7 +4,7 @@
 //! down its calls; the files are in a scratch folder.
 
 use crate::support::Sandbox;
-use crate::support::drive::{click, scroll_into_view, segment};
+use crate::support::drive::{click, scroll_into_view};
 use crate::support::lending::SHIPPED;
 use detent_model::PageSlug;
 use detent_ui::Opening;
@@ -24,14 +24,8 @@ fn intelligence() -> Opening {
     }
 }
 
-/// The segment that says on: the key's words are off, then on.
-fn on() -> String {
-    segment(LABEL, 2)
-}
-
-/// The segment that says off.
-fn off() -> String {
-    segment(LABEL, 1)
+fn toggle() -> String {
+    format!("[aria-label=\"{LABEL}\"] .ds-toggle")
 }
 
 /// The page's markup with an apostrophe read back, however the document spells it.
@@ -55,22 +49,22 @@ fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
 /// The window with the switch pressed once: the question is up.
 fn asked(sandbox: &Sandbox) -> Harness {
     let mut harness = sandbox.harness(intelligence());
-    scroll_into_view(&mut harness, &on());
-    click(&mut harness, &on());
+    scroll_into_view(&mut harness, &toggle());
+    click(&mut harness, &toggle());
     settle(&mut harness, "the question", |h| {
         plain(h).contains(QUESTION)
     });
     harness
 }
 
-fn serve_setting(sandbox: &Sandbox) -> Option<String> {
+fn serve_setting(sandbox: &Sandbox) -> Option<bool> {
     let text = sandbox.read("inferd/inferd.toml")?;
     let table: toml::Table = text.parse().expect("toml");
-    table["ai"]["tailnet"]["serve"].as_str().map(str::to_owned)
+    table["ai"]["tailnet"]["serve"].as_bool()
 }
 
 fn checked(harness: &Harness) -> Option<String> {
-    harness.attr(&on(), "aria-checked")
+    harness.attr(&toggle(), "aria-checked")
 }
 
 #[test]
@@ -114,7 +108,7 @@ fn allow_sets_sharing_up_and_then_writes_the_setting() {
     settle(&mut harness, "the setting", |_| {
         serve_setting(&sandbox).is_some()
     });
-    assert_eq!(serve_setting(&sandbox).as_deref(), Some("on"));
+    assert_eq!(serve_setting(&sandbox), Some(true));
     assert_eq!(sandbox.drop_in().as_deref(), Some(SHIPPED));
     assert_eq!(
         sandbox.units().calls(),
@@ -157,14 +151,14 @@ fn turning_it_off_takes_sharing_away_without_asking() {
     sandbox.write("inferd/inferd.toml", "[ai.tailnet]\nserve = true\n");
     sandbox.write(DROP_IN, SHIPPED);
     let mut harness = sandbox.harness(intelligence());
-    scroll_into_view(&mut harness, &on());
+    scroll_into_view(&mut harness, &toggle());
     assert_eq!(checked(&harness).as_deref(), Some("true"));
-    click(&mut harness, &off());
+    click(&mut harness, &toggle());
     settle(&mut harness, "the file to go", |_| {
         sandbox.drop_in().is_none()
     });
     settle(&mut harness, "the setting off", |_| {
-        serve_setting(&sandbox).as_deref() == Some("off")
+        serve_setting(&sandbox) == Some(false)
     });
     assert!(!plain(&harness).contains(QUESTION), "off asks nothing");
     assert_eq!(
