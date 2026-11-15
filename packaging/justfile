@@ -1,8 +1,9 @@
-# The desktop. Every part is a repo checked out beside this one (~/sill, ~/detent, ...).
+# The desktop, built and installed from this one tree: one cargo workspace at the root of the checkout,
+# one target directory (<tree>/target). Run `just` in packaging/.
 #
 #   just              build and install everything
 #   just build        build everything, as you
-#   just only sill detent   build and install just these parts
+#   just only sill detent   build and install just these parts (their programs are built in one cargo run)
 #   just check        what this machine lacks, with the line that installs it
 #
 # One line per part; the whole output is in ~/.local/state/desktop-install.log.
@@ -27,4 +28,4 @@ check:
 
 # every part, in install order
 parts:
-    @echo callers porter steward ferry stoker almanac docket cua detent casement sill transom turnstile keycap anyview mailo files palmrest session
+    @echo callers porter steward ferry stoker almanac docket cua detent casement sill transom turnstile keycap files palmrest session

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # The distro helpers under install/ in a scratch directory: the family from an os-release file, the package
-# table and the install lines per family, the escalation program, the cargo helper (a build runs from / with --manifest-path), and the check
+# table and the install lines per family, the escalation program, the cargo helper (one build of the tree, run from / with --manifest-path), and the check
 # mode against a made-up machine. Nothing reads the real /etc/os-release or writes outside the scratch
 # directory; the programs the checks look for are stubs on a PATH of its own.
 #
@@ -107,24 +107,28 @@ if [ "$(id -u)" != 0 ]; then
   contains escalate-says "$(cat "$tmp/escalate.err")" "Run this yourself, as root"
 fi
 
-# 5. building from outside the tree: cargo runs from /, names the manifest, gets the tree's pinned toolchain and the
-# settings its config gives besides the linker, and never RUSTFLAGS. cargo and rustup are stubs.
+# 5. building the tree: cargo runs from /, names the tree's manifest, gets the tree's pinned toolchain and the one setting an
+# install wants from the tree's config (git over the command line), and never RUSTFLAGS. cargo and rustup are stubs.
 # shellcheck source=../install/cargo.sh
 source "$INSTALL_DIR/cargo.sh"
-mkdir -p "$tmp/cargobin" "$tmp/trees/sill" "$tmp/trees/casement"
+mkdir -p "$tmp/cargobin" "$tmp/trees/pinned" "$tmp/trees/plain"
 printf '#!/bin/sh\necho "cwd=$PWD TC=${RUSTUP_TOOLCHAIN:-} FLAGS=${RUSTFLAGS-unset} TARGET=$CARGO_TARGET_DIR $*"\n' >"$tmp/cargobin/cargo"
 printf '#!/bin/sh\nexit 0\n' >"$tmp/cargobin/rustup"
 chmod +x "$tmp/cargobin"/*
-printf '[toolchain]\nchannel = "1.2.3"\ncomponents = ["rustfmt"]\n' >"$tmp/trees/sill/rust-toolchain.toml"
-unset RUSTFLAGS CARGO_TARGET_DIR
-expect toolchain "$(tree_toolchain "$tmp/trees/sill")" "1.2.3"
-expect no-toolchain "$(tree_toolchain "$tmp/trees/casement")" ""
-expect git-config "$(tree_configs "$tmp/trees/sill")" "net.git-fetch-with-cli=true"
-expect no-config "$(tree_configs "$tmp/trees/casement")" ""
-expect build-outside "$(PATH=$tmp/cargobin:$PATH build_outside "$tmp/trees/sill" -p sill)" \
-  "cwd=/ TC=1.2.3 FLAGS=unset TARGET=$tmp/trees/sill/target build --release --locked --manifest-path $tmp/trees/sill/Cargo.toml --config net.git-fetch-with-cli=true -p sill"
-expect build-outside-plain "$(CARGO_TARGET_DIR=$tmp/t PATH=$tmp/cargobin:$PATH build_outside "$tmp/trees/casement" -p casement)" \
-  "cwd=/ TC= FLAGS=unset TARGET=$tmp/t build --release --locked --manifest-path $tmp/trees/casement/Cargo.toml -p casement"
+printf '[toolchain]\nchannel = "1.2.3"\ncomponents = ["rustfmt"]\n' >"$tmp/trees/pinned/rust-toolchain.toml"
+unset RUSTFLAGS CARGO_TARGET_DIR BARDO_TREE
+expect toolchain "$(tree_toolchain "$tmp/trees/pinned")" "1.2.3"
+expect no-toolchain "$(tree_toolchain "$tmp/trees/plain")" ""
+expect tree-root "$(tree_root)" "$(cd "$HERE/../.." && pwd)"
+expect tree-root-env "$(BARDO_TREE=$tmp/trees/plain/ tree_root)" "$tmp/trees/plain"
+expect build-tree "$(BARDO_TREE=$tmp/trees/pinned PATH=$tmp/cargobin:$PATH build_tree -p sill)" \
+  "cwd=/ TC=1.2.3 FLAGS=unset TARGET=$tmp/trees/pinned/target build --release --locked --manifest-path $tmp/trees/pinned/Cargo.toml --config net.git-fetch-with-cli=true -p sill"
+expect build-tree-plain "$(BARDO_TREE=$tmp/trees/plain CARGO_TARGET_DIR=$tmp/t PATH=$tmp/cargobin:$PATH build_tree -p casement)" \
+  "cwd=/ TC= FLAGS=unset TARGET=$tmp/t build --release --locked --manifest-path $tmp/trees/plain/Cargo.toml --config net.git-fetch-with-cli=true -p casement"
+# one cargo run for every package of the parts, each package once
+expect build-parts "$(BARDO_TREE=$tmp/trees/plain PATH=$tmp/cargobin:$PATH build_parts casement sill)" \
+  "cwd=/ TC= FLAGS=unset TARGET=$tmp/trees/plain/target build --release --locked --manifest-path $tmp/trees/plain/Cargo.toml --config net.git-fetch-with-cli=true -p casement -p casementctl -p sill"
+expect no-packages "$(BARDO_TREE=$tmp/trees/plain PATH=$tmp/cargobin:$PATH build_parts callers session)" ""
 
 # 6. the check mode on a made-up machine: an empty PATH of stubs, an empty root, a fake dpkg and ldconfig.
 bin="$tmp/machine/bin" root="$tmp/machine/root"

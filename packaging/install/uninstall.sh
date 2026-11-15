@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Remove exactly what install/install.sh put in place, and nothing else. A file is removed only
 # when it is still what the installer wrote; one you changed is kept and named. That includes casement.service
-# and sill.service in <sysconfdir>/systemd/user, compared with the checkouts they came from (give the same --siblings; a
-# unit whose checkout is gone is kept and named). Directories are left alone. Same flags as install.sh (give the same
-# --prefix, --destdir, --sysconfdir, --sessions-dir and --siblings you installed with).
+# and sill.service in <sysconfdir>/systemd/user, compared with the crates they came from (give the same --tree; a
+# unit whose source is gone is kept and named). Directories are left alone. Same flags as install.sh (give the same
+# --prefix, --destdir, --sysconfdir, --sessions-dir and --tree you installed with).
 #
 #   install/uninstall.sh --dry-run    print every step, change nothing
 #   install/uninstall.sh              do it

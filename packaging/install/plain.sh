@@ -1,68 +1,50 @@
 #!/usr/bin/env bash
-# The plain installer behind the justfile: build every part as you, then install it, one line per part.
-# Each part's whole output goes to the log; a failure prints the log's last lines and stops.
+# The plain installer behind the justfile: build the whole desktop once from this tree as you, then install it,
+# one line per part. Each part's whole output goes to the log; a failure prints the log's last lines and stops.
 #
-#   install/plain.sh build   [PART...]   build as you (cargo, release, this system's linker)
+#   install/plain.sh build   [PART...]   build as you (cargo, release, this system's linker): one cargo run, one target dir
 #   install/plain.sh install [PART...]   build, then install; sudo asks once, at the start
 #
-# With no PART, every part in install order. PREFIX (default /usr/local) and SIBLINGS (default the
-# parent of this repo) come from the environment. Each part's own installer does the work; this file only
-# says how to build it as you and how to install what was built, so nothing builds as root.
+# With no PART, every part in install order. PREFIX (default /usr/local) and BARDO_TREE (default the parent of
+# packaging/) come from the environment. The tree is one cargo workspace: every program is built by one
+# `cargo build --release -p ...` at its root into <tree>/target (or $CARGO_TARGET_DIR), and each part's own installer
+# (crates/<part>/scripts/install.sh, or install/system.sh) is run with --no-build to place what was built, so nothing
+# builds as root.
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 desktop=$(dirname "$here")
-siblings=${SIBLINGS:-$(dirname "$desktop")}
-prefix=${PREFIX:-/usr/local}
-log=${XDG_STATE_HOME:-$HOME/.local/state}/desktop-install.log
 # shellcheck source=install/cargo.sh
 . "$here/cargo.sh"
+tree=$(tree_root)
+prefix=${PREFIX:-/usr/local}
+target=${CARGO_TARGET_DIR:-$tree/target}
+export CARGO_TARGET_DIR=$target
+log=${XDG_STATE_HOME:-$HOME/.local/state}/desktop-install.log
 
-all=(callers porter steward ferry stoker almanac docket cua detent casement sill transom turnstile keycap anyview mailo files palmrest session)
+all=(callers porter steward ferry stoker almanac docket cua detent casement sill transom turnstile keycap files palmrest session)
 
-# build_part PART: build what PART's installer installs, as you. Parts whose installer builds as you and
-# asks for sudo itself (stoker, almanac, docket, cua, sill, mailo, files) build in their install step instead.
-build_part() {
-  local s=$siblings
-  case $1 in
-    porter) build_outside "$s/porter" -p accountd ;;
-    ferry) build_outside "$s/ferry" -p syncd -p ferry-mountd ;;
-    steward) build_outside "$s/steward" -p inferd ;;
-    detent) build_outside "$s/detent" -p detent ;;
-    casement) build_outside "$s/casement" -p casement -p casementctl ;;
-    transom) build_outside "$s/transom" -p transom ;;
-    turnstile) build_outside "$s/turnstile" -p turnstile ;;
-    keycap) build_outside "$s/keycap" -p keycap ;;
-    palmrest) build_outside "$s/palmrest" -p palmrest ;;
-    anyview) build_outside "$s/anyview" -p anyview -p anyview-ffmpeg -p anyview-heif -p anyview-raw ;;
-    *) return 0 ;;
-  esac
-}
-
-# install_part PART: install PART from what was built. As root (sudo) only where the installer wants root
-# for the whole run; the rest run as you and use the sudo already granted.
+# install_part PART: install PART from what was built in $target. As root (sudo) only where the installer wants
+# root for the whole run; the rest run as you and use the sudo already granted. sudo drops the environment, so the
+# root ones pass CARGO_TARGET_DIR through env.
 install_part() {
-  local s=$siblings p=$prefix d=$desktop
+  local c=$tree/crates p=$prefix d=$desktop
   case $1 in
     callers) sudo "$d/install/system.sh" callers ;;
-    porter) sudo "$s/porter/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
-    steward) sudo "$s/steward/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
-    ferry) sudo "$s/ferry/scripts/install.sh" --prefix "$p" --no-build ;;
-    stoker) "$s/stoker/scripts/install.sh" --prefix "$p" --sysconfdir /etc ;;
-    almanac) "$s/almanac/scripts/install.sh" --prefix "$p" ;;
-    docket) "$s/docket/scripts/install.sh" --prefix "$p" ;;
-    cua) "$s/cua/scripts/install.sh" --prefix "$p" ;;
-    detent) sudo env PREFIX="$p" "$s/detent/scripts/install.sh" ;;
-    casement) sudo "$s/casement/scripts/install.sh" --prefix "$p" --locked --no-build ;;
-    sill) "$s/sill/dist/install.sh" ;;
-    transom) sudo "$s/transom/scripts/install.sh" --prefix "$p" --no-build ;;
-    turnstile | keycap | palmrest) sudo "$d/install/system.sh" "$1" --prefix "$p" --siblings "$s" ;;
-    anyview) sudo "$s/anyview/dist/install.sh" --prefix "$p" --no-build ;;
-    # Only the prefix: with MAILO_UNIT_DIR set too, mailo takes both for a place you own and never asks
-    # for sudo. Its unit goes to its default, /etc/systemd/user.
-    mailo) MAILO_PREFIX=$p "$s/mailo/dist/install.sh" ;;
+    porter) sudo env CARGO_TARGET_DIR="$target" "$c/porter/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
+    steward) sudo env CARGO_TARGET_DIR="$target" "$c/steward/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
+    ferry) sudo env CARGO_TARGET_DIR="$target" "$c/ferry/scripts/install.sh" --prefix "$p" --no-build ;;
+    stoker) "$c/stoker/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
+    almanac) "$c/almanac/scripts/install.sh" --prefix "$p" --no-build ;;
+    docket) "$c/docket/scripts/install.sh" --prefix "$p" --no-build ;;
+    cua) "$c/cua/scripts/install.sh" --prefix "$p" --no-build ;;
+    detent) sudo env PREFIX="$p" DETENT_BIN="$target/release/detent" "$c/detent/scripts/install.sh" ;;
+    casement) sudo env CARGO_TARGET_DIR="$target" "$c/casement/scripts/install.sh" --prefix "$p" --locked --no-build ;;
+    sill) "$c/sill/dist/install.sh" --no-build ;;
+    transom) sudo env CARGO_TARGET_DIR="$target" "$c/transom/scripts/install.sh" --prefix "$p" --no-build ;;
+    turnstile | keycap | palmrest) sudo env CARGO_TARGET_DIR="$target" "$d/install/system.sh" "$1" --prefix "$p" --tree "$tree" ;;
     # Its installer builds as you and asks for sudo itself only when the prefix is not yours.
-    files) FILES_PREFIX=$p "$s/files/dist/install.sh" ;;
-    session) sudo "$d/install/install.sh" --prefix "$p" --sysconfdir /etc --siblings "$s" ;;
+    files) FILES_PREFIX=$p "$c/files/dist/install.sh" --no-build ;;
+    session) sudo "$d/install/install.sh" --prefix "$p" --sysconfdir /etc --tree "$tree" ;;
   esac
 }
 
@@ -72,7 +54,7 @@ quietly() {
   shift
   printf '  %-10s %s… ' "$label" "$verb"
   { echo; echo "=== $label: $verb ($(date -Is))"; } >>"$log"
-  if (cd "$siblings" && "$@") >>"$log" 2>&1 </dev/null; then
+  if (cd "$tree" && "$@") >>"$log" 2>&1 </dev/null; then
     echo done
   else
     printf 'FAILED\n\n'
@@ -93,9 +75,7 @@ mkdir -p "$(dirname "$log")"
 : >"$log"
 
 verb=building
-for part in "${parts[@]}"; do
-  case $part in porter | steward | ferry | detent | casement | transom | turnstile | keycap | palmrest | anyview) quietly "$part" build_part "$part" ;; esac
-done
+quietly "all parts" build_parts "${parts[@]}"
 [ "$mode" = install ] || exit 0
 
 echo "  sudo asks for your password once:"

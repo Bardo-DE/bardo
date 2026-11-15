@@ -9,6 +9,22 @@ The desktop is meant to work out of the box on three families:
 Anything else is treated as "unknown": the installer prints the install line for all three families and lets
 you pick.
 
+## Installing
+
+Clone the bardo repository, then build and install from its `packaging/` folder. One tree is one cargo
+workspace: every program of the desktop is built in one `cargo build --release` run into one target directory
+(`target/` at the root), as you, and then placed with one `sudo` at the start:
+
+```
+git clone https://github.com/Bardo-DE/bardo.git
+cd bardo/packaging
+just check        # what this machine lacks, with the line that installs it (same as ./install.sh --check)
+just              # build everything as you, then install it (sudo asks once)
+```
+
+Ubuntu, Fedora and Arch use the same commands. You need rustup and `just` (`dnf install just` or `pacman -S just`;
+where your archive lacks it, `cargo install just`, or run `install/plain.sh install`, which is what `just` runs). Log out and back in to "sill (casement)" afterwards.
+
 ## What the installer checks
 
 `./install.sh --check` changes nothing. It reads `/etc/os-release` (`ID` and `ID_LIKE`) to find the family, looks for
@@ -23,7 +39,7 @@ It looks for:
   installer builds and puts in place), Xwayland, a place to keep saved passwords (gnome-keyring or KWallet), bubblewrap
   (the sandbox for agents), fuse3 (cloud drives in Files open their files when you open them), curl, xdg-utils, the Vulkan loader and a Vulkan driver. On Ubuntu also
   `dbus-user-session`, which minimal installs lack.
-- **To build from source**: rustup (the repos pin Rust 1.98.1; a distro's own rust package is the wrong version,
+- **To build from source**: rustup (the tree pins Rust 1.98.1 in rust-toolchain.toml; a distro's own rust package is the wrong version,
   and Ubuntu's is far too old), a C toolchain, cmake, pkg-config, libclang, perl and the development packages of
   the libraries we link (Wayland, libinput, libseat, libdrm, Mesa, PipeWire, PAM, fontconfig and others).
   If you install a prebuilt bundle you can skip all of this.
@@ -38,9 +54,10 @@ It looks for:
 Everything the check prints comes from one file, `install/packages.sh`. The harness and the gate use it for their
 own hints.
 
-Source builds do not need `mold`, and never use a linker other than the system's: several repos' cargo config asks
-for clang and mold to link faster, which is for the people who work on them. An install builds from `/` with
-`--manifest-path` (`install/cargo.sh`), so cargo does not read that file, and nothing is installed for the linker.
+Source builds do not need `clang` or `mold`, and never use a linker other than the system's: a working tree's cargo
+config may ask for them to link faster, which is for the people who work on it. An install builds from `/` with
+`--manifest-path` of the tree (`install/cargo.sh`), so cargo does not read that file, and nothing is installed for the
+linker.
 
 ## Install lines
 
@@ -221,12 +238,12 @@ the install lines above already include (`polkit` on Fedora and Arch, `polkitd p
 
 ## Where things go
 
-`./install.sh` takes `--prefix` (default `/usr/local`), `--sysconfdir` (default `/etc`) and `--destdir`. porter goes
+`./install.sh` takes `--prefix` (default `/usr/local`), `--sysconfdir` (default `/etc`), `--destdir`, `--tree` (the bardo tree; default the parent of `packaging/`) and `--no-build`. porter goes
 under the same prefix as the rest: its daemons find the providers, the client table and the model catalog under the
 first `$XDG_DATA_DIRS` entry that has them (default `/usr/local/share:/usr/share`), and its caller tables in
 `/etc/porter` (steward installs inferd and its caller table there too; ferry, which has syncd, writes nothing under `/etc`). The session script, the desktop target and the login entry
 are installed by `install/install.sh`, which `./install.sh` runs last. casement and its user unit are installed by
-casement's own installer, which `./install.sh` runs too. Both print the exact command to run as root when they
+`crates/casement/scripts/install.sh`, which `./install.sh` runs too. Both print the exact command to run as root when they
 cannot write a place (`/etc`, `/usr/share/wayland-sessions`) themselves.
 
 ### The input service and the list of programs

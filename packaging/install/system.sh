@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # The desktop's own system files: the list of its programs, the input service, the keyboard map and the touchpad
-# daemon. Four parts, each run on its own by install.sh (it passes the prefix, the staging root and where the checkouts
-# are):
+# daemon. Four parts, each run on its own by install.sh (it passes the prefix, the staging root and where the tree
+# is):
 #
-#   install/system.sh PART [--dry-run] [--prefix DIR] [--destdir DIR] [--siblings DIR]
+#   install/system.sh PART [--dry-run] [--prefix DIR] [--destdir DIR] [--tree DIR]
 #   install/system.sh --remove PART [same flags]
 #
 #   callers    /etc/quire/desktop-callers.toml, from dist/: which program is the shell, the updater, the portal and so on.
 #              The update service and the screen-sharing service read it once, when they start, and refuse everybody
 #              without it, so this part comes before anything that installs or starts them. Always replaced (an
 #              administrator adds rows in /etc/quire/desktop-callers.d/, which is never touched).
-#   turnstile  the input service: its program (built by install.sh as you, from the checkout beside this one), its
+#   turnstile  the input service: its program (built by install/plain.sh or install.sh as you, from this tree), its
 #              socket and service in /usr/lib/systemd/system, the device rule that closes /dev/uinput to everybody
 #              but it, and the list that loads the kernel module. Then it reloads systemd and the device rules and
 #              starts the socket. No part of the desktop gives /dev/uinput to the person or to a group.
@@ -53,11 +53,12 @@ if [ "${1:-}" = --remove ]; then mode=remove; shift; fi
 part=${1:-}
 case "$part" in callers | turnstile | keycap | palmrest) shift ;; -h | --help) usage; exit 0 ;; *) usage >&2; die "name a part: callers, turnstile, keycap or palmrest" ;; esac
 parse_flags "$@"
+target_dir=${CARGO_TARGET_DIR:-$tree/target}
 DIST="$(cd "$SRC/../dist" && pwd)"
 vendor_units=/usr/lib/systemd/system
-turnstile_bin=${TURNSTILE_BIN:-$siblings/turnstile/target/release/turnstile}
-keycap_bin=${KEYCAP_BIN:-$siblings/keycap/target/release/keycap}
-palmrest_bin=${PALMREST_BIN:-$siblings/palmrest/target/release/palmrest}
+turnstile_bin=${TURNSTILE_BIN:-$target_dir/release/turnstile}
+keycap_bin=${KEYCAP_BIN:-$target_dir/release/keycap}
+palmrest_bin=${PALMREST_BIN:-$target_dir/release/palmrest}
 
 # files: "MODE SOURCE DEST" per line of this part, DEST without the staging root. Programs come first.
 files() {
@@ -66,21 +67,21 @@ files() {
       echo "644 $DIST/desktop-callers.toml /etc/quire/desktop-callers.toml" ;;
     turnstile)
       echo "755 $turnstile_bin $prefix/bin/turnstile"
-      echo "644 $siblings/turnstile/dist/turnstile.socket $vendor_units/turnstile.socket"
-      echo "644 $siblings/turnstile/dist/turnstile.service $vendor_units/turnstile.service"
-      echo "644 $siblings/turnstile/dist/72-turnstile.rules /etc/udev/rules.d/72-turnstile.rules"
-      echo "644 $siblings/turnstile/dist/turnstile-modules.conf /etc/modules-load.d/turnstile.conf" ;;
+      echo "644 $tree/crates/turnstile/dist/turnstile.socket $vendor_units/turnstile.socket"
+      echo "644 $tree/crates/turnstile/dist/turnstile.service $vendor_units/turnstile.service"
+      echo "644 $tree/crates/turnstile/dist/72-turnstile.rules /etc/udev/rules.d/72-turnstile.rules"
+      echo "644 $tree/crates/turnstile/dist/turnstile-modules.conf /etc/modules-load.d/turnstile.conf" ;;
     keycap)
       echo "755 $keycap_bin $prefix/bin/keycap"
-      echo "644 $siblings/keycap/dist/keycap.service $vendor_units/keycap.service"
-      echo "644 $siblings/keycap/dist/keycap.polkit.rules /etc/polkit-1/rules.d/keycap.polkit.rules"
+      echo "644 $tree/crates/keycap/dist/keycap.service $vendor_units/keycap.service"
+      echo "644 $tree/crates/keycap/dist/keycap.polkit.rules /etc/polkit-1/rules.d/keycap.polkit.rules"
       echo "644 $DIST/keycap.toml /usr/lib/keycap/keycap.toml" ;;
     palmrest)
       # No module list: the input service's turnstile.conf loads uinput. No rule for /dev/uinput either.
       echo "755 $palmrest_bin $prefix/bin/palmrest"
-      echo "644 $siblings/palmrest/dist/palmrest.service $vendor_units/palmrest.service"
-      echo "644 $siblings/palmrest/dist/70-palmrest.rules /etc/udev/rules.d/70-palmrest.rules"
-      echo "644 $siblings/palmrest/dist/99-palmrest.conf /etc/modprobe.d/99-palmrest.conf" ;;
+      echo "644 $tree/crates/palmrest/dist/palmrest.service $vendor_units/palmrest.service"
+      echo "644 $tree/crates/palmrest/dist/70-palmrest.rules /etc/udev/rules.d/70-palmrest.rules"
+      echo "644 $tree/crates/palmrest/dist/99-palmrest.conf /etc/modprobe.d/99-palmrest.conf" ;;
   esac
 }
 
@@ -188,8 +189,8 @@ install_part() {
   while read -r _ source _; do
     [ -f "$source" ] || {
       case "$source" in
-        */bin/*) die "$source is not there: build it first, as yourself (install.sh does: ./install.sh --only $part)" 2 ;;
-        *) die "$source is not there: keep the checkout beside this one or pass --siblings" 2 ;;
+        */release/*) die "$source is not there: build it first, as yourself (just build, or ./install.sh --only $part)" 2 ;;
+        *) die "$source is not there: pass --tree if this is not the bardo tree packaging folder" 2 ;;
       esac
     }
   done < <(files)

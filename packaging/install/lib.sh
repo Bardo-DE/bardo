@@ -7,8 +7,8 @@
 #   --destdir DIR      a staging root put in front of every path (default $DESTDIR, else none)
 #   --sysconfdir DIR   where the user target and the casement and sill units go, in DIR/systemd/user (default $SYSCONFDIR, else /etc)
 #   --sessions-dir DIR the display manager's wayland-sessions directory (default /usr/share/wayland-sessions)
-#   --siblings DIR     where the casement and sill checkouts are (default $SIBLINGS, else the parent of this repo): their
-#                      dist/casement.service and dist/sill.service are the units installed
+#   --tree DIR         the bardo tree (default $BARDO_TREE, else the parent of packaging/): crates/casement/dist/casement.service and
+#                      crates/sill/dist/sill.service are the units installed
 #
 # Never runs sudo and never writes to $HOME: a destination you cannot write is printed with the
 # command to run as root (through sudo, doas or pkexec, whichever this machine has), and the script stops there.
@@ -29,7 +29,7 @@ prefix=${PREFIX:-/usr/local}
 destdir=${DESTDIR:-}
 sysconfdir=${SYSCONFDIR:-/etc}
 sessions_dir=/usr/share/wayland-sessions
-siblings=${SIBLINGS:-$(dirname "$(dirname "$SRC")")}
+tree=${BARDO_TREE:-$(dirname "$(dirname "$SRC")")}
 dry=0
 
 die() { echo "$(basename "$0"): $*" >&2; exit "${2:-2}"; }
@@ -42,24 +42,24 @@ parse_flags() {
       --destdir) destdir=${2:?--destdir needs a directory}; shift ;;
       --sysconfdir) sysconfdir=${2:?--sysconfdir needs a directory}; shift ;;
       --sessions-dir) sessions_dir=${2:?--sessions-dir needs a directory}; shift ;;
-      --siblings) siblings=${2:?--siblings needs a directory}; shift ;;
+      --tree) tree=${2:?--tree needs a directory}; shift ;;
       -h|--help) usage; exit 0 ;;
       *) usage >&2; die "unknown argument $1" ;;
     esac
     shift
   done
-  for dir in "$prefix" "$sysconfdir" "$sessions_dir" "$siblings"; do
+  for dir in "$prefix" "$sysconfdir" "$sessions_dir" "$tree"; do
     case "$dir" in /*) ;; *) die "$dir: paths must be absolute" ;; esac
   done
   prefix=${prefix%/}
   destdir=${destdir%/}
   sysconfdir=${sysconfdir%/}
   sessions_dir=${sessions_dir%/}
-  siblings=${siblings%/}
+  tree=${tree%/}
 }
 
-# unit_source NAME: the unit file of the repo NAME (casement, sill) in the sibling checkouts.
-unit_source() { echo "$siblings/$1/dist/$1.service"; }
+# unit_source NAME: the unit file of the crate directory NAME (casement, sill) in this tree.
+unit_source() { echo "$tree/crates/$1/dist/$1.service"; }
 
 # files: "MODE SOURCE DEST" per line, DEST without the destdir. The desktop entry's SOURCE is
 # rendered (Exec filled in) by render_entry; the others are copied as they are.
@@ -74,8 +74,8 @@ files() {
   echo "644 $SRC/sill-casement.desktop $sessions_dir/sill-casement.desktop"
   # quire's look Extensions (Editorial), picked under Settings > Look; every quire app finds them in <data dir>/quire/extensions.
   local f
-  for f in "$siblings"/quire/extensions/*/*; do
-    [ -f "$f" ] && echo "644 $f $prefix/share/quire/extensions/${f#"$siblings"/quire/extensions/}"
+  for f in "$tree"/crates/quire/extensions/*/*; do
+    [ -f "$f" ] && echo "644 $f $prefix/share/quire/extensions/${f#"$tree"/crates/quire/extensions/}"
   done
 }
 

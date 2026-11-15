@@ -8,11 +8,11 @@
 #   (flags: see install/lib.sh)
 #
 # Also installed, root-held, in <sysconfdir>/systemd/user (/etc/systemd/user): casement.service and sill.service, from the
-# casement and sill checkouts beside this one (--siblings), so the account service can trust the compositor and the
+# casement and sill crates of this tree (--tree), so the account service can trust the compositor and the
 # shell as fixed roles (it accepts units only from root-held places, never ~/.config).
 # And, in the same place, xdg-desktop-portal.service.d/10-quire.conf: a drop-in for the portal frontend's own unit that unsets the
 # loader variables, so the portal backend (transom) can prove the frontend is the real one (NEW-PI-1).
-# Not installed here: the casement, sill and transom (the portal backend) programs themselves (their own installers and
+# Not installed here: the casement, sill and transom (the portal backend) programs themselves (just install, then just only transom, and
 # packages), other sessions (left untouched), and
 # anything under $HOME. install/uninstall.sh removes exactly the files listed below.
 set -euo pipefail
@@ -30,7 +30,7 @@ for tool in casement sill; do
   command -v "$tool" >/dev/null || note "WARNING: $tool is not on PATH; the session cannot start without it"
 done
 for name in casement sill; do
-  [ -f "$(unit_source "$name")" ] || note "WARNING: $(unit_source "$name") is missing; the session needs $name.service and cannot start $name without it (keep the $name checkout beside this one or pass --siblings)"
+  [ -f "$(unit_source "$name")" ] || note "WARNING: $(unit_source "$name") is missing; the session needs $name.service and cannot start $name without it (pass --tree if this is not the bardo tree's packaging folder)"
   # A copy in the person's own folder wins over the installed one and is not trusted by the account service.
   if [ -z "$destdir" ] && [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$name.service" ]; then
     note "WARNING: ${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$name.service hides the installed unit and is not trusted by the account service; remove it"

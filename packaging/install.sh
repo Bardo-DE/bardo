@@ -1,33 +1,34 @@
 #!/usr/bin/env bash
-# Install the desktop: runs each component repo's own installer, in dependency order.
+# Install the desktop from the bardo tree: runs each component's own installer (crates/<name>/...), in dependency order,
+# on programs built from this one tree.
 #
-#   ./install.sh [--dry-run] [--prefix DIR] [--destdir DIR] [--sysconfdir DIR] [--siblings DIR] [--only NAME[,NAME]]
+#   ./install.sh [--dry-run] [--prefix DIR] [--destdir DIR] [--sysconfdir DIR] [--tree DIR] [--no-build] [--only NAME[,NAME]]
 #   ./install.sh --check [--runtime-only]
 #
 #   --dry-run      print the plan (what runs, in which order, what is left to you), run nothing, build nothing
 #   --prefix DIR   where the software goes (default $PREFIX, else /usr/local)
 #   --destdir DIR  a staging root put in front of every path (default $DESTDIR, else none)
 #   --sysconfdir   where porter's and steward's caller tables go (default $SYSCONFDIR, else /etc); almanac, docket and cua always use /etc/quire; stoker writes nothing there
-#   --siblings DIR where the component repos are checked out side by side (default: the parent of this repo)
+#   --tree DIR     the bardo tree (default $BARDO_TREE, else the parent of packaging/)
+#   --no-build     do not build: install the programs already in <tree>/target (or $CARGO_TARGET_DIR) release folder
 #   --check        change nothing: look for what the desktop needs on this machine (Fedora, Ubuntu/Debian, Arch;
 #                  the family comes from /etc/os-release) and print the exact dnf, apt or pacman line for what
 #                  is missing; exit 1 when something needed is missing. --runtime-only leaves out the build tools
 #   --only NAMES   just these components (comma separated: callers, porter, steward, ferry, stoker, almanac, docket, cua, detent, casement, sill,
-#                  transom, turnstile, keycap, anyview, mailo, files, palmrest, session, fonts)
+#                  transom, turnstile, keycap, files, palmrest, session, fonts)
 #
 # Order: callers (the list of the desktop's own programs, /etc/quire/desktop-callers.toml, this repo's dist/), porter (the account daemon and the caller table), steward (inferd, the AI broker, and its caller table), ferry (the sync daemon syncd and the helper that shows drives in ~/Cloud, with their units), stoker (the model catalogue inferd reads), almanac (the memory daemon and its caller table),
 # docket (the action router, the companion, the reader and the tool server, with their caller tables; they read
 # porter's accounts), cua (the computer-use daemon cuad, for apps that are not ours, and its caller table), detent (Settings), casement (the compositor and
 # its user unit), sill (the shell), transom (the portal backend: screen sharing, screenshots; its
-# scripts/install.sh builds it), turnstile (the input service that makes virtual keyboards and pads, from install/system.sh), keycap (the
-# keyboard map, also from install/system.sh), anyview, mailo, files (the file manager), palmrest (the touchpad service, also from install/system.sh), and last the session itself (this repo's
+# scripts/install.sh places it), turnstile (the input service that makes virtual keyboards and pads, from install/system.sh), keycap (the
+# keyboard map, also from install/system.sh), files (the file manager), palmrest (the touchpad service, also from install/system.sh), and last the session itself (this repo's
 # install/install.sh: the desktop-session script, the user target and the login entry "sill (casement)"). Each
 # component's installer is its
-# own: this script passes the prefix and the staging root through and nothing else, and stops at the first
+# own: this script passes the prefix, the staging root and the built programs' place through and nothing else, and stops at the first
 # one that fails. "callers" is first on purpose: the update service (slipway) and the portal backend (transom) read the
 # list once, when they start, and refuse every caller without it, so it is in place before anything that installs or starts
-# them. turnstile comes before keycap and palmrest, which ask it for their virtual devices. A component whose installer is not in its checkout yet (casement, until its scripts/install.sh
-# lands) is reported and skipped; the others carry on.
+# them. turnstile comes before keycap and palmrest, which ask it for their virtual devices.
 #
 # The colour emoji font (fonts/Noto-COLRv1.ttf) goes to <prefix>/share/fonts/quire/ after the components, unless
 # fontconfig already has a COLRv1 Noto Color Emoji (Fedora does; Ubuntu and Arch ship a bitmap build our renderer
@@ -42,10 +43,11 @@
 # the restart rule and /usr/lib/keycap/keycap.toml (Caps Lock; keycap's vendor file, under the administrator's
 # /etc/keycap/keycap.toml, which is never touched) instead.
 #
-# Builds. The repos pin Rust 1.98.1 and need rustup (a distro's rust package is the wrong version). Some
-# repos' cargo config asks for clang and mold, which is how they are worked on. An install never reads it
-# and never asks for a linker: what this script builds itself (detent, turnstile, keycap, palmrest) runs from / with --manifest-path
-# (install/cargo.sh), and each component's own installer does the same for its own build.
+# Builds. The tree pins Rust 1.98.1 (rust-toolchain.toml) and needs rustup (a distro's rust package is the wrong
+# version). The tree is one cargo workspace: every program the selected components install is built by one
+# `cargo build --release --locked -p ...` into <tree>/target (or $CARGO_TARGET_DIR), as you, then each component's
+# installer runs with --no-build. The build runs from / with --manifest-path (install/cargo.sh), so the tree's own cargo
+# config is never read and the system's own linker is used; no linker is asked for or installed.
 #
 # Root. This script never runs sudo and never writes under ~/.config or /etc itself. A component runs
 # here only when everything it writes is writable by you (a user prefix, or a --destdir); the others are
@@ -60,8 +62,6 @@
 #     three go under /usr/local instead and the plan says so; install/system.sh refuses such a prefix on its own (re-audit NEW-ROOT-1)
 #   - stoker: the catalogue goes under the prefix; its installer asks for sudo, doas or pkexec itself for a system
 #     prefix, so outside a --destdir it is left to you, run as yourself
-#   - mailo: the binary under the prefix and its unit in /etc/systemd/user; its installer refuses to run as root
-#     and asks for sudo itself, so outside a --destdir it is left to you, run as yourself (never under sudo)
 #   - files: the binary, the desktop entry, the two bus services (its own and the desktop's file-manager name) and the intents
 #     under the prefix; its installer refuses to run as root and asks for sudo itself for a place you do not own, so outside a
 #     --destdir it is left to you, run as yourself (never under sudo)
@@ -84,13 +84,14 @@ source "$HERE/install/rootheld.sh"
 source "$HERE/install/check.sh"
 # shellcheck source=install/fonts.sh
 source "$HERE/install/fonts.sh"
-ORDER=(callers porter steward ferry stoker almanac docket cua detent casement sill transom turnstile keycap anyview mailo files palmrest session)
+ORDER=(callers porter steward ferry stoker almanac docket cua detent casement sill transom turnstile keycap files palmrest session)
 
 prefix=${PREFIX:-/usr/local}
 destdir=${DESTDIR:-}
 sysconfdir=${SYSCONFDIR:-/etc}
-siblings="$(dirname "$HERE")"
+tree=$(tree_root)
 only=""
+build=1
 dry=0
 check=0
 check_args=()
@@ -109,8 +110,9 @@ while [ $# -gt 0 ]; do
     --destdir=*) destdir=${1#--destdir=} ;;
     --sysconfdir) sysconfdir=${2:?--sysconfdir needs a directory}; shift ;;
     --sysconfdir=*) sysconfdir=${1#--sysconfdir=} ;;
-    --siblings) siblings=${2:?--siblings needs a directory}; shift ;;
-    --siblings=*) siblings=${1#--siblings=} ;;
+    --tree) tree=${2:?--tree needs a directory}; shift ;;
+    --tree=*) tree=${1#--tree=} ;;
+    --no-build) build=0 ;;
     --only) only=${2:?--only needs names}; shift ;;
     --only=*) only=${1#--only=} ;;
     -h|--help) usage; exit 0 ;;
@@ -126,6 +128,9 @@ fi
 case "$prefix" in /*) ;; *) die "--prefix must be an absolute path" ;; esac
 destdir=${destdir%/}
 prefix=${prefix%/}
+case "$tree" in /*) ;; *) die "--tree must be an absolute path" ;; esac
+tree=${tree%/}
+target_dir=${CARGO_TARGET_DIR:-$tree/target}
 
 # root_prefix: where a program that root runs, or that the input service believes for being root's file, goes (turnstile, keycap,
 # palmrest). Anyone who can replace the program could run their own code in its place: the prefix is used only when every
@@ -137,11 +142,11 @@ root_prefix() {
 
 # What a component is: its directory, its installer (relative), the command words after the installer, the
 # environment it takes, the places it writes, and why it is left to you (empty: it can run here).
-dir="" script="" args=() envs=() writes=() yourself="" optional=0 blurb=""
+dir="" script="" args=() envs=() writes=() yourself="" blurb=""
 
 # describe NAME: fills the variables above for one component.
 describe() {
-  dir="$siblings/$1" args=() envs=() writes=() yourself="" optional=0 blurb=""
+  dir="$tree/crates/$1" args=() envs=() writes=() yourself="" blurb=""
   case "$1" in
     callers)
       # The list of the desktop's own programs, a file of this repo (dist/desktop-callers.toml), placed at the fixed
@@ -154,41 +159,47 @@ describe() {
       writes=("$destdir/etc/quire") ;;
     porter)
       script=scripts/install.sh
-      args=(--prefix "$prefix" --sysconfdir "$sysconfdir")
+      args=(--prefix "$prefix" --sysconfdir "$sysconfdir" --no-build)
+      envs=("CARGO_TARGET_DIR=$target_dir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
       writes=("$destdir$prefix" "$destdir$sysconfdir") ;;
     steward)
       # inferd, the AI broker, its unit and its caller table (<sysconfdir>/porter/inferd-callers.toml). Same shape as porter's.
       script=scripts/install.sh
-      args=(--prefix "$prefix" --sysconfdir "$sysconfdir")
+      args=(--prefix "$prefix" --sysconfdir "$sysconfdir" --no-build)
+      envs=("CARGO_TARGET_DIR=$target_dir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
       writes=("$destdir$prefix" "$destdir$sysconfdir") ;;
     ferry)
       # syncd, the helper that shows drives in ~/Cloud (porter-mountd) and its socket, their units and org.quire.Sync1's activation
       # file. Its installer has no --sysconfdir: it writes nothing under /etc (syncd's caller row is in porter's table).
       script=scripts/install.sh
-      args=(--prefix "$prefix")
+      args=(--prefix "$prefix" --no-build)
+      envs=("CARGO_TARGET_DIR=$target_dir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
       writes=("$destdir$prefix") ;;
     stoker)
       # The model catalogue (<prefix>/share/stoker/catalog), which inferd reads from the first XDG_DATA_DIRS entry that has it.
       # Nothing to build. Its installer takes --sysconfdir but writes nothing under it for the catalogue.
       script=scripts/install.sh
-      args=(--prefix "$prefix" --sysconfdir "$sysconfdir")
+      args=(--prefix "$prefix" --sysconfdir "$sysconfdir" --no-build)
+      envs=("CARGO_TARGET_DIR=$target_dir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
       writes=("$destdir$prefix")
       [ -n "$destdir" ] || yourself="its installer asks for sudo, doas or pkexec itself for a system prefix; run it as yourself" ;;
     almanac)
       # memoryd and /etc/quire/memory-callers.toml. The installer has no --sysconfdir: /etc/quire is fixed.
       script=scripts/install.sh
-      args=(--prefix "$prefix")
+      args=(--prefix "$prefix" --no-build)
+      envs=("CARGO_TARGET_DIR=$target_dir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
       writes=("$destdir$prefix" "$destdir/etc/quire")
       [ -n "$destdir" ] || yourself="its caller table goes to /etc/quire; its installer asks for sudo itself and must not be run as root" ;;
     docket)
       # the daemons, quire-do and /etc/quire/*-callers.toml (fixed, like almanac's), defaults in /etc/xdg/quire.
       script=scripts/install.sh
-      args=(--prefix "$prefix")
+      args=(--prefix "$prefix" --no-build)
+      envs=("CARGO_TARGET_DIR=$target_dir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
       writes=("$destdir$prefix" "$destdir/etc/quire" "$destdir/etc/xdg/quire")
       [ -n "$destdir" ] || yourself="its caller tables go to /etc/quire; its installer asks for sudo itself and must not be run as root" ;;
@@ -197,26 +208,30 @@ describe() {
       # /etc/quire/cuad-callers.toml (fixed, like almanac's: cuad reads that path only). Needs at-spi2-core at run time
       # (its installer prints a note when that is missing).
       script=scripts/install.sh
-      args=(--prefix "$prefix")
+      args=(--prefix "$prefix" --no-build)
+      envs=("CARGO_TARGET_DIR=$target_dir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
       writes=("$destdir$prefix" "$destdir/etc/quire")
       [ -n "$destdir" ] || yourself="its caller table goes to /etc/quire; its installer asks for sudo itself and must not be run as root" ;;
     detent)
       script=scripts/install.sh
-      envs=("PREFIX=$prefix" "DESTDIR=$destdir")
+      envs=("PREFIX=$prefix" "DESTDIR=$destdir" "DETENT_BIN=$target_dir/release/detent")
       writes=("$destdir$prefix") ;;
     casement)
       script=scripts/install.sh
-      optional=1
-      args=(--prefix "$prefix" --locked)
+      args=(--prefix "$prefix" --locked --no-build)
+      envs=("CARGO_TARGET_DIR=$target_dir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
       writes=("$destdir$prefix") ;;
     sill)
       script=dist/install.sh
+      args=(--no-build)
+      envs=("CARGO_TARGET_DIR=$target_dir")
       yourself="its installer has fixed destinations (/usr/local, /etc, /usr/share) and asks for sudo" ;;
     transom)
       script=scripts/install.sh
-      args=(--prefix "$prefix")
+      args=(--prefix "$prefix" --no-build)
+      envs=("CARGO_TARGET_DIR=$target_dir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
       writes=("$destdir$prefix") ;;
     turnstile)
@@ -225,8 +240,9 @@ describe() {
       script=install/system.sh
       blurb="the input service: it alone makes virtual keyboards and pads, for the keyboard map and the touchpad program, and /dev/uinput is closed to everybody else"
       args=(turnstile --prefix "$(root_prefix)")
+      envs=("CARGO_TARGET_DIR=$target_dir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
-      args+=(--siblings "$siblings")
+      args+=(--tree "$tree")
       writes=("$destdir$(root_prefix)" "$destdir/usr/lib/systemd/system" "$destdir/etc/udev/rules.d" "$destdir/etc/modules-load.d") ;;
     keycap)
       # The keyboard map, installed by install/system.sh and not by keycap's own installer (see the header).
@@ -234,41 +250,34 @@ describe() {
       script=install/system.sh
       blurb="the keyboard map: its program and service, the rule that lets you restart it, and /usr/lib/keycap/keycap.toml (Caps Lock switches the input method)"
       args=(keycap --prefix "$(root_prefix)")
+      envs=("CARGO_TARGET_DIR=$target_dir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
-      args+=(--siblings "$siblings")
+      args+=(--tree "$tree")
       writes=("$destdir$(root_prefix)" "$destdir/usr/lib/systemd/system" "$destdir/etc/polkit-1/rules.d" "$destdir/usr/lib/keycap") ;;
-    anyview)
-      script=dist/install.sh
-      args=(--prefix "$prefix")
-      envs=("DESTDIR=$destdir")
-      writes=("$destdir$prefix") ;;
-    mailo)
-      script=dist/install.sh
-      envs=("MAILO_PREFIX=$destdir$prefix" "MAILO_UNIT_DIR=$destdir/etc/systemd/user")
-      writes=("$destdir$prefix" "$destdir/etc/systemd/user")
-      [ -n "$destdir" ] || yourself="its installer builds as you, refuses to run as root and asks for sudo itself; run it as yourself" ;;
     files)
       script=dist/install.sh
-      envs=("FILES_PREFIX=$prefix" "FILES_DESTDIR=$destdir")
+      args=(--no-build)
+      envs=("FILES_PREFIX=$prefix" "FILES_DESTDIR=$destdir" "CARGO_TARGET_DIR=$target_dir")
       writes=("$destdir$prefix")
-      [ -n "$destdir" ] || yourself="its installer builds as you, refuses to run as root and asks for sudo itself; run it as yourself" ;;
+      [ -n "$destdir" ] || yourself="its installer refuses to run as root and asks for sudo itself; run it as yourself" ;;
     palmrest)
       # The touchpad service, installed by install/system.sh and not by palmrest's own installer (see the header).
       dir="$HERE"
       script=install/system.sh
       blurb="the touchpad service: Magic Mouse scrolling and gestures, a system service like the keyboard map, with the rule that gives the mouse's raw node to the input group; it serves only the person at the seat"
       args=(palmrest --prefix "$(root_prefix)")
+      envs=("CARGO_TARGET_DIR=$target_dir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
-      args+=(--siblings "$siblings")
+      args+=(--tree "$tree")
       writes=("$destdir$(root_prefix)" "$destdir/usr/lib/systemd/system" "$destdir/etc/udev/rules.d" "$destdir/etc/modprobe.d") ;;
     session)
       # This repo's own session installer (never sudo; it stops with the root command when a place is not writable).
       dir="$HERE"
       script=install/install.sh
-      # It also puts casement.service and sill.service, root-held, in <sysconfdir>/systemd/user, from the checkouts in --siblings.
+      # It also puts casement.service and sill.service, root-held, in <sysconfdir>/systemd/user, from the casement and sill crates of the tree (--tree).
       args=(--prefix "$prefix" --sysconfdir "$sysconfdir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
-      args+=(--siblings "$siblings")
+      args+=(--tree "$tree")
       writes=("$destdir$prefix" "$destdir$sysconfdir" "$destdir/usr/share/wayland-sessions") ;;
     *) die "no component named $1 (known: ${ORDER[*]})" ;;
   esac
@@ -333,14 +342,10 @@ fi
 [ "${#selected[@]}" -gt 0 ] || [ "$fonts_wanted" = 1 ] || die "nothing selected"
 
 # Plan: decide each component's fate before anything runs.
-run=() left=() reasons=() absent=()
+run=() left=() reasons=()
 for name in "${selected[@]}"; do
   describe "$name"
-  if [ ! -x "$dir/$script" ]; then
-    [ "$optional" = 1 ] || die "$name: no installer at $dir/$script (--siblings says where the repos are)"
-    absent+=("$name")
-    continue
-  fi
+  [ -x "$dir/$script" ] || die "$name: no installer at $dir/$script (--tree says where the bardo tree is)"
   if [ -n "$yourself" ]; then
     left+=("$name"); reasons+=("$yourself")
   elif root=$(needs_root) && [ -n "$root" ]; then
@@ -355,12 +360,6 @@ step=0
 for name in "${selected[@]}"; do
   describe "$name"
   step=$((step + 1))
-  case " ${absent[*]:-} " in
-    *" $name "*)
-      printf '%d. %-8s skipped (no installer at %s yet; until it lands, put the program and its unit in place another way)\n' \
-        "$step" "$name" "$dir/$script"
-      continue ;;
-  esac
   case " ${run[*]:-} " in
     *" $name "*) printf '%d. %-8s runs   %s\n' "$step" "$name" "$(command_text)" ;;
     *)
@@ -412,37 +411,25 @@ case "$prefix" in
     echo "        user units: systemd's user manager does not read $prefix/lib/systemd/user at all; link them where it does, as root:"
     echo "          mkdir -p /usr/local/lib/systemd/user && ln -sf $prefix/lib/systemd/user/* /usr/local/lib/systemd/user/" ;;
 esac
-command -v rustup >/dev/null || echo "note: rustup was not found. Building from source needs it (the repos pin Rust 1.98.1): $RUSTUP_LINE"
+command -v rustup >/dev/null || echo "note: rustup was not found. Building from source needs it (this tree pins Rust 1.98.1): $RUSTUP_LINE"
 [ "$dry" = 0 ] || exit 0
 
-# build_if_needed NAME: for a component this script builds itself, as you (detent, turnstile, keycap, palmrest): build its program when it
-# is not there, so the component's installer, which only copies, has it. Anything else: nothing to do. $DETENT_BIN, $TURNSTILE_BIN,
-# $KEYCAP_BIN and $PALMREST_BIN name a program built elsewhere. The input service is built with no feature at all (its `fake` is for tests).
-build_if_needed() {
-  local name=$1 tree="$siblings/$1" var args=()
-  case "$name" in
-    detent) var=DETENT_BIN ;;
-    turnstile) var=TURNSTILE_BIN; args=(-p turnstile) ;;
-    keycap) var=KEYCAP_BIN ;;
-    palmrest) var=PALMREST_BIN ;;
-    *) return 0 ;;
-  esac
-  [ -z "${!var:-}" ] || return 0
-  [ ! -x "$tree/target/release/$name" ] || return 0
-  echo "== building $name, as yourself"
-  build_outside "$tree" ${args[@]+"${args[@]}"}
-}
+# One build for everything the selected components install, as you, before any installer runs (root must not run the compiler,
+# and what is left to you below needs its programs built too): one cargo run, one target directory. The input service is
+# built with no feature at all (its `fake` is for tests). Cargo has nothing to do for what is already up to date.
+if [ "$build" = 1 ]; then
+  echo "== building, as yourself: ${selected[*]}"
+  CARGO_TARGET_DIR=$target_dir BARDO_TREE=$tree build_parts "${selected[@]}" || {
+    echo "install.sh: the release build failed. Nothing was installed." >&2
+    exit 1
+  }
+fi
 
 done_list=()
 for name in "${run[@]:-}"; do
   [ -n "$name" ] || continue
   describe "$name"
   echo "== $name"
-  # These install a built program; build it first when it is not there.
-  build_if_needed "$name" || {
-    echo "install.sh: $name failed: its release build. Installed so far: ${done_list[*]:-nothing}. Not run: the rest." >&2
-    exit 1
-  }
   status=0
   (cd "$dir" && env "${envs[@]}" "./$script" "${args[@]}") || status=$?
   if [ "$status" != 0 ]; then
@@ -459,20 +446,7 @@ if [ "$fonts_state" = wanted ]; then
   done_list+=(fonts)
 fi
 
-# What is left to you may need a program built as yourself first (root must not run the compiler); build it now so the
-# commands printed above work as they stand.
-for name in "${left[@]:-}"; do
-  [ -n "$name" ] && [ "$name" != fonts ] || continue
-  build_if_needed "$name" || {
-    echo "install.sh: $name: its release build failed; the command printed above needs the program. Installed so far: ${done_list[*]:-nothing}." >&2
-    exit 1
-  }
-done
-
 echo "installed: ${done_list[*]:-nothing}"
-if [ "${#absent[@]}" -gt 0 ]; then
-  echo "not installed (no installer in the checkout yet): ${absent[*]}"
-fi
 if [ "${#left[@]}" -gt 0 ]; then
   echo "left to you (the commands are in the plan above): ${left[*]}"
 fi
