@@ -56,10 +56,7 @@ impl StylesGuard {
         let load = decide(&earlier, hash);
         if load {
             let mut records = earlier;
-            records.push(Record {
-                hash,
-                good: false,
-            });
+            records.push(Record { hash, good: false });
             let keep = records.len().saturating_sub(FAILED_STARTS);
             write(&file, &records[keep..]);
         }

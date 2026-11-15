@@ -154,10 +154,7 @@ pub fn use_window_handle() -> Option<WindowHandle> {
 /// component or a handler inside a window `launch` opened (or one this opened); anywhere else
 /// (the harness, a snapshot) there is no event loop to ask and it answers
 /// `None`.
-pub fn open_window(
-    spec: WindowSpec,
-    root: fn() -> Element,
-) -> Option<WindowHandle> {
+pub fn open_window(spec: WindowSpec, root: fn() -> Element) -> Option<WindowHandle> {
     open(spec, Root::Plain(root))
 }
 

@@ -231,7 +231,10 @@ pub(crate) fn caret_owed(element: &MountedData) -> bool {
         let empty = element
             .attr(LocalName::from("value"))
             .is_none_or(str::is_empty);
-        Some(matches!((field_of(found), empty), (Field::NotLaidOut, false)))
+        Some(matches!(
+            (field_of(found), empty),
+            (Field::NotLaidOut, false)
+        ))
     });
     match read {
         None => true,

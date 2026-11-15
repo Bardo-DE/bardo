@@ -14,9 +14,7 @@ pub const FAILED_STARTS: usize = 2;
 pub fn decide(records: &[Record], now: Fingerprint) -> bool {
     let tail = records.len().saturating_sub(FAILED_STARTS);
     let last = &records[tail..];
-    let failed = last.len() == FAILED_STARTS
-        && last
-            .iter()
-            .all(|record| record.hash == now && !record.good);
+    let failed =
+        last.len() == FAILED_STARTS && last.iter().all(|record| record.hash == now && !record.good);
     !failed
 }

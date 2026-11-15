@@ -19,6 +19,7 @@ pub struct Record {
     pub hash: Fingerprint,
     /// Whether the first frame was drawn and the program lived five seconds more. `false`: the
     /// styles were about to load and nothing more is known.
+    pub good: bool,
 }
 
 /// The records in `text`, oldest first.
