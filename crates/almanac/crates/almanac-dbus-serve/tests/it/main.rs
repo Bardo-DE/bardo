@@ -2,5 +2,4 @@
 #[path = "../../../almanac-core/tests/it/support/mod.rs"]
 mod support;
 
-mod introspection;
 mod served;

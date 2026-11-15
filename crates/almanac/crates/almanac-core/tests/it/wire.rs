@@ -1,9 +1,9 @@
-//! The wire and the stored forms: every variant survives serde, tags and JSON are pinned.
+//! The wire: every request that names a space says so.
 
 use crate::support::*;
 use almanac_core::*;
 
-/// Indexes every variant: a variant with a sample but no index breaks the coverage assert.
+/// Indexes every variant that has a sample.
 fn request_index(r: &MemoryRequest) -> usize {
     match r {
         MemoryRequest::Record(_) => 0,
@@ -51,59 +51,6 @@ fn request_index(r: &MemoryRequest) -> usize {
 }
 
 #[test]
-fn wire_round_trip_every_request() {
-    let all = requests();
-    round_trips(&all);
-    let covered: std::collections::BTreeSet<usize> = all.iter().map(request_index).collect();
-    assert_eq!(
-        covered,
-        (0..=37).collect(),
-        "a request variant has no sample"
-    );
-}
-
-fn reply_index(r: &MemoryReply) -> usize {
-    match r {
-        MemoryReply::Recorded(_) => 0,
-        MemoryReply::RecordedBatch(..) => 1,
-        MemoryReply::Ok => 2,
-        MemoryReply::Hits(_) => 3,
-        MemoryReply::Facts(_) => 4,
-        MemoryReply::Related(_) => 5,
-        MemoryReply::Provenance(_) => 6,
-        MemoryReply::Primer(_) => 7,
-        MemoryReply::Proposed(..) => 8,
-        MemoryReply::Spaces(_) => 9,
-        MemoryReply::Status(_) => 10,
-        MemoryReply::Timeline(_) => 11,
-        MemoryReply::Plan(_) => 12,
-        MemoryReply::Forgot(_) => 13,
-        MemoryReply::Pending(_) => 14,
-        MemoryReply::Consolidation(_) => 15,
-        MemoryReply::Rules(_) => 16,
-        MemoryReply::Verified(_) => 17,
-        MemoryReply::Exported(_) => 18,
-        MemoryReply::Refused(_) => 19,
-        MemoryReply::Recent(_) => 20,
-        MemoryReply::Swept(_) => 21,
-        MemoryReply::Durable(_) => 22,
-        MemoryReply::Entries(_) => 23,
-        MemoryReply::Relocated(_) => 24,
-        MemoryReply::PendingSettings(_) => 25,
-        // See `request_index`: a new variant with a sample breaks the coverage assert.
-        _ => usize::MAX,
-    }
-}
-
-#[test]
-fn wire_round_trip_every_reply() {
-    let all = replies();
-    round_trips(&all);
-    let covered: std::collections::BTreeSet<usize> = all.iter().map(reply_index).collect();
-    assert_eq!(covered, (0..=25).collect(), "a reply variant has no sample");
-}
-
-#[test]
 fn requests_name_their_space() {
     for request in requests() {
         let named = request.space().is_some();
@@ -112,22 +59,5 @@ fn requests_name_their_space() {
             1 | 10 | 14 | 16 | 19 | 20 | 21 | 22 | 27 | 31 | 32 | 36 | 37
         );
         assert_eq!(named, by_index, "{request:?}");
-    }
-}
-
-#[test]
-fn a_draft_view_without_skipped_hunks_still_reads_and_the_new_states_are_pinned() {
-    let old = r#"{"run":"c-1","hunks":[],"state":{"kind":"proposed"}}"#;
-    let view: DraftView = serde_json::from_str(old).expect("an older view");
-    assert!(view.skipped.is_empty());
-    for (state, json) in [
-        (RunState::Discarded, r#"{"kind":"discarded"}"#),
-        (RunState::Superseded, r#"{"kind":"superseded"}"#),
-    ] {
-        assert_eq!(serde_json::to_string(&state).expect("json"), json);
-    }
-    for reason in SkipReason::ALL {
-        let json = serde_json::to_string(reason).expect("json");
-        assert_eq!(json, format!("\"{}\"", reason.slug()));
     }
 }

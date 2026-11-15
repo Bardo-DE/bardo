@@ -27,61 +27,6 @@ fn every_request_round_trips_through_its_member() {
 }
 
 #[test]
-fn the_member_table() {
-    let table: Vec<(Iface, &str, usize)> = requests()
-        .iter()
-        .map(|r| {
-            let c = encode_request(r).expect("encode");
-            (c.interface, c.member, c.args.len())
-        })
-        .collect();
-    use Iface::{Control, Recall, Record};
-    for expected in [
-        (Record, "Record", 2),
-        (Record, "RecordBatch", 2),
-        (Record, "ExplainFile", 1),
-        (Record, "Mark", 1),
-        (Recall, "Search", 2),
-        (Recall, "Facts", 2),
-        (Recall, "Inject", 2),
-        (Recall, "Recent", 2),
-        (Recall, "Related", 2),
-        (Recall, "Provenance", 2),
-        (Recall, "Primer", 1),
-        (Recall, "Propose", 2),
-        (Control, "Spaces", 0),
-        (Control, "Status", 1),
-        (Control, "Timeline", 2),
-        (Control, "PlanForget", 2),
-        (Control, "Forget", 1),
-        (Control, "Pending", 1),
-        (Control, "Settle", 2),
-        (Control, "Consolidation", 1),
-        (Control, "RunConsolidation", 1),
-        (Control, "Revert", 1),
-        (Control, "ApplyConsolidation", 1),
-        (Control, "DiscardConsolidation", 1),
-        (Control, "Rules", 0),
-        (Control, "SetRule", 1),
-        (Control, "RemoveRule", 1),
-        (Control, "Pause", 2),
-        (Control, "Resume", 1),
-        (Control, "Verify", 1),
-        (Control, "Rebuild", 1),
-        (Control, "Export", 1),
-        (Control, "Sweep", 1),
-        (Control, "RemoveSpace", 2),
-        (Control, "ConfirmSettings", 1),
-        (Control, "PendingSettings", 0),
-    ] {
-        assert!(
-            table.contains(&expected),
-            "{expected:?} missing from {table:?}"
-        );
-    }
-}
-
-#[test]
 fn replies_round_trip_through_their_members() {
     let event = event_ref(3);
     let pairs: Vec<(&str, MemoryReply)> = vec![

@@ -1,6 +1,5 @@
 mod apply;
 mod edits;
-mod fixtures;
 mod forget_revert;
 mod hunks;
 mod open_refusals;

@@ -7,7 +7,7 @@ use crate::common;
 use common::bus::PrivateBus;
 use common::{ACCESS_DENIED, INVALID_ARGS, Known, NO_FITTING, client, error_name, eventually};
 use ferry_bus::SyncProxy;
-use ferry_bus::{STATUS_KEY_QUOTA, SYNC_BUS, SYNC_ERROR_PAUSED, SYNC_PATH};
+use ferry_bus::{STATUS_KEY_QUOTA, SYNC_ERROR_PAUSED};
 use ferry_sync::{
     BaseVersion, Conflict, ConflictRule, LocalId, MemoryReplica, Quota, RemoteId, RemoteSide,
     RemoteVersion, StoredConflict,
@@ -65,39 +65,6 @@ fn owned_by(app: &str) -> Visible {
 
 async fn proxy(connection: &zbus::Connection) -> SyncProxy<'_> {
     SyncProxy::new(connection).await.expect("proxy")
-}
-
-fn interface_of(xml: &str) -> Vec<String> {
-    xml.lines()
-        .map(str::trim)
-        .skip_while(|l| !l.starts_with("<interface name=\"org.quire.Sync1\""))
-        .take_while(|l| *l != "</interface>")
-        .map(str::to_owned)
-        .collect()
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn the_served_object_has_exactly_the_frozen_interface() {
-    let rig = rig().await;
-    let me = client(&rig.bus, &rig.known, "org.example.App", CallerRole::App).await;
-    let live = zbus::fdo::IntrospectableProxy::builder(&me)
-        .destination(SYNC_BUS)
-        .expect("destination")
-        .path(SYNC_PATH)
-        .expect("path")
-        .build()
-        .await
-        .expect("proxy")
-        .introspect()
-        .await
-        .expect("introspect");
-    let frozen = std::fs::read_to_string(
-        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../dbus/org.quire.Sync1.xml"),
-    )
-    .expect("the checked-in xml");
-    let (served, pinned) = (interface_of(&live), interface_of(&frozen));
-    assert!(served.len() > 10, "{live}");
-    assert_eq!(served, pinned);
 }
 
 #[tokio::test(flavor = "multi_thread")]

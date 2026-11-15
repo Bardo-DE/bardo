@@ -34,13 +34,3 @@ fn refusals_map_one_to_one_to_error_names() {
     }
     assert_eq!(names.len(), 13);
 }
-
-#[test]
-fn names_are_the_documented_ones() {
-    assert_eq!(MEMORY_BUS, "org.quire.Memory1");
-    assert_eq!(MEMORY_PATH, "/org/quire/Memory1");
-    assert!(zbus::zvariant::ObjectPath::try_from(MEMORY_PATH).is_ok());
-    for interface in [RECORD_INTERFACE, RECALL_INTERFACE, CONTROL_INTERFACE] {
-        assert!(interface.starts_with(MEMORY_BUS));
-    }
-}

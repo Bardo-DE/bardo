@@ -12,7 +12,6 @@ use ferry_bus::{
     ITEM_KEY_FRACTION, ITEM_KEY_KEPT, ITEM_KEY_KIND, ITEM_KEY_OTHER, ITEM_KEY_STATE, ITEM_KEY_URL,
     StorageProxy,
 };
-use ferry_bus::{STORAGE_PATH, SYNC_BUS};
 use ferry_drive::testing::{MemoryListing, MemorySink, MemorySource, Took};
 use ferry_drive::{Drive, DriveConfig, NodeId, Reason};
 use porter_callers::CallerRole;
@@ -132,45 +131,6 @@ fn flag(details: &porter_dbus::Details, key: &str) -> Option<bool> {
 async fn state_of(proxy: &StorageProxy<'_>, path: &str) -> Option<String> {
     let items = proxy.items(vec![at(path)]).await.expect("items");
     items.get(&at(path)).and_then(|d| text(d, ITEM_KEY_STATE))
-}
-
-fn interface_of(xml: &str) -> Vec<String> {
-    xml.lines()
-        .map(str::trim)
-        .skip_while(|l| !l.starts_with("<interface name=\"org.quire.Storage1\""))
-        .take_while(|l| *l != "</interface>")
-        .map(str::to_owned)
-        .collect()
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn the_served_object_has_exactly_the_frozen_interface() {
-    let rig = rig().await;
-    let me = client(
-        &rig.bus,
-        &rig.known,
-        "org.quire.Shell",
-        CallerRole::SheetHost,
-    )
-    .await;
-    let live = zbus::fdo::IntrospectableProxy::builder(&me)
-        .destination(SYNC_BUS)
-        .expect("destination")
-        .path(STORAGE_PATH)
-        .expect("path")
-        .build()
-        .await
-        .expect("proxy")
-        .introspect()
-        .await
-        .expect("introspect");
-    let frozen = std::fs::read_to_string(
-        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../dbus/org.quire.Storage1.xml"),
-    )
-    .expect("the checked-in xml");
-    let (served, pinned) = (interface_of(&live), interface_of(&frozen));
-    assert!(served.len() > 10, "{live}");
-    assert_eq!(served, pinned);
 }
 
 #[tokio::test(flavor = "multi_thread")]

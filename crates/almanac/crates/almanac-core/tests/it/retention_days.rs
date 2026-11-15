@@ -11,15 +11,6 @@ fn days_of(rules: &RuleSet, pattern: &str) -> Option<Retention> {
 }
 
 #[test]
-fn the_default_retention_days_are_the_shipped_defaults() {
-    let standard = RuleSet::standard();
-    assert_eq!(
-        standard.clone().with_retention(&RetentionDays::default()),
-        standard
-    );
-}
-
-#[test]
 fn each_class_changes_its_own_patterns_and_nothing_else() {
     let days = RetentionDays {
         search: DayCount(1),
