@@ -41,15 +41,6 @@ pub struct AskKey {
     pub power: Power,
 }
 
-/// Whether the shell has been told of a question.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Sheet {
-    /// Waiting for its turn, or for a shell.
-    Queued,
-    /// On the person's screen.
-    Shown,
-}
-
 /// One open question.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OpenAsk {
@@ -64,7 +55,7 @@ pub struct OpenAsk {
     /// Whether an answer is kept.
     pub memory: Memory,
     /// Whether the shell has it.
-    pub sheet: Sheet,
+    pub shown: bool,
     /// When it counts as dismissed.
     pub deadline: Mono,
     /// The clients whose requests wait on it.
@@ -79,7 +70,7 @@ pub struct AskView {
     /// Which power.
     pub power: Power,
     /// Whether the shell has it.
-    pub sheet: Sheet,
+    pub shown: bool,
     /// How many clients wait on it.
     pub waiting: usize,
 }
@@ -156,7 +147,7 @@ impl Asks {
             reask,
             subject,
             memory,
-            sheet: Sheet::Queued,
+            shown: false,
             deadline: now.after(ASK_TTL),
             waiting: BTreeSet::from([client]),
         });
@@ -168,7 +159,7 @@ impl Asks {
         let at = self
             .open
             .iter()
-            .position(|ask| ask.id == id && ask.sheet == Sheet::Shown)?;
+            .position(|ask| ask.id == id && ask.shown)?;
         Some(self.open.remove(at))
     }
 
@@ -180,12 +171,12 @@ impl Asks {
 
     /// Whether a question is on screen.
     pub(super) fn is_shown(&self) -> bool {
-        self.open.iter().any(|ask| ask.sheet == Sheet::Shown)
+        self.open.iter().any(|ask| ask.shown)
     }
 
     /// The first queued question.
     pub(super) fn first_queued_mut(&mut self) -> Option<&mut OpenAsk> {
-        self.open.iter_mut().find(|ask| ask.sheet == Sheet::Queued)
+        self.open.iter_mut().find(|ask| !ask.shown)
     }
 
     /// `client` no longer waits on anything; the powers it was waiting for.
@@ -200,7 +191,7 @@ impl Asks {
     pub(super) fn requeue(&mut self) {
         self.open
             .iter_mut()
-            .for_each(|ask| ask.sheet = Sheet::Queued);
+            .for_each(|ask| ask.shown = false);
     }
 
     /// `who` is not asked about `power` again before [`REASK_AFTER`] from `now`. The table is
@@ -235,7 +226,7 @@ impl Asks {
             .map(|ask| AskView {
                 id: ask.id,
                 power: ask.key.power,
-                sheet: ask.sheet,
+                shown: ask.shown,
                 waiting: ask.waiting.len(),
             })
             .collect()

@@ -9,7 +9,7 @@ use casement_core::policy::{ConnectionRole, GlobalKind, advertised_to};
 use casement_core::privilege::{
     ASK_TTL, ASKS_PER_MINUTE, AskSubject, Book, ClientStanding, Edit, Engine, Fallback, Floor,
     FloorRule, OPEN_ASKS, PowerOutcome, ProgramPath, REASK_AFTER, SHELL_WAIT, SandboxAppId,
-    ServiceRole, Sheet, Subject, UnixSeconds, Verdict,
+    ServiceRole, Subject, UnixSeconds, Verdict,
 };
 use casement_core::time::{Mono, TimerKey};
 use casement_core::{ClientKey, Effect, Event, Model};
@@ -94,7 +94,7 @@ impl Desk {
             .privilege()
             .asks()
             .iter()
-            .find(|ask| ask.sheet == Sheet::Shown)
+            .find(|ask| ask.shown)
             .map(|ask| ask.id)
             .expect("a question is on screen")
     }
@@ -585,7 +585,7 @@ fn an_answer_that_is_not_for_a_question_on_screen_is_ignored() {
         .privilege()
         .asks()
         .into_iter()
-        .find(|ask| ask.sheet == Sheet::Queued)
+        .find(|ask| !ask.shown)
         .expect("a second question waits")
         .id;
     assert!(
@@ -647,7 +647,7 @@ fn a_question_on_a_shell_that_went_waits_for_the_next_one() {
     let effects = desk.uses(1, Power::Screen);
     let (ask, ..) = questions(&effects)[0].clone();
     desk.send(Event::ShellGone);
-    assert_eq!(desk.model.privilege().asks()[0].sheet, Sheet::Queued);
+    assert!(!desk.model.privilege().asks()[0].shown);
     let effects = desk.send(Event::ShellReady);
     assert_eq!(
         questions(&effects).iter().map(|q| q.0).collect::<Vec<_>>(),
@@ -1087,7 +1087,7 @@ mod storms {
                 };
                 prop_assert!(questions(&effects).len() <= 1, "{:?}", act);
                 let shown = desk.model.privilege().asks().iter()
-                    .filter(|ask| ask.sheet == Sheet::Shown).count();
+                    .filter(|ask| ask.shown).count();
                 prop_assert!(shown <= 1);
                 prop_assert!(desk.model.privilege().asks().len() <= OPEN_ASKS);
                 for n in [1u64, 5] {

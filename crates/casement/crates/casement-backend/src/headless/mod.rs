@@ -89,15 +89,6 @@ impl<T: FrameElements> FrameSource for T {
     }
 }
 
-/// What presenting a frame did.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Shown {
-    /// The output presented a frame (its [`HeadlessBackend::last_frame`] moved).
-    Frame,
-    /// The output is dark, or not plugged: nothing was presented.
-    Dark,
-}
-
 /// The headless backend.
 #[derive(Debug)]
 pub struct HeadlessBackend {
@@ -323,20 +314,21 @@ impl HeadlessBackend {
     }
 
     /// Draws `source` into `name`'s image and records it as the frame presented at vblank `seq`
-    /// of the session clock's instant `at`. A dark or unplugged output presents nothing.
+    /// of the session clock's instant `at`. A dark or unplugged output presents nothing: `false`; `true` when a frame was presented
+    /// (its [`HeadlessBackend::last_frame`] moved).
     pub fn present(
         &mut self,
         name: &OutputName,
         seq: VblankSeq,
         at: Mono,
         source: &dyn FrameSource,
-    ) -> Result<Shown, BackendError> {
+    ) -> Result<bool, BackendError> {
         let renderer = self.renderer.as_mut();
         let Some(output) = self.outputs.get_mut(name) else {
-            return Ok(Shown::Dark);
+            return Ok(false);
         };
         if !output.power {
-            return Ok(Shown::Dark);
+            return Ok(false);
         }
         let size = output.spec.mode.size;
         let drawn = match output.canvas.as_mut() {
@@ -394,7 +386,7 @@ impl HeadlessBackend {
                 bare,
             },
         });
-        Ok(Shown::Frame)
+        Ok(true)
     }
 
     /// A canvas for `spec`'s mode; a renderer fault is logged and the output draws blank.

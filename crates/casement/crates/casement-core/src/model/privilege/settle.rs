@@ -2,7 +2,7 @@
 //! the two things every step ends with: showing the next question, and arming the timer for the
 //! next deadline.
 
-use super::ask::{Asker, OpenAsk, Sheet};
+use super::ask::{Asker, OpenAsk};
 use super::book::{Book, Grant, UnixSeconds, Verdict};
 use super::decide::{Decision, decide};
 use super::edit::Edit;
@@ -199,7 +199,7 @@ impl Privilege {
             .collect();
         for id in answered {
             if let Some(ask) = self.asks.take(id) {
-                if ask.sheet == Sheet::Shown {
+                if ask.shown {
                     out.push(Effect::WithdrawAsk { ask: ask.id });
                 }
                 self.settle(out, &ask, Settle::ByRecord);
@@ -229,7 +229,7 @@ impl Privilege {
             let Some(ask) = self.asks.take(id) else {
                 continue;
             };
-            if ask.sheet == Sheet::Shown {
+            if ask.shown {
                 out.push(Effect::WithdrawAsk { ask: ask.id });
                 self.asks.cool(ask.reask.clone(), ask.key.power, ctx.now);
             }
@@ -245,7 +245,7 @@ impl Privilege {
             return;
         }
         if let Some(ask) = self.asks.first_queued_mut() {
-            ask.sheet = Sheet::Shown;
+            ask.shown = true;
             ask.deadline = ctx.now.after(ASK_TTL);
             out.push(Effect::AskPermission {
                 ask: ask.id,

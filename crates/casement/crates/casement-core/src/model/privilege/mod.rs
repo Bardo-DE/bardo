@@ -35,7 +35,7 @@ mod subject;
 mod subject_dto;
 mod use_power;
 
-pub use ask::{AskView, Sheet};
+pub use ask::AskView;
 pub use book::{Book, Grant, UnixSeconds, Verdict};
 pub use book_codec::{BookError, Loaded};
 pub use decide::{Decision, decide, decide_trusted};
@@ -222,7 +222,7 @@ impl Privilege {
             .asks
             .open
             .iter()
-            .filter(|ask| ask.sheet == Sheet::Shown)
+            .filter(|ask| ask.shown)
             .count();
         self.asks.open.len() <= OPEN_ASKS
             && shown <= 1

@@ -9,7 +9,6 @@ use self::scene::{SceneSource, empty_frame, layers_on, row_of, sample_scene_at};
 use crate::cli::StartMode;
 use crate::exec;
 use crate::state::State;
-use casement_backend::headless::Shown;
 use casement_backend::tty::PresentOutcome;
 use casement_backend::{BackendKind, ConnectorEvent, HeadlessBackend};
 use casement_core::frame::Repeat;
@@ -244,10 +243,7 @@ fn present_headless(
             .map_or(0, |output| output.presented)
             .saturating_add(1),
     );
-    Ok(match backend.present(name, seq, now, source)? {
-        Shown::Frame => Some(seq),
-        Shown::Dark => None,
-    })
+    Ok(backend.present(name, seq, now, source)?.then_some(seq))
 }
 
 /// What follows a presented frame: frame callbacks to the surfaces drawn, then the
