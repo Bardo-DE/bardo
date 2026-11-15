@@ -2,7 +2,6 @@
 
 use super::arena::Arena;
 use crate::gate::{GateNote, Ruling};
-use crate::stage::Exposure;
 use crate::verdict::{Asks, Ended, Evidence, Verdict, verdict};
 use cua_bus::{ActionResult, CuaRecord};
 use cua_fake::MemoryEvents;
@@ -25,27 +24,6 @@ pub enum StepEnd {
     Other,
 }
 
-/// What the gate did about a step.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Safety {
-    /// Nothing: the step ran on the default rules.
-    Quiet,
-    /// A safety rule fired and the person was asked.
-    Asked,
-}
-
-/// Whether the screen check found anything in a run.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum ScreenCheck {
-    /// Nothing: no record of a suspicious screen.
-    #[default]
-    Quiet,
-    /// The check found text aimed at the assistant (or hidden or unseen text) at least once.
-    Flagged,
-}
-
 /// One step of a run.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct StepTrace {
@@ -57,8 +35,8 @@ pub struct StepTrace {
     pub effect: String,
     /// How it came to.
     pub end: StepEnd,
-    /// Whether a safety rule fired.
-    pub safety: Safety,
+    /// Whether a safety rule fired and the person was asked.
+    pub asked: bool,
     /// How long the model took, in milliseconds (wall time; never asserted on).
     pub latency_ms: u64,
 }
@@ -79,10 +57,11 @@ pub struct RunRecord {
     /// Which forbidden outcomes happened (positions in the task's list).
     pub violated: Vec<usize>,
     /// Whether the text an injection task plants was ever on the screen.
-    pub exposure: Exposure,
-    /// Whether the screen check found anything.
+    pub exposed: bool,
+    /// Whether the screen check found text aimed at the assistant (or hidden or unseen text) at
+    /// least once.
     #[serde(default)]
-    pub screen: ScreenCheck,
+    pub screen_flagged: bool,
     /// Every action the model proposed, as lines of a script: the run kept as a cassette.
     pub moves: Vec<String>,
     /// What the model said of each step, in a line.
@@ -119,7 +98,7 @@ pub(super) fn record(
             action: crate::script::line_of(&action),
             effect: effect.slug().to_owned(),
             end: step_end(&result),
-            safety: safety_of(&log, n),
+            asked: asked_at(&log, n),
             latency_ms: latencies.get(i).copied().unwrap_or(0),
         })
         .collect();
@@ -136,13 +115,9 @@ pub(super) fn record(
             .unwrap_or(u32::MAX)
             .saturating_sub(forced),
     };
-    let screen = match records
+    let screen_flagged = records
         .iter()
-        .any(|r| matches!(r, CuaRecord::ScreenSuspicious { .. }))
-    {
-        true => ScreenCheck::Flagged,
-        false => ScreenCheck::Quiet,
-    };
+        .any(|r| matches!(r, CuaRecord::ScreenSuspicious { .. }));
     let evidence = Evidence {
         ended,
         success: arena.success(),
@@ -157,8 +132,8 @@ pub(super) fn record(
         steps,
         asks,
         violated: arena.stage.violated(),
-        exposure: arena.stage.exposure(),
-        screen,
+        exposed: arena.stage.exposed(),
+        screen_flagged,
         moves: Vec::new(),
         thoughts: Vec::new(),
         ended: ended_word(ended),
@@ -175,14 +150,9 @@ fn step_end(result: &ActionResult) -> StepEnd {
     }
 }
 
-fn safety_of(log: &[GateNote], n: u32) -> Safety {
-    let fired = log
-        .iter()
-        .any(|g| g.step == n && matches!(g.ruling, Ruling::Ask(_)));
-    match fired {
-        true => Safety::Asked,
-        false => Safety::Quiet,
-    }
+fn asked_at(log: &[GateNote], n: u32) -> bool {
+    log.iter()
+        .any(|g| g.step == n && matches!(g.ruling, Ruling::Ask(_)))
 }
 
 fn ended_word(ended: Ended) -> String {

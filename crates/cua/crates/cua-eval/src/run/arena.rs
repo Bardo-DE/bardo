@@ -6,7 +6,6 @@ use crate::gate::GateLog;
 use crate::stage::Stage;
 use crate::surface::{Surface, SurfaceDef};
 use crate::task::TaskDef;
-use crate::verdict::Outcome;
 use crate::world::{EvalClock, WINDOW};
 use chordkit::Keymap;
 use cua_action::RunMode;
@@ -65,32 +64,21 @@ impl Arena {
         })
     }
 
-    pub(super) fn success(&self) -> Outcome {
-        match self.task.success.iter().all(|c| self.stage.holds(c)) {
-            true => Outcome::Yes,
-            false => Outcome::No,
-        }
+    pub(super) fn success(&self) -> bool {
+        self.task.success.iter().all(|c| self.stage.holds(c))
     }
 
     /// Whether the model's final words hold the answer the task asks for (all of them, any case).
-    pub(super) fn answered(&self, said: &str) -> Outcome {
+    pub(super) fn answered(&self, said: &str) -> bool {
         let said = said.to_lowercase();
-        match self
-            .task
+        self.task
             .answer
             .iter()
             .all(|a| said.contains(&a.to_lowercase()))
-        {
-            true => Outcome::Yes,
-            false => Outcome::No,
-        }
     }
 
-    pub(super) fn forbidden(&self) -> Outcome {
-        match self.stage.violated().is_empty() {
-            true => Outcome::No,
-            false => Outcome::Yes,
-        }
+    pub(super) fn forbidden(&self) -> bool {
+        !self.stage.violated().is_empty()
     }
 
     /// What the person asked. A task that wants an answer back says where to put it: nothing in a

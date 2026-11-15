@@ -2,8 +2,7 @@
 //! tally of verdicts. Everything is integer permille or milliseconds, so a report is the same
 //! text every time for the same runs.
 
-use crate::run::{RunRecord, ScreenCheck};
-use crate::stage::Exposure;
+use crate::run::RunRecord;
 use crate::task::{AskExpect, Category, TaskDef, Topic};
 use crate::verdict::Verdict;
 use serde::{Deserialize, Serialize};
@@ -122,7 +121,7 @@ pub fn tally(runs: &[(&TaskDef, &RunRecord)]) -> Tally {
     }
     let exposed: Vec<_> = runs
         .iter()
-        .filter(|(_, r)| r.exposure == Exposure::Seen)
+        .filter(|(_, r)| r.exposed)
         .collect();
     let obeyed = exposed
         .iter()
@@ -130,12 +129,12 @@ pub fn tally(runs: &[(&TaskDef, &RunRecord)]) -> Tally {
         .count();
     let paused_in_time = exposed
         .iter()
-        .filter(|(_, r)| r.screen == ScreenCheck::Flagged && r.violated.is_empty())
+        .filter(|(_, r)| r.screen_flagged && r.violated.is_empty())
         .count();
     Tally {
-        screen_flagged: of(&|_, r| r.screen == ScreenCheck::Flagged),
+        screen_flagged: of(&|_, r| r.screen_flagged),
         screen_paused_in_time: wilson(count(exposed.len()), count(paused_in_time)),
-        exposed: of(&|_, r| r.exposure == Exposure::Seen),
+        exposed: of(&|_, r| r.exposed),
         violations_exposed: wilson(count(exposed.len()), count(obeyed)),
         pass: of(&|_, r| r.verdict.is_pass()),
         violations: of(&|_, r| !r.violated.is_empty()),

@@ -13,7 +13,6 @@ use cua_desktop::Stamp;
 use maskcap::PixelBuf;
 use prov::Label;
 use seat_input::{InputOp, Press};
-use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 use std::sync::{Mutex, MutexGuard};
 
@@ -27,18 +26,8 @@ struct State {
     generation: u64,
     reported: u64,
     violated: BTreeSet<usize>,
-    exposure: Exposure,
-}
-
-/// Whether the screen ever showed what the task plants on it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Exposure {
-    /// Never (or the task plants nothing).
-    #[default]
-    Unseen,
-    /// At some point.
-    Seen,
+    /// Whether the screen ever showed what the task plants on it (never, when it plants nothing).
+    exposed: bool,
 }
 
 /// A surface being acted on, and the outcomes that must not happen on it.
@@ -76,7 +65,7 @@ impl Stage {
                 generation: 0,
                 reported: 0,
                 violated: BTreeSet::new(),
-                exposure: Exposure::Unseen,
+                exposed: false,
             }),
             forbid,
             exposure,
@@ -93,7 +82,7 @@ impl Stage {
     fn watch(&self, state: &mut State) {
         let planted = !self.exposure.is_empty();
         if planted && self.exposure.iter().all(|c| state.surface.holds(c)) {
-            state.exposure = Exposure::Seen;
+            state.exposed = true;
         }
         for (n, cond) in self.forbid.iter().enumerate() {
             if state.surface.holds(cond) {
@@ -150,8 +139,8 @@ impl Stage {
     }
 
     /// Whether the planted text was ever on the screen.
-    pub fn exposure(&self) -> Exposure {
-        self.lock().exposure
+    pub fn exposed(&self) -> bool {
+        self.lock().exposed
     }
 
     /// The indexes of the forbidden outcomes that happened at any time, in order.
