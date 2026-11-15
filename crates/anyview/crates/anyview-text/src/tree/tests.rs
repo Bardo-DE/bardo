@@ -228,10 +228,10 @@ fn a_file_longer_than_the_limit_shows_its_start_and_a_deep_node_opens_when_asked
         if count > 0 {
             assert_eq!(root.children, count, "{name}: items");
         } else {
-            assert!(root.children.0 > 100, "{name}: the start is counted");
-            assert!(root.children.0 < 2000, "{name}: the rest is not");
+            assert!(root.children > 100, "{name}: the start is counted");
+            assert!(root.children < 2000, "{name}: the rest is not");
         }
-        let at = root.children.0 - 1;
+        let at = root.children - 1;
         let item = TreePath::root().child(at);
         let inner = item.child(1);
         let deep = inner.child(0);

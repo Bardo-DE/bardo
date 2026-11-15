@@ -92,7 +92,7 @@ impl PickerObject {
         let label: String = app_label.chars().take(MAX_LABEL).collect();
         let modes: Vec<u32> = cursor_modes.into_iter().take(MAX_MODES).collect();
         let ask = Ask::from_wire(&label, kinds, multiple, &modes)
-            .map_err(|e| fdo::Error::InvalidArgs(e.to_string()))?
+            .ok_or_else(|| fdo::Error::InvalidArgs("a malformed ask".to_owned()))?
             .remembering(Remembered::from_wire(remembered));
         let (answer, answered) = oneshot::channel();
         let stopped = || fdo::Error::Failed("the picker has stopped".to_owned());

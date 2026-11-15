@@ -57,7 +57,7 @@ impl Peek for TreePeek {
         let values = match (format, coverage) {
             (TreeFormat::Json, Coverage::Whole) => None,
             (TreeFormat::Json | TreeFormat::JsonLines, _) => {
-                Some(Tally::of(count.0 as usize, coverage)) // a u32 fits a usize
+                Some(Tally::of(count as usize, coverage)) // a u32 fits a usize
             }
         };
         Ok(TreePeeked {
@@ -78,10 +78,10 @@ impl Peek for TreePeek {
         let facts = Facts::empty().with(FactLabel::Kind, FactValue::text(kind));
         let facts = match (&peeked.values, peeked.keys.as_slice()) {
             (Some(values), []) => facts.with_fact(items(values.text())),
-            (None, []) => facts.with_fact(items(grouped(peeked.root.children.0))),
+            (None, []) => facts.with_fact(items(grouped(peeked.root.children))),
             (values, keys) => facts.with(
                 FactLabel::Keys,
-                FactValue::text(keys_text(keys, peeked.root.children.0, values.as_ref())),
+                FactValue::text(keys_text(keys, peeked.root.children, values.as_ref())),
             ),
         };
         facts.with_fact(

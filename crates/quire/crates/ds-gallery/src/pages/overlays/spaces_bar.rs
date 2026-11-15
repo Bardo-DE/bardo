@@ -69,7 +69,7 @@ fn Bar(name: String, held: Option<bool>, over: DropState, add_over: DropState) -
                         label: "Spaces",
                         spaces: tiles,
                         shown: shown(),
-                        expansion: held,
+                        expanded: held,
                         on_pick: move |key: BarSpaceKey| {
                             if let Ok(at) = key.0.parse() {
                                 picked.set(at);

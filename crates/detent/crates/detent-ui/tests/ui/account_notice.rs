@@ -50,7 +50,8 @@ fn world(name: &str) -> (Harness, detent_model::Outbox, impl Sized) {
 fn an_account_segment_opens_that_accounts_detail_and_an_unknown_one_the_list() {
     // (the segment, the account whose detail opens; none: the list)
     for (segment, opens) in [("work_example", Some("work.example")), ("nobody", None)] {
-        let (mut harness, outbox, _keep) = world(&format!("notice-account-{segment}"));
+        let name = format!("notice-account-{segment}");
+        let (mut harness, outbox, _keep) = world(&name);
         outbox.send(detail(segment)).expect("listening");
         settle(&mut harness, "the page", |h| match opens {
             Some(id) => h.attr(".accounts-detail", "data-account").as_deref() == Some(id),

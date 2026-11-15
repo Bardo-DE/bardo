@@ -150,7 +150,7 @@ impl TreeSession {
         let (bytes, bom) = text.into_parts();
         let tree = read(&bytes, format)?;
         Ok(TreeSession {
-            mark: bom.mark().to_vec(),
+            mark: if bom { "\u{feff}".as_bytes().to_vec() } else { Vec::new() },
             bytes,
             format,
             tree,
@@ -278,7 +278,7 @@ impl TreeSession {
     /// itself, and the root takes it after its last. Returns the path of the new node.
     pub fn insert_below(&mut self, path: &TreePath) -> Result<TreePath, TreeEditError> {
         let here = self.tree.row(path)?;
-        let count = here.children.0;
+        let count = here.children;
         let container = matches!(here.kind, super::NodeKind::Object | super::NodeKind::Array);
         match (path.split_last(), container, count) {
             (_, true, 0) => self.insert_first(path),

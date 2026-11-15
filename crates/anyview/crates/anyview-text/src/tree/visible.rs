@@ -41,7 +41,7 @@ fn child_row(tree: &Tree, path: &TreePath, at: usize) -> Option<TreeRow> {
 
 /// How many rows the node of `row` at `path` and its open descendants make.
 fn count(tree: &Tree, row: &TreeRow, path: &TreePath, open: &OpenNodes) -> u64 {
-    let len = row.children.0 as usize; // a u32 fits a usize
+    let len = row.children as usize; // a u32 fits a usize
     if len == 0 || !open.is_open(path) {
         return 1;
     }
@@ -91,7 +91,7 @@ fn openness(len: usize, path: &TreePath, open: &OpenNodes) -> Openness {
 /// Collect the rows of the node of `row` at `path` into `cut`: itself, then its open children.
 fn walk(tree: &Tree, row: TreeRow, path: &TreePath, open: &OpenNodes, cut: &mut Cut) {
     let depth = u32::try_from(path.depth()).unwrap_or(u32::MAX);
-    let len = row.children.0 as usize; // a u32 fits a usize
+    let len = row.children as usize; // a u32 fits a usize
     cut.push(|| VisibleRow {
         path: path.clone(),
         depth,
@@ -123,7 +123,7 @@ fn walk(tree: &Tree, row: TreeRow, path: &TreePath, open: &OpenNodes, cut: &mut 
             let at_path = path.child(u32::try_from(position).unwrap_or(u32::MAX));
             cut.push(|| VisibleRow {
                 depth: depth + 1,
-                openness: openness(child.children.0 as usize, &at_path, open), // a u32 fits a usize
+                openness: openness(child.children as usize, &at_path, open), // a u32 fits a usize
                 path: at_path,
                 row: child,
             });
@@ -173,7 +173,7 @@ impl Tree {
         let mut at = TreePath::root();
         let mut before = 0_u64;
         for step in path.steps().iter().copied() {
-            let len = self.row(&at).ok()?.children.0;
+            let len = self.row(&at).ok()?.children;
             if step >= len || !open.is_open(&at) {
                 return None;
             }

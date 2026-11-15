@@ -246,7 +246,7 @@ mod tests {
         for n in 0..HINTS_MAX {
             ok.hints.insert(format!("x-{n}"), owned(Value::from(1u32)));
         }
-        assert!(posting(ok).is_ok(), "the ceiling itself passes");
+        assert!(posting(ok).is_some(), "the ceiling itself passes");
     }
 
     #[test]
