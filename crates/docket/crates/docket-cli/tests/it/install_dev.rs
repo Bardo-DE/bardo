@@ -198,12 +198,12 @@ fn an_install_puts_every_piece_where_the_session_reads_it() {
     for config in [
         "intentd",
         "companiond",
-        "inferd",
         "memory-callers",
         "actions-mcp",
     ] {
         has(&format!(".config/quire/{config}.toml"));
     }
+    has(".config/inferd/inferd.toml");
     // Offline unless asked: no drop-in that opens inferd's network (its sandbox drop-in, which
     // only narrows it, is checked below).
     assert!(
@@ -311,12 +311,12 @@ fn a_config_of_the_persons_own_is_never_overwritten_and_a_second_run_changes_not
         return;
     }
     let jail = Jail::new();
-    let mine = jail.config().join("quire/inferd.toml");
+    let mine = jail.config().join("inferd/inferd.toml");
     std::fs::create_dir_all(mine.parent().expect("dir")).expect("dir");
     std::fs::write(&mine, "# mine\n[ai]\nlocal_only = \"off\"\n").expect("mine");
     jail.ok(&[]);
     assert_eq!(
-        jail.read(".config/quire/inferd.toml"),
+        jail.read(".config/inferd/inferd.toml"),
         "# mine\n[ai]\nlocal_only = \"off\"\n"
     );
     let first = jail.tree();
@@ -324,7 +324,7 @@ fn a_config_of_the_persons_own_is_never_overwritten_and_a_second_run_changes_not
     assert_eq!(jail.tree(), first, "idempotent");
     assert!(again.contains("kept (yours)"), "{again}");
     assert_eq!(
-        jail.read(".config/quire/inferd.toml"),
+        jail.read(".config/inferd/inferd.toml"),
         "# mine\n[ai]\nlocal_only = \"off\"\n"
     );
 }
@@ -368,7 +368,7 @@ fn an_uninstall_removes_exactly_what_was_installed_and_keeps_what_is_the_persons
     jail.ok(&[]);
     assert_ne!(jail.tree(), before);
     // The runbook edits inferd.toml: that edit survives.
-    let inferd = jail.config().join("quire/inferd.toml");
+    let inferd = jail.config().join("inferd/inferd.toml");
     let edited = format!(
         "{}\n[ai]\nlocal_only = \"off\"\n",
         std::fs::read_to_string(&inferd).expect("read")
@@ -381,8 +381,8 @@ fn an_uninstall_removes_exactly_what_was_installed_and_keeps_what_is_the_persons
         .into_iter()
         .chain([
             ".config/".to_owned(),
-            ".config/quire/".to_owned(),
-            ".config/quire/inferd.toml".to_owned(),
+            ".config/inferd/".to_owned(),
+            ".config/inferd/inferd.toml".to_owned(),
         ])
         .collect();
     assert_eq!(left, expected, "only the person's own files remain");

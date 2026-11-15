@@ -65,7 +65,7 @@ if you will have it read mail.
 
 The defaults keep every class on this computer (`ai.local_only = "on"`, floors at `on_device`). The companion,
 the policy writer and the reviewers all send the class `prompt`, and only that; readerd sends the class of what
-it reads. Append this to `~/.config/quire/inferd.toml` (inferd rereads the file within a moment, no restart):
+it reads. Append this to `~/.config/inferd/inferd.toml` (inferd rereads the file within a moment, no restart):
 
 ```toml
 [ai]
@@ -125,6 +125,6 @@ sudo rm /etc/porter/callers.toml /etc/porter/inferd-callers.toml
 systemctl --user daemon-reload
 ```
 
-`--uninstall` keeps `~/.config/quire/inferd.toml` because you edited it (delete it by hand), and does not touch your
+`--uninstall` keeps `~/.config/inferd/inferd.toml` because you edited it (delete it by hand), and does not touch your
 key: remove the AI account in Settings later (accountd's list under `~/.local/state/porter`, and the
 `porter.accountd` entry in KWallet), or delete the OpenRouter key at openrouter.ai.

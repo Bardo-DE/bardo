@@ -164,7 +164,7 @@ build_plan() {
     plan config "$cfg" "$QUIRE_CONFIG/$(basename "$cfg")"
   done
   if [ "$CLOUD" = 1 ]; then plan dropin "$STEWARD/dist/inferd-cloud.conf" "$UNITS/inferd.service.d/cloud.conf"; fi
-  plan config "$STEWARD/dist/inferd.toml" "$QUIRE_CONFIG/inferd.toml"
+  plan config "$STEWARD/dist/inferd.toml" "$CONFIG/inferd/inferd.toml"
   plan config "$ALMANAC/dbus/memory-callers.toml" "$QUIRE_CONFIG/memory-callers.toml"
 }
 
