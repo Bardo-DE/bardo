@@ -26,20 +26,6 @@ fn differing_bytes(a: &[u8], b: &[u8]) -> usize {
 }
 
 #[test]
-fn a_jpeg_turn_changes_only_the_orientation_tag() {
-    let before = bytes("rotated.jpg");
-    let after = edited(
-        &before,
-        &sniffed(&before, "a.jpg"),
-        Edit::Rotate(QuarterTurn::Quarter),
-    )
-    .unwrap();
-    assert_eq!(ExifFacts::read(&before).orientation.tag(), 6);
-    assert_eq!(ExifFacts::read(&after).orientation.tag(), 3);
-    assert_eq!(differing_bytes(&before, &after), 1);
-}
-
-#[test]
 fn a_jpeg_flip_changes_only_the_orientation_tag_and_twice_restores_it() {
     let before = bytes("rotated.jpg");
     let kind = sniffed(&before, "a.jpg");

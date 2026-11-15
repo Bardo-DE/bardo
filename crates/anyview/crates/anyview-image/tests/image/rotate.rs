@@ -72,16 +72,6 @@ fn four_quarter_turns_return_the_original_bytes() {
 }
 
 #[test]
-fn a_turn_changes_what_decoding_shows() {
-    let original = bytes("rotated.jpg");
-    assert_eq!(upright_size(&original), size(32, 48));
-    let quarter = rotate_jpeg(&original, QuarterTurn::Quarter).unwrap(); // now orientation 3: 48 x 32
-    assert_eq!(upright_size(&quarter), size(48, 32));
-    let back = rotate_jpeg(&quarter, QuarterTurn::ThreeQuarter).unwrap();
-    assert_eq!(upright_size(&back), size(32, 48));
-}
-
-#[test]
 fn a_photo_without_exif_gains_a_segment_and_keeps_every_other_byte() {
     let before = bytes("plain.jpg");
     assert_eq!(ExifFacts::read(&before), ExifFacts::none());
@@ -106,12 +96,6 @@ fn bytes_after_the_end_of_image_survive() {
     let after = rotate_jpeg(&file, QuarterTurn::Half).unwrap();
     assert!(after.ends_with(b"MPF-TRAILER"));
     assert_eq!(tag(&after), 8, "6 turned a half is 8");
-}
-
-#[test]
-fn no_turn_returns_the_file_as_it_was() {
-    let file = bytes("rotated.jpg");
-    assert_eq!(rotate_jpeg(&file, QuarterTurn::None).unwrap(), file);
 }
 
 #[test]

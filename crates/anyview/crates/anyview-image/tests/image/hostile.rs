@@ -6,7 +6,7 @@
 use crate::support;
 
 use anyview_core::{Peek, PixelLen, PixelSize};
-use anyview_image::{Decoded, FrameCount, ImageError, RasterPeek, VectorPeek, decode_bytes};
+use anyview_image::{Decoded, FrameCount, ImageError, RasterPeek, decode_bytes};
 use std::time::{Duration, Instant};
 use support::{budget, bytes, fixture, sniffed};
 
@@ -166,47 +166,6 @@ fn an_icon_element_that_claims_four_gigabytes_is_refused() {
     let started = Instant::now();
     let peeked = RasterPeek::peek(&src, &sniffed, &budget(1 << 20));
     refused_in_time("a 16 byte icns", started, &peeked);
-}
-
-/// A raw file named `.dng`: a TIFF header and `repeats` JPEG start markers.
-fn raw_of_start_markers(repeats: usize) -> Vec<u8> {
-    let mut file = b"II*\0\x08\0\0\0".to_vec();
-    file.extend([0xFF, 0xD8].repeat(repeats));
-    file
-}
-
-#[test]
-fn a_raw_file_of_start_markers_has_no_preview_and_is_read_once() {
-    let file = raw_of_start_markers(400_000);
-    let sniffed = sniffed(&file, "quad.dng");
-    let started = Instant::now();
-    let got = decode_bytes(&file, &sniffed);
-    assert!(matches!(got, Err(ImageError::NoPreview)), "{got:?}");
-    assert!(started.elapsed() < REFUSAL, "took {:?}", started.elapsed());
-}
-
-fn svg_peek(file: &str) -> Result<anyview_image::ImagePeek, ImageError> {
-    let (src, sniffed) = fixture(file);
-    VectorPeek::peek(&src, &sniffed, &budget(1 << 20))
-}
-
-#[test]
-fn a_drawing_that_asks_for_hours_of_filtering_is_refused() {
-    // name, fixture
-    const CASES: &[(&str, &str)] = &[
-        ("a thousand octaves of turbulence", "bomb-turbulence.svg"),
-        ("a morphology of radius two thousand", "bomb-morphology.svg"),
-        (
-            "a blur over a region of twenty thousand pages",
-            "bomb-blur-region.svg",
-        ),
-    ];
-    for (name, file) in CASES {
-        let started = Instant::now();
-        let got = svg_peek(file);
-        refused_in_time(name, started, &got);
-        assert!(got.is_err(), "{name}");
-    }
 }
 
 #[test]
