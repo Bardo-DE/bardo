@@ -6,19 +6,17 @@
 //! Every event is stamped with the virtual instant [`ImeSession::pump`] was given.
 
 use super::input_method::{
-    GrabData, InputMethodDelegate, InputMethodEvent, InputMethodSink, MethodData, PopupData,
-    bind_input_method,
+    GrabData, InputMethodEvent, MethodData, PopupData, bind_input_method, grab_event,
+    method_event, popup_event,
 };
-use super::text_input::{
-    TextInputData, TextInputDelegate, TextInputEvent, TextInputSink, bind_text_input,
-};
+use super::text_input::{TextInputData, TextInputEvent, bind_text_input, field_event};
 use crate::misc::idle::{pump_queue, side_queue};
 use crate::{ClientError, GlobalList, Pumped};
 use casement_core::time::Mono;
 use std::time::Duration;
 use wayland_client::protocol::wl_keyboard::{self, WlKeyboard};
 use wayland_client::protocol::wl_seat::{self, WlSeat};
-use wayland_client::{Connection, Dispatch, EventQueue, QueueHandle, delegate_dispatch};
+use wayland_client::{Connection, Dispatch, EventQueue, QueueHandle};
 use wayland_protocols::wp::text_input::zv3::client::{
     zwp_text_input_manager_v3::ZwpTextInputManagerV3,
     zwp_text_input_v3::ZwpTextInputV3,
@@ -57,30 +55,66 @@ struct Seen {
     document_keys: Vec<DocumentKey>,
 }
 
-impl TextInputSink for Seen {
-    fn text_input_event(&mut self, event: TextInputEvent) {
-        self.field.push(Stamped {
-            at: self.now,
-            event,
-        });
+impl Seen {
+    /// Files a text-field event under the instant of the pump.
+    fn note_field(&mut self, event: Option<TextInputEvent>) {
+        if let Some(event) = event {
+            self.field.push(Stamped {
+                at: self.now,
+                event,
+            });
+        }
+    }
+
+    /// Files an input-method event under the instant of the pump.
+    fn note_method(&mut self, event: Option<InputMethodEvent>) {
+        if let Some(event) = event {
+            self.method.push(Stamped {
+                at: self.now,
+                event,
+            });
+        }
     }
 }
 
-impl InputMethodSink for Seen {
-    fn input_method_event(&mut self, event: InputMethodEvent) {
-        self.method.push(Stamped {
-            at: self.now,
-            event,
-        });
-    }
+/// Implements `Dispatch` for `Seen` by filing what `convert` makes of each event, or by ignoring
+/// every event (a manager).
+macro_rules! seen_dispatch {
+    ($proxy:ty, $data:ty, ignore) => {
+        impl Dispatch<$proxy, $data> for Seen {
+            fn event(
+                _state: &mut Seen,
+                _proxy: &$proxy,
+                _event: <$proxy as wayland_client::Proxy>::Event,
+                _data: &$data,
+                _connection: &Connection,
+                _qh: &QueueHandle<Seen>,
+            ) {
+            }
+        }
+    };
+    ($proxy:ty, $data:ty, $note:ident, $convert:path) => {
+        impl Dispatch<$proxy, $data> for Seen {
+            fn event(
+                state: &mut Seen,
+                _proxy: &$proxy,
+                event: <$proxy as wayland_client::Proxy>::Event,
+                _data: &$data,
+                _connection: &Connection,
+                _qh: &QueueHandle<Seen>,
+            ) {
+                state.$note($convert(event));
+            }
+        }
+    };
 }
 
-delegate_dispatch!(Seen: [ZwpTextInputManagerV3: ()] => TextInputDelegate);
-delegate_dispatch!(Seen: [ZwpTextInputV3: TextInputData] => TextInputDelegate);
-delegate_dispatch!(Seen: [ZwpInputMethodManagerV2: ()] => InputMethodDelegate);
-delegate_dispatch!(Seen: [ZwpInputMethodV2: MethodData] => InputMethodDelegate);
-delegate_dispatch!(Seen: [ZwpInputMethodKeyboardGrabV2: GrabData] => InputMethodDelegate);
-delegate_dispatch!(Seen: [ZwpInputPopupSurfaceV2: PopupData] => InputMethodDelegate);
+seen_dispatch!(ZwpTextInputManagerV3, (), ignore);
+seen_dispatch!(ZwpTextInputV3, TextInputData, note_field, field_event);
+seen_dispatch!(ZwpInputMethodManagerV2, (), ignore);
+seen_dispatch!(ZwpInputMethodV2, MethodData, note_method, method_event);
+seen_dispatch!(ZwpInputMethodKeyboardGrabV2, GrabData, note_method, grab_event);
+seen_dispatch!(ZwpInputPopupSurfaceV2, PopupData, note_method, popup_event);
 
 impl Dispatch<WlSeat, ()> for Seen {
     fn event(

@@ -1,12 +1,12 @@
 //! `zwp_input_method_v2`: the client side of an input method (what fcitx5 is). Filled by
-//! P0-H7. Self-contained like [`super::text_input`]: a client state implements
-//! [`InputMethodSink`] and names [`InputMethodDelegate`] for the manager, the method, its
-//! keyboard grab and its popup surface with `wayland_client::delegate_dispatch!`.
+//! P0-H7. Self-contained like [`super::text_input`]: the client state's `Dispatch` impls turn each
+//! wire event into an [`InputMethodEvent`] with [`method_event`], [`grab_event`] and
+//! [`popup_event`].
 
 use crate::ClientError;
 use crate::GlobalList;
 use wayland_client::protocol::wl_seat::WlSeat;
-use wayland_client::{Connection, Dispatch, QueueHandle};
+use wayland_client::{Dispatch, QueueHandle};
 use wayland_protocols_misc::zwp_input_method_v2::client::{
     zwp_input_method_keyboard_grab_v2::{self, ZwpInputMethodKeyboardGrabV2},
     zwp_input_method_manager_v2::ZwpInputMethodManagerV2,
@@ -105,135 +105,73 @@ impl InputMethodEvent {
     }
 }
 
-/// Where a client state collects its input method's events.
-pub trait InputMethodSink {
-    /// `event` arrived.
-    fn input_method_event(&mut self, event: InputMethodEvent);
+/// The event the compositor sent the method object, if it is one this client records.
+pub fn method_event(event: zwp_input_method_v2::Event) -> Option<InputMethodEvent> {
+    Some(match event {
+        zwp_input_method_v2::Event::Activate => InputMethodEvent::Activate,
+        zwp_input_method_v2::Event::Deactivate => InputMethodEvent::Deactivate,
+        zwp_input_method_v2::Event::SurroundingText {
+            text,
+            cursor,
+            anchor,
+        } => InputMethodEvent::SurroundingText {
+            text,
+            cursor,
+            anchor,
+        },
+        zwp_input_method_v2::Event::ContentType { hint, purpose } => InputMethodEvent::ContentType {
+            hint: u32::from(hint),
+            purpose: u32::from(purpose),
+        },
+        zwp_input_method_v2::Event::Done => InputMethodEvent::Done,
+        zwp_input_method_v2::Event::Unavailable => InputMethodEvent::Unavailable,
+        _ => return None,
+    })
 }
 
-/// The `Dispatch` impls for the manager, the method, its grab and its popup surface.
-#[derive(Debug, Clone, Copy)]
-pub struct InputMethodDelegate;
-
-impl<S> Dispatch<ZwpInputMethodManagerV2, (), S> for InputMethodDelegate
-where
-    S: Dispatch<ZwpInputMethodManagerV2, ()>,
-{
-    fn event(
-        _state: &mut S,
-        _proxy: &ZwpInputMethodManagerV2,
-        _event: <ZwpInputMethodManagerV2 as wayland_client::Proxy>::Event,
-        _data: &(),
-        _conn: &Connection,
-        _qh: &QueueHandle<S>,
-    ) {
-    }
-}
-
-impl<S> Dispatch<ZwpInputMethodV2, MethodData, S> for InputMethodDelegate
-where
-    S: InputMethodSink + Dispatch<ZwpInputMethodV2, MethodData>,
-{
-    fn event(
-        state: &mut S,
-        _proxy: &ZwpInputMethodV2,
-        event: zwp_input_method_v2::Event,
-        _data: &MethodData,
-        _conn: &Connection,
-        _qh: &QueueHandle<S>,
-    ) {
-        let event = match event {
-            zwp_input_method_v2::Event::Activate => InputMethodEvent::Activate,
-            zwp_input_method_v2::Event::Deactivate => InputMethodEvent::Deactivate,
-            zwp_input_method_v2::Event::SurroundingText {
-                text,
-                cursor,
-                anchor,
-            } => InputMethodEvent::SurroundingText {
-                text,
-                cursor,
-                anchor,
-            },
-            zwp_input_method_v2::Event::ContentType { hint, purpose } => {
-                InputMethodEvent::ContentType {
-                    hint: u32::from(hint),
-                    purpose: u32::from(purpose),
-                }
+/// The event the grabbed keyboard sent, if it is one this client records.
+pub fn grab_event(event: zwp_input_method_keyboard_grab_v2::Event) -> Option<InputMethodEvent> {
+    Some(match event {
+        zwp_input_method_keyboard_grab_v2::Event::Keymap { size, .. } => {
+            InputMethodEvent::GrabKeymap { size }
+        }
+        zwp_input_method_keyboard_grab_v2::Event::Key { key, state, .. } => {
+            InputMethodEvent::GrabKey {
+                key,
+                state: u32::from(state),
             }
-            zwp_input_method_v2::Event::Done => InputMethodEvent::Done,
-            zwp_input_method_v2::Event::Unavailable => InputMethodEvent::Unavailable,
-            _ => return,
-        };
-        state.input_method_event(event);
-    }
+        }
+        zwp_input_method_keyboard_grab_v2::Event::Modifiers {
+            mods_depressed,
+            mods_latched,
+            mods_locked,
+            ..
+        } => InputMethodEvent::GrabModifiers {
+            depressed: mods_depressed,
+            latched: mods_latched,
+            locked: mods_locked,
+        },
+        _ => return None,
+    })
 }
 
-impl<S> Dispatch<ZwpInputMethodKeyboardGrabV2, GrabData, S> for InputMethodDelegate
-where
-    S: InputMethodSink + Dispatch<ZwpInputMethodKeyboardGrabV2, GrabData>,
-{
-    fn event(
-        state: &mut S,
-        _proxy: &ZwpInputMethodKeyboardGrabV2,
-        event: zwp_input_method_keyboard_grab_v2::Event,
-        _data: &GrabData,
-        _conn: &Connection,
-        _qh: &QueueHandle<S>,
-    ) {
-        let event = match event {
-            zwp_input_method_keyboard_grab_v2::Event::Keymap { size, .. } => {
-                InputMethodEvent::GrabKeymap { size }
-            }
-            zwp_input_method_keyboard_grab_v2::Event::Key { key, state, .. } => {
-                InputMethodEvent::GrabKey {
-                    key,
-                    state: u32::from(state),
-                }
-            }
-            zwp_input_method_keyboard_grab_v2::Event::Modifiers {
-                mods_depressed,
-                mods_latched,
-                mods_locked,
-                ..
-            } => InputMethodEvent::GrabModifiers {
-                depressed: mods_depressed,
-                latched: mods_latched,
-                locked: mods_locked,
-            },
-            _ => return,
-        };
-        state.input_method_event(event);
-    }
-}
-
-impl<S> Dispatch<ZwpInputPopupSurfaceV2, PopupData, S> for InputMethodDelegate
-where
-    S: InputMethodSink + Dispatch<ZwpInputPopupSurfaceV2, PopupData>,
-{
-    fn event(
-        state: &mut S,
-        _proxy: &ZwpInputPopupSurfaceV2,
-        event: zwp_input_popup_surface_v2::Event,
-        _data: &PopupData,
-        _conn: &Connection,
-        _qh: &QueueHandle<S>,
-    ) {
-        let zwp_input_popup_surface_v2::Event::TextInputRectangle {
-            x,
-            y,
-            width,
-            height,
-        } = event
-        else {
-            return;
-        };
-        state.input_method_event(InputMethodEvent::PopupRectangle {
-            x,
-            y,
-            width,
-            height,
-        });
-    }
+/// The event the popup surface got, if it is one this client records.
+pub fn popup_event(event: zwp_input_popup_surface_v2::Event) -> Option<InputMethodEvent> {
+    let zwp_input_popup_surface_v2::Event::TextInputRectangle {
+        x,
+        y,
+        width,
+        height,
+    } = event
+    else {
+        return None;
+    };
+    Some(InputMethodEvent::PopupRectangle {
+        x,
+        y,
+        width,
+        height,
+    })
 }
 
 /// Binds the input-method manager and asks for the method of `seat`.

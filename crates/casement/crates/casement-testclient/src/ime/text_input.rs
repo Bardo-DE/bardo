@@ -1,15 +1,14 @@
 //! `zwp_text_input_v3`: the client side of a text field. Filled by P0-H7.
 //!
 //! Self-contained so it works with whatever event-queue state the shared core (P0-T-client)
-//! settles on: a client state implements [`TextInputSink`], names this delegate once with
-//! `wayland_client::delegate_dispatch!(State: [ZwpTextInputManagerV3: ()] => TextInputDelegate)`
-//! and the same for `ZwpTextInputV3: TextInputData`, and [`bind_text_input`] creates the
-//! field. Events arrive as [`TextInputEvent`]s, which print as transcript lines.
+//! settles on: the client state's `Dispatch` impl for `ZwpTextInputV3` turns each wire event into
+//! a [`TextInputEvent`] with [`field_event`], and [`bind_text_input`] creates the field. Events
+//! print as transcript lines.
 
 use crate::ClientError;
 use crate::GlobalList;
 use wayland_client::protocol::wl_seat::WlSeat;
-use wayland_client::{Connection, Dispatch, QueueHandle};
+use wayland_client::{Dispatch, QueueHandle};
 use wayland_protocols::wp::text_input::zv3::client::{
     zwp_text_input_manager_v3::ZwpTextInputManagerV3,
     zwp_text_input_v3::{self, ZwpTextInputV3},
@@ -82,68 +81,31 @@ impl TextInputEvent {
     }
 }
 
-/// Where a client state collects its text field's events.
-pub trait TextInputSink {
-    /// `event` arrived.
-    fn text_input_event(&mut self, event: TextInputEvent);
-}
-
-/// The `Dispatch` impls for the manager (no events) and the field.
-#[derive(Debug, Clone, Copy)]
-pub struct TextInputDelegate;
-
-impl<S> Dispatch<ZwpTextInputManagerV3, (), S> for TextInputDelegate
-where
-    S: Dispatch<ZwpTextInputManagerV3, ()>,
-{
-    fn event(
-        _state: &mut S,
-        _proxy: &ZwpTextInputManagerV3,
-        _event: <ZwpTextInputManagerV3 as wayland_client::Proxy>::Event,
-        _data: &(),
-        _conn: &Connection,
-        _qh: &QueueHandle<S>,
-    ) {
-    }
-}
-
-impl<S> Dispatch<ZwpTextInputV3, TextInputData, S> for TextInputDelegate
-where
-    S: TextInputSink + Dispatch<ZwpTextInputV3, TextInputData>,
-{
-    fn event(
-        state: &mut S,
-        _proxy: &ZwpTextInputV3,
-        event: zwp_text_input_v3::Event,
-        _data: &TextInputData,
-        _conn: &Connection,
-        _qh: &QueueHandle<S>,
-    ) {
-        let event = match event {
-            zwp_text_input_v3::Event::Enter { .. } => TextInputEvent::Enter,
-            zwp_text_input_v3::Event::Leave { .. } => TextInputEvent::Leave,
-            zwp_text_input_v3::Event::PreeditString {
-                text,
-                cursor_begin,
-                cursor_end,
-            } => TextInputEvent::Preedit {
-                text,
-                begin: cursor_begin,
-                end: cursor_end,
-            },
-            zwp_text_input_v3::Event::CommitString { text } => TextInputEvent::CommitString(text),
-            zwp_text_input_v3::Event::DeleteSurroundingText {
-                before_length,
-                after_length,
-            } => TextInputEvent::DeleteSurrounding {
-                before: before_length,
-                after: after_length,
-            },
-            zwp_text_input_v3::Event::Done { serial } => TextInputEvent::Done(serial),
-            _ => return,
-        };
-        state.text_input_event(event);
-    }
+/// The event the compositor sent the text field, if it is one this client records.
+pub fn field_event(event: zwp_text_input_v3::Event) -> Option<TextInputEvent> {
+    Some(match event {
+        zwp_text_input_v3::Event::Enter { .. } => TextInputEvent::Enter,
+        zwp_text_input_v3::Event::Leave { .. } => TextInputEvent::Leave,
+        zwp_text_input_v3::Event::PreeditString {
+            text,
+            cursor_begin,
+            cursor_end,
+        } => TextInputEvent::Preedit {
+            text,
+            begin: cursor_begin,
+            end: cursor_end,
+        },
+        zwp_text_input_v3::Event::CommitString { text } => TextInputEvent::CommitString(text),
+        zwp_text_input_v3::Event::DeleteSurroundingText {
+            before_length,
+            after_length,
+        } => TextInputEvent::DeleteSurrounding {
+            before: before_length,
+            after: after_length,
+        },
+        zwp_text_input_v3::Event::Done { serial } => TextInputEvent::Done(serial),
+        _ => return None,
+    })
 }
 
 /// Binds the text-input manager and creates a field for `seat`.
