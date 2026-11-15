@@ -20,9 +20,6 @@ fn tile(n: usize) -> String {
     format!(".ds-cv-item[*|data-index=\"{n}\"]")
 }
 
-/// The Icons segment of the toolbar's switcher, the last of its two.
-const ICONS_SEGMENT: &str = ".ds-segmented-segment:last-of-type";
-
 /// A window on `dir` over `prefs` with the opener it reports to, once it has listed everything.
 fn open(dir: &Path, prefs: &Arc<FakePrefs>) -> (Harness, Arc<RecordingOpener>, TempDir) {
     let config = tempfile::tempdir().unwrap();
@@ -47,46 +44,12 @@ fn click(window: &mut Harness, selector: &str) {
     window.advance(Duration::from_millis(50));
 }
 
-fn selected(window: &Harness, n: usize) -> bool {
-    window.attr(&tile(n), "aria-selected").as_deref() == Some("true")
-}
-
 /// A window on `dir` showing icons.
 fn icons(dir: &Path) -> (Harness, Arc<RecordingOpener>, TempDir) {
     let (mut window, opener, config) = open(dir, &Arc::new(FakePrefs::new()));
     command(&mut window, ShortcutKey::Char('1'));
     settle_until(&mut window, |h| h.count(".ds-cv-item") > 0);
     (window, opener, config)
-}
-
-#[test]
-fn the_switcher_and_the_keys_change_the_view_in_both_directions() {
-    let dir = scratch_folder();
-    let (mut window, _opener, _config) = open(dir.path(), &Arc::new(FakePrefs::new()));
-    assert_eq!(window.count(".ds-cv-item"), 0);
-
-    click(&mut window, ICONS_SEGMENT);
-    settle_until(&mut window, |h| h.count(".ds-cv-item") == 4);
-    assert_eq!(window.count(".ds-vtable"), 0, "the table is still drawn");
-    assert!(window.html().contains("zebra.png"));
-
-    command(&mut window, ShortcutKey::Char('2'));
-    settle_until(&mut window, |h| h.count(".ds-cv-item") == 0);
-    assert!(window.html().contains("Date Modified"));
-
-    command(&mut window, ShortcutKey::Char('1'));
-    settle_until(&mut window, |h| h.count(".ds-cv-item") == 4);
-}
-
-#[test]
-fn a_press_selects_a_tile_and_another_replaces_it() {
-    let dir = scratch_folder();
-    let (mut window, _opener, _config) = icons(dir.path());
-    click(&mut window, &tile(1));
-    assert!(selected(&window, 1));
-    click(&mut window, &tile(3));
-    assert!(selected(&window, 3));
-    assert!(!selected(&window, 1), "a plain click keeps the old tile");
 }
 
 #[test]

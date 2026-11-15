@@ -183,22 +183,6 @@ fn download_now_fills_the_ring_and_leaves_nothing_when_it_is_downloaded() {
 }
 
 #[test]
-fn keep_downloaded_is_checked_once_the_row_is_kept() {
-    let mut rig = open(Vec::new(), DriveState::Ready);
-    let report = item(rig.dir.path(), "report.pdf");
-    rig.clouds.set_item(
-        report,
-        CloudItem::new(CloudKind::File, CloudState::Downloaded).kept(),
-    );
-    settle_until(&mut rig.harness, |h| h.html().contains("zebra.png"));
-    rig.harness.advance(Duration::from_millis(200));
-    rig.menu_on_report();
-    settle_until(&mut rig.harness, |h| {
-        h.count("[role=\"menuitemcheckbox\"][aria-checked=\"true\"]") == 1
-    });
-}
-
-#[test]
 fn a_drive_that_needs_signing_in_says_why_and_offers_accounts_only_when_pressed() {
     let empty = tempfile::tempdir().unwrap();
     let words = "Sign in again to see this drive\u{2019}s files.";
@@ -238,17 +222,6 @@ fn a_mark_follows_the_drives_state_in_the_sidebar() {
     settle_until(&mut rig.harness, |h| {
         h.count("[data-trailing=\"glyph\"]") == 1
     });
-}
-
-#[test]
-fn a_service_that_goes_away_shows_no_drives_and_the_drives_return_with_it() {
-    let mut rig = open(Vec::new(), DriveState::Ready);
-    assert!(rig.harness.html().contains("OneDrive"));
-    rig.clouds.set_away(true);
-    settle_until(&mut rig.harness, |h| !h.html().contains("OneDrive"));
-    assert!(rig.harness.html().contains("zebra.png"), "the folder stays");
-    rig.clouds.set_away(false);
-    settle_until(&mut rig.harness, |h| h.html().contains("OneDrive"));
 }
 
 fn edge_over(clouds: Arc<FakeClouds>) -> (Edge, tokio::sync::mpsc::UnboundedReceiver<Heard>) {

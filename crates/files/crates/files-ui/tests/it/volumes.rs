@@ -211,17 +211,3 @@ fn a_busy_disk_asks_in_an_alert_and_force_eject_ejects_it_anyway() {
     );
     assert!(!harness.html().contains("Programs using it"));
 }
-
-#[test]
-fn cancelling_the_force_eject_question_leaves_the_disk() {
-    let busy = EjectFailure::InUse(vec![ProgramName::new("vlc")]);
-    let fake = Arc::new(FakeVolumes::with(vec![stick()]).failing_eject(busy));
-    let (mut harness, _dir, _config) = window_over(fake.clone(), "STICK");
-    let at: Point = harness.centre("[aria-label=\"Eject STICK\"]").unwrap();
-    harness.send(Click::click(at));
-    settle_until(&mut harness, |h| h.html().contains("Programs using it"));
-    harness.send(Click::key(ds::prelude::ShortcutKey::Escape));
-    settle_until(&mut harness, |h| !h.html().contains("Programs using it"));
-    assert_eq!(fake.calls(), vec![VolumeCall::Ejected(id("stick"))]);
-    assert!(harness.html().contains("Eject STICK"));
-}

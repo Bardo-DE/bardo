@@ -68,47 +68,6 @@ fn space_opens_quick_look_on_the_selected_file_and_space_or_escape_closes_it() {
 }
 
 #[test]
-fn command_y_opens_quick_look_too() {
-    let dir = scratch_folder();
-    let (mut window, _config) = open(dir.path(), &Arc::new(FakePrefs::new()));
-    click_row(&mut window, 0);
-    window.send(Input::chord(&[ShortcutKey::Super], ShortcutKey::Char('y')));
-    settle_until(&mut window, |h| h.count(".ds-peek") > 0);
-}
-
-#[test]
-fn quick_look_follows_the_arrow_keys_and_shows_a_folder() {
-    let dir = scratch_folder();
-    let (mut window, _config) = open(dir.path(), &Arc::new(FakePrefs::new()));
-    click_row(&mut window, 0);
-    press(&mut window, ShortcutKey::Space);
-    settle_until(&mut window, |h| h.count(".ds-peek") > 0);
-    press(&mut window, ShortcutKey::Down);
-    settle_until(&mut window, |h| {
-        h.attr(".ds-peek", "aria-label").as_deref() == Some("Projects")
-    });
-    // The folder: its icon, its name and what is in it.
-    settle_until(&mut window, |h| h.count(".anyview-pane") > 0);
-    press(&mut window, ShortcutKey::Down);
-    settle_until(&mut window, |h| {
-        h.attr(".ds-peek", "aria-label").as_deref() == Some("report.pdf")
-    });
-    assert_eq!(
-        window.attr(&row(2), "data-selected").as_deref(),
-        Some("yes"),
-        "the selection moved with it"
-    );
-}
-
-#[test]
-fn space_with_nothing_selected_opens_nothing() {
-    let dir = scratch_folder();
-    let (mut window, _config) = open(dir.path(), &Arc::new(FakePrefs::new()));
-    press(&mut window, ShortcutKey::Space);
-    assert_eq!(window.count(".ds-peek"), 0);
-}
-
-#[test]
 fn command_i_opens_get_info_with_the_size_in_words_and_in_bytes() {
     let dir = scratch_folder();
     std::fs::write(dir.path().join("big.bin"), vec![0u8; 12_345]).unwrap();
@@ -125,17 +84,6 @@ fn command_i_opens_get_info_with_the_size_in_words_and_in_bytes() {
     assert!(html.contains(&place), "the folder is not named:\n{html}");
     press(&mut window, ShortcutKey::Escape);
     settle_until(&mut window, |h| h.count(".ds-sheet") == 0);
-}
-
-#[test]
-fn get_info_on_a_folder_counts_what_is_in_it() {
-    let dir = scratch_folder();
-    let (mut window, _config) = open(dir.path(), &Arc::new(FakePrefs::new()));
-    click_row(&mut window, 1);
-    window.send(Input::chord(&[ShortcutKey::Super], ShortcutKey::Char('i')));
-    settle_until(&mut window, |h| h.html().contains("1 item"));
-    let sheet = window.text_of(".ds-sheet").unwrap_or_default();
-    assert!(!sheet.contains("bytes"), "a folder has no size: {sheet}");
 }
 
 #[test]

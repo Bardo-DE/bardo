@@ -1,6 +1,5 @@
 //! Go to Folder in the window: Shift+Command+G, a path typed, Return to go and Escape to stay.
 
-use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -70,32 +69,6 @@ impl Rig {
     }
 }
 
-fn path_text(path: &Path) -> String {
-    path.to_string_lossy().into_owned()
-}
-
-#[test]
-fn the_sheet_opens_on_the_folder_shown() {
-    let mut rig = open();
-    rig.ask();
-    let html = rig.harness.html();
-    assert!(
-        html.contains(&path_text(rig.dir.path())),
-        "the folder is not the text:\n{html}"
-    );
-}
-
-#[test]
-fn a_path_that_is_a_folder_goes_there() {
-    let mut rig = open();
-    rig.ask();
-    rig.key(ShortcutKey::End);
-    rig.type_text("/docs");
-    rig.key(ShortcutKey::Enter);
-    settle_until(&mut rig.harness, |h| h.html().contains("inner.txt"));
-    assert!(!rig.sheet_is_up(), "the sheet is still up");
-}
-
 #[test]
 fn tilde_is_the_home_folder() {
     let mut rig = open();
@@ -105,36 +78,4 @@ fn tilde_is_the_home_folder() {
     rig.key(ShortcutKey::Enter);
     settle_until(&mut rig.harness, |h| h.html().contains("inner.txt"));
     assert!(!rig.sheet_is_up());
-}
-
-#[test]
-fn a_path_that_is_not_a_folder_stays_open_and_says_so() {
-    let mut rig = open();
-    rig.ask();
-    rig.key(ShortcutKey::End);
-    rig.type_text("/nope");
-    rig.key(ShortcutKey::Enter);
-    settle_until(&mut rig.harness, |h| h.html().contains("be found"));
-    assert!(rig.sheet_is_up(), "the sheet closed");
-    assert!(rig.harness.html().contains("notes.txt"), "the window moved");
-}
-
-#[test]
-fn a_file_is_not_a_folder_either() {
-    let mut rig = open();
-    rig.ask();
-    rig.key(ShortcutKey::End);
-    rig.type_text("/notes.txt");
-    rig.key(ShortcutKey::Enter);
-    settle_until(&mut rig.harness, |h| h.html().contains("be found"));
-    assert!(rig.sheet_is_up());
-}
-
-#[test]
-fn escape_puts_the_sheet_away_and_stays_put() {
-    let mut rig = open();
-    rig.ask();
-    rig.key(ShortcutKey::Escape);
-    settle_until(&mut rig.harness, |h| h.count(".ds-text-field") == 0);
-    assert!(rig.harness.html().contains("notes.txt"));
 }

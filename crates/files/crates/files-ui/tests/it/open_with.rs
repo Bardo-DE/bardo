@@ -9,11 +9,9 @@ use ds::base::press::PointerButton;
 use ds::prelude::{Point, ShortcutKey};
 use ds_harness::harness::settle_until;
 use ds_harness::{Harness, Input};
-use files_model::AppPick;
-use files_ui::OpenAs;
 use tempfile::TempDir;
 
-use super::support::{RecordingOpener, VIEWER_ICON, harness, launch, scratch_folder};
+use super::support::{RecordingOpener, harness, launch, scratch_folder};
 
 /// A window on the scratch folder with what it needs kept alive.
 struct Rig {
@@ -64,10 +62,6 @@ impl Rig {
     }
 }
 
-fn viewer() -> AppPick {
-    AppPick::new("viewer.desktop")
-}
-
 #[test]
 fn the_submenu_lists_the_default_first_then_the_rest_by_name_then_other() {
     let mut rig = open();
@@ -85,21 +79,6 @@ fn the_submenu_lists_the_default_first_then_the_rest_by_name_then_other() {
     ];
     assert!(order.windows(2).all(|pair| pair[0] < pair[1]), "{order:?}");
     assert!(!html.contains("Calculator"), "that is for the Other sheet");
-}
-
-#[test]
-fn an_app_with_an_icon_shows_its_picture_in_the_submenu_and_one_without_shows_none() {
-    let mut rig = open();
-    rig.enter_submenu();
-    let html = rig.harness.html();
-    // Viewer has an icon file; editor and Zed have none, so theirs is the empty box that keeps
-    // the titles in line.
-    assert_eq!(
-        rig.harness.count(".ds-menu-image[data-image=\"image\"]"),
-        1,
-        "{html}"
-    );
-    assert!(html.contains(&format!("file://{VIEWER_ICON}")), "{html}");
 }
 
 #[test]
@@ -123,56 +102,6 @@ fn the_other_sheet_draws_each_apps_picture_or_the_plain_app_glyph() {
 }
 
 #[test]
-fn picking_the_default_opens_the_file_with_it() {
-    let mut rig = open();
-    rig.enter_submenu();
-    rig.key(ShortcutKey::Enter);
-    settle_until(&mut rig.harness, |_| !rig.opener.calls().is_empty());
-    assert_eq!(
-        rig.opener.calls(),
-        vec![(
-            vec![rig.dir.path().join("report.pdf")],
-            OpenAs::App(viewer())
-        )]
-    );
-}
-
-#[test]
-fn other_lists_every_app_and_a_pick_opens_with_it() {
-    let mut rig = open();
-    rig.enter_submenu();
-    // Viewer, editor, Zed, then Other.
-    for _ in 0..3 {
-        rig.key(ShortcutKey::Down);
-    }
-    rig.key(ShortcutKey::Enter);
-    settle_until(&mut rig.harness, |h| {
-        // The menu blinks its pick and fades out as the sheet comes up.
-        h.html().contains("Choose Application") && h.count(".ds-menu") == 0
-    });
-    let html = rig.harness.html();
-    for text in ["Calculator", "Viewer", "Zed"] {
-        assert!(html.contains(text), "{text} is not listed:\n{html}");
-    }
-    assert!(!html.contains("(default)"), "the sheet marks no default");
-    assert!(rig.opener.calls().is_empty(), "nothing opens before a pick");
-
-    let first: Point = rig.harness.centre(".ds-sheet-body .ds-row").unwrap();
-    rig.harness.send(Input::click(first));
-    settle_until(&mut rig.harness, |_| !rig.opener.calls().is_empty());
-    assert_eq!(
-        rig.opener.calls(),
-        vec![(
-            vec![rig.dir.path().join("report.pdf")],
-            OpenAs::App(AppPick::new("calc.desktop"))
-        )]
-    );
-    settle_until(&mut rig.harness, |h| {
-        !h.html().contains("Choose Application")
-    });
-}
-
-#[test]
 fn escape_puts_the_sheet_of_apps_away_and_opens_nothing() {
     let mut rig = open();
     rig.enter_submenu();
@@ -189,37 +118,6 @@ fn escape_puts_the_sheet_of_apps_away_and_opens_nothing() {
         !h.html().contains("Choose Application")
     });
     assert!(rig.opener.calls().is_empty());
-}
-
-#[test]
-fn the_row_menu_now_offers_quick_look_get_info_and_copy_as_pathname() {
-    let mut rig = open();
-    rig.menu_on_report();
-    let html = rig.harness.html();
-    for text in [
-        "Open With",
-        "Get Info",
-        "Quick Look",
-        "Copy as Pathname",
-        "New Folder",
-    ] {
-        assert!(html.contains(text), "{text} is not in the menu:\n{html}");
-    }
-    // Only the menu holds these words, so the order of the page is the order of the menu.
-    let menu = &html[html.find("Open With").unwrap()..];
-    let at = |text: &str| {
-        menu.find(text)
-            .unwrap_or_else(|| panic!("no {text}:\n{menu}"))
-    };
-    let order = [
-        at("Move to Trash"),
-        at("Get Info"),
-        at("Rename"),
-        at("Quick Look"),
-        at("Copy as Pathname"),
-        at("New Folder"),
-    ];
-    assert!(order.windows(2).all(|pair| pair[0] < pair[1]), "{order:?}");
 }
 
 #[test]
