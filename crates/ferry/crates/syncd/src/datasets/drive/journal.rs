@@ -4,7 +4,7 @@
 //! built when it is read, so a folder renamed or moved re-paths everything inside it without
 //! one more row written.
 
-use crate::journal::{JournalError, migrate};
+use crate::journal::{JournalError, prepare_with};
 use ferry_sync::{
     Anchor, Change, ChangePage, ContentHash, Cursor, Folders, ItemKind, ItemPath, More, RemoteId,
     RemoteItem, RemoteVersion,
@@ -17,8 +17,8 @@ use std::sync::{Mutex, MutexGuard, PoisonError};
 /// How many folders a path may have before it is given up as a loop.
 const DEPTH: usize = 64;
 
-/// Version 1: entries, and the one row of where the feed stands.
-const V1: &str = "
+/// The tables: entries, and the one row of where the feed stands.
+const SCHEMA: &str = "
 CREATE TABLE entries (
     id          TEXT PRIMARY KEY NOT NULL,
     parent      TEXT,
@@ -41,7 +41,8 @@ CREATE TABLE listed (
 );
 ";
 
-const MIGRATIONS: &[&str] = &[V1];
+/// The version of this schema, kept in the file's `user_version`; any other version is emptied.
+const VERSION: u32 = 1;
 
 /// One entry of the drive: a file, a folder or a document that opens online.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -97,14 +98,14 @@ pub struct DriveJournal {
 
 impl DriveJournal {
     /// Opens the file at `path` (`Paths::journal(account, "storage_drive")`), creating it and its
-    /// directory, and migrating it.
+    /// directory; a file of another schema version is emptied.
     pub fn open(path: &Path) -> Result<Self, JournalError> {
         if let Some(dir) = path.parent() {
             std::fs::create_dir_all(dir)?;
         }
         let mut connection = Connection::open(path)?;
         connection.execute_batch("PRAGMA synchronous = FULL;")?;
-        migrate(&mut connection, MIGRATIONS)?;
+        prepare_with(&mut connection, SCHEMA, VERSION)?;
         connection.execute(
             "INSERT OR IGNORE INTO feed (id, anchor, folders, listing) VALUES (1, NULL, ?1, 0)",
             [serde_json::to_string(&Folders::new()).map_err(corrupt)?],

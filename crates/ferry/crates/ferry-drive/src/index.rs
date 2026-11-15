@@ -42,22 +42,6 @@ impl Row {
     }
 }
 
-/// One file made on this computer, as an index from before changes were sent kept it (read and
-/// turned into an [`Edit`]).
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(crate) struct LocalRow {
-    /// Its number, which names its file.
-    pub n: u64,
-    /// The drive's folder it is in; `None` at the top.
-    pub parent: Option<String>,
-    /// Its name.
-    pub name: String,
-    /// Its size.
-    pub size: u64,
-    /// When it was made.
-    pub made: i64,
-}
-
 /// The drive's item as this computer last knew it: what a change of it was made against.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct Base {
@@ -244,9 +228,6 @@ pub(crate) struct Index {
     /// The items kept downloaded by id (a folder keeps everything under it).
     #[serde(default)]
     pub kept: BTreeSet<String>,
-    /// The files made here, as an index from before changes were sent kept them.
-    #[serde(default, skip_serializing)]
-    pub local: Vec<LocalRow>,
     /// The changes made here, by item.
     #[serde(default, with = "edits")]
     pub edits: BTreeMap<NodeId, Edit>,
@@ -268,59 +249,15 @@ pub(crate) struct Index {
     /// The open clock.
     #[serde(default)]
     pub clock: u64,
-    /// The format it was written in: [`FORMAT`] since generations were kept (none before).
+    /// The format it was written in: [`FORMAT`]; an index of another format is dropped.
     #[serde(default)]
     pub format: u32,
 }
 
-/// The index's format now: 1, since the bytes' generations were kept.
+/// The index's format now.
 pub(crate) const FORMAT: u32 = 1;
 
 impl Index {
-    /// Takes the files made here that an index from before the queue kept in as changes to
-    /// send.
-    fn migrate(&mut self) {
-        for row in std::mem::take(&mut self.local) {
-            let parent = row
-                .parent
-                .map_or(NodeId::Top, |p| NodeId::Remote(ferry_sync::RemoteId(p)));
-            let dirty = Dirty {
-                file: row.n,
-                size: row.size,
-                modified: row.made,
-                generation: self.take_generation(),
-            };
-            let mut edit = Edit::made_here(row.n, parent, row.name, Some(dirty), row.made);
-            edit.seq = self.take_seq();
-            self.next_local = self.next_local.max(row.n + 1);
-            self.edits.insert(edit.id.clone(), edit);
-        }
-        // Bytes written before generations were kept (an index of an older format): a generation
-        // of their own, so they are never taken for a copy that was not written to. Once only:
-        // a copy not written to yet keeps its `0` across a restart.
-        if self.format >= FORMAT {
-            return;
-        }
-        self.format = FORMAT;
-        let unnumbered: Vec<NodeId> = self
-            .edits
-            .values()
-            .filter(|edit| edit.dirty.as_ref().is_some_and(|d| d.generation == 0))
-            .map(|edit| edit.id.clone())
-            .collect();
-        for id in unnumbered {
-            let generation = self.take_generation();
-            if let Some(edit) = self.edits.get_mut(&id)
-                && let Some(dirty) = edit.dirty.as_mut()
-            {
-                dirty.generation = generation;
-                if edit.session.is_some() && edit.session_of == 0 {
-                    edit.session_of = generation;
-                }
-            }
-        }
-    }
-
     /// A new number for a file made here.
     pub fn take_local(&mut self) -> u64 {
         let n = self.next_local.max(1);
@@ -428,7 +365,8 @@ impl IndexFile {
         Self(AtomicFile::new(dir.to_path_buf(), INDEX))
     }
 
-    /// The index as stored, or an empty one. When the file is unreadable, the copy before it,
+    /// The index as stored, or an empty one; one of another format is not read. When the file is
+    /// unreadable, the copy before it,
     /// without its cached items: what it says is kept and what was made here stands, but it
     /// cannot vouch for the content files, written to after it, so it claims none of them.
     pub fn load(&self) -> Index {
@@ -436,6 +374,7 @@ impl IndexFile {
             std::fs::read(&path)
                 .ok()
                 .and_then(|bytes| serde_json::from_slice::<Index>(&bytes).ok())
+                .filter(|index| index.format == FORMAT)
         };
         let mut index = read(self.0.path())
             .or_else(|| {
@@ -445,7 +384,7 @@ impl IndexFile {
                 })
             })
             .unwrap_or_default();
-        index.migrate();
+        index.format = FORMAT;
         index
     }
 
@@ -461,36 +400,15 @@ mod tests {
     use super::*;
 
     #[test]
-    fn bytes_written_before_generations_were_kept_are_given_one() {
-        let mut index = Index::default();
-        let base = Base {
-            version: "v1".into(),
-            parent: None,
-            name: "a.txt".into(),
-            size: 1,
-            modified: None,
-        };
-        let id = NodeId::Remote(ferry_sync::RemoteId("r".into()));
-        let mut edit = Edit::of_base(id.clone(), false, NodeId::Top, base, 0);
-        edit.dirty = Some(Dirty {
-            file: 1,
-            size: 2,
-            modified: 0,
-            generation: 0,
-        });
-        index.edits.insert(id.clone(), edit);
-        let mut current = index.clone();
-        current.format = FORMAT;
-        index.migrate();
-        let generation = index.edits[&id].dirty.as_ref().map(|d| d.generation);
-        assert!(generation.is_some_and(|g| g > 0), "{generation:?}");
-        assert_eq!(index.format, FORMAT);
-        let once = index.clone();
-        index.migrate();
-        assert_eq!(index, once, "once only");
-        // A copy not written to yet, in an index of this format, is left as it is.
-        current.migrate();
-        let generation = current.edits[&id].dirty.as_ref().map(|d| d.generation);
-        assert_eq!(generation, Some(0));
+    fn an_index_of_another_format_is_not_read() {
+        let dir = test_kit::Scratch::new("index-format");
+        let file = IndexFile::new(dir.path());
+        let mut index = file.load();
+        index.next_local = 5;
+        file.save(&index).expect("save");
+        assert_eq!(file.load().next_local, 5);
+        index.format = FORMAT + 1;
+        file.save(&index).expect("save");
+        assert_eq!(file.load().next_local, 0);
     }
 }

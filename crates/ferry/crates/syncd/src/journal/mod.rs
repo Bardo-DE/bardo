@@ -8,8 +8,7 @@
 mod rows;
 mod schema;
 
-pub use schema::SCHEMA_VERSION;
-pub(crate) use schema::migrate;
+pub(crate) use schema::prepare_with;
 
 use ferry_sync::{
     ItemPath, JournalItem, LocalId, RemoteId, StoredAnchor, StoredConflict, StoredTombstone,
@@ -28,12 +27,6 @@ pub enum JournalError {
     /// The file's directory could not be made.
     #[error("journal: {0}")]
     Io(#[from] std::io::Error),
-    /// The file was written by a newer syncd.
-    #[error("journal: schema version {found} is newer than this syncd's")]
-    Newer {
-        /// Its version.
-        found: i64,
-    },
     /// A row holds something this syncd cannot read.
     #[error("journal: {0}")]
     Corrupt(String),
@@ -76,13 +69,9 @@ pub struct Journal {
 }
 
 impl Journal {
-    /// Opens the journal at `path`, creating it (and its directory) and migrating it.
+    /// Opens the journal at `path`, creating it (and its directory); a file of another schema version is emptied.
     pub fn open(path: &Path) -> Result<Self, JournalError> {
-        Self::open_with(path, schema::MIGRATIONS)
-    }
-
-    pub(crate) fn open_with(path: &Path, migrations: &[&str]) -> Result<Self, JournalError> {
-        Self::open_synchronous(path, migrations, "FULL")
+        Self::open_synchronous(path, "FULL")
     }
 
     /// A journal whose commits are not flushed to the disk: for the tests that make thousands of
@@ -90,20 +79,16 @@ impl Journal {
     /// `open` (`cut_at` stops a write before it commits, whatever the flush).
     #[cfg(test)]
     pub(crate) fn open_unflushed(path: &Path) -> Result<Self, JournalError> {
-        Self::open_synchronous(path, schema::MIGRATIONS, "OFF")
+        Self::open_synchronous(path, "OFF")
     }
 
-    fn open_synchronous(
-        path: &Path,
-        migrations: &[&str],
-        synchronous: &str,
-    ) -> Result<Self, JournalError> {
+    fn open_synchronous(path: &Path, synchronous: &str) -> Result<Self, JournalError> {
         if let Some(dir) = path.parent() {
             std::fs::create_dir_all(dir)?;
         }
         let mut connection = Connection::open(path)?;
         connection.execute_batch(&format!("PRAGMA synchronous = {synchronous};"))?;
-        schema::migrate(&mut connection, migrations)?;
+        schema::prepare(&mut connection)?;
         Ok(Self {
             connection: Mutex::new(connection),
             writes: AtomicUsize::new(0),
@@ -129,15 +114,6 @@ impl Journal {
     #[cfg(test)]
     pub(crate) fn cut_at(&self, n: usize) {
         *self.cut.lock().unwrap_or_else(PoisonError::into_inner) = Some(self.writes() + n);
-    }
-
-    /// The schema version of the file.
-    pub fn version(&self) -> Result<i64, JournalError> {
-        Ok(self.connection().query_row(
-            "SELECT COALESCE(MAX(version), 0) FROM schema_migrations",
-            [],
-            |row| row.get(0),
-        )?)
     }
 
     /// Commits `ops` together.
