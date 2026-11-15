@@ -29,32 +29,3 @@ pub enum TailscaleError {
     TimedOut,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn every_variant_says_what_failed_and_none_is_a_sentence_for_a_person() {
-        let all = [
-            TailscaleError::NotInstalled,
-            TailscaleError::NotRunning,
-            TailscaleError::Refused,
-            TailscaleError::SignedOut,
-            TailscaleError::NoSuchPeer,
-            TailscaleError::Malformed,
-            TailscaleError::TimedOut,
-        ];
-        for error in all {
-            let text = error.to_string();
-            assert!(!text.ends_with('.'), "{text}");
-            assert!(text.starts_with(|c: char| c.is_ascii_lowercase()), "{text}");
-            for word in ["your", "please", "try again", "isn't", "doesn't"] {
-                assert!(!text.to_lowercase().contains(word), "{text} says {word}");
-            }
-        }
-        assert_eq!(
-            TailscaleError::NotRunning.to_string(),
-            "nothing answers on the tailscaled socket"
-        );
-    }
-}

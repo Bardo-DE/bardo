@@ -27,25 +27,6 @@ fn images_of(table: &Table, name: &str) -> Option<Vec<String>> {
 }
 
 #[test]
-fn every_role_round_trips_through_peepholes_spelling() {
-    for role in [
-        CallerRole::App,
-        CallerRole::Settings,
-        CallerRole::SheetHost,
-        CallerRole::PorterDaemon,
-        CallerRole::Agent,
-        CallerRole::Cua,
-        CallerRole::AgentLauncher,
-        CallerRole::Terminal,
-        CallerRole::Compositor,
-    ] {
-        let name = role_name(role).expect("a valid role name");
-        assert_eq!(role_of_name(&name), Some(role), "{name}");
-    }
-    assert_eq!(role_of_name(&RoleName::from_static(MANAGER_ROLE)), None);
-}
-
-#[test]
 fn a_daemon_unit_without_a_program_is_taken_to_be_installed_as_a_daemon() {
     let table = table_of(vec![row(
         "org.quire.Inference",

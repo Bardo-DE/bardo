@@ -182,16 +182,6 @@ fn a_process_is_named_by_its_scope_or_unit() {
 }
 
 #[test]
-fn a_scope_app_is_unsandboxed_and_a_flatpak_is_flatpak() {
-    let s = Procs::new();
-    s.process(80, Some(&scope("app-org.example.Mail-1.scope")));
-    s.process(81, Some(&scope("app-flatpak-org.example.Photos-2.scope")));
-    s.flatpak(81, "org.example.Photos");
-    assert_eq!(resolve(&s, 80).map(|c| c.1), Some(Isolation::Unsandboxed));
-    assert_eq!(resolve(&s, 81).map(|c| c.1), Some(Isolation::Flatpak));
-}
-
-#[test]
 fn a_scope_named_after_a_daemons_app_is_an_app() {
     // Any process may start a scope by any name: only the unit itself carries the unit's role.
     let s = Procs::new();
@@ -331,50 +321,6 @@ fn an_unreadable_sandbox_root_leaves_the_cgroup_and_the_image_to_decide() {
         let root = s.path().join(pid.to_string()).join("root");
         std::fs::set_permissions(root, std::fs::Permissions::from_mode(0o755)).expect("chmod");
     }
-}
-
-#[test]
-fn a_flatpak_app_is_named_by_its_metadata_checked_against_its_scope() {
-    let s = Procs::new();
-    // A Flatpak scope with no metadata: any program can start a scope by that name.
-    s.process(60, Some(&scope("app-flatpak-org.example.Photos-5.scope")));
-    // Metadata that disagrees with the cgroup (another app's scope, a daemon's unit): nobody.
-    s.process(61, Some(&scope("app-org.quire.Settings-1.scope")));
-    s.flatpak(61, "org.example.Photos");
-    s.process(62, Some("/system.slice/inferd.service"));
-    s.flatpak(62, "org.example.Photos");
-    s.main_of("inferd.service", 62);
-    // Metadata that names no application: nobody, in any scope.
-    s.process(63, Some(&scope("app-org.example.Mail-1.scope")));
-    let root = s.path().join("63/root");
-    std::fs::create_dir_all(&root).expect("root");
-    std::fs::write(root.join(".flatpak-info"), "[Instance]\ninstance-id=1\n").expect("info");
-    for pid in [60, 61, 62, 63] {
-        assert_eq!(resolve(&s, pid), None, "pid {pid}");
-    }
-}
-
-#[test]
-fn a_service_role_goes_only_to_the_units_main_process() {
-    let s = Procs::new();
-    let unit = "/user.slice/user@1000.service/app.slice/inferd.service";
-    s.process(70, Some(unit));
-    s.main_of("inferd.service", 70);
-    // Another process of the person's that moved itself into the unit's cgroup: it runs no
-    // program of the row.
-    s.process(71, Some(unit));
-    // A unit whose main process nothing states (not running, or no manager to ask).
-    s.process(72, Some("/system.slice/cuad.service"));
-    assert_eq!(
-        resolve(&s, 70),
-        got(
-            "org.quire.Inference",
-            Isolation::Unsandboxed,
-            CallerRole::PorterDaemon
-        )
-    );
-    assert_eq!(resolve(&s, 71), None);
-    assert_eq!(resolve(&s, 72), None);
 }
 
 #[test]

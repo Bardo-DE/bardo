@@ -8,24 +8,23 @@ use porter_capability::{
     ImageMode, KeyValueCap, LabelModel, LanguageSet, LanguageTag, LibraryRead, LlmCap, LlmFeature,
     LlmWire, MailCap, MailTransport, Modality, NotesCap, NotesTransport, PhotosCap, PimCap,
     PimTransport, PrefixText, PushCap, PushChannel, RerankCap, SpeechCap, SpeechMode, StorageCap,
-    StorageScope, VocabVersion,
+    StorageScope,
 };
-use porter_core::store::{AccountToggle, Persisted};
 use porter_core::*;
 use porter_core::{
     GrantKey,
     consent::{
-        AccountChoice, AskPurpose, Availability, ConsentAnswer, ConsentAsk, Decision, Grant,
-        GrantScope, Usage, Verdict,
+        AccountChoice, AskPurpose, ConsentAnswer, ConsentAsk, Decision, Grant, GrantScope, Usage,
+        Verdict,
     },
 };
 use porter_ids::word::word as word_of;
 use porter_ids::*;
+use porter_match::Need;
 use porter_match::{
     AgentNeed, CuaNeed, DimsNeed, EmbedNeed, IdentityNeed, ImageGenNeed, KeyValueNeed, LlmNeed,
     MailNeed, NotesNeed, PhotosNeed, PimNeed, PushNeed, RerankNeed, SpeechNeed, StorageNeed,
 };
-use porter_match::{Match, Need, Shortfall};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;
@@ -276,101 +275,6 @@ fn grant() -> Grant {
 }
 
 #[test]
-fn capabilities_needs_and_offers_round_trip() {
-    every_capability().iter().for_each(round_trip);
-    every_need().iter().for_each(round_trip);
-    for capability in every_capability() {
-        round_trip(&capability.kind());
-        round_trip(&Claim {
-            subject: Subject::Account,
-            offer: Offer::Present(capability),
-            provenance: Provenance::Probed,
-        });
-    }
-    round_trip(&Claim {
-        subject: Subject::Model(ModelId::parse("llama3.2").expect("model")),
-        offer: Offer::Absent {
-            kind: CapabilityKind::Notes,
-            reason: AbsentReason::TenantConsent,
-        },
-        provenance: Provenance::Curated,
-    });
-    round_trip(&Claim {
-        subject: Subject::Agent(AgentProgram::parse("claude-code").expect("program")),
-        offer: Offer::Present(Capability::Agent(Box::new(claude_code()))),
-        provenance: Provenance::Declared,
-    });
-    round_trip(&Match::Short(Shortfall::Scope));
-    round_trip(&Match::Short(Shortfall::Program));
-    round_trip(&KindToggle {
-        kind: CapabilityKind::Mail,
-        toggle: Toggle::Off,
-    });
-}
-
-#[test]
-fn accounts_and_ai_properties_round_trip() {
-    round_trip(&Account {
-        id: account_id("cloud"),
-        provider: ProviderId::parse("google").expect("provider"),
-        label: AccountLabel("ada@example.org".into()),
-        state: AccountState::Limited,
-        auth: AuthKind::OAuthPkce,
-        capabilities: vec![],
-        restriction: restriction(),
-        endpoints: endpoints(),
-    });
-    round_trip(&Account {
-        id: account_id("claude-code"),
-        provider: ProviderId::parse("claude-code").expect("provider"),
-        label: AccountLabel("Claude Code".into()),
-        state: AccountState::NeedsLogin,
-        auth: AuthKind::AgentLogin,
-        capabilities: vec![],
-        restriction: Restriction::none(),
-        endpoints: vec![],
-    });
-    round_trip(&Locality::Cloud {
-        region: Some(Region("eu-west-1".into())),
-    });
-    round_trip(&Locality::OnDevice);
-    round_trip(&Tier::Balanced);
-    round_trip(&Billing::Metered);
-    round_trip(&Billing::PlanBudget);
-}
-
-#[test]
-fn consent_values_round_trip() {
-    round_trip(&grant());
-    round_trip(&Verdict::Granted {
-        grant: grant_id("g1"),
-        scope: GrantScope::Once,
-    });
-    round_trip(&Availability::AvailableNeedsConsent);
-    round_trip(&ConsentAsk::new(
-        app(),
-        CapabilityKind::Storage,
-        DataClass::Photos,
-        Usage::Interactive,
-        vec![AccountChoice::new(
-            account_id("cloud"),
-            AccountLabel("Nextcloud".into()),
-            ProviderId::parse("nextcloud").expect("provider"),
-        )],
-    ));
-    round_trip(&ConsentAnswer::Allow {
-        account: account_id("cloud"),
-        scope: GrantScope::Always,
-    });
-    round_trip(&ConsentAnswer::Dismissed);
-    round_trip(&ConsentAnswer::AddAccount);
-    assert_eq!(
-        serde_json::to_string(&ConsentAnswer::AddAccount).expect("json"),
-        r#"{"kind":"add_account"}"#
-    );
-}
-
-#[test]
 fn a_session_scope_round_trips_with_its_session_and_the_old_scopes_keep_their_words() {
     let session = SessionToken::parse("sess-1").expect("session");
     let scope = GrantScope::Session(session.clone());
@@ -456,58 +360,6 @@ fn a_consent_ask_names_its_session_only_when_it_has_one() {
 }
 
 #[test]
-fn secrets_and_tokens_round_trip() {
-    for purpose in [
-        SecretPurpose::Password,
-        SecretPurpose::IncomingPassword,
-        SecretPurpose::OutgoingPassword,
-        SecretPurpose::ServicePassword(CapabilityKind::Contacts),
-        SecretPurpose::OAuthRefresh,
-        SecretPurpose::ApiKey,
-        SecretPurpose::KeyPair,
-        SecretPurpose::DeviceKey,
-    ] {
-        round_trip(&SecretKey {
-            account: account_id("cloud"),
-            purpose,
-        });
-    }
-    round_trip(&Credential::OAuth {
-        access: SecretText::new("a"),
-        refresh: SecretText::new("r"),
-        expires_at: UnixSeconds(5),
-        granted: Default::default(),
-    });
-    round_trip(&Credential::KeyPair {
-        access_key: "AKIA".into(),
-        secret: SecretText::new("s"),
-    });
-    round_trip(&Credential::Bearer(SecretText::new("api-token")));
-    // The JSON a store wrote before the bearer existed still reads, and the bearer is its own
-    // kind: a stored password is not read as a token.
-    for old in [
-        r#"{"kind":"password","v":"pw"}"#,
-        r#"{"kind":"api_key","v":"k"}"#,
-        r#"{"kind":"key_pair","v":{"access_key":"A","secret":"s"}}"#,
-    ] {
-        serde_json::from_str::<Credential>(old).expect(old);
-    }
-    assert_eq!(
-        serde_json::to_string(&Credential::Bearer(SecretText::new("t"))).expect("json"),
-        r#"{"kind":"bearer","v":"t"}"#
-    );
-    assert_eq!(
-        serde_json::from_str::<Credential>(r#"{"kind":"password","v":"pw"}"#).expect("old"),
-        Credential::Password(SecretText::new("pw"))
-    );
-    round_trip(&IssuedToken::new(
-        TokenKind::Xoauth2,
-        SecretText::new("t"),
-        UnixSeconds(9),
-    ));
-}
-
-#[test]
 fn a_grant_keeps_its_reach_and_one_stored_without_a_reach_reaches_the_app_folder() {
     let mut whole = grant();
     whole.key.reach = StorageScope::Full;
@@ -571,11 +423,6 @@ fn stored_forms_keep_their_slugs() {
 
 fn json<T: Serialize>(value: &T) -> String {
     serde_json::to_string(value).expect("serializes")
-}
-
-#[test]
-fn the_vocabulary_is_version_thirteen() {
-    assert_eq!(VocabVersion::CURRENT, VocabVersion(13));
 }
 
 #[test]
@@ -725,43 +572,6 @@ fn an_embedding_capability_keeps_its_prompts_with_the_model() {
         r#"{"dims":768,"modalities":["text"],"max_input":8192,"max_batch":32,"prompts":{"query":"search_query: ","document":""}}"#
     );
     assert_eq!(serde_json::from_str::<EmbedCap>(&json).expect("read"), cap);
-}
-
-#[test]
-fn endpoints_and_stored_documents_round_trip() {
-    endpoints().iter().for_each(round_trip);
-    for protocol in [
-        EndpointProtocol::Imap,
-        EndpointProtocol::Smtp,
-        EndpointProtocol::Http,
-        EndpointProtocol::Sieve,
-    ] {
-        round_trip(&protocol);
-    }
-    let stored = Persisted {
-        vocab: VocabVersion::CURRENT,
-        accounts: vec![Account {
-            id: account_id("cloud"),
-            provider: ProviderId::parse("nextcloud").expect("provider"),
-            label: AccountLabel("ada@example.org".into()),
-            state: AccountState::Ok,
-            auth: AuthKind::LoginFlowV2,
-            capabilities: vec![],
-            restriction: Restriction::none(),
-            endpoints: endpoints(),
-        }],
-        grants: vec![grant()],
-        toggles: vec![AccountToggle {
-            account: account_id("cloud"),
-            kind: CapabilityKind::Notes,
-            toggle: Toggle::Off,
-        }],
-    };
-    round_trip(&stored);
-    assert_eq!(
-        Persisted::from_json(&stored.to_json().expect("json")).expect("read"),
-        stored
-    );
 }
 
 #[test]

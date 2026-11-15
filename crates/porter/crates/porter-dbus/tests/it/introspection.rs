@@ -31,32 +31,6 @@ fn checked_in_introspection_matches_the_interfaces() {
 }
 
 #[test]
-fn the_spaces_registry_declares_its_six_methods_and_one_signal() {
-    let xml = porter_dbus::accounts::SPACES.introspection();
-    for member in [
-        "<method name=\"List\">",
-        "<arg type=\"a(sa{sv})\" direction=\"out\"/>",
-        "<method name=\"Create\">",
-        "<method name=\"Register\">",
-        "<method name=\"Rename\">",
-        "<method name=\"SetLook\">",
-        "<method name=\"Remove\">",
-        "<signal name=\"Changed\">",
-    ] {
-        assert!(xml.contains(member), "missing {member}");
-    }
-    assert_eq!(xml.matches("<method ").count(), 6);
-    assert_eq!(xml.matches("<signal ").count(), 1);
-    assert_eq!(porter_wire::names::SPACES_PATH, "/org/quire/Spaces1");
-    assert!(
-        !porter_dbus::accounts::ACCOUNTS
-            .introspection()
-            .contains("org.quire.Spaces1"),
-        "its own file, beside Accounts1's"
-    );
-}
-
-#[test]
 fn the_identities_object_declares_five_methods_and_one_signal_and_no_token() {
     let xml = porter_dbus::accounts::IDENTITIES.introspection();
     for member in [

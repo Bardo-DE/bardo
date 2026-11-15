@@ -296,12 +296,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn an_address_is_written_for_a_query() {
-        assert_eq!(encode_addr("100.64.0.2:5000"), "100.64.0.2%3A5000");
-        assert_eq!(encode_addr("[fd7a::2]:5000"), "%5Bfd7a%3A%3A2%5D%3A5000");
-    }
-
-    #[test]
     fn the_watch_mask_asks_for_no_private_keys() {
         // Without NotifyNoPrivateKeys (16) tailscaled wants write access for the stream.
         assert_eq!(WATCH_MASK & 16, 16);

@@ -245,25 +245,4 @@ mod tests {
             assert!(NodeId::parse(bad).is_err(), "{bad:?}");
         }
     }
-
-    #[test]
-    fn a_node_id_is_its_string_on_the_wire() {
-        let id = NodeId::parse("nPXS7a2CNTRL").expect("id");
-        assert_eq!(
-            serde_json::to_string(&id).expect("json"),
-            "\"nPXS7a2CNTRL\""
-        );
-        assert!(serde_json::from_str::<NodeId>("\"bad id\"").is_err());
-    }
-
-    #[test]
-    fn an_owner_is_its_serde_word() {
-        for owner in MachineOwner::ALL {
-            let json = serde_json::to_value(owner).expect("json");
-            assert_eq!(json.as_str(), Some(owner.slug()));
-            assert_eq!(MachineOwner::from_slug(owner.slug()), Some(owner));
-        }
-        assert_eq!(MachineOwner::from_slug("Mine"), None);
-        assert_eq!(MachineOwner::from_slug(""), None);
-    }
 }

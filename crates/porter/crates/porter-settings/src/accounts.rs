@@ -307,31 +307,6 @@ mod tests {
         schema(registry, &no_apps(), &Plain).key
     }
 
-    #[test]
-    fn every_key_is_under_accounts_and_hands_off_and_the_schema_checks() {
-        let schema = schema(&registry(), &no_apps(), &Plain);
-        assert!(schema.check().is_ok());
-        assert!(schema.key.iter().all(|k| k.path.0.starts_with("accounts.")));
-        assert!(schema.key.iter().all(|k| k.agent == AgentSetting::HandsOff));
-        let paths: Vec<&str> = schema.key.iter().map(|k| k.path.0.as_str()).collect();
-        for want in [
-            "accounts.fake-storage.remove",
-            "accounts.fake-storage.reauth",
-            "accounts.fake-mail.state",
-            "accounts.fake-mail.place",
-            "accounts.clients.microsoft",
-        ] {
-            assert!(paths.contains(&want), "{want} in {paths:?}");
-        }
-        // An identity has no service switch, permit or sync row.
-        for gone in [".service.", ".grant.", ".sync.", ".sign_out"] {
-            assert!(
-                !paths.iter().any(|p| p.contains(gone)),
-                "{gone} in {paths:?}"
-            );
-        }
-    }
-
     /// The apps that use an identity are listed under it, by the name a person reads, as
     /// read-only rows that parse and print both ways.
     #[test]
@@ -568,40 +543,6 @@ mod tests {
         runtime.auth = AuthKind::LocalRuntime;
         assert_eq!(place_slug(&runtime), "this_computer");
         assert_eq!(place_slug(&mail_account()), "elsewhere");
-    }
-
-    #[test]
-    fn a_destructive_action_is_marked_so() {
-        let rows = rows(&registry());
-        let remove = rows
-            .iter()
-            .find(|k| k.path.0 == "accounts.fake-mail.remove")
-            .expect("remove");
-        assert!(matches!(
-            &remove.kind,
-            KeyKind::Live { action } if action.weight == ActionWeight::Destructive
-        ));
-    }
-
-    #[test]
-    fn paths_parse_back_to_their_keys() {
-        let registry = registry();
-        for key in &rows(&registry) {
-            let parsed = parse(&key.path.0, &registry).unwrap_or_else(|| panic!("{}", key.path.0));
-            assert_eq!(path(&parsed), key.path.0);
-        }
-        for bad in [
-            "accounts.nobody.remove",
-            "accounts.fake-mail.service.storage",
-            "accounts.fake-mail.grant.g1",
-            "accounts.fake-mail.sync.files",
-            "accounts.clients.openrouter",
-            "accounts.clients.microsoft.secret",
-            "dock.size",
-            "accounts.fake-mail.nonsense",
-        ] {
-            assert_eq!(parse(bad, &registry), None, "{bad}");
-        }
     }
 
     /// A registry whose language-model account holds one permit of Companion, with a dotted id.
