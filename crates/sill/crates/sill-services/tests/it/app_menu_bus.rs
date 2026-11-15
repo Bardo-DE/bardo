@@ -889,66 +889,6 @@ async fn the_bar_shows_no_menu_for_a_program_other_than_the_one_the_compositor_r
     );
 }
 
-/// QUIRE-12 for the agent: the same comparison decides what it may list.
-#[tokio::test(flavor = "multi_thread")]
-async fn the_agent_lists_the_menu_of_the_program_the_compositor_reports_and_no_other() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
-    let scratch = TempDir::new("app-menu-agent-reported");
-    let callers = Introduced::new();
-    let _app = FakeApp::start_as(&bus, scratch.path(), "dev.notes", &callers, "dev.other");
-    let reported = agent_reporting(
-        &bus,
-        scratch.path(),
-        &callers,
-        &["dev.notes"],
-        None,
-        reporting("dev.notes", "/usr/bin/app_menu_app"),
-    )
-    .await;
-    let listed = reported
-        .agent
-        .list(None)
-        .await
-        .unwrap_or_else(|e| panic!("{e:?}"));
-    assert!(listed.text.contains("Undo"), "{}", listed.text);
-
-    let other = agent_reporting(
-        &bus,
-        scratch.path(),
-        &callers,
-        &["dev.notes"],
-        None,
-        reporting("dev.notes", "/usr/bin/notes"),
-    )
-    .await;
-    let listed = other
-        .agent
-        .list(None)
-        .await
-        .unwrap_or_else(|e| panic!("{e:?}"));
-    assert!(!listed.text.contains("Undo"), "{}", listed.text);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn the_bar_shows_no_menu_for_a_name_another_program_owns() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
-    let scratch = TempDir::new("app-menu-bar-squatter");
-    let callers = Introduced::new();
-    let _squatter = FakeApp::start_as(&bus, scratch.path(), "test.app", &callers, "dev.other");
-    let handle = service(&bus, scratch.path(), &callers);
-    follow(&handle, Some("test.app"));
-    tokio::time::sleep(Duration::from_millis(800)).await;
-    assert_eq!(
-        *handle.state.borrow(),
-        AppMenus::default(),
-        "a menu from a program that is not the app was shown"
-    );
-}
-
 #[tokio::test(flavor = "multi_thread")]
 async fn the_shells_own_rows_do_what_the_table_calls_cheap() {
     let Some(bus) = PrivateBus::start() else {

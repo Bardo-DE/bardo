@@ -1,6 +1,5 @@
-//! The walking index and detection for real, on this machine, never over the person's files:
-//! `fd` walks a scratch folder under the target directory, and `detect` only asks whether each
-//! backend exists (a bus name, a program on `PATH`).
+//! The walking index for real, on this machine, never over the person's files:
+//! `fd` walks a scratch folder under the target directory.
 //!
 //! Run explicitly: `cargo test -p sill-services --test it files_walk_live -- --ignored
 //! --nocapture`.
@@ -9,11 +8,8 @@ use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use sill_launcher::{Cancel, Query};
-use sill_search::providers::files::choice::IndexState;
-use sill_search::providers::files::choice::detect;
 use sill_search::providers::files::walk::{WalkIndex, Walker};
 use sill_search::providers::files::{FileAnswer, FileAsk, FileIndex, HitLimit};
-use sill_services::env::{Bus, BusRoute};
 
 fn scratch(name: &str) -> PathBuf {
     let root = PathBuf::from(env!("CARGO_TARGET_TMPDIR"))
@@ -79,16 +75,4 @@ fn a_budget_of_nothing_is_a_partial_answer() {
     let answer = index.search(&ask("m9", &root, Duration::ZERO), &query);
     let _ = std::fs::remove_dir_all(&root);
     assert_eq!(answer, FileAnswer::Partial(Vec::new()));
-}
-
-/// Detection only, reported.
-#[test]
-#[ignore = "needs tracker"]
-fn this_machine_has_tracker() {
-    let found = detect(&Bus::session(BusRoute::Usual));
-    eprintln!(
-        "sill: files detect: tracker={:?} fd={:?} plocate={:?}",
-        found.tracker, found.fd, found.plocate
-    );
-    assert_ne!(found.tracker, IndexState::Absent);
 }

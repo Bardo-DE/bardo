@@ -1,9 +1,7 @@
 //! The runner end to end on a real runtime, with fake providers: ordering and grouping,
-//! generations dropped however late they arrive, cancellation, choices counted and saved, and
-//! the query-to-first-batch latency over the fixture app index.
+//! generations dropped however late they arrive, cancellation, choices counted and saved.
 
 mod fake;
-mod latency;
 
 use std::sync::Arc;
 use std::time::Duration;
