@@ -12,28 +12,6 @@ use porter_dbus::accounts::{AccountProxy, ManagerProxy};
 use std::time::Duration;
 
 #[tokio::test(flavor = "multi_thread")]
-async fn only_the_shell_may_ask_who_needs_signing_in() {
-    let rig = Rig::start().await;
-    for who in [
-        caller("org.example.App", CallerRole::App),
-        caller("org.quire.Settings", CallerRole::Settings),
-        caller("org.quire.Companion", CallerRole::Agent),
-    ] {
-        let connection = rig.client_as(who).await;
-        let error = ManagerProxy::new(&connection)
-            .await
-            .expect("proxy")
-            .needing_reauth()
-            .await
-            .expect_err("refused");
-        assert_eq!(
-            error_name(&error),
-            refusal_name(porter_wire::Refusal::Denied)
-        );
-    }
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn the_shell_is_told_of_a_refusal_and_a_recovery_and_reads_the_account() {
     let (_dir, options) = poking_options();
     let rig = Rig::start_with(options, SheetHost::quiet()).await;

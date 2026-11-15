@@ -1,5 +1,6 @@
 //! Role checks (PLAN §2.1): an `Agent` is refused what acts for the person, the agent launcher is
-//! not accountd's to serve, an unknown sender is `AccessDenied`.
+//! not accountd's to serve, an unknown sender is `AccessDenied`, and only the shell asks who needs
+//! signing in again.
 
 use crate::common;
 
@@ -11,65 +12,99 @@ use porter_dbus::accounts::{AccountProxy, ManagerProxy};
 use porter_wire::Refusal;
 use zbus::zvariant::ObjectPath;
 
-#[tokio::test(flavor = "multi_thread")]
-async fn an_agent_is_refused_every_method_that_acts_for_the_person() {
-    let rig = Rig::start().await;
-    let agent = rig
-        .client_as(caller("org.quire.Companion", CallerRole::Agent))
-        .await;
-    let denied = refusal_name(Refusal::Denied);
-
-    let manager = ManagerProxy::new(&agent).await.expect("proxy");
-    let add = manager
-        .add_account("", "", &Details::new())
-        .await
-        .expect_err("add");
-    assert_eq!(error_name(&add), denied);
-
-    let account = AccountProxy::builder(&agent)
-        .path(ObjectPath::try_from(account_path(&storage_account_id())).expect("path"))
-        .expect("path")
-        .build()
-        .await
-        .expect("proxy");
-    let reauth = account
-        .reauthenticate("", &Details::new())
-        .await
-        .expect_err("reauthenticate");
-    assert_eq!(error_name(&reauth), denied);
-
-    // Nothing was shown to anyone.
-    assert!(rig.host_log.calls().opened.is_empty());
+#[derive(Clone, Copy)]
+enum Call {
+    Add,
+    Reauthenticate,
+    NeedingReauth,
 }
 
 fn storage_account_id() -> porter_core::AccountId {
     porter_fake::storage_account().id
 }
 
-#[tokio::test(flavor = "multi_thread")]
-async fn the_agent_launcher_may_call_its_own_interface_and_nothing_else_of_accountd() {
-    let rig = Rig::start().await;
-    let launcher = rig
-        .client_as(caller("org.quire.Docket", CallerRole::AgentLauncher))
-        .await;
-    let manager = ManagerProxy::new(&launcher).await.expect("proxy");
-    let add = manager
-        .add_account("", "", &Details::new())
-        .await
-        .expect_err("add");
-    assert_eq!(error_name(&add), ACCESS_DENIED);
+/// The error name a caller gets for `call`.
+async fn refused(connection: &zbus::Connection, call: Call) -> String {
+    let manager = ManagerProxy::new(connection).await.expect("proxy");
+    let error = match call {
+        Call::Add => manager
+            .add_account("", "", &Details::new())
+            .await
+            .map(|_| ())
+            .expect_err("add"),
+        Call::NeedingReauth => manager
+            .needing_reauth()
+            .await
+            .map(|_| ())
+            .expect_err("needing"),
+        Call::Reauthenticate => {
+            let account = AccountProxy::builder(connection)
+                .path(ObjectPath::try_from(account_path(&storage_account_id())).expect("path"))
+                .expect("path")
+                .build()
+                .await
+                .expect("proxy");
+            account
+                .reauthenticate("", &Details::new())
+                .await
+                .expect_err("reauthenticate")
+        }
+    };
+    error_name(&error)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn an_unknown_sender_is_access_denied_everywhere() {
+async fn each_role_is_refused_what_is_not_its_own() {
     let rig = Rig::start().await;
-    let stranger = rig.stranger().await;
-    let manager = ManagerProxy::new(&stranger).await.expect("proxy");
-    let add = manager
-        .add_account("", "", &Details::new())
-        .await
-        .expect_err("add");
-    assert_eq!(error_name(&add), ACCESS_DENIED);
-    let needing = manager.needing_reauth().await.expect_err("needing");
-    assert_eq!(error_name(&needing), ACCESS_DENIED);
+    let denied = refusal_name(Refusal::Denied);
+    // `None` is an unknown sender.
+    let rows = [
+        (
+            Some(("org.quire.Companion", CallerRole::Agent)),
+            Call::Add,
+            denied.as_str(),
+        ),
+        (
+            Some(("org.quire.Companion", CallerRole::Agent)),
+            Call::Reauthenticate,
+            denied.as_str(),
+        ),
+        (
+            Some(("org.quire.Docket", CallerRole::AgentLauncher)),
+            Call::Add,
+            ACCESS_DENIED,
+        ),
+        (None, Call::Add, ACCESS_DENIED),
+        (None, Call::NeedingReauth, ACCESS_DENIED),
+        // Only the shell asks who needs signing in again.
+        (
+            Some(("org.example.App", CallerRole::App)),
+            Call::NeedingReauth,
+            denied.as_str(),
+        ),
+        (
+            Some(("org.quire.Settings", CallerRole::Settings)),
+            Call::NeedingReauth,
+            denied.as_str(),
+        ),
+        (
+            Some(("org.quire.Companion", CallerRole::Agent)),
+            Call::NeedingReauth,
+            denied.as_str(),
+        ),
+    ];
+    for (who, call, expected) in rows {
+        let connection = match who {
+            Some((name, role)) => rig.client_as(caller(name, role)).await,
+            None => rig.stranger().await,
+        };
+        assert_eq!(
+            refused(&connection, call).await,
+            expected,
+            "{:?}",
+            who.map(|w| w.1)
+        );
+    }
+    // Nothing was shown to anyone.
+    assert!(rig.host_log.calls().opened.is_empty());
 }

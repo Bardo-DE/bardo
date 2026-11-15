@@ -329,77 +329,105 @@ async fn typed_imap_and_smtp_on_other_ports_with_starttls_and_a_login_name() {
 }
 
 #[tokio::test]
-async fn typed_ports_default_from_the_security_when_left_empty() {
-    let mail = nothing_published().await;
-    let mut signin = mail.provider.sign_in(add()).expect("sign-in");
-    let typed = vec![
-        plain(FieldKind::Protocol, "imap"),
-        plain(FieldKind::Server, "mail.fake.test"),
-        plain(FieldKind::Security, "starttls"),
-        plain(FieldKind::OutgoingServer, "mail.fake.test"),
-        plain(FieldKind::OutgoingSecurity, "tls"),
-    ];
-    let steps = drive(&mut signin, manual_person(typed)).await;
-    let urls: Vec<_> = done(&steps)
-        .endpoints
-        .iter()
-        .map(|e| e.url.to_string())
-        .collect();
-    assert_eq!(
-        urls,
-        ["imap://mail.fake.test:143", "smtps://mail.fake.test:465"]
+async fn typed_servers_become_endpoints_by_their_security() {
+    use FieldKind::*;
+    // (the form, what it makes: none when the form is refused as unreadable; the first endpoints)
+    type Row = (
+        &'static [(FieldKind, &'static str)],
+        Option<&'static [(Family, &'static str, Tls)]>,
     );
-}
-
-#[tokio::test]
-async fn typed_servers_on_this_computer_may_be_plain() {
-    let mail = nothing_published().await;
-    let mut signin = mail.provider.sign_in(add()).expect("sign-in");
-    let typed = vec![
-        plain(FieldKind::Protocol, "imap"),
-        plain(FieldKind::Server, "127.0.0.1"),
-        plain(FieldKind::Security, "plain"),
-        plain(FieldKind::Port, "31143"),
-        plain(FieldKind::OutgoingServer, "127.0.0.1"),
-        plain(FieldKind::OutgoingSecurity, "plain"),
-        plain(FieldKind::OutgoingPort, "31587"),
+    const ROWS: &[Row] = &[
+        // Ports left empty follow the security.
+        (
+            &[
+                (Protocol, "imap"),
+                (Server, "mail.fake.test"),
+                (Security, "starttls"),
+                (OutgoingServer, "mail.fake.test"),
+                (OutgoingSecurity, "tls"),
+            ],
+            Some(&[
+                (Family::Imap, "imap://mail.fake.test:143", Tls::StartTls),
+                (Family::Smtp, "smtps://mail.fake.test:465", Tls::Implicit),
+            ]),
+        ),
+        // A server on this computer may be plain.
+        (
+            &[
+                (Protocol, "imap"),
+                (Server, "127.0.0.1"),
+                (Security, "plain"),
+                (Port, "31143"),
+                (OutgoingServer, "127.0.0.1"),
+                (OutgoingSecurity, "plain"),
+                (OutgoingPort, "31587"),
+            ],
+            Some(&[
+                (Family::Imap, "imap://127.0.0.1:31143", Tls::Plain),
+                (Family::Smtp, "smtp://127.0.0.1:31587", Tls::Plain),
+            ]),
+        ),
+        // Plain off this computer is not accepted.
+        (
+            &[
+                (Protocol, "imap"),
+                (Server, "mail.fake.test"),
+                (Security, "plain"),
+                (OutgoingServer, "mail.fake.test"),
+                (OutgoingSecurity, "tls"),
+            ],
+            None,
+        ),
+        // POP3 with STARTTLS defaults to port 110, and may be plain on this computer.
+        (
+            &[
+                (Protocol, "pop3"),
+                (Server, "pop.fake.test"),
+                (Security, "starttls"),
+                (Port, ""),
+                (OutgoingServer, "pop.fake.test"),
+                (OutgoingSecurity, "starttls"),
+            ],
+            Some(&[(Family::Pop3, "pop3://pop.fake.test:110", Tls::StartTls)]),
+        ),
+        (
+            &[
+                (Protocol, "pop3"),
+                (Server, "127.0.0.1"),
+                (Security, "plain"),
+                (Port, "31110"),
+                (OutgoingServer, "127.0.0.1"),
+                (OutgoingSecurity, "plain"),
+            ],
+            Some(&[(Family::Pop3, "pop3://127.0.0.1:31110", Tls::Plain)]),
+        ),
     ];
-    let steps = drive(&mut signin, manual_person(typed)).await;
-    assert_eq!(
-        shown(done(&steps)),
-        vec![
-            (
-                Family::Imap,
-                "imap://127.0.0.1:31143".into(),
-                Tls::Plain,
-                "ada@fake.test".into()
+    for (form, made) in ROWS {
+        let mail = nothing_published().await;
+        let mut signin = mail.provider.sign_in(add()).expect("sign-in");
+        let typed = form.iter().map(|(kind, text)| plain(*kind, text)).collect();
+        let steps = drive(&mut signin, manual_person(typed)).await;
+        match made {
+            None => assert_eq!(
+                steps.last(),
+                Some(&SignInStep::Failed(SignInFault::Unreadable)),
+                "{form:?}"
             ),
-            (
-                Family::Smtp,
-                "smtp://127.0.0.1:31587".into(),
-                Tls::Plain,
-                "ada@fake.test".into()
-            ),
-        ]
-    );
-}
-
-#[tokio::test]
-async fn typed_plain_off_this_computer_is_not_accepted() {
-    let mail = nothing_published().await;
-    let mut signin = mail.provider.sign_in(add()).expect("sign-in");
-    let typed = vec![
-        plain(FieldKind::Protocol, "imap"),
-        plain(FieldKind::Server, "mail.fake.test"),
-        plain(FieldKind::Security, "plain"),
-        plain(FieldKind::OutgoingServer, "mail.fake.test"),
-        plain(FieldKind::OutgoingSecurity, "tls"),
-    ];
-    let steps = drive(&mut signin, manual_person(typed)).await;
-    assert_eq!(
-        steps.last(),
-        Some(&SignInStep::Failed(SignInFault::Unreadable))
-    );
+            Some(want) => {
+                let got: Vec<_> = done(&steps)
+                    .endpoints
+                    .iter()
+                    .take(want.len())
+                    .map(|e| (e.family, e.url.to_string(), e.tls))
+                    .collect();
+                let want: Vec<_> = want
+                    .iter()
+                    .map(|(family, url, tls)| (*family, (*url).to_owned(), *tls))
+                    .collect();
+                assert_eq!(got, want, "{form:?}");
+            }
+        }
+    }
 }
 
 /// A JMAP server the form names: a session resource that wants Basic with the login name.
@@ -620,43 +648,6 @@ async fn typed_pop3_builds_pop3_and_smtp_endpoints_with_the_login_name() {
             Credential::Password(SecretText::new("s3cret"))
         )]
     );
-}
-
-#[tokio::test]
-async fn typed_pop3_starttls_defaults_to_port_110_and_may_be_plain_on_this_computer() {
-    for (security, host, port, scheme, tls) in [
-        (
-            "starttls",
-            "pop.fake.test",
-            "",
-            "pop3://pop.fake.test:110",
-            Tls::StartTls,
-        ),
-        (
-            "plain",
-            "127.0.0.1",
-            "31110",
-            "pop3://127.0.0.1:31110",
-            Tls::Plain,
-        ),
-    ] {
-        let mail = nothing_published().await;
-        let mut signin = mail.provider.sign_in(add()).expect("sign-in");
-        let typed = vec![
-            plain(FieldKind::Protocol, "pop3"),
-            plain(FieldKind::Server, host),
-            plain(FieldKind::Security, security),
-            plain(FieldKind::Port, port),
-            plain(FieldKind::OutgoingServer, host),
-            plain(FieldKind::OutgoingSecurity, security),
-        ];
-        let steps = drive(&mut signin, manual_person(typed)).await;
-        let first = &done(&steps).endpoints[0];
-        assert_eq!(
-            (first.family, first.url.to_string(), first.tls),
-            (Family::Pop3, scheme.into(), tls)
-        );
-    }
 }
 
 #[tokio::test]
@@ -1278,39 +1269,31 @@ fn has_review(steps: &[SignInStep]) -> bool {
 }
 
 #[tokio::test]
-async fn a_wrong_mail_password_is_refused_before_the_review() {
-    let mail = published().await;
-    let mut signin = mail.provider.sign_in(add()).expect("sign-in");
-    let steps = drive(&mut signin, mail_person("ada@fake.test", "wrong", "")).await;
-    assert_eq!(
-        steps.last(),
-        Some(&SignInStep::Failed(SignInFault::Refused)),
-        "{steps:?}"
-    );
-    assert!(!has_review(&steps), "{steps:?}");
-}
-
-#[tokio::test]
-async fn a_mail_server_that_cannot_be_reached_is_unreachable_before_the_review() {
-    let mail = published().await;
-    let provider = mail.provider.clone().with_connect(Wire::nowhere());
-    let mut signin = provider.sign_in(add()).expect("sign-in");
-    let steps = drive(&mut signin, mail_person("ada@fake.test", PASSWORD, "")).await;
-    assert_eq!(
-        steps.last(),
-        Some(&SignInStep::Failed(SignInFault::Unreachable)),
-        "{steps:?}"
-    );
-    assert!(!has_review(&steps), "{steps:?}");
-}
-
-#[tokio::test]
-async fn the_right_mail_password_goes_on_to_the_review() {
-    let mail = published().await;
-    let mut signin = mail.provider.sign_in(add()).expect("sign-in");
-    let steps = drive(&mut signin, mail_person("ada@fake.test", PASSWORD, "")).await;
-    assert!(has_review(&steps), "{steps:?}");
-    done(&steps);
+async fn the_mail_servers_are_tried_with_the_password_before_the_review() {
+    // (password, whether the servers can be reached, how the sign-in ends: none is the review)
+    for (password, reachable, ending) in [
+        ("wrong", true, Some(SignInFault::Refused)),
+        (PASSWORD, false, Some(SignInFault::Unreachable)),
+        (PASSWORD, true, None),
+    ] {
+        let mail = published().await;
+        let provider = match reachable {
+            true => mail.provider.clone(),
+            false => mail.provider.clone().with_connect(Wire::nowhere()),
+        };
+        let mut signin = provider.sign_in(add()).expect("sign-in");
+        let steps = drive(&mut signin, mail_person("ada@fake.test", password, "")).await;
+        match ending {
+            Some(fault) => {
+                assert_eq!(steps.last(), Some(&SignInStep::Failed(fault)), "{steps:?}");
+                assert!(!has_review(&steps), "{steps:?}");
+            }
+            None => {
+                assert!(has_review(&steps), "{steps:?}");
+                done(&steps);
+            }
+        }
+    }
 }
 
 #[tokio::test]
