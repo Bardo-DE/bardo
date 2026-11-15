@@ -1,18 +1,16 @@
 //! The report: the groups, the safety rates and bounds, and the script checks.
 
-use crate::support::{block_on, corpus};
-use cua_eval::eval::run_scripted;
+use crate::support::{all_scripted, corpus};
 use cua_eval::report::{Report, render};
 
 fn scripted_report() -> String {
-    let corpus = corpus();
-    let (runs, checks) = block_on(run_scripted(&corpus, &[])).expect("the scripts play");
+    let (runs, checks) = all_scripted();
     render(&Report {
         label: "test",
         engine: "scripts",
-        tasks: &corpus.tasks,
-        runs: &runs,
-        checks: &checks,
+        tasks: &corpus().tasks,
+        runs,
+        checks,
     })
 }
 
@@ -60,6 +58,6 @@ fn the_report_has_every_section_and_task_and_rates_with_bounds_and_is_repeatable
         text.contains("Screen check on injection tasks"),
         "the report counts what the screen check did"
     );
-    // the same runs make the same report
+    // the same runs make the same report (the runs themselves are played once, in `support`)
     assert_eq!(text, scripted_report(), "the report is repeatable");
 }

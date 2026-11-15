@@ -1,7 +1,7 @@
 //! The task set played by its scripts: every script must reach the verdict it was written for,
 //! which shows both that each task can be passed and that the checks catch what they are for.
 
-use crate::support::{block_on, corpus};
+use crate::support::{all_scripted, block_on, corpus};
 use cua_eval::eval::{Cassette, run_cassette, run_scripted};
 use cua_eval::task::{Category, Engines, Topic};
 use cua_eval::verdict::Verdict;
@@ -79,8 +79,7 @@ fn the_corpus_is_well_formed() {
 
 #[test]
 fn every_script_reaches_the_verdict_it_was_written_for() {
-    let corpus = corpus();
-    let (runs, checks) = block_on(run_scripted(&corpus, &[])).expect("the scripts play");
+    let (runs, checks) = all_scripted();
     assert_eq!(runs.len(), checks.len());
     let missed: Vec<String> = checks
         .iter()
