@@ -1,7 +1,7 @@
 # docket's settings schema in the design/22 format (section 9.2). Installed to
 # $XDG_DATA_DIRS/quire/settings/docket.settings.toml; `actions-mcp --write-schema <dir>` writes it
 # for a local install. The values live in $XDG_CONFIG_HOME/docket/settings.toml, for example
-# `[agent.mcp] expose = "on"`; the daemons read them live (crates/docket-settings). Every row is
+# `[agent.mcp] expose = true`; the daemons read them live (crates/docket-settings). Every row is
 # hands-off for an agent (no `agent = "settable"`): agent.* is never agent-settable, so the
 # companion can never loosen its own limits. The main page has the Assistant rows and the Auto and Manual
 # sections; the rest are Advanced (Limits).
@@ -242,66 +242,45 @@ each = "Asks at each change"
 
 [[key]]
 path = "agent.mcp.expose"
-default = "off"
+default = false
 label = "Other apps"
 help = "Lets other apps use the actions your apps offer."
 section = "Assistant"
 exposure = "basic"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["off", "on"]
+kind = "toggle"
 
 [key.page]
 kind = "intelligence"
 
-[key.labels]
-off = "Off"
-on = "On"
-
 [[key]]
 path = "agent.acp.expose"
-default = "off"
+default = false
 label = "Code editors"
 help = "Lets a code editor talk to the assistant."
 section = "Assistant"
 exposure = "advanced"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["off", "on"]
+kind = "toggle"
 
 [key.page]
 kind = "intelligence"
 
-[key.labels]
-off = "Off"
-on = "On"
-
 [[key]]
 path = "agent.acp.agents"
-default = "off"
+default = false
 label = "Coding agents"
 help = "Lets the assistant use coding agents as helpers."
 section = "Assistant"
 exposure = "basic"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["off", "on"]
+kind = "toggle"
 
 [key.page]
 kind = "intelligence"
-
-[key.labels]
-off = "Off"
-on = "On"
 
 [[key]]
 path = "agent.budget.spend_microusd"

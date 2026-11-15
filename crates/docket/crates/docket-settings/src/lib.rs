@@ -44,9 +44,8 @@ pub const REVIEW_CEILING: docket_core::ReviewTimeouts = docket_core::ReviewTimeo
 };
 
 /// Every value of the file, typed: what the router and the companion read, and whether the MCP
-/// and ACP edges are on. The file keeps the Settings app's `"on"` / `"off"` words for the three
-/// switches; the typed value is a `bool`. All three are off by default: an edge that was never
-/// switched on serves nothing.
+/// and ACP edges are on. The file stores the three switches as TOML `true` / `false`. All three
+/// are off by default: an edge that was never switched on serves nothing.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct AgentSettings {
     /// The proposed values, with the person's choices in them.

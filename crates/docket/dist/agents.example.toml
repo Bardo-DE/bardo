@@ -2,7 +2,7 @@
 # ~/.config/docket/agents.toml, fix the paths, and switch it on with
 #
 #   [agent.acp]
-#   agents = "on"
+#   agents = true
 #
 # in ~/.config/docket/settings.toml. Nothing starts while that setting is off or the program is
 # not listed here. Paths must be absolute.

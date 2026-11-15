@@ -358,11 +358,11 @@ async fn an_edge_following_the_settings_file_switches_on_and_off_with_it() {
     // No file: off.
     assert!(rig.client.list_all_tools().await.expect("list").is_empty());
     // The person switches it on in the Settings app: the next request sees the tools.
-    write("[agent.mcp]\nexpose = \"on\"\n");
+    write("[agent.mcp]\nexpose = true\n");
     let tools = rig.client.list_all_tools().await.expect("list");
     assert!(!tools.is_empty());
     // And off again: no tools, and a call is refused before the router is asked.
-    write("[agent.mcp]\nexpose = \"off\"\n");
+    write("[agent.mcp]\nexpose = false\n");
     assert!(rig.client.list_all_tools().await.expect("list").is_empty());
     let result = call(
         &rig,

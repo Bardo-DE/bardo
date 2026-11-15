@@ -1,10 +1,10 @@
 //! Whether the edge may serve at all: the setting `agent.acp.expose`, off unless the file says
-//! `on`. The binary checks it before it builds a server, so one that was never switched on has
+//! `true`. The binary checks it before it builds a server, so one that was never switched on has
 //! nothing to serve with.
 
 use docket_settings::{AgentSettings, Locator, read};
 
-/// Whether the text of a settings file says `agent.acp.expose` is on; anything but `on` is off.
+/// Whether the text of a settings file says `agent.acp.expose` is on; anything but `true` is off.
 pub fn exposed(text: &str) -> bool {
     read(text, AgentSettings::default()).value.acp
 }
@@ -22,15 +22,15 @@ mod tests {
     use super::*;
 
     #[test]
-    fn only_on_exposes() {
+    fn only_true_exposes() {
         let cases = [
             ("", false),
-            ("[agent.acp]\nexpose = \"on\"\n", true),
-            ("[agent.acp]\nexpose = \"off\"\n", false),
+            ("[agent.acp]\nexpose = true\n", true),
+            ("[agent.acp]\nexpose = false\n", false),
             ("[agent.acp]\nexpose = \"maybe\"\n", false),
-            ("[agent.acp]\nexpose = true\n", false),
-            ("[agent.mcp]\nexpose = \"on\"\n", false),
-            ("[agent.acp\nexpose = \"on\"", false),
+            ("[agent.acp]\nexpose = \"on\"\n", false),
+            ("[agent.mcp]\nexpose = true\n", false),
+            ("[agent.acp\nexpose = true", false),
         ];
         for (text, want) in cases {
             assert_eq!(exposed(text), want, "{text:?}");

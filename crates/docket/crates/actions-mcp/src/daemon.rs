@@ -217,7 +217,7 @@ pub async fn run(args: Args, env: &impl Fn(&str) -> Option<String>) -> Result<()
     }
     if !config.expose {
         eprintln!(
-            "actions-mcp: off (set agent.mcp.expose = \"on\" in docket/settings.toml): no tools are listed"
+            "actions-mcp: off (set agent.mcp.expose = true in docket/settings.toml): no tools are listed"
         );
     }
     let connection = docket_dbus::session_connection(env).await?;

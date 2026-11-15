@@ -18,6 +18,8 @@ pub(crate) enum Rule {
         range: RangeInclusive<i64>,
         set: fn(&mut AgentSettings, i64),
     },
+    /// A switch, stored as TOML `true` or `false`.
+    Toggle { set: fn(&mut AgentSettings, bool) },
     /// One of `words`, read by the target type's serde name; `set` says whether it took.
     Word {
         words: &'static [&'static str],
@@ -70,6 +72,13 @@ pub(crate) fn legacy() -> Vec<Key> {
             parse_into(&mut s.agent.start_mode, w)
         }),
     ]
+}
+
+const fn toggle(path: &'static str, set: fn(&mut AgentSettings, bool)) -> Key {
+    Key {
+        path,
+        rule: Rule::Toggle { set },
+    }
 }
 
 const fn word(
@@ -134,20 +143,10 @@ pub(crate) fn table() -> Vec<Key> {
 }
 
 fn rest() -> Vec<Key> {
-    let switch: &[&str] = &["off", "on"];
     vec![
-        word("agent.mcp.expose", switch, |s, w| {
-            s.expose = w == "on";
-            true
-        }),
-        word("agent.acp.expose", switch, |s, w| {
-            s.acp = w == "on";
-            true
-        }),
-        word("agent.acp.agents", switch, |s, w| {
-            s.agents = w == "on";
-            true
-        }),
+        toggle("agent.mcp.expose", |s, on| s.expose = on),
+        toggle("agent.acp.expose", |s, on| s.acp = on),
+        toggle("agent.acp.agents", |s, on| s.agents = on),
         num("agent.budget.spend_microusd", 0..=1_000_000_000, |s, v| {
             // Millionths of a US dollar in the file. 0 is a cap of nothing: the turn after any
             // reported charge stops (a free or unpriced turn reports none).

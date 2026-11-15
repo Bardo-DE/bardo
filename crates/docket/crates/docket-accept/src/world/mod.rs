@@ -128,9 +128,9 @@ pub enum AcpSetting {
     /// No settings file: the feature is off.
     #[default]
     Off,
-    /// `[agent.acp] expose = "on"`.
+    /// `[agent.acp] expose = true`.
     On,
-    /// `[agent.acp] agents = "on"`: intentd counts the host of an external agent
+    /// `[agent.acp] agents = true`: intentd counts the host of an external agent
     /// (`org.quire.AcpAgent`) and `agents.toml` may start programs.
     Agents,
 }
@@ -139,8 +139,8 @@ pub enum AcpSetting {
 pub fn settings_toml(acp: AcpSetting) -> String {
     match acp {
         AcpSetting::Off => String::new(),
-        AcpSetting::On => "[agent.acp]\nexpose = \"on\"\n".to_owned(),
-        AcpSetting::Agents => "[agent.acp]\nagents = \"on\"\n".to_owned(),
+        AcpSetting::On => "[agent.acp]\nexpose = true\n".to_owned(),
+        AcpSetting::Agents => "[agent.acp]\nagents = true\n".to_owned(),
     }
 }
 

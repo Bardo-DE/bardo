@@ -1,6 +1,6 @@
 //! docket-acp as its own process, switched on: the library's `serve` under a name of the
 //! acceptance harness (the packaged binary reads the person's settings file; this is the
-//! setting `agent.acp.expose = "on"` already read).
+//! setting `agent.acp.expose = true` already read).
 
 use std::process::ExitCode;
 

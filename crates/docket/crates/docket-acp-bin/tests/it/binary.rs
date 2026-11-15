@@ -28,8 +28,8 @@ fn run(settings: Option<&str>) -> Output {
 fn it_refuses_to_serve_while_the_setting_is_off_or_missing() {
     for settings in [
         None,
-        Some("[agent.acp]\nexpose = \"off\"\n"),
-        Some("[agent.mcp]\nexpose = \"on\"\n"),
+        Some("[agent.acp]\nexpose = false\n"),
+        Some("[agent.mcp]\nexpose = true\n"),
     ] {
         let out = run(settings);
         assert_eq!(out.status.code(), Some(2), "{settings:?}");
@@ -44,7 +44,7 @@ fn it_refuses_to_serve_while_the_setting_is_off_or_missing() {
 
 #[test]
 fn switched_on_it_serves_through_the_bus_and_stops_when_there_is_none() {
-    let out = run(Some("[agent.acp]\nexpose = \"on\"\n"));
+    let out = run(Some("[agent.acp]\nexpose = true\n"));
     assert_eq!(out.status.code(), Some(1));
     assert!(out.stdout.is_empty());
     assert!(String::from_utf8_lossy(&out.stderr).contains("bus"));

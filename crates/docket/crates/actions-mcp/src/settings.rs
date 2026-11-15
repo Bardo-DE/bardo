@@ -1,9 +1,9 @@
 //! The setting `agent.mcp.expose` (quire design/22 section 3.27) read from docket's own settings
-//! file, `$XDG_CONFIG_HOME/docket/settings.toml`, as `[agent.mcp] expose = "on"`. The schema the
+//! file, `$XDG_CONFIG_HOME/docket/settings.toml`, as `[agent.mcp] expose = true`. The schema the
 //! Settings app draws the row from is `dist/settings/docket.settings.toml`.
 //!
 //! The reading is `docket-settings`' (lenient as design/22 section 2 asks): a missing file, a
-//! missing key or a value that is not `"on"` is off, never an error. A switch
+//! missing key or a value that is not `true` is off, never an error. A switch
 //! that cannot be read is a switch that is not on. This crate may not link a file watcher
 //! (`scripts/check-boundary.sh`), so the edge reads the file again whenever it is asked whether it
 //! is on: a change in the Settings app applies to the next request.
@@ -39,17 +39,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn the_switch_is_on_only_when_the_file_says_on() {
+    fn the_switch_is_on_only_when_the_file_says_true() {
         let cases = [
             ("", false),
-            ("[agent.mcp]\nexpose = \"on\"\n", true),
-            ("[agent.mcp]\nexpose = \"off\"\n", false),
+            ("[agent.mcp]\nexpose = true\n", true),
+            ("[agent.mcp]\nexpose = false\n", false),
             ("[agent.mcp]\nexpose = \"maybe\"\n", false),
-            ("[agent.mcp]\nexpose = true\n", false),
+            ("[agent.mcp]\nexpose = \"on\"\n", false),
             ("[agent]\npermissions = \"auto\"\n", false),
-            ("[agent.mcp\nexpose = \"on\"", false),
+            ("[agent.mcp\nexpose = true", false),
             (
-                "[agent]\npermissions = \"auto\"\n[agent.mcp]\nexpose = \"on\"\n",
+                "[agent]\npermissions = \"auto\"\n[agent.mcp]\nexpose = true\n",
                 true,
             ),
         ];

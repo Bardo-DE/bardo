@@ -26,11 +26,16 @@ fn path(row: &toml::Table) -> &str {
     row["path"].as_str().expect("path")
 }
 
+/// A kind with no parameters, such as a toggle, has no `v` table.
+static NO_PARAMS: std::sync::LazyLock<toml::Table> = std::sync::LazyLock::new(toml::Table::new);
+
 fn kind_of(row: &toml::Table) -> (&str, &toml::Table) {
     let kind = row["kind"].as_table().expect("kind");
     (
         kind["kind"].as_str().expect("kind name"),
-        kind["v"].as_table().expect("kind v"),
+        kind.get("v")
+            .and_then(toml::Value::as_table)
+            .unwrap_or(&NO_PARAMS),
     )
 }
 
@@ -81,18 +86,18 @@ fn the_schema_has_the_shape_the_settings_app_loads() {
                 assert!((min..=max).contains(&default), "{p}");
                 assert!(!v["unit"].as_str().unwrap_or("").is_empty(), "{p} unit");
             }
-            (kind @ ("toggle" | "segmented"), v) => {
+            ("toggle", _) => {
+                assert!(row["default"].is_bool(), "{p}");
+                assert!(row.get("labels").is_none(), "{p}");
+            }
+            ("segmented", v) => {
                 let words: Vec<&str> = v["variants"]
                     .as_array()
                     .unwrap()
                     .iter()
                     .filter_map(toml::Value::as_str)
                     .collect();
-                if kind == "toggle" {
-                    assert_eq!(words.len(), 2, "{p}");
-                } else {
-                    assert!(words.len() >= 2, "{p}");
-                }
+                assert!(words.len() >= 2, "{p}");
                 assert!(
                     words.contains(&row["default"].as_str().expect("a word default")),
                     "{p}"
@@ -146,6 +151,7 @@ fn the_schema_rows_and_the_key_table_are_the_same_keys_with_the_same_ranges() {
                 assert_eq!(v["min"].as_integer(), Some(*range.start()), "{}", key.path);
                 assert_eq!(v["max"].as_integer(), Some(*range.end()), "{}", key.path);
             }
+            Rule::Toggle { .. } => assert_eq!(kind_of(row).0, "toggle", "{}", key.path),
             Rule::Word { words, set } => {
                 for word in *words {
                     assert!(
@@ -206,6 +212,7 @@ fn merge(into: &mut toml::Table, key: String, value: toml::Value) {
 /// A valid value for the row that is not its default.
 fn other_than_default(row: &toml::Table) -> toml::Value {
     match kind_of(row) {
+        ("toggle", _) => toml::Value::Boolean(!row["default"].as_bool().unwrap()),
         (_, v) if v.contains_key("min") => {
             let default = row["default"].as_integer().unwrap();
             let (min, max) = (
@@ -315,9 +322,10 @@ fn each_key_lands_in_the_typed_value_the_design_names() {
         read(&both, AgentSettings::default()).value.agent.start_mode,
         Mode::Auto
     );
-    assert!(read_one("agent.mcp.expose", word("on")).expose);
-    assert!(read_one("agent.acp.expose", word("on")).acp);
-    assert!(read_one("agent.acp.agents", word("on")).agents);
+    let on = toml::Value::Boolean(true);
+    assert!(read_one("agent.mcp.expose", on.clone()).expose);
+    assert!(read_one("agent.acp.expose", on.clone()).acp);
+    assert!(read_one("agent.acp.agents", on).agents);
     assert_eq!(
         read_one("agent.budget.spend_microusd", int(2_500_000))
             .agent
@@ -332,6 +340,7 @@ fn a_bad_value_falls_back_for_that_key_alone() {
     for row in rows() {
         let p = path(&row);
         let bad: Vec<toml::Value> = match kind_of(&row) {
+            ("toggle", _) => vec![toml::Value::String("on".into()), toml::Value::Integer(1)],
             (_, v) if v.contains_key("min") => vec![
                 toml::Value::Integer(v["min"].as_integer().unwrap() - 1),
                 toml::Value::Integer(v["max"].as_integer().unwrap() + 1),
@@ -387,7 +396,7 @@ fn a_fallback_is_the_base_value_not_the_default() {
 
 #[test]
 fn a_file_that_is_not_toml_keeps_every_base_value_and_says_so() {
-    let loaded = read("[agent.mcp\nexpose = \"on\"", AgentSettings::default());
+    let loaded = read("[agent.mcp\nexpose = true", AgentSettings::default());
     assert_eq!(loaded.value, AgentSettings::default());
     assert_eq!(loaded.fallbacks.len(), 1);
     assert!(matches!(loaded.fallbacks[0].why, Why::NotToml(_)));
@@ -396,7 +405,7 @@ fn a_file_that_is_not_toml_keeps_every_base_value_and_says_so() {
 #[test]
 fn unknown_keys_are_reported_and_version_is_not_one() {
     let loaded = read(
-        "version = 1\n[agent.budget]\nbogus = 1\n[agent.mcp]\nexpose = \"on\"\n[other]\nx = 1\n",
+        "version = 1\n[agent.budget]\nbogus = 1\n[agent.mcp]\nexpose = true\n[other]\nx = 1\n",
         AgentSettings::default(),
     );
     assert!(loaded.value.expose);
@@ -418,7 +427,7 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
         (&home, "[agent.budget]\nspend_microusd = 5\n"),
         (
             &etc,
-            "[agent.budget]\nspend_microusd = 9\n[agent.mcp]\nexpose = \"on\"\n",
+            "[agent.budget]\nspend_microusd = 9\n[agent.mcp]\nexpose = true\n",
         ),
     ] {
         std::fs::create_dir_all(dir.path().join("docket")).unwrap();

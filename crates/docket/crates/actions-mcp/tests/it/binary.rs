@@ -110,11 +110,7 @@ fn configure(dir: &Path, text: &str) {
 fn switch_on(dir: &Path) {
     let config = dir.join("config/docket");
     std::fs::create_dir_all(&config).expect("dirs");
-    std::fs::write(
-        config.join("settings.toml"),
-        "[agent.mcp]\nexpose = \"on\"\n",
-    )
-    .expect("settings");
+    std::fs::write(config.join("settings.toml"), "[agent.mcp]\nexpose = true\n").expect("settings");
 }
 
 async fn client_over_stdio(edge: &mut Edge) -> RunningService<RoleClient, ()> {
