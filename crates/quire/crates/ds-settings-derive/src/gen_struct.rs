@@ -6,7 +6,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
 
-use crate::attrs::{AgentMark, EndsAttr, FieldAttrs, FootnoteAttr, container_attrs, field_attrs};
+use crate::attrs::{EndsAttr, FieldAttrs, FootnoteAttr, container_attrs, field_attrs};
 use crate::shape::{Shape, shape_of};
 
 pub(crate) fn expand(input: &syn::DeriveInput, data: &syn::DataStruct) -> syn::Result<TokenStream> {
@@ -42,7 +42,7 @@ pub(crate) fn expand(input: &syn::DeriveInput, data: &syn::DataStruct) -> syn::R
             section,
             unit,
             advanced,
-            agent,
+            agent_settable,
             hint,
             control,
             note,
@@ -58,12 +58,11 @@ pub(crate) fn expand(input: &syn::DeriveInput, data: &syn::DataStruct) -> syn::R
         } else {
             quote! { ::ds_settings::schema::Exposure::Basic }
         };
-        let agent_setting = match agent {
-            AgentMark::Settable => {
-                guards.push(never_settable_guard(&path));
-                quote! { ::ds_settings::schema::AgentSetting::Settable }
-            }
-            AgentMark::HandsOff => quote! { ::ds_settings::schema::AgentSetting::HandsOff },
+        let agent_setting = if agent_settable {
+            guards.push(never_settable_guard(&path));
+            quote! { ::ds_settings::schema::AgentSetting::Settable }
+        } else {
+            quote! { ::ds_settings::schema::AgentSetting::HandsOff }
         };
         let shape = shape_of(&field_ident.to_string(), &field.ty, hint)
             .map_err(|reason| syn::Error::new(field.ty.span(), reason))?;
