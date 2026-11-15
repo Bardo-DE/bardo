@@ -12,7 +12,7 @@ use casement_core::window::{SpacePlace, WindowState};
 use casement_testclient::ClientError;
 use casement_testclient::quire::desktop::{
     AppLifeKind, AppRequest, AppVisibility, Assign, DesktopWatch, ManagerError, PlaceKind,
-    PlaceTarget, PlacementMark, Presence, ProofKind, SpaceKind, SpaceRequest, Toggle,
+    PlaceTarget, PlacementMark, ProofKind, SpaceKind, SpaceRequest, Toggle,
     WindowRequest, WindowStateKind,
 };
 use casement_testclient::quire::window::WindowManager;
@@ -83,7 +83,7 @@ fn live_spaces(watch: &DesktopWatch) -> usize {
     watch
         .spaces()
         .iter()
-        .filter(|space| space.presence == Presence::Here)
+        .filter(|space| !space.gone)
         .count()
 }
 
@@ -336,7 +336,7 @@ fn the_shells_requests_reach_the_model() {
     ask(&mut fixture, &mut watch, |w| {
         w.window(1, WindowRequest::FullScreen(Toggle::Off))
     });
-    assert_eq!(watch.spaces()[1].presence, Presence::Gone);
+    assert!(watch.spaces()[1].gone);
     assert_eq!(live_spaces(&watch), 1);
 
     // create_space, to_space, space.activate and move_to
@@ -461,11 +461,11 @@ fn the_manager_follows_what_goes_away() {
 
     tops[0].destroy();
     settle(&mut fixture, &mut watch);
-    assert_eq!(watch.windows()[0].presence, Presence::Gone);
-    assert_eq!(watch.windows()[1].presence, Presence::Here);
+    assert!(watch.windows()[0].gone);
+    assert!(!watch.windows()[1].gone);
     assert_eq!(
-        watch.apps()[0].presence,
-        Presence::Here,
+        watch.apps()[0].gone,
+        false,
         "the app still runs"
     );
 
@@ -474,7 +474,7 @@ fn the_manager_follows_what_goes_away() {
     ask(&mut fixture, &mut watch, |w| {
         w.space(1, SpaceRequest::Remove)
     });
-    assert_eq!(watch.spaces()[1].presence, Presence::Gone);
+    assert!(watch.spaces()[1].gone);
     assert_eq!(live_spaces(&watch), 1);
 
     ask(&mut fixture, &mut watch, |w| w.stop());
@@ -489,10 +489,10 @@ fn the_manager_follows_what_goes_away() {
 
     fixture.disconnect(public);
     settle(&mut fixture, &mut watch);
-    assert_eq!(watch.windows()[1].presence, Presence::Gone);
+    assert!(watch.windows()[1].gone);
     assert_eq!(
-        watch.apps()[0].presence,
-        Presence::Gone,
+        watch.apps()[0].gone,
+        true,
         "a stopped manager still hears that what it has ended"
     );
 }

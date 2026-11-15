@@ -11,16 +11,6 @@ use wayland_protocols::ext::foreign_toplevel_list::v1::client::{
     ext_foreign_toplevel_list_v1::{self, ExtForeignToplevelListV1},
 };
 
-/// Whether a listed window is still open.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum Listing {
-    /// Open.
-    #[default]
-    Open,
-    /// The compositor sent `closed`.
-    Closed,
-}
-
 /// One window as the list announced it (updates apply at `done`).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Listed {
@@ -31,7 +21,7 @@ pub struct Listed {
     /// The app id after the last `done`.
     pub app_id: String,
     /// Whether it is still open.
-    pub listing: Listing,
+    pub closed: bool,
 }
 
 /// A handle and what it said so far (pending until `done`).
@@ -129,7 +119,7 @@ impl Dispatch<ExtForeignToplevelListV1, ()> for Roster {
                     identifier: String::new(),
                     title: String::new(),
                     app_id: String::new(),
-                    listing: Listing::Open,
+                    closed: false,
                 };
                 state.entries.push(Entry {
                     handle: toplevel,
@@ -173,8 +163,8 @@ impl Dispatch<ExtForeignToplevelHandleV1, ()> for Roster {
             }
             ext_foreign_toplevel_handle_v1::Event::Done => entry.shown = entry.pending.clone(),
             ext_foreign_toplevel_handle_v1::Event::Closed => {
-                entry.pending.listing = Listing::Closed;
-                entry.shown.listing = Listing::Closed;
+                entry.pending.closed = true;
+                entry.shown.closed = true;
             }
             _ => {}
         }

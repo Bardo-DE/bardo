@@ -7,7 +7,7 @@ use casement_core::geometry::PhysicalSize;
 use casement_core::policy::ConnectionRole;
 use casement_core::privilege::Verdict;
 use casement_protocols::vocab::{Answer, Power};
-use casement_testclient::manage::foreign_toplevel_list::{Listed, Listing, ToplevelList};
+use casement_testclient::manage::foreign_toplevel_list::{Listed, ToplevelList};
 use casement_testclient::surface::toplevel::{Toplevel, WmBase};
 use casement_testclient::{Pattern, ShmBuffer, shm_buffer};
 use casement_testkit::{ASKED_PROGRAM, ClientId, Fixture, FixtureSpec};
@@ -42,13 +42,13 @@ fn windows_are_listed_and_closed() {
     fixture.pump();
     list.pump().expect("pump");
     let window = windows(&fixture)[0];
-    let listed = |title: &str, listing: Listing| Listed {
+    let listed = |title: &str, closed: bool| Listed {
         identifier: format!("w{}", window.0),
         title: title.to_owned(),
         app_id: "org.example.Mail".to_owned(),
-        listing,
+        closed,
     };
-    assert_eq!(list.listed(), [listed("Inbox", Listing::Open)]);
+    assert_eq!(list.listed(), [listed("Inbox", false)]);
 
     top.set_title("Drafts");
     top.surface.commit();
@@ -56,14 +56,14 @@ fn windows_are_listed_and_closed() {
     list.pump().expect("pump");
     assert_eq!(
         list.listed(),
-        [listed("Drafts", Listing::Open)],
+        [listed("Drafts", false)],
         "a new title is announced under the same identifier"
     );
 
     top.destroy();
     fixture.pump();
     list.pump().expect("pump");
-    assert_eq!(list.listed(), [listed("Drafts", Listing::Closed)]);
+    assert_eq!(list.listed(), [listed("Drafts", true)]);
 }
 
 // ---- Per-app consent (`Power::Windows`): smithay serves this protocol whole, so it holds a

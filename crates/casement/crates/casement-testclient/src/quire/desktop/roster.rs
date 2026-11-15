@@ -34,16 +34,6 @@ fn known<T>(value: WEnum<T>) -> Option<T> {
     }
 }
 
-/// Whether an object is still there or its last event (`closed`, `removed`) arrived.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum Presence {
-    /// No last event yet.
-    #[default]
-    Here,
-    /// The last event arrived.
-    Gone,
-}
-
 /// An app as announced (a burst applies at `done`; these are the latest values).
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct AppView {
@@ -69,7 +59,7 @@ pub struct AppView {
     /// How many `done` events arrived.
     pub dones: usize,
     /// Whether `closed` arrived.
-    pub presence: Presence,
+    pub gone: bool,
 }
 
 /// A window's rectangle and scale as announced.
@@ -127,7 +117,7 @@ pub struct WindowView {
     /// How many `done` events arrived.
     pub dones: usize,
     /// Whether `closed` arrived.
-    pub presence: Presence,
+    pub gone: bool,
 }
 
 /// A Space as announced.
@@ -148,7 +138,7 @@ pub struct SpaceView {
     /// How many `done` events arrived.
     pub dones: usize,
     /// Whether `removed` arrived.
-    pub presence: Presence,
+    pub gone: bool,
 }
 
 /// The active app and key window as announced.
@@ -340,7 +330,7 @@ impl Dispatch<QuireDesktopAppV1, ()> for Roster {
             app::Event::Attention { level } => view.attention = known(level),
             app::Event::Mru { rank } => view.mru = Some(rank),
             app::Event::Done => view.dones += 1,
-            app::Event::Closed => view.presence = Presence::Gone,
+            app::Event::Closed => view.gone = true,
             _ => {}
         }
     }
@@ -401,7 +391,7 @@ impl Dispatch<QuireDesktopWindowV1, ()> for Roster {
             window::Event::Placement { mark } => seen.view.placement = known(mark),
             window::Event::MenuPath { path } => seen.view.menu_path = Some(path),
             window::Event::Done => seen.view.dones += 1,
-            window::Event::Closed => seen.view.presence = Presence::Gone,
+            window::Event::Closed => seen.view.gone = true,
             _ => {}
         }
     }
@@ -428,7 +418,7 @@ impl Dispatch<QuireDesktopSpaceV1, ()> for Roster {
             space::Event::Output { .. } => view.outputs += 1,
             space::Event::Activity { activity } => view.activity = known(activity),
             space::Event::Done => view.dones += 1,
-            space::Event::Removed => view.presence = Presence::Gone,
+            space::Event::Removed => view.gone = true,
             _ => {}
         }
     }

@@ -18,7 +18,7 @@ use wayland_client::protocol::wl_output::WlOutput;
 use wayland_client::protocol::wl_seat::WlSeat;
 use wayland_protocols::ext::foreign_toplevel_list::v1::client::ext_foreign_toplevel_list_v1::ExtForeignToplevelListV1;
 
-pub use self::roster::{ActiveView, AppView, GeometryView, Presence, SpaceView, WindowView};
+pub use self::roster::{ActiveView, AppView, GeometryView, SpaceView, WindowView};
 pub use casement_protocols::client::quire_desktop_v1::quire_desktop_app_v1::{
     AppLifeKind, AppVisibility, Attention, ProofKind,
 };

@@ -42,17 +42,7 @@ pub struct WlrListed {
     /// How many `wl_output`s it is on after the last `done`.
     pub outputs: usize,
     /// Whether the compositor sent `closed`.
-    pub closed: Closing,
-}
-
-/// Whether a listed window was withdrawn.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum Closing {
-    /// Still listed.
-    #[default]
-    Open,
-    /// The compositor sent `closed`.
-    Closed,
+    pub closed: bool,
 }
 
 /// A handle and what it said so far.
@@ -280,8 +270,8 @@ impl Dispatch<ZwlrForeignToplevelHandleV1, ()> for Roster {
                 entry.shown = entry.pending.clone();
             }
             zwlr_foreign_toplevel_handle_v1::Event::Closed => {
-                entry.pending.closed = Closing::Closed;
-                entry.shown.closed = Closing::Closed;
+                entry.pending.closed = true;
+                entry.shown.closed = true;
             }
             _ => {}
         }

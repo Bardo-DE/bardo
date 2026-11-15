@@ -11,7 +11,7 @@ use casement_core::privilege::{UnixSeconds, Verdict};
 use casement_core::window::WindowState;
 use casement_core::{Event, WindowId};
 use casement_protocols::vocab::{Answer, Emphasis, Power};
-use casement_testclient::manage::wlr_toplevel::{Closing, ToplevelWatch, WlrListed, WlrState};
+use casement_testclient::manage::wlr_toplevel::{ToplevelWatch, WlrListed, WlrState};
 use casement_testclient::surface::toplevel::{Toplevel, WmBase};
 use casement_testclient::{Pattern, ShmBuffer, shm_buffer};
 use casement_testkit::{ASKED_PROGRAM, ClientId, Fixture, FixtureSpec};
@@ -100,7 +100,7 @@ fn a_window_is_listed_with_its_state_and_withdrawn_when_it_closes() {
         app_id: "org.example.Mail".to_owned(),
         states: states_of(&fixture, window),
         outputs: 1,
-        closed: Closing::Open,
+        closed: false,
     };
     assert_eq!(watch.listed(), std::slice::from_ref(&want));
 
@@ -120,7 +120,7 @@ fn a_window_is_listed_with_its_state_and_withdrawn_when_it_closes() {
     settle(&mut fixture, &mut watch);
     let after = watch.listed();
     assert_eq!(after.len(), 1);
-    assert_eq!(after[0].closed, Closing::Closed);
+    assert!(after[0].closed);
     assert_eq!(after[0].title, "Drafts");
 }
 
