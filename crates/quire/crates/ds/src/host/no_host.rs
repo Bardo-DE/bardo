@@ -3,7 +3,7 @@
 use crate::host::caret::{Caret, FieldSelection, InitialCaret};
 use crate::host::document::DocumentHost;
 use crate::host::focused::Focused;
-use crate::host::found::{Found, SameNode};
+use crate::host::found::Found;
 use crate::host::hand_back::HandBack;
 use crate::host::measure::Measured;
 use crate::host::parts::{
@@ -89,7 +89,7 @@ impl GeometryHost for NoHost {
         Found::Unreachable
     }
 
-    fn same(&self, _: &MountedData, _: &MountedData) -> SameNode {
-        SameNode::Different
+    fn same(&self, _: &MountedData, _: &MountedData) -> bool {
+        false
     }
 }

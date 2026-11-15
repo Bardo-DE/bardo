@@ -172,6 +172,7 @@ fn kind_expr(shape: Shape, ty: &syn::Type, unit: Option<&str>) -> TokenStream {
             };
             quote! { ::ds_settings::schema::KeyKind::Bounded { min: #min, max: #max, unit: #unit } }
         }
+        Shape::Toggle => quote! { ::ds_settings::schema::KeyKind::Toggle },
         Shape::Text => quote! { ::ds_settings::schema::KeyKind::Text },
         Shape::Provided { capability } => quote! {
             ::ds_settings::schema::KeyKind::Provided { capability: #capability.to_owned() }

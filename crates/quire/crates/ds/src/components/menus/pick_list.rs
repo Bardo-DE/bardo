@@ -32,7 +32,7 @@ use crate::focus::request::use_focus_request;
 use crate::host::caret::InitialCaret;
 use crate::host::measure::{Anchor, MountedRef};
 use crate::root::common::Common;
-use crate::root::pointer_trail::{Movement, movement_of, use_pointer_trail};
+use crate::root::pointer_trail::{moved_to, use_pointer_trail};
 use dioxus::prelude::*;
 use ds_core::geometry::{
     placement::{Align, Placement, Side},
@@ -121,7 +121,7 @@ pub fn PickList<T: Clone + PartialEq + 'static>(
         let point = {
             let (live, selection) = (live.clone(), selection.clone());
             move |(index, to): (usize, Point)| {
-                let moved = movement_of(trail, to) == Movement::Moved;
+                let moved = moved_to(trail, to);
                 let enabled = live.get(index) == Some(&Availability::Enabled);
                 if moved && enabled && index != current {
                     in_view.pointed(index, revision);

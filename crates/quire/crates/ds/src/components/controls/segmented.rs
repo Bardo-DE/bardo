@@ -21,7 +21,7 @@ use crate::components::content::title_tip::use_tip;
 use crate::components::controls::choice::Choice;
 use crate::components::controls::glyph::glyph_size;
 use crate::components::controls::press::{ActivationKeys, activates, disabled, use_pressing};
-use crate::components::controls::segmented_thumb::{SEGMENT_PX, ThumbOver, group_style, index_of};
+use crate::components::controls::segmented_thumb::{SEGMENT_PX, group_style, index_of, thumb_over};
 use crate::focus::press_focus::on_click;
 use crate::root::common::Common;
 use crate::stack::roving::{Rove, Roving, Wrap};
@@ -182,7 +182,7 @@ pub fn SegmentedControl<T: Clone + PartialEq + 'static>(
                 Segment {
                     key: "{index}",
                     selected: tracking.selects(&choice.value),
-                    thumb: if one { Some(ThumbOver::of(thumb.position(), index)) } else { None },
+                    thumb: if one { Some(thumb_over(thumb.position(), index)) } else { None },
                     enabled: choice.availability,
                     group: availability,
                     size,
@@ -213,7 +213,7 @@ pub fn SegmentedControl<T: Clone + PartialEq + 'static>(
 fn Segment<T: Clone + PartialEq + 'static>(
     choice: Choice<T>,
     selected: bool,
-    thumb: Option<ThumbOver>,
+    thumb: Option<bool>,
     enabled: Availability,
     group: Availability,
     size: ControlSize,
@@ -224,11 +224,7 @@ fn Segment<T: Clone + PartialEq + 'static>(
     let tip = use_tip(choice.name.clone().filter(|_| image_only).map(TipText::new));
     let live = enabled == Availability::Enabled && group == Availability::Enabled;
     let checked = if selected { Check::On } else { Check::Off };
-    let under = match (thumb, selected) {
-        (Some(over), _) => over.slug(),
-        (None, true) => ThumbOver::Under.slug(),
-        (None, false) => ThumbOver::Clear.slug(),
-    };
+    let under = if thumb.unwrap_or(selected) { "under" } else { "clear" };
     rsx! {
         button {
             r#type: "button",

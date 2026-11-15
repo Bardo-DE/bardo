@@ -4,7 +4,6 @@ use crate::pages::Section;
 use dioxus::prelude::*;
 use ds::components::lists::row::size::RowSize;
 use ds::components::lists::table::model::{CellAlign, Sort, SortDirection, TableColumn, TableRow};
-use ds::components::lists::table::rules::ColumnRules;
 use ds::components::lists::table::view::Table;
 use ds::prelude::*;
 
@@ -138,7 +137,7 @@ pub fn TableSection() -> Element {
     let mut cursor = use_signal(|| Some("Notes from the sync"));
     let files = ordered(&sort());
     rsx! {
-        Section { title: "Table", note: "NSTableView: a press on a header sorts by it (again to flip) and the indicator follows; drag the edge between two headers to resize a column, held at its least, the last column taking the rest; rows are not striped; the arrows move the selection; the third table draws a hairline between columns (ColumnRules::Hairline), and a VirtualTable also draws one under the header once its rows scroll.",
+        Section { title: "Table", note: "NSTableView: a press on a header sorts by it (again to flip) and the indicator follows; drag the edge between two headers to resize a column, held at its least, the last column taking the rest; rows are not striped; the arrows move the selection; the third table draws a hairline between columns (column_rules), and a VirtualTable also draws one under the header once its rows scroll.",
             div { class: "g-list", style: "width:620px",
                 Table::<&'static str, Column> {
                     label: "Files",
@@ -174,7 +173,7 @@ pub fn TableSection() -> Element {
                     sort: Some(Sort { column: Column::Name, direction: SortDirection::Ascending }),
                     on_sort: |_| {},
                     selection: vec![],
-                    rules: ColumnRules::Hairline,
+                    column_rules: true,
                     onselect: |_| {},
                 }
             }

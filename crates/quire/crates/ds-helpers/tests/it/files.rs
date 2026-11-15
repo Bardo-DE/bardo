@@ -11,7 +11,6 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::{Arc, Barrier};
-use std::time::Duration;
 
 /// One test's own directory under the system temp dir, removed on drop.
 struct Scratch(PathBuf);
@@ -265,7 +264,7 @@ fn writers_racing_for_one_path_never_publish_a_torn_file() {
                     bytes.iter().all(|&b| b == bytes[0]),
                     "a mixed file was published"
                 );
-                std::thread::sleep(Duration::from_micros(200));
+                std::thread::yield_now();
             }
         })
     };

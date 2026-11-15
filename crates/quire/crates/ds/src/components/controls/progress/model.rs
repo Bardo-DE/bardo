@@ -20,17 +20,6 @@ pub enum ProgressStyle {
     Pie,
 }
 
-/// Whether a ring is closed or leaves a notch at twelve (`data-gap`): a charging battery's ring
-/// keeps the notch for the bolt its owner lays over it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum RingGap {
-    /// All the way round.
-    #[default]
-    Closed,
-    /// Round from the notch's far side to its near side.
-    Notched,
-}
-
 /// How far the work has come: a share, or an operation without one.
 ///
 /// `Unknown` carries the [`Operation`] that drives the loop: a spinner or a barber pole exists

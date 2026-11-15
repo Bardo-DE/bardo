@@ -205,7 +205,7 @@ fn entries(support: [bool; 4]) -> Vec<MenuItem<WindowTile>> {
             key: None,
             hint: None,
             check: None,
-            after: AfterPick::Close,
+            keep_open: false,
             text: Default::default(),
             availability: if support {
                 Availability::Enabled

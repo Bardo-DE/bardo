@@ -4,7 +4,7 @@ use ds::components::content::provider_mark::MarkProvider;
 use ds::prelude::Check;
 use ds_shell::accounts::hidden::Hidden;
 use ds_shell::accounts::model::{
-    AccountChoice, AllowScope, Attempt, ChoiceKey, ConsentAnswer, CopyState, FieldProblem,
+    AccountChoice, AllowScope, Attempt, ChoiceKey, ConsentAnswer, FieldProblem,
     FieldRole, FieldText, FormField, Limitation, ProblemKind, ProviderEntry, ProviderKey,
     ProviderPick, ServiceKey, ServiceLine, ServiceOffer, SignInFault,
 };
@@ -292,7 +292,7 @@ fn every_sheet_view_becomes_the_props_of_its_part() {
                 provider: "Google".to_owned(),
                 shown: "login.example.org/\u{2026}".to_owned(),
                 url: "https://login.example.org/auth?x=1".to_owned(),
-                copied: CopyState::Idle,
+                copied: false,
             }),
         ),
         (
@@ -307,7 +307,7 @@ fn every_sheet_view_becomes_the_props_of_its_part() {
                 provider: "Microsoft".to_owned(),
                 code: "ABCD-EFGH".to_owned(),
                 url: "https://example.org/device".to_owned(),
-                copied: CopyState::Idle,
+                copied: false,
             }),
         ),
         (
@@ -454,7 +454,7 @@ fn the_draft_reaches_the_props() {
     let Some(Step::Browser { copied, .. }) = shown(browser, vec![SheetAction::Copied]) else {
         panic!("no browser step");
     };
-    assert_eq!(copied, CopyState::Copied);
+    assert!(copied);
     assert_eq!(CopyMark::Copied, CopyMark::Copied);
 }
 

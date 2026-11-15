@@ -1,8 +1,6 @@
 //! The pure half of the segmented control's selection thumb (design/30 section 2.3): where the
 //! thumb stands, which labels it covers, and the inline style that places it.
 
-use ds_core::word::Word;
-
 /// About how wide a segment draws, in pixels: what one of the thumb's units is when a hand's
 /// speed is scaled into it and when it is close enough to rest.
 pub(crate) const SEGMENT_PX: f32 = 64.0;
@@ -11,24 +9,11 @@ pub(crate) const SEGMENT_PX: f32 = 64.0;
 /// segment is under a pixel.
 const IN_CELL: f32 = 0.01;
 
-/// Whether the thumb is over a segment: `data-thumb`, which picks the label's ink.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-pub(crate) enum ThumbOver {
-    /// The thumb covers more than half of this segment: the label takes the thumb's ink.
-    Under,
-    /// The label stands on the track.
-    Clear,
-}
-
-impl ThumbOver {
-    /// Where the thumb, at `position` segments from the start, stands against segment `index`.
-    pub(crate) fn of(position: f32, index: usize) -> ThumbOver {
-        if (position - index as f32).abs() < 0.5 {
-            ThumbOver::Under
-        } else {
-            ThumbOver::Clear
-        }
-    }
+/// Whether the thumb, at `position` segments from the start, is over segment `index`: it covers
+/// more than half of it and the label takes the thumb's ink (`data-thumb="under"`; otherwise
+/// `"clear"`, the label stands on the track).
+pub(crate) fn thumb_over(position: f32, index: usize) -> bool {
+    (position - index as f32).abs() < 0.5
 }
 
 /// The group's inline style: `count` segments, the thumb's home cell (`at`, 1-based for
@@ -49,23 +34,23 @@ pub(crate) fn index_of<T: PartialEq>(values: &[T], value: &T) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use super::{ThumbOver, group_style, index_of};
+    use super::{group_style, index_of, thumb_over};
 
     #[test]
     fn a_label_takes_the_thumbs_ink_only_while_the_thumb_is_over_it() {
-        const CASES: &[(f32, usize, ThumbOver)] = &[
-            (0.0, 0, ThumbOver::Under),
-            (0.0, 1, ThumbOver::Clear),
-            (0.49, 0, ThumbOver::Under),
-            (0.51, 0, ThumbOver::Clear),
-            (0.51, 1, ThumbOver::Under),
-            (1.2, 1, ThumbOver::Under),
-            (1.2, 2, ThumbOver::Clear),
+        const CASES: &[(f32, usize, bool)] = &[
+            (0.0, 0, true),
+            (0.0, 1, false),
+            (0.49, 0, true),
+            (0.51, 0, false),
+            (0.51, 1, true),
+            (1.2, 1, true),
+            (1.2, 2, false),
             // An overshoot past the last segment still covers it.
-            (2.3, 2, ThumbOver::Under),
+            (2.3, 2, true),
         ];
         for &(position, index, want) in CASES {
-            assert_eq!(ThumbOver::of(position, index), want, "{position} {index}");
+            assert_eq!(thumb_over(position, index), want, "{position} {index}");
         }
     }
 

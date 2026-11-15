@@ -30,7 +30,6 @@ use ds::components::content::image_source::{ImageSize, ImageSource};
 use ds::components::content::picture_fit::picture_style;
 use ds::components::content::text_runs::TextLine;
 use ds::components::controls::button_model::{Bezel, ImagePosition};
-use ds::components::controls::press::Propagation;
 use ds::components::overlays::swipe_glue::SwipeGlue;
 use ds::motion::anim::Anim;
 use ds::motion::presence::spec::PresenceSpec;
@@ -262,7 +261,7 @@ fn action_row(actions: Vec<ThumbAction>) -> Element {
                         bezel: Bezel::Toolbar, image: ImagePosition::Only,
                         icon: action.icon,
                         label: action.label.plain_text(),
-                        propagation: Propagation::Stop,
+                        stop_propagation: true,
                         onclick: move |_| action.onpress.call(()),
                     }
                 }

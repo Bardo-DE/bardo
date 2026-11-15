@@ -27,7 +27,7 @@ fn item(value: u8, title: &str) -> MenuItem<u8> {
         check: None,
         availability: Availability::Enabled,
         hint: None,
-        after: AfterPick::Close,
+        keep_open: false,
         text: Default::default(),
     }
 }

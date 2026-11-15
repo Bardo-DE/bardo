@@ -33,7 +33,7 @@ fn Page() -> Element {
             div {
                 onkeydown: on_action(keys, chordkit::Context::Normal, move |_| {
                     actions += 1;
-                    ds::keys::ActionTaken::Yes
+                    true
                 }),
                 ShortcutField {
                     label: "Open",

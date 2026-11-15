@@ -4,7 +4,7 @@
 //! the list's content from the layout and sets the list's offset, nearest edge first
 //! (`ds::host::reveal::nearest_scroll`), with no animation.
 
-use crate::node_ref::{NodeRef, Written};
+use crate::node_ref::NodeRef;
 use blitz_dom::{BaseDocument, NodeId, ScrollBehavior};
 use dioxus::prelude::MountedData;
 use ds::host::reveal::{ScrollSpan, Scrolled, nearest_scroll};
@@ -26,8 +26,8 @@ pub(crate) fn reveal(scroller: &MountedData, item: &MountedData) -> Scrolled {
         doc.scroll_to(list.node, x, y, ScrollBehavior::Instant);
         doc.shell_provider.request_redraw();
     }) {
-        Written::Done => Scrolled::Done,
-        Written::Busy => Scrolled::Busy,
+        Ok(()) => Scrolled::Done,
+        Err(_) => Scrolled::Busy,
     }
 }
 

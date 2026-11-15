@@ -15,7 +15,7 @@ use ds::base::word::Word;
 use ds::components::content::label::{Label, LabelRole, LabelStyle};
 use ds::components::content::status::battery_state::{BatteryPower, BatteryState};
 use ds::components::content::text_runs::TextLine;
-use ds::components::controls::progress::model::{Progress, ProgressStyle, RingGap};
+use ds::components::controls::progress::model::{Progress, ProgressStyle};
 use ds::components::controls::progress::view::ProgressIndicator;
 use ds::root::common::Common;
 
@@ -50,10 +50,10 @@ pub fn BatteryRing(
     let class = common.class("ds-battery-ring");
     let data = common.data_attributes();
     let charging = state.power == BatteryPower::Charging;
-    let (gap, tone) = match (charging, state.is_low()) {
-        (true, _) => (RingGap::Notched, "ok"),
-        (false, true) => (RingGap::Closed, "low"),
-        (false, false) => (RingGap::Closed, "ok"),
+    let (notched, tone) = match (charging, state.is_low()) {
+        (true, _) => (true, "ok"),
+        (false, true) => (false, "low"),
+        (false, false) => (false, "ok"),
     };
     let power = match state.power {
         BatteryPower::Battery => "battery",
@@ -72,7 +72,7 @@ pub fn BatteryRing(
                 ProgressIndicator {
                     style: ProgressStyle::Ring,
                     progress: Progress::Known(state.level),
-                    gap,
+                    notched,
                     centre: given(children),
                     common: Common { aria_label: Some(label.plain_text()), ..Common::default() },
                 }

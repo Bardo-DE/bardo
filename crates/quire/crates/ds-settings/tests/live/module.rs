@@ -41,9 +41,7 @@ pub fn schema() -> LiveSchema {
         key: vec![
             spec(
                 TOGGLE,
-                KeyKind::Toggle {
-                    variants: ["on".to_owned(), "off".to_owned()],
-                },
+                KeyKind::Toggle,
                 toml::Value::Boolean(true),
             ),
             spec(CLIENT, KeyKind::Text, toml::Value::String(String::new())),

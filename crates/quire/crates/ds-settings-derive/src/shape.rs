@@ -20,6 +20,8 @@ pub(crate) enum Shape {
     /// The field's type is `String`, `PathBuf` or `Cow<str>` (any path ending in one), or
     /// `#[settings(text)]` said so.
     Text,
+    /// The field's type is exactly `bool`: a switch, stored as TOML `true` or `false`.
+    Toggle,
     /// The field's type is exactly `Hex` (any path ending in that segment).
     Colour,
     /// The field's type is `Vec<String>` (or `Vec<PathBuf>`, `Vec<Cow<str>>`): a list of text.
@@ -87,6 +89,7 @@ pub(crate) fn shape_of(field: &str, ty: &syn::Type, hint: KindHint) -> Result<Sh
     let name = segment.ident.to_string();
     Ok(match name.as_str() {
         _ if is_text_type(ty) => Shape::Text,
+        "bool" if type_path.path.segments.len() == 1 => Shape::Toggle,
         "Hex" => Shape::Colour,
         "Vec" => match first_type(&segment.arguments) {
             Some(inner) if is_text_type(inner) => Shape::TextList,

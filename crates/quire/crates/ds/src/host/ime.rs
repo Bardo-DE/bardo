@@ -19,15 +19,6 @@ pub enum ImeEvent {
     Disabled,
 }
 
-/// Whether the window's IME is on for the surface.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum ImeSwitch {
-    /// On: the surface has the keyboard.
-    On,
-    /// Off: it lost it.
-    Off,
-}
-
 /// A surface's registration for IME events, to cancel as it unmounts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct ImeListener(pub u64);

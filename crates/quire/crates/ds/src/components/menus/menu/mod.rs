@@ -19,4 +19,3 @@ pub(crate) mod scrolling;
 pub(crate) mod submenu;
 pub(crate) mod surface;
 pub(crate) mod tracker;
-pub mod unavailable;

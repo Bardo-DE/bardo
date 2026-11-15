@@ -47,10 +47,3 @@ fn parse_finds_a_variant_by_its_slug_and_nothing_else() {
     assert_eq!(Access::parse("ReadOnly"), None);
     assert_eq!(Access::parse(""), None);
 }
-
-#[test]
-fn a_stored_enum_matches_its_serde_name() {
-    word_matches_serde::<Access>();
-    word_matches_serde::<Stored>();
-    assert_eq!(Stored::SameAsLight.slug(), "same_as_light");
-}

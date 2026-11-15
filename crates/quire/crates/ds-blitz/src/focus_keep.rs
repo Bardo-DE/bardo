@@ -18,7 +18,7 @@
 
 use crate::click_focus::nowhere;
 use crate::focus_chain::{Candidates, Mark};
-use crate::node_ref::{DocRef, NodeRef, Written};
+use crate::node_ref::{DocRef, NodeRef};
 use blitz_dom::{BaseDocument, NodeId};
 use dioxus::prelude::MountedData;
 use std::cell::RefCell;
@@ -188,8 +188,8 @@ pub fn keep(keeper: &mut FocusKeeper, doc: &DocRef) -> Kept {
         crate::focus::caret_after_text(write, next);
         write.shell_provider.request_redraw();
     }) {
-        Written::Done => Kept::Moved,
-        Written::Busy => {
+        Ok(()) => Kept::Moved,
+        Err(_) => {
             // Look again next time, from what was known before this look.
             *keeper = before;
             Kept::Still

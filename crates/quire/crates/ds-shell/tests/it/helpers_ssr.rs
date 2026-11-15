@@ -11,7 +11,6 @@ use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
 use ds::prelude::*;
 use ds_lint::LintConfig;
-use ds_shell::accounts::model::CopyState;
 use ds_shell::helpers::model::HelperPhase;
 use ds_shell::prelude::*;
 
@@ -87,7 +86,7 @@ const SPECIMENS: &[Specimen] = &[
                 },
                 on_install: |_| {},
                 on_dismiss: |_| {},
-                copy: CopyState::Copied,
+                copy: true,
             }
         }
     }),

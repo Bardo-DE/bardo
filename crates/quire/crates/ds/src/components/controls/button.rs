@@ -18,7 +18,7 @@ use crate::components::controls::button_model::{
 };
 use crate::components::controls::glyph::glyph_size;
 use crate::components::controls::press::{
-    ActivationKeys, PressListeners, Propagation, disabled, use_pressing,
+    ActivationKeys, PressListeners, disabled, use_pressing,
 };
 use crate::components::controls::progress::busy::{busy_class, use_busy, use_busy_seen};
 use crate::components::controls::progress::model::{Progress, ProgressStyle};
@@ -80,7 +80,7 @@ fn spinner_size(size: ControlSize) -> ControlSize {
 ///
 /// `swap: IconSwap::CrossFade` fades a changed `icon` into the new one.
 ///
-/// `propagation: Propagation::Stop` keeps the press at the button: its ancestors never hear the
+/// `stop_propagation: true` keeps the press at the button: its ancestors never hear the
 /// click (a header action inside a `<summary>` leaves the `<details>` as it was).
 #[component]
 pub fn Button(
@@ -103,7 +103,7 @@ pub fn Button(
     #[props(default)] title_shortcut: Option<Shortcut>,
     #[props(default)] trailing: Option<Icon>,
     #[props(default)] leading: Option<Leading>,
-    #[props(default)] propagation: Propagation,
+    #[props(default)] stop_propagation: bool,
     #[props(default)] common: Common,
 ) -> Element {
     let seen = use_busy_seen(availability);
@@ -115,7 +115,7 @@ pub fn Button(
     };
     let aria_label = common.aria_label.clone().or(spoken);
     let name = aria_label.clone().unwrap_or_else(|| label.plain_text());
-    let listen = PressListeners::new(onclick).with_propagation(propagation);
+    let listen = PressListeners::new(onclick).with_stop_propagation(stop_propagation);
     let pressing = use_pressing();
     let operation = use_busy(availability);
     let live = availability == Availability::Enabled;

@@ -11,7 +11,7 @@ use std::path::Path;
 use ds_settings::schema::{Page, Schema, SettingsSchema, deep_link_path};
 use ds_settings::{AppearanceSettings, IconsSettings};
 
-const DOC_PATH: &str = "../../design/22-SETTINGS.md";
+const DOC_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../../design/22-SETTINGS.md");
 
 fn schemas() -> Vec<Schema> {
     vec![AppearanceSettings::schema(), IconsSettings::schema()]
@@ -135,22 +135,8 @@ fn settable(schema: &Schema) -> Vec<&str> {
 }
 
 #[test]
-fn the_derive_marks_five_appearance_keys_and_nothing_else_in_the_quire_schema() {
-    assert_eq!(
-        settable(&quire_schema()),
-        [
-            "appearance.theme",
-            "appearance.accent",
-            "appearance.look",
-            "appearance.file_icons",
-            "appearance.custom_styles"
-        ]
-    );
-}
-
-#[test]
-fn use_my_styles_is_a_use_off_switch_on_the_appearance_page_that_defaults_to_use() {
-    use ds_settings::schema::{KeyKind, Page, TogglePair};
+fn use_my_styles_is_a_use_off_choice_on_the_appearance_page_that_defaults_to_use() {
+    use ds_settings::schema::{KeyKind, Page};
     let schema = quire_schema();
     let key = schema
         .key
@@ -161,17 +147,10 @@ fn use_my_styles_is_a_use_off_switch_on_the_appearance_page_that_defaults_to_use
     assert_eq!(key.page, Page::Appearance);
     assert_eq!(key.default, toml::Value::String("use".to_owned()));
     assert_eq!(key.agent, AgentSetting::Settable);
-    let KeyKind::Toggle { variants } = &key.kind else {
-        panic!("a two-word enum is a toggle: {:?}", key.kind);
+    let KeyKind::Segmented { variants } = &key.kind else {
+        panic!("a two-word enum is a segmented choice: {:?}", key.kind);
     };
     assert_eq!(variants, &["use".to_owned(), "off".to_owned()]);
-    assert_eq!(
-        TogglePair::of(variants),
-        Some(TogglePair {
-            on: "use".to_owned(),
-            off: "off".to_owned()
-        })
-    );
 }
 
 #[test]

@@ -3,7 +3,7 @@
 use dioxus::prelude::*;
 use ds::base::selection::Pick;
 use ds::components::controls::scroller::handle::use_scroller;
-use ds::components::lists::table::model::{CellAlign, Sort as TableSort, Sorting, TableColumn};
+use ds::components::lists::table::model::{CellAlign, Sort as TableSort, TableColumn};
 use ds::components::lists::virtual_table::VirtualTable;
 use ds::prelude::{FileIcon, Label, Px, TableLook};
 use files_core::{Entry, Location, Sort, SortKey};
@@ -32,7 +32,7 @@ fn column(id: Column, location: &Location) -> TableColumn<Column> {
     let base = TableColumn::new(id, id.title_in(location), width);
     match id {
         Column::Sort(SortKey::Size) => base.aligned(CellAlign::Trailing),
-        Column::WhereFrom => base.sorting(Sorting::Fixed),
+        Column::WhereFrom => base.sortable(false),
         Column::Sort(_) => base,
     }
 }

@@ -2,9 +2,7 @@
 //! shares of the view, a split inside a split, and the dim of the panes without the focus.
 
 use dioxus::prelude::*;
-use ds::components::chrome::split_view::model::{
-    PaneSize, PaneSpec, Share, SplitAxis, SplitPane, UnfocusedPanes,
-};
+use ds::components::chrome::split_view::model::{PaneSize, PaneSpec, Share, SplitAxis, SplitPane};
 use ds::components::chrome::split_view::view::SplitView;
 use ds::prelude::*;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -77,7 +75,7 @@ fn Page() -> Element {
         Layout::Dimming => rsx! {
             SplitView {
                 label: "Dim",
-                unfocused: UnfocusedPanes::Dim,
+                dim_unfocused: true,
                 panes: vec![SplitPane::new(share(0.5), rsx! { input { class: "one" } })],
                 input { class: "two" }
             }

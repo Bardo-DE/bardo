@@ -32,29 +32,6 @@ impl<T> SuggestionSection<T> {
     }
 }
 
-/// Whether a new list of results highlights its first row.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum InitialHighlight {
-    /// Nothing is highlighted until a key or the pointer asks: Return submits the text.
-    #[default]
-    None,
-    /// The first pickable row is highlighted whenever the results change, so Return picks it
-    /// (Spotlight's top hit).
-    TopHit,
-}
-
-/// What Escape does first when the field holds text and the suggestions are up.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum EscapeOrder {
-    /// The first Escape closes the panel, the second clears the text, the third goes on to the
-    /// window (`NSSearchField`'s way).
-    #[default]
-    ClosePanelFirst,
-    /// The first Escape clears the text (and with it the results), the second goes on to the
-    /// window: Spotlight's way.
-    ClearFirst,
-}
-
 /// Who decides whether the suggestions panel is up.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum Panel {
@@ -69,7 +46,10 @@ pub enum Panel {
 /// How a search field's panel and keys behave, gathered for the pure key step.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub(crate) struct Manner {
-    pub(crate) escape: EscapeOrder,
+    /// The first Escape clears the text (and with it the results), the second goes on to the
+    /// window: Spotlight's way. Otherwise the first closes the panel, the second clears the
+    /// text, the third goes on to the window (`NSSearchField`'s way).
+    pub(crate) clear_first: bool,
     pub(crate) panel: Panel,
     /// The arrow keys stop at the first and last row; otherwise Down from the last row lands on
     /// the first and Up from the first on the last.

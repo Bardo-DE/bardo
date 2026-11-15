@@ -7,7 +7,6 @@
 use dioxus::prelude::*;
 use ds::base::vocab::RowState;
 use ds::components::controls::button_model::{Bezel, ImagePosition};
-use ds::components::controls::press::Propagation;
 use ds::components::lists::row::row::Outline;
 use ds::focus::request::use_focus_request;
 use ds::prelude::*;
@@ -50,7 +49,7 @@ fn Page() -> Element {
                 bezel: Bezel::Toolbar, image: ImagePosition::Only,
                 icon: Icon::Ellipsis,
                 label: "Actions for {path}",
-                propagation: Propagation::Stop,
+                stop_propagation: true,
                 onclick: move |_| note(format!("more:{path}")),
             }
         })

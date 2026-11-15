@@ -60,7 +60,7 @@ use crate::host::signals::HostSignals;
 use crate::keys::use_keys_provider;
 use crate::root::chrome::{FrameTint, Ground, RootChrome};
 use crate::root::extent::RootExtent;
-use crate::root::pointer_trail::{Movement, PointerTrail};
+use crate::root::pointer_trail::PointerTrail;
 use crate::stack::host::{OverlayHost, use_overlays_provider};
 use crate::stack::hover_hub::use_hover_hub_provider;
 use crate::stack::layer_stack::LayerStack;
@@ -179,7 +179,7 @@ pub fn Ds(
             // Last to hear a move: where the pointer is, for a list asking whether it moved.
             onpointermove: move |event: PointerEvent| {
                 // A replayed move (Blitz's hover repair) is not one: it arms nothing.
-                if let Movement::Moved = trail.movement(pointer_point(&event)) {
+                if trail.moved(pointer_point(&event)) {
                     toasts.pointer_moved();
                 }
                 trail.heard(&event);

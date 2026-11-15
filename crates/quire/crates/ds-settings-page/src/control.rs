@@ -1,11 +1,12 @@
 //! The control a key kind gets.
 
-use ds_settings::schema::{KeyKind, TogglePair};
+use ds_settings::schema::KeyKind;
 
 /// The control a key gets.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum Control {
-    Switch(TogglePair),
+    /// A switch, for a `bool`.
+    Switch,
     /// Two short choices, side by side.
     Segments(Vec<String>),
     /// Three or more choices, or a menu: a pop-up button showing the chosen one, as the Mac
@@ -19,9 +20,7 @@ pub(crate) enum Control {
 /// that knows what is installed fills its choices (`KeySpec::offering`), which makes it a menu.
 pub(crate) fn control_of(kind: &KeyKind) -> Control {
     match kind {
-        KeyKind::Toggle { variants } => {
-            TogglePair::of(variants).map_or_else(|| choice(variants.to_vec()), Control::Switch)
-        }
+        KeyKind::Toggle => Control::Switch,
         KeyKind::Segmented { variants } => choice(variants.clone()),
         KeyKind::Menu { variants } => Control::PopUp(variants.clone()),
         KeyKind::Fixed { .. }

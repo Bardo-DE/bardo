@@ -9,7 +9,7 @@ use crate::edit::composition::settle;
 use crate::edit::pointer::EditFocus;
 use crate::focus::soon::{blur_element, focus_landing_told};
 use crate::host::document::DocumentHost;
-use crate::host::ime::{ImeEvent, ImeSwitch};
+use crate::host::ime::ImeEvent;
 use crate::host::measure::BUSY_ATTEMPTS;
 use crate::host::probe::Probe;
 use dioxus::prelude::*;
@@ -37,7 +37,7 @@ pub(crate) fn focused_out(ctx: &SurfaceCtx) {
     ctx.tell(ended);
     if let Some(element) = ctx.state.element() {
         write_soon(Rc::clone(&ctx.host), element, |edit, element| {
-            edit.ime().switch(element, ImeSwitch::Off)
+            edit.ime().switch(element, false)
         });
     }
     if ctx.state.focus.replace(EditFocus::Out) == EditFocus::In
@@ -70,7 +70,7 @@ pub(crate) fn blur_surface(ctx: &SurfaceCtx) {
 /// one.
 fn ime_on(host: Rc<dyn DocumentHost>, element: Rc<MountedData>, area: Option<Rect>) {
     write_soon(host, element, move |edit, element| {
-        match edit.ime().switch(element, ImeSwitch::On) {
+        match edit.ime().switch(element, true) {
             Probe::Found(()) => match area {
                 Some(area) => edit.ime().cursor_area(element, area),
                 None => Probe::Found(()),

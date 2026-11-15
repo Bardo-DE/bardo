@@ -23,6 +23,7 @@ const GLOBS: &str = "\
 50:text/x-amb-a:*.amb
 50:text/x-prefixed:x.in.*t
 50:text/x-neg:neg_[!a-c]
+50:text/x-cs:CSONLY:cs
 bad line
 x:text/x-bad:*.bad
 ";
@@ -38,80 +39,68 @@ fn db(layers: &[&str]) -> MimeDb {
     MimeDb::from_layers(&layers)
 }
 
+/// The guess a list of types stands for: none is unknown, one is that type, more are ambiguous.
+fn guess(kinds: &[&str]) -> NameGuess {
+    match kinds {
+        [] => NameGuess::Unknown,
+        [one] => NameGuess::Type(mt(one)),
+        many => NameGuess::Ambiguous(many.iter().map(|kind| mt(kind)).collect()),
+    }
+}
+
 #[test]
 fn names_map_to_types() {
-    let rows = [
-        ("notes.txt", Some("text/plain")),
-        ("NOTES.TXT", Some("text/plain")),
-        ("a.tar.gz", Some("application/x-compressed-tar")),
-        ("A.TAR.GZ", Some("application/x-compressed-tar")),
-        ("a.gz", Some("application/gzip")),
-        ("README", Some("text/x-readme")),
-        ("readme", Some("text/x-readme")),
-        ("Makefile", Some("text/x-makefile")),
-        ("core.123", Some("application/x-core")),
-        ("core.x", None),
-        ("img_1.raw", Some("image/x-raw")),
-        ("img_12.raw", None),
-        ("special.txt", Some("text/x-special")),
-        ("x.in.txt", Some("text/plain")),
-        ("x.in.xt", Some("text/x-prefixed")),
-        ("neg_d", Some("text/x-neg")),
-        ("neg_b", None),
-        ("foo.c", Some("text/x-csrc")),
-        ("foo.C", Some("text/x-c++src")),
-        ("x.dup", Some("text/x-strong")),
-        ("a.bad", None),
-        ("nothing", None),
+    let rows: &[(&str, &[&str])] = &[
+        ("notes.txt", &["text/plain"]),
+        ("NOTES.TXT", &["text/plain"]),
+        ("a.tar.gz", &["application/x-compressed-tar"]),
+        ("A.TAR.GZ", &["application/x-compressed-tar"]),
+        ("a.gz", &["application/gzip"]),
+        ("README", &["text/x-readme"]),
+        ("readme", &["text/x-readme"]),
+        ("Makefile", &["text/x-makefile"]),
+        ("core.123", &["application/x-core"]),
+        ("core.x", &[]),
+        ("img_1.raw", &["image/x-raw"]),
+        ("img_12.raw", &[]),
+        ("special.txt", &["text/x-special"]),
+        ("x.in.txt", &["text/plain"]),
+        ("x.in.xt", &["text/x-prefixed"]),
+        ("neg_d", &["text/x-neg"]),
+        ("neg_b", &[]),
+        ("foo.c", &["text/x-csrc"]),
+        ("foo.C", &["text/x-c++src"]),
+        ("x.dup", &["text/x-strong"]),
+        // Equal patterns of equal weight are ambiguous, listed in order.
+        ("x.amb", &["text/x-amb-a", "text/x-amb-b"]),
+        // A case-sensitive pattern ignores other case.
+        ("CSONLY", &["text/x-cs"]),
+        ("csonly", &[]),
+        ("a.bad", &[]),
+        ("nothing", &[]),
     ];
     let db = db(&[GLOBS]);
     for (file, want) in rows {
-        let want = want.map_or(NameGuess::Unknown, |kind| NameGuess::Type(mt(kind)));
-        assert_eq!(db.by_name(&name(file)), want, "{file}");
+        assert_eq!(db.by_name(&name(file)), guess(want), "{file}");
     }
 }
 
 #[test]
-fn equal_patterns_with_equal_weight_are_ambiguous() {
-    let guess = db(&[GLOBS]).by_name(&name("x.amb"));
-    assert_eq!(
-        guess,
-        NameGuess::Ambiguous(vec![mt("text/x-amb-a"), mt("text/x-amb-b")])
-    );
-}
-
-#[test]
-fn nothing_globs_in_a_higher_folder_clears_lower_patterns_of_that_type() {
+fn nothing_globs_clears_lower_folders_patterns_of_that_type_only() {
     let high = "0:text/plain:__NOGLOBS__\n50:text/plain:*.text\n50:image/png:*.png\n";
     let low = "50:text/plain:*.txt\n50:text/plain:*.asc\n50:image/jpeg:*.jpg\n";
-    let db = db(&[high, low]);
-    let rows = [
-        ("a.txt", NameGuess::Unknown),
-        ("a.asc", NameGuess::Unknown),
-        ("a.text", NameGuess::Type(mt("text/plain"))),
-        ("a.png", NameGuess::Type(mt("image/png"))),
-        ("a.jpg", NameGuess::Type(mt("image/jpeg"))),
+    let layered = db(&[high, low]);
+    let rows: &[(&str, &[&str])] = &[
+        ("a.txt", &[]),
+        ("a.asc", &[]),
+        ("a.text", &["text/plain"]),
+        ("a.png", &["image/png"]),
+        ("a.jpg", &["image/jpeg"]),
     ];
     for (file, want) in rows {
-        assert_eq!(db.by_name(&name(file)), want, "{file}");
+        assert_eq!(layered.by_name(&name(file)), guess(want), "{file}");
     }
-}
-
-#[test]
-fn nothing_globs_in_a_lower_folder_leaves_higher_patterns() {
-    let db = db(&["50:text/plain:*.txt\n", "0:text/plain:__NOGLOBS__\n"]);
-    assert_eq!(
-        db.by_name(&name("a.txt")),
-        NameGuess::Type(mt("text/plain"))
-    );
-}
-
-#[test]
-fn a_case_sensitive_pattern_ignores_other_case() {
-    let db = db(&["50:text/x-cs:README:cs\n"]);
-    assert_eq!(
-        db.by_name(&name("README")),
-        NameGuess::Type(mt("text/x-cs"))
-    );
-    assert_eq!(db.by_name(&name("readme")), NameGuess::Unknown);
+    // In the lower folder it leaves the higher folder's patterns alone.
+    let lower = db(&["50:text/plain:*.txt\n", "0:text/plain:__NOGLOBS__\n"]);
+    assert_eq!(lower.by_name(&name("a.txt")), guess(&["text/plain"]));
 }

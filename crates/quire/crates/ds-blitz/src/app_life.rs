@@ -19,15 +19,6 @@ pub enum LastWindowClosed {
     StayFor(Duration),
 }
 
-/// What the loop does next.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Verdict {
-    /// Keep running.
-    Run,
-    /// Drop every window and end the loop.
-    Exit,
-}
-
 /// How many windows are open, and since when there were none.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Lifecycle {
@@ -38,14 +29,8 @@ pub(crate) struct Lifecycle {
     held: usize,
     /// Since when no window has been open, if none is and the policy cares.
     idle_since: Option<Instant>,
-    run: Run,
-}
-
-/// Whether the app has asked to end the loop.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Run {
-    Going,
-    Quitting,
+    /// Whether the app has asked to end the loop.
+    quitting: bool,
 }
 
 impl Lifecycle {
@@ -60,7 +45,7 @@ impl Lifecycle {
             open: 0,
             held: 0,
             idle_since,
-            run: Run::Going,
+            quitting: false,
         }
     }
 
@@ -104,29 +89,27 @@ impl Lifecycle {
 
     /// The app asked to end the loop.
     pub(crate) fn quit(&mut self) {
-        self.run = Run::Quitting;
+        self.quitting = true;
     }
 
-    /// Whether the loop runs on at `now`.
-    pub(crate) fn verdict(&self, now: Instant) -> Verdict {
-        if self.run == Run::Quitting {
-            return Verdict::Exit;
+    /// Whether the loop ends at `now`: drop every window and stop.
+    pub(crate) fn ended(&self, now: Instant) -> bool {
+        if self.quitting {
+            return true;
         }
         match (self.policy, self.idle_since) {
-            (_, None) => Verdict::Run,
-            (LastWindowClosed::Exit, Some(_)) => Verdict::Exit,
-            (LastWindowClosed::StayFor(linger), Some(since)) => match since.checked_add(linger) {
-                Some(end) if now < end => Verdict::Run,
-                Some(_) => Verdict::Exit,
-                None => Verdict::Run,
-            },
+            (_, None) => false,
+            (LastWindowClosed::Exit, Some(_)) => true,
+            (LastWindowClosed::StayFor(linger), Some(since)) => {
+                since.checked_add(linger).is_some_and(|end| now >= end)
+            }
         }
     }
 
     /// When the loop must look again with nothing else happening: the end of a linger.
     pub(crate) fn wake_at(&self) -> Option<Instant> {
         match (self.policy, self.idle_since) {
-            (LastWindowClosed::StayFor(linger), Some(since)) if self.run == Run::Going => {
+            (LastWindowClosed::StayFor(linger), Some(since)) if !self.quitting => {
                 since.checked_add(linger)
             }
             _ => None,
@@ -146,13 +129,13 @@ mod tests {
     fn exit_ends_the_loop_when_the_last_window_closes_and_not_before() {
         let t0 = Instant::now();
         let mut life = Lifecycle::new(LastWindowClosed::Exit, t0);
-        assert_eq!(life.verdict(t0), Verdict::Run, "nothing has closed yet");
+        assert!(!life.ended(t0), "nothing has closed yet");
         life.opened();
         life.opened();
         life.closed(at(t0, 10));
-        assert_eq!(life.verdict(at(t0, 10)), Verdict::Run, "one is still open");
+        assert!(!life.ended(at(t0, 10)), "one is still open");
         life.closed(at(t0, 20));
-        assert_eq!(life.verdict(at(t0, 20)), Verdict::Exit);
+        assert!(life.ended(at(t0, 20)));
     }
 
     #[test]
@@ -163,7 +146,7 @@ mod tests {
         life.opened();
         life.opened();
         life.closed(t0);
-        assert_eq!(life.verdict(at(t0, 1_000_000)), Verdict::Run);
+        assert!(!life.ended(at(t0, 1_000_000)));
         assert_eq!(life.wake_at(), None);
     }
 
@@ -174,9 +157,9 @@ mod tests {
         let mut life = Lifecycle::new(LastWindowClosed::StayFor(linger), t0);
         life.opened();
         life.closed(at(t0, 100));
-        assert_eq!(life.verdict(at(t0, 599)), Verdict::Run);
+        assert!(!life.ended(at(t0, 599)));
         assert_eq!(life.wake_at(), Some(at(t0, 600)));
-        assert_eq!(life.verdict(at(t0, 600)), Verdict::Exit);
+        assert!(life.ended(at(t0, 600)));
     }
 
     #[test]
@@ -186,7 +169,7 @@ mod tests {
         life.opened();
         life.closed(at(t0, 100));
         life.opened();
-        assert_eq!(life.verdict(at(t0, 10_000)), Verdict::Run);
+        assert!(!life.ended(at(t0, 10_000)));
         assert_eq!(life.wake_at(), None);
         life.closed(at(t0, 10_000));
         assert_eq!(
@@ -200,8 +183,8 @@ mod tests {
     fn stay_for_counts_from_the_start_when_no_window_ever_opened() {
         let t0 = Instant::now();
         let life = Lifecycle::new(LastWindowClosed::StayFor(Duration::from_millis(50)), t0);
-        assert_eq!(life.verdict(at(t0, 49)), Verdict::Run);
-        assert_eq!(life.verdict(at(t0, 50)), Verdict::Exit);
+        assert!(!life.ended(at(t0, 49)));
+        assert!(life.ended(at(t0, 50)));
     }
 
     #[test]
@@ -214,7 +197,7 @@ mod tests {
             let mut life = Lifecycle::new(policy, t0);
             life.opened();
             life.quit();
-            assert_eq!(life.verdict(t0), Verdict::Exit, "{policy:?}");
+            assert!(life.ended(t0), "{policy:?}");
             assert_eq!(life.wake_at(), None);
         }
     }
@@ -225,7 +208,7 @@ mod tests {
         let mut life = Lifecycle::new(LastWindowClosed::StayFor(Duration::MAX), t0);
         life.opened();
         life.closed(t0);
-        assert_eq!(life.verdict(at(t0, 1_000_000)), Verdict::Run);
+        assert!(!life.ended(at(t0, 1_000_000)));
         assert_eq!(life.wake_at(), None);
     }
 
@@ -236,7 +219,7 @@ mod tests {
         life.closed(t0);
         life.opened();
         life.closed(t0);
-        assert_eq!(life.verdict(t0), Verdict::Exit);
+        assert!(life.ended(t0));
     }
 
     #[test]
@@ -245,16 +228,12 @@ mod tests {
         let linger = Duration::from_millis(500);
         let mut life = Lifecycle::new(LastWindowClosed::StayFor(linger), t0);
         life.hold();
-        assert_eq!(
-            life.verdict(at(t0, 10_000)),
-            Verdict::Run,
-            "held past the linger"
-        );
+        assert!(!life.ended(at(t0, 10_000)), "held past the linger");
         assert_eq!(life.wake_at(), None);
         life.release(at(t0, 10_000));
-        assert_eq!(life.verdict(at(t0, 10_499)), Verdict::Run);
+        assert!(!life.ended(at(t0, 10_499)));
         assert_eq!(life.wake_at(), Some(at(t0, 10_500)));
-        assert_eq!(life.verdict(at(t0, 10_500)), Verdict::Exit);
+        assert!(life.ended(at(t0, 10_500)));
     }
 
     #[test]
@@ -265,11 +244,11 @@ mod tests {
         life.hold();
         life.hold();
         life.closed(at(t0, 10));
-        assert_eq!(life.verdict(at(t0, 20)), Verdict::Run, "held, no window");
+        assert!(!life.ended(at(t0, 20)), "held, no window");
         life.release(at(t0, 30));
-        assert_eq!(life.verdict(at(t0, 40)), Verdict::Run, "one hold is left");
+        assert!(!life.ended(at(t0, 40)), "one hold is left");
         life.release(at(t0, 50));
-        assert_eq!(life.verdict(at(t0, 60)), Verdict::Exit, "nothing holds it");
+        assert!(life.ended(at(t0, 60)), "nothing holds it");
     }
 
     #[test]
@@ -280,6 +259,6 @@ mod tests {
         life.opened();
         life.hold();
         life.release(at(t0, 5));
-        assert_eq!(life.verdict(at(t0, 6)), Verdict::Run, "a window is open");
+        assert!(!life.ended(at(t0, 6)), "a window is open");
     }
 }

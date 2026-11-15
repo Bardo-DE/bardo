@@ -24,18 +24,6 @@ pub enum MenuImage {
     Swatch(SystemHue),
 }
 
-/// What a pick does to the menu that holds the item.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum AfterPick {
-    /// The item blinks twice, the menu yields the value and fades out: `NSMenu`'s way.
-    #[default]
-    Close,
-    /// The value is yielded at once and the menu stays up, so the person can pick again: a
-    /// toggle in a set of toggles (a label to add or remove), as SwiftUI's
-    /// `menuActionDismissBehavior(.disabled)` does on the Mac. Nothing blinks.
-    KeepOpen,
-}
-
 /// One line of a menu.
 #[derive(Debug, Clone, PartialEq)]
 pub enum MenuItem<T> {
@@ -58,10 +46,14 @@ pub enum MenuItem<T> {
         check: Option<Check>,
         /// Whether it can be picked. A disabled item is drawn at .35 opacity, skipped by the
         /// arrow keys and ignores the pointer; a context menu leaves it out unless it is asked
-        /// to dim it (`ContextUnavailable`; design/13 section 13.3.3).
+        /// to dim it (`dim_unavailable`; design/13 section 13.3.3).
         availability: Availability,
-        /// Whether a pick closes the menu.
-        after: AfterPick,
+        /// Whether a pick leaves the menu up. By default the item blinks twice, the menu yields the
+        /// value and fades out (`NSMenu`'s way). When set the value is yielded at once and the
+        /// menu stays up, so the person can pick again: a toggle in a set of toggles (a label to
+        /// add or remove), as SwiftUI's `menuActionDismissBehavior(.disabled)` does on the Mac.
+        /// Nothing blinks.
+        keep_open: bool,
         /// What the row says beside its title: the characters a query matched and a second line.
         text: ItemText,
     },
@@ -121,7 +113,7 @@ impl<T> SwatchRow<T> {
                     name: swatch.name,
                     colour: swatch.colour,
                     check: swatch.check,
-                    after: swatch.after,
+                    keep_open: swatch.keep_open,
                 })
                 .collect(),
         }
@@ -139,8 +131,8 @@ pub struct MenuSwatch<T> {
     pub colour: SystemHue,
     /// Whether the tag is already on the files: `On` draws a check in the dot, `Mixed` a dash.
     pub check: Option<Check>,
-    /// Whether a pick closes the menu.
-    pub after: AfterPick,
+    /// Whether a pick leaves the menu up (see `MenuItem::Item`).
+    pub keep_open: bool,
 }
 
 impl<T> MenuSwatch<T> {
@@ -151,7 +143,7 @@ impl<T> MenuSwatch<T> {
             name: name.into(),
             colour,
             check: None,
-            after: AfterPick::Close,
+            keep_open: false,
         }
     }
 
@@ -163,9 +155,9 @@ impl<T> MenuSwatch<T> {
         }
     }
 
-    /// The same dot with `after` as what its pick does to the menu.
-    pub fn with_after(self, after: AfterPick) -> Self {
-        MenuSwatch { after, ..self }
+    /// The same dot with `keep_open` as whether its pick leaves the menu up.
+    pub fn with_keep_open(self, keep_open: bool) -> Self {
+        MenuSwatch { keep_open, ..self }
     }
 }
 
@@ -182,7 +174,7 @@ impl<T> MenuItem<T> {
                 hint,
                 check,
                 availability,
-                after,
+                keep_open,
                 text,
             } => MenuItem::Item {
                 value: lift(value),
@@ -192,7 +184,7 @@ impl<T> MenuItem<T> {
                 hint,
                 check,
                 availability,
-                after,
+                keep_open,
                 text,
             },
             MenuItem::Submenu {
@@ -223,7 +215,7 @@ impl<T> MenuItem<T> {
             hint: None,
             check: None,
             availability: Availability::Enabled,
-            after: AfterPick::Close,
+            keep_open: false,
             text: ItemText::default(),
         }
     }
@@ -283,10 +275,11 @@ impl<T> MenuItem<T> {
         self
     }
 
-    /// The same item with `after` as what its pick does to the menu; only a command has one.
-    pub fn with_after(mut self, to: AfterPick) -> Self {
-        if let MenuItem::Item { after, .. } = &mut self {
-            *after = to;
+    /// The same item with `keep_open` as whether its pick leaves the menu up; only a command has
+    /// one.
+    pub fn with_keep_open(mut self, to: bool) -> Self {
+        if let MenuItem::Item { keep_open, .. } = &mut self {
+            *keep_open = to;
         }
         self
     }

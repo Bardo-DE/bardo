@@ -9,15 +9,6 @@ use crate::host::event_point::pointer_point;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Point;
 
-/// Whether a pointer move went anywhere.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Movement {
-    /// The pointer is somewhere it was not at the last move.
-    Moved,
-    /// The pointer is where the last move left it: the move was replayed, not made.
-    Still,
-}
-
 /// The last point a move reached in this root.
 #[derive(Clone, Copy)]
 pub(crate) struct PointerTrail(CopyValue<Option<Point>>);
@@ -34,13 +25,11 @@ impl PointerTrail {
         last.set(Some(pointer_point(event)));
     }
 
-    /// Whether a move to `to`, heard before the root, went anywhere.
-    pub(crate) fn movement(self, to: Point) -> Movement {
-        if *self.0.peek() == Some(to) {
-            Movement::Still
-        } else {
-            Movement::Moved
-        }
+    /// Whether a move to `to`, heard before the root, went anywhere: the pointer is somewhere it
+    /// was not at the last move. `false` when the pointer is where the last move left it, so the
+    /// move was replayed, not made.
+    pub(crate) fn moved(self, to: Point) -> bool {
+        *self.0.peek() != Some(to)
     }
 }
 
@@ -50,6 +39,6 @@ pub(crate) fn use_pointer_trail() -> Option<PointerTrail> {
 }
 
 /// Whether a move to `to` went anywhere, by `trail` when there is one.
-pub(crate) fn movement_of(trail: Option<PointerTrail>, to: Point) -> Movement {
-    trail.map_or(Movement::Moved, |trail| trail.movement(to))
+pub(crate) fn moved_to(trail: Option<PointerTrail>, to: Point) -> bool {
+    trail.is_none_or(|trail| trail.moved(to))
 }

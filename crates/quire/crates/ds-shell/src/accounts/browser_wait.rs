@@ -4,7 +4,6 @@
 
 use super::adapter::{Action, CopyAction, Intent, Landing};
 use super::frame::StepFrame;
-use super::model::CopyState;
 use super::model::StepTitle;
 use super::waiting::Waiting;
 use dioxus::prelude::*;
@@ -16,7 +15,7 @@ use ds::components::content::provider_mark::{MarkProvider, MarkStyle};
 pub fn BrowserWait(
     #[props(into)] provider: String,
     url: String,
-    #[props(default)] copied: CopyState,
+    #[props(default)] copied: bool,
     on_open_again: EventHandler<()>,
     on_copy: EventHandler<String>,
     on_cancel: EventHandler<()>,

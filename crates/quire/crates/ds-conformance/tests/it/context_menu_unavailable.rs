@@ -1,5 +1,5 @@
 //! A context menu leaves out the items that cannot be picked by default, keeps them dimmed under
-//! `ContextUnavailable::Dim`, and a row's tip shows on hover even while the row is disabled.
+//! `dim_unavailable`, and a row's tip shows on hover even while the row is disabled.
 
 use dioxus::prelude::*;
 use ds::host::measure::Anchor;
@@ -15,7 +15,7 @@ const VIEW: Viewport = Viewport {
 };
 
 thread_local! {
-    static MODE: Cell<ContextUnavailable> = const { Cell::new(ContextUnavailable::Hide) };
+    static MODE: Cell<bool> = const { Cell::new(false) };
 }
 
 fn items() -> Vec<MenuItem<u8>> {
@@ -37,7 +37,7 @@ fn Page() -> Element {
                 placement: MenuPlacement::Context,
                 anchor: Anchor::Point(Point { x: Px(100.0), y: Px(60.0) }),
                 items: items(),
-                unavailable: MODE.with(Cell::get),
+                dim_unavailable: MODE.with(Cell::get),
                 onpick: move |_: u8| {},
                 onclose: move |_| {},
             }
@@ -45,8 +45,8 @@ fn Page() -> Element {
     }
 }
 
-fn start(mode: ContextUnavailable) -> Harness {
-    MODE.with(|cell| cell.set(mode));
+fn start(dim: bool) -> Harness {
+    MODE.with(|cell| cell.set(dim));
     let mut harness = Harness::new(Page, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
     harness.advance(Duration::from_millis(300));
     harness
@@ -54,8 +54,8 @@ fn start(mode: ContextUnavailable) -> Harness {
 
 #[test]
 fn a_context_menu_hides_what_cannot_be_picked_unless_asked_to_dim_it() {
-    assert_eq!(start(ContextUnavailable::Hide).count(".ds-menu-item"), 2);
-    let dimmed = start(ContextUnavailable::Dim);
+    assert_eq!(start(false).count(".ds-menu-item"), 2);
+    let dimmed = start(true);
     assert_eq!(dimmed.count(".ds-menu-item"), 3);
     assert_eq!(
         dimmed.count(".ds-menu-item[aria-disabled=true]"),
@@ -66,7 +66,7 @@ fn a_context_menu_hides_what_cannot_be_picked_unless_asked_to_dim_it() {
 
 #[test]
 fn a_disabled_row_shows_its_tip_on_hover() {
-    let mut harness = start(ContextUnavailable::Dim);
+    let mut harness = start(true);
     assert_eq!(harness.count(".ds-tooltip"), 0);
     let at = harness
         .centre(".ds-menu-item[aria-disabled=true]")

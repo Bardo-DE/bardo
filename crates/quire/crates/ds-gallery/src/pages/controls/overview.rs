@@ -15,7 +15,6 @@ use ds::components::controls::badge::{Badge, BadgeContent, BadgeTone};
 use ds::components::controls::chip::{Chip, ChipVariant};
 use ds::components::controls::chip_dot::ChipDot;
 use ds::components::controls::command_line::CommandLine;
-use ds::components::controls::copy_state::CopyState;
 use ds::components::controls::key_equivalent::{KeyEquivalent, KeyStyle};
 use ds::components::controls::progress::model::{Progress, ProgressStyle};
 use ds::components::controls::progress::view::ProgressIndicator;
@@ -92,12 +91,12 @@ fn Buttons() -> Element {
 
 #[component]
 fn CommandLines() -> Element {
-    let mut copy = use_signal(CopyState::default);
+    let mut copy = use_signal(|| false);
     rsx! {
         Section { title: "CommandLine", note: "Live: Copy tells the host (here the page itself, which writes no clipboard) and the label reads Copied until the host says Idle again. The second line is the Copied state as a host that has copied shows it. A long command wraps at any character; the text is selectable.",
             div { class: "g-column",
-                CommandLine { text: "sudo dnf install llama-cpp".to_string(), copy: copy(), on_copy: move |_| copy.set(CopyState::Copied) }
-                CommandLine { text: "sudo pacman -S mpv".to_string(), copy: CopyState::Copied, on_copy: |_| {} }
+                CommandLine { text: "sudo dnf install llama-cpp".to_string(), copy: copy(), on_copy: move |_| copy.set(true) }
+                CommandLine { text: "sudo pacman -S mpv".to_string(), copy: true, on_copy: |_| {} }
                 CommandLine { text: "sudo apt install --no-install-recommends ffmpeg libheif-examples wl-clipboard mpv".to_string(), on_copy: |_| {} }
             }
         }

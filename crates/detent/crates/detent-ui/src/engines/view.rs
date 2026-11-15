@@ -10,7 +10,6 @@ use detent_model::{
 use dioxus::prelude::*;
 use ds::components::content::label::{LabelRole, LabelStyle};
 use ds::components::controls::command_line::CommandLine;
-use ds::components::controls::copy_state::CopyState;
 use ds::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle};
 use ds::prelude::*;
 use ds::style::tokens::control_size::ControlSize;
@@ -30,7 +29,7 @@ pub(crate) fn LocalEnginesNote() -> Element {
     let env = use_context::<Env>();
     let engines = use_live(Client::engines);
     let state = engines.state;
-    let mut copy = use_signal(CopyState::default);
+    let mut copy = use_signal(|| false);
     let advice = use_hook({
         let file = env.os_release.clone();
         move || install_advice(&std::fs::read_to_string(file).unwrap_or_default())
@@ -79,7 +78,7 @@ pub(crate) fn LocalEnginesNote() -> Element {
                         copy: copy(),
                         on_copy: move |text: String| {
                             let _ = ds_blitz::clipboard::write_text(&text);
-                            copy.set(CopyState::Copied);
+                            copy.set(true);
                         },
                     }
                 },

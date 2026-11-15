@@ -30,7 +30,7 @@ use ds::components::content::icon_view::IconView;
 use ds::components::content::rich_text::Rich;
 use ds::components::content::text_runs::{TextLine, text};
 use ds::components::controls::button::Button;
-use ds::components::controls::press::{ActivationKeys, PressListeners, Propagation};
+use ds::components::controls::press::{ActivationKeys, PressListeners};
 use ds::motion::swipe::SwipeMetrics;
 use ds::root::chrome::RootChrome;
 use ds::root::common::Common;
@@ -175,7 +175,7 @@ fn action_row(actions: &[CardAction]) -> Element {
                     key: "{n}",
                     size: ControlSize::Mini,
                     label: action.label,
-                    propagation: Propagation::Stop,
+                    stop_propagation: true,
                     onclick: move |press| action.on_press.call(press),
                 }
             }
@@ -185,7 +185,7 @@ fn action_row(actions: &[CardAction]) -> Element {
 
 /// The close button at the top left corner: its own hit target, keeping its press.
 fn close_button(on_close: EventHandler<Press>) -> Element {
-    let close = PressListeners::new(on_close).with_propagation(Propagation::Stop);
+    let close = PressListeners::new(on_close).with_stop_propagation(true);
     rsx! {
         button {
             r#type: "button",

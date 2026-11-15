@@ -16,7 +16,7 @@
 //! the next (`Column`; a divider then moves with Up and Down). A pane's size is `PaneSize`: pixels,
 //! or a `Share` of the view's length along the axis, which keeps following the view as it
 //! resizes. A `SplitView` inside a pane or as the rest is a split of its own, with its own axis
-//! and its own length. `unfocused: UnfocusedPanes::Dim` draws the panes that do not hold the
+//! and its own length. `dim_unfocused: true` draws the panes that do not hold the
 //! focus at `--pane-dim`: the focus is where the caller says (`focused`) or, failing that, where a
 //! press or a key last landed (renderers send no focus event up the tree to follow).
 //!
@@ -25,7 +25,7 @@
 //! `div.ds-split-rest` holding `children`.
 
 use crate::components::chrome::split_view::model::{
-    DividerDrag, PaneAt, PaneFocus, PaneSize, SplitAxis, SplitPane, UnfocusedPanes,
+    DividerDrag, PaneAt, PaneFocus, PaneSize, SplitAxis, SplitPane,
 };
 use crate::components::chrome::split_view::pane::{Mover, PaneBox};
 use crate::components::controls::edge_grab::EdgeGrab;
@@ -194,7 +194,7 @@ pub fn SplitView(
     axis: SplitAxis,
     /// Whether the panes without the focus are dimmed.
     #[props(default)]
-    unfocused: UnfocusedPanes,
+    dim_unfocused: bool,
     /// The pane that holds the focus, when the caller knows (a terminal focuses its panes
     /// itself). While it is `Some` the view draws what it is given; while `None` the view
     /// follows a press or a key in a pane.
@@ -264,7 +264,7 @@ pub fn SplitView(
             role: "group",
             "aria-label": common.aria_label.clone().unwrap_or(label),
             "data-axis": (axis != SplitAxis::Row).then(|| axis.slug()),
-            "data-unfocused": (unfocused != UnfocusedPanes::Keep).then(|| unfocused.slug()),
+            "data-unfocused": dim_unfocused.then_some("dim"),
             "data-dragging": if dragging { Some("true") } else { None },
             onmounted: move |event: MountedEvent| {
                 probe.on_mounted(event.clone());
@@ -286,7 +286,7 @@ pub fn SplitView(
                         width: splits.size_of(&panes, at),
                         least: pane.spec.min.resolve(extent),
                         shown: pane.shown,
-                        folded: pane.folded,
+                        peeks: pane.peeks,
                         mover,
                         focus: PaneFocus::of(PaneAt::Pane(at), holding),
                         on_hold: move |()| hold.call(PaneAt::Pane(at)),

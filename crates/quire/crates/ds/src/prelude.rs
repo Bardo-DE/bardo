@@ -58,7 +58,6 @@ pub use ds_style::icon::style::GlyphStyle;
 // Progress and pending work
 pub use crate::components::controls::progress::model::Progress;
 pub use crate::components::controls::progress::model::ProgressStyle;
-pub use crate::components::controls::progress::model::RingGap;
 pub use crate::components::controls::progress::view::ProgressIndicator;
 pub use ds_motion::detail::operation::Operation;
 pub use ds_motion::detail::operation::PendingToken;
@@ -90,7 +89,7 @@ pub use crate::components::forms::pane_stack::stack::PaneStack;
 
 // Keys as actions
 pub use crate::keys::{
-    ActionTaken, KeySource, Keys, on_action, use_keys, use_keys_provider, use_platform,
+    KeySource, Keys, on_action, use_keys, use_keys_provider, use_platform,
     use_register, use_register_actions,
 };
 
@@ -140,7 +139,6 @@ pub use crate::components::lists::row::row::Row;
 pub use crate::components::lists::section_header::HeaderAction;
 pub use crate::components::lists::section_header::SectionHeader;
 pub use crate::components::lists::table::look::TableLook;
-pub use crate::components::lists::table::rules::{ColumnRules, HeaderRule};
 
 // Spaces
 pub use crate::components::app::space_editor::SpaceEditor;
@@ -169,7 +167,7 @@ pub use ds_motion::symbol::effect::{LoopEffect, OnceEffect, SymbolEffect, Transi
 pub use ds_motion::symbol::view::Symbol;
 
 // Host
-pub use crate::focus::press_focus::{FocusOnPress, FocusOnPressScope};
+pub use crate::focus::press_focus::FocusOnPressScope;
 pub use crate::host::document::DocumentHost;
 pub use crate::host::document::use_document_host;
 pub use crate::host::focused::Focused;
@@ -194,7 +192,6 @@ pub use crate::components::menus::item::text::{ItemText, Marks};
 pub use crate::components::menus::menu::hung::{Hung, PanelWidth};
 pub use crate::components::menus::menu::menu::Menu;
 pub use crate::components::menus::menu::placement::MenuPlacement;
-pub use crate::components::menus::menu::unavailable::ContextUnavailable;
 pub use crate::components::menus::palette::command_palette::CommandPalette;
 pub use crate::components::menus::palette::machine::model::{
     PaletteIn, PaletteIndex, PaletteMove, PaletteOut, PaletteParams, PaletteState,
@@ -204,7 +201,7 @@ pub use crate::components::menus::palette::palette_host::CommandPaletteHost;
 pub use crate::components::menus::pick_list::PickList;
 pub use crate::components::menus::pull_down_button::{PullDownButton, PullDownFace};
 pub use crate::components::menus::search::model::{
-    CardPlace, EscapeOrder, InitialHighlight, Panel, SearchCursor, SuggestionSection,
+    CardPlace, Panel, SearchCursor, SuggestionSection,
     SuggestionsPresent,
 };
 pub use crate::components::menus::search::view::SearchField;

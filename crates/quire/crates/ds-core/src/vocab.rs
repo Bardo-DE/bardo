@@ -609,40 +609,7 @@ mod availability_tests {
 
 #[cfg(test)]
 mod companion_tests {
-    use super::{CompanionPresence, EffectMark, MemoryVerb};
-    use crate::testing::word_matches_serde;
-    use crate::word::Word;
-
-    #[test]
-    fn companion_presence_words_round_trip() {
-        word_matches_serde::<CompanionPresence>();
-        word_matches_serde::<MemoryVerb>();
-        const SLUGS: &[(CompanionPresence, &str)] = &[
-            (CompanionPresence::Idle, "idle"),
-            (CompanionPresence::Listening, "listening"),
-            (CompanionPresence::Working, "working"),
-            (CompanionPresence::Acting, "acting"),
-            (CompanionPresence::Waiting, "waiting"),
-        ];
-        assert_eq!(CompanionPresence::ALL.len(), SLUGS.len());
-        for &(presence, slug) in SLUGS {
-            assert_eq!(presence.slug(), slug, "{presence:?}");
-            assert_eq!(
-                serde_json::to_string(&presence).ok(),
-                Some(format!("\"{slug}\"")),
-                "{presence:?}"
-            );
-        }
-    }
-
-    #[test]
-    fn memory_verbs_are_stored_in_snake_case() {
-        assert_eq!(MemoryVerb::OpenSource.slug(), "open_source");
-        assert_eq!(
-            serde_json::from_str::<MemoryVerb>("\"open_source\"").ok(),
-            Some(MemoryVerb::OpenSource)
-        );
-    }
+    use super::EffectMark;
 
     #[test]
     fn effect_marks_order_by_severity() {

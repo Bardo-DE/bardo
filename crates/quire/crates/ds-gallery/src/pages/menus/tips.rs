@@ -16,14 +16,14 @@ pub fn KeptItemsAndTips() -> Element {
         MenuItem::new(3, "Paste"),
     ];
     rsx! {
-        Section { title: "Context menu, items kept", note: "ContextUnavailable::Dim keeps an unavailable item dimmed instead of leaving it out; hover the dimmed row for its tip, shown at once.",
+        Section { title: "Context menu, items kept", note: "dim_unavailable keeps an unavailable item dimmed instead of leaving it out; hover the dimmed row for its tip, shown at once.",
             div { class: "g-stage",
                 div { class: "g-menu-card",
                     Menu::<u8> {
                         placement: MenuPlacement::Context,
                         anchor: Anchor::Point(Point::default()),
                         items,
-                        unavailable: ContextUnavailable::Dim,
+                        dim_unavailable: true,
                         flow: Flow::Inline,
                         onpick: |_| {},
                         onclose: |_| {},

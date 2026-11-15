@@ -6,7 +6,6 @@
 
 use crate::components::controls::button::Button;
 use crate::components::controls::button_model::{Answers, Bezel, ButtonRole};
-use crate::components::controls::press::Propagation;
 use crate::focus::click::kept_click;
 use crate::focus::soon::focus_soon;
 use crate::root::common::Common;
@@ -66,7 +65,7 @@ pub(crate) fn buttons(confirm: &RowConfirm) -> Element {
                 bezel: Bezel::Push,
                 size: ControlSize::Small,
                 answers: Answers::Escape,
-                propagation: Propagation::Stop,
+                stop_propagation: true,
                 onclick: move |_| on_cancel.call(()),
                 common: Common {
                     mounted: Some(EventHandler::new(|event: MountedEvent| focus_soon(event.data()))),
@@ -78,7 +77,7 @@ pub(crate) fn buttons(confirm: &RowConfirm) -> Element {
                 bezel: Bezel::Push,
                 size: ControlSize::Small,
                 role,
-                propagation: Propagation::Stop,
+                stop_propagation: true,
                 onclick: move |_| on_confirm.call(()),
             }
         }

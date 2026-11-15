@@ -4,7 +4,7 @@ use anyview_archive::{ArchivePeeked, EntryKind};
 use anyview_core::FactValue;
 use anyview_text::{RowLabel, TablePeeked, TreePeeked, TreeRow};
 use dioxus::prelude::*;
-use ds::components::lists::table::model::{Sorting, TableColumn, TableRow};
+use ds::components::lists::table::model::{TableColumn, TableRow};
 use ds::components::lists::table::view::Table;
 use ds::prelude::Px;
 
@@ -88,7 +88,7 @@ fn grid(titles: Vec<String>, rows: Vec<TableRow<usize>>) -> Element {
     let columns: Vec<TableColumn<usize>> = titles
         .into_iter()
         .enumerate()
-        .map(|(at, title)| TableColumn::new(at, title, COLUMN).sorting(Sorting::Fixed))
+        .map(|(at, title)| TableColumn::new(at, title, COLUMN).sortable(false))
         .collect();
     rsx! {
         div { class: "anyview-grid",

@@ -9,7 +9,7 @@
 //! once that render has ended (`ds_style::busy`), then a frame later.
 
 use crate::focus::select::Select;
-use crate::host::caret::{CaretOwed, InitialCaret};
+use crate::host::caret::InitialCaret;
 use crate::host::document::use_document_host;
 use crate::host::focused::Focused;
 use crate::host::measure::BUSY_ATTEMPTS;
@@ -108,7 +108,7 @@ pub(crate) async fn focus_selecting(
 /// A document too busy to read counts as owing (the placing retries).
 async fn land_owed_caret(element: &MountedData, focused: Focused, caret: InitialCaret) {
     let host = use_document_host();
-    if focused == Focused::Done && host.caret().caret_owed(element) == CaretOwed::AfterLayout {
+    if focused == Focused::Done && host.caret().caret_owed(element) {
         let _ = retry_for(LAYOUT_ATTEMPTS, || host.caret().place_caret(element, caret)).await;
     }
 }

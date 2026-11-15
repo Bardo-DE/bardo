@@ -65,8 +65,7 @@ impl Control {
             Control::Picture | Control::Corners => matches!(kind, KeyKind::Text),
             Control::Menu => matches!(
                 kind,
-                KeyKind::Toggle { .. }
-                    | KeyKind::Segmented { .. }
+                KeyKind::Segmented { .. }
                     | KeyKind::Menu { .. }
                     | KeyKind::Provided { .. }
             ),
@@ -81,10 +80,7 @@ impl KeyKind {
     pub fn default_control(&self) -> Control {
         match self {
             KeyKind::Fixed { .. } => Control::Readout,
-            KeyKind::Toggle { variants } => match TogglePair::of(variants) {
-                Some(_) => Control::Toggle,
-                None => Control::Segmented,
-            },
+            KeyKind::Toggle => Control::Toggle,
             KeyKind::Segmented { .. } => Control::Segmented,
             KeyKind::Menu { .. } | KeyKind::Provided { .. } => Control::Menu,
             KeyKind::Bounded { .. } => Control::Slider,
@@ -109,60 +105,9 @@ impl KeySpec {
     }
 }
 
-/// The two words of an on/off enum, which one is on.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct TogglePair {
-    /// The word a switched-on toggle stores.
-    pub on: String,
-    /// The word a switched-off toggle stores.
-    pub off: String,
-}
-
-/// Words that mean "not doing it": when a two-word enum has exactly one of them, the other is on.
-const OFF_WORDS: &[&str] = &["off", "hide", "never", "none", "nothing"];
-
-/// Pairs that are a setting and its absence without an off word, written `(on, off)`.
-/// `reduced`/`standard` is macOS's "Reduce motion": on means reduced; `reduced`/`system` is
-/// "Reduce transparency" (`appearance.transparency`).
-const ON_OFF_PAIRS: &[(&str, &str)] = &[
-    ("natural", "traditional"),
-    ("reduced", "standard"),
-    ("reduced", "system"),
-    ("enabled", "disabled"),
-    ("yes", "no"),
-];
-
-impl TogglePair {
-    /// The pair `variants` make when they are on and off, else `None`: a choice between two
-    /// things (`ring`/`bar`, `bottom`/`left`) is not a switch. Two words are on and off when
-    /// exactly one is an off word (the other is on), or they are a row of the pair table, in
-    /// either order.
-    pub fn of(variants: &[String; 2]) -> Option<TogglePair> {
-        let [first, second] = variants;
-        let is_off = |word: &String| OFF_WORDS.contains(&word.as_str());
-        let pair = |on: &String, off: &String| TogglePair {
-            on: on.clone(),
-            off: off.clone(),
-        };
-        match (is_off(first), is_off(second)) {
-            (false, true) => return Some(pair(first, second)),
-            (true, false) => return Some(pair(second, first)),
-            (true, true) => return None,
-            (false, false) => {}
-        }
-        ON_OFF_PAIRS
-            .iter()
-            .find_map(|(on, off)| match (first.as_str(), second.as_str()) {
-                (a, b) if (a, b) == (*on, *off) => Some(pair(first, second)),
-                (a, b) if (a, b) == (*off, *on) => Some(pair(second, first)),
-                _ => None,
-            })
-    }
-}
-
 #[cfg(test)]
 mod tests {
-    use super::{Control, ControlName, TogglePair};
+    use super::{Control, ControlName};
     use crate::schema::{
         ActionLabel, ActionWeight, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, LiveAction,
         Page, Section,
@@ -170,12 +115,6 @@ mod tests {
 
     fn words(list: &[&str]) -> Vec<String> {
         list.iter().map(|word| (*word).to_owned()).collect()
-    }
-
-    fn toggle(a: &str, b: &str) -> KeyKind {
-        KeyKind::Toggle {
-            variants: [a.to_owned(), b.to_owned()],
-        }
     }
 
     fn key(kind: KeyKind, control: Option<&str>) -> KeySpec {
@@ -219,16 +158,7 @@ mod tests {
                 },
                 Control::Readout,
             ),
-            (toggle("on", "off"), Control::Toggle),
-            (toggle("off", "on"), Control::Toggle),
-            (toggle("show", "hide"), Control::Toggle),
-            (toggle("traditional", "natural"), Control::Toggle),
-            (toggle("standard", "reduced"), Control::Toggle),
-            (toggle("system", "reduced"), Control::Toggle),
-            (toggle("enabled", "disabled"), Control::Toggle),
-            (toggle("no", "yes"), Control::Toggle),
-            (toggle("icons", "letters"), Control::Segmented),
-            (toggle("off", "none"), Control::Segmented),
+            (KeyKind::Toggle, Control::Toggle),
             (
                 KeyKind::Segmented {
                     variants: words(&["a", "b", "c"]),
@@ -318,21 +248,5 @@ mod tests {
         for control in <Control as ds_core::word::Word>::ALL {
             assert_eq!(Control::named(&control.name()), Some(*control));
         }
-    }
-
-    #[test]
-    fn two_words_are_a_switch_only_when_one_is_off_or_the_pair_is_listed() {
-        let pair = |a: &str, b: &str| TogglePair::of(&[a.to_owned(), b.to_owned()]);
-        let on_off = |on: &str, off: &str| {
-            Some(TogglePair {
-                on: on.to_owned(),
-                off: off.to_owned(),
-            })
-        };
-        assert_eq!(pair("on", "off"), on_off("on", "off"));
-        assert_eq!(pair("hide", "show"), on_off("show", "hide"));
-        assert_eq!(pair("disabled", "enabled"), on_off("enabled", "disabled"));
-        assert_eq!(pair("ring", "bar"), None);
-        assert_eq!(pair("never", "none"), None);
     }
 }

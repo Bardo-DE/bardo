@@ -1,6 +1,6 @@
 //! The `com.canonical.dbusmenu` object: the methods a client calls, the signals it listens for.
 
-use super::pace::{EVENTS_PER_CALL_MAX, Pace, Pass};
+use super::pace::{EVENTS_PER_CALL_MAX, Pace};
 use super::permit::{self, Caller, MenuPermit, SenderName, Verdict};
 use super::wire::{self, Layout, Props, WireError};
 use ds::base::command::CommandId;
@@ -189,8 +189,7 @@ impl DbusMenu {
         #[zbus(connection)] connection: &zbus::Connection,
     ) -> fdo::Result<Vec<i32>> {
         let sender = self.admit(&header, connection).await?;
-        let pass = self.pace().admit(&sender, Instant::now());
-        if pass == Pass::Wait {
+        if !self.pace().admit(&sender, Instant::now()) {
             return Err(fdo::Error::LimitsExceeded(
                 "too many event groups a second".to_owned(),
             ));

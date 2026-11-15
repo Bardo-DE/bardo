@@ -5,7 +5,6 @@
 use dioxus::prelude::*;
 use ds::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue};
 use ds::components::controls::button_model::{Bezel, ImagePosition};
-use ds::components::controls::press::Propagation;
 use ds::prelude::*;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use std::time::Duration;
@@ -39,14 +38,14 @@ fn Scheduled() -> Element {
                             bezel: Bezel::Toolbar, image: ImagePosition::Only,
                             icon: Icon::X,
                             label: "Cancel sending Q3 notes",
-                            propagation: Propagation::Stop,
+                            stop_propagation: true,
                             onclick: move |_| log.with_mut(|log| log.push("cancel")),
                         }
                         Button {
                             bezel: Bezel::Toolbar, image: ImagePosition::Only,
                             icon: Icon::X,
                             label: "Close Q3 notes",
-                            propagation: Propagation::Stop,
+                            stop_propagation: true,
                             onclick: move |_| log.with_mut(|log| log.push("close")),
                         }
                     }),

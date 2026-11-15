@@ -4,7 +4,6 @@
 
 use super::adapter::{Action, CopyAction, Intent, Landing};
 use super::frame::StepFrame;
-use super::model::CopyState;
 use super::model::StepTitle;
 use dioxus::prelude::*;
 
@@ -15,7 +14,7 @@ pub fn ShowCode(
     #[props(into)] provider: String,
     code: String,
     url: String,
-    #[props(default)] copied: CopyState,
+    #[props(default)] copied: bool,
     on_copy: EventHandler<String>,
     on_cancel: EventHandler<()>,
     #[props(default)] title: StepTitle,

@@ -14,7 +14,6 @@ ds-style = {path = "../ds-style", default-features = false}
 dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"], optional = true}
 
 [dev-dependencies]
-dioxus-ssr = {version = "0.7"}
 ds = {path = "../ds"}
 
 [features]

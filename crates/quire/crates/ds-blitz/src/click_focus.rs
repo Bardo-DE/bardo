@@ -20,7 +20,7 @@
 //! the pressed one up, unless a field has the keyboard (no `blur` could tell it so).
 
 use crate::focus_chain::{Candidates, ChainNode, Target};
-use crate::node_ref::{NodeRef, Written};
+use crate::node_ref::NodeRef;
 use blitz_dom::{BaseDocument, LocalName, Node, NodeId};
 use dioxus::prelude::*;
 use ds::host::fallback::Fallback;
@@ -51,8 +51,8 @@ pub(crate) fn take(root: &MountedData) -> Focused {
             doc.set_focus_to(node);
             doc.shell_provider.request_redraw();
         }) {
-            Written::Done => Focused::Done,
-            Written::Busy => Focused::Busy,
+            Ok(()) => Focused::Done,
+            Err(_) => Focused::Busy,
         },
     }
 }
@@ -133,8 +133,8 @@ pub(crate) fn restore(target: &MountedData) -> Focused {
             doc.set_focus_to(node);
             doc.shell_provider.request_redraw();
         }) {
-            Written::Done => Focused::Done,
-            Written::Busy => Focused::Busy,
+            Ok(()) => Focused::Done,
+            Err(_) => Focused::Busy,
         },
     }
 }

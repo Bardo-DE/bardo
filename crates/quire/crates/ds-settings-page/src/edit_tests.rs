@@ -11,8 +11,8 @@ fn spelling() -> KeySpec {
     KeySpec {
         ends: None,
         path: KeyPath("compose.spelling".to_owned()),
-        kind: KeyKind::Toggle {
-            variants: ["on".to_owned(), "off".to_owned()],
+        kind: KeyKind::Segmented {
+            variants: vec!["on".to_owned(), "off".to_owned()],
         },
         default: text("on"),
         label: Label("Spelling".to_owned()),

@@ -24,7 +24,7 @@ use super::coast::{Coast, Heard};
 use super::eased::Eased;
 use super::wheel::{Role, Run, WheelInput, pointer_scrolls};
 use crate::frame_tag::FrameTag;
-use crate::node_ref::{DocRef, Written};
+use crate::node_ref::DocRef;
 use crate::phase::Phase;
 
 /// How many frames a frame view waits for its frame's element to be laid out before it gives up.
@@ -283,8 +283,8 @@ impl WindowScroll {
             out = Some(act(doc, &mut self.shared.state.borrow_mut()));
         });
         match written {
-            Written::Done => out,
-            Written::Busy => None,
+            Ok(()) => out,
+            Err(_) => None,
         }
     }
 

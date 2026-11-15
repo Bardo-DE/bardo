@@ -14,7 +14,7 @@ pub trait MenuModel: Clone + PartialEq + 'static {
 
     /// What a context menu does with an entry that cannot be picked: leave it out (the
     /// default) or keep it dimmed, for a menu whose entries are always the same set.
-    fn unavailable(&self) -> ContextUnavailable {
-        ContextUnavailable::Hide
+    fn dim_unavailable(&self) -> bool {
+        false
     }
 }

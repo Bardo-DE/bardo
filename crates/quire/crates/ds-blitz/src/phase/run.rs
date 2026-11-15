@@ -4,7 +4,7 @@
 use super::book::{Book, WatchId};
 use super::caret::{caret_box, selection_boxes};
 use super::read::{apply, border_box, scroll_of};
-use crate::node_ref::{DocRef, NodeRef, Written};
+use crate::node_ref::{DocRef, NodeRef};
 use crate::probe::Probe;
 use blitz_kit::after_resolve::{self, AfterResolve};
 use dioxus::core::{Runtime, RuntimeGuard};
@@ -209,8 +209,8 @@ impl Phase {
                 .collect();
         });
         match written {
-            Written::Done => moved.iter().filter(|moved| **moved).count(),
-            Written::Busy => {
+            Ok(()) => moved.iter().filter(|moved| **moved).count(),
+            Err(_) => {
                 if layout == Layout::Resolved {
                     // Put back what was taken, behind anything queued since.
                     let mut book = self.shared.book.borrow_mut();

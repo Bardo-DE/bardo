@@ -5,27 +5,6 @@ use dioxus::prelude::*;
 use ds_core::geometry::units::Px;
 use ds_core::word::Word;
 
-/// Whether dragging a pane below its least folds it away.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum Collapsing {
-    /// The pane stops at its least.
-    #[default]
-    Never,
-    /// Past half its least the pane folds away, and a drag back past that opens it.
-    Snaps,
-}
-
-/// What a folded pane does with what lies outside it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum Folded {
-    /// The pane clips its body: nothing of it shows, and nothing reaches the pointer.
-    #[default]
-    Clips,
-    /// The body is an `EdgePeek`: once the pane is folded away its strip at the window's edge
-    /// waits for the pointer, and the sidebar it floats out stands over the content beside it.
-    Peeks,
-}
-
 /// The way the panes of a split view lie.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
 pub enum SplitAxis {
@@ -34,16 +13,6 @@ pub enum SplitAxis {
     Row,
     /// One above the next, dividers flat: a pane's size is its height.
     Column,
-}
-
-/// What a split view does to the panes that do not hold the focus.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum UnfocusedPanes {
-    /// Every pane is drawn alike.
-    #[default]
-    Keep,
-    /// Once the focus has been put in a pane, the other panes are drawn at `--pane-dim`.
-    Dim,
 }
 
 /// A place in a split view where the focus can be.
@@ -126,8 +95,9 @@ pub struct PaneSpec {
     pub min: PaneSize,
     /// The most a drag gives it.
     pub max: PaneSize,
-    /// Whether it can fold away.
-    pub collapsing: Collapsing,
+    /// Whether it can fold away: past half its least the pane folds, and a drag back past that
+    /// opens it. When false the pane stops at its least.
+    pub collapsing: bool,
 }
 
 impl PaneSpec {
@@ -136,7 +106,7 @@ impl PaneSpec {
         preferred: PaneSize::Fixed(Px(240.0)),
         min: PaneSize::Fixed(Px(180.0)),
         max: PaneSize::Fixed(Px(320.0)),
-        collapsing: Collapsing::Snaps,
+        collapsing: true,
     };
 
     /// A pane that is `preferred` of the view, a drag keeping it between a tenth and nine
@@ -146,7 +116,7 @@ impl PaneSpec {
             preferred: PaneSize::Share(preferred),
             min: PaneSize::Share(Share(0.1)),
             max: PaneSize::Share(Share(0.9)),
-            collapsing: Collapsing::Never,
+            collapsing: false,
         }
     }
 
@@ -158,11 +128,10 @@ impl PaneSpec {
     /// What a drag that would make the pane `raw` long, in a view `extent` long, does.
     pub fn dragged(self, raw: Px, extent: Px) -> DividerDrag {
         let (min, max) = (self.min.resolve(extent), self.max.resolve(extent));
-        match self.collapsing {
-            Collapsing::Snaps if raw.0 < min.0 / 2.0 => DividerDrag::Collapse,
-            Collapsing::Snaps | Collapsing::Never => {
-                DividerDrag::Resize(Px(raw.0.clamp(min.0, max.0.max(min.0))))
-            }
+        if self.collapsing && raw.0 < min.0 / 2.0 {
+            DividerDrag::Collapse
+        } else {
+            DividerDrag::Resize(Px(raw.0.clamp(min.0, max.0.max(min.0))))
         }
     }
 }
@@ -185,8 +154,10 @@ pub struct SplitPane {
     pub body: Element,
     /// Open, or folded away.
     pub shown: bool,
-    /// What it does with its body while folded away.
-    pub folded: Folded,
+    /// Whether its body is an `EdgePeek`: once the pane is folded away its strip at the window's
+    /// edge waits for the pointer, and the sidebar it floats out stands over the content beside
+    /// it. Otherwise the pane clips its body when folded.
+    pub peeks: bool,
 }
 
 impl SplitPane {
@@ -196,7 +167,7 @@ impl SplitPane {
             spec,
             body,
             shown: true,
-            folded: Folded::Clips,
+            peeks: false,
         }
     }
 
@@ -208,7 +179,7 @@ impl SplitPane {
     /// The same pane, its body an `EdgePeek` that stays reachable while the pane is folded.
     pub fn peeking(self) -> Self {
         SplitPane {
-            folded: Folded::Peeks,
+            peeks: true,
             ..self
         }
     }
@@ -216,39 +187,39 @@ impl SplitPane {
 
 #[cfg(test)]
 mod tests {
-    use super::{Collapsing, DividerDrag, PaneSize, PaneSpec, Share};
+    use super::{DividerDrag, PaneSize, PaneSpec, Share};
     use ds_core::geometry::units::Px;
 
     #[test]
     fn a_drag_is_held_to_the_widths_and_may_fold_a_collapsible_pane() {
-        const CASES: &[(&str, Collapsing, f32, DividerDrag)] = &[
+        const CASES: &[(&str, bool, f32, DividerDrag)] = &[
             (
                 "inside",
-                Collapsing::Snaps,
+                true,
                 250.0,
                 DividerDrag::Resize(Px(250.0)),
             ),
             (
                 "over the most",
-                Collapsing::Snaps,
+                true,
                 500.0,
                 DividerDrag::Resize(Px(320.0)),
             ),
             (
                 "under the least but past half",
-                Collapsing::Snaps,
+                true,
                 100.0,
                 DividerDrag::Resize(Px(180.0)),
             ),
             (
                 "under half the least",
-                Collapsing::Snaps,
+                true,
                 60.0,
                 DividerDrag::Collapse,
             ),
             (
                 "not collapsible",
-                Collapsing::Never,
+                false,
                 60.0,
                 DividerDrag::Resize(Px(180.0)),
             ),

@@ -17,7 +17,7 @@ use crate::components::menus::menu::placement::MenuPlacement;
 use crate::components::menus::search::card::card;
 use crate::components::menus::search::highlight::{initial, shown_at, value_at};
 use crate::components::menus::search::model::{
-    CardPlace, EscapeOrder, InitialHighlight, Manner, Panel, SearchCursor, SuggestionSection,
+    CardPlace, Manner, Panel, SearchCursor, SuggestionSection,
     SuggestionsPresent, flatten,
 };
 use crate::components::menus::search::step::{Act, SuggestKey, Suggesting, Text, press};
@@ -79,7 +79,7 @@ impl<T: Clone + 'static> Moves<T> {
 /// The field keeps the keyboard throughout. Up and Down move the highlight (wrapping, skipping
 /// disabled rows; Down reopens a closed panel), Enter picks the highlighted row through `onpick`,
 /// or, with none highlighted, submits the text through `onsubmit`. Escape takes one step a press,
-/// in the order `escape` says (the panel, the text, then the window; or the text, then the
+/// in the order `clear_first` says (the panel, the text, then the window; or the text, then the
 /// window). Tab is the field's own unless `onkey` takes it: the caret leaves and the panel
 /// closes. A press on the field is inside the panel and leaves it open; a press anywhere else
 /// closes it. The pointer over a row highlights it and a click picks it.
@@ -113,10 +113,10 @@ pub fn SearchField<T: Clone + PartialEq + 'static>(
     #[props(default)] on_token_remove: Option<EventHandler<usize>>,
     #[props(default)] suggestions: Vec<SuggestionSection<T>>,
     #[props(default = PanelWidth::SameAsField)] width: PanelWidth,
-    #[props(default)] highlight: InitialHighlight,
+    #[props(default)] top_hit: bool,
     #[props(default)] cursor: SearchCursor<T>,
     #[props(default)] on_highlight: EventHandler<Option<T>>,
-    #[props(default)] escape: EscapeOrder,
+    #[props(default)] clear_first: bool,
     #[props(default)] open: Panel,
     #[props(default)] stop_at_ends: bool,
     #[props(default)] present: SuggestionsPresent,
@@ -136,9 +136,9 @@ pub fn SearchField<T: Clone + PartialEq + 'static>(
     let rows: Vec<MenuItem<T>> = flatten(&suggestions);
     // Results that change light their top hit again, whatever moved the highlight before.
     use_effect(use_reactive!(|rows| {
-        if highlight == InitialHighlight::TopHit {
+        if top_hit {
             let picks = choices(&rows);
-            let at = initial(highlight, &liveness(&picks));
+            let at = initial(top_hit, &liveness(&picks));
             on_highlight.call(value_at(&picks, at));
             state.with_mut(|state| state.cursor = at);
         }
@@ -151,7 +151,7 @@ pub fn SearchField<T: Clone + PartialEq + 'static>(
         cursor: lit,
     };
     let manner = Manner {
-        escape,
+        clear_first,
         panel: open,
         stop_at_ends,
     };

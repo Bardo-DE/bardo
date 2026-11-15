@@ -24,6 +24,7 @@ pub(crate) fn KeyRow(
     let help = (!spec.help.0.is_empty()).then(|| TextLine::from(spec.help.0.clone()));
     let path = spec.path.clone();
     let current = value.as_str().unwrap_or_default().to_owned();
+    let on = value.as_bool().unwrap_or(false);
     let say = move |word: String| {
         onedit.call(SettingEdit {
             path: path.clone(),
@@ -31,16 +32,16 @@ pub(crate) fn KeyRow(
         })
     };
     let control = match control_of(&spec.kind) {
-        Control::Switch(pair) => {
-            let on = current == pair.on;
+        Control::Switch => {
+            let path = spec.path.clone();
             rsx! {
                 Toggle {
                     label: label.clone(),
                     value: if on { Check::On } else { Check::Off },
                     onchange: move |next| {
-                        say(match next {
-                            Check::On => pair.on.clone(),
-                            Check::Off | Check::Mixed => pair.off.clone(),
+                        onedit.call(SettingEdit {
+                            path: path.clone(),
+                            value: toml::Value::Boolean(next == Check::On),
                         });
                     },
                 }

@@ -3,7 +3,7 @@
 //! `crate::size_ledger`; the window it asks is `crate::sized_window`.
 
 use crate::screen_area::ScreenArea;
-use crate::size_ledger::{ANSWER_WINDOW, Expiry, Serial, SizeLedger, SizeOrigin, SizeRequest};
+use crate::size_ledger::{ANSWER_WINDOW, Serial, SizeLedger, SizeOrigin, SizeRequest};
 use crate::sized_window::{SizedWindow, WinitSized};
 use crate::window_requests::Requests;
 use crate::window_size::Extent;
@@ -116,7 +116,7 @@ impl WindowSizer {
 
     /// The answer window of request `serial`, for `asked`, has passed.
     fn expired(&self, serial: Serial, asked: Extent) {
-        if self.ledger.borrow_mut().expire(serial) == Expiry::Lapsed {
+        if self.ledger.borrow_mut().expire(serial) {
             self.settle_request(SizeRequest::Expired(asked));
         }
     }

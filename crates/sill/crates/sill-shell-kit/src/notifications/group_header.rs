@@ -13,7 +13,6 @@ use ds::components::content::icon_view::IconView;
 use ds::components::content::text_runs::{TextLine, text};
 use ds::components::controls::button::Button;
 use ds::components::controls::button_model::Bezel;
-use ds::components::controls::press::Propagation;
 use ds::root::common::Common;
 use ds::style::icon::render::IconSize;
 
@@ -64,7 +63,7 @@ pub fn GroupHeader(
                         bezel: Bezel::Inline,
                         label,
                         shown: expanded,
-                        propagation: Propagation::Stop,
+                        stop_propagation: true,
                         onclick: move |press| on_toggle.call(press),
                     }
                 }
@@ -72,7 +71,7 @@ pub fn GroupHeader(
                     common: Common { aria_label: Some(clear), ..Common::default() },
                     bezel: Bezel::Inline,
                     label: "Clear",
-                    propagation: Propagation::Stop,
+                    stop_propagation: true,
                     onclick: move |press| on_clear.call(press),
                 }
             }

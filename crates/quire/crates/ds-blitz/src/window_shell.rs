@@ -35,8 +35,8 @@
 //! the renderer and so lets it go.
 //!
 use crate::app_handle::Remote;
-use crate::app_life::{Lifecycle, Verdict};
-use crate::close_request::{CloseAnswer, CloseGuard};
+use crate::app_life::Lifecycle;
+use crate::close_request::CloseGuard;
 use crate::open_window::WindowHandle;
 use crate::phase::{Layout, Phase};
 use crate::startup_token::LaunchTokens;
@@ -421,14 +421,11 @@ impl Windows {
         let Some(sub) = self.sub_mut(key) else {
             return;
         };
-        match sub.close.ask() {
-            CloseAnswer::Close => self.drop_window(event_loop, key),
-            CloseAnswer::Keep => {
-                // The handler wrote what it needs to show; the next frame draws it.
-                if let Some(window) = sub.slot.window() {
-                    window.request_redraw();
-                }
-            }
+        if sub.close.ask() {
+            self.drop_window(event_loop, key);
+        } else if let Some(window) = sub.slot.window() {
+            // The handler wrote what it needs to show; the next frame draws it.
+            window.request_redraw();
         }
     }
 
@@ -437,19 +434,18 @@ impl Windows {
         if !self.surfaces_ready {
             return;
         }
-        match self.life.verdict(Instant::now()) {
-            Verdict::Exit => {
-                self.drop_all(event_loop);
-                self.spare.clear();
-                self.parking = None;
-                self.base.handle.end();
-                event_loop.exit();
-            }
-            Verdict::Run => event_loop.set_control_flow(
+        if self.life.ended(Instant::now()) {
+            self.drop_all(event_loop);
+            self.spare.clear();
+            self.parking = None;
+            self.base.handle.end();
+            event_loop.exit();
+        } else {
+            event_loop.set_control_flow(
                 self.life
                     .wake_at()
                     .map_or(ControlFlow::Wait, ControlFlow::WaitUntil),
-            ),
+            );
         }
     }
 }

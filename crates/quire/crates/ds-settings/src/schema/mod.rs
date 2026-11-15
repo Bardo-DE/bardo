@@ -30,7 +30,7 @@ pub use agent::{
 };
 pub use behaviour::{CornerAction, HotCornerSettings};
 pub use column::{Column, ColumnKind, ColumnName};
-pub use control::{Control, ControlName, TogglePair};
+pub use control::{Control, ControlName};
 pub use corners::{CornerBinding, CornerBindings, CornerDo, CornerKey, CornerKeys, OpenItem};
 pub use corners_stored::fold_older_commands;
 pub use deep_link::{deep_link, deep_link_path};

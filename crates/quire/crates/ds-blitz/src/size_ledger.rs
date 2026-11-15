@@ -43,15 +43,6 @@ pub enum SizeRequest {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct Serial(u32);
 
-/// Whether an expiry ended the request it was set for.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Expiry {
-    /// The request was still waiting: it is spent now.
-    Lapsed,
-    /// It was answered or replaced before: nothing changes.
-    Stale,
-}
-
 /// A request we made and have not yet seen answered.
 #[derive(Debug, Clone, Copy)]
 struct Asked {
@@ -93,14 +84,16 @@ impl SizeLedger {
         serial
     }
 
-    /// The answer window of request `serial` has passed.
-    pub(crate) fn expire(&mut self, serial: Serial) -> Expiry {
+    /// The answer window of request `serial` has passed. `true` when the request was still
+    /// waiting and is spent now; `false` when it was answered or replaced before, and nothing
+    /// changes.
+    pub(crate) fn expire(&mut self, serial: Serial) -> bool {
         match self.asked {
             Some(asked) if asked.serial == serial => {
                 self.asked = None;
-                Expiry::Lapsed
+                true
             }
-            _ => Expiry::Stale,
+            _ => false,
         }
     }
 
@@ -196,7 +189,7 @@ mod tests {
         let t0 = Instant::now();
         let mut ledger = SizeLedger::new(e(800, 600));
         let first = ledger.request(e(900, 700), t0);
-        assert_eq!(ledger.expire(first), Expiry::Lapsed);
+        assert!(ledger.expire(first));
         assert_eq!(
             ledger.resized(e(900, 700), t0),
             Some(SizeOrigin::Person),
@@ -205,12 +198,12 @@ mod tests {
 
         let first = ledger.request(e(1000, 700), t0);
         let second = ledger.request(e(1100, 700), t0);
-        assert_eq!(ledger.expire(first), Expiry::Stale, "replaced before");
+        assert!(!ledger.expire(first), "replaced before");
         assert_eq!(
             ledger.resized(e(1100, 700), t0),
             Some(SizeOrigin::Requested),
             "the newer request still stands"
         );
-        assert_eq!(ledger.expire(second), Expiry::Stale, "answered before");
+        assert!(!ledger.expire(second), "answered before");
     }
 }

@@ -3,7 +3,7 @@
 
 use chordkit::{Action, Context, Desktop, Platform, StandardAction};
 use dioxus::prelude::*;
-use ds::keys::{ActionTaken, on_action};
+use ds::keys::on_action;
 use ds::prelude::*;
 use ds_blitz::FocusFallback;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -37,7 +37,7 @@ fn Pad() -> Element {
             style: "width:200px;height:60px",
             onkeydown: on_action(keys, Context::Normal, move |action| {
                 log.with_mut(|log| log.push_str(&format!("{action:?};")));
-                ActionTaken::Yes
+                true
             }),
             "pad"
         }

@@ -54,7 +54,7 @@ impl<T> PaletteRow<T> {
             chord: RowChord::default(),
             availability: Availability::Enabled,
             action: None,
-            after: AfterPick::Close,
+            keep_open: false,
             shape: RowShape::Plain,
         }
     }

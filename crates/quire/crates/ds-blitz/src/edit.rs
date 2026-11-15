@@ -16,7 +16,7 @@ use blitz_dom::{BaseDocument, NodeId};
 use dioxus::prelude::*;
 use dioxus_native_dom::NodeHandle;
 use ds::host::captured::CapturedPointer;
-use ds::host::ime::{ImeEvent, ImeListener, ImeSwitch};
+use ds::host::ime::{ImeEvent, ImeListener};
 use ds::host::position::{TextPosition, TextRange};
 use ds::host::probe::Probe;
 use ds::prelude::*;
@@ -59,9 +59,9 @@ pub(crate) fn selection_rects(element: &MountedData, range: &TextRange) -> Probe
     })
 }
 
-pub(crate) fn set_ime(element: &MountedData, switch: ImeSwitch) -> Probe<()> {
+pub(crate) fn set_ime(element: &MountedData, on: bool) -> Probe<()> {
     read(element, |doc, _| {
-        doc.shell_provider.set_ime_enabled(switch == ImeSwitch::On);
+        doc.shell_provider.set_ime_enabled(on);
         Some(())
     })
 }

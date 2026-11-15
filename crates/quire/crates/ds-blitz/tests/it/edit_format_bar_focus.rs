@@ -55,7 +55,7 @@ fn Editor() -> Element {
                 }
                 div { id: "bubble", style: "position:absolute; left:20px; top:50px",
                     onmousedown: move |event: MouseEvent| event.prevent_default(),
-                    FocusOnPressScope { focus: FocusOnPress::Refuses,
+                    FocusOnPressScope { refuses: true,
                     SegmentedControl {
                         label: "Style",
                         choices: vec![

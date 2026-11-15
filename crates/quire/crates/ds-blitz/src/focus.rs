@@ -12,10 +12,10 @@
 //! tries again a frame later.
 
 use crate::blitz_host::FindDocument;
-use crate::node_ref::{DocRef, FoundNode, NodeRef, Written};
+use crate::node_ref::{Busy, DocRef, FoundNode, NodeRef};
 use blitz_dom::{BaseDocument, LocalName, Node, NodeId};
 use dioxus::prelude::*;
-use ds::host::caret::{Caret, CaretOwed, FieldSelection, InitialCaret, caret_at, stem_end};
+use ds::host::caret::{Caret, FieldSelection, InitialCaret, caret_at, stem_end};
 use ds::host::found::Found;
 use ds::prelude::*;
 use std::rc::Rc;
@@ -221,9 +221,9 @@ pub(crate) fn selection(element: &MountedData) -> FieldSelection {
 /// it was focused is still owed. A document busy rendering is read as owing: the caller then
 /// places the caret with a retry, which waits for the editor, rather than leaving a field that is
 /// not laid out yet with its caret at the start.
-pub(crate) fn caret_owed(element: &MountedData) -> CaretOwed {
+pub(crate) fn caret_owed(element: &MountedData) -> bool {
     let Some(node) = NodeRef::of(element) else {
-        return CaretOwed::No;
+        return false;
     };
     let read = node.read(|doc| {
         let found = doc.get_node(node.node)?;
@@ -231,14 +231,11 @@ pub(crate) fn caret_owed(element: &MountedData) -> CaretOwed {
         let empty = element
             .attr(LocalName::from("value"))
             .is_none_or(str::is_empty);
-        match (field_of(found), empty) {
-            (Field::NotLaidOut, false) => Some(CaretOwed::AfterLayout),
-            _ => Some(CaretOwed::No),
-        }
+        Some(matches!((field_of(found), empty), (Field::NotLaidOut, false)))
     });
     match read {
-        None => CaretOwed::AfterLayout,
-        Some(owed) => owed.unwrap_or(CaretOwed::No),
+        None => true,
+        Some(owed) => owed.unwrap_or(false),
     }
 }
 
@@ -255,10 +252,10 @@ pub(crate) fn caret_after_text(doc: &mut BaseDocument, node: NodeId) {
     }
 }
 
-fn done(written: Written) -> Focused {
+fn done(written: Result<(), Busy>) -> Focused {
     match written {
-        Written::Done => Focused::Done,
-        Written::Busy => Focused::Busy,
+        Ok(()) => Focused::Done,
+        Err(Busy) => Focused::Busy,
     }
 }
 

@@ -135,7 +135,7 @@ impl AgentSetting {
 /// A key's shape: what values it can hold, and so which control draws it.
 ///
 /// Inferred from the field's own type by the derive (`crates/ds-settings-derive/src/shape.rs`):
-/// a one-variant enum is [`KeyKind::Fixed`], a two-variant enum [`KeyKind::Toggle`], three to five [`KeyKind::Segmented`], more
+/// a `bool` is [`KeyKind::Toggle`], a one-variant enum is [`KeyKind::Fixed`], two to five [`KeyKind::Segmented`], more
 /// [`KeyKind::Menu`]; a newtype with `range` is [`KeyKind::Bounded`]; `String`, `PathBuf`,
 /// `Cow<str>` or a field marked `#[settings(text)]` is [`KeyKind::Text`]; `Hex` is [`KeyKind::Colour`]; `Vec<String>` and `Vec<Word enum>` are [`KeyKind::List`]; `Vec<T>` with
 /// `T: SettingsRow` is [`KeyKind::Rows`].
@@ -148,8 +148,8 @@ pub enum KeyKind {
     /// A one-variant enum: the key exists and has its one value, with room for a second
     /// variant later (`control_center.material`'s `Sheet` for v1).
     Fixed { variant: String },
-    /// A two-variant enum: on/off, natural/traditional, ....
-    Toggle { variants: [String; 2] },
+    /// A `bool`: on or off, stored as TOML `true` or `false`.
+    Toggle,
     /// A three-to-five-variant enum.
     Segmented { variants: Vec<String> },
     /// A more-than-five-variant enum.
@@ -306,8 +306,8 @@ impl KeySpec {
     }
 }
 
-/// Every variant count from 1 up, mapped to the [`KeyKind`] it picks (section 9.1: "a two-
-/// variant enum -> Toggle; 3..=5 variants -> Segmented; more -> Menu"; one variant is a
+/// Every variant count from 1 up, mapped to the [`KeyKind`] it picks (section 9.1: "a 2..=5
+/// variants -> Segmented; more -> Menu"; one variant is a
 /// read-only [`KeyKind::Fixed`]).
 ///
 /// Pure: takes the words, returns the kind. The derive's `kind_of::<T>()` (`crate::schema`)
@@ -318,13 +318,7 @@ pub fn kind_from_variants(mut words: Vec<String>) -> KeyKind {
         1 => KeyKind::Fixed {
             variant: words.remove(0),
         },
-        2 => {
-            let [a, b]: [String; 2] = words
-                .try_into()
-                .unwrap_or_else(|words: Vec<String>| panic!("checked len() == 2: {words:?}"));
-            KeyKind::Toggle { variants: [a, b] }
-        }
-        3..=5 => KeyKind::Segmented { variants: words },
+        2..=5 => KeyKind::Segmented { variants: words },
         _ => KeyKind::Menu { variants: words },
     }
 }
@@ -334,41 +328,28 @@ mod tests {
     use super::{KeyKind, kind_from_variants};
 
     #[test]
-    fn two_variants_are_a_toggle() {
-        let kind = kind_from_variants(vec!["on".to_owned(), "off".to_owned()]);
-        assert_eq!(
-            kind,
-            KeyKind::Toggle {
-                variants: ["on".to_owned(), "off".to_owned()]
-            }
-        );
-    }
-
-    #[test]
-    fn three_to_five_variants_are_segmented() {
-        for count in 3..=5 {
+    fn the_variant_count_picks_the_kind() {
+        // (variant count, the kind's shape)
+        let cases = [
+            (1, "fixed"),
+            (2, "segmented"),
+            (3, "segmented"),
+            (5, "segmented"),
+            (6, "menu"),
+        ];
+        for (count, want) in cases {
             let words: Vec<String> = (0..count).map(|i| format!("v{i}")).collect();
-            assert!(matches!(
-                kind_from_variants(words),
-                KeyKind::Segmented { .. }
-            ));
+            let got = match kind_from_variants(words.clone()) {
+                KeyKind::Fixed { variant } => {
+                    assert_eq!(variant, words[0], "{count} variants");
+                    "fixed"
+                }
+                KeyKind::Segmented { .. } => "segmented",
+                KeyKind::Menu { .. } => "menu",
+                _ => "other",
+            };
+            assert_eq!(got, want, "{count} variants");
         }
-    }
-
-    #[test]
-    fn more_than_five_variants_are_a_menu() {
-        let words: Vec<String> = (0..6).map(|i| format!("v{i}")).collect();
-        assert!(matches!(kind_from_variants(words), KeyKind::Menu { .. }));
-    }
-
-    #[test]
-    fn one_variant_is_fixed() {
-        assert_eq!(
-            kind_from_variants(vec!["only".to_owned()]),
-            KeyKind::Fixed {
-                variant: "only".to_owned()
-            }
-        );
     }
 
     #[test]
@@ -451,11 +432,7 @@ mod provided_tests {
         assert!(text.contains("kind = \"provided\""), "{text}");
         assert!(text.contains("capability = \"look\""), "{text}");
         assert_eq!(toml::from_str::<KeySpec>(&text).unwrap(), spec);
-    }
-
-    #[test]
-    fn a_provided_key_is_drawn_as_a_menu() {
-        let spec: KeySpec = toml::from_str(PROVIDED).expect("parses");
+        // It is drawn as a menu.
         assert_eq!(spec.kind.default_control(), Control::Menu);
         assert_eq!(spec.control(), Control::Menu);
     }

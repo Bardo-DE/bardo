@@ -7,7 +7,6 @@ use crate::wallpaper;
 use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
 use ds::prelude::*;
-use ds_shell::accounts::model::CopyState;
 use ds_shell::helpers::model::HelperPhase;
 use ds_shell::prelude::*;
 
@@ -19,7 +18,7 @@ fn sheet(phase: HelperPhase) -> Element {
 
 fn copied(phase: HelperPhase) -> Element {
     rsx! {
-        HelperSheet { app: "Anyview", tool: "mpv", purpose: "play videos", phase, on_install: |_| {}, on_dismiss: |_| {}, copy: CopyState::Copied }
+        HelperSheet { app: "Anyview", tool: "mpv", purpose: "play videos", phase, on_install: |_| {}, on_dismiss: |_| {}, copy: true }
     }
 }
 

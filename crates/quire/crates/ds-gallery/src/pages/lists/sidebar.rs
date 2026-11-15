@@ -6,7 +6,6 @@ use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
 use ds::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue};
 use ds::components::controls::button_model::{Bezel, ImagePosition};
-use ds::components::controls::press::Propagation;
 use ds::components::lists::list::model::ListStyle;
 use ds::components::lists::row::row::Outline;
 use ds::prelude::*;
@@ -103,7 +102,7 @@ fn Places() -> Element {
                             bezel: Bezel::Toolbar, image: ImagePosition::Only,
                             icon: Icon::X,
                             label: format!("Close {name}"),
-                            propagation: Propagation::Stop,
+                            stop_propagation: true,
                             onclick: move |_| today.with_mut(|today| today.retain(|seen| *seen != name)),
                         }
                     }),
@@ -215,7 +214,7 @@ fn FolderTree() -> Element {
                 image: ImagePosition::Only,
                 icon: Icon::Ellipsis,
                 label: "Actions for {path}",
-                propagation: Propagation::Stop,
+                stop_propagation: true,
                 onclick: move |_| said.set(format!("the menu for {path}")),
             }
         })

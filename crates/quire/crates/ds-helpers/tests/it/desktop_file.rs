@@ -64,6 +64,19 @@ fn an_entry_is_read_by_key_type() {
     assert!(!entry.is_true("Hidden"));
     assert!(!entry.is_true("Missing"));
     assert_eq!(file.skipped_lines(), 0);
+
+    // An action group is found by the name the entry lists.
+    let names: Vec<_> = entry
+        .list("Actions")
+        .into_iter()
+        .filter_map(|id| {
+            file.group(&format!("Desktop Action {id}"))
+                .map(|g| g.name().to_owned())
+        })
+        .collect();
+    assert_eq!(names, ["Desktop Action new-window"]);
+    let groups: Vec<_> = file.groups().map(|group| group.name()).collect();
+    assert_eq!(groups, ["Desktop Entry", "Desktop Action new-window"]);
 }
 
 #[test]
@@ -129,23 +142,6 @@ fn a_translation_follows_the_persons_locales() {
             "{case}"
         );
     }
-}
-
-#[test]
-fn an_action_group_is_found_by_the_name_the_entry_lists() {
-    let file = files();
-    let entry = file.entry().expect("the entry group");
-    let names: Vec<_> = entry
-        .list("Actions")
-        .into_iter()
-        .filter_map(|id| {
-            file.group(&format!("Desktop Action {id}"))
-                .map(|g| g.name().to_owned())
-        })
-        .collect();
-    assert_eq!(names, ["Desktop Action new-window"]);
-    let groups: Vec<_> = file.groups().map(|group| group.name()).collect();
-    assert_eq!(groups, ["Desktop Entry", "Desktop Action new-window"]);
 }
 
 #[test]

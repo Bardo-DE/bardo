@@ -10,7 +10,7 @@ use ds::components::content::provider_mark::MarkProvider;
 use ds::prelude::*;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use ds_shell::accounts::model::{
-    AccountChoice, AllowScope, ChoiceKey, ConsentAnswer, CopyState, FieldRole, FieldText,
+    AccountChoice, AllowScope, ChoiceKey, ConsentAnswer, FieldRole, FieldText,
     FormField, Limitation, ProviderEntry, ProviderKey, ProviderPick, ServiceKey,
     ServiceLine, ServiceOffer, SignInFault, StepTitle,
 };
@@ -30,7 +30,7 @@ static LOG: GlobalSignal<Vec<String>> = Signal::global(Vec::new);
 static FIELDS: GlobalSignal<Vec<FormField>> = Signal::global(Vec::new);
 static QUERY: GlobalSignal<String> = Signal::global(String::new);
 static CURSOR: GlobalSignal<Option<ProviderPick>> = Signal::global(|| None);
-static COPIED: GlobalSignal<CopyState> = Signal::global(CopyState::default);
+static COPIED: GlobalSignal<bool> = Signal::global(|| false);
 static SERVICES: GlobalSignal<Vec<Check>> = Signal::global(Vec::new);
 
 fn ms(n: u64) -> Duration {
@@ -199,7 +199,7 @@ fn Browser() -> Element {
             on_open_again: move |()| LOG.write().push("open".to_owned()),
             on_copy: move |text: String| {
                 LOG.write().push(format!("copy {text}"));
-                *COPIED.write() = CopyState::Copied;
+                *COPIED.write() = true;
             },
             on_cancel: move |()| LOG.write().push("cancel".to_owned()),
         }
@@ -253,7 +253,7 @@ fn start(app: fn() -> Element) -> Harness {
         ];
         QUERY.write().clear();
         *CURSOR.write() = None;
-        *COPIED.write() = CopyState::Idle;
+        *COPIED.write() = false;
         *SERVICES.write() = vec![Check::On, Check::Off];
     });
     // Past the entrance and the focus that waits for the document.

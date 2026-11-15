@@ -20,7 +20,7 @@ use ds::components::content::provider_mark::MarkProvider;
 use ds::prelude::Check;
 use ds_shell::accounts::hidden::Hidden;
 use ds_shell::accounts::model::{
-    AccountChoice, Attempt, Choice, ChoiceKey, CopyState, FieldProblem, FieldRole, FieldText,
+    AccountChoice, Attempt, Choice, ChoiceKey, FieldProblem, FieldRole, FieldText,
     FormField, FormPart, ProblemKind, ProviderEntry, ProviderKey, ProviderPick, ServiceKey,
     ServiceLine, ServiceOffer, SignInFault,
 };
@@ -109,13 +109,13 @@ pub(super) enum Step {
         shown: String,
         /// The whole address, for "Copy Link".
         url: String,
-        copied: CopyState,
+        copied: bool,
     },
     Code {
         provider: String,
         code: String,
         url: String,
-        copied: CopyState,
+        copied: bool,
     },
     Review(ReviewProps),
     Working {
@@ -377,11 +377,8 @@ fn switch(toggle: bool) -> Check {
     if toggle { Check::On } else { Check::Off }
 }
 
-fn copy_state(draft: &Draft) -> CopyState {
-    match draft.copied {
-        CopyMark::Idle => CopyState::Idle,
-        CopyMark::Copied => CopyState::Copied,
-    }
+fn copy_state(draft: &Draft) -> bool {
+    draft.copied == CopyMark::Copied
 }
 
 /// The role a porter field kind plays in the form.

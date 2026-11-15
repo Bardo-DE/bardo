@@ -5,7 +5,6 @@
 
 use dioxus::prelude::*;
 use ds::host::document::{DocumentHost, use_document_host};
-use ds::host::ime::ImeSwitch;
 use ds::host::probe::Probe;
 use ds::prelude::*;
 use ds::root::common::Common;
@@ -68,11 +67,11 @@ fn a_texture_layer_surface_moves_the_candidate_window() {
     let answers = harness.within(|| {
         let ime = host.edit().expect("a Blitz host edits").ime();
         (
-            ime.switch(&element, ImeSwitch::On),
+            ime.switch(&element, true),
             ime.cursor_area(&element, caret()),
         )
     });
     assert_eq!((answers.0, answers.1), (Probe::Found(()), Probe::Found(())));
-    assert_eq!(harness.ime_switch(), ImeSwitch::On);
+    assert!(harness.ime_switch());
     assert_eq!(harness.ime_cursor_area(), Some(caret()));
 }

@@ -16,13 +16,6 @@ const SENDERS_MAX: usize = 64;
 /// The span the call count is taken over.
 const WINDOW: Duration = Duration::from_secs(1);
 
-/// Whether a call may go ahead.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum Pass {
-    Go,
-    Wait,
-}
-
 /// The recent `EventGroup` calls of each sender.
 #[derive(Debug, Default)]
 pub(super) struct Pace {
@@ -30,13 +23,13 @@ pub(super) struct Pace {
 }
 
 impl Pace {
-    /// Counts a call by `sender` at `now`, and says whether it is within the rate.
-    pub(super) fn admit(&mut self, sender: &SenderName, now: Instant) -> Pass {
+    /// Counts a call by `sender` at `now`, and says whether it is within the rate (`false`: wait).
+    pub(super) fn admit(&mut self, sender: &SenderName, now: Instant) -> bool {
         if self.is_full_for(sender) {
             self.forget_idle(now);
         }
         if self.is_full_for(sender) {
-            return Pass::Wait;
+            return false;
         }
         let recent = self.calls.entry(sender.clone()).or_default();
         while recent
@@ -46,10 +39,10 @@ impl Pace {
             recent.pop_front();
         }
         if recent.len() >= CALLS_PER_SECOND_MAX {
-            return Pass::Wait;
+            return false;
         }
         recent.push_back(now);
-        Pass::Go
+        true
     }
 
     fn is_full_for(&self, sender: &SenderName) -> bool {
@@ -77,25 +70,24 @@ mod tests {
     fn a_sender_gets_its_calls_per_second_and_then_waits_until_the_window_passes() {
         let (mut pace, start) = (Pace::default(), Instant::now());
         for _ in 0..CALLS_PER_SECOND_MAX {
-            assert_eq!(pace.admit(&sender(1), start), Pass::Go);
+            assert!(pace.admit(&sender(1), start));
         }
-        assert_eq!(pace.admit(&sender(1), start), Pass::Wait);
-        assert_eq!(
+        assert!(!pace.admit(&sender(1), start));
+        assert!(
             pace.admit(&sender(2), start),
-            Pass::Go,
             "another sender has its own count"
         );
-        assert_eq!(pace.admit(&sender(1), start + WINDOW), Pass::Go);
+        assert!(pace.admit(&sender(1), start + WINDOW));
     }
 
     #[test]
     fn a_crowd_of_senders_is_told_to_wait_until_some_go_idle() {
         let (mut pace, start) = (Pace::default(), Instant::now());
         for n in 0..SENDERS_MAX {
-            assert_eq!(pace.admit(&sender(n), start), Pass::Go);
+            assert!(pace.admit(&sender(n), start));
         }
-        assert_eq!(pace.admit(&sender(SENDERS_MAX), start), Pass::Wait);
+        assert!(!pace.admit(&sender(SENDERS_MAX), start));
         assert_eq!(pace.admit(&sender(0), start), Pass::Go, "a known sender");
-        assert_eq!(pace.admit(&sender(SENDERS_MAX), start + WINDOW), Pass::Go);
+        assert!(pace.admit(&sender(SENDERS_MAX), start + WINDOW));
     }
 }

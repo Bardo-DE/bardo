@@ -45,7 +45,7 @@ fn Anchored() -> Element {
             check: None,
             availability: Availability::Enabled,
             hint: None,
-            after: AfterPick::Close,
+            keep_open: false,
             text: Default::default(),
         })
         .collect::<Vec<_>>();

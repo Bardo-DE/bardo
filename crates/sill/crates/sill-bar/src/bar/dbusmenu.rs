@@ -82,7 +82,7 @@ fn entry(pick: RowPick, row: &TrayMenuEntry, icon: RowIcon) -> Option<MenuItem<B
         hint: None,
         check: to_ds_check(*check),
         availability,
-        after: AfterPick::Close,
+        keep_open: false,
         text: Default::default(),
     })
 }

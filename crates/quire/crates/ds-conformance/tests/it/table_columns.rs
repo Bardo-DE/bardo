@@ -4,7 +4,6 @@
 
 use dioxus::prelude::*;
 use ds::components::lists::table::model::{Sort, SortDirection, TableColumn, TableRow};
-use ds::components::lists::table::rules::ColumnRules;
 use ds::components::lists::table::view::Table;
 use ds::prelude::*;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -102,7 +101,7 @@ fn Ruled() -> Element {
     let rows = vec![TableRow::new(1u8, "A", vec![rsx! { "A" }])];
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
-            Table::<u8, u8> { label: "Files", columns, rows, rules: ColumnRules::Hairline, on_sort: |_| {}, onselect: |_| {} }
+            Table::<u8, u8> { label: "Files", columns, rows, column_rules: true, on_sort: |_| {}, onselect: |_| {} }
         }
     }
 }

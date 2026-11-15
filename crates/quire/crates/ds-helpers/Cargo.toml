@@ -35,10 +35,6 @@ default = ["quire-desktop"]
 # (design/36 section 2); `PackageKit::on` is absent, since it takes a zbus connection.
 quire-desktop = ["dep:zbus"]
 
-[[test]]
-name = "packagekit"
-required-features = ["quire-desktop"]
-
 [lints.rust]
 unsafe_code = "deny"
 missing_debug_implementations = "warn"

@@ -8,7 +8,7 @@
 //!
 //! The tile is a `div[role=button]` rather than a `button`, because the chevron inside it is a
 //! button of its own and a button may not hold another. The chevron keeps its press
-//! (`Propagation::Stop`), so a press on it opens the detail and never also toggles the module.
+//! (`stop_propagation`), so a press on it opens the detail and never also toggles the module.
 //! Keys are handled here on both renderers: Blitz synthesises no click from Enter, and the
 //! chevron prevents the default of the keys it takes, so a browser's synthesised click cannot
 //! run the same press twice.
@@ -21,7 +21,7 @@ use ds::base::vocab::{Availability, Check, aria_word};
 use ds::base::word::Word;
 use ds::components::content::icon_source::IconSource;
 use ds::components::content::text_runs::{TextLine, text};
-use ds::components::controls::press::{ActivationKeys, PressListeners, Propagation};
+use ds::components::controls::press::{ActivationKeys, PressListeners};
 use ds::focus::click::kept_click;
 use ds::root::common::Common;
 use ds::style::icon::Icon;
@@ -114,7 +114,7 @@ fn chevron_button(
     let name = format!("{} details", title.plain_text());
     let open = (availability == Availability::Enabled).then_some(on_detail);
     let inert = open.map_or(Availability::Disabled, |_| Availability::Enabled);
-    let listen = open.map(|open| PressListeners::new(open).with_propagation(Propagation::Stop));
+    let listen = open.map(|open| PressListeners::new(open).with_stop_propagation(true));
     rsx! {
         button {
             r#type: "button",

@@ -11,7 +11,7 @@
 //! that component.
 //!
 //! **A click a quire control keeps (the rule).** A control that stops a click's propagation (a
-//! strip button, a tree row's select button, its trailing slot, any `Propagation::Stop`) keeps
+//! strip button, a tree row's select button, its trailing slot, any stopped press) keeps
 //! it from the root, and one that prevents its default (a tree row's `summary`) makes the root
 //! pass it by. Every such control calls [`kept_click`] last in its click handler, so the root's
 //! rule still holds: the pressed control, or its nearest focusable ancestor, has the keyboard
@@ -21,7 +21,7 @@
 //! [`ClickFocusHost::press`](crate::host::parts::ClickFocusHost::press) moves it now, inside the click, and a handler's own later focus (a
 //! `focus_soon`) still wins.
 
-use crate::focus::press_focus::{FocusOnPress, on_click};
+use crate::focus::press_focus::on_click;
 use crate::focus::soon::retry_busy;
 use crate::host::document::{DocumentHost, use_document_host};
 use crate::host::fallback::Fallback;
@@ -64,7 +64,7 @@ impl ClickRoot {
 /// hear a click. Outside a `Ds` root, or with a host that has no click-focus part
 /// (`FocusFallback::BlitzDefault`, a server render), it does nothing.
 pub fn kept_click(event: &MouseEvent) {
-    if on_click(event) == FocusOnPress::Refuses {
+    if on_click(event) {
         return;
     }
     let Some(root) = try_consume_context::<ClickRoot>() else {

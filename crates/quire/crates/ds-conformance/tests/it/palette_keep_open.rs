@@ -22,7 +22,7 @@ fn Page() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let rows = vec![
         PaletteRow {
-            after: AfterPick::KeepOpen,
+            keep_open: true,
             ..PaletteRow::new(1u8, "Toggle")
         },
         PaletteRow::new(2u8, "Run"),

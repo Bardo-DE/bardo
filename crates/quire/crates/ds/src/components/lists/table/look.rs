@@ -2,7 +2,7 @@
 
 use ds_core::word::Word;
 
-/// How a `VirtualTable` looks. The rules (`ColumnRules`, `HeaderRule`) are drawn as they are
+/// How a `VirtualTable` looks. The rules (`column_rules`, `header_rule`) are drawn as they are
 /// asked for in every look.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
 pub enum TableLook {

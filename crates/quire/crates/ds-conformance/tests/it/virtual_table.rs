@@ -11,7 +11,6 @@ use ds::base::selection::RowSelection;
 use ds::components::controls::scroller::handle::use_scroller;
 use ds::components::lists::table::look::TableLook;
 use ds::components::lists::table::model::TableColumn;
-use ds::components::lists::table::rules::{ColumnRules, HeaderRule};
 use ds::components::lists::virtual_table::{VirtualTable, row_pitch};
 use ds::prelude::*;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, PointerAction, PointerInput, Viewport};
@@ -65,7 +64,7 @@ fn Page() -> Element {
                     on_sort: |_| {},
                     cursor: cursor(),
                     onselect: move |row| cursor.set(Some(row)),
-                    rules: ColumnRules::Hairline,
+                    column_rules: true,
                 }
             }
             button { class: "to-5000", onclick: move |_| scroller.reveal_row(5000, row_pitch()), "5000" }
@@ -183,7 +182,7 @@ fn Bare() -> Element {
                     cell: Callback::new(|(row, _): (usize, usize)| rsx! { "{row}" }),
                     scroller,
                     on_sort: |_| {},
-                    header_rule: HeaderRule::Never,
+                    header_rule: false,
                 }
             }
         }
@@ -207,7 +206,7 @@ fn hairline_rules_are_marked_and_none_leaves_the_table_unmarked() {
     assert_eq!(
         bare.attr(".ds-vtable", "data-scrolled"),
         None,
-        "HeaderRule::Never marks nothing"
+        "no header rule marks nothing"
     );
 }
 

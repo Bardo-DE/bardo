@@ -10,7 +10,6 @@ pub mod chip;
 pub mod chip_dot;
 pub mod choice;
 pub mod command_line;
-pub mod copy_state;
 pub mod disclosure;
 pub(crate) mod edge_grab;
 pub(crate) mod glyph;

@@ -3,7 +3,6 @@
 
 use super::model::HelperPhase;
 use super::wording::words;
-use crate::accounts::model::CopyState;
 use crate::accounts::waiting::Waiting;
 use dioxus::prelude::*;
 use ds::components::content::icon_source::IconSource;
@@ -32,7 +31,7 @@ pub fn HelperBody(
     on_install: EventHandler<()>,
     on_dismiss: EventHandler<()>,
     #[props(default)] on_copy: EventHandler<String>,
-    #[props(default)] copy: CopyState,
+    #[props(default)] copy: bool,
 ) -> Element {
     let said = words(&app, &tool, &purpose, &phase);
     let (title, body) = (said.title, said.body);
@@ -86,7 +85,7 @@ pub fn HelperSheet(
     on_install: EventHandler<()>,
     on_dismiss: EventHandler<()>,
     #[props(default)] on_copy: EventHandler<String>,
-    #[props(default)] copy: CopyState,
+    #[props(default)] copy: bool,
 ) -> Element {
     let label = words(&app, &tool, &purpose, &phase).title;
     let busy = phase == HelperPhase::Installing;

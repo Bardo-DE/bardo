@@ -36,7 +36,7 @@ fn groups(query: &str, on: &[usize]) -> Vec<PaletteGroup<usize>> {
             } else {
                 Check::Off
             }),
-            after: AfterPick::KeepOpen,
+            keep_open: true,
             ..PaletteRow::new(value, *name)
         })
         .collect();

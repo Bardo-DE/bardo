@@ -80,17 +80,13 @@ const LOW: &str = "[Default Applications]\ntext/plain=other.desktop\n\
 const CACHE: &str = "[MIME Cache]\ntext/plain=cacheapp.desktop;editor.desktop;nope.desktop;\n";
 
 #[test]
-fn the_default_skips_uninstalled_apps_and_the_first_file_wins() {
+fn the_default_skips_uninstalled_apps_and_open_with_orders_defaults_added_then_cache() {
     let assoc = assoc(&[HIGH, LOW], &[CACHE], &["gone.desktop"]);
     assert_eq!(
         assoc.default_for(&mt("text/plain"), &db()),
         Some(id("editor.desktop"))
     );
-}
-
-#[test]
-fn open_with_orders_defaults_added_then_cache_without_repeats_or_removed() {
-    let assoc = assoc(&[HIGH, LOW], &[CACHE], &["gone.desktop"]);
+    // No repeats and no removed apps.
     let want = ids(&[
         "editor.desktop",
         "other.desktop",
@@ -123,18 +119,16 @@ fn a_removal_only_reaches_downward_and_a_default_only_its_own_file() {
 }
 
 #[test]
-fn an_uninstalled_default_falls_through_to_the_cache() {
+fn an_uninstalled_default_falls_through_to_the_cache_and_earlier_files_beat_later_ones() {
     let file = "[Default Applications]\ntext/plain=gone.desktop\n";
     let cache = "[MIME Cache]\ntext/plain=cached.desktop\n";
-    let assoc = assoc(&[file], &[cache], &["gone.desktop"]);
+    let gone = assoc(&[file], &[cache], &["gone.desktop"]);
     assert_eq!(
-        assoc.default_for(&mt("text/plain"), &db()),
+        gone.default_for(&mt("text/plain"), &db()),
         Some(id("cached.desktop"))
     );
-}
 
-#[test]
-fn desktop_specific_files_listed_first_beat_general_ones() {
+    // Desktop-specific files are listed first and beat the general ones.
     let kde = "[Default Applications]\ntext/plain=kate.desktop\n";
     let general = "[Default Applications]\ntext/plain=gedit.desktop\n";
     let assoc = assoc(&[kde, general], &[], &[]);

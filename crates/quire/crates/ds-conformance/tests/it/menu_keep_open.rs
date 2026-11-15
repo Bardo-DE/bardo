@@ -31,7 +31,7 @@ fn items(on: &[usize]) -> Vec<MenuItem<usize>> {
         };
         MenuItem::new(value, name)
             .with_check(state)
-            .with_after(AfterPick::KeepOpen)
+            .with_keep_open(true)
     };
     vec![
         label(0, "Invoices"),

@@ -17,7 +17,6 @@ use crate::components::lists::row::row::Row;
 use crate::components::lists::row::size::RowSize;
 use crate::components::lists::table::head::{cells, use_resize};
 use crate::components::lists::table::model::{Sort, TableColumn, TableRow};
-use crate::components::lists::table::rules::ColumnRules;
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use ds_core::vocab::RowState;
@@ -27,7 +26,7 @@ use std::hash::Hash;
 /// A table of `rows` in `columns`. `sort` is the sorted column; `on_sort` hears what a header
 /// press asks for. `selection` are the selected rows and `cursor` the one the keys rest on;
 /// `onselect` hears a click, an arrow or a typed letter reaching a row. `size` is the rows'
-/// height (24 by default). `rules` draws a hairline between the columns.
+/// height (24 by default). `column_rules` draws a hairline between the columns.
 #[component]
 pub fn Table<K: Clone + PartialEq + Hash + 'static, C: Clone + PartialEq + 'static>(
     label: String,
@@ -39,7 +38,7 @@ pub fn Table<K: Clone + PartialEq + Hash + 'static, C: Clone + PartialEq + 'stat
     #[props(default)] cursor: Option<K>,
     onselect: EventHandler<K>,
     #[props(default)] size: RowSize,
-    #[props(default)] rules: ColumnRules,
+    #[props(default)] column_rules: bool,
     #[props(default)] common: Common,
 ) -> Element {
     let resize = use_resize();
@@ -79,7 +78,7 @@ pub fn Table<K: Clone + PartialEq + Hash + 'static, C: Clone + PartialEq + 'stat
             role: "group",
             "aria-label": common.aria_label.clone().unwrap_or_else(|| label.clone()),
             "data-density": size.slug(),
-            "data-rules": rules.attribute(),
+            "data-rules": column_rules.then_some("hairline"),
             style: "--table-cols:{template}",
             onmounted: move |event| common.mounted(event),
             onpointermove: move |event: PointerEvent| resize.drag(&move_columns, &event),

@@ -3,7 +3,6 @@
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
 use ds::components::controls::button_model::{Bezel, ImagePosition};
-use ds::components::controls::press::Propagation;
 use ds::prelude::*;
 use ds::root::common::Common;
 use ds::root::pass_through::{DataAttr, DataName, ExtraClass};
@@ -52,7 +51,7 @@ pub fn PassThrough() -> Element {
                 Specimen { name: "data-folder", code: "data-folder=\"INBOX/Receipts\"",
                     div { class: "g-row",
                         Button { common: Common { data: folder("INBOX/Receipts"), ..Common::default() }, bezel: Bezel::Toolbar, label: "Receipts", onclick: |_| {} }
-                        Button { common: Common { data: folder("INBOX/Receipts"), ..Common::default() }, bezel: Bezel::Toolbar, image: ImagePosition::Only, icon: Icon::Ellipsis, label: "Actions for Receipts", propagation: Propagation::Stop, onclick: |_| {} }
+                        Button { common: Common { data: folder("INBOX/Receipts"), ..Common::default() }, bezel: Bezel::Toolbar, image: ImagePosition::Only, icon: Icon::Ellipsis, label: "Actions for Receipts", stop_propagation: true, onclick: |_| {} }
                     }
                 }
                 Specimen { name: "extra_class", code: "class=\"ds-button g-reveal\"",

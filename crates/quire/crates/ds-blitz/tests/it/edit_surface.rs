@@ -9,7 +9,6 @@ use ds::edit::input::PreeditCursor;
 use ds::edit::input::{Composition, EditInput, KeyInput};
 use ds::edit::pointer::{EditFocus, EditPointer};
 use ds::host::captured::PointerPhase;
-use ds::host::ime::ImeSwitch;
 use ds::host::pasted::Pasted;
 use ds::host::position::{TextPosition, TextRange};
 use ds::host::probe::Probe;
@@ -143,7 +142,7 @@ fn near(a: f32, b: f32) -> bool {
 fn a_click_focuses_the_surface_and_switches_the_ime_on() {
     let harness = focused();
     assert!(harness.focus_of("#editor"));
-    assert_eq!(harness.ime_switch(), ImeSwitch::On);
+    assert!(harness.ime_switch());
     assert_eq!(FOCUS.with(|log| log.borrow().clone()), vec![EditFocus::In]);
 }
 

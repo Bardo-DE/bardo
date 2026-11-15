@@ -35,34 +35,19 @@ pub fn button_of(trigger: Option<MouseButton>) -> Option<PointerButton> {
     }
 }
 
-/// Whether a press goes on to the control's ancestors after the control has heard it (mailo
-/// gaps 5). A button inside a `<summary>` (a collapsible section's header action) must keep its
-/// press to itself, or the `<details>` around it toggles as well: the caller only receives a
-/// [`Press`], never the event, so it cannot stop the event itself.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum Propagation {
-    /// The press reaches the ancestors too, as any click does (the default).
-    #[default]
-    Bubble,
-    /// The press ends at the control: its propagation is stopped before `onclick` runs, and
-    /// its default action is prevented, since on Blitz a click's default action walks up the
-    /// ancestors (it is what toggles a `<details>` from its `<summary>`). A `type=button` has
-    /// no default action of its own, so nothing the control does is lost. The keyboard still
-    /// moves to the control, as for any press: the control hands the click to the host's
-    /// click focus itself (FINDINGS "Native focus").
-    Stop,
-}
-
-impl Propagation {
-    /// Keep `event` at the control when the press stops there.
-    fn apply(self, event: &MouseEvent) {
-        match self {
-            Propagation::Bubble => {}
-            Propagation::Stop => {
-                event.stop_propagation();
-                event.prevent_default();
-            }
-        }
+/// Keep `event` at the control when `stop` is set. A button inside a `<summary>` (a collapsible
+/// section's header action) must keep its press to itself, or the `<details>` around it toggles
+/// as well: the caller only receives a [`Press`], never the event, so it cannot stop the event
+/// itself. A stopped press ends at the control: its propagation is stopped before `onclick` runs,
+/// and its default action is prevented, since on Blitz a click's default action walks up the
+/// ancestors (it is what toggles a `<details>` from its `<summary>`). A `type=button` has no
+/// default action of its own, so nothing the control does is lost. The keyboard still moves to
+/// the control, as for any press: the control hands the click to the host's click focus itself
+/// (FINDINGS "Native focus").
+fn keep_at_control(stop: bool, event: &MouseEvent) {
+    if stop {
+        event.stop_propagation();
+        event.prevent_default();
     }
 }
 
@@ -113,11 +98,11 @@ pub(crate) fn activates(event: &KeyboardEvent, keys: ActivationKeys) -> bool {
 /// `click` (primary, and keyboard activation), `contextmenu` (secondary: Blitz and browsers
 /// send a right-click as that and never as a click; its default is prevented), and `mouseup`
 /// for the middle button, which neither fires as a click on Blitz. Under
-/// [`Propagation::Stop`] each of them keeps its event at the control before reporting.
+/// a stopped press each of them keeps its event at the control before reporting.
 #[derive(Debug, Clone, Copy)]
 pub struct PressListeners {
     press: EventHandler<Press>,
-    propagation: Propagation,
+    stop_propagation: bool,
 }
 
 impl PressListeners {
@@ -125,28 +110,28 @@ impl PressListeners {
     pub fn new(press: EventHandler<Press>) -> Self {
         PressListeners {
             press,
-            propagation: Propagation::Bubble,
+            stop_propagation: false,
         }
     }
 
-    /// The same listeners, keeping or passing on the event as `propagation` says.
-    pub fn with_propagation(self, propagation: Propagation) -> Self {
+    /// The same listeners, keeping the event at the control (`true`) or passing it on.
+    pub fn with_stop_propagation(self, stop_propagation: bool) -> Self {
         PressListeners {
-            propagation,
+            stop_propagation,
             ..self
         }
     }
 
     /// A `click`: primary, or whatever button the event names. A click kept at the control
-    /// ([`Propagation::Stop`]) is handed to the host's click focus last, as the root would have
+    /// (a stopped press) is handed to the host's click focus last, as the root would have
     /// (`focus::click::kept_click`): the control has the keyboard afterwards.
     pub fn click(&self, event: &MouseEvent) {
-        self.propagation.apply(event);
+        keep_at_control(self.stop_propagation, event);
         on_click(event);
         if let Some(button) = button_of(event.trigger_button()) {
             self.press.call(press_of(event, button));
         }
-        if self.propagation == Propagation::Stop {
+        if self.stop_propagation {
             kept_click(event);
         }
     }
@@ -154,7 +139,7 @@ impl PressListeners {
     /// A `contextmenu`: a secondary press. The page's own menu is the app's to open.
     pub fn context_menu(&self, event: &MouseEvent) {
         event.prevent_default();
-        self.propagation.apply(event);
+        keep_at_control(self.stop_propagation, event);
         self.press.call(press_of(event, PointerButton::Secondary));
     }
 
@@ -177,7 +162,7 @@ impl PressListeners {
     /// A `mouseup`: only the middle button counts (the primary one arrives as `click`).
     pub fn mouse_up(&self, event: &MouseEvent) {
         if event.trigger_button() == Some(MouseButton::Auxiliary) {
-            self.propagation.apply(event);
+            keep_at_control(self.stop_propagation, event);
             self.press.call(press_of(event, PointerButton::Middle));
         }
     }

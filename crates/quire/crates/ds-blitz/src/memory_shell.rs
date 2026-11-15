@@ -5,7 +5,6 @@
 
 use crate::clipboard::ClipboardFiles;
 use blitz_traits::shell::{ClipboardError, ShellProvider};
-use ds::host::ime::ImeSwitch;
 use ds::prelude::*;
 use std::sync::{Mutex, PoisonError};
 
@@ -29,7 +28,7 @@ struct FileFormats {
 /// What the document last asked of the IME.
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct ImeState {
-    switch: ImeSwitch,
+    switch: bool,
     area: Option<Rect>,
 }
 
@@ -41,7 +40,7 @@ impl Default for MemoryShell {
             primary: Mutex::new(None),
             files: Mutex::new(FileFormats::default()),
             ime: Mutex::new(ImeState {
-                switch: ImeSwitch::Off,
+                switch: false,
                 area: None,
             }),
         }
@@ -141,7 +140,7 @@ impl MemoryShell {
     }
 
     /// Whether the document has the IME on.
-    pub fn ime_switch(&self) -> ImeSwitch {
+    pub fn ime_switch(&self) -> bool {
         lock(&self.ime).switch
     }
 
@@ -162,11 +161,7 @@ impl ShellProvider for MemoryShell {
     }
 
     fn set_ime_enabled(&self, is_enabled: bool) {
-        lock(&self.ime).switch = if is_enabled {
-            ImeSwitch::On
-        } else {
-            ImeSwitch::Off
-        };
+        lock(&self.ime).switch = is_enabled;
     }
 
     fn set_ime_cursor_area(&self, x: f32, y: f32, width: f32, height: f32) {

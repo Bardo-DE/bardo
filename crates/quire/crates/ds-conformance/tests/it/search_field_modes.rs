@@ -19,8 +19,8 @@ const VIEW: Viewport = Viewport {
 
 #[derive(Clone, Copy)]
 struct Setup {
-    highlight: InitialHighlight,
-    escape: EscapeOrder,
+    top_hit: bool,
+    clear_first: bool,
     open: Panel,
     stop_at_ends: bool,
     present: SuggestionsPresent,
@@ -39,8 +39,8 @@ enum Chips {
 
 thread_local! {
     static SETUP: Cell<Setup> = const { Cell::new(Setup {
-        highlight: InitialHighlight::None,
-        escape: EscapeOrder::ClosePanelFirst,
+        top_hit: false,
+        clear_first: false,
         open: Panel::Owned,
         stop_at_ends: false,
         present: SuggestionsPresent::Popup,
@@ -101,8 +101,8 @@ fn Page() -> Element {
                     },
                     on_token: (setup.chips == Chips::Live).then(|| EventHandler::new(move |at: usize| log.with_mut(|log| log.push(format!("token:{at}"))))),
                     on_token_remove: (setup.chips == Chips::Live).then(|| EventHandler::new(move |at: usize| log.with_mut(|log| log.push(format!("remove:{at}"))))),
-                    highlight: setup.highlight,
-                    escape: setup.escape,
+                    top_hit: setup.top_hit,
+                    clear_first: setup.clear_first,
                     open: setup.open,
                     stop_at_ends: setup.stop_at_ends,
                     present: setup.present,
@@ -163,7 +163,7 @@ fn text(harness: &Harness, id: &str) -> String {
 
 fn top_hit() -> Setup {
     Setup {
-        highlight: InitialHighlight::TopHit,
+        top_hit: true,
         ..popup()
     }
 }
@@ -188,7 +188,7 @@ fn the_top_hit_is_lit_again_after_typing() {
 #[test]
 fn nothing_is_lit_without_a_top_hit() {
     let harness = start(Setup {
-        highlight: InitialHighlight::None,
+        top_hit: false,
         ..popup()
     });
     assert_eq!(lit(&harness), None);
@@ -235,7 +235,7 @@ fn escape_closes_the_panel_clears_the_text_then_reaches_the_window() {
 #[test]
 fn escape_clears_first_then_reaches_the_window() {
     let mut harness = start(Setup {
-        escape: EscapeOrder::ClearFirst,
+        clear_first: true,
         ..popup()
     });
     type_text(&mut harness, "dan");
@@ -318,7 +318,7 @@ fn a_floated_card_is_one_popover_holding_both() {
 #[test]
 fn a_card_picks_with_return_and_closes_its_rows() {
     let mut harness = start(Setup {
-        highlight: InitialHighlight::TopHit,
+        top_hit: true,
         ..card()
     });
     press(&mut harness, ShortcutKey::Enter);

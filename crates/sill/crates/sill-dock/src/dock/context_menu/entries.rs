@@ -114,7 +114,7 @@ impl Line {
             check: self.check,
             availability: self.availability,
             hint: None,
-            after: AfterPick::Close,
+            keep_open: false,
             text: Default::default(),
         }
     }

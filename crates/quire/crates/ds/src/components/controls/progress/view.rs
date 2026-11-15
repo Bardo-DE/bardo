@@ -5,7 +5,7 @@
 //! [`Operation`](ds_motion::detail::operation::Operation).
 
 use super::arc::{PIE_RIM, RingSpan, arc_path, pie_path};
-use super::model::{Progress, ProgressStyle, RingGap};
+use super::model::{Progress, ProgressStyle};
 use super::spokes::{SPIN, age, step_of};
 use crate::components::content::icon_source::IconSource;
 use crate::components::content::icon_view::IconView;
@@ -29,7 +29,7 @@ const FOLLOW: TweenSpec = TweenSpec {
 };
 
 /// Progress: `progress` drawn as `style` at `size`. A `Ring` takes an optional centre `glyph`, or
-/// any `centre` element (a device's glyph), and may be `Notched` at twelve.
+/// any `centre` element (a device's glyph), and may be `notched` at twelve (a charging battery's ring keeps the notch for the bolt its owner lays over it).
 ///
 /// A `Spinner` has no known amount, so it takes `Progress::Unknown` and draws nothing while the
 /// operation is idle; a `Bar` or `Ring` given `Unknown` is the barber pole or the turning arc.
@@ -41,7 +41,7 @@ pub fn ProgressIndicator(
     #[props(default)] size: ControlSize,
     #[props(default)] glyph: Option<IconSource>,
     #[props(default)] centre: Option<Element>,
-    #[props(default)] gap: RingGap,
+    #[props(default)] notched: bool,
     #[props(default)] common: Common,
 ) -> Element {
     let (share, operation) = match progress {
@@ -61,7 +61,7 @@ pub fn ProgressIndicator(
             role: "progressbar",
             "data-style": style.slug(),
             "data-size": size.slug(),
-            "data-gap": if style == ProgressStyle::Ring { Some(gap.slug()) } else { None },
+            "data-gap": if style == ProgressStyle::Ring { Some(if notched { "notched" } else { "closed" }) } else { None },
             "data-pending": if known { None } else { Some(frame.slug()) },
             "aria-label": common.aria_label.clone(),
             "aria-valuemin": if known { Some("0") } else { None },
@@ -74,7 +74,7 @@ pub fn ProgressIndicator(
             match style {
                 ProgressStyle::Bar => bar(shown, frame),
                 ProgressStyle::Spinner => spinner(frame),
-                ProgressStyle::Ring => ring(shown, frame, glyph, centre, gap),
+                ProgressStyle::Ring => ring(shown, frame, glyph, centre, notched),
                 ProgressStyle::Pie => pie(shown, frame),
             }
         }
@@ -117,12 +117,9 @@ fn ring(
     frame: PendingFrame,
     glyph: Option<IconSource>,
     centre: Option<Element>,
-    gap: RingGap,
+    notched: bool,
 ) -> Element {
-    let whole = match gap {
-        RingGap::Closed => RingSpan::FULL,
-        RingGap::Notched => RingSpan::GAPPED,
-    };
+    let whole = if notched { RingSpan::GAPPED } else { RingSpan::FULL };
     let span = match frame {
         PendingFrame::Step(_) => whole.filled(Fraction(250)),
         PendingFrame::Idle => whole.filled(shown),

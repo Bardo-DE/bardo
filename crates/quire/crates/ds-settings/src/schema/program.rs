@@ -418,82 +418,64 @@ mod tests {
     }
 
     #[test]
-    fn a_nonexistent_directory_is_skipped_silently() {
+    fn a_missing_directory_and_a_malformed_file_are_skipped() {
         let dir = std::env::temp_dir().join("ds-settings-schema-test-does-not-exist");
         let _ = std::fs::remove_dir_all(&dir);
         assert_eq!(discover(&[dir]), Vec::new());
-    }
 
-    #[test]
-    fn a_malformed_file_is_skipped() {
-        let dir = std::env::temp_dir().join(format!(
-            "ds-settings-schema-test-{}-{}",
-            std::process::id(),
-            "malformed"
-        ));
-        let _ = std::fs::remove_dir_all(&dir);
-        std::fs::create_dir_all(&dir).unwrap();
+        let dir = scratch("malformed");
         std::fs::write(dir.join("broken.settings.toml"), "not = [valid").unwrap();
         assert_eq!(discover(std::slice::from_ref(&dir)), Vec::new());
         std::fs::remove_dir_all(&dir).unwrap();
     }
 
     #[test]
-    fn xdg_data_home_comes_after_xdg_data_dirs_so_it_never_shadows_them() {
-        let dirs = data_dirs_from(
-            Some(OsString::from("/xdg-data-home")),
-            Some(OsString::from("/a:/b")),
-            Some(OsString::from("/home/ada")),
-        );
-        assert_eq!(
-            dirs,
-            vec![
-                std::path::PathBuf::from("/a/quire/settings"),
-                std::path::PathBuf::from("/b/quire/settings"),
-                std::path::PathBuf::from("/xdg-data-home/quire/settings"),
-            ]
-        );
-    }
-
-    #[test]
-    fn xdg_data_home_falls_back_to_home_local_share() {
-        let dirs = data_dirs_from(
-            None,
-            Some(OsString::from("/a")),
-            Some(OsString::from("/home/ada")),
-        );
-        assert_eq!(
-            dirs.last(),
-            Some(&std::path::PathBuf::from(
-                "/home/ada/.local/share/quire/settings"
-            ))
-        );
-    }
-
-    #[test]
-    fn empty_or_relative_values_are_ignored_not_used_as_given() {
-        let dirs = data_dirs_from(
-            Some(OsString::from("")),
-            Some(OsString::from("")),
-            Some(OsString::from("/home/ada")),
-        );
-        assert_eq!(
-            dirs,
-            vec![
-                std::path::PathBuf::from("/usr/local/share/quire/settings"),
-                std::path::PathBuf::from("/usr/share/quire/settings"),
-                std::path::PathBuf::from("/home/ada/.local/share/quire/settings"),
-            ]
-        );
-        let relative = data_dirs_from(
-            Some(OsString::from("rel")),
-            Some(OsString::from("rel:/a")),
-            None,
-        );
-        assert_eq!(
-            relative,
-            vec![std::path::PathBuf::from("/a/quire/settings")]
-        );
+    fn the_data_dirs_follow_the_xdg_rules() {
+        let os = |text: &str| Some(OsString::from(text));
+        // (name, XDG_DATA_HOME, XDG_DATA_DIRS, HOME, the folders)
+        let cases = [
+            (
+                "XDG_DATA_HOME comes after XDG_DATA_DIRS so it never shadows them",
+                os("/xdg-data-home"),
+                os("/a:/b"),
+                os("/home/ada"),
+                vec![
+                    "/a/quire/settings",
+                    "/b/quire/settings",
+                    "/xdg-data-home/quire/settings",
+                ],
+            ),
+            (
+                "XDG_DATA_HOME falls back to HOME/.local/share",
+                None,
+                os("/a"),
+                os("/home/ada"),
+                vec!["/a/quire/settings", "/home/ada/.local/share/quire/settings"],
+            ),
+            (
+                "empty values are ignored",
+                os(""),
+                os(""),
+                os("/home/ada"),
+                vec![
+                    "/usr/local/share/quire/settings",
+                    "/usr/share/quire/settings",
+                    "/home/ada/.local/share/quire/settings",
+                ],
+            ),
+            (
+                "relative values are ignored",
+                os("rel"),
+                os("rel:/a"),
+                None,
+                vec!["/a/quire/settings"],
+            ),
+        ];
+        for (name, home, dirs, user, want) in cases {
+            let want: Vec<std::path::PathBuf> =
+                want.into_iter().map(std::path::PathBuf::from).collect();
+            assert_eq!(data_dirs_from(home, dirs, user), want, "{name}");
+        }
     }
 
     #[test]
@@ -522,11 +504,8 @@ mod tests {
         assert!(present);
         assert!(dir.join("quire.settings.toml").exists());
         std::fs::remove_dir_all(&dir).unwrap();
-    }
 
-    #[test]
-    fn maybe_write_schema_without_a_directory_argument_is_an_error() {
-        let schema = sample();
+        // The flag without a directory is an error.
         let args = vec!["quire".to_owned(), "--write-schema".to_owned()];
         assert!(maybe_write_schema(&schema, &args).is_err());
     }

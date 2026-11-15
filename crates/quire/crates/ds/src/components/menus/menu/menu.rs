@@ -22,7 +22,6 @@ use crate::components::menus::menu::placement::{MENU_INSET, MenuPlacement};
 use crate::components::menus::menu::scrolling::{use_in_view, use_scrolling};
 use crate::components::menus::menu::surface::{Surface, stacking};
 use crate::components::menus::menu::tracker::{Via, use_tracker};
-use crate::components::menus::menu::unavailable::ContextUnavailable;
 use crate::components::overlays::flow::Flow;
 use crate::components::overlays::popover::{escape_closes, use_float};
 use crate::host::measure::{Anchor, MountedRef};
@@ -51,7 +50,7 @@ use ds_style::tokens::layer::ZLayer;
 /// chosen value), numbered as `expanded` numbers them.
 ///
 /// `placement` says where the menu belongs. Every menu draws its items' key equivalents; a
-/// `Context` menu also leaves out what cannot be picked (unless `unavailable` is `Dim`). Every menu
+/// `Context` menu also leaves out what cannot be picked (unless `dim_unavailable` is set). Every menu
 /// opens at once. A pick blinks the item twice, then calls `onpick`, fades the menu out over
 /// `--t-quick` and calls `onclose`; Escape and an outside click play the fade and call `onclose`.
 /// An item with `AfterPick::KeepOpen` (a toggle in a set of toggles) yields its value at once and
@@ -106,7 +105,7 @@ pub fn Menu<T: Clone + PartialEq + 'static>(
     /// Whether a `Context` menu leaves out the items that cannot be picked (the default) or
     /// keeps them dimmed. The other placements ignore it.
     #[props(default)]
-    unavailable: ContextUnavailable,
+    dim_unavailable: bool,
     #[props(default)] measured: Option<Rect>,
     #[props(default)] common: Common,
 ) -> Element {
@@ -133,7 +132,7 @@ pub fn Menu<T: Clone + PartialEq + 'static>(
         }
     });
     let items = match placement {
-        MenuPlacement::Context if unavailable == ContextUnavailable::Hide => available(&items),
+        MenuPlacement::Context if !dim_unavailable => available(&items),
         MenuPlacement::Context | MenuPlacement::Bar | MenuPlacement::Popup => items,
     };
     let label = items.iter().find_map(|item| match item {

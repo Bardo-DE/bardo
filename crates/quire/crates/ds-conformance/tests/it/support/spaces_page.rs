@@ -61,7 +61,7 @@ fn page_of(count: usize, with_extra: Extra, editing: Editing) -> Element {
                 .map(|name| {
                     MenuItem::new(name.to_owned(), name)
                         .with_check(Check::Off)
-                        .with_after(AfterPick::KeepOpen)
+                        .with_keep_open(true)
                 })
                 .collect(),
         }],

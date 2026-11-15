@@ -121,7 +121,7 @@ pub use blitz_host::provide_host;
 pub use blitz_kit::adapter::{ADAPTER_ENV, AdapterPref};
 pub use blitz_kit::net::FileRoots;
 pub use click_focus::FocusFallback;
-pub use close_request::{CloseAnswer, use_close_request};
+pub use close_request::use_close_request;
 pub use content_fit::{ContentFit, use_content_fit};
 pub use contexts::RootContexts;
 pub use error::LaunchError;

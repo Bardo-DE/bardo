@@ -41,9 +41,6 @@ fn key(path: &str, label: &str, section: &str, kind: KeyKind, default: &str) -> 
 }
 
 fn schema() -> Schema {
-    let toggle = |a: &str, b: &str| KeyKind::Toggle {
-        variants: [a.to_owned(), b.to_owned()],
-    };
     Schema {
         footnotes: Vec::new(),
         app: AppId("sample".to_owned()),
@@ -56,14 +53,16 @@ fn schema() -> Schema {
                 "view.spelling",
                 "Check spelling",
                 "Writing",
-                toggle("on", "off"),
+                KeyKind::Toggle,
                 "on",
             ),
             key(
                 "view.marks",
                 "Sender marks",
                 "Writing",
-                toggle("icons", "letters"),
+                KeyKind::Segmented {
+                    variants: words(&["icons", "letters"]),
+                },
                 "icons",
             ),
             key(

@@ -37,7 +37,7 @@ fn items() -> Vec<MenuItem<u8>> {
             check: None,
             availability: Availability::Enabled,
             hint: None,
-            after: AfterPick::Close,
+            keep_open: false,
             text: Default::default(),
         })
         .collect()

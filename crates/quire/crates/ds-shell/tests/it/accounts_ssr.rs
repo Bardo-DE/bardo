@@ -16,7 +16,7 @@ use ds::components::content::provider_mark::{MarkProvider, MarkStyle};
 use ds::prelude::*;
 use ds_lint::LintConfig;
 use ds_shell::accounts::model::{
-    AccountChoice, Attempt, Choice, ChoiceKey, CopyState, FieldProblem, FieldRole, FieldText,
+    AccountChoice, Attempt, Choice, ChoiceKey, FieldProblem, FieldRole, FieldText,
     FormField, FormPart, Limitation, NoAccountWhy, ProblemKind, ProviderEntry, ProviderKey,
     ProviderPick, ServiceKey, ServiceLine, ServiceOffer, SignInFault,
 };
@@ -456,7 +456,7 @@ const SPECIMENS: &[Specimen] = &[
             BrowserWait {
                 provider: "Nextcloud",
                 url: "https://cloud.example.org/login/v2/flow/abc123",
-                copied: CopyState::Copied,
+                copied: true,
                 on_open_again: |_| {},
                 on_copy: |_| {},
                 on_cancel: |_| {},

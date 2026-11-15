@@ -11,7 +11,6 @@ use dioxus::html::geometry::{
 use dioxus::html::{MountedError, MountedResult, RenderedElementBacking};
 use dioxus::prelude::MountedData;
 use dioxus_native_dom::NodeHandle;
-use ds::host::found::SameNode;
 use std::cell::RefCell;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::rc::Rc;
@@ -40,39 +39,35 @@ impl DocRef {
         }
     }
 
-    /// Write the document, or answer [`Written::Busy`] while it is borrowed.
-    pub(crate) fn write(&self, write: impl FnOnce(&mut BaseDocument)) -> Written {
+    /// Write the document, or answer [`Busy`] while it is borrowed.
+    pub(crate) fn write(&self, write: impl FnOnce(&mut BaseDocument)) -> Result<(), Busy> {
         match self {
             DocRef::Handle(handle) => {
                 if handle.try_doc().is_none() {
-                    return Written::Busy;
+                    return Err(Busy);
                 }
                 // Free a moment ago, on this thread: only a shared borrow held further up the
                 // stack could refuse the write now, and that is busy too.
                 match catch_unwind(AssertUnwindSafe(|| write(&mut handle.doc_mut()))) {
-                    Ok(()) => Written::Done,
-                    Err(_) => Written::Busy,
+                    Ok(()) => Ok(()),
+                    Err(_) => Err(Busy),
                 }
             }
             DocRef::Cell(cell) => match cell.try_borrow_mut() {
                 Ok(mut doc) => {
                     write(&mut doc);
-                    Written::Done
+                    Ok(())
                 }
-                Err(_) => Written::Busy,
+                Err(_) => Err(Busy),
             },
         }
     }
 }
 
-/// Whether a write to the document went in.
+/// A write that did not go in: the document is borrowed (the renderer holds it), so try again
+/// next frame.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Written {
-    /// It did.
-    Done,
-    /// The document is borrowed (the renderer holds it): try again next frame.
-    Busy,
-}
+pub(crate) struct Busy;
 
 /// A node and its document.
 #[derive(Clone)]
@@ -100,8 +95,8 @@ impl NodeRef {
         self.doc.read(read)
     }
 
-    /// Write the node's document, or answer [`Written::Busy`] while it is borrowed.
-    pub(crate) fn write(&self, write: impl FnOnce(&mut BaseDocument)) -> Written {
+    /// Write the node's document, or answer [`Busy`] while it is borrowed.
+    pub(crate) fn write(&self, write: impl FnOnce(&mut BaseDocument)) -> Result<(), Busy> {
         self.doc.write(write)
     }
 }
@@ -141,9 +136,6 @@ impl RenderedElementBacking for FoundNode {
 }
 
 /// Whether two handles name the same node (`ds::host::parts::GeometryHost::same`).
-pub(crate) fn same(a: &MountedData, b: &MountedData) -> SameNode {
-    match (NodeRef::of(a), NodeRef::of(b)) {
-        (Some(a), Some(b)) if a.node == b.node => SameNode::Same,
-        _ => SameNode::Different,
-    }
+pub(crate) fn same(a: &MountedData, b: &MountedData) -> bool {
+    matches!((NodeRef::of(a), NodeRef::of(b)), (Some(a), Some(b)) if a.node == b.node)
 }

@@ -7,7 +7,7 @@
 //! it, so an entry wires no `onsubmit` of its own and the step's default action runs once.
 
 use super::hidden::Hidden;
-use super::model::{Attempt, Choice, CopyState, FieldText, PickerChoice};
+use super::model::{Attempt, Choice, FieldText, PickerChoice};
 use dioxus::prelude::*;
 use ds::components::content::avatar::AvatarSize;
 use ds::components::content::icon_source::{ExternalIcon, IconSource};
@@ -248,15 +248,12 @@ pub(crate) fn CopyAction(
     #[props(into)] label: String,
     #[props(into)] copied: String,
     text: String,
-    state: CopyState,
+    state: bool,
     #[props(default)] intent: Intent,
     #[props(default)] landing: Landing,
     oncopy: EventHandler<String>,
 ) -> Element {
-    let shown = match state {
-        CopyState::Idle => label,
-        CopyState::Copied => copied,
-    };
+    let shown = if state { copied } else { label };
     rsx! {
         Action {
             label: shown,

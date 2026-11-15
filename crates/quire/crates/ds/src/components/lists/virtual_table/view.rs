@@ -41,7 +41,7 @@
 //! `div.ds-vtable-rows[role=listbox]` of `div.ds-vtable-item` (one `Row` each, `data-row` its
 //! index; `data-selected=yes` on the cursor's, `data-stripe=odd` on a striped one) and a spacer.
 //! `data-look=striped|unstriped` is a list look (absent for the plain grid), `data-rules=hairline`
-//! draws the lines between columns and `data-scrolled=yes|no` (unless the header rule is `Never`)
+//! draws the lines between columns and `data-scrolled=yes|no` (unless `header_rule` is false)
 //! keys the line under the header. A table wider than its box scrolls sideways, header and rows
 //! together. With `pinned` columns the root carries `data-pinned=yes` and `data-across=yes|no`
 //! (the other columns are scrolled sideways or not), and the body is `split::body`'s: see there.
@@ -67,7 +67,7 @@ use crate::components::lists::row::row::Row;
 use crate::components::lists::table::head::{Fit, cells, use_resize};
 use crate::components::lists::table::look::TableLook;
 use crate::components::lists::table::model::{Sort, TableColumn};
-use crate::components::lists::table::rules::{ColumnRules, HeaderRule, scrolled_word};
+use crate::components::lists::table::rules::scrolled_word;
 use crate::components::lists::table::widths::fit_width;
 use crate::components::lists::virtual_list::layout::Layout;
 use crate::components::lists::virtual_list::view::use_cursor_reveal;
@@ -170,8 +170,8 @@ fn row_content<C>(
 ///
 /// `overscan` is how many rows are mounted beyond the visible ones on each side (4 by default).
 /// `look` dresses the table (`TableLook::Plain`, the grid, by default; `Striped` and `Unstriped`
-/// are Finder's list view). `rules` draws a hairline between the columns; `header_rule` draws one under the
-/// header once the rows are scrolled (`HeaderRule::WhenScrolled`, the default). `pitch` is how
+/// are Finder's list view). `column_rules` draws a hairline between the columns; `header_rule` draws one under the
+/// header once the rows are scrolled (the default). `pitch` is how
 /// tall every row is ([`row_pitch`], the compact row, by default): a table that zooms its rows
 /// gives the zoomed height, and a row may be shorter than the compact row.
 ///
@@ -203,8 +203,8 @@ pub fn VirtualTable<C: Clone + PartialEq + 'static>(
     #[props(default)] pinned: usize,
     #[props(default = OVERSCAN_ROWS)] overscan: usize,
     #[props(default)] look: TableLook,
-    #[props(default)] rules: ColumnRules,
-    #[props(default)] header_rule: HeaderRule,
+    #[props(default)] column_rules: bool,
+    #[props(default = true)] header_rule: bool,
     #[props(default = row_pitch())] pitch: Px,
     #[props(default)] common: Common,
 ) -> Element {
@@ -322,7 +322,7 @@ pub fn VirtualTable<C: Clone + PartialEq + 'static>(
     let data = common.data_attributes();
     let mounted = common.clone();
     let away = (!held()).then_some("away");
-    let scrolled = header_rule.attribute(scroller.scroll().read().offset);
+    let scrolled = header_rule.then(|| scrolled_word(scroller.scroll().read().offset));
     let (above, below) = (layout.top(start).0, layout.below(end).0);
     let height = pitch.0;
     let fit: Option<Fit> = cell_width.map(|width| {
@@ -445,7 +445,7 @@ pub fn VirtualTable<C: Clone + PartialEq + 'static>(
             "aria-label": common.aria_label.clone().unwrap_or_else(|| label.clone()),
             "data-focus": away,
             "data-look": look.attribute(),
-            "data-rules": rules.attribute(),
+            "data-rules": column_rules.then_some("hairline"),
             "data-scrolled": scrolled,
             "data-pinned": pin,
             "data-across": across_mark,

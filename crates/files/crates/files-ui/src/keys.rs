@@ -11,7 +11,7 @@ use dioxus::prelude::{
     Key, KeyboardEvent, ModifiersInteraction, ReadableExt, Signal, WritableExt, use_hook,
 };
 use ds::base::command::types_text;
-use ds::prelude::{ActionTaken, Keys, use_keys};
+use ds::prelude::{Keys, use_keys};
 use files_core::ViewMode;
 use files_model::{Browser, Chooser, GoTo, InfoView, Input};
 
@@ -144,10 +144,10 @@ pub(crate) fn pressed(
     browse: Browse,
     sidebar: Signal<bool>,
     event: &KeyboardEvent,
-) -> ActionTaken {
+) -> bool {
     // The name field has the keyboard while one is typed: its keys are its own.
     if browse.renaming() {
-        return ActionTaken::No;
+        return false;
     }
     if event.key() == Key::Escape {
         return escape(browse);
@@ -155,7 +155,7 @@ pub(crate) fn pressed(
     // Get Info, Go to Folder and the sheet of apps are sheets over the window: the keys behind
     // them wait.
     if sheet_up(&browse.state.read()) {
-        return ActionTaken::No;
+        return false;
     }
     match keys.action_of(event, Context::Normal) {
         Some(action) => act(&action, browse, sidebar),
@@ -164,10 +164,10 @@ pub(crate) fn pressed(
 }
 
 /// Carries out `action`, when the window answers it.
-fn act(action: &Action, browse: Browse, mut sidebar: Signal<bool>) -> ActionTaken {
+fn act(action: &Action, browse: Browse, mut sidebar: Signal<bool>) -> bool {
     let send = |input: Input| {
         browse.send(input);
-        ActionTaken::Yes
+        true
     };
     match action {
         Action::Standard(standard) if *standard == StandardAction::SelectAll => {
@@ -196,33 +196,33 @@ fn act(action: &Action, browse: Browse, mut sidebar: Signal<bool>) -> ActionTake
         Action::Standard(standard) if *standard == StandardAction::ToggleSidebar => {
             let next = !sidebar();
             sidebar.set(next);
-            ActionTaken::Yes
+            true
         }
-        Action::App(app) => own_input(app).map_or(ActionTaken::No, send),
+        Action::App(app) => own_input(app).is_some_and(send),
         // A standard action the window does not offer, or one chordkit adds later.
-        Action::Standard(_) => ActionTaken::No,
+        Action::Standard(_) => false,
     }
 }
 
 /// A letter, digit or symbol typed with no command key held jumps to the name that starts with
 /// what has been typed.
-fn type_ahead(browse: Browse, event: &KeyboardEvent) -> ActionTaken {
+fn type_ahead(browse: Browse, event: &KeyboardEvent) -> bool {
     let key = event.key();
     if !types_text(&key, event.modifiers()) {
-        return ActionTaken::No;
+        return false;
     }
     let Key::Character(text) = key else {
-        return ActionTaken::No;
+        return false;
     };
     // A space with no name begun is Quick Look (Finder's); in the middle of one it is a letter.
     if text == " " && browse.state.read().typed().is_empty() {
         browse.send(Input::QuickLook);
-        return ActionTaken::Yes;
+        return true;
     }
     for c in text.chars() {
         browse.send(Input::Type(c));
     }
-    ActionTaken::Yes
+    true
 }
 
 /// Whether a sheet is up over the folder: Get Info, Go to Folder or the apps of Open With.
@@ -234,7 +234,7 @@ fn sheet_up(state: &Browser) -> bool {
 
 /// Escape puts away what is up over the folder: a sheet of Go to Folder or of apps, Get Info,
 /// else Quick Look. With nothing up the key goes on to whoever has it.
-fn escape(browse: Browse) -> ActionTaken {
+fn escape(browse: Browse) -> bool {
     let input = {
         let state = browse.state.read();
         if !matches!(state.go_to(), GoTo::Closed) {
@@ -254,8 +254,8 @@ fn escape(browse: Browse) -> ActionTaken {
     match input {
         Some(input) => {
             browse.send(input);
-            ActionTaken::Yes
+            true
         }
-        None => ActionTaken::No,
+        None => false,
     }
 }

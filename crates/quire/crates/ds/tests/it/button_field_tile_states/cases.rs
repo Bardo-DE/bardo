@@ -7,7 +7,6 @@ use ds::components::app::send_pill::{PillAction, SendPill};
 use ds::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue};
 use ds::components::content::provider_mark::{MarkProvider, MarkStyle};
 use ds::components::controls::button_model::{Bezel, ImagePosition};
-use ds::components::controls::press::Propagation;
 use ds::motion::detail::operation::Operation;
 use ds::motion::detail::operation::PendingToken;
 use ds::prelude::*;
@@ -31,7 +30,7 @@ fn scheduled() -> Element {
             leading: RowLeading::Avatar(CLOCKED),
             accessory: Accessory::Slot(rsx! {
                 span { "Mon 9:00" }
-                Button { bezel: Bezel::Toolbar, image: ImagePosition::Only, icon: Icon::X, label: "Cancel sending Q3 notes", propagation: Propagation::Stop, onclick: |_| {} }
+                Button { bezel: Bezel::Toolbar, image: ImagePosition::Only, icon: Icon::X, label: "Cancel sending Q3 notes", stop_propagation: true, onclick: |_| {} }
             }),
         }
     }

@@ -16,7 +16,7 @@ use detent_model::{
     SyncBook,
 };
 use dioxus::prelude::*;
-use ds::components::chrome::split_view::model::{Collapsing, PaneSize, PaneSpec, SplitPane};
+use ds::components::chrome::split_view::model::{PaneSize, PaneSpec, SplitPane};
 use ds::components::chrome::split_view::view::SplitView;
 use ds::components::overlays::empty_state::EmptyState;
 use ds::prelude::*;
@@ -26,7 +26,7 @@ const SOURCES: PaneSpec = PaneSpec {
     preferred: PaneSize::Fixed(Px(280.0)),
     min: PaneSize::Fixed(Px(220.0)),
     max: PaneSize::Fixed(Px(380.0)),
-    collapsing: Collapsing::Never,
+    collapsing: false,
 };
 
 /// The accounts as a list and a detail screen, or one row that says the account service is not

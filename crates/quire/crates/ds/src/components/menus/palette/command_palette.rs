@@ -32,7 +32,7 @@ use crate::components::menus::palette::palette_shown::{Change, Showing, use_show
 use crate::components::menus::palette::palette_stops::{
     Run, Travel, grid_spans, run_of, shown_groups, stops, travel,
 };
-use crate::root::pointer_trail::{Movement, movement_of, use_pointer_trail};
+use crate::root::pointer_trail::{moved_to, use_pointer_trail};
 use ds_core::vocab::{Dismiss, shown_word};
 use ds_core::word::Word;
 use ds_motion::anim::Anim;
@@ -268,7 +268,7 @@ pub fn CommandPalette<T: Clone + PartialEq + 'static>(
                     let live = live.clone();
                     let selection = selection.clone();
                     move |(index, to): (usize, Point)| {
-                        let moved = movement_of(trail, to) == Movement::Moved;
+                        let moved = moved_to(trail, to);
                         let enabled = live.get(index) == Some(&Availability::Enabled);
                         if moved && enabled && index != current {
                             in_view.pointed(index, revision);

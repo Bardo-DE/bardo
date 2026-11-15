@@ -391,10 +391,6 @@ pub enum NoAccountWhy {
     Unsupported,
 }
 
-/// Whether the link or code has been copied, as the host knows it: `ds`'s [`CopyState`], at the path
-/// this crate has always given it.
-pub use ds::components::controls::copy_state::CopyState;
-
 /// Why a sign-in ended without an account.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
 pub enum SignInFault {

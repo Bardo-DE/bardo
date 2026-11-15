@@ -3,13 +3,13 @@
 //! panicking when the renderer holds the document or the element is not its own.
 
 use crate::host::captured::CapturedPointer;
-use crate::host::caret::{Caret, CaretOwed, FieldSelection, InitialCaret};
+use crate::host::caret::{Caret, FieldSelection, InitialCaret};
 use crate::host::drop_hit::DropHit;
 use crate::host::fallback::Fallback;
 use crate::host::focused::Focused;
-use crate::host::found::{Found, SameNode};
+use crate::host::found::Found;
 use crate::host::hand_back::HandBack;
-use crate::host::ime::{ImeEvent, ImeListener, ImeSwitch};
+use crate::host::ime::{ImeEvent, ImeListener};
 use crate::host::measure::Measured;
 use crate::host::pasted::Pasted;
 use crate::host::phase::{Observe, Observed, PhaseWrite, Queued};
@@ -51,11 +51,13 @@ pub trait CaretHost {
     fn place_caret(&self, el: &MountedData, at: InitialCaret) -> Focused;
     /// The field's selection, in characters.
     fn selection(&self, el: &MountedData) -> FieldSelection;
-    /// Whether the focused field `el`, not laid out yet, still owes its caret. A host that cannot
-    /// tell owes nothing.
-    fn caret_owed(&self, el: &MountedData) -> CaretOwed {
+    /// Whether the focused field `el`, not laid out yet, still owes its caret its landing: a field
+    /// with text and no editor yet. An empty field owes nothing: its caret sits at the start, which
+    /// is its end too, so a key typed the moment it is built is never moved away from. A host that
+    /// cannot tell owes nothing.
+    fn caret_owed(&self, el: &MountedData) -> bool {
         let _ = el;
-        CaretOwed::No
+        false
     }
 }
 
@@ -67,8 +69,10 @@ pub trait GeometryHost {
     fn reveal(&self, list: &MountedData, item: &MountedData) -> Scrolled;
     /// The first element matching a CSS selector.
     fn find(&self, selector: &str) -> Found;
-    /// Whether `a` and `b` are the same node.
-    fn same(&self, a: &MountedData, b: &MountedData) -> SameNode;
+    /// Whether `a` and `b` are the same node of the host's document: an element found by selector
+    /// is a different handle on the same node as the one a component mounted. Two nodes, or a
+    /// handle the host cannot read, are not.
+    fn same(&self, a: &MountedData, b: &MountedData) -> bool;
     /// Publish what the frame phase sees of `el` into a signal, whenever it changes, until the
     /// returned watch is dropped. A host with no phase answers [`Observed::Unsupported`].
     fn observe(&self, _el: &MountedData, _what: Observe) -> Observed {
@@ -114,8 +118,8 @@ pub trait EditHost {
 
 /// The window's IME, as an edit surface uses it.
 pub trait ImeHost {
-    /// Turn the IME on or off for the surface.
-    fn switch(&self, surface: &MountedData, to: ImeSwitch) -> Probe<()>;
+    /// Turn the IME on (the surface has the keyboard) or off (it lost it) for the surface.
+    fn switch(&self, surface: &MountedData, on: bool) -> Probe<()>;
     /// Where the IME's candidate window should sit: the caret's rect.
     fn cursor_area(&self, surface: &MountedData, area: Rect) -> Probe<()>;
     /// Deliver the IME's events to `sink` while the surface (or a node inside it) has the focus.

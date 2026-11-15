@@ -1,11 +1,10 @@
 //! A press kept at its button, on a real Blitz document: a `Button`
-//! (image-only included) with `propagation: Propagation::Stop` inside a `<summary>` fires its own
+//! (image-only included) with `stop_propagation: true` inside a `<summary>` fires its own
 //! `onclick` and leaves the `<details>` as it was, while a `Bubble` one (the default) lets the
 //! click reach the summary, which toggles its details.
 
 use dioxus::prelude::*;
 use ds::components::controls::button_model::{Bezel, ImagePosition};
-use ds::components::controls::press::Propagation;
 use ds::prelude::*;
 use ds::style::tokens::control_size::ControlSize;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -31,7 +30,7 @@ fn Page() -> Element {
                     Button {
                         size: ControlSize::Mini,
                         label: "Remove",
-                        propagation: Propagation::Stop,
+                        stop_propagation: true,
                         onclick: move |_| note("press:stop"),
                     }
                 }
@@ -55,7 +54,7 @@ fn Page() -> Element {
                         bezel: Bezel::Toolbar, size: ControlSize::Large, image: ImagePosition::Only,
                         icon: Icon::X,
                         label: "Remove signature",
-                        propagation: Propagation::Stop,
+                        stop_propagation: true,
                         onclick: move |_| note("press:glyph"),
                     }
                 }

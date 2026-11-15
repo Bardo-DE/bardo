@@ -169,7 +169,7 @@ fn system_menu(session: &Session) -> Vec<MenuItem<BarPick>> {
             check: None,
             availability,
             hint: None,
-            after: AfterPick::Close,
+            keep_open: false,
             text: Default::default(),
         }
     };
@@ -260,7 +260,7 @@ fn item(title: String, value: BarPick, check: Option<Check>) -> MenuItem<BarPick
         check,
         availability: Availability::Enabled,
         hint: None,
-        after: AfterPick::Close,
+        keep_open: false,
         text: Default::default(),
     }
 }

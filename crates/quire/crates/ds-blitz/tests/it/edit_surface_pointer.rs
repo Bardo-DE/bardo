@@ -9,7 +9,6 @@ use ds::edit::handle::{EditHandle, use_edit_handle};
 use ds::edit::input::{Composition, EditInput, KeyInput};
 use ds::edit::pointer::{EditFocus, EditPointer, Extend};
 use ds::host::captured::PointerPhase;
-use ds::host::ime::ImeSwitch;
 use ds::host::position::TextPosition;
 use ds::host::probe::Probe;
 use ds::prelude::*;
@@ -101,12 +100,12 @@ fn the_surface_carries_the_apps_class_and_data() {
 #[test]
 fn a_programmatic_focus_does_what_a_press_does() {
     let mut harness = fresh();
-    assert_eq!(harness.ime_switch(), ImeSwitch::Off);
+    assert!(!harness.ime_switch());
     harness.within(|| handle().focus());
     harness.advance(ms(50));
     assert!(harness.focus_of("#editor"));
     assert_eq!(drain(&FOCUS), vec![EditFocus::In]);
-    assert_eq!(harness.ime_switch(), ImeSwitch::On);
+    assert!(harness.ime_switch());
     harness.send(Input::ime_update("か", 3));
     harness.send(Input::ime_commit("火"));
     let heard = drain(&INPUT);
@@ -125,7 +124,7 @@ fn a_programmatic_focus_does_what_a_press_does() {
     harness.advance(ms(50));
     assert!(!harness.focus_of("#editor"));
     assert_eq!(drain(&FOCUS), vec![EditFocus::Out]);
-    assert_eq!(harness.ime_switch(), ImeSwitch::Off);
+    assert!(!harness.ime_switch());
     harness.send(Input::ime_commit("x"));
     assert_eq!(drain(&INPUT), Vec::new(), "no longer the IME's target");
 }

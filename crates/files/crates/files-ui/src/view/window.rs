@@ -3,12 +3,12 @@
 use std::rc::Rc;
 
 use dioxus::prelude::*;
-use ds::components::chrome::split_view::model::{Collapsing, PaneSize, PaneSpec, SplitPane};
+use ds::components::chrome::split_view::model::{PaneSize, PaneSpec, SplitPane};
 use ds::components::chrome::split_view::view::SplitView;
 use ds::file_drop::drag::FileDrop;
 use ds::file_drop::hook::use_file_drop;
 use ds::focus::soon::focus_soon;
-use ds::prelude::{ActionTaken, Px};
+use ds::prelude::Px;
 use ds::window::host::use_window_title;
 
 use super::busy::Busy;
@@ -33,7 +33,7 @@ const SIDEBAR: PaneSpec = PaneSpec {
     preferred: PaneSize::Fixed(Px(232.0)),
     min: PaneSize::Fixed(Px(212.0)),
     max: PaneSize::Fixed(Px(320.0)),
-    collapsing: Collapsing::Snaps,
+    collapsing: true,
 };
 
 /// The window's content, under `Ds`.
@@ -91,7 +91,7 @@ pub(super) fn Window() -> Element {
                 }));
             },
             onkeydown: move |event: KeyboardEvent| {
-                if pressed(keys, browse, sidebar, &event) == ActionTaken::Yes {
+                if pressed(keys, browse, sidebar, &event) {
                     event.prevent_default();
                     event.stop_propagation();
                 }

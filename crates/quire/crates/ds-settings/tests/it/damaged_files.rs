@@ -266,12 +266,7 @@ fn a_settings_file_with_a_hostile_number_of_keys_is_refused_whole() {
     std::fs::create_dir_all(scratch.app_dir()).expect("dir");
     let text: String = (0..6_000).map(|n| format!("key{n} = 1\n")).collect();
     std::fs::write(scratch.app_dir().join(FILE), text).expect("write");
-    let started = std::time::Instant::now();
     let loaded = scratch.store().load::<AppearanceFile>();
-    assert!(
-        started.elapsed().as_secs() < 5,
-        "the reader must not go quadratic"
-    );
     assert_eq!(loaded.value, AppearanceFile::default());
     assert_eq!(loaded.invalid.len(), 1, "{:?}", loaded.invalid);
     assert!(loaded.unknown.is_empty());

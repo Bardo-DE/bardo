@@ -131,7 +131,7 @@ fn snooze_hints() -> Vec<MenuItem<u8>> {
         item(4, "Toggle flag")
             .with_check(Check::On)
             .with_hint("kept open")
-            .with_after(AfterPick::KeepOpen),
+            .with_keep_open(true),
         item(5, "Someday")
             .with_hint("no date")
             .with_availability(Availability::Disabled),
@@ -397,7 +397,7 @@ fn HookedTip() -> Element {
 fn label_groups() -> Vec<PaletteGroup<u8>> {
     let label = |value: u8, title: &str, on: Check| PaletteRow {
         accessory: Accessory::Check(on),
-        after: AfterPick::KeepOpen,
+        keep_open: true,
         ..PaletteRow::new(value, title)
     };
     vec![

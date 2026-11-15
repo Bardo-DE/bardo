@@ -8,7 +8,7 @@ use crate::input::{ImeInput, PasteChord, RawKeyInput, RawKeyPhase};
 use crate::query::first;
 use blitz_traits::events::{BlitzImeEvent, MouseEventButton, UiEvent};
 use ds::host::captured::{CapturedPointer, PointerPhase};
-use ds::host::ime::{ImeEvent, ImeSwitch};
+use ds::host::ime::ImeEvent;
 use ds::host::position::TextPosition;
 use ds::prelude::*;
 use ds_blitz::seam::edit_hit as hit;
@@ -54,7 +54,7 @@ impl Harness {
     }
 
     /// Whether the document has the IME on (a surface switches it on as it takes the keyboard).
-    pub fn ime_switch(&self) -> ImeSwitch {
+    pub fn ime_switch(&self) -> bool {
         self.doc.shell.ime_switch()
     }
 

@@ -120,7 +120,7 @@ fn shape(kind: &KeyKind) -> (String, String) {
     let words = |variants: &[String]| format!("{{{}}}", variants.join(", "));
     match kind {
         KeyKind::Fixed { variant } => (format!("fixed `{variant}`"), String::new()),
-        KeyKind::Toggle { variants } => (format!("choice {}", words(&variants[..])), String::new()),
+        KeyKind::Toggle => ("toggle".to_owned(), String::new()),
         KeyKind::Segmented { variants } | KeyKind::Menu { variants } => {
             (format!("choice {}", words(variants)), String::new())
         }

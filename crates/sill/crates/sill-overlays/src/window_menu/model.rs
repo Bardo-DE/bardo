@@ -19,8 +19,8 @@ impl MenuModel for WindowMenuModel {
     }
 
     /// The menu is always the same set: an entry the window cannot take is dimmed, not left out.
-    fn unavailable(&self) -> ContextUnavailable {
-        ContextUnavailable::Dim
+    fn dim_unavailable(&self) -> bool {
+        true
     }
 }
 

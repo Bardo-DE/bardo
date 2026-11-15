@@ -2,14 +2,15 @@
 //! named by its value, as a controlled selection is (`SearchCursor`); the menu numbers its choices.
 
 use crate::components::menus::menu::choices::{Act, Choice};
-use crate::components::menus::search::model::{InitialHighlight, SearchCursor};
+use crate::components::menus::search::model::SearchCursor;
 use ds_core::vocab::Availability;
 
-/// The choice a fresh list of results highlights: the first pickable one under `TopHit`.
-pub(crate) fn initial(highlight: InitialHighlight, live: &[Availability]) -> Option<usize> {
-    match highlight {
-        InitialHighlight::None => None,
-        InitialHighlight::TopHit => live.iter().position(|row| *row == Availability::Enabled),
+/// The choice a fresh list of results highlights: the first pickable one when `top_hit` is set.
+pub(crate) fn initial(top_hit: bool, live: &[Availability]) -> Option<usize> {
+    if top_hit {
+        live.iter().position(|row| *row == Availability::Enabled)
+    } else {
+        None
     }
 }
 
@@ -45,7 +46,7 @@ mod tests {
     use super::{initial, shown_at, value_at};
     use crate::components::menus::item::item::AfterPick;
     use crate::components::menus::menu::choices::{Act, Choice, Slot};
-    use crate::components::menus::search::model::{InitialHighlight, SearchCursor};
+    use crate::components::menus::search::model::SearchCursor;
     use ds_core::vocab::Availability::{Disabled as D, Enabled as E};
 
     fn pick(
@@ -62,10 +63,10 @@ mod tests {
 
     #[test]
     fn the_top_hit_is_the_first_enabled_choice() {
-        assert_eq!(initial(InitialHighlight::None, &[E, E]), None);
-        assert_eq!(initial(InitialHighlight::TopHit, &[D, E, E]), Some(1));
-        assert_eq!(initial(InitialHighlight::TopHit, &[D]), None);
-        assert_eq!(initial(InitialHighlight::TopHit, &[]), None);
+        assert_eq!(initial(false, &[E, E]), None);
+        assert_eq!(initial(true, &[D, E, E]), Some(1));
+        assert_eq!(initial(true, &[D]), None);
+        assert_eq!(initial(true, &[]), None);
     }
 
     #[test]

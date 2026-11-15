@@ -4,7 +4,7 @@
 
 use crate::components::controls::edge_grab::EdgeGrab;
 use crate::components::lists::table::model::{
-    CellAlign, Sort, SortDirection, Sorting, TableColumn,
+    CellAlign, Sort, SortDirection, TableColumn,
 };
 use crate::components::lists::table::widths::Widths;
 use dioxus::prelude::*;
@@ -181,7 +181,7 @@ fn header_cell<C: Clone + PartialEq + 'static>(
         SortDirection::Ascending => Icon::ChevronUp,
         SortDirection::Descending => Icon::ChevronDown,
     });
-    let live = column.sorting == Sorting::Sortable;
+    let live = column.sortable;
     rsx! {
         button {
             r#type: "button",
@@ -189,7 +189,7 @@ fn header_cell<C: Clone + PartialEq + 'static>(
             role: "columnheader",
             "aria-sort": aria,
             "data-align": column.align.slug(),
-            "data-sorting": column.sorting.slug(),
+            "data-sorting": if live { "sortable" } else { "fixed" },
             "aria-disabled": if live { None } else { Some("true") },
             onclick: move |_| {
                 if live {

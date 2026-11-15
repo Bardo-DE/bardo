@@ -3,7 +3,6 @@
 use super::scoped::Scoped;
 use dioxus::prelude::*;
 use ds::components::controls::button_model::{Bezel, ImagePosition};
-use ds::components::controls::press::Propagation;
 use ds::components::lists::row::row::Outline;
 use ds::prelude::*;
 use ds::root::common::Common;
@@ -36,7 +35,7 @@ fn class(list: &str) -> Option<ExtraClass> {
 /// The ⋯ for a folder row.
 fn more(name: &str) -> Element {
     rsx! {
-        Button { bezel: Bezel::Toolbar, image: ImagePosition::Only, icon: Icon::Ellipsis, label: "Actions for {name}", propagation: Propagation::Stop, onclick: |_| {} }
+        Button { bezel: Bezel::Toolbar, image: ImagePosition::Only, icon: Icon::Ellipsis, label: "Actions for {name}", stop_propagation: true, onclick: |_| {} }
     }
 }
 
@@ -67,7 +66,7 @@ pub const CASES: &[Case] = &[
     },
     Case {
         golden: "controls/button/data-attr-extra-class.html",
-        make: || rsx! { Button { common: Common { data: folder("INBOX/Receipts"), extra_class: class("fold-more"), ..Common::default() }, bezel: Bezel::Toolbar, image: ImagePosition::Only, icon: Icon::Ellipsis, label: "Actions for Receipts", propagation: Propagation::Stop, onclick: |_| {} } },
+        make: || rsx! { Button { common: Common { data: folder("INBOX/Receipts"), extra_class: class("fold-more"), ..Common::default() }, bezel: Bezel::Toolbar, image: ImagePosition::Only, icon: Icon::Ellipsis, label: "Actions for Receipts", stop_propagation: true, onclick: |_| {} } },
     },
     Case {
         golden: "lists/row/outline-open-idle.html",

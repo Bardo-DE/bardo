@@ -22,12 +22,12 @@ use crate::phase::Phase;
 use crate::reveal::reveal;
 use dioxus::prelude::*;
 use ds::host::captured::CapturedPointer;
-use ds::host::caret::{Caret, CaretOwed, FieldSelection, InitialCaret};
+use ds::host::caret::{Caret, FieldSelection, InitialCaret};
 use ds::host::drop_hit::DropHit;
 use ds::host::fallback::Fallback;
-use ds::host::found::{Found, SameNode};
+use ds::host::found::Found;
 use ds::host::hand_back::HandBack;
-use ds::host::ime::{ImeEvent, ImeListener, ImeSwitch};
+use ds::host::ime::{ImeEvent, ImeListener};
 use ds::host::parts::{
     CaretHost, ClickFocusHost, EditHost, FileDropHost, FocusHost, GeometryHost, ImeHost,
 };
@@ -246,7 +246,7 @@ impl CaretHost for BlitzCaret {
         selection(el)
     }
 
-    fn caret_owed(&self, el: &MountedData) -> CaretOwed {
+    fn caret_owed(&self, el: &MountedData) -> bool {
         caret_owed(el)
     }
 }
@@ -271,7 +271,7 @@ impl GeometryHost for BlitzGeometry {
             .map_or(Found::Unreachable, |find| find(selector))
     }
 
-    fn same(&self, a: &MountedData, b: &MountedData) -> SameNode {
+    fn same(&self, a: &MountedData, b: &MountedData) -> bool {
         same(a, b)
     }
 
@@ -335,8 +335,8 @@ impl EditHost for BlitzEdit {
 struct BlitzIme(EditListeners);
 
 impl ImeHost for BlitzIme {
-    fn switch(&self, surface: &MountedData, to: ImeSwitch) -> Probe<()> {
-        set_ime(surface, to)
+    fn switch(&self, surface: &MountedData, on: bool) -> Probe<()> {
+        set_ime(surface, on)
     }
 
     fn cursor_area(&self, surface: &MountedData, area: Rect) -> Probe<()> {

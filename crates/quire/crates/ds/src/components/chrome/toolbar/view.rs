@@ -82,7 +82,7 @@ fn hidden_rows<T: Clone>(items: &[&ToolbarItem<T>]) -> Vec<MenuItem<T>> {
             hint: None,
             check: item.check,
             availability: item.availability,
-            after: AfterPick::Close,
+            keep_open: false,
             text: Default::default(),
         })
         .collect()

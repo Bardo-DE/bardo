@@ -122,10 +122,11 @@ mod tests {
     }
 
     #[test]
-    fn a_two_word_enum_is_a_toggle() {
+    fn a_two_word_enum_is_segmented_and_a_bool_is_a_toggle() {
         assert!(matches!(
             kind_of::<ds_style::appearance::motion::Motion>(),
-            KeyKind::Toggle { .. }
+            KeyKind::Segmented { .. }
         ));
+        assert_eq!(kind_of::<bool>(), KeyKind::Toggle);
     }
 }

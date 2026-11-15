@@ -89,8 +89,8 @@ fn a_vec_of_rows_is_rows_and_a_vec_of_text_or_words_is_a_list() {
             ],
         },
         KeyKind::List(Box::new(KeyKind::Text)),
-        KeyKind::List(Box::new(KeyKind::Toggle {
-            variants: ["left".to_owned(), "right".to_owned()],
+        KeyKind::List(Box::new(KeyKind::Segmented {
+            variants: vec!["left".to_owned(), "right".to_owned()],
         })),
     ];
     assert_eq!(kinds, want.iter().collect::<Vec<_>>());

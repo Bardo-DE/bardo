@@ -32,7 +32,7 @@ fn label_menu(on: &[u8]) -> Vec<MenuItem<u8>> {
         };
         MenuItem::new(value, name)
             .with_check(state)
-            .with_after(AfterPick::KeepOpen)
+            .with_keep_open(true)
     };
     vec![
         MenuItem::Header("Labels".to_string()),
@@ -66,7 +66,7 @@ fn label_groups(query: &str, on: &[u8]) -> Vec<PaletteGroup<u8>> {
             } else {
                 Check::Off
             }),
-            after: AfterPick::KeepOpen,
+            keep_open: true,
             ..PaletteRow::new(value, name)
         })
         .collect();
@@ -124,7 +124,7 @@ pub fn HintsAndPickList() -> Element {
                         }
                     }
                 }
-                Specimen { name: "Keeps open", code: "MenuItem::new(1, \"Invoices\").with_after(AfterPick::KeepOpen)".to_string(),
+                Specimen { name: "Keeps open", code: "MenuItem::new(1, \"Invoices\").with_keep_open(true)".to_string(),
                     div { class: "g-menu-card",
                         Menu::<u8> {
                             placement: MenuPlacement::Popup,

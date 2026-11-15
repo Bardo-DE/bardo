@@ -11,7 +11,7 @@ use ds::assembly::ds::Inject;
 use ds::components::content::provider_mark::MarkProvider;
 use ds::prelude::*;
 use ds_shell::accounts::model::{
-    AccountChoice, Attempt, Choice, ChoiceKey, CopyState, FieldProblem, FieldRole, FieldText,
+    AccountChoice, Attempt, Choice, ChoiceKey, FieldProblem, FieldRole, FieldText,
     FormField, FormPart, Limitation, NoAccountWhy, ProblemKind, ProviderEntry, ProviderKey,
     ServiceKey, ServiceLine, ServiceOffer, SignInFault,
 };
@@ -184,7 +184,7 @@ pub fn AccountsPage() -> Element {
                     BrowserWait { provider: "Nextcloud", url: "https://cloud.example.org/login/v2/flow/abc123", on_open_again: |_| {}, on_copy: |_| {}, on_cancel: |_| {} }
                 }) }
                 Stage { theme: Theme::Dark, body: step(rsx! {
-                    ShowCode { provider: "Microsoft 365", code: "BQKD-4MZP", url: "https://microsoft.com/devicelogin", copied: CopyState::Copied, on_copy: |_| {}, on_cancel: |_| {} }
+                    ShowCode { provider: "Microsoft 365", code: "BQKD-4MZP", url: "https://microsoft.com/devicelogin", copied: true, on_copy: |_| {}, on_cancel: |_| {} }
                 }) }
             }
         }

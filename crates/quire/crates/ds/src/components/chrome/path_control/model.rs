@@ -82,7 +82,7 @@ pub(crate) fn rows(segments: &[PathSegment], first: usize) -> Vec<MenuItem<usize
             hint: None,
             check: None,
             availability: Availability::Enabled,
-            after: AfterPick::Close,
+            keep_open: false,
             text: Default::default(),
         })
         .collect()

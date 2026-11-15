@@ -14,7 +14,7 @@ pub enum OpacityToken {
     #[token(value = ".16")]
     Veil,
     /// `--pane-dim` .6: a pane of a split view that does not hold the focus, when the view dims
-    /// them (`UnfocusedPanes::Dim`), so the one being typed into stands out.
+    /// them (`dim_unfocused`), so the one being typed into stands out.
     #[token(value = ".6")]
     PaneDim,
 }

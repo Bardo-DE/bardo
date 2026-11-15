@@ -51,16 +51,6 @@ impl<C: Clone + PartialEq> Sort<C> {
     }
 }
 
-/// Whether a press on a column's header sorts by it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum Sorting {
-    /// It sorts.
-    #[default]
-    Sortable,
-    /// A plain title.
-    Fixed,
-}
-
 /// Where a column's cells and title sit.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
 pub enum CellAlign {
@@ -86,8 +76,8 @@ pub struct TableColumn<C> {
     pub min_width: Px,
     /// Where its cells sit.
     pub align: CellAlign,
-    /// Whether its header sorts.
-    pub sorting: Sorting,
+    /// Whether a press on its header sorts by it; when false the header is a plain title.
+    pub sortable: bool,
 }
 
 impl<C> TableColumn<C> {
@@ -99,7 +89,7 @@ impl<C> TableColumn<C> {
             width,
             min_width: Px(48.0),
             align: CellAlign::Leading,
-            sorting: Sorting::Sortable,
+            sortable: true,
         }
     }
 
@@ -108,9 +98,9 @@ impl<C> TableColumn<C> {
         TableColumn { align, ..self }
     }
 
-    /// The same column with `sorting`.
-    pub fn sorting(self, sorting: Sorting) -> Self {
-        TableColumn { sorting, ..self }
+    /// The same column whose header sorts, or not, as `sortable` says.
+    pub fn sortable(self, sortable: bool) -> Self {
+        TableColumn { sortable, ..self }
     }
 }
 
