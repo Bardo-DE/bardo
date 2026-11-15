@@ -13,7 +13,7 @@
 mod bound;
 mod facts;
 
-use self::bound::{Asked, Outcome, Told};
+use self::bound::{Asked, Told};
 use super::code_of;
 use crate::client::ClientState;
 use crate::foreign_toplevel_list::window_of_identifier;
