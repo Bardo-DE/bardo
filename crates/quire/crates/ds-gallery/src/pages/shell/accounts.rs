@@ -13,7 +13,7 @@ use ds::prelude::*;
 use ds_shell::accounts::model::{
     AccountChoice, Attempt, Choice, ChoiceKey, CopyState, FieldProblem, FieldRole, FieldText,
     FormField, FormPart, Limitation, NoAccountWhy, ProblemKind, ProviderEntry, ProviderKey,
-    Requirement, ServiceKey, ServiceLine, ServiceOffer, SignInFault,
+    ServiceKey, ServiceLine, ServiceOffer, SignInFault,
 };
 use ds_shell::prelude::*;
 
@@ -44,7 +44,7 @@ fn providers() -> Vec<ProviderEntry> {
 }
 
 fn field(role: FieldRole, text: FieldText) -> FormField {
-    FormField::new(role, Requirement::Required, text)
+    FormField::new(role, true, text)
 }
 
 fn manual(role: FieldRole, text: &str, part: FormPart) -> FormField {
@@ -79,7 +79,7 @@ fn by_hand(protocol: &str, port: &str, hint: &'static str) -> Vec<FormField> {
     let ported = |role, text: &str, hint, part| {
         let port = manual(role, text, part).hinted(hint);
         FormField {
-            requirement: Requirement::Optional,
+            required: false,
             ..port
         }
     };

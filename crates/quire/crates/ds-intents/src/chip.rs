@@ -24,16 +24,6 @@ pub enum ChipKind {
     Text,
 }
 
-/// Whether the person can drop a chip from the prompt (`data-removal`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum Removal {
-    /// Dropping it is the person's choice.
-    #[default]
-    Removable,
-    /// It always goes with the prompt.
-    Fixed,
-}
-
 /// One piece of context the prompt carries, drawn as a chip. The chips are the consent surface:
 /// what is not shown is not sent.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -44,6 +34,6 @@ pub struct ContextChip {
     pub label: String,
     /// How many, where it stands for several.
     pub count: Option<Tally>,
-    /// Whether it can be dropped.
-    pub removal: Removal,
+    /// Whether the person can drop it from the prompt; a fixed chip always goes with it.
+    pub removable: bool,
 }

@@ -116,4 +116,4 @@ pub use look::{Look, LookSheet, STYLESHEET_CAP_BYTES};
 pub use provision::Provision;
 pub use resolve::{Problem, Resolved, Trouble};
 pub use search::{Found, Off, PROTOCOL, Search};
-pub use your_changes::{ChangeError, Removal, YOUR_CHANGES_ID, YOUR_CHANGES_NAME, YourChanges};
+pub use your_changes::{ChangeError, YOUR_CHANGES_ID, YOUR_CHANGES_NAME, YourChanges};

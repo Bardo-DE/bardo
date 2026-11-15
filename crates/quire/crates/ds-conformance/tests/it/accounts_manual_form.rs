@@ -6,7 +6,7 @@ use dioxus::prelude::*;
 use ds::prelude::*;
 use ds_harness::harness::settle_until;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use ds_shell::accounts::model::{Choice, FieldRole, FieldText, FormField, FormPart, Requirement};
+use ds_shell::accounts::model::{Choice, FieldRole, FieldText, FormField, FormPart};
 use ds_shell::prelude::*;
 use std::time::Duration;
 
@@ -24,7 +24,7 @@ fn fields(protocol: &str) -> Vec<FormField> {
     let plain = |role, text: &str| {
         FormField::new(
             role,
-            Requirement::Required,
+            true,
             FieldText::Plain(text.to_owned()),
         )
         .in_part(FormPart::Incoming)

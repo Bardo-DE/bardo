@@ -18,7 +18,7 @@ use ds_lint::LintConfig;
 use ds_shell::accounts::model::{
     AccountChoice, Attempt, Choice, ChoiceKey, CopyState, FieldProblem, FieldRole, FieldText,
     FormField, FormPart, Limitation, NoAccountWhy, ProblemKind, ProviderEntry, ProviderKey,
-    ProviderPick, Requirement, ServiceKey, ServiceLine, ServiceOffer, SessionOffer, SignInFault,
+    ProviderPick, ServiceKey, ServiceLine, ServiceOffer, SessionOffer, SignInFault,
 };
 use ds_shell::prelude::*;
 
@@ -66,7 +66,7 @@ fn providers() -> Vec<ProviderEntry> {
 }
 
 fn field(role: FieldRole, text: FieldText) -> FormField {
-    FormField::new(role, Requirement::Required, text)
+    FormField::new(role, true, text)
 }
 
 fn plain(text: &str) -> FieldText {
@@ -100,7 +100,7 @@ const SECURITIES: [(&str, &str); 2] = [
 
 fn optional(field: FormField) -> FormField {
     FormField {
-        requirement: Requirement::Optional,
+        required: false,
         ..field
     }
 }

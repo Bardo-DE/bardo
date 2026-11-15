@@ -11,7 +11,7 @@ use ds::prelude::*;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use ds_shell::accounts::model::{
     AccountChoice, AllowScope, ChoiceKey, ConsentAnswer, CopyState, FieldRole, FieldText,
-    FormField, Limitation, ProviderEntry, ProviderKey, ProviderPick, Requirement, ServiceKey,
+    FormField, Limitation, ProviderEntry, ProviderKey, ProviderPick, ServiceKey,
     ServiceLine, ServiceOffer, SessionOffer, SignInFault, StepTitle,
 };
 use ds_shell::helpers::HelperPhase;
@@ -42,7 +42,7 @@ fn log(harness: &mut Harness) -> Vec<String> {
 }
 
 fn field(role: FieldRole, text: FieldText) -> FormField {
-    FormField::new(role, Requirement::Required, text)
+    FormField::new(role, true, text)
 }
 
 fn account(label: &str) -> AccountChoice {

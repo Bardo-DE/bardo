@@ -4,7 +4,7 @@ use std::fs;
 use std::path::Path;
 
 use ds_extensions::{
-    Capability, ChangeError, Removal, Search, YOUR_CHANGES_ID, YOUR_CHANGES_NAME, YourChanges,
+    Capability, ChangeError, Search, YOUR_CHANGES_ID, YOUR_CHANGES_NAME, YourChanges,
     choices_for,
 };
 use ds_helpers::mime::{IconName, MimeDb, MimeLayer, MimeType};
@@ -87,14 +87,14 @@ fn it_cannot_be_removed_while_it_holds_a_change() {
     let scratch = Scratch::new();
     let changes = YourChanges::in_root(&scratch.root("home"));
     // Nothing set yet: nothing to lose.
-    assert_eq!(changes.removal(), Removal::Allowed);
+    assert!(changes.removable());
     let pdf = icon("application/pdf");
     changes
         .set(&pdf, &picture(&scratch, "a.svg", SVG.as_bytes()))
         .expect("sets");
-    assert_eq!(changes.removal(), Removal::Blocked);
+    assert!(!changes.removable());
     changes.clear(&pdf).expect("clears");
-    assert_eq!(changes.removal(), Removal::Allowed);
+    assert!(changes.removable());
 }
 
 #[test]

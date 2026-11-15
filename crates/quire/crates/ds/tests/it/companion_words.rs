@@ -4,7 +4,6 @@
 use ds::components::companion::answer::action::ActionRole;
 use ds::components::companion::answer::footer::ServedPlaceKind;
 use ds::components::companion::answer::model::Streaming;
-use ds::components::companion::form::model::FieldNeed;
 use ds::components::companion::memory::model::{FactOrigin, FactStanding};
 use ds::components::companion::orb::model::{OrbPeriod, OrbSize, OrbTone};
 use ds::components::companion::plan::model::{Inclusion, PlanFinish, StopWhy};
@@ -28,7 +27,6 @@ fn every_companion_word_parses_back_from_its_slug() {
     round_trips::<BusyKind>();
     round_trips::<FactOrigin>();
     round_trips::<FactStanding>();
-    round_trips::<FieldNeed>();
     round_trips::<Inclusion>();
     round_trips::<OrbPeriod>();
     round_trips::<OrbSize>();

@@ -49,15 +49,6 @@ const MANIFEST_TEXT: &str = "id = \"user.YourChanges\"\nname = \"Your changes\"\
 version = \"1.0.0\"\nsummary = \"The icons you chose for single file types\"\n\n\
 [[provides]]\ncapability = \"file_icons\"\ndir = \"file-icons\"\n";
 
-/// Whether the Extension may be removed.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Removal {
-    /// It holds no change: Remove may be offered (or it can just stay, empty).
-    Allowed,
-    /// It holds at least one change: never removable, since removing it would throw them away.
-    Blocked,
-}
-
 /// A change that could not be made.
 #[derive(Debug, thiserror::Error)]
 pub enum ChangeError {
@@ -170,13 +161,10 @@ impl YourChanges {
         Ok(names)
     }
 
-    /// Whether Remove may be offered: never while a change is held. A folder that cannot be
-    /// read counts as holding changes.
-    pub fn removal(&self) -> Removal {
-        match self.changed() {
-            Ok(names) if names.is_empty() => Removal::Allowed,
-            _ => Removal::Blocked,
-        }
+    /// Whether Remove may be offered: never while a change is held, since removing the Extension
+    /// would throw the changes away. A folder that cannot be read counts as holding changes.
+    pub fn removable(&self) -> bool {
+        matches!(self.changed(), Ok(names) if names.is_empty())
     }
 
     /// Writes `extension.toml` unless it already says exactly this.

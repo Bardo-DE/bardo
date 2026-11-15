@@ -1,9 +1,7 @@
 //! A compact form: the title and a labelled input per missing value. Each edit is reported under
 //! the field's key.
 
-use crate::components::companion::form::model::{
-    FieldKeyId, FieldNeed, FormField, FormInput, FormValue,
-};
+use crate::components::companion::form::model::{FieldKeyId, FormField, FormInput, FormValue};
 use crate::components::controls::chip::{Chip, ChipVariant};
 use crate::components::fields::text_field::TextField;
 use crate::components::fields::text_field_model::{FieldKind, FieldRows};
@@ -54,12 +52,12 @@ pub fn FormBody(
 
 #[component]
 fn FieldView(field: FormField, on_edit: EventHandler<(FieldKeyId, FormValue)>) -> Element {
-    let need = field.need.slug();
+    let need = if field.required { "required" } else { "optional" };
     rsx! {
         div { class: "ds-card-form-field", "data-need": need,
             span { class: "ds-card-label",
                 "{field.label}"
-                if field.need == FieldNeed::Optional {
+                if !field.required {
                     span { class: "ds-card-optional", " (optional)" }
                 }
             }

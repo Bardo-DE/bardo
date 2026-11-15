@@ -6,7 +6,7 @@ use ds_shell::accounts::hidden::Hidden;
 use ds_shell::accounts::model::{
     AccountChoice, AllowScope, Attempt, ChoiceKey, ConsentAnswer, CopyState, FieldProblem,
     FieldRole, FieldText, FormField, Limitation, ProblemKind, ProviderEntry, ProviderKey,
-    ProviderPick, Requirement, ServiceKey, ServiceLine, ServiceOffer, SignInFault,
+    ProviderPick, ServiceKey, ServiceLine, ServiceOffer, SignInFault,
 };
 use ds_shell::prelude::{Recovery, WorkingFor};
 use porter_capability::{AbsentReason, CapabilityKind};
@@ -260,17 +260,17 @@ fn every_sheet_view_becomes_the_props_of_its_part() {
                 fields: vec![
                     FormField::new(
                         FieldRole::Address,
-                        Requirement::Required,
+                        true,
                         FieldText::Plain(String::new()),
                     ),
                     FormField::new(
                         FieldRole::Password,
-                        Requirement::Required,
+                        true,
                         FieldText::Secret(Hidden::new("")),
                     ),
                     FormField::new(
                         FieldRole::Server,
-                        Requirement::Optional,
+                        false,
                         FieldText::Plain(String::new()),
                     ),
                 ],
@@ -675,7 +675,7 @@ fn the_server_form_becomes_choices_hints_and_parts() {
             Choice::new("starttls", "Secure after connecting (STARTTLS)")
         ])
     );
-    assert_eq!(of(FieldRole::Port).requirement, Requirement::Optional);
+    assert!(!of(FieldRole::Port).required);
     assert_eq!(of(FieldRole::Port).text, FieldText::Plain(String::new()));
     assert_eq!(of(FieldRole::Port).hint.as_deref(), Some("993"));
     assert_eq!(of(FieldRole::OutgoingPort).hint.as_deref(), Some("465"));

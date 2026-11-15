@@ -21,8 +21,8 @@ use ds::prelude::Check;
 use ds_shell::accounts::hidden::Hidden;
 use ds_shell::accounts::model::{
     AccountChoice, Attempt, Choice, ChoiceKey, CopyState, FieldProblem, FieldRole, FieldText,
-    FormField, FormPart, ProblemKind, ProviderEntry, ProviderKey, ProviderPick, Requirement,
-    ServiceKey, ServiceLine, ServiceOffer, SignInFault,
+    FormField, FormPart, ProblemKind, ProviderEntry, ProviderKey, ProviderPick, ServiceKey,
+    ServiceLine, ServiceOffer, SignInFault,
 };
 use ds_shell::prelude::{Recovery, WorkingFor};
 use porter_core::consent::{AskPurpose, ConsentAsk};
@@ -315,8 +315,8 @@ fn form_fields(draft: &Draft, provider: &ProviderId) -> Vec<FormField> {
             let base = FormField::new(
                 role_of(field.kind),
                 match field.presence {
-                    Presence::Required => Requirement::Required,
-                    Presence::Optional => Requirement::Optional,
+                    Presence::Required => true,
+                    Presence::Optional => false,
                 },
                 match (&field.value, field.entry) {
                     (FieldValue::Secret(text), _) => FieldText::Secret(Hidden::new(text.expose())),

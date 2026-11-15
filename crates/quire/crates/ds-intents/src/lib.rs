@@ -13,7 +13,7 @@ pub mod summon;
 pub mod thing;
 pub mod voice;
 
-pub use chip::{ChipKind, ContextChip, Removal};
+pub use chip::{ChipKind, ContextChip};
 pub use context::ContextModel;
 pub use prompt_mode::FieldMode;
 pub use summon::{SummonAnswerMark, SummonSerial};

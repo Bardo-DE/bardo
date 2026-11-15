@@ -4,20 +4,10 @@ use crate::components::companion::answer::action::CardAction;
 use crate::components::companion::answer::footer::CardFooter;
 use crate::components::content::icon_source::IconSource;
 use crate::components::fields::text_field_model::Validity;
-use ds_core::word::Word;
 
 /// A form field's key: the parameter's name.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct FieldKeyId(pub String);
-
-/// Whether a field must be filled, `data-need`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-pub enum FieldNeed {
-    /// The action cannot run without it.
-    Required,
-    /// It may stay empty.
-    Optional,
-}
 
 /// A thing the person can pick for an entity field.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -80,7 +70,7 @@ pub struct FormField {
     /// What it takes.
     pub input: FormInput,
     /// Whether it must be filled.
-    pub need: FieldNeed,
+    pub required: bool,
     /// What it holds.
     pub value: FormValue,
     /// Whether the value is acceptable.

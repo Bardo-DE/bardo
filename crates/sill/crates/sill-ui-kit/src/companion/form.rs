@@ -6,7 +6,7 @@ use docket_vocab::{Args, ParamType, Value};
 use ds::components::companion::answer::action::{ActionRole, CardAction, CardActionId};
 use ds::components::companion::answer::footer::CardFooter;
 use ds::components::companion::form::model::{
-    CompactForm, EntityOption, FieldKeyId, FieldNeed, FormField, FormInput, FormValue,
+    CompactForm, EntityOption, FieldKeyId, FormField, FormInput, FormValue,
 };
 use ds::components::fields::text_field_model::Validity;
 use ds_core::vocab::{Availability, EffectMark};
@@ -37,9 +37,9 @@ fn field(param: &ParamDecl, values: &Args) -> FormField {
         key: FieldKeyId(param.name.as_str().to_owned()),
         label: param.label.as_str().to_owned(),
         input: input(&param.ty),
-        need: match param.need {
-            ParamNeed::Required => FieldNeed::Required,
-            ParamNeed::Optional | ParamNeed::Defaulted(_) => FieldNeed::Optional,
+        required: match param.need {
+            ParamNeed::Required => true,
+            ParamNeed::Optional | ParamNeed::Defaulted(_) => false,
         },
         value: values
             .get(&param.name)

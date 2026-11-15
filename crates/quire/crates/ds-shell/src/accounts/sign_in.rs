@@ -7,7 +7,7 @@
 
 use super::adapter::{Action, Entry, Intent, Landing, Pick, Rejection};
 use super::frame::StepFrame;
-use super::model::{FieldFold, FieldProblem, FieldRole, FieldText, FormField, FormPart, StepTitle};
+use super::model::{FieldProblem, FieldRole, FieldText, FormField, FormPart, StepTitle};
 use super::wording::{
     ADVANCED_WORDS, field_label, field_placeholder, form_ready, part_words, problem_text,
 };
@@ -38,9 +38,9 @@ pub fn SignInForm(
     let mut opened = use_signal(|| false);
     let ready = form_ready(&fields, problem);
     let grouped = fields.iter().any(|field| {
-        field.choices.is_some() || field.part.is_some() || field.fold == FieldFold::Advanced
+        field.choices.is_some() || field.part.is_some() || field.advanced
     });
-    let advanced = runs(&fields, FieldFold::Advanced);
+    let advanced = runs(&fields, true);
     let advanced_shown = if marks_advanced(&fields, problem) {
         true
     } else {
@@ -64,14 +64,14 @@ pub fn SignInForm(
             body: rsx! {
                 if grouped {
                     Form {
-                        {sections(runs(&fields, FieldFold::Shown), FieldFold::Shown, problem, on_input)}
+                        {sections(runs(&fields, false), false, problem, on_input)}
                         if !advanced.is_empty() {
                             Disclosure {
                                 shown: advanced_shown,
                                 on_toggle: move |next: bool| opened.set(next),
                                 label: ADVANCED_WORDS.to_owned(),
                                 div { class: "ds-acc-advanced",
-                                    {sections(advanced, FieldFold::Advanced, problem, on_input)}
+                                    {sections(advanced, true, problem, on_input)}
                                 }
                             }
                         }
@@ -94,13 +94,13 @@ pub fn SignInForm(
 /// The part a run of fields sits in, and the fields of the run with their place in the form.
 type Run<'a> = (Option<FormPart>, Vec<(usize, &'a FormField)>);
 
-/// The fields that stand where `fold` says, cut into runs of neighbours that share a part, in
+/// The fields that stand in the form, or under the Advanced disclosure when `advanced`,, cut into runs of neighbours that share a part, in
 /// the order given; each keeps its place in the whole form.
-fn runs(fields: &[FormField], fold: FieldFold) -> Vec<Run<'_>> {
+fn runs(fields: &[FormField], advanced: bool) -> Vec<Run<'_>> {
     fields
         .iter()
         .enumerate()
-        .filter(|(_, field)| field.fold == fold)
+        .filter(|(_, field)| field.advanced == advanced)
         .fold(Vec::<Run>::new(), |mut runs, (index, field)| {
             match runs.last_mut() {
                 Some((part, run)) if *part == field.part => run.push((index, field)),
@@ -113,13 +113,13 @@ fn runs(fields: &[FormField], fold: FieldFold) -> Vec<Run<'_>> {
 /// One section per run, each titled with its part.
 fn sections(
     runs: Vec<Run<'_>>,
-    fold: FieldFold,
+    advanced: bool,
     problem: Option<FieldProblem>,
     on_input: EventHandler<(FieldRole, FieldText)>,
 ) -> Element {
     rsx! {
         for (part , run) in runs {
-            FormSection { key: "{fold.slug()}-{part.map_or(\"form\", |part| part.slug())}", title: part.map(part_title),
+            FormSection { key: "{advanced}-{part.map_or(\"form\", |part| part.slug())}", title: part.map(part_title),
                 for (index , field) in run {
                     {row(field, landing_of(index), problem, on_input)}
                 }
@@ -133,7 +133,7 @@ fn marks_advanced(fields: &[FormField], problem: Option<FieldProblem>) -> bool {
     problem.is_some_and(|problem| {
         fields
             .iter()
-            .any(|field| field.fold == FieldFold::Advanced && field.role == problem.role)
+            .any(|field| field.advanced && field.role == problem.role)
     })
 }
 
@@ -176,7 +176,7 @@ fn entry(
             placeholder: field
                 .hint
                 .clone()
-                .unwrap_or_else(|| field_placeholder(role, field.requirement).to_owned()),
+                .unwrap_or_else(|| field_placeholder(role, field.required).to_owned()),
             landing,
             rejection: rejection(problem, role),
             help: field.help.clone(),

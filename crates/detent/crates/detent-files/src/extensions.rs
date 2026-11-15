@@ -14,7 +14,7 @@ use detent_model::{
 use ds_extensions::bayonet::manifest::Raw;
 use ds_extensions::bayonet::registry::Candidate;
 use ds_extensions::{
-    Capability, ExtensionId, ExtensionsFile, Found, Power, Problem, Removal, Search,
+    Capability, ExtensionId, ExtensionsFile, Found, Power, Problem, Search,
     YOUR_CHANGES_ID, YourChanges, choices_for,
 };
 use ds_settings::schema::{FilePath, KeyPath};
@@ -134,10 +134,7 @@ fn words_of(candidate: &Candidate<Raw>) -> Vec<String> {
 /// Whether the person's own changes block taking their Extension away: they do while it holds
 /// any, and a folder that cannot be read counts as holding some (quire's rule).
 fn holds_changes(search: &Search) -> bool {
-    match YourChanges::of(search).map(|changes| changes.removal()) {
-        Some(Removal::Blocked) => true,
-        Some(Removal::Allowed) | None => false,
-    }
+    YourChanges::of(search).is_some_and(|changes| !changes.removable())
 }
 
 /// A row for `candidate`, standing as `standing`. The person's changes get `own`, the rest hold none.

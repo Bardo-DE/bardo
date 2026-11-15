@@ -26,5 +26,5 @@ pub mod served_by;
 
 pub use ds_intents::{
     ChipKind, ContextChip, ContextModel, DictateSerial, FieldMode, HeardEndMark, HeardMark,
-    InputLevel, Removal, SummonAnswerMark, SummonOriginMark, SummonSerial, Tally, ThingMark,
+    InputLevel, SummonAnswerMark, SummonOriginMark, SummonSerial, Tally, ThingMark,
 };

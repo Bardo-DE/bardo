@@ -5,7 +5,7 @@ use ds::components::content::provider_mark::MarkProvider;
 
 use super::model::{
     AccountChoice, AllowScope, ChoiceKey, FieldProblem, FieldRole, FormField, FormPart, Limitation,
-    NoAccountWhy, ProblemKind, ProviderEntry, ProviderPick, Requirement, SignInFault,
+    NoAccountWhy, ProblemKind, ProviderEntry, ProviderPick, SignInFault,
 };
 
 /// "Mail wants to keep its library in your files": `request` finishes the sentence.
@@ -54,13 +54,13 @@ pub(crate) fn field_label(role: FieldRole) -> &'static str {
 
 /// The hint inside an empty form field. An optional login name says what an empty one means; it
 /// never says "Required".
-pub(crate) fn field_placeholder(role: FieldRole, requirement: Requirement) -> &'static str {
+pub(crate) fn field_placeholder(role: FieldRole, required: bool) -> &'static str {
     match role {
         FieldRole::Address => "name@example.org",
         FieldRole::Server => "mail.example.org",
-        FieldRole::Username => match requirement {
-            Requirement::Required => "Required",
-            Requirement::Optional => "Same as your address",
+        FieldRole::Username => match required {
+            true => "Required",
+            false => "Same as your address",
         },
         FieldRole::Password => "Password or app password",
         FieldRole::AppPassword => "Paste your app password",
@@ -104,7 +104,7 @@ pub(crate) fn form_ready(fields: &[FormField], problem: Option<FieldProblem>) ->
     !invalid
         && fields
             .iter()
-            .all(|field| field.requirement == Requirement::Optional || !field.text.is_blank())
+            .all(|field| !field.required || !field.text.is_blank())
 }
 
 /// The review's last button: a plain "Done", or the one-grant "Add, and allow Mail to use it"
@@ -254,8 +254,8 @@ mod tests {
         ProviderEntry::new(ProviderKey(key.to_owned()), label, MarkProvider::Imap)
     }
 
-    fn field(requirement: Requirement, text: FieldText) -> FormField {
-        FormField::new(FieldRole::Address, requirement, text)
+    fn field(required: bool, text: FieldText) -> FormField {
+        FormField::new(FieldRole::Address, required, text)
     }
 
     fn choice(label: &str) -> AccountChoice {
@@ -274,37 +274,37 @@ mod tests {
             ("no fields", vec![], true),
             (
                 "required and filled",
-                vec![field(Requirement::Required, plain("ada@example.org"))],
+                vec![field(true, plain("ada@example.org"))],
                 true,
             ),
             (
                 "required and empty",
-                vec![field(Requirement::Required, plain(""))],
+                vec![field(true, plain(""))],
                 false,
             ),
             (
                 "required and only blanks",
-                vec![field(Requirement::Required, plain("  \t"))],
+                vec![field(true, plain("  \t"))],
                 false,
             ),
             (
                 "optional and empty",
-                vec![field(Requirement::Optional, plain(""))],
+                vec![field(false, plain(""))],
                 true,
             ),
             (
                 "a secret still empty",
                 vec![
-                    field(Requirement::Required, plain("ada@example.org")),
-                    field(Requirement::Required, secret("")),
+                    field(true, plain("ada@example.org")),
+                    field(true, secret("")),
                 ],
                 false,
             ),
             (
                 "a secret typed",
                 vec![
-                    field(Requirement::Required, plain("ada@example.org")),
-                    field(Requirement::Required, secret("pw")),
+                    field(true, plain("ada@example.org")),
+                    field(true, secret("pw")),
                 ],
                 true,
             ),
@@ -313,7 +313,7 @@ mod tests {
             assert_eq!(form_ready(fields, None), *want, "{name}");
         }
         // A field known to be invalid holds Continue back; a refusal does not (retry after editing).
-        let filled = vec![field(Requirement::Required, plain("ada@example.org"))];
+        let filled = vec![field(true, plain("ada@example.org"))];
         let problem = |kind| FieldProblem {
             role: FieldRole::Port,
             kind,
@@ -326,11 +326,11 @@ mod tests {
     #[test]
     fn an_optional_login_name_never_says_required() {
         assert_eq!(
-            field_placeholder(FieldRole::Username, Requirement::Optional),
+            field_placeholder(FieldRole::Username, false),
             "Same as your address"
         );
         assert_eq!(
-            field_placeholder(FieldRole::Username, Requirement::Required),
+            field_placeholder(FieldRole::Username, true),
             "Required"
         );
     }

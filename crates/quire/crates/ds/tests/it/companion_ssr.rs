@@ -17,7 +17,7 @@ use ds::components::companion::answer::view::AnswerCard;
 use ds::components::companion::chips::view::ContextChips;
 use ds::components::companion::draft::model::{DraftReply, PersonLine};
 use ds::components::companion::form::model::{
-    CompactForm, FieldKeyId, FieldNeed, FormField, FormInput, FormValue,
+    CompactForm, FieldKeyId, FormField, FormInput, FormValue,
 };
 use ds::components::companion::memory::model::{ConsolidationDiff, MemoryDay};
 use ds::components::companion::memory::view::{ConsolidationView, MemoryTimeline};
@@ -36,7 +36,7 @@ use ds::components::companion::replace::view::ReplaceBar;
 use ds::components::companion::run_row::model::{RunPlace, RunRowView, RunState};
 use ds::components::companion::run_row::view::RunRow;
 use ds::components::companion::served_by::view::ServedByChip;
-use ds::components::companion::{ChipKind, ContextChip, Removal};
+use ds::components::companion::{ChipKind, ContextChip};
 use ds::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone};
 use ds::components::content::text_runs::{RunTone, TextLine, TextRun};
 use ds::components::fields::text_field_model::Validity;
@@ -89,7 +89,7 @@ const SPECIMENS: &[Specimen] = &[
             kind: ChipKind::Results,
             label: "Results".to_owned(),
             count: Some(Tally(12)),
-            removal: Removal::Removable,
+            removable: true,
         }];
         root(rsx! { ContextChips { chips } })
     }),
@@ -521,23 +521,23 @@ fn a_replace_card_draws_both_texts_and_waits_for_apply() {
 
 #[test]
 fn a_form_card_draws_a_labelled_input_per_field_and_its_submit() {
-    let field = |key: &str, label: &str, input, need| FormField {
+    let field = |key: &str, label: &str, input, required| FormField {
         key: FieldKeyId(key.to_owned()),
         label: label.to_owned(),
         input,
-        need,
+        required,
         value: FormValue::Empty,
         validity: Validity::Valid,
     };
     let html = render_card(AnswerView::Form(CompactForm {
         title: "Who is it for?".to_owned(),
         fields: vec![
-            field("to", "Recipient", FormInput::Text, FieldNeed::Required),
+            field("to", "Recipient", FormInput::Text, true),
             field(
                 "kind",
                 "Kind",
                 FormInput::Choice(vec![("a".to_owned(), "Invoice".to_owned())]),
-                FieldNeed::Optional,
+                false,
             ),
         ],
         submit: action("go", "Continue", ActionRole::Primary, EffectMark::Read),

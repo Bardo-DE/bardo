@@ -6,7 +6,7 @@ use docket_vocab::EntityRef;
 use ds::components::companion::answer::footer::{
     CardFooter, ServedByView, ServedPlace, ServedPlaceKind, SourceChip, SourceKey,
 };
-use ds::components::companion::{ChipKind, ContextChip, Removal};
+use ds::components::companion::{ChipKind, ContextChip};
 use ds::components::content::icon_source::IconSource;
 use ds::prelude::Icon;
 use porter_capability::Locality;
@@ -66,7 +66,7 @@ fn scope_chips(keep: ContextKeep) -> Vec<ContextChip> {
         kind,
         label: label.to_owned(),
         count: None,
-        removal: Removal::Fixed,
+        removable: false,
     })
     .collect()
 }

@@ -12,7 +12,7 @@ use docket_vocab::{
 use ds::components::companion::answer::footer::ServedPlaceKind;
 use ds::components::companion::answer::model::{AnswerView, Streaming};
 use ds::components::companion::answer::refused::RefusedView;
-use ds::components::companion::form::model::{FieldNeed, FormInput, FormValue};
+use ds::components::companion::form::model::{FormInput, FormValue};
 use ds::components::companion::plan::model::{PlanFinish, PlanPhase, PlanStepState, StopWhy};
 use ds::components::content::text_runs::TextLine;
 use ds_core::vocab::EffectMark;
@@ -486,10 +486,10 @@ fn a_form_field_carries_its_need_its_input_and_its_value() {
         panic!("a form");
     };
     assert_eq!(view.title, "write to Sam");
-    assert_eq!(view.fields[0].need, FieldNeed::Required);
+    assert!(view.fields[0].required);
     assert_eq!(view.fields[0].value, FormValue::Empty);
     assert!(matches!(view.fields[0].input, FormInput::Entity { .. }));
-    assert_eq!(view.fields[1].need, FieldNeed::Optional);
+    assert!(!view.fields[1].required);
     assert_eq!(view.fields[1].value, FormValue::Text("hello".to_owned()));
     assert_eq!(view.fields[1].input, FormInput::Lines);
 }

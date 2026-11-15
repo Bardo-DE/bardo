@@ -17,20 +17,11 @@ use ds_style::icon::Icon;
 use ds_style::icon::render::{Glyph, IconSize};
 use ds_style::tokens::delay::DelayToken;
 
-/// Whether an arrow strip is drawn at one end.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Cue {
-    /// Rows lie past this end.
-    Shown,
-    /// Nothing lies past this end.
-    Hidden,
-}
-
-/// The two ends' strips.
+/// The two ends' strips: whether an arrow strip is drawn at each end (rows lie past it).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct Cues {
-    pub start: Cue,
-    pub end: Cue,
+    pub start: bool,
+    pub end: bool,
 }
 
 /// How much hidden length counts as hidden at all: below this the end is reached.
@@ -39,10 +30,7 @@ const NEGLIGIBLE: f32 = 0.5;
 /// Which ends have rows past them. The list's padding `pad` is not a row: that much past an end
 /// still shows nothing more.
 pub(crate) fn cues(scroll: Scroll, pad: Px) -> Cues {
-    let past = |hidden: f32| match hidden - pad.0 > NEGLIGIBLE {
-        true => Cue::Shown,
-        false => Cue::Hidden,
-    };
+    let past = |hidden: f32| hidden - pad.0 > NEGLIGIBLE;
     Cues {
         start: past(scroll.offset.0),
         end: past(scroll.max_offset().0 - scroll.offset.0),
@@ -87,7 +75,7 @@ impl Scrolling {
         let Cues { start, end } = *self.cues.read();
         let scroller = self.scroller;
         rsx! {
-            if start == Cue::Shown {
+            if start {
                 {self.strip(Edge::Start)}
             }
             div {
@@ -100,7 +88,7 @@ impl Scrolling {
                 onscroll: move |event: ScrollEvent| scroller.heard(Px(event.scroll_top() as f32)),
                 {rows}
             }
-            if end == Cue::Shown {
+            if end {
                 {self.strip(Edge::End)}
             }
         }
@@ -145,7 +133,7 @@ pub(crate) fn use_in_view(
 
 #[cfg(test)]
 mod tests {
-    use super::{Cue, Cues, cues};
+    use super::{Cues, cues};
     use ds_core::geometry::scroll::Scroll;
     use ds_core::geometry::units::Px;
 
@@ -159,17 +147,18 @@ mod tests {
 
     #[test]
     fn a_strip_shows_only_where_rows_lie_past_the_end() {
-        use Cue::{Hidden, Shown};
+        const HIDDEN: bool = false;
+        const SHOWN: bool = true;
         // (name, scroll, cues)
         #[rustfmt::skip]
         let cases = [
-            ("not measured", at(0.0, 0.0, 0.0), Cues { start: Hidden, end: Hidden }),
-            ("fits", at(0.0, 300.0, 300.0), Cues { start: Hidden, end: Hidden }),
-            ("only padding past the end", at(0.0, 300.0, 305.0), Cues { start: Hidden, end: Hidden }),
-            ("more rows below", at(0.0, 300.0, 700.0), Cues { start: Hidden, end: Shown }),
-            ("in the middle", at(100.0, 300.0, 700.0), Cues { start: Shown, end: Shown }),
-            ("at the end", at(400.0, 300.0, 700.0), Cues { start: Shown, end: Hidden }),
-            ("a row's padding from the top", at(5.0, 300.0, 700.0), Cues { start: Hidden, end: Shown }),
+            ("not measured", at(0.0, 0.0, 0.0), Cues { start: HIDDEN, end: HIDDEN }),
+            ("fits", at(0.0, 300.0, 300.0), Cues { start: HIDDEN, end: HIDDEN }),
+            ("only padding past the end", at(0.0, 300.0, 305.0), Cues { start: HIDDEN, end: HIDDEN }),
+            ("more rows below", at(0.0, 300.0, 700.0), Cues { start: HIDDEN, end: SHOWN }),
+            ("in the middle", at(100.0, 300.0, 700.0), Cues { start: SHOWN, end: SHOWN }),
+            ("at the end", at(400.0, 300.0, 700.0), Cues { start: SHOWN, end: HIDDEN }),
+            ("a row's padding from the top", at(5.0, 300.0, 700.0), Cues { start: HIDDEN, end: SHOWN }),
         ];
         for (name, scroll, want) in cases {
             assert_eq!(cues(scroll, Px(5.0)), want, "{name}");
