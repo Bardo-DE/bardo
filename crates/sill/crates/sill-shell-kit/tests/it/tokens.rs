@@ -13,7 +13,6 @@ use ds::style::tokens::person::PersonSwatch;
 use ds::style::tokens::shape::Radius;
 use ds::style::tokens::spacing::SpacingToken;
 use ds::style::tokens::timing::DurationToken;
-use ds::style::tokens::token::Token;
 use ds::style::tokens::type_scale::{Family, FontSize};
 use ds::style::tokens::widget_paint::WidgetPaint;
 use sill_shell_kit::stylesheet;

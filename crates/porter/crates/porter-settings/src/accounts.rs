@@ -224,7 +224,6 @@ fn client_help(issuer: Issuer) -> &'static str {
 mod tests {
     use super::*;
     use crate::{APP, GRANT_SERVICE, REVOKE, SCOPE, SERVICE, SIGN_IN, SINCE, USED_BY, place_slug};
-    use ds_settings::schema::{ActionWeight, AgentSetting};
     use porter_capability::CapabilityKind;
     use porter_core::AuthKind;
     use porter_core::consent::{Decision, GrantScope};

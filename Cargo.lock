@@ -4544,6 +4544,7 @@ dependencies = [
  "tokio",
  "url",
  "zbus",
+ "zbus-ready",
 ]
 
 [[package]]

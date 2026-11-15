@@ -38,6 +38,7 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros",
 docket-dbus = {path = "../docket-dbus", features = ["fixture-callers"]}
 docket-permissions-core = {path = "../docket-permissions-core"}
 porter-infer = {path = "../../../steward/crates/porter-infer"}
+zbus-ready = {path = "../../../zbus-ready"}
 docket-testbus = {path = "../docket-testbus"}
 intentd = { path = "../intentd" }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
