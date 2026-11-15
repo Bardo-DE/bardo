@@ -69,8 +69,7 @@ pub enum ToClient {
 }
 pub struct KeymapState { overrides: String, problems: Vec<KeymapProblem> }
 // overrides: chordkit's line format, only lines that read; problems: plain words with a line
-pub struct Status { mode: Mode, keyboards: Vec<Keyboard> }  // empty = no keyboards
-pub enum Mode { Running, Paused }                           // Paused = escape chord
+pub struct Status { paused: bool, keyboards: Vec<Keyboard> }  // empty = no keyboards; paused = escape chord
 pub struct Keyboard { info: KeyboardInfo, grab: Grab }
 pub enum Grab {
     Active,

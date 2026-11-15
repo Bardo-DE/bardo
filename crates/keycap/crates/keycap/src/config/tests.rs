@@ -1,8 +1,7 @@
-use std::path::PathBuf;
-
 use keycap_core::{ConfigLayer, Hold, Profile, RuleAction, Stroke, Trigger, resolve};
 
 use super::*;
+use keycap_devtest::Scratch;
 
 fn map(s: &str) -> RuleAction {
     RuleAction::Map(
@@ -14,23 +13,6 @@ fn map(s: &str) -> RuleAction {
 fn rule<'a>(p: &'a Profile, when: &str) -> Option<&'a RuleAction> {
     p.rules
         .get(&Trigger::parse(when).expect("test triggers are valid"))
-}
-
-/// A scratch directory under the system temp dir, removed on drop.
-struct Scratch(PathBuf);
-
-impl Scratch {
-    fn new(tag: &str) -> Scratch {
-        let dir = std::env::temp_dir().join(format!("keycap-config-{tag}-{}", std::process::id()));
-        std::fs::create_dir_all(&dir).expect("scratch dir is creatable");
-        Scratch(dir)
-    }
-}
-
-impl Drop for Scratch {
-    fn drop(&mut self) {
-        let _ = std::fs::remove_dir_all(&self.0);
-    }
 }
 
 /// What `capslock` writes in the default profile once `layer` is laid over the built-in mapping.
@@ -51,6 +33,7 @@ mod trusted_files {
     use super::super::trusted::LAYER_FILE_CAP;
     use super::super::vendor::vendor_through;
     use super::*;
+use keycap_devtest::Scratch;
 
     const CAPS_RULE: &str =
         "[profile.default]\nrules = [{ when = \"capslock\", then = \"ctrl+space\" }]\n";
@@ -200,10 +183,10 @@ mod trusted_files {
         let reads: [Read; 2] = [super::super::vendor, super::super::system];
         for read in reads {
             assert_eq!(
-                read(&dir.0.join("not-there")),
+                read(&dir.path().join("not-there")),
                 (ConfigLayer::default(), vec![])
             );
-            assert_eq!(read(&dir.0), (ConfigLayer::default(), vec![]));
+            assert_eq!(read(dir.path()), (ConfigLayer::default(), vec![]));
         }
     }
 
@@ -212,8 +195,8 @@ mod trusted_files {
         // The seam for tests that point `$KEYCAP_CONFIG_DIR` at a scratch folder: a machine file
         // written there is the person's, so it gives no layer. A test that needs one has to say so.
         let dir = Scratch::new("person-owned");
-        std::fs::write(dir.0.join(FILE_NAME), CAPS_RULE).expect("scratch file is writable");
-        let (layer, warnings) = super::super::system(&dir.0);
+        std::fs::write(dir.path().join(FILE_NAME), CAPS_RULE).expect("scratch file is writable");
+        let (layer, warnings) = super::super::system(dir.path());
         assert_eq!(layer, ConfigLayer::default());
         assert_eq!(warnings.len(), 1);
         assert!(

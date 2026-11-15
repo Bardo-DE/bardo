@@ -16,7 +16,7 @@ mod tests;
 
 pub use keymap::{KeymapProblem, KeymapState, RegisteredAction, Registration};
 pub use message::{KeymapCall, Steer, ToClient, ToDaemon};
-pub use vocab::{Grab, Keyboard, KeyboardInfo, Mode, NameError, ProfileName, Status, Warning};
+pub use vocab::{Grab, Keyboard, KeyboardInfo, NameError, ProfileName, Status, Warning};
 pub use wire::{
     CONFIG_DIR, Compat, KEYMAP_FILE, KEYMAP_MAX_BYTES, MAX_PACKET, MIN_PROTOCOL_VERSION,
     PROTOCOL_VERSION, ProtocolError, SOCKET_PATH, compat, decode, encode,

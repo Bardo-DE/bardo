@@ -3,7 +3,7 @@
 use crate::action::{Action, key_of};
 use crate::keys::KeyCombo;
 use crate::outputs::pad::PadFrame;
-use palmrest_protocol::{LockState, Over, TapKind, ToHost};
+use palmrest_protocol::{TapKind, ToHost};
 use serde::Serialize;
 
 /// One effect of a report, in the order it must happen.
@@ -32,8 +32,8 @@ pub enum Source {
 ///
 /// SmartZoom is realised as the `Tap{One}` the host receives, so it produces nothing here. G4
 /// produces nothing while a host holds the pointer (the host runs its own page swipe).
-pub fn action_outs(action: &Action, source: Source, claimed: Over) -> Vec<Out> {
-    if source == Source::OneFingerSwipe && claimed == Over::Ours {
+pub fn action_outs(action: &Action, source: Source, claimed: bool) -> Vec<Out> {
+    if source == Source::OneFingerSwipe && claimed {
         return vec![];
     }
     match key_of(action) {
@@ -44,8 +44,8 @@ pub fn action_outs(action: &Action, source: Source, claimed: Over) -> Vec<Out> {
 }
 
 /// The outputs of a completed double-tap.
-pub fn tap_outs(kind: TapKind, action: &Action, claimed: Over, t_ns: u64) -> Vec<Out> {
-    let host = (claimed == Over::Ours).then_some(Out::Host(ToHost::Tap { kind, t_ns }));
+pub fn tap_outs(kind: TapKind, action: &Action, claimed: bool, t_ns: u64) -> Vec<Out> {
+    let host = claimed.then_some(Out::Host(ToHost::Tap { kind, t_ns }));
     host.into_iter()
         .chain(action_outs(action, Source::Other, claimed))
         .collect()
@@ -54,13 +54,13 @@ pub fn tap_outs(kind: TapKind, action: &Action, claimed: Over, t_ns: u64) -> Vec
 /// `outs` without the keys and desktop actions a gesture fired, while the session is locked:
 /// they would reach the lock screen or run the person's commands on a locked machine. Messages
 /// to the shell and the scroll devices stay.
-pub fn while_unlocked(session: LockState, outs: Vec<Out>) -> Vec<Out> {
-    match session {
-        LockState::Unlocked => outs,
-        LockState::Locked => outs
-            .into_iter()
+pub fn while_unlocked(locked: bool, outs: Vec<Out>) -> Vec<Out> {
+    if locked {
+        outs.into_iter()
             .filter(|o| !matches!(o, Out::Key(_) | Out::Deferred(_)))
-            .collect(),
+            .collect()
+    } else {
+        outs
     }
 }
 
@@ -75,14 +75,14 @@ mod tests {
         let back = Action::Back;
         let key = vec![Out::Key(KeyCombo::alt(Key::LEFT))];
         assert_eq!(
-            action_outs(&back, Source::OneFingerSwipe, Over::NotOurs),
+            action_outs(&back, Source::OneFingerSwipe, false),
             key
         );
         assert_eq!(
-            action_outs(&back, Source::OneFingerSwipe, Over::Ours),
+            action_outs(&back, Source::OneFingerSwipe, true),
             vec![]
         );
-        assert_eq!(action_outs(&back, Source::Other, Over::Ours), key);
+        assert_eq!(action_outs(&back, Source::Other, true), key);
     }
 
     #[test]
@@ -92,9 +92,9 @@ mod tests {
             Out::Key(KeyCombo::alt(Key::LEFT)),
             Out::Deferred(Action::Workspace(Workspace::Overview)),
         ];
-        assert_eq!(while_unlocked(LockState::Unlocked, outs.clone()), outs);
+        assert_eq!(while_unlocked(false, outs.clone()), outs);
         assert_eq!(
-            while_unlocked(LockState::Locked, outs),
+            while_unlocked(true, outs),
             vec![Out::Host(ToHost::DeviceGone)]
         );
     }
@@ -102,9 +102,9 @@ mod tests {
     #[test]
     fn smart_zoom_is_only_the_host_tap() {
         let z = Action::SmartZoom;
-        assert_eq!(tap_outs(TapKind::One, &z, Over::NotOurs, 5), vec![]);
+        assert_eq!(tap_outs(TapKind::One, &z, false, 5), vec![]);
         assert_eq!(
-            tap_outs(TapKind::One, &z, Over::Ours, 5),
+            tap_outs(TapKind::One, &z, true, 5),
             vec![Out::Host(ToHost::Tap {
                 kind: TapKind::One,
                 t_ns: 5
@@ -112,7 +112,7 @@ mod tests {
         );
         let o = Action::Workspace(Workspace::Overview);
         assert_eq!(
-            tap_outs(TapKind::Two, &o, Over::NotOurs, 5),
+            tap_outs(TapKind::Two, &o, false, 5),
             vec![Out::Deferred(o)]
         );
     }

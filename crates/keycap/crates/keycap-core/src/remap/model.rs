@@ -2,7 +2,7 @@
 
 use std::collections::BTreeMap;
 
-use keycap_protocol::{Mode, ProfileName};
+use keycap_protocol::ProfileName;
 
 use crate::escape::Escape;
 use crate::event::{DeviceId, Edge, OutEvent, Physical};
@@ -40,7 +40,7 @@ pub enum RemapOut {
     /// Give every keyboard back to the kernel.
     ReleaseGrabs,
     /// The core changed state.
-    Status(Mode),
+    Status { paused: bool },
 }
 
 /// The mapping state machine.
@@ -54,7 +54,7 @@ pub struct Remapper {
     pub(super) roles: BTreeMap<At, Role>,
     pub(super) escape: Escape,
     pub(super) focus: ProfileName,
-    pub(super) status: Mode,
+    pub(super) paused: bool,
 }
 
 impl Remapper {
@@ -65,13 +65,13 @@ impl Remapper {
             roles: BTreeMap::new(),
             escape: Escape::new(),
             focus: ProfileName::default_profile(),
-            status: Mode::Running,
+            paused: false,
         }
     }
 
     /// Whether keys are being mapped; `Paused` after the escape chord, until `RemapInput::Resume`.
-    pub fn status(&self) -> Mode {
-        self.status
+    pub fn paused(&self) -> bool {
+        self.paused
     }
 
     /// The roles of the role keys held now.

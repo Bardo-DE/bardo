@@ -128,7 +128,7 @@ are swapped at a boundary. The next candidate is a second source of the daemon's
 environment (`daemon::Env`); it is a plain struct until a fake exists.
 
 **Closed enums that stay enums:** `Out`, `Action`, `Gesture`, `ToHost`, `ToDaemon`, `Phase`, `Moment` (what each phase of a stroke carries),
-`Over`, `Sensor` (the two kinds of device), `RecordedSource` (which one a node or recording is).
+`Sensor` (the two kinds of device), `RecordedSource` (which one a node or recording is).
 
 ## 5. Recipes
 

@@ -4,9 +4,7 @@
 
 use super::support::{connect, me, recv, seat_file, send};
 use crate::daemon::socket::{FromSocket, Steering, ToSocket, bind, spawn};
-use palmrest_protocol::{
-    ActiveTouch, DeviceInfo, Filter, Over, PROTOCOL_VERSION, TapKind, ToDaemon, ToHost, Topic,
-};
+use palmrest_protocol::{DeviceInfo, Filter, PROTOCOL_VERSION, TapKind, ToDaemon, ToHost, Topic};
 use std::sync::mpsc;
 use std::time::Duration;
 
@@ -72,15 +70,15 @@ fn hello_fanout_filters_and_claims() {
         },
     );
 
-    send(&a, &ToDaemon::PointerOver { over: Over::Ours });
+    send(&a, &ToDaemon::PointerOver { over: true });
     assert_eq!(
         claims.recv_timeout(Duration::from_secs(2)),
-        Ok(FromSocket::Pointer(Over::Ours))
+        Ok(FromSocket::Pointer(true))
     );
 
     std::thread::sleep(Duration::from_millis(50)); // let b's Subscribe land before the fan-out
     let touches = ToHost::Touches {
-        active: ActiveTouch::Down,
+        active: true,
     };
     let tap = ToHost::Tap {
         kind: TapKind::Two,
@@ -95,7 +93,7 @@ fn hello_fanout_filters_and_claims() {
     drop(a);
     assert_eq!(
         claims.recv_timeout(Duration::from_secs(2)),
-        Ok(FromSocket::Pointer(Over::NotOurs)),
+        Ok(FromSocket::Pointer(false)),
         "a leaving releases its claim"
     );
     std::fs::remove_dir_all(&dir).unwrap();

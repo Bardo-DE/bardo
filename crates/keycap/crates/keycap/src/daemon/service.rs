@@ -14,7 +14,7 @@ use crate::ConfigLayer;
 use crate::config::{self, system, vendor};
 use crate::keymap;
 use keycap_client::FileText;
-use keycap_protocol::{Mode, Warning};
+use keycap_protocol::Warning;
 use std::path::{Path, PathBuf};
 use std::sync::mpsc;
 use std::time::Duration;
@@ -29,7 +29,7 @@ pub(crate) fn run(env: Env) -> Result<(), String> {
     let (inbox, mailbox) = mailbox().map_err(|e| format!("inbox: {e}"))?;
     let path = socket_path(&env.runtime_dir);
     let listener = bind(&path).map_err(|e| format!("{}: {e}", path.display()))?;
-    let initial = status_of(&Default::default(), Mode::Running);
+    let initial = status_of(&Default::default(), false);
     let first_keymap = keymap::read(&env.config_dir);
     keymap::settle(&Default::default(), first_keymap.clone())
         .problems

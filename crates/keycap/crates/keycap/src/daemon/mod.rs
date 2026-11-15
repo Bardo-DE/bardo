@@ -17,8 +17,6 @@ pub(crate) mod pointer;
 pub(crate) mod reader;
 pub(crate) mod readiness;
 pub(crate) mod route;
-#[cfg(test)]
-pub(crate) mod scratch;
 pub(crate) mod sdnotify;
 pub(crate) mod service;
 pub(crate) mod settings;

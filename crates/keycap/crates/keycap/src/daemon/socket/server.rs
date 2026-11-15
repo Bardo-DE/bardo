@@ -363,15 +363,18 @@ impl Server {
                     self.deliver(replies);
                 }
                 Ok(ToDaemon::Steer(steer)) => match request_of(peer, id, steer) {
-                    Ok(request) => {
+                    Some(request) => {
                         if let Some(refusal) = self.steer(id, request) {
                             self.complain(uid, refusal);
                             alive = false;
                             break;
                         }
                     }
-                    Err(refusal) => {
-                        self.complain(uid, refusal.what());
+                    None => {
+                        self.complain(
+                            uid,
+                            "sent a request without being the shell of the seat; dropped",
+                        );
                         alive = false;
                         break;
                     }

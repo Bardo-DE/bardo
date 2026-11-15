@@ -4,14 +4,14 @@
 
 use super::model::{ClientId, SocketEffect, Subscriber, Subscribers};
 use super::seat::Peer;
-use palmrest_protocol::{Filter, LockState, Over, ToDaemon, USER_CONFIG_MAX_BYTES};
+use palmrest_protocol::{Filter, ToDaemon, USER_CONFIG_MAX_BYTES};
 
 /// A packet's worth, once the standing of whoever sent it is known.
 #[derive(Debug, Clone, PartialEq)]
 pub(super) enum Hearing {
     Subscribe(Filter),
-    Pointer(Over),
-    Lock(LockState),
+    Pointer(bool),
+    Lock(bool),
     Settings(String),
     SettingsTooLarge,
     Malformed(String),
@@ -26,13 +26,11 @@ pub(super) fn interpret(heard: Result<ToDaemon, String>, peer: Peer) -> Hearing 
             Hearing::Subscribe(filter)
         }
         (Ok(ToDaemon::PointerOver { over }), Peer::Shell) => Hearing::Pointer(over),
-        (Ok(ToDaemon::SessionLock { state }), Peer::Shell) => Hearing::Lock(state),
+        (Ok(ToDaemon::SessionLock { locked }), Peer::Shell) => Hearing::Lock(locked),
         (
-            Ok(ToDaemon::SessionLock {
-                state: LockState::Locked,
-            }),
+            Ok(ToDaemon::SessionLock { locked: true }),
             Peer::Plain,
-        ) => Hearing::Lock(LockState::Locked),
+        ) => Hearing::Lock(true),
         (Ok(ToDaemon::UserConfig { toml }), Peer::Shell) if toml.len() <= USER_CONFIG_MAX_BYTES => {
             Hearing::Settings(toml)
         }

@@ -34,7 +34,7 @@ fn samples() -> Vec<ToHost> {
             t_ns: 9,
         },
         ToHost::Touches {
-            active: ActiveTouch::Down,
+            active: true,
         },
         ToHost::DeviceGone,
         ToHost::Run {
@@ -55,13 +55,11 @@ fn every_message_round_trips() {
         assert!(encode(&m).len() < MAX_PACKET);
     }
     for m in [
-        ToDaemon::PointerOver { over: Over::Ours },
+        ToDaemon::PointerOver { over: true },
         ToDaemon::Subscribe {
             filter: Filter::Only(vec![Topic::Scroll, Topic::Touches]),
         },
-        ToDaemon::SessionLock {
-            state: LockState::Locked,
-        },
+        ToDaemon::SessionLock { locked: true },
         ToDaemon::UserConfig {
             toml: "[scroll]\nspeed = 30\n".into(),
         },
@@ -72,10 +70,10 @@ fn every_message_round_trips() {
 
 #[test]
 fn wire_form_is_adjacently_tagged() {
-    let bytes = encode(&ToDaemon::PointerOver { over: Over::Ours });
+    let bytes = encode(&ToDaemon::PointerOver { over: true });
     assert_eq!(
         String::from_utf8(bytes).unwrap(),
-        r#"{"kind":"pointer_over","v":{"over":"ours"}}"#
+        r#"{"kind":"pointer_over","v":{"over":true}}"#
     );
     assert_eq!(
         String::from_utf8(encode(&ToHost::DeviceGone)).unwrap(),

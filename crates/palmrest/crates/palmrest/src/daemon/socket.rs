@@ -33,7 +33,7 @@ mod step;
 use io::{Exit, Server};
 pub use latchkey::guard::{SEAT_FILE, SeatFile};
 use limits::QUEUE_MAX;
-use palmrest_protocol::{DeviceInfo, HostAction, LockState, Over, ToHost};
+use palmrest_protocol::{DeviceInfo, HostAction, ToHost};
 use rustix::event::{EventfdFlags, eventfd};
 use rustix::fd::OwnedFd;
 use rustix::net::{AddressFamily, SocketAddrUnix, SocketFlags, SocketType};
@@ -63,9 +63,9 @@ pub enum ToSocket {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FromSocket {
     /// The pointer is over a subscriber's surface, or not (11.3.14).
-    Pointer(Over),
+    Pointer(bool),
     /// A subscriber says the session is locked, or none does any more.
-    Session(LockState),
+    Session(bool),
     /// The shell sent the person's settings (`None`: it sent none, or the person left the seat).
     UserConfig(Option<String>),
 }

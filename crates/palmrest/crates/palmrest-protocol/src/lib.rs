@@ -18,8 +18,8 @@ mod tests;
 
 pub use message::{DeviceInfo, Filter, ToDaemon, ToHost, Topic};
 pub use vocab::{
-    ACTION_WORD_MAX_BYTES, ACTION_WORDS_MAX, ActiveTouch, Axis, GestureId, HostAction, LockState,
-    Over, Phase, TapKind, Workspace,
+    ACTION_WORD_MAX_BYTES, ACTION_WORDS_MAX, Axis, GestureId, HostAction, Phase, TapKind,
+    Workspace,
 };
 pub use wire::{
     Compat, MAX_PACKET, PROTOCOL_VERSION, ProtocolError, USER_CONFIG_MAX_BYTES, compat, decode,

@@ -2,7 +2,6 @@
 
 use crate::support::{Rig, ok};
 use keycap_devtest::ExternalGrab;
-use keycap_protocol::Mode;
 use std::time::Duration;
 
 const QUIET: Duration = Duration::from_millis(500);
@@ -17,7 +16,7 @@ fn the_escape_chord_gives_the_keyboard_back_and_resume_takes_it_again() {
     r.press("esc", "-leftshift SYN");
     ok(
         r.client
-            .wait_status("Paused", STATUS_WITHIN, |s| s.mode == Mode::Paused),
+            .wait_status("Paused", STATUS_WITHIN, |s| s.paused),
         "status after the chord",
     );
     r.assert_nothing_held();
@@ -39,7 +38,7 @@ fn the_escape_chord_gives_the_keyboard_back_and_resume_takes_it_again() {
     ok(r.client.resume(), "sending Resume");
     ok(
         r.client
-            .wait_status("Running", STATUS_WITHIN, |s| s.mode == Mode::Running),
+            .wait_status("Running", STATUS_WITHIN, |s| !s.paused),
         "status after Resume",
     );
     r.wait_grab(keycap_protocol::Grab::Active);

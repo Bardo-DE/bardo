@@ -124,7 +124,6 @@ pub(super) fn send(client: &Client, message: &ToClient) -> Sent {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use keycap_protocol::Mode;
     use rustix::net::{AddressFamily, RecvFlags, SocketFlags, SocketType, socketpair};
 
     fn pair() -> (Client, OwnedFd) {
@@ -142,9 +141,9 @@ mod tests {
         )
     }
 
-    fn status(mode: Mode) -> Status {
+    fn status(paused: bool) -> Status {
         Status {
-            mode,
+            paused,
             keyboards: Vec::new(),
         }
     }
@@ -158,14 +157,14 @@ mod tests {
     #[test]
     fn a_missed_status_is_sent_again_in_its_latest_form_once_there_is_room() {
         let (mut client, theirs) = pair();
-        let running = ToClient::Status(status(Mode::Running));
+        let running = ToClient::Status(status(false));
         let queued = std::iter::from_fn(|| match send(&client, &running) {
             Sent::Delivered => Some(()),
             _ => None,
         })
         .count();
         assert!(queued > 0, "the queue took some");
-        let paused = status(Mode::Paused);
+        let paused = status(true);
         assert_eq!(
             send(&client, &ToClient::Status(paused.clone())),
             Sent::Behind
@@ -203,7 +202,7 @@ mod tests {
         let (client, theirs) = pair();
         drop(theirs);
         assert_eq!(
-            send(&client, &ToClient::Status(status(Mode::Running))),
+            send(&client, &ToClient::Status(status(false))),
             Sent::Gone
         );
     }

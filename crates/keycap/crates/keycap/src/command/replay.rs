@@ -5,7 +5,6 @@ use super::script::{Input, Step, parse};
 use crate::daemon::machine::Machine;
 use crate::daemon::settings::{Layers, parse_user};
 use crate::{Edge, OutEvent, Profiles, RemapOut};
-use keycap_protocol::Mode;
 use std::path::Path;
 
 /// The writes and requests of one step as text: `+key` and `-key` for presses and releases,
@@ -19,8 +18,8 @@ pub(super) fn render(outs: &[RemapOut]) -> String {
             .collect::<Vec<_>>()
             .join(" "),
         RemapOut::ReleaseGrabs => "release-grabs".to_owned(),
-        RemapOut::Status(Mode::Running) => "status running".to_owned(),
-        RemapOut::Status(Mode::Paused) => "status paused".to_owned(),
+        RemapOut::Status { paused: false } => "status running".to_owned(),
+        RemapOut::Status { paused: true } => "status paused".to_owned(),
     };
     outs.iter().map(one).collect::<Vec<_>>().join("; ")
 }
@@ -103,7 +102,7 @@ pub(super) fn replay_file(file: &Path, config: Option<&Path>) -> Result<Vec<Stri
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::daemon::scratch::Scratch;
+    use keycap_devtest::Scratch;
 
     const COPY: &str = "\
 # Cmd+C in a GUI app, then in a terminal
@@ -266,8 +265,8 @@ mod tests {
                 vec![
                     RemapOut::Write(vec![OutEvent::Sync]),
                     RemapOut::ReleaseGrabs,
-                    RemapOut::Status(Mode::Paused),
-                    RemapOut::Status(Mode::Running),
+                    RemapOut::Status { paused: true },
+                    RemapOut::Status { paused: false },
                 ],
                 "SYN; release-grabs; status paused; status running",
             ),

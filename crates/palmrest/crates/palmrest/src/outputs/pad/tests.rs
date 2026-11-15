@@ -2,7 +2,7 @@
 
 use super::*;
 use crate::sensor::units::Mm;
-use palmrest_protocol::{Axis, LockState, Over};
+use palmrest_protocol::Axis;
 
 const DOWN: Intent = Intent::Scroll(Axis::Y);
 const UP_RIGHT: Intent = Intent::Scroll(Axis::X);
@@ -240,19 +240,19 @@ fn a_new_landing_lifts_a_pending_one_first_so_the_tool_count_never_changes_in_pl
 
 /// Everything allowed, then the policy with one thing taken away.
 const OPEN: Policy = Policy {
-    claimed: Over::NotOurs,
-    session: LockState::Unlocked,
+    claimed: false,
+    session: false,
     live_swipe: true,
 };
 
 #[test]
 fn the_policy_lifts_what_it_no_longer_allows_and_nothing_else() {
     let claimed = Policy {
-        claimed: Over::Ours,
+        claimed: true,
         ..OPEN
     };
     let locked = Policy {
-        session: LockState::Locked,
+        session: true,
         ..OPEN
     };
     let late = Mono::from_millis(300);
@@ -282,7 +282,7 @@ fn the_policy_lifts_what_it_no_longer_allows_and_nothing_else() {
 #[test]
 fn a_claim_on_a_young_scroll_lifts_it_at_the_tap_timeout() {
     let claimed = Policy {
-        claimed: Over::Ours,
+        claimed: true,
         ..OPEN
     };
     let (scroll, _) = Pad::Up.land(DOWN, lead(0.0, 1.0), Mono(0));
@@ -327,7 +327,7 @@ fn a_swipe_needs_the_live_mapping_and_an_unlocked_session_and_a_scroll_a_free_po
     assert!(OPEN.allows(SWIPE) && OPEN.allows(DOWN));
     assert!(!remapped.allows(SWIPE) && remapped.allows(DOWN));
     let claimed = Policy {
-        claimed: Over::Ours,
+        claimed: true,
         ..OPEN
     };
     assert!(!claimed.allows(DOWN) && !claimed.allows(UP_RIGHT) && claimed.allows(SWIPE));

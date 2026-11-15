@@ -5,10 +5,7 @@ use crate::daemon::socket::FromSocket;
 use crate::daemon::socket::limits::MAX_CLIENTS;
 use crate::daemon::socket::model::{SocketEffect, SocketEvent, Subscribers};
 use latchkey::guard::{ACCEPT_PAUSE, COMPLAINT_INTERVAL};
-use palmrest_protocol::{
-    ActiveTouch, DeviceInfo, Filter, HostAction, LockState, Over, PROTOCOL_VERSION, TapKind,
-    ToDaemon, ToHost, Topic,
-};
+use palmrest_protocol::{DeviceInfo, Filter, HostAction, PROTOCOL_VERSION, TapKind, ToDaemon, ToHost, Topic};
 use rustix::io::Errno;
 use std::time::{Duration, Instant};
 
@@ -38,7 +35,7 @@ fn hello(device: DeviceInfo) -> ToHost {
 }
 
 const TOUCHES: ToHost = ToHost::Touches {
-    active: ActiveTouch::Down,
+    active: true,
 };
 const TAP: ToHost = ToHost::Tap {
     kind: TapKind::Two,
@@ -174,12 +171,10 @@ fn a_hang_up_releases_the_claim_and_the_lock_word() {
     let (subs, _) = feed(
         seated(&[(0, SHELL)]),
         [
-            said(0, ToDaemon::PointerOver { over: Over::Ours }),
+            said(0, ToDaemon::PointerOver { over: true }),
             said(
                 0,
-                ToDaemon::SessionLock {
-                    state: LockState::Unlocked,
-                },
+                ToDaemon::SessionLock { locked: false },
             ),
         ],
         now,
@@ -188,16 +183,16 @@ fn a_hang_up_releases_the_claim_and_the_lock_word() {
     assert_eq!(
         told,
         [
-            FromSocket::Pointer(Over::Ours),
-            FromSocket::Session(LockState::Unlocked)
+            FromSocket::Pointer(true),
+            FromSocket::Session(false)
         ]
     );
     let (subs, _) = feed(subs, [SocketEvent::Hangup { id: id(0) }], now);
     assert_eq!(
         tick(subs).1,
         [
-            FromSocket::Pointer(Over::NotOurs),
-            FromSocket::Session(LockState::Locked)
+            FromSocket::Pointer(false),
+            FromSocket::Session(true)
         ]
     );
 }
@@ -207,13 +202,13 @@ fn a_shell_whose_process_exited_is_believed_no_more() {
     let now = Instant::now();
     let (subs, _) = feed(
         seated(&[(0, SHELL)]),
-        [said(0, ToDaemon::PointerOver { over: Over::Ours })],
+        [said(0, ToDaemon::PointerOver { over: true })],
         now,
     );
     let (subs, told) = tick(subs);
-    assert_eq!(told, [FromSocket::Pointer(Over::Ours)]);
+    assert_eq!(told, [FromSocket::Pointer(true)]);
     let (subs, _) = feed(subs, [SocketEvent::ClaimsSeen(vec![(id(0), OTHER)])], now);
-    assert_eq!(tick(subs).1, [FromSocket::Pointer(Over::NotOurs)]);
+    assert_eq!(tick(subs).1, [FromSocket::Pointer(false)]);
 }
 
 #[test]
@@ -223,14 +218,12 @@ fn a_user_switch_closes_the_connections_of_the_one_who_left() {
         seated(&[(0, SHELL)]),
         [said(
             0,
-            ToDaemon::SessionLock {
-                state: LockState::Unlocked,
-            },
+            ToDaemon::SessionLock { locked: false },
         )],
         now,
     );
     let (subs, told) = tick(subs);
-    assert_eq!(told, [FromSocket::Session(LockState::Unlocked)]);
+    assert_eq!(told, [FromSocket::Session(false)]);
 
     let (subs, same) = feed(subs, [SocketEvent::SeatSeen { uid: Some(USER) }], now);
     assert!(same.is_empty(), "no news when nobody switched");
@@ -248,7 +241,7 @@ fn a_user_switch_closes_the_connections_of_the_one_who_left() {
         tick(subs).1,
         [
             FromSocket::UserConfig(None),
-            FromSocket::Session(LockState::Locked)
+            FromSocket::Session(true)
         ],
         "the one who left takes their settings with them, and the session is locked for the next"
     );

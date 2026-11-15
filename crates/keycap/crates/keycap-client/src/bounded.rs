@@ -31,13 +31,12 @@ pub fn read_text(path: &Path, max_bytes: u64) -> FileText {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::testing::Scratch;
 
     const LIMIT: u64 = 2048;
 
     #[test]
     fn missing_text_too_big_and_not_text() {
-        let dir = Scratch::new("bounded");
+        let dir = tempfile::tempdir().expect("scratch dir");
         let path = dir.path().join("f");
         assert_eq!(read_text(&path, LIMIT), FileText::Missing);
         std::fs::write(&path, "copy = Primary+C\n").unwrap();

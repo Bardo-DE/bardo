@@ -86,15 +86,6 @@ pub struct Warning {
     pub problem: String,
 }
 
-/// Whether keycap is remapping or has stood down.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Mode {
-    Running,
-    /// The escape chord paused remapping; `Resume` ends it.
-    Paused,
-}
-
 /// How keycap holds one keyboard.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -118,6 +109,7 @@ pub struct Keyboard {
 /// What keycap is doing, for the desktop to show. No keyboards means none is attached.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Status {
-    pub mode: Mode,
+    /// Whether the escape chord paused remapping; `Resume` ends it.
+    pub paused: bool,
     pub keyboards: Vec<Keyboard>,
 }

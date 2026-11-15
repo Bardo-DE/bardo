@@ -1,39 +1,13 @@
-//! Test support: a scratch directory and a fake keycap daemon on a private socket that speaks
+//! Test support: a fake keycap daemon on a private socket that speaks
 //! the keymap part of the protocol. It needs no devices, so these tests run everywhere.
 
 use keycap_protocol::{
-    self as protocol, KeymapCall, KeymapState, Mode, Registration, Status, ToClient, ToDaemon,
+    self as protocol, KeymapCall, KeymapState, Registration, Status, ToClient, ToDaemon,
 };
 use rustix::fd::OwnedFd;
 use rustix::net::{AddressFamily, RecvFlags, SendFlags, SocketAddrUnix, SocketType};
-use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicU32, Ordering};
+use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
-
-static NEXT: AtomicU32 = AtomicU32::new(0);
-
-/// An empty directory under the system temp dir, removed on drop.
-pub(crate) struct Scratch(PathBuf);
-
-impl Scratch {
-    pub(crate) fn new(label: &str) -> Scratch {
-        let n = NEXT.fetch_add(1, Ordering::Relaxed);
-        let dir =
-            std::env::temp_dir().join(format!("keycap-client-{label}-{}-{n}", std::process::id()));
-        std::fs::create_dir_all(&dir).expect("test scratch directory");
-        Scratch(dir)
-    }
-
-    pub(crate) fn path(&self) -> &Path {
-        &self.0
-    }
-}
-
-impl Drop for Scratch {
-    fn drop(&mut self) {
-        let _ = std::fs::remove_dir_all(&self.0);
-    }
-}
 
 #[derive(Default)]
 struct Shared {
@@ -47,7 +21,7 @@ struct Shared {
 pub(crate) struct FakeDaemon {
     pub(crate) socket: PathBuf,
     shared: Arc<Mutex<Shared>>,
-    _dir: Scratch,
+    _dir: tempfile::TempDir,
 }
 
 fn send(fd: &OwnedFd, message: &ToClient) {
@@ -57,7 +31,7 @@ fn send(fd: &OwnedFd, message: &ToClient) {
 impl FakeDaemon {
     /// A daemon whose `Hello` says `version`, holding `keymap`.
     pub(crate) fn start(version: u16, keymap: KeymapState) -> FakeDaemon {
-        let dir = Scratch::new("fake-daemon");
+        let dir = tempfile::tempdir().expect("scratch dir");
         let socket = dir.path().join("keycap.sock");
         let listener =
             rustix::net::socket(AddressFamily::UNIX, SocketType::SEQPACKET, None).expect("socket");
@@ -107,7 +81,7 @@ fn serve(fd: Arc<OwnedFd>, version: u16, shared: &Mutex<Shared>) {
         &ToClient::Hello {
             version,
             status: Status {
-                mode: Mode::Running,
+                paused: false,
                 keyboards: vec![],
             },
         },

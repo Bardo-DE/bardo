@@ -15,5 +15,8 @@ chordkit-file = {path = "../../../chordkit/crates/chordkit-file"}
 rustix = {version = "1", features = ["event", "fs", "net", "time", "process"]}
 shell-verbs = {path = "../../../casement-protocols/shell-verbs"}
 
+[dev-dependencies]
+tempfile = {version = "3"}
+
 [lints.rust]
 unsafe_code = "forbid"

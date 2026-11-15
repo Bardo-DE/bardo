@@ -91,7 +91,7 @@ impl Notifier {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::daemon::scratch::Scratch;
+    use keycap_devtest::Scratch;
     use std::os::linux::net::SocketAddrExt;
     use std::os::unix::net::{SocketAddr, UnixDatagram};
 

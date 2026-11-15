@@ -7,7 +7,7 @@ use super::limits::Complaints;
 use super::seat::{Peer, peer_of};
 use super::{FromSocket, ToSocket};
 use latchkey::guard::Claim;
-use palmrest_protocol::{DeviceInfo, Filter, LockState, Over, ToDaemon, ToHost};
+use palmrest_protocol::{DeviceInfo, Filter, ToDaemon, ToHost};
 use rustix::io::Errno;
 use std::collections::BTreeMap;
 use std::time::Instant;
@@ -25,9 +25,9 @@ pub(super) struct Subscriber {
     /// What it claims, as of the last look.
     pub(super) claim: Claim,
     pub(super) filter: Filter,
-    pub(super) over: Over,
+    pub(super) over: bool,
     /// What it last said about the session's lock; `None` until it says.
-    pub(super) lock: Option<LockState>,
+    pub(super) lock: Option<bool>,
 }
 
 impl Subscriber {
@@ -36,7 +36,7 @@ impl Subscriber {
             uid,
             claim,
             filter: Filter::All,
-            over: Over::NotOurs,
+            over: false,
             lock: None,
         }
     }
@@ -48,18 +48,18 @@ impl Subscriber {
 
     /// Whether the pointer is over this subscriber's surface, as far as it is believed: only the
     /// shell of the person at the seat.
-    pub(super) fn pointer(&self, active: Option<u32>) -> Over {
+    pub(super) fn pointer(&self, active: Option<u32>) -> bool {
         match self.peer(active) {
             Peer::Shell => self.over,
-            Peer::Plain | Peer::Observer => Over::NotOurs,
+            Peer::Plain | Peer::Observer => false,
         }
     }
 
     /// What this subscriber says about the lock, as far as it is believed: anyone served may say
     /// locked; only the shell may say unlocked.
-    pub(super) fn session(&self, active: Option<u32>) -> Option<LockState> {
+    pub(super) fn session(&self, active: Option<u32>) -> Option<bool> {
         match (self.lock, self.peer(active)) {
-            (Some(LockState::Unlocked), Peer::Plain | Peer::Observer) => None,
+            (Some(false), Peer::Plain | Peer::Observer) => None,
             (said, _) => said,
         }
     }
@@ -68,8 +68,8 @@ impl Subscriber {
 /// What the reader was last told about the subscribers' joint state.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) struct Told {
-    pub(super) pointer: Over,
-    pub(super) lock: LockState,
+    pub(super) pointer: bool,
+    pub(super) lock: bool,
 }
 
 /// Everything the socket thread decides from: the subscribers and what is known about the seat,
@@ -97,8 +97,8 @@ impl Subscribers {
             // Locked until a subscriber says otherwise: the tracker starts locked too, so the two
             // agree and nothing is announced for a state nobody changed.
             told: Told {
-                pointer: Over::NotOurs,
-                lock: LockState::Locked,
+                pointer: false,
+                lock: true,
             },
             config: None,
         }

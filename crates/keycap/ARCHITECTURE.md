@@ -144,7 +144,7 @@ Two outside parties decide what keycap trusts, and both are in the unit's reach 
 
 A trait appears only when two real implementations are swapped at a boundary. **Closed enums
 that stay enums:** `RemapInput`, `RemapOut`, `RuleAction`, `Edge`, `Layout`, `ToDaemon`, `ToClient`,
-`Peer`, `Eligibility`, `Mode`, `Grab`.
+`Peer`, `Eligibility`, `Grab`.
 
 ## 5. Recipes
 
@@ -350,7 +350,7 @@ pub enum RemapInput {
     ReleaseAll,
     Resume,
 }
-pub enum RemapOut { Write(Vec<OutEvent>), ReleaseGrabs, Status(Mode) }
+pub enum RemapOut { Write(Vec<OutEvent>), ReleaseGrabs, Status { paused: bool } }
 ```
 
 - **Modifiers are written eagerly.** A role press writes its `ModMap` output at once, so
@@ -394,8 +394,8 @@ pub enum RemapOut { Write(Vec<OutEvent>), ReleaseGrabs, Status(Mode) }
 - **`Focus`** takes effect at the next press; held keys keep what they wrote.
 - **Repeat** events are dropped: the compositor repeats.
 - **The escape chord** (both Shift keys + Esc, physical) releases everything and yields
-  `RemapOut::ReleaseGrabs` and `Mode::Paused`, in that order after the one draining `Write`; the
-  Esc press is not written. Keys are ignored until `Resume`, which yields `Status(Running)`.
+  `RemapOut::ReleaseGrabs` and `Status { paused: true }`, in that order after the one draining `Write`; the
+  Esc press is not written. Keys are ignored until `Resume`, which yields `Status { paused: false }`.
   The detector tracks the three chord keys per `(DeviceId, Physical)`. The grabs are given back
   at the chord, so the releases that follow never arrive: `Resume` and `ReleaseAll` start it
   over empty, and `DeviceGone(d)` forgets that keyboard's keys, so a lone Esc after a resume

@@ -14,7 +14,7 @@ use palmrest::outputs::pad::{PadFrame, UNITS_PER_MM};
 use palmrest::sensor::magic_mouse::report::{Buttons, Motion};
 use palmrest::touch::RawTouch;
 use palmrest::{Mono, Out, Tracker};
-use palmrest_protocol::{Axis, LockState, Over, ToHost, Workspace};
+use palmrest_protocol::{Axis, ToHost, Workspace};
 
 fn pad(outs: &[Out]) -> Vec<PadFrame> {
     outs.iter()
@@ -119,7 +119,7 @@ fn a_45_mm_vertical_stroke_lands_once_and_moves_the_pad_as_far_as_the_fingers() 
 #[test]
 fn a_claim_silences_the_scroll_pad_but_not_the_shell_stream() {
     let script = stroke(2, Axis::Y, 30.0, 40, 12.0);
-    let (claimed, _) = Tracker::new(Config::default()).claim(Over::Ours, Mono(0));
+    let (claimed, _) = Tracker::new(Config::default()).claim(true, Mono(0));
     let outs = outs_of(&drive(claimed, &script.records));
     assert!(pad(&outs).is_empty());
     assert!(
@@ -160,7 +160,7 @@ fn a_two_finger_horizontal_stroke_is_a_four_contact_swipe_that_follows_x_one_to_
 #[test]
 fn the_swipe_runs_under_a_claim_and_a_claim_mid_swipe_does_not_lift_it() {
     let script = stroke(2, Axis::X, 45.0, 45, 12.0);
-    let (claimed, _) = Tracker::new(Config::default()).claim(Over::Ours, Mono(0));
+    let (claimed, _) = Tracker::new(Config::default()).claim(true, Mono(0));
     let under_claim = pad(&outs_of(&drive(claimed, &script.records)));
     let free = pad(&run(Config::default(), &script));
     assert_eq!(
@@ -171,9 +171,9 @@ fn the_swipe_runs_under_a_claim_and_a_claim_mid_swipe_does_not_lift_it() {
     let (half, rest) = script.records.split_at(25);
     let (t, before) = feed_all(Tracker::new(Config::default()), half);
     let now = half.last().expect("records").at;
-    let (t, on_claim) = t.claim(Over::Ours, now);
+    let (t, on_claim) = t.claim(true, now);
     assert!(on_claim.is_empty(), "a claim does not lift a swipe");
-    let (t, on_release) = t.claim(Over::NotOurs, now);
+    let (t, on_release) = t.claim(false, now);
     assert!(on_release.is_empty());
     let after = drive(t, rest);
     let all = [outs_of(&before), outs_of(&after)].concat();
@@ -183,7 +183,7 @@ fn the_swipe_runs_under_a_claim_and_a_claim_mid_swipe_does_not_lift_it() {
 #[test]
 fn a_locked_session_has_no_swipe() {
     let script = stroke(2, Axis::X, 45.0, 45, 12.0);
-    let (locked, _) = Tracker::new(Config::default()).with_session_lock(LockState::Locked, Mono(0));
+    let (locked, _) = Tracker::new(Config::default()).with_session_lock(true, Mono(0));
     let outs = outs_of(&drive(locked, &script.records));
     assert!(pad(&outs).is_empty());
     assert!(
@@ -205,7 +205,7 @@ fn a_session_that_locks_mid_swipe_returns_and_lifts_it_at_once_and_the_rest_of_t
             .any(|f| matches!(f, PadFrame::Land { .. }))
     );
     let now = half.last().expect("records").at;
-    let (t, on_lock) = t.with_session_lock(LockState::Locked, now);
+    let (t, on_lock) = t.with_session_lock(true, now);
     assert!(
         matches!(pad(&on_lock)[..], [PadFrame::Move { .. }, PadFrame::Lift]),
         "the lock call returns the row to where it landed and lifts it: {on_lock:?}"

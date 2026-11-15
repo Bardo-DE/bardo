@@ -3,7 +3,7 @@
 
 use super::discover::{self, SYS_HIDRAW};
 use super::evdev::{self, SYS_INPUT, UDEV_DATA};
-use super::hidraw::{self, Access, READ_LEN};
+use super::hidraw::{self, READ_LEN};
 use crate::error::Error;
 use crate::recording::RecordedSource;
 use crate::sensor::evdev::EVENT_LEN;
@@ -68,21 +68,17 @@ fn open_hidraw(purpose: Purpose) -> Result<Opened, Error> {
             d.model, d.vendor, d.product
         );
     }
-    let want = match purpose {
-        Purpose::Run => Access::ReadWrite,
-        Purpose::Record => Access::ReadOnly,
-    };
-    let (fd, access) = hidraw::open(&found.node, want).map_err(|source| Error::HidrawOpen {
+    let (fd, writable) = hidraw::open(&found.node, purpose).map_err(|source| Error::HidrawOpen {
         node: found.node.clone(),
         source,
     })?;
-    match (purpose, access) {
-        (Purpose::Run, Access::ReadWrite) => {
+    match (purpose, writable) {
+        (Purpose::Run, true) => {
             if let Err(e) = hidraw::enable_multitouch(&fd) {
                 eprintln!("palmrest: enabling multitouch failed: {e}");
             }
         }
-        (Purpose::Run, Access::ReadOnly) => eprintln!(
+        (Purpose::Run, false) => eprintln!(
             "palmrest: {} is read-only; multitouch left as the kernel set it",
             found.info.path
         ),

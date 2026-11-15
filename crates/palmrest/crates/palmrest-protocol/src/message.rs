@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::vocab::{ActiveTouch, Axis, GestureId, HostAction, LockState, Over, Phase, TapKind};
+use crate::vocab::{Axis, GestureId, HostAction, Phase, TapKind};
 
 /// The mouse palmrest is reading.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -69,8 +69,9 @@ pub enum ToHost {
     },
     /// A double-tap fired while this host held the pointer.
     Tap { kind: TapKind, t_ns: u64 },
-    /// The first finger landed or the last one lifted.
-    Touches { active: ActiveTouch },
+    /// The first finger landed (`active`) or the last one lifted: fingers on the mouse or not, for
+    /// the host's double-scroll window (11.3.14).
+    Touches { active: bool },
     /// The mouse went away; every running gesture was Cancelled first.
     DeviceGone,
     /// A gesture's action that needs the person's session. Sent to the shell only (the connection
@@ -95,14 +96,16 @@ impl ToHost {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum ToDaemon {
-    /// Sent on `wl_pointer.enter`/`leave` of the host's surfaces (11.3.14).
-    PointerOver { over: Over },
+    /// Sent on `wl_pointer.enter`/`leave` of the host's surfaces (11.3.14): whether the pointer is
+    /// over one of the subscriber's surfaces.
+    PointerOver { over: bool },
     /// Narrows what this connection receives; the default is everything.
     Subscribe { filter: Filter },
-    /// The lock screen's state, sent when it changes and after connecting while locked. The
-    /// session counts as locked while any connection says so; a connection that closes stops
-    /// saying it.
-    SessionLock { state: LockState },
+    /// Whether the person's session is locked, sent when it changes and after connecting while
+    /// locked. The shell that draws the lock screen says so, because it is the one that knows; a
+    /// gesture does nothing on a locked session. The session counts as locked while any connection
+    /// says so; a connection that closes stops saying it.
+    SessionLock { locked: bool },
     /// The person's own gesture settings (the text of `~/.config/palmrest/gestures.toml`, at most
     /// [`crate::USER_CONFIG_MAX_BYTES`]), sent by the shell after connecting and when the file
     /// changes. The daemon layers it over `/etc/palmrest/gestures.toml`; empty text takes the

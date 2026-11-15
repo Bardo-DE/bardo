@@ -9,7 +9,7 @@ use keycap::{
     DeviceId, Edge, Key, Layout, Logical, Mono, OutEvent, Physical, Profiles, RemapInput, RemapOut,
     Remapper, builtin, resolve,
 };
-use keycap_protocol::{Mode, ProfileName};
+use keycap_protocol::ProfileName;
 
 /// The shipped profiles, resolved; the built-in layer must parse without a warning.
 pub fn real_profiles() -> Profiles {
@@ -87,8 +87,8 @@ pub fn render(outs: &[RemapOut]) -> String {
             .collect::<Vec<_>>()
             .join(" "),
         RemapOut::ReleaseGrabs => "GRABS-OFF".to_owned(),
-        RemapOut::Status(Mode::Paused) => "PAUSED".to_owned(),
-        RemapOut::Status(Mode::Running) => "RUNNING".to_owned(),
+        RemapOut::Status { paused: true } => "PAUSED".to_owned(),
+        RemapOut::Status { paused: false } => "RUNNING".to_owned(),
     };
     outs.iter().map(one).collect::<Vec<_>>().join("; ")
 }
@@ -167,8 +167,8 @@ impl Rig {
         self.wire.iter().map(|k| k.0.name()).collect()
     }
 
-    pub fn status(&self) -> Mode {
-        self.remapper.status()
+    pub fn paused(&self) -> bool {
+        self.remapper.paused()
     }
 
     fn apply(&mut self, out: &RemapOut) -> Result<(), String> {

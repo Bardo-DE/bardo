@@ -6,7 +6,6 @@
 use super::caps::{CapsFix, remaps_caps};
 use super::leds::{Lamp, Led, LedEvent};
 use crate::{OutEvent, Profiles, RemapInput, RemapOut, Remapper};
-use keycap_protocol::Mode;
 
 /// The remapper and what keycap knows of the Caps Lock lock.
 #[derive(Debug, Clone, Default)]
@@ -16,9 +15,9 @@ pub(crate) struct Machine {
 }
 
 impl Machine {
-    /// Whether keys are being mapped.
-    pub(crate) fn status(&self) -> Mode {
-        self.remapper.status()
+    /// Whether the escape chord paused the mapping.
+    pub(crate) fn paused(&self) -> bool {
+        self.remapper.paused()
     }
 
     /// The machine after a keyboard was grabbed with its Caps Lock lamp `lamp`.

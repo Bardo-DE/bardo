@@ -122,7 +122,7 @@ impl Connection {
             fd,
             version: 0,
             status: Status {
-                mode: protocol::Mode::Running,
+                paused: false,
                 keyboards: Vec::new(),
             },
         };
@@ -265,7 +265,7 @@ mod tests {
 
     #[test]
     fn a_daemon_with_a_full_queue_is_given_up_on_at_the_deadline() {
-        let dir = crate::testing::Scratch::new("full-queue");
+        let dir = tempfile::tempdir().expect("scratch dir");
         let path = dir.path().join("keycap.sock");
         let listener =
             rustix::net::socket(AddressFamily::UNIX, SocketType::SEQPACKET, None).expect("socket");

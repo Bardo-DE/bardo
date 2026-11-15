@@ -23,7 +23,7 @@ use crate::gestures::{
 use crate::outputs::pad::{Pad, PadFrame};
 use crate::sensor::{Frame, Surface, magic_mouse};
 use crate::time::Mono;
-use palmrest_protocol::{ActiveTouch, LockState, Over, ToHost};
+use palmrest_protocol::ToHost;
 
 /// Touches this soon after a click are ignored.
 const CLICK_GUARD: Ms = Ms(200);
@@ -49,9 +49,9 @@ pub struct Tracker {
     swipe: SwipeFire,
     tap: TapG,
     pad: Pad,
-    claimed: Over,
-    session: LockState,
-    touching: ActiveTouch,
+    claimed: bool,
+    session: bool,
+    touching: bool,
 }
 
 impl Tracker {
@@ -62,12 +62,12 @@ impl Tracker {
 
     /// A tracker for the frames of a sensor with this surface.
     pub fn on(cfg: Config, surface: Surface) -> Self {
-        Self::idle(cfg, surface, Over::NotOurs, LockState::Unlocked)
+        Self::idle(cfg, surface, false, false)
     }
 
     /// Nothing running: no contact, no stroke, nothing down on the pad. What outlives the mouse
     /// is named: the settings, the surface, who holds the pointer and the lock screen's state.
-    fn idle(cfg: Config, surface: Surface, claimed: Over, session: LockState) -> Self {
+    fn idle(cfg: Config, surface: Surface, claimed: bool, session: bool) -> Self {
         Self {
             cfg,
             surface,
@@ -81,7 +81,7 @@ impl Tracker {
             pad: Pad::Up,
             claimed,
             session,
-            touching: ActiveTouch::Up,
+            touching: false,
         }
     }
 
@@ -108,7 +108,7 @@ impl Tracker {
     /// The lock screen's state, as the shell last said it. While the session is locked no
     /// gesture runs a key or a desktop action and no Spaces swipe starts; a swipe that was
     /// running lifts at once. Scrolling and the socket stream go on.
-    pub fn with_session_lock(self, session: LockState, now: Mono) -> (Self, Vec<Out>) {
+    pub fn with_session_lock(self, session: bool, now: Mono) -> (Self, Vec<Out>) {
         Self { session, ..self }.enforce(now)
     }
 
@@ -116,7 +116,7 @@ impl Tracker {
     /// virtual touchpad lifts when a host takes over, so nothing is left pressed under our own
     /// surfaces: at once, or still at `MIN_DOWN` if it is younger, so it is no tap. A Spaces
     /// swipe is the compositor's and goes on.
-    pub fn claim(self, over: Over, now: Mono) -> (Self, Vec<Out>) {
+    pub fn claim(self, over: bool, now: Mono) -> (Self, Vec<Out>) {
         Self {
             claimed: over,
             ..self
@@ -146,8 +146,8 @@ impl Tracker {
         let (s, mut outs) = Self { stroke, ..self }.apply(&events, now);
         let (_, frames) = s.pad.lift_now();
         outs.extend(pad_outs(frames));
-        if s.touching == ActiveTouch::Down {
-            outs.push(touches(ActiveTouch::Up));
+        if s.touching {
+            outs.push(touches(false));
         }
         outs.push(Out::Host(ToHost::DeviceGone));
         (Self::idle(s.cfg, s.surface, s.claimed, s.session), outs)
@@ -180,7 +180,7 @@ impl Tracker {
 
         // `tick` runs first, so a lift that has come due is written before this report's motion.
         let (s, mut outs) = s.tick(now);
-        outs.extend(edge_out(edge, ActiveTouch::Down));
+        outs.extend(edge_out(edge, true));
         let (s, cancelled) = if press || seen.palm_turned {
             s.cancel(now)
         } else {
@@ -191,7 +191,7 @@ impl Tracker {
         outs.extend(recognised);
         let (s, gestured) = s.gestures(&samples, now, hold);
         outs.extend(gestured);
-        outs.extend(edge_out(edge, ActiveTouch::Up));
+        outs.extend(edge_out(edge, false));
         (s, outs)
     }
 
@@ -238,25 +238,21 @@ fn pad_outs(frames: Vec<PadFrame>) -> Vec<Out> {
 }
 
 /// Whether any contact is down in this report.
-fn active(samples: &[Sample]) -> ActiveTouch {
-    if samples.is_empty() {
-        ActiveTouch::Up
-    } else {
-        ActiveTouch::Down
-    }
+fn active(samples: &[Sample]) -> bool {
+    !samples.is_empty()
 }
 
 /// The edge a report makes: Down when the first contact lands, Up when the last one lifts.
-fn touch_edge(was: ActiveTouch, now: ActiveTouch) -> Option<ActiveTouch> {
+fn touch_edge(was: bool, now: bool) -> Option<bool> {
     (was != now).then_some(now)
 }
 
 /// The `Touches` message for `edge` if it is the `which` edge: Down goes out before the report's
 /// stroke phases, Up after them.
-fn edge_out(edge: Option<ActiveTouch>, which: ActiveTouch) -> Option<Out> {
+fn edge_out(edge: Option<bool>, which: bool) -> Option<Out> {
     edge.filter(|e| *e == which).map(touches)
 }
 
-fn touches(active: ActiveTouch) -> Out {
+fn touches(active: bool) -> Out {
     Out::Host(ToHost::Touches { active })
 }

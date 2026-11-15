@@ -6,12 +6,12 @@ use super::*;
 use crate::daemon::events::{EV_KEY, EV_REL, InputEvent, REL_X};
 use crate::daemon::inbox::{ClientId, Inbox, Message, Request, mailbox};
 use crate::daemon::route::Routed;
-use crate::daemon::scratch::Scratch;
+use keycap_devtest::Scratch;
 use crate::daemon::socket::client::{connect, recv};
 use crate::daemon::socket::{SeatFile, Steering, bind, socket_path, spawn};
 use crate::daemon::uinput::RecordingEmitter;
 use crate::{DeviceId, Edge, Key, Layout, Mono, Physical, RemapInput};
-use keycap_protocol::{Mode, ProfileName, ToClient};
+use keycap_protocol::{ProfileName, ToClient};
 use rustix::fd::OwnedFd;
 use std::time::Duration;
 
@@ -35,7 +35,7 @@ impl Rig {
         let listener = bind(&path).unwrap();
         let (inbox, mailbox) = mailbox().unwrap();
         let initial =
-            crate::daemon::devices::status_of(&Devices::new(), keycap_protocol::Mode::Running);
+            crate::daemon::devices::status_of(&Devices::new(), false);
         let socket = spawn(
             listener,
             inbox.clone(),
@@ -287,14 +287,14 @@ fn the_pause_chord_is_pushed_once_and_resume_is_pushed_back() {
     let Some(ToClient::Status(status)) = recv(&rig.client) else {
         panic!("expected the pause status");
     };
-    assert_eq!(status.mode, Mode::Paused);
+    assert!(status.paused);
 
     rig.request(Request::Resume);
     rig.reader.publish();
     let Some(ToClient::Status(status)) = recv(&rig.client) else {
         panic!("expected the running status, not a repeat of the pause");
     };
-    assert_eq!(status.mode, Mode::Running);
+    assert!(!status.paused);
 }
 
 #[test]

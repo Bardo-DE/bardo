@@ -25,7 +25,7 @@ pub(super) fn lamp_of(sys_input: &Path, device_path: &str) -> Option<Lamp> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::daemon::scratch::Scratch;
+    use keycap_devtest::Scratch;
 
     fn lamp_file(root: &Path, node: &str, led: &str, brightness: &str) {
         let dir = root.join(node).join("device").join(led);

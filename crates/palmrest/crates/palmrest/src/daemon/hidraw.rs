@@ -2,6 +2,7 @@
 //! also serves the evdev node, whose reads are runs of events.
 
 use super::hidioc;
+use super::source::Purpose;
 use crate::time::Mono;
 use rustix::event::{PollFd, PollFlags, poll};
 use rustix::fd::OwnedFd;
@@ -16,13 +17,6 @@ pub const ENABLE_MULTITOUCH: [u8; 3] = [0xf1, 0x02, 0x01];
 /// The largest read the mouse produces.
 pub const READ_LEN: usize = 64;
 
-/// How the node was opened: read-write can enable multitouch, read-only cannot.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Access {
-    ReadWrite,
-    ReadOnly,
-}
-
 /// Now on `CLOCK_MONOTONIC`.
 pub fn now() -> Mono {
     let t = clock_gettime(ClockId::Monotonic);
@@ -32,17 +26,19 @@ pub fn now() -> Mono {
     )
 }
 
-/// Opens the node read-write (falling back to read-only).
-pub fn open(path: &Path, want: Access) -> io::Result<(OwnedFd, Access)> {
+/// Opens the node for `purpose`: a run opens it read-write (falling back to read-only), a
+/// recording read-only. Whether it came out writable, so multitouch can be enabled, is the second
+/// half of the result.
+pub fn open(path: &Path, purpose: Purpose) -> io::Result<(OwnedFd, bool)> {
     let flags = OFlags::CLOEXEC | OFlags::NONBLOCK;
-    if want == Access::ReadWrite
+    if purpose == Purpose::Run
         && let Ok(fd) = rustix::fs::open(path, flags | OFlags::RDWR, Mode::empty())
     {
-        return Ok((fd, Access::ReadWrite));
+        return Ok((fd, true));
     }
     Ok((
         rustix::fs::open(path, flags | OFlags::RDONLY, Mode::empty())?,
-        Access::ReadOnly,
+        false,
     ))
 }
 

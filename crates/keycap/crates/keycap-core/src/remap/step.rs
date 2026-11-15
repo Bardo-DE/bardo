@@ -6,7 +6,6 @@ use crate::escape::Escape;
 use crate::event::{Edge, OutEvent};
 use crate::held::Held;
 use crate::profile::Profiles;
-use keycap_protocol::Mode;
 
 impl Remapper {
     /// Feed one input. Keys are tracked by the escape chord first; while `Paused` they yield
@@ -23,11 +22,11 @@ impl Remapper {
                 let (escape, fired) = self.escape.step(device, key, edge);
                 let this = Remapper { escape, ..self };
                 let at = (device, key);
-                match (this.status, fired, edge) {
-                    (Mode::Paused, _, _) | (_, _, Edge::Repeat) => (this, Vec::new()),
-                    (Mode::Running, true, _) => this.fire_escape(),
-                    (Mode::Running, false, Edge::Release) => this.settle(|held| held.release(at)),
-                    (Mode::Running, false, Edge::Press) => {
+                match (this.paused, fired, edge) {
+                    (true, _, _) | (_, _, Edge::Repeat) => (this, Vec::new()),
+                    (false, true, _) => this.fire_escape(),
+                    (false, false, Edge::Release) => this.settle(|held| held.release(at)),
+                    (false, false, Edge::Press) => {
                         let profile = profiles.resolve(&this.focus);
                         this.press(profile, layout, at)
                     }
@@ -50,11 +49,11 @@ impl Remapper {
             }
             RemapInput::Resume => (
                 Remapper {
-                    status: Mode::Running,
+                    paused: false,
                     escape: Escape::new(),
                     ..self
                 },
-                vec![RemapOut::Status(Mode::Running)],
+                vec![RemapOut::Status { paused: false }],
             ),
         }
     }
@@ -74,10 +73,10 @@ impl Remapper {
     /// never written.
     fn fire_escape(self) -> (Self, Vec<RemapOut>) {
         let (this, mut outs) = self.settle(Held::drain);
-        outs.extend([RemapOut::ReleaseGrabs, RemapOut::Status(Mode::Paused)]);
+        outs.extend([RemapOut::ReleaseGrabs, RemapOut::Status { paused: true }]);
         (
             Remapper {
-                status: Mode::Paused,
+                paused: true,
                 ..this
             },
             outs,

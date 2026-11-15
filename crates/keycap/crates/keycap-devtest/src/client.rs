@@ -57,7 +57,7 @@ impl Client {
         let mut client = Self {
             fd,
             status: Status {
-                mode: protocol::Mode::Running,
+                paused: false,
                 keyboards: Vec::new(),
             },
             log,
@@ -190,5 +190,5 @@ pub fn summary(status: &Status) -> String {
         .iter()
         .map(|k| format!("{} {:?}", k.info.name, k.grab))
         .collect();
-    format!("{:?} [{}]", status.mode, keyboards.join(", "))
+    format!("paused: {} [{}]", status.paused, keyboards.join(", "))
 }

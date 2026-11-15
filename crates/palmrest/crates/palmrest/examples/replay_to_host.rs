@@ -15,7 +15,7 @@ use palmrest::recording::{self, Record, RecordedSource};
 use palmrest::replay::{Timing, feed_from};
 use palmrest::stamp::StampClock;
 use palmrest::{Mono, Out, Tracker};
-use palmrest_protocol::{Over, ToHost};
+use palmrest_protocol::ToHost;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
@@ -49,11 +49,8 @@ fn run(args: Vec<String>) -> Result<(), String> {
 }
 
 /// Who holds the pointer for the replay, and the fixture paths.
-fn split_args(args: Vec<String>) -> (Over, Vec<PathBuf>) {
-    let held = match args.iter().any(|a| a == "--held") {
-        true => Over::Ours,
-        false => Over::NotOurs,
-    };
+fn split_args(args: Vec<String>) -> (bool, Vec<PathBuf>) {
+    let held = args.iter().any(|a| a == "--held");
     let files = args
         .into_iter()
         .filter(|a| a != "--held")
@@ -76,7 +73,7 @@ fn default_fixtures() -> Result<Vec<PathBuf>, String> {
 }
 
 /// The `ToHost` packets of one recording, as JSON lines.
-fn to_host_lines(file: &Path, held: Over) -> Result<Vec<String>, String> {
+fn to_host_lines(file: &Path, held: bool) -> Result<Vec<String>, String> {
     let name = file.display();
     let bytes = std::fs::read(file).map_err(|e| format!("{name}: {e}"))?;
     let rec = recording::read(&bytes).map_err(|e| format!("{name}: {e}"))?;
@@ -88,7 +85,7 @@ fn to_host_lines(file: &Path, held: Over) -> Result<Vec<String>, String> {
 
 /// Every `ToHost` the core sends for `records`, in order, ticking at its deadlines between
 /// reads and after the last one until it has none left.
-fn to_host(source: &RecordedSource, records: &[Record], held: Over) -> Vec<ToHost> {
+fn to_host(source: &RecordedSource, records: &[Record], held: bool) -> Vec<ToHost> {
     let mut sensor = source.sensor();
     let (mut tracker, claim) =
         Tracker::on(Config::default(), sensor.surface()).claim(held, Mono(0));

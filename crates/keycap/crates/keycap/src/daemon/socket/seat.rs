@@ -28,30 +28,15 @@ pub(super) fn peer_of(uid: u32, active_uid: Option<u32>, claim: Claim) -> Peer {
     }
 }
 
-/// Why a client's message was not acted on.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Refusal {
-    /// Only the shell steers: any other client only listens.
-    NotSteering,
-}
-
-impl Refusal {
-    /// The line for the log.
-    pub(crate) fn what(self) -> &'static str {
-        match self {
-            Refusal::NotSteering => "sent a request without being the shell of the seat; dropped",
-        }
-    }
-}
-
 /// What `peer` asking for `message` becomes: `Focus` and `UserConfig` only from the shell;
-/// `Resume` also from another program of the seat's user, since it only re-grabs.
-pub(crate) fn request_of(peer: Peer, client: ClientId, message: Steer) -> Result<Request, Refusal> {
+/// `Resume` also from another program of the seat's user, since it only re-grabs. `None` is a
+/// refusal: only the shell steers, any other client only listens.
+pub(crate) fn request_of(peer: Peer, client: ClientId, message: Steer) -> Option<Request> {
     match (peer, message) {
-        (Peer::Steering | Peer::Plain, Steer::Resume) => Ok(Request::Resume),
-        (Peer::Plain | Peer::Observer, _) => Err(Refusal::NotSteering),
-        (Peer::Steering, Steer::Focus { profile }) => Ok(Request::Focus(profile)),
-        (Peer::Steering, Steer::UserConfig { toml }) => Ok(Request::UserConfig { client, toml }),
+        (Peer::Steering | Peer::Plain, Steer::Resume) => Some(Request::Resume),
+        (Peer::Plain | Peer::Observer, _) => None,
+        (Peer::Steering, Steer::Focus { profile }) => Some(Request::Focus(profile)),
+        (Peer::Steering, Steer::UserConfig { toml }) => Some(Request::UserConfig { client, toml }),
     }
 }
 
@@ -168,13 +153,13 @@ mod tests {
                 "shell focus",
                 Peer::Steering,
                 focus(),
-                Ok(Request::Focus(profile.clone())),
+                Some(Request::Focus(profile.clone())),
             ),
             (
                 "shell config",
                 Peer::Steering,
                 config(),
-                Ok(Request::UserConfig {
+                Some(Request::UserConfig {
                     client,
                     toml: "x = 1".to_owned(),
                 }),
@@ -183,43 +168,43 @@ mod tests {
                 "shell resume",
                 Peer::Steering,
                 Steer::Resume,
-                Ok(Request::Resume),
+                Some(Request::Resume),
             ),
             (
                 "observer focus",
                 Peer::Observer,
                 focus(),
-                Err(Refusal::NotSteering),
+                None,
             ),
             (
                 "observer config",
                 Peer::Observer,
                 config(),
-                Err(Refusal::NotSteering),
+                None,
             ),
             (
                 "observer resume",
                 Peer::Observer,
                 Steer::Resume,
-                Err(Refusal::NotSteering),
+                None,
             ),
             (
                 "plain focus",
                 Peer::Plain,
                 focus(),
-                Err(Refusal::NotSteering),
+                None,
             ),
             (
                 "plain config",
                 Peer::Plain,
                 config(),
-                Err(Refusal::NotSteering),
+                None,
             ),
             (
                 "plain resume",
                 Peer::Plain,
                 Steer::Resume,
-                Ok(Request::Resume),
+                Some(Request::Resume),
             ),
         ];
         for (name, peer, message, want) in cases {

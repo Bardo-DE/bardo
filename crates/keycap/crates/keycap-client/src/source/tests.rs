@@ -1,7 +1,7 @@
 //! `KeycapSource` against a fake daemon, with the file fallback and without any file.
 
 use super::*;
-use crate::testing::{FakeDaemon, Scratch};
+use crate::testing::FakeDaemon;
 use chordkit::{Action, Context, StandardAction};
 use keycap_protocol::{KeymapState, PROTOCOL_VERSION};
 use std::sync::Arc;
@@ -30,7 +30,7 @@ fn alt_copy() -> chordkit::Chord {
 }
 
 /// A source with no daemon and the keymap file in `dir` holding `text` (none: no file).
-fn file_only(dir: &Scratch, text: Option<&str>) -> KeycapSource {
+fn file_only(dir: &tempfile::TempDir, text: Option<&str>) -> KeycapSource {
     let file = dir.path().join("keymap");
     if let Some(text) = text {
         std::fs::write(&file, text).expect("write");
@@ -49,7 +49,7 @@ fn wait_for(what: &str, ready: impl Fn() -> bool) {
 #[test]
 fn with_a_daemon_the_persons_keymap_comes_from_it_and_not_from_the_file() {
     let daemon = FakeDaemon::start(PROTOCOL_VERSION, state("copy = Primary+Alt+C\n"));
-    let dir = Scratch::new("source-daemon");
+    let dir = tempfile::tempdir().expect("scratch dir");
     let file = dir.path().join("keymap");
     std::fs::write(&file, "copy = Primary+Alt+X\n").expect("write");
     let source = KeycapSource::new(daemon.socket.clone(), file, "");
@@ -61,7 +61,7 @@ fn with_a_daemon_the_persons_keymap_comes_from_it_and_not_from_the_file() {
 
 #[test]
 fn without_a_daemon_the_file_is_read_directly() {
-    let dir = Scratch::new("source-file");
+    let dir = tempfile::tempdir().expect("scratch dir");
     let source = file_only(&dir, Some("copy = Primary+Alt+C\n"));
     assert_eq!(source.machine().origin, Origin::MachineFile);
     let keymap = source.load(OURS).expect("loads");
@@ -71,7 +71,7 @@ fn without_a_daemon_the_file_is_read_directly() {
 #[test]
 fn a_daemon_too_old_for_the_keymap_means_the_file_too() {
     let daemon = FakeDaemon::start(1, state("copy = Primary+Alt+X\n"));
-    let dir = Scratch::new("source-old");
+    let dir = tempfile::tempdir().expect("scratch dir");
     let file = dir.path().join("keymap");
     std::fs::write(&file, "copy = Primary+Alt+C\n").expect("write");
     let source = KeycapSource::new(daemon.socket.clone(), file, "");
@@ -84,7 +84,7 @@ fn a_daemon_too_old_for_the_keymap_means_the_file_too() {
 
 #[test]
 fn with_no_daemon_and_no_file_the_keymap_is_the_conventions_and_the_desktops_bindings() {
-    let dir = Scratch::new("source-nothing");
+    let dir = tempfile::tempdir().expect("scratch dir");
     let keymap = file_only(&dir, None).load(OURS).expect("loads");
     let expected = Keymap::conventional(OURS).with_system(system::system_bindings());
     assert_eq!(
@@ -97,7 +97,7 @@ fn with_no_daemon_and_no_file_the_keymap_is_the_conventions_and_the_desktops_bin
 
 #[test]
 fn the_desktops_bindings_only_apply_on_our_desktop() {
-    let dir = Scratch::new("source-windows");
+    let dir = tempfile::tempdir().expect("scratch dir");
     let keymap = file_only(&dir, None)
         .load(Platform::Windows)
         .expect("loads");
@@ -110,7 +110,7 @@ fn the_desktops_bindings_only_apply_on_our_desktop() {
 
 #[test]
 fn a_chord_the_desktop_keeps_is_refused_once_and_a_bad_line_is_reported() {
-    let dir = Scratch::new("source-problems");
+    let dir = tempfile::tempdir().expect("scratch dir");
     let source = file_only(&dir, Some("copy = Ctrl+1\nteleport = F5\n"));
     let (keymap, problems) = source.load_reporting(OURS);
     assert_eq!(problems.len(), 2, "{problems:?}");
@@ -196,7 +196,7 @@ fn watch_fires_when_the_daemon_says_the_keymap_changed_and_not_for_the_first_sta
 
 #[test]
 fn with_no_daemon_watch_fires_when_the_file_changes() {
-    let dir = Scratch::new("source-watch-file");
+    let dir = tempfile::tempdir().expect("scratch dir");
     let source = file_only(&dir, Some("copy = Primary+Alt+C\n"));
     let (count, callback) = counter();
     let _watch = source.watch(callback).expect("watches");
@@ -213,7 +213,7 @@ fn with_no_daemon_watch_fires_when_the_file_changes() {
 
 #[test]
 fn dropping_the_watch_ends_it() {
-    let dir = Scratch::new("source-watch-drop");
+    let dir = tempfile::tempdir().expect("scratch dir");
     let source = file_only(&dir, Some("copy = Primary+Alt+C\n"));
     let (count, callback) = counter();
     let watch = source.watch(callback).expect("watches");
@@ -261,7 +261,7 @@ fn registering_with_an_absent_daemon_says_so() {
 
 #[test]
 fn the_persons_file_wins_over_the_machines_and_problems_say_whose_they_are() {
-    let dir = Scratch::new("source-person");
+    let dir = tempfile::tempdir().expect("scratch dir");
     let machine = dir.path().join("machine");
     let person = dir.path().join("person");
     std::fs::write(&machine, "copy = Primary+Alt+X\nundo = none\nbogus = F5\n").expect("write");
@@ -290,7 +290,7 @@ fn the_persons_file_wins_over_the_machines_and_problems_say_whose_they_are() {
 #[test]
 fn watch_fires_when_the_persons_file_changes_with_or_without_a_daemon() {
     let daemon = FakeDaemon::start(PROTOCOL_VERSION, KeymapState::default());
-    let dir = Scratch::new("source-person-watch");
+    let dir = tempfile::tempdir().expect("scratch dir");
     let person = dir.path().join("person");
     std::fs::write(&person, "copy = Primary+Alt+C\n").expect("write");
     let source = KeycapSource::new(daemon.socket.clone(), "/nonexistent/keymap", &person);
@@ -303,7 +303,7 @@ fn watch_fires_when_the_persons_file_changes_with_or_without_a_daemon() {
     std::fs::write(&person, "copy = Primary+Alt+C\nredo = none\n").expect("write");
     wait_for("the callback", || count.load(Ordering::SeqCst) >= 1);
 
-    let alone = Scratch::new("source-person-watch-alone");
+    let alone = tempfile::tempdir().expect("scratch dir");
     let file = alone.path().join("person");
     let source = KeycapSource::new(
         alone.path().join("no-daemon.sock"),

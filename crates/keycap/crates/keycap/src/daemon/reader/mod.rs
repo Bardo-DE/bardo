@@ -115,7 +115,7 @@ impl<E: Emitter> Reader<E> {
         let devices = Devices::new().with_overrides(wiring.layers.overrides());
         let machine = Machine::default();
         Self {
-            published: super::devices::status_of(&devices, machine.status()),
+            published: super::devices::status_of(&devices, machine.paused()),
             mailbox: wiring.mailbox,
             socket: wiring.socket,
             emitter: wiring.emitter,

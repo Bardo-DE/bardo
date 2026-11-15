@@ -28,18 +28,17 @@ pub(crate) fn read(path: &Path) -> (Overrides, Vec<String>) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::testing::Scratch;
 
     #[test]
     fn missing_file_is_no_overrides() {
-        let dir = Scratch::new("fallback-missing");
+        let dir = tempfile::tempdir().expect("scratch dir");
         let (overrides, problems) = read(&dir.path().join("keymap"));
         assert_eq!((overrides.entries().len(), problems), (0, vec![]));
     }
 
     #[test]
     fn good_and_bad_lines_are_read_leniently_with_the_line_in_the_problem() {
-        let dir = Scratch::new("fallback-lines");
+        let dir = tempfile::tempdir().expect("scratch dir");
         let path = dir.path().join("keymap");
         std::fs::write(&path, "copy = Primary+Alt+C\nteleport = F5\n").unwrap();
         let (overrides, problems) = read(&path);
@@ -50,7 +49,7 @@ mod tests {
 
     #[test]
     fn a_file_that_is_not_text_is_one_problem() {
-        let dir = Scratch::new("fallback-binary");
+        let dir = tempfile::tempdir().expect("scratch dir");
         let path = dir.path().join("keymap");
         std::fs::write(&path, [0xff, 0xfe]).unwrap();
         let (overrides, problems) = read(&path);

@@ -5,7 +5,7 @@ use crate::daemon::socket::FromSocket;
 use crate::daemon::socket::model::SocketEvent;
 use crate::daemon::socket::packet::{Hearing, interpret};
 use crate::daemon::socket::seat::Peer;
-use palmrest_protocol::{Filter, LockState, Over, ToDaemon, Topic, USER_CONFIG_MAX_BYTES};
+use palmrest_protocol::{Filter, ToDaemon, Topic, USER_CONFIG_MAX_BYTES};
 use std::time::Instant;
 
 fn said(n: u64, message: ToDaemon) -> SocketEvent {
@@ -15,8 +15,8 @@ fn said(n: u64, message: ToDaemon) -> SocketEvent {
     }
 }
 
-fn lock(n: u64, state: LockState) -> SocketEvent {
-    said(n, ToDaemon::SessionLock { state })
+fn lock(n: u64, locked: bool) -> SocketEvent {
+    said(n, ToDaemon::SessionLock { locked })
 }
 
 fn settings(n: u64, toml: &str) -> SocketEvent {
@@ -26,13 +26,9 @@ fn settings(n: u64, toml: &str) -> SocketEvent {
 #[test]
 fn a_packet_means_what_the_standing_of_its_sender_allows() {
     let narrow = Filter::Only(vec![Topic::Tap]);
-    let over = ToDaemon::PointerOver { over: Over::Ours };
-    let unlocked = ToDaemon::SessionLock {
-        state: LockState::Unlocked,
-    };
-    let locked = ToDaemon::SessionLock {
-        state: LockState::Locked,
-    };
+    let over = ToDaemon::PointerOver { over: true };
+    let unlocked = ToDaemon::SessionLock { locked: false };
+    let locked = ToDaemon::SessionLock { locked: true };
     let subscribe = ToDaemon::Subscribe {
         filter: narrow.clone(),
     };
@@ -65,7 +61,7 @@ fn a_packet_means_what_the_standing_of_its_sender_allows() {
             "the shell says where the pointer is",
             over.clone(),
             Peer::Shell,
-            Hearing::Pointer(Over::Ours),
+            Hearing::Pointer(true),
         ),
         (
             "a plain program's pointer is ignored",
@@ -77,7 +73,7 @@ fn a_packet_means_what_the_standing_of_its_sender_allows() {
             "the shell may unlock",
             unlocked.clone(),
             Peer::Shell,
-            Hearing::Lock(LockState::Unlocked),
+            Hearing::Lock(false),
         ),
         (
             "a plain program may not unlock",
@@ -89,7 +85,7 @@ fn a_packet_means_what_the_standing_of_its_sender_allows() {
             "a plain program may lock",
             locked.clone(),
             Peer::Plain,
-            Hearing::Lock(LockState::Locked),
+            Hearing::Lock(true),
         ),
         (
             "a stranger may not lock",
@@ -141,7 +137,7 @@ fn a_malformed_packet_is_logged_and_changes_nothing() {
 
 #[test]
 fn a_packet_from_one_that_has_left_is_skipped() {
-    let (_, asked) = feed(seated(&[]), [lock(7, LockState::Unlocked)], Instant::now());
+    let (_, asked) = feed(seated(&[]), [lock(7, false)], Instant::now());
     assert!(asked.is_empty());
 }
 
@@ -154,22 +150,22 @@ fn the_session_is_unlocked_only_by_the_shell_and_any_subscriber_can_lock_it() {
         "silent subscribers leave it locked, and that is no news"
     );
 
-    let (subs, _) = feed(subs, [lock(1, LockState::Unlocked)], now);
+    let (subs, _) = feed(subs, [lock(1, false)], now);
     let (subs, told) = tick(subs);
     assert!(
         told.is_empty(),
         "a program that is not the shell cannot unlock the session"
     );
 
-    let (subs, _) = feed(subs, [lock(0, LockState::Unlocked)], now);
+    let (subs, _) = feed(subs, [lock(0, false)], now);
     let (subs, told) = tick(subs);
-    assert_eq!(told, [FromSocket::Session(LockState::Unlocked)]);
+    assert_eq!(told, [FromSocket::Session(false)]);
 
-    let (subs, _) = feed(subs, [lock(1, LockState::Locked)], now);
+    let (subs, _) = feed(subs, [lock(1, true)], now);
     let (subs, told) = tick(subs);
     assert_eq!(
         told,
-        [FromSocket::Session(LockState::Locked)],
+        [FromSocket::Session(true)],
         "any program of the person can lock it"
     );
 
@@ -177,25 +173,25 @@ fn the_session_is_unlocked_only_by_the_shell_and_any_subscriber_can_lock_it() {
     let (subs, told) = tick(subs);
     assert_eq!(
         told,
-        [FromSocket::Session(LockState::Unlocked)],
+        [FromSocket::Session(false)],
         "the one that locked it left"
     );
 
     let (subs, _) = feed(subs, [SocketEvent::Hangup { id: id(0) }], now);
     assert_eq!(
         tick(subs).1,
-        [FromSocket::Session(LockState::Locked)],
+        [FromSocket::Session(true)],
         "with no subscriber connected the session counts as locked"
     );
 }
 
 #[test]
 fn only_the_shell_is_believed_about_the_pointer() {
-    let over = |n| said(n, ToDaemon::PointerOver { over: Over::Ours });
+    let over = |n| said(n, ToDaemon::PointerOver { over: true });
     let (subs, _) = feed(seated(&[(0, SHELL), (1, OTHER)]), [over(1)], Instant::now());
     assert!(tick(subs.clone()).1.is_empty());
     let (subs, _) = feed(subs, [over(0)], Instant::now());
-    assert_eq!(tick(subs).1, [FromSocket::Pointer(Over::Ours)]);
+    assert_eq!(tick(subs).1, [FromSocket::Pointer(true)]);
 }
 
 #[test]

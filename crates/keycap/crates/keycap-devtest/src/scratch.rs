@@ -2,6 +2,9 @@
 
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicU32, Ordering};
+
+static NEXT: AtomicU32 = AtomicU32::new(0);
 
 /// A directory under the system temp directory, readable and searchable by everyone (the
 /// observer test runs a client as another user), removed on drop.
@@ -11,12 +14,12 @@ pub struct Scratch(PathBuf);
 impl Scratch {
     /// A fresh directory named for `label` and this process.
     pub fn new(label: &str) -> Self {
+        let n = NEXT.fetch_add(1, Ordering::Relaxed);
         let dir = std::env::temp_dir().join(format!(
-            "keycap-devtest-{}-{}",
+            "keycap-devtest-{}-{n}-{}",
             std::process::id(),
             label.replace(|c: char| !c.is_ascii_alphanumeric() && c != '-', "_")
         ));
-        let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("creating {}: {e}", dir.display()));
         std::fs::set_permissions(&dir, std::fs::Permissions::from_mode(0o755))
             .unwrap_or_else(|e| panic!("opening up {}: {e}", dir.display()));

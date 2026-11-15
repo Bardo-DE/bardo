@@ -3,7 +3,7 @@
 
 use crate::daemon::socket::SeatFile;
 use latchkey::guard::{Held, Origin, Vouch};
-use palmrest_protocol::{self as protocol, ActiveTouch, ToDaemon, ToHost};
+use palmrest_protocol::{self as protocol, ToDaemon, ToHost};
 use peephole::Pinned;
 use peephole_core::{Pid, Pin, Uid};
 use rustix::fd::OwnedFd;
@@ -93,5 +93,5 @@ pub(super) fn queued(fd: &OwnedFd) -> Vec<ToHost> {
 }
 
 pub(super) const TOUCHES: ToHost = ToHost::Touches {
-    active: ActiveTouch::Down,
+    active: true,
 };

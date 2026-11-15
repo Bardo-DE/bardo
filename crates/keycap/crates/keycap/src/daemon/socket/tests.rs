@@ -5,10 +5,10 @@
 use super::client::{WAIT, connect, recv, send};
 use super::*;
 use crate::daemon::inbox::{Mailbox, Message, Request, mailbox};
-use crate::daemon::scratch::Scratch;
+use keycap_devtest::Scratch;
 use keycap_client::FileText;
 use keycap_protocol::{
-    self as protocol, KeymapCall, KeymapState, Mode, PROTOCOL_VERSION, ProfileName,
+    self as protocol, KeymapCall, KeymapState, PROTOCOL_VERSION, ProfileName,
     RegisteredAction, Registration, Status, Steer, ToClient, ToDaemon, Warning,
 };
 use latchkey::guard::{ShellCheck, Vouch};
@@ -24,14 +24,14 @@ fn own_uid() -> u32 {
 
 fn running() -> Status {
     Status {
-        mode: Mode::Running,
+        paused: false,
         keyboards: Vec::new(),
     }
 }
 
 fn paused() -> Status {
     Status {
-        mode: Mode::Paused,
+        paused: true,
         keyboards: Vec::new(),
     }
 }

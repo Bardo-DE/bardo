@@ -1,4 +1,4 @@
-//! The words a message is made of: gesture ids, phases, axes, taps, touch and pointer state.
+//! The words a message is made of: gesture ids, phases, axes and taps.
 
 use serde::{Deserialize, Serialize};
 
@@ -32,33 +32,6 @@ pub enum Axis {
 pub enum TapKind {
     One,
     Two,
-}
-
-/// Fingers on the mouse or not, for the host's double-scroll window (11.3.14).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum ActiveTouch {
-    Down,
-    Up,
-}
-
-/// Whether the pointer is over one of the subscriber's surfaces.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Over {
-    Ours,
-    #[default]
-    NotOurs,
-}
-
-/// Whether the person's session is locked. The shell that draws the lock screen says so, because
-/// it is the one that knows; a gesture does nothing on a locked session.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum LockState {
-    Locked,
-    #[default]
-    Unlocked,
 }
 
 /// The most words a program or shell line may have.

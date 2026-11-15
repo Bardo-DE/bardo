@@ -186,7 +186,7 @@ impl<E: Emitter> Reader<E> {
                 self.write(&events) || recreated
             }
             // The status is read back from the remapper when it is published.
-            (RemapOut::Status(_), recreated) => recreated,
+            (RemapOut::Status { .. }, recreated) => recreated,
         }
     }
 

@@ -90,16 +90,16 @@ pub enum ToHost {
     Scroll { gesture: GestureId, phase: Phase, dx_px: f32, dy_px: f32, fingers: u8, axis: Option<Axis>, t_ns: u64 },
     Swipe { gesture: GestureId, phase: Phase, fingers: u8, dx_units: f32, t_ns: u64 },
     Tap { kind: TapKind, t_ns: u64 },
-    Touches { active: ActiveTouch },
+    Touches { active: bool },
     DeviceGone,
     Run { action: HostAction },      // to the shell's connection only, whatever its filter
 }
-pub enum ToDaemon { PointerOver { over: Over }, Subscribe { filter: Filter }, SessionLock { state: LockState }, UserConfig { toml: String } }
+pub enum ToDaemon { PointerOver { over: bool }, Subscribe { filter: Filter }, SessionLock { locked: bool }, UserConfig { toml: String } }
 pub enum HostAction { Workspace(Workspace), Shell { words: Vec<String> }, Command { argv: Vec<String> } }
 pub enum Filter { All, Only(Vec<Topic>) }            // Topic: Scroll | Swipe | Tap | Touches
 pub struct DeviceInfo { name: String, path: String, vendor: u16, product: u16 }
 // Phase: MayBegin | Began | Changed | Ended | Cancelled;  Axis: X | Y;  TapKind: One | Two
-// ActiveTouch: Down | Up;  Over: Ours | NotOurs;  LockState: Locked | Unlocked;  GestureId(u32)
+// GestureId(u32)
 ```
 
 `SessionLock` is the lock screen's state: the shell that draws it sends `Locked` when it locks and

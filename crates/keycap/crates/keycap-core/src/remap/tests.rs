@@ -1,4 +1,4 @@
-use keycap_protocol::{Mode, ProfileName};
+use keycap_protocol::ProfileName;
 
 use super::*;
 use crate::config::{ConfigLayer, ConfigSource, resolve};
@@ -52,7 +52,8 @@ fn render(outs: &[RemapOut]) -> String {
     let out = |o: &RemapOut| match o {
         RemapOut::Write(events) => events.iter().map(event).collect::<Vec<_>>().join(" "),
         RemapOut::ReleaseGrabs => "GRABS-OFF".to_owned(),
-        RemapOut::Status(status) => format!("{status:?}"),
+        RemapOut::Status { paused: true } => "Paused".to_owned(),
+        RemapOut::Status { paused: false } => "Running".to_owned(),
     };
     outs.iter().map(out).collect::<Vec<_>>().join("; ")
 }
@@ -196,10 +197,10 @@ fn the_remapper_is_paused_by_the_chord_and_running_again_after_resume() {
     let profiles = profiles();
     let (state, out) = run(&["+leftshift", "+rightshift", "+esc"]);
     assert_eq!(out[2], "-leftshift SYN; GRABS-OFF; Paused");
-    assert_eq!(state.status(), Mode::Paused);
+    assert!(state.paused());
     let (state, outs) = state.step(RemapInput::Focus(ProfileName::default_profile()), &profiles);
     assert!(outs.is_empty());
     let (state, outs) = state.step(RemapInput::Resume, &profiles);
     assert_eq!(render(&outs), "Running");
-    assert_eq!(state.status(), Mode::Running);
+    assert!(!state.paused());
 }

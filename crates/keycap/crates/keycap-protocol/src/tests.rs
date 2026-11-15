@@ -22,19 +22,19 @@ fn statuses() -> Vec<Status> {
     };
     vec![
         Status {
-            mode: Mode::Running,
+            paused: false,
             keyboards: vec![kb(Grab::Active), kb(Grab::Conflict)],
         },
         Status {
-            mode: Mode::Running,
+            paused: false,
             keyboards: vec![kb(Grab::WaitingForRelease)],
         },
         Status {
-            mode: Mode::Paused,
+            paused: true,
             keyboards: vec![kb(Grab::Active)],
         },
         Status {
-            mode: Mode::Running,
+            paused: false,
             keyboards: vec![],
         },
     ]
@@ -127,15 +127,15 @@ fn wire_form_is_adjacently_tagged() {
         json(&ToClient::Hello {
             version: 1,
             status: Status {
-                mode: Mode::Paused,
+                paused: true,
                 keyboards: vec![]
             }
         }),
-        r#"{"kind":"hello","v":{"version":1,"status":{"mode":"paused","keyboards":[]}}}"#
+        r#"{"kind":"hello","v":{"version":1,"status":{"paused":true,"keyboards":[]}}}"#
     );
     assert_eq!(
         json(&ToClient::Status(Status {
-            mode: Mode::Running,
+            paused: false,
             keyboards: vec![Keyboard {
                 info: KeyboardInfo {
                     name: "k".into(),
@@ -146,7 +146,7 @@ fn wire_form_is_adjacently_tagged() {
                 grab: Grab::WaitingForRelease
             }]
         })),
-        r#"{"kind":"status","v":{"mode":"running","keyboards":[{"info":{"name":"k","path":"/dev/input/event0","vendor":1,"product":2},"grab":"waiting_for_release"}]}}"#
+        r#"{"kind":"status","v":{"paused":false,"keyboards":[{"info":{"name":"k","path":"/dev/input/event0","vendor":1,"product":2},"grab":"waiting_for_release"}]}}"#
     );
 }
 
@@ -206,7 +206,7 @@ fn only_a_hello_of_another_version_is_incompatible() {
     let hello = |version| ToClient::Hello {
         version,
         status: Status {
-            mode: Mode::Running,
+            paused: false,
             keyboards: vec![],
         },
     };
@@ -222,7 +222,7 @@ fn only_a_hello_of_another_version_is_incompatible() {
         (
             "status",
             ToClient::Status(Status {
-                mode: Mode::Paused,
+                paused: true,
                 keyboards: vec![],
             }),
             Compat::Compatible,
@@ -272,7 +272,7 @@ fn the_version_window_is_min_through_current() {
     let hello = |version| ToClient::Hello {
         version,
         status: Status {
-            mode: Mode::Running,
+            paused: false,
             keyboards: vec![],
         },
     };

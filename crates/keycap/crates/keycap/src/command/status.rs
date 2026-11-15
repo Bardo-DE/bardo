@@ -3,7 +3,7 @@
 
 use crate::daemon::leds::Lamp;
 use keycap_client::{ClientError, Connection};
-use keycap_protocol::{Grab, Keyboard, Mode, Status, Steer, ToDaemon};
+use keycap_protocol::{Grab, Keyboard, Status, Steer, ToDaemon};
 use std::path::Path;
 use std::time::Duration;
 
@@ -37,9 +37,10 @@ fn connect(runtime_dir: &Path) -> Result<Connection, String> {
 /// A status as the lines `keycap status` prints; `caps` is the Caps Lock lamp of a keyboard,
 /// when it has one, and goes on a line of its own under it.
 pub(super) fn render(status: &Status, caps: impl Fn(&Keyboard) -> Option<Lamp>) -> String {
-    let mode = match status.mode {
-        Mode::Running => "running",
-        Mode::Paused => "paused by the escape chord; run `keycap resume` to grab again",
+    let mode = if status.paused {
+        "paused by the escape chord; run `keycap resume` to grab again"
+    } else {
+        "running"
     };
     let mut lines = vec![format!("keycap: {mode}")];
     if status.keyboards.is_empty() {
@@ -89,7 +90,7 @@ fn caps_line(lamp: Lamp) -> String {
 /// Whether the daemon is remapping at least one keyboard: what the exit status of
 /// `keycap status` says.
 pub(super) fn is_remapping(status: &Status) -> bool {
-    status.mode == Mode::Running && status.keyboards.iter().any(|k| k.grab == Grab::Active)
+    !status.paused && status.keyboards.iter().any(|k| k.grab == Grab::Active)
 }
 
 #[cfg(test)]
@@ -115,7 +116,7 @@ mod tests {
             (
                 "no keyboards",
                 Status {
-                    mode: Mode::Running,
+                    paused: false,
                     keyboards: vec![],
                 },
                 "keycap: running\n  no keyboards",
@@ -123,7 +124,7 @@ mod tests {
             (
                 "grabbed",
                 Status {
-                    mode: Mode::Running,
+                    paused: false,
                     keyboards: vec![keyboard("K5", Grab::Active)],
                 },
                 "keycap: running\n  K5 (/dev/input/event16, 3434:0a53): grabbed, remapping",
@@ -131,7 +132,7 @@ mod tests {
             (
                 "conflict",
                 Status {
-                    mode: Mode::Running,
+                    paused: false,
                     keyboards: vec![keyboard("K5", Grab::Conflict)],
                 },
                 "keycap: running\n  K5 (/dev/input/event16, 3434:0a53): held by another remapper (Toshy, keyd, ...)",
@@ -145,7 +146,7 @@ mod tests {
     #[test]
     fn a_device_name_cannot_carry_terminal_control_codes() {
         let status = Status {
-            mode: Mode::Running,
+            paused: false,
             keyboards: vec![keyboard("Evil\u{1b}[2J\u{7}\nKB é", Grab::Active)],
         };
         let text = render(&status, |_| None);
@@ -164,7 +165,7 @@ mod tests {
     #[test]
     fn the_caps_lock_lamp_goes_under_its_keyboard() {
         let status = Status {
-            mode: Mode::Running,
+            paused: false,
             keyboards: vec![
                 keyboard("K5", Grab::Active),
                 keyboard("Other", Grab::Active),
@@ -186,16 +187,16 @@ mod tests {
 
     #[test]
     fn only_an_active_grab_in_running_mode_counts_as_remapping() {
-        let one = |mode, grab| Status {
-            mode,
+        let one = |paused, grab| Status {
+            paused,
             keyboards: vec![keyboard("K5", grab)],
         };
-        assert!(is_remapping(&one(Mode::Running, Grab::Active)));
-        assert!(!is_remapping(&one(Mode::Running, Grab::Conflict)));
-        assert!(!is_remapping(&one(Mode::Running, Grab::WaitingForRelease)));
-        assert!(!is_remapping(&one(Mode::Paused, Grab::Active)));
+        assert!(is_remapping(&one(false, Grab::Active)));
+        assert!(!is_remapping(&one(false, Grab::Conflict)));
+        assert!(!is_remapping(&one(false, Grab::WaitingForRelease)));
+        assert!(!is_remapping(&one(true, Grab::Active)));
         assert!(!is_remapping(&Status {
-            mode: Mode::Running,
+            paused: false,
             keyboards: vec![]
         }));
     }

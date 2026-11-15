@@ -5,7 +5,7 @@ use super::support::{Role, Scripted, TOUCHES, me, queued, seat_file, send};
 use crate::daemon::socket::io::Server;
 use crate::daemon::socket::limits::{MAX_CLIENTS, PACKETS_PER_PASS, QUEUE_MAX};
 use crate::daemon::socket::{FromSocket, SocketHandle, ToSocket, bind};
-use palmrest_protocol::{self as protocol, LockState, Over, ToDaemon, ToHost};
+use palmrest_protocol::{self as protocol, ToDaemon, ToHost};
 use rustix::event::{EventfdFlags, eventfd};
 use rustix::fd::OwnedFd;
 use rustix::net::{AddressFamily, RecvFlags, SocketFlags, SocketType, socketpair};
@@ -109,18 +109,18 @@ fn a_flood_is_read_a_budget_at_a_time() {
         send(
             &chatty,
             &ToDaemon::PointerOver {
-                over: Over::NotOurs,
+                over: false,
             },
         )
     });
-    send(&chatty, &ToDaemon::PointerOver { over: Over::Ours });
+    send(&chatty, &ToDaemon::PointerOver { over: true });
     assert_eq!(s.server.pass(), None);
     assert!(
         s.claims.try_recv().is_err(),
         "the last packet waits for the next pass"
     );
     assert_eq!(s.server.pass(), None);
-    assert_eq!(s.claims.try_recv(), Ok(FromSocket::Pointer(Over::Ours)));
+    assert_eq!(s.claims.try_recv(), Ok(FromSocket::Pointer(true)));
 }
 
 #[test]
@@ -139,14 +139,12 @@ fn a_user_switch_closes_the_connection_of_the_one_who_left() {
     let shell = s.subscribe();
     send(
         &shell,
-        &ToDaemon::SessionLock {
-            state: LockState::Unlocked,
-        },
+        &ToDaemon::SessionLock { locked: false },
     );
     assert_eq!(s.server.pass(), None);
     assert_eq!(
         s.claims.try_recv(),
-        Ok(FromSocket::Session(LockState::Unlocked))
+        Ok(FromSocket::Session(false))
     );
 
     seat_file(&s.dir, Some(me() + 1));
@@ -165,7 +163,7 @@ fn a_user_switch_closes_the_connection_of_the_one_who_left() {
     assert_eq!(s.claims.try_recv(), Ok(FromSocket::UserConfig(None)));
     assert_eq!(
         s.claims.try_recv(),
-        Ok(FromSocket::Session(LockState::Locked))
+        Ok(FromSocket::Session(true))
     );
 }
 
