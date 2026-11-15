@@ -6,9 +6,8 @@
 //! left the motion scene; the number and the weight of what is kept are capped.
 
 use super::closing::Kept;
-use crate::handlers::capture_source::{body_copy, content_and_scale, window_rgba, window_texture};
+use crate::handlers::capture_source::{body_on_gpu, content_and_scale, window_rgba, window_texture};
 use crate::state::State;
-use casement_backend::tty::BodyCopy;
 use casement_core::WindowId;
 use casement_core::geometry::LogicalSize;
 use casement_render::ClosingBody;
@@ -171,7 +170,7 @@ pub(super) fn take(state: &mut State, window: WindowId) {
 }
 
 /// The last image of `window` as a body: copied into a texture on the display GPU where the seat
-/// allows ([`body_copy`]), no read-back; read back through the offscreen pass otherwise, and when
+/// allows ([`body_on_gpu`]), no read-back; read back through the offscreen pass otherwise, and when
 /// the GPU copy fails.
 fn make_body(
     state: &mut State,
@@ -179,11 +178,11 @@ fn make_body(
     id: u64,
     (radius, scale): (u32, Scale),
 ) -> Option<ClosingBody> {
-    let on_gpu = match body_copy(state) {
-        BodyCopy::Gpu => window_texture(state, window, radius)
+    let on_gpu = match body_on_gpu(state) {
+        true => window_texture(state, window, radius)
             .ok()
             .map(|(texture, size)| ClosingBody::from_texture(id, size, texture)),
-        _ => None,
+        false => None,
     };
     on_gpu.or_else(|| {
         let frame = window_rgba(state, window).ok()?;

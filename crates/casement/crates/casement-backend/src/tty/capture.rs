@@ -6,7 +6,7 @@
 //! renderer, a draw that failed.
 
 use super::TtyBackend;
-use super::capture_gpu::{BodyCopy, CaptureRoute, Picture, SceneSupport, body_copy, capture_route};
+use super::capture_gpu::{Picture, body_on_gpu};
 use crate::backend::BackendError;
 use crate::headless::{FramePixels, FrameSource, PresentedFrame};
 use casement_core::OutputName;
@@ -34,7 +34,7 @@ impl TtyBackend {
         let lender = self
             .devices
             .capture_gpu()
-            .filter(|gpu| gpu.scenes() == SceneSupport::Drawn);
+            .filter(|gpu| gpu.keeps_scenes());
         let Some(mut gpu) = lender else {
             return self.readback.draw(output, seq, at, source);
         };
@@ -80,19 +80,19 @@ impl TtyBackend {
 
     /// How a closing window's last image is kept on this seat: on the display GPU when it is the
     /// seat's only device and lends its renderer, else read back.
-    pub fn body_copy(&self) -> BodyCopy {
+    pub fn body_on_gpu(&self) -> bool {
         let lending = self
             .devices
             .devices
             .values()
             .filter(|device| device.kms.capture_gpu().is_some())
             .count();
-        body_copy(self.devices.devices.len(), lending)
+        body_on_gpu(self.devices.devices.len(), lending)
     }
 
     /// Renders `source` alone into a texture on the display GPU that stays there (the last image
     /// of a closing window), its bottom corners cut by `radius` logical pixels. Only for a seat
-    /// whose [`body_copy`](Self::body_copy) is [`BodyCopy::Gpu`]; the texture is drawn by the
+    /// whose [`body_on_gpu`](Self::body_on_gpu) is `true`; the texture is drawn by the
     /// scanout's renderer, which is that GPU's.
     pub fn render_window_texture(
         &mut self,
@@ -101,13 +101,13 @@ impl TtyBackend {
         radius: u32,
         source: &dyn FrameSource,
     ) -> Result<smithay::backend::renderer::gles::GlesTexture, BackendError> {
-        match self.body_copy() {
-            BodyCopy::Gpu => self
+        match self.body_on_gpu() {
+            true => self
                 .devices
                 .capture_gpu()
                 .ok_or(BackendError::NoFrame)?
                 .render_window_texture(size, scale, radius, source),
-            _ => Err(BackendError::NoFrame),
+            false => Err(BackendError::NoFrame),
         }
     }
 
@@ -116,7 +116,7 @@ impl TtyBackend {
     pub fn binds_format(&self, wanted: Format) -> bool {
         self.devices
             .capture_gpu()
-            .is_some_and(|gpu| matches!(capture_route(wanted, &gpu.formats()), CaptureRoute::Gpu))
+            .is_some_and(|gpu| gpu.formats().contains(&wanted))
     }
 
     /// Whether a capture of `output` can be drawn into a dma-buf of format `wanted`: the display

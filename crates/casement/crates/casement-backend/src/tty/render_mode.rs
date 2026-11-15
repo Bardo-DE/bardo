@@ -13,7 +13,7 @@ use super::surface::ScanoutSurface;
 use casement_core::output::OutputConfig;
 use std::collections::BTreeSet;
 
-/// How a session draws its outputs.
+/// How a session draws its outputs, and what one scanout surface came out drawn with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum RenderMode {
     /// With the GPU (GLES), falling back to the CPU for an output whose GPU surface fails.
@@ -21,15 +21,6 @@ pub enum RenderMode {
     Gpu,
     /// With the CPU alone (`--safe`): the GPU is never opened.
     Software,
-}
-
-/// What one scanout surface draws with.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Drawing {
-    /// GLES on a GPU.
-    Gpu,
-    /// pixman on the CPU, into dumb buffers.
-    Pixman,
 }
 
 /// Makes the two kinds of surface for a device. Real: `kms_real.rs`; fake: the test kit's
@@ -56,7 +47,7 @@ pub struct Opened {
     /// The surface.
     pub surface: Box<dyn ScanoutSurface>,
     /// What draws it.
-    pub drawing: Drawing,
+    pub drawing: RenderMode,
 }
 
 /// Which way each output of a device is drawn.
@@ -102,7 +93,7 @@ impl Routes {
         match maker.gpu(connector, config) {
             Ok(surface) => Ok(Opened {
                 surface,
-                drawing: Drawing::Gpu,
+                drawing: RenderMode::Gpu,
             }),
             Err(error) => {
                 self.failed.insert(connector);
@@ -121,6 +112,6 @@ fn by_cpu(
 ) -> Result<Opened, KmsError> {
     maker.software(connector, config).map(|surface| Opened {
         surface,
-        drawing: Drawing::Pixman,
+        drawing: RenderMode::Software,
     })
 }

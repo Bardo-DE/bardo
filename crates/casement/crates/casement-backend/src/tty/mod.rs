@@ -71,10 +71,7 @@ mod udev_real;
 #[cfg(feature = "tty")]
 mod writeback_real;
 
-pub use capture_gpu::{
-    BodyCopy, CaptureGpu, CaptureRoute, Picture, SceneSupport, body_copy, capture_fallback,
-    capture_route, merged_formats, renderable_formats,
-};
+pub use capture_gpu::{CaptureGpu, Picture, body_on_gpu, merged_formats, renderable_formats};
 pub use connector::{
     EdidError, VrrPolicy, attached_outputs, output_facts, parse_edid, plan_outputs, vrr_enabled,
 };
@@ -97,7 +94,7 @@ pub use master::{Master, MasterWatch, RETRY_EVERY};
 pub use offer::scanout_formats;
 pub use pace::Pace;
 pub use readback::Readback;
-pub use render_mode::{Drawing, Opened, RenderMode, Routes, ScanoutMaker};
+pub use render_mode::{Opened, RenderMode, Routes, ScanoutMaker};
 pub use report::{KmsReport, REPORT_EVERY, ReportPacer, ReportedOutput};
 pub use scanouts::{Flow, FrameTally, PresentOutcome, Scanout, ScanoutSet};
 pub use session::{SeatCauses, SeatSource, SeatState, SessionNote, TtySession};
@@ -735,12 +732,12 @@ impl TtyBackend {
         let wanted = target.format();
         let mut gpu = self.devices.capture_gpu();
         let listed = gpu.as_ref().map(|gpu| gpu.formats()).unwrap_or_default();
-        if let (CaptureRoute::Gpu, Some(gpu)) = (capture_route(wanted, &listed), gpu.as_mut()) {
+        if let Some(gpu) = gpu.as_mut().filter(|_| listed.contains(&wanted)) {
             match gpu.write_dmabuf(target, frame) {
                 Ok(()) => return Ok(()),
                 Err(error) => {
                     tracing::info!(%error, "the display GPU did not draw a capture; using the software renderer");
-                    if capture_fallback(wanted, &self.readback.capture_formats()).is_none() {
+                    if !self.readback.capture_formats().contains(&wanted) {
                         return Err(error);
                     }
                 }

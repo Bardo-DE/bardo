@@ -6,7 +6,6 @@ use crate::handlers::image_capture::draw_window_direct;
 use crate::state::State;
 use casement_backend::BackendKind;
 use casement_backend::headless::{FrameSource, RgbaFrame};
-use casement_backend::tty::BodyCopy;
 use casement_core::WindowId;
 use casement_core::geometry::{LogicalSize, PhysicalRect, PhysicalSize};
 use casement_core::time::Mono;
@@ -96,15 +95,15 @@ pub(crate) fn window_rgba(
 /// How the last image of a closing window is kept on the running backend: copied on the display
 /// GPU where the seat has exactly one that lends its renderer, read back everywhere else (the
 /// software renderers, a second GPU, the headless and nested backends).
-pub(crate) fn body_copy(state: &State) -> BodyCopy {
+pub(crate) fn body_on_gpu(state: &State) -> bool {
     match &state.backend {
-        BackendKind::Tty(tty) => tty.body_copy(),
-        _ => BodyCopy::ReadBack,
+        BackendKind::Tty(tty) => tty.body_on_gpu(),
+        _ => false,
     }
 }
 
 /// `window` drawn alone into a texture that stays on the display GPU, its bottom corners cut by
-/// `radius` logical pixels: no read-back. Only where [`body_copy`] says `Gpu`; any failure is the
+/// `radius` logical pixels: no read-back. Only where [`body_on_gpu`] says so; any failure is the
 /// caller's cue to read the window back instead.
 pub(crate) fn window_texture(
     state: &mut State,

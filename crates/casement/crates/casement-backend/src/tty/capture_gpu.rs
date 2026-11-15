@@ -5,16 +5,9 @@
 //! The real lender is `capture_gpu_real.rs` (the device's GLES renderer, the one that draws the
 //! scanout); the fake is `casement_testkit::fakes::FakeCaptureGpu`. The software renderer (the
 //! capture shadow's pixman) stays the fallback: it binds linear buffers only, so a client that
-//! allocated a GPU modifier can only be answered by the GPU.
-//!
-//! ```
-//! use casement_backend::tty::{CaptureRoute, capture_route};
-//! use smithay::backend::allocator::{Format, Fourcc, Modifier};
-//!
-//! let linear = Format { code: Fourcc::Argb8888, modifier: Modifier::Linear };
-//! assert_eq!(capture_route(linear, &[linear]), CaptureRoute::Gpu);
-//! assert_eq!(capture_route(linear, &[]), CaptureRoute::Software);
-//! ```
+//! allocated a GPU modifier can only be answered by the GPU: the GPU draws a buffer whose format
+//! and modifier it lists, and after a GPU fault the software renderer is retried only for a
+//! format it binds.
 
 use crate::backend::BackendError;
 use crate::headless::FrameSource;
@@ -49,9 +42,9 @@ pub trait CaptureGpu: std::fmt::Debug {
     }
 
     /// Whether it keeps each watched output's frame on the GPU ([`draw_scene`](Self::draw_scene)
-    /// and the calls after it). Absent by default: the capture shadow reads frames back.
-    fn scenes(&self) -> SceneSupport {
-        SceneSupport::Absent
+    /// and the calls after it). Not by default: the capture shadow reads frames back.
+    fn keeps_scenes(&self) -> bool {
+        false
     }
 
     /// Draws `source` as the frame `output` shows, into images that stay on the GPU (one with
@@ -113,7 +106,7 @@ pub trait CaptureGpu: std::fmt::Debug {
     /// Renders `source` alone into a new texture of `size` at `scale` that stays on this GPU, its
     /// bottom corners cut by `radius` logical pixels, and returns once it is done: the last image
     /// of a closing window, with no CPU read. The texture is this renderer's own; only it draws
-    /// it (see [`body_copy`]).
+    /// it (see [`body_on_gpu`]).
     fn render_window_texture(
         &mut self,
         size: PhysicalSize,
@@ -126,41 +119,22 @@ pub trait CaptureGpu: std::fmt::Debug {
     }
 }
 
-/// How a closing window's last image is kept.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum BodyCopy {
-    /// Copied into a texture on the display GPU, never read back.
-    Gpu,
-    /// Read back to the CPU and drawn from a memory buffer on any renderer.
-    ReadBack,
-}
-
-/// How to keep a closing window's last image on a seat with `devices` open display devices, of
+/// Whether a closing window's last image is kept on the GPU (`true`: copied into a texture on the
+/// display GPU, never read back) rather than read back to the CPU and drawn from a memory buffer
+/// on any renderer, on a seat with `devices` open display devices, of
 /// which `lending` lend a renderer. A texture belongs to one GL context, so the GPU copy is for a
 /// seat whose only device lends its renderer: with none (software) or a second GPU, whose
 /// scanout would draw it from another context, the image is read back.
 ///
 /// ```
-/// use casement_backend::tty::{BodyCopy, body_copy};
+/// use casement_backend::tty::body_on_gpu;
 ///
-/// assert_eq!(body_copy(1, 1), BodyCopy::Gpu);
-/// assert_eq!(body_copy(1, 0), BodyCopy::ReadBack);
-/// assert_eq!(body_copy(2, 2), BodyCopy::ReadBack);
+/// assert!(body_on_gpu(1, 1));
+/// assert!(!body_on_gpu(1, 0));
+/// assert!(!body_on_gpu(2, 2));
 /// ```
-pub fn body_copy(devices: usize, lending: usize) -> BodyCopy {
-    match (devices, lending) {
-        (1, 1) => BodyCopy::Gpu,
-        _ => BodyCopy::ReadBack,
-    }
-}
-
-/// Whether a lender keeps watched outputs' frames on the GPU.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum SceneSupport {
-    /// It does.
-    Drawn,
-    /// It does not: the software shadow reads frames back.
-    Absent,
+pub fn body_on_gpu(devices: usize, lending: usize) -> bool {
+    (devices, lending) == (1, 1)
 }
 
 /// What an output's frame looks like: the mode's size, the scale and the transform.
@@ -195,40 +169,6 @@ impl Picture {
             && right <= i64::from(self.size.w)
             && bottom <= i64::from(self.size.h)
     }
-}
-
-/// Which renderer answers a dma-buf capture frame.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum CaptureRoute {
-    /// The display GPU's renderer.
-    Gpu,
-    /// The software renderer (linear buffers).
-    Software,
-}
-
-/// Which renderer to try first for a buffer of `target` format: the GPU when it lists the format
-/// with that modifier, else the software renderer.
-pub fn capture_route(target: Format, gpu: &[Format]) -> CaptureRoute {
-    match gpu.contains(&target) {
-        true => CaptureRoute::Gpu,
-        false => CaptureRoute::Software,
-    }
-}
-
-/// What to do when the GPU could not draw into a buffer of `target` format: the software
-/// renderer when it can bind that format and modifier, else nothing (the frame fails).
-///
-/// ```
-/// use casement_backend::tty::{CaptureRoute, capture_fallback};
-/// use smithay::backend::allocator::{Format, Fourcc, Modifier};
-///
-/// let linear = Format { code: Fourcc::Argb8888, modifier: Modifier::Linear };
-/// let tiled = Format { code: Fourcc::Argb8888, modifier: Modifier::from(0x0100_0000_0000_0001_u64) };
-/// assert_eq!(capture_fallback(linear, &[linear]), Some(CaptureRoute::Software));
-/// assert_eq!(capture_fallback(tiled, &[linear]), None);
-/// ```
-pub fn capture_fallback(target: Format, software: &[Format]) -> Option<CaptureRoute> {
-    software.contains(&target).then_some(CaptureRoute::Software)
 }
 
 /// `first` followed by the formats of `second` it does not have: the offer of both renderers.
@@ -292,68 +232,18 @@ mod tests {
     }
 
     #[test]
-    fn the_route_follows_what_the_gpu_lists() {
-        let argb = Fourcc::Argb8888;
-        let gpu = [format(argb, tiled()), format(argb, Modifier::Linear)];
-        // name, the client's buffer, the route
-        let table = [
-            ("gpu modifier", format(argb, tiled()), CaptureRoute::Gpu),
-            (
-                "linear the gpu lists",
-                format(argb, Modifier::Linear),
-                CaptureRoute::Gpu,
-            ),
-            (
-                "another format",
-                format(Fourcc::Xrgb8888, Modifier::Linear),
-                CaptureRoute::Software,
-            ),
-            (
-                "unknown modifier",
-                format(argb, Modifier::from(7_u64)),
-                CaptureRoute::Software,
-            ),
-        ];
-        for (name, target, route) in table {
-            assert_eq!(capture_route(target, &gpu), route, "{name}");
-        }
-        assert_eq!(
-            capture_route(format(argb, Modifier::Linear), &[]),
-            CaptureRoute::Software,
-            "no gpu lent: software"
-        );
-    }
-
-    #[test]
     fn a_closing_image_stays_on_the_gpu_only_on_a_seat_with_one_lending_device() {
         // name, open devices, devices lending a renderer, the copy
         let table = [
-            ("one gpu", 1, 1, BodyCopy::Gpu),
-            ("one device, software", 1, 0, BodyCopy::ReadBack),
-            ("no device", 0, 0, BodyCopy::ReadBack),
-            ("a second gpu", 2, 2, BodyCopy::ReadBack),
-            (
-                "a second device that does not lend",
-                2,
-                1,
-                BodyCopy::ReadBack,
-            ),
+            ("one gpu", 1, 1, true),
+            ("one device, software", 1, 0, false),
+            ("no device", 0, 0, false),
+            ("a second gpu", 2, 2, false),
+            ("a second device that does not lend", 2, 1, false),
         ];
         for (name, devices, lending, copy) in table {
-            assert_eq!(body_copy(devices, lending), copy, "{name}");
+            assert_eq!(body_on_gpu(devices, lending), copy, "{name}");
         }
-    }
-
-    #[test]
-    fn after_a_gpu_fault_only_a_format_the_software_binds_is_retried() {
-        let argb = Fourcc::Argb8888;
-        let software = [format(argb, Modifier::Linear)];
-        assert_eq!(
-            capture_fallback(format(argb, Modifier::Linear), &software),
-            Some(CaptureRoute::Software)
-        );
-        assert_eq!(capture_fallback(format(argb, tiled()), &software), None);
-        assert_eq!(capture_fallback(format(argb, Modifier::Linear), &[]), None);
     }
 
     #[test]

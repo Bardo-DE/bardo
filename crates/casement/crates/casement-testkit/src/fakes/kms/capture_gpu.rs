@@ -3,7 +3,7 @@
 
 use casement_backend::BackendError;
 use casement_backend::headless::FrameSource;
-use casement_backend::tty::{CaptureGpu, Picture, SceneSupport};
+use casement_backend::tty::{CaptureGpu, Picture};
 use casement_core::OutputName;
 use casement_core::geometry::PhysicalRect;
 use casement_render::RenderError;
@@ -94,11 +94,8 @@ impl CaptureGpu for FakeCaptureGpu {
         }
     }
 
-    fn scenes(&self) -> SceneSupport {
-        match self.world().scenes {
-            SceneBehaviour::Absent => SceneSupport::Absent,
-            _ => SceneSupport::Drawn,
-        }
+    fn keeps_scenes(&self) -> bool {
+        !matches!(self.world().scenes, SceneBehaviour::Absent)
     }
 
     fn draw_scene(

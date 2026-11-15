@@ -3,7 +3,7 @@
 //! software surface flips and reports presentation like the GPU's.
 
 use casement_backend::tty::{
-    ConnectorId, DevicePath, Drawing, NoGpus, Pace, PresentOutcome, RenderMode, TtyBackend,
+    ConnectorId, DevicePath, NoGpus, Pace, PresentOutcome, RenderMode, TtyBackend,
     TtySeams,
 };
 use casement_core::OutputName;
@@ -76,7 +76,7 @@ impl Rig {
         }
     }
 
-    fn drawn_by(&self, connector: u32) -> Option<Drawing> {
+    fn drawn_by(&self, connector: u32) -> Option<RenderMode> {
         self.kms.drawn_by(ConnectorId(connector))
     }
 }
@@ -89,7 +89,7 @@ fn a_safe_session_draws_every_output_with_the_cpu_and_never_asks_for_the_gpu() {
     for connector in [1, 2, 3] {
         assert_eq!(
             rig.drawn_by(connector),
-            Some(Drawing::Pixman),
+            Some(RenderMode::Software),
             "{connector}"
         );
     }
@@ -101,7 +101,7 @@ fn a_session_with_a_gpu_draws_every_output_with_it() {
     rig.light();
     assert_eq!(rig.kms.gpu_asked(), 3);
     for connector in [1, 2, 3] {
-        assert_eq!(rig.drawn_by(connector), Some(Drawing::Gpu), "{connector}");
+        assert_eq!(rig.drawn_by(connector), Some(RenderMode::Gpu), "{connector}");
     }
 }
 
@@ -110,13 +110,13 @@ fn an_output_whose_gpu_surface_fails_is_drawn_by_the_cpu_and_the_others_keep_the
     let mut rig = rig(RenderMode::Gpu);
     rig.kms.refuse_gpu_on(ConnectorId(2));
     rig.light();
-    assert_eq!(rig.drawn_by(1), Some(Drawing::Gpu));
+    assert_eq!(rig.drawn_by(1), Some(RenderMode::Gpu));
     assert_eq!(
         rig.drawn_by(2),
-        Some(Drawing::Pixman),
+        Some(RenderMode::Software),
         "the one that failed"
     );
-    assert_eq!(rig.drawn_by(3), Some(Drawing::Gpu));
+    assert_eq!(rig.drawn_by(3), Some(RenderMode::Gpu));
     assert_eq!(rig.kms.gpu_asked(), 3, "every output was tried once");
 
     // Lit again at another mode, the failed output goes straight to the CPU: the driver that
@@ -133,7 +133,7 @@ fn an_output_whose_gpu_surface_fails_is_drawn_by_the_cpu_and_the_others_keep_the
     rig.backend
         .apply(&name, &smaller, at(1))
         .expect("lit again");
-    assert_eq!(rig.drawn_by(2), Some(Drawing::Pixman));
+    assert_eq!(rig.drawn_by(2), Some(RenderMode::Software));
     assert_eq!(
         rig.kms.gpu_asked(),
         3,

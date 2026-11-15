@@ -2,7 +2,7 @@
 //! its scanout, lent to draw capture frames into a client's dma-buf with the GPU's own formats
 //! and modifiers, and to keep the watched outputs' frames on the GPU (`capture_scene_real.rs`).
 
-use super::capture_gpu::{CaptureGpu, Picture, SceneSupport, renderable_formats};
+use super::capture_gpu::{CaptureGpu, Picture, renderable_formats};
 use super::capture_scene_real::SceneStore;
 use crate::backend::BackendError;
 use crate::headless::FrameSource;
@@ -82,8 +82,8 @@ impl CaptureGpu for RealCaptureGpu {
         self.node
     }
 
-    fn scenes(&self) -> SceneSupport {
-        SceneSupport::Drawn
+    fn keeps_scenes(&self) -> bool {
+        true
     }
 
     fn draw_scene(

@@ -6,7 +6,7 @@ use super::maker::FakeMaker;
 use super::topology::SyntheticTopology;
 use casement_backend::headless::ConnectorEvent;
 use casement_backend::tty::{
-    CaptureGpu, CommitVerdict, ConnectorFacts, ConnectorId, ConnectorStatus, DevicePath, Drawing,
+    CaptureGpu, CommitVerdict, ConnectorFacts, ConnectorId, ConnectorStatus, DevicePath,
     Kms, KmsCommit, KmsError, KmsOpener, KmsRefusal, KmsResources, Lit, RenderMode, Routes,
     ScanoutSurface, judge, output_facts,
 };
@@ -59,7 +59,7 @@ pub struct KmsWorld {
     /// How many times a GPU surface was asked for.
     pub gpu_asked: u32,
     /// What drew the surface last handed out for each connector.
-    pub drawn: BTreeMap<ConnectorId, Drawing>,
+    pub drawn: BTreeMap<ConnectorId, RenderMode>,
 }
 
 /// A fake display device.
@@ -105,7 +105,7 @@ impl FakeKms {
     }
 
     /// What drew the surface last handed out for `connector`.
-    pub fn drawn_by(&self, connector: ConnectorId) -> Option<Drawing> {
+    pub fn drawn_by(&self, connector: ConnectorId) -> Option<RenderMode> {
         self.world().drawn.get(&connector).copied()
     }
 
