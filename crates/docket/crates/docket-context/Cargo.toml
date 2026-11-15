@@ -1,0 +1,37 @@
+[package]
+name = "docket-context"
+description = "What the router remembers and shows: the session record and its state, the handle table, the task table, the write-ahead log, the undo journal, the manifest registry, the labels, the rebuild of a session from its log, and who is asking."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+action-review = {path = "../action-review"}
+almanac-core = {path = "../../../almanac/crates/almanac-core"}
+companion-model = {path = "../companion-model"}
+docket-core = {path = "../docket-core"}
+docket-wire = {path = "../docket-wire"}
+docket-manifest = {path = "../docket-manifest"}
+docket-permissions-core = {path = "../docket-permissions-core"}
+docket-vocab = {path = "../docket-vocab"}
+docket-session = {path = "../docket-session"}
+docket-skills = {path = "../docket-skills"}
+policy-point = {path = "../policy-point"}
+prov = {path = "../../../prov/prov"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+thiserror = {version = "2"}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+futures-channel = {version = "0.3", default-features = false, features = ["std"]}
+
+[dev-dependencies]
+docket-session = {path = "../docket-session", features = ["testing"]}
+docket-manifest = {path = "../docket-manifest", features = ["manifest-file"]}
+serde_json = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,45 @@
+//! The structure page (design/30 sections 2.1 to 2.7, the P2 components): one section per
+//! component that builds a window's content and its forms, every state it can express, live.
+
+mod capsule;
+mod column;
+mod document_tabs;
+mod drag_ghost;
+mod field_row;
+mod menu_bar;
+mod path_control;
+mod sidebar;
+mod sidebar_sections;
+mod split_view;
+mod status_bar;
+mod stepper;
+mod tab_view;
+mod table;
+mod titlebar;
+mod toolbar;
+
+use dioxus::prelude::*;
+
+/// The Structure page.
+#[component]
+pub fn StructurePage() -> Element {
+    rsx! {
+        capsule::CapsuleSection {}
+        stepper::StepperSection {}
+        table::TableSection {}
+        toolbar::ToolbarSection {}
+        column::ColumnSection {}
+        split_view::SplitViewSection {}
+        split_view::SplitViewPeekSection {}
+        sidebar::SidebarListSection {}
+        sidebar_sections::SidebarSectionsSection {}
+        path_control::PathControlSection {}
+        status_bar::StatusBarSection {}
+        tab_view::TabViewSection {}
+        document_tabs::DocumentTabsSection {}
+        field_row::FieldRowSection {}
+        menu_bar::MenuBarSection {}
+        drag_ghost::DragGhostSection {}
+        titlebar::TitlebarSection {}
+    }
+}

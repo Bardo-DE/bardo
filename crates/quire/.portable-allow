@@ -1,0 +1,8 @@
+# The D-Bus clients of quire (see scripts/check-portable.sh). Each file below reaches zbus by design
+# and is compiled only under its crate's `quire-desktop` feature (or, for ds-desktop, `dbus`); the
+# rest of every crate, and every other crate, names no zbus and builds with --no-default-features.
+^\./crates/ds-settings/src/portal/bus\.rs$
+^\./crates/ds-settings/src/live/(client|error|link|module|readers|skeleton|value)\.rs$
+^\./crates/ds-helpers/src/installer/(packagekit|transaction)\.rs$
+^\./crates/ds-blitz/src/(menus\.rs|menus/(permit|service|shell_only|wire)\.rs|print/portal\.rs)$
+^\./crates/ds-desktop/src/(probe|watch|outputs_live)\.rs$

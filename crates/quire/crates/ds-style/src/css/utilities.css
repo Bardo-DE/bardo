@@ -1,0 +1,34 @@
+/* utilities.css: the classes any component may add (design/02-TYPE.md sections 3 and 10,
+   design/03-COLOR.md section 8). The grain tile's image is appended by ds::stylesheet, which
+   has the generated PNG. */
+
+/* One line, clipped, fading out at the end: the ellipsis Blitz cannot draw (spike S13). */
+.ds-truncate{white-space:nowrap;overflow:hidden;min-width:0;mask-image:linear-gradient(to right,#000 calc(100% - 1.5em),transparent)}
+/* Machine facts in the data face, a size smaller (`S:56`; .86em, as
+   the data face is Inter and not a wide monospace). */
+.ds-mono{font-family:var(--font-data);font-size:var(--fs-mono);letter-spacing:var(--tracking-mono);font-variant-numeric:tabular-nums}
+/* The heading over a group of things (design/02-TYPE.md 2.1): sentence case, 11 px, secondary ink,
+   semibold, not tracked. */
+.ds-eyebrow{font-family:var(--font-ui);font-size:var(--fs-eyebrow);font-weight:600;letter-spacing:0;color:var(--ink-soft)}
+/* Every Glyph: a block that never shrinks in a flex row (design/04-COMPONENTS.md "Global rules",
+   `S:58-59`). Size and stroke are the SVG's own attributes (spike S6), never CSS. */
+.ds-ic{display:block;flex:none}
+/* Emoji in colour (FINDINGS "Colour emoji"): Inter, then the COLRv1 Noto Color Emoji face, so
+   text stays Inter (the emoji face maps digits and # to empty keycap bases) and every emoji falls
+   to colour. For an emoji grid, a reaction, any text that carries emoji. */
+.ds-emoji-text{font-family:var(--font-emoji)}
+/* Times, counts and numeric cells (design/02-TYPE.md section 9). */
+.ds-tabular{font-variant-numeric:tabular-nums}
+/* The window's frame: two gradient layers that cross-fade on a Space switch, and the grain over
+   them (design/03-COLOR.md sections 4.5 and 8). The back layer is the one a switch fades in.
+   Neither takes the pointer: under a root that is its own stacking context they are hit
+   before the content they sit behind unless they let it through. */
+.ds-layer{position:absolute;inset:0;z-index:var(--z-scene);pointer-events:none;background:var(--f-grad);transition:opacity var(--t-big) var(--e-out)}
+.ds-layer[*|data-layer=back]{opacity:0}
+.ds-grain{position:absolute;inset:0;z-index:var(--z-grain);pointer-events:none;opacity:var(--f-grain);background-size:128px 128px}
+/* Shell chrome's frame (`data-frame=tinted`, design/21-SPACES.md sections 3 and 5): the same two
+   layers and grain as the window's, grouped so the whole cross-fade sits at the material's tint
+   alpha (`--m-frame-alpha`; the solid floor without blur). Its own background is the current
+   gradient, under both layers, so the group stays opaque inside through a cross-fade and only
+   the group's alpha lets the blur through. */
+.ds-frame{position:absolute;inset:0;z-index:var(--z-scene);background:var(--f-grad);opacity:var(--m-frame-alpha);border-radius:inherit;overflow:hidden;pointer-events:none}

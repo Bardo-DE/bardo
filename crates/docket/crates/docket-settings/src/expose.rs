@@ -1,0 +1,41 @@
+//! Whether external MCP clients may use the registry's offered actions: the setting
+//! `agent.mcp.expose` (design/22 section 3.27, page Intelligence > Privacy). MCP is off by default
+//! (QUESTIONS S7): an edge that was never switched on lists no tools and refuses every call.
+
+use serde::{Deserialize, Serialize};
+
+/// Whether external clients may use the registry's offered actions.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum McpExpose {
+    /// No tools are listed and no call is made (the default).
+    #[default]
+    Off,
+    /// The offered actions are tools.
+    On,
+}
+
+/// Whether a code editor may drive the companion over ACP: the setting `agent.acp.expose`. Off by
+/// default, like the MCP edge: the `docket-acp` binary that was never switched on refuses to serve.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AcpExpose {
+    /// The binary refuses to serve (the default).
+    #[default]
+    Off,
+    /// An editor may open sessions and prompt.
+    On,
+}
+
+/// Whether docket may run external coding agents (Claude Code, Gemini CLI) as session backends
+/// over ACP: the setting `agent.acp.agents`. Off by default. Nothing launches while it is off, and
+/// the programs themselves come from the person's `agents.toml`, never from a prompt.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AcpAgents {
+    /// No agent program starts (the default).
+    #[default]
+    Off,
+    /// The programs in `agents.toml` may be started.
+    On,
+}

@@ -1,0 +1,180 @@
+#!/usr/bin/env bash
+# The person's style.css, live (quire ARCHITECTURE.md section 10, sill section 8). One daemon runs
+# from this checkout's debug build on shell-host's private headless KWin, on a private bus that is
+# both its session and its system bus, with a scratch HOME and XDG tree, its own XDG_RUNTIME_DIR
+# and the fake DDC; nothing reaches the user's session. The daemon is started once and never
+# restarted: every step below changes the file under it.
+#
+#   1. Baseline: the bar, the dock and the OSD (shown again just before each of its captures:
+#      its hold is a constant 1.5 s) are captured with no style.css.
+#   2. `sill style check` on the style to be written prints its notes and exits 0.
+#   3. style.css is written with a rule per surface (`.ds[data-surface=NAME]` and a token
+#      override: the bar's and the dock's frame alpha to 0, the OSD's ink and shadow ring to magenta). Every
+#      surface's capture changes without a restart (the same daemon pid answers ping);
+#      `sill style check` on a file that is not CSS exits 1.
+#   4. The file is edited (frame alpha .45, the ink and ring green): every surface changes again from the
+#      first edit (the live text is replaced, not added to).
+#   5. The file is deleted: every surface returns to its baseline (`changed_fraction` under 0.2%).
+#   6. A geometry token is written (`--shell-bar-h`, which the bar's layer reads from its resolved
+#      style): the bar's captured height changes, so the layer was resized and not only repainted;
+#      deleting the file brings the height back.
+#
+# Captures and logs: target/accept-user-style/. Exit 0 only when every step passed.
+#
+# Usage: dev/accept/user-style.sh
+set -uo pipefail
+# shellcheck source=dev/lib/all.sh
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
+OUT_DIR="$SILL_OUT_ROOT/accept-user-style"
+mkdir -p "$OUT_DIR"
+NAME=
+SURFACES=()
+DAEMON_PID=
+# The share of a surface's pixels that must change, and that may differ once it reverts.
+CHANGED=0.004
+SETTLED=0.002
+
+# The style, in the public selector surface (`data-surface`, namespaced for Blitz) and token
+# overrides, which win over the design system's by coming last: the bar's and the dock's frame
+# takes the alpha $1 (`--m-frame-alpha`), and the OSD's ink and card shadow the colour $2
+# (`--ink`, `--m-box`).
+style_for() {
+  printf '.ds[data-surface=bar], .ds[data-surface=dock] { --m-frame-alpha: %s }\n' "$1"
+  printf '.ds[data-surface=osd] { --ink: %s; --m-box: 0 0 0 6px %s }\n' "$2" "$2"
+}
+
+start_daemon() {
+  mkdir -p "$CONFIG/sill"
+  launch_daemon || return 1
+  DAEMON_PID=$DAEMON
+  NAME=$(output_name) || return 1
+  SURFACES=("sill-bar-$NAME" "sill-dock-$NAME" "sill-osd-$NAME")
+  sill debug osd volume 60 >"$OUT_DIR/osd.log" 2>&1 || return 1
+  wait_surface "sill-osd-$NAME" 30 || { echo "the OSD never mapped" >&2; return 1; }
+  sleep 1
+}
+
+# Shows the OSD again and waits for its first frame: once hidden, its surface is gone, and a new
+# one takes a moment to be presented. The 0.3 s after lets the fade-in finish inside the hold.
+show_osd() {
+  sill debug osd volume 60 >>"$OUT_DIR/osd.log" 2>&1 || return 1
+  for _ in $(seq 30); do
+    capture "$1" "$OUT_DIR/osd-probe.png" && { sleep 0.3; return 0; }
+    sleep 0.1
+  done
+  echo "the OSD was never presented" >&2
+  return 1
+}
+
+# Captures every surface as $OUT_DIR/$1-<surface>.png. The OSD hides 1.5 s after a change, so it
+# is shown again (and given its fade-in) right before its own capture.
+capture_all() {
+  local surface
+  for surface in "${SURFACES[@]}"; do
+    case "$surface" in
+      sill-osd-*) show_osd "$surface" || return 1 ;;
+    esac
+    capture "$surface" "$OUT_DIR/$1-$surface.png" || { echo "cannot capture $surface" >&2; return 1; }
+  done
+}
+
+# expect_all for every surface (reference $1, want $2, tag $3), the OSD shown again first: it
+# hides 1.5 s after a change, so it is not up when the bar's and the dock's polls are done.
+expect_styled() {
+  local SURFACES=("sill-bar-$NAME" "sill-dock-$NAME")
+  expect_all "$1" "$2" "$3" || return 1
+  show_osd "sill-osd-$NAME" || return 1
+  SURFACES=("sill-osd-$NAME")
+  expect_all "$1" "$2" "$3"
+}
+
+step_baseline() { capture_all base; }
+
+step_check_clean() {
+  style_for 0 "rgb(255, 0, 255)" >"$OUT_DIR/good.css"
+  sill style check "$OUT_DIR/good.css" >"$OUT_DIR/check-good.log" 2>&1 || {
+    cat "$OUT_DIR/check-good.log" >&2; return 1; }
+  cat "$OUT_DIR/check-good.log" >&2
+}
+
+step_written() {
+  style_for 0 "rgb(255, 0, 255)" >"$CONFIG/sill/style.css"
+  expect_styled base different written || return 1
+  printf '.ds { color: red \n}}}\n' >"$OUT_DIR/bad.css"
+  if sill style check "$OUT_DIR/bad.css" >"$OUT_DIR/check-bad.log" 2>&1; then
+    echo "sill style check accepted a file that is not CSS" >&2; return 1
+  fi
+  cat "$OUT_DIR/check-bad.log" >&2
+}
+
+step_edited() {
+  style_for .45 "rgb(0, 255, 0)" >"$CONFIG/sill/style.css"
+  expect_styled written different edited || return 1
+}
+
+step_deleted() {
+  rm -f "$CONFIG/sill/style.css"
+  expect_styled base same reverted
+}
+
+# The height in pixels of the PNG $1.
+png_height() {
+  python3 - "$1" <<'PY'
+import sys
+from PIL import Image
+print(Image.open(sys.argv[1]).height)
+PY
+}
+
+# Waits up to 20 s for the bar's capture to be $1 pixels tall when $2 is "is", or to be any other
+# height when it is "is-not"; captures into $OUT_DIR/geometry-bar.png.
+wait_bar_height() {
+  local height
+  for _ in $(seq 100); do
+    capture "sill-bar-$NAME" "$OUT_DIR/geometry-bar.png" || { sleep 0.2; continue; }
+    height=$(png_height "$OUT_DIR/geometry-bar.png")
+    if [ "$2" = is ] && [ "$height" = "$1" ]; then return 0; fi
+    if [ "$2" = is-not ] && [ "$height" != "$1" ]; then return 0; fi
+    sleep 0.2
+  done
+  echo "the bar is $height px tall, wanted it ${2/-/ } $1" >&2
+  return 1
+}
+
+step_geometry() {
+  local base
+  capture "sill-bar-$NAME" "$OUT_DIR/geometry-base.png" || return 1
+  base=$(png_height "$OUT_DIR/geometry-base.png")
+  printf '.ds[data-surface=bar] { --shell-bar-h: 40px }\n' >"$CONFIG/sill/style.css"
+  wait_bar_height "$base" is-not || return 1
+  rm -f "$CONFIG/sill/style.css"
+  wait_bar_height "$base" is
+}
+
+cleanup() {
+  local result=0
+  stop_daemon || result=1
+  stop_compositor
+  rm -rf "$RUNTIME"
+  scratch_drop
+  return "$result"
+}
+
+build || exit 1
+scratch_new
+# A short runtime folder of its own: the agent socket's path must fit in 108 bytes.
+rm -rf "$RUNTIME"
+RUNTIME=$(mktemp -d /tmp/sill-rt.XXXXXX)
+chmod 700 "$RUNTIME"
+: >"$OUT_DIR/capture.log"
+: >"$OUT_DIR/steps.log"
+start_compositor --default kwin || { echo "the headless KWin did not start (see $OUT_DIR/kwin.log)" >&2; rm -rf "$RUNTIME"; scratch_drop; exit 1; }
+trap cleanup EXIT
+backdrop_seed "$CONFIG" || exit 1
+start_daemon || { cleanup; trap - EXIT; exit 1; }
+run_steps step_baseline step_check_clean step_written step_edited step_deleted step_geometry
+status=$STATUS
+cleanup || status=1
+trap - EXIT
+echo "logs and captures in $OUT_DIR"
+exit "$status"

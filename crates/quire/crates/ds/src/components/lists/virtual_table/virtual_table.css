@@ -1,0 +1,95 @@
+/* VirtualTable (design/30 section 2.6): the `Table`'s header and cells over rows of one height that
+   are mounted only near the viewport. It also carries `ds-table` and `ds-list`, so the header, the
+   cells, the selected row and its grey when the keyboard is elsewhere are those sheets'. The box is
+   the consumer's to size; the body is as wide as the columns, and the table scrolls sideways when it
+   is narrower, header and rows together. The header is above the scroller, so it stays put. */
+
+.ds-vtable{ flex:1 1 0; height:100%; min-height:0; overflow-x:auto; overflow-y:hidden; }
+.ds-vtable-body{ display:flex; flex-direction:column; flex:1 1 0; min-height:0; }
+.ds-vtable-body > .ds-scroller{ flex:1 1 0; }
+.ds-vtable-item{ box-sizing:border-box; overflow:hidden; }
+.ds-vtable-item > .ds-row{ height:100%; box-sizing:border-box; }
+/* A table zoomed out has rows shorter than the compact row: the row is the item's height. */
+.ds-vtable .ds-vtable-item > .ds-row{ min-height:0; }
+.ds-vtable-spacer{ flex:none; }
+/* The rows' box stacks the items one under another and the track holds the pinned table's scrolling
+   pane at least as wide as its columns (its inline `min-width`), padding included. */
+.ds-vtable-rows{ display:block; }
+.ds-vtable-track{ display:block; box-sizing:border-box; }
+
+/* The list looks (`TableLook::Striped` and `Unstriped`, Finder's list view and the SwiftUI Table;
+   `data-look`). The header stays above the scroller, so no row passes under it and it needs no
+   fill of its own; its hairline is the header rule's. Its titles are regular-weight, smaller than
+   the cells and in the secondary ink; the sort indicator is drawn on the sorted column only. A row
+   is inset by `--s-6` each side, so the selected row is a rounded block (`--r-shell-highlight`)
+   away from the table's edges, in the accent while the table holds the keyboard and in the grey
+   wash when it does not (row.css). Under the selected row's accent the secondary inks are the
+   selected ink. The stripes (`data-stripe=odd`, by the row's index so they stay put as the window
+   slides) and the tint under the pointer are on the item, the full width, and give way to the
+   selection. The table's ground is the content surface, and `--stripe` is a 3 % wash. No rule is
+   drawn between rows. */
+.ds-vtable[*|data-look]{ background:var(--surface); }
+.ds-vtable[*|data-look] .ds-table-header{ box-sizing:border-box; padding:0 var(--s-6); }
+.ds-vtable[*|data-look] .ds-table-column{ font-size:var(--fs-small); font-weight:500; color:var(--ink-soft); }
+.ds-vtable[*|data-look] .ds-table-column:hover,
+.ds-vtable[*|data-look] .ds-table-column[*|aria-sort=ascending],
+.ds-vtable[*|data-look] .ds-table-column[*|aria-sort=descending]{ color:var(--ink); }
+.ds-vtable[*|data-look] .ds-table-column[*|aria-disabled=true]:hover{ color:var(--ink-soft); }
+.ds-vtable[*|data-look] .ds-vtable-item > .ds-row{ margin:0 var(--s-6); }
+.ds-vtable[*|data-look=striped] .ds-vtable-item[*|data-stripe=odd]{ background:var(--stripe); }
+.ds-vtable[*|data-look] .ds-vtable-item[*|data-row]:hover,
+.ds-vtable[*|data-look] .ds-vtable-item[*|data-hover=yes]{ background:var(--sel-neutral); }
+.ds-vtable[*|data-look] .ds-vtable-item[*|data-selected=yes],
+.ds-vtable[*|data-look] .ds-vtable-item[*|data-selected=yes]:hover{ background:transparent; }
+.ds:not([*|data-activity=inactive]) .ds-vtable[*|data-look]:not([*|data-focus=away]) .ds-row[*|data-focus=highlight][*|aria-selected=true]{
+  --ink-soft:var(--sel-ink); --ink-faint:var(--sel-ink);
+}
+
+/* Pinned columns (`pinned` > 0, `data-pinned=yes`; split.rs): two panes side by side under the
+   header, both in the table's one scroller so the rows of each move together. The held pane is as
+   wide as its columns; the other pane scrolls sideways itself (its offset moves the scrolling
+   header, which sits in a clip). `--pin-inset` is the list looks' row inset, so a pane's width
+   counts the inset its rows keep on the table's edge and not on the seam. A row is one block
+   across the seam: rounded on the left in the held pane and on the right in the scrolling one.
+   Once the columns are scrolled (`data-across=yes`) a hairline marks the seam. */
+.ds-vtable[*|data-pinned]{ overflow:hidden; }
+.ds-vtable[*|data-look]{ --pin-inset:var(--s-6); }
+.ds-vtable-heads{ display:flex; flex:none; }
+.ds-vtable-held-head{ flex:none; position:relative; }
+.ds-vtable-head-clip{ flex:1 1 0; min-width:0; overflow:hidden; }
+.ds-vtable-split{ display:flex; flex-direction:row; }
+.ds-vtable-held{ flex:none; position:relative; overflow:hidden; }
+.ds-vtable-columns{ flex:1 1 0; min-width:0; overflow-x:auto; overflow-y:hidden; scrollbar-width:none; }
+.ds-vtable[*|data-pinned] .ds-vtable-held .ds-row{ border-radius:var(--r-shell-highlight) 0 0 var(--r-shell-highlight); }
+.ds-vtable[*|data-pinned] .ds-vtable-columns .ds-row{ border-radius:0 var(--r-shell-highlight) var(--r-shell-highlight) 0; }
+.ds-vtable[*|data-pinned][*|data-look] .ds-vtable-held-head .ds-table-header{ padding:0 0 0 var(--s-6); }
+.ds-vtable[*|data-pinned][*|data-look] .ds-vtable-head-track .ds-table-header{ padding:0 var(--s-6) 0 0; }
+.ds-vtable[*|data-pinned][*|data-look] .ds-vtable-held .ds-vtable-item > .ds-row{ margin:0 0 0 var(--s-6); }
+.ds-vtable[*|data-pinned][*|data-look] .ds-vtable-columns .ds-vtable-item > .ds-row{ margin:0 var(--s-6) 0 0; }
+.ds-vtable[*|data-pinned][*|data-rules=hairline] .ds-vtable-columns .ds-table-cell:first-child{ border-left:var(--hair) solid var(--line); }
+.ds-vtable-held::after,
+.ds-vtable-held-head::after{ content:""; position:absolute; top:0; bottom:0; right:0; width:var(--hair); background:var(--line); opacity:0; pointer-events:none; }
+.ds-vtable[*|data-across=yes] .ds-vtable-held::after,
+.ds-vtable[*|data-across=yes] .ds-vtable-held-head::after{ opacity:1; }
+
+/* The outline (`outline` given; outline.rs): the first column's cell is indented by its depth (the
+   inline `padding-left`) and starts with a disclosure triangle, or with a gap of the same width on
+   a row that has no children so the names line up. The triangle is the disclosure's own, turned
+   a quarter when open; it is quiet until the pointer is over it and in the selected ink on a
+   selected row. */
+.ds-vtable-outline{ display:flex; align-items:center; min-width:0; }
+.ds-vtable-twisty,
+.ds-vtable-twisty-gap{ display:inline-flex; flex:none; align-items:center; justify-content:center; width:16px; height:16px; }
+.ds-vtable-twisty{ color:var(--ink-faint); cursor:default; }
+.ds-vtable-twisty:hover{ color:var(--ink-soft); }
+.ds-vtable-outline-cell{ display:block; flex:1 1 auto; min-width:0; overflow:hidden; white-space:nowrap; }
+
+/* Dragging rows (`onrowdrop`; row_drag.rs): the drop indicator is drawn in a layer of no height at
+   the top of the scroller's content, placed in the content's own coordinates so it scrolls with the
+   rows, as the rubber band is. Over a folder's row it is the row outlined in the accent under its
+   wash (`data-drop=onto`, the row's own rounded block); in a gap it is a line (`data-drop=between`,
+   the height Rust gives it). It never takes the pointer. */
+.ds-vtable-drop-layer{ position:relative; height:0; }
+.ds-vtable-drop{ position:absolute; left:var(--s-6); right:var(--s-6); box-sizing:border-box; pointer-events:none; z-index:var(--z-raise); }
+.ds-vtable-drop[*|data-drop=onto]{ border:2px solid var(--accent); border-radius:var(--r-shell-highlight); background:var(--accent-soft); }
+.ds-vtable-drop[*|data-drop=between]{ border-radius:var(--r-micro); background:var(--accent-text); }

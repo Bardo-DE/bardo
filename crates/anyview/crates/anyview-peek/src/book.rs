@@ -1,0 +1,121 @@
+//! The peek of a book: what its package says and its cover. An EPUB's cover is the image its
+//! package names; a comic's is its first page. Neither is decoded beyond that one image, and the
+//! reading order is not walked.
+
+use crate::body::Body;
+use crate::described::Described;
+use crate::error::PeekError;
+use crate::frames::cover_picture;
+use anyview_book::{BookError, Comic, Epub, comic_cover, epub_cover};
+use anyview_core::work::Interrupt;
+use anyview_core::{
+    BookFormat, Deadline, FactLabel, FactValue, Facts, FormatDetail, FormatKind, Input, Peek,
+    PeekBudget, Sniffed,
+};
+use anyview_image::ImagePeek;
+use std::sync::Arc;
+
+/// What a peek of a book holds.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BookLook {
+    /// The file's type in words, for a book with no cover.
+    pub described: Described,
+    /// The rows the book gave: title, author, publisher, language and its length.
+    pub rows: Facts,
+    /// The cover, reduced to the budget.
+    pub cover: Option<Arc<ImagePeek>>,
+}
+
+/// The peek of the kind `Book`.
+#[derive(Debug, Clone, Copy)]
+pub struct BookPeek;
+
+fn row(facts: Facts, label: FactLabel, text: Option<&String>) -> Facts {
+    match text {
+        Some(text) => facts.with(label, FactValue::text(text.clone())),
+        None => facts,
+    }
+}
+
+/// What a book's look is made of: its rows, and its cover when there was time for it.
+type Look = (Facts, Option<ImagePeek>);
+
+fn epub_look(src: &Input, budget: &PeekBudget, deadline: Deadline) -> Result<Look, BookError> {
+    let epub = Epub::open(src)?;
+    let meta = epub.meta();
+    let facts = row(Facts::empty(), FactLabel::Title, meta.title.as_ref());
+    let facts = row(facts, FactLabel::Author, meta.author.as_ref());
+    let facts = row(facts, FactLabel::Publisher, meta.publisher.as_ref());
+    let facts = row(facts, FactLabel::Language, meta.language.as_ref());
+    let facts = facts.with(
+        FactLabel::Chapters,
+        FactValue::text(epub.sections().get().to_string()),
+    );
+    // The cover is the slow part (an unpack and a decode): once the time is up the card is the rows.
+    let cover = (!deadline.interrupted())
+        .then(|| epub_cover(&epub))
+        .flatten()
+        .filter(|_| !deadline.interrupted())
+        .and_then(|cover| cover_picture(&cover.bytes, &cover.name, budget));
+    Ok((facts, cover))
+}
+
+fn comic_look(src: &Input, budget: &PeekBudget, deadline: Deadline) -> Result<Look, BookError> {
+    let comic = Comic::open(src)?;
+    let facts = Facts::empty().with(
+        FactLabel::Pages,
+        FactValue::text(comic.sections().get().to_string()),
+    );
+    let cover = (!deadline.interrupted())
+        .then(|| comic_cover(src))
+        .flatten()
+        .filter(|_| !deadline.interrupted())
+        .and_then(|cover| cover_picture(&cover.bytes, &cover.name, budget));
+    Ok((facts, cover))
+}
+
+impl Peek for BookPeek {
+    const KIND: FormatKind = FormatKind::Book;
+    type Peeked = BookLook;
+    type Error = PeekError;
+
+    fn peek(src: &Input, sniffed: &Sniffed, budget: &PeekBudget) -> Result<BookLook, PeekError> {
+        let described = Described::of(src, sniffed);
+        let FormatDetail::Book(format) = sniffed.detail() else {
+            return Err(PeekError::WrongKind {
+                kind: sniffed.kind(),
+            });
+        };
+        let deadline = budget.deadline_from_now();
+        let looked = match format {
+            BookFormat::Epub => epub_look(src, budget, deadline),
+            BookFormat::Cbz => comic_look(src, budget, deadline),
+        };
+        // A book that cannot be opened still has its type, size and date to show.
+        let (rows, cover) = looked.unwrap_or_else(|_| (Facts::empty(), None));
+        Ok(BookLook {
+            described,
+            rows,
+            cover: cover.map(Arc::new),
+        })
+    }
+
+    fn facts(peeked: &BookLook) -> Facts {
+        peeked.rows.rows().iter().fold(
+            Facts::empty().with(
+                FactLabel::Kind,
+                FactValue::text(peeked.described.kind.clone()),
+            ),
+            |facts, row| facts.with(row.label, row.value.clone()),
+        )
+    }
+}
+
+impl From<BookLook> for Body {
+    fn from(peeked: BookLook) -> Self {
+        match peeked.cover {
+            Some(cover) => Body::Picture(cover),
+            None => Body::FactsOnly(peeked.described),
+        }
+    }
+}

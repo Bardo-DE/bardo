@@ -1,0 +1,401 @@
+# The Bardo desktop: one workspace. Imported 2026-11-15; see IMPORT.md for each repo's source sha.
+
+[workspace]
+resolver = "3"
+members = [
+    "crates/airwaves/airwaves-bluez",
+    "crates/airwaves/airwaves-nm",
+    "crates/almanac/crates/almanac-client",
+    "crates/almanac/crates/almanac-core",
+    "crates/almanac/crates/almanac-dbus",
+    "crates/almanac/crates/almanac-dbus-serve",
+    "crates/almanac/crates/almanac-fake",
+    "crates/almanac/crates/almanac-host",
+    "crates/almanac/crates/almanac-infer",
+    "crates/almanac/crates/almanac-keyfile",
+    "crates/almanac/crates/almanac-local",
+    "crates/almanac/crates/almanac-seal",
+    "crates/almanac/crates/almanac-search",
+    "crates/almanac/crates/almanac-service",
+    "crates/almanac/crates/almanac-settings",
+    "crates/almanac/crates/almanac-store",
+    "crates/almanac/crates/almanac-tidy",
+    "crates/almanac/crates/almanac-watch",
+    "crates/almanac/crates/eventlog",
+    "crates/almanac/crates/memfiles",
+    "crates/almanac/crates/memfiles-format",
+    "crates/almanac/crates/memoryd",
+    "crates/almanac/crates/recall",
+    "crates/anyview/crates/anyview-archive",
+    "crates/anyview/crates/anyview-book",
+    "crates/anyview/crates/anyview-core",
+    "crates/anyview/crates/anyview-font",
+    "crates/anyview/crates/anyview-fs",
+    "crates/anyview/crates/anyview-image",
+    "crates/anyview/crates/anyview-peek",
+    "crates/anyview/crates/anyview-platform",
+    "crates/anyview/crates/anyview-plugin",
+    "crates/anyview/crates/anyview-plugin-protocol",
+    "crates/anyview/crates/anyview-store",
+    "crates/anyview/crates/anyview-text",
+    "crates/bayonet",
+    "crates/blitz-kit/crates/blitz-kit",
+    "crates/bulkhead",
+    "crates/casement/crates/casement",
+    "crates/casement/crates/casement-agent",
+    "crates/casement/crates/casement-backend",
+    "crates/casement/crates/casement-chrome",
+    "crates/casement/crates/casement-core",
+    "crates/casement/crates/casement-icons",
+    "crates/casement/crates/casement-ipc",
+    "crates/casement/crates/casement-layout",
+    "crates/casement/crates/casement-motion",
+    "crates/casement/crates/casement-privacy",
+    "crates/casement/crates/casement-render",
+    "crates/casement/crates/casement-testclient",
+    "crates/casement/crates/casement-testkit",
+    "crates/casement/crates/casement-wayland",
+    "crates/casement/crates/casementctl",
+    "crates/casement-protocols",
+    "crates/casement-protocols/desktop-client",
+    "crates/casement-protocols/shell-verbs",
+    "crates/chordkit/crates/chordkit",
+    "crates/chordkit/crates/chordkit-file",
+    "crates/chordkit/crates/chordkit-gnome",
+    "crates/chordkit/crates/chordkit-kde",
+    "crates/chordkit/crates/chordkit-macos",
+    "crates/cua/crates/a11y-atspi",
+    "crates/cua/crates/a11y-tree",
+    "crates/cua/crates/cua-bus",
+    "crates/cua/crates/cua-dbus",
+    "crates/cua/crates/cua-desktop",
+    "crates/cua/crates/cua-eval",
+    "crates/cua/crates/cua-eval-cloud",
+    "crates/cua/crates/cua-fake",
+    "crates/cua/crates/cua-host",
+    "crates/cua/crates/cua-run",
+    "crates/cua/crates/cua-system",
+    "crates/cua/crates/cua-types",
+    "crates/cua/crates/cuad",
+    "crates/cua/crates/maskcap",
+    "crates/cua/crates/maskcap-wayland",
+    "crates/cua/crates/seat-ei",
+    "crates/cua/crates/seat-input",
+    "crates/detent/crates/detent",
+    "crates/detent/crates/detent-callers",
+    "crates/detent/crates/detent-client",
+    "crates/detent/crates/detent-files",
+    "crates/detent/crates/detent-intents",
+    "crates/detent/crates/detent-model",
+    "crates/detent/crates/detent-system",
+    "crates/detent/crates/detent-testkit",
+    "crates/detent/crates/detent-ui",
+    "crates/docket/crates/acp-core",
+    "crates/docket/crates/action-review",
+    "crates/docket/crates/actions-mcp",
+    "crates/docket/crates/actions-tools",
+    "crates/docket/crates/agent-loop",
+    "crates/docket/crates/agents-core",
+    "crates/docket/crates/companion-client",
+    "crates/docket/crates/companion-core",
+    "crates/docket/crates/companion-model",
+    "crates/docket/crates/companion-wire",
+    "crates/docket/crates/companiond",
+    "crates/docket/crates/docket-accept",
+    "crates/docket/crates/docket-acp",
+    "crates/docket/crates/docket-acp-bin",
+    "crates/docket/crates/docket-acp-host",
+    "crates/docket/crates/docket-agents",
+    "crates/docket/crates/docket-checkpoint",
+    "crates/docket/crates/docket-checkpoint-git",
+    "crates/docket/crates/docket-cli",
+    "crates/docket/crates/docket-client",
+    "crates/docket/crates/docket-context",
+    "crates/docket/crates/docket-core",
+    "crates/docket/crates/docket-dbus",
+    "crates/docket/crates/docket-ds",
+    "crates/docket/crates/docket-eval",
+    "crates/docket/crates/docket-fake",
+    "crates/docket/crates/docket-gate",
+    "crates/docket/crates/docket-gate-wire",
+    "crates/docket/crates/docket-helpers",
+    "crates/docket/crates/docket-host",
+    "crates/docket/crates/docket-inapp",
+    "crates/docket/crates/docket-launch",
+    "crates/docket/crates/docket-live",
+    "crates/docket/crates/docket-log",
+    "crates/docket/crates/docket-manifest",
+    "crates/docket/crates/docket-memory",
+    "crates/docket/crates/docket-memory-core",
+    "crates/docket/crates/docket-models",
+    "crates/docket/crates/docket-native",
+    "crates/docket/crates/docket-permissions-core",
+    "crates/docket/crates/docket-planner",
+    "crates/docket/crates/docket-procroot",
+    "crates/docket/crates/docket-provider",
+    "crates/docket/crates/docket-reader",
+    "crates/docket/crates/docket-router",
+    "crates/docket/crates/docket-session",
+    "crates/docket/crates/docket-settings",
+    "crates/docket/crates/docket-skills",
+    "crates/docket/crates/docket-skills-disk",
+    "crates/docket/crates/docket-store",
+    "crates/docket/crates/docket-tasks",
+    "crates/docket/crates/docket-testbus",
+    "crates/docket/crates/docket-trace",
+    "crates/docket/crates/docket-vocab",
+    "crates/docket/crates/docket-wire",
+    "crates/docket/crates/eval-core",
+    "crates/docket/crates/intentd",
+    "crates/docket/crates/policy-point",
+    "crates/docket/crates/readerd",
+    "crates/docket/crates/voice-audio",
+    "crates/docket/crates/voice-dbus",
+    "crates/docket/crates/voice-loop",
+    "crates/docket/crates/voice-pipewire",
+    "crates/docket/crates/voice-wire",
+    "crates/docket/crates/voiced",
+    "crates/ferry/crates/ferry-bus",
+    "crates/ferry/crates/ferry-drive",
+    "crates/ferry/crates/ferry-drive-fuse",
+    "crates/ferry/crates/ferry-fake-graph",
+    "crates/ferry/crates/ferry-mountd",
+    "crates/ferry/crates/ferry-rig",
+    "crates/ferry/crates/ferry-sync",
+    "crates/ferry/crates/quickxorhash",
+    "crates/ferry/crates/storage-gdrive",
+    "crates/ferry/crates/storage-graph",
+    "crates/ferry/crates/storage-webdav",
+    "crates/ferry/crates/syncd",
+    "crates/ferry/crates/syncd-fakes",
+    "crates/ferry/crates/windows-zones",
+    "crates/files/crates/files",
+    "crates/files/crates/files-core",
+    "crates/files/crates/files-desktop",
+    "crates/files/crates/files-fs",
+    "crates/files/crates/files-model",
+    "crates/files/crates/files-ops",
+    "crates/files/crates/files-trash",
+    "crates/files/crates/files-ui",
+    "crates/keycap/crates/keycap",
+    "crates/keycap/crates/keycap-client",
+    "crates/keycap/crates/keycap-core",
+    "crates/keycap/crates/keycap-devtest",
+    "crates/keycap/crates/keycap-protocol",
+    "crates/keycap/crates/keycap-sys",
+    "crates/latchkey",
+    "crates/palmrest/crates/palmrest",
+    "crates/palmrest/crates/palmrest-protocol",
+    "crates/peephole/peephole",
+    "crates/peephole/peephole-bus",
+    "crates/peephole/peephole-core",
+    "crates/porter/crates/accountd",
+    "crates/porter/crates/dav-proto",
+    "crates/porter/crates/fake-secret-service",
+    "crates/porter/crates/generic-proto",
+    "crates/porter/crates/keyring-chunked",
+    "crates/porter/crates/nextcloud-proto",
+    "crates/porter/crates/oauth-probe-proto",
+    "crates/porter/crates/porter-calendar",
+    "crates/porter/crates/porter-callers",
+    "crates/porter/crates/porter-capability",
+    "crates/porter/crates/porter-client",
+    "crates/porter/crates/porter-client-dbus",
+    "crates/porter/crates/porter-client-inproc",
+    "crates/porter/crates/porter-core",
+    "crates/porter/crates/porter-daemon",
+    "crates/porter/crates/porter-dbus",
+    "crates/porter/crates/porter-dbus-macros",
+    "crates/porter/crates/porter-discover",
+    "crates/porter/crates/porter-fake",
+    "crates/porter/crates/porter-fake-servers",
+    "crates/porter/crates/porter-families",
+    "crates/porter/crates/porter-family-generic",
+    "crates/porter/crates/porter-family-kit",
+    "crates/porter/crates/porter-family-nextcloud",
+    "crates/porter/crates/porter-family-oauth",
+    "crates/porter/crates/porter-fs",
+    "crates/porter/crates/porter-http",
+    "crates/porter/crates/porter-http-relay",
+    "crates/porter/crates/porter-http-reqwest",
+    "crates/porter/crates/porter-identities",
+    "crates/porter/crates/porter-ids",
+    "crates/porter/crates/porter-match",
+    "crates/porter/crates/porter-oauth",
+    "crates/porter/crates/porter-provider",
+    "crates/porter/crates/porter-proxy",
+    "crates/porter/crates/porter-rig",
+    "crates/porter/crates/porter-secrets",
+    "crates/porter/crates/porter-service",
+    "crates/porter/crates/porter-service-accounts",
+    "crates/porter/crates/porter-service-core",
+    "crates/porter/crates/porter-service-grants",
+    "crates/porter/crates/porter-settings",
+    "crates/porter/crates/porter-sheet",
+    "crates/porter/crates/porter-sheets",
+    "crates/porter/crates/porter-spaces",
+    "crates/porter/crates/porter-store",
+    "crates/porter/crates/porter-tailscale",
+    "crates/porter/crates/porter-wire",
+    "crates/porter/crates/test-kit",
+    "crates/prov/prov",
+    "crates/quire/crates/ds",
+    "crates/quire/crates/ds-behaviour",
+    "crates/quire/crates/ds-blitz",
+    "crates/quire/crates/ds-conformance",
+    "crates/quire/crates/ds-core",
+    "crates/quire/crates/ds-core-derive",
+    "crates/quire/crates/ds-desktop",
+    "crates/quire/crates/ds-extensions",
+    "crates/quire/crates/ds-gallery",
+    "crates/quire/crates/ds-harness",
+    "crates/quire/crates/ds-helpers",
+    "crates/quire/crates/ds-intents",
+    "crates/quire/crates/ds-lint",
+    "crates/quire/crates/ds-motion",
+    "crates/quire/crates/ds-peer",
+    "crates/quire/crates/ds-settings",
+    "crates/quire/crates/ds-settings-derive",
+    "crates/quire/crates/ds-settings-page",
+    "crates/quire/crates/ds-shell",
+    "crates/quire/crates/ds-style",
+    "crates/quire/crates/quire-emoji",
+    "crates/quire/tools/icons",
+    "crates/shell-host/crates/shell-host",
+    "crates/sill/crates/sill",
+    "crates/sill/crates/sill-bar",
+    "crates/sill/crates/sill-dock",
+    "crates/sill/crates/sill-ipc",
+    "crates/sill/crates/sill-launcher",
+    "crates/sill/crates/sill-launcher-ui",
+    "crates/sill/crates/sill-model",
+    "crates/sill/crates/sill-notify-ui",
+    "crates/sill/crates/sill-overlays",
+    "crates/sill/crates/sill-search",
+    "crates/sill/crates/sill-services",
+    "crates/sill/crates/sill-settings",
+    "crates/sill/crates/sill-shell-kit",
+    "crates/sill/crates/sill-testkit",
+    "crates/sill/crates/sill-ui-kit",
+    "crates/slipway/crates/slipway",
+    "crates/slipway/crates/slipway-core",
+    "crates/slipway/crates/slipway-root",
+    "crates/steward/crates/inferd",
+    "crates/steward/crates/inferd-client",
+    "crates/steward/crates/inferd-probe",
+    "crates/steward/crates/porter-bridge",
+    "crates/steward/crates/porter-infer",
+    "crates/steward/crates/porter-router",
+    "crates/steward/crates/porter-tailnet",
+    "crates/steward/crates/porter-turns",
+    "crates/steward/crates/steward-dbus",
+    "crates/steward/crates/steward-rig",
+    "crates/stoker/crates/cua-action",
+    "crates/stoker/crates/cua-parse",
+    "crates/stoker/crates/cua-session",
+    "crates/stoker/crates/cua-vendors",
+    "crates/stoker/crates/engine-install",
+    "crates/stoker/crates/engine-manifest",
+    "crates/stoker/crates/engine-probe",
+    "crates/stoker/crates/engine-spec",
+    "crates/stoker/crates/engine-supervisor",
+    "crates/stoker/crates/genai-names",
+    "crates/stoker/crates/model-catalog",
+    "crates/stoker/crates/model-extract",
+    "crates/stoker/crates/model-http",
+    "crates/stoker/crates/model-openai-compat",
+    "crates/stoker/crates/model-provider",
+    "crates/stoker/crates/model-replay",
+    "crates/stoker/crates/model-wire",
+    "crates/stoker/crates/speech-host",
+    "crates/stoker/crates/speech-host-client",
+    "crates/stoker/crates/speech-provider",
+    "crates/stoker/crates/speech-vad",
+    "crates/stoker/crates/vision-prep",
+    "crates/transom/crates/transom",
+    "crates/transom/crates/transom-core",
+    "crates/turnstile/crates/turnstile",
+    "crates/turnstile/crates/turnstile-client",
+    "crates/turnstile/crates/turnstile-wire",
+]
+exclude = [
+    'crates/casement/casement-scene-css',
+    'crates/casement/wlcs-casement',
+    'crates/docket/fuzz',
+    'crates/stoker/crates/speech-host-sherpa',
+    'crates/stoker/crates/speech-vad-silero',
+    'crates/turnstile/vendor/input-linux-sys',
+]
+
+[profile.dev]
+opt-level = 0
+debug = "line-tables-only"
+split-debuginfo = "unpacked"
+incremental = true
+
+[profile.dev.package."*"]
+debug = false
+
+[profile.dev.package.pbkdf2]
+opt-level = 3
+
+
+[profile.dev.package.hmac]
+opt-level = 3
+
+
+[profile.dev.package.sha2]
+opt-level = 3
+
+
+[profile.dev.package.digest]
+opt-level = 3
+
+
+[profile.dev.package.aes]
+opt-level = 3
+
+
+[profile.dev.package.cbc]
+opt-level = 3
+
+
+[profile.dev.package.cipher]
+opt-level = 3
+
+
+[profile.dev.package.block-buffer]
+opt-level = 3
+
+
+[profile.dev.package.crypto-common]
+opt-level = 3
+
+
+[profile.dev.package.generic-array]
+opt-level = 3
+
+
+[profile.dev.package.inout]
+opt-level = 3
+
+[profile.release]
+strip = "debuginfo"
+
+[patch.crates-io]
+anyrender = {git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826"}
+anyrender_vello_cpu = {git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826"}
+anyrender_vello_hybrid = {git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826"}
+dioxus-core = {git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439"}
+dioxus-core-types = {git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439"}
+generational-box = {git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439"}
+glifo = {git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8"}
+input-linux-sys = {path = "crates/turnstile/vendor/input-linux-sys"}
+pixels_window_renderer = {git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826"}
+subsecond = {git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439"}
+subsecond-types = {git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439"}
+vello_common = {git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8"}
+vello_cpu = {git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8"}
+vello_hybrid = {git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8"}
+vello_sparse_shaders = {git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8"}
+wgpu_context = {git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826"}

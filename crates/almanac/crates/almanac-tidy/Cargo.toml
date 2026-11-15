@@ -1,0 +1,25 @@
+[package]
+name = "almanac-tidy"
+description = "What memory learns and keeps tidy, as pure values: the fact lifecycle machine, the consolidation run machine, seam and draft check, the consolidation prompt and the parse of the model's answer, the check of a tidied topic file, what a reply changed, and the Space removal notes."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/almanac"
+publish = false
+
+[dependencies]
+almanac-core = {path = "../almanac-core"}
+blake3 = {version = "1"}
+memfiles-format = {path = "../memfiles-format"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+toml = {version = "1"}
+
+[dev-dependencies]
+almanac-fake = {path = "../almanac-fake"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

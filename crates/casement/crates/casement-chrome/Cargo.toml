@@ -1,0 +1,22 @@
+[package]
+name = "casement-chrome"
+description = "casement's window title text: parley lays the title out with fontique's system fonts, vello_cpu rasterises it to premultiplied RGBA at the output's native scale. The only crate that reaches the text stack (boundary row B15)."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/casement"
+publish = false
+
+[dependencies]
+casement-core = {path = "../casement-core"}
+ds-core = {path = "../../../quire/crates/ds-core", default-features = false}
+ds-style = {path = "../../../quire/crates/ds-style", default-features = false}
+parley = {version = "0.11.1", default-features = false, features = ["std", "system"]}
+thiserror = {version = "2"}
+vello_cpu = {git = "https://github.com/Bardo-DE/vello", rev = "3e43d4af1f1955f2efc2cd52e50350811a1386ca"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+missing_debug_implementations = "warn"

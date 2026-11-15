@@ -1,0 +1,25 @@
+[package]
+name = "anyview-plugin"
+description = "Plugins as values: the capabilities the viewer asks of a plugin and what each handles, which plugin serves a kind and capability, and the package to suggest when none does. Pure, on bayonet; discovery and the process live in anyview-platform."
+version = "0.1.0-beta.1"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/anyview"
+publish = false
+
+[dependencies]
+anyview-core = {path = "../anyview-core"}
+anyview-plugin-protocol = {path = "../anyview-plugin-protocol"}
+bayonet = {default-features = false, features = ["host"], path = "../../../bayonet"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+
+[lints.clippy]
+unwrap_used = "deny"
+wildcard_enum_match_arm = "deny"
+match_wildcard_for_single_variants = "deny"

@@ -1,0 +1,53 @@
+[package]
+name = "porter-rig"
+description = "Test tooling, never installed and never in dist: the rig a jailed scenario drives porter with. porter-rig-servers starts porter-fake-servers' fakes on loopback and plants known secrets, porter-rig-client acts as an app over the session bus, porter-rig-secrets is a fake org.freedesktop.secrets so the real accountd runs with no keyring. Nothing shipped depends on it."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[[bin]]
+name = "porter-rig-servers"
+path = "src/bin/porter-rig-servers.rs"
+
+[[bin]]
+name = "porter-rig-client"
+path = "src/bin/porter-rig-client.rs"
+
+[[bin]]
+name = "porter-rig-secrets"
+path = "src/bin/porter-rig-secrets.rs"
+
+[dependencies]
+test-kit = {path = "../test-kit"}
+fake-secret-service = {path = "../fake-secret-service"}
+porter-core = {path = "../porter-core"}
+porter-capability = {path = "../porter-capability"}
+porter-wire = {path = "../porter-wire"}
+porter-ids = {path = "../porter-ids"}
+porter-client = {path = "../porter-client"}
+porter-client-dbus = {path = "../porter-client-dbus"}
+porter-callers = {path = "../porter-callers", features = ["test-proc-root"]}
+porter-fake = {path = "../porter-fake"}
+porter-fake-servers = {path = "../porter-fake-servers"}
+clap = {version = "4", features = ["derive"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+# `signal` is what this crate adds to the pinned line: SIGTERM ends the servers cleanly.
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[dev-dependencies]
+accountd = { path = "../accountd" }
+porter-provider = {path = "../porter-provider"}
+porter-secrets = {path = "../porter-secrets", features = ["oo7"]}
+porter-service = {path = "../porter-service"}
+porter-service-core = {path = "../porter-service-core"}
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

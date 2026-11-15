@@ -1,0 +1,39 @@
+[package]
+name = "ferry-drive"
+description = "Files on demand over a drive's listing, without a file system: the names a drive's items are shown by, the link files of online documents, the content cache (chunked fetches a read waits on, Keep Downloaded, Remove Download, eviction past a limit) and each item's state. The FUSE adapter (ferry-drive-fuse) and syncd's Storage1 are built over it."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/ferry"
+publish = false
+
+[dependencies]
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+porter-fs = {path = "../../../porter/crates/porter-fs"}
+ferry-sync = {path = "../ferry-sync"}
+quickxorhash = {path = "../quickxorhash"}
+md-5 = {version = "0.10"}
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+hex = {version = "0.4"}
+rangemap = {version = "1.8"}
+sha2 = {version = "0.10"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[dev-dependencies]
+test-kit = {path = "../../../porter/crates/test-kit"}
+ferry-drive = { path = ".", features = ["testing"] }
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[features]
+# `MemoryListing` and `MemorySource`: a drive held in memory, for the tests of this crate, the
+# FUSE adapter's and syncd's.
+testing = []
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

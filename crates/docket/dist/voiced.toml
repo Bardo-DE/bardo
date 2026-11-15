@@ -1,0 +1,10 @@
+# voiced.toml: which bus names play which role (voice.md section 3.5).
+# `shell` may open utterances and speech. `app` is not listed: it is whoever owns the bus name a
+# `Route` names, checked with GetNameOwner.
+earcons = "on"
+
+[roles]
+shell = ["org.quire.Shell"]
+# The longest the mic stays open on one Begin; past it the utterance ends as TooLong. The mic also
+# closes at once if the connection that began it leaves the bus.
+# max_hold_ms = 60000

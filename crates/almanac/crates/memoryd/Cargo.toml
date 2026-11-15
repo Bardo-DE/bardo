@@ -1,0 +1,75 @@
+[package]
+name = "memoryd"
+description = "almanac's memory daemon: serves org.quire.Memory1 over almanac-service, with the real seams (Secret Service keys, SQLCipher, sealed files, inferd models)."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/almanac"
+publish = false
+
+[features]
+# `MEMORYD_KEYS=file:<path>` selects a file-backed key store (`almanac_keyfile::FileKeys`), for a
+# jailed acceptance run with no Secret Service. TEST ONLY: off by default, never in a release or
+# dist build; without it the variable is ignored.
+test-keys = ["dep:almanac-keyfile"]
+# `MEMORYD_PROC_ROOT=<dir>` makes the daemon read `<dir>/<pid>/cgroup` for its callers instead of
+# `/proc/<pid>/cgroup`, so an acceptance run can present its test processes as units. TEST ONLY:
+# off by default, never in a release or dist build (check-boundary.sh fails if a default build
+# has it); without it the variable is ignored.
+test-proc-root = ["porter-callers/test-proc-root"]
+
+[dependencies]
+almanac-core = {path = "../almanac-core"}
+almanac-seal = {path = "../almanac-seal", features = ["oo7"]}
+almanac-keyfile = {path = "../almanac-keyfile", optional = true}
+eventlog = {path = "../eventlog"}
+almanac-store = {path = "../almanac-store"}
+memfiles = {path = "../memfiles"}
+recall = {path = "../recall"}
+almanac-local = {path = "../almanac-local"}
+almanac-host = {path = "../almanac-host"}
+almanac-service = {path = "../almanac-service"}
+almanac-infer = {path = "../almanac-infer"}
+almanac-tidy = {path = "../almanac-tidy"}
+almanac-settings = {path = "../almanac-settings"}
+almanac-watch = {path = "../almanac-watch"}
+atomic-write-file = {version = "0.3"}
+almanac-dbus = {path = "../almanac-dbus"}
+almanac-dbus-serve = {path = "../almanac-dbus-serve"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-callers = {features = ["file"], path = "../../../porter/crates/porter-callers"}
+porter-daemon = {path = "../../../porter/crates/porter-daemon"}
+porter-client = {path = "../../../porter/crates/porter-client"}
+porter-client-dbus = {path = "../../../porter/crates/porter-client-dbus"}
+inferd-client = {features = ["dbus"], path = "../../../steward/crates/inferd-client"}
+clap = {version = "4", features = ["derive"]}
+getrandom = {version = "0.3"}
+landlock = {version = "0.4"}
+rusqlite = {version = "0.40", features = ["bundled-sqlcipher-vendored-openssl"]}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+serde_json = {version = "1"}
+blake3 = {version = "1"}
+
+[dev-dependencies]
+porter-wire = {path = "../../../porter/crates/porter-wire"}
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+porter-infer = {path = "../../../steward/crates/porter-infer"}
+porter-dbus = {path = "../../../porter/crates/porter-dbus"}
+steward-dbus = {path = "../../../steward/crates/steward-dbus"}
+# The tests present their processes as a fixture tree, which porter reads only in a test build.
+memoryd = { path = ".", features = ["test-proc-root"] }
+almanac-client = {path = "../almanac-client", default-features = false, features = ["dbus"]}
+almanac-fake = {path = "../almanac-fake"}
+almanac-seal = {path = "../almanac-seal", features = ["oo7", "testing"]}
+recall = {path = "../recall", features = ["testing"]}
+tar = {version = "0.4"}
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

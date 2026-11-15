@@ -1,0 +1,31 @@
+[package]
+name = "acp-core"
+description = "Our own rules for the Agent Client Protocol, pure: path confinement, the protocol errors, the gate's ruling on permission requests, taint, strikes, the tool-request mapping, the names of calls, what an agent reports, why a start failed, and the court seam. No connection, no IO, no clock and no wording; the connections are the official agent-client-protocol SDK's, in docket-acp and docket-acp-host."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+agent-client-protocol = {version = "3.5", default-features = false}
+bulkhead = {path = "../../../bulkhead"}
+companion-model = {path = "../companion-model"}
+docket-core = {path = "../docket-core"}
+docket-manifest = {path = "../docket-manifest"}
+docket-permissions-core = {path = "../docket-permissions-core"}
+docket-vocab = {path = "../docket-vocab"}
+docket-session = {path = "../docket-session"}
+model-provider = {path = "../../../stoker/crates/model-provider"}
+iso_currency = {version = "0.7", features = ["with-serde"]}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+prov = {path = "../../../prov/prov"}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+tracing = {version = "0.1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

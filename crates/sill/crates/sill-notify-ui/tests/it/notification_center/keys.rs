@@ -1,0 +1,106 @@
+//! The center's keys on the real surface (design/20 §1.6): the column takes the keyboard as it
+//! opens; Down and Up move the ring over the drawn rows (each group's header, then its cards),
+//! Return opens a group from its header or its stack or invokes a lone card's `default` and
+//! closes, Delete clears a group from its header or its stack or dismisses a lone card, Escape
+//! closes.
+
+use super::{advance, commands, opened, ringed, two_apps};
+use ds::prelude::*;
+use ds_harness::Input;
+use sill_model::notifications::{
+    ActionKey, Activation, AppKey, Clear, NotificationId, NotificationsCommand,
+};
+
+#[test]
+fn the_column_holds_the_keyboard_and_the_arrows_move_the_ring() {
+    let mut running = opened(two_apps());
+    assert!(
+        running.harness.focus_of(".sill-nc-column"),
+        "focused as it opens"
+    );
+    assert_eq!(ringed(&running.harness), None);
+    let steps = [
+        (ShortcutKey::Down, Some("head")),
+        (ShortcutKey::Down, Some("3")),
+        (ShortcutKey::Down, Some("head")),
+        (ShortcutKey::Down, Some("1")),
+        (ShortcutKey::Down, Some("1")),
+        (ShortcutKey::Up, Some("head")),
+    ];
+    for (key, want) in steps {
+        running.harness.send(Input::key(key));
+        advance(&mut running, 20);
+        assert_eq!(ringed(&running.harness).as_deref(), want, "{key:?}");
+    }
+}
+
+#[test]
+fn return_opens_a_group_then_invokes_a_lone_card_and_closes() {
+    let mut running = opened(two_apps());
+    running.harness.send(Input::key(ShortcutKey::Down));
+    running.harness.send(Input::key(ShortcutKey::Enter));
+    advance(&mut running, 40);
+    assert_eq!(running.harness.count(".ds-notification"), 4, "Mail opened");
+    assert!(commands(&mut running).is_empty());
+    running.harness.send(Input::key(ShortcutKey::Down));
+    running.harness.send(Input::key(ShortcutKey::Enter));
+    advance(&mut running, 40);
+    assert_eq!(
+        commands(&mut running),
+        vec![NotificationsCommand::InvokeAction {
+            id: NotificationId(5),
+            action: ActionKey::default_action(),
+            token: Activation::NoToken,
+        }]
+    );
+    assert!(running.link.now().opening().is_none());
+}
+
+#[test]
+fn return_on_a_stack_opens_it() {
+    let mut running = opened(two_apps());
+    running.harness.send(Input::key(ShortcutKey::Down));
+    running.harness.send(Input::key(ShortcutKey::Down));
+    running.harness.send(Input::key(ShortcutKey::Enter));
+    advance(&mut running, 40);
+    assert_eq!(
+        running.harness.count(".ds-notification"),
+        4,
+        "the stack opened"
+    );
+    assert!(commands(&mut running).is_empty());
+}
+
+#[test]
+fn delete_clears_a_group_and_dismisses_a_lone_card() {
+    let mut running = opened(two_apps());
+    running.harness.send(Input::key(ShortcutKey::Down));
+    running.harness.send(Input::key(ShortcutKey::Delete));
+    advance(&mut running, 20);
+    // The service has not answered, so the rows are still Mail's header and stack and Chat's
+    // header and card; the ring stayed on Mail's header. Backspace is the Mac keyboard's Delete.
+    running.harness.send(Input::key(ShortcutKey::Down));
+    running.harness.send(Input::key(ShortcutKey::Delete));
+    running.harness.send(Input::key(ShortcutKey::Down));
+    running.harness.send(Input::key(ShortcutKey::Down));
+    running.harness.send(Input::key(ShortcutKey::Backspace));
+    advance(&mut running, 20);
+    let mail = || NotificationsCommand::ClearHistory(Clear::App(AppKey("mail".to_owned())));
+    assert_eq!(
+        commands(&mut running),
+        vec![
+            mail(),
+            mail(),
+            NotificationsCommand::Dismiss(NotificationId(4)),
+        ]
+    );
+}
+
+#[test]
+fn escape_closes() {
+    let mut running = opened(two_apps());
+    running.harness.send(Input::key(ShortcutKey::Escape));
+    advance(&mut running, 20);
+    assert!(running.link.now().opening().is_none());
+    assert!(commands(&mut running).is_empty());
+}

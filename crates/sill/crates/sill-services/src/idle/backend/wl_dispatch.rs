@@ -1,0 +1,97 @@
+//! The idle thread's protocol events.
+
+use smithay_client_toolkit::reexports::protocols_wlr::output_power_management::v1::client::zwlr_output_power_v1;
+use smithay_client_toolkit::reexports::protocols_wlr::output_power_management::v1::client::zwlr_output_power_manager_v1::ZwlrOutputPowerManagerV1;
+use smithay_client_toolkit::reexports::protocols_wlr::output_power_management::v1::client::zwlr_output_power_v1::ZwlrOutputPowerV1;
+use wayland_client::{Connection, Dispatch, Proxy, QueueHandle};
+use wayland_client::globals::GlobalListContents;
+use wayland_client::protocol::wl_registry;
+use wayland_client::protocol::wl_output::WlOutput;
+use wayland_client::protocol::wl_registry::WlRegistry;
+use wayland_client::protocol::wl_seat::WlSeat;
+use wayland_protocols::ext::idle_notify::v1::client::ext_idle_notification_v1;
+use wayland_protocols::ext::idle_notify::v1::client::ext_idle_notification_v1::ExtIdleNotificationV1;
+use wayland_protocols::ext::idle_notify::v1::client::ext_idle_notifier_v1::ExtIdleNotifierV1;
+
+use super::wl_state::WlState;
+
+/// Outputs come and go after the first roundtrip.
+impl Dispatch<WlRegistry, GlobalListContents> for WlState {
+    fn event(
+        state: &mut Self,
+        registry: &WlRegistry,
+        event: wl_registry::Event,
+        _: &GlobalListContents,
+        _: &Connection,
+        qh: &QueueHandle<Self>,
+    ) {
+        match event {
+            wl_registry::Event::Global {
+                name,
+                interface,
+                version,
+            } if interface == WlOutput::interface().name => {
+                let output = registry.bind::<WlOutput, _, _>(name, version.min(4), qh, ());
+                state.add_screen(name, output);
+            }
+            wl_registry::Event::GlobalRemove { name } => state.remove_screen(name),
+            _ => {}
+        }
+    }
+}
+
+impl Dispatch<ExtIdleNotificationV1, u64> for WlState {
+    fn event(
+        state: &mut Self,
+        _: &ExtIdleNotificationV1,
+        event: ext_idle_notification_v1::Event,
+        id: &u64,
+        _: &Connection,
+        _: &QueueHandle<Self>,
+    ) {
+        match event {
+            ext_idle_notification_v1::Event::Idled => state.idled(*id),
+            ext_idle_notification_v1::Event::Resumed => state.resumed(*id),
+            _ => {}
+        }
+    }
+}
+
+impl Dispatch<ZwlrOutputPowerV1, ()> for WlState {
+    fn event(
+        state: &mut Self,
+        control: &ZwlrOutputPowerV1,
+        event: zwlr_output_power_v1::Event,
+        _: &(),
+        _: &Connection,
+        _: &QueueHandle<Self>,
+    ) {
+        if let zwlr_output_power_v1::Event::Failed = event {
+            state.power_failed(control);
+        }
+    }
+}
+
+/// Globals whose events idle does not follow.
+macro_rules! ignore_events {
+    ($($proxy:ty),*) => {$(
+        impl Dispatch<$proxy, ()> for WlState {
+            fn event(
+                _: &mut Self,
+                _: &$proxy,
+                _: <$proxy as Proxy>::Event,
+                _: &(),
+                _: &Connection,
+                _: &QueueHandle<Self>,
+            ) {
+            }
+        }
+    )*};
+}
+
+ignore_events!(
+    ExtIdleNotifierV1,
+    ZwlrOutputPowerManagerV1,
+    WlSeat,
+    WlOutput
+);

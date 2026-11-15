@@ -1,0 +1,34 @@
+# OpenRouter (openrouter.ai): one key that reaches many companies' models. The account is an API
+# key the person pastes, like an email password. `discover` checks it with one authenticated call,
+# GET /api/v1/key with a bearer token (the models list is public there, so it would accept any
+# key), and keeps none of the answer. The row below is the floor every chat model meets; which
+# models the key reaches is the curated catalogue's and inferd's routing, and accountd keeps no
+# list. Its billing is metered: what a reply cost is what OpenRouter reports for it, and no price
+# is kept here. The sign-in that mints a key through the browser (PKCE) is not built: it would be
+# a second sign-in on this file (FINDINGS).
+id = "openrouter"
+label = "OpenRouter"
+mark = "openrouter"
+group = "intelligence"
+
+[mark_face]
+letter = "OR"
+colour = "#6467F2"
+
+[auth]
+kind = "api_key"
+
+[discovery]
+kind = "model_list"
+
+[ai]
+locality = { kind = "cloud", v = {} }
+billing = { kind = "metered" }
+
+[[capability]]
+family = "chat_completions"
+endpoint = "https://openrouter.ai/api/v1"
+kind = "llm"
+features = ["chat"]
+context = 8192
+max_output = 4096

@@ -1,0 +1,58 @@
+//! The shell's pure vocabulary: units, identifiers, attempts, and every service's state,
+//! commands, events and effects with the pure `step` that is the only place its state changes.
+//!
+//! Nothing here does I/O or reaches a runtime, a bus or a UI (`scripts/check-boundary.sh`):
+//! `sill-services` carries the effects, and every transition is table-tested without a bus.
+
+pub mod accounts;
+pub mod actions;
+pub mod app_menu;
+pub mod apps;
+pub mod attempt;
+pub mod auth;
+pub mod badges;
+pub mod battery;
+pub mod bluetooth;
+pub mod capture_pick;
+pub mod clipboard;
+pub mod clock;
+pub mod companion;
+pub mod desktop;
+pub mod displays;
+pub mod events;
+pub mod guest_asks;
+pub mod hot_corners;
+pub mod idle;
+pub mod ids;
+pub mod input_source;
+pub mod intents;
+pub mod kbd_backlight;
+pub mod keyboard;
+pub mod keycap;
+pub mod launch;
+pub mod locker;
+pub mod network;
+pub mod night_shift;
+pub mod notifications;
+pub mod now_playing;
+pub mod on_off;
+pub mod osd;
+pub mod pins;
+pub mod polkit_agent;
+pub mod power_profile;
+pub mod results;
+pub mod screenshots;
+pub mod seed;
+pub mod serve;
+pub mod session;
+pub mod sync_hold;
+pub mod tray;
+pub mod units;
+pub mod untrusted;
+pub mod voice;
+pub mod volume;
+pub mod wallpaper;
+pub mod wifi;
+pub mod windows;
+pub mod work_areas;
+pub mod workspace_looks;

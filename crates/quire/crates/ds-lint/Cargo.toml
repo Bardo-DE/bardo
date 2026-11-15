@@ -1,0 +1,21 @@
+[package]
+name = "ds-lint"
+description = "The design system's stylesheet and markup linter: reads its vocabulary from Kits and tokenizes with cssparser."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/quire"
+publish = false
+
+[dependencies]
+ds-core = {path = "../ds-core"}
+ds-style = {path = "../ds-style", default-features = false}
+cssparser = {version = "0.37"}
+
+[dev-dependencies]
+ds = {path = "../ds"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

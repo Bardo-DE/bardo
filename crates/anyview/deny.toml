@@ -1,0 +1,118 @@
+# cargo-deny gate. Run: scripts/check-deny.sh (all four checks: advisories, bans, licenses, sources).
+#
+# A dependency whose licence is not listed fails the gate rather than being noticed later by
+# someone reading Cargo.lock.
+
+[graph]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[licenses]
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "0BSD",
+    "CC0-1.0",
+    "Unicode-3.0",
+    "Zlib",
+    # bzip2-1.0.6: the bzip2 library's own permissive licence, reached through anyview-archive's bzip2 crate.
+    "bzip2-1.0.6",
+    # Weak, file-level copyleft. The note below says why this one is here and GPL is not.
+    "MPL-2.0",
+]
+confidence-threshold = 0.9
+
+# MPL-2.0 is allowed, and it is a decision rather than an oversight.
+#
+# MPL is file-level copyleft: fine to link or depend on, never to paste source from. That
+# position is about the *licence*, so encoding it per-crate would be busywork. Several crates
+# arrive under it by unrelated routes (stylo, app_units, cssparser and selectors in blitz; option-ext
+# through dirs; freedesktop-desktop-entry in the shell), and the
+# versions churn. anyview reaches them through the Blitz stack once `anyview-ui` exists.
+#
+# Depending on them obliges us to make *those files'* source available, which their registries
+# already do, and obliges nothing of ours. The rule that actually constrains these repositories,
+# do not copy MPL source into them, is not something a dependency gate can check,
+# so reviewers check it.
+#
+# What stays out of that list is strong copyleft: GPL, AGPL, EUPL. Those would change what this
+# project may be distributed as, and a dependency arriving under one should stop the build.
+
+[advisories]
+# Each ignore says why it is safe to carry and what would end it. A new advisory not listed here
+# fails the gate.
+ignore = [
+    # bincode 1.3.3: the author ceased development and calls 1.3.3 complete. It comes only through
+    # syntect 5.3.0 (the newest syntect), which uses it to load its built-in syntax dump, our own
+    # build-time data and never untrusted input. Remove when syntect moves off it.
+    { id = "RUSTSEC-2025-0141", reason = "unmaintained but complete; syntect reads only its own built-in dump with it" },
+    # paste: archived proc-macro, run at compile time only. It comes through rav1e (AVIF export) and
+    # pulp (exr). Nothing of it is in the shipped code's input path.
+    { id = "RUSTSEC-2024-0436", reason = "compile-time proc macro only, no runtime or input exposure; arrives through rav1e and pulp" },
+    # ttf-parser: unmaintained. It comes through winit's client-side decorations (sctk-adwaita ->
+    # ab_glyph) which parse only the system's UI font; no upgrade drops it. Remove when winit does.
+    { id = "RUSTSEC-2026-0192", reason = "unmaintained, no known flaw; reached only through the window frame's own font, not through opened files" },
+    # zip 8.6: three flaws of `ZipArchive::extract` and `ZipStreamReader::extract`, which unpack a whole
+    # archive to disk (SUID bits kept, symlinks out of the destination, permissions set through a
+    # symlink). Nothing calls either: anyview-archive lists a zip and reads one entry into memory, never
+    # to disk, and calamine reads its parts in memory. zip 9 fixes them, but calamine 0.36.1 (the
+    # newest) requires zip ^8.6. Remove these, and move the workspace to zip 9, when calamine does.
+    { id = "RUSTSEC-2026-0367", reason = "zip's extract() keeps SUID bits; nothing here calls extract, and calamine holds zip at 8" },
+    { id = "RUSTSEC-2026-0368", reason = "zip's extract() writes symlinks out of the destination; nothing here calls extract, and calamine holds zip at 8" },
+    { id = "RUSTSEC-2026-0369", reason = "zip's extract() sets permissions through symlinks; nothing here calls extract, and calamine holds zip at 8" },
+    # zbus 5's companion crates: zvariant, zvariant_derive and zbus_names are folded into zbus 6 as
+    # modules, so the standalone crates are marked unmaintained. No known flaw. zbus 5 comes through
+    # quire, docket, porter, peephole and ashpd, so the move to zbus 6 is the whole desktop's, not
+    # anyview's alone. Remove these when the desktop set moves to zbus 6.
+    { id = "RUSTSEC-2026-0370", reason = "zvariant folded into zbus 6; no known flaw; zbus 5 comes through the desktop's own crates" },
+    { id = "RUSTSEC-2026-0371", reason = "zbus_names folded into zbus 6; no known flaw; zbus 5 comes through the desktop's own crates" },
+    { id = "RUSTSEC-2026-0372", reason = "zvariant_derive folded into zbus 6; no known flaw; zbus 5 comes through the desktop's own crates" },
+]
+
+[bans]
+# Two versions of one crate are a size and noise cost, not a fault: they warn and never fail.
+multiple-versions = "warn"
+wildcards = "allow"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+# The pinned git dependencies, all rev-pinned in Cargo.lock: quire and blitz-kit (the desktop
+# manifest's revs), our forks, mpv-wgpu, and
+# taffy (reached through blitz).
+allow-git = [
+    "https://github.com/Bardo-DE/anyrender",
+    "https://github.com/Bardo-DE/blitz",
+    "https://github.com/Bardo-DE/blitz-kit",
+    # The desktop's portable keymap (quire v0.3.14 resolves keys to actions with it, and anyview-core
+    # declares the viewer's own default chords): one rev, quire's. MIT OR Apache-2.0.
+    "https://github.com/Bardo-DE/chordkit",
+    # dioxus-core 0.7.10 with the dirty-task fix backported (quire's [patch], v0.2.15+).
+    "https://github.com/Bardo-DE/dioxus",
+    # Single instance without D-Bus (anyview-platform): MIT OR Apache-2.0, one rev in Cargo.toml.
+    "https://github.com/Bardo-DE/latchkey",
+    "https://github.com/Bardo-DE/quire",
+    # The plugin library (the wire, the manifest envelope, discovery and the process handling): one
+    # rev in Cargo.toml. MIT OR Apache-2.0.
+    "https://github.com/Bardo-DE/bayonet",
+    "https://github.com/Bardo-DE/mpv-wgpu",
+    "https://github.com/Bardo-DE/vello",
+    # The desktop's agent layer (anyview-platform, quire-desktop): docket at the manifest's rev, and
+    # porter, almanac and stoker at the revs docket pins, and peephole (porter-dbus's caller check,
+    # at the tag porter pins). All MIT OR Apache-2.0.
+    "https://github.com/Bardo-DE/docket",
+    "https://github.com/Bardo-DE/porter",
+    "https://github.com/Bardo-DE/almanac",
+    # prov, the label and name vocabulary, in its own repo since porter dropped its copy. MIT OR Apache-2.0.
+    "https://github.com/Bardo-DE/prov",
+    "https://github.com/Bardo-DE/stoker",
+    # docket ff9d1b73's sandbox for the commands and agent processes it runs (bubblewrap), at the
+    # rev docket pins. MIT OR Apache-2.0.
+    "https://github.com/Bardo-DE/bulkhead",
+    "https://github.com/Bardo-DE/peephole",
+    "https://github.com/DioxusLabs/taffy",
+]

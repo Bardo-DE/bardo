@@ -1,0 +1,9 @@
+/target
+/target-*
+tools/progress/out/
+crates/ds-gallery/out/
+__pycache__/
+tools/emoji/.venv/
+tools/emoji/.cache/
+tools/progress/shots/
+examples/consumer/target/

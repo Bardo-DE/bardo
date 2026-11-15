@@ -1,0 +1,133 @@
+//! Which targets an event of each origin may reach, for which use (I3, I8, the lock, the feed).
+
+use super::{Leases, Origin};
+use crate::ids::{LayerKey, WindowId};
+use crate::lock::LockState;
+
+/// What an event would land on.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum InputTarget {
+    /// A window's surface tree.
+    Window(WindowId),
+    /// A popup of this window.
+    Popup(WindowId),
+    /// A layer surface.
+    Layer(LayerKey),
+    /// The session lock's surface.
+    LockSurface,
+    /// A trusted surface (the confirm sheet).
+    Trusted,
+    /// Nothing (the desktop background, with no wallpaper client).
+    Nothing,
+}
+
+/// What the event would be used for.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum InputUse {
+    /// A key press or release.
+    Key,
+    /// A button or touch press.
+    Press,
+    /// Pointer motion.
+    Motion,
+    /// A scroll.
+    Scroll,
+    /// A system gesture (a Space swipe, Mission Control).
+    SystemGesture,
+    /// Text typed through an input method or the agent.
+    Text,
+}
+
+/// The state [`reach`] reads.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ReachFacts<'a> {
+    /// The session lock.
+    pub lock: &'a LockState,
+    /// The agent's leases: which window each holds.
+    pub leases: &'a Leases,
+}
+
+/// Why an event was refused.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Refusal {
+    /// Only physical input reaches this target (a trusted surface).
+    NotPhysical,
+    /// A feed may only scroll and gesture.
+    FeedKind,
+    /// The agent's target is outside its lease.
+    OutsideLease,
+    /// The agent's lease is suspended.
+    Suspended,
+    /// The kill chord ended the agent's leases.
+    Killed,
+    /// The session is locked and the event is not physical, or not for the lock surface.
+    Locked,
+}
+
+/// Whether an event from `origin` may reach `target` for `use_`: `Ok` when it may, else the
+/// reason it may not.
+///
+/// The checks run in this order, the first that refuses wins:
+///
+/// 1. **The lock.** While the session is locked (or locking), only physical (and test) input
+///    reaches only the lock surface; everything else is [`Refusal::Locked`], whoever sends it.
+/// 2. **The agent.** An event of a lease reaches only the window that lease holds, its
+///    surfaces and its popups; anything else (another window, a layer surface, the desktop, a
+///    lease that ended) is [`Refusal::OutsideLease`]. `Model::reach` first takes a window the
+///    held window opened over itself (a dialog, a file chooser) as the held window.
+/// 3. **The feed.** A feed scrolls and gestures only: [`Refusal::FeedKind`].
+/// 4. **Trusted surfaces.** Only physical (and test) input reaches one (I3), and virtual
+///    devices are never physical (I8): [`Refusal::NotPhysical`].
+///
+/// Everything else is allowed: a remote session or a virtual keyboard types into windows like
+/// the person would.
+pub fn reach(
+    origin: &Origin,
+    target: &InputTarget,
+    use_: InputUse,
+    facts: &ReachFacts,
+) -> Result<(), Refusal> {
+    [
+        refuse_by_lock(origin, target, *facts),
+        refuse_agent(origin, target, facts.leases),
+        refuse_feed(origin, use_),
+        refuse_untrusted(origin, target),
+    ]
+    .into_iter()
+    .flatten()
+    .next()
+    .map_or(Ok(()), Err)
+}
+
+fn refuse_by_lock(origin: &Origin, target: &InputTarget, facts: ReachFacts) -> Option<Refusal> {
+    match facts.lock {
+        LockState::Unlocked => None,
+        LockState::Locking { .. }
+        | LockState::Locked { .. }
+        | LockState::LockedWithoutSurface { .. } => {
+            let reaches_lock = origin.is_physical() && matches!(target, InputTarget::LockSurface);
+            (!reaches_lock).then_some(Refusal::Locked)
+        }
+    }
+}
+
+fn refuse_agent(origin: &Origin, target: &InputTarget, leases: &Leases) -> Option<Refusal> {
+    let Origin::Agent(lease) = origin else {
+        return None;
+    };
+    let inside = match (leases.window_of(*lease), target) {
+        (Some(held), InputTarget::Window(window) | InputTarget::Popup(window)) => held == *window,
+        _ => false,
+    };
+    (!inside).then_some(Refusal::OutsideLease)
+}
+
+fn refuse_feed(origin: &Origin, use_: InputUse) -> Option<Refusal> {
+    let allowed = matches!(use_, InputUse::Scroll | InputUse::SystemGesture);
+    (matches!(origin, Origin::Feed(_)) && !allowed).then_some(Refusal::FeedKind)
+}
+
+fn refuse_untrusted(origin: &Origin, target: &InputTarget) -> Option<Refusal> {
+    (matches!(target, InputTarget::Trusted) && !origin.is_physical())
+        .then_some(Refusal::NotPhysical)
+}

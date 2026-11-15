@@ -1,0 +1,26 @@
+[package]
+name = "syncd-fakes"
+description = "Test tooling, never installed and never in dist: fakes of what syncd serves. `storage` is a fake org.quire.Storage1, two drives of real files whose states move, and the binary in src/bin serves it on the session bus for building Files before syncd serves the real one. Nothing shipped depends on it."
+
+# The binary is found by its file in src/bin; its name and flags are the shell session's, unchanged.
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/ferry"
+publish = false
+
+[dependencies]
+ferry-bus = {path = "../ferry-bus"}
+porter-dbus = {path = "../../../porter/crates/porter-dbus"}
+clap = {version = "4", features = ["derive"]}
+# `signal` and `io-std`: SIGTERM ends the binary, and it reads its commands from stdin.
+tokio = {version = "1", features = ["io-std", "io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[dev-dependencies]
+test-kit = {path = "../../../porter/crates/test-kit"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

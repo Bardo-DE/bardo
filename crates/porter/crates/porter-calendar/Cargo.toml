@@ -1,0 +1,34 @@
+[package]
+name = "porter-calendar"
+description = "One calendar store for every porter client: list calendars, put an event (as iCalendar for the stores that take it, as its fields for the ones that take JSON), find one by UID and remove one. Backends: CalDAV, Microsoft Graph, the Google Calendar API and JMAP over the HTTP seam, and Evolution Data Server over D-Bus (feature `eds`). Pure but for `eds`: no runtime, no socket."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+chrono = {version = "0.4", default-features = false, features = ["alloc"]}
+dav-proto = {path = "../dav-proto", features = ["discover"]}
+porter-http = {path = "../porter-http"}
+porter-ids = {path = "../porter-ids"}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"], optional = true}
+
+[features]
+# Evolution Data Server, the calendar store of GNOME and of most Linux desktops, over the session
+# bus. Off by default: it is the one backend that reaches a bus.
+eds = ["dep:zbus"]
+
+[dev-dependencies]
+base64 = {version = "0.22"}
+porter-fake-servers = {path = "../porter-fake-servers"}
+porter-http-relay = {path = "../porter-http-relay"}
+test-kit = {path = "../test-kit"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

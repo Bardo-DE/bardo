@@ -1,0 +1,6 @@
+/target
+/target-*
+/dev/out
+.claude/
+/wlcs-casement/target
+/casement-scene-css/target

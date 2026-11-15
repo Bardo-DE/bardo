@@ -1,0 +1,27 @@
+[package]
+name = "casement-privacy"
+description = "casement's privacy files: the person's book (which program may use which power) and the administrator's floor, read and written safely, and the list of both that casementctl prints."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/casement"
+publish = false
+
+[dependencies]
+casement-core = {path = "../casement-core"}
+casement-protocols = {path = "../../../casement-protocols"}
+# The safe file reader and writer every quire crate shares (`read_capped`, `write_atomic`,
+# `move_aside`); no bus, no UI.
+ds-helpers = {path = "../../../quire/crates/ds-helpers", default-features = false}
+thiserror = {version = "2"}
+tracing = {version = "0.1"}
+
+[dev-dependencies]
+tempfile = {version = "3"}
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+missing_debug_implementations = "warn"

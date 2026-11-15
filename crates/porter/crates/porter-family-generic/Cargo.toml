@@ -1,0 +1,25 @@
+[package]
+name = "porter-family-generic"
+description = "The generic family: a mail server or a DAV server with a password, found by autoconfig, SRV and MX, .well-known or the provider file. A driver: generic-proto holds the servers a person typed and the DAV and JMAP lookups, and this crate sends them and tries the password at the mail server."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+porter-family-kit = {path = "../porter-family-kit"}
+generic-proto = {path = "../generic-proto"}
+porter-core = {path = "../porter-core"}
+porter-capability = {path = "../porter-capability"}
+porter-sheet = {path = "../porter-sheet"}
+porter-provider = {path = "../porter-provider"}
+porter-http = {path = "../porter-http"}
+porter-discover = {path = "../porter-discover"}
+porter-proxy = {path = "../porter-proxy", features = ["tls"]}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

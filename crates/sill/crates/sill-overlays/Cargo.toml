@@ -1,0 +1,46 @@
+[package]
+name = "sill-overlays"
+description = "The overlay surfaces: OSD, power menu, polkit prompt, app switcher, idle dim, hot corners, wallpaper and the lock screen."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.91"
+repository = "https://github.com/Bardo-DE/sill"
+publish = false
+
+[dependencies]
+porter-sheet = {path = "../../../porter/crates/porter-sheet"}
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+chordkit = {path = "../../../chordkit/crates/chordkit"}
+ds = {path = "../../../quire/crates/ds"}
+ds-behaviour = {path = "../../../quire/crates/ds-behaviour"}
+ds-settings = {path = "../../../quire/crates/ds-settings", features = ["dioxus", "tokio"]}
+sill-shell-kit = {path = "../sill-shell-kit"}
+ds-shell = {path = "../../../quire/crates/ds-shell"}
+jiff = {version = "0.2"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+serde_json = {version = "1"}
+shell-host = {path = "../../../shell-host/crates/shell-host"}
+sill-launcher = {path = "../sill-launcher"}
+sill-model = {path = "../sill-model"}
+sill-services = {path = "../sill-services"}
+sill-settings = {path = "../sill-settings"}
+sill-ui-kit = {path = "../sill-ui-kit"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
+
+[dev-dependencies]
+desktop-client = {path = "../../../casement-protocols/desktop-client", features = ["fake"]}
+sill-testkit = {path = "../sill-testkit"}
+sill-ui-kit = {path = "../sill-ui-kit", features = ["harness"]}
+ds-harness = {path = "../../../quire/crates/ds-harness"}
+image = {version = "0.25.6", default-features = false, features = ["png", "jpeg", "webp"]}
+shell-host = {path = "../../../shell-host/crates/shell-host", features = ["debug-inject"]}
+
+[[example]]
+name = "wallpaper_demo"
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

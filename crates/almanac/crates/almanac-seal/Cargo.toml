@@ -1,0 +1,38 @@
+[package]
+name = "almanac-seal"
+description = "almanac's per-Space keys, subkey derivation, the sealed-file format and the key store seam."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/almanac"
+publish = false
+
+[dependencies]
+const-hex = {version = "1.19"}
+almanac-core = {path = "../almanac-core"}
+blake3 = {version = "1"}
+chacha20poly1305 = {version = "0.10"}
+getrandom = {version = "0.3"}
+thiserror = {version = "2"}
+zeroize = {version = "1"}
+oo7 = {version = "0.6", optional = true}
+
+[dev-dependencies]
+almanac-seal = { path = ".", features = ["testing", "oo7"] }
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tempfile = {version = "3"}
+
+[features]
+# `MemoryKeys`, for tests and almanac-fake.
+testing = []
+# `Oo7Keys`, the Secret Service key store.
+oo7 = ["dep:oo7"]
+
+# blake3's portable Rust implementation (no C/assembly SIMD), for a cross build with no C
+# compiler for the target. Off by default: the desktop keeps blake3's fast paths.
+pure-hash = ["blake3/pure"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

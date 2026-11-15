@@ -1,0 +1,141 @@
+# The pages Settings has before any program declares one (design/22-SETTINGS.md section 9.3).
+# Order follows the Mac sidebar, spaced by ten so a program's own page can sit between two. An alias is the
+# name a page had before it was declared.
+
+[[page]]
+id = "appearance"
+title = "Appearance"
+symbol = "sun-moon"
+order = 40
+
+[[page]]
+id = "extensions"
+title = "Extensions"
+symbol = "puzzle"
+order = 45
+
+[[page]]
+id = "wallpaper"
+title = "Wallpaper"
+symbol = "image"
+order = 90
+
+[[page]]
+id = "displays"
+title = "Displays"
+symbol = "monitor"
+order = 80
+
+[[page]]
+id = "wifi"
+title = "Wi-Fi"
+symbol = "wifi"
+order = 10
+
+[[page]]
+id = "bluetooth"
+title = "Bluetooth"
+symbol = "bluetooth"
+order = 20
+
+[[page]]
+id = "dock"
+title = "Desktop & Dock"
+symbol = "panel"
+order = 70
+
+[[page]]
+id = "mouse-and-gestures"
+title = "Mouse & Gestures"
+symbol = "mouse"
+order = 140
+aliases = ["mouse_and_gestures"]
+
+[[page]]
+id = "keyboard-and-shortcuts"
+title = "Keyboard & Shortcuts"
+symbol = "keyboard"
+order = 130
+aliases = ["keyboard_and_shortcuts"]
+
+[[page]]
+id = "notifications"
+title = "Notifications"
+symbol = "bell"
+order = 30
+
+[[page]]
+id = "spaces"
+title = "Spaces"
+symbol = "group"
+order = 100
+
+[[page]]
+id = "accounts"
+title = "Accounts"
+symbol = "key"
+order = 120
+
+# Step sill opens to sign in to the person's accounts (`detent --page accounts-setup`): reachable by id,
+# never a sidebar row.
+[[page]]
+id = "accounts-setup"
+title = "Sign in to Your Accounts"
+symbol = "key"
+order = 121
+listing = "hidden"
+aliases = ["accounts_setup"]
+
+[[page]]
+id = "privacy"
+title = "Privacy & Security"
+symbol = "lock"
+order = 60
+
+[[page]]
+id = "power"
+title = "Power"
+symbol = "power"
+order = 110
+
+[[page]]
+id = "apps"
+title = "Apps"
+symbol = "grid"
+order = 150
+
+[[page]]
+id = "intelligence"
+title = "Intelligence"
+symbol = "sparkles"
+order = 50
+
+[[page]]
+id = "viewer"
+title = "Viewer"
+symbol = "image"
+order = 160
+
+[[page]]
+id = "assistant-model"
+title = "Assistant Model"
+symbol = "sparkles"
+order = 55
+aliases = ["assistant_model", "Assistant Model"]
+
+# First-run step of the model picker (detent) and the step sill opens after first login: reachable
+# by id, never a sidebar row.
+[[page]]
+id = "assistant-model-setup"
+title = "Assistant Model Setup"
+symbol = "sparkles"
+order = 56
+listing = "hidden"
+aliases = ["assistant_model_setup"]
+
+[[page]]
+id = "software-update"
+title = "Software Update"
+symbol = "download"
+order = 115
+aliases = ["software_update", "Software Update"]

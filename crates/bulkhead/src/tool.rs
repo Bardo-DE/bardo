@@ -1,0 +1,219 @@
+//! The shell tool: a table of terminals over a `Sandbox`. It is the one place a command is
+//! started, and it starts nothing the sandbox cannot confine: if the sandbox cannot, `create`
+//! refuses with the reason and runs nothing.
+//!
+//! `output` is bounded and redacted. `kill` and `release` always work: no policy stands in front of
+//! stopping a command.
+
+use crate::env::sandbox_env;
+use crate::output::{Shown, shown};
+use crate::sandbox::{Argv, ByteLimit, ExitReport, Job, Network, RunSpec, Sandbox, StartFault};
+use crate::{AbsPath, SandboxState};
+use std::collections::BTreeMap;
+
+/// Output kept when the requester names no limit.
+pub const DEFAULT_KEEP: usize = 64 * 1024;
+
+/// The most output ever kept, whatever the requester asks.
+pub const MAX_KEEP: usize = 1024 * 1024;
+
+/// Terminals open at once.
+pub const MAX_TERMINALS: usize = 8;
+
+/// One terminal.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct TermId(pub u64);
+
+/// A request to run one command.
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[non_exhaustive]
+pub struct Launch {
+    /// The command.
+    pub argv: Argv,
+    /// Where it runs, and the one place it may write.
+    pub cwd: AbsPath,
+    /// The environment the requester asked for; only the allowlist survives.
+    pub env: Vec<(String, String)>,
+    /// Output bytes to keep, if the requester named a limit.
+    pub limit: Option<u64>,
+}
+
+impl Launch {
+    /// A request to run `argv` in `cwd`, with no extra environment and the default output limit.
+    pub fn new(argv: Argv, cwd: AbsPath) -> Self {
+        Self {
+            argv,
+            cwd,
+            env: Vec::new(),
+            limit: None,
+        }
+    }
+
+    /// The same request with these environment variables (only the allowlist survives).
+    #[must_use]
+    pub fn with_env(mut self, env: Vec<(String, String)>) -> Self {
+        self.env = env;
+        self
+    }
+
+    /// The same request keeping at most `bytes` of output (clamped to `MAX_KEEP`).
+    #[must_use]
+    pub fn with_limit(mut self, bytes: u64) -> Self {
+        self.limit = Some(bytes);
+        self
+    }
+}
+
+/// Why a terminal call failed.
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[non_exhaustive]
+pub enum ShellFault {
+    /// The command did not start.
+    #[error(transparent)]
+    Start(#[from] StartFault),
+    /// No such terminal (never made, or released).
+    #[error("no such terminal")]
+    NoSuchTerminal,
+    /// Too many terminals are open.
+    #[error("too many terminals are open")]
+    TooMany,
+}
+
+/// A terminal's output and how it stands.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Snapshot {
+    /// The output, redacted and within the limit.
+    pub shown: Shown,
+    /// How it ended, if it has.
+    pub exit: Option<ExitReport>,
+}
+
+#[derive(Debug)]
+struct Term<J> {
+    job: J,
+    limit: ByteLimit,
+}
+
+/// The terminals of one connection.
+///
+/// A command runs only inside the sandbox it is given. This example uses the scripted
+/// `FakeSandbox`, so it needs no `bwrap` and no privileges:
+///
+/// ```
+/// use bulkhead::fake::{FakeSandbox, Script};
+/// use bulkhead::{AbsPath, Argv, ExitReport, Launch, Shell};
+///
+/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// let (sandbox, seen) = FakeSandbox::ready(vec![Script::done("hello\n", 0)]);
+/// let mut shell = Shell::new(sandbox);
+///
+/// let argv = Argv::new("echo", &["hello".to_owned()]).ok_or("no program")?;
+/// let cwd = AbsPath::parse("/home/u/project")?;
+/// let id = shell.create(&Launch::new(argv, cwd))?;
+///
+/// assert_eq!(shell.wait(id)?, ExitReport::Code(0));
+/// assert_eq!(shell.output(id)?.shown.text, "hello\n");
+/// assert_eq!(seen.started()[0].argv.line(), "echo hello");
+/// shell.release(id)?;
+/// # Ok(())
+/// # }
+/// ```
+#[derive(Debug)]
+pub struct Shell<S: Sandbox> {
+    sandbox: S,
+    network: Network,
+    terms: BTreeMap<TermId, Term<S::Job>>,
+    next: u64,
+}
+
+fn limit_of(asked: Option<u64>) -> ByteLimit {
+    let asked = asked.map_or(DEFAULT_KEEP, |n| usize::try_from(n).unwrap_or(MAX_KEEP));
+    ByteLimit(asked.clamp(1, MAX_KEEP))
+}
+
+impl<S: Sandbox> Shell<S> {
+    /// A shell over `sandbox`, whose commands have no network.
+    pub fn new(sandbox: S) -> Self {
+        Self::with_network(sandbox, Network::Off)
+    }
+
+    /// A shell over `sandbox` whose commands run with `network`.
+    pub fn with_network(sandbox: S, network: Network) -> Self {
+        Self {
+            sandbox,
+            network,
+            terms: BTreeMap::new(),
+            next: 0,
+        }
+    }
+
+    /// The network the commands run with.
+    pub fn network(&self) -> Network {
+        self.network
+    }
+
+    /// Whether the sandbox can confine anything at all.
+    pub fn available(&self) -> SandboxState {
+        self.sandbox.available()
+    }
+
+    /// Whether a command in `cwd` can be sandboxed.
+    pub fn check(&self, cwd: &AbsPath) -> SandboxState {
+        self.sandbox.check(cwd)
+    }
+
+    /// Starts a command in the sandbox and returns its terminal.
+    pub fn create(&mut self, launch: &Launch) -> Result<TermId, ShellFault> {
+        if self.terms.len() >= MAX_TERMINALS {
+            return Err(ShellFault::TooMany);
+        }
+        let limit = limit_of(launch.limit);
+        let spec = RunSpec {
+            argv: launch.argv.clone(),
+            cwd: launch.cwd.clone(),
+            env: sandbox_env(&launch.env),
+            network: self.network,
+            keep: limit,
+        };
+        let job = self.sandbox.start(&spec)?;
+        self.next += 1;
+        let id = TermId(self.next);
+        self.terms.insert(id, Term { job, limit });
+        Ok(id)
+    }
+
+    /// The output so far, and the exit if there is one.
+    pub fn output(&mut self, id: TermId) -> Result<Snapshot, ShellFault> {
+        let term = self.terms.get_mut(&id).ok_or(ShellFault::NoSuchTerminal)?;
+        let exit = term.job.exit();
+        Ok(Snapshot {
+            shown: shown(&term.job.output(), term.limit),
+            exit,
+        })
+    }
+
+    /// Blocks until the command ends.
+    pub fn wait(&mut self, id: TermId) -> Result<ExitReport, ShellFault> {
+        let term = self.terms.get_mut(&id).ok_or(ShellFault::NoSuchTerminal)?;
+        Ok(term.job.wait())
+    }
+
+    /// Kills the command; the terminal stays valid, so its output can still be read.
+    pub fn kill(&mut self, id: TermId) -> Result<(), ShellFault> {
+        let term = self.terms.get_mut(&id).ok_or(ShellFault::NoSuchTerminal)?;
+        term.job.kill();
+        Ok(())
+    }
+
+    /// Kills the command and forgets the terminal.
+    pub fn release(&mut self, id: TermId) -> Result<(), ShellFault> {
+        let mut term = self.terms.remove(&id).ok_or(ShellFault::NoSuchTerminal)?;
+        term.job.kill();
+        Ok(())
+    }
+
+    /// Terminals open now.
+    pub fn open(&self) -> usize {
+        self.terms.len()
+    }
+}

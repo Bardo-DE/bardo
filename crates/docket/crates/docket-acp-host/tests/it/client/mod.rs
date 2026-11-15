@@ -1,0 +1,25 @@
+//! The ACP client edge: an external agent as a session backend whose calls go through the real
+//! router, against a scripted fake agent over an in-memory pipe. Every test is scripted: no
+//! process, no network, no clock; the real file system appears only under a scratch directory.
+
+mod agent;
+mod bridged;
+mod calls;
+mod cancel;
+mod contract;
+mod edge;
+mod edge_input;
+mod exec_taint;
+mod full;
+mod handover;
+mod helper_agent;
+mod hostile;
+mod hostile_limits;
+mod labelled;
+mod models;
+mod osfiles;
+mod own_edge;
+mod rig;
+mod schema;
+mod sign_in;
+mod world;

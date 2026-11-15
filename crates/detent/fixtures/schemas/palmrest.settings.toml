@@ -1,0 +1,177 @@
+app = "palmrest"
+file = "palmrest/gestures.toml"
+version = 1
+
+[[key]]
+path = "gestures.gesture_action_map.one_finger_swipe_right"
+default = "back"
+label = "One-finger swipe right"
+help = "What this gesture does."
+section = "Gestures"
+exposure = "basic"
+
+[key.kind]
+kind = "menu"
+
+[key.kind.v]
+variants = ["none", "back", "forward", "workspace_prev", "workspace_next", "workspace_overview", "smart_zoom"]
+
+[key.page]
+kind = "mouse_and_gestures"
+
+[key.labels]
+back = "Back"
+forward = "Forward"
+none = "Nothing"
+smart_zoom = "Smart zoom"
+workspace_next = "Next workspace"
+workspace_overview = "Workspace overview"
+workspace_prev = "Previous workspace"
+
+[[key]]
+path = "gestures.gesture_action_map.one_finger_swipe_left"
+default = "forward"
+label = "One-finger swipe left"
+help = "What this gesture does."
+section = "Gestures"
+exposure = "basic"
+
+[key.kind]
+kind = "menu"
+
+[key.kind.v]
+variants = ["none", "back", "forward", "workspace_prev", "workspace_next", "workspace_overview", "smart_zoom"]
+
+[key.page]
+kind = "mouse_and_gestures"
+
+[key.labels]
+back = "Back"
+forward = "Forward"
+none = "Nothing"
+smart_zoom = "Smart zoom"
+workspace_next = "Next workspace"
+workspace_overview = "Workspace overview"
+workspace_prev = "Previous workspace"
+
+[[key]]
+path = "gestures.gesture_action_map.two_finger_swipe_right"
+default = "workspace_prev"
+label = "Two-finger swipe right"
+help = "What this gesture does."
+section = "Gestures"
+exposure = "basic"
+
+[key.kind]
+kind = "menu"
+
+[key.kind.v]
+variants = ["none", "back", "forward", "workspace_prev", "workspace_next", "workspace_overview", "smart_zoom"]
+
+[key.page]
+kind = "mouse_and_gestures"
+
+[key.labels]
+back = "Back"
+forward = "Forward"
+none = "Nothing"
+smart_zoom = "Smart zoom"
+workspace_next = "Next workspace"
+workspace_overview = "Workspace overview"
+workspace_prev = "Previous workspace"
+
+[[key]]
+path = "gestures.gesture_action_map.two_finger_swipe_left"
+default = "workspace_next"
+label = "Two-finger swipe left"
+help = "What this gesture does."
+section = "Gestures"
+exposure = "basic"
+
+[key.kind]
+kind = "menu"
+
+[key.kind.v]
+variants = ["none", "back", "forward", "workspace_prev", "workspace_next", "workspace_overview", "smart_zoom"]
+
+[key.page]
+kind = "mouse_and_gestures"
+
+[key.labels]
+back = "Back"
+forward = "Forward"
+none = "Nothing"
+smart_zoom = "Smart zoom"
+workspace_next = "Next workspace"
+workspace_overview = "Workspace overview"
+workspace_prev = "Previous workspace"
+
+[[key]]
+path = "gestures.gesture_action_map.two_finger_double_tap"
+default = "workspace_overview"
+label = "Two-finger double-tap"
+help = "What this gesture does."
+section = "Gestures"
+exposure = "basic"
+
+[key.kind]
+kind = "menu"
+
+[key.kind.v]
+variants = ["none", "back", "forward", "workspace_prev", "workspace_next", "workspace_overview", "smart_zoom"]
+
+[key.page]
+kind = "mouse_and_gestures"
+
+[key.labels]
+back = "Back"
+forward = "Forward"
+none = "Nothing"
+smart_zoom = "Smart zoom"
+workspace_next = "Next workspace"
+workspace_overview = "Workspace overview"
+workspace_prev = "Previous workspace"
+
+[[key]]
+path = "gestures.gesture_action_map.one_finger_double_tap"
+default = "smart_zoom"
+label = "One-finger double-tap"
+help = "What this gesture does."
+section = "Gestures"
+exposure = "basic"
+
+[key.kind]
+kind = "menu"
+
+[key.kind.v]
+variants = ["none", "back", "forward", "workspace_prev", "workspace_next", "workspace_overview", "smart_zoom"]
+
+[key.page]
+kind = "mouse_and_gestures"
+
+[key.labels]
+back = "Back"
+forward = "Forward"
+none = "Nothing"
+smart_zoom = "Smart zoom"
+workspace_next = "Next workspace"
+workspace_overview = "Workspace overview"
+workspace_prev = "Previous workspace"
+
+[[key]]
+path = "scroll.speed"
+default = 22
+label = "Scroll speed"
+help = "How far each movement scrolls."
+section = "Scrolling"
+exposure = "basic"
+
+[key.kind]
+kind = "bounded"
+
+[key.kind.v]
+min = 0
+max = 63
+
+[key.page]
+kind = "mouse_and_gestures"

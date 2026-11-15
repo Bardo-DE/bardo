@@ -1,0 +1,37 @@
+[package]
+name = "detent-model"
+description = "Pure model of the Settings app: schema discovery, page and section grouping, controls per key kind, search."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/detent"
+publish = false
+
+[dependencies]
+docket-manifest = {path = "../../../docket/crates/docket-manifest"}
+docket-vocab = {path = "../../../docket/crates/docket-vocab"}
+porter-tailscale = {path = "../../../porter/crates/porter-tailscale"}
+porter-tailnet = {path = "../../../steward/crates/porter-tailnet"}
+porter-sheet = {path = "../../../porter/crates/porter-sheet"}
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+almanac-core = {path = "../../../almanac/crates/almanac-core"}
+chordkit = {path = "../../../chordkit/crates/chordkit"}
+docket-core = {path = "../../../docket/crates/docket-core"}
+docket-settings = {path = "../../../docket/crates/docket-settings"}
+ds-helpers = {path = "../../../quire/crates/ds-helpers", default-features = false}
+ds-settings = {path = "../../../quire/crates/ds-settings"}
+keycap-client = {path = "../../../keycap/crates/keycap-client"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-infer = {path = "../../../steward/crates/porter-infer"}
+regex = {version = "1", default-features = false, features = ["std", "perf", "unicode"]}
+toml = {version = "1"}
+
+[dev-dependencies]
+detent-testkit = {path = "../detent-testkit"}
+serde_json = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

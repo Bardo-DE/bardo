@@ -1,0 +1,234 @@
+//! A field reached by its `FieldHandle` or by selector takes the keyboard,
+//! selects its value, and hears `onfocus` once (Blitz raises the event for a focus set from code,
+//! after the ask's own task has run, so a selector's "found" comes first);
+//! a handle's blur is heard once too (Blitz clears the focus silently, so the handle tells it); an unknown or unreadable selector is a typed error.
+
+use dioxus::prelude::*;
+use ds::base::time::clock::sleep;
+use ds::focus::field::{FieldHandle, use_field_handle};
+use ds::focus::select::Select;
+use ds::focus::selector::{FocusError, focus_by_selector};
+use ds::prelude::*;
+use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
+use std::time::Duration;
+
+const VIEW: Viewport = Viewport {
+    width: 360,
+    height: 320,
+    scale_percent: 100,
+};
+
+fn ms(n: u64) -> Duration {
+    Duration::from_millis(n)
+}
+
+/// How the page's buttons reach the field.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Reach {
+    /// Through the field's handle.
+    Handle,
+    /// Through `focus_by_selector(selector)`.
+    Selector(&'static str),
+}
+
+/// Ask for the focus as `reach` says, logging a selector's outcome.
+fn ask(reach: Reach, handle: FieldHandle, mut log: Signal<Vec<String>>) {
+    match reach {
+        Reach::Handle => handle.focus(Select::All),
+        Reach::Selector(selector) => {
+            spawn(async move {
+                let outcome = match focus_by_selector(selector, Select::All).await {
+                    Ok(()) => "found".to_owned(),
+                    Err(FocusError::NoSuchElement { .. }) => "no-such-element".to_owned(),
+                    Err(FocusError::BadSelector { .. }) => "bad-selector".to_owned(),
+                    Err(other) => format!("{other:?}"),
+                };
+                log.with_mut(|log| log.push(outcome));
+            });
+        }
+    }
+}
+
+/// A rename field on "Inbox" logging its focus and blur; "Go" reaches it as `reach` says, "Out"
+/// blurs it through its handle.
+#[component]
+fn Page(reach: Reach) -> Element {
+    let mut log = use_signal(Vec::<String>::new);
+    let handle = use_field_handle();
+    rsx! {
+        Ds { appearance: Appearance::default(), material: Material::Sheet,
+            div { style: "display:flex; flex-direction:column; gap:12px; width:300px; padding:12px",
+                div { class: "rename", style: "display:flex",
+                    TextField { label: "Name", value: "Inbox",
+                        handle: Some(handle),
+                        oninput: |_| {},
+                        onfocus: move |()| log.with_mut(|log| log.push("focus".to_owned())),
+                        onblur: move |()| log.with_mut(|log| log.push("blur".to_owned())),
+                    }
+                }
+                div { id: "go", style: "display:flex",
+                    Button { label: "Go",
+                        onclick: move |_| ask(reach, handle, log) }
+                }
+                div { id: "out", style: "display:flex",
+                    Button { label: "Out",
+                        onclick: move |_| handle.blur() }
+                }
+                p { class: "mounted", if handle.element().is_some() { "mounted" } }
+            }
+            p { class: "log", {log().join(",")} }
+        }
+    }
+}
+
+#[allow(non_snake_case)]
+fn ByHandle() -> Element {
+    rsx! { Page { reach: Reach::Handle } }
+}
+
+#[allow(non_snake_case)]
+fn BySelector() -> Element {
+    rsx! { Page { reach: Reach::Selector(".rename input") } }
+}
+
+#[allow(non_snake_case)]
+fn ByUnknown() -> Element {
+    rsx! { Page { reach: Reach::Selector("#nothing-here") } }
+}
+
+#[allow(non_snake_case)]
+fn ByGarbage() -> Element {
+    rsx! { Page { reach: Reach::Selector("[[") } }
+}
+
+fn log(harness: &Harness) -> String {
+    harness.text_of(".log").unwrap_or_default()
+}
+
+fn press(harness: &mut Harness, selector: &str) {
+    let at = harness
+        .centre(selector)
+        .unwrap_or_else(|| panic!("{selector} is not in the document:\n{}", harness.html()));
+    harness.send(Input::click(at));
+}
+
+fn reached(app: fn() -> Element) -> Harness {
+    let mut harness = Harness::new(app, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
+    harness.advance(ms(50));
+    press(&mut harness, "#go button");
+    harness.advance(ms(150));
+    harness
+}
+
+#[test]
+fn a_field_focused_by_its_handle_hears_it_once_with_its_value_selected() {
+    let harness = reached(ByHandle);
+    assert!(harness.focus_of(".rename input"));
+    assert_eq!(log(&harness), "focus");
+    assert_eq!(
+        harness.selected_text(".rename input").as_deref(),
+        Some("Inbox")
+    );
+}
+
+#[test]
+fn a_field_focused_by_selector_hears_it_once_with_its_value_selected() {
+    let harness = reached(BySelector);
+    assert!(harness.focus_of(".rename input"));
+    assert_eq!(log(&harness), "found,focus");
+    assert_eq!(
+        harness.selected_text(".rename input").as_deref(),
+        Some("Inbox")
+    );
+}
+
+#[test]
+fn a_handle_blur_is_heard_once_and_leaves_the_field() {
+    let mut harness = reached(ByHandle);
+    press(&mut harness, "#out button");
+    harness.advance(ms(150));
+    assert!(!harness.focus_of(".rename input"));
+    assert_eq!(log(&harness), "focus,blur");
+}
+
+#[test]
+fn the_handle_hands_out_the_mounted_element() {
+    let mut harness = Harness::new(
+        ByHandle,
+        HarnessConfig::new(VIEW).with_clock(Clock::Virtual),
+    );
+    harness.advance(ms(50));
+    assert_eq!(harness.text_of(".mounted").as_deref(), Some("mounted"));
+}
+
+#[test]
+fn an_unknown_selector_is_no_such_element() {
+    let mut harness = Harness::new(
+        ByUnknown,
+        HarnessConfig::new(VIEW).with_clock(Clock::Virtual),
+    );
+    harness.advance(ms(50));
+    press(&mut harness, "#go button");
+    harness.advance(ms(1_000));
+    assert_eq!(log(&harness), "no-such-element");
+    assert!(!harness.focus_of(".rename input"));
+}
+
+#[test]
+fn an_unreadable_selector_is_a_bad_selector() {
+    let mut harness = Harness::new(
+        ByGarbage,
+        HarnessConfig::new(VIEW).with_clock(Clock::Virtual),
+    );
+    harness.advance(ms(50));
+    press(&mut harness, "#go button");
+    harness.advance(ms(150));
+    assert_eq!(log(&harness), "bad-selector");
+}
+
+/// A field asked for twice by selector, 300 ms apart, as a palette's does on each open; its text
+/// echoed below.
+#[allow(non_snake_case)]
+fn Refocused() -> Element {
+    let mut text = use_signal(|| "Invoice".to_owned());
+    rsx! {
+        Ds { appearance: Appearance::default(), material: Material::Sheet,
+            div { class: "rename", style: "display:flex; width:300px; padding:12px",
+                TextField { label: "Name", value: text(), oninput: move |next| text.set(next) }
+            }
+            div { id: "go", style: "display:flex",
+                Button { label: "Go",
+                    onclick: move |_| {
+                        spawn(async move {
+                            for _ in 0..2 {
+                                let _ = focus_by_selector(".rename input", Select::None).await;
+                                sleep(ms(300)).await;
+                            }
+                        });
+                    }
+                }
+            }
+            p { class: "text", {text()} }
+        }
+    }
+}
+
+#[test]
+fn asking_again_for_a_focused_field_leaves_its_caret_where_it_is() {
+    let mut harness = Harness::new(
+        Refocused,
+        HarnessConfig::new(VIEW).with_clock(Clock::Virtual),
+    );
+    harness.advance(ms(50));
+    press(&mut harness, "#go button");
+    harness.advance(ms(150));
+    harness.send(Input::key(ShortcutKey::Char('X')));
+    harness.advance(ms(300));
+    harness.send(Input::key(ShortcutKey::Char('Y')));
+    harness.advance(ms(50));
+    let text = harness.text_of(".text").unwrap_or_default();
+    assert!(
+        text.contains("XY"),
+        "the second ask moved the caret: {text}"
+    );
+}

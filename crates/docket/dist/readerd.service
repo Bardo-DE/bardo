@@ -1,0 +1,38 @@
+# readerd's systemd user unit: the quarantined reader, a separate process that sees
+# untrusted text and has no tools. It resolves handles through intentd and asks inferd for its
+# model; nothing else. It is the tightest unit of the four: what it reads can be hostile.
+[Unit]
+Description=Quire quarantined reader (org.quire.Reader1)
+After=intentd.service
+Wants=intentd.service
+
+[Service]
+Type=dbus
+BusName=org.quire.Reader1
+ExecStart=/usr/libexec/quire/readerd
+# No loader variables from the session reach the daemon: porter gives its fixed caller role only
+# to a unit that unsets them (applied after the manager environment and Environment=).
+UnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT GCONV_PATH GIO_EXTRA_MODULES GTK_MODULES GTK_PATH GST_PLUGIN_PATH GST_PLUGIN_SYSTEM_PATH LIBGL_DRIVERS_PATH MESA_LOADER_DRIVER_OVERRIDE __EGL_VENDOR_LIBRARY_DIRS __EGL_VENDOR_LIBRARY_FILENAMES GBM_BACKENDS_PATH LIBVA_DRIVERS_PATH VK_ICD_FILENAMES VK_DRIVER_FILES VK_ADD_DRIVER_FILES VK_LAYER_PATH VK_ADD_LAYER_PATH VK_INSTANCE_LAYERS VK_LOADER_LAYERS_ENABLE
+
+# --- Sandbox ---
+# Only Unix sockets, and no IP address at all, in any namespace. The rest (no files, no home folder,
+# private temporary files, no devices, no kernel surfaces) is readerd.service.d/sandbox.conf.
+RestrictAddressFamilies=AF_UNIX
+IPAddressDeny=any
+# No setuid gain, no writable-and-executable memory (no JIT, no injected code).
+NoNewPrivileges=yes
+MemoryDenyWriteExecute=yes
+LockPersonality=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+RestrictSUIDSGID=yes
+# A narrow syscall set: the system-service baseline, minus privileged and obsolete calls.
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources @mount @debug @obsolete
+SystemCallArchitectures=native
+# No capabilities at all.
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+[Install]
+WantedBy=default.target

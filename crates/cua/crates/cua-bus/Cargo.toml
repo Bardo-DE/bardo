@@ -1,0 +1,34 @@
+[package]
+name = "cua-bus"
+description = "What crosses cuad's bus and its event log: the Cua1 bodies, the Start task, run states and outcomes, CuaRecord, the control refusals and who may call which member. Serde bodies over the vocabulary of almanac-core, docket-core, porter-core, porter-infer, prov and cua-action; no capability crate (accessibility, input, capture) is linked; results are prov Report messages."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/cua"
+publish = false
+
+[dependencies]
+docket-gate-wire = {path = "../../../docket/crates/docket-gate-wire"}
+docket-vocab = {path = "../../../docket/crates/docket-vocab"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+cua-action = {path = "../../../stoker/crates/cua-action"}
+cua-desktop = {path = "../cua-desktop"}
+cua-types = {path = "../cua-types"}
+docket-core = {path = "../../../docket/crates/docket-core"}
+almanac-core = {path = "../../../almanac/crates/almanac-core"}
+prov = {path = "../../../prov/prov"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-infer = {path = "../../../steward/crates/porter-infer"}
+model-provider = {path = "../../../stoker/crates/model-provider"}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+iso_currency = {version = "0.7", features = ["with-serde"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+
+[dev-dependencies]
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

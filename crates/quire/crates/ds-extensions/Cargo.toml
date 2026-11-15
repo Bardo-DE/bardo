@@ -1,0 +1,25 @@
+[package]
+name = "ds-extensions"
+description = "Extensions: the folder scan, the envelope checks, on and off, and the data capabilities (looks, file icons). No UI, no runtime, no bus."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/quire"
+publish = false
+
+[dependencies]
+ds-core = {path = "../ds-core"}
+ds-settings = {path = "../ds-settings", default-features = false}
+# The kinds, folder kinds, extension label and the type-to-kind table the standard set is.
+ds-style = {path = "../ds-style", default-features = false}
+# The capped file reader (a look's stylesheet is read through it).
+ds-helpers = {path = "../ds-helpers", default-features = false}
+# Manifests, the folder scan and the registry; see the workspace entry.
+bayonet = {default-features = false, features = ["host"], path = "../../../bayonet"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,26 @@
+[package]
+name = "memfiles"
+description = "almanac's agent memory files on disk: the plain and sealed directory vaults, and an in-memory vault for tests."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/almanac"
+publish = false
+
+[dependencies]
+almanac-core = {path = "../almanac-core"}
+almanac-seal = {path = "../almanac-seal"}
+almanac-store = {path = "../almanac-store"}
+
+[dev-dependencies]
+memfiles = { path = ".", features = ["testing"] }
+tempfile = {version = "3"}
+
+[features]
+# `MemoryVault`, for tests and almanac-fake.
+testing = []
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

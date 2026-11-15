@@ -1,0 +1,44 @@
+[package]
+name = "porter-turns"
+description = "Running model turns: a routed session on a model of this computer (chat, embeddings, computer-use steps), structured replies validated and repaired, the audit trail of finished turns, and a pipeline's stages. A library over porter-router: no bus, no daemon."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/steward"
+publish = false
+
+[dependencies]
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-match = {path = "../../../porter/crates/porter-match"}
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+porter-infer = {path = "../porter-infer"}
+porter-bridge = {path = "../porter-bridge"}
+porter-router = {path = "../porter-router"}
+cua-action = {path = "../../../stoker/crates/cua-action"}
+cua-parse = {path = "../../../stoker/crates/cua-parse"}
+cua-session = {path = "../../../stoker/crates/cua-session"}
+cua-vendors = {path = "../../../stoker/crates/cua-vendors"}
+engine-supervisor = {path = "../../../stoker/crates/engine-supervisor"}
+model-extract = {path = "../../../stoker/crates/model-extract"}
+# The HTTP client to a local engine (`hyper`); a plain Unix socket or loopback, so no `tls`.
+model-http = {features = ["client"], path = "../../../stoker/crates/model-http"}
+model-openai-compat = {path = "../../../stoker/crates/model-openai-compat"}
+model-provider = {path = "../../../stoker/crates/model-provider"}
+# `pixels`: the frame resize of a computer-use step.
+vision-prep = {features = ["pixels"], path = "../../../stoker/crates/vision-prep"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[dev-dependencies]
+model-provider = {features = ["testing"], path = "../../../stoker/crates/model-provider"}
+porter-router = {path = "../porter-router", features = ["testing"]}
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+test-kit = {path = "../../../porter/crates/test-kit"}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

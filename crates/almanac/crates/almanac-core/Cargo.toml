@@ -1,0 +1,23 @@
+[package]
+name = "almanac-core"
+description = "almanac's vocabulary: things, events, facts, retention rules, the memory wire (MemoryRequest, MemoryReply), the timeline and export shapes, and the pure admission rule."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/almanac"
+publish = false
+
+[dependencies]
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+const-hex = {version = "1.19"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+prov = {path = "../../../prov/prov"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+ulid = {version = "3", default-features = false}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

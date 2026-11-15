@@ -1,0 +1,68 @@
+//! How files meets the desktop: the file manager service other programs call, one running
+//! instance, and opening files with apps. This is the only crate of the app that names the session
+//! bus.
+//!
+//! Six parts, each usable on its own:
+//!
+//! - [`file_manager`]: `org.freedesktop.FileManager1`, parsed into typed [`Show`] requests that go
+//!   to a sink the app gives;
+//! - [`instance`]: [`claim`] the names, or [`forward`] a request to the app that has them;
+//! - [`launch`]: open files with the default app or a chosen one, per the Desktop Entry
+//!   Specification, behind the [`Launcher`] trait;
+//! - [`intents`]: the app's actions for the assistant and the command line (docket's
+//!   `IntentProvider1`), answered through the [`Window`] trait the caller implements;
+//! - [`disks`]: the computer's disks from UDisks2 on the system bus ([`Disks`]): list, open, eject
+//!   and a stream of changes, with the programs holding a disk open found by [`DiskUsers`].
+//!
+//! - [`storage`]: the cloud drives from porter's `org.quire.Storage1` ([`Storage`], and
+//!   [`DesktopClouds`] behind `files_fs::Clouds`), and [`open_url`], an online document opened in
+//!   the browser through the desktop portal.
+//!
+//! No part reads the environment: the caller passes the bus connection, the folders, the process
+//! folder and the tokens in.
+//!
+//! ```
+//! use files_desktop::{ExecLine, Expand, Takes};
+//! use std::path::{Path, PathBuf};
+//!
+//! let line = ExecLine::parse(r#""/opt/My App/run" --open %F"#)?;
+//! assert_eq!(line.takes(), Takes::ManyFiles);
+//! let files = [PathBuf::from("/a/1.txt"), PathBuf::from("/a/2.txt")];
+//! let argv = line.expand(&Expand {
+//!     files: &files,
+//!     icon: None,
+//!     name: "My App",
+//!     entry_path: Path::new("/usr/share/applications/app.desktop"),
+//! });
+//! assert_eq!(argv.len(), 4);
+//! assert_eq!(argv[0], "/opt/My App/run");
+//! # Ok::<(), files_desktop::ExecError>(())
+//! ```
+
+pub mod disks;
+mod error;
+pub mod file_manager;
+pub mod instance;
+pub mod intents;
+pub mod launch;
+pub mod open_url;
+pub mod storage;
+mod token;
+pub mod uri;
+
+pub use disks::{Changes, DiskUsers, Disks, NoUsers, ProcUsers};
+pub use error::{DiskError, IntentError, Refusal};
+pub use file_manager::{Reveal, Show, ShowKind, ShowRequest, Sink, StartupId};
+pub use instance::{Bus, Claim, FileManagerName, InstanceError, Served, claim, forward, session};
+pub use intents::{Ask, Reply, Undoing, Window};
+pub use launch::{
+    Activate, AppChoice, AppEntry, AppIcons, AppOffer, BusActivate, Catalog, DesktopLauncher,
+    EntryError, ExecError, ExecLine, Expand, IconLookup, LaunchError, Launcher, LauncherBuilder,
+    NoIcons, Spawn, SpawnCommand, StartError, SystemSpawn, Takes, installed_check, load_apps,
+};
+pub use open_url::{OpenUrlError, open_url};
+pub use storage::{DesktopClouds, Storage, StorageError};
+pub use token::ActivationToken;
+
+#[cfg(feature = "testing")]
+pub use launch::{ActivateCall, FakeActivate, FakeIcons, FakeSpawn};

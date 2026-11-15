@@ -1,0 +1,55 @@
+[package]
+name = "porter-secrets"
+description = "The Secrets trait accountd files credentials through, its attribute scheme, an in-memory store for tests, and the Secret Service and platform keyring stores."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+porter-core = {path = "../porter-core"}
+porter-capability = {path = "../porter-capability"}
+porter-ids = {path = "../porter-ids"}
+porter-fs = {path = "../porter-fs"}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+oo7 = {version = "0.6", optional = true}
+zeroize = {version = "1", optional = true}
+keyring-core = {version = "1", optional = true}
+keyring-chunked = {path = "../keyring-chunked", optional = true}
+
+[target.'cfg(any(target_os = "linux", target_os = "android"))'.dependencies]
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+
+[target.'cfg(target_os = "macos")'.dependencies]
+apple-native-keyring-store = {version = "1", features = ["keychain"], optional = true}
+
+[target.'cfg(windows)'.dependencies]
+windows-native-keyring-store = {version = "1", optional = true}
+
+[dev-dependencies]
+test-kit = {path = "../test-kit"}
+porter-secrets = { path = ".", features = ["testing", "keyring", "test-keys"] }
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[target.'cfg(target_os = "linux")'.dev-dependencies]
+porter-secrets = { path = ".", features = ["oo7"] }
+
+[features]
+# `MemorySecrets`, for tests and porter-fake.
+testing = []
+# `FileSecrets`, one 0600 JSON file of plain-text credentials, for private-bus and scratch runs.
+# TEST ONLY: never default, never in a release or dist build (a daemon's `test-keys` turns it on;
+# check-boundary.sh and the daemons' tests/dist.rs fail if a default build gets it). `keysel`
+# (with the `oo7` feature) is how a daemon chooses between this file and the Secret Service.
+test-keys = []
+# `Oo7Secrets`, the Secret Service store (oo7's file backend inside a sandbox).
+oo7 = ["dep:oo7", "dep:zeroize"]
+# `KeyringSecrets`, the platform keyring store (Apple keychain, Windows credential manager).
+keyring = ["dep:keyring-core", "dep:keyring-chunked", "dep:apple-native-keyring-store", "dep:windows-native-keyring-store"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

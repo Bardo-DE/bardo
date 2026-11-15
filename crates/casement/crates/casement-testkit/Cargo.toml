@@ -1,0 +1,48 @@
+[package]
+name = "casement-testkit"
+description = "casement's one test harness: Fixture over the real State on the headless backend, test origins, fakes (session, udev, logind, palmrest), the soft GPU topology, golden helpers and typed fuzz ops; the fake-logind binary."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/casement"
+publish = false
+
+[[bin]]
+name = "fake-logind"
+path = "src/bin/fake_logind.rs"
+
+[[bin]]
+name = "writeback-compare"
+path = "src/bin/writeback_compare.rs"
+
+[dependencies]
+casement = {path = "../casement", default-features = false, features = ["testing"]}
+casement-core = {path = "../casement-core"}
+casement-layout = {path = "../casement-layout"}
+casement-render = {path = "../casement-render", features = ["testing"]}
+casement-backend = {path = "../casement-backend", features = ["testing"]}
+casement-wayland = {path = "../casement-wayland"}
+casement-ipc = {path = "../casement-ipc"}
+casement-testclient = {path = "../casement-testclient"}
+casement-protocols = {path = "../../../casement-protocols", features = ["client"]}
+porter-core = {path = "../../../porter/crates/porter-core"}
+ds-core = {path = "../../../quire/crates/ds-core", default-features = false}
+smithay = {git = "https://github.com/Bardo-DE/smithay", rev = "919d8dcf7fe0b9ad03f3de53bc178dad30823631", default-features = false, features = ["backend_session", "renderer_multi", "renderer_pixman", "wayland_frontend"]}
+image = {version = "0.25.6", default-features = false, features = ["png", "jpeg"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process", "signal"]}
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
+proptest = {version = "1"}
+
+[dev-dependencies]
+wayland-client = {version = "0.31"}
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+missing_debug_implementations = "warn"

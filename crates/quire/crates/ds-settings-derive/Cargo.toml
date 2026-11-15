@@ -1,0 +1,21 @@
+[package]
+name = "ds-settings-derive"
+description = "#[derive(SettingsSchema)]: emits KeySpec/Schema from a settings struct or an enum's variant words (design/22-SETTINGS.md section 9)."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/quire"
+publish = false
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = {version = "2", features = ["full", "extra-traits"]}
+quote = {version = "1"}
+proc-macro2 = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

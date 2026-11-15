@@ -1,0 +1,23 @@
+[package]
+name = "generic-proto"
+description = "A generic account's servers with no IO: the mail servers a person typed or a provider file names, the DAV and JMAP lookups as requests (http::Request<Vec<u8>>) and verdicts over the replies, and the plan of the password check at the incoming mail server."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+dav-proto = {path = "../dav-proto", features = ["discover"]}
+porter-core = {path = "../porter-core"}
+porter-capability = {path = "../porter-capability"}
+porter-ids = {path = "../porter-ids"}
+porter-provider = {path = "../porter-provider"}
+porter-sheet = {path = "../porter-sheet"}
+http = {version = "1"}
+thiserror = {version = "2"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,120 @@
+//! An invocation read as what Settings can do. Pure: it decides nothing, it only names the
+//! action and its arguments, or says which argument is wrong.
+
+use crate::answer::{not_found, refusal};
+use detent_model::PageSlug;
+use docket_core::{AppRefusal, Invocation};
+use docket_vocab::{ParamName, TargetValue, Value};
+use ds_settings::schema::KeyPath;
+use ds_settings::target::SettingsTarget;
+use porter_core::AppName;
+
+/// What a call asks of Settings.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) enum Ask {
+    /// Show a page.
+    OpenPage(PageSlug),
+    /// Show a key's row or an account (a page target is [`Ask::OpenPage`]).
+    OpenTarget(SettingsTarget),
+    /// Tell the value of a key.
+    ReadKey(KeyPath),
+    /// Set a key to the stored form `text`.
+    SetKey { key: KeyPath, text: String },
+    /// Tell the accounts, one line each.
+    ListAccounts,
+    /// Show the Accounts page.
+    OpenAccounts,
+    /// Show the Intelligence page.
+    OpenIntelligence,
+}
+
+fn param(name: &str) -> Result<ParamName, AppRefusal> {
+    ParamName::parse(name).map_err(|_| AppRefusal::Unsupported)
+}
+
+/// The key of the entity argument `name`, which must be of `kind` and belong to `app`.
+fn entity_arg(
+    inv: &Invocation,
+    app: &AppName,
+    name: &str,
+    kind: &str,
+) -> Result<String, AppRefusal> {
+    let wanted = param(name)?;
+    let Some(arg) = inv.args.get(&wanted) else {
+        return Err(AppRefusal::NeedsParam {
+            param: wanted,
+            options: Vec::new(),
+        });
+    };
+    match &arg.value {
+        Value::Entity(id) if &id.app == app && id.kind.as_str() == kind => {
+            Ok(id.key.as_str().to_owned())
+        }
+        Value::Entity(id) => Err(not_found(app, id.kind.as_str(), id.key.as_str())),
+        _ => Err(refusal(format!("{name} must name a {kind}"))),
+    }
+}
+
+/// The key of the one thing of `kind` an `.open` call acts on (the launcher's Enter on a hit).
+fn target_entity(inv: &Invocation, app: &AppName, kind: &str) -> Result<String, AppRefusal> {
+    match &inv.target {
+        TargetValue::Entities(named) => match named.as_slice() {
+            [id] if &id.app == app && id.kind.as_str() == kind => Ok(id.key.as_str().to_owned()),
+            [id] => Err(not_found(app, id.kind.as_str(), id.key.as_str())),
+            _ => Err(AppRefusal::Unsupported),
+        },
+        _ => Err(AppRefusal::Unsupported),
+    }
+}
+
+/// The text of the argument `name`; a whole number is taken as its digits.
+fn text_arg(inv: &Invocation, name: &str) -> Result<String, AppRefusal> {
+    let wanted = param(name)?;
+    match inv.args.get(&wanted).map(|arg| &arg.value) {
+        None => Err(AppRefusal::NeedsParam {
+            param: wanted,
+            options: Vec::new(),
+        }),
+        Some(Value::Text(text)) => Ok(text.clone()),
+        Some(Value::Integer(n)) => Ok(n.to_string()),
+        Some(_) => Err(refusal(format!("{name} must be text"))),
+    }
+}
+
+/// What the `page` argument asks: the target text (`page:X`, `key:K`, `account:P`) when it is
+/// one, else a plain page slug (`dock`, `app:acme`).
+fn page_ask(text: String) -> Ask {
+    match text.parse::<SettingsTarget>() {
+        Ok(SettingsTarget::Page(id)) => Ask::OpenPage(PageSlug(id.as_str().to_owned())),
+        Ok(target) => Ask::OpenTarget(target),
+        Err(_) => Ask::OpenPage(PageSlug(text)),
+    }
+}
+
+/// What `inv` asks, or why it cannot be asked.
+pub(crate) fn ask(inv: &Invocation, app: &AppName) -> Result<Ask, AppRefusal> {
+    match inv.action.as_str() {
+        "settings.page.show" => entity_arg(inv, app, "page", "settings.page").map(page_ask),
+        "settings.page.open" => {
+            target_entity(inv, app, "settings.page").map(|slug| Ask::OpenPage(PageSlug(slug)))
+        }
+        "settings.key.open" => {
+            let path = target_entity(inv, app, "settings.key")?;
+            format!("key:{path}")
+                .parse()
+                .map(Ask::OpenTarget)
+                .map_err(|_| refusal(format!("{path} is not a setting")))
+        }
+        "settings.key.read" => {
+            entity_arg(inv, app, "key", "settings.key").map(|key| Ask::ReadKey(KeyPath(key)))
+        }
+        "settings.key.set" => Ok(Ask::SetKey {
+            key: KeyPath(entity_arg(inv, app, "key", "settings.key")?),
+            text: text_arg(inv, "value")?,
+        }),
+        "settings.accounts.list" => Ok(Ask::ListAccounts),
+        "settings.accounts.open" => Ok(Ask::OpenAccounts),
+        "settings.intelligence.open" => Ok(Ask::OpenIntelligence),
+        _ => Err(AppRefusal::Unsupported),
+    }
+}

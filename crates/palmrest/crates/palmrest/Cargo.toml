@@ -1,0 +1,30 @@
+[package]
+name = "palmrest"
+description = "Magic Mouse gesture daemon: hidraw decoder, scroll feel, gestures, a socket for shell-host and a virtual touchpad for everyone else"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.92"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Bardo-DE/palmrest"
+
+[dependencies]
+palmrest-protocol = { path = "../palmrest-protocol" }
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+serde_json = {version = "1"}
+toml = {version = "1"}
+notify = {version = "8.2"}
+rustix = {version = "1", features = ["event", "fs", "net", "time", "process"]}
+input-linux = {version = "0.7", default-features = false}
+turnstile-client = {path = "../../../turnstile/crates/turnstile-client"}
+peephole = {path = "../../../peephole/peephole"}
+latchkey = {features = ["guard"], path = "../../../latchkey"}
+peephole-core = {features = ["desktop"], path = "../../../peephole/peephole-core"}
+
+[dev-dependencies]
+turnstile-client = {features = ["fake"], path = "../../../turnstile/crates/turnstile-client"}
+# A held process that is only a claim, for tests of who the socket's peer is; never in a shipped build.
+peephole = {features = ["fake"], path = "../../../peephole/peephole"}
+
+[lints.rust]
+unsafe_code = "deny"

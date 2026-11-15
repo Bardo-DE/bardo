@@ -1,0 +1,407 @@
+//! One open Space as the service holds it: the frozen `SpaceRuntime` plus what only the service
+//! needs (the digest subkey, the last verification, why bodies are gone, the last consolidation),
+//! and the helpers every request shares: appending, auditing, the fact snapshot, the index.
+
+use crate::backend::{Backend, BackendError};
+use crate::caller::Caller;
+use crate::clock::Clock;
+use crate::forget::{FactGraph, FactNode};
+use crate::runtime::SpaceRuntime;
+use almanac_core::{
+    Actor, ChainHealth, Count, Effect, EventBody, EventRef, Fact, FactId, FactState, Label, Link,
+    MemoryOp, Record, Refusal, RuleSet, RunId, RunState, Seq, SpaceId, SystemPart, TopicPath,
+    UnixSeconds,
+};
+use almanac_seal::{KeyError, SubKey};
+use almanac_search::docs::{event_ref, fact_doc, indexed_docs, newest_episodes};
+use almanac_store::{Doc, DocId, IndexFailure, SearchIndex};
+use almanac_store::{Entry, LogError, LogRead, LogWrite, NewHeader, Vault, VaultPath};
+use memfiles_format::{Block, MemfilesError};
+use std::collections::{BTreeMap, BTreeSet};
+
+/// What one request runs against: the seams, the rules as they are now and who is asking.
+pub(crate) struct Cx<'a, B: Backend> {
+    pub backend: &'a B,
+    pub rules: RuleSet,
+    pub settings: almanac_settings::MemorySettings,
+    pub quota: crate::quota::Quota,
+    pub caller: &'a Caller,
+}
+
+impl<B: Backend> Cx<'_, B> {
+    pub(crate) fn now(&self) -> UnixSeconds {
+        self.backend.clock().now()
+    }
+}
+
+/// Why bodies in this Space are gone, as far as this run of the daemon knows.
+#[derive(Debug, Default)]
+pub(crate) struct ErasedNotes {
+    pub forgotten: BTreeSet<Seq>,
+    pub expired: BTreeSet<Seq>,
+    pub header_only: BTreeSet<Seq>,
+}
+
+/// The last consolidation run: what the person can review and revert.
+#[derive(Debug, Clone)]
+pub(crate) struct LastRun {
+    pub run: RunId,
+    pub view: almanac_core::DraftView,
+    pub added: Vec<FactId>,
+    pub superseded: Vec<FactId>,
+    /// Files the run rewrote, as they were.
+    pub pre_images: Vec<crate::hunks::PreImage>,
+    /// Whether `Revert` may still use them (a forget closes it).
+    pub revert: crate::revert_guard::RevertGuard,
+    /// Topics whose facts the run reworded.
+    pub topics: Vec<TopicPath>,
+    /// Where the next run starts reading: the log head once the run is applied, the previous
+    /// cut while it is only proposed.
+    pub cut: Seq,
+    /// The log head the run read up to.
+    pub head: Seq,
+}
+
+/// A Space the service has open.
+pub(crate) struct Open<B: Backend> {
+    pub rt: SpaceRuntime<B>,
+    pub digest: SubKey,
+    pub chain: ChainHealth,
+    pub minted: u64,
+    pub notes: ErasedNotes,
+    pub run: RunState,
+    pub last: Option<LastRun>,
+    /// Topic files as the service last left them (`baseline.rs`).
+    pub baseline: crate::baseline::Baseline,
+    /// Topics found edited by someone else when the request began.
+    pub dirty: BTreeSet<TopicPath>,
+    /// What happened during the request that the bus should hear of (drained by the service).
+    pub outbox: Vec<crate::events::ServiceEvent>,
+    /// The index state the bus was last told of (or found when the Space opened).
+    pub announced: almanac_core::IndexView,
+    /// What the Space holds, counted at the first record and kept up to date after it; `None`
+    /// when it must be counted afresh (a sweep erased bodies).
+    pub usage: Option<crate::quota::Usage>,
+}
+
+/// A fact as the files hold it.
+#[derive(Debug, Clone)]
+pub(crate) struct Stored {
+    pub topic: TopicPath,
+    pub fact: Fact,
+    pub state: FactState,
+}
+
+pub(crate) fn failed(e: impl std::fmt::Display) -> Refusal {
+    Refusal::Invalid(e.to_string())
+}
+
+/// What a failed append is, typed for a writer that must know: a locked, full or failing log.
+pub(crate) fn append_refusal(e: LogError) -> Refusal {
+    match e {
+        LogError::Full => Refusal::SpaceFull,
+        LogError::Sqlite(_) | LogError::Corrupt { .. } | LogError::Schema { .. } => {
+            Refusal::Unavailable
+        }
+        other => log_refusal(other),
+    }
+}
+
+pub(crate) fn log_refusal(e: LogError) -> Refusal {
+    match e {
+        LogError::Locked => Refusal::SpaceLocked,
+        other => failed(other),
+    }
+}
+
+/// A Space whose stores would not open: a key the store will not give, or one that does not
+/// open the log, is a locked Space (the person fixes the key); the rest is a failure.
+pub(crate) fn backend_refusal(e: BackendError) -> Refusal {
+    match e {
+        BackendError::Keys(KeyError::Locked) => Refusal::SpaceLocked,
+        BackendError::Keys(_) => Refusal::Busy,
+        BackendError::Log(e) => log_refusal(e),
+        other => failed(other),
+    }
+}
+
+pub(crate) fn files_refusal(e: MemfilesError) -> Refusal {
+    failed(e)
+}
+
+impl<B: Backend> Open<B> {
+    pub(crate) fn space(&self) -> &SpaceId {
+        &self.rt.meta.id
+    }
+
+    /// `StatusChanged` for this Space if the index is not where the bus last heard it was (a
+    /// background rebuild finished, the embedder went away or came back); said once per change.
+    pub(crate) fn index_news(&mut self) -> Option<crate::events::ServiceEvent> {
+        let now = self.rt.index.state();
+        (now != self.announced).then(|| {
+            self.announced = now;
+            crate::events::ServiceEvent::StatusChanged(self.space().clone())
+        })
+    }
+
+    /// Entropy for an id: a keyed hash over the Space's digest subkey, a counter, the time, the
+    /// backend's random bytes and what the id is for. No ambient randomness (the
+    /// bytes come through `Backend::random`); ids from two machines differ because their Space
+    /// keys do, and a restarted daemon's differ because its random bytes do.
+    pub(crate) fn entropy(&mut self, cx: &Cx<'_, B>, what: &[u8]) -> [u8; 10] {
+        let now = cx.now();
+        self.minted += 1;
+        let head = self.rt.log.head().map(|h| h.seq.0).unwrap_or_default();
+        let mut hasher = blake3::Hasher::new_keyed(self.digest.expose());
+        hasher.update(b"QID1");
+        hasher.update(&self.minted.to_be_bytes());
+        hasher.update(&now.0.to_be_bytes());
+        hasher.update(&head.to_be_bytes());
+        hasher.update(&cx.backend.random());
+        hasher.update(what);
+        let mut out = [0u8; 10];
+        out.copy_from_slice(&hasher.finalize().as_bytes()[..10]);
+        out
+    }
+
+    /// Whether one more event costing `cost` bytes fits the Space's quota. The cached count is
+    /// trusted only to say yes; before a refusal the Space is counted afresh, so bodies a forget
+    /// or a sweep erased are not held against it.
+    pub(crate) fn admit_quota(
+        &mut self,
+        quota: &crate::quota::Quota,
+        cost: u64,
+    ) -> Result<(), Refusal> {
+        if let Some(usage) = &self.usage
+            && usage.fits(quota, cost)
+        {
+            return Ok(());
+        }
+        let fresh = crate::quota::Usage::of(&self.entries()?);
+        self.usage = Some(fresh);
+        match fresh.fits(quota, cost) {
+            true => Ok(()),
+            false => Err(Refusal::SpaceFull),
+        }
+    }
+
+    /// Chains `record` into the log with `body` (or as a header only).
+    pub(crate) fn append(
+        &mut self,
+        now: UnixSeconds,
+        record: &Record,
+        body: Option<EventBody>,
+    ) -> Result<Entry, Refusal> {
+        let header = NewHeader::of(record, now, &self.digest);
+        self.rt.log.append(header, body).map_err(append_refusal)
+    }
+
+    /// Logs memoryd's own `op`, whatever the admission rules say.
+    pub(crate) fn audit(&mut self, now: UnixSeconds, op: MemoryOp) -> Result<Entry, Refusal> {
+        let effect = match op {
+            MemoryOp::Read { .. } => Effect::Read,
+            MemoryOp::Forgot { .. } => Effect::Destructive,
+            _ => Effect::UndoableWrite,
+        };
+        let record = Record {
+            space: self.space().clone(),
+            occurred: now,
+            actor: Actor::System {
+                part: SystemPart::Memory,
+            },
+            effect,
+            label: Label::trusted_user(),
+            body: EventBody::Memory { op },
+            cause: almanac_core::Cause::None,
+        };
+        let body = record.body.clone();
+        self.append(now, &record, Some(body))
+    }
+
+    pub(crate) fn event_ref(&self, entry: &Entry) -> EventRef {
+        event_ref(self.space(), entry)
+    }
+
+    /// The entry with sequence number `seq`, if the log still has it.
+    pub(crate) fn entry_at(&self, seq: Seq) -> Option<Entry> {
+        let q = almanac_core::TimelineQuery {
+            before: Some(almanac_core::Cursor(Seq(seq.0 + 1))),
+            limit: Count(1),
+            filter: any_filter(),
+        };
+        self.rt
+            .log
+            .page(&q)
+            .ok()?
+            .into_iter()
+            .find(|e| e.header.seq == seq)
+    }
+
+    /// Every retained entry, oldest first.
+    pub(crate) fn entries(&self) -> Result<Vec<Entry>, Refusal> {
+        self.rt.log.scan(Seq(0)).map_err(log_refusal)
+    }
+
+    /// Every fact the files hold: active (or superseded by a newer active one) and pending.
+    pub(crate) fn stored(&self) -> Result<Vec<Stored>, Refusal> {
+        let store = &self.rt.store;
+        let mut active: Vec<(TopicPath, Fact)> = Vec::new();
+        for topic in store.topics().map_err(files_refusal)? {
+            let file = store.read(&topic).map_err(files_refusal)?;
+            active.extend(file.blocks.into_iter().filter_map(|b| match b {
+                Block::Fact(f) => Some((topic.clone(), f)),
+                Block::Unstamped(_) | Block::Verbatim(_) => None,
+            }));
+        }
+        let replaced: BTreeMap<FactId, FactId> = active
+            .iter()
+            .flat_map(|(_, f)| f.supersedes.iter().map(|old| (old.clone(), f.id.clone())))
+            .collect();
+        let pending = store.pending().map_err(files_refusal)?;
+        Ok(active
+            .into_iter()
+            .map(|(topic, fact)| {
+                let state = match replaced.get(&fact.id) {
+                    Some(by) => FactState::Superseded { by: by.clone() },
+                    None => FactState::Active,
+                };
+                Stored { topic, fact, state }
+            })
+            .chain(pending.into_iter().map(|(topic, fact)| Stored {
+                topic,
+                fact,
+                state: FactState::Pending,
+            }))
+            .collect())
+    }
+
+    /// The facts and procedures as the planner reads them.
+    pub(crate) fn fact_graph(&self) -> Result<FactGraph, Refusal> {
+        let nodes = self
+            .stored()?
+            .into_iter()
+            .map(|s| FactNode {
+                id: s.fact.id,
+                links: s.fact.links,
+                state: s.state,
+            })
+            .collect();
+        let procedures = self
+            .rt
+            .store
+            .vault()
+            .list(&VaultPath::procedures_dir())
+            .unwrap_or_default();
+        Ok(FactGraph { nodes, procedures })
+    }
+
+    /// Adds or replaces documents in the index. A failed index never fails a write: the files
+    /// and the log are the truth and the index rebuilds from them.
+    pub(crate) async fn index_put(&mut self, cx: &Cx<'_, B>, docs: Vec<Doc>) {
+        if !docs.is_empty() {
+            let _ = self.rt.index.upsert(&docs, cx.backend.embedder()).await;
+        }
+    }
+
+    /// Removes documents by id.
+    pub(crate) fn index_drop(&mut self, ids: &[String]) {
+        let ids: Vec<DocId> = ids.iter().cloned().map(DocId).collect();
+        if !ids.is_empty() {
+            let _ = self.rt.index.remove(&ids);
+        }
+    }
+
+    /// Removes documents by id and says when the index could not: a forget must not go on to
+    /// remove the files while the forgotten text is still searchable.
+    pub(crate) fn index_remove(&mut self, ids: &[String]) -> Result<(), Refusal> {
+        let ids: Vec<DocId> = ids.iter().cloned().map(DocId).collect();
+        if ids.is_empty() {
+            return Ok(());
+        }
+        self.rt.index.remove(&ids).map(drop).map_err(failed)
+    }
+
+    /// Everything the index holds, from the files and the log: active facts that nothing
+    /// replaced, and the newest event of each episode.
+    pub(crate) fn truth_docs(&self) -> Result<Vec<Doc>, Refusal> {
+        let entries = self.entries()?;
+        let newest = newest_episodes(&entries);
+        let facts = self
+            .stored()?
+            .into_iter()
+            .filter(|s| s.state == FactState::Active)
+            .map(|s| fact_doc(&s.fact));
+        let events = entries.iter().flat_map(|e| {
+            indexed_docs(self.space(), e, &newest)
+                .into_iter()
+                .map(|d| d.into_doc(e.header.occurred))
+        });
+        Ok(facts.chain(events).collect())
+    }
+
+    /// Rebuilds the index from the truth.
+    pub(crate) async fn rebuild_index(&mut self, cx: &Cx<'_, B>) -> Result<(), Refusal> {
+        let docs = self.truth_docs()?;
+        self.rt
+            .index
+            .rebuild(docs, cx.backend.embedder())
+            .await
+            .map_err(|e| match e {
+                IndexFailure::Embed(_) => Refusal::Busy,
+                other => failed(other),
+            })
+    }
+
+    /// Brings the index in line with the truth at open: an index the embedder's own is adopted
+    /// (only what changed is embedded), anything else is rebuilt (`Index::sync`). An embedder
+    /// that fails does not stop the Space opening: the index says why in its state and the next
+    /// start tries again.
+    pub(crate) async fn sync_index(&mut self, cx: &Cx<'_, B>) -> Result<(), Refusal> {
+        let docs = self.truth_docs()?;
+        match self.rt.index.sync(docs, cx.backend.embedder()).await {
+            Ok(()) | Err(IndexFailure::Embed(_)) => Ok(()),
+            Err(other) => Err(failed(other)),
+        }
+    }
+
+    /// The links of a fact that name events, for the timeline's derived counts.
+    pub(crate) fn derived_from(&self, stored: &[Stored], event: &EventRef) -> Count {
+        let n = stored
+            .iter()
+            .filter(|s| s.fact.links.contains(&Link::Event(event.clone())))
+            .count();
+        Count(u32::try_from(n).unwrap_or(u32::MAX))
+    }
+}
+
+/// The filter that shows everything.
+pub(crate) fn any_filter() -> almanac_core::TimelineFilter {
+    almanac_core::TimelineFilter {
+        actors: almanac_core::ActorFilter::Everyone,
+        apps: Vec::new(),
+        kinds: Vec::new(),
+        trust: almanac_core::TrustFilter::Any,
+        range: None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_failed_append_is_typed_by_why_it_failed() {
+        assert_eq!(append_refusal(LogError::Locked), Refusal::SpaceLocked);
+        assert_eq!(append_refusal(LogError::Full), Refusal::SpaceFull);
+        assert_eq!(
+            append_refusal(LogError::Sqlite("io".to_owned())),
+            Refusal::Unavailable
+        );
+        assert_eq!(
+            append_refusal(LogError::Corrupt {
+                at: almanac_core::Seq(3)
+            }),
+            Refusal::Unavailable
+        );
+    }
+}

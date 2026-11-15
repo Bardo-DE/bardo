@@ -1,0 +1,195 @@
+//! What a call is once the router has looked at it: the data every later stage reads, and the
+//! small pure facts derived from it (who the actor is, what the arguments hash to, what the
+//! reviewer is shown).
+
+use crate::gate::Pending;
+use action_review::GoalKey;
+use action_review::{ArgDigest, ArgView, CallEndKind, ProposedAction, ReviewRequest, TypedStep};
+use docket_context::state::SessionRecord;
+use docket_context::who::Who;
+use docket_core::{ActivationToken, CallRefusal, Cost, StepEnd, size_of};
+use docket_manifest::ActionDecl;
+use docket_permissions_core::{GrantCaller, Ruling};
+use docket_vocab::{
+    ActionRef, Args, CallId, CallRequest, CharCount, ParamName, TargetValue, Value, WindowKey,
+};
+use policy_point::GrantState;
+use porter_core::GrantId;
+use porter_core::consent::{GrantScope, Usage, Verdict};
+use porter_ids::Count;
+use prov::{Actor, AgentRole, Effect, EntityId, Integrity, SpaceId};
+
+/// A call that ended before it reached the gate.
+#[derive(Debug, Clone)]
+pub struct Early {
+    pub id: CallId,
+    pub who: Who,
+    pub action: ActionRef,
+    pub effect: Effect,
+    pub space: SpaceId,
+    pub refusal: CallRefusal,
+}
+
+/// A call ready to be driven.
+#[derive(Debug, Clone)]
+pub struct Prepared {
+    pub id: CallId,
+    pub who: Who,
+    pub space: SpaceId,
+    pub decl: ActionDecl,
+    pub request: CallRequest,
+    pub ruling: Ruling,
+    pub pending: Pending,
+    pub goal: GoalKey,
+    pub digest: ArgDigest,
+    pub cost: Cost,
+    pub review: Option<ReviewRequest>,
+    pub window: Option<WindowKey>,
+    pub targets: Vec<EntityId>,
+    /// The handles the caller named, before the router resolved them (for the history line).
+    pub named: Vec<docket_vocab::Handle>,
+    /// The launcher's activation token, for the app's `Perform` only.
+    pub activation: Option<ActivationToken>,
+    /// How the call was classified, for an action that classifies per call. `decl.effect` is
+    /// already the effect it used.
+    pub classified: Option<docket_vocab::Classification>,
+    /// What standing grants say about the call; none for the person's own calls.
+    pub standing: Option<crate::standing_ctx::StandingCtx>,
+    /// The arguments the router fills itself (`ParamDecl::filled`), put in just before the app
+    /// is called; empty until then. Kept apart from `request.args` so the sheet, the digest and
+    /// the gate never see them.
+    pub filled: Args,
+}
+
+/// The things a target names, if it names things.
+pub fn entities(target: &TargetValue) -> Vec<EntityId> {
+    match target {
+        TargetValue::Entities(ids) => ids.clone(),
+        TargetValue::Nothing
+        | TargetValue::Handles(_)
+        | TargetValue::Text(_)
+        | TargetValue::Files(_) => vec![],
+    }
+}
+
+/// A stable hash of what a call is about: the same action, target (things or files) and argument
+/// values.
+pub fn digest(target: &TargetValue, args: &Args) -> ArgDigest {
+    let values: std::collections::BTreeMap<&ParamName, &Value> =
+        args.iter().map(|(k, v)| (k, &v.value)).collect();
+    let bytes = serde_json::to_vec(&(target, values)).unwrap_or_default();
+    let hash = bytes.iter().fold(0xcbf2_9ce4_8422_2325_u64, |h, b| {
+        (h ^ u64::from(*b)).wrapping_mul(0x0100_0000_01b3)
+    });
+    ArgDigest(hash)
+}
+
+/// What a consent verdict says of the grant behind it, as the policy reads it.
+pub fn grant_state(v: &Verdict) -> GrantState {
+    match v {
+        Verdict::Granted {
+            scope: GrantScope::Always,
+            ..
+        } => GrantState::Always,
+        // A grant for one launcher session holds now but is not standing: like a once.
+        Verdict::Granted {
+            scope: GrantScope::Once | GrantScope::Session(_),
+            ..
+        } => GrantState::Once,
+        Verdict::Ask => GrantState::None,
+        Verdict::Denied => GrantState::Denied,
+    }
+}
+
+/// How the actor uses the app: an agent working in the background, or the person's own acts.
+pub fn usage_of(actor: &Actor) -> Usage {
+    match actor {
+        Actor::Companion {
+            role: AgentRole::Worker { .. } | AgentRole::Cua { .. } | AgentRole::Helper { .. },
+            ..
+        } => Usage::Background,
+        _ => Usage::Interactive,
+    }
+}
+
+/// The steps of a session as the reviewer is told them: codes only.
+pub fn typed_history(record: &SessionRecord) -> Vec<TypedStep> {
+    record
+        .history
+        .iter()
+        .map(|s| TypedStep {
+            call: s.call,
+            action: s.action.clone(),
+            effect: s.effect,
+            end: match &s.end {
+                StepEnd::Done { .. } => CallEndKind::Done,
+                StepEnd::Refused(CallRefusal::Denied(_)) => CallEndKind::Denied,
+                StepEnd::Unconfirmed(_) => CallEndKind::Unconfirmed,
+                StepEnd::Refused(_)
+                | StepEnd::Held(_)
+                | StepEnd::Unread(_)
+                | StepEnd::Interrupted => CallEndKind::Failed,
+            },
+            verdict: None,
+        })
+        .collect()
+}
+
+/// The action as the reviewer is shown it: the arguments, trusted or untrusted, and the targets.
+pub fn proposed(decl: &ActionDecl, call: &CallRequest, targets: &[EntityId]) -> ProposedAction {
+    let view = |name: &ParamName| {
+        call.args.get(name).map(|a| match a.label.integrity {
+            Integrity::Trusted => ArgView::Trusted(a.value.clone()),
+            Integrity::Untrusted => ArgView::Untrusted {
+                from: a.label.sources.clone(),
+                size: CharCount(match &a.value {
+                    Value::Text(t) | Value::Url(t) => size_of(t).0,
+                    _ => 0,
+                }),
+            },
+        })
+    };
+    ProposedAction {
+        app: call.action.app.clone(),
+        action: decl.name.clone(),
+        label: decl.label.clone(),
+        effect: decl.effect,
+        kinds: targets.iter().map(|e| e.kind.clone()).collect(),
+        count: Count(u32::try_from(targets.len()).unwrap_or(u32::MAX)),
+        args: decl
+            .params
+            .iter()
+            .filter_map(|p| view(&p.name).map(|v| (p.name.clone(), p.sink, v)))
+            .collect(),
+        lasting: decl.lasting,
+    }
+}
+
+/// What a grant the person gives with "always" is keyed by: one per data class, for the whole
+/// app in this Space.
+pub fn grants_for(
+    prepared: &Prepared,
+    id: GrantId,
+    at: prov::UnixSeconds,
+    caller: GrantCaller,
+) -> Vec<docket_permissions_core::ActionGrant> {
+    prepared
+        .decl
+        .classes
+        .iter()
+        .map(|class| porter_core::consent::Grant {
+            id: id.clone(),
+            key: docket_permissions_core::ActionGrantKey {
+                caller: caller.clone(),
+                owner: prepared.request.action.app.clone(),
+                target: docket_permissions_core::GrantTarget::App,
+                class: *class,
+                usage: usage_of(&prepared.who.actor),
+                space: prov::SpaceScope::Only(prepared.space.clone()),
+            },
+            decision: porter_core::consent::Decision::Allow,
+            scope: GrantScope::Always,
+            at,
+        })
+        .collect()
+}

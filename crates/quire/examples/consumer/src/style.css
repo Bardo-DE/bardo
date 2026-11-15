@@ -1,0 +1,33 @@
+/* This example's own stylesheet: quire tokens only, no literal colour, duration, easing,
+   radius, font-size or font-family (CONSUMING.md section 5, rule 1). Attribute selectors carry
+   the `*|` namespace prefix a Blitz consumer needs (FINDINGS spike S2), which also matches in a
+   browser, so this file works unchanged on the webview and on Blitz.
+
+   `.page`, `.actions`, `.sent-badge` are this app's own classes; none is prefixed `ds-`, which
+   quire's own classes reserve (ARCHITECTURE.md "Repo rules": consumers never style .ds-*). */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-12);
+  padding: var(--s-16);
+  max-width: 360px;
+}
+
+.actions {
+  display: flex;
+  gap: var(--s-8);
+}
+
+/* The "Sent" confirmation: shown for exactly as long as ds::settle(Anim::Fade, ...) says,
+   never a literal millisecond count (coherence rule 4; see tests/coherence.rs). */
+.sent-badge {
+  color: var(--ok);
+  font-size: var(--fs-small);
+  opacity: 0;
+  transition: opacity var(--t-move) var(--e-out);
+}
+
+.sent-badge[*|data-shown=shown] {
+  opacity: 1;
+}

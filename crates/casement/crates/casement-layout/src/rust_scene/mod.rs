@@ -1,0 +1,64 @@
+//! The production layout. At P0: desktop floating windows and the Mac's centre-then-cascade
+//! for new ones. P3-Z adds tile zones, fill, full screen, Split View, the spread, Exposé, the
+//! Space row and Show Desktop, one file each.
+//!
+//! The Mission Control spread (P3-Z, 03 §1.8; SP8, with A21's push-apart replaced by the Mac's
+//! rows on 2026-10-24): the windows, ordered top to bottom by their centres (then left to right,
+//! then id), are dealt into k rows of near-equal length, each row left to right; for each k up
+//! to `2·√n + 2` the largest common scale (at most 1) at which the rows fit is found, and the k
+//! with the largest scale wins (fewer rows on a tie). The rows are centred as a group below the
+//! Spaces strip, inside a 5% margin at the sides and the bottom, with a gap of at least 2% of
+//! the width. Below the floor scale the windows are laid out at the floor, clamped inside, and
+//! `LayoutReport::SpreadOverflow` is reported. App Exposé orders windows by `StackIndex` then id, minimised thumbnails at
+//! 16:9.
+
+mod cascade;
+mod desktop;
+mod floating;
+mod icon_rect;
+mod overview;
+mod split;
+mod spread;
+mod spread_fit;
+mod tile_zone;
+
+pub use tile_zone::zone_rect;
+
+use crate::{Arrangement, LayoutKnobs, SceneLayout, SceneSpec};
+
+/// casement's own layout.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct RustScene;
+
+impl SceneLayout for RustScene {
+    /// For each output: each Space's origin (the shown one at the usable origin, the others
+    /// beside it in row order, one usable width apart), each floating window kept where it is
+    /// while its grip stays in the usable area (never above it), else its size held to its
+    /// limits and then to the area and its position pulled back until it does, each new window centred in the usable area and every later
+    /// new window of the same Space one cascade step further (starting over at the centre
+    /// when a step would leave the area); minimised windows get no target. A window whose size
+    /// changed gets a `Resize`; a minimum that cannot be met is reported
+    /// (`LayoutReport::MinUnmet`).
+    ///
+    /// A filled window takes the usable area and a full-screen one the whole output.
+    ///
+    /// A tiled window takes its zone's half or quarter of the usable area inside the tile margin
+    /// (`tile_zone.rs`).
+    ///
+    /// A Split View Space's two windows take the left and right of the whole output with an
+    /// 8 px divider between them (`split.rs`).
+    ///
+    /// Every output is arranged as a desktop whatever its mode, so the windows keep their
+    /// desktop targets; an output in Mission Control also gets an overview slot for each window
+    /// of its shown desktop Space, spread without overlap below the Spaces bar's strip
+    /// (`spread.rs`; `LayoutReport::SpreadOverflow` when the floor scale cannot separate them).
+    /// App Exposé and Show Desktop arrive with P3-Z, one file each.
+    fn arrange(&self, spec: &SceneSpec, knobs: &LayoutKnobs) -> Arrangement {
+        let mut arrangement = Arrangement::default();
+        for output in &spec.outputs {
+            desktop::arrange_output(output, knobs, &mut arrangement);
+            overview::arrange_overview(output, knobs, &mut arrangement);
+        }
+        arrangement
+    }
+}

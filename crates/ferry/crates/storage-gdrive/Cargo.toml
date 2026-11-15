@@ -1,0 +1,28 @@
+[package]
+name = "storage-gdrive"
+description = "The Google Drive replica: ferry-sync's Replica over the app data folder (`spaces=appDataFolder`, scope drive.appdata) or My Drive (`spaces=drive`, scope drive; Google's own documents and shortcuts as items that open online). Changes by changes.list with a page token as the anchor (a refused token is AnchorExpired), writes checked against the file's `version` first, small files by multipart upload and large ones by a resumable session, md5Checksum as the content hash, quota from `about`. Its HTTP goes through the Http it is handed (in syncd, porter-http-relay's RelayHttp over accountd's OpenAuthenticated, which adds the bearer). Pure: no runtime, no socket."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/ferry"
+publish = false
+
+[dependencies]
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+porter-http = {path = "../../../porter/crates/porter-http"}
+ferry-sync = {path = "../ferry-sync"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+
+[dev-dependencies]
+test-kit = {path = "../../../porter/crates/test-kit"}
+porter-fake-servers = {path = "../../../porter/crates/porter-fake-servers"}
+porter-http-relay = {path = "../../../porter/crates/porter-http-relay"}
+ferry-sync = {path = "../ferry-sync", features = ["testing"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

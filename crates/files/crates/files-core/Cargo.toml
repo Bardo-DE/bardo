@@ -1,0 +1,28 @@
+[package]
+name = "files-core"
+description = "The vocabulary of files: names, entries, locations and views, as plain data with no I/O."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/files"
+publish = false
+
+[dependencies]
+ds-helpers = {default-features = false, path = "../../../quire/crates/ds-helpers"}
+thiserror = {version = "2"}
+
+[[test]]
+name = "it"
+path = "tests/it/main.rs"
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+missing_docs = "warn"
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+wildcard_enum_match_arm = "deny"
+match_wildcard_for_single_variants = "deny"

@@ -1,0 +1,416 @@
+//! `FakeLink` over the two fake apps, and `FakeSeams` bundling every fake into the router's
+//! `Seams`.
+
+use crate::clock::FixedClock;
+use crate::files::FakeFiles;
+use crate::mail::FakeMail;
+use crate::scripted::{
+    FakeMemory, ScriptedConfirmer, ScriptedReader, ScriptedReviewer, ScriptedWriter,
+};
+use crate::simple::{MemoryGrants, RecordingSink};
+use action_review::Reviewer;
+use docket_checkpoint::MemoryStore;
+use docket_core::LinkFault;
+use docket_core::PolicyWriter;
+use docket_core::{
+    AppRefusal, ContextScope, ContextSnapshot, Invocation, Outcome, Preview, SuggestAsk, UndoFault,
+};
+use docket_manifest::Latency;
+use docket_provider::IntentProvider;
+use docket_router::{AppFault, AppLink, Seams};
+use docket_vocab::{Clock, EntityRef, UndoToken};
+use porter_core::AppName;
+use prov::{Actor, EntityId};
+use std::collections::BTreeMap;
+use std::sync::{Arc, Mutex, OnceLock};
+
+/// Whether a fake app answers `Perform`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Answering {
+    /// It answers.
+    Normal,
+    /// It never answers: the router times the call out.
+    Silent,
+    /// It is not there (not installed, or it does not start): the call is refused as unavailable.
+    Absent,
+    /// It is installed but not running: a lookup (search, preview, context) skips it, and an
+    /// action starts it and is answered.
+    Stopped,
+}
+
+/// Routes the router's calls to the fake apps by bus name.
+#[derive(Debug)]
+pub struct FakeLink {
+    /// The mail app.
+    pub mail: FakeMail,
+    /// The files app.
+    pub files: FakeFiles,
+    /// The menu app, whose `menu.item.activate` classifies per call.
+    pub menu: crate::menu::FakeMenu,
+    /// Apps that do not answer `Perform` as usual: they time out, or are not there.
+    pub answering: Mutex<BTreeMap<AppName, Answering>>,
+    /// What the focused window shows, if a test set one: the fakes have no windows of their own.
+    pub window: Mutex<Option<ContextSnapshot>>,
+    /// Every invocation the router sent to `Perform`, in order.
+    pub performed: Mutex<Vec<docket_core::ActivatedInvocation>>,
+    /// The built-in `org.quire.Companion` provider, once a test has attached the router that
+    /// hosts it (`host_companion`); until then the app is unavailable.
+    companion: Hosted,
+    /// Apps a test answers itself (`host`).
+    hosted: Mutex<BTreeMap<AppName, Arc<dyn crate::HostedApp>>>,
+}
+
+type Perform = Box<dyn Fn(Invocation) -> Result<Outcome, AppRefusal> + Send + Sync>;
+
+/// The way back to the router that hosts the built-in provider.
+#[derive(Default)]
+struct Hosted(OnceLock<Perform>);
+
+impl std::fmt::Debug for Hosted {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Hosted(attached: {})", self.0.get().is_some())
+    }
+}
+
+/// Attaches `router` as the host of the built-in `org.quire.Companion` provider, as intentd does:
+/// the app answers through the router's own `companion_perform`. The router is held weakly.
+pub fn host_companion(router: &std::sync::Arc<docket_router::Router<FakeSeams>>) {
+    let weak = std::sync::Arc::downgrade(router);
+    let _ = router
+        .seams
+        .link
+        .companion
+        .0
+        .set(Box::new(move |inv| match weak.upgrade() {
+            Some(router) => router.companion_perform(inv),
+            None => Err(AppRefusal::Unsupported),
+        }));
+}
+
+impl FakeLink {
+    /// The three apps, answering.
+    pub fn new(mail: FakeMail, files: FakeFiles, menu: crate::menu::FakeMenu) -> Self {
+        Self {
+            mail,
+            files,
+            menu,
+            answering: Mutex::new(BTreeMap::new()),
+            window: Mutex::new(None),
+            performed: Mutex::new(Vec::new()),
+            companion: Hosted::default(),
+            hosted: Mutex::new(BTreeMap::new()),
+        }
+    }
+
+    /// Forgets what a case left in the apps and in the link itself: the mail, files and menu
+    /// data, the apps made unreachable, the window and the invocations performed. Apps a test
+    /// hosts stay, like the manifests do.
+    pub fn clear(&self) {
+        self.mail.clear();
+        self.files.clear();
+        self.menu.clear();
+        if let Ok(mut answering) = self.answering.lock() {
+            answering.clear();
+        }
+        if let Ok(mut window) = self.window.lock() {
+            *window = None;
+        }
+        if let Ok(mut performed) = self.performed.lock() {
+            performed.clear();
+        }
+    }
+
+    /// Makes `app` answered by `hosted`, in the test's own process.
+    pub fn host(&self, app: AppName, hosted: Arc<dyn crate::HostedApp>) {
+        if let Ok(mut all) = self.hosted.lock() {
+            all.insert(app, hosted);
+        }
+    }
+
+    fn hosted(&self, app: &AppName) -> Option<Arc<dyn crate::HostedApp>> {
+        self.hosted
+            .lock()
+            .ok()
+            .and_then(|all| all.get(app).cloned())
+    }
+
+    /// Everything the fake apps list, mail first and then files: what a window of an app shows.
+    pub fn shown(&self) -> Vec<docket_vocab::EntityRef> {
+        let mut all = self.mail.shown();
+        all.extend(self.files.shown());
+        all
+    }
+
+    /// Makes `snapshot` what the app's `Context` answers (until the next call to this).
+    pub fn show_window(&self, snapshot: ContextSnapshot) {
+        if let Ok(mut window) = self.window.lock() {
+            *window = Some(snapshot);
+        }
+    }
+
+    /// Makes `app` stop answering `Perform` (its calls time out), vanish (its calls are
+    /// unavailable), or answer again.
+    pub fn answer_from(&self, app: &AppName, answering: Answering) {
+        if let Ok(mut all) = self.answering.lock() {
+            match answering {
+                Answering::Normal => all.remove(app),
+                other => all.insert(app.clone(), other),
+            };
+        }
+    }
+
+    fn is_mail(&self, app: &AppName) -> bool {
+        self.mail.manifest().manifest().app == *app
+    }
+
+    fn is_menu(&self, app: &AppName) -> bool {
+        self.menu.manifest().manifest().app == *app
+    }
+
+    fn is_files(&self, app: &AppName) -> bool {
+        self.files.manifest().manifest().app == *app
+    }
+}
+
+impl AppLink for FakeLink {
+    async fn perform(
+        &self,
+        app: &AppName,
+        inv: Invocation,
+        within: Latency,
+    ) -> Result<Outcome, AppFault> {
+        self.perform_activated(app, inv, None, within).await
+    }
+
+    async fn perform_activated(
+        &self,
+        app: &AppName,
+        inv: Invocation,
+        activation: Option<docket_core::ActivationToken>,
+        within: Latency,
+    ) -> Result<Outcome, AppFault> {
+        self.perform_classified(app, inv, activation, None, within)
+            .await
+    }
+
+    async fn classify(
+        &self,
+        app: &AppName,
+        inv: Invocation,
+    ) -> Result<docket_vocab::CallClass, docket_vocab::ClassifyFault> {
+        if !self.is_menu(app) {
+            return Err(docket_vocab::ClassifyFault::Unsupported);
+        }
+        self.menu
+            .classify(inv)
+            .await
+            .map_err(|_| docket_vocab::ClassifyFault::Refused)
+    }
+
+    async fn perform_classified(
+        &self,
+        app: &AppName,
+        inv: Invocation,
+        activation: Option<docket_core::ActivationToken>,
+        classified: Option<docket_vocab::CallClass>,
+        _within: Latency,
+    ) -> Result<Outcome, AppFault> {
+        if let Ok(mut seen) = self.performed.lock() {
+            seen.push(docket_core::ActivatedInvocation {
+                invocation: inv.clone(),
+                activation,
+                classified: classified.clone(),
+            });
+        }
+        let how = self
+            .answering
+            .lock()
+            .ok()
+            .and_then(|all| all.get(app).copied());
+        match how {
+            Some(Answering::Silent) => return Err(AppFault::TimedOut),
+            Some(Answering::Absent) => return Err(AppFault::Unavailable),
+            Some(Answering::Normal | Answering::Stopped) | None => {}
+        }
+        if self.is_mail(app) {
+            self.mail.perform(inv).await.map_err(AppFault::Refused)
+        } else if self.is_files(app) {
+            self.files.perform(inv).await.map_err(AppFault::Refused)
+        } else if self.is_menu(app) {
+            self.menu
+                .perform_classified(inv, None, classified)
+                .await
+                .map_err(AppFault::Refused)
+        } else if let Some(hosted) = self.hosted(app) {
+            hosted.perform(inv).await.map_err(AppFault::Refused)
+        } else if app.as_str() == docket_permissions_core::COMPANION_APP {
+            match self.companion.0.get() {
+                Some(perform) => perform(inv).map_err(AppFault::Refused),
+                None => Err(AppFault::Unavailable),
+            }
+        } else {
+            Err(AppFault::Refused(AppRefusal::Unsupported))
+        }
+    }
+
+    async fn dry_run(&self, app: &AppName, inv: Invocation) -> Result<Preview, AppRefusal> {
+        if self.is_mail(app) {
+            self.mail.dry_run(inv).await
+        } else if self.is_files(app) {
+            self.files.dry_run(inv).await
+        } else if let Some(hosted) = self.hosted(app) {
+            hosted.dry_run(inv).await
+        } else {
+            Err(AppRefusal::Unsupported)
+        }
+    }
+
+    async fn undo(&self, app: &AppName, token: &UndoToken, actor: &Actor) -> Result<(), UndoFault> {
+        if self.is_mail(app) {
+            self.mail.undo(token.clone(), actor.clone()).await
+        } else if self.is_files(app) {
+            self.files.undo(token.clone(), actor.clone()).await
+        } else if let Some(hosted) = self.hosted(app) {
+            hosted.undo(token.clone(), actor.clone()).await
+        } else {
+            Err(UndoFault::AppUnavailable)
+        }
+    }
+
+    async fn running(&self, app: &AppName) -> bool {
+        let how = self
+            .answering
+            .lock()
+            .ok()
+            .and_then(|all| all.get(app).copied());
+        !matches!(how, Some(Answering::Stopped | Answering::Absent))
+    }
+
+    async fn context(
+        &self,
+        app: &AppName,
+        _scope: ContextScope,
+    ) -> Result<ContextSnapshot, LinkFault> {
+        // The fakes have no windows of their own (ds answers context in a real app): a test
+        // sets one with `show_window`.
+        self.window
+            .lock()
+            .ok()
+            .and_then(|window| window.clone())
+            .filter(|snapshot| snapshot.app == *app)
+            .ok_or(LinkFault::Unavailable)
+    }
+
+    async fn preview(&self, app: &AppName, id: &EntityId) -> Result<Preview, LinkFault> {
+        if self.is_mail(app) {
+            Ok(self.mail.preview(id).await)
+        } else if self.is_files(app) {
+            Ok(self.files.preview(id).await)
+        } else {
+            Err(LinkFault::Unavailable)
+        }
+    }
+
+    async fn suggest(&self, app: &AppName, ask: SuggestAsk) -> Result<Vec<EntityRef>, LinkFault> {
+        if self.is_mail(app) {
+            Ok(self.mail.suggest(ask).await)
+        } else if self.is_files(app) {
+            Ok(self.files.suggest(ask).await)
+        } else {
+            Err(LinkFault::Unavailable)
+        }
+    }
+}
+
+/// Every fake, public so a test reads what each recorded. The reviewer, the writer and the clock
+/// are parameters whose defaults are the fakes: a live run puts the real cascade, the real
+/// writer and the system clock in their places and keeps every other fake.
+#[derive(Debug)]
+pub struct FakeSeams<
+    R = ScriptedReviewer,
+    W = ScriptedWriter,
+    K = FixedClock,
+    L = std::sync::Arc<docket_session::fake::MemoryLog>,
+    C = ScriptedConfirmer,
+    Rd = ScriptedReader,
+> {
+    /// The apps.
+    pub link: FakeLink,
+    /// The sheet.
+    pub confirmer: C,
+    /// The reviewer.
+    pub reviewer: R,
+    /// The consent store.
+    pub grants: MemoryGrants,
+    /// The event log.
+    pub sink: RecordingSink,
+    /// The clock.
+    pub clock: K,
+    /// Memory.
+    pub memory: FakeMemory,
+    /// The policy writer.
+    pub writer: W,
+    /// The reader.
+    pub reader: Rd,
+    /// The sessions' durable log. Shared by default, so a test can drop the router and restore
+    /// from it.
+    pub log: L,
+    /// The restore points of every workspace, held in memory.
+    pub checkpoints: MemoryStore,
+}
+
+impl<
+    R: Reviewer,
+    W: PolicyWriter,
+    K: Clock,
+    L: docket_session::SessionLog,
+    C: docket_core::Confirmer,
+    Rd: docket_core::Reader,
+> Seams for FakeSeams<R, W, K, L, C, Rd>
+{
+    type Link = FakeLink;
+    type Confirm = C;
+    type Review = R;
+    type Grants = MemoryGrants;
+    type Sink = RecordingSink;
+    type Time = K;
+    type Memory = FakeMemory;
+    type Writer = W;
+    type Reading = Rd;
+    type Log = L;
+    type Checkpoints = MemoryStore;
+
+    fn link(&self) -> &FakeLink {
+        &self.link
+    }
+    fn confirmer(&self) -> &C {
+        &self.confirmer
+    }
+    fn reviewer(&self) -> &R {
+        &self.reviewer
+    }
+    fn grants(&self) -> &MemoryGrants {
+        &self.grants
+    }
+    fn sink(&self) -> &RecordingSink {
+        &self.sink
+    }
+    fn clock(&self) -> &K {
+        &self.clock
+    }
+    fn memory(&self) -> &FakeMemory {
+        &self.memory
+    }
+    fn writer(&self) -> &W {
+        &self.writer
+    }
+    fn reader(&self) -> &Rd {
+        &self.reader
+    }
+    fn log(&self) -> &L {
+        &self.log
+    }
+    fn checkpoints(&self) -> &MemoryStore {
+        &self.checkpoints
+    }
+}

@@ -1,0 +1,74 @@
+# Who may call intentd (org.quire.Intents1), and as what. A caller is the systemd unit behind the bus
+# connection (the bus names its process, /proc/<pid>/cgroup names the unit or app scope, and a
+# service's role goes only to the unit's main process, as the systemd manager says). The roles of
+# intentd.toml belong to the app a caller is; a role that stands for more than an app needs the
+# role below too, and only THIS file (installed as /etc/quire/intentd-callers.toml) can give a fixed
+# one (sheet_host, cua, compositor); the user's ~/.config/quire/intentd-callers.toml is laid over it
+# and its fixed rows are ignored. An app scope (app-<id>-<n>.scope) or Flatpak app is an app without a
+# row here; a process in neither (a terminal's child apart, which is the cli role), is refused.
+#
+#   role "sheet_host" + app org.quire.Shell      -> sill: launcher, confirm and control
+#   role "cua"        + app org.quire.Cua1       -> cuad
+#   role "agent"      + the daemons' apps        -> companiond, readerd, actions-mcp, docket-acp, docket-agent
+#   role "app"        + an app's own service -> org.quire.Mail.service (mailo intents)
+#
+# A scope never carries a fixed role, so the shell is sill.service and nothing else. docket-acp and
+# docket-agent are started by an editor, not by systemd: their rows are scopes they are started in
+# (`systemd-run --user --scope --unit=docket-acp`), which is an agent and no more.
+# A scope has no main process, so each row names the program it runs (`exe`): our own docket-acp
+# and docket-agent hosts, never the agent programs docket-agent starts (node, npx, ...), which
+# reach the desktop only through these hosts and actions-mcp.
+
+[[caller]]
+app = "org.quire.Shell"
+unit = "sill.service"
+role = "sheet_host"
+exe = ["/usr/bin/sill", "/usr/local/bin/sill", "/opt/quire/releases/*/bin/sill"]
+
+[[caller]]
+app = "org.quire.Cua1"
+unit = "cuad.service"
+role = "cua"
+
+[[caller]]
+app = "org.quire.Companion1"
+unit = "companiond.service"
+role = "agent"
+
+[[caller]]
+app = "org.quire.Reader1"
+unit = "readerd.service"
+role = "agent"
+
+[[caller]]
+app = "org.quire.ActionsMcp"
+unit = "actions-mcp.service"
+role = "agent"
+
+[[caller]]
+app = "org.quire.Acp"
+unit = "docket-acp.scope"
+role = "agent"
+exe = ["/usr/bin/docket-acp", "/usr/local/bin/docket-acp", "/opt/quire/releases/*/bin/docket-acp"]
+
+[[caller]]
+app = "org.quire.AcpAgent"
+unit = "docket-agent.scope"
+role = "agent"
+exe = ["/usr/bin/docket-agent", "/usr/local/bin/docket-agent", "/opt/quire/releases/*/bin/docket-agent"]
+
+# The same host as a service the bus starts for the assistant (`docket-agent --serve`): a unit with a
+# main process, so no program path is listed. It is the one program that opens an outside agent's
+# session; companiond only hands it a turn (acp-callers.toml).
+[[caller]]
+app = "org.quire.AcpAgent"
+unit = "docket-agent.service"
+role = "agent"
+
+# An app's own service the bus starts (D-Bus `SystemdService=`): Mail's `mailo intents`, which
+# answers the router and pushes Mail's things to the launcher's index. A plain app and no more; its
+# window is the same app through its app scope (`app-…-org.quire.Mail-<n>.scope`) and needs no row.
+[[caller]]
+app = "org.quire.Mail"
+unit = "org.quire.Mail.service"
+role = "app"

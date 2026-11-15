@@ -1,0 +1,39 @@
+[package]
+name = "porter-oauth"
+description = "OAuth for porter's families: PKCE, the loopback redirect rules, the client registry, renewal, and the token, refresh and revoke exchanges over the `Http` seam; the loopback listener is behind the `io` feature."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+porter-core = {path = "../porter-core"}
+porter-ids = {path = "../porter-ids"}
+porter-http = {path = "../porter-http"}
+porter-provider = {path = "../porter-provider"}
+base64 = {version = "0.22"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+form_urlencoded = {version = "1.2"}
+httparse = {version = "1.10"}
+sha2 = {version = "0.10"}
+subtle = {version = "2.6.1"}
+thiserror = {version = "2"}
+toml = {version = "1"}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"], optional = true}
+
+[dev-dependencies]
+test-kit = {path = "../test-kit"}
+porter-fake-servers = {path = "../porter-fake-servers"}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
+
+[features]
+# `LoopbackServer`, the 127.0.0.1 listener. Pulls in the runtime, so it is off by default: the
+# rules, the registry and the exchanges reach none.
+io = ["dep:tokio"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

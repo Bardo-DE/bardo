@@ -1,0 +1,103 @@
+//! Giving a field the keyboard again: a menu that took the keyboard closes,
+//! and the palette's field should have it back without being remounted (which replays the
+//! palette's entrance).
+
+use crate::focus::select::Select;
+use crate::host::caret::InitialCaret;
+use dioxus::prelude::*;
+use ds_style::task::{try_get, try_set};
+
+/// How many times focus has been asked for: a field serves each new ticket once.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
+pub struct FocusTicket(pub u32);
+
+/// A caller's handle on a field's focus: pass it as `Focus::Controlled(request)` to a
+/// `TextField` (or as `focus` to a palette's search field), then call [`FocusRequest::request`]
+/// from a handler whenever the field should have the keyboard again.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct FocusRequest {
+    asked: Signal<FocusTicket>,
+    /// What the field does with its text each time the request lands.
+    landing: Option<InitialCaret>,
+}
+
+impl FocusRequest {
+    /// This request, selecting the field's whole value each time it lands (and as the field
+    /// mounts), so the first key typed replaces it: a rename field opened on the old name.
+    pub fn with_select_all(self) -> Self {
+        FocusRequest {
+            landing: Some(InitialCaret::SelectAll),
+            ..self
+        }
+    }
+
+    /// This request, selecting the file name without its extension each time it lands (and as the
+    /// field mounts): a rename field opened on "photo.png" selects "photo", as Finder does. A host
+    /// that cannot place a selection selects the whole name.
+    pub fn with_select_stem(self) -> Self {
+        FocusRequest {
+            landing: Some(InitialCaret::SelectStem),
+            ..self
+        }
+    }
+
+    /// This request, putting the field's caret at `caret` each time it lands (and as the field
+    /// mounts): a command palette opened on a query puts it at the end. Needs the
+    /// host's [`CaretHost::place_caret`](crate::host::parts::CaretHost::place_caret) for `End` and `Start`; a
+    /// host without one leaves the caret where the renderer put it.
+    pub fn with_caret(self, caret: InitialCaret) -> Self {
+        FocusRequest {
+            landing: Some(caret),
+            ..self
+        }
+    }
+
+    /// What the field does with its text when the focus lands: [`Select::All`] for a request
+    /// that selects the whole value, [`Select::Stem`] for the name without its extension,
+    /// [`Select::None`] otherwise (a caret placed at an end too).
+    pub fn select(&self) -> Select {
+        match self.landing {
+            Some(InitialCaret::SelectAll) => Select::All,
+            Some(InitialCaret::SelectStem) => Select::Stem,
+            None | Some(InitialCaret::End | InitialCaret::Start) => Select::None,
+        }
+    }
+
+    /// Where the field's caret goes when the focus lands, if anywhere.
+    pub fn caret(&self) -> Option<InitialCaret> {
+        self.landing
+    }
+
+    /// What the focus write does with the field's text.
+    pub(crate) fn landing(&self) -> Option<InitialCaret> {
+        self.landing
+    }
+
+    /// Ask for the focus: the field takes it on its next render, or as it mounts. Call it from a
+    /// handler (a menu's `onclose`), not from render.
+    pub fn request(&self) {
+        if let Ok(FocusTicket(count)) = try_get(self.asked) {
+            let _ = try_set(self.asked, FocusTicket(count.wrapping_add(1)));
+        }
+    }
+
+    /// The latest ticket, read so the field re-renders when a new one is asked for.
+    pub(crate) fn ticket(&self) -> FocusTicket {
+        self.asked
+            .try_read()
+            .map_or(FocusTicket::default(), |ticket| *ticket)
+    }
+
+    /// The latest ticket, without subscribing.
+    pub(crate) fn peek(&self) -> FocusTicket {
+        try_get(self.asked).unwrap_or_default()
+    }
+}
+
+/// A focus handle owned by the calling component.
+pub fn use_focus_request() -> FocusRequest {
+    FocusRequest {
+        asked: use_signal(FocusTicket::default),
+        landing: None,
+    }
+}

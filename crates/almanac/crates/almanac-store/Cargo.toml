@@ -1,0 +1,25 @@
+[package]
+name = "almanac-store"
+description = "The seams almanac's service stands on, as traits and types only: the event log, the file vault and the search index. No SQLite, no OpenSSL, no runtime."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/almanac"
+publish = false
+
+[dependencies]
+almanac-core = {path = "../almanac-core"}
+almanac-seal = {path = "../almanac-seal"}
+blake3 = {version = "1"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+almanac-fake = {path = "../almanac-fake"}
+almanac-service = {path = "../almanac-service"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

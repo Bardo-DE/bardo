@@ -1,0 +1,84 @@
+//! The mail-app states, as data: the golden each renders to and how to make it.
+
+use dioxus::prelude::*;
+use ds::components::app::pin_tile::{PinFace, PinTile};
+use ds::components::content::mark_face::MarkFace;
+use ds::components::content::provider_mark::{MarkProvider, MarkStyle};
+use ds::components::controls::button_model::Bezel;
+use ds::prelude::*;
+use ds_style::tokens::control_size::ControlSize;
+use ds_style::tokens::hex::{Colour, Hex};
+
+/// An account colour.
+const SLATE: Colour = Colour::Solid(Hex([0x2f, 0x7f, 0x6e]));
+
+/// A local-folders account: no provider, so the neutral folder mark.
+fn local() -> PinFace {
+    PinFace::Account {
+        initial: 'L',
+        colour: SLATE,
+        provider: MarkProvider::Local,
+        address: None,
+    }
+}
+
+/// One state and its golden.
+pub struct Case {
+    pub golden: &'static str,
+    pub make: fn() -> Element,
+}
+
+pub const CASES: &[Case] = &[
+    Case {
+        golden: "lists/pin_tile/one-local.html",
+        make: || rsx! { PinTile { face: local(), selection: Selection::Selected, unread: 2, onclick: |_| {} } },
+    },
+    Case {
+        golden: "lists/provider_mark/local-row.html",
+        make: || rsx! { ProviderMark { provider: MarkProvider::Local, size: ControlSize::Mini, style: MarkStyle::Letter } },
+    },
+    Case {
+        golden: "lists/provider_mark/local-image-ignored.html",
+        make: || rsx! { ProviderMark { provider: MarkProvider::Local, size: ControlSize::Small, style: MarkStyle::Image(ImageSource("data:image/png;base64,iVBORw0KGgo=".to_string())) } },
+    },
+    Case {
+        golden: "lists/provider_mark/face-one-letter.html",
+        make: || rsx! { ProviderMark { provider: MarkProvider::Imap, size: ControlSize::Regular, face: Some(MarkFace::new("A", "#D97757")) } },
+    },
+    Case {
+        golden: "lists/provider_mark/face-two-letters-mini.html",
+        make: || rsx! { ProviderMark { provider: MarkProvider::Imap, size: ControlSize::Mini, face: Some(MarkFace::new("OR", "#6467F2")) } },
+    },
+    Case {
+        golden: "lists/provider_mark/face-dark-ink.html",
+        make: || rsx! { ProviderMark { provider: MarkProvider::Imap, size: ControlSize::Small, face: Some(MarkFace::new("Cx", "#FFE066")) } },
+    },
+    Case {
+        golden: "lists/provider_mark/face-bad-colour-neutral.html",
+        make: || rsx! { ProviderMark { provider: MarkProvider::Google, size: ControlSize::Small, face: Some(MarkFace::new("Zz", "teal")) } },
+    },
+    Case {
+        golden: "controls/button/frame.html",
+        make: || rsx! { Button { bezel: Bezel::Toolbar, label: "Settings", icon: Some(Icon::Settings), onclick: |_| {} } },
+    },
+    Case {
+        golden: "controls/button/frame-pressed.html",
+        make: || rsx! { Button { bezel: Bezel::Toolbar, label: "Today", value: Some(Check::On), onclick: |_| {} } },
+    },
+    Case {
+        golden: "controls/button/quiet-caret.html",
+        make: || rsx! { Button { bezel: Bezel::Inline, label: "poh@acme.example", trailing: Icon::ChevronDown, shown: Shown::Hidden, onclick: |_| {} } },
+    },
+    Case {
+        golden: "controls/button/mini-trailing-glyph.html",
+        make: || rsx! { Button { size: ControlSize::Mini, label: "Open", trailing: Icon::Link, onclick: |_| {} } },
+    },
+    Case {
+        golden: "controls/text_field/secret-value-unwritten.html",
+        make: || rsx! { TextField { kind: FieldKind::Secure, label: "App password", value: "hunter2", placeholder: "App password", oninput: |_| {} } },
+    },
+    Case {
+        golden: "controls/text_field/bare.html",
+        make: || rsx! { TextField { bezel: FieldBezel::Plain, label: "Name", value: "Work", placeholder: "Name this Space", oninput: |_| {} } },
+    },
+];

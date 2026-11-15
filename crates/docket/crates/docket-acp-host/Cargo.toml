@@ -1,0 +1,62 @@
+[package]
+name = "docket-acp-host"
+description = "The ACP client edge: an external coding agent (Claude Code, Gemini CLI) is a session backend. `AcpBackend` speaks the Agent Client Protocol as the client, on the official agent-client-protocol SDK's client role, over a `Spawn` seam; every call the agent makes is formed, confined and ruled by the router (`Court`, `IntentsCourt` over docket-client) before the `Performer` acts. The IO under it: files and the working directory, the agent's tool socket, the sandboxed terminals (bulkhead), the agent apps of the helpers. Our own ACP rules are `acp-core`; the server edge (an editor drives us) is `docket-acp`; the process that starts agents is `docket-launch`. The `testing` feature adds the in-memory pipe, scripted spawner and file map."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[features]
+# `fake`: an in-memory pipe, a scripted `Spawn` and a file system in a map, for tests of this crate
+# and of the launcher.
+testing = []
+
+[lib]
+name = "docket_acp_host"
+path = "src/lib.rs"
+
+[dependencies]
+acp-core = {path = "../acp-core"}
+actions-tools = {path = "../actions-tools"}
+agent-client-protocol = {version = "3.5", default-features = false}
+bulkhead = {path = "../../../bulkhead"}
+companion-model = {path = "../companion-model"}
+const-hex = {version = "1.19"}
+docket-client = {path = "../docket-client", default-features = false}
+docket-core = {path = "../docket-core"}
+docket-wire = {path = "../docket-wire"}
+docket-manifest = {path = "../docket-manifest"}
+docket-permissions-core = {path = "../docket-permissions-core"}
+docket-vocab = {path = "../docket-vocab"}
+docket-procroot = {path = "../docket-procroot"}
+docket-session = {path = "../docket-session"}
+docket-store = {path = "../docket-store"}
+futures-channel = {version = "0.3", default-features = false, features = ["std"]}
+futures-util = {version = "0.3", default-features = false, features = ["sink", "std"]}
+getrandom = {version = "0.3", features = ["std"]}
+porter-core = {path = "../../../porter/crates/porter-core"}
+prov = {path = "../../../prov/prov"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tracing = {version = "0.1"}
+
+[dev-dependencies]
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+action-review = {path = "../action-review"}
+docket-acp-host = {path = ".", features = ["testing"]}
+docket-client = {path = "../docket-client", default-features = false, features = ["in_process"]}
+docket-fake = {path = "../docket-fake"}
+docket-host = {path = "../docket-host"}
+docket-router = {path = "../docket-router"}
+docket-session = {path = "../docket-session", features = ["testing"]}
+docket-testbus = {path = "../docket-testbus"}
+jsonschema = {version = "0.58", default-features = false}
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

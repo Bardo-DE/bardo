@@ -1,0 +1,43 @@
+# Anthropic (Claude). Checked with GET /v1/models, headers x-api-key and anthropic-version.
+# The account is an API key the person pastes, like an email password: no sign-in with the company.
+# `discover` checks the key with one call to the models list and keeps none of the answer. The
+# row below is the floor every chat model meets; the models themselves are the curated catalogue
+# (stoker), grouped by company, and accountd keeps no list. Its billing is
+# metered: what a reply cost is what the provider reports, and no price is kept here.
+id = "anthropic"
+label = "Anthropic (Claude)"
+mark = "anthropic"
+group = "intelligence"
+
+[mark_face]
+letter = "A"
+colour = "#D97757"
+
+[auth]
+kind = "api_key"
+
+[discovery]
+kind = "model_list"
+
+[ai]
+locality = { kind = "cloud", v = {} }
+billing = { kind = "metered" }
+
+[[capability]]
+family = "messages"
+endpoint = "https://api.anthropic.com/v1"
+kind = "llm"
+features = ["chat"]
+context = 8192
+max_output = 4096
+
+# The agent programs that may run on this key (the launcher hands a program the key through its
+# `key_env`, or better routes it through inferd with `base_url_env`; FINDINGS, P1). A program not
+# named here is refused this key.
+[[capability]]
+family = "acp_agent"
+kind = "agent"
+program = "claude-code"
+key_env = "ANTHROPIC_API_KEY"
+base_url_env = "ANTHROPIC_BASE_URL"
+protocols = ["anthropic_messages"]

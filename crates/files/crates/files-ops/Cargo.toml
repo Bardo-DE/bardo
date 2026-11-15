@@ -1,0 +1,32 @@
+[package]
+name = "files-ops"
+description = "Copy, move, trash and rename for files as a queue with progress, cancel, conflict questions and an undo journal."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/files"
+publish = false
+
+[dependencies]
+files-core = {path = "../files-core"}
+files-trash = {path = "../files-trash"}
+
+[dev-dependencies]
+files-trash = {path = "../files-trash", features = ["testing"]}
+tempfile = {version = "3"}
+
+[[test]]
+name = "it"
+path = "tests/it/main.rs"
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+missing_docs = "warn"
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+wildcard_enum_match_arm = "deny"
+match_wildcard_for_single_variants = "deny"

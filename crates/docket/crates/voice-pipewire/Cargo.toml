@@ -1,0 +1,20 @@
+[package]
+name = "voice-pipewire"
+description = "The PipeWire backend of the voice-audio device: capture from one physical source node, playback on the default output, and the default-source metadata reader. Needs libpipewire and libclang to build."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+voice-audio = {path = "../voice-audio"}
+pipewire = {version = "0.10"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,145 @@
+//! How far a standard action reaches: every app, or only the apps that offer the feature.
+//!
+//! The split follows the Mac menus. A universal action is part of being a desktop app or of the
+//! desktop itself (clipboard, undo, windows, quit, find, the desktop's own switchers), so every
+//! app honours it and none may give up its chord. An action that is only meaningful where the
+//! app has the feature (fonts, text styles, printing, documents, toolbars, stepping through found
+//! text) is offered by those apps alone; an app without the feature may
+//! [forgo](crate::Registration::forgo) it and take the chord for something of its own.
+
+use crate::standard_action::StandardAction;
+
+/// Whether every app honours a standard action.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Reach {
+    /// Every app honours it; no app may take its chord.
+    Universal,
+    /// Only apps that offer the feature honour it; others may forgo it.
+    IfOffered,
+}
+
+impl StandardAction {
+    /// Whether every app honours this action, or only apps that offer the feature.
+    ///
+    /// The match below is the one list: it names every action, so a new action cannot be left out.
+    pub fn reach(self) -> Reach {
+        use StandardAction as S;
+        match self {
+            S::PasteAndMatchStyle
+            | S::UseSelectionForFind
+            | S::JumpToSelection
+            | S::Bold
+            | S::Italic
+            | S::Underline
+            | S::ShowFonts
+            | S::ShowColors
+            | S::Bigger
+            | S::Smaller
+            | S::ActualSize
+            | S::New
+            | S::Open
+            | S::Save
+            | S::SaveAs
+            | S::Print
+            | S::PageSetup
+            | S::ToggleToolbar
+            | S::ToggleSidebar
+            | S::QuickLook
+            | S::Reveal
+            | S::MoveToTrash
+            | S::NewFolder
+            | S::EmptyTrash
+            // Find Next and Find Previous belong to an app with text to search: Finder offers
+            // Find (⌘F) but not them, and gives ⇧⌘G to Go to Folder.
+            | S::FindNext
+            | S::FindPrevious => Reach::IfOffered,
+            S::Launcher
+            | S::NextInputSource
+            | S::EmojiAndSymbols
+            | S::NextApp
+            | S::PreviousApp
+            | S::NextWindow
+            | S::Settings
+            | S::Cancel
+            | S::Help
+            | S::SelectAll
+            | S::Copy
+            | S::Cut
+            | S::Paste
+            | S::Undo
+            | S::Redo
+            | S::Find
+            | S::Hide
+            | S::HideOthers
+            | S::Minimize
+            | S::MinimizeAll
+            | S::Close
+            | S::CloseAll
+            | S::Quit
+            | S::FullScreen
+            | S::ToggleDock
+            | S::ScreenshotScreen
+            | S::ScreenshotSelection
+            | S::ScreenshotTools
+            | S::ForceQuit
+            | S::LockScreen
+            | S::LogOut
+            | S::MissionControl
+            | S::AppWindows
+            | S::SpaceLeft
+            | S::SpaceRight
+            | S::TileLeft
+            | S::TileRight
+            | S::TileTop
+            | S::TileBottom
+            | S::TileTopLeft
+            | S::TileTopRight
+            | S::TileBottomLeft
+            | S::TileBottomRight
+            | S::Fill
+            | S::Center
+            | S::ReturnToPreviousSize
+            | S::SwitchToSpace(_) => Reach::Universal,
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::standard_action::SpaceNumber;
+
+    #[test]
+    fn reach_table() {
+        use StandardAction as S;
+        type Case = (StandardAction, Reach);
+        let cases: &[Case] = &[
+            (S::Copy, Reach::Universal),
+            (S::Quit, Reach::Universal),
+            (S::TileTopLeft, Reach::Universal),
+            (S::ReturnToPreviousSize, Reach::Universal),
+            (S::Find, Reach::Universal),
+            (
+                S::SwitchToSpace(SpaceNumber::new(3).unwrap_or_else(|| panic!("3"))),
+                Reach::Universal,
+            ),
+            (S::ShowFonts, Reach::IfOffered),
+            (S::Bold, Reach::IfOffered),
+            (S::Print, Reach::IfOffered),
+            (S::PageSetup, Reach::IfOffered),
+            (S::FindNext, Reach::IfOffered),
+            (S::FindPrevious, Reach::IfOffered),
+        ];
+        for (action, expected) in cases {
+            assert_eq!(action.reach(), *expected, "{action:?}");
+        }
+    }
+
+    #[test]
+    fn some_actions_are_offered_only() {
+        let offered = StandardAction::all()
+            .filter(|a| a.reach() == Reach::IfOffered)
+            .count();
+        assert_eq!(offered, 26);
+    }
+}

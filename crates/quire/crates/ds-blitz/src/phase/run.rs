@@ -1,0 +1,397 @@
+//! The phase itself: a window's (or the harness's) handle on its queue of writes and its watches,
+//! and the step the loop runs.
+
+use super::book::{Book, WatchId};
+use super::caret::{caret_box, selection_boxes};
+use super::read::{apply, border_box, scroll_of};
+use crate::node_ref::{DocRef, NodeRef, Written};
+use crate::probe::Probe;
+use blitz_kit::after_resolve::{self, AfterResolve};
+use dioxus::core::{Runtime, RuntimeGuard};
+use dioxus::prelude::{MountedData, Signal};
+use ds::base::geometry::scroll::Scroll;
+use ds::host::phase::{Observe, Observed, PhaseWrite, Queued, Watch};
+use ds::host::position::{TextPosition, TextRange};
+use ds::prelude::Rect;
+use ds::style::task::try_set;
+use std::cell::RefCell;
+use std::rc::Rc;
+
+/// Whether layout is up to date when the phase runs.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Layout {
+    /// Right after a frame was resolved: reads are current and writes clamp against the content as
+    /// drawn. Writes are applied once and dropped.
+    Resolved,
+    /// After the document was updated and before it was resolved: only writes run, and they are
+    /// kept to run again once layout has caught up.
+    Pending,
+}
+
+/// What one run of the phase did.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct Ran {
+    /// Writes that moved something in the document.
+    pub applied: usize,
+    /// Signals that were given a changed value.
+    pub published: usize,
+}
+
+impl Ran {
+    /// Whether the run changed the document or a signal, so the frame must be drawn again.
+    pub fn changed(self) -> bool {
+        self.applied + self.published > 0
+    }
+}
+
+/// The document the phase works on and the runtime its signals belong to.
+#[derive(Clone)]
+struct Drive {
+    doc: DocRef,
+    runtime: Rc<Runtime>,
+}
+
+#[derive(Default)]
+struct Shared {
+    book: RefCell<Book>,
+    /// The readings components take after every resolve (`use_resolved`).
+    after: AfterResolve,
+    drive: RefCell<Option<Drive>>,
+    /// The debug probe's file (nothing unless the feature is on and the environment asks).
+    probe: Probe,
+}
+
+/// One document's phase. Cloned freely: the host that serves components and the loop that runs it
+/// hold the same one. Until a document is attached it supports nothing.
+#[derive(Clone, Default)]
+pub struct Phase {
+    shared: Rc<Shared>,
+}
+
+impl std::fmt::Debug for Phase {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Phase").finish_non_exhaustive()
+    }
+}
+
+impl Phase {
+    /// Work on `doc`, publishing into signals that live in `runtime`.
+    pub fn attach(&self, doc: DocRef, runtime: Rc<Runtime>) {
+        self.shared.drive.replace(Some(Drive { doc, runtime }));
+    }
+
+    /// The document this phase works on, once attached.
+    pub(crate) fn document(&self) -> Option<DocRef> {
+        self.shared
+            .drive
+            .borrow()
+            .as_ref()
+            .map(|drive| drive.doc.clone())
+    }
+
+    /// Run `call` inside the runtime the phase publishes to, where a component's callback can be
+    /// called; `None` (and `call` never runs) while no document is attached.
+    pub(crate) fn in_runtime<T>(&self, call: impl FnOnce() -> T) -> Option<T> {
+        let runtime = Rc::clone(&self.shared.drive.borrow().as_ref()?.runtime);
+        let _in_runtime = RuntimeGuard::new(runtime);
+        Some(call())
+    }
+
+    /// Publish what `what` names for the element `el`, until the watch is dropped.
+    pub(crate) fn observe(&self, el: &MountedData, what: Observe) -> Observed {
+        let (Some(_), Some(node)) = (self.shared.drive.borrow().as_ref(), NodeRef::of(el)) else {
+            return Observed::Unsupported;
+        };
+        let id = self.shared.book.borrow_mut().watch(node.node, what);
+        let book = Rc::clone(&self.shared);
+        Observed::Watching(Watch::new(move || forget(&book, id)))
+    }
+
+    /// The readings run after every resolved frame, which the host provides as a root context
+    /// so `use_resolved` can register with it.
+    pub fn after_resolve(&self) -> AfterResolve {
+        self.shared.after.clone()
+    }
+
+    /// Queue `write` to the element `el` for the next run.
+    pub(crate) fn write(&self, el: &MountedData, write: PhaseWrite) -> Queued {
+        let (Some(_), Some(node)) = (self.shared.drive.borrow().as_ref(), NodeRef::of(el)) else {
+            return Queued::Unsupported;
+        };
+        self.shared.book.borrow_mut().queue(node.node, write);
+        Queued::Yes
+    }
+
+    /// Whether a caret moved since the phase last read it: the loop then lays out and runs the
+    /// phase before it paints (`Phase::run` with [`Layout::Resolved`]), so the caret is drawn in
+    /// the frame that draws the text it follows.
+    pub fn wants_early_run(&self) -> bool {
+        let book = self.shared.book.borrow();
+        book.carets.iter().any(super::book::CaretWatch::moved)
+            || book
+                .selections
+                .iter()
+                .any(super::book::SelectionWatch::moved)
+    }
+
+    /// Run one step: apply the queued writes, then (once layout is [`Layout::Resolved`]) publish
+    /// every watched value that changed. The document is borrowed only while it is read or
+    /// written, and not at all while signals are set. A document that is borrowed elsewhere is
+    /// left for the next run.
+    pub fn run(&self, layout: Layout) -> Ran {
+        let Some(drive) = self.shared.drive.borrow().clone() else {
+            return Ran::default();
+        };
+        let applied = self.apply_writes(&drive, layout);
+        let published = match layout {
+            Layout::Resolved => self.publish(&drive),
+            Layout::Pending => 0,
+        };
+        if layout == Layout::Resolved {
+            self.shared.probe.publish(&drive.doc);
+        }
+        Ran { applied, published }
+    }
+
+    /// Publish the scroll state of every watched scroller as the document has it now, ahead of
+    /// the frame's layout: the scroll step has just written this frame's offsets, so a component
+    /// that windows over the offset (`VirtualList`) renders for the offset the frame draws, not
+    /// the last one. The size of the viewport and the content are the last layout's; the run
+    /// after the layout publishes them when they changed. Returns how many signals changed.
+    pub fn publish_scrolls(&self) -> usize {
+        let Some(drive) = self.shared.drive.borrow().clone() else {
+            return 0;
+        };
+        let reads = {
+            let book = self.shared.book.borrow();
+            if book.scrolls.is_empty() {
+                return 0;
+            }
+            drive.doc.read(|doc| {
+                book.scrolls
+                    .iter()
+                    .map(|watch| (watch.id, scroll_of(doc, watch.node)))
+                    .collect::<Vec<_>>()
+            })
+        };
+        let Some(scrolls) = reads else {
+            return 0;
+        };
+        let Changed { scrolls, .. } = self.changed(Reads {
+            rects: Vec::new(),
+            scrolls,
+            carets: Vec::new(),
+            selections: Vec::new(),
+        });
+        let _in_runtime = RuntimeGuard::new(Rc::clone(&drive.runtime));
+        scrolls
+            .into_iter()
+            .filter(|(sink, read)| try_set(*sink, *read).is_ok())
+            .count()
+    }
+
+    fn apply_writes(&self, drive: &Drive, layout: Layout) -> usize {
+        let writes = {
+            let mut book = self.shared.book.borrow_mut();
+            match layout {
+                Layout::Resolved => std::mem::take(&mut book.writes),
+                Layout::Pending => book.writes.clone(),
+            }
+        };
+        if writes.is_empty() {
+            return 0;
+        }
+        let mut moved = Vec::new();
+        let written = drive.doc.write(|doc| {
+            moved = writes
+                .iter()
+                .map(|waiting| apply(doc, waiting.node, waiting.write))
+                .collect();
+        });
+        match written {
+            Written::Done => moved.iter().filter(|moved| **moved).count(),
+            Written::Busy => {
+                if layout == Layout::Resolved {
+                    // Put back what was taken, behind anything queued since.
+                    let mut book = self.shared.book.borrow_mut();
+                    for waiting in writes {
+                        if !book.writes.iter().any(|held| held.node == waiting.node) {
+                            book.writes.push(waiting);
+                        }
+                    }
+                }
+                0
+            }
+        }
+    }
+
+    fn publish(&self, drive: &Drive) -> usize {
+        let Some(reads) = self.read(drive) else {
+            return 0;
+        };
+        let Changed {
+            rects,
+            scrolls,
+            carets,
+            selections,
+        } = self.changed(reads);
+        let tokens = drive
+            .doc
+            .read(|doc| self.shared.after.read(doc))
+            .unwrap_or_default();
+        let _in_runtime = RuntimeGuard::new(Rc::clone(&drive.runtime));
+        // A sink whose component has gone is skipped: its watch is dropped with it.
+        let rects = rects
+            .into_iter()
+            .filter(|(sink, read)| try_set(*sink, *read).is_ok())
+            .count();
+        let scrolls = scrolls
+            .into_iter()
+            .filter(|(sink, read)| try_set(*sink, *read).is_ok())
+            .count();
+        let carets = carets
+            .into_iter()
+            .filter(|(sink, read)| try_set(*sink, *read).is_ok())
+            .count();
+        let selections = selections
+            .into_iter()
+            .filter(|(sink, read)| try_set(*sink, read.clone()).is_ok())
+            .count();
+        let tokens = after_resolve::publish(tokens);
+        rects + scrolls + carets + selections + tokens
+    }
+
+    /// Everything watched, read from the document; `None` while it is borrowed elsewhere.
+    fn read(&self, drive: &Drive) -> Option<Reads> {
+        let book = self.shared.book.borrow();
+        drive.doc.read(|doc| {
+            let rects = book
+                .rects
+                .iter()
+                .map(|watch| (watch.id, border_box(doc, watch.node)))
+                .collect();
+            let scrolls = book
+                .scrolls
+                .iter()
+                .map(|watch| (watch.id, scroll_of(doc, watch.node)))
+                .collect();
+            let carets = book
+                .carets
+                .iter()
+                .map(|watch| {
+                    let at = watch.now();
+                    let found = at.as_ref().and_then(|at| caret_box(doc, watch.node, at));
+                    (watch.id, at, found)
+                })
+                .collect();
+            let selections = book
+                .selections
+                .iter()
+                .map(|watch| {
+                    let range = watch.now();
+                    let found = range
+                        .as_ref()
+                        .map(|range| selection_boxes(doc, watch.node, range))
+                        .unwrap_or_default();
+                    (watch.id, range, found)
+                })
+                .collect();
+            Reads {
+                rects,
+                scrolls,
+                carets,
+                selections,
+            }
+        })
+    }
+
+    /// The reads that differ from what was last published, with their sinks, remembered as
+    /// published.
+    fn changed(&self, reads: Reads) -> Changed {
+        let mut book = self.shared.book.borrow_mut();
+        let rects = reads
+            .rects
+            .into_iter()
+            .filter_map(|(id, read)| {
+                let watch = book.rects.iter_mut().find(|watch| watch.id == id)?;
+                (watch.last != read).then(|| {
+                    watch.last = read;
+                    (watch.sink, read)
+                })
+            })
+            .collect();
+        let scrolls = reads
+            .scrolls
+            .into_iter()
+            .filter_map(|(id, read)| {
+                let watch = book.scrolls.iter_mut().find(|watch| watch.id == id)?;
+                (watch.last != read).then(|| {
+                    watch.last = read;
+                    (watch.sink, read)
+                })
+            })
+            .collect();
+        let carets = reads
+            .carets
+            .into_iter()
+            .filter_map(|(id, at, read)| {
+                let watch = book.carets.iter_mut().find(|watch| watch.id == id)?;
+                watch.last_at = at;
+                (watch.last != read).then(|| {
+                    watch.last = read;
+                    (watch.sink, read)
+                })
+            })
+            .collect();
+        let selections = reads
+            .selections
+            .into_iter()
+            .filter_map(|(id, range, read)| {
+                let watch = book.selections.iter_mut().find(|watch| watch.id == id)?;
+                watch.last_range = range;
+                (watch.last != read).then(|| {
+                    watch.last = read.clone();
+                    (watch.sink, read)
+                })
+            })
+            .collect();
+        Changed {
+            rects,
+            scrolls,
+            carets,
+            selections,
+        }
+    }
+}
+
+/// What the document showed for each watch.
+struct Reads {
+    rects: Vec<Read<Rect>>,
+    scrolls: Vec<Read<Scroll>>,
+    carets: Vec<CaretRead>,
+    selections: Vec<SelectionRead>,
+}
+
+/// A caret's position and the box the document showed for it.
+type CaretRead = (WatchId, Option<TextPosition>, Option<Rect>);
+
+/// A selection's range and the boxes the document showed for it.
+type SelectionRead = (WatchId, Option<TextRange>, Vec<Rect>);
+
+/// What differs from what was published, with the signals to publish it to.
+struct Changed {
+    rects: Vec<Sink<Rect>>,
+    scrolls: Vec<Sink<Scroll>>,
+    carets: Vec<Sink<Rect>>,
+    selections: Vec<(Signal<Vec<Rect>>, Vec<Rect>)>,
+}
+
+/// What the document showed for one watch.
+type Read<T> = (WatchId, Option<T>);
+
+/// A signal and the value to publish to it.
+type Sink<T> = (Signal<Option<T>>, Option<T>);
+
+fn forget(shared: &Shared, id: WatchId) {
+    shared.book.borrow_mut().forget(id);
+}

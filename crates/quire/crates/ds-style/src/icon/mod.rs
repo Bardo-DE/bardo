@@ -1,0 +1,491 @@
+//! Lucide glyphs, as data.
+//!
+//! The geometry is Lucide (<https://lucide.dev>), ISC licence, notice in
+//! `crates/ds-style/assets/icons/LICENSE-lucide.txt`.
+//!
+//! The outline style is a 24 grid, 2px stroke, round caps and joins, one colour; the solid
+//! style (`style`, `solid_*`; each icon's default is its `native` pick) is filled paths on the same grid. The
+//! stroke is written as SVG attributes by [`render::Glyph`], because usvg in Blitz
+//! may not resolve CSS on SVG (design/08-ICONS.md section 1.3, spike S6).
+//!
+//! The icons are data and not markup strings, so nothing here needs a raw HTML sink.
+//! The mailo set's geometry is in `geometry`, transcribed from the design's `ICON` table; the
+//! shell set's is in `geometry_shell` (design/08-ICONS.md section 1.6), the control center's in
+//! `geometry_control`, quire's own marks on Lucide's grid in `geometry_own`
+//!; the named sets are in `sets`.
+//!
+//! No serde: an icon is never stored, and a derive would make it a persisted schema.
+
+use shape::Shape;
+
+pub mod classify;
+pub(crate) mod drawn;
+pub mod family;
+pub mod file_kind;
+pub mod file_tint;
+pub(crate) mod geometry;
+pub(crate) mod geometry_actions;
+pub(crate) mod geometry_control;
+pub(crate) mod geometry_files;
+pub(crate) mod geometry_format;
+pub(crate) mod geometry_markup;
+pub(crate) mod geometry_own;
+pub(crate) mod geometry_shell;
+pub mod mime;
+pub mod native;
+pub mod parts;
+pub(crate) mod plate;
+pub mod plate_tint;
+#[cfg(feature = "dioxus")]
+pub mod posed;
+pub mod render;
+pub mod retint;
+pub(crate) mod sets;
+pub mod shape;
+#[cfg(feature = "dioxus")]
+pub mod slash;
+pub mod solid_fan;
+pub(crate) mod solid_files;
+pub(crate) mod solid_mailo;
+pub(crate) mod solid_markup;
+pub(crate) mod solid_more;
+pub mod solid_parts;
+pub(crate) mod solid_shell;
+pub mod stroke;
+pub mod style;
+#[cfg(all(test, feature = "dioxus"))]
+mod tests;
+pub(crate) mod tone_band;
+#[cfg(test)]
+mod tone_band_tests;
+pub mod url;
+
+use geometry::*;
+
+/// One glyph: the mailo set, named for its key in the design's `ICON` table, then the shell
+/// set, named for its Lucide glyph.
+#[derive(Debug, Clone, PartialEq, Eq, Copy, Hash)]
+pub enum Icon {
+    /// The mailo `Inbox` glyph.
+    Inbox,
+    /// The mailo `Star` glyph.
+    Star,
+    /// The mailo `Archive` glyph.
+    Archive,
+    /// The mailo `Clock` glyph.
+    Clock,
+    /// The mailo `Trash` glyph.
+    Trash,
+    /// The mailo `Mail` glyph.
+    Mail,
+    /// The mailo `MailOpen` glyph.
+    MailOpen,
+    /// The mailo `Tag` glyph.
+    Tag,
+    /// The sync glyph, quire's own drawing: two clockwise arcs, each ending in an arrowhead.
+    Refresh,
+    /// The mailo `Send` glyph.
+    Send,
+    /// The mailo `Command` glyph.
+    Command,
+    /// The mailo `Columns` glyph.
+    Columns,
+    /// The mailo `Group` glyph.
+    Group,
+    /// The mailo `Panel` glyph.
+    Panel,
+    /// The mailo `Square` glyph.
+    Square,
+    /// The mailo `Maximize` glyph.
+    Maximize,
+    /// The mailo `Corner` glyph.
+    Corner,
+    /// The mailo `Undo` glyph.
+    Undo,
+    /// The mailo `Check` glyph.
+    Check,
+    /// The mailo `X` glyph.
+    X,
+    /// The mailo `Paperclip` glyph.
+    Paperclip,
+    /// The mailo `Pen` glyph.
+    Pen,
+    /// The mailo `Key` glyph.
+    Key,
+    /// The mailo `FilePen` glyph.
+    FilePen,
+    /// The mailo `OctagonAlert` glyph.
+    OctagonAlert,
+    /// The mailo `Pin` glyph.
+    Pin,
+    /// The mailo `Reply` glyph.
+    Reply,
+    /// The mailo `ReplyAll` glyph.
+    ReplyAll,
+    /// The mailo `Forward` glyph.
+    Forward,
+    /// The mailo `Search` glyph.
+    Search,
+    /// The mailo `Settings` glyph.
+    Settings,
+    /// The mailo `PanelLeft` glyph.
+    PanelLeft,
+    /// The mailo `Plus` glyph.
+    Plus,
+    /// A horizontal dash: a mixed check mark.
+    Minus,
+    /// Lucide `wifi`.
+    Wifi,
+    /// Lucide `wifi-low`.
+    WifiLow,
+    /// Lucide `wifi-high`.
+    WifiHigh,
+    /// Lucide `wifi-off`.
+    WifiOff,
+    /// Lucide `ethernet-port`: a wired network.
+    Ethernet,
+    /// Lucide `battery`.
+    Battery,
+    /// Lucide `battery-low`.
+    BatteryLow,
+    /// Lucide `battery-medium`.
+    BatteryMedium,
+    /// Lucide `battery-full`.
+    BatteryFull,
+    /// Lucide `battery-charging`.
+    BatteryCharging,
+    /// Lucide `battery-warning`.
+    BatteryWarning,
+    /// Lucide `bluetooth`.
+    Bluetooth,
+    /// Lucide `bluetooth-connected`.
+    BluetoothConnected,
+    /// Lucide `bluetooth-off`.
+    BluetoothOff,
+    /// Lucide `volume`.
+    Volume,
+    /// Lucide `volume-1`.
+    Volume1,
+    /// Lucide `volume-2`.
+    Volume2,
+    /// Lucide `volume-x`.
+    VolumeX,
+    /// Lucide `mic`.
+    Mic,
+    /// Lucide `mic-off`.
+    MicOff,
+    /// Lucide `sun`.
+    Sun,
+    /// Lucide `moon`.
+    Moon,
+    /// Lucide `sun-moon`.
+    SunMoon,
+    /// Lucide `power`.
+    Power,
+    /// Lucide `lock`.
+    Lock,
+    /// Lucide `bell`.
+    Bell,
+    /// Lucide `bell-off`.
+    BellOff,
+    /// Lucide `layout-grid`.
+    Grid,
+    /// Lucide `app-window`.
+    Window,
+    /// Lucide `monitor`.
+    Monitor,
+    /// Lucide `keyboard`.
+    Keyboard,
+    /// Lucide `chevron-left`.
+    ChevronLeft,
+    /// Lucide `chevron-right`.
+    ChevronRight,
+    /// Lucide `chevron-up`.
+    ChevronUp,
+    /// Lucide `chevron-down`.
+    ChevronDown,
+    /// Lucide `chevrons-up-down`: a pop-up button's pair.
+    ChevronsUpDown,
+    /// Lucide `folder`.
+    Folder,
+    /// Lucide `file`.
+    File,
+    /// Lucide `image`.
+    Image,
+    /// Lucide `square-terminal`.
+    Terminal,
+    /// Lucide `sticky-note`.
+    StickyNote,
+    /// Lucide `camera`.
+    Camera,
+    /// quire's own drawing: an arrow with an open chevron head over a baseline.
+    Download,
+    /// Lucide `upload`.
+    Upload,
+    /// Lucide `copy`.
+    Copy,
+    /// Lucide `link`.
+    Link,
+    /// Lucide `sparkles`.
+    Sparkles,
+    /// Lucide `gauge`.
+    Gauge,
+    /// Tabler `brightness-half`, used only if Lucide `sun` reads wrong at 22 px.
+    Brightness,
+    /// Lucide `printer`: mailo's print action.
+    Printer,
+    /// Lucide `folder-input`: mailo's move-to-folder action.
+    FolderInput,
+    /// Lucide `play`: Now Playing.
+    Play,
+    /// Lucide `pause`: Now Playing.
+    Pause,
+    /// Lucide `skip-back`: Now Playing's previous track.
+    SkipBack,
+    /// Lucide `skip-forward`: Now Playing's next track.
+    SkipForward,
+    /// Lucide `log-out`: the power menu's Log Out.
+    LogOut,
+    /// Lucide `rotate-ccw`: the power menu's Restart.
+    Restart,
+    /// Lucide `rotate-ccw`: turn a picture a quarter turn to the left. The same glyph as
+    /// `Restart`, named for what it does, so it pairs with `RotateRight`.
+    RotateLeft,
+    /// Lucide `rotate-cw`: turn a picture a quarter turn to the right; `RotateLeft` mirrored.
+    RotateRight,
+    /// Lucide `headphones`: an audio output or a Bluetooth device.
+    Headphones,
+    /// Lucide `music`: a recording with no cover, or a music library.
+    Music,
+    /// Lucide `speaker`: an audio output.
+    Speaker,
+    /// Lucide `mouse`: a Bluetooth device.
+    Mouse,
+    /// Lucide `gamepad`: a Bluetooth device.
+    Gamepad,
+    /// Lucide `smartphone`: a Bluetooth device.
+    Phone,
+    // The "more" glyphs. Kept at the end so the control set and these
+    // merge without touching each other's lines.
+    /// Lucide `ellipsis`: a row's or a header's overflow menu, laid across.
+    Ellipsis,
+    /// Lucide `ellipsis-vertical`: the same menu where the row is narrow and tall.
+    EllipsisVertical,
+    /// Lucide `grip-vertical`: six dots, two across and three down; a row's handle where a list
+    /// can be reordered by dragging it.
+    Grip,
+    // Control center parts 2: quire's own glyphs on Lucide's grid.
+    /// Two toggles with their knobs at opposite ends: the control center's bar item
+    /// (`geometry_own`, which documents the geometry).
+    Switches,
+    // Lock and switcher parts (M11): the lock field's enter arrow and its caps-lock mark.
+    /// Lucide `arrow-right`: the lock field's enter button.
+    ArrowRight,
+    /// Lucide `arrow-big-up-dash`: caps lock is on.
+    CapsLock,
+    // Launcher v2: the clipboard, emoji and web providers.
+    /// Lucide `clipboard`: the clipboard history.
+    Clipboard,
+    /// Lucide `smile`: emoji.
+    Smile,
+    /// Lucide `globe`: the web.
+    Globe,
+    // design/26: quire's own glyph on Lucide's grid.
+    /// Lucide `moon`'s outline, filled: the Focus module when it is on (`geometry_own`).
+    MoonFilled,
+    // Text formatting (a format bar) and severity (a banner, a label).
+    /// Lucide `bold`.
+    Bold,
+    /// Lucide `italic`.
+    Italic,
+    /// Lucide `underline`.
+    Underline,
+    /// Lucide `strikethrough`.
+    Strike,
+    /// Lucide `code`: inline code.
+    Code,
+    /// Lucide `info`: a note.
+    Info,
+    /// Lucide `circle-check`: it worked.
+    CircleCheck,
+    /// Lucide `triangle-alert`: take care.
+    TriangleAlert,
+    /// Lucide `heart`: a favourite.
+    Heart,
+    /// Lucide `git-branch`: a version-control branch.
+    GitBranch,
+    /// Lucide `diff`: lines added and removed (a plus over a minus).
+    Diff,
+    /// Lucide `hand`: the pan tool.
+    Hand,
+    /// Lucide `crop`.
+    Crop,
+    /// Lucide `mouse-pointer`: the select tool.
+    MousePointer,
+    /// Lucide `highlighter`.
+    Highlighter,
+    /// Lucide `type`: a text box.
+    Type,
+    /// Lucide `circle`: an oval shape.
+    Circle,
+    /// Lucide `slash`: a diagonal stroke.
+    Line,
+    /// Lucide `arrow-up-right`: an arrow shape.
+    ArrowUpRight,
+    /// Lucide `pen-line`: freehand.
+    PenLine,
+    /// Lucide `list-tree`: an outline or table of contents.
+    ListTree,
+    /// Lucide `table`: a spreadsheet.
+    Table,
+    // A file manager: places, drives and the kinds of file.
+    /// Lucide `house`: the home folder.
+    Home,
+    /// Lucide `eject`: a triangle over a bar; unmount a drive or a disc.
+    Eject,
+    /// Lucide `hard-drive`: a drive inside the machine.
+    DriveInternal,
+    /// quire's own drawing: a flat drive with a connector plug on it (`geometry_files`).
+    DriveExternal,
+    /// Lucide `disc`: an optical disc.
+    Disc,
+    /// Lucide `file-text`: a text document.
+    FileText,
+    /// Lucide `file-image`: a picture file.
+    FileImage,
+    /// Lucide `file-audio`: a sound file.
+    FileAudio,
+    /// Lucide `file-video`: a movie file.
+    FileVideo,
+    /// Lucide `file-archive`: a compressed archive.
+    FileArchive,
+    /// Lucide `file-code`: source code.
+    FileCode,
+    /// quire's own drawing: a file with a letter P (`geometry_files`).
+    FilePdf,
+    /// Lucide `file-cog`: a program.
+    FileApp,
+    /// Lucide `align-left`: three lines of text, the mark of a document (`geometry_files`).
+    Lines,
+    /// quire's own drawing: the letter P, the mark of a PDF (`geometry_files`).
+    Pdf,
+    /// Lucide `puzzle`: a puzzle piece, the Extensions page (`geometry_files`).
+    Puzzle,
+    /// Lucide `cloud`: a file kept in a cloud drive (`geometry_files`).
+    Cloud,
+    /// Lucide `cloud-download`: in the cloud only, click to download (`geometry_files`).
+    CloudDownload,
+    /// Lucide `cloud-upload`: waiting to upload (`geometry_files`).
+    CloudUpload,
+}
+
+impl Icon {
+    /// The children of this glyph's outline, in the design's order. `solid_shapes` is its
+    /// solid form and `shapes_in` picks by style.
+    pub fn shapes(self) -> &'static [Shape] {
+        match self {
+            Icon::Inbox => INBOX,
+            Icon::Star => STAR,
+            Icon::Archive => ARCHIVE,
+            Icon::Clock => CLOCK,
+            Icon::Trash => TRASH,
+            Icon::Mail => MAIL,
+            Icon::MailOpen => MAIL_OPEN,
+            Icon::Tag => TAG,
+            Icon::Refresh => REFRESH,
+            Icon::Send => SEND,
+            Icon::Command => COMMAND,
+            Icon::Columns => COLUMNS,
+            Icon::Group => GROUP,
+            Icon::Panel => PANEL,
+            Icon::Square => SQUARE,
+            Icon::Maximize => MAXIMIZE,
+            Icon::Corner => CORNER,
+            Icon::Undo => UNDO,
+            Icon::Check => CHECK,
+            Icon::X => X_MARK,
+            Icon::Paperclip => PAPERCLIP,
+            Icon::Pen => PEN,
+            Icon::Key => KEY,
+            Icon::FilePen => FILE_PEN,
+            Icon::OctagonAlert => OCTAGON_ALERT,
+            Icon::Pin => PIN,
+            Icon::Reply => REPLY,
+            Icon::ReplyAll => REPLY_ALL,
+            Icon::Forward => FORWARD,
+            Icon::Search => SEARCH,
+            Icon::Settings => SETTINGS,
+            Icon::PanelLeft => PANEL_LEFT,
+            Icon::Plus => PLUS,
+            Icon::Minus => MINUS,
+            Icon::Printer => geometry_actions::PRINTER,
+            Icon::FolderInput => geometry_actions::FOLDER_INPUT,
+            Icon::Play
+            | Icon::Pause
+            | Icon::SkipBack
+            | Icon::SkipForward
+            | Icon::LogOut
+            | Icon::Restart
+            | Icon::RotateLeft
+            | Icon::RotateRight
+            | Icon::Headphones
+            | Icon::Music
+            | Icon::Speaker
+            | Icon::Mouse
+            | Icon::Gamepad
+            | Icon::Phone => geometry_control::shapes(self),
+            Icon::Ellipsis => geometry_actions::ELLIPSIS,
+            Icon::EllipsisVertical => geometry_actions::ELLIPSIS_VERTICAL,
+            Icon::Grip => geometry_actions::GRIP,
+            Icon::Switches => geometry_own::SWITCHES,
+            Icon::MoonFilled => geometry_own::MOON_FILLED,
+            Icon::ArrowRight => geometry_actions::ARROW_RIGHT,
+            Icon::CapsLock => geometry_actions::CAPS_LOCK,
+            Icon::Clipboard => geometry_actions::CLIPBOARD,
+            Icon::Smile => geometry_actions::SMILE,
+            Icon::Globe => geometry_actions::GLOBE,
+            Icon::Bold => geometry_format::BOLD,
+            Icon::Italic => geometry_format::ITALIC,
+            Icon::Underline => geometry_format::UNDERLINE,
+            Icon::Strike => geometry_format::STRIKE,
+            Icon::Code => geometry_format::CODE,
+            Icon::Info => geometry_actions::INFO,
+            Icon::CircleCheck => geometry_actions::CIRCLE_CHECK,
+            Icon::TriangleAlert => geometry_actions::TRIANGLE_ALERT,
+            Icon::Heart => geometry_actions::HEART,
+            Icon::GitBranch => geometry_actions::GIT_BRANCH,
+            Icon::Diff => geometry_actions::DIFF,
+            Icon::Hand
+            | Icon::Crop
+            | Icon::MousePointer
+            | Icon::Highlighter
+            | Icon::Type
+            | Icon::Circle
+            | Icon::Line
+            | Icon::ArrowUpRight
+            | Icon::PenLine
+            | Icon::ListTree
+            | Icon::Table => geometry_markup::shapes(self),
+            Icon::Home
+            | Icon::Eject
+            | Icon::DriveInternal
+            | Icon::DriveExternal
+            | Icon::Disc
+            | Icon::FileText
+            | Icon::FileImage
+            | Icon::FileAudio
+            | Icon::FileVideo
+            | Icon::FileArchive
+            | Icon::FileCode
+            | Icon::FilePdf
+            | Icon::FileApp
+            | Icon::Lines
+            | Icon::Pdf
+            | Icon::Puzzle
+            | Icon::Cloud
+            | Icon::CloudDownload
+            | Icon::CloudUpload => geometry_files::shapes(self),
+            shell => geometry_shell::shapes(shell),
+        }
+    }
+}

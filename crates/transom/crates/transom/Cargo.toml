@@ -1,0 +1,47 @@
+[package]
+name = "transom"
+description = "The quire desktop portal backend: Screenshot, ScreenCast, RemoteDesktop, Settings and Inhibit served on the session bus for xdg-desktop-portal."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/transom"
+publish = false
+
+[lib]
+name = "transom"
+
+[[bin]]
+name = "transom"
+path = "src/main.rs"
+
+[features]
+# `TRANSOM_DEV_CALLERS=FILE`: callers named in a person's own rows file are let in as the portal
+# frontend or the shell at `Proof::Dev` (peephole's `dev-rows`). Off by default; the desktop's test
+# jail and the dev scripts build with it. A release build has neither the variable nor `dev-rows`.
+debug = ["peephole-bus/dev-rows"]
+
+[dependencies]
+transom-core = {path = "../transom-core"}
+thiserror = {version = "2"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+peephole-bus = {default-features = false, features = ["tokio", "desktop"], path = "../../../peephole/peephole-bus"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tracing = {version = "0.1"}
+tracing-subscriber = {version = "0.3", default-features = false, features = ["fmt", "std", "env-filter"]}
+# Named now so the fill lanes edit no manifest (P2-T1: image; P2-T2: the other three).
+wayland-client = {version = "0.31"}
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "process"]}
+wayland-protocols = {version = "0.32.13", features = ["client", "staging"]}
+pipewire = {version = "0.10"}
+image = {version = "0.25.6", default-features = false, features = ["png"]}
+
+[dev-dependencies]
+# `introduce` makes a test's connection stand as the frontend or the shell without looking at it.
+peephole-bus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../../peephole/peephole-bus"}
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+missing_debug_implementations = "warn"

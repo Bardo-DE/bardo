@@ -1,0 +1,454 @@
+//! The public selector table: what a user stylesheet may rely on (ARCHITECTURE.md section 10,
+//! design/30 section 1.7).
+//!
+//! A person restyles their desktop by editing one CSS file after the design system's own. That
+//! file may name exactly what this table lists: `[data-surface=<name>]` on every surface root,
+//! `.ds-<component>` on a component's root, the parts a component lists as public
+//! (`.ds-<component>-<part>`), the attribute axes below, and every token variable
+//! (`--<prefix><slug>`, from `Kits::vocabulary`). Anything else is internal and may change
+//! without notice; a rename of anything listed here is a breaking change for the person's file,
+//! so it updates this table and `docs/selectors.md` (a test keeps the page equal to
+//! [`markdown`]).
+//!
+//! The table is versioned: [`SURFACE`] is bumped when a listed name is renamed or removed. A
+//! renamed part keeps its old name for one release ([`RENAMES`]); an app lists its own parts in
+//! an [`AppSelectors`] table in the same format (ARCHITECTURE.md "Repo rules").
+//!
+//! A component's public parts are added here in the change that gives it the part
+//! (a gallery example that restyles it and a `lint::user_stylesheet` case that accepts it come
+//! with the row).
+
+/// The version of the public styling surface this table describes. It is bumped when a public
+/// name is renamed or removed, and not when one is added: a look made for an earlier number may
+/// have lost a part, a look made for a later one cannot have. A look Extension records the number
+/// it was made against (`styles_for`).
+pub const SURFACE: u32 = 1;
+
+/// One component's public class names.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ComponentSelectors {
+    /// The component, as design/30 names it.
+    pub component: &'static str,
+    /// The root class without its dot: `ds-<component>`.
+    pub root: &'static str,
+    /// The public parts, without the root's prefix: `remove` is `.ds-chip-remove`.
+    pub parts: &'static [&'static str],
+}
+
+impl ComponentSelectors {
+    /// The root as a selector: `.ds-chip`.
+    pub fn root_selector(&self) -> String {
+        format!(".{}", self.root)
+    }
+
+    /// Each public part as a selector: `.ds-chip-remove`.
+    pub fn part_selectors(&self) -> Vec<String> {
+        self.parts
+            .iter()
+            .map(|part| format!(".{}-{part}", self.root))
+            .collect()
+    }
+}
+
+/// An attribute a user stylesheet may select on, on any component that writes it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Axis {
+    /// The attribute, or the family of attributes (`aria-*`).
+    pub attribute: &'static str,
+    /// What it says.
+    pub meaning: &'static str,
+}
+
+/// The attribute every surface root carries, naming the surface: `[data-surface=bar]`. Written
+/// by the consumer's surface root, not by a component.
+pub const SURFACE_ATTRIBUTE: &str = "data-surface";
+
+/// A public part that was renamed. For one quire release the part carries both names: the old
+/// class stays on the element and in this table, so a person's stylesheet keeps working, and the
+/// release notes list it under "Styles". The release after it deletes the row.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct PartRename {
+    /// The component's root class: `ds-chip`.
+    pub root: &'static str,
+    /// The new part name, without the root's prefix: `remove`.
+    pub part: &'static str,
+    /// The old part name, still public for this release: `close`.
+    pub renamed_from: &'static str,
+}
+
+impl PartRename {
+    /// The old class, without its dot: `ds-chip-close`.
+    pub fn old_class(&self) -> String {
+        format!("{}-{}", self.root, self.renamed_from)
+    }
+
+    /// The new class, without its dot: `ds-chip-remove`.
+    pub fn new_class(&self) -> String {
+        format!("{}-{}", self.root, self.part)
+    }
+}
+
+/// The parts renamed in the current release, each still public under its old name. Empty when
+/// nothing was renamed.
+pub const RENAMES: &[PartRename] = &[];
+
+/// An app's own public parts, in the table's format. Every root and part carries the app's
+/// prefix (`<app>-`), so an app can never claim a `ds-` name. A part nobody listed is internal.
+/// The app publishes the table (a `const`) and `ds_lint::user_stylesheet_with` reads
+/// [`AppSelectors::classes`] so a listed part is not reported as an internal selector.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct AppSelectors {
+    /// The app's short name, lower case: `mailo`. Every class below starts with `<app>-`.
+    pub app: &'static str,
+    /// The components whose root and parts are public; each `root` starts with `<app>-`.
+    pub components: &'static [ComponentSelectors],
+    /// The parts renamed this release, still public under their old names.
+    pub renames: &'static [PartRename],
+}
+
+impl AppSelectors {
+    /// Whether `class` is in this app's namespace.
+    fn owns(&self, class: &str) -> bool {
+        class
+            .strip_prefix(self.app)
+            .is_some_and(|rest| rest.starts_with('-') && rest.len() > 1)
+    }
+
+    /// The roots that do not start with `<app>-`: they are not published, and a test in the app
+    /// asserts this is empty.
+    pub fn misnamed_roots(&self) -> Vec<&'static str> {
+        self.components
+            .iter()
+            .map(|component| component.root)
+            .filter(|root| !self.owns(root))
+            .collect()
+    }
+
+    /// Every class the app publishes, without the dot: each root, each part and each old name.
+    pub fn classes(&self) -> Vec<String> {
+        let current = self.components.iter().flat_map(|component| {
+            std::iter::once(component.root.to_string()).chain(
+                component
+                    .part_selectors()
+                    .into_iter()
+                    .map(|part| part[1..].to_string()),
+            )
+        });
+        let old = self.renames.iter().map(PartRename::old_class);
+        current
+            .chain(old)
+            .filter(|class| self.owns(class))
+            .collect()
+    }
+}
+
+/// The components whose root and parts are public.
+pub const COMPONENTS: &[ComponentSelectors] = &[
+    ComponentSelectors {
+        component: "Alert",
+        root: "ds-alert",
+        parts: &["icon", "title", "body", "footer"],
+    },
+    ComponentSelectors {
+        component: "Avatar",
+        root: "ds-avatar",
+        parts: &[],
+    },
+    ComponentSelectors {
+        component: "Badge",
+        root: "ds-badge",
+        parts: &["label"],
+    },
+    ComponentSelectors {
+        component: "Button",
+        root: "ds-button",
+        parts: &["icon", "label"],
+    },
+    ComponentSelectors {
+        component: "Capsule",
+        root: "ds-capsule",
+        parts: &["readout", "divider"],
+    },
+    ComponentSelectors {
+        component: "Checkbox",
+        root: "ds-checkbox",
+        parts: &["indicator", "label"],
+    },
+    ComponentSelectors {
+        component: "Chip",
+        root: "ds-chip",
+        parts: &["remove"],
+    },
+    ComponentSelectors {
+        component: "EmptyState",
+        root: "ds-empty-state",
+        parts: &["icon", "title", "body", "action"],
+    },
+    ComponentSelectors {
+        component: "FactList",
+        root: "ds-fact-list",
+        parts: &["item", "label", "value"],
+    },
+    ComponentSelectors {
+        component: "HoverCard",
+        root: "ds-hovercard",
+        parts: &["body"],
+    },
+    ComponentSelectors {
+        component: "InlineBanner",
+        root: "ds-inline-banner",
+        parts: &["icon", "body", "actions"],
+    },
+    ComponentSelectors {
+        component: "KeyEquivalent",
+        root: "ds-key-equivalent",
+        parts: &["key"],
+    },
+    ComponentSelectors {
+        component: "Label",
+        root: "ds-label",
+        parts: &[],
+    },
+    ComponentSelectors {
+        component: "LevelIndicator",
+        root: "ds-level-indicator",
+        parts: &["track", "fill", "icon"],
+    },
+    ComponentSelectors {
+        component: "Disclosure",
+        root: "ds-disclosure",
+        parts: &["indicator", "body"],
+    },
+    ComponentSelectors {
+        component: "List",
+        root: "ds-list",
+        parts: &["item"],
+    },
+    ComponentSelectors {
+        component: "Loadable",
+        root: "ds-loadable",
+        parts: &["layer", "spin"],
+    },
+    ComponentSelectors {
+        component: "Menu",
+        root: "ds-menu",
+        parts: &["item", "separator", "header"],
+    },
+    ComponentSelectors {
+        component: "Popover",
+        root: "ds-popover",
+        parts: &["body", "arrow"],
+    },
+    ComponentSelectors {
+        component: "ProgressIndicator",
+        root: "ds-progress",
+        parts: &["track", "fill", "indicator", "glyph"],
+    },
+    ComponentSelectors {
+        component: "RadioGroup",
+        root: "ds-radio-group",
+        parts: &["item", "indicator", "label", "image"],
+    },
+    ComponentSelectors {
+        component: "PopUpButton",
+        root: "ds-popup",
+        parts: &["sizer"],
+    },
+    ComponentSelectors {
+        component: "Row",
+        root: "ds-row",
+        parts: &["leading", "title", "detail", "trailing"],
+    },
+    ComponentSelectors {
+        component: "SectionHeader",
+        root: "ds-section-header",
+        parts: &["title", "value", "action"],
+    },
+    ComponentSelectors {
+        component: "SegmentedControl",
+        root: "ds-segmented",
+        parts: &["segment", "indicator", "label", "icon"],
+    },
+    ComponentSelectors {
+        component: "Sheet",
+        root: "ds-sheet",
+        parts: &["body"],
+    },
+    ComponentSelectors {
+        component: "SidePanel",
+        root: "ds-side-panel",
+        parts: &["header", "body"],
+    },
+    ComponentSelectors {
+        component: "Skeleton",
+        root: "ds-skeleton",
+        parts: &[],
+    },
+    ComponentSelectors {
+        component: "SkeletonRow",
+        root: "ds-skeleton-row",
+        parts: &["lines"],
+    },
+    ComponentSelectors {
+        component: "Scrubber",
+        root: "ds-scrubber",
+        parts: &["track", "buffered", "fill", "thumb", "tooltip"],
+    },
+    ComponentSelectors {
+        component: "Slider",
+        root: "ds-slider",
+        parts: &["track", "fill", "thumb", "icon", "tick"],
+    },
+    ComponentSelectors {
+        component: "SpacesBar",
+        root: "ds-spaces-bar",
+        parts: &["space", "thumb", "backdrop", "name", "add"],
+    },
+    ComponentSelectors {
+        component: "TextField",
+        root: "ds-text-field",
+        parts: &["frame", "icon", "suffix", "help", "tokens"],
+    },
+    ComponentSelectors {
+        component: "Toast",
+        root: "ds-toast",
+        parts: &["body", "action"],
+    },
+    ComponentSelectors {
+        component: "Toggle",
+        root: "ds-toggle",
+        parts: &["track", "indicator"],
+    },
+    ComponentSelectors {
+        component: "Tooltip",
+        root: "ds-tooltip",
+        parts: &[],
+    },
+];
+
+/// The attributes a user stylesheet may select on.
+pub const AXES: &[Axis] = &[
+    Axis {
+        attribute: "data-variant",
+        meaning: "a component's role or bezel",
+    },
+    Axis {
+        attribute: "data-size",
+        meaning: "the `ControlSize` slug: mini, small, regular, large",
+    },
+    Axis {
+        attribute: "data-state",
+        meaning: "`Check`: off, on, mixed",
+    },
+    Axis {
+        attribute: "data-selected",
+        meaning: "`Selection`",
+    },
+    Axis {
+        attribute: "data-busy",
+        meaning: "`Availability::Busy`",
+    },
+    Axis {
+        attribute: "data-availability",
+        meaning: "`Availability`: enabled, disabled, busy",
+    },
+    Axis {
+        attribute: "data-pressed",
+        meaning: "`PressPhase`: present while a pointer or a key holds the control down",
+    },
+    Axis {
+        attribute: "data-role",
+        meaning: "a button's role: normal or destructive",
+    },
+    Axis {
+        attribute: "data-severity",
+        meaning: "`Severity` of an inline banner or a label: info, ok, warn, danger",
+    },
+    Axis {
+        attribute: "data-focus",
+        meaning: "`FocusStyle`: ring, highlight",
+    },
+    Axis {
+        attribute: "data-activity",
+        meaning: "`Activity`, on `.ds`: written as `inactive` while the window is not the one focused, absent while it is",
+    },
+    Axis {
+        attribute: "aria-*",
+        meaning: "the state an element exposes to assistive technology",
+    },
+];
+
+/// Every class a user stylesheet may select on, without the dot: `ds` (the root, where token
+/// overrides go), each component's root and each public part. The linter's copy of the table.
+pub fn classes() -> Vec<String> {
+    std::iter::once("ds".to_string())
+        .chain(COMPONENTS.iter().flat_map(|component| {
+            std::iter::once(component.root.to_string()).chain(
+                component
+                    .part_selectors()
+                    .into_iter()
+                    .map(|part| part[1..].to_string()),
+            )
+        }))
+        .chain(RENAMES.iter().map(PartRename::old_class))
+        .collect()
+}
+
+/// Every attribute a user stylesheet may select on: the surface attribute and each axis.
+pub fn attributes() -> Vec<String> {
+    std::iter::once(SURFACE_ATTRIBUTE.to_string())
+        .chain(AXES.iter().map(|axis| axis.attribute.to_string()))
+        .collect()
+}
+
+/// The page `docs/selectors.md` holds: the table, as markdown.
+pub fn markdown() -> String {
+    let mut page = String::from(
+        "# Public selectors\n\n\
+         What a user stylesheet (`~/.config/<app>/style.css`) may rely on. Anything not listed\n\
+         here is internal and may change without notice; renaming anything listed here is a\n\
+         breaking change for the person's file.\n\n\
+         Prefer token overrides (`.ds { --accent: ...; --t-quick: 120ms }`) to selectors: they\n\
+         re-theme every surface consistently, and every token variable\n\
+         (`--<prefix><slug>`) is public.\n\n",
+    );
+    page.push_str(&format!(
+        "The surface is version {SURFACE}: it is bumped when a listed name is renamed or removed.\n\n"
+    ));
+    page.push_str(&format!(
+        "## Surfaces\n\n`[{SURFACE_ATTRIBUTE}=<name>]` is on every surface root.\n\n"
+    ));
+    page.push_str("## Components\n\n| Component | Root | Parts |\n| --- | --- | --- |\n");
+    for component in COMPONENTS {
+        let parts = component.part_selectors();
+        let parts = match parts.is_empty() {
+            true => "none yet".to_string(),
+            false => parts
+                .iter()
+                .map(|part| format!("`{part}`"))
+                .collect::<Vec<_>>()
+                .join(", "),
+        };
+        page.push_str(&format!(
+            "| {} | `{}` | {parts} |\n",
+            component.component,
+            component.root_selector()
+        ));
+    }
+    let renames: Vec<&PartRename> = RENAMES.iter().collect();
+    if !renames.is_empty() {
+        page.push_str("\n## Renamed this release\n\n| Old | New |\n| --- | --- |\n");
+        for rename in renames {
+            page.push_str(&format!(
+                "| `.{}` | `.{}` |\n",
+                rename.old_class(),
+                rename.new_class()
+            ));
+        }
+    }
+    page.push_str("\n## Attributes\n\n| Attribute | Meaning |\n| --- | --- |\n");
+    for axis in AXES {
+        page.push_str(&format!("| `{}` | {} |\n", axis.attribute, axis.meaning));
+    }
+    page
+}

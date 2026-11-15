@@ -1,0 +1,239 @@
+//! The media types of the kinds the viewer opens: the one map from kind to MIME that the desktop
+//! entry's `MimeType` line is built from.
+
+use super::family::Family;
+use super::{
+    BookFormat, Delimiter, FormatKind, MediaContainer, Mime, OfficeFormat, RasterFormat, TreeFormat,
+};
+use crate::peek::StageSupport;
+use crate::profile::stage_support;
+use ds_core::word::Word;
+
+/// The media types a file of `kind` is sniffed as, in no order and with repeats allowed. Every
+/// kind is answered: a kind with no type of its own (a folder, a file nothing describes) says none.
+fn mimes_of(kind: FormatKind) -> Vec<&'static str> {
+    fn family<F: Family>() -> Vec<&'static str> {
+        F::ALL.iter().map(|format| format.mime()).collect()
+    }
+    match kind {
+        FormatKind::Pdf => vec!["application/pdf"],
+        FormatKind::Raster => family::<RasterFormat>(),
+        FormatKind::Vector => vec!["image/svg+xml"],
+        FormatKind::Video | FormatKind::Audio => MediaContainer::ALL
+            .iter()
+            .filter(|container| container.kind() == kind)
+            .map(|container| container.mime())
+            .collect(),
+        FormatKind::Markdown => vec!["text/markdown"],
+        FormatKind::Code => vec!["text/html", "text/css", "application/xml", "text/plain"],
+        FormatKind::PlainText => vec!["text/plain"],
+        FormatKind::Table => family::<Delimiter>()
+            .into_iter()
+            .chain(
+                OfficeFormat::ALL
+                    .iter()
+                    .filter(|format| format.kind() == FormatKind::Table)
+                    .map(|format| format.mime()),
+            )
+            .collect(),
+        FormatKind::Tree => family::<TreeFormat>(),
+        FormatKind::Book => family::<BookFormat>(),
+        FormatKind::Font
+        | FormatKind::Archive
+        | FormatKind::Office
+        | FormatKind::Folder
+        | FormatKind::Other => Vec::new(),
+    }
+}
+
+/// The media types of every kind the viewer has a stage for (`StageSupport::Stage`), sorted and
+/// without repeats: what a desktop entry claims the viewer opens. A kind the viewer only peeks
+/// at is left out, since claiming it would make the viewer the answer to a file it cannot show.
+#[must_use]
+pub fn opened_mimes() -> Vec<Mime> {
+    opened_texts().into_iter().map(Mime::known).collect()
+}
+
+fn opened_texts() -> Vec<&'static str> {
+    let mut texts: Vec<&'static str> = FormatKind::ALL
+        .iter()
+        .copied()
+        .filter(|kind| stage_support(*kind) == StageSupport::Stage)
+        .flat_map(mimes_of)
+        .collect();
+    texts.sort_unstable();
+    texts.dedup();
+    texts
+}
+
+/// The registry's name (shared-mime-info) for a type the viewer sniffs a file as, where the
+/// registry spells it differently: its canonical type, or `None` where it has no type for the
+/// format at all (a file of it is sniffed as plain text by the desktop). A desktop looks a file's
+/// type up by its canonical name, so an alias in a desktop entry is a claim nobody finds.
+const REGISTRY: &[(&str, Option<&str>)] = &[
+    ("application/x-ndjson", None),
+    ("audio/aiff", Some("audio/x-aiff")),
+    ("audio/opus", Some("audio/x-opus+ogg")),
+    ("audio/wav", Some("audio/vnd.wave")),
+    ("image/heic", Some("image/heif")),
+    ("image/vnd.radiance", Some("image/x-hdr")),
+    ("image/x-qoi", Some("image/qoi")),
+    ("video/x-m4v", Some("video/mp4")),
+    ("video/x-msvideo", Some("video/vnd.avi")),
+];
+
+/// The file name patterns of the formats the registry has no type for, which a chooser needs
+/// where a media type cannot name them.
+const UNREGISTERED_GLOBS: &[&str] = &["*.jsonl", "*.ndjson"];
+
+/// What a desktop entry claims and a file chooser offers as "supported": the types of
+/// [`opened_mimes`] under the names the registry knows, sorted and without repeats. A format the
+/// registry has no type for is left out here and named by [`opened_globs`] instead.
+#[must_use]
+pub fn claimed_mimes() -> Vec<Mime> {
+    let mut texts: Vec<&'static str> = opened_texts()
+        .into_iter()
+        .filter_map(|text| {
+            REGISTRY
+                .iter()
+                .find(|(sniffed, _)| *sniffed == text)
+                .map_or(Some(text), |(_, registered)| *registered)
+        })
+        .collect();
+    texts.sort_unstable();
+    texts.dedup();
+    texts.into_iter().map(Mime::known).collect()
+}
+
+/// The file name patterns of the opened formats the registry has no media type for.
+pub fn opened_globs() -> &'static [&'static str] {
+    UNREGISTERED_GLOBS
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::sniff::{FileHead, SniffStep, sniff};
+    use crate::source::FileName;
+
+    #[test]
+    fn the_opened_types_are_those_of_the_kinds_with_a_stage() {
+        let opened: Vec<String> = opened_mimes()
+            .iter()
+            .map(|m| m.as_str().to_owned())
+            .collect();
+        for want in [
+            "application/pdf",
+            "image/png",
+            "image/svg+xml",
+            "video/mp4",
+            "audio/flac",
+            "text/markdown",
+            "text/plain",
+            "text/csv",
+            "application/json",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.oasis.opendocument.spreadsheet",
+            "application/vnd.ms-excel",
+            "application/epub+zip",
+            "application/vnd.comicbook+zip",
+        ] {
+            assert!(opened.iter().any(|m| m == want), "{want} is not opened");
+        }
+        for peeked in [
+            "application/zip",
+            "font/ttf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "inode/directory",
+        ] {
+            assert!(
+                !opened.iter().any(|m| m == peeked),
+                "{peeked} is only peeked at"
+            );
+        }
+        let mut sorted = opened.clone();
+        sorted.sort();
+        sorted.dedup();
+        assert_eq!(opened, sorted);
+    }
+
+    #[test]
+    fn the_claimed_types_are_the_opened_ones_under_the_registrys_names() {
+        let claimed: Vec<String> = claimed_mimes()
+            .iter()
+            .map(|m| m.as_str().to_owned())
+            .collect();
+        let has = |text: &str| claimed.iter().any(|m| m == text);
+        // sniffed name, the name the registry knows it by (none where it has no type)
+        for (sniffed, registered) in REGISTRY {
+            assert!(
+                opened_mimes().iter().any(|m| m.as_str() == *sniffed),
+                "{sniffed} is a type the viewer opens, or it has no row here"
+            );
+            assert!(
+                !has(sniffed),
+                "{sniffed} is claimed under its registered name"
+            );
+            if let Some(registered) = registered {
+                assert!(has(registered), "{registered}");
+            }
+        }
+        assert!(has("audio/vnd.wave") && has("image/heif") && has("image/qoi"));
+        assert!(
+            has("image/png") && has("application/pdf"),
+            "the rest are as they were"
+        );
+        assert!(
+            !has("application/zip") && !has("font/ttf"),
+            "a peek is not a claim"
+        );
+        assert_eq!(opened_globs(), ["*.jsonl", "*.ndjson"]);
+        let mut sorted = claimed.clone();
+        sorted.sort();
+        sorted.dedup();
+        assert_eq!(claimed, sorted);
+    }
+
+    #[test]
+    fn what_a_file_is_sniffed_as_is_in_the_map_of_its_kind() {
+        const FILES: &[(&str, &[u8])] = &[
+            ("a.pdf", b"%PDF-1.7\n"),
+            ("a.svg", b"<svg/>"),
+            ("a.md", b"# t\n"),
+            ("a.html", b"<p>x</p>"),
+            ("a.css", b"a{}"),
+            ("a.xml", b"<a/>"),
+            ("a.rs", b"fn main() {}"),
+            ("a.txt", b"text"),
+            ("a.csv", b"a,b\n"),
+            ("a.json", b"{}"),
+            ("a.jsonl", b"{}\n"),
+        ];
+        for (file, head) in FILES {
+            let name = FileName::new(file).unwrap();
+            let SniffStep::Done(sniffed) = sniff(&FileHead::new(head), &name) else {
+                panic!("{file} needs a look inside");
+            };
+            assert!(
+                mimes_of(sniffed.kind()).contains(&sniffed.mime().as_str()),
+                "{file}: {:?} as {}",
+                sniffed.kind(),
+                sniffed.mime().as_str()
+            );
+        }
+    }
+
+    #[test]
+    fn every_opened_type_names_a_kind_with_a_stage() {
+        use crate::kind::kind_of_mime;
+        for mime in opened_mimes() {
+            let kind = kind_of_mime(&mime);
+            assert_eq!(
+                stage_support(kind),
+                StageSupport::Stage,
+                "{}",
+                mime.as_str()
+            );
+        }
+    }
+}

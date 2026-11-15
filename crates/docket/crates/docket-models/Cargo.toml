@@ -1,0 +1,37 @@
+[package]
+name = "docket-models"
+description = "The models docket asks, portable: a porter-infer `Model` over any inferd-client Transport (`TransportModel`), the task-policy writer (`TransportWriter`) and the reviewer cascade's placeholder set. No bus, no runtime: intentd's `InferdModel` and `InferdWriter` are thin adapters over these."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+porter-match = {path = "../../../porter/crates/porter-match"}
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+action-review = {path = "../action-review"}
+docket-core = {path = "../docket-core"}
+docket-permissions-core = {path = "../docket-permissions-core"}
+docket-vocab = {path = "../docket-vocab"}
+inferd-client = {path = "../../../steward/crates/inferd-client"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-infer = {path = "../../../steward/crates/porter-infer"}
+prov = {path = "../../../prov/prov"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+
+[dev-dependencies]
+porter-wire = {path = "../../../porter/crates/porter-wire"}
+model-provider = {path = "../../../stoker/crates/model-provider"}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+docket-fake = {path = "../docket-fake"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+# The scripted model transport of companiond's tests is included by path (one file, not a copy).
+inferd-client = {path = "../../../steward/crates/inferd-client"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

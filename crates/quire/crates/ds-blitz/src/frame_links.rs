@@ -1,0 +1,230 @@
+//! What a link clicked inside a frame does. Blitz reloads the frame with the
+//! link's target (its `IframeNavigationProvider` sends the parent a `NavigateIframe`), which for
+//! a mail body means fetching a stranger's page into the reader. ds-blitz gives every frame
+//! document its own navigation provider instead (through `crate::frames`, as the document is
+//! parsed): the frame never navigates, and the app either hears the click or nothing happens.
+//!
+//! A click is delivered through a channel, not called from the provider: Blitz calls it while
+//! the document is held, and the app's handler must be free to touch the document (focus,
+//! measure) without a "RefCell already borrowed". The link's text and title
+//! are read as it is delivered, from the frame's document, then free: the provider hears only the
+//! URL.
+
+use crate::frame_anchor::LinkFacts;
+use crate::frame_book::FrameBook;
+use crate::frame_hover::FrameLinkHover;
+use crate::frame_image::FrameImageClick;
+use crate::frame_menu::FrameLinkMenu;
+use crate::frame_tag::FrameTag;
+use crate::origin::FrameId;
+use blitz_traits::navigation::{NavigationOptions, NavigationProvider};
+use std::fmt;
+use std::sync::Arc;
+use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender, unbounded_channel};
+
+/// A link clicked inside a frame.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct FrameLink {
+    /// The frame's document.
+    pub frame: FrameId,
+    /// The frame's `iframe`'s `data-frame-tag`: which of the app's frames it is (mailo's
+    /// message), if the element has one.
+    pub tag: Option<FrameTag>,
+    /// The link's target, resolved against the frame's base URL.
+    pub href: String,
+    /// The anchor's text content, whitespace-collapsed: what the reader saw, to compare with
+    /// `href` (mailo's link honesty check). Empty if the anchor could not be found again.
+    pub text: String,
+    /// The anchor's `title`, if it has one.
+    pub title: Option<String>,
+}
+
+/// The app's handler for one kind of thing heard inside a frame: it runs on the UI thread, with
+/// the document free.
+pub type FrameHandler<E> = Arc<dyn Fn(E) + Send + Sync>;
+
+/// What a link clicked inside a frame does. The frame never navigates either way.
+///
+/// The default is inert: the click is dropped and nothing else is heard. A handler per kind of
+/// event is optional, and the app hears only the kinds it set.
+#[derive(Clone, Default)]
+pub struct FrameLinks {
+    /// Called with each click. `None`: the click is dropped, and the other handlers are never
+    /// called either (a link that does nothing has nothing to preview).
+    click: Option<FrameHandler<FrameLink>>,
+    /// Called as the pointer crosses a link.
+    hover: Option<FrameHandler<FrameLinkHover>>,
+    /// Called when a context menu is asked over a link.
+    menu: Option<FrameHandler<FrameLinkMenu>>,
+    /// Called on a click on an image (outside any link).
+    image: Option<FrameHandler<FrameImageClick>>,
+}
+
+impl FrameLinks {
+    /// Call `handler` with every link clicked inside a frame (mailo opens it in the browser).
+    pub fn intercept(handler: impl Fn(FrameLink) + Send + Sync + 'static) -> Self {
+        FrameLinks {
+            click: Some(Arc::new(handler)),
+            ..FrameLinks::default()
+        }
+    }
+
+    /// Also call `handler` as the pointer comes onto and leaves a link inside a frame (a link
+    /// pill). A set that has no click handler stays inert: a link that does nothing has nothing
+    /// to preview.
+    pub fn with_hover(self, handler: impl Fn(FrameLinkHover) + Send + Sync + 'static) -> Self {
+        self.when_clicking(|links| links.hover = Some(Arc::new(handler)))
+    }
+
+    /// Also call `handler` when a context menu (a secondary press) is asked over a link inside
+    /// a frame (mailo's "Copy Link"): the link is the nearest enclosing `a[href]`, resolved
+    /// against the frame's base URL. It is heard just before the page's own `oncontextmenu`
+    /// for the same press, so the app can keep it for the menu that handler opens. A set that
+    /// has no click handler stays inert.
+    pub fn with_context_menu(
+        self,
+        handler: impl Fn(FrameLinkMenu) + Send + Sync + 'static,
+    ) -> Self {
+        self.when_clicking(|links| links.menu = Some(Arc::new(handler)))
+    }
+
+    /// Also call `handler` when a primary click is released on an image inside a frame
+    /// (mailo opens an inline image in Peek): an `img` with a `src`, resolved against the frame's
+    /// base URL (a `cid:` reference stays `cid:`), and no link above it, since a click on a linked
+    /// image is the link's. A set that has no click handler stays inert.
+    pub fn with_image_click(
+        self,
+        handler: impl Fn(FrameImageClick) + Send + Sync + 'static,
+    ) -> Self {
+        self.when_clicking(|links| links.image = Some(Arc::new(handler)))
+    }
+
+    /// The handler for a click on an image, if the app set one.
+    pub fn images(&self) -> Option<FrameHandler<FrameImageClick>> {
+        self.image.clone()
+    }
+
+    /// The handler for a context menu asked over a link, if the app set one.
+    pub fn menu(&self) -> Option<FrameHandler<FrameLinkMenu>> {
+        self.menu.clone()
+    }
+
+    /// The handler for the pointer crossing a link, if the app set one.
+    pub fn hover(&self) -> Option<FrameHandler<FrameLinkHover>> {
+        self.hover.clone()
+    }
+
+    /// `set` applied to the set, unless it is inert.
+    fn when_clicking(mut self, set: impl FnOnce(&mut Self)) -> Self {
+        if self.click.is_some() {
+            set(&mut self);
+        }
+        self
+    }
+}
+
+impl fmt::Debug for FrameLinks {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("FrameLinks")
+            .field("click", &self.click.is_some())
+            .field("hover", &self.hover.is_some())
+            .field("menu", &self.menu.is_some())
+            .field("image", &self.image.is_some())
+            .finish()
+    }
+}
+
+/// A click as the frame's navigation provider hears it, before the app is told.
+#[derive(Debug)]
+struct Clicked {
+    frame: FrameId,
+    href: String,
+}
+
+/// Every frame document's navigation provider: a click goes on the channel, or nowhere when the
+/// app keeps frame links inert.
+struct FrameNav {
+    sender: Option<UnboundedSender<Clicked>>,
+}
+
+impl NavigationProvider for FrameNav {
+    fn navigate_to(&self, options: NavigationOptions) {
+        if let Some(sender) = &self.sender {
+            let _ = sender.send(Clicked {
+                frame: FrameId::of(options.source_document),
+                href: options.url.to_string(),
+            });
+        }
+    }
+}
+
+/// Where the clicks a document's frames report are delivered to the app.
+pub struct LinkInbox {
+    receiver: UnboundedReceiver<Clicked>,
+    handler: Option<FrameHandler<FrameLink>>,
+    /// Where the clicked frame's tag is read.
+    book: FrameBook,
+}
+
+impl std::fmt::Debug for LinkInbox {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("LinkInbox").finish_non_exhaustive()
+    }
+}
+
+impl LinkInbox {
+    /// Hand every click waiting to the app, now: the headless document calls it each frame.
+    /// `read` finds what the link says; it must release the document before it returns.
+    pub fn drain(&mut self, read: &dyn Fn(FrameId, &str) -> LinkFacts) {
+        while let Ok(link) = self.receiver.try_recv() {
+            self.deliver(link, read);
+        }
+    }
+
+    /// Hand each click to the app as it arrives, for the document's life: the window's task.
+    pub(crate) async fn serve(mut self, read: impl Fn(FrameId, &str) -> LinkFacts) {
+        while let Some(link) = self.receiver.recv().await {
+            self.deliver(link, &read);
+        }
+    }
+
+    fn deliver(&self, clicked: Clicked, read: &dyn Fn(FrameId, &str) -> LinkFacts) {
+        if let Some(handler) = &self.handler {
+            let facts = read(clicked.frame, &clicked.href);
+            handler(FrameLink {
+                frame: clicked.frame,
+                tag: self.book.tag(clicked.frame),
+                href: clicked.href,
+                text: facts.text,
+                title: facts.title,
+            });
+        }
+    }
+}
+
+/// The frame documents' navigation provider for `links`, and the inbox its clicks arrive in,
+/// tagged from `book`.
+pub fn frame_links(
+    links: &FrameLinks,
+    book: FrameBook,
+) -> (Arc<dyn NavigationProvider>, LinkInbox) {
+    let (sender, receiver) = unbounded_channel();
+    let (sender, handler) = match &links.click {
+        None => (None, None),
+        Some(click) => (Some(sender), Some(click.clone())),
+    };
+    (
+        Arc::new(FrameNav { sender }),
+        LinkInbox {
+            receiver,
+            handler,
+            book,
+        },
+    )
+}
+
+/// What the link clicked toward `href` in `frame` says, read from `top`'s frames.
+pub fn read_link(top: &blitz_dom::BaseDocument, frame: FrameId, href: &str) -> LinkFacts {
+    crate::frame_tree::in_frame(top, frame, &|doc| crate::frame_anchor::clicked(doc, href))
+        .unwrap_or_else(|| LinkFacts::bare(href))
+}

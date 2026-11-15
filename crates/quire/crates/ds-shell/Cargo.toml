@@ -1,0 +1,27 @@
+[package]
+name = "ds-shell"
+description = "The design system's app-facing parts above ds: the account sheets and consent alert, the missing-helper sheet and the confirm card, with their sheets."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/quire"
+publish = false
+
+[dependencies]
+ds = {path = "../ds"}
+ds-core = {path = "../ds-core"}
+ds-motion = {path = "../ds-motion", features = ["dioxus"]}
+ds-style = {path = "../ds-style", default-features = false, features = ["dioxus"]}
+dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+# `accounts::Hidden` wipes a typed secret when it is dropped.
+zeroize = {version = "1"}
+
+[dev-dependencies]
+dioxus-ssr = {version = "0.7"}
+ds-lint = {path = "../ds-lint"}
+ds-core = {path = "../ds-core", features = ["testing"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

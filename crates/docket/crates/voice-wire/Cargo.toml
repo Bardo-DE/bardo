@@ -1,0 +1,27 @@
+[package]
+name = "voice-wire"
+description = "The bodies of org.quire.Voice1: begin, events on the utterance fd, ends, faults, status and refusals. Content-free except the transcript fields, which redact their Debug."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+docket-wire = {path = "../docket-wire"}
+docket-vocab = {path = "../docket-vocab"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-infer = {path = "../../../steward/crates/porter-infer"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+proptest = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

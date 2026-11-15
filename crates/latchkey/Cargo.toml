@@ -1,0 +1,63 @@
+[package]
+name = "latchkey"
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+description = "Find this user's background agent, or start one. One logic, three platforms."
+repository = "https://github.com/Bardo-DE/latchkey"
+keywords = ["daemon", "agent", "ipc", "single-instance", "socket"]
+categories = ["os", "network-programming"]
+readme = "README.md"
+
+[dependencies]
+# The transport, and only the transport. `interprocess` already unifies Unix domain sockets and
+# Windows named pipes behind one `Read + Write` stream, which is the half of this problem that
+# was solved; re-implementing it would be the mistake this crate exists to avoid making twice.
+interprocess = "2.4"
+
+# Unix only, and only for what `std` cannot say safely: who this process is, who the other end of a
+# socket is, and `O_NOFOLLOW`. Checking the owner of the directory and of the peer is what makes
+# "the directory is the authentication" true rather than hoped.
+[target.'cfg(unix)'.dependencies]
+rustix = { version = "1.1", default-features = false, features = ["std", "fs", "net", "process"] }
+# Only for the `guard` feature: the caller check (who is on the other end of a socket) is
+# peephole's, by git tag like every consumer of it.
+peephole = {optional = true, path = "../peephole/peephole"}
+peephole-core = {optional = true, path = "../peephole/peephole-core"}
+
+# Windows only: the pipe's security descriptor, which `interprocess` takes as a wide C string.
+[target.'cfg(windows)'.dependencies]
+widestring = "1"
+
+[dev-dependencies]
+tempfile = "3"
+# The test agent below is built only with this feature. Naming it here switches it on for this
+# crate's own tests, while `cargo install latchkey` (no dev-dependencies) never builds it.
+latchkey = { path = ".", features = ["test-agent", "guard"] }
+
+[target.'cfg(unix)'.dev-dependencies]
+# `fake` is the seam that pins a process that is only a claim, for the guard's tests.
+peephole = {features = ["fake"], path = "../peephole/peephole"}
+
+[features]
+# Builds the `latchkey-test-agent` binary the cross-process tests drive. Not for users.
+test-agent = []
+# `latchkey::guard`: the guards of a socket that every local account can reach (Unix only).
+guard = ["dep:peephole", "dep:peephole-core"]
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "warn"
+
+# The agent the cross-process tests drive. A binary target rather than only the example because a
+# `cargo nextest archive` carries binary targets and drops examples, so the tests could not find
+# an example once the archive was extracted elsewhere. `examples/agent.rs` stays the user-facing
+# copy and includes this same source. `test = false`: it has no tests of its own.
+# `required-features`: without it `cargo install latchkey` put this binary on the user's PATH.
+[[bin]]
+name = "latchkey-test-agent"
+path = "tests/support/agent.rs"
+required-features = ["test-agent"]
+test = false
+doc = false

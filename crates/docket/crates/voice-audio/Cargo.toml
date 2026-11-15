@@ -1,0 +1,27 @@
+[package]
+name = "voice-audio"
+description = "The audio device seam, pure: the node model, the capture choice (never a monitor), the capture and playback traits, and a scripted fake behind the testing feature."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+
+[features]
+# `FakeAudioDevice`, a device that plays scripted frames, for tests.
+testing = []
+
+[dev-dependencies]
+# The tests play the fake device, so they build the crate with its `testing` feature on.
+voice-audio = {path = ".", features = ["testing"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

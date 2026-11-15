@@ -1,0 +1,27 @@
+[package]
+name = "seat-input"
+description = "The agent's input: InputOp, the pure plan from a CuaAction to input operations, the keymap and region maps, and the AgentSeat seam. The reis client is `seat-ei`."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/cua"
+publish = false
+
+[dependencies]
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+cua-action = {path = "../../../stoker/crates/cua-action"}
+cua-desktop = {path = "../cua-desktop"}
+cua-types = {path = "../cua-types"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+keyboard-types = {version = "0.7", features = ["serde"]}
+xkbcommon = {version = "0.8", default-features = false}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+serde_json = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

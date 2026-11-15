@@ -1,0 +1,25 @@
+[package]
+name = "casement-layout"
+description = "casement's pure layout seam: SceneLayout, the scene spec, the Arrangement it yields and RustScene, the production layout; taffy only behind taffy_bridge."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/casement"
+publish = false
+
+[dependencies]
+casement-core = {path = "../casement-core"}
+casement-protocols = {path = "../../../casement-protocols"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+ds-core = {path = "../../../quire/crates/ds-core", default-features = false}
+ds-style = {path = "../../../quire/crates/ds-style", default-features = false}
+taffy = {git = "https://github.com/DioxusLabs/taffy", rev = "4863877b9cab21645b160d7f247901f90214fe27", default-features = false, features = ["std", "taffy_tree", "flexbox", "grid", "block_layout"]}
+
+[dev-dependencies]
+proptest = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+missing_debug_implementations = "warn"

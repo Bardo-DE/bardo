@@ -1,0 +1,42 @@
+# Google (Gemini) through the Gemini API, checked with GET /v1beta/models, header x-goog-api-key.
+# This is an API key from Google AI Studio and has nothing to do with google.toml, the Google
+# account (OAuth: Calendar, People, Drive, ...), which stays a TODO under owner decision D1.
+# The account is an API key the person pastes, like an email password: no sign-in with the company.
+# `discover` checks the key with one call to the models list and keeps none of the answer. The
+# row below is the floor every chat model meets; the models themselves are the curated catalogue
+# (stoker), grouped by company, and accountd keeps no list. Its billing is
+# metered: what a reply cost is what the provider reports, and no price is kept here.
+id = "google-ai"
+label = "Google (Gemini)"
+mark = "gemini"
+group = "intelligence"
+
+[mark_face]
+letter = "G"
+colour = "#8E75B2"
+
+[auth]
+kind = "api_key"
+
+[discovery]
+kind = "model_list"
+
+[ai]
+locality = { kind = "cloud", v = {} }
+billing = { kind = "metered" }
+
+[[capability]]
+family = "generate_content"
+endpoint = "https://generativelanguage.googleapis.com/v1beta"
+kind = "llm"
+features = ["chat"]
+context = 8192
+max_output = 4096
+
+# The agent programs that may run on this key (see anthropic.toml).
+[[capability]]
+family = "acp_agent"
+kind = "agent"
+program = "gemini-cli"
+key_env = "GEMINI_API_KEY"
+protocols = ["generate_content"]

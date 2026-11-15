@@ -1,0 +1,20 @@
+[package]
+name = "docket-testbus"
+description = "Test only: a private session bus (a dbus-daemon from a scratch config) whose teardown is certain, shared by the daemons' and the terminal's bus tests."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+docket-dbus = {path = "../docket-dbus"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[dev-dependencies]
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

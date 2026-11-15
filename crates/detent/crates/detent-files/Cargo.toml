@@ -1,0 +1,32 @@
+[package]
+name = "detent-files"
+description = "Reading and writing the settings files the schemas describe: lenient load, atomic write."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/detent"
+publish = false
+
+[dependencies]
+chordkit = {path = "../../../chordkit/crates/chordkit"}
+detent-model = {path = "../detent-model"}
+agents-core = {path = "../../../docket/crates/agents-core"}
+docket-agents = {path = "../../../docket/crates/docket-agents"}
+docket-settings = {path = "../../../docket/crates/docket-settings"}
+ds-extensions = {path = "../../../quire/crates/ds-extensions"}
+ds-helpers = {path = "../../../quire/crates/ds-helpers", default-features = false}
+freedesktop-icons = {version = "0.4"}
+ds-settings = {path = "../../../quire/crates/ds-settings"}
+serde_json = {version = "1"}
+keycap-client = {path = "../../../keycap/crates/keycap-client"}
+thiserror = {version = "2"}
+toml = {version = "1"}
+toml_edit = {version = "0.25"}
+
+[dev-dependencies]
+detent-testkit = {path = "../detent-testkit"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

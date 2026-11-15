@@ -1,0 +1,25 @@
+[package]
+name = "porter-client"
+description = "The app-facing API of the account service: sign an account in, find one by capability, ask for consent, over any transport."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+porter-core = {path = "../porter-core"}
+porter-tailscale = {path = "../porter-tailscale"}
+porter-match = {path = "../porter-match"}
+porter-capability = {path = "../porter-capability"}
+porter-wire = {path = "../porter-wire"}
+porter-ids = {path = "../porter-ids"}
+porter-sheet = {path = "../porter-sheet"}
+futures-core = {version = "0.3"}
+futures-util = {version = "0.3", default-features = false}
+thiserror = {version = "2"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

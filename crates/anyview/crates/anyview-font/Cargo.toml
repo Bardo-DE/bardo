@@ -1,0 +1,30 @@
+[package]
+name = "anyview-font"
+description = "Fonts for the viewer: facts read with skrifa, the specimen's glyph outlines and the font peek."
+version = "0.1.0-beta.1"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/anyview"
+publish = false
+
+[dependencies]
+anyview-core = {path = "../anyview-core"}
+miniz_oxide = {version = "0.8", default-features = false, features = ["with-alloc"]}
+skrifa = {version = "0.44"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+# `OnDisk`: the input of a fixture on disk (core opens no file).
+anyview-fs = {path = "../anyview-fs"}
+miniz_oxide = {version = "0.8", default-features = false, features = ["with-alloc"]}
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+
+[lints.clippy]
+unwrap_used = "deny"
+wildcard_enum_match_arm = "deny"
+match_wildcard_for_single_variants = "deny"

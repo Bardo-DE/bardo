@@ -1,0 +1,34 @@
+[package]
+name = "almanac-local"
+description = "A portable on-disk Backend for an app that hosts its own memory (mailo on macOS and Windows): SQLCipher log and index, sealed files, provided keys, no daemon."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/almanac"
+publish = false
+
+[dependencies]
+almanac-core = {path = "../almanac-core"}
+almanac-seal = {path = "../almanac-seal"}
+almanac-host = {path = "../almanac-host"}
+almanac-service = {path = "../almanac-service"}
+almanac-tidy = {path = "../almanac-tidy"}
+eventlog = {path = "../eventlog"}
+almanac-store = {path = "../almanac-store"}
+memfiles = {path = "../memfiles"}
+recall = {path = "../recall"}
+rusqlite = {version = "0.40", features = ["bundled-sqlcipher-vendored-openssl"]}
+getrandom = {version = "0.3"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+almanac-settings = {path = "../almanac-settings"}
+almanac-client = {path = "../almanac-client", default-features = false, features = ["in_process"]}
+almanac-fake = {path = "../almanac-fake"}
+tempfile = {version = "3"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

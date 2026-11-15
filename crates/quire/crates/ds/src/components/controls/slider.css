@@ -1,0 +1,79 @@
+/* Slider (design/30 section 2.1, `NSSlider`; sized by design/29-SIZING.md). Attribute selectors
+   carry `*|` (spike S2); the focus ring is the global one, on `.ds-slider` (spike S12). The level
+   is `--f`, written inline by the component.
+
+   Linear: a capsule track under a plain round knob (`--slider-knob-*`, the handle's shadow, no
+   ring); a DragTracker in Rust writes `--f`, the knob follows the pointer 1:1 and springs to a
+   tick or where a throw lands, so nothing here transitions `left`. Pressed changes nothing on
+   the knob: macOS has no swell. Ticks are marks on the track at their own `--f`.
+
+   Level (design/29 section 16): the Control Center's level slider. A well and a fill of the level
+   inks under a round knob of the fill's ink that carries the glyph, so nothing stands before the
+   rail and the whole width is track. The inks are the material's level inks (`--m-level-*`, per scheme, `material/level.rs`). A level set from outside slides
+   over `--t-quick --e-out`; under the pointer (`data-pressed`) the fill follows it with no
+   transition. Glyph parts cross-fade over `--t-quick`; the sun's rays scale with `--f`. */
+
+.ds-slider{ --sl-knob:var(--slider-knob-m); --sl-track:var(--slider-track-m); --sl-h:var(--ctl-h-m); position:relative; display:block; cursor:default; }
+.ds-slider[*|data-size=mini]{ --sl-knob:var(--slider-knob-xs); --sl-track:var(--slider-track-xs); --sl-h:var(--ctl-h-xs); }
+.ds-slider[*|data-size=small]{ --sl-knob:var(--slider-knob-s); --sl-track:var(--slider-track-s); --sl-h:var(--ctl-h-s); }
+.ds-slider[*|data-size=large]{ --sl-knob:var(--slider-knob-l); --sl-track:var(--slider-track-l); --sl-h:var(--ctl-h-l); }
+.ds-slider[*|data-size=extra-large]{ --sl-knob:var(--slider-knob-xl); --sl-track:var(--slider-track-xl); --sl-h:var(--ctl-h-xl); }
+
+.ds-slider[*|data-look=linear]{ width:100%; height:var(--sl-knob); }
+.ds-slider[*|data-look=linear] .ds-slider-track{
+  position:absolute; left:0; right:0; top:calc((var(--sl-knob) - var(--sl-track)) / 2); height:var(--sl-track); overflow:hidden;
+  border-radius:var(--r-pill); background:var(--line);
+}
+.ds-slider[*|data-look=linear] .ds-slider-fill{ height:100%; width:calc(var(--f) * 100%); background:var(--accent); }
+.ds-slider-tick{ position:absolute; top:0; bottom:0; left:calc(var(--f) * 100%); width:var(--hair); background:var(--ink-faint); }
+.ds-slider[*|data-look=linear] .ds-slider-thumb{
+  position:absolute; top:0; left:calc(var(--f) * 100%); box-sizing:border-box; width:var(--sl-knob); height:var(--sl-knob); margin-left:calc(var(--sl-knob) / -2);
+  border-radius:var(--r-pill); background:var(--knob-fill); box-shadow:var(--shadow-handle); cursor:default;
+}
+
+/* The level look. The rail is the control's height. */
+.ds-slider[*|data-look=level]{ --level-h:var(--sl-h); display:flex; align-items:center; gap:var(--s-10); width:100%; box-sizing:border-box; }
+.ds-slider-rail{ position:relative; flex:1; min-width:0; height:var(--level-h, var(--sl-h)); }
+/* Where a press and a drag land: the rail and a margin round it, so a drag a little past an end
+   still reaches the control. Last in the rail, so it is over everything drawn there. */
+.ds-slider-hit{ position:absolute; top:calc(var(--s-6) * -1); bottom:calc(var(--s-6) * -1); left:calc(var(--s-16) * -1); right:calc(var(--s-16) * -1); }
+
+/* The capsule: a translucent well with an inner shade, the fill in the bright ink. */
+.ds-slider[*|data-look=level] .ds-slider-track{
+  position:absolute; top:0; bottom:0; left:0; right:0; overflow:hidden; border-radius:var(--r-pill);
+  background:var(--m-level-well); box-shadow:var(--m-level-shade);
+}
+.ds-slider[*|data-look=level] .ds-slider-fill{
+  position:absolute; top:0; bottom:0; left:0; width:calc(var(--f) * 100%); overflow:hidden; border-radius:var(--r-pill);
+  background:var(--m-level-fill); transition:width var(--t-quick) var(--e-out);
+}
+.ds-slider[*|data-pressed] .ds-slider-fill{ transition:none; }
+
+/* The knob: a round disc of the fill's ink riding the fill's end, the capsule less the 1 px knob
+   inset (design/29-SIZING.md R3); the fill ends at its centre. */
+.ds-slider[*|data-look=level] .ds-slider-fill{ width:calc(var(--level-h) / 2 + var(--f) * (100% - var(--level-h))); }
+.ds-slider[*|data-look=level] .ds-slider-thumb{
+  position:absolute; top:var(--knob-inset); left:calc(var(--knob-inset) + var(--f) * (100% - var(--level-h))); width:calc(var(--level-h) - 2 * var(--knob-inset)); height:calc(var(--level-h) - 2 * var(--knob-inset));
+  border-radius:var(--r-pill); background:var(--m-level-fill); box-shadow:var(--m-level-knob);
+  transition:left var(--t-quick) var(--e-out);
+}
+.ds-slider[*|data-pressed] .ds-slider-thumb{ transition:none; }
+
+/* The level well is 22 at every size and its knob 20 (design/29 section 16), thinner than the capsule's rung. */
+.ds-slider[*|data-look=level]{ --level-h:var(--s-22); }
+
+/* The knob holds the glyph, centred, in the dark ink the glyph has where the fill covers it. */
+.ds-slider[*|data-look=level] .ds-slider-thumb{ display:flex; align-items:center; justify-content:center; box-sizing:border-box; color:var(--m-level-glyph-fill); }
+.ds-slider[*|data-look=level] .ds-slider-thumb > .ds-slider-icon{ position:static; display:flex; }
+
+/* Disabled: a level that cannot be moved says so. The rail drops to the
+   disabled .35 (design/13 section 13.3.3's disabled item), the knob is not drawn (nothing to
+   grab), except the level knob, which holds the glyph and dims with the rail, and the pointer is the not-allowed cursor; no press registers (the component takes no
+   input). Busy takes no input either, and keeps the default cursor. */
+.ds-slider[*|aria-disabled=true]{ cursor:not-allowed; }
+.ds-slider[*|aria-disabled=true] .ds-slider-rail{ opacity:.35; }
+.ds-slider[*|data-look=linear][*|aria-disabled=true]{ opacity:.35; }
+.ds-slider[*|aria-disabled=true] .ds-slider-thumb{ display:none; }
+.ds-slider[*|data-look=linear][*|aria-disabled=true] .ds-slider-thumb{ display:block; }
+.ds-slider[*|data-look=level][*|aria-disabled=true] .ds-slider-thumb{ display:flex; }
+.ds-slider[*|aria-busy=true]{ opacity:.35; pointer-events:none; }

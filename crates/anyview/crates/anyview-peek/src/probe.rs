@@ -1,0 +1,78 @@
+//! Probing: what a file is. It reads the file's first 4 KiB and sniffs it, looking inside a zip
+//! for what kind of zip it is; the answer is what [`peek`](crate::peek) takes. [`look`](crate::look)
+//! does both.
+
+use crate::error::PeekError;
+use anyview_archive::zip_entries;
+use anyview_core::{
+    ByteLen, FileHead, Input, OleStreams, SniffStep, Sniffed, ZipEntries, is_ole, sniff,
+    sniff_folder, sniff_ole, sniff_zip,
+};
+use std::io::{Error, ErrorKind};
+
+/// The most of a zip's central directory sniffing reads to tell a document from an archive; a
+/// zip with a larger one is sniffed as a plain archive. It is 8 MiB so that a book or a comic with
+/// many thousands of entries is still a book or a comic: what a file is must not depend on which
+/// window asks (the viewer's own probe used to read this much and this one 256 KiB, so the same
+/// file sniffed differently in the launcher and in the viewer).
+const ZIP_INDEX: ByteLen = ByteLen(8 * 1024 * 1024);
+
+/// A file that was looked at: the file as it was then, and what it is.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Probed {
+    /// The file, with the name and stamp it had when it was probed.
+    pub input: Input,
+    /// What sniffing made of it.
+    pub sniffed: Sniffed,
+}
+
+/// Looks at `src`, a path (`&FilePath`, `&Source`) or any bytes a host injects: a folder is a
+/// folder; a file is sniffed from its head and, when it is a zip or a compound file, from its
+/// entries or directory (an unreadable
+/// zip is a plain archive, which a peek then reports on). Blocking: run it on a worker.
+pub fn probe(src: impl Into<Input>) -> Result<Probed, PeekError> {
+    let input = src.into();
+    let fault = |error: &Error| {
+        let path = input.label();
+        if error.kind() == ErrorKind::NotFound {
+            PeekError::Missing { path }
+        } else {
+            PeekError::Unreadable {
+                path,
+                kind: error.kind(),
+            }
+        }
+    };
+    let is_folder = match input.path() {
+        Some(path) => std::fs::metadata(path.as_path())
+            .map_err(|e| fault(&e))?
+            .is_dir(),
+        None => false,
+    };
+    let sniffed = if is_folder {
+        sniff_folder()
+    } else {
+        // A FIFO, device or socket is refused here, so no later read of the file can hang on it.
+        let head = input
+            .bytes()
+            .read_range(0..FileHead::MAX.0)
+            .map_err(|e| fault(&e))?;
+        let head = FileHead::new(&head);
+        match sniff(&head, input.name()) {
+            // A compound file is Word, Excel or PowerPoint by the streams in its directory,
+            // which lies past the head.
+            SniffStep::Done(sniffed) if is_ole(&head) => OleStreams::read(|start, len| {
+                input.bytes().read_range(start..start.saturating_add(len))
+            })
+            .and_then(|streams| sniff_ole(&streams))
+            .unwrap_or(sniffed),
+            SniffStep::Done(sniffed) => sniffed,
+            SniffStep::LookInside(inside) => {
+                let entries = zip_entries(&input, ZIP_INDEX)
+                    .unwrap_or_else(|_| ZipEntries::new(Vec::<String>::new(), None));
+                sniff_zip(inside, &entries)
+            }
+        }
+    };
+    Ok(Probed { input, sniffed })
+}

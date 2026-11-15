@@ -1,0 +1,100 @@
+# Findings
+
+Departures from the plan, standing facts and open items. An entry names the condition that closes it.
+
+## Decisions and departures
+
+1. **`Pinned::of_stream` makes `Pin::AtConnect` through nix (0.1.5; was `Reopened`).** rustix 1.1.5
+   has `socket_peercred` and `pidfd_open` but no safe `SO_PEERPIDFD` wrapper (`net/sockopt.rs`), and
+   every crate forbids `unsafe`, so 0.1.4 and earlier reopened the pid (pid from `SO_PEERCRED`, pidfd
+   at once, `SO_PEERCRED` again), which a recycled pid could pass. The owner allowed nix (2026-10-17):
+   `getsockopt(stream, sockopt::PeerPidfd)` is the kernel's descriptor of the connector, checked
+   against `SO_PEERCRED`'s pid by its `fdinfo` and polled alive. `ESRCH` (the connector has exited) is
+   `PeerGone`; any other error (a kernel before 6.5 says `ENOPROTOOPT`) falls back to the reopened pin.
+   This closes casement's NEW-CASB-7 once casement holds its Wayland clients through `of_stream`;
+   `Pinned::pidfd` (0.1.6) lends the held descriptor so casement signals the same process it judged.
+2. **No `From<Refused> for fdo::Error`.** Both types are foreign to `peephole-bus` (orphan rule).
+   `access_denied(Refused) -> fdo::Error` and `BusPeers::require_or_deny` do the same job.
+3. **`watch_owner` is `async` and returns a `Result`.** Subscribing is a bus call. The watch yields
+   `Option<()>` per change; the consumer re-runs `owner_of`.
+4. **The manager's own identity is checked by `BusPeers`, not by `ManagerLink`.** `ManagerCheck::Verified`
+   asks `owner_of(org.freedesktop.systemd1)` to hold a requirement (the desktop uses role `manager`,
+   `Exe`); `Unchecked` is for a private test bus. A custom `UnitSource` thus gets the same check.
+   The image is not always readable: systemd 254 and later gives user managers `CAP_WAKE_ALARM`, and
+   the kernel then hides `/proc/<pid>/exe` from every process of that user without it (found on the
+   first real login, Fedora 44). So a manager whose image does not prove it is believed when process
+   1, as the owner of `org.freedesktop.systemd1` on the system bus, names it the main process of
+   `user@<uid>.service` and it is still that process (`attest.rs`).
+5. **`ExecStart` is matched against the row's patterns, not equal to the image** (ARCHITECTURE 3).
+6. **`FixtureProc` is behind `fake`.** The plan listed it as public; as a test helper it follows the
+   convention "test helpers are not API".
+7. **`peephole::peephole_core` and `peephole_bus::peephole` are crate re-exports,** not glob re-exports.
+8. **Roles added to the plan's list:** `updater` (slipway.service), `memory` (memoryd.service) and
+   `manager` (the systemd image). The plan's DETENT-05 row names `updater` and `memory`.
+9. **`Cgroup` proof is reachable only with a hidden image.** A readable but user-writable image is
+   `Unverified`, whatever its cgroup says, so no `Cgroup` standing exists for a hostile image.
+
+10. **Developer rows are a cargo feature, not a table key or a runtime switch (0.1.4).** The
+    desktop's developer scripts run stand-ins from the checkout; a runtime switch could be turned on
+    in a shipped binary, a feature cannot (the gate greps for it). `Proof::Dev` and the `origin`
+    field are `cfg`-gated, so a build without the feature has the same API as 0.1.3: `Proof` is
+    already `#[non_exhaustive]`, and the new variant sits first so the derived order puts it below
+    `Cgroup`. A developer row may name an app or role a shipped row names (a stand-in for the
+    accounts service is `org.quire.Accounts` in both); what it never does is replace a shipped row,
+    hold a shipped unit, or give a proof above `Dev`. `Requirement::dev` accepts every proof, so a
+    consumer's debug build lets in the real service too; "only Dev or Full" is not expressible
+    without a new `Requirement` field. `TableFiles::load_dev` takes the person's uid as an argument
+    because `ProcFs` has no notion of the current user. `RealProc::info_of` is read, not run in a
+    test (no scratch-directory test in this crate).
+
+11. **A pin is never a caller's claim (P4).** `Pinned::from_pid` and `from_pid_with_uid` no
+    longer take a `Pin`: they open the pidfd by number, so the pin is always `Reopened`. Only
+    `Pinned::of_stream` and `Pinned::from_fd`, which hold a descriptor the kernel or the bus made at
+    connect time, give `AtConnect`. The rule: **a `Pin` value is produced by the code that holds the
+    process and never accepted as an argument by a public constructor** (the `fake` seam
+    `Pinned::introduced` is the one place a test forges it). A `PinNeed::AtConnect` requirement can
+    therefore not be met by a caller that merely says so.
+
+12. **Plain types (owner, 2026-10-28).** The type rule changed. The private two-state
+    enums `UnitUse` and `UnitCheck` are `bool`; the `LOADER_VARIABLES` doc no longer repeats the
+    names. No behaviour change. The public two-state types (`Alive`, `Transient`, `Loader`,
+    `Fragment`, `DropIns`) wait for wave 2 because porter and casement use them.
+
+## Open items
+
+1. **Snap from a socket.** The Snap label comes only from the bus's `LinuxSecurityLabel`; `SO_PEERSEC`
+   is not read for sockets (no safe rustix wrapper checked). A Snap on a unix socket is a hidden-image
+   `Unverified`. Closes with a consumer that needs it (nothing in wave 2 does).
+2. **xdg-dbus-proxy.** A proxied app is the proxy's process (`Program`); no special case exists.
+3. **Per-distro `exe` paths** in `dist/desktop-callers.toml` are the plan's guesses (portal frontend
+   `/usr/libexec` vs `/usr/lib`, `systemd` under `/usr/lib` and `/lib`). Closes at the desktop gate
+   per distro (plan section 7, fact 13).
+4. **The unit manager calls do blocking `lstat`s inline** (a fragment and a handful of drop-ins).
+   Bounded and tiny; `Offload` covers only the `/proc` probe. Closes if a profile says otherwise.
+5. **`Pin::AtConnect` on the bus depends on the bus daemon offering `ProcessFD`** (dbus-daemon 1.14.10
+   and dbus-broker are believed to). Unverified; without it the pin is `Reopened`.
+6. **No `Cargo.lock` is committed** by the first lane; the gate session generates it.
+
+## v0.1.10 (2026-10-25): owners inside a user service's namespace
+
+- A user service with ProtectSystem/ProtectHome/PrivateTmp runs with PrivateUsers=self: only the person's uid is mapped, and
+  root's files show as the overflow uid (65534). Every image, directory and table file then read as Writable(Owner(65534)), so
+  accountd and inferd could prove no peer Full and refused Settings on the real login (found by the agent session).
+- `RealProc` now reads `self/uid_map` and `sys/kernel/overflowuid`: where real root is not mapped and the overflow uid is not a
+  mapped account, an owner of the overflow uid is taken as root's (`OwnerView`). The group and other write bits still count. The
+  person's own uid stays mapped, so their files stay theirs, and the threat of the person's own session forging is still met.
+  Another local account's files would also read as root's inside such a namespace; on this desktop no other account owns a
+  path on the proof ladder.
+- Checked under `unshare --user --map-current-user`: `/etc`, `/usr/bin/ls` and the desktop table are root-only.
+
+## v0.1.11 (2026-10-27): `Proof::Unit` for a sandboxed user service's callers
+
+- With v0.1.10 a sandboxed user service (accountd, inferd) reads owners right, but its user namespace still hides every other
+  process's `exe` and `environ` (the kernel's ptrace check across namespaces), so Settings, Inference1 and Accounts1 stayed at
+  `Cgroup` and were refused (found by the agent session inside accountd's real sandbox).
+- The owner chose (2026-10-27) a new level over taking `Full` on the manager's word or reshaping the sandbox: `Proof::Unit`, between
+  `Exe` and `Full`, for a hidden image whose unit passes every unit check of `Full` and whose `ExecStart` program is root-only all
+  the way up (`UnitFacts::exec_trust`, new). `Full` still means the running image itself was read. What `Unit` cannot see: a main
+  process that later exec'd another program. Consumers opt in (porter: fixed roles accept `Unit`).
+- `BusPeers::require` asks the manager when any requirement is `Unit` or higher.
+- Breaking for anything that builds `UnitFacts` (porter's fixture): add `exec_trust`.

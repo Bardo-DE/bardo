@@ -1,0 +1,75 @@
+//! The crate's integration tests: one executable, one module per former test file.
+//! A separate test target needs a stated reason.
+
+mod alert_ssr;
+mod button_busy_look_ssr;
+mod button_description_ssr;
+mod button_field_tile_states_ssr;
+mod button_leading_and_label_run_states_ssr;
+mod button_pass_through_and_outline_states_ssr;
+mod button_popup_ssr;
+mod capsule_unmeasured_ssr;
+mod center_tables;
+mod chip_pressable_ssr;
+mod chrome;
+mod clock_rule;
+mod companion_ssr;
+mod companion_stand_ins;
+mod companion_words;
+mod components_controls;
+mod components_lists;
+mod components_overlays;
+mod components_structure;
+mod control_goldens_lint;
+#[path = "controls/css_scan.rs"]
+mod css_scan;
+mod edit_surface_ssr;
+mod file_icon_ssr;
+mod forms_ssr;
+mod golden_hygiene;
+mod hig_lint;
+mod kept_click_rule;
+mod launcher_parts_ssr;
+mod legibility;
+mod motion_drift;
+mod motion_machines;
+mod pass_through_lint;
+mod pdf_thumb_ssr;
+mod pixel_root;
+mod placement;
+mod pop_up_button_open_ssr;
+mod provider_and_button_face_states_ssr;
+mod root_ssr;
+mod roster;
+mod row_leading_element_ssr;
+mod row_outline_editing_states_ssr;
+mod selectors;
+mod sheet_hygiene;
+mod snippet_forms;
+mod space_editor_ssr;
+mod standard_action;
+mod status_bar_ssr;
+mod status_tables;
+mod support;
+mod surface;
+mod symbol_ssr;
+mod token_derive;
+mod toolbar_parts_ssr;
+mod type_faces;
+mod user_style_ssr;
+mod voice_orb_ssr;
+mod window_frame_ssr;
+mod window_tiled;
+
+#[path = "support/module_guard.rs"]
+mod module_guard;
+
+#[test]
+fn every_test_file_is_a_module() {
+    let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/it");
+    let left_out = module_guard::undeclared(&dir);
+    assert!(
+        left_out.is_empty(),
+        "not a module of main.rs, so never run: {left_out:?}"
+    );
+}

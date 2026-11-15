@@ -1,0 +1,238 @@
+/* The gallery's own layout. Every colour, size, radius, shadow, duration and spacing is a quire
+   token; the only raw numbers are the widths and heights that place the specimens. Linted
+   with ds::lint Strict in tests/lint.rs. */
+
+.g-app{position:relative;display:flex;flex-direction:column;gap:var(--s-12);padding:var(--s-12) var(--s-14) var(--s-36);min-height:100%}
+.g-toolbar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--s-10) var(--s-16);color:var(--f-ink)}
+.g-tool{display:flex;flex-direction:column;gap:var(--s-4)}
+.g-tool-name{font-family:var(--font-data);font-size:var(--fs-caption);letter-spacing:.08em;text-transform:uppercase;color:var(--f-ink-soft)}
+.g-anchor{display:inline-flex}
+.g-pages{display:flex;flex-wrap:wrap}
+.g-card{position:relative;display:flex;flex-direction:column;gap:var(--s-22);padding:var(--s-18) var(--s-22) var(--s-26);background:var(--surface);color:var(--ink);border-radius:var(--r-card);box-shadow:var(--shadow-card)}
+.g-lede{max-width:760px;font-size:var(--fs-body);color:var(--ink-soft)}
+.g-section{display:flex;flex-direction:column;gap:var(--s-10)}
+.g-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-10) var(--s-12)}
+.g-column{display:flex;flex-direction:column;align-items:stretch;gap:var(--s-10);max-width:420px}
+.g-row-top{align-items:flex-start}
+/* Pushes what follows it to the row's end (the bar's status side). */
+.g-spacer{flex:1}
+.g-col{display:flex;flex-direction:column;gap:var(--s-6);min-width:0}
+.g-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s-12)}
+.g-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-12)}
+.g-grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s-10)}
+.g-grid6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s-8)}
+.g-grid8{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:var(--s-8)}
+.g-note{font-size:var(--fs-small);color:var(--ink-soft);max-width:760px}
+.g-name{font-size:var(--fs-small);font-weight:600;color:var(--ink)}
+.g-code{font-family:var(--font-code);font-size:var(--fs-caption);color:var(--ink-faint);overflow-wrap:anywhere}
+.g-pass{color:var(--ok)}
+.g-fail{color:var(--danger)}
+
+/* Specimens. */
+.g-swatch{height:34px;border-radius:var(--r-small);box-shadow:inset 0 0 0 var(--hair) var(--line)}
+.g-chip-swatch{width:26px;height:26px;border-radius:var(--r-pill);flex:none;box-shadow:inset 0 0 0 var(--hair) var(--line)}
+.g-space-bar{height:10px;background:var(--accent);border-radius:var(--r-micro)}
+.g-radius{width:84px;height:56px;background:var(--accent-soft);border:var(--hair) solid var(--accent-text)}
+.g-shadow{width:110px;height:64px;background:var(--raise);border-radius:var(--r-card)}
+.g-type-line{display:flex;align-items:baseline;gap:var(--s-14);min-width:0}
+.g-type-name{width:190px;flex:none}
+.g-sample{width:56px;height:56px;border-radius:var(--r-btn);background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700}
+.g-lab{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-10)}
+.g-lab-cell{display:flex;align-items:center;gap:var(--s-12);padding:var(--s-10);border-radius:var(--r-panel);background:var(--surface-2)}
+.g-table{display:grid;gap:var(--s-4) var(--s-14);align-items:baseline}
+.g-cols5{grid-template-columns:minmax(0,1.6fr) repeat(4,minmax(0,1fr))}
+.g-cols6{grid-template-columns:minmax(0,1.4fr) minmax(0,1.2fr) repeat(4,minmax(0,1fr))}
+.g-head{font-family:var(--font-data);font-size:var(--fs-caption);text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint)}
+
+/* Stages: a positioned box so the absolutely placed specimens (toast, pills, ghost) land inside
+   it rather than on the page. */
+.g-stage{position:relative;min-height:120px;border-radius:var(--r-panel);background:var(--surface-2);overflow:hidden}
+.g-stage-tall{min-height:200px}
+.g-stage-pad{padding:var(--s-14)}
+.g-list.g-stage-pad{padding:var(--s-14)}
+.g-leave{width:360px;border-radius:var(--r-panel);overflow:hidden}
+.g-leave-row{padding:var(--s-4) var(--s-8)}
+.g-list{position:relative;max-width:620px;border-radius:var(--r-panel);background:var(--surface);border:var(--hair) solid var(--line-soft);padding:var(--s-4) 0}
+/* A title a bare field edits in place. */
+.g-bare-title{display:flex;font-size:var(--fs-title);color:var(--ink)}
+.g-side{display:flex;flex-direction:column;gap:var(--s-2);width:232px;padding:var(--s-10);border-radius:var(--r-panel);background:var(--f-solid);color:var(--f-ink)}
+
+/* Materials: a wallpaper under each chrome panel. The image is a generated PNG (wallpaper.rs). */
+.g-wall{display:flex;flex-direction:column;gap:var(--s-10);padding:var(--s-14);border-radius:var(--r-panel);background-size:cover;background-position:center}
+.g-panel{display:flex;flex-direction:column;gap:var(--s-6);padding:var(--s-12) var(--s-14);min-height:92px}
+.g-panel-row{flex-direction:row;align-items:center;gap:var(--s-12)}
+.g-panel-bar{flex-direction:row;align-items:center;min-height:32px;padding:var(--s-4) var(--s-12)}
+.g-panel-dock{flex-direction:row;align-items:center;justify-content:center;min-height:58px}
+.g-floors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s-4) var(--s-10)}
+
+/* The matrix: one cell per scheme and accent. */
+.g-matrix{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s-8)}
+.g-cell{display:flex;flex-direction:column;gap:var(--s-8);padding:var(--s-12);min-height:120px}
+/* The launcher panel's shape, for the embedded palette (sill's 540-wide card), and the dock
+   pill's specimen box. A grid item stretches both ways, so the Surface inside fills the box; the
+   pill, a flex item, is as wide as its tiles. */
+.g-launcher{display:grid;align-items:start;width:540px;height:330px}
+.g-launcher-wide{display:grid;align-items:start;width:860px;height:400px}
+.g-dock{display:flex;padding-top:var(--s-36)}
+.g-dock-tiles{display:flex;align-items:center;gap:var(--s-12);padding:var(--s-8) var(--s-12)}
+
+/* The Chrome targets page: the bar strip, the menu's room under it, the paired
+   material cards, corner fills, the dock specimen and the window cards. */
+.g-chrome-wall{gap:0}
+.g-chrome-bar{display:flex;align-items:center;gap:var(--s-4);height:32px;padding:0 var(--s-10)}
+.g-chrome-cards{flex-direction:row;flex-wrap:wrap;gap:var(--s-22) var(--s-36)}
+.g-chrome-pair{display:flex;gap:var(--s-22)}
+.g-chrome-card{display:flex;flex-direction:column;gap:var(--s-4);padding:var(--s-14);min-height:84px}
+.g-chrome-fill{width:150px;height:110px}
+.g-chrome-corners{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-22);align-items:start}
+.g-chrome-plate-box{width:96px;height:96px}
+.g-chrome-dock{display:flex;padding-top:var(--s-36)}
+.g-chrome-windows{padding:var(--s-22) var(--s-36) var(--s-36)}
+.g-chrome-window{width:260px;height:150px;background:var(--raise);border-radius:var(--r-window)}
+.g-chrome-window-old{box-shadow:var(--shadow-pop)}
+.g-edit{position:relative;width:440px;border:var(--hair) solid var(--line);border-radius:var(--r-btn);background:var(--surface-2);color:var(--ink);font-size:var(--fs-body);line-height:1.55}
+.g-edit-body{padding:var(--s-8) var(--s-12)}
+.g-edit p{margin:0}
+.g-edit-chip{display:inline-block}
+.g-edit-caret{position:absolute;width:var(--caret-w);background:var(--accent-text);pointer-events:none}
+/* The reader a pane peeks over its inline scrim. */
+.g-peeked{position:absolute;top:var(--s-10);right:var(--s-10);bottom:var(--s-10);width:45%;padding:var(--s-12);border-radius:var(--r-panel);background:var(--surface);box-shadow:var(--shadow-2)}
+/* A card holding an inline menu with its query field. */
+.g-menu-card{width:260px;padding:var(--s-6);border-radius:var(--r-panel);background:var(--surface);box-shadow:var(--shadow-2)}
+/* A consumer's own reveal on a quire button (`extra_class`): faint until its row is
+   hovered. The gallery's class, never a `ds-` one. */
+.g-reveal-row .g-reveal{opacity:.35;transition:opacity var(--t-quick) var(--e-out)}
+.g-reveal-row:hover .g-reveal{opacity:1}
+/* The Level page and the level sheet: a specimen's ground holds an OSD card with its margins. */
+.g-level-tile{display:block;width:344px}
+.g-level-ground{display:flex;flex-direction:column;padding:0 0 var(--s-12)}
+.g-level-grid{display:flex;flex-direction:column;gap:var(--s-12)}
+.g-level-live{display:flex;flex-direction:column;gap:var(--s-16)}
+.g-level-screen{display:block;height:150px;border-radius:var(--r-panel);overflow:hidden}
+.g-level-sheet{display:flex;flex-direction:column;padding:var(--s-6) var(--s-16)}
+.g-level-label{width:150px}
+/* The control center specimen: the panel is 320 wide, 12 inside (design/13 section 13.3.7). */
+.g-modal{position:relative;width:560px;border-radius:var(--r-panel);overflow:hidden}
+.g-modal.g-modal-wide{width:760px}
+.g-modal-stage{height:300px}
+.g-cat-wide{width:1120px}
+.g-within-stage{display:flex;gap:var(--s-8);padding:var(--s-8);box-sizing:border-box}
+.g-within-side{flex:none;width:120px;border-radius:var(--r-panel);background:var(--surface-2)}
+.g-within-card{flex:1 1 0;min-width:0;border-radius:var(--r-card);background:var(--surface);color:var(--ink)}
+.g-cat-wide .g-modal-stage{height:520px}
+.g-alert-row{align-items:flex-start;gap:var(--s-22)}
+.g-alert-cc{width:320px;border-radius:var(--r-panel);overflow:hidden}
+.g-alert-cc-body{position:relative;padding:var(--s-12);min-height:300px}
+.g-alert-stage{height:360px;padding:var(--s-14)}
+/* The notifications specimen: per scheme, the Work tint holding the banners
+   and a posed mid-drag card on the left, and the center's edge panel on the right, in a stage the
+   height of a small screen (the panel is absolutely placed, so the stage gives its root a height). */
+.g-notif-row{display:flex;flex-wrap:wrap;gap:var(--s-22)}
+.g-notif{width:820px;border-radius:var(--r-panel);overflow:hidden}
+.g-notif-ground{display:flex;gap:var(--s-16);padding:var(--s-16)}
+.g-notif-left{display:flex;flex-direction:column;gap:var(--s-12);width:392px}
+.g-notif-swiped{transform:translateX(56px)}
+.g-notif-center{position:relative;width:380px}
+.g-notif-stage{height:540px}
+/* The widgets specimen: the desktop's cards and the center's tiles side by
+   side over the wallpaper, each host's three sizes wrapping in its own column. */
+.g-widgets{flex-direction:row;flex-wrap:wrap;gap:var(--s-22)}
+.g-widgets-desk{width:560px}
+.g-widgets-center{width:560px;border-radius:var(--r-panel);overflow:hidden}
+.g-widgets-grid{display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--s-16);padding:var(--s-12)}
+.g-shot-row{display:flex;flex-wrap:wrap;gap:var(--s-22)}
+.g-shot{width:680px;border-radius:var(--r-panel);overflow:hidden}
+.g-shot-ground{display:flex;align-items:flex-end;gap:var(--s-16);padding:var(--s-16) var(--s-16) var(--s-26)}
+.g-wl-wall{padding:var(--s-22)}
+.g-wl-cards{display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--s-16)}
+.g-wl-devices{display:flex;flex-wrap:wrap;gap:var(--s-16)}
+.g-wl-device{display:flex;flex-direction:column;align-items:center;gap:var(--s-6);width:72px;color:var(--ink)}
+.g-wl-device-name{font-family:var(--font-ui);font-size:var(--fs-small);color:var(--ink-soft)}
+/* Edit Widgets as met: a 1120 x 720 desktop, its widgets at their cells, the sheet
+   at the bottom edge holding the gallery, which fills it. */
+.g-we-stage{position:relative;width:1120px;border-radius:var(--r-panel);overflow:hidden;background-size:cover}
+.g-we-desk{position:relative;height:720px}
+.g-we-cell{position:absolute}
+.g-we-sheet{display:flex;flex-direction:column;flex:1;min-height:0}
+.g-wb-wall{position:relative;padding:0}
+.g-wb-slot{position:absolute;border-radius:var(--m-radius)}
+/* The Lock and switcher page (M11): a lock screen at a 16:10 output's proportions, and two at
+   half scale (a transform, so the lock screen lays itself out at full size); a wrong password
+   posed at shake-x's 20 % frame; the polkit sheet's stage; the switcher on the calm wallpaper. */
+.g-lock-full{width:1216px;border-radius:var(--r-panel);overflow:hidden}
+.g-lock-size{width:1216px;height:760px}
+.g-lock-mini{width:596px;height:372px;border-radius:var(--r-panel);overflow:hidden}
+.g-lock-mini .g-lock-stage{transform:scale(.49);transform-origin:0 0}
+.g-lock-picture{width:380px;padding:var(--s-26) 0;border-radius:var(--r-panel);overflow:hidden;background-size:cover;background-position:center}
+.g-shake-pose{transform:translateX(-6px)}
+.g-polkit{width:588px;background-size:cover;background-position:center}
+.g-polkit-stage{height:540px}
+.g-switcher-wall{display:flex;justify-content:center;padding:var(--s-36) var(--s-16);border-radius:var(--r-panel);background-size:cover;background-position:center}
+.g-emoji-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:var(--s-12) var(--s-8)}
+.g-emoji-cell{align-items:center}
+.g-emoji-reactions{gap:var(--s-22);align-items:flex-start}
+.g-emoji-sizes{align-items:flex-end;gap:var(--s-12)}
+/* Details page (design/26-DETAILS.md): one cell per primitive, its well above its caption and
+   the buttons that move it. */
+.g-detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-12)}
+.g-detail-cell{display:flex;flex-direction:column;gap:var(--s-10);padding:var(--s-12);border-radius:var(--r-panel);background:var(--surface-2)}
+.g-detail{display:flex;align-items:center;justify-content:center;gap:var(--s-12);min-height:72px;padding:var(--s-10) var(--s-14);border-radius:var(--r-small);background:var(--surface);color:var(--ink)}
+.g-detail-list{flex-direction:column;align-items:stretch;justify-content:flex-start}
+.g-driven-stage{position:relative;height:180px;border-radius:var(--r-small);overflow:hidden}
+.g-driven-stage-fill{height:180px}
+.g-driven-switcher{overflow:hidden}
+.g-driven-tile{display:grid;place-items:center;width:56px;height:56px;border-radius:var(--r-tile);background:var(--accent);color:var(--accent-ink);font-size:var(--fs-small);font-weight:600}
+.g-status-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g-status-strip{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s-14);padding:var(--s-10) var(--s-12);border-radius:var(--r-small);background:var(--surface);color:var(--ink)}
+.g-status-still{display:flex;flex-direction:column;align-items:center;gap:var(--s-6);min-width:56px}
+.g-status-words{font-size:var(--fs-caption);color:var(--ink-soft);text-align:center}
+.g-center-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g-center-tiles{flex:1;min-width:0}
+.g-center-player{display:flex;align-items:center;gap:var(--s-4)}
+.g-center-track{flex:1;min-width:0}
+.g-detail-word{font-size:var(--fs-small);color:var(--ink-soft);min-width:84px}
+.g-bar{position:relative;width:160px;height:10px;border-radius:var(--r-pill);background:var(--line);overflow:hidden}
+.g-bar-fill{height:100%;border-radius:var(--r-pill);background:var(--accent)}
+.g-figure{font-family:var(--font-data);font-size:var(--fs-title);min-width:48px}
+.g-check-well{display:grid;place-items:center;width:22px;height:22px;color:var(--ok)}
+.g-shake-field{padding:var(--s-6) var(--s-14);border-radius:var(--r-pill);background:var(--raise);box-shadow:var(--shadow-1);color:var(--ink-faint)}
+.g-nudge-bell{display:inline-block}
+.g-seal{width:36px;height:36px;border-radius:var(--r-pill);background:var(--accent)}
+.g-spin-well{position:relative;display:grid;place-items:center;width:32px;height:32px;margin:var(--s-6);border-radius:var(--r-pill);background:var(--paper);color:var(--ink-soft)}
+.g-reveal-row{padding:var(--s-4) var(--s-10);border-radius:var(--r-small);background:var(--surface-2);font-size:var(--fs-small);margin-bottom:var(--s-4)}
+
+.g-stage-row{display:flex;gap:var(--s-16);flex-wrap:wrap;margin:var(--s-12) 0}
+.g-stage{position:relative;width:300px;height:290px}
+
+.g-stage-caption{position:absolute;left:0;bottom:0;margin:0}
+.g-stage[*|data-wide=true]{width:520px}
+.g-split-stage{height:220px;width:640px}
+.g-split-side{box-sizing:border-box;height:100%;padding:var(--s-12);background:var(--surface);color:var(--ink-soft)}
+.g-split-main{box-sizing:border-box;height:100%;padding:var(--s-12);color:var(--ink-soft)}
+.g-spaces{display:flex;width:640px;height:420px;border-radius:var(--r-panel);overflow:hidden;background:var(--paper)}
+.g-spaces-side{display:flex;flex-direction:column;gap:var(--s-4);width:232px;box-sizing:border-box;padding:var(--s-10);background:var(--f-solid);color:var(--f-ink)}
+.g-spaces-page{flex:1 1 0;display:flex;align-items:center;justify-content:center}
+.g-side-frame{display:flex;flex-direction:column;width:232px;height:330px;border-radius:var(--r-panel);overflow:hidden}
+.g-on-tint{background:var(--f-solid)}
+.g-titlebar{position:relative;width:520px;border-radius:var(--r-panel);background:var(--f-solid);overflow:hidden}
+.g-window{display:flex;flex-direction:column;width:980px;height:640px;border-radius:var(--r-window);background:var(--paper);box-shadow:var(--shadow-window);overflow:hidden}
+.g-window-bar{position:relative;flex:none;background:var(--surface)}
+.g-window-body{flex:1 1 0;min-height:0}
+.g-window-content{display:flex;flex-direction:column;height:100%;min-width:0}
+.g-window-scroll{flex:1 1 0;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:var(--s-14);padding:var(--s-4) var(--s-22) var(--s-22)}
+
+/* App features page: the edge-peek stage's host grid, and the Space key's swatch. */
+.g-side-host{display:grid;height:100%;transition:grid-template-columns var(--t-move) var(--e-out)}
+.g-side-body{padding:var(--s-12);display:flex;flex-direction:column;gap:var(--s-6)}
+.g-side-content{display:grid;place-items:center;color:var(--ink-faint)}
+.g-space-key{padding:var(--s-8) var(--s-12);border-radius:var(--r-field);background:var(--surface-2);transition:background-color var(--t-big) var(--e-out)}
+.g-space-key[*|data-space="1"]{background:var(--c-blue-soft)}
+.g-space-key[*|data-space="2"]{background:var(--c-green-soft)}
+.g-space-key[*|data-space="3"]{background:var(--c-violet-soft)}
+.g-space-key[*|data-space="4"]{background:var(--c-amber-soft)}
+.g-space-key[*|data-space="5"]{background:var(--c-red-soft)}
+.g-accounts{width:588px;background-size:cover;background-position:center}
+.g-accounts-stage{height:560px}
+.g-helpers{width:588px;background-size:cover;background-position:center}
+.g-helpers-stage{height:360px}
+.g-accounts[*|data-height=tall] .g-accounts-stage{height:900px}

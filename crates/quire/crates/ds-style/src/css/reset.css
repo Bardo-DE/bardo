@@ -1,0 +1,26 @@
+/* reset.css: the document stays transparent and `.ds` carries the base text (design/02-TYPE.md
+   section 3). A shell surface shows the desktop through `html` and `body`; whatever a surface
+   paints, its `.ds` root paints. No `:root`, no media query: the root's attributes are explicit
+   (design/05-MOTION.md section 9 rule 11).
+   The element rules scope through `:where(.ds)`, which adds no specificity: each is (0,0,1), so
+   any component rule written as one class outranks them (a `.ds button` form was (0,1,1) and
+   took a lone class's colour and font; FINDINGS "Polish pass"). */
+html,body{margin:0;padding:0;background:transparent}
+.ds,.ds *,.ds *::before,.ds *::after{box-sizing:border-box}
+.ds{background-color:var(--paper);color:var(--ink);font-family:var(--font-ui);font-size:var(--fs-base);line-height:1.55;-webkit-font-smoothing:antialiased}
+:where(.ds) h1,:where(.ds) h2,:where(.ds) h3{font-family:var(--font-display);font-weight:700;margin:0;letter-spacing:var(--tracking-heading);text-wrap:balance}
+:where(.ds) h4,:where(.ds) h5{font-family:var(--font-display);font-weight:700;margin:0}
+:where(.ds) p{margin:0}
+:where(.ds) button,:where(.ds) input,:where(.ds) textarea,:where(.ds) select{font:inherit;color:inherit}
+/* An overlay root (`RootExtent::Viewport`): at least the viewport, since a root of
+   positioned content lays out nothing and Taffy places a fixed box against its parent. A window
+   root (`RootExtent::Window`) is the window's height exactly, so its children can be `height:100%`. */
+.ds[*|data-extent=viewport]{min-height:100vh;min-width:100vw}
+.ds[*|data-extent=window]{height:100vh;min-width:100vw;box-sizing:border-box}
+/* The focus ring (design/30 section 1.4, Ring): a 3 px translucent accent outline one pixel off the
+   element, on keyboard focus only. Blitz never matches the visible-focus pseudo
+   class, so ds-native stamps the input modality on the root and the ring keys on it (spike
+   S12). */
+.ds[*|data-modality=keyboard] :focus{outline:var(--ring) solid var(--accent-ring);outline-offset:var(--focus-gap);border-radius:var(--r-tiny)}
+/* Highlight is the element's own fill (menu rows), never a ring. */
+.ds[*|data-modality=keyboard] [*|data-focus=highlight]:focus{outline:none}

@@ -1,0 +1,20 @@
+[package]
+name = "oauth-probe-proto"
+description = "What an OAuth token shows, with no IO: the bearer read of an API and the readings of Google's and Microsoft Graph's answers as claims about the account's services (present, turned off, refused by the tenant, not on the server)."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+porter-capability = {path = "../porter-capability"}
+porter-ids = {path = "../porter-ids"}
+http = {version = "1"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

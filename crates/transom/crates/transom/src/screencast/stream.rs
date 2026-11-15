@@ -1,0 +1,150 @@
+//! Moving frames from a [`CaptureSource`] to a [`FrameSink`].
+//!
+//! The sink is the seam in front of PipeWire: the real one is [`super::pipewire::PipewireSink`],
+//! [`FakeSink`] records what it was given. [`Pump`] is the whole loop body, so the logic between
+//! them is tested without either.
+
+use std::time::Duration;
+
+use transom_core::{CursorMode, Extent, PwNode};
+
+use crate::capture::{Arrival, CaptureError, CaptureSource, CapturedFrame};
+
+/// How long one turn waits for a change before it gives the loop a chance to look around (to
+/// notice it was told to stop).
+pub const QUIET_TURN: Duration = Duration::from_millis(250);
+
+/// Why a frame could not be handed on.
+#[derive(Debug, thiserror::Error)]
+#[non_exhaustive]
+pub enum SinkError {
+    /// No app is reading the stream any more.
+    #[error("nobody is reading the stream")]
+    NoReader,
+    /// PipeWire failed.
+    #[error("pipewire: {0}")]
+    Pipewire(String),
+}
+
+/// Where frames go.
+pub trait FrameSink: Send + std::fmt::Debug {
+    /// The node apps connect to.
+    fn node(&self) -> PwNode;
+    /// Offer one frame. The sink keeps it as the picture to show: it goes out when a reader has a
+    /// buffer free, and again at the stream's pace for as long as nothing newer comes.
+    fn push(&mut self, frame: CapturedFrame) -> Result<(), SinkError>;
+    /// Tell the sink the stream's size changed (the window was resized).
+    fn resize(&mut self, size: Extent) -> Result<(), SinkError>;
+}
+
+/// What one turn of the pump did.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[non_exhaustive]
+pub enum PumpOutcome {
+    /// A frame went to the sink.
+    Pushed,
+    /// The sink had to be resized first, then a frame went.
+    ResizedAndPushed,
+    /// Nothing changed for a while. The sink keeps sending the last picture on its own.
+    Quiet,
+    /// The source is gone; the stream is over.
+    SourceEnded,
+}
+
+/// The loop body: take a frame from the source, give it to the sink.
+#[derive(Debug)]
+pub struct Pump<C, S> {
+    source: C,
+    sink: S,
+    last_size: Extent,
+    cursor: CursorMode,
+}
+
+impl<C: CaptureSource, S: FrameSink> Pump<C, S> {
+    /// A pump between `source` and `sink`.
+    pub fn new(source: C, sink: S, cursor: CursorMode) -> Self {
+        let last_size = source.size();
+        Self {
+            source,
+            sink,
+            last_size,
+            cursor,
+        }
+    }
+
+    /// The node the sink serves.
+    pub fn node(&self) -> PwNode {
+        self.sink.node()
+    }
+
+    /// The cursor mode this stream was set up with.
+    pub fn cursor(&self) -> CursorMode {
+        self.cursor
+    }
+
+    /// Take the sink back (to inspect a fake, or to close a real one).
+    pub fn into_sink(self) -> S {
+        self.sink
+    }
+
+    /// One turn: wait up to [`QUIET_TURN`] for a frame, resize the sink if the frame's size
+    /// changed, push it.
+    pub fn turn(&mut self) -> Result<PumpOutcome, SinkError> {
+        let frame = match self.source.next_frame(QUIET_TURN) {
+            Ok(Arrival::Frame(frame)) => frame,
+            Ok(Arrival::Quiet) => return Ok(PumpOutcome::Quiet),
+            Err(CaptureError::Ended | CaptureError::Stopped) => {
+                return Ok(PumpOutcome::SourceEnded);
+            }
+            Err(other) => return Err(SinkError::Pipewire(other.to_string())),
+        };
+        let resized = frame.size != self.last_size;
+        if resized {
+            self.sink.resize(frame.size)?;
+            self.last_size = frame.size;
+        }
+        self.sink.push(frame)?;
+        Ok(if resized {
+            PumpOutcome::ResizedAndPushed
+        } else {
+            PumpOutcome::Pushed
+        })
+    }
+}
+
+/// A sink that keeps what it was given.
+#[derive(Debug)]
+pub struct FakeSink {
+    node: PwNode,
+    /// The presentation stamps of the frames received, in order.
+    pub received: Vec<u64>,
+    /// The sizes the sink was resized to, in order.
+    pub resizes: Vec<Extent>,
+}
+
+impl FakeSink {
+    /// A sink serving `node`.
+    pub fn new(node: PwNode) -> Self {
+        Self {
+            node,
+            received: Vec::new(),
+            resizes: Vec::new(),
+        }
+    }
+}
+
+impl FrameSink for FakeSink {
+    fn node(&self) -> PwNode {
+        self.node
+    }
+
+    fn push(&mut self, frame: CapturedFrame) -> Result<(), SinkError> {
+        self.received.push(frame.presented_ns);
+        Ok(())
+    }
+
+    fn resize(&mut self, size: Extent) -> Result<(), SinkError> {
+        self.resizes.push(size);
+        Ok(())
+    }
+}

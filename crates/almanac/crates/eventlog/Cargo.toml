@@ -1,0 +1,34 @@
+[package]
+name = "eventlog"
+description = "almanac's typed, append-only, hash-chained per-Space event log (also the audit log)."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/almanac"
+publish = false
+
+[dependencies]
+almanac-core = {path = "../almanac-core"}
+almanac-seal = {path = "../almanac-seal"}
+almanac-store = {path = "../almanac-store"}
+blake3 = {version = "1"}
+rusqlite = {version = "0.40", features = ["bundled-sqlcipher-vendored-openssl"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+const-hex = {version = "1.19"}
+eventlog = { path = ".", features = ["testing"] }
+almanac-seal = {path = "../almanac-seal", features = ["testing"]}
+rusqlite = {version = "0.40", features = ["bundled-sqlcipher-vendored-openssl"]}
+tempfile = {version = "3"}
+
+[features]
+# `MemoryLog`, for tests and almanac-fake.
+testing = []
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

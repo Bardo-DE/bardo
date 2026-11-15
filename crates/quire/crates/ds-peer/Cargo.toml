@@ -1,0 +1,23 @@
+[package]
+name = "ds-peer"
+description = "A deadline for a call to another process, and the typed error for a peer that did not answer in time."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/quire"
+publish = false
+
+[dependencies]
+thiserror = {version = "2"}
+# A wall-clock delay on its own timer thread, so the deadline works under any executor (zbus's
+# own, tokio, a test's block_on).
+futures-timer = {version = "3"}
+
+[dev-dependencies]
+# The tests' runtime; the crate itself names none.
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

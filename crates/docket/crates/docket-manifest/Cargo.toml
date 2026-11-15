@@ -1,0 +1,33 @@
+[package]
+name = "docket-manifest"
+description = "docket's manifest: what an app declares (entities, actions, parameters), its validation (`validate`, `ValidManifest`, `fits`), a manifest file read as TOML (feature `manifest-file`) and a tool call's JSON arguments read into typed ones (`args_from_json`)."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+almanac-core = {path = "../../../almanac/crates/almanac-core"}
+docket-vocab = {path = "../docket-vocab"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+prov = {path = "../../../prov/prov"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+toml = {version = "1", optional = true}
+url = {version = "2.5"}
+
+[features]
+# `manifest-file`: `parse`, a manifest file read as TOML and validated. Off by default so the pure
+# crates that sit on this one never reach a TOML parser.
+manifest-file = ["dep:toml"]
+
+[dev-dependencies]
+proptest = {version = "1"}
+toml = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,38 @@
+[package]
+name = "docket-gate"
+description = "The pure steps of a call's way through the router: the facts the policy reads, the gate's mapping from a ruling, the call lifecycle, classification, consent, turn start, argument checks, the call as prepared, what is driven, the confirmation sheet's facts, standing grants' context, the terminal's grants and the trace spans."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+action-review = {path = "../action-review"}
+bulkhead = {path = "../../../bulkhead"}
+docket-context = {path = "../docket-context"}
+docket-core = {path = "../docket-core"}
+docket-manifest = {path = "../docket-manifest"}
+docket-permissions-core = {path = "../docket-permissions-core"}
+docket-session = {path = "../docket-session"}
+docket-vocab = {path = "../docket-vocab"}
+docket-wire = {path = "../docket-wire"}
+genai-names = {path = "../../../stoker/crates/genai-names"}
+model-provider = {path = "../../../stoker/crates/model-provider"}
+policy-point = {path = "../policy-point"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+prov = {path = "../../../prov/prov"}
+serde_json = {version = "1"}
+toml = {version = "1"}
+tracing = {version = "0.1"}
+url = {version = "2.5"}
+
+[dev-dependencies]
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

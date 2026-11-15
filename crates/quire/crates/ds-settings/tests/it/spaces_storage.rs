@@ -1,0 +1,216 @@
+//! The kit's two files through `SpacesStorage` on a scratch tree: a round trip, the one-time
+//! import, the payload fix-up, and Today's prune. A damaged file is in `damaged_files.rs`.
+
+use crate::support::Scratch;
+
+use ds_settings::{AppName, ConfigRoot, Fixup, Origin, SpacesLoad, SpacesStorage};
+use ds_style::space::list::{Epoch, IDLE, SpaceId, Spaces, Today};
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+struct Note {
+    #[serde(default)]
+    folder: String,
+}
+
+type Set = Spaces<Note, String>;
+
+fn storage(scratch: &Scratch) -> SpacesStorage {
+    SpacesStorage::new(
+        &ConfigRoot::Scratch(scratch.root().to_path_buf()),
+        AppName("notes"),
+    )
+}
+
+fn first() -> Set {
+    Spaces::first_run(
+        [Note { folder: "a".into() }, Note { folder: "b".into() }],
+        Note::default,
+    )
+}
+
+fn untouched(_: &mut Set) -> Fixup {
+    Fixup::Kept
+}
+
+#[test]
+fn a_first_run_is_written_and_read_back() {
+    let scratch = Scratch::new();
+    let disk = storage(&scratch);
+    let (spaces, origin) = disk.boot_spaces(|_| {}, first, untouched);
+    assert_eq!(origin, Origin::FirstRun);
+    let (again, origin) = disk.boot_spaces(|_| {}, || panic!("stored"), untouched);
+    assert_eq!(origin, Origin::Stored);
+    assert_eq!(again, spaces);
+}
+
+fn disk_dir(scratch: &Scratch) -> std::path::PathBuf {
+    ConfigRoot::Scratch(scratch.root().to_path_buf())
+        .dir(AppName("notes"))
+        .expect("scratch has a dir")
+}
+
+#[test]
+fn the_raw_import_and_the_payload_fixup_run_and_a_change_is_saved() {
+    let scratch = Scratch::new();
+    let disk = storage(&scratch);
+    let dir = disk_dir(&scratch);
+    std::fs::create_dir_all(&dir).expect("dir");
+    std::fs::write(
+        dir.join("spaces.json"),
+        r#"{"spaces":[{"name":"Old","folder":"x"}]}"#,
+    )
+    .expect("write");
+    let import = |value: &mut serde_json::Value| {
+        if let Some(space) = value["spaces"][0].as_object_mut() {
+            space.entry("theme").or_insert_with(|| "dark".into());
+        }
+    };
+    let fill = |spaces: &mut Set| {
+        spaces.edit(SpaceId(0), |space| space.payload.folder.push('!'));
+        Fixup::Changed
+    };
+    let (spaces, origin) = disk.boot_spaces(import, first, fill);
+    assert_eq!(origin, Origin::Stored);
+    assert_eq!(spaces.current().payload.folder, "x!");
+    assert_eq!(
+        spaces.current().look.theme,
+        ds_style::appearance::theme::Theme::Dark
+    );
+    let SpacesLoad::Stored(saved) = disk.load_spaces::<Note, String>(|_| {}) else {
+        panic!("the fix-up was written back");
+    };
+    assert_eq!(saved, spaces, "the fix-up was written back");
+}
+
+#[test]
+fn today_lives_in_the_state_directory_and_boots_pruned() {
+    let scratch = Scratch::new();
+    let disk = storage(&scratch);
+    let mut today: Today<u32> = Today::default();
+    today.opened(SpaceId(0), 1, Epoch(0));
+    today.opened(SpaceId(0), 2, Epoch(IDLE.as_secs() as i64));
+    disk.save_today(&today).expect("saves");
+    let state = ConfigRoot::Scratch(scratch.root().to_path_buf())
+        .state_dir(AppName("notes"))
+        .expect("dir");
+    assert!(state.join("today.json").exists());
+    assert!(!disk_dir(&scratch).join("today.json").exists());
+    let booted: Today<u32> = disk.boot_today(Epoch(IDLE.as_secs() as i64 + 5));
+    assert_eq!(booted.entries.len(), 1);
+    let stored: Today<u32> = disk.load_today();
+    assert_eq!(stored, booted, "the prune was written back");
+    std::fs::write(state.join("today.json"), "garbage").expect("write");
+    assert_eq!(
+        disk.load_today::<u32, ds_style::space::list::NoPark>()
+            .entries
+            .len(),
+        0
+    );
+}
+
+#[test]
+fn nowhere_to_write_keeps_the_spaces_for_the_session() {
+    let disk = SpacesStorage::at(None, None);
+    let (spaces, origin) = disk.boot_spaces(|_| {}, first, untouched);
+    assert_eq!((spaces.count(), origin), (2, Origin::FirstRun));
+    assert!(disk.save_spaces(&spaces).is_err());
+}
+
+#[test]
+fn a_mailo_shaped_today_keeps_its_entries_parked_drafts_and_prunes() {
+    // mailo's file: RFC 3339 `last_opened` and `parked`, and the `drafts` key.
+    let text = r#"{
+      "entries": [
+        {"space": 0, "item": 7, "last_opened": "2023-11-14T22:13:20Z"},
+        {"space": 1, "item": 8, "last_opened": "2023-11-14T01:00:00.5Z"}
+      ],
+      "drafts": [{"space": 0, "item": 3, "title": "Re: hello", "parked": "2023-11-13T09:00:00+02:00"}]
+    }"#;
+    let scratch = Scratch::new();
+    let disk = storage(&scratch);
+    let state = ConfigRoot::Scratch(scratch.root().to_path_buf())
+        .state_dir(AppName("notes"))
+        .expect("dir");
+    std::fs::create_dir_all(&state).expect("dir");
+    std::fs::write(state.join("today.json"), text).expect("write");
+    let now = Epoch(1_700_000_000 + 60);
+    let today: Today<u32, u32> = disk.boot_today(now);
+    assert_eq!(
+        today.entries.len(),
+        1,
+        "the old entry is pruned, the fresh one kept"
+    );
+    assert_eq!(today.entries[0].item, 7);
+    assert_eq!(today.entries[0].last_opened, Epoch(1_700_000_000));
+    assert_eq!(today.parked.len(), 1, "a parked draft never expires");
+    assert_eq!(today.parked[0].title, "Re: hello");
+    let stored: Today<u32, u32> = disk.load_today();
+    assert_eq!(stored, today, "written back as unix seconds");
+    assert!(
+        std::fs::read_to_string(state.join("today.json"))
+            .expect("read")
+            .contains("1700000000"),
+    );
+    // Before anything expired, the first load keeps every entry.
+    std::fs::write(state.join("today.json"), text).expect("write");
+    let early: Today<u32, u32> = disk.boot_today(Epoch(1_699_920_000));
+    assert_eq!(early.entries.len(), 2);
+}
+
+const MAILO_TODAY: &str = r#"{"entries":[
+  {"space":1,"thread":"t-old","last_opened":"2026-10-06T12:00:00Z"},
+  {"space":1,"thread":"t-new","last_opened":"2026-10-07T12:00:00Z"}],
+ "drafts":[{"space":1,"draft":"d-1","title":"Re: lunch","parked":"2026-10-07T12:00:00Z"}]}"#;
+
+fn write_today(scratch: &Scratch, text: &str) {
+    let state = ConfigRoot::Scratch(scratch.root().to_path_buf())
+        .state_dir(AppName("notes"))
+        .expect("dir");
+    std::fs::create_dir_all(&state).expect("dir");
+    std::fs::write(state.join("today.json"), text).expect("write");
+}
+
+#[test]
+fn mailos_real_today_file_is_read_and_pruned() {
+    let scratch = Scratch::new();
+    let disk = storage(&scratch);
+    write_today(&scratch, MAILO_TODAY);
+    let loaded: Today<String, String> = disk.load_today();
+    assert_eq!(loaded.entries.len(), 2);
+    assert_eq!(loaded.entries[1].item, "t-new");
+    assert_eq!(loaded.entries[1].space, SpaceId(1));
+    assert_eq!(loaded.parked.len(), 1);
+    assert_eq!(loaded.parked[0].item, "d-1");
+    assert_eq!(loaded.parked[0].title, "Re: lunch");
+    let noon = 1791374400;
+    let booted: Today<String, String> = disk.boot_today(Epoch(noon + 3600));
+    let items: Vec<&str> = booted.entries.iter().map(|e| e.item.as_str()).collect();
+    assert_eq!(
+        items,
+        ["t-new"],
+        "the entry a day old is idle, the one an hour old is not"
+    );
+    assert_eq!(booted.parked.len(), 1, "parked things never expire");
+}
+
+#[test]
+fn one_bad_today_item_drops_only_itself() {
+    let scratch = Scratch::new();
+    let disk = storage(&scratch);
+    write_today(
+        &scratch,
+        r#"{"entries":[
+  {"space":0,"thread":"a","last_opened":"2026-10-07T12:00:00Z"},
+  {"space":0,"thread":"b","last_opened":"yesterday"},
+  {"space":0,"last_opened":"2026-10-07T12:00:00Z"},
+  {"space":0,"thread":"c","last_opened":"2026-10-07T12:00:00Z"}],
+ "drafts":[{"space":0,"draft":"x","title":"t","parked":"2026-10-07T12:00:00Z"},
+  {"space":"zero","draft":"y","title":"t","parked":"2026-10-07T12:00:00Z"}]}"#,
+    );
+    let loaded: Today<String, String> = disk.load_today();
+    let items: Vec<&str> = loaded.entries.iter().map(|e| e.item.as_str()).collect();
+    assert_eq!(items, ["a", "c"]);
+    assert_eq!(loaded.parked.len(), 1);
+    assert_eq!(loaded.parked[0].item, "x");
+}

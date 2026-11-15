@@ -1,0 +1,56 @@
+//! O2-O3: the virtual devices foreign clients see, behind one seam.
+//!
+//! `Emitter` is a real seam: the daemon writes through the uinput emitter, and every test
+//! writes through `RecordingEmitter`, so no test ever creates an input device.
+
+pub mod events;
+pub mod pad;
+
+use crate::keys::KeyCombo;
+use pad::PadFrame;
+use thiserror::Error;
+
+/// A virtual device write that failed.
+#[derive(Debug, Error)]
+pub enum OutputError {
+    /// Not there yet (the service is starting, the node is closed): worth trying again.
+    #[error("virtual input is not available: {0}")]
+    Unavailable(String),
+    #[error("writing to the virtual device failed: {0}")]
+    Write(#[from] std::io::Error),
+    /// The input service closed the connection, turned palmrest away or stopped answering. The
+    /// text says why, in plain words. Too many in a row end the virtual devices.
+    #[error("{0}")]
+    Cut(String),
+}
+
+/// Where foreign-client frames go.
+pub trait Emitter {
+    fn pad(&mut self, f: &PadFrame) -> Result<(), OutputError>;
+    fn key(&mut self, k: &KeyCombo) -> Result<(), OutputError>;
+}
+
+/// One frame an emitter was asked to write.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Emitted {
+    Pad(PadFrame),
+    Key(KeyCombo),
+}
+
+/// Remembers every frame instead of writing it.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct RecordingEmitter {
+    pub emitted: Vec<Emitted>,
+}
+
+impl Emitter for RecordingEmitter {
+    fn pad(&mut self, f: &PadFrame) -> Result<(), OutputError> {
+        self.emitted.push(Emitted::Pad(*f));
+        Ok(())
+    }
+
+    fn key(&mut self, k: &KeyCombo) -> Result<(), OutputError> {
+        self.emitted.push(Emitted::Key(k.clone()));
+        Ok(())
+    }
+}

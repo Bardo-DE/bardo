@@ -1,0 +1,33 @@
+/* Alert (design/34 section 3.7, design/04-COMPONENTS.md section 55): the Mac's alert in the narrow
+   sheet (`SheetWidth::Alert`, `--sheet-alert-w` 260, or 88 % of a smaller root), centred: one centred column as
+   the polkit prompt's, the optional caller-supplied hero icon at 64 (a Critical alert badges it
+   with a 20 px warning glyph at the lower right), the title in the display face at
+   `--fs-title-2` 17/700, the body in `--fs-control` in the soft ink, then the footer: one or two
+   buttons side by side at equal width 8 apart, 18 below, the default on the right (the first
+   button is last on screen), or three or more stacked, the default on top, all at the Regular
+   size (the ladder's 28). The default button is the accent one; another is the plain one, or, for a destructive
+   action, a Danger whose label is red at rest as well as on hover. The panel's entrance and exit
+   are the sheet's. Nothing behind it is dimmed.
+   Inline (`data-flow=inline`): a stage over the nearest positioned ancestor, on the peek layer,
+   holding the sheet's centring stage, so it fits a control-center popover; it catches the pointer
+   for what it covers. */
+
+.ds-alert{ position:relative; display:flex; flex-direction:column; align-items:center; box-sizing:border-box; width:100%; padding:var(--s-24) var(--s-24) var(--s-20); text-align:center; color:var(--ink); }
+.ds-alert-icon{ position:relative; display:flex; margin-bottom:var(--s-12); }
+.ds-alert-badge{ position:absolute; right:calc(var(--s-4) * -1); bottom:calc(var(--s-4) * -1); display:flex; color:var(--danger); }
+.ds-alert-title{ font-family:var(--font-display); font-size:var(--fs-title-2); font-weight:700; line-height:1.25; color:var(--ink); }
+.ds-alert-body{ margin-top:var(--s-6); font-size:var(--fs-control); line-height:1.45; color:var(--ink-soft); }
+.ds-alert-footer{ display:flex; gap:var(--s-8); align-self:stretch; margin-top:var(--s-18); }
+.ds-alert-footer[*|data-layout=row]{ flex-direction:row-reverse; }
+.ds-alert-footer[*|data-layout=stack]{ flex-direction:column; }
+.ds-alert-slot{ display:flex; flex:1; min-width:0; }
+.ds-alert-slot .ds-button{ width:100%; justify-content:center; }
+/* A destructive action that is not the default is filled danger with its own ink: the red as
+   text on the raised ground measured about 3.5:1 in dark, the filled pair clears 4.5:1 in both
+   schemes. The hover and pressed states keep the pair (they outrank the button's own wash). */
+.ds-alert .ds-button[*|data-variant=push][*|data-role=destructive]{ background:var(--danger); color:var(--danger-ink); }
+.ds-alert .ds-button[*|data-variant=push][*|data-role=destructive]:hover{ background:var(--danger); color:var(--danger-ink); }
+.ds-alert .ds-button[*|data-variant=push][*|data-role=destructive][*|data-pressed]{ background:var(--danger); color:var(--danger-ink); }
+.ds-alert-stage{ position:absolute; inset:0; z-index:var(--z-peek); pointer-events:auto; }
+.ds-alert-suppression{ margin-top:var(--s-12); }
+.ds-alert-help{ position:absolute; left:var(--s-24); bottom:var(--s-20); }

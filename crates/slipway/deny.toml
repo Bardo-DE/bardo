@@ -1,0 +1,72 @@
+# cargo-deny gates, both run in CI (.github/workflows/ci.yml):
+#
+#   cargo deny check licenses     a dependency whose licence is not listed fails the gate rather than
+#                                 being noticed later by someone reading Cargo.lock
+#   cargo deny check advisories   a dependency with a RustSec advisory (vulnerability, unmaintained
+#                                 crate, unsound code) or a yanked version fails the gate; the
+#                                 programs that run as root are built from this lock file
+#   cargo deny check bans sources a wildcard version requirement, or a dependency from anywhere but
+#                                 crates.io and the one git repository named below, fails the gate
+
+[graph]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[advisories]
+version = 2
+yanked = "deny"
+# An advisory that does not apply is ignored by id, one entry each, with the reason beside it:
+#   { id = "RUSTSEC-0000-0000", reason = "why it does not reach us" },
+ignore = [
+    { id = "RUSTSEC-2026-0370", reason = "zvariant is unmaintained only because zbus 6 folds it in as its wire module; no known flaw; remove when the desktop set moves to zbus 6" },
+    { id = "RUSTSEC-2026-0371", reason = "zbus_names is unmaintained only because zbus 6 folds it in; no known flaw; remove when the desktop set moves to zbus 6" },
+    { id = "RUSTSEC-2026-0372", reason = "zvariant_derive is unmaintained only because zbus 6 provides its derives; no known flaw; remove when the desktop set moves to zbus 6" },
+]
+
+[licenses]
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "0BSD",
+    "CC0-1.0",
+    "Unicode-3.0",
+    "Zlib",
+    # Weak, file-level copyleft. The note below says why this one is here and GPL is not.
+    "MPL-2.0",
+    # webpki-roots: the Mozilla CA list as data (permissive, attribution only), for HTTPS downloads.
+    "CDLA-Permissive-2.0",
+]
+confidence-threshold = 0.9
+
+# MPL-2.0 is allowed, and it is a decision rather than an oversight.
+#
+# MPL is file-level copyleft: fine to link or depend on, never to paste source from. That
+# position is about the *licence*, so encoding it per-crate would be busywork. Several crates
+# arrive under it by unrelated routes (stylo, app_units, cssparser and selectors in blitz; option-ext
+# through dirs; cosmic-dbus-networkmanager and freedesktop-desktop-entry in the shell), and the
+# versions churn.
+#
+# Depending on them obliges us to make *those files'* source available, which their registries
+# already do, and obliges nothing of ours. The rule that actually constrains these repositories,
+# do not copy MPL source into them, is not something a dependency gate can check,
+# so reviewers check it.
+#
+# What stays out of that list is strong copyleft: GPL, AGPL, EUPL. Those would change what this
+# project may be distributed as, and a dependency arriving under one should stop the build.
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+# The workspace's own crates are path dependencies without a version.
+allow-wildcard-paths = true
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+# peephole: which program is calling the update service (the service only; the root programs never link it,
+# scripts/check-boundary.sh).
+allow-git = ["https://github.com/Bardo-DE/peephole"]

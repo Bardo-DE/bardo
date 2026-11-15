@@ -1,0 +1,17 @@
+[package]
+name = "turnstile-wire"
+description = "turnstile: the messages between the input-device service and its clients, and the fixed list of devices it will make"
+version = "0.1.1"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/turnstile"
+publish = false
+
+[dependencies]
+thiserror = {version = "2"}
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+missing_debug_implementations = "warn"

@@ -1,0 +1,99 @@
+# Agent programs docket may run as session backends (acp-sessions.md S4). Copy to
+# ~/.config/docket/agents.toml, fix the paths, and switch it on with
+#
+#   [agent.acp]
+#   agents = "on"
+#
+# in ~/.config/docket/settings.toml. Nothing starts while that setting is off or the program is
+# not listed here. Paths must be absolute.
+
+# Claude Code through its ACP adapter, signed in the way you sign it in today (a subscription or
+# its own key): docket gives it no key and never reads its login. The network is the host's,
+# because this agent has to reach its provider; that is weaker than the endpoint route below and
+# is on only because this entry says so.
+[[agent]]
+program = "claude-code"
+command = "/home/me/.local/bin/claude-agent-acp"
+route = "login"
+network = "host"
+# Where the program is installed (read-only), and its own login and settings (read-write).
+reads = ["/home/me/.local/share/node"]
+state = ["/home/me/.claude", "/home/me/.claude.json"]
+home = "/home/me"
+# What the audit and the journal call it. Yours to write: docket never takes it from the agent.
+label = "Claude Code"
+# The agent's own login, run where you can see it (a terminal), when the Settings app asks.
+login = ["konsole", "-e", "claude", "login"]
+# The desktop's actions (mail, contacts, memory) are offered to the agent as an MCP server it starts itself
+# (the `actions-mcp` program beside docket-agent); every call is a call of this session, asked about like the
+# planner's. "off" keeps the agent to its own tools and the host's file and terminal methods.
+tools = "offered"
+# Confines what Claude Code brings of its own (profile = "claude-code"). Claude Code ignores a managed-settings
+# file outside its hosted mode, so docket sends the settings the way the ACP adapter takes them: in the
+# `session/new` request it writes itself (`_meta.claudeCode.options.settings`, Claude Code's flag-settings tier,
+# which outranks your user, project and local settings). No file is written and the agent cannot change them.
+#   - your claude.ai account's connectors (cloud services), skills and plugins are turned off, which would
+#     otherwise reach tools and hooks that never pass docket's router;
+#   - Claude Code may call the desktop's own tool server (`quire`) without its own permission prompt, so the
+#     desktop's sheet is the only one you see; no other server is pre-allowed.
+# The variables of Claude Code's isolated mode are set too (no account connectors, no CLAUDE.md files, no
+# update check). If `state` is your real ~/.claude, your own user-level MCP servers and hooks still load, and
+# allow rules in your own settings add to ours: that is your choice. Use a scratch `state` for a closed run.
+profile = "claude-code"
+
+# Google's Antigravity agent (agy) through its ACP server, a self-contained program that comes with a static
+# helper beside it (keep that helper executable; the program's own directory is visible to the sandbox, read-only).
+# Its login file is `.gemini/antigravity-acp/acp_token.json` under its home: docket never reads it. The live-eval
+# harness copies it in per run (`--acp-credentials FILE --acp-credentials-at .gemini/antigravity-acp/acp_token.json`).
+# The agent signs itself in from that file when docket sends `sign_in`; the id must be one the agent offers when it
+# starts, or the session does not open and docket says the agent needs signing in. A way that needs a browser is not
+# one docket can run for you: sign in once with the agent's own tool, then use `oauth-personal`.
+[[agent]]
+program = "agy"
+command = "/home/u/.local/share/agy-acp-server/agy_acp_server.par"
+args = ["--uid="]
+route = "login"
+network = "host"
+state = ["/home/u/.gemini"]
+home = "/home/u"
+label = "Antigravity"
+sign_in = "oauth-personal"
+# agy asks before every tool of its own, the desktop's tool server (`quire`) included. The desktop answers
+# that request itself for a call to its own server (the call is ruled when it arrives), so no `profile` is needed;
+# agy's command, file and subagent tools keep asking, through the desktop.
+
+# Gemini CLI reaching only the sites it needs, instead of the host's network. A filter outside its sandbox lets
+# through the hosts named in `allow` ("host" or "*.domain") and nothing else; `deny` wins over `allow`; ports 443
+# and 80 are open and `ports` adds more. The lists go with network = "allowlist" and no other network, and an
+# entry with nothing in `allow` is refused. The filter checks names, not content: a host you allow can still
+# receive whatever the agent sends it, so allow only what the agent needs.
+#
+# [[agent]]
+# program = "gemini-cli"
+# command = "/opt/gemini/bin/gemini-acp"
+# route = "handoff"
+# network = "allowlist"
+# allow = ["generativelanguage.googleapis.com", "*.googleapis.com"]
+# deny = ["upload.googleapis.com"]
+# ports = [8443]
+# key_env = "GEMINI_API_KEY"
+
+# The same program with inferd as its model (an API-key account in accountd): the agent gets a
+# base URL and a per-session token, the real key stays in porter, and the only network it has is
+# that endpoint. Use one entry or the other for a program name.
+#
+# [[agent]]
+# program = "claude-code"
+# command = "/home/me/.local/bin/claude-agent-acp"
+# route = "endpoint"
+# network = "endpoint_only"
+# key_env = "ANTHROPIC_API_KEY"
+# base_url_env = "ANTHROPIC_BASE_URL"
+# protocol = "anthropic_messages"
+# reads = ["/home/me/.local/share/node"]
+# state = ["/home/me/.claude", "/home/me/.claude.json"]
+# home = "/home/me"
+# profile = "claude-code"
+# [agent.endpoint]
+# kind = "account"
+# id = "anthropic-main"

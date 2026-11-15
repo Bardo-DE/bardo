@@ -1,0 +1,26 @@
+[package]
+name = "turnstile-client"
+description = "turnstile: what palmrest and keycap link to ask the input-device service for a device"
+version = "0.1.1"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/turnstile"
+publish = false
+
+[features]
+# The stand-in for the service, for the callers' tests; a shipped build never enables it.
+fake = []
+
+[dependencies]
+rustix = {version = "1.1", default-features = false, features = ["event", "net", "std"]}
+turnstile-wire = {path = "../turnstile-wire"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+missing_debug_implementations = "warn"

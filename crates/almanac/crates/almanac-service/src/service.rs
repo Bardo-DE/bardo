@@ -1,0 +1,476 @@
+//! `MemoryService`: memoryd's core, over a [`Backend`]: every request is authorised with
+//! `allowed`, routed to its Space and run through the pure machines; their effects are applied
+//! here. A Space is checked out of the service for the length of a request (its index is written
+//! across an await), so the service queues requests per Space (`queue`): a second request for the
+//! same Space waits its turn, and `Busy` never reaches a caller for that reason.
+
+use crate::backend::Backend;
+use crate::caller::Caller;
+use crate::clock::Clock;
+use crate::events::ServiceEvent;
+use crate::key_refusal::key_refusal;
+use crate::open::{Cx, ErasedNotes, Open};
+use crate::queue::{Claim, Line};
+use crate::quota::Quota;
+use crate::record::Stored;
+use crate::registry::Listing;
+use crate::runtime::SpaceRuntime;
+use almanac_core::{
+    AppName, ChainHealth, Count, PlanToken, Record, Refusal, RuleSet, RunState, SpaceId, SpaceKind,
+    SpaceMeta, SpaceState, SpaceSummary,
+};
+use almanac_seal::{KeyError, KeyStore, Purpose, derive};
+use almanac_settings::MemorySettings;
+use almanac_store::SearchIndex;
+use chrono::{Offset, Utc};
+use memfiles_format::Store;
+use std::collections::{BTreeMap, BTreeSet};
+use std::sync::{Mutex, MutexGuard, PoisonError};
+
+/// A Space either sits in the service or is out on a request.
+enum Slot<B: Backend> {
+    Ready(Box<Open<B>>),
+    Busy,
+}
+
+/// memoryd's core: every request goes through `allowed`, then the machines.
+pub struct MemoryService<B: Backend> {
+    backend: B,
+    rules: Mutex<RuleSet>,
+    /// The person's settings in force: every request reads them afresh.
+    settings: Mutex<MemorySettings>,
+    /// What one Space may hold.
+    quota: Mutex<Quota>,
+    spaces: Mutex<BTreeMap<SpaceId, Slot<B>>>,
+    metas: Mutex<BTreeMap<SpaceId, SpaceMeta>>,
+    buffers: Mutex<BTreeMap<SpaceId, Vec<Record>>>,
+    /// Spaces whose lost key was announced, until they open again.
+    locked: Mutex<BTreeSet<SpaceId>>,
+    events: Mutex<Vec<ServiceEvent>>,
+    /// The app whose App Space takes a memory no app wrote (`relocate`).
+    fallback_owner: Mutex<Option<AppName>>,
+    /// Who waits for which Spaces.
+    pub(crate) line: Line,
+}
+
+impl<B: Backend> std::fmt::Debug for MemoryService<B> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("MemoryService").finish_non_exhaustive()
+    }
+}
+
+fn locked<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
+    m.lock().unwrap_or_else(PoisonError::into_inner)
+}
+
+/// A Space out on a request; it goes back into the service when the lease drops.
+pub(crate) struct Lease<'a, B: Backend> {
+    service: &'a MemoryService<B>,
+    id: SpaceId,
+    open: Option<Box<Open<B>>>,
+}
+
+impl<B: Backend> Lease<'_, B> {
+    pub(crate) fn open(&mut self) -> Option<&mut Open<B>> {
+        self.open.as_deref_mut()
+    }
+
+    /// The Space is gone: it does not go back.
+    pub(crate) fn discard(mut self) {
+        self.open = None;
+        locked(&self.service.spaces).remove(&self.id);
+    }
+}
+
+impl<B: Backend> Drop for Lease<'_, B> {
+    fn drop(&mut self) {
+        if let Some(mut open) = self.open.take() {
+            self.service.raise_all(open.index_news());
+            locked(&self.service.spaces).insert(self.id.clone(), Slot::Ready(open));
+        }
+    }
+}
+
+impl<B: Backend> MemoryService<B> {
+    /// A service over `backend` with the person's rules. No Space is open yet.
+    pub fn new(backend: B, rules: RuleSet) -> Self {
+        Self {
+            backend,
+            rules: Mutex::new(rules),
+            settings: Mutex::new(MemorySettings::default()),
+            quota: Mutex::new(Quota::default()),
+            spaces: Mutex::new(BTreeMap::new()),
+            metas: Mutex::new(BTreeMap::new()),
+            buffers: Mutex::new(BTreeMap::new()),
+            locked: Mutex::new(BTreeSet::new()),
+            events: Mutex::new(Vec::new()),
+            fallback_owner: Mutex::new(None),
+            line: Line::default(),
+        }
+    }
+
+    fn raise(&self, event: ServiceEvent) {
+        locked(&self.events).push(event);
+    }
+
+    pub(crate) fn raise_all(&self, events: impl IntoIterator<Item = ServiceEvent>) {
+        locked(&self.events).extend(events);
+    }
+
+    /// A Space found without its key: said once, until it opens again.
+    fn note_locked(&self, id: &SpaceId) {
+        if locked(&self.locked).insert(id.clone()) {
+            self.raise(ServiceEvent::Locked(id.clone()));
+        }
+    }
+
+    /// What happened since the last call that the bus should hear of, oldest first: pending
+    /// facts settled or aged out, Spaces locked or open again. memoryd calls it after every
+    /// request and on its timers.
+    pub fn take_events(&self) -> Vec<ServiceEvent> {
+        std::mem::take(&mut locked(&self.events))
+    }
+
+    /// The timer's key check: an open Space whose key the store no longer gives is closed and
+    /// announced as locked (the keyring locked); a locked one whose key is back is opened again,
+    /// which flushes the records it buffered. Spaces out on a request are left to it.
+    pub async fn check_keys(&self) {
+        let _all = self.line.enter(Claim::Everything).await;
+        let open: Vec<SpaceId> = locked(&self.spaces)
+            .iter()
+            .filter(|(_, slot)| matches!(slot, Slot::Ready(_)))
+            .map(|(id, _)| id.clone())
+            .collect();
+        for id in open {
+            if matches!(self.backend.keys().get(&id).await, Err(KeyError::Locked)) {
+                let mut spaces = locked(&self.spaces);
+                if matches!(spaces.get(&id), Some(Slot::Ready(_))) {
+                    spaces.remove(&id);
+                    drop(spaces);
+                    self.note_locked(&id);
+                }
+            }
+        }
+        let waiting: Vec<SpaceId> = locked(&self.locked).iter().cloned().collect();
+        for id in waiting {
+            if self.backend.keys().get(&id).await.is_ok() {
+                drop(self.checkout(&Caller::ShellUi, &id).await);
+            }
+        }
+    }
+
+    /// Names the app whose App Space takes a removed Space's memories that no app wrote (the
+    /// companion's, an agent's). Without it such a removal is refused before it changes anything.
+    pub fn set_fallback_owner(&self, app: AppName) {
+        *locked(&self.fallback_owner) = Some(app);
+    }
+
+    pub(crate) fn fallback_owner(&self) -> Option<AppName> {
+        locked(&self.fallback_owner).clone()
+    }
+
+    /// Whether `id` is a Space the service has met (registered or provisioned).
+    pub(crate) fn has_meta(&self, id: &SpaceId) -> bool {
+        locked(&self.metas).contains_key(id)
+    }
+
+    /// The backend.
+    pub fn backend(&self) -> &B {
+        &self.backend
+    }
+
+    /// Tells the service about a Space from `spaces.toml`. A Space named before it is
+    /// registered is provisioned on first use (a key, a sealed vault, a fresh replica); memoryd
+    /// persists [`MemoryService::metas`].
+    pub fn register(&self, meta: SpaceMeta) {
+        locked(&self.metas).insert(meta.id.clone(), meta);
+    }
+
+    /// Every Space the service knows, registered or provisioned.
+    pub fn metas(&self) -> Vec<SpaceMeta> {
+        locked(&self.metas).values().cloned().collect()
+    }
+
+    /// The person's settings in force now.
+    pub fn settings(&self) -> MemorySettings {
+        *locked(&self.settings)
+    }
+
+    /// Puts the person's settings in force for every request after this one. A Space that exists
+    /// keeps the way its files are held; `at_rest` is for the Spaces made from now on.
+    pub fn apply_settings(&self, settings: MemorySettings) {
+        *locked(&self.settings) = settings;
+    }
+
+    /// Sets what one Space may hold, for the records after this call.
+    pub fn set_quota(&self, quota: Quota) {
+        *locked(&self.quota) = quota;
+    }
+
+    /// The rules now (memoryd persists them after a `SetRule` or `RemoveRule`).
+    pub fn rules(&self) -> RuleSet {
+        locked(&self.rules).clone()
+    }
+
+    pub(crate) fn cx<'a>(&'a self, caller: &'a Caller) -> Cx<'a, B> {
+        let settings = self.settings();
+        Cx {
+            backend: &self.backend,
+            // The person's retention over the rules' defaults, for this request only: what
+            // `rules()` gives (and memoryd persists) stays what `SetRule` made it.
+            rules: self.rules().with_retention(&settings.retention),
+            settings,
+            quota: *locked(&self.quota),
+            caller,
+        }
+    }
+
+    pub(crate) fn known(&self) -> Vec<SpaceId> {
+        let mut ids: Vec<SpaceId> = locked(&self.metas).keys().cloned().collect();
+        ids.extend(locked(&self.spaces).keys().cloned());
+        ids.sort();
+        ids.dedup();
+        ids
+    }
+
+    /// Takes `id` out of the service, opening it first if need be.
+    pub(crate) async fn checkout(
+        &self,
+        caller: &Caller,
+        id: &SpaceId,
+    ) -> Result<Lease<'_, B>, Refusal> {
+        let previous = locked(&self.spaces).insert(id.clone(), Slot::Busy);
+        match previous {
+            Some(Slot::Ready(open)) => Ok(Lease {
+                service: self,
+                id: id.clone(),
+                open: Some(open),
+            }),
+            Some(Slot::Busy) => Err(Refusal::Busy),
+            None => match self.open_space(caller, id).await {
+                Ok(open) => {
+                    if locked(&self.locked).remove(id) {
+                        self.raise(ServiceEvent::StatusChanged(id.clone()));
+                    }
+                    Ok(Lease {
+                        service: self,
+                        id: id.clone(),
+                        open: Some(Box::new(open)),
+                    })
+                }
+                Err(e) => {
+                    locked(&self.spaces).remove(id);
+                    if e == Refusal::SpaceLocked {
+                        self.note_locked(id);
+                    }
+                    Err(e)
+                }
+            },
+        }
+    }
+
+    /// An app opens or provisions a desktop-wide Space only if the registry lists it; the
+    /// registry failing is a refusal, never a yes. Anyone else (router, shell) is not asked.
+    async fn require_listed(&self, caller: &Caller, id: &SpaceId) -> Result<(), Refusal> {
+        let asks = matches!(caller, Caller::App(_)) && matches!(id.kind(), SpaceKind::Linked(_));
+        if !asks {
+            return Ok(());
+        }
+        match self.backend.is_listed(id).await {
+            Ok(Listing::Listed) => Ok(()),
+            Ok(Listing::Unlisted) => Err(Refusal::SpaceUnknown),
+            Err(_) => Err(Refusal::Unavailable),
+        }
+    }
+
+    async fn open_space(&self, caller: &Caller, id: &SpaceId) -> Result<Open<B>, Refusal> {
+        self.require_listed(caller, id).await?;
+        let keys = self.backend.keys();
+        let key = match keys.get(id).await {
+            Ok(key) => key,
+            Err(KeyError::Missing) => keys.create(id).await.map_err(key_refusal)?,
+            Err(e) => return Err(key_refusal(e)),
+        };
+        let digest = derive(&key, id, Purpose::Digest);
+        let meta = locked(&self.metas)
+            .entry(id.clone())
+            .or_insert_with(|| {
+                let mut replica = [0u8; 16];
+                replica.copy_from_slice(
+                    &blake3::keyed_hash(digest.expose(), b"QREPLICA1").as_bytes()[..16],
+                );
+                SpaceMeta {
+                    id: id.clone(),
+                    created: self.backend.clock().now(),
+                    replica: almanac_core::ReplicaId(replica),
+                    vault: self.settings().at_rest,
+                    format: 1,
+                }
+            })
+            .clone();
+        let log = self
+            .backend
+            .open_log(id, meta.replica, &key)
+            .map_err(crate::open::backend_refusal)?;
+        let files = self
+            .backend
+            .open_files(&meta, &key)
+            .map_err(crate::open::backend_refusal)?;
+        let index = self
+            .backend
+            .open_index(id, &key)
+            .map_err(crate::open::backend_refusal)?;
+        let store = Store::new(files, id.clone(), Utc.fix());
+        let marks = crate::marks::load(store.vault());
+        let baseline = crate::baseline::Baseline::load(store.vault());
+        let mut open = Open {
+            rt: SpaceRuntime {
+                meta,
+                state: SpaceState::Open,
+                log,
+                store,
+                index,
+                marks,
+                buffer: Vec::new(),
+                plans: BTreeMap::new(),
+            },
+            digest,
+            chain: ChainHealth::Unchecked,
+            minted: 0,
+            notes: ErasedNotes::default(),
+            run: RunState::Idle,
+            last: None,
+            baseline,
+            dirty: std::collections::BTreeSet::new(),
+            outbox: Vec::new(),
+            announced: almanac_core::IndexView::Absent,
+            usage: None,
+        };
+        let cx = self.cx(caller);
+        open.sync_index(&cx).await?;
+        // What a Space opens with is what its first reader finds; only later changes are news.
+        open.announced = open.rt.index.state();
+        open.restore_proposal(cx.now());
+        open.guard_topics()?;
+        let waiting = locked(&self.buffers).remove(id).unwrap_or_default();
+        let mut records = waiting.into_iter();
+        while let Some(record) = records.next() {
+            match open.record(&cx, record.clone()).await {
+                Ok(_) => {}
+                // A record that can never be stored is dropped; the ones behind it still are.
+                Err(Refusal::Invalid(_)) => {}
+                // A failure that may pass: this record and the rest wait for the next open.
+                Err(e) => {
+                    let rest: Vec<Record> = std::iter::once(record).chain(records).collect();
+                    locked(&self.buffers).insert(id.clone(), rest);
+                    return Err(e);
+                }
+            }
+        }
+        Ok(open)
+    }
+
+    /// One record into its Space; a locked Space buffers it.
+    pub(crate) async fn record_one(
+        &self,
+        caller: &Caller,
+        record: Record,
+    ) -> Result<Stored, Refusal> {
+        // Floored here as well: a record buffered while locked is replayed by whoever opens
+        // the Space next, not by the app that wrote it.
+        let mut record = crate::record::floored(caller, record);
+        crate::record::land_in_receiver(&mut record);
+        let id = record.space.clone();
+        match self.checkout(caller, &id).await {
+            Ok(mut lease) => {
+                let cx = self.cx(caller);
+                let open = lease.open().ok_or(Refusal::Busy)?;
+                open.record(&cx, record).await
+            }
+            Err(Refusal::SpaceLocked) => self.buffer(&id, record),
+            Err(other) => Err(other),
+        }
+    }
+
+    fn buffer(&self, id: &SpaceId, record: Record) -> Result<Stored, Refusal> {
+        use crate::space::{SpaceEffect, SpaceEvent, step};
+        // What cannot be stored later is refused now, while the writer can still be told.
+        if let Some(why) = crate::docs::record_fault(&record) {
+            return Err(crate::open::failed(why));
+        }
+        locked(&self.quota).fields.check(&record.body)?;
+        let mut buffers = locked(&self.buffers);
+        let waiting = buffers.entry(id.clone()).or_default();
+        let buffered = Count(u32::try_from(waiting.len()).unwrap_or(u32::MAX));
+        let (_, effects) = step(SpaceState::Locked, SpaceEvent::Record { buffered });
+        if effects.contains(&SpaceEffect::Buffer) {
+            waiting.push(record);
+            Ok(Stored::Dropped(almanac_core::DropReason::SpaceLocked))
+        } else {
+            Err(Refusal::SpaceLocked)
+        }
+    }
+
+    pub(crate) fn forget_meta(&self, id: &SpaceId) {
+        locked(&self.metas).remove(id);
+    }
+
+    /// The summaries of every known Space.
+    pub(crate) fn summaries(&self) -> Vec<SpaceSummary> {
+        let metas = locked(&self.metas);
+        let spaces = locked(&self.spaces);
+        metas
+            .values()
+            .map(|m| SpaceSummary {
+                id: m.id.clone(),
+                state: match spaces.get(&m.id) {
+                    Some(Slot::Ready(o)) => o.rt.state,
+                    Some(Slot::Busy) => SpaceState::Open,
+                    None => SpaceState::Locked,
+                },
+                vault: m.vault,
+                created: m.created,
+            })
+            .collect()
+    }
+
+    /// The open Space that holds the plan `token`.
+    pub(crate) fn space_of_plan(&self, token: &PlanToken) -> Option<SpaceId> {
+        locked(&self.spaces)
+            .iter()
+            .find_map(|(id, slot)| match slot {
+                Slot::Ready(o) if o.rt.plans.contains_key(token) => Some(id.clone()),
+                _ => None,
+            })
+    }
+
+    /// The open Space whose last consolidation run is `run`.
+    pub(crate) fn space_of_run(&self, run: &almanac_core::RunId) -> Option<SpaceId> {
+        locked(&self.spaces)
+            .iter()
+            .find_map(|(id, slot)| match slot {
+                Slot::Ready(o) if o.last.as_ref().is_some_and(|l| &l.run == run) => {
+                    Some(id.clone())
+                }
+                _ => None,
+            })
+    }
+
+    /// Every Space the service knows, for the requests that name none.
+    pub(crate) fn all_spaces(&self) -> Vec<SpaceId> {
+        self.known()
+    }
+
+    /// Logs `op` in every open Space (rules are global).
+    pub(crate) fn audit_open(&self, now: almanac_core::UnixSeconds, op: &almanac_core::MemoryOp) {
+        for slot in locked(&self.spaces).values_mut() {
+            if let Slot::Ready(open) = slot {
+                let _ = open.audit(now, op.clone());
+            }
+        }
+    }
+
+    pub(crate) fn set_rules(&self, f: impl FnOnce(&mut RuleSet)) {
+        f(&mut locked(&self.rules));
+    }
+}

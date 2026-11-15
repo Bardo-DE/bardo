@@ -1,0 +1,108 @@
+[package]
+name = "inferd"
+description = "steward's AI broker daemon: serves org.quire.Inference1 over porter-infer, with the router, the engine host, the model turns and the audit trail behind the session server's four seams."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/steward"
+publish = false
+
+[features]
+# TEST ONLY, off by default and never in dist: `INFERD_PROC_ROOT=<dir>` makes the caller lookup read
+# `<dir>/<pid>/cgroup` instead of `/proc`, for acceptance runs whose processes are in no unit.
+# Without this feature the variable is ignored (with a line on standard error).
+test-proc-root = ["porter-callers/test-proc-root"]
+
+[dependencies]
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-match = {path = "../../../porter/crates/porter-match"}
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-wire = {path = "../../../porter/crates/porter-wire"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+porter-daemon = {default-features = false, features = ["watch"], path = "../../../porter/crates/porter-daemon"}
+porter-fs = {path = "../../../porter/crates/porter-fs"}
+cua-action = {path = "../../../stoker/crates/cua-action"}
+porter-callers = {path = "../../../porter/crates/porter-callers"}
+porter-dbus = {path = "../../../porter/crates/porter-dbus"}
+# The AI keys are accountd's: inferd asks it through porter-client (`broker`), and removes its old
+# store once accountd has copied it (`old_keys`, the record is porter-store's).
+porter-client = {path = "../../../porter/crates/porter-client"}
+porter-client-dbus = {path = "../../../porter/crates/porter-client-dbus"}
+porter-settings = {path = "../../../porter/crates/porter-settings"}
+porter-store = {path = "../../../porter/crates/porter-store"}
+inferd-probe = {path = "../inferd-probe"}
+steward-dbus = {path = "../steward-dbus"}
+porter-http = {path = "../../../porter/crates/porter-http"}
+porter-http-reqwest = {path = "../../../porter/crates/porter-http-reqwest"}
+porter-provider = {path = "../../../porter/crates/porter-provider"}
+porter-tailnet = {path = "../porter-tailnet", features = ["io", "persist"]}
+porter-tailscale = {features = ["io"], path = "../../../porter/crates/porter-tailscale"}
+porter-infer = {path = "../porter-infer"}
+# Routing and the session machine: the router, the plan, the catalogue, the local model book, the
+# attached engines as values, the seams.
+porter-router = {path = "../porter-router"}
+# Running turns: a local model's chat, embedding and computer-use turns, the structured-reply
+# check, the audit trail and the stages of a pipeline.
+porter-turns = {path = "../porter-turns"}
+porter-bridge = {path = "../porter-bridge"}
+ds-settings = {features = ["live", "tokio"], path = "../../../quire/crates/ds-settings"}
+model-provider = {path = "../../../stoker/crates/model-provider"}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+iso_currency = {version = "0.7", features = ["with-serde"]}
+model-catalog = {path = "../../../stoker/crates/model-catalog"}
+# What differs between the engines, what is installed and pinned, and where an engine is found.
+engine-spec = {path = "../../../stoker/crates/engine-spec"}
+engine-manifest = {path = "../../../stoker/crates/engine-manifest"}
+engine-probe = {path = "../../../stoker/crates/engine-probe"}
+engine-supervisor = {path = "../../../stoker/crates/engine-supervisor"}
+model-http = {features = ["client", "tls"], path = "../../../stoker/crates/model-http"}
+model-openai-compat = {path = "../../../stoker/crates/model-openai-compat"}
+vision-prep = {features = ["pixels"], path = "../../../stoker/crates/vision-prep"}
+cua-parse = {path = "../../../stoker/crates/cua-parse"}
+cua-session = {path = "../../../stoker/crates/cua-session"}
+cua-vendors = {path = "../../../stoker/crates/cua-vendors"}
+model-extract = {path = "../../../stoker/crates/model-extract"}
+model-replay = {path = "../../../stoker/crates/model-replay"}
+model-wire = {path = "../../../stoker/crates/model-wire"}
+speech-provider = {path = "../../../stoker/crates/speech-provider"}
+speech-host-client = {path = "../../../stoker/crates/speech-host-client"}
+clap = {version = "4", features = ["derive"]}
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+# The stable short hash that names a computer written in a script with no letters or digits of
+# ASCII (`computers::slug_of`); std's hasher changes between Rust versions.
+sha2 = {version = "0.10"}
+# The agent token: its bytes from the system's random source, and its compare in constant time.
+getrandom = {version = "0.4.3"}
+chrono = {version = "0.4", default-features = false, features = ["alloc"]}
+hex = {version = "0.4"}
+subtle = {version = "2.6.1"}
+thiserror = {version = "2"}
+# `signal` is the one feature this crate adds to the pinned line: SIGTERM and SIGINT end the daemon
+# gracefully (`shutdown`).
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
+toml = {version = "1"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[dev-dependencies]
+test-kit = {path = "../../../porter/crates/test-kit"}
+ds-settings = {features = ["live", "testing", "tokio"], path = "../../../quire/crates/ds-settings"}
+# The client side the tests drive inferd through.
+porter-client = {path = "../../../porter/crates/porter-client"}
+porter-client-dbus = {path = "../../../porter/crates/porter-client-dbus"}
+inferd-client = {path = "../inferd-client", features = ["dbus"]}
+# `sealed_key`: the memfd the fake Broker hands a key on.
+porter-secrets = {path = "../../../porter/crates/porter-secrets"}
+engine-supervisor = {features = ["testing"], path = "../../../stoker/crates/engine-supervisor"}
+model-provider = {features = ["testing"], path = "../../../stoker/crates/model-provider"}
+porter-fake = {path = "../../../porter/crates/porter-fake"}
+porter-fake-servers = {path = "../../../porter/crates/porter-fake-servers"}
+# The scratch directory, the test catalog entries and the models they make.
+porter-router = {path = "../porter-router", features = ["testing"]}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

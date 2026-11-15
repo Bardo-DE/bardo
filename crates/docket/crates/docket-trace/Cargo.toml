@@ -1,0 +1,25 @@
+[package]
+name = "docket-trace"
+description = "Test and acceptance support: the model tap, which keeps every chat request and answer on a daemon's inferd link as a ModelExchange (and can write them to a file). No shipped crate depends on it."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+docket-core = {path = "../docket-core"}
+docket-dbus = {path = "../docket-dbus", features = ["inferd"]}
+porter-infer = {path = "../../../steward/crates/porter-infer"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+tracing = {version = "0.1"}
+
+[dev-dependencies]
+porter-core = {path = "../../../porter/crates/porter-core"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

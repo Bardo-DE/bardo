@@ -1,0 +1,30 @@
+[package]
+name = "sill-ipc"
+description = "The sill IPC protocol: newline-delimited JSON requests and responses, one per connection."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.91"
+repository = "https://github.com/Bardo-DE/sill"
+publish = false
+
+[dependencies]
+clap = {version = "4", features = ["derive"], optional = true}
+ds-core = {path = "../../../quire/crates/ds-core"}
+sill-launcher = {path = "../sill-launcher"}
+sill-model = {path = "../sill-model"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+sill-testkit = {path = "../sill-testkit"}
+keycap-protocol = {path = "../../../keycap/crates/keycap-protocol"}
+
+[features]
+# The command line parses straight into the request types (`sill` turns this on).
+cli = ["dep:clap"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

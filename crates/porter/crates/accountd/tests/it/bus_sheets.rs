@@ -1,0 +1,299 @@
+//! `BusSheets` against a sheet host written by hand on the private bus: only the verified host
+//! is dialled, only its `Input` for the right handle counts, and a host that leaves ends the
+//! sheet. The forged-signal tests are ported from the caller side's (`porter-dbus`). The sheet
+//! the tests start is `AddAccount`'s, the one sheet an app may still ask accountd for.
+
+use crate::common;
+
+use accountd::BusSheets;
+use common::host::send_input;
+use common::*;
+use porter_callers::CallerRole;
+use porter_core::SecretText;
+use porter_dbus::accounts::{ManagerProxy, Sheet};
+use porter_sheet::host::{SheetFault, SheetLink, SheetOpen, Sheets};
+use porter_sheet::{FieldAnswer, FieldKind, FieldValue, SheetInput, SheetView};
+use porter_wire::ParentWindow;
+use std::sync::Arc;
+use std::time::Duration;
+
+/// Starts `AddAccount` as photos and returns its Request path, response listener and the handle
+/// the host was opened with.
+async fn adding(
+    rig: &Rig,
+) -> (
+    zbus::Connection,
+    Sheet,
+    zbus::zvariant::OwnedObjectPath,
+    String,
+) {
+    let client = rig.client("org.quire.Photos").await;
+    let sheet = Sheet::subscribe(&client).await.expect("subscribe");
+    let path = ManagerProxy::new(&client)
+        .await
+        .expect("proxy")
+        .add_account("", "wayland:abc", &sheet.options())
+        .await
+        .expect("add_account");
+    eventually("the host to be opened", || {
+        !rig.host_log.calls().opened.is_empty()
+    })
+    .await;
+    let handle = rig.host_log.calls().opened[0].0.clone();
+    (client, sheet, path, handle)
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn the_add_sheet_is_shown_with_the_window_and_ended_by_the_host() {
+    let rig = Rig::start_with(Default::default(), SheetHost::quiet()).await;
+    let (_client, mut sheet, path, handle) = adding(&rig).await;
+    {
+        let calls = rig.host_log.calls();
+        assert_eq!(calls.opened[0].1, "wayland:abc");
+        let view: SheetView = serde_json::from_str(&calls.opened[0].2).expect("a view");
+        assert!(
+            matches!(view, SheetView::Providers(_)),
+            "the provider list: {view:?}"
+        );
+    }
+    send_input(&rig.host_connection, &handle, &SheetInput::Dismiss).await;
+    let (code, results) = sheet.response(&path).await.expect("response");
+    assert_eq!(code, 1, "{results:?}");
+    assert_eq!(rig.service.registry().accounts.len(), 3);
+    // The sheet was taken down when the answer came.
+    eventually("the host to be told to close", || {
+        rig.host_log.calls().closed == vec![handle.clone()]
+    })
+    .await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn a_forged_input_is_ignored_whoever_sends_it_and_whatever_handle_it_names() {
+    let rig = Rig::start_with(Default::default(), SheetHost::quiet()).await;
+    let (_client, mut sheet, path, handle) = adding(&rig).await;
+
+    // Another connection sends a Dismiss for the real handle.
+    let forger = rig.stranger().await;
+    send_input(&forger, &handle, &SheetInput::Dismiss).await;
+    // The real host sends a Dismiss for a handle that is not this sheet's.
+    send_input(&rig.host_connection, "accountd-999", &SheetInput::Dismiss).await;
+    // And a line that is not an input at all.
+    let emitter = zbus::object_server::SignalEmitter::new(
+        &rig.host_connection,
+        porter_wire::names::SHEET_PATH,
+    )
+    .expect("emitter");
+    emitter
+        .emit(
+            "org.quire.AccountsSheet1",
+            "Input",
+            &(handle.as_str(), "{not json"),
+        )
+        .await
+        .expect("emit");
+    tokio::time::sleep(Duration::from_millis(200)).await;
+    assert!(
+        rig.host_log.calls().closed.is_empty(),
+        "no forgery ended the sheet"
+    );
+
+    // Only the owner's answer for the handle counts.
+    send_input(&rig.host_connection, &handle, &SheetInput::Dismiss).await;
+    let (code, results) = sheet.response(&path).await.expect("response");
+    assert_eq!(code, 1, "{results:?}");
+    eventually("the host to be told to close", || {
+        rig.host_log.calls().closed == vec![handle.clone()]
+    })
+    .await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn a_process_that_only_claimed_the_name_is_not_the_host() {
+    let rig = Rig::start_with(Default::default(), SheetHost::quiet()).await;
+    let host_name = rig.host_connection.unique_name().expect("name").to_string();
+    // The owner of the name is not in the SheetHost role.
+    rig.callers
+        .introduce_as(&host_name, caller("org.example.Squatter", CallerRole::App));
+    let client = rig.client("org.quire.Photos").await;
+    let mut sheet = Sheet::subscribe(&client).await.expect("subscribe");
+    let path = ManagerProxy::new(&client)
+        .await
+        .expect("proxy")
+        .add_account("", "", &sheet.options())
+        .await
+        .expect("add_account");
+    let (code, _) = sheet.response(&path).await.expect("response");
+    assert_ne!(
+        code, 0,
+        "the sheet could not be shown, so nothing was added"
+    );
+    assert!(
+        rig.host_log.calls().opened.is_empty(),
+        "the squatter saw nothing"
+    );
+    assert_eq!(rig.service.registry().accounts.len(), 3);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn no_host_on_the_bus_is_no_sheet() {
+    let rig = Rig::start_with(Default::default(), SheetHost::quiet()).await;
+    rig.host_connection
+        .release_name(porter_wire::names::SHEET_BUS)
+        .await
+        .expect("release");
+    let client = rig.client("org.quire.Photos").await;
+    let mut sheet = Sheet::subscribe(&client).await.expect("subscribe");
+    let path = ManagerProxy::new(&client)
+        .await
+        .expect("proxy")
+        .add_account("", "", &sheet.options())
+        .await
+        .expect("add_account");
+    let (code, _) = sheet.response(&path).await.expect("response");
+    assert_ne!(code, 0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn a_host_that_leaves_ends_the_sheet() {
+    let rig = Rig::start_with(Default::default(), SheetHost::quiet()).await;
+    let (_client, mut sheet, path, _handle) = adding(&rig).await;
+    rig.host_connection.close().await.expect("close");
+    let (code, _) = sheet.response(&path).await.expect("response");
+    assert_eq!(code, 1, "no answer is a dismissal");
+    assert_eq!(rig.service.registry().accounts.len(), 3);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn a_caller_that_closes_the_request_takes_the_host_sheet_down() {
+    let rig = Rig::start_with(Default::default(), SheetHost::quiet()).await;
+    let (_client, sheet, path, handle) = adding(&rig).await;
+    sheet.closer(Some(path)).expect("closer").close().await;
+    eventually("the host to be told to close", || {
+        rig.host_log.calls().closed == vec![handle.clone()]
+    })
+    .await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn a_caller_that_closes_the_request_while_open_is_on_its_way_back_takes_the_sheet_down() {
+    // The host shows the sheet when it has `Open`, and accountd hears its answer a moment later.
+    // A Close in that moment dropped the flow before the link existed, so nothing told the host
+    // and the sheet stayed up (the flake of the test above, made certain by a host whose `Open`
+    // returns late).
+    let host = SheetHost::quiet().slow_to_return(Duration::from_secs(2));
+    let rig = Rig::start_with(Default::default(), host).await;
+    let (_client, sheet, path, handle) = adding(&rig).await;
+    sheet.closer(Some(path)).expect("closer").close().await;
+    eventually("the host to be told to close", || {
+        rig.host_log.calls().closed == vec![handle.clone()]
+    })
+    .await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn a_conversation_carries_views_out_and_typed_secrets_in() {
+    let rig = Rig::start().await;
+    let sheets = BusSheets::new(rig.connection.clone(), Arc::clone(&rig.callers));
+    let mut link = sheets
+        .conversation(SheetOpen {
+            window: ParentWindow::Unparented,
+            view: SheetView::Done,
+        })
+        .await
+        .expect("open");
+    let handle = rig.host_log.calls().opened[0].0.clone();
+    link.update(SheetView::Working {
+        provider: porter_core::ProviderId::parse("fake-cloud").expect("id"),
+        row: None,
+    })
+    .await
+    .expect("update");
+    assert_eq!(rig.host_log.calls().updated.len(), 1);
+
+    let submit = SheetInput::Submit(vec![FieldAnswer {
+        kind: FieldKind::Password,
+        value: FieldValue::Secret(SecretText::new(APP_PASSWORD)),
+    }]);
+    send_input(&rig.host_connection, &handle, &submit).await;
+    let got = link.input().await.expect("input");
+    assert_eq!(got, submit);
+    assert!(
+        !format!("{got:?}").contains(APP_PASSWORD),
+        "Debug redacts the secret"
+    );
+
+    drop(link);
+    eventually("the sheet to be closed on drop", || {
+        rig.host_log.calls().closed == vec![handle.clone()]
+    })
+    .await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn a_link_reports_closed_when_the_host_goes() {
+    let rig = Rig::start().await;
+    let sheets = BusSheets::new(rig.connection.clone(), Arc::clone(&rig.callers));
+    let mut link = sheets
+        .conversation(SheetOpen {
+            window: ParentWindow::Unparented,
+            view: SheetView::Done,
+        })
+        .await
+        .expect("open");
+    rig.host_connection.close().await.expect("close");
+    assert_eq!(link.input().await, Err(SheetFault::Closed));
+    assert_eq!(link.update(SheetView::Done).await, Err(SheetFault::Closed));
+}
+
+/// rel-11: an app has one sheet of a kind open at a time. A second ask while the first is open
+/// is refused at once (`LimitsExceeded`, no sheet, no Request object), from another connection of
+/// the same app too; once the first is closed the app may ask again.
+#[tokio::test(flavor = "multi_thread")]
+async fn a_second_sheet_of_a_kind_while_one_is_open_is_refused_until_it_ends() {
+    let rig = Rig::start_with(Default::default(), SheetHost::quiet()).await;
+    let (client, sheet, path, _handle) = adding(&rig).await;
+    let ask = |connection: zbus::Connection| async move {
+        let options = Sheet::subscribe(&connection)
+            .await
+            .expect("subscribe")
+            .options();
+        ManagerProxy::new(&connection)
+            .await
+            .expect("proxy")
+            .add_account("", "wayland:abc", &options)
+            .await
+    };
+    let again = ask(client.clone()).await.expect_err("one is open");
+    assert_eq!(
+        error_name(&again),
+        "org.freedesktop.DBus.Error.LimitsExceeded"
+    );
+    let other_connection = rig.client("org.quire.Photos").await;
+    let again = ask(other_connection).await.expect_err("the same app");
+    assert_eq!(
+        error_name(&again),
+        "org.freedesktop.DBus.Error.LimitsExceeded"
+    );
+    assert_eq!(rig.host_log.calls().opened.len(), 1, "no second sheet");
+    // Another app is not held up.
+    ask(rig.client("org.quire.Mail").await)
+        .await
+        .expect("another app's sheet");
+
+    sheet.closer(Some(path)).expect("closer").close().await;
+    let mut asked = None;
+    let deadline = test_kit::Deadline::generous();
+    while !deadline.passed() {
+        match ask(client.clone()).await {
+            Ok(path) => {
+                asked = Some(path);
+                break;
+            }
+            Err(_) => tokio::time::sleep(Duration::from_millis(10)).await,
+        }
+    }
+    assert!(
+        asked.is_some(),
+        "the app may ask again once its sheet ended"
+    );
+}

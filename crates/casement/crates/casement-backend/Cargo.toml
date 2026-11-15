@@ -1,0 +1,45 @@
+[package]
+name = "casement-backend"
+description = "casement's backends: the headless backend (virtual outputs, vblank source, render-cost model, VirtualInput), winit, and the tty seams (session, udev, KMS, scanout, GPU nodes, libinput settings) with their thin real adapters behind the features tty and libinput."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/casement"
+publish = false
+
+[dependencies]
+casement-core = {path = "../casement-core"}
+casement-protocols = {path = "../../../casement-protocols"}
+casement-render = {path = "../casement-render"}
+ds-core = {path = "../../../quire/crates/ds-core", default-features = false}
+smithay = {git = "https://github.com/Bardo-DE/smithay", rev = "919d8dcf7fe0b9ad03f3de53bc178dad30823631", default-features = false, features = ["backend_egl", "backend_session", "backend_winit", "renderer_gl", "renderer_multi", "renderer_pixman"]}
+# The KMS fixtures (`KmsResources` and its parts) are serde values, recorded and replayed by the
+# test kit's FakeKms.
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+tracing = {version = "0.1"}
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
+
+[features]
+# Headless tests only (B10): the dummy renderer, minting Physical/Virtual/Test origins.
+testing = ["casement-render/testing"]
+# casementctl's injection path (B10): minting Physical/Remote/Test origins from Debug1.
+debug-inject = []
+# The real tty adapters (`tty/*_real.rs`, `gpu/render_nodes_real.rs`): libseat, udev, DRM, GBM
+# (A2). Off by default so headless consumers (the test kit, cua's tests, a harness) build with
+# no system libraries; the `casement` binary turns it on. Only smithay's own features, which
+# bring the device crates, so no crate is added beyond the union the binary already links.
+tty = [
+  "smithay/backend_drm",
+  "smithay/backend_gbm",
+  "smithay/backend_udev",
+  "smithay/backend_session_libseat",
+]
+# The real libinput adapter (`input/libinput_real.rs`), off by default for the same reason.
+libinput = ["smithay/backend_libinput"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+missing_debug_implementations = "warn"

@@ -1,0 +1,28 @@
+[package]
+name = "porter-bridge"
+description = "The one mapping between porter's wire types (porter-infer) and stoker's provider types (model-provider): a chat, task or embedding request as a turn, a turn's events and end as porter's, a provider error as a ModelError. Pure: no runtime, no socket, no HTTP. inferd and inferd-client's in-process engine host share it."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/steward"
+publish = false
+
+[dependencies]
+model-catalog = {path = "../../../stoker/crates/model-catalog"}
+model-openai-compat = {path = "../../../stoker/crates/model-openai-compat"}
+model-provider = {path = "../../../stoker/crates/model-provider"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-match = {path = "../../../porter/crates/porter-match"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+porter-infer = {path = "../porter-infer"}
+thiserror = {version = "2"}
+vision-prep = {path = "../../../stoker/crates/vision-prep"}
+
+[dev-dependencies]
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

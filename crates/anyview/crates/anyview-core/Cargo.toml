@@ -1,0 +1,36 @@
+[package]
+name = "anyview-core"
+description = "The viewer's pure vocabulary: kinds, sniffing, units, sequence, actions, edits, exports, view memory."
+version = "0.1.0-beta.1"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/anyview"
+publish = false
+
+[features]
+# `LocalZone::pin`, for tests whose expected text names a time: a time zone every machine shares.
+testing = []
+
+[dependencies]
+# The actions and chords of the keymap: a file action's own id and default chord.
+chordkit = {path = "../../../chordkit/crates/chordkit"}
+ds-core = {path = "../../../quire/crates/ds-core"}
+infer = {version = "0.19"}
+serde = {version = "1", features = ["derive"]}
+jiff = {version = "0.2"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+# `ds_core::testing::word_matches_serde`, for the stored `Word` enums.
+ds-core = {features = ["testing"], path = "../../../quire/crates/ds-core"}
+serde_json = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+
+[lints.clippy]
+unwrap_used = "deny"
+wildcard_enum_match_arm = "deny"
+match_wildcard_for_single_variants = "deny"

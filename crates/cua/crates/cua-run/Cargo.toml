@@ -1,0 +1,44 @@
+[package]
+name = "cua-run"
+description = "The pure run machine of a computer-use run: observations, the phase table, inputs and effects, effect classification, mode support, the lease book, stall detection, the configuration and the seams cuad plugs in."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/cua"
+publish = false
+
+[dependencies]
+docket-gate-wire = {path = "../../../docket/crates/docket-gate-wire"}
+docket-wire = {path = "../../../docket/crates/docket-wire"}
+docket-permissions-core = {path = "../../../docket/crates/docket-permissions-core"}
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+cua-action = {path = "../../../stoker/crates/cua-action"}
+cua-desktop = {path = "../cua-desktop"}
+chordkit = {path = "../../../chordkit/crates/chordkit"}
+maskcap = {path = "../maskcap"}
+seat-input = {path = "../seat-input"}
+a11y-tree = {path = "../a11y-tree"}
+cua-bus = {path = "../cua-bus"}
+docket-core = {path = "../../../docket/crates/docket-core"}
+prov = {path = "../../../prov/prov"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-infer = {path = "../../../steward/crates/porter-infer"}
+model-provider = {path = "../../../stoker/crates/model-provider"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+
+keyboard-types = {version = "0.7", features = ["serde"]}
+blake3 = {version = "1"}
+
+[dev-dependencies]
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+docket-vocab = {path = "../../../docket/crates/docket-vocab"}
+cua-fake = {path = "../cua-fake"}
+serde_json = {version = "1"}
+toml = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

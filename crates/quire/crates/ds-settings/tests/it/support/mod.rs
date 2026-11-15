@@ -1,0 +1,83 @@
+//! What every settings integration test shares: a scratch directory standing in for
+//! `$XDG_CONFIG_HOME`. No test reads or writes the real `~/.config`.
+
+use ds_settings::{AppName, ConfigRoot, Store};
+use std::path::PathBuf;
+use std::sync::atomic::{AtomicU32, Ordering};
+
+/// The program name every test's store uses.
+pub const APP: AppName = AppName("probe");
+
+/// One test's own directory under the system temp dir, removed on drop. (No `tempfile`: it is not
+/// in the pinned dependency block.)
+pub struct Scratch(PathBuf);
+
+impl Scratch {
+    pub fn new() -> Self {
+        static NEXT: AtomicU32 = AtomicU32::new(0);
+        let n = NEXT.fetch_add(1, Ordering::Relaxed);
+        let path =
+            std::env::temp_dir().join(format!("ds-settings-test-{}-{n}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&path);
+        std::fs::create_dir_all(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
+        Scratch(path)
+    }
+
+    /// The store whose program directory is inside this scratch directory.
+    pub fn store(&self) -> Store {
+        Store::new(ConfigRoot::Scratch(self.0.clone()), APP)
+    }
+
+    /// The directory standing in for `$XDG_CONFIG_HOME`.
+    pub fn root(&self) -> &std::path::Path {
+        &self.0
+    }
+
+    /// The program directory itself, where the store's files land.
+    pub fn app_dir(&self) -> PathBuf {
+        self.0.join(APP.0)
+    }
+}
+
+impl Drop for Scratch {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(&self.0);
+    }
+}
+
+/// Make a FIFO at `path`; `false` when the system has no `mkfifo` (the test then proves nothing
+/// and returns).
+pub fn make_fifo(path: &std::path::Path) -> bool {
+    std::process::Command::new("mkfifo")
+        .arg(path)
+        .status()
+        .is_ok_and(|status| status.success())
+}
+
+/// Take every permission from the file at `path`. `false` when that does not stop this process
+/// from reading it (it runs as root), so the test has nothing to prove.
+pub fn make_unreadable(path: &std::path::Path) -> bool {
+    use std::os::unix::fs::PermissionsExt;
+    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o000)).is_ok()
+        && std::fs::File::open(path).is_err()
+}
+
+/// Give the file at `path` its ordinary permissions back.
+pub fn make_readable(path: &std::path::Path) {
+    use std::os::unix::fs::PermissionsExt;
+    let _ = std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o644));
+}
+
+/// The names in `dir`, sorted.
+pub fn names(dir: &std::path::Path) -> Vec<String> {
+    let mut names: Vec<String> = std::fs::read_dir(dir)
+        .map(|entries| {
+            entries
+                .filter_map(Result::ok)
+                .map(|entry| entry.file_name().to_string_lossy().into_owned())
+                .collect()
+        })
+        .unwrap_or_default();
+    names.sort();
+    names
+}

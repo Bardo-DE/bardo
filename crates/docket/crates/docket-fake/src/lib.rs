@@ -1,0 +1,41 @@
+//! Test fakes for docket: the fixture manifests of a mail and a files app and in-memory
+//! providers behind them (`FakeMail`, `FakeFiles`, with real undo tokens), scripted stand-ins
+//! for everything that asks a person or a model (`ScriptedConfirmer`, `ScriptedReviewer`,
+//! `ScriptedWriter`, `ScriptedReader`, `FakeMemory`), a fixed clock, a recording sink, an
+//! in-memory consent store, a model that only talks (`WordsModel`), and `fake_router` over all of them. Test code only: nothing in a
+//! daemon links this crate.
+
+mod clock;
+mod files;
+mod grant_contract;
+mod hosted;
+mod labels;
+mod mail;
+mod menu;
+mod parsed;
+mod router;
+mod scripted;
+mod seams;
+mod simple;
+mod words;
+
+pub use clock::FixedClock;
+pub use files::FakeFiles;
+pub use grant_contract::{check_grant_file_contract, contract_grant, contract_standing};
+pub use hosted::{BoxFut, HostedApp};
+pub use mail::{FakeMail, MailContact, MailThread, SentMail};
+pub use menu::{FakeMenu, MenuItem, MenuPerform};
+pub use parsed::ParsedReviewer;
+pub use router::{
+    FILES_MANIFEST, FakeError, MAIL_MANIFEST, MENU_MANIFEST, fake_router, fake_router_on,
+    fake_router_over, fake_router_reading, fake_router_with, files_manifest, install_menu,
+    mail_manifest, menu_manifest, registry,
+};
+pub use scripted::{
+    FakeMemory, Forget, ReviewMode, ScriptedConfirmer, ScriptedReader, ScriptedReviewer,
+    ScriptedWriter,
+};
+pub use seams::Answering;
+pub use seams::{FakeLink, FakeSeams, host_companion};
+pub use simple::{MemoryGrants, RecordingSink, RuleTexts};
+pub use words::{WordsModel, WordsSession};

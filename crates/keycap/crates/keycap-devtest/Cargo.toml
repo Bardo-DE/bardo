@@ -1,0 +1,18 @@
+[package]
+name = "keycap-devtest"
+publish = false
+description = "Test-only harness for keycap: fake keyboards on /dev/uinput, the daemon as a child process, its output device and its socket. Creates input devices; run only through the gated device tests"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.91"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Bardo-DE/keycap"
+
+[dependencies]
+keycap-protocol = { path = "../keycap-protocol" }
+keycap-client = { path = "../keycap-client" }
+keycap-sys = { path = "../keycap-sys" }
+rustix = {version = "1", features = ["event", "fs", "net", "pipe", "process", "time"]}
+
+[lints.rust]
+unsafe_code = "forbid"

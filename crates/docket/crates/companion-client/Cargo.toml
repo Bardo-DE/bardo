@@ -1,0 +1,25 @@
+[package]
+name = "companion-client"
+description = "The person's side of org.quire.Companion1: a CompanionTransport seam (open, ask, follow the answer object, close) and DbusCompanion over the session bus. What quire-do ask is written against. Kept out of docket-client so the apps and cuad that use that crate do not take on the companion's wire."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+companion-model = {path = "../companion-model"}
+companion-wire = {path = "../companion-wire"}
+docket-client = {path = "../docket-client", default-features = false}
+docket-wire = {path = "../docket-wire"}
+docket-dbus = {path = "../docket-dbus"}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+prov = {path = "../../../prov/prov"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,21 @@
+[package]
+name = "docket-skills-disk"
+description = "Skill directories on the real disk: the one SkillFolder that lists and reads them with std::fs, for the daemons and tools that hand docket-skills a folder."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+docket-skills = {path = "../docket-skills"}
+
+[dev-dependencies]
+docket-manifest = {path = "../docket-manifest"}
+toml = {version = "1"}
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

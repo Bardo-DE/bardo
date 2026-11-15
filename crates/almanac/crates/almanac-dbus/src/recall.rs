@@ -1,0 +1,31 @@
+//! `org.quire.Memory1.Recall`: readers and proposals. Callers are the action router and the
+//! shell; every call is audited as `Memory.Read`.
+
+/// The caller's side.
+#[zbus::proxy(
+    interface = "org.quire.Memory1.Recall",
+    default_service = "org.quire.Memory1",
+    default_path = "/org/quire/Memory1"
+)]
+pub trait Recall {
+    /// Search (`RecallQuery` JSON); answers `Vec<RecallHit>` JSON.
+    fn search(&self, space: &str, query: &str) -> zbus::Result<String>;
+    /// Facts (`FactQuery` JSON); answers `Vec<FactView>` JSON.
+    fn facts(&self, space: &str, query: &str) -> zbus::Result<String>;
+    /// Automatic recall for one turn (`InjectQuery` JSON, a token budget inside); answers
+    /// `Vec<RecallHit>` JSON within the budget.
+    fn inject(&self, space: &str, query: &str) -> zbus::Result<String>;
+    /// Recent activity (`RecentQuery` JSON); answers `Vec<RecentEntry>` JSON, newest first.
+    fn recent(&self, space: &str, query: &str) -> zbus::Result<String>;
+    /// The next events of one stream, oldest first (`EntriesQuery` JSON); answers `EntriesPage`
+    /// JSON.
+    fn entries(&self, space: &str, query: &str) -> zbus::Result<String>;
+    /// Events related to a thing (`ThingRef` JSON); answers `Vec<EventSummary>` JSON.
+    fn related(&self, space: &str, thing: &str) -> zbus::Result<String>;
+    /// Where a file came from (`SpacePath` JSON); answers `FileProvenance` JSON.
+    fn provenance(&self, space: &str, path: &str) -> zbus::Result<String>;
+    /// The primer, markdown.
+    fn primer(&self, space: &str) -> zbus::Result<String>;
+    /// Proposes a fact (`FactDraft` JSON); answers the `FactId` and the `FactState` JSON.
+    fn propose(&self, space: &str, draft: &str) -> zbus::Result<(String, String)>;
+}

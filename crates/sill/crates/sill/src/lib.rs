@@ -1,0 +1,36 @@
+//! The sill daemon and command line, as a library so `crates/sill/tests/**` can exercise its
+//! internals (`main.rs` is a thin wrapper over this crate).
+
+pub mod actions;
+pub mod cli;
+pub mod companion;
+pub mod corners;
+pub mod daemon;
+pub mod display_trial;
+pub mod door_guard;
+pub mod edge_reveal;
+pub mod empty_trash;
+pub mod eyedropper;
+pub mod force_quit;
+pub mod idle_dim;
+pub mod intents;
+pub mod ipc;
+pub mod launch;
+pub mod lock;
+pub mod name_guard;
+pub mod osd;
+pub mod outgoing;
+pub mod outputs;
+pub mod permission_answers;
+pub mod policy;
+pub mod release;
+pub mod run_args;
+pub mod scroll;
+pub mod sheet_latch;
+pub mod spaces_bar;
+pub mod split_picker;
+pub mod voice;
+pub mod watchdog;
+pub mod window_menu;
+pub mod work_areas;
+pub mod workspace_looks;

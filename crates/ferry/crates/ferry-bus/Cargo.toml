@@ -1,0 +1,26 @@
+[package]
+name = "ferry-bus"
+description = "ferry's D-Bus interfaces, each written once under porter-dbus's `#[bus_interface]`: org.quire.Sync1 (syncd's datasets), org.quire.Storage1 (the drives shown in Files) and, behind the `photos-picker` feature, org.quire.Photos1.Picker, with their bus names, object paths, option keys and row codecs."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/ferry"
+publish = false
+
+[dependencies]
+porter-dbus = {path = "../../../porter/crates/porter-dbus"}
+porter-dbus-macros = {path = "../../../porter/crates/porter-dbus-macros"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+serde = {version = "1", features = ["derive"]}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[features]
+# The Photos Picker's proxy and interface (`org.quire.Photos1.Picker`). Off by default: no Photos
+# app ships in v1, so the default bus surface does not declare it. syncd's feature of the same
+# name turns it on for the object it serves.
+photos-picker = []
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,31 @@
+[package]
+name = "casement-render"
+description = "casement's renderer seam: the Compositor trait over smithay's renderers, the CasementElement set, FrameScene to elements, damage-tracked output rendering and (feature testing) golden comparison."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/casement"
+publish = false
+
+[dependencies]
+casement-core = {path = "../casement-core"}
+casement-motion = {path = "../casement-motion"}
+casement-protocols = {path = "../../../casement-protocols"}
+ds-core = {path = "../../../quire/crates/ds-core", default-features = false}
+smithay = {git = "https://github.com/Bardo-DE/smithay", rev = "919d8dcf7fe0b9ad03f3de53bc178dad30823631", default-features = false, features = ["backend_egl", "desktop", "renderer_gl", "renderer_pixman", "wayland_frontend"]}
+thiserror = {version = "2"}
+image = {version = "0.25.6", default-features = false, features = ["png", "jpeg"], optional = true}
+
+[dev-dependencies]
+tempfile = {version = "3"}
+proptest = {version = "1"}
+
+[features]
+# Headless tests only (B10): smithay's DummyRenderer and the golden helper.
+testing = ["smithay/renderer_test", "dep:image"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+missing_debug_implementations = "warn"

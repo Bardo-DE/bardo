@@ -1,0 +1,31 @@
+[package]
+name = "actions-tools"
+description = "The tools a registry offers to an outside agent, as pure data: tool names, schemas and hints, the arguments read by their declared types, the coarse refusals and the outcome as JSON. Also the one tool list and the one tool-call preparation (`listing`, `prepare`): the MCP edge (actions-mcp) and the host of an external ACP agent (docket-acp) both call them and keep only their transport."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[lib]
+name = "actions_tools"
+path = "src/lib.rs"
+
+[dependencies]
+docket-core = {path = "../docket-core"}
+docket-manifest = {path = "../docket-manifest"}
+docket-permissions-core = {path = "../docket-permissions-core"}
+docket-vocab = {path = "../docket-vocab"}
+prov = {path = "../../../prov/prov"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+toml = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

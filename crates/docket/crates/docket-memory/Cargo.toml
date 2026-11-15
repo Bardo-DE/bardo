@@ -1,0 +1,39 @@
+[package]
+name = "docket-memory"
+description = "docket's memory seam over a transport, portable: `MemoryLink` and `SessionLog` over almanac-client (any Transport: memoryd over D-Bus, or the service hosted in process), `MemoryProvider` (the org.quire.Memory actions as an IntentProvider), and `AuditState`, which drains the audit queue into memory with retry accounting. No bus, no runtime."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+almanac-client = {default-features = false, path = "../../../almanac/crates/almanac-client"}
+almanac-core = {path = "../../../almanac/crates/almanac-core"}
+docket-core = {path = "../docket-core"}
+docket-manifest = {path = "../docket-manifest"}
+docket-vocab = {path = "../docket-vocab"}
+docket-memory-core = {path = "../docket-memory-core"}
+docket-provider = {path = "../docket-provider"}
+docket-session = {path = "../docket-session"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+prov = {path = "../../../prov/prov"}
+serde_json = {version = "1"}
+
+[dev-dependencies]
+docket-permissions-core = {path = "../docket-permissions-core"}
+docket-session = {path = "../docket-session", features = ["testing"]}
+almanac-client = {default-features = false, features = ["in_process"], path = "../../../almanac/crates/almanac-client"}
+almanac-fake = {path = "../../../almanac/crates/almanac-fake"}
+almanac-service = {path = "../../../almanac/crates/almanac-service"}
+docket-fake = {path = "../docket-fake"}
+docket-context = {path = "../docket-context"}
+docket-router = {path = "../docket-router"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+docket-wire = {path = "../docket-wire"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

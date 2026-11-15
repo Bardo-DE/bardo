@@ -1,0 +1,26 @@
+# An inferd.toml for `--engine cloud`. Copy it to dev/live/inferd.cloud.toml (git ignores that) and
+# pass it with --inferd-config. No key is in it or may be: inferd gets the key from its own key store on the
+# private bus (docs/live-eval.md, "Cloud"). It must not hold a [callers] table.
+[ai]
+# Prompts may leave this computer. The writer, the reviewers and the planner send the class
+# `prompt`; the reader sends `mail`, so a live smoke of flow-c needs `mail` floored too (leave it
+# out to keep mail on this computer: the reader then fails and the flow reports it).
+local_only = "off"
+
+[ai.floor]
+prompt = "anywhere"
+# mail = "anywhere"
+
+# Each run pins all three tiers to ONE model, so the run measures that model alone. Fill the ids
+# with `cloud/<entry id>` of ~/stoker/catalog (the file's own `id`); the account must reach them.
+# The ids are left empty here because the cloud set is being changed in stoker. A tier left empty
+# has no model chosen, and a request at that tier is refused: fill all three.
+[ai.model.text]
+fast = ""
+balanced = ""
+best = ""
+
+# A cap stops a runaway run: cents per day, on the account and on the app.
+[ai.spend]
+account_daily_cents = 500
+app_daily_cents = 500

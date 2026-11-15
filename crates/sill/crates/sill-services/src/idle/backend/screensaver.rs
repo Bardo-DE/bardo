@@ -1,0 +1,151 @@
+//! `org.freedesktop.ScreenSaver` on [`Reach::session`](crate::idle::Reach), served while idle is
+//! `Own`: `Inhibit(app, reason) -> cookie`, `UnInhibit(cookie)` and `GetActive()`, at
+//! `/org/freedesktop/ScreenSaver` and `/ScreenSaver`. The object hands each call to the live
+//! loop, which owns the inhibitors ([`sill_model::idle::inhibit_step`]); a caller that leaves the
+//! bus loses
+//! its inhibits (`NameOwnerChanged`). The name is asked for without replacing a holder: if
+//! another holds it, its inhibits never reach sill, and that is logged.
+
+use sill_model::idle::{BusPeer, Idle, IdlePhase, InhibitCookie, InhibitMsg, InhibitReply};
+use sill_model::serve::ClaimError;
+use tokio::sync::{mpsc, oneshot, watch};
+use zbus::fdo::{DBusProxy, NameOwnerChangedStream};
+use zbus::message::Header;
+use zbus::{Connection, fdo, interface};
+
+use crate::env::Bus;
+use crate::serve::{claim, refused};
+
+/// The well-known name.
+pub(crate) const BUS_NAME: &str = "org.freedesktop.ScreenSaver";
+
+/// The two paths apps call.
+pub(crate) const PATHS: [&str; 2] = ["/org/freedesktop/ScreenSaver", "/ScreenSaver"];
+
+/// A call handed to the loop.
+#[derive(Debug)]
+pub(crate) struct Call {
+    pub(crate) msg: InhibitMsg,
+    pub(crate) reply: oneshot::Sender<InhibitReply>,
+}
+
+/// The served object (one per path).
+#[derive(Debug, Clone)]
+struct Saver {
+    calls: mpsc::UnboundedSender<Call>,
+    idle: watch::Receiver<Idle>,
+}
+
+fn stopped() -> fdo::Error {
+    fdo::Error::Failed("sill's idle service has stopped".to_owned())
+}
+
+fn caller(header: &Header<'_>) -> fdo::Result<BusPeer> {
+    header
+        .sender()
+        .map(|name| BusPeer(name.to_string()))
+        .ok_or_else(|| fdo::Error::Failed("no sender".to_owned()))
+}
+
+impl Saver {
+    async fn ask(&self, msg: InhibitMsg) -> fdo::Result<InhibitReply> {
+        let (reply, answer) = oneshot::channel();
+        self.calls
+            .send(Call { msg, reply })
+            .map_err(|_| stopped())?;
+        answer.await.map_err(|_| stopped())
+    }
+}
+
+#[interface(name = "org.freedesktop.ScreenSaver")]
+impl Saver {
+    async fn inhibit(
+        &self,
+        #[zbus(header)] header: Header<'_>,
+        application_name: String,
+        reason_for_inhibit: String,
+    ) -> fdo::Result<u32> {
+        let msg = InhibitMsg::Inhibit {
+            peer: caller(&header)?,
+            app: application_name,
+            reason: reason_for_inhibit,
+        };
+        match self.ask(msg).await? {
+            InhibitReply::Cookie(InhibitCookie(cookie)) => Ok(cookie),
+            InhibitReply::TooMany => Err(fdo::Error::LimitsExceeded(
+                "too many inhibitors held".to_owned(),
+            )),
+            InhibitReply::Done | InhibitReply::Unknown => Err(stopped()),
+        }
+    }
+
+    async fn un_inhibit(&self, #[zbus(header)] header: Header<'_>, cookie: u32) -> fdo::Result<()> {
+        let msg = InhibitMsg::UnInhibit {
+            peer: caller(&header)?,
+            cookie: InhibitCookie(cookie),
+        };
+        // An unknown cookie is ignored, as the spec's servers do.
+        self.ask(msg).await.map(|_| ())
+    }
+
+    /// Whether the "screen saver" is on: the displays are off for idleness.
+    fn get_active(&self) -> bool {
+        match self.idle.borrow().phase {
+            IdlePhase::DisplaysOff | IdlePhase::Suspending => true,
+            IdlePhase::Active | IdlePhase::Dimmed => false,
+        }
+    }
+}
+
+/// The served name and the departures it follows. Dropping it closes the connection, which
+/// gives the name back.
+pub(crate) struct Served {
+    _connection: Connection,
+    pub(crate) departures: Option<NameOwnerChangedStream>,
+}
+
+impl std::fmt::Debug for Served {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Served").finish_non_exhaustive()
+    }
+}
+
+/// Serve the object on `session` and ask for the name; `None` when it cannot be had.
+pub(crate) async fn serve(
+    session: &Bus,
+    calls: mpsc::UnboundedSender<Call>,
+    idle: watch::Receiver<Idle>,
+) -> Option<Served> {
+    let saver = Saver { calls, idle };
+    let claimed = claim(session, BUS_NAME, async |connection| {
+        for path in PATHS {
+            connection
+                .object_server()
+                .at(path, saver.clone())
+                .await
+                .map_err(refused)?;
+        }
+        Ok(())
+    })
+    .await;
+    let connection = match claimed {
+        Ok(connection) => connection,
+        Err(ClaimError::NoBus) => return None,
+        Err(ClaimError::NameTaken(_)) => {
+            eprintln!("sill: idle: {BUS_NAME} is held by another; its inhibits never reach sill");
+            return None;
+        }
+        Err(ClaimError::Refused(why)) => {
+            eprintln!("sill: idle: serving {BUS_NAME}: {why}");
+            return None;
+        }
+    };
+    let departures = match DBusProxy::new(&connection).await {
+        Ok(dbus) => dbus.receive_name_owner_changed().await.ok(),
+        Err(_) => None,
+    };
+    Some(Served {
+        _connection: connection,
+        departures,
+    })
+}

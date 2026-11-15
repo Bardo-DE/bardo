@@ -1,0 +1,23 @@
+[package]
+name = "porter-family-nextcloud"
+description = "The Nextcloud family: Login Flow v2, OCS discovery, WebDAV, CalDAV, CardDAV and the Notes API over one app password. A driver: nextcloud-proto builds the requests and reads the answers, dav-proto walks the principal, and this crate sends them."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+porter-family-kit = {path = "../porter-family-kit"}
+nextcloud-proto = {path = "../nextcloud-proto"}
+dav-proto = {path = "../dav-proto", features = ["discover"]}
+porter-core = {path = "../porter-core"}
+porter-capability = {path = "../porter-capability"}
+porter-sheet = {path = "../porter-sheet"}
+porter-provider = {path = "../porter-provider"}
+porter-http = {path = "../porter-http"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

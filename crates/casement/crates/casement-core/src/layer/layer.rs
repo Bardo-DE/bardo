@@ -1,0 +1,124 @@
+//! One layer surface's state, as its client configured it (wlr-layer-shell, in our words).
+
+use crate::geometry::LogicalSize;
+use crate::ids::OutputKey;
+use casement_protocols::vocab::ShellRole;
+
+/// What a layer surface asked for.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LayerSpec {
+    /// The output it sits on.
+    pub output: OutputKey,
+    /// Which layer.
+    pub level: LayerLevel,
+    /// The edges it is held to.
+    pub anchor: Anchors,
+    /// The size it asked for (`set_size`); 0 on an axis leaves that axis to the compositor.
+    pub size: LogicalSize,
+    /// The space it keeps windows out of.
+    pub exclusive: ExclusiveZone,
+    /// Its distance from each anchored edge.
+    pub margin: Margins,
+    /// Whether it takes the keyboard.
+    pub keyboard: KeyboardInteractivity,
+    /// The namespace its client gave (`"bar"`, `"dock"`).
+    pub namespace: String,
+    /// The shell role sill gave it through `quire_shell_v1`.
+    pub role: ShellRoleTag,
+    /// Whose connection it came through.
+    pub owner: LayerOwner,
+}
+
+impl LayerSpec {
+    /// What its keyboard request comes to. `Exclusive` outranks the key window, so only the
+    /// shell's surfaces keep it; any other client's is on-demand, and takes the keyboard only
+    /// when the person clicks it (CASC-02).
+    pub fn granted_keyboard(&self) -> KeyboardInteractivity {
+        match (self.keyboard, self.owner) {
+            (KeyboardInteractivity::Exclusive, LayerOwner::Client) => {
+                KeyboardInteractivity::OnDemand
+            }
+            (asked, LayerOwner::Shell | LayerOwner::Client) => asked,
+        }
+    }
+}
+
+/// Whose connection a layer surface came through.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum LayerOwner {
+    /// The shell's own (the bar, the dock, the launcher): trusted with the keyboard and with
+    /// room taken from windows.
+    Shell,
+    /// Any other client.
+    Client,
+}
+
+/// The four layers, bottom to top.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub enum LayerLevel {
+    /// Below everything (wallpaper).
+    Background,
+    /// Below windows.
+    Bottom,
+    /// Above windows (the bar, the dock).
+    Top,
+    /// Above everything, full-screen windows included.
+    Overlay,
+}
+
+/// Which edges a layer surface is held to (`true`: held).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Anchors {
+    /// The top edge.
+    pub top: bool,
+    /// The bottom edge.
+    pub bottom: bool,
+    /// The left edge.
+    pub left: bool,
+    /// The right edge.
+    pub right: bool,
+}
+
+/// How a layer surface treats the space beside its anchored edge.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ExclusiveZone {
+    /// It ignores other surfaces' zones and reserves none (`-1`).
+    Ignore,
+    /// It avoids other zones and reserves none (`0`).
+    Respect,
+    /// It reserves this many logical pixels beside its edge.
+    Reserve(u32),
+}
+
+/// A layer surface's distance from each edge, in logical pixels.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Margins {
+    /// From the top edge.
+    pub top: i32,
+    /// From the right edge.
+    pub right: i32,
+    /// From the bottom edge.
+    pub bottom: i32,
+    /// From the left edge.
+    pub left: i32,
+}
+
+/// Whether a layer surface takes the keyboard.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum KeyboardInteractivity {
+    /// Never.
+    None,
+    /// When clicked.
+    OnDemand,
+    /// Whenever it is mapped (a launcher, a lock-like overlay).
+    Exclusive,
+}
+
+/// The shell role a layer surface has been given, if any.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ShellRoleTag {
+    /// None yet.
+    Unassigned,
+    /// This role.
+    Assigned(ShellRole),
+}

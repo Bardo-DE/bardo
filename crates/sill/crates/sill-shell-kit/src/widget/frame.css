@@ -1,0 +1,19 @@
+/* WidgetFrame (design/04 "Widgets"; design/20 section 1.14). A small widget is one
+   `--widget-cell` square, a medium two cells and a gap wide, a large two by two; the
+   notification center sets both tokens. The card is a tile on the Popover it is in, a
+   ModuleTile's plate: `--surface-2`, a hairline, `--r-tile` 12, its content 12 in from the
+   outer edge (the padding gives up the hairline, so a small card's content box stays 140). The optional title
+   row is quiet (design/23-WIDGETS.md section 4.3): the glyph at 12 and the name in the UI face
+   at `--fs-caption` 600, both `--ink-soft`, so the widget's own value leads. Attribute selectors
+   carry `*|` (spike S2). */
+
+.ds-widget{ position:relative; display:flex; flex-direction:column; gap:var(--s-8); box-sizing:border-box; overflow:hidden;
+  width:var(--widget-cell); height:var(--widget-cell); padding:calc(var(--s-12) - var(--hair)); border:var(--hair) solid var(--line);
+  border-radius:var(--r-tile); background:var(--surface-2); color:var(--ink); }
+.ds-widget[*|data-size=medium]{ width:calc(2 * var(--widget-cell) + var(--widget-gap)); }
+.ds-widget[*|data-size=large]{ width:calc(2 * var(--widget-cell) + var(--widget-gap)); height:calc(2 * var(--widget-cell) + var(--widget-gap)); }
+
+.ds-widget-title{ position:relative; z-index:var(--z-raise); display:flex; align-items:center; gap:var(--s-5); flex:none; min-width:0;
+  font-family:var(--font-ui); font-size:var(--fs-caption); font-weight:600; line-height:1.25; color:var(--ink-soft); }
+.ds-widget-title-text{ white-space:nowrap; overflow:hidden; }
+.ds-widget-body{ position:relative; z-index:var(--z-raise); display:flex; flex-direction:column; flex:1; min-width:0; min-height:0; }

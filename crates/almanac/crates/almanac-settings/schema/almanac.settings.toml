@@ -1,0 +1,113 @@
+# almanac's settings schema in the design/22 format (section 9.2). Installed to
+# $XDG_DATA_DIRS/quire/settings/almanac.settings.toml; `memoryd --write-schema <dir>` writes it for a
+# local install. The values live in $XDG_CONFIG_HOME/almanac/settings.toml, for example `[memory.files]`
+# then `at_rest = "plain"`; memoryd reads them live (crates/almanac-settings, crates/almanac-host). Every row
+# is hands-off for an agent (no `agent = "settable"`): memory.* is never agent-settable, so the
+# companion can never loosen what memory keeps or how it is held. The rows design/22 section 5 puts
+# on the Intelligence page are Memory's two; the others (Memory, History) are Advanced. Not here, because nothing
+# reads it yet: `memory.join_window_ms` (memoryd does not run the file watch yet). See FINDINGS.
+app = "almanac"
+file = "almanac/settings.toml"
+version = 1
+
+[[key]]
+path = "memory.files.at_rest"
+default = "sealed"
+label = "Memory files"
+help = "Private keeps memory files encrypted. Readable by apps leaves them as plain files. Existing Spaces keep theirs."
+section = "Memory"
+exposure = "basic"
+
+[key.kind]
+kind = "toggle"
+
+[key.kind.v]
+variants = ["sealed", "plain"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+sealed = "Private"
+plain = "Readable by apps"
+
+[[key]]
+path = "memory.consolidation.when"
+default = "nightly"
+label = "Tidy memory"
+help = "When memory sorts what it learned and tidies its files. You can undo any run."
+section = "Memory"
+exposure = "basic"
+
+[key.kind]
+kind = "segmented"
+
+[key.kind.v]
+variants = ["nightly", "manual", "never"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+nightly = "Nightly"
+manual = "When I ask"
+never = "Never"
+
+[[key]]
+path = "memory.consolidation.apply"
+default = "auto"
+label = "Apply tidying"
+help = "Apply each tidy-up right away, or wait for your approval."
+section = "Memory"
+exposure = "advanced"
+
+[key.kind]
+kind = "toggle"
+
+[key.kind.v]
+variants = ["auto", "review"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+auto = "Right away"
+review = "After I review"
+
+[[key]]
+path = "memory.retention.search_days"
+default = 30
+label = "Keep search history"
+help = "How long searches are remembered."
+section = "History"
+exposure = "advanced"
+
+[key.kind]
+kind = "bounded"
+
+[key.kind.v]
+min = 1
+max = 3650
+unit = "days"
+
+[key.page]
+kind = "intelligence"
+
+[[key]]
+path = "memory.retention.session_days"
+default = 30
+label = "Keep task history"
+help = "How long the assistant's tasks are remembered."
+section = "History"
+exposure = "advanced"
+
+[key.kind]
+kind = "bounded"
+
+[key.kind.v]
+min = 1
+max = 3650
+unit = "days"
+
+[key.page]
+kind = "intelligence"

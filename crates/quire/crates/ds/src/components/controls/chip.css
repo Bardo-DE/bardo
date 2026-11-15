@@ -1,0 +1,56 @@
+/* Chip (design/04-COMPONENTS.md section 10). Attribute selectors carry `*|` (spike S2); the
+   washes replace `color-mix` (`--ok-wash`, `--danger-wash`). Chips never truncate. */
+
+.ds-chip{ font-family:var(--font-data); font-variant-numeric:tabular-nums; white-space:nowrap; }
+
+/* Accent: `S:198-199`. Label shares its shape (`C:941-944`). */
+.ds-chip[*|data-variant=accent],
+.ds-chip[*|data-variant=label]{
+  font-size:var(--fs-micro); padding:var(--s-1-5) var(--s-7); border-radius:var(--r-chip);
+  background:var(--accent-soft); color:var(--ink);
+}
+.ds-chip[*|data-variant=label][*|data-hue=red]{    background:var(--c-red-soft);    color:var(--c-red-deep); }
+.ds-chip[*|data-variant=label][*|data-hue=amber]{  background:var(--c-amber-soft);  color:var(--c-amber-deep); }
+.ds-chip[*|data-variant=label][*|data-hue=green]{  background:var(--c-green-soft);  color:var(--c-green-deep); }
+.ds-chip[*|data-variant=label][*|data-hue=blue]{   background:var(--c-blue-soft);   color:var(--c-blue-deep); }
+.ds-chip[*|data-variant=label][*|data-hue=violet]{ background:var(--c-violet-soft); color:var(--c-violet-deep); }
+
+/* Neutral: C's `.tag` (`C:615-616`). */
+.ds-chip[*|data-variant=neutral]{
+  font-size:var(--fs-micro); padding:var(--s-2) var(--s-7); border-radius:var(--r-pill);
+  background:var(--surface-2); border:var(--hair) solid var(--line); color:var(--ink-faint);
+}
+
+/* Token: `S:798`. */
+.ds-chip[*|data-variant=token]{ font-size:var(--fs-note); padding:var(--s-2) var(--s-8); border-radius:var(--r-pill); background:var(--accent-soft); color:var(--ink); }
+
+/* Status: `S:276-278`. */
+.ds-chip[*|data-variant=status]{ font-size:var(--fs-micro); padding:var(--s-1) var(--s-7); border-radius:var(--r-pill); }
+.ds-chip[*|data-variant=status][*|data-status=ok]{ background:var(--ok-wash); color:var(--ok); }
+.ds-chip[*|data-variant=status][*|data-status=bad]{ background:var(--danger-wash); color:var(--danger); }
+
+/* Person: `S:592-598`. The avatar is an 18 Avatar. */
+.ds-chip[*|data-variant=person]{
+  display:inline-flex; align-items:center; gap:var(--s-6); padding:var(--s-2) var(--s-8) var(--s-2) var(--s-3); border-radius:var(--r-pill);
+  background:var(--surface); border:var(--hair) solid var(--line);
+  font-family:var(--font-ui); font-size:var(--fs-meta); color:var(--ink);
+}
+.ds-chip-remove{ border:0; background:none; padding:0; cursor:default; color:var(--ink-faint); line-height:0; }
+
+/* A leading colour dot: the chip's `dot` colour (a `--tag-*` token or any CSS colour) in `--chip-dot`. */
+.ds-chip-dot{ display:inline-block; vertical-align:middle; flex:none; width:12px; height:12px; margin-right:var(--s-4); border-radius:var(--r-pill); background:var(--chip-dot); }
+/* A dot with no text (a tag in a row): nothing to keep apart from. */
+.ds-chip-dot:only-child{ margin-right:0; }
+
+/* Pressable: the face is a button that wears the chip's own type and ink; the chip lays the
+   face and its remove button in a row. Focus ring: the global keyboard rule. */
+.ds-chip[*|data-pressable]{ display:inline-flex; align-items:center; gap:var(--s-5); }
+.ds-chip-press{
+  display:inline-flex; align-items:center; margin:0; padding:0; border:0; border-radius:inherit; background:none;
+  font-family:inherit; font-size:inherit; font-variant-numeric:inherit; color:inherit; white-space:nowrap; cursor:default;
+}
+/* Picked: the ink, a stronger wash and a firmer line, as a toggle Button that is on. A chip with
+   no line of its own gets a ring in its place. */
+.ds-chip[*|data-state=on]{ color:var(--ink); box-shadow:0 0 0 var(--hair) var(--ink-faint); }
+.ds-chip[*|data-variant=neutral][*|data-state=on],
+.ds-chip[*|data-variant=person][*|data-state=on]{ background:var(--fill); border-color:var(--ink-faint); box-shadow:none; }

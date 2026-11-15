@@ -1,0 +1,40 @@
+[package]
+name = "cua-eval-cloud"
+description = "The computer-use eval against a hosted model: a stoker Provider that asks porter's inferd for a chat turn over the bus (the API key stays in accountd and inferd), and the cua-eval-cloud binary that plays the task set on it under a spend and step budget."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/cua"
+publish = false
+
+[lib]
+name = "cua_eval_cloud"
+path = "src/lib.rs"
+
+[[bin]]
+name = "cua-eval-cloud"
+path = "src/main.rs"
+
+[dependencies]
+porter-match = {path = "../../../porter/crates/porter-match"}
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+cua-eval = {path = "../cua-eval"}
+model-catalog = {path = "../../../stoker/crates/model-catalog"}
+model-provider = {path = "../../../stoker/crates/model-provider"}
+inferd-client = {features = ["dbus"], path = "../../../steward/crates/inferd-client"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-infer = {path = "../../../steward/crates/porter-infer"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+toml = {version = "1"}
+vision-prep = {path = "../../../stoker/crates/vision-prep"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[dev-dependencies]
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

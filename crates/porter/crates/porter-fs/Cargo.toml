@@ -1,0 +1,27 @@
+[package]
+name = "porter-fs"
+description = "porter's file writer: atomic saves (a staging file, synced, renamed over the target, the directory synced) the one-file backup and (feature `book`) a kept document saved on the blocking pool. Std only by default; the one place porter's blocking file writes live."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+serde = {version = "1", features = ["derive"], optional = true}
+serde_json = {version = "1", optional = true}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"], optional = true}
+
+[features]
+# `book::commit`: a document saved off the async runtime's threads. A host that keeps a document
+# (the Spaces, the identity uses) names it; the default stays std only.
+book = ["dep:serde", "dep:serde_json", "dep:tokio"]
+
+[dev-dependencies]
+test-kit = {path = "../test-kit"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

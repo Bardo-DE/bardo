@@ -1,0 +1,102 @@
+//! The crate's one error.
+
+use crate::pdf::PageTrouble;
+use anyview_archive::ArchiveError;
+use anyview_core::{ByteLen, FormatKind};
+use anyview_font::FontError;
+use anyview_image::ImageError;
+use anyview_text::TextError;
+use ds_core::word::Word;
+use std::convert::Infallible;
+use std::path::PathBuf;
+use thiserror::Error;
+
+/// Why a peek failed. Every peek reports through it, so the registry's one signature covers all of
+/// them; the pane shows [`PeekError`]'s words as the reason a file has no preview.
+#[derive(Debug, Error)]
+pub enum PeekError {
+    /// An image peek failed.
+    #[error(transparent)]
+    Image(#[from] ImageError),
+    /// A text, code, Markdown, table or tree peek failed.
+    #[error(transparent)]
+    Text(#[from] TextError),
+    /// The recording's header could not be read: the file is not what its name says, or is damaged.
+    #[error("cannot read the recording: {reason}")]
+    Media {
+        /// What the parser said.
+        reason: String,
+    },
+    /// An archive's listing failed.
+    #[error(transparent)]
+    Archive(#[from] ArchiveError),
+    /// A font could not be read.
+    #[error(transparent)]
+    Font(#[from] FontError),
+    /// The PDF's first page could not be drawn.
+    #[error("{}", .0.label())]
+    Pdf(PageTrouble),
+    /// The folder could not be listed.
+    #[error("cannot list {path:?}: {kind}")]
+    Folder {
+        /// The folder.
+        path: PathBuf,
+        /// What the operating system said.
+        kind: std::io::ErrorKind,
+    },
+    /// The path names nothing.
+    #[error("{path:?} does not exist")]
+    Missing {
+        /// The path.
+        path: PathBuf,
+    },
+    /// The path exists and cannot be read.
+    #[error("cannot read {path:?}: {kind}")]
+    Unreadable {
+        /// The path.
+        path: PathBuf,
+        /// What the operating system said.
+        kind: std::io::ErrorKind,
+    },
+    /// The peek has to read more of the file than its budget allows.
+    #[error("the file is {} bytes and the preview may read {}", .len.0, .allowed.0)]
+    OverBudget {
+        /// The file's length.
+        len: ByteLen,
+        /// The most the peek may read.
+        allowed: ByteLen,
+    },
+    /// The file's sniffed kind belongs to another peek.
+    #[error("a {kind:?} file is not what this peek reads")]
+    WrongKind {
+        /// What the file was sniffed as.
+        kind: FormatKind,
+    },
+}
+
+impl PeekError {
+    /// Whether the peek ended because its time ran out and left nothing to show: a back end's
+    /// interrupted error. It is no fault of the file, and the card says nothing of it.
+    pub fn is_interrupted(&self) -> bool {
+        matches!(
+            self,
+            PeekError::Text(TextError::Interrupted)
+                | PeekError::Archive(ArchiveError::Interrupted)
+                | PeekError::Font(FontError::Interrupted)
+        )
+    }
+
+    /// A recording that its parser refused, for `reason`.
+    pub fn media(reason: impl Into<String>) -> Self {
+        PeekError::Media {
+            reason: reason.into(),
+        }
+    }
+}
+
+/// A peek that cannot fail names `Infallible`; this is the one conversion the registry needs.
+impl From<Infallible> for PeekError {
+    fn from(never: Infallible) -> Self {
+        match never {}
+    }
+}

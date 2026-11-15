@@ -1,0 +1,122 @@
+//! What the model asks its caller to do.
+
+use std::path::PathBuf;
+
+use crate::app::AppPick;
+use files_core::{
+    FileName, FolderPath, FolderPrefs, ItemRef, Location, OnlineUrl, OpFailure, OpPlan, Resolution,
+    Summary, VolumeId, VolumeName, VolumeTrouble,
+};
+
+/// One file to hand to an app: where it is, and what it is called.
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[non_exhaustive]
+pub struct OpenTarget {
+    /// The folder it is in.
+    pub folder: FolderPath,
+    /// Its name there.
+    pub name: FileName,
+}
+
+impl OpenTarget {
+    /// The file called `name` in `folder`.
+    pub fn new(folder: FolderPath, name: FileName) -> OpenTarget {
+        OpenTarget { folder, name }
+    }
+
+    /// The full path of the file.
+    pub fn path(&self) -> PathBuf {
+        self.folder.as_path().join(self.name.as_os_str())
+    }
+}
+
+/// Something for the caller to carry out; the answer, if any, comes back as an
+/// [`Input`](crate::Input).
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[non_exhaustive]
+pub enum Effect {
+    /// Read the folder and answer with `Input::Listed`.
+    List(Location),
+    /// Start telling us about changes there, as `Input::Changed`.
+    Watch(Location),
+    /// Stop telling us about changes there.
+    Unwatch(Location),
+    /// Hand these files to the apps that open them.
+    OpenFiles(Vec<OpenTarget>),
+    /// Hand these files to this app, whatever their own default is.
+    OpenFilesWith {
+        /// What to open.
+        targets: Vec<OpenTarget>,
+        /// The app to open it with.
+        app: AppPick,
+    },
+    /// Find out whether this is a folder the person may open, and answer with
+    /// `Input::FolderChecked`.
+    CheckFolder(FolderPath),
+    /// Put this text on the clipboard.
+    CopyText(String),
+    /// Rename a file in a folder; the listing changes when the disk does.
+    Rename {
+        /// The folder it is in.
+        folder: FolderPath,
+        /// Its name now.
+        from: FileName,
+        /// The name it should have.
+        to: FileName,
+    },
+    /// Look up how this folder was last shown and answer with `Input::PrefsLoaded`.
+    LoadPrefs(Location),
+    /// Remember how this folder is shown.
+    SavePrefs(Location, FolderPrefs),
+    /// Make a preview of this item for Quick Look; the answer is not an input (a picture is not
+    /// something the model holds), the window shows it when it arrives.
+    Look(ItemRef),
+    /// Read the facts of this item for Get Info and answer with `Input::InfoRead`.
+    ReadInfo(ItemRef),
+    /// Read the facts of this item for the preview pane and answer with `Input::DetailsRead`.
+    ReadDetails(ItemRef),
+    /// Do this change to the files, after the ones already asked for; the browser hears how it
+    /// goes as `Input::Op`.
+    Run(OpPlan),
+    /// Take back the newest change that can be taken back.
+    Undo,
+    /// The person's answer to a taken name the work is waiting on.
+    Answer(Resolution),
+    /// Stop the change under way.
+    Cancel,
+    /// Tell the person a change failed.
+    Tell(OpFailure),
+    /// Tell the person a change was made that they can undo (a move to the Trash).
+    Announce(Summary),
+    /// Open (mount) this disk and answer with `Input::Mounted`.
+    MountVolume(VolumeId),
+    /// Eject this disk and answer with `Input::Ejected`.
+    EjectVolume(VolumeId),
+    /// Eject this disk even though programs may be using it (the person said so), and answer with
+    /// `Input::ForceEjected`.
+    ForceEjectVolume(VolumeId),
+    /// Ask where these items of a cloud drive stand and answer with `Input::CloudItems`.
+    ReadCloud(Vec<ItemRef>),
+    /// Download these items and answer with `Input::CloudAnswered`.
+    CloudDownload(Vec<ItemRef>),
+    /// Remove the downloaded copy of these items and answer with `Input::CloudAnswered`.
+    CloudRemove(Vec<ItemRef>),
+    /// Keep these items downloaded (`true`) or stop keeping them, and answer with
+    /// `Input::CloudAnswered`.
+    CloudKeep(Vec<ItemRef>, bool),
+    /// Save these online documents as files and answer with `Input::CopiesSaved`.
+    CloudSaveCopy(Vec<ItemRef>),
+    /// Open this online document in the browser.
+    OpenUrl(OnlineUrl),
+    /// Tell the person this, in plain words.
+    Say(String),
+    /// Close the window: its last tab was closed.
+    CloseWindow,
+    /// Tell the person a disk could not be opened or ejected.
+    TellVolume {
+        /// The disk's name.
+        name: VolumeName,
+        /// What went wrong.
+        trouble: VolumeTrouble,
+    },
+}

@@ -1,0 +1,34 @@
+[package]
+name = "desktop-client"
+description = "One typed Wayland desktop client for wlroots-style compositors: toplevels, workspaces, outputs and output capture, as pure state plus a wire layer and a fake."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/casement-protocols"
+publish = false
+
+[dependencies]
+thiserror = {version = "2"}
+casement-protocols = {path = ".."}
+wayland-client = {version = "0.31", optional = true}
+wayland-protocols = {version = "0.32.13", features = ["client", "staging", "unstable"], optional = true}
+wayland-protocols-wlr = {version = "0.3.12", features = ["client"], optional = true}
+rustix = {version = "1", features = ["fs"], optional = true}
+
+[features]
+default = []
+# The wire layer: binds the globals on a caller-supplied connection.
+client = [
+  "casement-protocols/client",
+  "dep:wayland-client",
+  "dep:wayland-protocols",
+  "dep:wayland-protocols-wlr",
+  "dep:rustix",
+]
+# The fake: scripted events in, recorded commands out. Pure; no Wayland.
+fake = []
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

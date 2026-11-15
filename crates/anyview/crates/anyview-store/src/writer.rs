@@ -1,0 +1,227 @@
+//! The write API: what the viewer links. Reads, decides with the pure modules, writes whole files.
+//!
+//! Any number of writers may share a store root, in this process or another (the viewer and a
+//! terminal that embeds it): each write takes the store's cross-process lock, reads what is on
+//! disk now, merges in only its own entry, and replaces the file atomically. So the last writer
+//! wins per file entry, never per store, and nobody erases another's entries. Blocking; call it
+//! from a worker.
+
+use crate::error::StoreError;
+use crate::guard::StoreLock;
+use crate::history::{History, HistoryCap, HistoryEntry, history_after_view};
+use crate::io;
+use crate::label::resume_label;
+use crate::reader::{HISTORY_FILE, HistoryRead, read_history};
+use crate::record::{
+    PanelRecord, Prune, ResumeRecord, applicable, prune_decision, resume_file_name,
+};
+use crate::viewed::Viewed;
+use anyview_core::{FilePath, FileStamp, FormatKind, PanelKept, Resume};
+use std::path::PathBuf;
+
+/// The directory inside a store root that holds one file of view memory per viewed file.
+const RESUME_DIR: &str = "resume";
+
+/// The file inside a store root that holds what is kept of the left panel: its width, whether it is open and its view.
+const PANEL_FILE: &str = "panel.json";
+
+/// The result of recording a view.
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[non_exhaustive]
+pub struct ViewRecorded {
+    /// Set when the history file on disk was damaged and was replaced by a fresh one: the
+    /// damage, for the caller's log. `None` when the history was read normally or was absent.
+    pub replaced_damaged: Option<StoreError>,
+    /// Where the damaged history was kept (`history.json.bad-<seconds>` beside it), when there
+    /// was one: it is moved aside, never written over.
+    pub kept_at: Option<PathBuf>,
+}
+
+/// Writes the store at one root.
+#[derive(Debug, Clone)]
+pub struct StoreWriter {
+    root: PathBuf,
+    cap: HistoryCap,
+}
+
+impl StoreWriter {
+    /// A writer for the store at `root` (created on first write) that keeps `cap` files.
+    #[must_use]
+    pub fn new(root: impl Into<PathBuf>, cap: HistoryCap) -> StoreWriter {
+        StoreWriter {
+            root: root.into(),
+            cap,
+        }
+    }
+
+    /// Notes that `path` was viewed at `viewed` and left at `resume`: it goes first in the
+    /// history with a label derived from `resume`. Then the view memory of files that are gone,
+    /// replaced, or no longer in the history is deleted, so it is the one write that prunes.
+    ///
+    /// A damaged `history.json` is moved aside to `history.json.bad-<viewed>`, a fresh one is
+    /// written, and both are reported in the result; a disk failure (including one moving the
+    /// damaged file aside) leaves the file as it was and is the error. A failure while pruning comes after the history was
+    /// written.
+    pub fn record_view(
+        &self,
+        path: &FilePath,
+        kind: FormatKind,
+        viewed: Viewed,
+        resume: &Resume,
+    ) -> Result<ViewRecorded, StoreError> {
+        resume_file_name(path)?; // refuses a path JSON cannot hold, before anything is written
+        let _lock = StoreLock::exclusive(&self.root)?;
+        let history_file = self.root.join(HISTORY_FILE);
+        let (before, replaced_damaged, kept_at) = match read_history(&self.root) {
+            HistoryRead::Loaded(history) => (history, None, None),
+            HistoryRead::Absent => (History::default(), None, None),
+            HistoryRead::Unavailable(error @ StoreError::Corrupt { .. }) => {
+                let kept = io::move_aside(&history_file, viewed.0)?;
+                log::warn!(
+                    "the history was damaged ({error}); kept it at {} and started a new one",
+                    kept.display()
+                );
+                (History::default(), Some(error), Some(kept))
+            }
+            HistoryRead::Unavailable(
+                error @ (StoreError::Io { .. }
+                | StoreError::PathNotUtf8 { .. }
+                | StoreError::NoSuchVersion { .. }),
+            ) => {
+                return Err(error);
+            }
+        };
+        let entry = HistoryEntry {
+            path: path.clone(),
+            kind,
+            viewed,
+            label: resume_label(resume),
+        };
+        let after = history_after_view(&before, entry, self.cap);
+        io::write_json(&history_file, &after)?;
+        self.prune_resume(&after)?;
+        Ok(ViewRecorded {
+            replaced_damaged,
+            kept_at,
+        })
+    }
+
+    /// Remembers `resume` for `path`, whose file has `stamp` now (the stamp read when the file
+    /// was opened). `Resume::Nothing` forgets instead. This does not touch the history: its
+    /// label comes from [`StoreWriter::record_view`].
+    pub fn save_resume(
+        &self,
+        path: &FilePath,
+        stamp: FileStamp,
+        resume: &Resume,
+    ) -> Result<(), StoreError> {
+        let file = self.resume_path(path)?;
+        let _lock = StoreLock::exclusive(&self.root)?;
+        if matches!(resume, Resume::Nothing) {
+            return io::remove(&file);
+        }
+        let record = ResumeRecord {
+            path: path.clone(),
+            stamp,
+            resume: resume.clone(),
+        };
+        io::write_json(&file, &record)
+    }
+
+    /// What was remembered for `path` when its file looked like `current`: `None` when nothing
+    /// was, or the file was edited or replaced since. A damaged record is the error; treat it
+    /// as nothing remembered.
+    pub fn load_resume(
+        &self,
+        path: &FilePath,
+        current: FileStamp,
+    ) -> Result<Option<Resume>, StoreError> {
+        let record = io::read_json::<ResumeRecord>(&self.resume_path(path)?)?;
+        Ok(record.and_then(|record| applicable(record, path, current)))
+    }
+
+    /// Remembers that the left panel was left `width` logical pixels wide. It is one value for the
+    /// person, not one per file.
+    pub fn save_panel_width(&self, width: u32) -> Result<(), StoreError> {
+        let _lock = StoreLock::exclusive(&self.root)?;
+        let record = PanelRecord {
+            width: Some(width),
+            ..self.panel_record()
+        };
+        io::write_json(&self.root.join(PANEL_FILE), &record)
+    }
+
+    /// The width the left panel was left at: `None` when none was remembered. A damaged record
+    /// is the error; treat it as nothing remembered.
+    pub fn load_panel_width(&self) -> Result<Option<u32>, StoreError> {
+        let record = io::read_json::<PanelRecord>(&self.root.join(PANEL_FILE))?;
+        Ok(record.and_then(|record| record.width))
+    }
+
+    /// Remembers whether the left panel was open, and the view it was on unless `kept.view` is
+    /// `None`, which leaves the view already kept (a panel closed is still on its last view).
+    pub fn save_panel_view(&self, kept: &PanelKept) -> Result<(), StoreError> {
+        let _lock = StoreLock::exclusive(&self.root)?;
+        let before = self.panel_record();
+        let record = PanelRecord {
+            width: before.width,
+            open: Some(kept.open),
+            view: kept.view.clone().or(before.view),
+        };
+        io::write_json(&self.root.join(PANEL_FILE), &record)
+    }
+
+    /// Whether the left panel was left open, and on which view: `None` when that was never
+    /// remembered. A damaged record is the error; treat it as nothing remembered.
+    pub fn load_panel_view(&self) -> Result<Option<PanelKept>, StoreError> {
+        let record = io::read_json::<PanelRecord>(&self.root.join(PANEL_FILE))?;
+        Ok(record.and_then(|record| {
+            record.open.map(|open| PanelKept {
+                open,
+                view: record.view,
+            })
+        }))
+    }
+
+    /// The panel's record as it is, or an empty one when there is none or it is damaged (the
+    /// next write replaces it).
+    fn panel_record(&self) -> PanelRecord {
+        io::read_json::<PanelRecord>(&self.root.join(PANEL_FILE))
+            .ok()
+            .flatten()
+            .unwrap_or_default()
+    }
+
+    fn resume_path(&self, path: &FilePath) -> Result<PathBuf, StoreError> {
+        Ok(self.resume_dir().join(resume_file_name(path)?))
+    }
+
+    fn resume_dir(&self) -> PathBuf {
+        self.root.join(RESUME_DIR)
+    }
+
+    /// Deletes every record `prune_decision` removes, and every record that does not parse.
+    fn prune_resume(&self, history: &History) -> Result<(), StoreError> {
+        for file in io::list_json(&self.resume_dir())? {
+            match io::read_json::<ResumeRecord>(&file) {
+                Ok(Some(record)) => {
+                    let current = io::stamp_of(record.path.as_path());
+                    match prune_decision(&record, history, current) {
+                        Prune::Keep => {}
+                        Prune::Remove(_) => io::remove(&file)?,
+                    }
+                }
+                Ok(None) => {}
+                Err(StoreError::Corrupt { .. }) => io::remove(&file)?,
+                Err(
+                    error @ (StoreError::Io { .. }
+                    | StoreError::PathNotUtf8 { .. }
+                    | StoreError::NoSuchVersion { .. }),
+                ) => {
+                    return Err(error);
+                }
+            }
+        }
+        Ok(())
+    }
+}

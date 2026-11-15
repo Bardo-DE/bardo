@@ -1,0 +1,39 @@
+[package]
+name = "engine-install"
+description = "Gets an engine onto this computer from engine-manifest's pinned manifest: a resumable, cancellable download with its hash checked, unpacked and sealed into place; a Python environment filled from a hashed lock; or the distro's package. Also the argument grammar and the report lines of the privileged helper that installs for every user."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/stoker"
+publish = false
+
+[[bin]]
+name = "engine-helper"
+path = "src/bin/engine-helper.rs"
+
+[dependencies]
+engine-manifest = {path = "../engine-manifest"}
+engine-probe = {path = "../engine-probe"}
+engine-spec = {path = "../engine-spec"}
+model-catalog = {path = "../model-catalog"}
+model-http = {path = "../model-http", features = ["client", "tls"]}
+# The archives are unpacked in process (`extract`), never by the system's `tar`.
+flate2 = {version = "1.1.10"}
+tar = {version = "0.4.46", default-features = false}
+rustix = {version = "1.1", default-features = false, features = ["std", "fs"]}
+sha2 = {version = "0.10"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+url = {version = "2"}
+
+[dev-dependencies]
+rcgen = {version = "0.13", default-features = false, features = ["ring", "pem"]}
+rustls-pki-types = {version = "1"}
+tempfile = {version = "3"}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
+tokio-rustls = {version = "0.26", default-features = false, features = ["ring", "logging", "tls12"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

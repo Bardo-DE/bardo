@@ -1,0 +1,482 @@
+//! `FakeMail`: an in-memory mail app behind the fixture manifest, with real undo tokens.
+
+use crate::labels::{app_label, entity, entity_ref, outcome, third_party};
+use docket_core::{
+    AppRefusal, Hit, Invocation, MessageSnip, Outcome, Preview, SuggestAsk, UndoFault, Undoable,
+};
+use docket_manifest::ValidManifest;
+use docket_provider::IntentProvider;
+use docket_vocab::{ParamName, TargetValue, UndoToken, Value};
+use porter_core::{AppName, DataClass};
+use prov::{Actor, EntityId, Labelled, Source, SpaceId, UnixSeconds};
+use std::collections::{BTreeMap, BTreeSet};
+use std::sync::Mutex;
+
+/// One thread in the store.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MailThread {
+    /// Its key.
+    pub key: String,
+    /// The subject, somebody else's words.
+    pub subject: String,
+    /// The sender's address.
+    pub from: String,
+    /// The body, somebody else's words.
+    pub body: String,
+}
+
+/// One contact in the store (a trusted store: the app's own).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MailContact {
+    /// Its key.
+    pub key: String,
+    /// The display name.
+    pub name: String,
+    /// The address.
+    pub address: String,
+}
+
+/// A thread as a list shows it: the subject and the sender, somebody else's words.
+fn thread_ref(app: &AppName, space: &SpaceId, t: &MailThread) -> Option<docket_vocab::EntityRef> {
+    let label = third_party(Source::Mail, DataClass::Mail, space.clone());
+    let say = |v: &str| Labelled {
+        value: v.to_owned(),
+        label: label.clone(),
+    };
+    Some(entity_ref(
+        entity(app, "mail.thread", &t.key)?,
+        say(&t.subject),
+        say(&t.from),
+    ))
+}
+
+/// A message the app sent or forwarded.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SentMail {
+    /// The contact key it went to.
+    pub to: String,
+    /// The thread keys forwarded, empty for a fresh message.
+    pub threads: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum UndoStep {
+    Unarchive(Vec<String>),
+    Unsend(u64),
+    Undraft(u64),
+}
+
+#[derive(Debug, Default)]
+struct State {
+    threads: BTreeMap<String, MailThread>,
+    contacts: BTreeMap<String, MailContact>,
+    archived: BTreeSet<String>,
+    /// Each draft with the serial it was made under, so an undo finds it after others left.
+    drafts: Vec<(u64, String)>,
+    /// Each send with its serial.
+    sent: Vec<(u64, SentMail)>,
+    opened: Vec<String>,
+    undo: BTreeMap<String, UndoStep>,
+    next: u64,
+    serial: u64,
+}
+
+/// The fake mail app.
+#[derive(Debug)]
+pub struct FakeMail {
+    manifest: ValidManifest,
+    app: AppName,
+    space: SpaceId,
+    state: Mutex<State>,
+}
+
+impl FakeMail {
+    /// A mail app with this manifest, working in `space`.
+    pub fn new(manifest: ValidManifest, space: SpaceId) -> Self {
+        let app = manifest.manifest().app.clone();
+        Self {
+            manifest,
+            app,
+            space,
+            state: Mutex::new(State::default()),
+        }
+    }
+
+    /// Adds a thread.
+    pub fn with_thread(self, thread: MailThread) -> Self {
+        self.add_thread(thread);
+        self
+    }
+
+    /// Adds a contact.
+    pub fn with_contact(self, contact: MailContact) -> Self {
+        self.add_contact(contact);
+        self
+    }
+
+    /// Adds a thread to a running app.
+    pub fn add_thread(&self, thread: MailThread) {
+        self.edit(|s| {
+            s.threads.insert(thread.key.clone(), thread);
+        });
+    }
+
+    /// Adds a contact to a running app.
+    pub fn add_contact(&self, contact: MailContact) {
+        self.edit(|s| {
+            s.contacts.insert(contact.key.clone(), contact);
+        });
+    }
+
+    /// Forgets every thread, contact, draft, send and undo token.
+    pub fn clear(&self) {
+        self.edit(|s| *s = State::default());
+    }
+
+    fn edit<R>(&self, f: impl FnOnce(&mut State) -> R) -> R {
+        match self.state.lock() {
+            Ok(mut s) => f(&mut s),
+            Err(p) => f(&mut p.into_inner()),
+        }
+    }
+
+    /// What the app lists: every thread that is not archived (subject and sender, somebody
+    /// else's words), then every contact (name and address, the app's own), each in key order.
+    pub fn shown(&self) -> Vec<docket_vocab::EntityRef> {
+        let (app, space) = (self.app.clone(), self.space.clone());
+        let own = app_label(&app);
+        self.edit(|s| {
+            let threads = s
+                .threads
+                .values()
+                .filter(|t| !s.archived.contains(&t.key))
+                .filter_map(|t| thread_ref(&app, &space, t));
+            let contacts = s.contacts.values().filter_map(|c| {
+                let say = |v: &str| Labelled {
+                    value: v.to_owned(),
+                    label: own.clone(),
+                };
+                Some(entity_ref(
+                    entity(&app, "mail.contact", &c.key)?,
+                    say(&c.name),
+                    say(&c.address),
+                ))
+            });
+            threads.chain(contacts).collect()
+        })
+    }
+
+    /// Whether a thread is archived.
+    pub fn is_archived(&self, key: &str) -> bool {
+        self.edit(|s| s.archived.contains(key))
+    }
+
+    /// Whether a thread still exists.
+    pub fn has_thread(&self, key: &str) -> bool {
+        self.edit(|s| s.threads.contains_key(key))
+    }
+
+    /// The threads the person opened, in order.
+    pub fn opened(&self) -> Vec<String> {
+        self.edit(|s| s.opened.clone())
+    }
+
+    /// What was sent or forwarded.
+    pub fn sent(&self) -> Vec<SentMail> {
+        self.edit(|s| s.sent.iter().map(|(_, m)| m.clone()).collect())
+    }
+
+    /// How many drafts exist.
+    pub fn drafts(&self) -> usize {
+        self.edit(|s| s.drafts.len())
+    }
+
+    fn keys(target: &TargetValue) -> Vec<String> {
+        match target {
+            TargetValue::Entities(ids) => ids.iter().map(|e| e.key.as_str().to_owned()).collect(),
+            TargetValue::Nothing
+            | TargetValue::Handles(_)
+            | TargetValue::Text(_)
+            | TargetValue::Files(_) => vec![],
+        }
+    }
+
+    fn serial(s: &mut State) -> u64 {
+        s.serial += 1;
+        s.serial
+    }
+
+    fn token(s: &mut State) -> Option<UndoToken> {
+        s.next += 1;
+        UndoToken::parse(&format!("mail-undo-{}", s.next)).ok()
+    }
+
+    /// The relation a related action was asked for.
+    fn relation(inv: &Invocation) -> Option<String> {
+        let name = ParamName::parse(docket_manifest::RELATION_ARG).ok()?;
+        match &inv.args.get(&name)?.value {
+            Value::Choice(id) => Some(id.as_str().to_owned()),
+            _ => None,
+        }
+    }
+
+    fn contact_key(inv: &Invocation) -> Option<String> {
+        let name = ParamName::parse("to").ok()?;
+        match &inv.args.get(&name)?.value {
+            Value::Entity(e) => Some(e.key.as_str().to_owned()),
+            _ => None,
+        }
+    }
+}
+
+impl IntentProvider for FakeMail {
+    fn manifest(&self) -> &ValidManifest {
+        &self.manifest
+    }
+
+    async fn perform(&self, inv: Invocation) -> Result<Outcome, AppRefusal> {
+        let keys = Self::keys(&inv.target);
+        let space = self.space.clone();
+        let app = self.app.clone();
+        self.edit(|s| match inv.action.as_str() {
+            "mail.thread.read" => {
+                let key = keys.first().ok_or(AppRefusal::Unsupported)?;
+                let thread = s.threads.get(key).ok_or_else(|| {
+                    entity(&app, "mail.thread", key)
+                        .map_or(AppRefusal::Unsupported, AppRefusal::NotFound)
+                })?;
+                let label = third_party(Source::Mail, DataClass::Mail, space);
+                let mut out = outcome(None, Undoable::No, Preview::None);
+                out.value = Some(Labelled {
+                    value: Value::Text(thread.body.clone()),
+                    label,
+                });
+                Ok(out)
+            }
+            "mail.thread.related" => {
+                let key = keys.first().ok_or(AppRefusal::Unsupported)?;
+                let thread = s.threads.get(key).ok_or_else(|| {
+                    entity(&app, "mail.thread", key)
+                        .map_or(AppRefusal::Unsupported, AppRefusal::NotFound)
+                })?;
+                if Self::relation(&inv).as_deref() != Some("from") {
+                    return Err(AppRefusal::Unsupported);
+                }
+                // The sender is the contact with that address, or the address itself as the key
+                // of a sender who is nobody's contact.
+                let sender = s
+                    .contacts
+                    .values()
+                    .find(|c| c.address == thread.from)
+                    .map_or(thread.from.as_str(), |c| c.key.as_str());
+                let mut out = outcome(None, Undoable::No, Preview::None);
+                // Labelled as the app's own on purpose: the router, not the app, makes it
+                // untrusted (the relation says its answer comes from the message).
+                out.value = Some(Labelled {
+                    value: Value::Entities(
+                        entity(&app, "mail.contact", sender).into_iter().collect(),
+                    ),
+                    label: app_label(&app),
+                });
+                Ok(out)
+            }
+            "mail.thread.open" => {
+                let key = keys.first().ok_or(AppRefusal::Unsupported)?;
+                if !s.threads.contains_key(key) {
+                    return Err(entity(&app, "mail.thread", key)
+                        .map_or(AppRefusal::Unsupported, AppRefusal::NotFound));
+                }
+                s.opened.push(key.clone());
+                Ok(outcome(None, Undoable::No, Preview::None))
+            }
+            "mail.thread.archive" => {
+                let missing = keys.iter().find(|k| !s.threads.contains_key(*k));
+                if let Some(k) = missing {
+                    return Err(entity(&app, "mail.thread", k)
+                        .map_or(AppRefusal::Unsupported, AppRefusal::NotFound));
+                }
+                s.archived.extend(keys.iter().cloned());
+                let token = Self::token(s).ok_or(AppRefusal::Busy)?;
+                s.undo
+                    .insert(token.as_str().to_owned(), UndoStep::Unarchive(keys.clone()));
+                Ok(outcome(
+                    Some(format!("Archived {} threads", keys.len())),
+                    Undoable::Yes(token),
+                    Preview::None,
+                ))
+            }
+            "mail.draft.create" => {
+                let serial = Self::serial(s);
+                s.drafts.push((serial, "draft".into()));
+                let token = Self::token(s).ok_or(AppRefusal::Busy)?;
+                s.undo
+                    .insert(token.as_str().to_owned(), UndoStep::Undraft(serial));
+                Ok(outcome(
+                    Some("Draft saved".into()),
+                    Undoable::Yes(token),
+                    Preview::None,
+                ))
+            }
+            "mail.message.send" => {
+                let to = Self::contact_key(&inv).ok_or(AppRefusal::Unsupported)?;
+                let serial = Self::serial(s);
+                s.sent.push((
+                    serial,
+                    SentMail {
+                        to,
+                        threads: vec![],
+                    },
+                ));
+                let token = Self::token(s).ok_or(AppRefusal::Busy)?;
+                s.undo
+                    .insert(token.as_str().to_owned(), UndoStep::Unsend(serial));
+                Ok(outcome(
+                    Some("Sent".into()),
+                    Undoable::Yes(token),
+                    Preview::None,
+                ))
+            }
+            "mail.message.forward" => {
+                let to = Self::contact_key(&inv).ok_or(AppRefusal::Unsupported)?;
+                let serial = Self::serial(s);
+                s.sent.push((
+                    serial,
+                    SentMail {
+                        to,
+                        threads: keys.clone(),
+                    },
+                ));
+                Ok(outcome(
+                    Some(format!("Forwarded {} threads", keys.len())),
+                    Undoable::No,
+                    Preview::None,
+                ))
+            }
+            "mail.thread.delete" => {
+                keys.iter().for_each(|k| {
+                    s.threads.remove(k);
+                });
+                Ok(outcome(
+                    Some(format!("Deleted {} threads", keys.len())),
+                    Undoable::No,
+                    Preview::None,
+                ))
+            }
+            _ => Err(AppRefusal::Unsupported),
+        })
+    }
+
+    async fn dry_run(&self, inv: Invocation) -> Result<Preview, AppRefusal> {
+        let app = self.app.clone();
+        let space = self.space.clone();
+        self.edit(|s| match inv.action.as_str() {
+            "mail.message.send" | "mail.message.forward" => {
+                let key = Self::contact_key(&inv).ok_or(AppRefusal::Unsupported)?;
+                let own = |t: &str| Labelled {
+                    value: t.to_owned(),
+                    label: app_label(&app),
+                };
+                // A contact shows its saved address; a sender who is nobody's contact is named by
+                // the address itself, which the message wrote.
+                let to = match s.contacts.get(&key) {
+                    Some(contact) => own(&contact.address),
+                    None => Labelled {
+                        value: key.clone(),
+                        label: third_party(Source::Mail, DataClass::Mail, space.clone()),
+                    },
+                };
+                Ok(Preview::Message {
+                    to: vec![to],
+                    subject: own("(subject)"),
+                    body: own("(body)"),
+                })
+            }
+            _ => Ok(Preview::None),
+        })
+    }
+
+    async fn undo(&self, token: UndoToken, _actor: Actor) -> Result<(), UndoFault> {
+        self.edit(|s| match s.undo.remove(token.as_str()) {
+            None => Err(UndoFault::Gone),
+            Some(UndoStep::Unarchive(keys)) => {
+                keys.iter().for_each(|k| {
+                    s.archived.remove(k);
+                });
+                Ok(())
+            }
+            Some(UndoStep::Unsend(serial)) => {
+                let before = s.sent.len();
+                s.sent.retain(|(n, _)| *n != serial);
+                (s.sent.len() < before).then_some(()).ok_or(UndoFault::Gone)
+            }
+            Some(UndoStep::Undraft(serial)) => {
+                let before = s.drafts.len();
+                s.drafts.retain(|(n, _)| *n != serial);
+                (s.drafts.len() < before)
+                    .then_some(())
+                    .ok_or(UndoFault::Gone)
+            }
+        })
+    }
+
+    async fn search(&self, text: &str) -> Vec<Hit> {
+        let (app, space) = (self.app.clone(), self.space.clone());
+        self.edit(|s| {
+            s.threads
+                .values()
+                .filter(|t| t.subject.contains(text))
+                .filter_map(|t| {
+                    Some(Hit {
+                        entity: thread_ref(&app, &space, t)?,
+                        why: None,
+                    })
+                })
+                .collect()
+        })
+    }
+
+    async fn preview(&self, id: &EntityId) -> Preview {
+        let space = self.space.clone();
+        self.edit(|s| match s.threads.get(id.key.as_str()) {
+            None => Preview::None,
+            Some(t) => {
+                let label = third_party(Source::Mail, DataClass::Mail, space);
+                let say = |v: &str| Labelled {
+                    value: v.to_owned(),
+                    label: label.clone(),
+                };
+                Preview::Thread {
+                    subject: say(&t.subject),
+                    messages: vec![MessageSnip {
+                        from: say(&t.from),
+                        snippet: say(&t.body),
+                        at: UnixSeconds(0),
+                    }],
+                }
+            }
+        })
+    }
+
+    async fn suggest(&self, ask: SuggestAsk) -> Vec<docket_vocab::EntityRef> {
+        let app = self.app.clone();
+        let own = app_label(&app);
+        self.edit(|s| {
+            s.contacts
+                .values()
+                .filter(|c| c.name.contains(&ask.typed) || c.address.contains(&ask.typed))
+                .filter_map(|c| {
+                    let id = entity(&app, "mail.contact", &c.key)?;
+                    let title = Labelled {
+                        value: c.name.clone(),
+                        label: own.clone(),
+                    };
+                    let sub = Labelled {
+                        value: c.address.clone(),
+                        label: own.clone(),
+                    };
+                    Some(entity_ref(id, title, sub))
+                })
+                .collect()
+        })
+    }
+}

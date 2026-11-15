@@ -1,0 +1,4545 @@
+# 04 Components
+
+> **KEEP entries only (stamp 2026-10-02): do not build from this file for anything else.** One quiet Mac Look (`30-CATALOGUE.md` wins). Use a section here only for a component whose 30 section 2 row is KEEP or MERGE, and then only for its markup skeleton and CSS, with 30's sizes, states and part names. The frame/card model, caps-tracked labels, spring pops, hover-strip icons, `AppearancePicker`, striped placeholders and every keyframe here are history (target (clean-up phase) to remove from the code).
+>
+> **Superseded in part by `30-CATALOGUE.md`.** 30 section 2 is the component inventory: names, sizes, variants, states and merges replace this file's per-component inventory, size tables and variant lists (every component absorbed or dropped in 30 sections 2 and 4 is not built from here). Markup skeletons and CSS here remain a source for KEEP entries only, with 30's sizes, states and part names. Where this file and 30 disagree, 30 wins.
+
+
+Every component in the `quire` crate: its markup, its sizes, every state with the CSS that draws
+it, and what must change to run on Blitz. Built from the two prototypes so that nobody needs to
+open the HTML.
+
+- **S** = `~/mailo-design/mailo-spaces.html` (newest; wins every conflict).
+- **C** = `~/mailo-design/mailo-charm.html` (older; source for pieces S lacks: dropdown menu,
+  tabs, drag ghost, drop target, sync halo, Candy hues).
+- `S:123` means line 123 of S. CSS blocks marked "verbatim" are copied character for character;
+  everything else is a restatement.
+
+## What this governs
+
+- Every `ds-` class in `crates/ds/src/components/*.css` and every `#[component]` in
+  `crates/ds/src/components/*.rs`.
+- Which token each value uses. Token values themselves live in `03-COLOR.md` (colour, shadow),
+  `01-LAYOUT.md` (spacing, z), `02-TYPE.md` (fonts, sizes) and `05-MOTION.md` (durations,
+  easings, full keyframes). This file names tokens; it does not define them.
+- Pointer and keyboard behaviour is summarised here and specified as state machines in
+  `06-INTERACTIONS.md`.
+- Not governed: mail-only reader blocks (`.b-*`, `S:461-534`) and composer document styling
+  (`S:727-775`). They are mailo's, not the design system's.
+
+Rules that apply to every section (from the plan's §11 addenda):
+
+1. Every class is prefixed `ds-`. Variants go in `data-variant` / `data-size` / `data-kind`;
+   state goes in `aria-*` where an ARIA attribute exists, otherwise in `data-*`.
+2. Consumers never style `.ds-*`. If mailo needs a different look, the component grows a variant.
+3. No `bool` props. Two-state props are enums from the shared vocabulary below.
+4. Every duration, easing, colour, radius, z-index and keyframe comes from the token table. A
+   raw value in this document is either a token's current value (shown for reference) or a
+   literal the prototype uses and the token table must absorb (listed in Open decisions).
+5. Blitz constraints: no JavaScript, no `backdrop-filter`, no `text-overflow: ellipsis`, no
+   `filter()`, no `animationend`/`transitionend`, no `line-clamp`, no `mix-blend-mode`, no
+   `color-mix()` (use precomputed washes), no `position: sticky`, no native form controls.
+   CSS transitions and `@keyframes` work.
+
+## Component index
+
+| # | Component | Prototype source | Mail usage | Shell usage (planned, see 20-SURFACES) |
+| --- | --- | --- | --- | --- |
+| 1 | Button (Primary, Secondary, Mini, Quiet, Danger) | S `.btn` `.mini` `.plink`; C `.btn.ghost`; Danger derived | Send, Compose, Reply, RSVP, hover-card actions | settings actions, notification actions |
+| 2 | IconButton (Tool, Foot, Strip, Pin) | S `.tool` `.foot-btn` `.strip button` `.pin` | reader tools, sidebar foot, row strip, account tiles | bar buttons, dock context, control-center tiles |
+| 3 | SegmentedControl | S `.seg` `.view-switch`; C `.seg` | Reader/Original, editor settings | control center, settings |
+| 4 | Toggle | derived from `.seg` + accent | settings | control center (Wi-Fi, Bluetooth) |
+| 5 | Slider | derived from `input[type=range]`, `.handle`, toast pull tab | Grain in Space editor | volume, brightness, OSD |
+| 6 | TextInput (Boxed, Inline) | S `.inp` `.inp.inline` `.pinput` | people fields, bubble link input | settings fields |
+| 7 | SearchField | S `.cmdk-in` | command menu | launcher |
+| 8 | CommandPill | S `.cmd` | sidebar top | bar launcher button |
+| 9 | Kbd | S `kbd`; C `.cmdk-list .kbd` | hints, menus | launcher, shortcut hints |
+| 10 | Chip (Accent, Label, Neutral + person/token/status) | S `.chip` `.pchip` `.tok` `.pill`; C `.chip[data-chip]` `.tag` | row labels, recipients, search tokens | notification tags |
+| 11 | Avatar | S `.av` (many), `.fav`, `.tile.round`; C `.acct-ring .av` | rows, reader, hover cards, menus | user menu, notifications |
+| 12 | Tabs | C `.tabs` | settings pages | settings, control-center pages |
+| 13 | SectionHeader | S `.s-h` `.ed-label` `.fmenu .g`; C `.grp` `.menu h6` | sidebar groups, list groups | launcher groups, settings |
+| 14 | Count | S `.count` `.pin .n` | sidebar counts | dock badge, bar indicators |
+| 15 | Spinner (Spin, Breathe) | C `.halo` | sync | bar sync/progress |
+| 16 | ListRow | S `.row`; C `.row` | thread list | notification list, launcher results (rows) |
+| 17 | HoverStrip | S `.strip` | row actions | notification actions |
+| 18 | Tooltip (Fly, Card) | S `.fly`, `.hc.tip` | strip labels, time tooltip | dock labels, bar tooltips |
+| 19 | SidebarItem (+ seal) | S `.item`; C `.view` | places, labels, pinned, Today | settings nav, launcher categories |
+| 20 | Menu + MenuEntry (Dropdown, Context, Rich, Slim) | S `.fmenu`; C `.menu` | snooze, labels, `/`, `@`, pickers | bar menus, tray menus, dock context |
+| 21 | Popover | shared surface of S `.fmenu` `.hc` `.bubble` | all floating surfaces | xdg_popup content |
+| 22 | HoverCard | S `.hc` | thread/sender/account/pin/Today cards | dock window previews (planned) |
+| 23 | Toast (+ pull tab) | S `.toast` | undo | notifications (planned) |
+| 24 | Scrim, Sheet, Peek | S `.scrim` `.peek`; C `[data-peek]` | peek reader | dialogs, settings sheets |
+| 25 | CommandPalette | S `.cmdk` | Ctrl T / Ctrl K | launcher |
+| 26 | Appearance choice (`SegmentedControl` + `RadioGroup`) | derived from S editor segs + C controls row | settings | control center, settings |
+| 27 | AccountTile | S `.pin.acct` | sidebar tiles | user switcher (planned) |
+| 28 | ProviderMark | S `.prov` | tiles, rows, From picker | none |
+| 29 | LinkPill | S `.linkpill` | reader links | none |
+| 30 | SelectionBubble | S `.bubble` | composer | text fields (planned) |
+| 31 | SendPill | S `.sendpill`; C `.outbox` | undo send | progress pill (planned) |
+| 32 | SpaceEditor pieces | S `.editor` `.field` `.handle` `.stop` `.presets` `.check` `.sp` | Space editor | Settings > Spaces, bar workspace menu |
+| 33 | EdgeStrip (+ side peek) | S `.edge`, `.side-peek` | hidden sidebar | dock auto-hide edge (planned) |
+| 34 | DragGhost and DropTarget | C `.ghost` `.is-drop-target`; S `.ograb` `.drop-line` | drag thread to place, move composer object | dock drag-out (planned) |
+| 35 | SyncHalo | C `.acct-ring .halo` | account sync | bar sync indicator |
+| 41 | ShotThumbnail, ShotGhost | none (design/20 section 1.13) | none | screenshot thumbnail |
+| 42 | LockScreen, LockClock, LockPrompt, PolkitPrompt | none (design/20 sections 1.9, 1.10) | none | lock screen, polkit prompt |
+| 43 | AppSwitcher | none (design/13 section 13.3.5, design/20 section 1.11) | none | app switcher |
+| 44 | AnimatedEmoji | none (design/25-EMOJI.md) | none | the user's picture: lock and login screen, user menu, settings |
+| 45 | PdfThumb, PdfFileThumb | none | none | launcher preview, Quick Look |
+| 46 | EmojiGrid | macOS Character Viewer (reference) | none | launcher emoji section |
+| 47 | PreviewPane | macOS Quick Look / Spotlight preview (reference) | none | launcher preview pane, Quick Look |
+| 48 | RowShape (palette rows: File, Clip) | Spotlight file and clipboard rows (reference) | none | launcher file and clipboard results |
+| 49 | PaletteGroup ("Show More") and the key claim | Spotlight sections (reference) | Ctrl T / Ctrl K (unchanged) | launcher sections, Space and Right for the preview |
+| 54 | LeavingList | S `.row.going` + `.healing` (`S:326-333`), C `.row.is-entering` (`C:373`) | none | notification center column |
+| 55 | Alert | none (the Mac's `NSAlert`, Sonoma/Sequoia) | none | control-center confirmations, shell dialogs |
+
+## Shared vocabulary
+
+### Props enums (`ds-core/vocab.rs`)
+
+The plan names these; the mapping to attributes below is this document's proposal and is
+binding once 04 is approved.
+
+| Enum | Variants | Renders as |
+| --- | --- | --- |
+| `Availability` | `Enabled`, `Disabled` | `Disabled` adds `aria-disabled="true"` and removes the click handler. Visual: not specified in either prototype (see Open decisions O-1). |
+| `Selection` | `Selected`, `Unselected` | `aria-selected="true"|"false"` (rows, menu items, tabs, palette items). |
+| `Emphasis` | `Strong`, `Plain` | `data-emphasis="strong"|"plain"`. Used for unread/read weight (`S:190-194`) and the Today item's lighter text (`S:137`). |
+| `Here` | `Current`, `Elsewhere` | `aria-current="true"|"false"` (sidebar items, space dots). |
+| `Switch` | `On`, `Off` | `aria-pressed` on buttons (segments, tiles, star, bubble marks); `aria-checked` + `role="switch"` on Toggle. |
+| `Check` | `Checked`, `Unchecked` | `aria-checked="true"|"false"` on menu items (`S:2080`, `C:1752`). |
+| `Fraction(u16)` | permille 0..=1000 | Inline `style="--f: <value/1000>"` consumed by Slider fill/thumb, SendPill ring, progress. |
+| `StaggerIndex(u8)` | 0..=12 (capped at 12 by `use_roster`; C capped at 8, `C:1709`) | Inline `style="--i: n"` (rows) or `--j` (strip buttons, `S:1287`). |
+| `PulseKey` | opaque key from `use_pulse` | `class="a-<anim>"` + `data-pulse="a"|"b"`: the A/B alias swap restarts a keyframe without `void el.offsetWidth` (`S:1520`, `S:1525`). |
+| `Shortcut(Vec<Key>)` | keys | Rendered with glyphs, modifiers in the Mac's order `⌃ ⌥ ⇧ ⌘` whatever order they were given in, then the key, e.g. `⇧⌘Z` (design/27 section 6.2). Bind a standard combination with `Shortcut::standard(StandardAction)`; `Shortcut::custom(keys)` returns `Err(Reserved(action))` for any combination in the table (06 section 2.0). S writes "Ctrl T" as plain text (`S:841`); see Open decisions O-2. |
+
+Motion states set by `use_roster` / `use_motion_timer` (not props):
+`data-presence="entering"|"present"|"leaving"|"healing"` and, for leaving rows,
+`data-exit="fold"|"curl"|"crumple"`. These replace S's `.entering`, `.going`, `.healing` classes.
+
+Root attributes set by `Ds` (not props; consumers never select on them, the lint's
+`DsInternals`): `data-theme`, `data-accent`, `data-motion`, `data-material`, `data-blur`,
+`data-modality="keyboard"|"pointer"` (spike S12) and `data-hover="warm"|"cold"`, which the
+`HoverHub` stamps while cards and fly labels are warm (O-11, section 17).
+
+### Global rules every component inherits
+
+Focus ring (verbatim, `S:55`; same `C:190`):
+
+```css
+:focus-visible{ outline:2.5px solid var(--accent); outline-offset:2px; border-radius:4px; }
+```
+
+Pointer (design/27 section 6.3, H0): every control shows the arrow (`cursor:default`), never
+the prototype's `cursor:pointer`; the pointing hand is only for a link (`a`, `role=link`, a
+`*-link` class such as `.ds-run-link`); `grab` on a drag handle; resize cursors on dividers and
+window edges. The CSS quoted from S and C below keeps their `cursor:pointer` as source; quire's
+sheets do not (lint `PointerCursor`).
+
+Icon base `Glyph` (verbatim, `S:58-59`; same `C:973-974`). Every icon is Lucide geometry on a
+24 grid; components only override width and height.
+
+```css
+.ic{ width:16px; height:16px; flex:none; display:block; stroke:currentColor; stroke-width:2;
+  stroke-linecap:round; stroke-linejoin:round; fill:none; }
+```
+
+Markup: `<svg class="ds-ic" viewBox="0 0 24 24" aria-hidden="true">…paths…</svg>` (`S:957`).
+Sizes used across components: 11, 12, 13, 14, 16, 17, 18, 20 px (listed per component).
+C also uses 15 px icons with `stroke-width:1.7`/`1.8` (`C:307`, `C:411`, `C:443`); S does not.
+S wins: stroke is always 2.
+
+Buttons reset (verbatim, `S:54`): `button{ font:inherit; color:inherit; }`.
+
+Reduced motion (verbatim, `S:807-809`). In ds this becomes the `Reduced` motion level (every
+duration 60 ms) rather than a media query with `!important`; see 05-MOTION.
+
+```css
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{ animation-duration:1ms !important; animation-iteration-count:1 !important; transition-duration:60ms !important; }
+}
+```
+
+### Truncation (applies wherever S uses ellipsis)
+
+S truncates with `white-space:nowrap; overflow:hidden; text-overflow:ellipsis` on `.nm`,
+`.row-sub`, `.row-snip`, `.item .t`, the command pill label, `.att .nm2`, `.linkpill`,
+`.cmdk .snip`. Blitz has no ellipsis. Replacement (plan): `.ds-truncate` = `nowrap` +
+`overflow:hidden` + a right-edge mask fade; or `text::clip_chars` in Rust when the text is known
+and the width is fixed. Every section below that truncates says `.ds-truncate`.
+
+### Surfaces and layers
+
+Floating things render through `OverlayHost` at the end of `.ds`, never inside the component that
+opened them (`position:fixed` breaks inside transformed ancestors). z values (`S` A1): link pill
+7, toast 8, send pill 9, scrim 10, peek 11, focus page 12, edge 14, side peek 15, palette 20,
+hover card 30, menu 40, bubble 41, drag ghost 50 (C). These become `--z-*` tokens (01-LAYOUT).
+Positions come from `place(anchor, content, bounds, want, gap) -> Placed` in Rust: flip when it
+does not fit, clamp 8 px from the bounds.
+
+On shell surfaces a floating component is its own Wayland popup: the component emits a
+`PopoverRequest { anchor, placement, size }`, shell-host maps it to `xdg_positioner`, and the
+component fills that surface. The popup's background is the Material recipe
+(`Material::Popover`, `--m-tint`, compositor blur); see 03-COLOR.
+
+## Components
+
+### 1. Button
+
+**Purpose.** A labelled action. Five variants. Mail: Send (`S:1958`), Compose (`S:1587`),
+Reply/Reply all/Forward (`S:1379`), RSVP (`S:1343`), hover-card actions (`S:1744`), c-warn
+choices (`S:2322`). Shell: settings and notification actions.
+
+**Markup.**
+
+```html
+<button type="button" class="ds-button" data-variant="primary|secondary|mini|quiet|danger"
+        aria-pressed="true|false"   <!-- only when the button is a toggle (Mini) -->
+        aria-disabled="true">       <!-- only when Availability::Disabled -->
+  <svg class="ds-ic">…</svg><span>Label</span>
+</button>
+```
+
+Mapping: `.btn` -> `[data-variant=primary]`; `.btn.ghost` (C) -> `[data-variant=secondary]`;
+`.mini` -> `[data-variant=mini]`; `.plink` -> `[data-variant=quiet]`; Danger is derived.
+
+**Props.**
+
+```rust
+#[component] pub fn Button(
+    variant: ButtonVariant,            // Primary | Secondary | Mini | Quiet | Danger
+    label: String,
+    #[props(default)] icon: Option<IconSource>,  // Glyph | Symbolic | Image; Icon converts
+    #[props(default)] pressed: Option<Switch>,   // Some only for toggle buttons (Mini)
+    #[props(default)] availability: Availability,
+    onclick: EventHandler<Press>,      // Press { button: Primary | Secondary | Middle, modifiers }
+    #[props(default)] id: Option<String>,        // -> id, for a popup anchored by element id
+    #[props(default)] mounted: Option<EventHandler<MountedEvent>>, // the element, for Anchor::Mounted
+) -> Element
+```
+
+`mounted` is settled (Gallery fixes B): a menu or popover anchors to the button itself through
+`Anchor::Mounted(MountedRef(event.data()))`, with no wrapper to measure; it writes no attribute.
+
+Settled (tray gaps, sill Q6 and Q8): `icon` is an `IconSource` (08-ICONS §1.5: a glyph, a
+symbolic external icon painted in the text colour, or an external image as it is); `id` is
+written as the element's `id`; `onclick` reports which button pressed. A right-click arrives as
+`contextmenu` (its default prevented) and is reported as `Secondary`, the middle button's
+`mouseup` as `Middle`, a click or a keyboard activation as `Primary`. A closure `move |_| …` and
+an `EventHandler<()>` still convert.
+
+Settled (mailo gaps 4, 2026-09-25): a sixth variant, `Frame` (`data-variant="frame"`), for
+words on the Space frame: the sidebar item's chrome (padding 6px 8px, `--r-item`, ui 13.5 / 600,
+`--f-ink-soft` on nothing; `--f-ink` on `--f-pill-hover` under the pointer, `--f-pill` held, and
+`--f-pill` with `--shadow-current` when `aria-pressed="true"`). `trailing: Option<Trailing>`
+(`Caret`: `chevron-down` 12 in `span.ds-button-trail` at .7; `Glyph(Icon)` at the variant's icon
+size) follows the label, for a dropdown showing its value. `face: ButtonFace` (`Label` default;
+`Bold`, `Italic`, `Underline`, `Strike`) draws the label as `span.ds-button-face[data-face]`
+holding `B`, `i` (in `--font-serif` italic, S's Georgia), `U` (underlined) or `S` (struck
+through), and names the button by `label` through `aria-label` unless `aria_label` is given;
+`FaceMark { face, label }` is the same span on its own, for a `BubbleButton`'s `label`.
+
+**Geometry.**
+
+| Variant | Padding | Radius | Gap | Font | Colours | Icon |
+| --- | --- | --- | --- | --- | --- | --- |
+| Primary | 8px 14px (C 8px 15px) | `--r-btn` (9) | 6 | ui 13 / 700 | bg `--accent`, text `--accent-ink`, `--shadow-1` | 14 |
+| Secondary | as Primary | `--r-btn` | 6 | ui 13 / 700 | bg `--surface-2`, text `--ink-soft`, 1px `--line` border | 14 |
+| Mini | 5px 10px (Candy 6px 13px) | `--r-btn` | 6 | ui 12 / 600, line-height 1 | bg `--surface-2`, text `--ink-soft`, 1px `--line` | 14 |
+| Quiet | 2px 4px | 6px | not specified | ui 12 | text `--ink-faint`, no bg | not specified |
+| Danger (derived) | as Mini | `--r-btn` | 6 | ui 12 / 600 | at rest as Mini | 14 |
+
+Mini is `display:inline-flex; align-items:center; white-space:nowrap`.
+
+**States.**
+
+Primary (verbatim, `S:386-391`):
+
+```css
+.btn{ display:inline-flex; align-items:center; gap:6px; border:0; cursor:pointer; border-radius:var(--r-btn); padding:8px 14px;
+  font-weight:700; font-size:13px; background:var(--accent); color:var(--accent-ink); box-shadow:var(--shadow-1);
+  transition:transform var(--t-tap) var(--e-out), box-shadow var(--t-quick) var(--e-out); }
+.btn:hover{ transform:translateY(-1px) scale(1.015); box-shadow:var(--shadow-2); }
+.btn:active{ transform:translateY(1px) scale(var(--squish)); }
+.btn .ic{ width:14px; height:14px; }
+```
+
+C adds `filter:saturate(1.1)` on hover and `box-shadow:var(--shadow-1)` on active (`C:529-530`).
+The filter is dropped (Blitz, and S does not have it). The active shadow is not in S; S wins.
+
+Secondary (verbatim, `C:531`; S has no `.btn.ghost`):
+
+```css
+.btn.ghost{ background:var(--surface-2); color:var(--ink-soft); border:1px solid var(--line); }
+```
+
+Mini (verbatim, `S:165-173`):
+
+```css
+.mini{
+  display:inline-flex; align-items:center; gap:6px; line-height:1; white-space:nowrap;
+  border:1px solid var(--line); background:var(--surface-2); cursor:pointer;
+  border-radius:var(--r-btn); padding:5px 10px; font-size:12px; font-weight:600; color:var(--ink-soft);
+  transition:transform var(--t-tap) var(--e-out), background-color var(--t-quick) var(--e-out), box-shadow var(--t-quick) var(--e-out);
+}
+.mini:hover{ color:var(--ink); background:var(--raise); box-shadow:var(--shadow-1); }
+.mini:active{ transform:scale(var(--squish)) translateY(1px); }
+.mini .ic{ width:14px; height:14px; }
+```
+
+Mini pressed (verbatim, `S:523`, the RSVP row; the only pressed Mini styling in S):
+
+```css
+.b-event .rsvp .mini[aria-pressed="true"]{ background:var(--accent); color:var(--accent-ink); border-color:transparent; }
+```
+
+In ds this becomes `.ds-button[data-variant=mini][aria-pressed="true"]`. C also transitions
+`color` (`C:354`); add it (harmless, keeps hover colour smooth).
+
+Quiet (verbatim, `S:601-602`):
+
+```css
+.plink{ border:0; background:none; cursor:pointer; font-size:12px; color:var(--ink-faint); padding:2px 4px; border-radius:6px; }
+.plink:hover{ color:var(--ink); background:var(--surface); }
+```
+
+Danger (derived from C's destructive hover, `C:958-963`, which states "the two buttons that
+destroy something go red on hover, and only on hover"):
+
+```css
+/* derived: Mini at rest; red only on hover. --danger-wash replaces color-mix (plan token). */
+.ds-button[data-variant=danger]:hover{ background:var(--danger-wash); color:var(--danger); }
+```
+
+| State | Primary | Mini | Quiet | Danger |
+| --- | --- | --- | --- | --- |
+| default | above | above | above | = Mini |
+| hover | lift -1px, scale 1.015, `--shadow-2` | `--ink` on `--raise` + `--shadow-1` | `--ink` on `--surface` | `--danger` on `--danger-wash` |
+| active | translateY(1px) scale(`--squish`) | scale(`--squish`) translateY(1px) | not specified | = Mini |
+| focus-visible | global ring | global ring | global ring | global ring |
+| pressed | n/a | accent fill, `--accent-ink`, border transparent | n/a | n/a |
+| disabled | not specified (O-1) | not specified | not specified | not specified |
+| entering / leaving | none | none | none | none |
+
+**Motion.** Transitions only: transform `--t-tap --e-out`; background, colour, shadow
+`--t-quick --e-out`.
+
+**Behaviour.** Click on pointer up inside. Space/Enter activate. A Mini with `pressed` toggles its
+own `Switch` only when the consumer says so (RSVP is single-select: pressing one un-presses the
+others, `S:1689`).
+
+**Blitz notes.** Drop C's `filter:saturate(1.1)`. Nothing else changes.
+
+### 2. IconButton
+
+**Purpose.** An icon-only action. Variants: Tool (reader/composer tools, `S:1373`, `S:1949-1951`),
+Foot (sidebar foot: hide sidebar, new Space, `S:846`, `S:1266`), Strip (row hover strip, see
+§17), Pin (square tile, see §27 for the account-tile content).
+
+**Markup.**
+
+```html
+<button type="button" class="ds-icon-button" data-variant="tool|foot|strip|pin"
+        aria-label="Close peek" title="Hide the sidebar (Ctrl S)"
+        aria-pressed="true|false"      <!-- Pin only -->
+        aria-expanded="true|false">    <!-- Tool when it opens a menu (C:1727) -->
+  <svg class="ds-ic">…</svg>
+</button>
+```
+
+Mapping: `.tool` -> `[data-variant=tool]`; `.foot-btn` -> `[data-variant=foot]`;
+`.strip button` -> `[data-variant=strip]`; `.pin` -> `[data-variant=pin]`.
+
+**Props.**
+
+```rust
+#[component] pub fn IconButton(
+    variant: IconButtonVariant,        // Tool | Foot | Strip | Pin | Status
+    #[props(into)] icon: IconSource, label: String, // Icon converts; label -> aria-label (required)
+    #[props(default)] tooltip: Option<String>,   // -> Button's `title`: a hooked Tooltip on the Tip profile (warm, hides on press, no wrapper); inside a Tooltip none
+    #[props(default)] pressed: Option<Switch>,   // Pin
+    #[props(default)] expanded: Option<Switch>,  // Tool that owns a Menu
+    #[props(default)] availability: Availability,
+    onclick: EventHandler<Press>,      // settled: as Button's
+    #[props(default)] id: Option<String>,        // settled: as Button's
+    #[props(default)] mounted: Option<EventHandler<MountedEvent>>, // settled: as Button's
+) -> Element
+```
+
+An external icon (a tray item's pixmap or theme icon) is `IconSource::Symbolic` or
+`IconSource::Image` and draws at its own `ExternalIcon::size` (settled, tray gaps Q6); a glyph
+takes the variant's size below.
+
+**Geometry.**
+
+| Variant | Box | Radius | Colours at rest | Icon | Surface it sits on |
+| --- | --- | --- | --- | --- | --- |
+| Tool | 28 x 26, 1px transparent border | `--r-btn` | `--ink-faint`, transparent | 16 | card (`--surface-2` reader) |
+| Foot | 24 x 24 | 8px | `--f-ink-soft`, transparent | 16 | Space frame |
+| Strip | 26 x 26 (C 28) | 999px | `--ink-soft`, transparent | 14 (C 15) | strip pill (`--raise`) |
+| Pin | aspect-ratio 1, fills a 4-column grid cell, gap 6 | 12px | `--f-ink`, bg `--f-pill-hover` | content (§27) | Space frame |
+| Status | `--bar-status-box` square (default 22) | `--r-item` | `--f-ink-soft`, transparent; hover `--f-ink` on `--f-pill-hover`; pressed/expanded `--f-pill` | `--bar-status-glyph` (default 16), sized in CSS | Space frame (the bar) |
+
+Status is settled (bar gaps, sill Q12; 13 §13.3.1): the two properties are stylesheet tokens
+(sill's sheet declares 22 and 16; `ds::style::tokens::status::{BOX_VAR, GLYPH_VAR}` name them), and
+a look or the person's own sheet moves them; the settings keys are retired (2026-10-27).
+
+**The frame ground** (settled, bar gaps): the sidebar item's pattern (§19, `--f-*` inks on the
+frame) is a scope, not a per-component variant. Under `data-ground="frame"` (a Bar or Dock root,
+or `Surface { on: Some(Ground::Frame) }`) the paper inks and fills are the frame's (`--ink*`
+→ `--f-ink*`, `--surface` → `--f-pill-hover`, `--surface-2`/`--raise` → `--f-pill`, `--line*` →
+`--f-line`), so every component on it draws in the frame inks; overlays opened from it are
+paper.
+
+**States.**
+
+Tool (verbatim, `S:204-206`):
+
+```css
+.tool{ display:inline-grid; place-items:center; width:28px; height:26px; border:1px solid transparent; border-radius:var(--r-btn);
+  background:transparent; color:var(--ink-faint); cursor:pointer; transition:background-color var(--t-quick) var(--e-out), color var(--t-quick) var(--e-out); }
+.tool:hover{ color:var(--ink); background:var(--surface); }
+```
+
+C's Tool is a text+icon button with active and expanded states (verbatim, `C:993-1002`). Its
+geometry is not used (S's icon-only box wins); its `:active` and `[aria-expanded]` rules are
+adopted because S has none:
+
+```css
+.tool:active{ transform:scale(var(--squish)); }
+.tool[aria-expanded="true"]{ color:var(--ink); background:var(--surface-2); border-color:var(--line); }
+```
+
+Foot (verbatim, `S:151-153`):
+
+```css
+.foot-btn{ width:24px; height:24px; border-radius:8px; border:0; background:transparent; cursor:pointer;
+  display:grid; place-items:center; color:var(--f-ink-soft); }
+.foot-btn:hover{ background:var(--f-pill-hover); color:var(--f-ink); }
+```
+
+Strip: see §17 for the full block. Summary: hover `--accent-soft` bg + `--ink`; active
+`scale(.88)`.
+
+Pin (verbatim, `S:108-114`, `S:118`):
+
+```css
+.pin{
+  aspect-ratio:1; border:0; border-radius:12px; cursor:pointer; background:var(--f-pill-hover);
+  display:grid; place-items:center; position:relative; color:var(--f-ink);
+  transition:background-color var(--t-quick) var(--e-out), transform var(--t-tap) var(--e-out);
+}
+.pin:hover{ background:var(--f-pill); }
+.pin:active{ transform:scale(var(--squish)); }
+.pin[aria-pressed="true"]{ background:var(--f-pill); box-shadow:0 1px 0 rgba(255,255,255,.4) inset, 0 2px 6px -3px rgba(0,0,0,.25); }
+```
+
+| State | Tool | Foot | Strip | Pin |
+| --- | --- | --- | --- | --- |
+| hover | `--ink` on `--surface` | `--f-ink` on `--f-pill-hover` | `--ink` on `--accent-soft` | bg `--f-pill` |
+| active | scale(`--squish`) (from C) | not specified | scale(.88) | scale(`--squish`) |
+| focus-visible | global ring | global ring | global ring | global ring |
+| pressed / expanded | expanded: `--ink` on `--surface-2` + `--line` border | n/a | n/a | `--f-pill` + current-item shadow |
+| disabled | not specified (O-1) | not specified | not specified | not specified |
+| entering | none | none | `pop-in` (§17) | none |
+
+**Motion.** Transitions: background and colour `--t-quick --e-out`; transform `--t-tap --e-out`.
+
+**Behaviour.** `aria-label` is mandatory. Tool with `expanded` toggles its Menu (C:1770-1775).
+
+**Blitz notes.** None beyond the shared rules. The Pin's inset white highlight is a literal
+`rgba(255,255,255,.4)`; the token table needs `--shadow-current` (O-3).
+
+**Status radius (the macOS polish pass, settled 2026-09-24).** `Status`'s hover and open pill is
+`--r-shell-bar-item` 4, the bar item's, not `--r-item` 9.
+
+### 3. SegmentedControl
+
+**Purpose.** One choice out of 2 to 4, all visible. Mail: Reader/Original (`S:1376`), Space
+editor Appearance / Accent / Provider marks (`S:879-893`). Shell: control center, settings.
+Also the building block of the appearance choice (§26).
+
+**Markup.**
+
+```html
+<div class="ds-segmented" data-size="regular|small" role="group" aria-label="Appearance">
+  <button type="button" class="ds-segment" aria-pressed="true">System</button>
+  <button type="button" class="ds-segment" aria-pressed="false">Light</button>
+  <button type="button" class="ds-segment" aria-pressed="false">Dark</button>
+</div>
+```
+
+Mapping: `.seg` -> `.ds-segmented[data-size=regular]`; `.view-switch` ->
+`.ds-segmented[data-size=small]`.
+
+**Props.**
+
+```rust
+#[component] pub fn SegmentedControl<T: Clone + PartialEq + 'static>(
+    label: String,                         // aria-label of the group
+    options: Vec<(T, String)>,             // value, visible text
+    value: T,
+    #[props(default)] size: SegSize,       // Regular | Small
+    onchange: EventHandler<T>,
+) -> Element
+```
+
+**Geometry.**
+
+| Part | Regular (`.seg`) | Small (`.view-switch`) |
+| --- | --- | --- |
+| Track padding | 3px | 2px |
+| Track gap | 2px | 2px |
+| Track bg / border | `--surface-2`, 1px `--line` | `--surface`, 1px `--line` |
+| Track radius | 999px | 999px |
+| Segment padding | 5px 11px (C 6px 13px) | 3px 10px |
+| Segment font | ui 12 / 600 (C 12.5 / 600, letter-spacing .01em) | ui 11.5 / 600 |
+| Segment radius | 999px | 999px |
+| Segment text | `--ink-soft` | `--ink-soft` |
+
+**States.**
+
+Regular (verbatim, `S:265-268`):
+
+```css
+.seg{ display:inline-flex; padding:3px; gap:2px; background:var(--surface-2); border:1px solid var(--line); border-radius:999px; }
+.seg button{ border:0; background:transparent; padding:5px 11px; border-radius:999px; font-size:12px; font-weight:600;
+  cursor:pointer; color:var(--ink-soft); transition:background-color var(--t-quick) var(--e-out), color var(--t-quick) var(--e-out); }
+.seg button[aria-pressed="true"]{ background:var(--ink); color:var(--paper); }
+```
+
+Small (verbatim, `S:537-539`):
+
+```css
+.view-switch{ display:inline-flex; padding:2px; gap:2px; background:var(--surface); border:1px solid var(--line); border-radius:999px; margin-left:auto; }
+.view-switch button{ border:0; background:transparent; padding:3px 10px; border-radius:999px; font-size:11.5px; font-weight:600; color:var(--ink-soft); cursor:pointer; }
+.view-switch button[aria-pressed="true"]{ background:var(--ink); color:var(--paper); }
+```
+
+S has no hover or active rule. C does (verbatim, `C:236-237`); adopt both:
+
+```css
+.seg button:hover{ color:var(--ink); }
+.seg button:active{ transform:scale(var(--squish)); }
+```
+
+(with `transform var(--t-tap) var(--e-out)` added to the transition, `C:233-234`).
+
+| State | CSS |
+| --- | --- |
+| default | above |
+| hover | `--ink` text (from C) |
+| active | scale(`--squish`) (from C) |
+| focus-visible | global ring on the segment |
+| pressed (current) | `--ink` bg (the thumb), `--paper` text |
+| disabled | not specified (O-1) |
+| entering / leaving | none |
+
+`margin-left:auto` on `.view-switch` is layout of the reader head, not the component; the consumer
+places it.
+
+**Motion.** Background and colour `--t-quick --e-out`; transform `--t-tap --e-out`. The pressed
+fill jumps from one segment to the next; there is no sliding thumb in either prototype.
+
+As built (design/27 section 5.15, design/05 section 14): the pressed fill is one thumb, placed in
+the selected segment's own grid cell (so at rest it covers exactly that segment's laid-out box, at
+every scale) and shifted from there by a spring while it slides. A label's ink is not
+transitioned: it is `--paper` while the thumb covers most of it (`data-thumb="under"`) and
+`--ink-soft` otherwise, so the words change colour where the thumb is. A colour transition ran on
+its own clock and left labels in the thumb's light ink on the light track (2026-09-28).
+
+**Behaviour.** Click selects. Keyboard: not specified in the prototypes (each segment is a plain
+button, Tab moves between them). 06-INTERACTIONS decides whether Left/Right move the selection.
+
+**Blitz notes.** None.
+
+### 4. Toggle
+
+**Derived.** Neither prototype has an on/off switch. The plan adds it ("div track/knob, spring")
+because Blitz has no native form controls. Built from the SegmentedControl track (`.seg`), the
+accent fill of a pressed Mini (`S:523`), and the Space dot's spring (`S:147-150`).
+
+**Purpose.** A setting that is on or off and applies at once. Mail: settings. Shell: control
+center tiles (Wi-Fi, Bluetooth, Do Not Disturb).
+
+**Markup.**
+
+```html
+<button type="button" class="ds-toggle" role="switch" aria-checked="true|false" aria-label="Wi-Fi">
+  <span class="ds-toggle-knob"></span>
+</button>
+```
+
+**Props.**
+
+```rust
+#[component] pub fn Toggle(label: String, value: Switch,
+    #[props(default)] availability: Availability, onchange: EventHandler<Switch>) -> Element
+```
+
+**Geometry.** Proposal (every size below is derived, none is in a prototype; O-4):
+
+| Part | Value | Derived from |
+| --- | --- | --- |
+| Track padding | 3px | `.seg` padding |
+| Track border | 1px `--line` | `.seg` |
+| Track radius | 999px | `.seg` |
+| Track bg Off | `--surface-2` | `.seg` |
+| Track bg On | `--accent`, border transparent | pressed Mini (`S:523`) |
+| Knob | circle, `--raise`, `--shadow-1` | not specified; `--raise` is the "floats above" surface (A3) |
+| Knob size / track width | not specified (O-4) | |
+
+**States (derived CSS).**
+
+```css
+/* derived */
+.ds-toggle{ display:inline-flex; padding:3px; border:1px solid var(--line); border-radius:999px;
+  background:var(--surface-2); cursor:pointer;
+  transition:background-color var(--t-quick) var(--e-out), border-color var(--t-quick) var(--e-out); }
+.ds-toggle-knob{ border-radius:999px; background:var(--raise); box-shadow:var(--shadow-1);
+  transition:transform var(--t-move) var(--e-spring); }
+.ds-toggle[aria-checked="true"]{ background:var(--accent); border-color:transparent; }
+.ds-toggle[aria-checked="true"] .ds-toggle-knob{ transform:translateX(/* track inner width - knob */); }
+.ds-toggle:active .ds-toggle-knob{ transform:scale(var(--squish)); }
+```
+
+| State | Rule |
+| --- | --- |
+| default (Off) | track `--surface-2`, knob left |
+| hover | not specified |
+| active | knob scale(`--squish`) |
+| focus-visible | global ring on the track |
+| On | track `--accent`, knob right |
+| disabled | not specified (O-1) |
+
+**Motion.** Knob moves on `--t-move --e-spring` ("spring only on contact": the toggle moves
+because it was touched). Track colour `--t-quick --e-out`.
+
+**Behaviour.** Click or Space flips. Enter: not specified.
+
+**Blitz notes.** Exists only because `input[type=checkbox]` is unavailable. The pressed-state
+knob position must be a fixed px translate (no `calc` against the track's own width in a
+transition is guaranteed); fix sizes in O-4.
+
+### 5. Slider
+
+**Derived.** S uses a native `input[type=range]` with `accent-color` for Grain (`S:269`,
+`S:875`). Blitz has no native range. The plan: "Slider (divs + DragTracker)". Built from the
+editor's `.handle` (the one draggable dot in S, `S:255-257`) and the toast pull tab's drag
+model (`S:1562-1572`).
+
+**Purpose.** A continuous value in a range. Mail: Space editor Grain 0..100. Shell: volume,
+brightness, OSD.
+
+**Markup.**
+
+```html
+<div class="ds-slider" role="slider" tabindex="0" data-wheel="capture" aria-label="Grain"
+     aria-valuemin="0" aria-valuemax="100" aria-valuenow="35" style="--f:.35">
+  <div class="ds-slider-track"><div class="ds-slider-fill"></div></div>
+  <div class="ds-slider-thumb" data-drag="idle|live"></div>
+</div>
+```
+
+**Props.**
+
+```rust
+#[component] pub fn Slider(label: String, value: Fraction, #[props(default)] step: Fraction,
+    #[props(default)] availability: Availability, onchange: EventHandler<Fraction>) -> Element
+```
+
+**Geometry.**
+
+| Part | Value | Source |
+| --- | --- | --- |
+| Width | 100% of its container | `S:269` `width:100%` |
+| Fill colour | `--accent` | `S:269` `accent-color:var(--accent)` |
+| Thumb | 22 x 22 circle, 3px white border, `0 0 0 1px rgba(0,0,0,.25), 0 3px 8px rgba(0,0,0,.35)` | `.handle` `S:255-256` (proposal: reuse) |
+| Thumb while dragging | scale(1.15) | `.handle.on` `S:257` |
+| Track height, track colour | not specified (O-5) | |
+
+**States (derived CSS).**
+
+```css
+/* derived */
+.ds-slider-fill{ width:calc(var(--f) * 100%); background:var(--accent); }
+.ds-slider-thumb{ left:calc(var(--f) * 100%); width:22px; height:22px; margin-left:-11px; border-radius:999px;
+  border:3px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.25), 0 3px 8px rgba(0,0,0,.35); cursor:grab; }
+.ds-slider-thumb[data-drag="live"]{ transform:scale(1.15); }
+```
+
+| State | Rule |
+| --- | --- |
+| default | as above |
+| hover | not specified |
+| active / dragging | thumb scale(1.15) (`S:257`); no transition on `left` while dragging (toast tab sets `transition:none`, `S:1565`) |
+| focus-visible | global ring on `.ds-slider` |
+| disabled | not specified (O-1) |
+
+**Motion.** While dragging: none (follows the pointer 1:1). Keyboard steps: not specified.
+
+**Behaviour.** Pointer down on track or thumb captures the pointer and jumps the value to the
+pointer (`S:1435-1441`, the field does the same). Move updates, up releases. Keys: Left/Down
+minus one step, Right/Up plus one step (the handle uses 5° / .05 steps, `S:1455-1456`; slider
+step is a prop). See 06-INTERACTIONS "drag tracker". `data-wheel="capture"` (11-BEHAVIOUR-scroll.md
+section 11.3.1) marks the slider as one of the ds components that consumes wheel input itself, so
+shell-host's scroll engine hands it the raw event instead of scrolling the page under it.
+
+**Blitz notes.** `setPointerCapture` is JS; `DragTracker` in Rust owns the capture and writes
+`--f`. The white border and shadow literals need tokens (`--handle-ring`, O-3).
+
+### 6. TextInput
+
+**Purpose.** "ONE FIELD": every text input in the window (`S:777-780`). Boxed for standalone
+fields; Inline inside another container (recipient row, palette header, bubble link mode).
+
+**Markup.**
+
+```html
+<input class="ds-input" data-variant="boxed|inline" type="text"
+       placeholder="Add a person" aria-label="To" autocomplete="off">
+```
+
+Mapping: `.inp` -> `[data-variant=boxed]`; `.inp.inline` and `.pinput` -> `[data-variant=inline]`.
+
+**Props.**
+
+```rust
+#[component] pub fn TextInput(variant: InputVariant /* Boxed | Inline */, label: String,
+    value: String, #[props(default)] placeholder: String,
+    #[props(default)] availability: Availability,
+    oninput: EventHandler<String>, #[props(default)] onkey: EventHandler<KeyboardData>,
+    #[props(default)] focus: Focus /* OnMount | Manual (default); W2 integration, 06 §17 */) -> Element
+```
+
+**Geometry.**
+
+| Variant | Padding | Radius | Font | Colours | Width |
+| --- | --- | --- | --- | --- | --- |
+| Boxed | 7px 10px | 10px (`--r-field`) | ui 13.5 | `--ink` on `--surface`, 1px `--line` | set by consumer |
+| Inline | 3px 2px | none | ui 13.5 (palette 16, bubble 12.5, `.pinput` 13) | `--ink`, transparent | min 120px, flex 1 |
+
+**States.**
+
+Verbatim, `S:781-786`:
+
+```css
+.inp{ font:inherit; font-size:13.5px; color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:10px;
+  padding:7px 10px; outline:none; transition:border-color var(--t-quick) var(--e-out), box-shadow var(--t-quick) var(--e-out); }
+.inp::placeholder{ color:var(--ink-faint); }
+.inp:focus{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+.inp.inline{ border-color:transparent; background:transparent; padding:3px 2px; min-width:120px; flex:1; box-shadow:none; }
+.inp.inline:focus{ border-color:transparent; box-shadow:none; }
+```
+
+`.pinput` (verbatim, `S:599-600`) is the same Inline field at 13 px; fold it into Inline.
+
+```css
+.pinput{ border:0; outline:none; background:transparent; font:inherit; font-size:13px; color:var(--ink); min-width:120px; flex:1; padding:3px 2px; }
+.pinput::placeholder{ color:var(--ink-faint); }
+```
+
+| State | Boxed | Inline |
+| --- | --- | --- |
+| default | `--line` border | transparent |
+| hover | not specified | not specified |
+| focus (any focus, not only visible) | border `--accent` + `0 0 0 3px var(--accent-soft)` (the plan's `--accent-ring`) | nothing (the container shows focus) |
+| placeholder | `--ink-faint` | `--ink-faint` |
+| disabled | not specified (O-1) | not specified |
+| error | not specified; the To row uses `shake-x` on its row (`S:590`), not a red border | |
+
+**Motion.** Border and ring `--t-quick --e-out`.
+
+**Behaviour.** Focus on open where the surface says so (palette input focused on open,
+`S:1661`). `Focus::Controlled(FocusRequest)` (settled 2026-09-24, FINDINGS "Launcher gaps", sill
+Q44) focuses on mount and again at every `request()`: a menu that took the keyboard hands it
+back when it closes, without remounting the field. Every focus change waits out a document the
+renderer holds (`ds::host::parts::FocusHost`, Q43). Recipient inputs: Enter or `,` adds, Backspace on empty removes the last chip
+(`S:2265-2266`).
+
+**Blitz notes.** `::placeholder` must be verified in the spike; if unsupported, render the
+placeholder as an absolutely positioned span shown while the value is empty. `outline:none`
+is required so the global focus ring does not double the accent ring.
+
+**Settled (mailo gaps 4, 2026-09-25).**
+
+- `Bare` face (`InputVariant::Bare`): no border, padding, ground or radius;
+  font, size, weight, tracking, line height and colour inherited, so a title or a property row's
+  value is edited where it reads. The caret is `--accent`, the selection `--accent-soft`; the
+  placeholder is the parent's colour at .45.
+- `TextInputKind::Secret`: drawn as `Password`, but the component keeps the typed text in its own
+  state, emits it only through `oninput` and `onchange`, and never writes a `value` attribute (the
+  prop is ignored). `Password` still writes its `value`, unchanged since wave 2. mailo's secret
+  field is `Secret`.
+- A masked field's caret (sill Q360b, 2026-09-27). Blitz measures a `Password` or `Secret`
+  field's hidden text in its editor's face, untracked, so its caret drifts off the Inter dots.
+  Where the host reads the selection (`ds::host::parts::CaretHost::selection`, ds-blitz's), the
+  input carries `data-caret=drawn` (`caret-color: transparent`) and `.ds-input-mask` draws the
+  caret itself: `span.ds-input-caret` centred in the gap between the dots at the caret's
+  character (half the tracking back; half a gap after the last dot at the end), Blitz's caret
+  redrawn (1.5 px, the line's height, the dots' ink, `--accent` on Bare, no blink, as Blitz's
+  does not blink), shown only while the field has the keyboard and nothing is selected. A
+  selected range is `span.ds-input-mask-selected` on `--accent-soft`. A Boxed mask's line is
+  `--surface` (content box) so Blitz's own fixed-colour selection over the hidden text stays
+  under it; an Inline field (the lock pill) cannot hide it. Dots count characters, and so does
+  the caret's place. Without the host (a webview) the renderer's caret stays.
+- `TextInputKind::File`: the chosen name in a read-only `span.ds-input[data-kind=file]` (a
+  `role=textbox`, `aria-readonly`) and a Tool `IconButton` (folder, titled "Choose…", named
+  "{label}: Choose…") after it, gap 6. Blitz has no file picker (blitz-dom's `file-input` feature
+  is off in quire's pin, and even on it only draws a Browse button), so a click on either calls
+  `on_pick` and the host opens its own chooser and hands the name back as `value`.
+- `TextInputKind::Multiline { rows: Rows(n), grow: Grow::{Fixed, ToContent} }`: a `textarea`
+  with `rows`, `height:auto`, no resize handle. blitz-dom makes a `textarea` a multiline text
+  editor, reads its text from the `value` attribute (not its children), sizes it at `rows` line
+  heights (2 when absent; `cols` at 0.6 em each, else 300 px) and inserts a newline on Enter.
+  `ToContent` raises `rows` to the value's hard line count; a soft wrap does not grow it.
+- `onchange: EventHandler<String>`: the value committed, on Enter in a one-line field or when the
+  caret leaves any field. Blitz dispatches no `change` event, so the field makes it on both
+  renderers.
+
+### 7. SearchField
+
+**Purpose.** A search icon plus an Inline TextInput, as the header of a list of results. Mail:
+the command menu's input row. Shell: the launcher.
+
+**Markup.**
+
+```html
+<div class="ds-search">
+  <svg class="ds-ic">…search…</svg>
+  <input class="ds-input" data-variant="inline" type="text" aria-label="Search"
+         placeholder="Search mail, people, actions · try from:dana or has:attachment">
+</div>
+<div class="ds-search-tokens"><span class="ds-chip" data-variant="token">from dana</span></div>
+```
+
+Mapping: `.cmdk-in` -> `.ds-search`; `.cmdk .tokens` -> `.ds-search-tokens`.
+
+**Props.**
+
+```rust
+#[component] pub fn SearchField(label: String, value: String, placeholder: String,
+    tokens: Vec<String>, oninput: EventHandler<String>, onkey: EventHandler<KeyboardData>,
+    #[props(default)] focus: Focus /* passed to the field; the palette uses OnMount, or
+                                       Controlled(request) when given a FocusRequest */) -> Element
+```
+
+**Geometry.** Row: flex, gap 9, padding 12px 14px, bottom border 1px `--line-soft`, icon and
+text colour `--ink-faint`, input ui 16 `--ink` (C 14.5, padding 11px 14px, icon 18). Tokens row:
+flex wrap, gap 5, padding `0 14px 8px`.
+
+**States.** Verbatim, `S:235-236` and `S:794-797`:
+
+```css
+.cmdk-in{ display:flex; align-items:center; gap:9px; padding:12px 14px; border-bottom:1px solid var(--line-soft); color:var(--ink-faint); }
+.cmdk-in input{ font:inherit; font-size:16px; border:0; outline:none; background:transparent; color:var(--ink); width:100%; }
+.cmdk-in{ padding:12px 14px; }
+.cmdk-in input{ font-size:16px; }
+.cmdk .tokens{ display:flex; gap:5px; flex-wrap:wrap; padding:0 14px 8px; }
+```
+
+Focus is shown by the caret only (the field is inline). Hover, disabled: not specified.
+
+**Suggestions (`SearchField`, `NSSearchField`).** A search field can own a suggestions panel:
+sections of menu rows, each under an optional header, hung under the field at its width (or a
+minimum) and flipped above it when there is no room below. The panel is a Menu whose cursor the
+field drives (`MenuCursor::Controlled`), so the keyboard never leaves the field: Up and Down move
+the highlight (wrapping, skipping disabled rows; Down reopens a closed panel), Enter picks the
+highlighted row or, with none, submits the text, Escape closes the panel first and clears the
+field second, Tab is the field's own and closes the panel with the caret's leaving. A press on the
+field is inside the panel (the outside-press catcher leaves the field's rect alone, and draws
+nothing until the field is laid out, so a panel that opens mid-press does not swallow the
+release); a press anywhere else closes it. Rows may mark the characters a query matched
+(semibold), lead with an avatar and carry a second line in the faint ink. In a toolbar the field
+is a `ToolbarSearch` item: below its minimum width plus its items it collapses to a magnifier
+button, which opens the field in place with the caret in it (`NSSearchToolbarItem`); an empty
+field folds back when the caret leaves it or on Escape.
+
+Options (Spotlight). `highlight: InitialHighlight::TopHit` lights the first pickable row whenever
+the results change, so Return picks it (default `None`). The lit row is the field's own or the
+caller's (`cursor: SearchCursor::Is(value)`, named by the row's value); `on_highlight` hears each
+move, and `onkey` hears every key the field leaves alone, so a host completes the lit row's text
+on Tab. `escape: EscapeOrder` is `ClosePanelFirst` (the panel, the text, then the window; the
+default) or `ClearFirst` (the text, with the results and so the panel, then the window): one
+Escape is one step, never a press that changes nothing. `present: SuggestionsPresent::Card` draws
+the field and its results as one surface (one radius, one shadow, the results under a hairline,
+inset as a menu's rows are); with a `CardPlace` the card floats at the window level from its
+anchor and `ondismiss` hears a press outside it, without one it is drawn where it stands.
+
+**Motion.** None. **Behaviour.** Up/Down move the selection in the list below (clamped, not
+wrapping, `S:1653-1654`); Enter runs; Esc closes. Operators `from: is:unread is:starred
+has:attachment label:` become tokens (`S:1596-1598`). 06-INTERACTIONS "command menu search".
+
+**Blitz notes.** None beyond TextInput.
+
+### 8. CommandPill
+
+**Purpose.** The full-width "Search or run a command" button at the top of the sidebar, drawn on
+the Space colour (Arc-derived). Opens the CommandPalette. Shell: the bar's launcher button.
+
+**Markup.** (from `S:841`)
+
+```html
+<button type="button" class="ds-command-pill">
+  <svg class="ds-ic">…search…</svg>
+  <span class="ds-command-pill-label ds-truncate">Search or run a command</span>
+  <span class="ds-command-pill-keys">⌃T</span>
+</button>
+```
+
+Mapping: `.cmd` -> `.ds-command-pill`; `.cmd .k` -> `.ds-command-pill-keys`.
+
+**Props.**
+
+```rust
+#[component] pub fn CommandPill(label: String, shortcut: Shortcut, onclick: EventHandler<()>) -> Element
+```
+
+**Geometry.** Width 100%, padding 8px 10px, radius 10, gap 8, ui 13, text `--f-ink-soft`, bg
+`--f-pill`, inset highlight `0 1px 0 rgba(255,255,255,.35) inset`. Keys: data 10,
+`--f-ink-faint`, `margin-left:auto`, nowrap. Icon 16.
+
+**States.** Verbatim, `S:92-100`:
+
+```css
+.cmd{
+  display:flex; align-items:center; gap:8px; width:100%; border:0; cursor:pointer; text-align:left;
+  padding:8px 10px; border-radius:10px; background:var(--f-pill); color:var(--f-ink-soft);
+  font-size:13px; box-shadow:0 1px 0 rgba(255,255,255,.35) inset;
+  transition:background-color var(--t-quick) var(--e-out), transform var(--t-tap) var(--e-out);
+}
+.cmd:hover{ color:var(--f-ink); }
+.cmd:active{ transform:scale(var(--squish)); }
+.cmd .k{ margin-left:auto; white-space:nowrap; flex:none; font-family:var(--font-data); font-size:10px; color:var(--f-ink-faint); }
+```
+
+| State | Rule |
+| --- | --- |
+| hover | text `--f-ink` (background unchanged) |
+| active | scale(`--squish`) |
+| focus-visible | global ring |
+| disabled, entering, leaving | not specified / none |
+
+**Motion.** Background `--t-quick --e-out`, transform `--t-tap --e-out`. Colour change is not
+in the transition list (instant).
+
+**Behaviour.** Click opens the palette; the same shortcut (Ctrl T or Ctrl K) opens it from
+anywhere (`S:1667`).
+
+**Blitz notes.** Label uses `.ds-truncate` (S uses inline ellipsis, `S:841`).
+
+### 9. Kbd
+
+**Purpose.** A key cap in hints and menus. Mail: intro hints, composer hint row (`S:1956`),
+hover-card foot (`S:1735`). Shell: launcher hints, shortcut lists.
+
+**Markup.** `<kbd class="ds-kbd">⌃</kbd><kbd class="ds-kbd">T</kbd>` (one `kbd` per key, as
+`S:824`).
+
+**Props.** `#[component] pub fn Kbd(shortcut: Shortcut, #[props(default)] size: KbdSize /* Regular | Small */) -> Element`
+
+**Geometry.** data 10.5 (Small 9.5, `S:662`), padding 1px 5px, radius 5, 1px `--line` border with
+a 2px bottom border, bg `--surface-2`, text `--ink-soft`. Keys in one shortcut are separated by a
+space (`S:824`) or a thin space (`C:1175`); pick one (O-2).
+
+**States.** Verbatim, `S:67-68`:
+
+```css
+kbd{ font-family:var(--font-data); font-size:10.5px; border:1px solid var(--line); border-bottom-width:2px;
+  border-radius:5px; padding:1px 5px; color:var(--ink-soft); background:var(--surface-2); }
+```
+
+Static: no hover, active, focus, or motion. C's palette uses a flatter cap (verbatim,
+`C:1079-1080`: `margin-left:auto; font-family:var(--font-data); font-size:10px;
+color:var(--ink-faint); border:1px solid var(--line); border-radius:5px; padding:1px 5px;`);
+S replaced it with the plain `.sc` text, so it is not a variant.
+
+**Blitz notes.** Glyphs ⌘⇧⌥⌃ must be in the bundled Space Mono subset or fall back cleanly
+(02-TYPE).
+
+### 10. Chip
+
+**Purpose.** A small label that states a fact. Variants in the plan: Accent (S's only chip:
+every label chip is accent-soft), Label(hue) (C Candy: one hue per named label), Neutral (C
+`.tag`). Related shapes that S uses and the plan's enum does not yet name: Person chip
+(`.pchip`, recipients), Token (`.tok`, search operators), Status pill (`.pill.ok/.bad`,
+contrast checks), Attachment count (`.clip`). See O-6.
+
+**Markup.**
+
+```html
+<span class="ds-chip" data-variant="accent|label|neutral|token|status" data-hue="blue" data-status="ok|bad">spec</span>
+
+<span class="ds-chip" data-variant="person">          <!-- .pchip -->
+  <span class="ds-avatar" data-size="18">D</span>Dana Okafor
+  <button type="button" class="ds-chip-remove" aria-label="Remove Dana Okafor"><svg class="ds-ic">…x…</svg></button>
+</span>
+
+<span class="ds-chip" data-variant="neutral" data-pressable data-state="on|off">   <!-- onpress set -->
+  <button type="button" class="ds-chip-press" aria-pressed="true|false"><i class="ds-chip-dot" style="--chip-dot:…"></i>120°</button>
+  <button type="button" class="ds-chip-remove" aria-label="Remove 120°">…</button>   <!-- onremove, a sibling -->
+</span>
+
+<span class="ds-clip"><svg class="ds-ic">…paperclip…</svg>3</span>
+```
+
+A chip with `onpress` is pressable: its face is a real `button` (click, Return and Space press
+it) and the remove button is a sibling of that button, never inside it, so removing a chip does
+not press it. `pressed: Some(Check::On)` is the picked look: `--ink` text and, on Neutral and
+Person, the `--fill` wash and an `--ink-faint` line (a toggle Button that is on); other
+variants have no line of their own and take a hairline ring. `dot` draws a 12 px disc in the
+given colour before the text. The space editor's colour stops and a companion form's choices
+are pressable Neutral chips.
+
+**Props.**
+
+```rust
+#[component] pub fn Chip(variant: ChipVariant, text: String,
+    #[props(default)] onremove: Option<EventHandler<()>>,   // any variant
+    #[props(default)] pressed: Option<Check>,               // aria-pressed, with onpress
+    #[props(default)] onpress: Option<EventHandler<Press>>, // makes the face a button
+    #[props(default)] dot: Option<String>,                  // a CSS colour, a disc before the text
+    #[props(default)] pulse: Option<PulseKey>) -> Element    // chip-land / chip-in / flash
+pub enum ChipVariant { Accent, Label(LabelHue), Neutral, Person(Avatar), Token, Status(Verdict) }
+pub enum LabelHue { Red, Amber, Green, Blue, Violet }
+```
+
+**Geometry.**
+
+| Variant | Font | Padding | Radius | Colours | Source |
+| --- | --- | --- | --- | --- | --- |
+| Accent | data 9.5 (C letter-spacing .02em) | 1.5px 7px (Candy 2px 9px) | `--r-chip` (6 6 6 2) | `--ink` on `--accent-soft` | `S:198-199` |
+| Label(hue) | as Accent | as Accent | as Accent | `--c-<hue>-deep` on `--c-<hue>-soft` | `C:941-944` |
+| Neutral | data 9.5 | 2px 7px | 999px | `--ink-faint` on `--surface-2`, 1px `--line` | `C:615-616` |
+| Token | data 10.5 | 2px 8px | 999px | `--ink` on `--accent-soft` | `S:798` |
+| Status | data 9.5 | 1px 7px | 999px | ok: `--ok` on 16% ok wash; bad: `--danger` on 16% danger wash | `S:276-278` |
+| Person | ui 12.5 | 2px 8px 2px 3px, gap 6 | 999px | `--ink` on `--surface`, 1px `--line`; avatar 18; remove icon 11 `--ink-faint` | `S:592-596` |
+| Clip | data 9.5, gap 2 | none | none | `--ink-faint`, icon 11 | `S:543-544` |
+
+All chips are `white-space:nowrap` (never truncated).
+
+**States.**
+
+Accent (verbatim, `S:198-199`):
+
+```css
+.chip{ font-family:var(--font-data); font-size:9.5px; padding:1.5px 7px; border-radius:var(--r-chip);
+  background:var(--accent-soft); color:var(--ink); white-space:nowrap; }
+```
+
+Label(hue) (verbatim, `C:941-944`; one line per label, the label-to-hue map is data):
+
+```css
+body[data-look="candy"] .chip[data-chip="spec"]{   background:var(--c-blue-soft);   color:var(--c-blue-deep); }
+body[data-look="candy"] .chip[data-chip="rust"]{   background:var(--c-amber-soft);  color:var(--c-amber-deep); }
+```
+
+Neutral (verbatim, `C:615-616`):
+
+```css
+.tag{ font-family:var(--font-data); font-size:9.5px; padding:2px 7px; border-radius:999px;
+  background:var(--surface-2); border:1px solid var(--line); color:var(--ink-faint); }
+```
+
+Token (verbatim, `S:798`):
+
+```css
+.cmdk .tok{ font-family:var(--font-data); font-size:10.5px; padding:2px 8px; border-radius:999px; background:var(--accent-soft); color:var(--ink); }
+```
+
+Status (verbatim, `S:276-278`; `color-mix` becomes the precomputed `--ok-wash` / `--danger-wash`):
+
+```css
+.pill{ font-family:var(--font-data); font-size:9.5px; padding:1px 7px; border-radius:999px; }
+.pill.ok{ background:color-mix(in oklab, var(--ok) 16%, transparent); color:var(--ok); }
+.pill.bad{ background:color-mix(in oklab, var(--danger) 16%, transparent); color:var(--danger); }
+```
+
+Person (verbatim, `S:592-598`):
+
+```css
+.pchip{ display:inline-flex; align-items:center; gap:6px; padding:2px 8px 2px 3px; border-radius:999px; background:var(--surface); border:1px solid var(--line);
+  font-size:12.5px; color:var(--ink); animation:chip-in var(--t-move) var(--e-spring); }
+.pchip .av{ width:18px; height:18px; border-radius:999px; display:grid; place-items:center; font-family:var(--font-display); font-weight:800; font-size:9px; color:#fff; }
+.pchip .x{ border:0; background:none; padding:0; cursor:pointer; color:var(--ink-faint); line-height:0; }
+.pchip .x .ic{ width:11px; height:11px; }
+.pchip.flash{ box-shadow:0 0 0 3px var(--accent-soft); }
+```
+
+Clip (verbatim, `S:543-544`):
+
+```css
+.row .clip{ display:inline-flex; align-items:center; gap:2px; font-family:var(--font-data); font-size:9.5px; color:var(--ink-faint); }
+.row .clip .ic{ width:11px; height:11px; }
+```
+
+| State | Rule |
+| --- | --- |
+| default | per variant |
+| hover | not specified (a pressable chip and any remove button: not specified) |
+| focus-visible | global ring on the pressable face and on the remove button |
+| entering | Person: `chip-in --t-move --e-spring` on mount. Accent/Label landing after a drop or label pick: `chip-land --t-big --e-spring` (C `.is-landing`, `C:402`) |
+| flash | Person: `0 0 0 3px var(--accent-soft)` for 1200 ms (`S:2119`): `pulse` with `Anim::ChipFlash`, the `chip-flash` keyframe (chip-in's last frame plus the ring) over `--t-flash` |
+| leaving | none (removed at once) |
+
+**Motion.** `chip-in`, `chip-land`, `chip-flash` (05-MOTION; `chip-flash` and `--t-flash` 1200 ms are quire's, wave 1 amendment, proposed). The flash plays through the pulse class, so it needs no Rust timer.
+
+**Behaviour.** Remove button removes the recipient; Backspace in an empty recipient input removes
+the last chip (`S:2266`).
+
+**Blitz notes.** `color-mix` replaced by `--ok-wash`/`--danger-wash`. Person avatar colour is an
+inline style from the hash (see §11).
+
+### 11. Avatar
+
+**Purpose.** A person or account as a coloured disc with one letter. Mail: reader meta, hover
+cards, recipient chips, event attendees, account tiles, palette/menu tiles, Today favicons.
+Shell: user menu, notifications.
+
+**Markup.**
+
+```html
+<span class="ds-avatar" data-size="28" data-shape="round|square" style="--av-bg:#5B4FC4; --av-fg:#fff">D</span>
+```
+
+Colour sources (A3): `Ink` = `--ink` bg, `--paper` text (reader meta, hover card); `Account` = the
+account colour, white text (`S:1238`); `Person` = hash `h=(h*31+code)%360` -> `hsl(h,38%,42%)`,
+white text (`S:1879`); `Stack` = `--ink-soft` bg, `--paper` text (event attendees).
+
+**Props.**
+
+```rust
+#[component] pub fn Avatar(initial: char, size: AvatarSize, tone: AvatarTone,
+    #[props(default)] shape: AvatarShape /* Round | Square */) -> Element
+pub enum AvatarTone { Ink, Account(Colour), Person(PersonHue), Stack }
+```
+
+**Geometry.** Every avatar is `display:grid; place-items:center`, display font weight 800.
+
+| Size | Font | Shape | Where | Source |
+| --- | --- | --- | --- | --- |
+| 16 | 9 | square r5 | sidebar pinned/Today favicon `.fav` | `S:138-139` |
+| 18 | 9 | round | person chip | `S:594` |
+| 20 | 9.5 | round, 2px `--surface` border, overlap -6px | event attendees | `S:519-521` |
+| 20 | 9 | round | slim menu tile `.tile.round` | `S:788` |
+| 22 | 10 | round | hover-card message rows | `S:409-410` |
+| 26 | 12 | round | pinned tile (non-account) | `S:115-116` |
+| 28 | 12 | round | reader meta | `S:209-210` |
+| 28 | 12.5 | round | account tile | `S:548` |
+| 30 | 13 | round | C account ring | `C:278-283` |
+| 34 | 14 | round | hover-card person header | `S:417` |
+| 34 | 13 | round (`.tile.round`) or square r8 | rich menu tile | `S:671-672`, `S:787` |
+
+**States.** Verbatim, reader meta (`S:209-210`):
+
+```css
+.meta .av{ width:28px; height:28px; border-radius:999px; display:grid; place-items:center; flex:none;
+  background:var(--ink); color:var(--paper); font-family:var(--font-display); font-weight:800; font-size:12px; }
+```
+
+Verbatim, attendee stack (`S:519-521`):
+
+```css
+.b-event .ppl i{ width:20px; height:20px; border-radius:999px; display:grid; place-items:center; font-style:normal; font-family:var(--font-display);
+  font-weight:800; font-size:9.5px; color:var(--paper); background:var(--ink-soft); border:2px solid var(--surface); margin-left:-6px; }
+.b-event .ppl i:first-child{ margin-left:0; }
+```
+
+Hover inside an account tile: `rotate(-6deg) scale(1.08)` (§27). Unpressed account tile:
+`saturate(.55)` + opacity .85 (§27, filter replaced). No other states.
+
+**Motion.** Only inside AccountTile (§27).
+
+**Blitz notes.** The hue hash is computed in Rust and emitted as an inline custom property;
+`hsl()` in inline style is a colour function the lint bans in consumer CSS, so the Rust side
+converts to hex (O-7).
+
+### 12. Tabs
+
+**Purpose.** Switch between pages of one surface. Only in C (the page's own section tabs,
+`C:1167-1171`). ds use: settings pages, control-center pages.
+
+**Markup.** (from `C:1167-1170`)
+
+```html
+<div class="ds-tabs" role="tablist" aria-label="Sections">
+  <button type="button" class="ds-tab" role="tab" aria-selected="true" aria-controls="panel-a">Inbox</button>
+  <button type="button" class="ds-tab" role="tab" aria-selected="false" aria-controls="panel-b">Motion catalogue</button>
+</div>
+```
+
+**Props.**
+
+```rust
+#[component] pub fn Tabs<T: Clone + PartialEq + 'static>(label: String,
+    tabs: Vec<(T, String)>, value: T, onchange: EventHandler<T>) -> Element
+```
+
+**Geometry.** Bar: flex, gap 6, 1px `--line` bottom border (margins `26px 0 14px` are page layout,
+not the component). Tab: padding `10px 14px 12px`, display 16 / 700, `--ink-faint`. Underline:
+3px high, inset 10px left and right, bottom -1px (sits on the bar's border), radius
+`999px 999px 0 0`, `--accent`.
+
+**States.** Verbatim, `C:243-257`:
+
+```css
+.tabs{ display:flex; gap:6px; margin:26px 0 14px; border-bottom:1px solid var(--line); }
+.tabs button{
+  position:relative; border:0; background:transparent; cursor:pointer;
+  padding:10px 14px 12px; font-family:var(--font-display); font-weight:700; font-size:16px;
+  color:var(--ink-faint); transition:color var(--t-quick) var(--e-out);
+}
+.tabs button:hover{ color:var(--ink-soft); }
+.tabs button[aria-selected="true"]{ color:var(--ink); }
+.tabs button::after{
+  content:""; position:absolute; left:10px; right:10px; bottom:-1px; height:3px;
+  border-radius:999px 999px 0 0; background:var(--accent);
+  transform:scaleX(0); transform-origin:50% 100%;
+  transition:transform var(--t-move) var(--e-spring);
+}
+.tabs button[aria-selected="true"]::after{ transform:scaleX(1); }
+```
+
+| State | Rule |
+| --- | --- |
+| default | `--ink-faint`, underline scaleX(0) |
+| hover | `--ink-soft` |
+| active | not specified |
+| focus-visible | global ring |
+| selected | `--ink`, underline scaleX(1) |
+| disabled | not specified (O-1) |
+
+**Motion.** Underline grows in place (`--t-move --e-spring`); the old tab's shrinks at the same
+time. The plan's "spring underline" means this; there is no sliding underline between tabs.
+
+**Behaviour.** Click selects. Arrow keys: not specified in C (06-INTERACTIONS decides).
+
+**Blitz notes.** `::after` pseudo-elements must be verified (spike); fallback is a real
+`<span class="ds-tab-underline">`.
+
+### 13. SectionHeader
+
+**Purpose.** A small-caps label that names a group. Four kinds, one component.
+
+| Kind | Where | Prototype |
+| --- | --- | --- |
+| Frame | sidebar groups on the Space colour (Places, Pinned, Today) with a trailing rule and an optional action button ("Clear") | S `.s-h` |
+| Group | list group headers on the card, with a count and a trailing rule | C `.grp` |
+| Field | a label above a control, with an optional right-aligned value | S `.ed-label` |
+| Menu | group title inside a menu or palette | S `.fmenu .g`, `.cmdk-g`; C `.menu h6` |
+
+**Markup.**
+
+```html
+<div class="ds-section-header" data-kind="frame|group|field|menu">
+  <span>Today</span>
+  <span class="ds-section-header-value">35</span>                 <!-- group count / field value -->
+  <button type="button" class="ds-section-header-action">Clear</button>   <!-- frame only -->
+</div>
+```
+
+**Props.**
+
+```rust
+#[component] pub fn SectionHeader(kind: HeaderKind, text: String,
+    #[props(default)] value: Option<String>,
+    #[props(default)] action: Option<(String, EventHandler<()>)>,
+    #[props(default)] action_selection: Selection) -> Element   // Selected: data-selected on the action
+```
+
+`action_selection: Selected` (sill Q294, 2026-09-26) draws the action as a keyboard selection,
+`data-selected="true"`: `--accent-soft` behind it, `--ink` words, `--r-tiny`. The palette sets it
+while its cursor rests on a group's "Show More" (section 49); nothing else changes.
+
+**Geometry.**
+
+| Kind | Padding | Font | Tracking | Colour | Rule |
+| --- | --- | --- | --- | --- | --- |
+| Frame | 14px 6px 5px, gap 6 | data 10 upper | .14em | `--f-ink-faint` | 1px `--f-line`, flex 1, after the text |
+| Group | 12px 6px 6px, gap 8 | data 10 upper | .12em | `--ink-faint` | 1px `--line-soft`, flex 1 |
+| Field | margin-bottom 6 | data 10 upper | .14em | `--ink-faint` | none; value `margin-left:auto`, tracking .02em, no upper |
+| Menu | 7px 8px 3px (palette 8px 10px 4px; C 5px 9px 6px) | data 9.5 upper | .14em (C .13em) | `--ink-faint` | none |
+
+**States.** Frame (verbatim, `S:120-125`):
+
+```css
+.s-h{ display:flex; align-items:center; gap:6px; padding:14px 6px 5px; font-family:var(--font-data);
+  font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--f-ink-faint); }
+.s-h::after{ content:""; flex:1; height:1px; background:var(--f-line); }
+.s-h button{ order:2; border:0; background:none; cursor:pointer; font:inherit; letter-spacing:.08em;
+  color:var(--f-ink-faint); padding:0 2px; text-transform:none; }
+.s-h button:hover{ color:var(--f-ink); }
+```
+
+Group (verbatim, `C:1026-1032`):
+
+```css
+.grp{
+  display:flex; align-items:center; gap:8px; padding:12px 6px 6px;
+  font-family:var(--font-data); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.grp::after{ content:""; flex:1; height:1px; background:var(--line-soft); }
+.grp .n{ font-variant-numeric:tabular-nums; }
+```
+
+Field (verbatim, `S:250-251`):
+
+```css
+.ed-label{ font-family:var(--font-data); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px; display:flex; align-items:center; }
+.ed-label .r{ margin-left:auto; letter-spacing:.02em; text-transform:none; }
+```
+
+Menu (verbatim, `S:668`, `S:238`, `C:1011-1012`):
+
+```css
+.fmenu .g{ padding:7px 8px 3px; font-family:var(--font-data); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); }
+.cmdk-g{ padding:8px 10px 4px; font-family:var(--font-data); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); }
+.menu h6{ margin:0; padding:5px 9px 6px; font-family:var(--font-data); font-size:9.5px;
+  letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); }
+```
+
+Only the Frame action button has a state (hover `--f-ink`). S's Frame rule sits after the action
+button because the button has `order:2`; the rule (`::after`) is order 0 by default, so visual
+order is text, rule, button. Keep that order.
+
+**Blitz notes.** `::after` rule: same pseudo-element check as Tabs; fallback a real
+`<span class="ds-section-header-rule">`.
+
+### 14. Count
+
+**Purpose.** An unread or item count. Empty at zero. Bumps when it changes. Mail: sidebar items,
+account tiles. Shell: dock badges, bar indicators.
+
+**Markup.**
+
+```html
+<span class="ds-count a-bump" data-place="tile|item" data-pulse="a|b">4</span>
+```
+
+(The zero case renders the element with empty text, `S:1247` `(n || "")`, so layout does not shift.)
+
+**Props.** `#[component] pub fn Count(value: u32, #[props(default)] place: CountPlace /* Item | Tile */) -> Element`
+The component fires its own bump when `value` changes between renders (it keeps the last value
+it drew; no `PulseKey` prop, wave 1 amendment), except during a Space switch (`S:1262`: counts
+bump only when `dir` is falsy). For that render the consumer gives the count a new `key`, so it
+mounts at rest (O-8).
+
+**Geometry.**
+
+| Place | Font | Colour | Position |
+| --- | --- | --- | --- |
+| Item | data 10.5, tabular (C) | `--f-ink-faint` (C on card: `--ink-faint`) | `margin-left:auto` |
+| Tile | data 9 | `--f-ink-soft` | absolute top 4 right 5 |
+
+**States.** Verbatim, `S:136`, `S:117`, `S:341-342`:
+
+```css
+.item .count{ margin-left:auto; font-family:var(--font-data); font-size:10.5px; color:var(--f-ink-faint); }
+.pin .n{ position:absolute; top:4px; right:5px; font-family:var(--font-data); font-size:9px; color:var(--f-ink-soft); }
+.count.bump, .pin .n.bump{ display:inline-block; animation:bump var(--t-move) var(--e-spring); }
+```
+
+C adds `font-variant-numeric:tabular-nums` (`C:308-311`); adopt it. C Candy forces counts to
+`--ink-faint` ("the unread count loses its alarm colour", `C:932-933`); S already does.
+
+**Motion.** `bump --t-move --e-spring` on change.
+
+**Blitz notes.** Restart via `use_pulse` A/B alias, not class removal + reflow.
+
+### 15. Spinner
+
+**Purpose.** Activity without a known end. Two kinds from C's sync halo: Spin (work in
+progress) and Breathe (idle but live). Mail: account sync. Shell: bar sync, network connecting.
+
+**Markup.**
+
+```html
+<span class="ds-spinner" data-kind="spin|breathe" aria-hidden="true"></span>
+```
+
+It is drawn as a ring around its parent (the halo is `inset:-4px` of a 30 px avatar). Standalone
+size: not specified (O-9).
+
+**Props.** `#[component] pub fn Spinner(kind: SpinnerKind /* Spin | Breathe */, operation: Operation) -> Element`
+(D0, design/26 R4: the ring is a bounded pending loop on `ds::detail::use_pending`: nothing for
+`PendingGrace`, a step every `--t-pending-step`, its still frame from the operation token's
+deadline; no `infinite` animation. The keyframe-loop CSS below is the prototype's, kept for
+reference; the shipped sheet is the progress indicator's sheet.)
+
+**Geometry.** absolute, `inset:-4px` of the host, radius 999px, 2px `--accent` border. Spin: border
+dashed, opacity .9.
+
+**States.** Verbatim, `C:284-292`:
+
+```css
+.acct-ring .halo{
+  position:absolute; inset:-4px; border-radius:999px; border:2px solid var(--accent);
+  opacity:0; transform:scale(.85);
+}
+.acct[data-sync="idle"] .halo{ animation:breathe var(--t-ambient) ease-in-out infinite; }
+.acct[data-sync="busy"] .halo{
+  opacity:.9; transform:scale(1); border-style:dashed;
+  animation:spin 1.1s linear infinite;
+}
+```
+
+**Motion.** `breathe` over `--t-ambient` (5 s Post), `ease-in-out`, infinite; `spin` 1.1 s linear
+infinite. Both loop, contradicting "nothing loops" (A8 #7); the plan keeps them as the only
+loops besides the destination pulse (§19). `ease-in-out` and `1.1s` are not tokens yet (O-3).
+
+**Blitz notes.** Infinite animations keep `is_animating()` true and cost frames forever. Breathe
+at idle means the bar never idles. See O-9: proposal is Breathe off by default on shell surfaces.
+
+### 16. ListRow
+
+**Purpose.** One item in a list: the thread row. Carries the unread dot, text lines, tail
+(time, chips, attachment count), star, and a HoverStrip slot. Animates in on first show, out per
+operation, and closes gaps. Mail: the thread list. Shell: notification list, launcher results
+(planned).
+
+**Markup.** (from `S:1277-1289`)
+
+```html
+<ul class="ds-list" role="listbox" aria-label="Threads" data-presence="entering|present">
+  <li class="ds-row" role="option" aria-selected="false" data-emphasis="strong|plain"
+      data-presence="present|leaving|healing" data-exit="fold|curl|crumple" style="--i:0; --dy:79px; --d:0">
+    <div class="ds-row-dot"><span class="ds-dot"></span></div>
+    <div class="ds-row-main">
+      <div class="ds-row-from">
+        <span class="ds-row-name ds-truncate">Dana Okafor</span>
+        <span class="ds-row-via"><span class="ds-provider" data-size="row">…</span>gmail</span>
+      </div>
+      <div class="ds-row-sub ds-truncate">Re: UIDL stability…</div>
+      <div class="ds-row-snip ds-truncate">Treat UIDL as…</div>
+    </div>
+    <div class="ds-row-tail">
+      <span class="ds-row-time">09:41</span>
+      <span class="ds-row-tags"><span class="ds-clip">…</span><span class="ds-chip">spec</span></span>
+    </div>
+    <button type="button" class="ds-star" aria-pressed="false" aria-label="Star this thread">
+      <svg class="ds-ic">…star…</svg>
+      <span class="ds-sparks"><i style="--a:0deg"></i>…six, --a 0..300 step 60…</span>
+    </button>
+    <!-- HoverStrip slot, §17 -->
+  </li>
+</ul>
+```
+
+Mapping: `.row[data-read=unread|read]` -> `[data-emphasis=strong|plain]`; `.list.entering` ->
+`.ds-list[data-presence=entering]`; `.row.going[data-op]` -> `[data-presence=leaving][data-exit]`;
+`.row.healing` -> `[data-presence=healing]`; `.star[data-on]` -> `.ds-star[aria-pressed]`.
+The hover-card hooks (`data-hc` on row, name, time) become `HoverTarget` wrappers (§22).
+
+**Props.**
+
+```rust
+#[component] pub fn ListRow(
+    selection: Selection, emphasis: Emphasis, index: StaggerIndex,
+    presence: Presence,                        // from use_roster: Entering | Present | Leaving(Exit)
+    #[props(default)] heal: Option<Heal>,      // from use_roster: a present row sliding into a gap
+    name: String, via: Option<Element>, subject: String, snippet: Option<String>,
+    time: String, tags: Element,               // chips + clip
+    star: Option<(Switch, EventHandler<Switch>)>, star_pulse: PulseKey,
+    strip: Option<Element>,                    // HoverStrip
+    onclick: EventHandler<MouseData>,          // consumer reads shift for peek
+    #[props(default)] drop: DropState,         // Idle | Target (data-drop) | Source (data-drag), §34
+) -> Element
+```
+
+**Geometry.**
+
+| Part | Value | Source |
+| --- | --- | --- |
+| Row grid | `10px minmax(0,1fr) auto`, gap 10, align start | `S:176` |
+| Row padding / margin | 10px 11px / bottom 5px (Candy 13px 13px) | `S:177` |
+| Row radius | `--r-card` (12 12 12 4) | `S:177` |
+| Row border | 1px transparent | `S:178` |
+| Row height | about 74 (heal distance = height + 5) | `S:1537` |
+| Dot column | padding-top 6 (C 5); dot 8 x 8 round `--accent` | `S:185-186` |
+| From line | flex baseline, gap 7 | `S:189` |
+| Name | ui 13.5 / 700 (read: 500, `--ink-soft`) | `S:190-191` |
+| Via | data 9.5 `--ink-faint`, flex none; provider mark 11 | `S:192`, `S:556` |
+| Subject | ui 13.5 / line 1.35 (unread 600) | `S:193-194` |
+| Snippet | ui 12.5 `--ink-faint` | `S:195` |
+| Tail | column, align end, gap 5; tags row gap 4 | `S:196`, `S:1281` |
+| Time | data 10 `--ink-faint` tabular | `S:197` |
+| Star | absolute left 6 bottom 7 (C 8/8), 22 x 22; icon 14 (C 15) | `S:299-302` |
+| Sparks | six 3 x 3 round `--warn` dots from the centre | `S:305-306` |
+
+**States.**
+
+Row base, hover, selected (verbatim, `S:175-184`):
+
+```css
+.row{
+  position:relative; display:grid; grid-template-columns:10px minmax(0,1fr) auto; gap:10px; align-items:start;
+  padding:10px 11px; margin-bottom:5px; border-radius:var(--r-card); background:var(--surface);
+  border:1px solid transparent; cursor:pointer; user-select:none;
+  transition:transform var(--t-quick) var(--e-out), box-shadow var(--t-quick) var(--e-out),
+             background-color var(--t-quick) var(--e-out), border-color var(--t-quick) var(--e-out);
+  animation:rise var(--t-move) var(--e-out) backwards; animation-delay:calc(var(--i,0) * var(--stagger));
+}
+.row:hover{ transform:translateY(var(--lift)); box-shadow:var(--shadow-2); border-color:var(--line); }
+.row[aria-selected="true"]{ background:var(--raise); border-color:var(--accent); box-shadow:var(--shadow-1); }
+```
+
+Entering only on first show (verbatim, `S:293-296`; overrides the `animation` above):
+
+```css
+.row{ animation:none; }
+.list.entering .row{ animation:rise var(--t-move) var(--e-out) backwards; animation-delay:calc(var(--i,0) * var(--stagger)); }
+.dot{ transition:transform var(--t-quick) var(--e-spring), opacity var(--t-quick) var(--e-out); }
+.row[data-read="read"] .dot{ transform:scale(0) translateX(-6px); }
+```
+
+Read/unread text (verbatim, `S:187`, `S:191`, `S:194`):
+
+```css
+.row[data-read="read"] .dot{ transform:scale(0); opacity:0; }
+.row[data-read="read"] .nm{ font-weight:500; color:var(--ink-soft); }
+.row[data-read="unread"] .row-sub{ font-weight:600; }
+```
+
+Leaving and healing (verbatim, `S:326-333`):
+
+```css
+.row.going{ pointer-events:none; }
+.row.going[data-op="archive"]{ animation:fold var(--t-big) cubic-bezier(.55,0,.75,.2) forwards; }
+.row.going[data-op="snooze"]{ animation:curl 560ms cubic-bezier(.55,0,.75,.2) forwards; }
+.row[data-read="unread"].going{ animation-duration:calc(var(--t-big) * 1.15); }
+.row.healing{ animation:heal var(--t-move) var(--e-spring) backwards; animation-delay:calc(var(--d,0) * 18ms); }
+```
+
+C's third exit (verbatim, `C:714`): `.row.is-going[data-op="trash"]{ animation:crumple var(--t-big) var(--e-exit) forwards; }`.
+S has no trash op (A8 #9); ds keeps `Exit::Crumple` for delete.
+
+Restored by undo (inline style, `S:1560`): `rise var(--t-big) var(--e-spring) backwards`.
+C arrival (verbatim, `C:373`): `.row.is-entering{ animation:row-in var(--t-big) var(--e-spring) backwards; }`.
+C dragging (verbatim, `C:374`): `.row.is-dragging{ opacity:.35; }` (§34).
+
+Star (verbatim, `S:299-307`):
+
+```css
+.star{ position:absolute; left:6px; bottom:7px; width:22px; height:22px; border:0; padding:0; background:transparent;
+  cursor:pointer; display:grid; place-items:center; opacity:0; transition:opacity var(--t-quick) var(--e-out); }
+.row:hover .star, .star[data-on="true"]{ opacity:1; }
+.star .ic{ width:14px; height:14px; stroke:var(--ink-faint); transition:stroke var(--t-quick) var(--e-out), fill var(--t-quick) var(--e-out); }
+.star[data-on="true"] .ic{ stroke:var(--warn); fill:var(--warn); }
+.star.pop .ic{ animation:star-pop var(--t-big) var(--e-spring); }
+.sparks{ position:absolute; inset:0; pointer-events:none; }
+.sparks i{ position:absolute; left:50%; top:50%; width:3px; height:3px; border-radius:999px; background:var(--warn); opacity:0; }
+.sparks.go i{ animation:spark 520ms var(--e-out) forwards; }
+```
+
+Candy star (verbatim, `C:955-956`): `stroke:var(--c-amber-deep); fill:var(--c-amber);` and amber
+sparks. S wins (`--warn`) unless the Look is Candy (07-LOOKS).
+
+Snooze floater "zZ" (verbatim, `S:334-335`): fixed, z 40, display 800 14, `--accent`,
+`floatup 900ms var(--e-out) forwards`; placed at row right - 70, row top + 8 (`S:1536`); removed
+at 950 ms.
+
+| State | Rule |
+| --- | --- |
+| default | `--surface`, transparent border, star hidden, strip hidden |
+| hover | lift `--lift`, `--shadow-2`, `--line` border; star and strip appear |
+| active | not specified |
+| focus-visible | global ring on the row; C also reveals the strip on `:focus-within` (`C:430`) |
+| selected | `--raise`, `--accent` border, `--shadow-1` |
+| plain (read) | dot scaled out, name 500 `--ink-soft`, subject 400 |
+| entering (list first shown) | `rise --t-move --e-out backwards`, delay `--i * --stagger` |
+| entering (restored by undo) | `rise --t-big --e-spring backwards` |
+| entering (new arrival, C) | `row-in --t-big --e-spring backwards` |
+| leaving | `pointer-events:none`; archive `fold --t-big --e-exit`, snooze `curl 560ms --e-exit`, delete `crumple --t-big --e-exit`; unread x1.15 duration |
+| healing | `heal --t-move --e-spring backwards`, delay `--d * 18ms`, from `translateY(--dy)` |
+| disabled | not specified |
+
+**Motion.** Keyframes `rise`, `row-in`, `fold`, `curl`, `crumple`, `heal`, `star-pop`, `spark`,
+`floatup`; tokens `--t-quick --t-move --t-big --e-out --e-spring --e-exit --lift --stagger`;
+named durations 520 (`--t-spark`), 560 (`--t-curl`), 900 (`--t-float`); heal step 18 ms
+(`HealStep`). Sparks only when starring, never when unstarring (`S:1526`).
+
+**Behaviour.** Click selects and opens (marks read, adds to Today); Shift-click peeks
+(`S:1511`); star toggles and pulses; the strip's buttons act. Rows stay in the roster until
+`settle(exit)` elapses, then the rows below heal (`S:1537-1545`: `dy = height + 5`, index `d`
+counts from the removed row). Hover never marks read. 06-INTERACTIONS "row lifecycle".
+
+**Blitz notes.**
+- `animationend` + 900 ms fallback (`S:1545`) -> `use_roster` with `settle()`.
+- `curl` ends with `filter:saturate(.2)` (`S:332`): banned; drop the filter, keep transform and
+  opacity (05-MOTION owns the keyframe).
+- Name, subject, snippet: `.ds-truncate`.
+- Restart of `star-pop` / `spark` via `use_pulse`.
+- Hover lift on many rows: transforms only on the hovered row (plan perf rule), stagger capped 12.
+- The floater is `position:fixed` in S; in ds it renders through OverlayHost at a Rust-computed
+  point.
+
+### 17. HoverStrip
+
+**Purpose.** A pill of icon buttons that appears on a row while it is hovered. Each button
+previews its result through a Fly tooltip. Mail: archive, snooze, label, read toggle
+(`S:1286`); C varies per view (A4). Shell: notification actions (planned).
+
+**Markup.** (from `S:1286-1288`)
+
+```html
+<div class="ds-strip">
+  <button type="button" class="ds-icon-button" data-variant="strip" data-op="archive"
+          style="--j:0" aria-label="Archive">
+    <svg class="ds-ic">…</svg>
+    <span class="ds-fly">Archive → out of Inbox</span>
+  </button>
+  …
+</div>
+```
+
+**Props.**
+
+```rust
+#[component] pub fn HoverStrip(actions: Vec<StripAction>) -> Element
+pub struct StripAction { id: ActionId, icon: Icon, label: String, fly: String,
+    onhover: Option<EventHandler<Here>>,   // destination preview (§19 dest)
+    onclick: EventHandler<Rect> }          // rect anchors snooze/label menus
+```
+
+**Geometry.** Strip: absolute right 8, vertically centred, flex gap 3 (C 4), padding 3, radius
+999, `--raise` bg, 1px `--line`, `--shadow-2`. Buttons 26 x 26 (C 28) round, `--ink-soft`,
+icons 14 (C 15). A7: "strip 26 gap 3" is S; S wins.
+
+**States.** Verbatim, `S:312-323`:
+
+```css
+.strip{ position:absolute; right:8px; top:50%; transform:translateY(-50%); display:flex; gap:3px; padding:3px;
+  border-radius:999px; background:var(--raise); border:1px solid var(--line); box-shadow:var(--shadow-2);
+  opacity:0; pointer-events:none; transition:opacity var(--t-quick) var(--e-out); }
+.row:hover .strip{ opacity:1; pointer-events:auto; }
+.strip button{ width:26px; height:26px; border:0; border-radius:999px; background:transparent; cursor:pointer;
+  display:grid; place-items:center; color:var(--ink-soft); transform:scale(.7); opacity:0;
+  transition:background-color var(--t-quick) var(--e-out), color var(--t-quick) var(--e-out); }
+.row:hover .strip button{ animation:pop-in var(--t-move) var(--e-spring) forwards; animation-delay:calc(var(--j) * var(--stagger)); }
+.strip button:hover{ background:var(--accent-soft); color:var(--ink); }
+.strip button:active{ transform:scale(.88) !important; }
+.strip .ic{ width:14px; height:14px; }
+```
+
+`.strip button{ position:relative; }` (`S:441`) so the Fly anchors to its button.
+
+Candy per-op hover (verbatim, `C:960-966`): trash/purge hover `--c-red-soft` / `--c-red-deep`;
+restore hover `--c-green-soft` / `--c-green-deep`. In ds: `data-tone="danger|restore"` on the
+strip button, used by the Danger rule of §1 and a derived restore rule.
+
+| State | Rule |
+| --- | --- |
+| hidden | strip opacity 0, no pointer events; buttons scale(.7), opacity 0 |
+| shown (row hover; C also row focus-within) | strip opacity 1; buttons `pop-in` staggered by `--j` |
+| button hover | `--accent-soft` bg, `--ink` |
+| button active | scale(.88) |
+| focus-visible | global ring on the button |
+| leaving | strip fades out (`--t-quick`); buttons snap back to scale(.7) (no exit animation) |
+
+**Motion.** `pop-in --t-move --e-spring forwards`, delay `--j * --stagger`; strip opacity
+`--t-quick --e-out`.
+
+**Behaviour.** Hovering archive or snooze lights the destination sidebar item (`dest`, §19)
+until the pointer leaves; any click clears it (`S:1832-1839`). Snooze and label open a slim Menu
+anchored at the button's rect (`S:1504-1509`). 06-INTERACTIONS "destination preview".
+
+**Blitz notes.**
+- `!important` on `:active` exists to beat the `forwards` fill of `pop-in`; the lint bans
+  `!important`. Replacement: after `settle(pop-in)` the component swaps to a `data-shown="settled"`
+  state with no animation and `transform:scale(1)`, so `:active{transform:scale(.88)}` wins
+  without `!important` (O-10).
+- Reveal on `.row:hover` is pure CSS and stays; keyboard reveal uses `:focus-within` (from C).
+
+### 18. Tooltip
+
+**Purpose.** Text that names an action or a value. Two kinds: Fly (a small dark label above a
+strip button; says what the action will do, "snooze names the time", `S:440`) and Card (a small
+hover card for a value, e.g. the full date on a row time, `S:1747-1748`). Shell: dock labels, bar
+tooltips.
+
+**Markup.**
+
+```html
+<!-- Fly: child of its button -->
+<span class="ds-fly" role="tooltip">Snooze until…</span>
+
+<!-- Card: through OverlayHost, driven by HoverHub -->
+<div class="ds-popover ds-tip" role="tooltip">Wed 23 Sep 2026, 09:41
+  <div class="ds-tip-sub">10:41 their time (Lagos)</div></div>
+```
+
+Mapping: `.strip .fly` -> `.ds-fly`; `.hc.tip` -> `.ds-popover.ds-tip`.
+
+**Props.**
+
+```rust
+#[component] pub fn Tooltip(kind: TooltipKind /* Fly | Card */, text: String,
+    #[props(default)] sub: Option<String>,
+    #[props(default)] shown: Option<Shown> /* Visible | Hidden: the caller's say */,
+    children: Element /* the target */) -> Element
+```
+
+**Geometry.**
+
+| Kind | Box | Font | Colours | Position |
+| --- | --- | --- | --- | --- |
+| Fly | padding 3px 7px, radius 6 | data 10, nowrap | `--paper` on `--ink` | centred above the target, bottom `calc(100% + 7px)` |
+| Card | auto width, max 260, padding 6px 10px, radius 9 | ui 12; sub data 10.5 `--ink-faint`, margin-top 1 | hover-card surface (§22) | below the target: x = left, y = bottom + 6, clamp 8 |
+
+**States.** Fly (verbatim, `S:442-446`):
+
+```css
+.strip .fly{ position:absolute; bottom:calc(100% + 7px); left:50%; transform:translateX(-50%) translateY(3px); white-space:nowrap;
+  background:var(--ink); color:var(--paper); font-family:var(--font-data); font-size:10px; padding:3px 7px; border-radius:6px; opacity:0;
+  pointer-events:none; transition:opacity var(--t-quick) var(--e-out) 0ms, transform var(--t-quick) var(--e-spring) 0ms; }
+.strip button:hover .fly{ opacity:1; transform:translateX(-50%) translateY(0); transition-delay:var(--fly-delay, 350ms); }
+.win.warm .strip button:hover .fly{ --fly-delay:0ms; }
+```
+
+Card (verbatim, `S:426-427`, on top of the `.hc` base in §22):
+
+```css
+.hc.tip{ width:auto; max-width:260px; padding:6px 10px; font-size:12px; border-radius:9px; }
+.hc.tip .sub{ margin-top:1px; }
+```
+
+| State | Fly | Card |
+| --- | --- | --- |
+| hidden | opacity 0, translateY(3px) | not mounted |
+| entering | after 350 ms (`--d-fly`), or at once when warm: opacity 1, translateY(0) | `hc-in --t-move --e-spring` after HoverOpen 450 ms (0 when warm) |
+| leaving | immediate (0 ms delay on the way out) | `hc-out 120ms --e-out`, removed at 130 |
+
+**Motion.** Fly: opacity `--t-quick --e-out`, transform `--t-quick --e-spring`, delay `--d-fly`.
+Card: see §22.
+
+**Behaviour.** Warm window: for 400 ms after any hover card closes, flies open at once and the
+next card opens without the 450 ms wait (`S:1711-1712`). 06-INTERACTIONS "hover intent".
+Caller-driven (settled 2026-09-24, FINDINGS "Launcher gaps", sill Q17): `shown: Some(Visible)`
+shows the label with no pointer on it and `Some(Hidden)` keeps it down under one, both at once
+with no delay of their own (`[data-shown]` on `.ds-fly-target`); the dock's label machine (hide
+on press, while a menu is open, while dragging) owns its timing. `None` is the hover behaviour.
+
+**Blitz notes.** The warm state is a class on `.win` set by JS. In ds, `HoverHub` owns it and
+stamps `data-hover="warm|cold"` on `.ds`; the rule becomes
+`.ds[data-hover=warm] .ds-fly{ --fly-delay:0ms }` (proposal, O-11). The Card is placed by
+`place()`, not measured with `offsetHeight`.
+
+**Size (the macOS polish pass, settled 2026-09-24).** Both labels are `--fs-shell-tip` 12 px (the
+Fly was 10); the Fly keeps the data face.
+
+### 19. SidebarItem
+
+**Purpose.** A navigable place in the sidebar, drawn on the Space colour. Kinds: Place (Inbox,
+Starred, …, labels; carries the seal when current), Pinned (person or saved search with a
+favicon), Today (an opened thread or draft, behaves like a tab: slides in, has a close button,
+collapses when closed). Receives drops (gulp), previews destinations (dest). Mail: sidebar. Shell:
+settings navigation, launcher categories (planned).
+
+**Markup.** (from `S:1242-1256`)
+
+```html
+<button type="button" class="ds-sidebar-item" data-kind="place" aria-current="true">
+  <svg class="ds-ic">…inbox…</svg><span>Inbox</span><span class="ds-count">4</span>
+</button>
+
+<button type="button" class="ds-sidebar-item" data-kind="pinned">
+  <span class="ds-avatar" data-size="16" data-shape="square">D</span>
+  <span class="ds-truncate" data-emphasis="plain">Dana Okafor</span><span class="ds-count">2</span>
+</button>
+
+<div class="ds-sidebar-item" data-kind="today" role="button" tabindex="0" data-presence="entering|present|leaving">
+  <span class="ds-avatar" data-size="16" data-shape="square">D</span>
+  <span class="ds-truncate" data-emphasis="plain">Re: UIDL stability…</span>
+  <button type="button" class="ds-sidebar-item-close" aria-label="Close"><svg class="ds-ic">…x…</svg></button>
+</div>
+```
+
+Pulses on the item: `a-gulp` (received something), `a-dest` (destination preview, loops while
+hovered). Mapping: `.item` -> `.ds-sidebar-item`; `.item.pinned` -> `[data-kind=pinned]`;
+`.today-item` -> `[data-kind=today]`; `.item.gulp` -> pulse `a-gulp`; `.item.dest` ->
+`[data-preview=destination]`; `.entering/.leaving` -> `data-presence`.
+
+**Props.**
+
+```rust
+#[component] pub fn SidebarItem(kind: ItemKind /* Place{icon} | Pinned{avatar} | Today{avatar} */,
+    label: String, here: Here, count: Option<u32>,
+    presence: Presence, preview: Option<Preview /* Destination */>, pulse: PulseKey,
+    onclick: EventHandler<()>, onclose: Option<EventHandler<()>>,
+    #[props(default)] drop: DropState /* Idle | Target | Source, §34 */) -> Element
+```
+
+**Geometry.**
+
+| Part | Value | Source |
+| --- | --- | --- |
+| Item | flex, gap 9, width 100%, padding 6px 8px, radius 9 (`--r-item`) | `S:127-128` |
+| Text | ui 13.5 / 600, `--f-ink-soft` | `S:128-129` |
+| Pinned / Today text | weight 500 | `S:558`, `S:137` |
+| Icon | 16 | `.ic` |
+| Favicon | 16 x 16 r5, display 800 9 white (draft: `--ink` bg, pen icon 10 white) | `S:138-139`, `S:724`, `S:1250` |
+| Close (`.x`) | `margin-left:auto`, icon 13, `--f-ink-faint`, opacity 0 until hover | `S:140-143` |
+| Seal | 5 x 5 round `--f-ink`, left -7, vertically centred | `S:345-346` |
+| Count | §14 | |
+
+C `.view` (card-coloured sidebar): padding 7px 9px (Candy 9px 11px), radius `--r-chip`, hover and
+current on `--raise`, seal left -10 in `--seal` (`C:300-319`). S wins.
+
+**States.** Base, hover, current (verbatim, `S:126-143`):
+
+```css
+.item{
+  display:flex; align-items:center; gap:9px; width:100%; text-align:left; cursor:pointer; border:0;
+  background:transparent; padding:6px 8px; border-radius:9px; font-size:13.5px; font-weight:600;
+  color:var(--f-ink-soft); position:relative;
+  transition:background-color var(--t-quick) var(--e-out), color var(--t-quick) var(--e-out), transform var(--t-tap) var(--e-out);
+}
+.item:hover{ background:var(--f-pill-hover); color:var(--f-ink); }
+.item:active{ transform:scale(var(--squish)); }
+.item[aria-current="true"]{ background:var(--f-pill); color:var(--f-ink);
+  box-shadow:0 1px 0 rgba(255,255,255,.4) inset, 0 2px 6px -3px rgba(0,0,0,.25); }
+.item .count{ margin-left:auto; font-family:var(--font-data); font-size:10.5px; color:var(--f-ink-faint); }
+.item .t{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; font-weight:500; }
+.item .fav{ width:16px; height:16px; border-radius:5px; flex:none; display:grid; place-items:center;
+  font-family:var(--font-display); font-weight:800; font-size:9px; color:#fff; }
+.item .x{ margin-left:auto; opacity:0; border:0; background:none; cursor:pointer; padding:0; color:var(--f-ink-faint);
+  transition:opacity var(--t-quick) var(--e-out); }
+.item:hover .x{ opacity:1; }
+.item .x .ic{ width:13px; height:13px; }
+```
+
+Seal (verbatim, `S:345-346`), only on Place items:
+
+```css
+.item[data-place][aria-current="true"]::before{ content:""; position:absolute; left:-7px; top:50%; width:5px; height:5px;
+  border-radius:999px; background:var(--f-ink); transform:translateY(-50%) scale(0); animation:seal-pop var(--t-big) var(--e-spring) forwards; }
+```
+
+Gulp, dest, Today presence (verbatim, `S:339`, `S:447-448`, `S:350-351`):
+
+```css
+.item.gulp{ animation:gulp var(--t-big) var(--e-spring); }
+.item.dest{ background:var(--f-hover); color:var(--f-ink); box-shadow:0 0 0 1.5px var(--accent) inset; animation:dest 900ms var(--e-out) infinite alternate; }
+.today-item.entering{ animation:tab-in var(--t-big) var(--e-spring); }
+.today-item.leaving{ animation:tab-out var(--t-move) cubic-bezier(.55,0,.75,.2) forwards; overflow:hidden; }
+```
+
+Bug (A8 #1): `--f-hover` is undefined; use `--f-pill-hover`. `color-mix` inside `dest`'s keyframe
+becomes a precomputed token (05-MOTION).
+
+C drop target (verbatim, `C:320-323`), adopted as `[data-drop=target]` (§34):
+
+```css
+.view.is-drop-target{
+  background:var(--accent-soft); color:var(--ink);
+  transform:scale(1.045); box-shadow:var(--shadow-1);
+}
+```
+
+C Candy label hue (verbatim, `C:950-951`): the icon and seal take `--tag`; the row stays grey.
+
+| State | Rule |
+| --- | --- |
+| default | transparent, `--f-ink-soft` |
+| hover | `--f-pill-hover` bg, `--f-ink`; close button appears |
+| active | scale(`--squish`) |
+| focus-visible | global ring |
+| current | `--f-pill`, `--f-ink`, current-item shadow; Place: seal pops in |
+| destination preview | `--f-pill-hover`, `--f-ink`, inset accent ring pulsing (`dest 900ms`, alternate, infinite) |
+| drop target | `--accent-soft`, `--ink`, scale 1.045, `--shadow-1` (from C) |
+| received (gulp) | `gulp --t-big --e-spring`, class removed at 460 ms (`S:1520`) |
+| entering (Today) | `tab-in --t-big --e-spring` |
+| leaving (Today) | `tab-out --t-move --e-exit forwards`, then removed (fallback 400 ms, `S:1485`) |
+| disabled | not specified |
+
+**Motion.** `seal-pop`, `gulp`, `dest`, `tab-in`, `tab-out`; tokens `--t-quick --t-tap --t-move
+--t-big --e-out --e-spring --e-exit --squish`.
+
+**Behaviour.** Click navigates; the close button closes the Today entry only, never archives
+(`S:921`). A Today entry drops after 12 idle hours. Clear empties Today. 06-INTERACTIONS
+"sidebar".
+
+**Blitz notes.**
+- `::before` seal: pseudo-element check (spike); fallback a real `<span class="ds-seal">`.
+- `animationend` + 400 ms fallback for Today close -> `settle(TabOut)`.
+- Gulp restart via `use_pulse`, not class removal + reflow.
+- `dest` loops while the preview holds; stop it on leave. Uses `color-mix` in keyframes ->
+  precomputed `--accent-ring` value.
+- The Today item is a `div[role=button]` with a nested button; in ds keep the outer as
+  `div[role=button][tabindex=0]` (a button cannot contain a button).
+- `.t` truncation -> `.ds-truncate`.
+
+### 20. Menu
+
+**Purpose.** "ONE MENU: every list of choices in the window uses this" (`S:777-780`). A floating
+list of entries with keyboard selection, typing to filter, and a pick callback. Kinds:
+
+| Kind | Prototype | Used for |
+| --- | --- | --- |
+| Rich | S `.fmenu` (280 wide, 34 px tiles, title + one line of help + shortcut) | `/` insert menu (`S:2110`), palette results (§25) |
+| Slim | S `.fmenu.slim` (220 wide, 22 px tiles) | snooze, labels, `@` mention, turn-into, from, when, people, object menu (`S:1505-2259`) |
+| Dropdown | C `.menu` (min 186 wide, check column, anchored under its button's right edge) | Group by / Show in list (`C:1747-1759`), row picker (`C:1971-1986`); shell bar menus |
+| Context | derived (no right-click menu in either prototype) | dock context menu, tray menus, right-click on rows (planned) |
+
+**Markup.**
+
+```html
+<div class="ds-popover ds-menu" data-kind="rich|slim|dropdown|context" role="listbox"
+     aria-label="Snooze until" data-presence="entering|present">
+  <div class="ds-section-header" data-kind="menu">Snooze until</div>          <!-- MenuEntry::Header -->
+  <div class="ds-menu-item" role="option" aria-selected="true" aria-checked="true">   <!-- MenuEntry::Item -->
+    <span class="ds-menu-tile"><svg class="ds-ic">…clock…</svg></span>
+    <span><b class="ds-menu-title">Tomorrow</b><small class="ds-menu-detail">08:00</small></span>
+    <span class="ds-menu-trail">⌃S</span>            <!-- shortcut, or a check icon when checked -->
+  </div>
+  <div class="ds-menu-separator" role="separator"></div>                       <!-- MenuEntry::Separator -->
+  <div class="ds-menu-empty">Nothing matches "zz".</div>
+</div>
+```
+
+Mapping: `.fmenu` -> `.ds-menu[data-kind=rich]`; `.fmenu.slim` -> `[data-kind=slim]`; C `.menu`
+-> `[data-kind=dropdown]`; `.it` -> `.ds-menu-item`; `.g` / `h6` -> SectionHeader kind Menu;
+`.tile` -> `.ds-menu-tile`; `b` -> `.ds-menu-title`; `small` -> `.ds-menu-detail`; `.sc` / C
+`.tail` -> `.ds-menu-trail`; `.none` -> `.ds-menu-empty`.
+
+**Props.**
+
+```rust
+#[component] pub fn Menu<T: Clone + PartialEq + 'static>(
+    kind: MenuKind,                       // Rich | Slim | Dropdown | Context
+    anchor: Anchor,                       // Rect (button) | Point (caret, right-click)
+    entries: Vec<MenuEntry<T>>,
+    #[props(default)] filter: Filter,     // Typing | None
+    onpick: EventHandler<T>, onclose: EventHandler<()>,
+    #[props(default)] timing: MenuTiming, // submenu delay and triangle timeout (13 §13.3.4)
+    #[props(default)] expanded: Option<usize>, // a choice whose submenu opens on mount
+    #[props(default)] on_hover: Option<EventHandler<Option<usize>>>, // settled (bar gaps): choice under the pointer
+    #[props(default)] on_release: Option<EventHandler<Press>>,        // settled: every release over the menu
+    #[props(default)] entrance: MenuEntrance,                        // settled: Animated | Instant (bar menus)
+) -> Element
+// Settled (bar gaps, sill Q11): a pick calls `onpick`, then `onclose`, once; Escape and an
+// outside click play `menu-out` (`--t-quick --e-exit`, 13 §13.3.2) before `onclose`; a
+// release over an enabled item after a press that began outside picks it (press-drag-release).
+pub enum MenuEntry<T> {
+    Item { value: T, title: String, detail: Option<String>, tile: Option<Tile>, trail: Trail,
+           check: Option<Check>, availability: Availability },
+    Submenu { title: String, tile: Option<Tile>, availability: Availability, children: Vec<MenuEntry<T>> },
+    Header(String),
+    Info { title: String, detail: Option<String> }, // settled (bar gaps): a status line, never a choice
+    Separator,
+}
+pub enum Tile { Icon(Icon), Text(String), Avatar(Avatar) }
+pub enum Trail { None, Shortcut(Shortcut), Note(String) }
+```
+
+**Geometry.**
+
+| Part | Rich | Slim | Dropdown (C) | Context (derived) |
+| --- | --- | --- | --- | --- |
+| Width | 280 | 220 | min 186, auto | = Slim |
+| Max height | the room to the window edge it opens toward, less 8 (see below); palette 360 | same | same | = Slim |
+| Padding | 5 | 5 | 6 | 5 |
+| Radius | 12 (`--r-menu`) | 12 | `--r-panel` 14 | 12 |
+| Surface | `--raise`, 1px `--line`, `0 18px 40px -16px rgba(0,0,0,.45)` | same | `--raise`, 1px `--line`, `--shadow-2` | = Slim |
+| Item grid | `34px 1fr auto`, gap 9, padding 5px 7px, radius 8 | `22px 1fr auto`, padding 6px 8px | flex, gap 8, padding 6px 9px, radius `--r-btn` | = Slim |
+| Tile | 34 x 34 r8, 1px `--line`, `--surface`, display 800 13 `--ink-soft`; icon 17 | 22 x 22, no border, transparent; round avatar 20 / 9 | check icon 16 (hidden until checked) | = Slim |
+| Title | ui 13 / 600 | same | ui 13 `--ink-soft` | same |
+| Detail | ui 11.5 / 1.3 `--ink-faint` | same | n/a | same |
+| Trail | data 10 `--ink-faint`; check icon 14 `--accent` | same | data 10 `--ink-faint` (`.tail`) | same |
+| Empty | padding 10, ui 12.5 `--ink-faint` | same | not specified | same |
+
+**Height and scrolling (2026-10-13, `NSMenu`).** A floating `Menu` has no fixed cap: it grows to its
+rows until it meets the window edge it opens toward, less `--s-8`. Rust sets that as an inline
+`max-height` from the side `place()` chose (`Float::room`); the stylesheet's window-high cap holds
+until the place is known. Rows scroll in `.ds-menu-list` (the panel holds the strips and the
+list). Where rows lie past an end, a full-width strip one row high (`.ds-menu-scroll[data-end=start|end]`,
+a chevron) shows there; resting the pointer on it scrolls the list `ScrollArrowStep` (16 ms) by 6 px
+a tick, and the strip goes at that end. The wheel and a trackpad still scroll; a key that moves the
+highlight brings its row into view. A menu that fits shows no strip. An inline menu has none of this.
+
+**States.** Rich and Slim (verbatim, `S:665-680`, `S:787-791`):
+
+```css
+.fmenu{ position:absolute; z-index:40; width:280px; max-height:320px; overflow-y:auto; background:var(--raise); color:var(--ink); border:1px solid var(--line);
+  border-radius:12px; box-shadow:0 18px 40px -16px rgba(0,0,0,.45); padding:5px; animation:menu-pop var(--t-move) var(--e-spring); }
+.fmenu .it{ display:grid; grid-template-columns:34px 1fr auto; gap:9px; align-items:center; padding:5px 7px; border-radius:8px; cursor:pointer; }
+.fmenu .it[aria-selected="true"]{ background:var(--accent-soft); }
+.fmenu .it .tile{ width:34px; height:34px; border-radius:8px; border:1px solid var(--line); background:var(--surface); display:grid; place-items:center;
+  font-family:var(--font-display); font-weight:800; font-size:13px; color:var(--ink-soft); }
+.fmenu .it .tile .ic{ width:17px; height:17px; }
+.fmenu .it b{ display:block; font-size:13px; font-weight:600; }
+.fmenu .it small{ display:block; font-size:11.5px; color:var(--ink-faint); line-height:1.3; }
+.fmenu .it .sc{ font-family:var(--font-data); font-size:10px; color:var(--ink-faint); }
+.fmenu .none{ padding:10px; font-size:12.5px; color:var(--ink-faint); }
+.fmenu.slim{ width:220px; }
+.fmenu.slim .it{ grid-template-columns:22px 1fr auto; padding:6px 8px; }
+.fmenu.slim .it .tile{ width:22px; height:22px; border:0; background:transparent; }
+.fmenu .tile.round{ border-radius:999px; }
+.fmenu.slim .tile.round{ width:20px; height:20px; font-family:var(--font-display); font-weight:800; font-size:9px; }
+.fmenu .it[aria-checked="true"] b{ color:var(--ink); }
+.fmenu .it .sc .ic{ width:14px; height:14px; color:var(--accent); }
+.fmenu mark, .cmdk mark{ background:transparent; color:var(--accent); font-weight:800; }
+```
+
+Dropdown (verbatim, `C:1003-1023`):
+
+```css
+.menu{
+  position:absolute; top:calc(100% + 7px); right:0; z-index:12; min-width:186px;
+  background:var(--raise); border:1px solid var(--line); border-radius:var(--r-panel);
+  box-shadow:var(--shadow-2); padding:6px;
+  transform-origin:88% 0; animation:menu-in var(--t-move) var(--e-spring);
+}
+.menu button{
+  display:flex; align-items:center; gap:8px; width:100%; text-align:left; border:0;
+  background:transparent; cursor:pointer; padding:6px 9px; border-radius:var(--r-btn);
+  font-size:13px; color:var(--ink-soft);
+  transition:background-color var(--t-quick) var(--e-out), color var(--t-quick) var(--e-out);
+}
+.menu button:hover{ background:var(--surface-2); color:var(--ink); }
+.menu button .ic{ opacity:0; }
+.menu button[aria-checked="true"]{ color:var(--ink); font-weight:600; }
+.menu button[aria-checked="true"] .ic{ opacity:1; color:var(--accent); }
+.menu .tail{ margin-left:auto; font-family:var(--font-data); font-size:10px; color:var(--ink-faint); }
+```
+
+Separator (derived from the bubble's vertical separator, `S:689`
+`.bubble .sep{ width:1px; height:18px; background:var(--line-soft); margin:0 3px; }`, turned
+horizontal): 1px high, full width, `--line-soft`; vertical margin not specified (O-12).
+
+| State | Rich / Slim / Context | Dropdown |
+| --- | --- | --- |
+| item default | transparent | transparent, `--ink-soft` |
+| item hover | not specified in S (only keyboard moves the selection); see O-13 | `--surface-2`, `--ink` |
+| item selected (keyboard) | `--accent-soft` bg | not specified |
+| item checked | title `--ink`; trail shows check 14 `--accent` | `--ink`, 600, check icon visible `--accent` |
+| item focus-visible | not used (focus stays in the input that opened the menu) | global ring |
+| item disabled | settled (13 §13.3.3): opacity .35, `aria-disabled="true"`, not selectable, skipped by Up/Down, a click does nothing | same, no hover |
+| submenu parent | settled (13 §13.3.3-13.3.4): 12 px chevron in the trail, `aria-haspopup`, `aria-expanded`; open keeps the selected look | same, `--surface-2` |
+| submenu | settled (13 §13.3.4): a panel of the same kind right of the menu (flips left), top at the parent row's top less the padding, gap 2, no entrance; `data-depth` | same |
+| match highlight | `mark`: `--accent`, 800, no background | n/a |
+| entering | `menu-pop --t-move --e-spring` | `menu-in --t-move --e-spring`, origin 88% 0 |
+| leaving | removed at once (`S:2052`) | removed at once (`C:1744`) |
+
+**Motion.** `menu-pop`, `menu-in` (05-MOTION).
+
+**Behaviour.** (06-INTERACTIONS "menus")
+- Opening a menu closes any other floating menu (`S:2069`).
+- Keys (S, `S:2089-2098`): Down/Up move the selection and WRAP; Enter or Tab picks; Esc closes
+  and stops propagation. Typing filters with the fuzzy ranker and resets the selection to 0
+  (`S:2086-2088`). The selected item scrolls into view (nearest).
+- Pointer: mousedown inside the menu is prevented so focus stays in the field that opened it
+  (`S:2099`). Click on an item closes the menu, then calls pick (`S:2103`). Click outside closes,
+  except on `[data-pick]`, a grip, or a strip button (`S:2104`) (those open their own menu).
+- Dropdown (C): its button toggles `aria-expanded`; picking a Group closes; toggling a property
+  stays open (`C:1765-1766`); outside click closes (`C:1777`).
+- Placement (S `placeFloat`, `S:2060-2065`): x = anchor.left - 8, y = anchor.bottom + 6; if it
+  overflows the bottom (window height - 8) flip to anchor.top - height - 6; clamp both axes to
+  8 px inside the window. Dropdown (C): below the button, right edges aligned, gap 7, no clamp;
+  ds uses `place(…, Placement::BottomEnd, gap 7)` with the same flip + clamp.
+- Context (derived): anchored at the pointer (`Anchor::Point`), placement BottomStart, gap 0,
+  same flip + clamp.
+
+**Blitz notes.**
+- `position:absolute` inside `.win` -> OverlayHost; placement by `place()` in Rust, never
+  measured with `offsetHeight`.
+- `scrollIntoView` -> Rust sets the scroll offset of the menu element.
+- `z-index:40` literal -> `--z-menu`.
+- On shell surfaces the menu is its own xdg_popup via `PopoverRequest`; the surface background is
+  `Material::Popover`, and the menu's own `--raise` fill becomes `--m-tint` (03-COLOR).
+- Filtering and fuzzy ranking are pure Rust (06-INTERACTIONS).
+
+**Shell scale (the macOS polish pass, settled 2026-09-24).** Slim, Context and Dropdown are the
+text menus (design/13 section 13.3.3): rows at least `--shell-menu-row` 22 px, text
+`--fs-shell-menu` 13 at 400, the 22 px check column, the selection an inset highlight at
+`--r-shell-highlight` 6 inside the 5 px panel padding, separators 1 px `--line-soft` with
+`--shell-menu-sep` 5 px above and below and inset 8 px to the text, disabled rows at .35. Rich
+keeps its 34 px tiles. The sizes are tuned tokens (`ShellType`), so a look or a style sheet moves them by their inputs. On a Popover root (the shell's) the card paints the material
+stack v2 (03-COLOR section 17.4).
+
+### 21. Popover
+
+**Purpose.** The shared floating surface under Menu (§20), HoverCard (§22), Tooltip Card (§18),
+SelectionBubble (§30) and CommandPalette (§25). It owns the surface look, the layer, placement,
+Esc and outside-click via `LayerStack`. S has no standalone popover; the plan adds one (placement
+in Rust).
+
+**Markup.**
+
+```html
+<div class="ds-popover" data-elevation="pop|bubble|sheet" data-layer="menu|card|bubble|palette"
+     style="left:120px; top:48px" data-presence="entering|present|leaving">…</div>
+```
+
+**Props.**
+
+```rust
+#[component] pub fn Popover(anchor: Anchor, placement: Placement, gap: Px,
+    #[props(default)] elevation: Elevation /* Pop | Bubble | Sheet */,
+    #[props(default)] dismiss: Dismiss /* EscAndOutside | EscOnly | None */,
+    onclose: EventHandler<()>, children: Element) -> Element
+```
+
+**Geometry.** The surfaces the prototypes draw, one per elevation:
+
+| Elevation | Radius | Shadow (literal) | Used by | Source |
+| --- | --- | --- | --- | --- |
+| Pop | 12 (menu) / 14 `--r-panel` (card) | `0 18px 40px -16px rgba(0,0,0,.45)` | Menu, HoverCard, side peek (`0 20px 40px -16px`) | `S:666`, `S:400`, `S:454` |
+| Bubble | 10 | `0 12px 28px -12px rgba(0,0,0,.45)` | SelectionBubble | `S:684` |
+| Sheet | 14 `--r-panel` | `0 30px 60px -20px rgba(0,0,0,.5)` (palette); `0 24px 50px -18px rgba(0,0,0,.55)` (peek) | CommandPalette, Peek | `S:233`, `S:224` |
+
+All: background `--raise` (peek: `--surface-2`), text `--ink`, 1px `--line` border (peek: none).
+The plan collapses these shadows into `--shadow-pop` and `--shadow-sheet` (O-3 lists the
+literals the table must absorb).
+
+**States.** Entering and leaving belong to the child (menu-pop, hc-in, peek-in). Popover adds
+none.
+
+**Behaviour.** Placement: `place(anchor, content, bounds, want, gap)`: flip to the other side
+when it does not fit, clamp 8 px from bounds. Hover cards do not flip in S (`S:1715-1726`: they
+only clamp); `Placement` carries a `Flip::Never` option for them. Esc and outside click close the
+topmost layer only (`LayerStack`).
+
+**Blitz notes.** This component exists so that no consumer writes `position:fixed` or measures
+layout. Mount point: OverlayHost at the end of `.ds`. Content size for `place()` comes from
+`onmounted` rects (spike S9; fallback LayoutProbe). On shell surfaces: `PopoverRequest`.
+
+**Exit (the macOS polish pass, settled 2026-09-24).** Escape or an outside click marks the popover
+`data-presence="leaving"` and fades it out (`menu-out`, `--t-quick`, `--e-exit`) before `onclose`
+runs, as a menu does.
+
+### 22. HoverCard
+
+**Purpose.** A preview that opens after the pointer rests on something, and never marks read or
+fetches (`S:396`, `S:1697-1703`). Kinds in S: thread, sender (with spoof flag), time (the
+Tooltip Card, §18), account, pin, Today. Mail: list rows, sender names, row times, sidebar tiles
+and items. Shell: dock window previews (planned).
+
+**Markup.** Target and card are separate. The target wraps whatever it hooks:
+
+```html
+<span class="ds-hover-target" data-hover-key="sender:3">Dana Okafor</span>   <!-- was data-hc -->
+
+<div class="ds-popover ds-hovercard" data-kind="thread|sender|account|side" data-presence="entering|present|leaving">
+  <div class="ds-hovercard-person"><span class="ds-avatar" data-size="34">D</span>
+    <div><h5 class="ds-hovercard-title">Dana Okafor</h5><div class="ds-hovercard-sub">dana@example.com</div></div></div>
+  <div class="ds-hovercard-stats"><span><b>14</b>threads</span><span><b>Mon</b>last wrote</span></div>
+  <div class="ds-hovercard-flag" data-tone="danger|info"><svg class="ds-ic">…</svg><span>…</span></div>
+  <div class="ds-hovercard-msgs">
+    <div class="ds-hovercard-msg"><span class="ds-avatar" data-size="22">D</span><div><b>Dana</b><p>…</p></div></div>
+  </div>
+  <div class="ds-hovercard-foot">stays unread while you look<span class="ds-hovercard-keys"><kbd class="ds-kbd">Space</kbd> peek</span></div>
+  <div class="ds-hovercard-actions"><button class="ds-button" data-variant="mini">…</button></div>
+</div>
+```
+
+**Props.**
+
+```rust
+#[component] pub fn HoverTarget(key: HoverKey, kind: HoverKind, children: Element) -> Element
+#[component] pub fn HoverCard(
+    kind: HoverKind,                       // Thread | Sender | Account | Side
+    #[props(default)] parts: Vec<HoverCardPart>,   // drawn in order, before children
+    children: Element,
+) -> Element
+pub enum HoverCardPart {
+    Title(String), Sub(String),
+    Person { initial: char, tone: AvatarTone, title: String, sub: Option<String> },   // avatar 34
+    Stats(Vec<HoverStat>),                 // HoverStat { value, label }
+    Flag { tone: FlagTone /* Danger | Info */, icon: Icon, text: String },
+    Messages(Vec<HoverMessage>),           // HoverMessage { initial, tone, name, text }, avatar 22
+    Foot { text: String, keys: Option<KeyHint> },   // KeyHint { shortcut, label }
+    Actions(Vec<Element>),                 // Mini buttons
+}
+// HoverHub (context) owns Idle -> Pending -> Open -> Closing -> Warm; consumers render the card for the open key.
+```
+
+The parts are settled (Gallery fixes B): each draws exactly the block in the markup above, so
+a consumer never writes `ds-hovercard-*` by hand (a sender card from parts is byte-identical to
+the hand-written golden). The flag takes its glyph because the catalogue has no info glyph.
+
+**Geometry.**
+
+| Part | Value | Source |
+| --- | --- | --- |
+| Card | width 300 (Side kind 260), padding 12px 13px, ui 13, `--raise`, 1px `--line`, radius `--r-panel`, Pop shadow | `S:399-401`, `S:428` |
+| Title `h5` | display 14 / 1.2, margin 0 | `S:405` |
+| Sub | data 10.5 `--ink-faint`, margin-top 2 | `S:406` |
+| Messages | margin-top 9, grid gap 7; row grid `22px 1fr` gap 8 align start; name 12; text ui 12 / 1.4 `--ink-soft`, 2 lines max | `S:407-412` |
+| Person header | flex gap 10 centre; avatar 34 / 14 | `S:416-417` |
+| Stats | margin-top 9, flex gap 14, ui 12 `--ink-soft`; value display 15 `--ink` block | `S:418-419` |
+| Flag | margin-top 9, flex gap 7 start, padding 7px 9px, radius `--r-btn`, ui 12 / 1.4 `--ink`; icon 14, margin-top 1 | `S:420-422` |
+| Flag danger | bg danger 12% over `--raise` (`--danger-wash`); icon `--danger` | `S:421-422` |
+| Flag info | bg `--accent-soft`; icon `--accent` | `S:423-424` |
+| Foot | margin-top 10, padding-top 8, top border 1px `--line-soft`, flex gap 6, data 10 `--ink-faint`; keys `margin-left:auto` | `S:413-415` |
+| Actions | margin-top 10, flex gap 6 wrap, Mini buttons | `S:425` |
+| Live dot | 6 x 6 round `--ok` | `S:561` |
+
+**States.** Card (verbatim, `S:399-404`):
+
+```css
+.hc{ position:absolute; z-index:30; width:300px; background:var(--raise); color:var(--ink); border:1px solid var(--line);
+  border-radius:var(--r-panel); box-shadow:0 18px 40px -16px rgba(0,0,0,.45); padding:12px 13px; font-size:13px;
+  animation:hc-in var(--t-move) var(--e-spring); }
+.hc.out{ animation:hc-out 120ms var(--e-out) forwards; }
+@keyframes hc-in{ from{ opacity:0; transform:translateY(4px) scale(.98); } to{ opacity:1; transform:none; } }
+@keyframes hc-out{ to{ opacity:0; transform:translateY(2px); } }
+```
+
+Content blocks (verbatim, `S:405-425`, `S:428`):
+
+```css
+.hc h5{ margin:0; font-family:var(--font-display); font-size:14px; line-height:1.2; }
+.hc .sub{ font-family:var(--font-data); font-size:10.5px; color:var(--ink-faint); margin-top:2px; }
+.hc .msgs{ margin-top:9px; display:grid; gap:7px; }
+.hc .msg{ display:grid; grid-template-columns:22px 1fr; gap:8px; align-items:start; }
+.hc .msg .av, .hc .person .av{ width:22px; height:22px; border-radius:999px; display:grid; place-items:center; background:var(--ink); color:var(--paper);
+  font-family:var(--font-display); font-weight:800; font-size:10px; }
+.hc .msg b{ font-size:12px; }
+.hc .msg p{ font-size:12px; color:var(--ink-soft); line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.hc .foot{ margin-top:10px; padding-top:8px; border-top:1px solid var(--line-soft); display:flex; align-items:center; gap:6px;
+  font-family:var(--font-data); font-size:10px; color:var(--ink-faint); }
+.hc .foot .k{ margin-left:auto; }
+.hc .person{ display:flex; gap:10px; align-items:center; }
+.hc .person .av{ width:34px; height:34px; font-size:14px; }
+.hc .stat{ margin-top:9px; display:flex; gap:14px; font-size:12px; color:var(--ink-soft); }
+.hc .stat b{ display:block; font-family:var(--font-display); font-size:15px; color:var(--ink); }
+.hc .flag{ margin-top:9px; display:flex; gap:7px; align-items:flex-start; padding:7px 9px; border-radius:var(--r-btn);
+  background:color-mix(in oklab, var(--danger) 12%, var(--raise)); color:var(--ink); font-size:12px; line-height:1.4; }
+.hc .flag .ic{ width:14px; height:14px; color:var(--danger); margin-top:1px; }
+.hc .flag.info{ background:var(--accent-soft); }
+.hc .flag.info .ic{ color:var(--accent); }
+.hc .acts{ margin-top:10px; display:flex; gap:6px; flex-wrap:wrap; }
+.hc.side-card{ width:260px; }
+```
+
+| State | Rule |
+| --- | --- |
+| idle -> pending | pointer rests on a target; open after 450 ms (HoverOpen), 0 ms when warm |
+| entering | `hc-in --t-move --e-spring` |
+| present | pointer may travel into the card; entering the card cancels the close timer |
+| leaving | pointer out for 150 ms (HoverClose): `hc-out 120ms --e-out forwards`, unmounted at 130 ms; the hub turns warm for 400 ms (HoverWarm) |
+| replaced | a new key while one is open replaces it at once, no exit (`S:1778`) |
+| dismissed | a click in the list removes the card at once (`S:1809`) |
+| suppressed | no card over a leaving row, while a peek is open, or while the palette is open (`S:1790`) |
+
+**Motion.** `hc-in`, `hc-out`; `--t-move --e-spring`; 120 ms is `--t-hc-out`.
+
+**Behaviour.** Innermost target wins (sender name inside a row beats the row, `S:1787-1788`).
+Space with a thread card open (focus not in an input) closes the card and opens the peek
+(`S:1804-1807`). Placement by kind (`S:1715-1726`): thread x = list column right + 10, y = row
+top - 4; pin/today/account x = target right + 10, y = target top - 6; others x = target left,
+y = target bottom + 6; clamp to [8, window - 8]; no flip. 06-INTERACTIONS "hover intent".
+
+**Blitz notes.**
+- `-webkit-line-clamp` (message text) -> `text::clip_chars` to two lines' worth in Rust.
+- `color-mix` flag background -> `--danger-wash`.
+- JS timers and `.out` removal -> `HoverHub` + `HoverIntent` state machine + `settle(HcOut)`.
+- Position from `getBoundingClientRect` -> `onmounted` rects + `place()`.
+- Plan: host synthesises a PointerMove before pointer down so intent arms.
+
+### 23. Toast
+
+**Purpose.** The undo toast: one dark pill at the bottom centre of the card saying what just
+happened, with a pull tab. Pull the tab right past 46 px, or click it, to undo. Mail: every
+operation (`S:1548-1553`). Shell: notifications (planned; the pull tab is mail's undo).
+
+**Markup.** (from `S:861`, tab content `S:1563`)
+
+```html
+<div class="ds-toast" role="status" data-shown="shown|hidden">
+  <span class="ds-toast-text">Archived</span>
+  <span class="ds-toast-hint">pull →</span>
+  <button type="button" class="ds-toast-tab" data-drag="idle|live" data-armed="armed|disarmed" style="transform:translateX(0px)">
+    <svg class="ds-ic">…undo…</svg>Undo
+  </button>
+</div>
+```
+
+**Props.**
+
+```rust
+pub fn use_toasts() -> ToastHub     // push(text, undo: Option<UndoToken>); one visible at a time
+// push_undoable(text, undo: UndoToken, on_undo: EventHandler<UndoToken>): the undo calls on_undo
+// (settled, Gallery fixes B); last_undo() stays for a consumer that watches instead.
+#[component] pub fn ToastHost() -> Element   // rendered by Ds; reads ToastHub
+```
+
+**Geometry.**
+
+| Part | Value | Source |
+| --- | --- | --- |
+| Toast | absolute, left 50%, bottom 14, flex centre, gap 2, padding 5px 5px 5px 15px, radius 999, `--paper` on `--ink`, `--shadow-2`, ui 12.5 / 600, nowrap | `S:360-363` |
+| Hidden offset | translateX(-50%) translateY(160%) (C 140%) | `S:360` |
+| Hint | data 10, opacity .7 (C .72), letter-spacing .06em, padding `0 6px 0 10px` | `S:365` |
+| Tab | flex gap 6, padding 5px 12px 5px 9px, radius 999, `--ink` on `--paper`, ui 12 / 700, cursor grab, icon 13 | `S:366-370` |
+| Tab armed | `--accent-ink` on `--accent` | `S:369` |
+| Drag range | dx clamped to [-6, 78]; armed when dx > 46 | `S:1566-1567` |
+
+**States.** Verbatim, `S:360-370`:
+
+```css
+.toast{ position:absolute; left:50%; bottom:14px; z-index:8; transform:translateX(-50%) translateY(160%);
+  display:flex; align-items:center; gap:2px; background:var(--ink); color:var(--paper); border-radius:999px;
+  padding:5px 5px 5px 15px; box-shadow:var(--shadow-2); font-size:12.5px; font-weight:600; white-space:nowrap;
+  transition:transform var(--t-big) var(--e-spring); }
+.toast.show{ transform:translateX(-50%) translateY(0); }
+.toast .hint{ font-family:var(--font-data); font-size:10px; opacity:.7; letter-spacing:.06em; padding:0 6px 0 10px; }
+.toast .tab{ display:flex; align-items:center; gap:6px; cursor:grab; background:var(--paper); color:var(--ink); border:0;
+  border-radius:999px; padding:5px 12px 5px 9px; font-size:12px; font-weight:700; touch-action:none;
+  transition:transform var(--t-move) var(--e-spring), background-color var(--t-quick) var(--e-out); }
+.toast .tab.armed{ background:var(--accent); color:var(--accent-ink); }
+.toast .tab .ic{ width:13px; height:13px; }
+```
+
+C adds `.toast .tab:active{ cursor:grabbing; }` (`C:572`); adopt it.
+
+| State | Rule |
+| --- | --- |
+| hidden | translateY(160%) below the card edge |
+| entering (shown) | translateY(0) over `--t-big --e-spring` |
+| tab hover | not specified |
+| tab dragging | `data-drag=live`: `transition:none`, transform `translateX(dx)` written by the drag tracker |
+| tab armed | `--accent` fill, `--accent-ink` text |
+| tab released | transition restored; tab springs back to 0 over `--t-move --e-spring`; armed cleared |
+| tab focus-visible | global ring |
+| leaving | back to translateY(160%) after 5200 ms (ToastHold), or at once on undo |
+
+**Motion.** Transform transitions only (`--t-big --e-spring` for the toast, `--t-move
+--e-spring` for the tab, `--t-quick --e-out` for the tab fill).
+
+**Behaviour.** Each push replaces the text, shows the toast and restarts the 5200 ms timer.
+Release while armed undoes. A click with |dx| < 3 undoes (S; C requires dx == 0). Undo is
+ignored if the snapshot belongs to another Space (`S:1555`). 06-INTERACTIONS "undo toast".
+
+**Blitz notes.**
+- `setPointerCapture` + inline style writes -> Rust DragTracker writes `--dx`/`transform` and
+  `data-drag`; `transition:none` becomes the `[data-drag=live]` rule.
+- `touch-action:none`: keep (harmless if ignored).
+- Timers -> Rust (`ToastHold`).
+- Position absolute in the card -> OverlayHost, bottom-centre of the content region.
+
+### 24. Scrim, Sheet, Peek
+
+**Purpose.** Modal layering. Scrim dims and catches the click that closes. Peek shows a thread's
+reader in a centred panel over the card (shift-click a row, or Space on a thread card). Sheet is
+the plan's general modal panel for settings and dialogs, derived from Peek (A0: "centred peek over
+scrim (sheet)"). Shell: dialogs, settings sheets.
+
+**Markup.** (from `S:1576-1582`)
+
+```html
+<button type="button" class="ds-scrim" aria-label="Close peek"></button>
+<div class="ds-peek" data-mode="center|full" role="dialog" aria-label="Re: UIDL stability">
+  <div class="ds-peek-tools">
+    <button type="button" class="ds-icon-button" data-variant="tool" aria-label="Close peek">…x…</button>
+  </div>
+  …reader…
+</div>
+<div class="ds-sheet" role="dialog" aria-label="…" data-overscroll="band">…</div>   <!-- derived -->
+```
+
+**Props.**
+
+```rust
+#[component] pub fn Scrim(label: String, onclose: EventHandler<()>) -> Element
+#[component] pub fn Peek(mode: PeekMode /* Center | Full */, label: String, onclose: EventHandler<()>, children: Element) -> Element
+#[component] pub fn Sheet(label: String, onclose: EventHandler<()>, children: Element) -> Element   // derived
+```
+
+**Geometry.**
+
+| Part | Value | Source |
+| --- | --- | --- |
+| Scrim | absolute inset 0, z 10, no border, `--scrim` (rgba(0,0,0,.22)), cursor pointer | `S:221` |
+| Scrim (C) | `--ink` at opacity .16 | `C:1054` |
+| Peek Center | absolute `inset:36px 12% 36px 12%` (C `34px 10%`), z 11, `--surface-2`, radius `--r-panel`, `0 24px 50px -18px rgba(0,0,0,.55)`, overflow hidden, flex column | `S:223-224` |
+| Peek Full (C) | inset 0, z 11 | `C:1049-1050` |
+| Sheet | derived: = Peek Center geometry; width and height not specified (O-14) | |
+
+**States.** Verbatim, `S:221-227`:
+
+```css
+.scrim{ position:absolute; inset:0; z-index:10; border:0; background:var(--scrim); cursor:pointer;
+  animation:fade var(--t-move) var(--e-out); }
+.peek{ position:absolute; inset:36px 12% 36px 12%; z-index:11; background:var(--surface-2); border-radius:var(--r-panel);
+  box-shadow:0 24px 50px -18px rgba(0,0,0,.55); overflow:hidden; display:flex; flex-direction:column;
+  animation:peek-in var(--t-big) var(--e-spring); }
+@keyframes peek-in{ 0%{ opacity:0; transform:scale(.95) translateY(12px); } 100%{ opacity:1; transform:none; } }
+@keyframes fade{ from{ opacity:0; } to{ opacity:1; } }
+```
+
+C Full (verbatim, `C:1049-1050`): `.shell[data-peek="full"] .reader{ position:absolute; inset:0; z-index:11; animation:peek-in var(--t-move) var(--e-out); }`
+
+| State | Scrim | Peek |
+| --- | --- | --- |
+| entering | `fade --t-move --e-out` | Center: `peek-in --t-big --e-spring`; Full: `peek-in --t-move --e-out` |
+| hover | not specified (cursor pointer) | n/a |
+| focus-visible | global ring (it is a button) | n/a |
+| leaving | removed at once (`S:1583`) | removed at once |
+
+**Motion.** `fade`, `peek-in`. C's `peek-in` differs (scale .97 translateY 10px, `C:1052`); S wins.
+
+**Behaviour.** Close: the tool button, the scrim, or Esc (Esc closes the palette first if open,
+`S:1670`). Opening a peek closes any existing one. Hover cards are suppressed while a peek is open.
+Focus: not specified (O-15: move focus into the peek and restore it on close).
+
+**Blitz notes.** Through OverlayHost, sized to the card's content rect (the scrim covers the card,
+not the window, in S). Percent insets work in Blitz; no change.
+
+### 25. CommandPalette
+
+**Purpose.** "The command menu is the same menu, just bigger and centred" (`S:792`). Search and
+commands over a scrim: a SearchField on top and a Rich Menu below, grouped (Actions, Recent / Top
+hit, Mail, People, Actions). Mail: Ctrl T / Ctrl K. Shell: the launcher.
+
+**Markup.** (from `S:1635-1636`, items `S:1644-1646`)
+
+```html
+<div class="ds-palette-wrap">                               <!-- scrim + centring -->
+  <div class="ds-palette" role="dialog" aria-label="Search and commands" data-presence="entering">
+    <div class="ds-search">…§7…</div>
+    <div class="ds-search-tokens">…</div>
+    <div class="ds-menu" data-kind="rich" data-embed="palette" role="listbox">
+      <div class="ds-section-header" data-kind="menu">Top hit</div>
+      <div class="ds-menu-item" role="option" aria-selected="true">
+        <span class="ds-menu-tile"><span class="ds-avatar" data-size="34">D</span></span>
+        <span><b class="ds-menu-title">Re: <mark>UIDL</mark> stability</b>
+              <small class="ds-menu-detail ds-truncate">Treat UIDL as…</small></span>
+        <span class="ds-menu-trail">⌃1</span>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+**Props.**
+
+```rust
+#[component] pub fn CommandPalette<T: Clone + PartialEq + 'static>(
+    label: String, placeholder: String, query: String, tokens: Vec<String>,
+    groups: Vec<(String, Vec<MenuEntry<T>>)>, empty: String,
+    oninput: EventHandler<String>, onpick: EventHandler<T>, onclose: EventHandler<()>,
+    #[props(default)] host: CommandPaletteHost,          // Overlay | Surface
+    #[props(default)] entrance: PaletteEntrance,         // PeekIn | CmdkIn
+    #[props(default)] id: Option<String>,                // on the card
+    #[props(default)] focus: Option<FocusRequest>,
+    #[props(default)] selected: Option<usize>,           // controlled selection
+    #[props(default)] on_select: Option<EventHandler<usize>>,
+    #[props(default)] on_select_rect: Option<EventHandler<Rect>>,
+    #[props(default)] onkey: Option<EventHandler<KeyboardData>>,
+    #[props(default)] claim: Option<Callback<FieldKey, Claim>>,   // section 49
+    #[props(default)] shown: Option<Shown>, #[props(default)] retain: Retain,
+    #[props(default)] corner: Option<Corner>,
+    #[props(default)] aside: Option<Element>,                     // section 47
+    #[props(default = ASIDE_WIDTH)] aside_width: Px) -> Element   // 360
+```
+
+`groups` is `#[props(into)] PaletteGroups<T>` since sill M9 (section 49): the older
+`Vec<(String, Vec<MenuEntry<T>>)>` still converts, so every existing call compiles unchanged;
+only a bare `groups: Vec::new()` needs `PaletteGroups::default()`, since two `Vec`s now
+convert.
+
+Hosts (settled 2026-09-24, FINDINGS "Launcher gaps", sill Q40-Q41): `Overlay` is the scrim and
+the card 11 % down, as below. `Surface` is the shell launcher's: no wrap and no scrim, the card
+fills its container (`width:100%; height:100%`, the list taking the height under the field) and
+paints the enclosing material's tint and edge (`--m-tint`/`--m-tint-solid`, `--m-box`) at radius
+`--r-panel`, carrying `id` for the blur region. `entrance` picks `peek-in` (S) or `cmdk-in` (C)
+for either host. The selection is exposed: `selected` makes it the caller's (Up, Down and the
+pointer then ask through `on_select`), uncontrolled `on_select` hears every change, and
+`on_select_rect` reports the selected row's rect after layout, for an actions menu anchored to
+it. `onkey` hears every key the field gets after the palette. A row's tile takes
+`Tile::Source(IconSource)`: an app's icon image fills the tile with no plate (Q42).
+
+Ranking and grouping are pure Rust (06-INTERACTIONS "command menu search").
+
+**Geometry.**
+
+| Part | Value | Source |
+| --- | --- | --- |
+| Wrap | absolute inset 0, z 20, grid `place-items:start center`, padding-top 11% (C 14%), `--scrim` bg | `S:230-231` |
+| Panel | width `min(540px, 88%)` (C `min(420px,88%)`), `--raise`, `--ink`, 1px `--line`, radius 14, `0 30px 60px -20px rgba(0,0,0,.5)`, overflow hidden | `S:232-233`, `S:793` |
+| Input row | SearchField (§7): padding 12px 14px, input 16 | `S:794-795` |
+| List | embedded Rich Menu: static, auto width, max-height 360, no border, no shadow, no radius, no animation | `S:796` |
+| Snippet | ui 11.5 `--ink-faint`, max width 380, truncated | `S:799` |
+| Empty | Menu empty style; text "Nothing in this Space matches. Search checks subjects, names, addresses and the text of every message." | `S:1647` |
+
+**States.** Verbatim, `S:230-234` then the overrides `S:793-799`:
+
+```css
+.cmdk-wrap{ position:absolute; inset:0; z-index:20; display:grid; place-items:start center; padding-top:11%;
+  background:var(--scrim); animation:fade var(--t-quick) var(--e-out); }
+.cmdk{ width:min(520px,86%); background:var(--raise); color:var(--ink); border:1px solid var(--line);
+  border-radius:var(--r-panel); box-shadow:0 30px 60px -20px rgba(0,0,0,.5); overflow:hidden;
+  animation:peek-in var(--t-big) var(--e-spring); }
+.cmdk{ width:min(540px, 88%); border-radius:14px; }
+.cmdk .fmenu{ position:static; width:auto; max-height:360px; border:0; box-shadow:none; border-radius:0; animation:none; }
+.cmdk .snip{ display:block; font-size:11.5px; color:var(--ink-faint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:380px; }
+```
+
+`.cmdk-list` and `.cmdk-g` rules (`S:237-241`) belong to the pre-menu version and are superseded
+by the embedded `.fmenu`; do not port them.
+
+| State | Rule |
+| --- | --- |
+| entering | wrap `fade --t-quick --e-out`; panel `peek-in --t-big --e-spring` (C: `cmdk-in`, with overshoot) |
+| item selected | Menu selected (`--accent-soft`) |
+| match | `mark` accent 800 |
+| leaving | removed at once (`S:1663`) |
+
+**Motion.** `fade`, `peek-in` (S) / `cmdk-in` (C). S wins.
+
+**Behaviour.** Open: closes floating menus, focuses the input (`S:1633`, `S:1661`). Keys: Up/Down
+move the selection CLAMPED (not wrapping, unlike Menu); Enter runs; Esc closes (`S:1653-1656`).
+Pointer down on the wrap outside the panel closes (`S:1660`). mousedown in the list is prevented
+(`S:1658`). Running an item closes first, then runs (`S:1650`). C returns focus to the shell on
+close (`C:2257`).
+
+**Blitz notes.** Through OverlayHost. `scrollIntoView` -> Rust scroll. Snippet truncation ->
+`.ds-truncate` with max width 380. On the shell the launcher is its own layer surface (plan), and
+the wrap's scrim is a transparent overlay catcher surface (plan: "two surfaces kept warm").
+
+**In a surface (the macOS polish pass, settled 2026-09-24).** With `host: Surface` the card is as
+tall as its content up to its container (no empty box under the last row); the query is
+`--fs-shell-field` 22 at `--fw-shell-field` 500 beside a `--shell-field-glyph` 20 px search glyph,
+row titles `--fs-shell-row` 14 and details `--fs-shell-detail` 12; its shadow is the material
+stack's contact and ambient pair (`--m-box`). `corner: Option<Corner>` gives the card another
+radius or a `Corner::Squircle` (the launcher's: `Squircle(14)`).
+
+### 26. Appearance choice
+
+Not a component of its own (design/30 part 4 deletes `AppearancePicker`, a name that is gone): the appearance choice
+is a `SegmentedControl` for Theme (System, Light, Dark) over a `RadioGroup` of accent swatches
+(`Arrangement::Swatches`), stacked as two field rows, in the control center and the settings app.
+
+**Derived.** Neither prototype has an appearance popover (A4: "NO appearance popover exists";
+A8 #9). The pieces that exist: S's Space editor rows (field label + SegmentedControl:
+Appearance System/Light/Dark, `S:877-888`) and C's controls row (label + segmented control,
+`C:1131-1157`).
+
+**Purpose.** Pick Theme and Accent for an app or the whole shell (`Appearance` in
+`resolve(app, look_theme, system)`). Motion is not offered (the user's decision: the motion
+level need not be user-configurable); the system's reduced-motion preference still maps into
+`Appearance::motion`.
+
+**Geometry.** Rows stacked; the Space editor's stack gap is 14 (`S:247`); a row is a Field
+SectionHeader (margin-bottom 6) over its control. Swatches reuse the Space dot (§32: 22 px
+circle, 2px border, gap 5 as in the sidebar foot `S:845`). Overall width is the host
+surface's (O-16). Labels: Theme uses S's words (System, Light, Dark; C says Auto).
+
+**Behaviour.** Changes apply at once and persist through ds-settings (atomic write). "System"
+follows the portal. The number of accents is the accent table's (03-COLOR). Changing Theme
+cross-fades the frame (layer opacity 380 ms, `S:86`; 05-MOTION).
+
+### 27. AccountTile
+
+**Purpose.** The accounts in this Space, as a row of square tiles at the top of the sidebar; one
+extra "All" tile when there is more than one account. Pressing a tile filters the list to that
+account. Each tile shows the account's letter, its provider mark, and its unread count. Mail:
+sidebar. Shell: user switcher (planned).
+
+**Markup.** (from `S:1233-1240`)
+
+```html
+<div class="ds-account-tiles" role="group" aria-label="Accounts in this Space">
+  <button type="button" class="ds-icon-button ds-account-tile" data-variant="pin"
+          aria-pressed="true" aria-label="All accounts">
+    <span class="ds-avatar" data-size="28" data-tone="all"><svg class="ds-ic">…inbox…</svg></span>
+    <span class="ds-count" data-place="tile">4</span>
+  </button>
+  <button type="button" class="ds-icon-button ds-account-tile" data-variant="pin"
+          aria-pressed="false" aria-label="poh@acme.example">
+    <span class="ds-avatar" data-size="28" style="--av-bg:#5B4FC4">P</span>
+    <span class="ds-provider" data-size="tile" data-kind="letter|image">G</span>
+    <span class="ds-count" data-place="tile">2</span>
+  </button>
+</div>
+```
+
+The tile is also a HoverTarget (account card, §22).
+
+**Props.**
+
+```rust
+#[component] pub fn AccountTile(account: AccountFace /* All | One{initial, colour, provider, address: Option<String>} */,
+    pressed: Switch, unread: u32, onclick: EventHandler<()>) -> Element
+```
+
+**Geometry.** Grid of 4 columns, gap 6, margin-top 12 (`S:107`). Tile: Pin IconButton (§2),
+aspect 1, radius 12. Avatar 28, display 800 12.5 white on the account colour; All: transparent
+avatar, `--f-ink`, inbox icon 18. Provider mark bottom-right (§28). Count top 4 right 5 data 9
+(§14).
+
+**States.** Tile base, hover, active, pressed: Pin IconButton (§2). Avatar (verbatim, `S:356-357`,
+`S:548-551`):
+
+```css
+.pin:hover .av{ transform:rotate(-6deg) scale(1.08); }
+.pin .av{ transition:transform var(--t-quick) var(--e-spring); }
+.pin.acct .av{ width:28px; height:28px; font-size:12.5px; }
+.pin.acct .av.all{ background:transparent; color:var(--f-ink); }
+.pin.acct .av.all .ic{ width:18px; height:18px; }
+.pin.acct[aria-pressed="false"] .av:not(.all){ filter:saturate(.55); opacity:.85; }
+```
+
+| State | Rule |
+| --- | --- |
+| default (pressed) | `--f-pill` + current shadow; avatar full colour |
+| unpressed | `--f-pill-hover`; avatar desaturated to 55% and opacity .85 |
+| hover | tile `--f-pill`; avatar rotate(-6deg) scale(1.08) on `--t-quick --e-spring` |
+| active | tile scale(`--squish`) |
+| focus-visible | global ring |
+| count changed | Count bump (§14) |
+
+**Behaviour.** A tile is pressed when it is the selected filter, or when the Space has one
+account (`S:1234`). Pressing re-renders the list with the entering stagger (`S:1494`). The list
+title gains the account address in data 11 `--ink-faint` (`S:1275`).
+
+**Blitz notes.** `filter:saturate(.55)` is banned. Replacement: Rust computes the desaturated
+account colour (OKLCH chroma x .55) and passes it as `--av-bg` when unpressed; opacity .85 stays
+(O-26).
+
+### 28. ProviderMark
+
+**Purpose.** "A letter in the provider's colour on a white chip, never the provider's logo"
+(`S:1128-1129`), or, when the user picks "Their icons", the provider's own favicon cached at
+account setup (`S:1139-1141`). Three sizes. Mail: account tiles, row `via`, From picker.
+
+**Markup.** (from `S:1143-1146`)
+
+```html
+<span class="ds-provider" data-size="tile|row|inline" data-kind="letter" style="--pc:#1A73E8" title="Google">G</span>
+<span class="ds-provider" data-size="tile|row|inline" data-kind="image" title="Google"><img alt="" src="data:…"></span>
+```
+
+**Props.**
+
+```rust
+#[component] pub fn ProviderMark(provider: Provider, size: MarkSize /* Tile | Row | Inline */,
+    style: MarkStyle /* Letter | Image(ImageSource) */) -> Element
+pub enum Provider { Google, Microsoft, Fastmail, ICloud, Yahoo, Imap, Local }
+```
+
+Letter and colour per provider (`S:1130-1136`): Google `G` #1A73E8; Microsoft 365 `M` #0F6CBD;
+Fastmail `F` #2A5DB0; iCloud `i` #3A82F7; Yahoo `Y` #6001D2; IMAP `@` #5D6660. Row `via` text:
+gmail, m365, fastmail, icloud, yahoo, imap.
+
+`Local` (mailo gaps 4, settled 2026-09-25): a local-folders account has no provider, so its mark
+is not a letter but the `folder` glyph (10 on a tile, 8 in a row, 9 inline) stroked in IMAP's
+neutral #5D6660 on the same chip, `data-kind="local"`, titled "Local folders". It has no favicon:
+`MarkStyle::Image` draws the same glyph.
+
+**Geometry.**
+
+| Size | Box | Radius | Font | Ring | Placement |
+| --- | --- | --- | --- | --- | --- |
+| Inline (base) | 13 x 13 | 4 | display 800 9, line-height 1 | `0 0 0 1px rgba(0,0,0,.08)` | inline-grid, flex none |
+| Tile | 14 x 14 | 5 | 9.5 | `0 0 0 1.5px var(--f-pill), 0 1px 2px rgba(0,0,0,.2)` | absolute right 7 bottom 7 |
+| Row | 11 x 11 | 3 | 7.5 | `0 0 0 1px var(--line)` | margin-right 4, vertical-align -1px |
+| Image kind | as size, padding 1.5, white bg; image fills, object-fit contain | | | | |
+
+**States.** Verbatim, `S:552-560`:
+
+```css
+.prov{ display:inline-grid; place-items:center; width:13px; height:13px; border-radius:4px; background:#FFFFFF; color:var(--pc);
+  font-family:var(--font-display); font-weight:800; font-size:9px; line-height:1; box-shadow:0 0 0 1px rgba(0,0,0,.08); flex:none; }
+.prov.on-tile{ position:absolute; right:7px; bottom:7px; width:14px; height:14px; font-size:9.5px; border-radius:5px;
+  box-shadow:0 0 0 1.5px var(--f-pill), 0 1px 2px rgba(0,0,0,.2); }
+.prov.in-row{ width:11px; height:11px; font-size:7.5px; border-radius:3px; margin-right:4px; vertical-align:-1px; box-shadow:0 0 0 1px var(--line); }
+.via{ display:inline-flex; align-items:center; }
+.prov.img{ background:#FFFFFF; padding:1.5px; }
+.prov.img img{ width:100%; height:100%; display:block; object-fit:contain; }
+```
+
+Static. No hover, focus or motion.
+
+**Blitz notes.** `#FFFFFF` and the provider colours are identity data, not theme colours; they
+enter through `--pc` and a `--mark-ground` token (O-3). `object-fit:contain`: verify (spike);
+fallback is pre-sizing the image in Rust. The favicon bytes are supplied by the app; ds never
+fetches.
+
+### 29. LinkPill
+
+**Purpose.** "The real destination of a link, like a browser's status bar … instant, and loud
+when the text lies" (`S:430`). Mail: reader and peek. Shell: none.
+
+**Markup.** (from `S:1820-1823`)
+
+```html
+<!-- honest -->
+<div class="ds-link-pill" data-truth="honest" role="status">
+  <span class="ds-link-pill-dim">https://www.</span><b>rfc-editor.org</b><span class="ds-link-pill-dim">/rfc/rfc1939</span>
+</div>
+<!-- lying: the visible text names another registered domain -->
+<div class="ds-link-pill" data-truth="lying" role="status">
+  <svg class="ds-ic">…x…</svg>Goes to <b>g00gle-security.xyz</b>, not google.com
+</div>
+```
+
+**Props.**
+
+```rust
+#[component] pub fn LinkPill(target: LinkTarget /* Honest{scheme_sub, registered, path} | Lying{registered, shown} */) -> Element
+```
+
+The honest/lying decision (registered domain = last two labels; compare the domain in the link
+text with the href's) is a pure function in mail, not in ds (`S:1812-1819`).
+
+**Geometry.** Absolute left 12 bottom 12 of the reader, z 7, max width `calc(100% - 24px)`,
+flex gap 7, padding 5px 11px 5px 9px, radius 999, `--paper` on `--ink`, data 11, nowrap,
+truncated, `--shadow-2`, no pointer events. Registered domain bold in `--paper`; scheme,
+subdomain and path at opacity .6. Lying: `--danger` bg, white text, x icon 13.
+
+**States.** Verbatim, `S:431-437`:
+
+```css
+.linkpill{ position:absolute; left:12px; bottom:12px; z-index:7; max-width:calc(100% - 24px); display:flex; align-items:center; gap:7px;
+  background:var(--ink); color:var(--paper); border-radius:999px; padding:5px 11px 5px 9px; font-family:var(--font-data); font-size:11px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; box-shadow:var(--shadow-2); animation:hc-in var(--t-quick) var(--e-out); pointer-events:none; }
+.linkpill b{ color:var(--paper); }
+.linkpill .dim{ opacity:.6; }
+.linkpill.warn{ background:var(--danger); color:#fff; }
+.linkpill .ic{ width:13px; height:13px; }
+```
+
+| State | Rule |
+| --- | --- |
+| entering | `hc-in --t-quick --e-out`, instant on pointer over (no intent delay) |
+| lying | danger fill, white text |
+| leaving | removed on pointer leave, no animation |
+
+**Behaviour.** One pill at a time; appears on pointer over a link in the reader or peek; clicks
+on those links are prevented in the prototype (`S:1829`). 06-INTERACTIONS "link pill".
+
+**Blitz notes.** Ellipsis -> `.ds-truncate` (fade on the right; the registered domain must stay
+visible, so truncate the path first: O-30). `#fff` -> `--danger-ink` token.
+
+### 30. SelectionBubble
+
+**Purpose.** "Notion's inline toolbar, and the only one there is" (`S:682`). Appears over a
+non-empty text selection in the composer. Mail: composer title and body. Shell: text fields
+(planned).
+
+**Markup.** (from `S:2136-2142`)
+
+```html
+<div class="ds-popover ds-bubble" role="toolbar" aria-label="Format">
+  <button type="button" class="ds-bubble-button" data-kind="turn">Text ▾</button>   <!-- body only -->
+  <span class="ds-bubble-sep"></span>
+  <button type="button" class="ds-bubble-button" aria-pressed="true" title="Bold (Ctrl B)"><b>B</b></button>
+  <button type="button" class="ds-bubble-button" aria-pressed="false" title="Italic (Ctrl I)"><i>i</i></button>
+  <button type="button" class="ds-bubble-button" aria-pressed="false" title="Underline (Ctrl U)"><u>U</u></button>
+  <button type="button" class="ds-bubble-button" aria-pressed="false" title="Strikethrough (Ctrl Shift S)"><s>S</s></button>
+  <button type="button" class="ds-bubble-button" title="Inline code (Ctrl E)">&lt;/&gt;</button>
+  <span class="ds-bubble-sep"></span>
+  <button type="button" class="ds-bubble-button" title="Link (Ctrl K)"><svg class="ds-ic">…corner…</svg>Link</button>
+</div>
+<!-- link mode replaces the contents -->
+<div class="ds-popover ds-bubble"><input class="ds-input" data-variant="inline" type="url" placeholder="Paste a link, then Enter" aria-label="Link"></div>
+```
+
+**Props.**
+
+```rust
+#[component] pub fn SelectionBubble(anchor: Rect /* selection rect */, mode: BubbleMode /* Actions(Vec<BubbleAction>) | Link */,
+    onlink: EventHandler<String>, onclose: EventHandler<()>) -> Element
+pub enum BubbleAction { Button(BubbleButton), Separator /* ds-bubble-sep */ }
+pub struct BubbleButton { label: Element, title: String, pressed: Option<Switch>, onclick: EventHandler<()> }
+```
+
+**Geometry.** Flex, gap 1, padding 3, radius 10, `--raise`, 1px `--line`, Bubble shadow
+`0 12px 28px -12px rgba(0,0,0,.45)`, z 41. Buttons: height 28, min width 28, padding `0 7px`,
+radius 7, ui 13 `--ink-soft`, inline-flex gap 4. Separator 1 x 18 `--line-soft`, margin `0 3px`.
+Turn button weight 600. Italic uses Georgia (`S:2138`), code uses data 11.5. Link input: ui 12.5,
+width 220, padding `0 8px`.
+
+**States.** Verbatim, `S:683-691`:
+
+```css
+.bubble{ position:absolute; z-index:41; display:flex; align-items:center; gap:1px; padding:3px; background:var(--raise); border:1px solid var(--line);
+  border-radius:10px; box-shadow:0 12px 28px -12px rgba(0,0,0,.45); animation:menu-pop var(--t-quick) var(--e-spring); }
+.bubble button{ border:0; background:transparent; cursor:pointer; height:28px; min-width:28px; padding:0 7px; border-radius:7px; color:var(--ink-soft); font-size:13px;
+  display:inline-flex; align-items:center; gap:4px; }
+.bubble button:hover{ background:var(--surface-2); color:var(--ink); }
+.bubble button[aria-pressed="true"]{ color:var(--accent); }
+.bubble .sep{ width:1px; height:18px; background:var(--line-soft); margin:0 3px; }
+.bubble .turn{ font-weight:600; }
+.bubble input{ border:0; outline:none; background:transparent; font:inherit; font-size:12.5px; width:220px; padding:0 8px; color:var(--ink); }
+```
+
+| State | Rule |
+| --- | --- |
+| entering | `menu-pop --t-quick --e-spring` |
+| button hover | `--surface-2`, `--ink` |
+| button pressed (mark active) | `--accent` text |
+| button focus-visible | global ring |
+| leaving | removed at once when the selection collapses (unless focus is inside the bubble) or leaves the composer |
+
+**Behaviour.** Placement: centred over the selection rect, 8 px above it; x clamped 8 px inside
+the window; top never above 8 (`S:2144-2145`); no flip below. mousedown on the bubble is
+prevented except on its input, so the selection survives (`S:2135`). "Turn ▾" opens the
+turn-into Slim Menu at its rect. Link mode: Enter applies, Esc hides. 06-INTERACTIONS
+"selection bubble".
+
+**Blitz notes.** S listens to `selectionchange` and `document.execCommand` / `queryCommandState`.
+None exist in Blitz. ds provides only the surface, placement and actions; the composer's Rust
+document model supplies the selection rect and the pressed marks (O-21). Georgia italic is a
+font outside the three families (02-TYPE decides).
+
+### 31. SendPill
+
+**Purpose.** Undo send. After Send, a dark pill at the bottom centre counts down 5 seconds with
+a ring, offers Undo, then says "Sent" and leaves. Mail: composer send. Shell: generic progress
+pill (planned).
+
+**Markup.** (from `S:2337-2338`)
+
+```html
+<div class="ds-send-pill" data-shown="shown|hidden" data-phase="counting|done" role="status" style="--f:.4">
+  <svg class="ds-send-ring" viewBox="0 0 24 24" aria-hidden="true">
+    <circle class="ds-send-ring-track" cx="12" cy="12" r="9"></circle>
+    <circle class="ds-send-ring-run" cx="12" cy="12" r="9"></circle>
+  </svg>
+  <span>Sending in 3 s</span>
+  <button type="button" class="ds-send-pill-undo">Undo</button>
+</div>
+```
+
+**Props.**
+
+```rust
+#[component] pub fn SendPill(text: String, progress: Fraction, phase: SendPhase /* Counting | Done */,
+    onundo: EventHandler<()>) -> Element
+```
+
+**Geometry.** Absolute left 50% bottom 14, z 9, flex centre gap 10, padding 6px 6px 6px 12px,
+radius 999, `--paper` on `--ink`, ui 12.5 / 600, nowrap, `--shadow-2`. Ring 20 x 20 (C 22),
+circles r 9, stroke 3, no fill; track `currentColor` at .25; run `currentColor`, round cap,
+rotated -90°, dasharray 57. Undo: `--ink` on `--paper`, padding 4px 12px, radius 999, ui 12 / 700.
+
+**States.** Verbatim, `S:706-715`:
+
+```css
+.sendpill{ position:absolute; left:50%; bottom:14px; z-index:9; transform:translateX(-50%) translateY(160%); display:flex; align-items:center; gap:10px;
+  background:var(--ink); color:var(--paper); border-radius:999px; padding:6px 6px 6px 12px; font-size:12.5px; font-weight:600; box-shadow:var(--shadow-2);
+  transition:transform var(--t-big) var(--e-spring); white-space:nowrap; }
+.sendpill.show{ transform:translateX(-50%) translateY(0); }
+.sendpill svg{ width:20px; height:20px; }
+.sendpill circle{ fill:none; stroke-width:3; }
+.sendpill .track{ stroke:currentColor; opacity:.25; }
+.sendpill .run{ stroke:currentColor; stroke-linecap:round; transform:rotate(-90deg); transform-origin:50% 50%; stroke-dasharray:57; }
+.sendpill button{ border:0; cursor:pointer; background:var(--paper); color:var(--ink); border-radius:999px; padding:4px 12px; font-size:12px; font-weight:700; }
+.sendpill.done button{ display:none; }
+```
+
+The ring drains by transitioning `stroke-dashoffset` 0 -> 57 over 5 s linear (inline, `S:2339`).
+
+C's outbox (the older, richer version; verbatim, `C:545-546`, `C:552-554`) adds the retry states
+S does not have:
+
+```css
+.outbox.nudge{ animation:nudge 520ms var(--e-out); }
+.outbox.shake{ animation:shake 560ms cubic-bezier(.36,.07,.19,.97); }
+.outbox .state{ font-family:var(--font-data); font-size:10px; opacity:.7; letter-spacing:.04em; }
+.outbox .fix{ border:0; cursor:pointer; background:var(--paper); color:var(--ink);
+  border-radius:999px; padding:4px 11px; font-size:11.5px; font-weight:700; }
+```
+
+| State | Rule |
+| --- | --- |
+| hidden | translateY(160%) |
+| entering | translateY(0), `--t-big --e-spring` |
+| counting | ring drains linearly over 5 s; text counts down each second ("Sending in 5 s" … ) or "Scheduled · <when>" |
+| undo hover / focus | not specified / global ring |
+| done | Undo hidden; text "Sent" (or "Scheduled · waits in the outbox"); hides after 1600 ms (SentHold) |
+| retrying (C) | `nudge 520ms --e-out`; auth failure `shake 560ms` + a Fix button ("Sign in") |
+| leaving | back to translateY(160%) |
+
+**Behaviour.** Undo reopens the composer with the identical document (`S:2344`). 06-INTERACTIONS
+"undo send".
+
+**Blitz notes.** A transition on an SVG attribute (`stroke-dashoffset`) is unlikely to animate in
+Blitz (spike S6 covers inline SVG only). Replacement: `MotionTimer` drives `progress: Fraction`
+and Rust re-renders the ring with `stroke-dashoffset = 57 * f` at frame rate, or a custom Widget
+(O-20). `setInterval` countdown -> Rust timer.
+
+### 32. SpaceEditor
+
+**Purpose.** The pieces of the Space editor: a panel, a hue x chroma field with up to three
+draggable dots, stop chips, a grain slider, segmented settings, eight presets, live contrast
+checks, and the Space dots that switch Spaces in the sidebar foot. Mail: the editor beside the
+window (`S:866-904`). Shell: Settings > Spaces and the bar's workspace menu (plan 21-SPACES).
+
+**Markup.**
+
+```html
+<aside class="ds-space-editor" aria-label="Space editor">
+  <h3 class="ds-space-editor-title"><span class="ds-space-swatch" style="background:linear-gradient(…)"></span>Work Space</h3>
+
+  <div class="ds-section-header" data-kind="field">Colour <span class="ds-section-header-value">drag a dot</span></div>
+  <div class="ds-field">                                   <!-- field image + handles -->
+    <div class="ds-field-plane"></div>
+    <div class="ds-handle" role="slider" tabindex="0" aria-label="Colour 1" aria-pressed="true"
+         style="left:74.4%; top:28%; background:#…"></div>
+  </div>
+  <div class="ds-stops">
+    <span class="ds-stop" aria-pressed="true"><i style="background:#…"></i>268°
+      <button type="button" class="ds-stop-remove" aria-label="Remove colour">…x…</button></span>
+    <button type="button" class="ds-button" data-variant="mini">…plus… Colour</button>   <!-- fewer than 3 dots -->
+  </div>
+
+  <!-- Grain: Slider §5; Appearance / Accent / Provider marks: SegmentedControl §3 -->
+
+  <div class="ds-presets"><button type="button" aria-label="Preset 1" style="background:linear-gradient(…)"></button>…8…</div>
+
+  <div class="ds-checks">
+    <div class="ds-check"><span>Sidebar text on the colour</span><span class="ds-check-value">7.12</span>
+      <span class="ds-chip" data-variant="status" data-status="ok">≥ 4.5</span></div>
+  </div>
+  <p class="ds-capnote">No capping needed: every stop passes at the chroma you chose.</p>
+</aside>
+
+<!-- Space dots, sidebar foot (S:1265) -->
+<button type="button" class="ds-space-dot" aria-pressed="true" aria-label="Work Space" title="Work (Ctrl 1)" style="background:linear-gradient(…)"></button>
+```
+
+**Props.**
+
+```rust
+#[component] pub fn SpaceEditor(look: SpaceLook, scheme: Scheme, active_dot: DotIndex,
+    onchange: EventHandler<SpaceLook>, #[props(default)] name: Option<String> /* "{name} Space" */,
+    #[props(default)] on_active_dot: Option<EventHandler<ActiveDot /* = DotIndex */>>) -> Element
+#[component] pub fn SpaceDot(name: String, frame: FrameVars, here: Here, shortcut: Shortcut, onclick: EventHandler<()>, #[props(default)] face: DotFace /* Swatch | Foot */) -> Element
+```
+
+`DotFace::Swatch` (default) is the editor's colour swatch. `DotFace::Foot` is the sidebar foot's dot,
+which `SpacesFoot` uses: a 22px target (quiet `--f-pill-hover` wash) around a 5px pip in
+`--f-ink-faint`, 7px and `--f-ink` for the current Space; no fill, ring or scale, and the change
+fades on `--t-quick`.
+
+Derivation of every colour shown (stops, picked colours, checks) is `space/palette.rs`
+(03-COLOR); the editor only renders.
+
+**Geometry.**
+
+| Piece | Value | Source |
+| --- | --- | --- |
+| Panel | padding 14, grid gap 14, `--surface`, 1px `--line`, radius `--r-panel`, `--shadow-1` | `S:246-247` |
+| Title | display 15, flex gap 8; swatch 14 circle, 135° gradient of the stops | `S:248-249` |
+| Field | height 176, radius 12, 1px `--line`, overflow hidden, cursor crosshair | `S:252-253` |
+| Field plane | 540 x 352 drawing scaled to fit; ground #f3f4f1 (dark #1b1d1a); dots every 18 px, radius 5.2, colour `oklch(L, (1 - y/H) * .15, x/W * 360)` with L .74 (dark .66) | `S:1396-1405` |
+| Handle | 22 circle, margin -11, 3px white border, `0 0 0 1px rgba(0,0,0,.25), 0 3px 8px rgba(0,0,0,.35)`; active handle scale 1.15; left = hue/360, top = 1 - chroma | `S:255-257`, `S:1416-1417` |
+| Stops row | flex wrap, gap 6, margin-top 8 | `S:258` |
+| Stop | inline-flex gap 5, 1px `--line`, `--surface-2`, radius 999, padding 3px 5px 3px 4px, data 10 `--ink-soft`; disc 14; remove icon 11 `--ink-faint` | `S:259-264` |
+| Presets | grid 8 columns, gap 6; each aspect 1, round, 1px `--line` | `S:270-271` |
+| Checks | grid gap 5, ui 12; row flex gap 8 `--ink-soft`; value data 10.5 tabular, `margin-left:auto` | `S:273-275` |
+| Cap note | ui 11.5 / 1.45 `--ink-faint` | `S:279` |
+| Space dot | 22 circle, 2px transparent border | `S:147` |
+
+**States.** Verbatim, `S:246-264`, `S:270-279`, `S:147-150`:
+
+```css
+.editor{ border:1px solid var(--line); border-radius:var(--r-panel); background:var(--surface); box-shadow:var(--shadow-1);
+  padding:14px; display:grid; gap:14px; position:sticky; top:14px; }
+.editor h3{ font-size:15px; display:flex; align-items:center; gap:8px; }
+.editor h3 .sw{ width:14px; height:14px; border-radius:999px; }
+.field{ position:relative; height:176px; border-radius:12px; overflow:hidden; cursor:crosshair; touch-action:none;
+  border:1px solid var(--line); }
+.field canvas{ width:100%; height:100%; display:block; }
+.handle{ position:absolute; width:22px; height:22px; margin:-11px 0 0 -11px; border-radius:999px; border:3px solid #fff;
+  box-shadow:0 0 0 1px rgba(0,0,0,.25), 0 3px 8px rgba(0,0,0,.35); cursor:grab; touch-action:none; }
+.handle.on{ transform:scale(1.15); }
+.stops{ display:flex; gap:6px; align-items:center; margin-top:8px; flex-wrap:wrap; }
+.stop{ display:inline-flex; align-items:center; gap:5px; border:1px solid var(--line); background:var(--surface-2);
+  border-radius:999px; padding:3px 5px 3px 4px; font-family:var(--font-data); font-size:10px; color:var(--ink-soft); cursor:pointer; }
+.stop i{ width:14px; height:14px; border-radius:999px; display:block; }
+.stop[aria-pressed="true"]{ border-color:var(--ink-faint); color:var(--ink); }
+.stop .rm{ border:0; background:none; padding:0; cursor:pointer; color:var(--ink-faint); line-height:0; }
+.stop .rm .ic{ width:11px; height:11px; }
+.presets{ display:grid; grid-template-columns:repeat(8,1fr); gap:6px; }
+.presets button{ aspect-ratio:1; border-radius:999px; border:1px solid var(--line); cursor:pointer; padding:0; }
+.presets button:hover{ transform:scale(1.1); }
+.checks{ display:grid; gap:5px; font-size:12px; }
+.check{ display:flex; align-items:center; gap:8px; color:var(--ink-soft); }
+.check .v{ margin-left:auto; font-family:var(--font-data); font-size:10.5px; font-variant-numeric:tabular-nums; }
+.capnote{ font-size:11.5px; color:var(--ink-faint); line-height:1.45; }
+.sp{ width:22px; height:22px; border-radius:999px; border:2px solid transparent; cursor:pointer; padding:0;
+  transition:transform var(--t-quick) var(--e-spring), border-color var(--t-quick) var(--e-out); }
+.sp:hover{ transform:scale(1.12); }
+.sp[aria-pressed="true"]{ border-color:var(--f-ink); transform:scale(1.08); }
+```
+
+| Piece | hover | active / drag | focus-visible | selected |
+| --- | --- | --- | --- | --- |
+| Handle | not specified | active dot scale 1.15; follows pointer | global ring | active dot (`.on`) |
+| Stop | not specified | n/a | global ring | border `--ink-faint`, text `--ink` |
+| Preset | scale 1.1 (no transition in S; O-29) | not specified | global ring | n/a |
+| Space dot | scale 1.12 | not specified | global ring | border `--f-ink`, scale 1.08 |
+
+**Motion.** Space dot: transform `--t-quick --e-spring`, border `--t-quick --e-out`. Changing the
+palette cross-fades the frame (380 ms layer opacity, 05-MOTION). Switching Space slides the
+sidebar content (`slide-r` / `slide-l`, `--t-big --e-spring`, `S:102-105`).
+
+**Behaviour.** Pointer down anywhere on the field picks the handle under it (or keeps the active
+one) and moves it to the pointer; drag continues with capture (`S:1435-1451`). Keys on a handle:
+Left/Right hue -5°/+5° wrapping at 360; Up/Down chroma +.05/-.05 clamped to [0, 1]
+(`S:1452-1457`). Up to three dots; "+ Colour" adds one 48° further round (`S:1463`); a stop's
+remove button drops it (not the last). A preset replaces the dots. Space dots switch Space
+(Ctrl 1..9). 06-INTERACTIONS "space editor", 21-SPACES.
+
+**Blitz notes.**
+- `canvas` -> no canvas in Blitz. Options: a `blitz_dom::Widget` painting the dot grid, or a PNG
+  per scheme generated in Rust (the plane depends only on the scheme) (O-19).
+- `position:sticky` is banned -> the panel is static; the host scrolls it.
+- `setPointerCapture` -> DragTracker.
+- The white handle border and shadow literals -> tokens (O-3).
+- Gradient backgrounds come from `FrameVars` as inline style.
+
+### 33. EdgeStrip
+
+**Purpose.** When the sidebar is hidden (Ctrl S), a 10 px strip on the window's left edge brings
+it back as a floating panel while the pointer is on it (Arc-derived). Mail: hidden sidebar.
+Shell: dock auto-hide reveal edge (planned).
+
+**Markup.**
+
+```html
+<div class="ds-edge" aria-hidden="true"></div>                      <!-- present only while the sidebar is hidden -->
+<nav class="ds-side" data-side="shown|hidden|peek" aria-label="Sidebar">…</nav>
+```
+
+Mapping: `.win.no-side` -> `.ds-side[data-side=hidden]` plus the window grid change;
+`.win.no-side.side-peek .side` -> `[data-side=peek]`.
+
+**Props.**
+
+```rust
+#[component] pub fn EdgeStrip(onenter: EventHandler<()>) -> Element
+// the sidebar container takes side: SideState { Shown, Hidden, Peek }
+```
+
+**Geometry.** Edge: absolute left 0, top 0, bottom 0, width 10, z 14. Peek panel: absolute left 8,
+top 8, bottom 8, width 226, z 15, background `--f-solid` (the first gradient stop), radius 14,
+`0 20px 40px -16px rgba(0,0,0,.45)`. Window grid when hidden: `0 minmax(0,1fr)`, padding-left 8.
+
+**States.** Verbatim, `S:85`, `S:91`, `S:451-454`:
+
+```css
+.win.no-side{ grid-template-columns:0 minmax(0,1fr); padding-left:8px; }
+.win.no-side .side{ visibility:hidden; }
+.edge{ position:absolute; left:0; top:0; bottom:0; width:10px; z-index:14; display:none; }
+.win.no-side .edge{ display:block; }
+.win.no-side.side-peek .side{ visibility:visible; position:absolute; left:8px; top:8px; bottom:8px; width:226px; z-index:15;
+  background:var(--f-solid); border-radius:14px; box-shadow:0 20px 40px -16px rgba(0,0,0,.45); animation:slide-r var(--t-move) var(--e-spring); }
+```
+
+| State | Rule |
+| --- | --- |
+| sidebar shown | edge not rendered |
+| hidden | grid column 0 (transitions `grid-template-columns` and padding over `--t-move --e-out`, `S:83`); sidebar invisible; edge present |
+| peek (entering) | sidebar floats over the card, `slide-r --t-move --e-spring` |
+| peek leaving | pointer leaves the sidebar: back to hidden at once, no exit |
+
+**Behaviour.** Pointer enters the edge -> peek; pointer leaves the floating sidebar -> hidden
+(`S:1842-1843`). A "Sidebar" Mini appears in the list bar while hidden (`S:855`, `S:1584`).
+Focus mode hides the sidebar; send and park restore it (`S:2330`). 06-INTERACTIONS "sidebar".
+
+**Blitz notes.** A grid-template-columns transition may not interpolate in Stylo; if it does not,
+animate the sidebar's width instead (spike S4 covers var-driven transitions). The peek panel
+renders in place (not OverlayHost) because it is the sidebar itself.
+
+### 34. DragGhost and DropTarget
+
+**Purpose.** Moving a thing by dragging. Two patterns in the prototypes: C drags a thread onto a
+sidebar place (a tilted ghost card follows the pointer; the place under it lights up and grows);
+S drags a composer object by its grip (the object dims; a 3 px accent line shows where it will
+land). Mail: both. Shell: dock drag-out and reorder (planned).
+
+**Markup.**
+
+```html
+<!-- C: ghost through OverlayHost -->
+<div class="ds-drag-ghost" style="left:412px; top:188px">Notes from the sync review
+  <div class="ds-drag-ghost-sub ds-truncate">Sam Lindqvist</div></div>
+<li class="ds-row" data-drag="source">…</li>                               <!-- was .is-dragging -->
+<button class="ds-sidebar-item" data-drop="target">…</button>              <!-- was .is-drop-target -->
+
+<!-- S: grip, dimmed source, drop line -->
+<div class="ds-object" data-drag="source|idle">
+  <span class="ds-grip" title="Drag to move · click for options">⋮⋮</span>…
+</div>
+<div class="ds-drop-line"></div>
+```
+
+**Props.**
+
+```rust
+pub fn use_drag<K>(threshold: Px /* 8, Manhattan */) -> DragTracker<K>   // motion/drag.rs
+#[component] pub fn DragGhost(title: String, sub: String, at: Point) -> Element
+#[component] pub fn DropLine() -> Element
+#[component] pub fn Grip(label: String, onclick: EventHandler<Rect>) -> Element
+```
+
+**Geometry.**
+
+| Piece | Value | Source |
+| --- | --- | --- |
+| Ghost | fixed, z 50, no pointer events, width 250, padding 9px 11px, radius `--r-card`, `--raise`, 1px `--line`, `--shadow-drag`, ui 13 / 700, `rotate(var(--tilt)) scale(1.02)` | `C:579-584` |
+| Ghost sub | ui 12 / 500 `--ink-faint`, truncated | `C:585-586` |
+| Ghost offset | cursor - (40, 18) | `C:2053-2054` |
+| Source | opacity .35 | `C:374`, `S:751` |
+| Drop target | `--accent-soft`, `--ink`, scale 1.045, `--shadow-1` | `C:320-323` |
+| Grip | 20 x 24, absolute left -24 top 6, radius 6, `--ink-faint`, 12 px text "⋮⋮", cursor grab, opacity 0 until the object is hovered | `S:747-749` |
+| Drop line | 3 px high, radius 3, `--accent`, margin 2px 0 | `S:752` |
+
+**States.** Verbatim, `C:579-586` and `S:747-752`:
+
+```css
+.ghost{
+  position:fixed; z-index:50; pointer-events:none; width:250px; padding:9px 11px;
+  border-radius:var(--r-card); background:var(--raise); border:1px solid var(--line);
+  box-shadow:var(--shadow-drag); font-size:13px; font-weight:700;
+  transform:rotate(var(--tilt)) scale(1.02);
+}
+.ghost .g-sub{ font-weight:500; color:var(--ink-faint); font-size:12px; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis; }
+.ograb{ position:absolute; left:-24px; top:6px; width:20px; height:24px; border-radius:6px; display:grid; place-items:center; color:var(--ink-faint);
+  font-size:12px; cursor:grab; opacity:0; user-select:none; transition:opacity var(--t-quick) var(--e-out), background-color var(--t-quick) var(--e-out); }
+.obj:hover > .ograb{ opacity:1; }
+.ograb:hover{ background:var(--surface); color:var(--ink); }
+.obj.dragging{ opacity:.35; }
+.drop-line{ height:3px; border-radius:3px; background:var(--accent); margin:2px 0; }
+```
+
+| State | Rule |
+| --- | --- |
+| pending | pointer down on a row (not on a button); nothing visible until 8 px Manhattan movement |
+| live | ghost at cursor - (40, 18); source .35 |
+| over target | target: drop-target style; only places that accept (inbox, snoozed, archive, trash, labels; not starred) |
+| dropped on label | chip added with `chip-land`, place gulps (§19) |
+| dropped elsewhere | the op runs (snoozed -> snooze, inbox -> restore, else the place's op) |
+| cancelled / released off target | ghost removed, source restored, no animation |
+| grip hover | `--surface`, `--ink` |
+| grip click | opens the object Slim Menu (Move up, Move down, Duplicate, Delete) |
+
+**Motion.** Ghost has no enter/exit animation; the drop target change is instant in C (no
+transition on `.view` transform beyond its `--t-tap` press transition). `--tilt` is 2.2deg (Post;
+S drops tilt, A7). Motion levels: Calm tilt 0.
+
+**Behaviour.** 06-INTERACTIONS "drag and drop". Hit testing under the pointer
+(`elementFromPoint`, `C:2055`) becomes a Rust query of registered drop-target rects.
+
+**Blitz notes.** HTML5 drag events (`dragstart`/`dragover`, `S:2269-2275`) do not exist; both
+patterns use the Rust DragTracker. Ghost is `position:fixed` in C; in ds it goes through
+OverlayHost at a Rust point. Ghost sub ellipsis -> `.ds-truncate`. Transforms on the ghost only.
+
+### 35. SyncHalo
+
+**Purpose.** A ring around an account avatar that says whether that account is live: breathing
+while idle and listening, dashed and spinning while syncing. Only in C (`C:1179-1183`). Mail:
+account in the sidebar. Shell: bar sync indicator. It is Spinner (§15) mounted on an Avatar.
+
+**Markup.** (from `C:1179-1183`)
+
+```html
+<div class="ds-account-ring" data-sync="idle|busy">
+  <span class="ds-spinner" data-kind="breathe|spin"></span>
+  <span class="ds-avatar" data-size="30">P</span>
+</div>
+```
+
+**Props.** `#[component] pub fn SyncHalo(initial: char, tone: AvatarTone, state: SyncState /* Idle | Busy */) -> Element`
+
+**Geometry.** Ring box 30 x 30, relative, flex none. Avatar absolute inset 0, round, `--paper` on
+`--ink`, display 800 13. Halo: §15.
+
+**States.** Verbatim, `C:278-292`:
+
+```css
+.acct-ring{ position:relative; width:30px; height:30px; flex:none; }
+.acct-ring .av{
+  position:absolute; inset:0; border-radius:999px; display:grid; place-items:center;
+  background:var(--ink); color:var(--paper);
+  font-family:var(--font-display); font-weight:800; font-size:13px;
+}
+.acct-ring .halo{
+  position:absolute; inset:-4px; border-radius:999px; border:2px solid var(--accent);
+  opacity:0; transform:scale(.85);
+}
+.acct[data-sync="idle"] .halo{ animation:breathe var(--t-ambient) ease-in-out infinite; }
+.acct[data-sync="busy"] .halo{
+  opacity:.9; transform:scale(1); border-style:dashed;
+  animation:spin 1.1s linear infinite;
+}
+```
+
+| State | Rule |
+| --- | --- |
+| idle | `breathe` over `--t-ambient`, infinite |
+| busy | dashed, opacity .9, `spin 1.1s linear infinite` (C holds busy for 1200 ms per sync, `C:2092-2100`) |
+| hover, focus, disabled | not specified (not interactive) |
+
+**Motion.** `breathe`, `spin`. See §15 for the loop cost.
+
+**Blitz notes.** See §15. S dropped the halo (A7: "no … t-ambient"); keeping it is O-25.
+
+### 36. MenuBarItem (the macOS polish pass, settled 2026-09-24)
+
+**Purpose.** A bar title or text status item (the app name, a menu title, the clock) and the pill
+behind it. macOS draws a rounded highlight behind the open title and the hovered item
+(design/13 section 13.3.1); `IconButton { Status }` already draws its own, so only text needs this.
+
+**Markup.** `div.ds-bar-item[aria-expanded][data-emphasis=strong]` around the control.
+**Props.** `open: Switch` (the menu is showing), `emphasis: Emphasis` (`Strong` = 700 for the app
+name), `id`, `children`.
+**Values.** Height `--shell-bar-item` 24 (`bar.open_title_pill_height_px`), side padding
+`--shell-bar-pad` 10 (`bar.title_padding_px`), radius `--r-shell-bar-item` 4
+(`bar.item_radius_px`, proposed key), text `--fs-shell-bar` 13 / `--fw-shell-bar` 500; hover
+`--f-pill-hover`, open `--f-pill`, no transition (a hover switch lands in one frame). A
+`Button { Quiet }` inside gives up its own padding, hover and size.
+
+### 37. WorkspacePills (the macOS polish pass, settled 2026-09-24)
+
+**Purpose.** The bar's workspace indicator as one segmented group on the frame rather than a row
+of separate `Button { Mini }`s.
+**Markup.** `div.ds-ws-pills[role=group]` holding `button.ds-ws-pill[aria-current]`.
+**Props.** `WorkspacePills { label, children }`; `WorkspacePill { label, current: Here, onclick:
+EventHandler<Press>, id }`. A caller that drags pills to reorder wraps each pill in its own element
+and listens there.
+**Values.** Track `--surface` (the frame's `--f-pill-hover`), 24 high, radius 4, padding 2; the
+current pill `--surface-2` (`--f-pill`) with `--shadow-current`; others `--ink-soft`, hover
+`--ink`; text at the bar's shell size.
+
+### 38. RunningDot and DockFloor (the macOS polish pass, settled 2026-09-24)
+
+**Purpose.** The dock's running indicator and its optional reflective floor (design/10 section
+10.3.2).
+**Markup.** `span.ds-running-dot` inside a positioned tile; `div.ds-dock-floor` first in the dock
+root.
+**Values.** Dot `--dock-dot` 4 px, its centre `--dock-dot-gap` 3 px under the tile, `--ink` of the
+dock scope, `fade` in over `--t-quick`. Floor: a light band rising from the pill's floor
+(white .26 to 0 over 40 %), shown at `--dock-floor` (0 unless `dock.floor = On`), masked with the
+pill when the pill is a squircle.
+
+**IconView plates.** `IconView { plate: Some(PlateFamily) }` sits the icon on an app-icon plate
+`size` square (design/08 sections 2.1-2.5, 4.1): `span.ds-plate[data-family]` with a masked
+`span.ds-plate-face` (the whole `n = 5` superellipse, the family's 135 degree gradient, inner
+highlight white .35 and rim black .08) and a drop `0 1px 1.5px .16, 0 6px 16px -6px .3` on the
+unmasked box; a glyph or symbolic icon at `--plate-glyph` 56 % in the family's glyph colour, an
+image at `--plate-inset` 72 %. Families `Red`, `Amber`, `Green`, `Blue`, `Violet`, `Neutral`
+(the neutral plate turns `#2A2E28` to `#1D211B` in the dark scheme). `plate_tint:
+Some(PlateTint)` (`Muted`, or `Monochrome(Tint)`) re-colours the stops and the ink by `retint`'s
+rule for both schemes, written inline as `--plate-base-l`/`-deep-l`/`-ink-l` and `-d`, marked
+`data-icon-style`, and read by the sheet under `data-theme` (sill FINDINGS Q72; design/08 4.4).
+
+### 39. MonthGrid (the calendar widget's month; sill Q180, 2026-09-26)
+
+**Purpose.** One month of days in seven columns: the calendar widget of the notification center
+and the desktop (design/20 section 1.12, "month grid (new ds component `MonthGrid`)"; section
+1.14). The shell computes the month (which days, which column comes first, which day is today,
+which days have an event, the ISO week of each row); quire only draws it (sill Q180). Its data
+mirrors the shell's grid field for field, so the shell's mapping is a plain `From`.
+
+**Markup.**
+
+```html
+<div class="ds-month" data-weeks="hide|show" data-density="regular|compact" aria-label="September 2026">
+  <div class="ds-month-header">
+    <span class="ds-month-title">September 2026</span>
+    <!-- only with onstep -->
+    <button class="ds-icon-button" data-variant="tool" aria-label="Previous month">…</button>
+    <button class="ds-icon-button" data-variant="tool" aria-label="Next month">…</button>
+    <!-- compact: button.ds-month-step (a 14 px button round an 11 px glyph) in place of each -->
+  </div>
+  <div class="ds-month-row" data-row="heads">
+    <span class="ds-month-week"></span>            <!-- only with data-weeks=show -->
+    <span class="ds-month-head">M</span> … seven
+  </div>
+  <div class="ds-month-weeks [a-slide-l|a-slide-r]" data-pulse="a"?>   <!-- keyed by the month -->
+    <div class="ds-month-row">
+      <span class="ds-month-week">36</span>          <!-- only with data-weeks=show -->
+      <span|button class="ds-month-day" data-kind="pressable"? data-place="before|in|after" data-events="busy|free"
+           aria-current="date"?>
+        <span class="ds-month-num">31</span>
+        <span class="ds-month-dot"></span>           <!-- only when busy -->
+      </span|button>  … seven
+    </div> … four to six
+  </div>
+</div>
+```
+
+**Props.** `#[component] pub fn MonthGrid(data: MonthGridData, weeks: WeekNumbers /* Hide */,
+density: MonthDensity /* Auto */, onstep: Option<EventHandler<Step>>,
+onpick: Option<EventHandler<DayKey>>) -> Element`.
+`MonthGridData { month: MonthKey, title: Text, heads: [Text; 7], weeks: Vec<MonthWeek> }`;
+`MonthWeek { number: IsoWeek, days: [MonthDay; 7] }`; `MonthDay { key: DayKey, place: DayPlace,
+mark: DayMark, events: Eventful }`. `MonthKey { year, month }` and `DayKey { year, month, day }`
+are the civil month and date as the shell's calendar library gives them (`i16`, `i8`, `i8`);
+the cell's label is the key's day. `DayPlace::{Before, InMonth, After}`,
+`DayMark::{Plain, Today}`, `Eventful::{Free, Busy}`, `WeekNumbers::{Hide, Show}` (the setting
+`calendar.week_numbers`, design/22 section 3.21), `Step::{Previous, Next}`. No header buttons
+without `onstep`; the days are `button`s only with `onpick`, which hears the day's key.
+
+**Geometry.**
+
+| Part | Value | Basis |
+| --- | --- | --- |
+| Day cell | 32 wide, 30 high; the number on a 24 round, `--fs-help` 11.5 / 500, tabular | proposed |
+| Event dot | 4 round, 2 under the number, centred | brief (sill Q180) |
+| Heads | the data face, `--fs-micro` 9.5, upper, tracked .14em as `.ds-section-header` (menu), `--ink-faint`, 18 high | design/02 section 4 ("calendar month and weekday") |
+| Title | the data face, `--fs-caption` 10 / 700, upper, tracked .12em, `--accent` | design/02 sections 4-5 ("calendar month", all upper) |
+| Header | 28 high, the title then the two `IconButton { Tool }` (28 x 26) at the end | design/20 section 1.12 |
+| Week number column | 24 wide, the data face `--fs-micro`, `--ink-faint` | proposed |
+| Rows | no gap; the grid is `7 x 32` (224) wide, `24 + 224` with week numbers | proposed |
+
+**Density (sill Q190, 2026-09-26).** A small desktop widget (`WidgetFrame { size: Small }`) is
+one 164 cell padded 12, a 140 x 140 content box; the regular grid (224 wide, 254 tall for six
+weeks) overflows it, and a shell cannot restyle `.ds-month-*`, so the grid has a compact density
+of its own, as a small calendar widget has in the reference desktop (design/20 section 1.14).
+`MonthDensity::{Auto, Regular, Compact}`, written as `data-density=regular|compact`. **The auto
+rule:** `Auto` (the default) follows the enclosing `WidgetFrame`, which provides its size to its
+content: `Small` draws compact; `Medium`, `Large` or no frame draws regular. `Regular` and
+`Compact` force it.
+
+| Part (compact) | Value | Basis |
+| --- | --- | --- |
+| Whole grid | **fills the box** (compact-spacing pass, 2026-09-27): `.ds-month` is `flex:1` in the frame's body, so in a small frame it is the 140 x 140 content box; the header and heads keep their heights and the weeks share the rest. The user's report on sill's capture: the grid sat in the top two thirds of the tile, the heads were cramped against the header and the first row, rows (19) and columns (20) differed, the margins were unbalanced | design/23 section 5.1 (the reference's small Month widget fills its card) |
+| Columns | seven, evenly across the width (`repeat(7, minmax(20px, 1fr))`, 20 each in 140; the disc is the floor) | fills the width |
+| Rows | the weeks share the height left under the header and heads, evenly (`flex: 1 1 20px`): six weeks 118 / 6 = 19.67, five weeks 118 / 5 = 23.6 (a five-week month has taller rows); 20 where the box sets no height | design/23 section 5.1, W16; measured on Blitz |
+| Optical foot | the weeks run 4 (`--s-4`) past the box's foot, so the last row's numbers end as far from the card's edge as the title's caps start from the top: ink insets measured on the 4x snapshots, top 15.2, left 16.5, right 15.8, bottom 16.8 (five weeks) and 14.8 (six); before the pass the five-week bottom was 38.8 | the 12 padding (design/23 M4) is to ink, not to line boxes; measured |
+| Day cell | a column wide, a row high; the number `--fs-caption` 10 on a round twice its size (20), in the middle of the row (six weeks: the disc overhangs its row by .33 a side into the neighbours' clear space) | Q361 (the 16 round left two 700 tabular digits touching its rim) |
+| Event dot | 3 round, inside the disc's foot (tucked 4, 1 under it, so the day's stack stays the disc's 20 and a busy day centres as a free one); `--accent-ink` on today's disc | Q190, Q361 |
+| Heads | the UI face at `--fs-nano` 9, `--fw-caps`, tracked, upper, `--ink-faint`, 12 high | the reference's weekday initials; widgets never use the data face's mono (design/23 section 3.2) |
+| Title | the UI face at `--fs-micro` 9.5, `--fw-caps` (600), tracked, upper, `--accent`; its left edge 4 in (`--s-4`), where a two-digit first column's number starts | the reference: month name top left in the accent, small caps weight |
+| Header | 14 high, no gap under it; the step buttons are plain 14 px `button.ds-month-step` round an 11 px glyph (`--ink-faint`, `--surface-2` under the pointer, squish pressed), since the Tool button's 28 x 26 would take a fifth of the height | Q190 |
+| Week numbers | never drawn, whatever `weeks` says (`data-weeks=hide`): a column would not fit | Q190 |
+| Snapshots | `tools/progress/shots/gallery/calendar-compact-{before,after}-{5wk,6wk}-{light,dark}-{1x,4x}.png`, from sill's ds-conformance/tests/month_grid_shots.rs (`QUIRE_CAL_SHOTS=<dir> QUIRE_CAL_TAG=<tag>`) | |
+
+**States.**
+
+| State | Rule |
+| --- | --- |
+| in the month | `--ink` |
+| the neighbours' days (`data-place=before|after`) | `--ink-faint` (quieter, still legible) |
+| today (`aria-current="date"`) | the number on an `--accent` disc in `--accent-ink`, 700 |
+| busy (`data-events=busy`) | a 4 px dot under the number: `--accent` (today's too: the dot sits under the disc, not on it); `--ink-soft` on a neighbour's day |
+| pressable hover (`data-kind=pressable`, the `button` form) | the number's disc `--surface-2`; today keeps its accent |
+| pressable active | the disc squishes (`--squish`, `--t-tap`) |
+| focus | the global ring on the cell |
+
+**Motion.** A month change plays once: the weeks are keyed by the month, so a new month mounts a
+new body, which plays `slide-r` (a later month, from the right) or `slide-l` (an earlier one)
+at the catalogue's row, `--t-big --e-spring` (`a-slide-r`/`a-slide-l` with `data-pulse="a"`),
+and drops the class at `settle(Anim::SlideR)`. The direction is the order of the two months, so
+the caller says nothing; the first month drawn, and every render that does not change the month,
+plays nothing (design/05 principle 7, nothing loops: every motion is keyed to a state change). The header and heads do not move.
+
+**Blitz notes.** Rows are CSS grid (`repeat(7, 32px)`), as `ModuleGrid`; the dot is a real span;
+no pseudo-elements. Compact: the weeks are a flex column whose rows grow and shrink alike from a
+20 px basis (`min-height:0`, one `minmax(0,1fr)` grid track), so every row gets the same share
+whatever its cells hold.
+### 40. Widgets: WidgetFrame, WidgetMetrics, ClockFace and BatteryLevel (settled 2026-09-26; drawing proposed, design/23)
+
+**Purpose.** The card every widget is drawn on, on the desktop layer and in the notification
+center's widget column (design/20 section 1.14; design/22 section 3.20; sill FINDINGS Q182,
+Q183), and the two faces sill cannot draw from text alone: an analog world clock and a battery
+glyph. Their drawing is the widget style "Flat, bright, measured" (design/23-WIDGETS.md
+sections 2 to 4), matched to the reference widgets measured in design/23 section 1.1. The card's corner, padding and title row are the frame's, so a widget writes no CSS
+for them.
+
+**WidgetMetrics.** Writes the grid unit as tuned tokens on any element around the widgets:
+`--widget-cell` from `widgets.desktop_cell_px` (164, held to `120..=240`) and `--widget-gap` from
+`widgets.desktop_gap_px` (16, held to `0..=48`); `WidgetMetrics::default().style_attr()` writes
+what the stylesheet falls back to.
+
+**WidgetFrame.** `WidgetFrame { size: WidgetSize::{Small, Medium, Large}, host:
+WidgetHost::{Desktop, Tile}, tint: CardTint::{Material, Space}, title: Option<WidgetTitle {
+glyph: Icon, text: Text }>, id: Option<String>, children }`.
+Markup: `div.ds-widget[data-size][data-host][data-tint]` holding, with `CardTint::Space`, a
+`div.ds-frame` (the Space's gradient at the material's frame alpha, under the content), an
+optional `div.ds-widget-title` (a `Glyph` at 12 and the text) and `div.ds-widget-body`.
+`data-tint="space"` is written only for the Space tint.
+The frame provides its `size` to its content through a context (`widget_scope`), so content
+that must fit the frame fits itself: a `MonthGrid` at `MonthDensity::Auto` is compact in a
+`Small` frame (section 39).
+
+| Metric | Value | Basis |
+| --- | --- | --- |
+| Small | `--widget-cell` square (164) | design/22 section 3.20 |
+| Medium | `2 x --widget-cell + --widget-gap` wide, one cell tall (344 x 164) | design/22 section 3.20 |
+| Large | `2 x --widget-cell + --widget-gap` square (344) | design/22 section 3.20 |
+| Desktop card | the `Widget` material's plate inside a transparent `Widget` scope (as the notification plate): its tint, hairline and soft drop, its own corner `--m-radius` (20), padding `--s-12` (the reference's measured inset) | design/20 section 1.14 (material `Widget`); design/23 section 1.1 M3, M4 |
+| Tile | no material of its own, on the Popover it sits in: `--surface-2` fill, `--line` hairline, `--r-tile` (12), padding `--s-12`, as a `ModuleTile` | brief (Q182) |
+| Space tint | `CardTint::Space`: the Space's gradient over the plate at `--m-frame-alpha`; the card stacks its own layers (`z-index` `--z-raise`) | design/23 section 4.3 |
+| Title row | optional and quiet: glyph 12 and the name in `--font-ui` `--fs-caption` 600, both `--ink-soft`, `--s-5` apart, `--s-8` above the body; the Batteries and Clock widgets pass none | design/23 section 4.3 |
+
+The tile takes the same footprint as the desktop card: the center's column (384 less its
+padding) holds a medium tile's 344.
+
+**Bump on change.** `use_bump_on(value)` returns the `PulseKey` of an `Anim::Bump` fired through
+`use_pulse` each time `value` differs from the one last rendered (never on mount), and back at
+rest `settle(Bump)` after each firing, so a battery's percentage or a clock's minute bumps once
+and nothing loops (design/20 section 1.14: "value change `bump`"). `Bumped { on: value, children
+}` wraps its children in `span.ds-bumped` wearing that pulse, for a widget that bumps a run of
+text rather than a component.
+
+**ClockFace.** `ClockFace { time: ClockTime { hour, minute, second: Seconds::{Shown(s), Hidden}
+}, phase: DayPhase::{Day, Night}, look: ClockLook::{Analog, Digital}, label: Text }`.
+Markup: `div.ds-clock[data-look][data-phase]`, then `span.ds-clock-label` around
+`span.ds-clock-city` (with the phase's mark before it on a digital face). Analog:
+`div.ds-clock-dial`, a flat disc 62 across (in a Small frame the card less 8 a side, with the
+label hidden), `--clock-face-day` or `--clock-face-night`, holding `svg.ds-clock-ticks` (60,
+shown only on the Small frame's dial), `div.ds-clock-numerals` of twelve `span.ds-clock-numeral`
+(display face 800, `--fs-dial` or `--fs-dial-large`), `svg.ds-clock-hands` (hour to .56 of the
+radius, minute to .9, a thin neck then a round-capped bar, and the hub; `--clock-ink-day` or
+`--clock-ink-night`) and, when the seconds are shown, `svg.ds-clock-second` (`--clock-seconds`)
+and `svg.ds-clock-pin`. Every vector is on `currentColor` with `data-ds-svg`. Digital: the time in
+`--font-display` 800 tabular (`09:41`, `09:41:07` with seconds), at `--fs-widget-hero` in a Small
+frame and `--fs-subject` elsewhere, bumping on each new minute; a sun (`svg.ds-clock-sun`,
+`--warn`) or moon (`svg.ds-clock-moon`, `--ink-faint`) before the city. The hand angles are pure
+(sill-shell-kit/clock/angles.rs): hour `30 x (h mod 12) + m / 2 + s / 120` degrees, minute `6 x m + s / 10`,
+second `6 x s`.
+
+**BatteryLevel**. `BatteryLevel { level:
+Fraction, mark: RingMark::{Plain, Charging}, label: Text, wake: WakeStamp, children }`: a ring 64 across
+(`div.ds-battery`, `role=progressbar` with `aria-valuenow` in percent): `svg.ds-battery-track`, a
+full circle in `--battery-track`; `svg.ds-battery-arc`, clockwise from twelve as far as the level
+in `--battery-fill`, `--battery-low` at or under 20 % (`data-tone` `low`, and `critical` at or
+under 10 %, the same red); charging is never low; stroke .093 of the ring, round caps, the path
+computed in Rust (`sill-shell-kit/battery/ring.rs`). `children` (the device glyph) sit centred in
+`span.ds-battery-device` at .47 of the ring. `Charging` (`data-mark="charging"`) cuts a gap at
+twelve in both strokes and sets `svg.ds-battery-bolt` in it once the fill has arrived. The
+percentage is the caller's (design/23 section 4.1), counted in step with the fill by
+`BatteryFigure { level, wake }` (`span.ds-battery-figure`, tabular) or `use_battery_figure`.
+
+**Motion.** None in steady state. The battery's arc fills from Rust (no keyframe, no CSS
+transition, O-20): from empty on mount and each new `wake`, from the old level on a change,
+over `--t-fill` at `--e-out`, `data-pulse="a"` while it moves; the bolt fades in over
+`--t-quick` after an entrance fill; nothing under Reduced (design/05 section 4.12). The clock's
+digital time still plays `bump` on a new minute (`--t-move --e-spring`, the Count's pulse).
+
+### 41. ShotThumbnail and ShotGhost (screenshot thumbnail, settled 2026-09-26)
+
+**Purpose.** The floating thumbnail after a screenshot (design/20 section 1.13; sill Q181): the
+picture, letterboxed in a card of the `Toast` material with its drop, at the bottom right of an
+Overlay surface. A click on the picture opens it; a drag past the threshold hands the host a
+drag start (the host does the drag, with `ShotGhost` as its icon); hovering shows a row of
+actions (Delete now, Mark Up and Copy Text later). The hold (`screenshot.thumbnail_hold_ms`,
+5200, design/22 section 3.22) is the caller's timer, paused on `onhover`, as `BannerStack`'s is.
+**Markup.** Inside a transparent `Toast` scope (`Surface { chrome: Transparent }`, as
+`NotificationCard`):
+`div.ds-shot[data-shown][data-presence][data-pulse][data-hover]` holding
+`div.ds-shot-plate[role=group][aria-label=Screenshot]` (the material card, `id` for the host's
+input and blur region, `Element("thumb")`), which holds `div.ds-shot-picture[role=button]` (the
+press target, `aria-label="Open screenshot"`) around `img.ds-shot-image` placed inline at its
+letterboxed rect, and `div.ds-shot-actions[role=toolbar]` of `span.ds-shot-action[style=--j]`
+each around an `IconButton { Strip }`. `ShotGhost` draws `div.ds-shot-ghost` around the same
+plate at the ghost width.
+**Props.**
+
+```rust
+pub struct ImageSource(pub String)              // a data: URI or file: URL; ::file(&Path), ::png(&[u8])
+pub struct ImageSize { pub width: u32, pub height: u32 }   // the picture's pixels, for its ratio
+pub struct ThumbAction { pub icon: Icon, pub label: Text, pub onpress: EventHandler<()> }
+pub struct DragStart { pub from: Point, pub at: Point }    // press point, and where it crossed
+#[component] pub fn ShotThumbnail(image: ImageSource, size: ImageSize, shown: Shown,
+    on_hidden: EventHandler<()> /* default */, width: Px /* 240 */, actions: Vec<ThumbAction>,
+    onopen: Option<EventHandler<()>>, ondrag: Option<EventHandler<DragStart>>,
+    onhover: Option<EventHandler<Hover>>, id: Option<String>,
+    swipe: Swipe /* Off */, swipe_metrics: SwipeMetrics /* notifications.swipe_* */) -> Element
+#[component] pub fn ShotGhost(image: ImageSource, size: ImageSize) -> Element
+```
+
+**Values.**
+
+| Part | Value | Basis |
+| --- | --- | --- |
+| Card width | `width`, 240 by default (sill's `THUMB_WIDTH`) | design/20 names none; about a sixth of a 1440 px screen |
+| Mat | 4 (`--s-4`) round the picture | the material shows as a thin frame |
+| Picture box | the image's own ratio, held between 2:1 (widest) and 16:10 (tallest); outside that the picture is letterboxed (bars of the material) | sill sizes its surface for 16:10 |
+| Card radius | `--m-radius` (Toast, 16); the picture's `--m-radius` less the mat | design/20 section 1.13 |
+| Actions | a pill at the bottom right, 6 in, `--raise`, `--shadow-2`, strip buttons popping in by `--j` x `--stagger` | HoverStrip (section 17) |
+| Drag threshold | 8 px Manhattan (`DRAG_THRESHOLD`) | section 34 |
+| Ghost | 120 wide, opacity .8, no motion | a drag icon is small and lets the drop target show through |
+
+**Motion.** Shown: `Anim::ShotIn` (`rise` at `--t-big --e-spring`); hidden (a dismissal or the
+hold's end): `Anim::ShotOut` (`shot-out`, a slide right past its own width that fades, at
+`--t-move --e-exit`, held), and `on_hidden` at `settle(ShotOut)`; a show while it leaves takes
+the hide back (`Osd`'s machine). The actions fade in over `--t-quick --e-out`.
+**Behaviour.** A press on the picture that travels 8 px (Manhattan) calls `ondrag` once, with
+the press point and the crossing point; the click that ends such a press does not open. A press
+that stays under the threshold opens on its click (`onopen`), as do Enter and Space on the
+picture. The pointer entering or leaving the card calls `onhover` (`Hover::Over`, `Away`) and
+shows or hides the actions. Actions keep their press: none also opens. `swipe:
+Swipe::Dismiss(handler)` is `NotificationCard`'s swipe to dismiss, the same machine and metrics
+(`notification_swipe`): a drag or a horizontal scroll to the right past 80 px or 600 px/s flies
+the card out (`banner-out`) and calls the handler at its settle, or at once inside a
+`BannerStack` row, which carries the flight. With it on, a press crossing the threshold mostly to
+the right is the swipe's and never a drag out; left, up and down still drag out. The card has no
+position of its own (no margin, no anchor): a `BannerStack { position: BottomRight }` or the
+caller's surface places it, and `shown`/`on_hidden` work in either. Under Reduced motion the card
+decides for itself: no spring back, and it fades in and out rather than rising and sliding.
+
+### 42. LockScreen, LockClock, LockPrompt and PolkitPrompt (M11, 2026-09-26; values proposed)
+
+**Purpose.** The shell's own lock screen (design/20 section 1.9) and polkit prompt (section
+1.10), replacing the borrowed ones of M7. The user's rule for them (2026-09-26): the reference
+desktop's surfaces are flat and bright, carried by colour and big confident type, with no bevel,
+gloss or neumorphic shadow and no monospace label; the lock screen matches the reference lock
+screen's layout (a large clock over the wallpaper, the avatar and name, a translucent pill
+password field, a small hint line). Arc's colour may reach the small surfaces: under
+`LockLook::Space` the date sits in a pill and the field is painted with the Space gradient.
+
+**Props.**
+
+```rust
+pub enum LockLook { Clear /* default */, Space }
+pub enum PromptState { Idle /* default */, Checking, Wrong, LockedOut { until: String }, Accepted }
+pub enum CapsLock { On, Off /* default */ }
+pub struct LockUser { pub name: String, pub picture: UserPicture }   // LockUser::new(name, impl Into<UserPicture>)
+pub enum UserPicture { Face(AvatarFace), Emoji(EmojiId), Photo(ImageSource) }   // From each (design/25 section 7)
+#[component] pub fn LockScreen(wallpaper: Option<ImageSource>, clock: Element, prompt: Element) -> Element
+#[component] pub fn LockClock(time: String, date: String, look: LockLook) -> Element
+#[component] pub fn LockPrompt(user: LockUser, state: PromptState, caps: CapsLock, look: LockLook,
+    placeholder: Option<String> /* "Enter Password" */, hint: Option<Text>,
+    wake: Option<WakeStamp>, oninput: EventHandler<String>, onsubmit: EventHandler<String>) -> Element
+#[component] pub fn PolkitPrompt(action: Text, detail: Option<Text>, title: Option<String>,
+    user: LockUser, state: PromptState, caps: CapsLock, oninput: EventHandler<String>,
+    onsubmit: EventHandler<String>, oncancel: EventHandler<()>, shown: Option<Shown>,
+    on_hidden: Option<EventHandler<()>>) -> Element
+pub enum SheetWidth { Regular /* default, 560 */, Narrow /* 340 */ }   // Sheet { width }
+```
+
+**Markup.** `LockScreen`: `div.ds-lock[role=dialog]` holding `div.ds-lock-wallpaper` (the picture
+as an inline `background-image`, its URL escaped; only `data:` and `file:`), `div.ds-lock-veil`,
+`div.ds-lock-top` (the clock) and `div.ds-lock-bottom` (the prompt). `LockClock`:
+`div.ds-lock-clock[data-look]` holding `div.ds-lock-date` then `div.ds-lock-time`. `LockPrompt`:
+`div.ds-lock-prompt[data-look][data-state]` holding the picture at 64 in
+`div.ds-user-picture[data-mood]` (the `Avatar`, the `AnimatedEmoji` at `Medium`, or
+`div.ds-user-photo[data-size=64]` around `img.ds-user-photo-image`), `div.ds-lock-name`,
+`div.ds-lock-field[data-filled]` (with `a-shake-x` and `data-pulse` while shaking) holding an
+Inline `TextInput { kind: Secret }`, `span.ds-lock-caps` (caps on) and `button.ds-lock-go` (a
+`Glyph` `ArrowRight`, or `span.ds-lock-busy` around a `Spinner` while checking), then
+`div.ds-lock-hint`. `PolkitPrompt`: a `Sheet { placement: Centre, scrim: Modal, width: Narrow }`
+holding `div.ds-polkit[data-state]`: the picture at 48 in `div.ds-user-picture` (the `Avatar`,
+the emoji drawn at `Medium` in a 48 box, or the photo at 48), `div.ds-polkit-title`,
+`div.ds-polkit-action`, `div.ds-polkit-details` (a `Tooltip { Card }` on
+`span.ds-polkit-details-word`), `div.ds-polkit-user`, `div.ds-polkit-field` (a Boxed secret
+`TextInput`, `span.ds-polkit-caps`), `div.ds-polkit-hint` (locked out), and
+`div.ds-polkit-actions` (Cancel `Secondary`, Authenticate `Primary`).
+
+| Part | Value | Basis |
+| --- | --- | --- |
+| Stage | the wallpaper covering it (`background-size:cover`) under `--lock-veil` (black .12 light, .28 dark); padding 7 % of the width on top, 5 % below | reference layout; the veil keeps white type legible on a pale picture |
+| Date | display face `--fs-amount` (22) 600, `--lock-ink-soft` (white .78) | reference: the day over the time |
+| Time | display face `--fs-lock-clock` (140) 700, tracking -.035em, tabular, `--lock-ink` (white), 2 below the date | the user's "very large, heavy"; reference proportions (about a fifth of the width for "9:41") |
+| Picture | 64 (`AvatarSize::Size64`, `--fs-display` letter; a photo in a 64 disc, clipped, `object-fit:cover` centred over `--surface-2`; an emoji at `Medium`, bare); 48 in the polkit sheet | reference; the photo is freedesktop's `~/.face` or AccountsService's icon |
+| Name | UI 16/700 (`--fs-title`), white, 10 below the avatar | reference |
+| Field | 260 x 38 pill (`--r-pill`), `--lock-glass` (white .24 light, .18 dark), 14 below the name, padding 16 left and 5 right; the secret's dots at `--fs-base` white, tracked .14em; placeholder `--lock-ink-soft`; hover `--lock-glass-strong` | reference; flat, no blur assumed (spike S15) |
+| Enter button | 28 disc of `--lock-glass-strong`, `ArrowRight` at 13, shown once something is typed (opacity over `--t-quick --e-out`), pressed `--squish` | reference |
+| Caps mark | `CapsLock` glyph at 14 in `--lock-ink-soft`, before the button | reference |
+| Hint | UI 12/500 (`--fs-small`), `--lock-ink-soft`, 12 below the field | reference |
+| Space look | date pill: `--f-grad`, `--f-ink`, padding 3 x 14; field: `--f-grad`, dots and caret `--f-ink`, placeholder `--f-ink-soft`, button `--f-pill` | Arc (09 H1) |
+| Polkit sheet | 340 wide (`SheetWidth::Narrow`), centred, one centred column: padding 22/22/18, title display 16/700, message `--fs-control` `--ink-soft`, Details `--fs-small` 600 `--accent`, name `--fs-small` 600 `--ink-soft` over the field, lock-out line `--danger`, the two buttons in two equal columns 8 apart, 18 below | the reference's password alert |
+
+**Behaviour.** The password is a `Secret` field: its text lives in the prompt and reaches the
+caller only through `oninput` and `onsubmit`; no `value` attribute is ever written. Enter (or the
+arrow, or Authenticate) calls `onsubmit(text)` unless the text is empty or the state is
+`Checking`/`LockedOut`. Escape in the lock field empties it (design/06); in the polkit sheet it
+cancels (the sheet's own Escape). Emptying remounts the field under a new key, calls
+`oninput("")` and puts the caret back. `Checking` and `LockedOut` write `aria-disabled` on the
+field and drop typing. **Motion.** Entering `Wrong` plays `shake-x` once on the field (the
+`a-shake-x` pulse: 420 ms `(.36,.07,.19,.97)`); at `settle(Anim::ShakeX)` the field empties and
+the pulse rests; it plays again only after the state has left `Wrong` (an older firing's timer
+never cuts a newer one short). The polkit sheet enters with `peek-in` and leaves with `sheet-out`
+(section 24). The unlock fade (design/20 section 1.9, `fade --t-move --e-exit`) is not drawn
+here: the host fades or unmaps its lock surfaces.
+
+**The picture's mood (2026-09-26; the persona was dropped for the emoji the same day).** The
+lock prompt's picture takes its mood from the prompt, so the shell sets none: `Attentive` while
+the field holds text and has the caret and while `Checking`; `Wince` on `Wrong`, through the
+shake and while the emptied field stays empty (typing again turns it `Attentive`, so each wrong
+winces once and none escalates); `Happy` on `Accepted`; `Idle` otherwise, `LockedOut` included.
+An emoji plays the mapping of design/25 section 5 (a glance, the confounded face, the partying
+face; slow at idle, steady while typing). Every kind, letter and photo included, plays the
+accept beat on `Accepted` (`picture-accept`, `Anim::PictureAccept`, `--t-big --e-spring`; the
+host unlocks at its settle; not under Reduced motion). An emoji's `WakeStamp` advances on a key,
+pointer move or press inside the prompt, at most once a second, so it rests between 19 and 20 s
+after the last activity; the prompt's `wake` prop adds the caller's stamp (the display waking). A
+letter or a photo is not woken, so activity costs it no render. `Accepted` closes the field like
+`Checking`. The polkit sheet's picture is `Wince` on `Wrong`, `Happy` on `Accepted`, else
+`Idle`, and is not woken by activity.
+
+### 43. AppSwitcher (M11, 2026-09-26; values proposed)
+
+**Purpose.** The Cmd+Tab panel (design/13 section 13.3.5, every value of whose table is here;
+design/20 section 1.11). It draws and reports only: the 150 ms show delay, the keys (Tab,
+Shift+Tab, grave, arrows, Q, H, Escape), the modifier's release and the MRU order are the
+shell's.
+
+**Props.**
+
+```rust
+pub struct AppKey(pub String);
+pub enum TilePresence { Present /* default */, Leaving }
+pub struct SwitcherApp { pub key: AppKey, pub name: String, pub icon: IconSource,
+    pub plate: Option<PlateFamily>, pub presence: TilePresence }        // SwitcherApp::new(key, name, icon)
+pub struct SwitcherMetrics { pub icon: Px, pub cell: Px, pub gap: Px, pub min_icon: Px } // 96, 112, 8, 48
+pub fn switcher_fit(count: usize, selected: usize, SwitcherMetrics, Option<Px>) -> SwitcherFit
+#[component] pub fn AppSwitcher(apps: Vec<SwitcherApp>, selected: AppKey, output: Option<Px>,
+    metrics: SwitcherMetrics, onhover: EventHandler<AppKey>, onactivate: EventHandler<AppKey>) -> Element
+```
+
+**Markup.** `div.ds-switcher[role=listbox]` (its geometry inline as `--switcher-cell`, `-icon`,
+`-gap`, `-view`, `-shift`, `-at`) holding `div.ds-frame` (the Space gradient and grain, as the
+OSD card) and `div.ds-switcher-view` around `div.ds-switcher-row`: `span.ds-switcher-ring`, then
+per app `div.ds-switcher-cell[role=option][aria-selected][aria-label]` (`a-fold` with
+`data-pulse` and `data-presence="leaving"` while leaving) holding a `Tooltip { Fly, shown }` around
+`span.ds-switcher-icon` and its `IconView`.
+
+| Part | Value | Basis |
+| --- | --- | --- |
+| Panel | `Material::Osd` in a transparent root, painted as the OSD card: the Space gradient at the frame alpha (the solid floor without blur), `--m-box`, `--m-radius` (18); padding 16, 10 below the name line | design/13 13.3.5 (Osd, radius 18, padding 16); design/20 1.7 |
+| Cells | `--switcher-cell` 80 with icons `--switcher-icon` 64 (design/20 section 1.11: the plate at 64), `--switcher-gap` 8 | `switcher.cell_size_px`, `icon_size_px`, `cell_gap_px` |
+| Selection | one `--f-pill` square of the cell's size, `--r-tile` (12), behind the row, moved to the selected cell by `transform` with `--t-quick --e-spring` | design/13 13.3.5; design/20 1.11 |
+| Name | the selected cell's Fly, moved under the tile (14 below the icon) and set in the UI face 13/600 in `--f-ink`, no label box; the others' Flys are `Shown::Hidden` | design/13 13.3.5 ("ui 13/600 centred"); design/20 1.11 (`Tooltip{Fly}`); the user's no-monospace rule |
+| Overflow | the panel fits `output - 64`: past that the cells shrink (icon + 16), down to icons of `switcher.overflow_min_icon_px` (48); past that the view is the room left and the row is scrolled (`margin-left`) with the selection centred, clamped to the row's ends | design/13 13.3.5 |
+| Appear | `fade` at `--t-quick --e-out`, no pop; closing is the host's (instant on release) | design/13 13.3.5 |
+| Quit (Q) | the leaving tile plays `fold` once (`--t-big --e-exit`, held); the shell drops it at `settle(Anim::Fold)` | design/13 13.3.5 |
+
+**Behaviour.** The pointer entering a tile calls `onhover(key)` (the shell selects it; "hover
+selects"), a click `onactivate(key)` ("click activates"); the component never moves the
+selection itself. The scroll is not animated: a transition on it played on the panel's first
+frame on Blitz, sliding the row in as it appeared.
+
+### 44. AnimatedEmoji (the user's picture as a moving emoji, 2026-09-26; design/25)
+
+**Purpose.** The user's picture as an emoji they pick from a shipped set of 42 Noto Animated
+Emoji (CC BY 4.0), moving: it plays its loop for 20 s after a wake and then rests. Replaces the
+persona as the user's picture; `UserPicture::Emoji(EmojiId)` carries it (design/25 section 7).
+
+**Markup.**
+
+```html
+<div class="ds-emoji" data-size="28|64|128" data-mood="idle|attentive|wince|happy|asleep"
+     data-disc="none|tinted" data-playback="awake|still" aria-hidden="true" style="--em-disc:#…">
+  <div class="ds-emoji-face" data-emoji="wink" data-frame="0"
+       style="background-image:url(data:image/png;base64,…);background-size:800% 400%;background-position:0% 0%"></div>
+</div>
+```
+
+**Props.**
+
+```rust
+#[component] pub fn AnimatedEmoji(emoji: EmojiId, size: PictureSize,
+    #[props(default)] mood: Mood, #[props(default)] wake: WakeStamp,
+    #[props(default)] disc: EmojiDisc /* None | Tinted(DiscHue) */,
+    #[props(default)] playback: EmojiPlayback /* Awake | Still */) -> Element
+pub enum EmojiId { Grinning, …, Blush /* default */, …, Fox } // serde: its slug
+```
+
+**Geometry.** 28, 64 or 128 px square (`PictureSize`). Small and Medium read the 128 px sheet,
+Large the 256 px one, so every size has 2x pixels. With a disc the face is inset 14 %.
+
+**Behaviour.** A Rust timer moves `background-position` frame by frame (per-frame holds from the
+manifest, 80 ms steps) only inside the 20 s awake window (`--t-awake`), whole loops only, ending
+on frame 0, the emoji's rest pose; then nothing is scheduled. Idle plays the pick slowly (a loop,
+4 s at rest, again); Attentive swaps in `EmojiId::ATTENTIVE` (eyes) once, then plays the pick
+steadily; Wince swaps in `EmojiId::WRONG` (confounded) once through, Happy `EmojiId::UNLOCKED`
+(partying), then the pick again at the idle pace; Asleep shows `EmojiId::ASLEEP` (sleeping)
+still (design/25 section 5). Reduced motion, or `playback: EmojiPlayback::Still` (a picker's
+grid): still frames only.
+
+**Tests.** sill-shell-kit/tests/emoji_ssr.rs (goldens, lint), `sill-shell-kit/emoji/tests.rs` (sheets,
+manifest, the script's idle rule, the mood mapping), sill's ds-conformance/tests/emoji_animation.rs (frames
+advance, rest at 21 s, idle's rests, the wince swap, each mood as a `UserPortrait`, Reduced).
+
+### 44a. UserPicture, UserPortrait and UserPicturePicker (2026-09-26; design/25 section 7)
+
+**Purpose.** The user's picture as one of three kinds, drawn the same way everywhere, and the
+grid where the user picks it (Settings' Users page, first run).
+
+**Props.**
+
+```rust
+pub enum UserPicture { Face(AvatarFace), Emoji(EmojiId), Photo(ImageSource) }   // From each
+pub enum PictureSize { Small /* 28 */, Medium /* 64 */, Large /* 128 */ }
+pub enum Mood { Idle /* default */, Attentive, Wince, Happy, Asleep }
+#[component] pub fn UserPortrait(picture: UserPicture, size: PictureSize,
+    #[props(default)] mood: Mood, #[props(default)] wake: WakeStamp) -> Element
+pub enum PictureChoice { Auto /* default */, Letter, Emoji(EmojiId), Photo }   // serde: {"kind","v"}
+pub enum FaceFile { Found(ImageSource), Missing }
+pub fn resolve_picture(choice: PictureChoice, face: FaceFile, letter: AvatarFace) -> UserPicture
+#[component] pub fn UserPicturePicker(letter: AvatarFace, choice: PictureChoice,
+    onpick: EventHandler<PictureChoice>, #[props(default = 8)] columns: u8,
+    #[props(default = "Picture")] label: String) -> Element
+```
+
+**Markup.** `UserPortrait`: `div.ds-user-picture[data-mood]` (`a-picture-accept` and
+`data-pulse` while the beat plays) around the `Avatar` at its own size, the `AnimatedEmoji`
+(bare) or `div.ds-user-photo[data-size]` around `img.ds-user-photo-image`. The picker:
+`div.ds-picture-picker[role=radiogroup][tabindex=0]` with the grid's inline columns, holding 43
+`div.ds-picture-cell[role=radio][aria-checked][aria-label]`: the letter's `Avatar` at 64
+("Letter P"), then each emoji's `AnimatedEmoji { size: Medium, playback: Still }` (its name).
+
+| Part | Value | Basis |
+| --- | --- | --- |
+| Wrapper | inline-flex, its picture's size; `transform-origin:50% 100%` | the beat lifts from the base |
+| Accept beat | `picture-accept`: `35%{ translateY(-8%) scale(1.03) }` between rests, `--t-big --e-spring` | the persona's hop, gentler, for every kind |
+| Picker cell | 76 px (`PICTURE_CELL`), the 64 px disc centred, no gap; chosen: `--accent-soft` on `--r-menu-item` | the emoji grid's selection look |
+
+**Behaviour.** `UserPortrait` plays the beat when `mood` changes to Happy (not on mount; never
+under Reduced motion); an emoji also plays the mood (section 44). The picker is a radio group: a
+click or an arrow key (the emoji grid's `grid_step`: Left and Right wrap rows, Up and Down stay
+inside) calls `onpick` with the new choice; `choice` is the caller's and marks one cell (none for
+`Auto` or `Photo`). Nothing in the picker plays.
+
+**Tests.** sill-shell-kit/tests/user_picture_ssr.rs (goldens of the letter, the emoji at rest, the photo
+and the picker; lint; the serde round trip; the `resolve_picture` table), `ds/src/components/
+user_picture/picker.rs` (cells and marks), sill's ds-conformance/tests/lock_switcher.rs (the emoji's moods
+in the lock prompt; the letter's beat).
+
+### 45. PdfThumb and PdfFileThumb (a PDF's first page; sill M9 launcher v2, 2026-09-26; values proposed)
+
+**Purpose.** A PDF's first page as a thumbnail: the launcher's preview pane now, Quick Look
+(design/20 section 2.4) later, the same part in both. The consumer passes a path and a size and
+never rasterises anything itself.
+
+**Split.** `ds::prelude::PdfThumb` draws a page it is handed (`PdfPage`) and reads no file: ds stays
+renderer-free and effect-free (`scripts/check-boundary.sh`), and pdfrum's CPU rasteriser is a
+renderer. `ds_blitz::PdfFileThumb` (cargo feature `pdf`, off by default so an app that
+shows no PDF builds no PDF reader) takes the path, reads and rasterises page 1 with pdfrum 0.4's
+`VelloCpuBackend` on a worker thread, caches the result by (path, modification time, device
+size, scale), and feeds `PdfThumb`. A consumer that is not on Blitz (mailo on the webview)
+can still draw `PdfThumb` from a raster of its own.
+
+**Markup.**
+
+```html
+<div class="ds-pdf-thumb" data-state="loading|pending|ready|empty|failed" role="img"
+     aria-label="PDF preview" aria-busy="true" style="width:160px;height:200px">
+  <div class="ds-pdf-thumb-sheet" style="left:2.73px;top:0px;width:154.55px;height:200px">
+    <img class="ds-pdf-thumb-page" alt="" src="data:image/png;base64,…" draggable="false">
+  </div>
+  <!-- failed, instead of the sheet: -->
+  <div class="ds-pdf-thumb-plate" data-trouble="unreadable|locked"><span class="ds-plate" …>…</span></div>
+</div>
+```
+
+**Props.**
+
+```rust
+pub enum PdfPage { Loading /* default */, Ready { image: ImageSource, sheet: ImageSize },
+    Empty, Failed(PdfTrouble) }
+pub enum PdfTrouble { Unreadable, Locked }
+pub const PDF_THUMB_GRACE: Duration;          // 400 ms, design/26 PendingGrace
+pub const PDF_DEFAULT_SHEET: ImageSize;       // A4 portrait, 595 x 842 pt
+pub fn sheet_rect(room: Size, shape: ImageSize) -> Rect;
+#[component] pub fn PdfThumb(page: PdfPage, size: Size, label: Option<String>) -> Element
+// ds-blitz, feature `pdf`:
+#[component] pub fn PdfFileThumb(path: PathBuf, size: Size, label: Option<String>) -> Element
+pub struct ThumbRequest { pub path: PathBuf, pub size: Size, pub scale: Scale }
+pub fn pdf_thumb_blocking(&ThumbRequest) -> PdfPage;    // cached, else read + raster now
+pub fn pdf_thumb_cached(&ThumbRequest) -> Option<PdfPage>;
+pub fn pdf_thumb_bytes(Vec<u8>, DeviceBox) -> PdfPage;  // no file, no cache
+```
+
+**Values.**
+
+| Part | Value | Basis |
+| --- | --- | --- |
+| Sheet | the page's displayed aspect (crop box, after rotation), the largest that fits `size`, centred | a page is never cropped or stretched |
+| Paper | `--foreign-ground` (white in both schemes), rendered on white | a PDF page is white whatever the desktop's scheme |
+| Edge | `var(--hairline) solid var(--line)`, radius `--r-micro`, lift `--shadow-1` | a sheet of paper, not a card |
+| Loading | the sheet laid out at A4 and transparent for 400 ms, then `pending`: the blank sheet at .5, faded in over `--t-quick` | design/26 R4: a fast read shows nothing; the pending look's still frame costs no frames |
+| Empty | the blank sheet (an empty file, or a document with no pages) | |
+| Failed | no sheet; `Icon::File` (unreadable) or `Icon::Lock` (a user password) on a red app-icon plate, two fifths of the room's shorter side (16 to 96) | design/08 plates; the file type, not an error mark |
+| Raster | device pixels = `size` x scale, rounded up, each side at most 2048; PNG in a `data:` URI | sharp at the scale drawn |
+| Cache | 64 pages, the oldest dropped first; the key's modification time means a file rewritten in place misses | a launcher scrolling results reuses pages |
+
+**Motion.** The sheet's opacity changes over `--t-quick --e-out` (loading 0, pending .5,
+ready 1). No loop.
+
+**Behaviour.** A page already cached for the file as it is now draws at once. Otherwise the
+first frame is `loading`; the request joins the queue of the one long-lived `pdf-thumb`
+worker thread, which reads and rasterises the page (a panic in the reader on hostile bytes reads
+as unreadable), and its page replaces the loading state. The queue is latest-wins: each
+thumbnail holds at most one waiting job, so a new path or size replaces its request that has not
+started (holding an arrow key through 20 PDFs runs two rasters, not twenty); a raster already
+running finishes into the cache but is not shown; a job whose thumbnail has gone is skipped; at
+most `QUEUE_DEPTH` (8) jobs wait, and a job pushed out of a full queue is asked for again. An
+encrypted file that opens with the empty user password draws; one that needs a password is
+`Failed(Locked)`.
+
+**Tests.** `ds/tests/it/pdf_thumb_ssr.rs` (a golden of each state, lint), `ds/src/components/
+pdf_thumb.rs` (the sheet's fit), `ds-blitz/tests/pdf_thumb.rs` (a generated PDF rasterised in
+its colour and aspect, the cache hit and the mtime miss, the failures, a document painting the
+page), `ds-blitz/tests/pdf_thumb_queue.rs` (20 quick requests run at most 4 rasters and show the
+last), `ds-blitz/pdf_thumb/cache.rs` (eviction).
+
+### 46. EmojiGrid (sill M9 launcher v2, Q291, 2026-09-26; values proposed)
+
+**Purpose.** Emoji as a grid of cells moved through in two dimensions: the launcher's Emoji
+section, and later a character picker. On its own it takes the keyboard; in a `CommandPalette`
+it is one group (`GroupEntries::Grid`, section 49) and the palette's field keeps the keyboard.
+
+**Markup.**
+
+```html
+<div class="ds-emoji-grid ds-emoji-text" role="grid" aria-label="Emoji" tabindex="0"
+     style="grid-template-columns:repeat(8,56px);grid-auto-rows:56px">
+  <div class="ds-emoji-cell" role="gridcell" aria-selected="true" aria-label="party popper">
+    <span class="ds-fly-target"><span class="ds-emoji-glyph" aria-hidden="true">🎉</span>
+      <span class="ds-fly" role="tooltip">party popper</span></span>
+  </div>
+</div>
+<!-- in a palette: no tabindex, aria-label the group's title -->
+```
+
+**Props.**
+
+```rust
+pub struct EmojiCell<T> { pub value: T, pub glyph: String, pub name: String }
+pub struct EmojiCells<T> { pub cells: Vec<EmojiCell<T>>, pub columns: u8, pub cell: Px }
+pub const EMOJI_CELL: Px;      // 56
+pub const EMOJI_COLUMNS: u8;   // 8
+#[component] pub fn EmojiGrid<T>(cells: Vec<EmojiCell<T>>, onpick: EventHandler<T>,
+    columns: u8 /* 8 */, cell: Px /* 56 */, selected: Option<usize>,
+    on_select: Option<EventHandler<usize>>, label: String /* "Emoji" */) -> Element
+pub fn grid_step(selected: usize, step: GridStep, count: usize, columns: u8) -> GridMove;
+pub enum GridStep { Up, Down, Left, Right }
+pub enum GridMove { To(usize), Out(GridEdge) }   pub enum GridEdge { Top, Bottom }
+```
+
+**Values.**
+
+| Part | Value | Basis |
+| --- | --- | --- |
+| Cell | `cell` square (56 in the launcher: eight in the 540 results column less padding), radius `--r-menu-item` | design/13 section 13.3.9 |
+| Glyph | `--fs-emoji-cell` 30, line-height 1, the `--font-emoji` stack (`.ds-emoji-text`) | proposed |
+| Selected | `--accent-soft`, as a palette row | design/27 section 6.4 (b): a highlight, never a ring |
+| Name | the cell's `aria-label` and its Fly tooltip; never a caption under the cell | reference |
+| Pointer | the arrow (`cursor:default`) | design/27 section 6.3 |
+
+**Behaviour.** Left and Right walk the cells in reading order and wrap from a row's end to the
+next row's start (the reference's character viewer); they stop at the first and last cell. Up
+and Down move a whole row in the same column; Down into a shorter last row lands on its last
+cell. Past the top or bottom row `grid_step` answers `Out(edge)`: a grid on its own stays, a
+palette moves on to the neighbouring group's nearest live stop. On its own, Enter or Space picks
+the selected cell and a click picks the cell clicked; the pointer over a cell asks to select it.
+The selection is always the caller's (`selected`, `on_select`); from none, the first arrow asks
+for cell 0.
+
+**Tests.** `ds/components/lists/emoji_grid/nav.rs` (the moves), `ds/components/menus/palette/palette_stops.rs`
+(entering and leaving in a palette), `ds/tests/it/launcher_parts_ssr.rs` (`grid-in-palette`,
+`grid-alone`), `ds-conformance/tests/it/palette_grid_pane.rs` (the palette walk and the grid on its own).
+
+### 47. PreviewPane (sill M9 launcher v2, Q292, 2026-09-26; values proposed)
+
+**Purpose.** A Quick-Look-style pane for one thing: its picture, page, text, icon or facts over
+a caption, and its actions with their keys. The launcher sets it beside its results with
+`CommandPalette { aside }`; the Quick Look app (design/20 section 2.4) is to reuse it.
+
+**Markup.**
+
+```html
+<div class="ds-palette" data-aside="shown" style="--aside:360px;">   <!-- the card -->
+  <div class="ds-search">…</div>
+  <div class="ds-menu" data-embed="palette">…</div>
+  <div class="ds-palette-aside" style="width:360px">
+    <div class="ds-preview" role="region" aria-label="Invoice.pdf preview"
+         data-content="image|text|pdf|app|facts|emoji|web|slot" data-shown="visible"
+         data-presence="entering|present|leaving" data-pulse="a|b">
+      <div class="ds-preview-media">…</div>          <!-- img.ds-preview-image, div.ds-preview-text[data-face=mono|prose],
+                                                          .ds-pdf-thumb, an icon, span.ds-preview-emoji.ds-emoji-text -->
+      <div class="ds-preview-caption"><b class="ds-preview-title">Invoice.pdf</b>
+        <small class="ds-preview-line ds-truncate">…</small></div>
+      <dl class="ds-preview-facts"><div class="ds-preview-fact"><dt>Kind</dt><dd>Setting</dd></div></dl>
+      <div class="ds-preview-actions">
+        <button type="button" class="ds-preview-action" tabindex="-1" data-focused="true">
+          <span class="ds-preview-action-label">Open</span><kbd class="ds-kbd" data-size="small">↵</kbd></button>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+**Props.**
+
+```rust
+pub enum PaneContent {
+    Image { src: ImageSource, size: ImageSize }, Text { excerpt: String, mono: Mono },
+    Pdf { page: PdfPage, name: String }, App { icon: IconSource, name: String, detail: Option<String> },
+    Facts { icon: IconSource, title: String, rows: Vec<(String, String)> },
+    Emoji { glyph: String, name: String }, Web { host: String, url: String },
+    Slot { label: String, element: Element } }
+pub enum Mono { Monospace, Proportional }
+pub struct PaneAction { pub label: String, pub shortcut: Shortcut }
+pub const PANE_MEDIA: Size;   // 328 x 220
+#[component] pub fn PreviewPane(content: PaneContent, actions: Vec<PaneAction>,
+    focused: Option<usize>, onaction: EventHandler<usize>,
+    shown: Shown /* Visible */, on_hidden: EventHandler<()>) -> Element
+// ds-blitz, feature `pdf`:
+pub fn use_pdf_page(path: Option<PathBuf>, size: Size) -> Option<PdfPage>
+```
+
+**The slot.** `PaneContent::Slot { label, element }` hosts the caller's own element in the media
+box, for content quire cannot name as data (a viewer's peek, which already draws its picture, name
+and facts). The pane keeps its frame: the slide in, the cue's cross-fade of the media, the pending
+look (which replaces the element while a load runs), and the actions. It adds no caption, the
+media box grows to fill the column above the actions (`[data-content=slot]`), and `label` words the
+region (`"{label} preview"`). The element is the caller's: its styles come from the caller's own
+layer (`AppStyle`), and a slot's markup is linted like any other.
+
+**The PDF split.** ds reads no file (section 45), so `PaneContent::Pdf` takes the page, not the
+path. A Blitz app gets the page from `ds_blitz::use_pdf_page(path, ds::components::lists::preview::content::PANE_MEDIA)`, the hook
+`PdfFileThumb` itself now runs on: cached, else asked of the one `pdf-thumb` worker, `Loading`
+until it lands. It takes an `Option` so the component that draws the pane calls it on every
+render and passes the path only while the content is a PDF: the pane stays one mounted element
+whatever the selection shows, so moving from a file to a PDF does not replay the pane's entrance
+(a wrapper component per content kind would remount it). A webview app rasterises the page
+itself and passes it the same way.
+
+**Values.**
+
+| Part | Value | Basis |
+| --- | --- | --- |
+| Width | the palette's `aside_width`, 360 by default (`ASIDE_WIDTH`), past a `--hair` `--line-soft` divider | sill F654 (360 beside the 540 results) |
+| Card | over a window, `min(540 + aside, 96%)` wide; in a surface, its container's width (the host widens it) | design/13 section 13.3.9 "the card widens by the pane" |
+| Padding, gap | 16, 12 | proposed |
+| Media | 220 tall; a picture or page fitted at its own aspect (`sheet_rect` in `PANE_MEDIA`); text on `--surface` with a `--line-soft` edge, radius `--r-small`, `--fs-meta` (mono: `--font-code` at `--fs-help`); app icon 96, facts icon 64, web: the Globe glyph on a Blue plate at 64; an emoji at `--fs-emoji-preview` 96 in the colour face | proposed |
+| Caption | title `--fs-title` 600, line `--fs-small` `--ink-faint`, centred | proposed |
+| Facts | label `--ink-faint` right-aligned in 40 %, value `--ink`, `--fs-small` | proposed |
+| Actions | at the foot; `--surface` buttons with a `--line` edge, radius `--r-small`, the label then its `Kbd` small; the focused one shows the focus ring (`--focus-ring` in `--accent-ring`); arrow pointer | design/09 H5 (every action shows its key), design/27 sections 6.3, 6.4 |
+
+**Motion.** Mounted or turned `Visible`: `slide-r` over `--t-move`, restarted under its other
+name on each showing, at `--e-spring` (`Anim::PaneInR`) only when `cue` says a contact caused it,
+else at `--e-out` (`Anim::PaneInROut`; design/26 R5, sill Q370). Turned `Hidden`:
+`Anim::PaneOutR` (`pane-out-r`, `--t-move --e-exit`, held), then `on_hidden` at its settle, when
+the caller drops the pane and the palette's `aside`. The content's moments come from `cue:
+PaneCue` (the caller's `use_detail` cue, or a bare `Touch`): a Preview, Change or Failure fades
+the media in at `--t-quick` (`Anim::MorphFadeIn`) in place; Reduced snaps. `operation:
+Operation` is the load the media waits on (Q371): `use_pending` with a Spin ring, nothing for
+`PendingGrace`, then the media box holds `.ds-preview-pending` (the ring, 20 px mark, over
+"Loading…" in `--ink-faint` `--fs-small`), still from the token's deadline; the pane is
+`aria-busy` while it runs. design/26 section 5.6 has the table.
+
+**Behaviour.** The pane never takes the keyboard: the launcher's field keeps it (design/13
+section 13.3.9's keys are the caller's, through the palette's `claim`, section 49), so `focused`
+draws which action the caller's Tab has reached. A click on an action calls `onaction(i)`.
+
+**Tests.** `ds/tests/it/launcher_parts_ssr.rs` (`pane-*`, `palette-aside`), `ds-conformance/tests/
+palette_grid_pane.rs` (the card widening over a window, the results narrowing in a surface, the exit
+settling before `on_hidden`), `ds-blitz/tests/pdf_thumb.rs` (a pane drawing a PDF through
+`use_pdf_page`), `ds-conformance/tests/it/launcher_pane_cues.rs` (each moment, Reduced, 0 frames).
+
+### 48. RowShape: file and clipboard rows in the palette (sill M9 launcher v2, Q290, 2026-09-26; values proposed)
+
+**Purpose.** The launcher's file and clipboard results, as palette rows rather than new markup.
+
+**Why a `MenuRow` field.** A palette row is a menu row (section 20); `ListRow` (section 16) is
+mail's thread row, with a dot, a star and a hover strip the launcher has no use for, and its
+selection is not the palette's. `MenuEntry::Row(MenuRow)` already carries runs, a trailing action
+and a constructor callers spread (`..MenuRow::new(value, title)`), so a new field is additive
+for every caller; a field on `MenuEntry::Item` would have broken every `Item` literal in sill,
+mailo and quire. The shape changes only what a row draws: it is picked, navigated and matched
+on its title as any row.
+
+**Props.**
+
+```rust
+pub struct MenuRow<T> { …, pub shape: RowShape }        // Plain by default (MenuRow::new)
+pub enum RowShape { Plain,
+    File { thumb: Option<ImageSource>, location: String, modified: String },
+    Clip { body: ClipBody, age: String } }
+pub enum ClipBody { Text { excerpt: String, lines: u8 }, Image { src: ImageSource, size: ImageSize } }
+```
+
+**Markup.** The row as section 20 draws it, with `data-shape="file|clip-text|clip-image"`:
+
+| Shape | Tile | Words | Trail |
+| --- | --- | --- | --- |
+| File | the thumbnail (`img.ds-menu-thumb` filling a `data-tile="thumb"` tile, no plate), else the row's tile (a mime glyph) | the title, then `location` as the second line (the row's `detail` is not drawn) | `span.ds-menu-when` (`modified`) before the row's trail |
+| Clip, text | the row's tile | `span.ds-menu-clip`: the excerpt in `--font-code` at `--fs-help`, line-height 1.35, `pre-wrap`, clipped to `--lines` (1 to 4) since Blitz has no line clamp; the title is not drawn (it is still what the query matches) | the age, then the trail |
+| Clip, image | the row's tile | the title, then `img.ds-menu-clip-image` 44 tall at its aspect, at most 200 wide, `--r-tiny` with a `--line` edge | the age, then the trail |
+
+A plain row's markup is unchanged: no `data-shape`, no `ds-menu-when`.
+
+**Tests.** `ds/components/lists/row/shape.rs` (the picture's box, the line budget),
+`ds/tests/it/launcher_parts_ssr.rs` (`row-file`, `row-clip`).
+
+### 49. PaletteGroup, "Show More" and the key claim (sill M9 launcher v2, Q294 and Q299, 2026-09-26)
+
+**Groups.**
+
+```rust
+pub struct PaletteGroup<T> { pub title: String, pub entries: GroupEntries<T>,
+    pub action: Option<(String, EventHandler<()>)> }
+pub enum GroupEntries<T> { List(Vec<MenuEntry<T>>), Grid(EmojiCells<T>) }
+impl PaletteGroup<T> { fn list(title, entries) -> Self; fn grid(title, EmojiCells) -> Self;
+    fn with_action(self, label, EventHandler<()>) -> Self }
+pub struct PaletteGroups<T>(pub Vec<PaletteGroup<T>>);   // From<Vec<PaletteGroup<T>>>,
+                                                         // From<Vec<(String, Vec<MenuEntry<T>>)>>, Default
+```
+
+A group with no rows or cells is not drawn, header and action included. Its header is
+`SectionHeader { kind: Menu, action }`.
+
+**The cursor's stops.** The palette's cursor rests on *stops*: each row (an item or a submenu
+parent, as before), each emoji cell, and each group's header action, numbered in drawing order
+with a group's action **after its last row or cell**. `selected`, `on_select` and
+`on_select_rect` name a stop by that number; for a palette of plain rows it is the choice number
+it always was. Up and Down walk the stops clamped, skipping disabled rows; inside a grid they
+move a row and leave it past its top or bottom row (section 46); Left and Right move only inside
+a grid, where the palette prevents their default (elsewhere they are the field's caret keys). A
+header action is not measured: `on_select_rect` reports nothing while the cursor is on one.
+
+**"Show More" by keyboard.** Down past a group's last row rests on its header's action, drawn
+selected (`data-selected`, section 13); Enter runs it and the palette stays open (a pick closes,
+an action does not); Down goes on to the next group. Chosen over a chord because Tab is the
+launcher's provider filter (design/06 section 20.2), Cmd chords are Q298's to assign, and a stop
+in the order is reachable with the keys a person is already pressing; the action sits in the
+header visually and last in its group in the order, the place Down reaches after the rows it
+would reveal.
+
+**Show More and Show Less motion** (design/26 section 5.6, sill Q373, 2026-09-27). The palette
+plays them itself, from its own action: when the person runs a group's action (Enter on it, or a
+click) and the next results differ from the last only in that group keeping its first rows and
+gaining or losing rows after them, it is an expand or a collapse. Expand: the added rows carry
+`data-row-motion=rise` with `--i` their place among the added (capped at 12) and `rise` at
+`--t-move --e-out` with `--stagger`; once laid out, their height is read and kept for the group.
+Collapse: the last row kept carries `data-row-motion=heal-from`, the list `--dy` (the kept height,
+scaled to the rows removed), and everything after that row `heal`s up (`--t-move --e-spring`: the
+person ran it, R5); with no height kept this opening it closes up at once. A group that grows or
+shrinks without its action ran is a new result set: nothing moves. An emoji grid group's action
+plays nothing.
+
+**First-show rise** (Q372). `reveal: RevealCue` (`#[props(into)]`, default
+`RevealCue::First(FirstShow::Still)`: no rise). `First(Animate)` rises the list's children
+(`[data-reveal=play]` on `.ds-menu`, design/26's `Reveal` rule) on mount and on each showing;
+`Cue(cue)` rises on each new Appear of the caller's `use_detail` cue and never for a Change.
+
+**The key claim.** `claim: Option<Callback<FieldKey, Claim>>` hears every key the field gets
+first, with where the caret is:
+
+```rust
+pub struct FieldKey { pub event: KeyboardEvent, pub caret: Caret }
+pub enum Claim { Take, Pass }
+pub enum Caret { AtEnd, Inside, Unknown }   // ds::host::caret; Unknown: no host, no field
+// the host's read: ds::host::parts::CaretHost::caret, on ds_blitz's Blitz host
+```
+
+`Claim::Take` keeps the key from everything else: the palette does not read it, its default is
+prevented (the field types no Space, moves no caret) and `onkey` does not hear it. `Pass` goes on
+as before. The caret is read from the field's editor when the key arrives: `AtEnd` for a bare
+caret after the last character (an empty field too), `Inside` for any other place or any
+selection. Blitz holds no borrow of the document while a handler runs, so the read is exact;
+without ds-blitz's `CaretHost` (a webview) it is `Unknown`. A verdict-returning callback was
+chosen over a declarative `KeyPolicy`: whether Space is the pane's depends on the caller's own
+state (browsing or typing, sill F654), which a policy would have to mirror into props every
+render; the callback asks at the moment with the caret in hand. It is a new prop beside
+`onkey`, so no existing `onkey` changes.
+
+**Tests.** `ds/components/menus/palette/palette_stops.rs` (the stop order and the moves),
+`ds/host/caret.rs` (the caret's place), `ds/tests/it/launcher_parts_ssr.rs` (`show-more`,
+`show-more-selected`), `ds-conformance/tests/it/palette_grid_pane.rs` (Show More reached and run by keyboard;
+Space taken only while browsing, Right only at the end), `ds/components/menus/palette/palette_expand.rs`
+(what is an expand), `ds-conformance/tests/it/launcher_palette_cues.rs` (the rise, the expand and the
+collapse, Reduced, 0 frames).
+
+### 50. EditSurface spelling (mailo's composer, 2026-09-27; values proposed)
+
+**Purpose.** Spellchecking in an app's own editor on `EditSurface` (the surface itself is in
+FINDINGS.md "Edit surface" and CONSUMING.md "Edit surface"): a misspelt word gets the reference
+platform's red dotted underline, and a right-click on it offers replacements. Off by default,
+so a surface that says nothing draws exactly what it drew before.
+
+**Split.** `ds` holds the vocabulary and the pure rules: `Spell`, `Lang`, the tokeniser and its
+skip rules (`spell::words`), the CJK test (`spell::script`), how marks follow an edit and which
+word is being typed (`spell::marks`), and the seam `Rc<dyn SpellService>`, a root context.
+`ds_blitz::spell` (cargo feature `spell`) implements the seam: the system's Hunspell
+dictionaries, checked and suggested by `spellbook` (MPL-2.0, used unmodified) on one worker
+thread per configuration; nothing is bundled. `ds_blitz::launch` provides it under the
+feature; another root calls `ds_blitz::spell::provide()`.
+
+**Markup.** The marks never touch the app's document: a layer is the surface's last child,
+absolutely positioned (out of the flow, so an app rule such as `.c-body > *` cannot move the
+text), taking no pointer, with one box per line of each marked word placed from the layer's own
+measured corner.
+
+```html
+<div class="ds-edit" role="textbox" …>
+  <p data-edit-node="0">Teh cat sat</p>          <!-- the app's own -->
+  <div class="ds-spell-layer" aria-hidden="true">
+    <span class="ds-spell-mark" style="left:0px;top:-20px;width:27.5px;height:calc(10px + .62em)"></span>
+  </div>
+</div>
+```
+
+**Props.**
+
+```rust
+pub enum Spell { Off /* default */, On { lang: Option<Lang> } }
+pub struct Lang(String);                 // Lang::parse("en_US.UTF-8") -> en_US; C/POSIX refused
+pub struct SpellReplace { pub range: TextRange, pub text: String }
+#[component] pub fn EditSurface(/* as before */ spell: Spell, caret: Option<TextPosition>,
+    on_replace: Option<EventHandler<SpellReplace>>, ..) -> Element
+#[component] pub fn SpellMarks(boxes: Vec<Rect>, onmounted: Option<EventHandler<MountedEvent>>) -> Element
+pub trait SpellService { fn languages(&self) -> Vec<Lang>;
+    fn paragraphs(&self, &MountedData) -> Probe<Vec<Paragraph>>;
+    fn check(&self, Vec<Lang>, Vec<String>) -> SpellFuture<Vec<String>>;
+    fn suggest(&self, Vec<Lang>, String) -> SpellFuture<Vec<String>>;
+    fn ignore(&self, String); fn learn(&self, Lang, String) -> SpellFuture<Learned>; }
+pub const SPELL_SUGGESTIONS: usize;      // 5
+// ds-blitz, feature `spell`:
+pub fn provide() -> Rc<dyn SpellService>;   // system dictionaries, the locale's language
+pub fn provide_with(SpellConfig, Vec<Lang>) -> Rc<dyn SpellService>;
+pub struct SpellConfig { pub dictionaries: Vec<PathBuf>, pub user: PathBuf }
+```
+
+**Values.**
+
+| Part | Value | Basis |
+| --- | --- | --- |
+| Mark | a dotted bottom border, round dots `calc(var(--hair) * 2)` across (2 px at 1x, whole device pixels at any scale), in `--spell-mark` | the reference's red dotted underline; Blitz draws `dotted` as round dots |
+| `--spell-mark` | the danger hue at full strength: `#E9152D` light, `#FF4245` dark | proposed: a dot a few pixels across needs all its chroma to read as red |
+| Mark height | half the line box plus .62 em, so the dots sit just under the descenders whatever the line height | proposed |
+| Debounce | `DelayToken::SpellDebounce`, 300 ms after the last input or caret move | proposed |
+| Menu | quire's context `Menu` at the pointer (or under the caret for the key): up to 5 suggestions (`No Guesses Found` when none), a rule, `Ignore Spelling`, `Learn Spelling` | the reference's spelling items |
+| Language | the surface's `lang`, else the host's: `LC_ALL`, else `LANG`; a region with no dictionary falls back (`en_NZ` → `en_US`, `de_CH` → `de_DE`) | proposed; the list setting is not in design/22 yet |
+| User dictionary | `$XDG_DATA_HOME/quire/spelling/<lang>.dic`, one word per line | proposed |
+
+**Behaviour.**
+
+- A frame after each input and each caret move the surface reads its paragraphs (every
+  `data-edit-node` text element's own text) and moves the marks with the edit: a mark whose word
+  is still whole where it was, or shifted by the paragraph's change in length, stays; any other
+  goes until the next check. After the debounce, only the paragraphs whose text changed since
+  their last check go to the worker; the answer replaces their marks.
+- The word being typed is not marked: when a paragraph changes, the word touching the caret is
+  held unmarked until the caret leaves it (a space, an arrow, a click elsewhere). Clicking into a
+  word already marked, without typing, keeps its mark.
+- Never checked: a chunk that is a URL (`scheme://`, `www.`, `mailto:`), an email address
+  (`local@domain.tld`) or a path (`/`, `~/`, `./`, `../`); text between paired backticks, or
+  inside `code`, `pre`, `kbd`, `samp`, `tt` or `var`; an all-capital word; a word with a digit.
+- CJK is never marked: a Han, kana, Hangul or Bopomofo character (Zhuyin's tone marks, CJK
+  punctuation and full-width forms included), found by Unicode block, is never part of a word.
+  A Latin word inside CJK text is still checked.
+- A right-click on a marked word, or the context-menu key (or Shift+F10) with the caret on one,
+  opens the menu; anywhere else the event goes on to the app. A suggestion reaches the app as
+  one `SpellReplace` (one undoable edit); Ignore accepts the word everywhere until the process
+  ends; Learn writes it to the user's dictionary and accepts it at once. The menu takes the
+  keyboard (`on_focus` hears `Out`) and the surface takes it back when it closes (`In`).
+- No spell service, no dictionary for the language, or `Spell::Off`: nothing is marked.
+
+**Motion.** None: a mark appears and goes with the check, as the reference's does.
+
+**Tests.** `ds/src/spell/words_tests.rs` (tokenisation, every skip rule, CJK), `script.rs` (the
+CJK blocks), `marks_tests.rs` (marks following an edit, the word being typed), `lang.rs`;
+`ds/tests/it/edit_surface_ssr.rs` (`spell-on.html`, `spell-marked.html`);
+`ds-blitz/spell/choose.rs` (dictionary fallback, the locale);
+`ds-blitz/tests/spell_worker.rs` (a temporary `.aff`/`.dic`: check, suggest, ignore, learn and
+read back, the system's en_US only where installed); `ds-blitz/tests/spell_edit.rs` (typed
+misspelling marked after the debounce, the typed word held, right-click and pick, undo restores
+it, Ignore, the context-menu key and Learn).
+
+### 51. Status glyphs: WifiGlyph, BatteryGlyph, BluetoothGlyph, VolumeGlyph (design/26 wave D1, 2026-09-27; motion settled by 26, drawing proposed)
+
+**Purpose.** The bar's status items as layered glyphs whose every state change plays the moment
+design/26 section 5.1 assigns it (G1-G4, G8-G10, G12, and G5-G7 on the glyph side), then paints 0
+frames. Ink only (`currentColor`), on Lucide's 24 grid with its 2-unit stroke; the glyph is
+decorative (`aria-hidden`) and each state has its words (`words()`, R8) for the item's label and
+menu. `StatusGlyph { status: StatusState }` holds the four as one family.
+
+**Markup.** `span.ds-status-glyph[data-kind=wifi|battery|bluetooth|volume]`, one
+`svg.ds-ic.ds-status-part[data-part][data-show=lit|faint|hidden]` per part; the first part is in
+flow and sizes the box. A pulse (`a-shake-x`, `a-seal-out`) goes on the wrapper with its
+`data-pulse` alias; `data-pending` on the wrapper is `idle`, `still` (a held loop, the glyph at
+.45), or for Bluetooth `high`/`low` (a breath's halves).
+
+| Glyph | Parts (inside out) | State (`Detailed`) | Moments |
+| --- | --- | --- | --- |
+| `WifiGlyph` | `dot`, `arc-1`..`arc-3` (Lucide `wifi`), `badge` ("!" at the lower right), `slash` | `WifiState::{Off, Idle, Joining(EventStamp), Joined { bars: WifiBars, reach: WifiReach }, Failed(EventStamp)}` | Joining: `Pending{Iterate, Layers(4)}` after `PendingGrace`, held dimmed at `PendingCap`; Joining to Joined: `Settle{Fill}` from the dot out to the real bars; bars: the arcs cross-fade lit/faint; no internet: the badge grows in (`--t-quick`, from .7); Failed: `Shake` once per stamp, then faint; Off: the slash draws on over `--t-quick` |
+| `BatteryGlyph` | `outline` (Lucide `battery`), `fill` (a filled bar in the body, 22 steps), `bolt`, `plug` (filled) | `BatteryState { level: Fraction, power: BatteryPower::{Battery, Charging, Held}, low_at: LowAt }` | a new fill step: `Sweep` from where it is over `--t-quick` (a finer change is none, R2); plugged in: the bolt (charging) or plug (held) grows in and the fill dims to .35 under it; at or under `low_at` on battery: the fill cross-fades to `--battery-low` (R15); `first: FirstShow::Animate` sweeps in from empty over `--t-sweep` |
+| `BluetoothGlyph` | `rune` (Lucide `bluetooth`), `dots` (two round dots), `slash` | `BluetoothState::{Off, On, Connecting(EventStamp), Connected, Failed(EventStamp)}` | Connecting: `Pending{Breathe}` (.45 to 1 per `--t-pending-step`, linear), held at `PendingCap`; Connecting to Connected: `Settle{LockIn}` (`seal-out`, remote) as the dots grow in; Failed: `Shake`; Off: the slash draws on, the rune faint |
+| `VolumeGlyph` | `LevelGlyph`'s body, three waves and slash | `VolumeState::{Heard(VolumeWaves), Muted, NoDevice}` | waves cross-fade by thirds; mute fades the waves out and the slash in (`LevelGlyph`'s own `--t-quick`); no count, no bump (R12) |
+
+**Values (proposed).** Faint parts at .25, a held loop at .45, a hidden part at 0 and scale .7; the
+fill's box is x 4.5, y 8.5, 11 by 7 units, corner 1, in 22 steps (half a unit: under a logical
+pixel at the bar's 22 px); the default low threshold is a fifth (`LowAt::default()`), which the
+shell reads from `bar.battery_low_percent` (design/26 G10, proposed; sill's key).
+
+**Tests.** `ds/tests/it/status_tables.rs` (every catalogue row as a `moment_table`, the first frames,
+the quantising: bars by thirds, waves by thirds, the fill's steps, the low threshold);
+`ds/src/components/status/{wifi.rs, battery_state.rs}` (layers per state, frame and fill; steps and
+tone); `ds-conformance/tests/it/status_wifi.rs`, `status_battery.rs`, `status_bluetooth_volume.rs` (each
+moment on a real Blitz document ending in `assert_settles_to_zero_frames`, the join's grace and
+its cap, a repeated stamp that does not shake, and Reduced: the still frame at once, the slash and
+the fill jumping, no shake). Gallery: Details, "Status glyphs".
+
+### 52. Control center details: the tile disc, row phases, Now Playing, device batteries (design/26 wave D2, 2026-09-27; motion settled by 26, drawing proposed)
+
+**Purpose.** The control center modules' state details of design/26 section 5.2 (G14, G16-G18,
+G20, G21, G23, G25-G30), each on the grammar's primitives and each ending at 0 frames. Every new
+prop is defaulted; the still states carry every meaning in words (R8).
+
+| Component | New | Moments |
+| --- | --- | --- |
+| `ModuleTile` | `disc: DiscMotion::{Still, Fill, Morph(Icon)}` (default `Still`); the disc is `span.ds-module-disc[data-motion]` | The disc reads Off/Busy to On as its Success (`Lighting`'s table): `Fill` lights the glyph's layers once from the inside out (`Settle{Fill}`, one layer per `--t-pending-step`; the Wi-Fi dot, then each arc); `Morph(on)` grows `on` in over the glyph (`MorphGlyph{DownUp}`), back on turning off, with `--e-spring` only when the tile's own press caused it (R5). Busy keeps the bounded Spinner |
+| `SettingsRow` | `phase: RowPhase::{Rest, Pending(EventStamp), Succeeded(EventStamp), Failed(EventStamp)}`, `work: RowWork::{Glyph, Trailing}`, `disc: RowDisc::{None, Off, On}`, `first: FirstShow` (all defaulted); `RowTrailing::Battery(Fraction)` | Pending, after `PendingGrace`: the glyph breathes (`Pending{Breathe}`, `data-pending`/`data-beat` on `.ds-settings-row-glyph`) or, with `RowWork::Trailing`, a `Spin` ring takes the trailing slot (`data-mark=pending`); both hold still at `PendingCap`. Pending to Succeeded: a `Check(On)` trailing draws on (`Settle{Check}`, `CheckMark`, then the plain check), otherwise the glyph seals (`Settle{LockIn}`: `gulp` when the row's own press started the operation, however long it ran, `seal-out` else). Failed: the row shakes once per stamp. A success nobody watched start is a plain Change |
+| `RowTrailing::Battery` | the device's `BatteryGlyph` (Compact) and `span.ds-settings-row-figure` | Appear (the battery arrives on a row already showing, or the row's `first` is `Animate`: the pane was just opened): the fill sweeps from empty over `--t-sweep` and the figure counts up in step; later levels sweep from where they are, a one-point step printed at once (R12) |
+| `PlayPauseButton` | new: `playback: Playback`, `onclick`, `availability` | An `IconButton { Tool }`'s markup with a `MorphGlyph{OffUp}` of the next action (Play paused, Pause playing or buffering), named for it; springs only under its own press |
+| `NowPlayingTrack` | new: `art: Option<IconSource>`, `title`, `by`, `playback` | A new track cross-fades art and words (`a-morph-fade-out` over `a-morph-fade-in`, `--t-quick`); a restated one plays nothing; `Buffering` breathes the art (bounded) |
+| `TrackPosition` | new: `at`, `length` (`Duration`), `playback` | A clock-paced report steps: while `Playing` the bar (`--f`) and the times repaint on each whole second from the last report, never between (1 frame a second while mounted); held otherwise, 0 frames |
+| `DeviceBattery` | new: `level`, `mark: RingMark`, `label`, `first: FirstShow`, `children` | `BatteryLevel`'s ring over its percentage on `Sweep` + `CountUp::InStep`: Appear (`first: Animate`) sweeps from empty over `--t-sweep` counting in step; a change sweeps from where it is over `--t-quick`; the bolt fades in once the sweep has landed |
+| `LevelControl` | `LevelGlyph::KeyboardBrightness` | A keyboard (Lucide `keyboard`'s body on the grid's lower half) under a rising sun whose five rays scale with the level, as the display sun's do |
+
+**Values (proposed).** Row disc 26 px (the tile disc's look: paper, or `--accent` with
+`--accent-ink` and an inset `--accent-text` hairline); the trailing spinner a 14 px ring; the
+position bar 4 px on `--m-level-well` with the played share in `--ink-soft`; the art well 48 px at
+`--r-media`; the device figure `--fs-help` in `--ink-soft`. `Icon::MoonFilled` is Lucide `moon`'s
+outline drawn with `Shape::Solid` (filled and stroked, so its silhouette is the outline's).
+
+**Tests.** `ds/tests/it/center_tables.rs` (the row and playback tables, the filled moon, the spring
+recipe); unit tables beside `Lighting`, `Percent`, `Reading` and `Playback`;
+`ds-conformance/tests/details_center_{tile,rows,player,battery}.rs`, all on `Clock::Virtual`, every
+moment ending in `assert_settles_to_zero_frames`, each with a Reduced case. Gallery: Details,
+"Control center modules".
+
+### Window frame: WindowFrame, the titlebar and the traffic lights (settled 2026-09-25)
+
+**Purpose.** The frame of a client-decorated window: our apps on `ds_blitz::launch` (mailo)
+and, later, the shell's apps on shell-host toplevels. It moves, resizes and zooms the window
+through the host seam `ds::prelude::HostWindow` (design/13 section 13.3.11; FINDINGS "Window frame").
+**Props.** `Ds { window: WindowFrame }`. `WindowFrame::None` (default) draws nothing and leaves
+the root's markup as it was; `WindowFrame::Titlebar { title, lights: Shown::{Visible,
+Hidden}, timing: FrameTiming }` (`WindowFrame::titlebar(title, lights)` takes the settings'
+default timing). `WindowTitlebar { title, lights, timing, pose: Shown::{Hidden, Visible} }` is
+the titlebar alone, for a gallery.
+**Markup.** The root stamps `data-window-frame="titlebar"` and becomes a column:
+`div.ds-titlebar[data-window][data-activity][data-first-mouse]` holding
+`div.ds-lights[role=group]` (three `button.ds-light[data-light=close|minimize|zoom]`, each with
+an `svg.ds-light-mark`) and `span.ds-titlebar-title.ds-truncate`; then `div.ds-window-body`
+with the children; then eight `div.ds-resize-edge[data-edge]` (not while maximized or
+fullscreen).
+
+| Metric | Value | Basis |
+| --- | --- | --- |
+| Titlebar height | 28 | macOS standard titlebar (28 pt) |
+| Light diameter | 12 | macOS (12 pt) |
+| Gap between lights | 8 (`--s-8`) | macOS (20 pt centre to centre) |
+| Inset of the first light | 13 (`--s-13`) from the left edge, centred on the titlebar | brief (macOS) |
+| Title | 13/600 (`--fs-control`), `--f-ink-soft`, `--f-ink-faint` inactive, centred between 84 px insets, `.ds-truncate` | macOS |
+| Light hues | close `--c-red`, minimize `--c-amber`, zoom `--c-green` (the Candy shelf) | design/03 section 15 |
+| Mark ink | the hue's `-deep` in light, its `-soft` in dark (dark on the disc in both) | macOS |
+| Resize zones | 4 px along each side, 12 x 12 at each corner, `--z-edge` | settled 2026-09-25 |
+
+**The reveal rule.** In the active window the lights are coloured at rest; in an inactive one
+they are `--f-pill` discs with a `--f-line` hairline (grey). The pointer over any light colours
+all three (inactive included) and shows all three marks; the keyboard focus on a light shows its
+mark; the green light shows its mark while its menu is open. This is macOS's rule: grey until
+hover applies to background windows, the active window keeps its colours.
+**Marks.** A cross, a bar, and the zoom mark: two outward corners, which turn inward
+("restore", `aria-label="Restore"`) while the window is maximized.
+**Behaviour.** A primary press on the titlebar's empty area that travels more than
+`move_threshold` (4 px) on either axis asks `begin_move` once; less is a click. A double-click
+on the titlebar is `zoom(Zoom::Toggle)`. Neither happens on a light (each light keeps its
+`pointerdown` and `dblclick`), and the move not while the window is maximized or fullscreen. A
+press on an edge zone asks `begin_resize(edge)` at once. Close, minimize and zoom on a click;
+the green light held for `menu_press` (500 ms), rested on for `menu_hover` (800 ms: the 450 ms
+hover intent plus 350 ms), right-clicked, or given ArrowDown opens the Move & Resize menu (a Slim
+`Menu`): Fill (`zoom(Maximize)`), Left half, Right half, Centre (`tile(..)`), each
+`Availability::Disabled` where `supports(..)` said `Support::No` as the menu opened. A hold that
+opened the menu does not also zoom on its release. Escape closes the menu (the menu's own);
+Tab reaches the three lights in order.
+**Motion.** A light springs back from `--squish` over `--t-tap --e-spring` (design/05 principle
+2: the press is contact); colours and marks cross-fade over `--t-quick --e-out`.
+
+### 53. IdleDim: the pre-screen-off dim overlay (Q447, 2026-09-27)
+
+**Purpose.** sill's own idle service dims the screen with a full-screen overlay before it goes
+off, never real brightness (design/22-SETTINGS.md section 3.24 `idle.dim_level_pct` 10..90,
+`idle.dim_s`; sill FINDINGS "sill idle (Q420 B)"). `IdleDim` is that overlay: a scrim that
+ignores every pointer and key event (sill's idle service, not this component, wakes the
+display), black at the caller's own level, fading in as the lead time runs out and snapping to
+nothing the instant an input arrives, whatever it was doing.
+
+**Markup.** `div.ds-idle-dim[aria-hidden]`, one element, its own inline `opacity`.
+
+**Props.**
+
+```rust
+#[component] pub fn IdleDim(level: Percent, phase: IdleDimPhase) -> Element
+```
+
+`level` is `idle.dim_level_pct` (10..90). `phase` is `IdleDimPhase::{Awake, Dimmed}`
+(design/26-DETAILS.md's grammar of small state changes, but not built on `Detailed`/`Cue`:
+the phase is already exactly what it means, dim or wake, so there is nothing left to classify).
+
+**Where it goes.** Its own root, above every other surface: `Ds { extent: RootExtent::Viewport,
+chrome: Some(RootChrome::Transparent), .. }` with `IdleDim` as the root's only child (a document's
+frame needs a height for an all-positioned root, CONSUMING.md).
+
+**Values.** `--scrim-idle` (design/03-COLOR.md section 17.3.3): opaque black, the same in both
+schemes; the level lives in the component's own `opacity`, not in the token.
+
+**Motion.** Not a keyframe: `ds::detail::use_idle_dim` drives the share from Rust, like `Sweep`
+(design/26 section 4.1, "Why Rust tweens"), because waking must retarget the share to zero
+mid-fade and a CSS `animation` cannot do that without a restyle. Dimming fades in over
+`--t-idle-dim --e-out` (design/05 section 3.4, ~2s, proposed); waking always snaps, with no
+frames, and so does a live settings edit that moves `level` while already dimmed
+(design/22-SETTINGS.md section 2: "no surface animates from a settings change"). Reduced motion
+never fades in either: it jumps straight to the level, the way `Sweep`'s own `Stand` plan does.
+Ends at 0 frames once landed (R3).
+
+**Tests.** `sill-shell-kit/idle_dim/model.rs` (the plan table: waking and a settings edit always snap,
+dimming fades except under Reduced); sill's ds-conformance/tests/idle_dim.rs on `Clock::Virtual` (the fade
+lands on the level at `--t-idle-dim`, an input mid-fade snaps to zero at once, Reduced motion
+shows the level from its first frame, `assert_settles_to_zero_frames` once landed). CONSUMING.md
+"Idle dim".
+
+### 54. LeavingList: rows that leave in batches and heal by measured heights (sill Q510, 2026-09-28)
+
+**Purpose.** The notification center's column. `AnimatedList` + `use_roster` heals by one fixed
+pitch and is driven by `Roster::leave`, so a Clear there had no exit and rows of different
+heights healed by the wrong distance. `LeavingList` takes the whole list on every render, the way
+`BannerStack` does: a key the caller stops listing plays its exit and stays drawn until it
+settles, and the rows below heal by the height the leaving row measured.
+
+**Batches.** Every key that goes missing in one render is one batch. Its rows play the exit
+together, each delayed by its place among the batch in list order (`--i` x `--stagger`, index
+capped at 12, design/05 section 9 rule 3), so a Clear folds its rows one after another. The batch
+settles at the longest of its rows' `settle(exit, level, i)`; then its rows are dropped at once and
+every row below heals by the sum of the measured heights of the dropped rows above it
+(`RosterState::settled_batch`), heal index counting from the first row below the first dropped
+one. So a row starts its heal exactly where it stood and ends exactly in its new place, whatever
+the rows' heights. A single dismissal is a batch of one; a group collapsing is the batch of the
+rows it hides. A key listed again while its batch plays stays where it is, is not dropped and is
+not reported; the rest of its batch goes on (a batch is its own timer, not one per row). The
+caller hears each dropped key on `on_settled`.
+
+**Markup.** `div.ds-leaving-list[role=list][aria-label][data-presence=entering|present]` holding
+one `div.ds-leaving-row[role=listitem][data-presence][data-exit]` per key, leaving rows included,
+each around the caller's content. The row is `display:flow-root`, so the content's margins stay
+inside it and its measured height (`client_rect`, taken as it mounts and again as it starts to
+leave) is the whole distance the rows below move. Style: `--i` while entering or leaving, `--dy`
+and `--d` while healing.
+
+**Props.**
+
+```rust
+pub struct LeavingItem<K> { pub key: K, pub row: Element }
+#[component] pub fn LeavingList<K: Clone + PartialEq + Hash + 'static>(label: String,
+    items: Vec<LeavingItem<K>>, exit: Exit /* Fold */, first: Presence /* Present */,
+    on_settled: Option<EventHandler<K>>) -> Element
+```
+
+`exit` is read on the render that starts a batch. `first: Present` shows the first render's rows
+at rest (a panel that slides in carries its rows); `Entering` lets them rise, staggered
+(principle 8: rows rise only when a list is first shown).
+
+**Motion.** As `ListRow` (section 16), on the row wrapper: first show `rise --t-move --e-out`
+staggered; an arrival into a list at rest `row-in --t-big --e-spring` (`C:373`); leaving `fold`
+(`--t-big`), `curl` (`--t-curl`), `crumple` (`--t-big`) or `banner-out` (`--t-move`), all
+`--e-exit` forwards with the batch stagger; healing `heal --t-move --e-spring` with `--d` x
+`--d-heal`; at rest `hold`. `tab-out` collapses its own height and is not played here (a heal on
+top of it would move the rows twice). Reduced (design/05 section 14.4): entering `fade`, leaving
+`menu-out`, healing `hold`, all at Reduced's 60 ms with no stagger, so the rows below take their
+places without sliding and a whole Clear settles at `settle(Fold, Reduced)` = 94 ms.
+
+**Not covered.** Heals that overlap: a batch that settles while the rows below are still healing
+from an earlier one restarts their heal from its own distance (the remaining part of the earlier
+heal is not carried over), as `use_roster` does. A row whose own height changes in place (a
+group's head gaining its stacked plates) moves the rows below it without a heal.
+
+**Tests.** `ds/tests/it/motion_machines.rs` (the batch as a table: stagger in list order, summed
+heal distances, a row taken back not dropped); `ds/tests/it/lists/motion.rs` on
+`Clock::Virtual` (rows of five different heights: one leaves and the rows below heal by its
+height and end exactly one row higher; a Clear of two non-adjacent rows is dropped together at
+the second row's settle and heals by 40 then 95; clearing everything settles at the fourth row's
+stagger; an arrival plays `row-in` until `settle(RowIn)`; a row listed again stays; Reduced).
+
+### 55. Alert: a question with Cancel and one action (sill Q490, 2026-09-28; values as the polkit sheet's)
+
+**Purpose.** The Mac's alert before Liquid Glass (Sonoma/Sequoia `NSAlert`, design/27): a short
+question the shell asks before an action with consequences, "Turn Bluetooth off?" from the
+control center being the first. It is the polkit sheet (section 42) without the field: a narrow
+panel over the modal scrim, everything centred in one column.
+
+**Props.**
+
+```rust
+pub enum AlertEmphasis { Default /* default */, Destructive }
+pub enum AlertButton { Cancel, Action }            // AlertEmphasis::default_button(self) -> AlertButton
+#[component] pub fn Alert(title: String, message: Option<Text>, action: String,
+    cancel: String /* "Cancel" */, emphasis: AlertEmphasis, onaction: EventHandler<()>,
+    oncancel: EventHandler<()>, icon: Option<IconSource>, flow: Flow /* Floating */,
+    shown: Option<Shown>, on_hidden: Option<EventHandler<()>>, panel_id: Option<String>) -> Element
+```
+
+**Markup.** `Flow::Floating`: a `Sheet { placement: Centre, scrim: Modal, width: Narrow }` in the
+overlay holding `div.ds-alert[data-emphasis]`. `Flow::Inline`: `div.ds-alert-stage[data-flow=inline]`
+where the caller renders it (absolute, inset 0, on `--z-peek`) holding the modal `button.ds-scrim`
+and `div.ds-sheet-stage > div.ds-sheet[data-placement=centre][data-width=narrow][role=alertdialog]`
+around the same `div.ds-alert`. Inside: `div.ds-alert-icon` (optional, `IconView` at 48),
+`div.ds-alert-title`, `div.ds-alert-message`, `div.ds-alert-actions` with two
+`span.ds-alert-slot`s, Cancel then the action.
+
+| Part | Value | Basis |
+| --- | --- | --- |
+| Panel | the narrow sheet: `min(340px, 88%)`, so 281 px in a 320 px popover; `--surface-2`, `--r-panel`, `--shadow-sheet` | section 24, `SheetWidth::Narrow` |
+| Column | padding 22/22/18, centred | the polkit sheet (section 42) |
+| Icon | 48 (`IconSize::Tile48`), 12 above the title; none by default | the Mac draws the app icon; 48 is the polkit picture's size |
+| Title | display face `--fs-title` (16) 700, `--ink` | as the polkit title |
+| Message | `--fs-control`, line-height 1.45, `--ink-soft`, 6 below | as the polkit message |
+| Buttons | two equal columns 8 apart, 18 below, full width each; Cancel left, the action right | the Mac's two-button alert |
+| Default | `Primary` (accent fill) | the Mac's default button |
+| Other | `Secondary`; a destructive action is `Danger` at `ButtonSize::Regular` with its label in `--danger` at rest | the Mac's destructive style (red label) |
+
+**Behaviour.** The default button is the action; when `emphasis` is `Destructive` it is Cancel
+(HIG, buttons: don't assign the primary role to a button that performs a destructive action, since
+people press the primary button without reading it). The default button takes the keyboard as the
+alert opens. Return presses the default button wherever the keyboard is; Space presses the button
+that has the keyboard; Tab and Shift+Tab move between the two buttons and never out (the alert is
+modal); Escape, or a press on the scrim, is Cancel. Every key it takes is prevented and stops
+there, so neither the sheet's own Escape nor a browser's synthesised click presses anything twice.
+Inline it has no layer on the stack: its keys are its own, and it covers exactly the nearest
+positioned ancestor, so render it last in that container.
+
+**Arming (`arm_after: Option<Duration>`, 2026-10-17).** A question that grants something (a
+permission) must not be answered by a keypress or click already in flight when it appeared. With a
+delay the alert is unarmed until it passes: the buttons are `Availability::Disabled` (dimmed, no
+hover or press), and Return, Escape, Space and clicks do nothing, Escape included (it neither
+dismisses nor reports a dismissal). The delay is an `Arming` state machine on quire's clock
+(`alert_model`), started when the alert mounts, and the keyboard moves to the default button when
+it arms. Unset, the alert is armed at once and is as above.
+
+**Motion.** The sheet's: `peek-in --t-big --e-spring` as it mounts (scrim `fade --t-move
+--e-out`); with `shown`, hidden, the driven spring fades and lowers it, the scrim plays `menu-out
+--t-quick --e-exit`, and `on_hidden` runs once the spring rests. Reduced: it only fades.
+
+**Tests.** `ds/tests/it/alert_ssr.rs` and `ds-conformance/tests/it/alert.rs` (the default button and faces, the
+keys, as tables); `ds/tests/it/alert_ssr.rs` (goldens under `tests/snapshots/alert/`: floating light
+and dark, inline in a 320 px popover, destructive, destructive with an icon, hidden both ways; lint
+clean; every class styled; the default is the filled button); `ds-conformance/tests/it/alert.rs` on
+`Clock::Virtual` (focus starts on the default, Cancel when destructive; Return presses the
+default wherever the focus is; Escape and the scrim cancel in both flows; Space presses the
+focused button; Tab stays inside; inline it fits inside a 320 px popover, floating it is centred in
+the window).
+
+### 56. FieldRow help (2026-10-13)
+
+`FieldRow { help, help_shown }` (design/30 section 2.2). `HelpShown::Inline` (the default) draws the help
+under the label. `HelpShown::OnRequest` hides it behind a borderless ⓘ (`Icon::Info`, `Bezel::Toolbar`,
+`ControlSize::Small`) at the label's trailing end, named "About <label>" with the tip "About". A press
+toggles a `Popover` (`Dismiss::Transient`, with its arrow) anchored to the button: the label as a bold
+title, then the help. Escape, an outside press and a second press close it, with the Popover's own
+fade; the layer stack keeps one open, since a press on another row's ⓘ is an outside press that closes
+the first. In both modes the help is one element, `id` the row's `id` plus `-help` (else a slug of the
+label), and the row carries `aria-describedby` to it; on request it is visually hidden, not removed.
+
+### 57. SpacesBar (2026-10-15)
+
+**Purpose.** Mission Control's strip of Spaces along the top edge, as Sonoma and Sequoia draw it
+(design/27 pre-Liquid-Glass). Collapsed it is a centred row of the Spaces' names with the current one
+on the frame's pill; the pointer over the bar expands it to a thumbnail for each Space with its name
+under it, the current thumbnail ringed in the accent; a plus at the right edge adds a Space; a Space a
+drag is over is lit, and so is the plus when a drag is over it. A Space may lie over its desktop's own
+picture, and the host can ask where everything is drawn.
+**Markup.** `div.ds-spaces-bar[role=group][data-expansion][data-presence][data-pulse]` holding
+`div.ds-spaces-bar-side`, `div.ds-spaces-bar-row` (a `button.ds-spaces-bar-space[data-selected]
+[aria-current][data-drop][data-drag]` per Space, holding `span.ds-spaces-bar-thumb` (with
+`img.ds-spaces-bar-backdrop` when it has a backdrop, then `img.ds-spaces-bar-picture` when it has a
+picture; only while expanded) and `span.ds-spaces-bar-name`)
+and a second side holding `span.ds-spaces-bar-add[data-drop]` around a toolbar `Button`.
+**Props.** `SpacesBar { label, spaces: Vec<SpaceTile>, shown: Shown, on_pick: EventHandler<BarSpaceKey>,
+on_add: Option<EventHandler<()>>, add_label, on_hidden, expansion: Option<BarExpansion>,
+on_expansion_change: Option<EventHandler<BarExpansion>>, add_drop: DropState, on_layout:
+Option<EventHandler<BarLayout>>, common }`. `SpaceTile::new(key, name)` with
+`.current(Selection)`, `.thumbnail(ImageSource)`, `.backdrop(ImageSource)`, `.in_drag(DropState)`.
+`add_drop` is the plus's part in a drag (`Target` wash and `--s-2` accent ring as a lit Space; `Accepts` a
+`--hair` outline). `backdrop` is drawn as an `img` under the thumbnail's picture, cover-fit and clipped by the
+card's `--r-tiny`; alone, it is what the card shows. `on_layout` hears a `BarLayout { spaces: Vec<SpaceRects
+{ key, tile, card: Option<Rect> }>, add: Option<Rect> }` (window coordinates, logical pixels) after each
+layout that moves or resizes a part (measured with `use_rect`, as the toolbar and titlebar do). `BarSpaceKey` is the host's own
+id, quoted back by `on_pick` and never read. `expansion` follows the controlled-component rule: `None`
+follows the pointer, `Some` is drawn whatever the pointer does and `on_expansion_change` hears each ask.
+A primary press only picks; a secondary one does nothing.
+**Values.** Bar padding `--s-8` by `--s-20`; Spaces `--s-16` apart; a Space `--r-small`, name 12.5 / 500
+(`--fs-meta`); collapsed current on `--f-pill` with `--shadow-current`; thumbnail 160 x 100, `--r-tiny`,
+`--f-pill-hover` ground, `--shadow-mark`; current and `DropState::Target` ring `--s-2` `--accent`;
+`Accepts` a `--hair` accent outline; `Source` dimmed to .35; thumbnails fade in over `--t-quick`.
+**Motion.** `drop-in` (`--t-overview --e-out`, 350 ms) in and `lift-out` (`--t-overview --e-exit`) out,
+by `use_presence`; `on_hidden` runs at `settle(LiftOut)`, when the host unmaps the surface. `--drop-dy`
+sets how far above it starts (`--s-48`). Reduced: a cross-fade over `--t-quick`.
+**Tests.** `ds/tests/it/components_overlays.rs` goldens (`spaces_bar/collapsed`, `expanded`);
+`ds-conformance/tests/it/spaces_bar.rs` (hover, press, plus, held expansion, drop lit, lift, the lit plus,
+the backdrop under the picture, `on_layout` against the drawn elements) and
+`drop_in_lift_out.rs` (the motion on a virtual clock).
+
+## Open decisions
+
+Each needs a yes/no or a number before the owning wave starts. "Proposal" marks this document's
+suggestion.
+
+| # | Topic | What is open | Proposal (numbers here are invented candidates, not prototype values) |
+| --- | --- | --- | --- |
+| O-1 | Disabled | No prototype draws a disabled control. | One rule for all: reduced opacity (candidate .45), default cursor, no hover, no press. Value needs sign-off. |
+| O-2 | Shortcut text | S writes "Ctrl T" as data text and `kbd` per key; the plan renders `⌘⇧⌥⌃`. Separator between keys: space (S) or thin space (C). On Linux the modifier is Ctrl (Toshy maps Cmd -> Ctrl). | Glyphs, no separator (`⌃T`), per the plan. |
+| O-3 | Literals without tokens | current-item shadow `0 1px 0 rgba(255,255,255,.4) inset, 0 2px 6px -3px rgba(0,0,0,.25)`; command pill inset `rgba(255,255,255,.35)`; Pop `0 18px 40px -16px rgba(0,0,0,.45)`; Bubble `0 12px 28px -12px`; palette `0 30px 60px -20px rgba(0,0,0,.5)`; peek `0 24px 50px -18px rgba(0,0,0,.55)`; side peek `0 20px 40px -16px`; handle ring and shadow; provider rings; `#fff`/`#FFFFFF` (fav text, provider ground, handle border, lying link text); easing `ease-in-out`; durations 1.1 s, 900 ms (`dest`), 1200 ms (flash); scales .88, 1.045, 1.08, 1.1, 1.12, 1.15, rotate -6deg; radii 5, 6, 7, 8, 10, 12. | Token table absorbs each (03/01/05). |
+| O-4 | Toggle size | Knob and track sizes are not in any prototype. | Candidate: knob 18, track 36 x 24 incl. 3 px padding. Needs sign-off. |
+| O-5 | Slider track | Height and unfilled colour not specified (native range). | Candidate: 4 px, `--line` unfilled, `--accent` filled. |
+| O-6 | Chip enum | S uses Person, Token, Status and Clip shapes; the plan's enum has Accent, Label, Neutral. | Add the four as variants (§10). |
+| O-7 | Person hue | `hsl()` from the hash is a colour function the lint bans in consumer CSS. | Rust converts to hex and emits `--av-bg`. Settled for consumers (Gallery fixes B): the markup lint allows a custom property written inline on a `ds`/`ds-*` element, so a rendered `Avatar` needs no exception. |
+| O-8 | Count bump on Space switch | S suppresses bumps when the Space changes (`S:1262`). | The consumer keys the count by Space, so a switch mounts it at rest (wave 1: replaces the `Motion::Quiet` render hint, which no type carries). |
+| O-9 | Infinite loops | Spinner, SyncHalo and `dest` loop; loops keep Blitz animating and the shell never idles. | Breathe off by default on shell surfaces; Spin only while busy; `dest` only while hovered. |
+| O-10 | Strip `!important` | `.strip button:active{ transform:scale(.88) !important }` beats the `forwards` fill; lint bans `!important`. | Settled state without animation after `settle(pop-in)` (§17). |
+| O-11 | Warm hover attribute | S puts `.warm` on `.win`. | `HoverHub` stamps `data-hover="warm|cold"` on `.ds`. |
+| O-12 | Menu separator | Not in S; derived from the bubble separator. | Candidate: 1 px `--line-soft`, margin 4px 0. |
+| O-13 | Menu item hover | S has none (keyboard only); C Dropdown uses `--surface-2`. | Pointer move over an item moves the selection (`--accent-soft`), so hover and keyboard look the same in Rich/Slim/Context; Dropdown keeps C. |
+| O-14 | Sheet size | Derived from Peek; no size given. | Candidate: width `min(560px, 88%)`, height by content, max = Peek Center inset. |
+| O-15 | Modal focus | Peek and Sheet do not move or trap focus in S. | Focus first focusable on open, restore on close, Tab trapped. Partly settled (focus on mount): `TextInput{focus: Focus::OnMount}` exists and the palette input and bubble link field use it; giving focus back is settled (2026-09-24, FINDINGS "Launcher gaps"): `Focus::Controlled(FocusRequest)` and `request()`. Peek and Sheet still neither move nor trap focus. |
+| O-16 | Appearance choice contents | Whether Look and Warmth (C) are part of it; width. | Theme, Accent, Motion only (the plan's `Appearance`); width set by the host surface. |
+| O-17 | Accent count | Plan: "Accent(6)" in the gallery and a moved test named "exactly-four-accent". | 03-COLOR decides; the picker renders the table. |
+| O-18 | S vs C contradictions | Resolved "S wins" in each section; listed here so nobody re-opens them silently: strip buttons 26 vs 28, gap 3 vs 4, icons 14 vs 15; star inset 6/7 vs 8/8, icon 14 vs 15; icon stroke 2 vs 1.7/1.8; toast hidden 160% vs 140%, hint opacity .7 vs .72; seg padding 5/11 12px vs 6/13 12.5px; Primary padding 14 vs 15; palette 540 vs 420, top 11% vs 14%, input 16 vs 14.5, list 360 vs 252, enter `peek-in` vs `cmdk-in`; peek inset `36px 12%` vs `34px 10%`, `peek-in` .95/12px vs .97/10px; scrim `--scrim` vs ink .16; row dot top 6 vs 5; stagger cap none (S, first show only; ds caps 12) vs 8; sidebar item radius 9 on the frame vs `--r-chip` on the card, seal -7 in `--f-ink` vs -10 in `--seal`; toast click-to-undo |dx| < 3 vs dx == 0; send ring 20 vs 22. | S wins, as written in each section. |
+| O-19 | Field plane | No canvas in Blitz. | PNG per scheme generated in Rust (static per scheme), handles as divs. |
+| O-20 | Send ring animation | SVG `stroke-dashoffset` transition likely does not run in Blitz. | Rust drives `Fraction` per frame; fallback a custom Widget. The ring carries `data-ds-svg="ring"`, so the markup lint knows it is quire's own vector (Gallery fixes B). |
+| O-21 | Selection source | The bubble needs a selection rect and mark states that only the composer's Rust model has. | ds owns surface + placement; mailo owns selection. |
+| O-22 | Pseudo-elements | Seal `::before`, header rule and tab underline `::after`. | Spike confirms; fallback real spans. |
+| O-23 | `::placeholder` | Not confirmed in Blitz. | Spike; fallback overlay span. |
+| O-24 | Strip keyboard reveal | S reveals on hover only; C also on `:focus-within`. | Adopt C (keyboard users can reach the actions). |
+| O-25 | SyncHalo | S removed it; C has it; "nothing loops" principle. | Keep for the shell's sync indicator only, with O-9. |
+| O-26 | Unpressed account tile | `filter:saturate(.55)` banned. | Rust-computed desaturated colour + opacity .85. |
+| O-27 | Provider icons | "Their icons" are provider favicons fetched at setup (`S:1139-1141`); licensing not settled. | ds renders what it is given; mailo decides whether to ship icons or letters by default. |
+| O-28 | Editor sticky | `position:sticky` banned. | Static panel; the host scroll view keeps it in view if needed. |
+| O-29 | Preset hover | `transform:scale(1.1)` with no transition (snaps). | Add `transform var(--t-quick) var(--e-spring)` to match the Space dot. |
+| O-30 | Link pill truncation | Must never hide the registered domain. | Truncate the path first, then the subdomain; never the bold part. |
+
+## Sources
+
+- S: `~/mailo-design/mailo-spaces.html`. CSS `S:6-809`; markup `S:812-927`; script `S:929-2367`.
+  Components by range: tokens `S:7-46`; base `S:48-59`; `kbd` `S:67-68`; window and frame
+  `S:77-105`; tiles `S:107-118`, `S:356-357`, `S:548-551`; section header `S:120-125`; sidebar
+  item `S:126-143`, `S:339-353`, `S:447-448`, `S:724`; foot and Space dots `S:145-153`; card and
+  list `S:156-199`; tool `S:204-206`; scrim and peek `S:221-227`; palette `S:230-241`,
+  `S:792-799`; editor `S:246-279`; row motion, star, strip `S:289-336`; count `S:341-342`; toast
+  `S:360-370`; Primary button `S:386-391`; hover card `S:396-428`; link pill `S:430-437`; fly
+  `S:440-446`; edge `S:450-454`; view switch `S:537-539`; clip `S:543-544`; provider marks
+  `S:552-561`; chips `S:592-598`; inputs `S:599-605`, `S:781-786`; menus `S:664-680`,
+  `S:787-791`; bubble `S:682-691`; send pill `S:705-715`; grip and drop line `S:745-752`; reduced
+  motion `S:807-809`. Script: sidebar render `S:1227-1267`; row render `S:1269-1290`; editor
+  `S:1392-1472`; ops, undo, toast `S:1517-1572`; peek `S:1576-1583`; palette `S:1590-1671`; hover
+  manager `S:1697-1809`; link pill `S:1811-1829`; destination `S:1831-1839`; edge `S:1841-1843`;
+  menus `S:2050-2105`; bubble `S:2123-2165`; object drag `S:2267-2275`; send `S:2315-2345`.
+- C: `~/mailo-design/mailo-charm.html`. Tokens and looks `C:12-176`, `C:776-966`; controls `C:224-257`;
+  shell, sidebar, halo, view `C:262-339`; list, row, star, strip `C:341-443`; toast `C:556-576`;
+  ghost `C:578-586`; keyframes `C:650-749`; tool and dropdown menu `C:992-1023`; group header
+  `C:1025-1032`; peek modes, scrim, palette `C:1043-1085`; markup `C:1110-1250`; script views, rows,
+  menus `C:1647-1778`; picker, drag, sync `C:1962-2116`; palette `C:2214-2260`.
+- Plan: `~/.claude/plans/vast-toasting-peach.md`, sections "Design: `<ds>` design-system repo"
+  (component list, props vocabulary, §11 addenda, Blitz risk table), "Findings: Blitz / Dioxus
+  Native", "UX decisions settled with the user", Appendix A (A1 layout, A3 colour usage, A4
+  components, A5 motion, A6 interactions, A7 looks, A8 bugs).
+- House style: `~/quire/CONVENTIONS.md`.
+- Sibling docs referenced: `01-LAYOUT.md`, `02-TYPE.md`, `03-COLOR.md`, `05-MOTION.md`,
+  `06-INTERACTIONS.md`, `07-LOOKS.md`, `20-SURFACES.md`, `21-SPACES.md`.

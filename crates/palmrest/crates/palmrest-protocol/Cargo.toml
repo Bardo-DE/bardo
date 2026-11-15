@@ -1,0 +1,16 @@
+[package]
+name = "palmrest-protocol"
+description = "The socket contract between palmrest and its hosts: messages, their vocabulary, and the packet codec"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.92"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Bardo-DE/palmrest"
+
+[dependencies]
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+serde_json = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"

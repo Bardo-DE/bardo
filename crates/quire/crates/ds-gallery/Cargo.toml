@@ -1,0 +1,35 @@
+[package]
+name = "ds-gallery"
+description = "Gallery of every quire component across theme, accent, motion and material."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/quire"
+publish = false
+
+[dependencies]
+chordkit = {path = "../../../chordkit/crates/chordkit"}
+ds-core = {path = "../ds-core"}
+ds = {path = "../ds"}
+ds-shell = {path = "../ds-shell"}
+ds-lint = {path = "../ds-lint"}
+ds-settings = {path = "../ds-settings", default-features = false}
+# `pdf`: so a workspace build compiles and tests `PdfFileThumb` (its tests need it).
+ds-blitz = {path = "../ds-blitz", default-features = false, features = ["pdf", "spell"]}
+ds-harness = {path = "../ds-harness", default-features = false}
+dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+image = {version = "0.25.6", default-features = false, features = ["png", "jpeg"]}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+dioxus-ssr = {version = "0.7"}
+
+[features]
+default = ["quire-desktop"]
+# Desktop integration of the quire crates this one uses (design/36 section 1).
+quire-desktop = ["ds-settings/quire-desktop", "ds-blitz/quire-desktop"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

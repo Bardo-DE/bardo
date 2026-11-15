@@ -1,0 +1,29 @@
+[package]
+name = "docket-settings"
+description = "docket's settings file ($XDG_CONFIG_HOME/docket/settings.toml, design/22 section 3.27): the key table, the lenient reader that falls back per key, the schema the Settings app draws, and where the file is found. Pure but for reading the file and the agents records beside it; the watch lives in the daemon."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+agents-core = {path = "../agents-core"}
+docket-core = {path = "../docket-core"}
+docket-permissions-core = {path = "../docket-permissions-core"}
+docket-vocab = {path = "../docket-vocab"}
+docket-store = {path = "../docket-store"}
+model-provider = {path = "../../../stoker/crates/model-provider"}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+toml = {version = "1"}
+toml_edit = {version = "0.25"}
+
+[dev-dependencies]
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

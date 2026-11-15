@@ -1,0 +1,34 @@
+/* The notification center (design/20 §1.6, design/13 §13.3.6). The surface is the output below
+   the bar (`Ds { extent: RootExtent::Viewport }`, a transparent Popover root); the panel is
+   quire's `SidePanel` (its edge, width, material, padding and motion), the group heads quire's
+   `GroupHeader`, the cards quire's `NotificationCard`. Everything here is layout and tokens.
+   Attribute selectors carry `*|`. */
+
+/* The scope wrapper: it fills the root, as quire's panel scope must,
+   and lets presses through to the catcher; the panel takes its own. */
+.sill-nc-scope{ position:absolute; top:0; right:0; bottom:0; left:0; pointer-events:none; }
+
+/* Inside the panel: the column fills it (the blur region is this box grown by the panel's
+   padding, `layer::PANEL_PADDING`). */
+.sill-nc-column{ display:flex; flex-direction:column; flex:1 1 auto; min-height:0; color:var(--ink);
+  outline:none; overflow-y:auto; }
+
+/* The title and Clear All. The space under it is the first row's own (`.sill-nc-item`). */
+.sill-nc-head{ display:flex; align-items:center; justify-content:space-between; gap:var(--s-8);
+  padding:0 0 0 var(--s-4); }
+
+/* The history: the groups' headers and cards, newest first, as one quire `List` (its
+   rows leave and close the gap). The whole column scrolls (history, then the widgets under it, as
+   macOS's Notification Center does), so the list takes its natural height. The gap between
+   rows is inside each row: a leaving row's measured height,
+   gap included, is how far the rows below it heal. */
+.sill-nc-list{ display:flex; flex-direction:column; flex:none; }
+.sill-nc-item{ display:flex; flex-direction:column; align-items:center; padding-top:var(--s-6); }
+
+/* Who else shows notifications, when sill does not. */
+.sill-nc-foot{ padding:var(--s-8) var(--s-4) 0; border-top:var(--hair) solid var(--line-soft); }
+
+/* The widgets slot (design/20 §1.14): quire's widget tiles under the history, standing
+   apart as the control center's modules do. A medium tile is two cells and a gap: 140 cells make it 296 wide, the panel's 320 less its
+   two 12 pt paddings, as a Mac's medium widget fills its column. */
+.sill-nc-widgets{ --widget-cell:140px; --widget-gap:16px; display:flex; flex-direction:column; align-items:center; gap:var(--s-8); padding-top:var(--s-8); }

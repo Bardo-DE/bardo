@@ -1,0 +1,10 @@
+/target
+/target-*
+
+# nested-compositor dev harness (scripts/dev/): run-time output, never checked in
+/scripts/dev/out/
+/scripts/dev/.nested-env
+/spike/out
+/tools/*/target
+# scripts/dev/kwin-virtual.sh run-time state
+/scripts/dev/.kwin-env

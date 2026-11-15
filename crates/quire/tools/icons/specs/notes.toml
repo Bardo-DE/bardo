@@ -1,0 +1,35 @@
+# Notes: a sheet with its corner turned down (the spot) and two lines pressed into it.
+name = "notes"
+dialect = "paper"
+tint = "ochre"
+grain = 20
+
+# The sheet, its bottom-right corner cut on the fold line (points inset by `round`).
+[[layer]]
+kind = "polygon"
+points = [[6, 5], [18, 5], [18, 14.1], [13.1, 19], [6, 19]]
+round = 1
+fill = "symbol"
+
+[[layer]]
+kind = "fold"
+at = [13.2, 14.2]
+size = 4.8
+corner = "top-left"
+fill = "spot"
+
+[[layer]]
+kind = "bar"
+from = [9, 9.5]
+to = [15, 9.5]
+width = 1.4
+fill = "detail"
+relief = "recessed"
+
+[[layer]]
+kind = "bar"
+from = [9, 12.6]
+to = [12.4, 12.6]
+width = 1.4
+fill = "detail"
+relief = "recessed"

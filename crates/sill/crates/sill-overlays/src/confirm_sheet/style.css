@@ -1,0 +1,26 @@
+/* The confirmation sheet (design/32 section 8, phase A). The sheet, the fact list and the buttons
+   are quire's (Sheet, FactList, Button); this lays out what sill puts in the sheet: the title,
+   who asks, the reasons, the limit's line, the footer. Tokens only. */
+
+.sill-confirm{ display:flex; flex-direction:column; gap:var(--s-10); padding:var(--s-16); color:var(--ink); outline:none; }
+.sill-confirm-title{ font-size:var(--fs-title); font-weight:700; }
+.sill-confirm-byline{ font-size:var(--fs-body); color:var(--ink-soft); }
+.sill-confirm-notes{ display:flex; flex-direction:column; gap:var(--s-2); }
+.sill-confirm-note{ font-size:var(--fs-small); color:var(--ink-soft); }
+.sill-confirm-offer{ display:flex; flex-direction:column; }
+.sill-confirm-held{ display:flex; align-items:center; justify-content:space-between; gap:var(--s-8); }
+.sill-confirm-held-why{ font-size:var(--fs-small); color:var(--ink-soft); }
+.sill-confirm-footer{ display:flex; justify-content:flex-end; gap:var(--s-8); }
+.sill-confirm-hold{ display:flex; }
+.sill-confirm-waiting{ font-size:var(--fs-small); color:var(--ink-faint); text-align:right; }
+
+/* The brief sheet (brief_view.rs): the editable text, the flagged spans, the pieces. */
+.sill-brief-hint,.sill-brief-next{ font-size:var(--fs-small); color:var(--ink-soft); }
+.sill-brief-field{ display:flex; flex-direction:column; }
+.sill-brief-note{ font-size:var(--fs-small); color:var(--ink-soft); }
+.sill-brief-heading{ font-size:var(--fs-small); font-weight:600; color:var(--ink-soft); }
+.sill-brief-flags,.sill-brief-pieces{ display:flex; flex-direction:column; gap:var(--s-4); }
+.sill-brief-flag{ display:flex; align-items:center; justify-content:space-between; gap:var(--s-8); }
+.sill-brief-flag-what{ display:flex; flex-direction:column; gap:var(--s-2); min-width:0; }
+.sill-brief-flag-why{ font-size:var(--fs-small); color:var(--ink-soft); }
+.sill-brief-piece{ font-size:var(--fs-body); color:var(--ink); }

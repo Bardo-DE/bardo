@@ -1,0 +1,15 @@
+[package]
+name = "shell-verbs"
+description = "The typed verbs the compositor sends the desktop shell (lock, launcher, switcher, screenshots, ...) and the command line each one spells, shared by both sides."
+
+# No dependencies at all: the verb is a plain enum.
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/casement-protocols"
+publish = false
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

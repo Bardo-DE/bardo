@@ -1,0 +1,280 @@
+//! The sidebar's places: which folders are the person's favourites, and how they are grouped.
+//!
+//! Pure data and mappings. The binary finds the folders (the XDG user directories that exist) and
+//! passes them in as [`Places`]; [`groups`] says what the sidebar lists; `view` draws it.
+
+use ds::prelude::FolderKind;
+use files_core::{CloudDrive, DriveId, FolderPath, Location, Volume, VolumeId};
+
+use crate::words;
+
+/// A place the sidebar can list.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum PlaceKind {
+    /// The person's home folder.
+    Home,
+    /// The Desktop folder.
+    Desktop,
+    /// The Documents folder.
+    Documents,
+    /// The Downloads folder.
+    Downloads,
+    /// The Pictures folder.
+    Pictures,
+    /// The Music folder.
+    Music,
+    /// The Videos folder.
+    Videos,
+    /// The whole filesystem, `/`.
+    Computer,
+    /// The Trash.
+    Trash,
+}
+
+impl PlaceKind {
+    /// The favourites, in the order the sidebar lists them.
+    pub const FAVORITES: [PlaceKind; 7] = [
+        PlaceKind::Home,
+        PlaceKind::Desktop,
+        PlaceKind::Documents,
+        PlaceKind::Downloads,
+        PlaceKind::Pictures,
+        PlaceKind::Music,
+        PlaceKind::Videos,
+    ];
+
+    /// The row's name.
+    pub fn label(self) -> &'static str {
+        words::place_label(self)
+    }
+}
+
+impl PlaceKind {
+    /// The folder icon of this place.
+    fn folder_kind(self) -> FolderKind {
+        match self {
+            PlaceKind::Home => FolderKind::Home,
+            PlaceKind::Desktop => FolderKind::Desktop,
+            PlaceKind::Documents => FolderKind::Documents,
+            PlaceKind::Downloads => FolderKind::Downloads,
+            PlaceKind::Pictures => FolderKind::Pictures,
+            PlaceKind::Music => FolderKind::Music,
+            PlaceKind::Videos => FolderKind::Movies,
+            PlaceKind::Trash => FolderKind::Trash,
+            PlaceKind::Computer => FolderKind::Plain,
+        }
+    }
+}
+
+/// A group of rows in the sidebar, named by a heading.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Heading {
+    /// The person's favourite folders.
+    Favorites,
+    /// Where things are kept: the computer's disk.
+    Locations,
+    /// The cloud drives the person turned on for Files.
+    Cloud,
+}
+
+impl Heading {
+    /// The heading's words.
+    pub fn label(self) -> &'static str {
+        words::heading_label(self)
+    }
+}
+
+/// What one sidebar item stands for: a heading, a place, or a disk.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum PlaceKey {
+    /// A group's heading, which the keys pass over.
+    Heading(Heading),
+    /// A place the person can go to.
+    Place(PlaceKind),
+    /// A disk under Locations, by its id, so a disk plugged in or out between a draw and a
+    /// press never opens another.
+    Volume(VolumeId),
+    /// A cloud drive, by its id.
+    Cloud(DriveId),
+}
+
+/// The row of the disk mounted exactly at `location`, for the sidebar's cursor.
+pub(crate) fn volume_key(volumes: &[Volume], location: &Location) -> Option<PlaceKey> {
+    let Location::Folder(folder) = location else {
+        return None;
+    };
+    volumes
+        .iter()
+        .find(|volume| volume.folder() == Some(folder))
+        .map(|volume| PlaceKey::Volume(volume.id.clone()))
+}
+
+/// The row of the cloud drive whose folder holds `location`, for the sidebar's cursor.
+pub(crate) fn cloud_key(clouds: &[CloudDrive], location: &Location) -> Option<PlaceKey> {
+    let Location::Folder(folder) = location else {
+        return None;
+    };
+    clouds
+        .iter()
+        .find(|drive| drive.holds(folder))
+        .map(|drive| PlaceKey::Cloud(drive.id.clone()))
+}
+
+/// Which rows the person chose to leave out of the sidebar. The Trash cannot be left out.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Sidebar {
+    left_out: Vec<PlaceKind>,
+    disks: bool,
+}
+
+impl Default for Sidebar {
+    fn default() -> Sidebar {
+        Sidebar {
+            left_out: Vec::new(),
+            disks: true,
+        }
+    }
+}
+
+impl Sidebar {
+    /// The same sidebar without the row for `kind`.
+    pub fn leaving_out(mut self, kind: PlaceKind) -> Sidebar {
+        if !self.left_out.contains(&kind) {
+            self.left_out.push(kind);
+        }
+        self
+    }
+
+    /// The same sidebar listing the attached disks (a row each) or not.
+    pub fn with_disks(self, disks: bool) -> Sidebar {
+        Sidebar { disks, ..self }
+    }
+
+    /// Whether the row for `kind` is listed (when it has a place to go to).
+    pub fn lists(&self, kind: PlaceKind) -> bool {
+        kind == PlaceKind::Trash || !self.left_out.contains(&kind)
+    }
+
+    /// Whether the attached disks are listed.
+    pub fn disks(&self) -> bool {
+        self.disks
+    }
+}
+
+/// The folders behind the favourites, as the binary found them, and which rows the person chose
+/// to list. A favourite with no folder (the person has no Music folder) is simply not listed.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct Places {
+    folders: Vec<(PlaceKind, FolderPath)>,
+    sidebar: Sidebar,
+}
+
+impl Places {
+    /// The same places listed as `sidebar` says. Where a row goes is not changed by this.
+    pub fn with_sidebar(self, sidebar: Sidebar) -> Places {
+        Places { sidebar, ..self }
+    }
+
+    /// Which rows are listed.
+    pub fn sidebar(&self) -> &Sidebar {
+        &self.sidebar
+    }
+
+    /// `kind` is `folder`, replacing any folder it had. [`PlaceKind::Computer`] is always `/` and
+    /// ignores this.
+    pub fn with(mut self, kind: PlaceKind, folder: FolderPath) -> Places {
+        self.folders.retain(|(known, _)| *known != kind);
+        self.folders.push((kind, folder));
+        self
+    }
+
+    /// The place `kind` goes to, when it has one.
+    pub fn location_of(&self, kind: PlaceKind) -> Option<Location> {
+        match kind {
+            PlaceKind::Computer => FolderPath::new("/").ok().map(Location::Folder),
+            PlaceKind::Trash => Some(Location::Trash),
+            PlaceKind::Home
+            | PlaceKind::Desktop
+            | PlaceKind::Documents
+            | PlaceKind::Downloads
+            | PlaceKind::Pictures
+            | PlaceKind::Music
+            | PlaceKind::Videos => self
+                .folders
+                .iter()
+                .find(|(known, _)| *known == kind)
+                .map(|(_, folder)| Location::Folder(folder.clone())),
+        }
+    }
+
+    /// What `folder` is, for drawing its icon: one of the special folders when it is the folder of
+    /// a favourite, else a plain folder.
+    pub(crate) fn folder_kind(&self, folder: &FolderPath) -> FolderKind {
+        let here = Location::Folder(folder.clone());
+        PlaceKind::FAVORITES
+            .into_iter()
+            .find(|kind| self.location_of(*kind).as_ref() == Some(&here))
+            .map_or(FolderKind::Plain, PlaceKind::folder_kind)
+    }
+
+    /// The place `location` is, for the sidebar's cursor: the first listed place whose folder it
+    /// is, favourites before the computer. A folder that is none of them has no place.
+    pub fn key_of(&self, location: &Location) -> Option<PlaceKey> {
+        PlaceKind::FAVORITES
+            .into_iter()
+            .chain([PlaceKind::Computer, PlaceKind::Trash])
+            .find(|kind| self.location_of(*kind).as_ref() == Some(location))
+            .map(PlaceKey::Place)
+    }
+}
+
+/// One group of the sidebar: a heading and the places under it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Group {
+    /// The heading.
+    pub heading: Heading,
+    /// The rows, in order.
+    pub rows: Vec<PlaceKind>,
+}
+
+/// What the sidebar lists: the favourites that have a folder and that the person did not leave
+/// out (none, no group), then the computer, unless left out, and the Trash.
+///
+/// Recents is left out until the place behind it is built.
+pub fn groups(places: &Places) -> Vec<Group> {
+    let listed = |kind: &PlaceKind| places.sidebar().lists(*kind);
+    let favorites: Vec<PlaceKind> = PlaceKind::FAVORITES
+        .into_iter()
+        .filter(|kind| places.location_of(*kind).is_some())
+        .filter(listed)
+        .collect();
+    let mut groups = Vec::new();
+    if !favorites.is_empty() {
+        groups.push(Group {
+            heading: Heading::Favorites,
+            rows: favorites,
+        });
+    }
+    groups.push(Group {
+        heading: Heading::Locations,
+        rows: [PlaceKind::Computer, PlaceKind::Trash]
+            .into_iter()
+            .filter(listed)
+            .collect(),
+    });
+    groups
+}
+
+/// The words for the toolbar's title and the window's: the folder's own name (`/` for the
+/// filesystem's root), or `Trash`.
+pub fn title_words(location: &Location) -> String {
+    match location {
+        Location::Folder(folder) => folder.as_path().file_name().map_or_else(
+            || "/".to_owned(),
+            |name| name.to_string_lossy().into_owned(),
+        ),
+        Location::Trash => "Trash".to_owned(),
+        // A place files-core adds later has no name until this gives it one.
+        _ => "Files".to_owned(),
+    }
+}

@@ -1,0 +1,91 @@
+//! The viewer's pure vocabulary: what a file is, how it is told apart, the units the viewer counts
+//! in, the sequence arrow keys walk, the actions, edits and exports a file offers, and the view
+//! memory a file keeps. No I/O and no renderer: effects belong to the crates above. Three small
+//! exceptions read the machine, each named where it is: `work::Interrupt` and
+//! `PeekBudget::deadline_from_now` read the monotonic clock, and `LocalZone::system` reads the
+//! system time zone. Everything else takes the time as an argument.
+//!
+//! Every public item is reached from this root, once, except the contract with the threads, which
+//! is reached through its one public module, `work`, and the front doors, which [`prelude`] names
+//! a second time for a glob import.
+
+#![warn(missing_docs)]
+
+mod action;
+mod edit;
+mod error;
+mod export;
+mod facts;
+mod find;
+mod form;
+mod helper;
+mod kind;
+mod markup;
+mod media;
+mod panel;
+mod peek;
+mod percent;
+pub mod prelude;
+mod profile;
+mod resume;
+mod sequence;
+mod sniff;
+mod source;
+mod tree_path;
+mod units;
+pub mod work;
+mod xml_depth;
+
+/// What a person sees the program called: the window titles, the now-playing entry and the helper sheet.
+/// The binary, the app id and the bus names stay `anyview`, `org.quire.Anyview` and `org.quire.Anyview1`.
+pub const APP_NAME: &str = "Viewer";
+
+pub use action::{FileAction, Reach, file_action_of, own_keys, reach, shortcut};
+pub use edit::{Adjust, Edit, EditKind, PixelRect, Reflection};
+pub use error::CoreError;
+pub use export::{
+    AudioTarget, ExportChoice, ExportExtension, ExportJob, HtmlDoc, MediaExport, MediaExportKind,
+    MetadataCarry, NoExport, NoExportKind, Orientation, PaperSize, PdfExport, PdfExportKind,
+    PdfPages, PixelSource, PrintLayout, RasterExport, RasterExportKind, RasterTarget, Resize,
+    StreamPick, Subtitles, TextExport, TextExportKind, TextFlavour, TextSource,
+};
+pub use facts::{
+    Coordinate, Fact, FactGroup, FactLabel, FactTime, FactValue, FactZone, Facts, FileDetails,
+    LocalZone, Tier, kind_name, kind_name_of,
+};
+pub use find::{CaseMatch, FindOption, FindOptions, WordMatch};
+pub use form::{FormWidget, WidgetAccess, WidgetKind};
+pub use helper::Helper;
+pub use kind::{
+    ArchiveFormat, BookFormat, Delimiter, FontFormat, FormatDetail, FormatKind, MediaContainer,
+    Mime, OfficeFormat, RasterFormat, SyntaxName, TextEncoding, TreeFormat, claimed_mimes,
+    kind_of_mime, opened_globs, opened_mimes,
+};
+pub use markup::{
+    FieldFill, Mark, MarkColor, MarkRef, MarkShape, MarkTool, MarkupSave, NOTE_SIZE, PagePoint,
+    PageRect,
+};
+pub use media::{MediaChapter, MediaTags, MediaTrack, StreamKind, TrackPlay, VideoPresence};
+pub use panel::{PanelKept, PanelOpen};
+pub use peek::{Deadline, Peek, PeekBudget, StageSupport};
+pub use percent::percent_decode;
+pub use profile::{actions_for, edits_for, mime_for, stage_support};
+pub use resume::{Resume, TrackChoice, TrackId};
+pub use sequence::{
+    Heading, Neighbours, NonEmpty, ResultsId, Sequence, SequenceMove, SequenceOrigin,
+    SequencePosition, moved, neighbours, without_current,
+};
+pub use sniff::{
+    FileHead, OleStreams, SniffStep, Sniffed, ZipEntries, ZipProbe, image_data_url, is_ole, sniff,
+    sniff_folder, sniff_ole, sniff_zip,
+};
+pub use source::{
+    ByteLen, FileName, FilePath, FileStamp, Input, ModTime, ReadAt, ReadAtStream, Source,
+};
+pub use tree_path::{OpenNodes, TreePath};
+pub use units::{
+    Axis, Bitrate, ChapterIndex, DocPoint, DocUnit, Dpi, LineIndex, MediaLength, MediaTime,
+    PageCount, PageIndex, PageRange, PageSelection, Percent, Permille, PixelArea, PixelLen,
+    PixelSize, Quality, QuarterTurn, SectionCount, SectionIndex, Speed, TimeRange, Volume, Zoom,
+};
+pub use xml_depth::{MAX_XML_DEPTH, nests_deeper_than};

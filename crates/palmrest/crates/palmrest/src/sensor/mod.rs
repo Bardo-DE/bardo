@@ -1,0 +1,65 @@
+//! The input seam: a `Sensor` turns a device's reads into `Frame`s in millimetres.
+//!
+//! `Sensor` is a closed enum of the two kinds palmrest decodes: `MagicMouseHid` (the mouse's
+//! hidraw reports, decoded by palmrest itself; the one the daemon was written for) and `EvdevMultitouch` (the `ABS_MT_*` slots a
+//! kernel multitouch driver exposes on an evdev node; untested on anything but the Magic Mouse).
+//!
+//! Everything downstream of a `Frame` is device-generic: the tracker projects each frame onto
+//! the reference lattice (`lattice`) and every threshold is configured in millimetres.
+
+pub mod evdev;
+pub mod frame;
+pub mod lattice;
+pub mod magic_mouse;
+pub mod surface;
+pub mod units;
+
+pub use evdev::{EvdevError, EvdevMultitouch, EvdevSpec};
+pub use frame::{Buttons, Frame, FrameContact, MagicShape, Motion, Stamp};
+pub use magic_mouse::{MagicMouseHid, Model};
+pub use surface::{Extent, SizeMm, Surface};
+pub use units::{Mm, MmPoint, MmRange, Resolution, UnitsPerMm};
+
+use crate::sensor::magic_mouse::decode::DecodeError;
+use thiserror::Error;
+
+/// A read that produced no frames, and why. The reader counts it and drops the read.
+#[derive(Debug, Clone, PartialEq, Eq, Error)]
+pub enum SensorError {
+    #[error(transparent)]
+    Hid(#[from] DecodeError),
+    #[error(transparent)]
+    Evdev(#[from] EvdevError),
+}
+
+/// A touch-sensing pointing device, as the core sees it: one of the two kinds palmrest decodes.
+///
+/// `decode` takes `&mut self` and may return any number of frames, because the two sources
+/// cut their streams differently: one hidraw read is one or two whole reports (an 0xF7 double),
+/// while an evdev read is a run of `input_event`s whose frames end at `SYN_REPORT` and may span
+/// reads, so the evdev sensor carries slot state between calls. It returns a `Result` rather
+/// than a bare `Vec` because a malformed read is a fact the reader logs and counts, not an
+/// empty frame list.
+#[derive(Debug, Clone, PartialEq)]
+pub enum Sensor {
+    MagicMouse(MagicMouseHid),
+    Evdev(EvdevMultitouch),
+}
+
+impl Sensor {
+    /// The touch surface: its size, resolution, buttons and clock.
+    pub fn surface(&self) -> Surface {
+        match self {
+            Sensor::MagicMouse(sensor) => sensor.surface(),
+            Sensor::Evdev(sensor) => sensor.surface(),
+        }
+    }
+
+    /// One read's bytes to the frames it completes, in order.
+    pub fn decode(&mut self, bytes: &[u8]) -> Result<Vec<Frame>, SensorError> {
+        match self {
+            Sensor::MagicMouse(sensor) => sensor.decode(bytes),
+            Sensor::Evdev(sensor) => sensor.decode(bytes),
+        }
+    }
+}

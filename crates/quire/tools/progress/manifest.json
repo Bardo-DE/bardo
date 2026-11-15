@@ -1,0 +1,920 @@
+{
+ "updated": "2026-09-27",
+ "archive_url": "https://claude.ai/artifact/GhMLUQjwi9FUxkJgoxrGUB",
+ "main_url": "https://claude.ai/artifact/6q66NrcfZ1zQjXEE7mN2Rd",
+ "entries": [
+  {
+   "id": "widgets-final",
+   "date": "2026-09-27 · gate",
+   "title": "Widgets: your picks applied, and the card became an interface",
+   "status": "done",
+   "lede": "Your picks are in: the battery percentage at weight 500, the ring's track as the plate darkened, one red for low and critical, the World Clock card following light and dark, new filled device glyphs (abstract, on the Lucide grid), and every widget card tinted by the Space. The card is now an interface: every widget, ours now and other apps' later, plugs in through one Rust trait and is drawn only on quire's card, so the corner, inset, material and tint can never drift. You choose which widgets go where in a new Edit Widgets gallery (browse, preview each size, add to the desktop or the notification center, resize, remove), and the choice is saved as data. Also fixed: the calendar takes the reference's layout at each size (Medium shows today beside the month, Large lists the day's events under it), and a widget picked up on the desktop lifts with a drop-slot guide. One question is for you: the month's title in the accent colour cannot stay readable on the see-through card, so there are two options side by side below.",
+   "notes": [
+    "Your pick (title-options pictures): (a) make the light desktop card nearly opaque (tint .96) so the title stays in the accent colour, or (b) keep the see-through card and draw the title in soft grey, with the accent kept for today's disc and the event dots. The branch uses (b) for now.",
+    "The pattern is named for reuse: a registry, one trait, a picker, placements as data. Spotlight categories, control center modules and menu bar items can follow it.",
+    "Other apps' widgets across processes are designed (a timeline sent as JSON over D-Bus, drawn with quire's view templates) but the transport is not built.",
+    "sill has to adopt it: its widgets become providers, its two widget settings become one layout, and its drag uses quire's lift and slot guide (listed in CONSUMING)."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/widgets-final/after-widget-looks-light.png",
+     "caption": "After: every card on the widget interface, Space-tinted; filled device glyphs; the calendar at each size; pick up and drop; Edit Widgets (light)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/widgets-final/after-widget-looks-dark.png",
+     "caption": "After, dark: the World Clock card follows the scheme."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/widgets-final/before-calendar-light.png",
+     "caption": "Before: the month did not fit its card (Medium overflowed, Large left 40 % empty)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/widgets-final/after-calendar-light.png",
+     "caption": "After: Small the month; Medium today beside the month; Large the month over the day's events, or No events today."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/widgets-final/before-widget-reference-light.png",
+     "caption": "Before: outline device glyphs, bare material cards."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/widgets-final/after-widget-reference-light.png",
+     "caption": "After: filled device glyphs, Space-tinted cards, the same measured layout."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/widgets-final/title-options-light.png",
+     "caption": "Your pick, light: the title now, (a) the card at .96, (b) the title in soft grey; the ratios on each card over seven wallpapers."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/widgets-final/title-options-dark.png",
+     "caption": "Your pick, dark: the dark card already holds the accent title; (b) for consistency."
+    }
+   ]
+  },
+  {
+   "id": "accent-band",
+   "date": "2026-09-27 · decision",
+   "title": "A lighter accent, kept in bounds: you picked B (Airy)",
+   "status": "done",
+   "lede": "Every accent now comes from one function that keeps it inside band B: light fills carrying dark ink, translucent washes for selections, menus and chips, a deeper blue for text and thin marks, and a focus ring drawn from it. The Space accents come from the same function, so mailo's frame and the shell match. Every hue is checked for legibility in both themes. Blue moved to a sky blue so it no longer duplicates Postmark. Landed in quire and sill on 2026-09-27; the candidate sheets stay below as the record.",
+   "notes": [
+    "Being fixed: the launcher's match highlight on a selected row, the password prompt's Details link and the desktop calendar's month label came out just under 4.5:1 on their real backgrounds; the band's checks now also measure against the translucent tints and materials.",
+    "Being fixed: the notification center's large calendar tile leaves empty space under the month."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/accent-b/launcher.png",
+     "caption": "The launcher on accent B (sill, nested)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/accent-b/control-center.png",
+     "caption": "Control center: the accent swatches and the Space-derived selections."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/accent-b/notification-center.png",
+     "caption": "Notification center; the large calendar tile's empty space is being fixed."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/accent/accent-b-final-light.png",
+     "caption": "Band B, light: every accented part."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/accent/accent-b-final-dark.png",
+     "caption": "Band B, dark."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/accent/calendar-compact-after-5wk-light-4x.png",
+     "caption": "The compact calendar after its spacing fix (4x)."
+    }
+   ]
+  },
+  {
+   "id": "inter-font-pass",
+   "date": "2026-09-27 · type",
+   "title": "The whole shell now draws its text in Inter, the fonts quire ships",
+   "status": "done",
+   "lede": "Until today shell-host never registered quire's own fonts, so the shell fell back to whatever the system had. Now every shell surface gets them from the host. sill re-ran every nested check under Inter and retook every capture: nothing new wraps, clips or shifts, and no failure came from a width that moved.",
+   "notes": [
+    "Better on the way: the arrow keycaps are real arrows, times and shortcuts sit apart in the launcher, labels meant for Space Mono are now Space Mono, and the bar clock uses even-width digits so it stops jumping between minutes.",
+    "Found and being fixed: the password field puts its dots about 90 px in with the caret before them; the small calendar's today circle is tight around two digits; with all five widgets in the widget center, the on-screen frame stacks two widgets over the Calendar (sill's own capture of the same screen is correct)."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/inter/launcher.png",
+     "caption": "Launcher v2 results in Inter."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/inter/control-center.png",
+     "caption": "Control center."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/inter/lock.png",
+     "caption": "Lock screen with the letter user picture."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/inter/widgets-desktop.png",
+     "caption": "Desktop widgets; the calendar's today circle (top right) is the one being resized."
+    }
+   ]
+  },
+  {
+   "id": "m9-launcher-v2",
+   "date": "2026-09-27 · milestone",
+   "title": "Launcher v2: files, clipboard, colour emoji and a Quick-Look-style preview",
+   "status": "done",
+   "lede": "The launcher now searches files (through a running indexer, else a fast name search under your home folder; it never starts an indexer on its own), keeps a memory-only clipboard history, and has a colour emoji grid with arrow keys that wrap like the character viewer. Results come in sections with Show More, and a preview pane opens beside the list: Space while browsing, Cmd+Y always, or Right at the end of the text. PDFs preview through pdfrum on one background worker, so holding Down through a folder of PDFs renders only the one you stop on. Everything shown is from sill running the real parts, with real keys.",
+   "notes": [
+    "Found and fixed on the way: yesterday's colour-emoji change drew digits and spaces from the emoji font under sill (\"0 0 : 2 2\"); the text fonts are back to Inter and emoji-only content uses its own style.",
+    "Still open: a small gap between a row's time and its shortcut, the hybrid-renderer timing of the emoji grid, and three settings for you on the Spotlight page (clipboard history, web search, skin tone)."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m9/launcher-v2-preview-pdf.png",
+     "caption": "Sections, file rows and the PDF preview pane."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m9/launcher-v2-preview-image.png",
+     "caption": "An image preview with its actions (Reveal in Files, Copy Path)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m9/launcher-v2-pane-focus.png",
+     "caption": "The pane's actions reached by keyboard."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m9/launcher-v2-emoji.png",
+     "caption": "The colour emoji grid."
+    }
+   ]
+  },
+  {
+   "id": "persona",
+   "date": "2026-09-26 · decision",
+   "title": "Your own animated character for the lock screen: a family of cute flat creatures that blink, glance, wince, hop and sleep",
+   "status": "decision",
+   "lede": "You asked for a moving, emoji-like user picture like the reference desktop's lock screen. This is our own, drawn from flat shapes in the icon language rather than the reference's assets: people, bears, cats, bunnies and blobs, each built from small choices (head, tone, eyes, brows, mouth, hair or ears, cheeks, an accessory, a backdrop), so any seed gives a pleasant random character and your pick is saved as settings data for a character editor later. It reacts: idle it blinks every few seconds and breathes slightly; while you type your password it glances down at the field; a wrong password makes it wince and shake its head once; unlocking makes it smile and hop; when the display sleeps it falls asleep with a single drifting z. Everything stops 20 seconds after the last activity, so the lock screen goes back to drawing nothing when idle, and reduced motion changes moods without animating. The lock screen can take it in place of the letter avatar next.",
+   "notes": [
+    "Pick: the Colour finish (as shown, brighter than the icons) or the Muted finish (the same characters at about half the colour, matching the icons' muted style). Also open (design/24 §7): whether the lock screen shows the character or the letter by default, and what wakes it there.",
+    "The motion strips are eight stills taken through each mood; the gallery images show resting faces."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/persona/seeds-light.png",
+     "caption": "Forty-eight random characters, one per seed (light)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/persona/seeds-dark.png",
+     "caption": "The same forty-eight (dark)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/persona/moods.png",
+     "caption": "Each mood as eight frames: idle blink, attentive glance, wince, happy hop, asleep with a drifting z."
+    }
+   ],
+   "page": "archive"
+  },
+  {
+   "id": "m11-parts",
+   "date": "2026-09-26 · lock and switcher",
+   "title": "The shell's own lock screen, password prompt and app switcher: parts and session locking",
+   "status": "proven",
+   "lede": "Milestone 11 replaces the borrowed lock screen and password prompt with our own, and adds the Cmd+Tab app switcher. quire now has the parts: a lock screen with a very large heavy clock under the date, the user's picture and name, and a translucent pill password field that shakes once and clears on a wrong password, shows a spinner while checking and marks caps lock; a password prompt for system actions on a narrow sheet with a details card and a locked-out state; and the app switcher on the OSD material with 112 px cells and 96 px icons, a selection square that springs between apps, the app's name under it, and shrinking then scrolling for many apps. The password never enters the page's markup. shell-host gained real session locking (the ext-session-lock protocol): one lock surface per display, keyboard without a click, unlock after the shell's password check, and fail-secure behaviour if the shell crashes, proven on a nested compositor with a code guard that makes locking the user's own session impossible. The shell wires the password check, the polkit agent and the switcher's keys next; an animated user picture is being designed to replace the letter avatar.",
+   "notes": [
+    "Switcher icons in these images are placeholder glyph plates, not the shipped app icons.",
+    "Not proven yet: the lock on a real session (several displays, fractional scale); the switcher's spring and fold watched moving; the Space look of the lock screen on a colourful Space."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m11/lock-dark.png",
+     "caption": "The lock screen: the date above a 140 px heavy clock, the avatar and name, a glass pill password field and the hint line (dark)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m11/lock-light.png",
+     "caption": "The lock screen: the date above a 140 px heavy clock, the avatar and name, a glass pill password field and the hint line (light)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m11/polkit-dark.png",
+     "caption": "The password prompt for system actions: a narrow sheet over the scrim, at rest and locked out after too many tries (dark)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m11/polkit-light.png",
+     "caption": "The password prompt for system actions: a narrow sheet over the scrim, at rest and locked out after too many tries (light)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m11/switcher-dark.png",
+     "caption": "The app switcher: five apps; fourteen shrunk to fit; fourteen at the 48 px minimum, scrolled to keep the selection in view (dark)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m11/switcher-light.png",
+     "caption": "The app switcher: five apps; fourteen shrunk to fit; fourteen at the 48 px minimum, scrolled to keep the selection in view (light)."
+    }
+   ]
+  },
+  {
+   "id": "widget-reference",
+   "date": "2026-09-26 · decision",
+   "title": "Widgets matched to the reference: flat, bright rings and dials, measured from real screenshots",
+   "status": "decision",
+   "lede": "Fourth round, after three rejected ones (a crude ring; skeuomorphic wells and bezels; neumorphic soft shapes). This time the agent downloaded real screenshots of the reference desktop's Batteries and World Clock widgets, measured them (card 164 px with a 19–20 px corner and a 12 px inset, a 64 px ring with a stroke of 0.093 of its width in a bright green, the track as the plate darkened, a bolt at twelve when charging, dials with twelve heavy numerals and sixty ticks, necked hands and an orange seconds hand, white day faces and dark night faces, no header rows) and redrew ours to land within a few pixels at 2x, checked side by side. What still gives ours away is the typeface, our outline device glyphs against the reference's filled ones, and the card material: the reference cards are translucent and pick up the wallpaper, and its World Clock card is dark even in light mode.",
+   "notes": [
+    "Picks (design/23 §6): battery percentage weight 500 as measured, or heavier; battery track the plate darkened as measured, or a light green; one red for low and critical as the reference, or amber then red; World Clock card dark in both schemes as the reference, or following the scheme; filled device glyphs (new icons) or our outline set; every widget card tinted by the Space (Arc) or the neutral material; the calendar items stay queued.",
+    "Not proven: no dark-scheme battery reference and no native medium Batteries screenshot were found (the medium comparison uses the phone widget); the Space tint is subtle in the gallery; the shell has not adopted it yet (its battery rows move to the ring layout)."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/widget-reference/ours-battery-small-light.png",
+     "caption": "Battery, Small: the ring with the device glyph and the percentage (light)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/widget-reference/ours-battery-small-dark.png",
+     "caption": "Battery, Small: the ring with the device glyph and the percentage (dark)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/widget-reference/ours-battery-medium-light.png",
+     "caption": "Battery, Medium: a row of rings; low turns red, a bolt marks charging (light)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/widget-reference/ours-battery-medium-dark.png",
+     "caption": "Battery, Medium: a row of rings; low turns red, a bolt marks charging (dark)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/widget-reference/ours-clock-small-light.png",
+     "caption": "World clock, Small: a flat dial with numerals, 60 ticks and an orange seconds hand (light)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/widget-reference/ours-clock-small-dark.png",
+     "caption": "World clock, Small: a flat dial with numerals, 60 ticks and an orange seconds hand (dark)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/widget-reference/ours-clock-medium-light.png",
+     "caption": "World clock, Medium: four dials, white by day and dark by night (light)."
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/widget-reference/ours-clock-medium-dark.png",
+     "caption": "World clock, Medium: four dials, white by day and dark by night (dark)."
+    }
+   ]
+  },
+  {
+   "id": "m10-parts",
+   "date": "2026-09-26 · widgets",
+   "title": "The shell's Milestone 10 gets its calendar, widgets, screenshot thumbnail and hot corners; sill's adoption is next",
+   "status": "proven",
+   "lede": "quire cut the design parts for the shell's Milestone 10 today, on quire master and shell-host master together. MonthGrid (design/04 §39) lays a month across seven columns with weekday initials, quiets the neighbouring month's days, seats today on the accent disc, marks busy days with a dot, offers an optional ISO week column, and slides the whole grid in from whichever side the new month came from on previous/next. WidgetFrame (design/04 §40) comes in small, medium and large on a 164 px cell with a 16 px gap: a card on the Widget material over the desktop, or a flat tile inside the notification center, sized by WidgetMetrics and pulsing once when its value bumps; inside sit ClockFace, analog with separate day and night faces and an accent second hand, or digital, and LevelRing for the battery with low and critical tones and a charging bolt. ShotThumbnail (design/04 §41) is the floating screenshot card, 240 px wide and letterboxed between 2:1 and 16:10 (pillarboxed for a portrait shot), rising in with a spring and sliding out on dismiss, with hover actions, swipe-to-dismiss riding the same swipe machine as a notification, a drag threshold that hands off to the host, a drag ghost, and reduced motion handled inside the component. On the shell-host side, a drag source (SurfaceHandle::start_drag, F60) is now proven by dropping a file onto a terminal on the virtual compositor; F61 found that a keyboard-less surface cannot portably learn whether a modifier key is held, so the shell retires the modifier-key variant of its hot corners and keeps dwell and screen-edge triggers only. Hot corners themselves follow design/13 §13.3.12 (a 150 ms dwell, a 500 ms re-arm, and an action table), and the whole set follows design/22 §3.19-§3.23 for session, widgets, calendar, screenshot and hot_corners. quire's parts are proven; sill still has to adopt them.",
+   "notes": [
+    "Earlier in the day, F59 found the host never re-dispatched pointer enter/leave after a layout-driven hover change, so a banner arriving under a resting pointer stayed unhovered; the shell's real-input repro confirmed the fix, quire's own Harness got the same repair, and BannerStack learned an entry edge.",
+    "F60 and F61 together settle the drag story: F60 proves the host can originate a drag (a file dropped onto a terminal on the virtual compositor); F61 closes off the modifier-held hot corner, since a surface with no keyboard cannot portably read a held modifier key.",
+    "Design references: design/04 §39 (MonthGrid), §40 (WidgetFrame, WidgetMetrics, ClockFace, LevelRing), §41 (ShotThumbnail); design/13 §13.3.12 (hot corners: dwell, re-arm, action table); design/22 §3.19-§3.23 (session, widgets, calendar, screenshot, hot_corners)."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m10/calendar-light.png",
+     "caption": "MonthGrid, light and dark: weekday initials, today on the accent disc, busy-day dots, and the optional ISO week column"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m10/widgets-light.png",
+     "caption": "WidgetFrame on the light page: the desktop's Widget-material card (Battery, World Clock, Batteries) beside the notification center's dark tile"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m10/widgets-dark.png",
+     "caption": "the same WidgetFrame set on the dark page: the notification-center tile beside the desktop card"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m10/thumbnail-light.png",
+     "caption": "ShotThumbnail, light and dark: the 240 px card letterboxed to 2:1, a pillarboxed portrait shot, and the compact drag ghost"
+    }
+   ]
+  },
+  {
+   "id": "m6-notifications",
+   "date": "2026-09-26 · notifications",
+   "title": "The shell's Milestone 6 lands on new notification parts: card, banner stack, swipe, center panel, rich runs",
+   "status": "proven",
+   "lede": "The shell's notification server, banners and center are complete and proven with real input on the headless compositor recipe. quire supplied the parts: a notification card in the Toast material with the app mark, age, summary and a body clamped to two lines that opens to six on hover, a count chip with offset layers for groups, action buttons and an 18 px close at the top left as on macOS; a banner stack that slides cards in from the right and out again with the rows below healing; a swipe machine that follows a drag one-to-one to the right and damped to the left, springs back under a threshold and flies out past it, with horizontal scroll summed into the same offset; a right-edge full-height panel for the center; rich body runs with italics, underlines and links; and a group header. Real input then found two host pointer bugs (no hover until a second motion after entering a surface; a surface unmapped under the pointer leaving the next one without its enter), which are being fixed in shell-host.",
+   "notes": [
+    "Blitz limits recorded: no line-clamp (the clamp is a max-height in whole lines with a fade drawn only where text is cut); hidden clamped lines still take hits (fixed with pointer-events); wheel deltas keep winit's sign and have no phase; removing an animation freezes its last frame; absolute boxes place against their parent.",
+    "The motion table is at 64 animations and 55 keyframes; 907 tests."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/gallery/m6-notifications-light.png",
+     "caption": "the gallery's Notifications section, light: a stack of three banners with one grouped, a card mid-swipe, the group header, the right-edge center"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/gallery/m6-notifications-dark.png",
+     "caption": "the same in dark over the Work tint"
+    }
+   ]
+  },
+  {
+   "id": "native-pdf",
+   "date": "2026-09-25 · printing without a webview",
+   "title": "Blitz pages become vector PDFs through pdfrum: mailo's last webview blocker falls",
+   "status": "proven",
+   "lede": "The user decided mailo goes native-only, printing included, and that the PDF must go through their own pdfrum library rather than a third-party writer. Blitz lays the page out once at the paper's content width; a painter over pdfrum's canvas draws each page as vector graphics with embedded, subsetted fonts and the real text behind every glyph run (read from the layout's clusters, so ligatures and CJK extract exactly); page breaks follow two markers since Blitz cannot parse the CSS ones, keep-together boxes move whole, orphans and widows are held, and no glyph is left hidden under a clip. Variable fonts embed at the weight the layout used. A print dialog goes through the desktop portal behind a feature. pdfrum itself gained a glyph-run API with ToUnicode and ActualText, gradient shadings, blend modes, PNG pass-through, blank documents and variable-font instancing, under its own gates.",
+   "notes": [
+    "The three-page fixture (Latin, CJK, a JPEG, an alpha PNG, a moved block, a forced break): 42 KB, about 6 ms per print after the first in release, JPEG embedded byte-identical, and a rasterised page differs from the headless snapshot by a mean of half a channel level.",
+    "Two findings on the way: the prototype's thin grey CJK was the variable font's Thin default instance, not a fallback; and a glyph with no text used to swallow the next glyph's text, a bug the earlier writer had too.",
+    "pdfrum is pinned by git revision until the user publishes 0.4.0 (the whole chain together, because of a dependency pin); then quire v0.1.10 is tagged and mailo deletes its webview path."
+   ],
+   "images": []
+  },
+  {
+   "id": "v019",
+   "date": "2026-09-25 · quire v0.1.9",
+   "title": "v0.1.9: the control center's parts, the power menu's sheet, a window frame, and the composer's surface hardened",
+   "status": "proven",
+   "lede": "One tag closes the day's second half. For the shell's Milestone 5: module tiles, a module grid and a content panel, settings rows, a pane switcher, a control-center glyph, and a compact appearance picker; for its power menu: a sheet that exits, centres and dims behind a modal scrim, buttons that can be disabled or regular-sized in the danger colour, an overlay root that fills the viewport, and keyboard-cap arrows that finally draw (the bundled mono font had dropped the left and right arrows). For our own windows: a titlebar you can drag, double-click to zoom, traffic lights with a Fill-only tiling menu, over one seam that ds-native implements for winit and the shell implements over the host. For mailo: fields focusable by handle or selector, keep-focus on clicks, frame tags and link text with hover, the editing surface's programmatic focus, pointer capture and caret width, and a tree row with drop state. And every timing test now polls for its state instead of asserting at an instant, because the harness advances real time.",
+   "notes": [
+    "823 tests; the day went from v0.1.2 to v0.1.9. All work landed through the gate worktree; the weekly usage limit stopped six agents mid-gate once and every branch resumed from its own transcript with nothing lost.",
+    "Blitz findings recorded on the way: a Dioxus-written `open` attribute never opens a details element (namespace mismatch); padding and borders are not painted on inline elements; stacking order follows CSS 2.1 Appendix E; about sixty tinted cards in one document lose layers; no pointer capture, worked around at the host.",
+    "Compositor findings for the fork list: one compositor configures every floating window as tiled on all edges, and not even KWin lets a client place its own window, so tiling from the window menu ships Fill only."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/gallery/v019-control-center-power-menu.png",
+     "caption": "the gallery's control center (tiles, a Sound panel with the level control, the compact picker) and the power menu (a centred sheet over the modal scrim, a disabled Suspend, a regular-sized danger Restart, small key caps)"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/gallery/v019-window-frame.png",
+     "caption": "the window frame: an active window with the tiling menu open (halves unavailable on Wayland), an inactive window with grey lights, a maximised one"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/gallery/v019-osd-cards.png",
+     "caption": "the OSD cards at the top right: Sound and Display with the capsule level control, light and dark"
+    }
+   ]
+  },
+  {
+   "id": "window-interact",
+   "date": "2026-09-25 · shell-host windows, and F47",
+   "title": "Our own windows can be moved, resized and zoomed; and the host had never received real input until now",
+   "status": "proven",
+   "lede": "Client-decorated windows (mailo on Blitz, the future apps) gain interactive move and resize with the pointer's press serial, maximise, minimise and fullscreen, the window's state readable by the frame, and an invisible 7 px resize margin around the visible frame with the right cursors, excluded from the window geometry and the blur. On the way the agent found that the host had never created a pointer or keyboard at all: the toolkit routes a seat that already exists at bind time through a different callback than a seat announced later, and the handler ignored it. Every acceptance so far drove surfaces through the debug-injection path, which bypasses Wayland input, so nothing noticed. Fixed in the same branch; everything believed about live typing, hovering and clicking through the host is unverified until re-run with a real mouse and keyboard.",
+   "notes": [
+    "Headless KWin with fake input: a titlebar drag moves the frame by the drag; a bottom-right margin drag grows 480x320 to 580x380 with the origin fixed; maximise fills the output minus the bar; cursor shapes default, nwse-resize, ns-resize; 5 s idle at 0 frames. Nested compositor: maximise and fullscreen work; a move with the pointer elsewhere is refused, nothing sent.",
+    "For the compositor fork list: one compositor configures every floating window as tiled on all four edges, so no resize margin can exist there; and not even KWin lets a client tile itself left, right or centred (no placement request in xdg_toplevel, none in other compositors' toplevel managers, KDE's set_position is KDE-only), so the window menu ships Fill only.",
+    "The document's own CSS cursor is now applied; it used to be recorded and never shown."
+   ],
+   "images": []
+  },
+  {
+   "id": "level-control",
+   "date": "2026-09-25 · the level control",
+   "title": "A macOS-grade level control for volume and brightness, in three looks for the pick",
+   "status": "proven",
+   "lede": "The user said a plain slider is too simple. The new level control has a thick capsule track with the glyph inside it, knocked out two-tone where the fill covers it; the glyph follows the level (speaker waves 0 to 3, a mute slash, sun rays that grow); while dragging the fill follows the pointer with no easing, set from outside it eases over the quick token; a press swells the track with the spring; dragging past an end stretches the capsule a few pixels and it springs back; keys step a sixteenth. Three looks: Capsule (glyph inside), CapsuleKnob (the older look with a separate handle) and Segments (sixteen staggered squares). The same wave built the OSD card: top right under the bar, a title line and the control in control-center module metrics, dropping in from above and fading out with the host unmapping at settle.",
+   "notes": [
+    "Recommendation: Capsule. It is the current macOS form and carries glyph, level and mute in one shape; Segments look dated and the knob adds a handle that means nothing on a read-only OSD.",
+    "Measured: a set from outside follows the ease-out curve (131 vs 130 px at a quarter of the time); a drag is under the pointer 16 ms after the move; the swell is 27 to 29 px; the stretch is 3 px and springs back; Reduced motion has no stretch.",
+    "Blitz finding: one document holding about 60 tinted cards loses layers (every card vanished), so the sheet renders each row on its own. Blitz has no pointer capture, so dragging out of the control's hit zone lets go."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/gallery/level-variants.png",
+     "caption": "the three looks in light and dark over the Work tint and a light ground, for volume 0, 40 and 100 percent, muted, and brightness 30 percent; 1x above, 2x below"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/gallery/level-motion.png",
+     "caption": "frames: a set from outside easing in, a press swelling the track, a drag past the end stretching the capsule and its spring back"
+    }
+   ]
+  },
+  {
+   "id": "edit-surface",
+   "date": "2026-09-25 · quire v0.1.7",
+   "title": "A rich-text editing surface for the mail composer, with no fork of the renderer",
+   "status": "proven",
+   "lede": "mailo keeps its own editor core and document model and draws its own caret and selection; quire now gives it the surface underneath. The spike found that the renderer's window-event hook runs before Blitz consumes an event, so IME preedit and commit reach the surface without patching anything, and everything needed for hit-testing and caret geometry was already public. The surface delivers typing, composition steps, paste with HTML, cut and copy, and pointer presses resolved to a text position (element plus byte offset), reports caret and selection rectangles, and sets the IME cursor area. A Harness driver types a Zhuyin composition in tests; an example window prints every input for a manual IME check.",
+   "notes": [
+    "Two Blitz defaults had to be blocked: a press starts its own painted text selection, and a click on a non-field element clears the focus.",
+    "Limits recorded: no automated test drives the real window's IME (re-check at every toolchain bump); no pointer capture during a drag; Tab still moves focus; CJK lines do not wrap at word boundaries; a caret exactly at an inline object's boundary resolves to after it.",
+    "657 tests; quire v0.1.5, v0.1.6 and v0.1.7 went to mailo in one day: nine wave-two, seven wave-three and nine wave-four component gaps, the Phase B host (contexts, sealed frames, HTML parser, clipboard, focus, frame links), and this surface."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/gallery/edit-light-postmark.png",
+     "caption": "the gallery's Edit page: two paragraphs and a chip inside the surface, the page's own caret drawn from the host's reported rect"
+    }
+   ]
+  },
+  {
+   "id": "icons-shipped",
+   "date": "2026-09-25 · the shipped icon set",
+   "title": "Five app icons ship in three styles, one family across procedural and model-derived faces",
+   "status": "proven",
+   "lede": "The user took the recommendation: mail in monochrome slate and photos in monochrome rose from the FLUX.2 Klein faces, files in solid ochre, terminal in monochrome jade and notes on paper with a clay spot, all procedural, at the muted chroma. A ship manifest exports every app at the freedesktop sizes, their doubles and the 1.5x sizes, drawn directly per size, into assets under the repository licence. Three styles ship: Colour, Muted at a lower chroma, and Monochrome exported neutral and tinted at run time by the Space, the accent or nothing, through a pure re-tint over RGBA bytes in the design crate that the shell also applies to third-party icons. A consistency test measures silhouette, bevel, shade and shadow across the five.",
+   "notes": [
+    "Sizes 16, 22, 24, 32, 36, 44, 48, 64, 72, 96, 128, 256, 512; 195 files, 6.1 MB. The 1024 master is not exported (design/08 stops the double at 256; the grain would make it 1.2 MB each).",
+    "The Paper plate is the one consistency exception: too close to white to show the top arc, so its bevel reads through the bottom shade and rim only.",
+    "Shell side: pick the file by style and size x scale, re-tint third-party icons after plating and before caching, never symbolic icons, and key the cache by icon, size, scale, style and tint."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/icons/round6-shipped.png",
+     "caption": "the shipped set: Colour, Muted, and Monochrome tinted by the Work and Home Spaces, each at 512 with the 16/32/48 strip on light and dark, read back from the exported files"
+    }
+   ]
+  },
+  {
+   "id": "m0-kwin-live",
+   "date": "2026-09-25 · Milestone 0 on the live KDE session",
+   "title": "The host passes its Milestone 0 acceptance on the real KWin session at scale 2",
+   "status": "proven",
+   "lede": "With the KDE session unlocked, the same acceptance the host passed on a nested compositor ran on the user's live Plasma 6 desktop: one 4K output at scale 2, NVIDIA over Vulkan, compositor blur on. The bar reserves its 32 px and paints its probe colour; blur behind the bar drops the variance by 99.98 % while the checkerboard below it stays sharp; the dock's hover sweep renders a frame per callback in every present mode with sub-millisecond frames and idles at zero frames, zero commits and zero main-thread wakeups; two surfaces share one device. The fractional-scale item was written for a 1.5 output and the display is at 2 now, so only its buffer and checker checks apply, and those pass.",
+   "notes": [
+    "The first attempt failed before any demo ran: the invoking shell had no runtime-directory variable, so nothing could find the compositor socket.",
+    "Fractional item: buffer 3840x64 for 1920x32 logical, checker runs of exactly 4 device pixels, preferred scale 240; its screen-row check failed because the capture held no bar at all (spectacle shot before the surface was mapped or after the demo exited), so it is a capture-timing question, not a rendering one. Recorded as shell-host F45."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/kwin/live-a-bar.png",
+     "caption": "item a on live KWin: the demo bar at the top of the real desktop, a maximised probe window below it"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/kwin/live-b-blur.png",
+     "caption": "item b: the bar over the checkerboard with compositor blur on"
+    }
+   ]
+  },
+  {
+   "id": "m2-wallpaper",
+   "date": "2026-09-25 · sill Milestone 2 wallpaper, and pixel snapping wired through",
+   "title": "The shell draws its own wallpaper, after two bugs in two repos; every surface reads its scale and snaps to device pixels",
+   "status": "proven",
+   "lede": "The wallpaper service reads the desktop's background record, resizes with Lanczos into a per-output cache and cross-fades on light and dark; the surface is a background layer that takes no input. It was built and gated a day before it painted anything. The first cause was in the host: after every present it dropped the redraw request that the image loader raised from another thread mid-render, so a decoded image never got a second paint (found with a standalone host demo, fixed by keeping host-thread and loader-thread requests apart). The second was in the shell: Taffy placed the fixed-position root against a zero-height parent, so the page was zero pixels tall. With both fixed the wallpaper is on by default and its acceptance passes 4 of 4. The same push wires quire's pixel snapping into every surface: each root reads the surface's live fractional scale and the host runs the snapping pass before each paint.",
+   "notes": [
+    "Idle with the full wiring at 1x, 20 s: bar 4→4 frames, dock 3→3, wallpaper 3→3, launcher 0. A first reading of 13 idle frames was the counters crossing the clock's minute repaint.",
+    "Host demo before the fix: a CSS background and a 512 px img stayed on the fallback colour; after: file, data-URL and CSS sources all show the image within about 5 ms of the swap, then 5 s idle at zero frames. Callbacks were never withheld, so a withheld-callback path was not the cause.",
+    "Still to do: a hairline screenshot on the nested output at scale 1.5 to see the snapping on screen."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/sill/wallpaper-nested.png",
+     "caption": "the shell's wallpaper surface painting the acceptance image (a blue field with a red marker whose centre pixel the script checks) under the bar and dock"
+    }
+   ]
+  },
+  {
+   "id": "icons-round5",
+   "date": "2026-09-25 · icon round five",
+   "title": "Round five: eight muted colourways per app, and how far the colour can be pushed",
+   "status": "proven",
+   "lede": "The user asked for more colours. The palette grew to eight hues 45 degrees apart (clay, ochre, sage, jade, teal, slate, plum, rose), still capped at the round-four chroma, and each app is shown in its recommended dialect across all eight. A second sheet shows three hues at three chroma levels so the saturation ceiling can be judged; a third is the swatch board with every colour's OKLCh values printed, so a pick can be named. No model ran: the mail and photos rows are the round-three Klein picks re-tinted.",
+   "notes": [
+    "Legibility: every hue at every level scores 3.0 to 4.1 against the dock pill on both Space frames in light and dark; the plate's mid lightness does that work, so hue never decides it.",
+    "Space frames: on Work (hue 268) slate and its neighbours teal and plum sit well, ochre and clay clash mildly; on Home (152) sage and jade sit well, plum and rose clash. At the lowest chroma the clash is faint because the frames are nearly grey; at the highest they vibrate.",
+    "Bolder levels: at chroma 0.15 ochre, jade and teal leave sRGB and the candy look returns; 0.11 keeps every hue in gamut and is the step to take if the set should be louder.",
+    "Recommendation, one hue per app: mail slate, files ochre, terminal jade (monochrome), notes a clay spot, photos rose. Five apps, five parts of the wheel."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/icons/round5-colourways.png",
+     "caption": "each app in its dialect across the eight hues at chroma 0.07; 512 with the 16/32/48 strip on light and dark"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/icons/round5-bolder.png",
+     "caption": "clay, sage and slate at chroma 0.07, 0.11 and 0.15"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/icons/round5-palette.png",
+     "caption": "the eight hues at three chroma levels on light and dark, each labelled with L, C, H and hex; CLIP marks colours outside sRGB"
+    }
+   ]
+  },
+  {
+   "id": "icons-round4",
+   "date": "2026-09-25 · icon round four",
+   "title": "Round four: one muted palette, no gradients, four dialects to mix across the set",
+   "status": "proven",
+   "lede": "The direction after round three: fewer gradients, less vibrant colour, and not every icon from the same recipe. Every icon keeps one skeleton (the squircle, the same light, a thin top bevel arc, bottom shade, drop shadow, emboss depth and grain) and one OKLCh palette capped at chroma 0.07 with six named hues (slate, teal, sage, ochre, clay, plum); plates are one colour with at most a faint tonal shift. Four dialects: Monochrome tone-on-tone (plate and symbol share a hue and differ in lightness), Graphite (near-black plate, light symbol), Paper (quire's paper plate, ink symbol, one spot of colour at most), and Solid (one flat muted colour, white symbol). Mail, files and photos also get their round-three Klein pick re-tinted into Monochrome, keeping Klein's emboss. A second sheet shows the whole set in Monochrome tinted by a Space, and two settings keys (icons.style: Colour, Muted, Monochrome; icons.monochrome_tint: Space, Accent, Neutral) are registered for it. No model ran this round.",
+   "notes": [
+    "Recommendation (three dialects across five apps): mail = Monochrome slate, Klein variant; files = Solid ochre, procedural (the Klein files is blotchy); terminal = Graphite; notes = Paper with the ochre spot on the fold; photos = Monochrome clay, Klein variant.",
+    "Weak spots: Monochrome and Solid are the least distinct pair; a Paper plate nearly disappears at 16 px on the light ground, so the ink symbol has to carry it.",
+    "cargo deny's advisory check fails on RUSTSEC-2026-0192 (ttf-parser unmaintained) through the Blitz stack, on master too; licences pass. Recorded, not silenced."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/icons/round4-dialects.png",
+     "caption": "five apps × four dialects, plus the Klein pick re-tinted to Monochrome for mail, files and photos; 512 with the 16/32/48 strip on light and dark"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/icons/round4-monochrome-space.png",
+     "caption": "the set in Monochrome tinted by the Work (268) and Home (152) Space presets, through ds's palette derivation"
+    }
+   ]
+  },
+  {
+   "id": "icons-round3",
+   "date": "2026-09-25 · icon round three",
+   "title": "Round three pressed the symbol into a two-hue bevelled plate; the user picked procedural for terminal and notes, Klein's face for mail, files and photos",
+   "status": "proven",
+   "lede": "After round two the user gave a reference direction: symbols embossed into the plate with no outlines or strokes, a matte finish, the plate's bevel catching light in a few crisp narrow spots, a soft two-hue gradient ground per app, no frosted glass, no text. The procedural renderer now draws filled layers raised, recessed or flush with an inner light edge and a soft shade, mixes each app's two-hue ground in OKLCh, and finishes the plate with a narrow top highlight arc, a bottom shade and one specular point; the emboss drops out at 16 and 32 px so the small sizes stay flat. FLUX.2 Klein rendered the same brief two ways: the embossed symbol on a surface that becomes the plate face, and the whole tile re-masked with our squircle. Qwen ran mail and terminal only. The pick is the user's; the agent's reading is that the procedural set is best at every size, Klein's face mode has the most convincing clay emboss but blurs at 16 and washes files and notes to pastel, and a hybrid (Klein's face as the material study on the procedural plate) is open.",
+   "notes": [
+    "design/08 §2.9 records the embossed rules for app icons only; small symbolic glyphs keep Lucide's one stroke. docs/icons-bakeoff.md 'Round three' has the full comparison.",
+    "New tools: `tools/icons face` plates a model-drawn surface or tile, `tools/icons strips` makes the 512/48/32/16 pick sheets, tools/icons/round3.sh runs the set."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/icons/round3-procedural.png",
+     "caption": "procedural, embossed: mail, files, terminal, notes, photos at 512, 48, 32 and 16 px on light and dark"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/icons/round3-klein-ground-picks.png",
+     "caption": "FLUX.2 Klein, face mode picks: the embossed symbol drawn on the two-hue ground, plated by our squircle"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/icons/round3-klein-tile-picks.png",
+     "caption": "FLUX.2 Klein, tile mode picks: the whole bevelled tile drawn by the model, re-masked"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/icons/round3-qwen-ground.png",
+     "caption": "Qwen-Image-2512, face mode, mail and terminal"
+    }
+   ]
+  },
+  {
+   "id": "polish-adoption",
+   "date": "2026-09-25 · sill adopts the polish pass",
+   "title": "The bar, dock and launcher take the polish pass on the nested compositor, over a real wallpaper",
+   "status": "proven",
+   "lede": "Every shell surface now writes the shell type scale and the material stack from the settings around its root. The bar's app name and clock sit in menu-bar pills and the workspaces form one segmented group; text menus are 22 px rows with a hairline separator and a rounded highlight. The dock pill is a squircle with quire's dock metrics, every tile on a paper plate, running dots on the baseline through a bounce. The launcher's card is a squircle sized to its content, its measured rect drives the panel's input and blur and the catcher's hole, and the surface grew room for the card's shadow. Fourteen new settings keys, three moved defaults, and a generated test wallpaper behind every acceptance run.",
+   "notes": [
+    "Acceptance: dock 6/6 (window maximises to 1260 of 1360; hover sweep 39 frames for 38 callbacks; idle 0 frames in 5 s; squircle corner probe tells inside from outside), bar 8/8 (idle 0 commits), launcher 6/6 in release: warm open min 64, p50 68, max 100 ms; first open 153 ms. The same build failed the 100 ms gate at load average 18 and passed at 8.",
+    "Gaps recorded as Q66 to Q70: design/22 rows (added in quire v0.1.3), material keys read from `extra` until ds-settings had fields (v0.1.3 has them; the switch is in progress), pill radius 22 vs the brief's 18 (same curve at 60 px, shadow radius differs), popup side room 24 px cuts a 28 px menu shadow, MagnifyParams design defaults."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/sill/polish-bar-nested.png",
+     "caption": "the bar: bold app name, one workspace group, status glyphs, the clock"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/sill/polish-bar-nested-menu.png",
+     "caption": "the clock's menu open: the pill highlight, 22 px rows, hairline separator"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/sill/polish-dock-nested-magnified.png",
+     "caption": "the dock magnified: squircle pill, paper plates, the separator"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/sill/polish-dock-nested-menu.png",
+     "caption": "a dock tile's context menu with a window, the running dot on the baseline"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/sill/polish-launcher-nested.png",
+     "caption": "the launcher: a content-sized squircle card with contact and ambient shadows"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/sill/polish-launcher-nested-actions.png",
+     "caption": "the launcher's actions menu hanging from the selected row"
+    }
+   ]
+  },
+  {
+   "id": "polish-and-icons",
+   "date": "2026-09-25 · quire polish pass and icon bake-off",
+   "title": "The design system gains the layers macOS stacks; icon round two is abstract, and the procedural set speaks the language",
+   "status": "proven",
+   "lede": "After comparing the shell with macOS, the design system gained a material stack (a vibrancy boost baked into the tint, a 1 px inner highlight, a hairline, a contact shadow and an ambient one), continuous-curvature squircle corners, a shell type scale (13 px bar items, 22 px menu rows, a 22 px launcher field), menu-bar hover pills, dock metrics with running dots and placeholder plates, and a launcher card that fits its content. The gallery's Polish page prints each rendering beside the macOS number it targets. The icon bake-off ran on both local models and produced clean, readable icons, but they are photoreal objects on plates; the verdict was 'too realistic', so round two goes abstract in the paper-and-ink language, with a procedural alternative built from the tokens. Round two ran: both models with a flat paper-cut-out brief, and a procedural set drawn from the tokens (one stroke weight, Post corners, the frame grain, four colours on the plate). The procedural set is coherent by construction and reads at every size; the generated sets moved away from clay renders but keep a second line weight (Klein) or bevels and drop shadows (Qwen). The pick is the user's.",
+   "notes": [
+    "Polish values are all configurable (design/22 keys per item); the docs mark each as settled with its macOS reference and confidence.",
+    "Bake-off numbers: FLUX.2 Klein 4B renders in 3 to 4 s warm at 12 GB; Qwen-Image-2512 in 70 to 90 s at 14.7 GB (cannot share the GPU). Qwen gave the cleaner raw set; both failed the terminal subject.",
+    "Round two: Klein 3.0 s per render at 11.1 GB peak, Qwen 67 to 78 s at 15.0 GB. Procedural: a 20 to 40 line spec per icon, seconds to render, every export size drawn rather than downscaled. Full comparison in docs/icons-bakeoff.md 'Round two'."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/gallery/polish-dark-postmark.png",
+     "caption": "the Polish page, dark: menu bar and text menu, the material stack off and on, squircle corners, the dock pill with plates, the launcher, the window shadow"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/icons/abstract-plated.png",
+     "caption": "round two, procedural: mail, files, terminal, notes, photos from tools/icons specs, at 512, 48, 32 and 16 px on light and dark"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/icons/klein2-plated.png",
+     "caption": "round two, FLUX.2 Klein 4B with the flat paper-cut-out brief: four seeds per subject"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/icons/qwen2-plated.png",
+     "caption": "round two, Qwen-Image-2512, the same brief"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/icons/qwen-plated.png",
+     "caption": "round one, Qwen-Image-2512, for comparison: rejected as too realistic"
+    }
+   ]
+  },
+  {
+   "id": "m4-launcher",
+   "date": "2026-09-24 · sill Milestone 4",
+   "title": "The launcher opens in about 60 ms with apps, windows, settings and a calculator, on the same menu as everything else",
+   "status": "proven",
+   "lede": "The first delivery gate of the program. Two warm surfaces (a transparent catcher and the panel) are toggled through one shared link, so opening never spawns anything. The search core runs every provider on its own thread, stamps results by generation and drops stale ones; queries reach their first results in microseconds. Providers: applications (with desktop actions), open windows, system commands gated on what logind allows, a calculator on fend, and settings keys from the installed schemas plus the desktop's own pages. The panel is the design system's command palette, keyboard-first, with Ctrl+K opening a row's actions as the same menu the bar and dock use.",
+   "notes": [
+    "Acceptance on a nested compositor (release build): warm open 52 to 80 ms, p50 57 (the budget is 100); first open 106 ms; both surfaces exist hidden from startup; a second toggle hides, a catcher click closes; 5 s idle after hide adds 0 frames on both surfaces.",
+    "Both crashes are fixed at the source (motion tasks are owned by their scope; focus goes through a host seam) and the launcher's workarounds are gone: the palette fills its panel with no dim box, rows show the app's own icon, the selection follows the pointer, and the actions menu hangs from the selected row. A 20-toggle stress at 150 ms spacing leaves the daemon healthy.",
+    "Not yet: IME verified live (needs your unlocked session and fcitx5: dev/ime-probe.sh prints the commands), the launcher on the output under the pointer, and system commands (logged, not run, until a session control exists).",
+    "Latency re-measurement pending a quiet machine: with a 28-core job running, warm opens read about 117 ms p50 versus 57 ms earlier."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/sill/launcher-nested.png",
+     "caption": "typing 'fi': top hit, applications, windows, settings"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/sill/launcher-nested-actions.png",
+     "caption": "Ctrl+K on Firefox: its desktop actions as a menu"
+    }
+   ]
+  },
+  {
+   "id": "m3-dock",
+   "date": "2026-09-24 · sill Milestones 2 and 3",
+   "title": "The dock launches, magnifies, badges and quits real apps on a nested compositor",
+   "status": "proven",
+   "page": "archive",
+   "lede": "The second shell surface, on the same design system as the bar. Behind it the application index (353 desktop entries on this machine, icons resolved through the theme chain), launching through transient systemd scopes or D-Bus activation with an activation token, a pins file, and LauncherEntry badges from the session bus. The dock reserves its height, magnifies tiles at the compositor's own frame rate while the pointer is over it and goes back to zero frames when it leaves, launches a pinned app on click, shows a badge within a frame of the signal, and opens the design system's context menu on a right click.",
+   "notes": [
+    "Acceptance on a nested compositor: reserve 72 px; a one-second hover sweep renders 52 frames for 52 callbacks then 0 frames over 5 s idle; a terminal launched in its own scope with its running dot 0.5 s later; a count badge turned red 131 ms after the emitter sent it; a right-click opened the menu with the window, Remove from Dock and Quit.",
+    "After the adoption pass the pill is the Dock material's own Space-gradient tint with its radius and shadow, and the hover label stays hidden while a menu is open. Still open in the design system: a radius override for the pill setting, icon sizes above 22 px, and a caller-driven tooltip.",
+    "Not yet built: Open at Login, drag ghost, file drops, minimize targets, sounds; auto-hide is wired but not exercised."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/sill/dock-nested.png",
+     "caption": "the dock at rest under the bar, two tiles (a terminal pinned, Trash)"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/sill/dock-nested-magnified.png",
+     "caption": "pointer over the terminal tile: magnified, neighbour pushed aside"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/sill/dock-nested-menu.png",
+     "caption": "after a click launched the terminal: running dot, and the right-click menu"
+    }
+   ]
+  },
+  {
+   "id": "m1-bar",
+   "date": "2026-09-24 · sill Milestone 1",
+   "title": "The bar runs as a real shell surface on a nested compositor: workspaces, status items, menus, zero idle frames",
+   "status": "proven",
+   "page": "archive",
+   "lede": "The first shell surface built on the design system. The sill daemon starts, takes its single-instance lock, spawns the services (UPower, NetworkManager, PipeWire, the status-notifier tray, the toplevel and workspace protocols on their own connection) and puts one bar per output on the nested compositor. The bar reserves its 32 px, sits idle at zero frames, and its clock and status menus are the design system's Menu opened as real popups. Every stylesheet and render passes the coherence lint, so it is the same menu mailo will get.",
+   "notes": [
+    "Updated after the design-system adoption pass: the bar is the Space gradient with grain, status items sit on the frame inks, the tray shows each app's own icon (coloured ones as images, the rest recoloured to the ink), and the popup is transparent around its card. The launcher panel in the first shot is the M4 work in progress on the same compositor.",
+    "Acceptance on a nested compositor and on KWin: exclusive zone 32 px; five seconds idle adds 0 frames and 0 commits; the clock menu opens and dismisses; the popup is transparent around its card.",
+    "What the live bar shows here: the focused app, workspace pills (drag to reorder), tray icons (stand-in glyphs until the design system can draw an app's own icon, which is being added), volume, Wi-Fi, the clock in the local zone.",
+    "Below the daemon's bar in the second shot is the demo bar with fake services and its clock menu open."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/sill/bar-nested.png",
+     "caption": "the daemon's bar on a nested compositor after adoption: Space gradient, real tray icons"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/sill/bar-nested-menu.png",
+     "caption": "the clock menu as a transparent popup"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/sill/bar.png",
+     "caption": "the bar on KWin at scale 1.5 (first version, Home Space tint)"
+    }
+   ]
+  },
+  {
+   "id": "m0-nested",
+   "date": "2026-09-24 · Milestone 0 on a nested compositor",
+   "title": "The host passes four of the five acceptance items on the real compositor; compositor blur makes the bar vanish",
+   "status": "running",
+   "page": "archive",
+   "lede": "A nested compositor turns out to run with the screen off once GL vblank sync is disabled, so the deferred run happened today. The bar reserves its 32 px, fractional scale maps pixel for pixel, two surfaces share one device, and the dock hover sweep renders every frame with zero idle frames. Blur is the exception: with a blur region requested, the compositor stops drawing the bar at all (one run captured a blank frame), while the same client passes on KWin. The acceptance check now also requires the checkerboard to stay visible so a blank frame can never read as a perfect blur. An investigation is running.",
+   "notes": [
+    "Dock sweep on the nested compositor: 2059 frames for 2059 callbacks, 0.27 ms median, 0.39 ms p95; five seconds idle: 0 frames, 0 commits, 0 main-thread wakeups.",
+    "Two surfaces on one device: the second costs 1.4 MB.",
+    "Blur: the bar is composited with blur off and disappears with blur on; the cause (our buffer/region or a compositor bug on the nested GL path) is being isolated with a plain shm client and the AMD adapter."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/nested/a.png",
+     "caption": "nested compositor: the 32 px bar above the maximized checkerboard (item a)"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/nested/b.png",
+     "caption": "nested compositor with a blur region requested: the bar is gone (item b, open)"
+    }
+   ]
+  },
+  {
+   "id": "gallery-first-look",
+   "date": "2026-09-24 · quire wave 3",
+   "title": "The design system exists: every component on review pages, in both themes and six accents",
+   "status": "proven",
+   "page": "archive",
+   "lede": "Forty-one components, the token tables, eight materials, forty-six animations and the Space editor are built and green (about 310 tests), and the gallery renders them through the real Blitz pipeline. Its first run caught thirteen defects (text inputs at replaced-element size, an empty toast pill on every root, invisible undo labels, a class collision between the text field and the Space editor's colour field); all are fixed, then a polish pass scoped the reset with :where, moved every spacing in every sheet onto the spacing tokens, and made the colour field's dots round. These are the sheets after both passes. The migration brief has gone to the mailo session.",
+   "notes": [
+    "Two root causes behind most of the list: one shared class name between two components, and a reset rule that outranked every single-class component rule.",
+    "Open: a Blitz hit-testing bug (a lone inline-flex button beside only inline content receives no click; reproduction test written for an upstream report) and overlay bounds that follow the content height."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/gallery/controls-light-postmark.png",
+     "caption": "Controls page, light, Postmark: buttons, icon buttons, command pill, segments, tabs, toggles, sliders, inputs at one line"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/gallery/overlays-dark-postmark.png",
+     "caption": "Overlays page, dark: the Rich menu, link pills honest and lying, the send pill counting down, the undo toast with its pull tab"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/gallery/lists-light-postmark.png",
+     "caption": "Lists page, light: rows with unread dots and chips, sidebar items on the Space's frame colour with the seal, tiles"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/gallery/space-light-postmark.png",
+     "caption": "Space page: the editor with its hue x chroma field, stops, grain, presets, the four legibility gates measured live, and the frame tokens it derives"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/gallery/materials-dark-postmark.png",
+     "caption": "Materials page, dark: eight materials over a wallpaper, blur on and off"
+    }
+   ]
+  },
+  {
+   "id": "h2-host",
+   "date": "2026-09-24 · shell-host H2",
+   "title": "The real host passes the Milestone 0 acceptance: one process, many surfaces, no idle frames",
+   "status": "proven",
+   "page": "archive",
+   "lede": "The spike is retired. The production host (calloop loop, one GPU device, shared renderer, layer surfaces, popups, input, IME, clipboard, blur, fractional scale) runs the same five acceptance items on its demos in a nested KWin and passes them all; 162 tests; the same numbers as the spike within noise.",
+   "notes": [
+    "Dock hover sweep: 73 frames for 73 callbacks, 0.89 ms median; five seconds idle: zero frames, zero commits, zero main-thread wakeups.",
+    "Two driver facts recorded: wgpu ties an instance to one Wayland display; NVIDIA 615.71 crashes on a surface query after a probe instance is dropped, so probe instances are kept alive.",
+    "Waiting on your unlocked screen: the same run on the live session and inside nested compositor."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m0/a.png",
+     "caption": "demo_bar on the real host: the 32 px bar above a maximized checkerboard"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m0/b.png",
+     "caption": "demo_bar with compositor blur behind the bar"
+    }
+   ]
+  },
+  {
+   "id": "m0-render",
+   "date": "2026-09-24 · Milestone 0, items a, b, c, f, g",
+   "title": "Blitz renders into a layer-shell bar with compositor blur, and the dock hover animates with zero idle frames",
+   "status": "proven",
+   "page": "archive",
+   "lede": "The go/no-go item for the whole program passed with no fallback. A Dioxus document draws into a top-anchored layer surface through one shared GPU renderer; the bar reserves its 32 px, the compositor blurs what is behind it, a hover sweep across twelve dock icons renders every frame in about a millisecond, and five seconds of idle produce no frames at all. Two surfaces in one process cost 2 MB more than one. Run in a nested virtual KWin because the session was locked.",
+   "notes": [
+    "Dock sweep: 69 frames for 70 callbacks, 0.92 ms median, 1.25 ms p95 against a 16.7 ms budget; idle: 0 frames, 0 commits.",
+    "Blur: pixel variance inside the bar dropped from 3306 to 0.56.",
+    "Fractional scale 1.5 and 1.7 map buffer to screen pixel for pixel; a 2-logical-px checker measures 3 px at 1.5.",
+    "NVIDIA on Vulkan works; the AMD iGPU and the GL backend do not present on this machine."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m0/a.png",
+     "caption": "item a: the 32 px bar (top) above a maximized checkerboard window"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m0/b_blur0.png",
+     "caption": "item b: translucent bar without blur"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m0/b.png",
+     "caption": "item b: the same bar with compositor blur behind it"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m0/f_1.7.png",
+     "caption": "item f: fractional scale 1.7, buffer 1919x54 for 1129x32 logical"
+    }
+   ]
+  },
+  {
+   "id": "m0-widget-headless",
+   "date": "2026-09-24 · Milestone 0, item d",
+   "title": "A custom-painted widget draws into its own GPU texture inside a Blitz document",
+   "status": "proven",
+   "page": "archive",
+   "lede": "The path the terminal, video player and PDF viewer will use: a Rust widget owns a wgpu texture, renders into it each frame, and Blitz composites it as an image. Redraw requests stop after the widget says it is idle. The headless render-to-PNG path and its snapshot test (the CI gate for every surface) also work.",
+   "notes": [
+    "Rendered on the RTX 5070 Ti through Vulkan, offscreen; the CPU path leaves the widget transparent by design.",
+    "Snapshot tolerance: at most 2 per channel and 0.1 % of pixels; a deliberate colour change was rejected at 8.2 %."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m0-widget-headless/0.png",
+     "upscale": 3,
+     "caption": "widget texture at t = 0 s (rotating triangle, 240x180 shown 3x)"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m0-widget-headless/1.png",
+     "upscale": 3,
+     "caption": "t = 0.5 s"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m0-widget-headless/2.png",
+     "upscale": 3,
+     "caption": "t = 1.0 s; after 2 s the widget stops asking for frames"
+    }
+   ]
+  },
+  {
+   "id": "m0-protocols",
+   "date": "2026-09-24 · Milestone 0, items b, e, f",
+   "title": "Blur, fractional scale and popups work against KWin from a bare client",
+   "status": "proven",
+   "page": "archive",
+   "lede": "Hand-written Wayland protocol handlers (the ones smithay-client-toolkit 0.20 lacks): the compositor advertises blur and honours a region; fractional scale reports this display's real 1.7; an xdg_popup child of a layer surface positions itself with the compositor's own constraint adjustment, and a nested submenu positions relative to it.",
+   "notes": [
+    "Popup 1 configured at (0,28) 180x110 after KWin slid it on-screen; popup 2 at (164,13) 160x90.",
+    "24 tests: rounded-strip regions against a raster oracle, positioner tables, scale rounding.",
+    "No screenshot: the capture tool returned transparent images from that run; fixed for the next spike."
+   ],
+   "images": []
+  },
+  {
+   "id": "m0-nested",
+   "date": "2026-09-24 · dev harness",
+   "title": "A nested compositor runs inside the KDE session with every protocol we need",
+   "status": "proven",
+   "page": "archive",
+   "lede": "One script starts a nested compositor as a window, records its socket, and lists its globals. It advertises layer-shell v5, background blur, fractional scale, viewporter, toplevel and workspace protocols, and text-input v3. ghostty runs inside it; stopping it leaves the host untouched.",
+   "notes": [
+    "Works on the NVIDIA path directly; the AMD fallback was not needed.",
+    "Frosted glass is set through the compositor's own theme setting."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m0-nested/0.png",
+     "caption": "the nested compositor as a window on the KDE desktop"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/m0-nested/1.jpeg",
+     "caption": "ghostty running inside the nested compositor"
+    }
+   ]
+  },
+  {
+   "id": "w0-probes",
+   "date": "2026-09-24 · quire wave 0",
+   "title": "Sixteen Blitz CSS probes settle what the design system may use",
+   "status": "proven",
+   "page": "archive",
+   "lede": "Each probe renders a tiny document headlessly and checks pixels. Transitions, keyframes, custom properties, animation restart, SVG currentColor, fonts, color-mix and timers all work. Attribute selectors only match with a namespace prefix, focus-visible is always false, ellipsis clips instead of fading, and no backend does backdrop-filter. The design system's CSS emitter and lint now encode these.",
+   "notes": [
+    "Fallbacks adopted: [*|data-x] selectors, a data-modality attribute for focus rings, mask-image fades for truncation, compositor blur only."
+   ],
+   "images": [
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/w0-probes/0.jpeg",
+     "caption": "S2: [data-theme] selector never matches on Blitz"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/w0-probes/1.jpeg",
+     "caption": "S2: [*|data-theme] matches (the fix)"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/w0-probes/2.jpeg",
+     "caption": "S3: keyframes with var(), t = 0"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/w0-probes/3.jpeg",
+     "caption": "S3: same document at t = 0.3 s"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/w0-probes/4.jpeg",
+     "caption": "S6: inline SVG stroke follows color via attributes"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/w0-probes/5.jpeg",
+     "caption": "S11: a bundled TTF registered on the font context"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/w0-probes/6.jpeg",
+     "caption": "S13: ellipsis clips (top); mask fade works (bottom)"
+    },
+    {
+     "path": "/home/pohsuanlai/quire/tools/progress/shots/w0-probes/7.jpeg",
+     "caption": "S16: hybrid backend applies blur() but not saturate()"
+    }
+   ]
+  },
+  {
+   "id": "icons-smoke",
+   "date": "2026-09-24 · icon pipeline",
+   "title": "Local image generation runs: FLUX.2 Klein 4B on the 5070 Ti in 22 seconds",
+   "status": "proven",
+   "page": "archive",
+   "lede": "ComfyUI in a uv venv with a 2.6 GB quantised FLUX.2 Klein (Apache-2.0). The smoke prompt asked for a single flat object; the model returned a photograph, which is what the style brief and the squircle post-processing will correct. Qwen-Image-2512 waits for 13 GB of free VRAM.",
+   "images": [
+    {
+     "path": "/home/pohsuanlai/comfy/out/smoke-flux2-klein-4b.png",
+     "caption": "smoke render: 'a paper envelope', 512 px, 4 steps"
+    }
+   ]
+  }
+ ]
+}

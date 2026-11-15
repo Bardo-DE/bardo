@@ -1,0 +1,124 @@
+# keycap's built-in mapping: the standard Mac set. `when` names roles (command, option,
+# control, shift) and `then` names written modifiers (ctrl, alt, super, shift). A string `then`
+# holds its stroke while the key is held; a list taps each stroke in order; `then = []`
+# swallows the chord. Keys are names from the key table, never numbers.
+
+[profile.default]
+modmap = { command = "ctrl", option = "alt", control = "super" }
+rules = [
+  { when = "command+left", then = "home" },
+  { when = "command+right", then = "end" },
+  { when = "command+up", then = "ctrl+home" },
+  { when = "command+down", then = "ctrl+end" },
+  { when = "command+shift+left", then = "shift+home" },
+  { when = "command+shift+right", then = "shift+end" },
+  { when = "command+shift+up", then = "ctrl+shift+home" },
+  { when = "command+shift+down", then = "ctrl+shift+end" },
+  { when = "option+left", then = "ctrl+left" },
+  { when = "option+right", then = "ctrl+right" },
+  { when = "option+shift+left", then = "ctrl+shift+left" },
+  { when = "option+shift+right", then = "ctrl+shift+right" },
+  { when = "option+backspace", then = "ctrl+backspace" },
+  { when = "option+delete", then = "ctrl+delete" },
+  { when = "command+backspace", then = ["shift+home", "delete"] },
+  { when = "command+tab", then = "alt+tab", hold = "while_held" },
+  { when = "command+shift+tab", then = "alt+shift+tab", hold = "while_held" },
+  { when = "command+space", then = "super+space" },
+  { when = "command+grave", then = "alt+grave", hold = "while_held" },
+  { when = "command+shift+grave", then = "alt+shift+grave", hold = "while_held" },
+  { when = "control+space", then = "ctrl+space" },
+  { when = "control+shift+space", then = "ctrl+shift+space" },
+  { when = "command+q", then = "alt+f4" },
+  { when = "control+a", then = "home" },
+  { when = "control+e", then = "end" },
+]
+
+# A terminal keeps physical Control as Control (shell readline, Ctrl+C, Ctrl+D) and never lets
+# Command become a bare Ctrl+letter: in a terminal Ctrl+letter is a control character (Ctrl+D
+# ends the shell, Ctrl+Z suspends, Ctrl+K kills the line), so every Command+letter is written as
+# Ctrl+Shift+letter, which terminals use for their own shortcuts (copy, paste, new tab, find)
+# and otherwise ignore. Command+Q is the exception: it quits, as everywhere (the default rule).
+# Command+Shift+letter and Command+Option+letter already carry another modifier, so they are
+# never a control character and need no rule.
+[profile.terminal]
+inherits = "default"
+modmap = { control = "ctrl" }
+rules = [
+  { when = "command+a", then = "ctrl+shift+a" }, { when = "command+b", then = "ctrl+shift+b" }, { when = "command+c", then = "ctrl+shift+c" }, { when = "command+d", then = "ctrl+shift+d" },
+  { when = "command+e", then = "ctrl+shift+e" }, { when = "command+f", then = "ctrl+shift+f" }, { when = "command+g", then = "ctrl+shift+g" }, { when = "command+h", then = "ctrl+shift+h" },
+  { when = "command+i", then = "ctrl+shift+i" }, { when = "command+j", then = "ctrl+shift+j" }, { when = "command+k", then = "ctrl+shift+k" }, { when = "command+l", then = "ctrl+shift+l" },
+  { when = "command+m", then = "ctrl+shift+m" }, { when = "command+n", then = "ctrl+shift+n" }, { when = "command+o", then = "ctrl+shift+o" }, { when = "command+p", then = "ctrl+shift+p" },
+  { when = "command+r", then = "ctrl+shift+r" }, { when = "command+s", then = "ctrl+shift+s" }, { when = "command+t", then = "ctrl+shift+t" }, { when = "command+u", then = "ctrl+shift+u" },
+  { when = "command+v", then = "ctrl+shift+v" }, { when = "command+w", then = "ctrl+shift+w" }, { when = "command+x", then = "ctrl+shift+x" }, { when = "command+y", then = "ctrl+shift+y" },
+  { when = "command+z", then = "ctrl+shift+z" },
+  { when = "command+backslash", then = "ctrl+shift+backslash" },
+  { when = "command+leftbrace", then = "ctrl+shift+leftbrace" },
+  { when = "command+rightbrace", then = "ctrl+shift+rightbrace" },
+  { when = "command+minus", then = "ctrl+minus" },
+  { when = "command+equal", then = "ctrl+shift+equal" },
+  { when = "command+dot", then = "ctrl+c" },
+  { when = "command+backspace", then = "ctrl+u" },
+  { when = "command+delete", then = "ctrl+k" },
+  { when = "command+shift+left", then = "ctrl+pageup" },
+  { when = "command+shift+right", then = "ctrl+pagedown" },
+  { when = "option+backspace", then = "ctrl+w" },
+  { when = "option+delete", then = ["esc", "d"] },
+  { when = "control+a", then = "ctrl+a" },
+  { when = "control+e", then = "ctrl+e" },
+]
+
+# Ghostty: its split, inspector and clear-screen shortcuts, and its own zoom-in key. The rest is
+# the terminal profile.
+[profile.ghostty]
+inherits = "terminal"
+rules = [
+  { when = "command+d", then = "ctrl+shift+o" },
+  { when = "command+shift+d", then = "ctrl+shift+e" },
+  { when = "command+k", then = "ctrl+l" },
+  { when = "command+option+i", then = "ctrl+shift+i" },
+  { when = "command+equal", then = "ctrl+equal" },
+]
+
+# An app that reads the desktop keymap itself (temor, and any app that resolves chords through
+# chordkit) gets Command as Super, unchanged: it needs Cmd+D and Cmd+Shift+D told apart, which
+# the terminal profile's Ctrl+Shift+letter cannot do. Physical Control stays Control, as in a
+# terminal. The editing rules `default` rewrites (Cmd+arrows to Home/End, Option+arrows to word
+# moves, the Backspace and Delete family, Control+A/E) are restated as themselves so the app sees
+# the real chord; the desktop's own chords (Cmd+Tab, Cmd+Space, Cmd+`, Cmd+Q) stay inherited.
+# Rules cannot be deleted down an `inherits` chain, only replaced, hence the restating.
+[profile.keymap-aware]
+inherits = "default"
+modmap = { command = "super", control = "ctrl" }
+rules = [
+  { when = "command+left", then = "super+left" },
+  { when = "command+right", then = "super+right" },
+  { when = "command+up", then = "super+up" },
+  { when = "command+down", then = "super+down" },
+  { when = "command+shift+left", then = "super+shift+left" },
+  { when = "command+shift+right", then = "super+shift+right" },
+  { when = "command+shift+up", then = "super+shift+up" },
+  { when = "command+shift+down", then = "super+shift+down" },
+  { when = "option+left", then = "alt+left" },
+  { when = "option+right", then = "alt+right" },
+  { when = "option+shift+left", then = "alt+shift+left" },
+  { when = "option+shift+right", then = "alt+shift+right" },
+  { when = "option+backspace", then = "alt+backspace" },
+  { when = "option+delete", then = "alt+delete" },
+  { when = "command+backspace", then = "super+backspace" },
+  { when = "control+a", then = "ctrl+a" },
+  { when = "control+e", then = "ctrl+e" },
+]
+
+# A file manager: Cmd+Backspace moves the selection to the trash (not "select to the first item,
+# then delete"), and the arrows navigate as in Finder.
+[profile.filemanager]
+inherits = "default"
+rules = [
+  { when = "command+left", then = "alt+left" },
+  { when = "command+right", then = "alt+right" },
+  { when = "command+up", then = "alt+up" },
+  { when = "command+down", then = "enter" },
+  { when = "command+backspace", then = "delete" },
+  { when = "command+i", then = "alt+enter" },
+  { when = "command+shift+dot", then = "ctrl+h" },
+]

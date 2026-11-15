@@ -1,0 +1,289 @@
+//! The auth service's loop.
+//!
+//! Loads the [`sill_model::auth::Account`] once, at the first command (so a service nobody locks
+//! with never
+//! reads anything: who this process runs as from the [`crate::env::Passwd`] seam (the system's
+//! accounts database), AccountsService's `IconFile` over the system bus when it answers within 1 s,
+//! [`crate::auth::avatar_source`]); feeds every command and every finished check through
+//! [`sill_model::auth::step`]; runs each `Check` with `authenticator.check` on `rt`'s blocking
+//! pool,
+//! tagged with a [`Round`] so a verdict that comes back after a `Reset` is dropped; turns `Fake`
+//! into a verdict without the authenticator (after [`FAKE_CHECK_MS`], so the surface sees
+//! `Checking` first, as for a real check: debug builds only); publishes [`sill_model::auth::Auth`];
+//! ends
+//! when every control is gone. There is no lockout wait. The secret lives only in the `Submit` and
+//! the check's `Attempt`, both dropped (and zeroed) when the check ends; it is never logged or
+//! published.
+
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+use std::time::Duration;
+
+use sill_model::auth::gate::step;
+use sill_model::auth::{
+    Account, Attempt, Auth, AuthCommand, AuthPhase, Checks, FakeVerdict, GateIn, GateOut, Outcome,
+    Secret, Verdict,
+};
+use tokio::runtime::Handle;
+use tokio::sync::{mpsc, watch};
+
+use super::account::avatar_source;
+use crate::env::{Authenticator, Bus, Passwd, Person};
+
+/// How long a made-up verdict (`sill debug auth`) takes, so the surface sees `Checking` and the
+/// field shakes again on every wrong one.
+pub const FAKE_CHECK_MS: u64 = 250;
+
+/// How long AccountsService gets to name the person's picture.
+const ACCOUNTS_TIMEOUT: Duration = Duration::from_secs(1);
+
+/// Which check a verdict answers: a `Reset` (or a fake taking over) starts a new round.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+struct Round(u64);
+
+/// A finished check, tagged.
+struct Finished {
+    round: Round,
+    verdict: Verdict,
+}
+
+/// Whether the account has been read yet.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Loaded {
+    Not,
+    Yes,
+}
+
+/// Everything the loop owns.
+struct Live {
+    tx: watch::Sender<Auth>,
+    checks: Checks,
+    round: Round,
+    loaded: Loaded,
+    account: AccountPlace,
+    passwd: Arc<dyn Passwd>,
+    authenticator: Arc<dyn Authenticator>,
+    rt: Handle,
+    done: mpsc::UnboundedSender<Finished>,
+}
+
+pub(crate) async fn run(
+    tx: watch::Sender<Auth>,
+    mut commands: mpsc::UnboundedReceiver<AuthCommand>,
+    account: AccountPlace,
+    passwd: Arc<dyn Passwd>,
+    authenticator: Arc<dyn Authenticator>,
+) {
+    let rt = Handle::current();
+    let (done, mut finished) = mpsc::unbounded_channel();
+    let mut live = Live {
+        tx,
+        checks: Checks::default(),
+        round: Round::default(),
+        loaded: Loaded::Not,
+        account,
+        passwd,
+        authenticator,
+        rt,
+        done,
+    };
+    loop {
+        tokio::select! {
+            command = commands.recv() => match command {
+                Some(command) => live.command(command).await,
+                None => break,
+            },
+            Some(check) = finished.recv() => live.finished(check),
+        }
+    }
+}
+
+impl Live {
+    async fn command(&mut self, command: AuthCommand) {
+        if self.loaded == Loaded::Not {
+            self.loaded = Loaded::Yes;
+            let account = load_account(&self.account, &self.passwd, &self.rt).await;
+            self.tx.send_modify(|auth| auth.account = account);
+        }
+        match command {
+            AuthCommand::Submit(secret) => self.submit(secret),
+            AuthCommand::Reset => self.reset(),
+            AuthCommand::Fake(verdict) => self.fake(verdict),
+            AuthCommand::Grace(_ticket) => self.grace(),
+        }
+    }
+
+    fn submit(&mut self, secret: Secret) {
+        let (next, out) = step(self.checks, GateIn::Submit);
+        self.checks = next;
+        if !out.contains(&GateOut::Check) {
+            return;
+        }
+        let attempt = Attempt {
+            user: self.tx.borrow().account.user.clone(),
+            secret,
+        };
+        let (round, authenticator, done) = (
+            self.round,
+            Arc::clone(&self.authenticator),
+            self.done.clone(),
+        );
+        self.rt.spawn_blocking(move || {
+            let verdict = authenticator.check(&attempt);
+            drop(attempt);
+            let _ = done.send(Finished { round, verdict });
+        });
+        self.publish_out(&out, &Verdict::plain(Outcome::Refused));
+    }
+
+    /// The lock grace: `Accepted` as a right password would publish it, with no check, so the lock
+    /// surfaces unlock through their one path. Ignored while a check runs (the
+    /// person is already typing; their own verdict stands).
+    fn grace(&mut self) {
+        match self.checks.checking {
+            true => {}
+            false => {
+                let (checking, _) = step(self.checks, GateIn::Submit);
+                let (next, out) = step(checking, GateIn::Verdict(Outcome::Accepted));
+                self.checks = next;
+                self.publish_out(&out, &Verdict::plain(Outcome::Accepted));
+            }
+        }
+    }
+
+    fn reset(&mut self) {
+        self.round = Round(self.round.0 + 1);
+        let (next, _) = step(self.checks, GateIn::Reset);
+        self.checks = next;
+        let phase = AuthPhase::Idle;
+        self.tx.send_if_modified(|auth| {
+            let changed = auth.phase != phase || !auth.notes.is_empty();
+            auth.phase = phase;
+            auth.notes.clear();
+            changed
+        });
+    }
+
+    /// A made-up verdict: whatever check runs is dropped, and the verdict arrives after
+    /// [`FAKE_CHECK_MS`] like a real one.
+    fn fake(&mut self, fake: FakeVerdict) {
+        let outcome = match fake {
+            FakeVerdict::Accept => Outcome::Accepted,
+            FakeVerdict::Refuse => Outcome::Refused,
+        };
+        match self.checks.checking {
+            true => self.round = Round(self.round.0 + 1),
+            false => {
+                let (next, out) = step(self.checks, GateIn::Submit);
+                self.checks = next;
+                if !out.contains(&GateOut::Check) {
+                    return;
+                }
+                self.publish_out(&out, &Verdict::plain(Outcome::Refused));
+            }
+        }
+        let (round, done) = (self.round, self.done.clone());
+        self.rt.spawn(async move {
+            tokio::time::sleep(Duration::from_millis(FAKE_CHECK_MS)).await;
+            let _ = done.send(Finished {
+                round,
+                verdict: Verdict::plain(outcome),
+            });
+        });
+    }
+
+    fn finished(&mut self, check: Finished) {
+        if check.round != self.round {
+            return;
+        }
+        let input = GateIn::Verdict(check.verdict.outcome.clone());
+        let (next, out) = step(self.checks, input);
+        self.checks = next;
+        self.publish_out(&out, &check.verdict);
+    }
+
+    /// Publish what the machine said (`verdict` for its notes and fault).
+    fn publish_out(&self, out: &[GateOut], verdict: &Verdict) {
+        let Some(phase) = out.iter().rev().find_map(|said| phase_of(*said, verdict)) else {
+            return;
+        };
+        let failures = self.checks.failures;
+        let notes = match phase {
+            AuthPhase::Checking => Vec::new(),
+            _ => verdict.notes.clone(),
+        };
+        self.tx.send_if_modified(|auth| {
+            let changed = auth.phase != phase || auth.failures != failures || auth.notes != notes;
+            auth.phase = phase;
+            auth.failures = failures;
+            auth.notes = notes;
+            changed
+        });
+    }
+}
+
+/// The published phase one output means (`Busy` means nothing new).
+fn phase_of(said: GateOut, verdict: &Verdict) -> Option<AuthPhase> {
+    match said {
+        GateOut::Check => Some(AuthPhase::Checking),
+        GateOut::Busy => None,
+        GateOut::Accepted => Some(AuthPhase::Accepted),
+        GateOut::Wrong => Some(AuthPhase::Wrong),
+        GateOut::Expired => Some(AuthPhase::Expired),
+        GateOut::Unavailable => match verdict.outcome {
+            Outcome::Unavailable(fault) => Some(AuthPhase::Unavailable(fault)),
+            Outcome::Accepted | Outcome::Refused | Outcome::Expired => Some(AuthPhase::Idle),
+        },
+    }
+}
+
+/// This session's person: who this process runs as, asked of `passwd` on `rt`'s blocking pool
+/// (a name service may be slow), with their picture. A lookup that never returns an answer leaves
+/// the account empty.
+async fn load_account(place: &AccountPlace, passwd: &Arc<dyn Passwd>, rt: &Handle) -> Account {
+    let passwd = Arc::clone(passwd);
+    let Ok(Person { id, user, name }) = rt.spawn_blocking(move || passwd.current()).await else {
+        return Account::default();
+    };
+    let icon = tokio::time::timeout(ACCOUNTS_TIMEOUT, accounts_icon(&place.system, id.0))
+        .await
+        .ok()
+        .flatten();
+    let home = &place.home;
+    Account {
+        user,
+        name,
+        avatar: avatar_source(icon, home, Path::is_file),
+    }
+}
+
+/// AccountsService's `IconFile` for `uid`, when it has one.
+async fn accounts_icon(system: &Bus, uid: u32) -> Option<PathBuf> {
+    const ACCOUNTS: &str = "org.freedesktop.Accounts";
+    let bus = system.try_connect().await.ok()?;
+    let reply = bus
+        .call_method(
+            Some(ACCOUNTS),
+            "/org/freedesktop/Accounts",
+            Some(ACCOUNTS),
+            "FindUserById",
+            &i64::from(uid),
+        )
+        .await
+        .ok()?;
+    let path: zbus::zvariant::OwnedObjectPath = reply.body().deserialize().ok()?;
+    let user = zbus::Proxy::new(&bus, ACCOUNTS, path, "org.freedesktop.Accounts.User")
+        .await
+        .ok()?;
+    let icon: String = user.get_property("IconFile").await.ok()?;
+    (!icon.is_empty()).then(|| PathBuf::from(icon))
+}
+
+/// Where the person's name and picture are read.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct AccountPlace {
+    /// AccountsService's bus, which may name the picture.
+    pub(crate) system: Bus,
+    /// The home folder, whose `.face` is the fallback picture.
+    pub(crate) home: std::path::PathBuf,
+}

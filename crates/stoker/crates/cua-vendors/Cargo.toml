@@ -1,0 +1,24 @@
+[package]
+name = "cua-vendors"
+description = "The vendor computer-use encodings (Anthropic, OpenAI, Gemini): tool specs, decode, result encode. Pure: the tool declarations, the decoders and the result encoders, ready for the cloud backends."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/stoker"
+publish = false
+
+[dependencies]
+cua-action = {path = "../cua-action"}
+model-provider = {path = "../model-provider"}
+cua-parse = {path = "../cua-parse"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+proptest = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

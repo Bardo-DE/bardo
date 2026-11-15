@@ -1,0 +1,45 @@
+[package]
+name = "docket-tasks"
+description = "The companion's task model, portable: one identity over many tasks (TaskRuntime, the drive loop's effects, the roster, the front pointer, side conversations, the idle pass, restart recovery), generic over the router link, the `Planner`, the clock and the surface. companiond is its bus adapter; docket-inapp uses it in one app."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+agent-loop = {path = "../agent-loop"}
+almanac-core = {path = "../../../almanac/crates/almanac-core"}
+companion-core = {path = "../companion-core"}
+companion-model = {path = "../companion-model"}
+companion-wire = {path = "../companion-wire"}
+docket-client = {path = "../docket-client", default-features = false}
+docket-core = {path = "../docket-core"}
+docket-wire = {path = "../docket-wire"}
+docket-manifest = {path = "../docket-manifest"}
+docket-permissions-core = {path = "../docket-permissions-core"}
+docket-vocab = {path = "../docket-vocab"}
+docket-planner = {path = "../docket-planner"}
+docket-session = {path = "../docket-session"}
+docket-skills = {path = "../docket-skills"}
+docket-store = {path = "../docket-store"}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-infer = {path = "../../../steward/crates/porter-infer"}
+prov = {path = "../../../prov/prov"}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+tracing = {version = "0.1"}
+
+[dev-dependencies]
+docket-client = {path = "../docket-client", default-features = false, features = ["in_process"]}
+docket-fake = {path = "../docket-fake"}
+docket-planner = {path = "../docket-planner", features = ["testing"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

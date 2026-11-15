@@ -1,0 +1,167 @@
+//! `palmrest replay`: a recording through the pure core, exactly as the reader thread drives it.
+//!
+//! The acceptance tests run through here, so what they check is the daemon's own path from
+//! bytes to outputs, not a test-only shortcut.
+
+use crate::config::Config;
+use crate::gestures::Intent;
+use crate::recording::{Record, RecordedSource};
+use crate::sensor::{MagicMouseHid, Sensor, SensorError};
+use crate::stamp::StampClock;
+use crate::time::Mono;
+use crate::tracker::{Out, Tracker};
+
+/// Where event times come from during a replay.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Timing {
+    /// The recorded arrival times, as-is (fixtures).
+    Arrival,
+    /// Through the timestamp calibration, as the live daemon does.
+    Calibrated,
+}
+
+/// What one record produced.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Step {
+    pub at: Mono,
+    pub outs: Vec<Out>,
+    /// What the stroke recogniser had decided after this record.
+    pub intent: Option<Intent>,
+    pub error: Option<SensorError>,
+}
+
+/// Replays Magic Mouse hidraw `records` from a fresh tracker.
+///
+/// Between records the tracker is ticked at its deadlines, as the reader thread's poll timeout
+/// does, and after the last record until it has none left; each tick that produced outputs is a
+/// `Step` of its own at the deadline. A delayed touchpad lift therefore replays at its own time. A step per record is kept for records; ticks only add steps.
+pub fn replay(records: &[Record], cfg: Config, timing: Timing) -> Vec<Step> {
+    replay_to_end(records, cfg, timing).1
+}
+
+/// `replay`, also returning the tracker after the last record and its ticks.
+pub fn replay_to_end(records: &[Record], cfg: Config, timing: Timing) -> (Tracker, Vec<Step>) {
+    replay_from(&RecordedSource::MagicMouseHid, records, cfg, timing)
+}
+
+/// Replays `records` from `source` through a fresh sensor and tracker.
+pub fn replay_from(
+    source: &RecordedSource,
+    records: &[Record],
+    cfg: Config,
+    timing: Timing,
+) -> (Tracker, Vec<Step>) {
+    let mut sensor = source.sensor();
+    let mut tracker = Tracker::on(cfg, sensor.surface());
+    let mut clock = StampClock::new();
+    let mut steps = Vec::with_capacity(records.len());
+    for r in records {
+        let (t, ticks) = ticks_until(tracker, Some(r.at));
+        steps.extend(ticks);
+        let (t, clk, step) = feed_from(&mut sensor, t, clock, r, timing);
+        tracker = t;
+        clock = clk;
+        steps.push(step);
+    }
+    let (tracker, ticks) = ticks_until(tracker, None);
+    steps.extend(ticks);
+    (tracker, steps)
+}
+
+/// The most ticks one gap may take; a long gap of delayed lifts stays well under it.
+const MAX_TICKS: usize = 100_000;
+
+/// Ticks `tracker` at every deadline before `until` (all of them if `None`).
+fn ticks_until(mut tracker: Tracker, until: Option<Mono>) -> (Tracker, Vec<Step>) {
+    let mut steps = Vec::new();
+    for _ in 0..MAX_TICKS {
+        let Some(d) = tracker.deadline() else { break };
+        if until.is_some_and(|u| d >= u) {
+            break;
+        }
+        let (t, outs) = tracker.tick(d);
+        tracker = t;
+        if !outs.is_empty() {
+            steps.push(Step {
+                at: d,
+                outs,
+                intent: tracker.intent(),
+                error: None,
+            });
+        }
+        if tracker.deadline().is_some_and(|next| next <= d) {
+            break; // a deadline that does not move on would never let the replay finish
+        }
+    }
+    (tracker, steps)
+}
+
+/// One Magic Mouse hidraw read through decode, the stamp clock and the tracker.
+pub fn feed(
+    tracker: Tracker,
+    clock: StampClock,
+    r: &Record,
+    timing: Timing,
+) -> (Tracker, StampClock, Step) {
+    feed_from(
+        &mut Sensor::MagicMouse(MagicMouseHid::default()),
+        tracker,
+        clock,
+        r,
+        timing,
+    )
+}
+
+/// One read through the sensor, the stamp clock and the tracker: the reader thread's body.
+pub fn feed_from(
+    sensor: &mut Sensor,
+    tracker: Tracker,
+    clock: StampClock,
+    r: &Record,
+    timing: Timing,
+) -> (Tracker, StampClock, Step) {
+    match sensor.decode(&r.bytes) {
+        Err(e) => {
+            let intent = tracker.intent();
+            (
+                tracker,
+                clock,
+                Step {
+                    at: r.at,
+                    outs: vec![],
+                    intent,
+                    error: Some(e),
+                },
+            )
+        }
+        Ok(frames) => {
+            let (mut tracker, mut clock, mut outs) = (tracker, clock, Vec::new());
+            for frame in &frames {
+                let (c, now) = match timing {
+                    Timing::Arrival => (clock, r.at),
+                    Timing::Calibrated => clock.observe(frame.stamp, r.at),
+                };
+                let (t, o) = tracker.step(frame, now);
+                tracker = t;
+                clock = c;
+                outs.extend(o);
+            }
+            let intent = tracker.intent();
+            (
+                tracker,
+                clock,
+                Step {
+                    at: r.at,
+                    outs,
+                    intent,
+                    error: None,
+                },
+            )
+        }
+    }
+}
+
+/// Every output of a replay, flattened.
+pub fn outs(steps: &[Step]) -> Vec<Out> {
+    steps.iter().flat_map(|s| s.outs.iter().cloned()).collect()
+}

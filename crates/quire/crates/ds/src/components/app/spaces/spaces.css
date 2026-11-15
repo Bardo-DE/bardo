@@ -1,0 +1,27 @@
+/* Spaces (design/21-SPACES.md section 13): the sidebar head and foot, the parts of a Space's
+   menu, and its Edit Space sheet. Colours are the frame's own (`--f-*`) and tokens; nothing is Space-tinted here
+   but through them. */
+
+.ds-space-head{ display:flex; align-items:center; min-width:0; padding:0 var(--s-6); }
+
+.ds-spaces-foot{ display:flex; align-items:center; gap:var(--s-6); padding-top:var(--s-6); min-width:0; }
+.ds-spaces-foot > *{ flex:none; }
+/* The dots take the foot's free width, so the buttons sit at its end, and stand close together at
+   its centre. With one Space there are no dots, and the empty gap takes that width instead. */
+.ds-spaces-foot > .ds-spaces-dots{ display:flex; gap:var(--s-2); align-items:center; justify-content:center; flex:1 1 auto; min-width:0; }
+.ds-spaces-foot > .ds-spaces-gap{ flex:1 1 auto; min-width:0; }
+/* The hold a dot's right click is caught on: it lays out as the dot. Which Space is current is
+   the dot's own brightness and size (space_editor.css), not the hold's. */
+.ds-spaces-dot-hold{ display:flex; }
+
+.ds-space-part{ display:grid; gap:var(--s-10); padding:var(--s-12); }
+.ds-space-rename{ width:240px; }
+.ds-space-part-acts{ display:flex; justify-content:flex-end; gap:var(--s-6); }
+
+/* The Edit Space sheet (design/34 section 3.8): the title (a Title label), the grouped form (the name row,
+   then the colour on the group's ground at the row's side inset), and the buttons at the end,
+   Cancel before Save. The form brings its own 20 margin; the title and the buttons share it. */
+.ds-space-edit{ display:flex; flex-direction:column; min-width:0; }
+.ds-space-edit-title{ padding:var(--s-20) var(--s-20) 0; }
+.ds-space-edit-colour{ padding:var(--s-14); }
+.ds-space-edit-acts{ display:flex; justify-content:flex-end; gap:var(--s-8); padding:0 var(--s-20) var(--s-20); }

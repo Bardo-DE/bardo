@@ -1,0 +1,28 @@
+[package]
+name = "docket-checkpoint"
+description = "Restore points of an agent's workspace, pure plus one seam: the CheckpointStore trait, retention, the restore plan and its digest, the per-turn decision, a MemoryStore fake and the contract every store keeps. No file, process or bus; the git store is another crate."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[features]
+# The store contract (`contract`): test code, which asserts by panicking.
+testing = []
+
+[dependencies]
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+bulkhead = {path = "../../../bulkhead"}
+const-hex = {version = "1.19"}
+docket-core = {path = "../docket-core"}
+docket-vocab = {path = "../docket-vocab"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+prov = {path = "../../../prov/prov"}
+sha2 = {version = "0.11"}
+thiserror = {version = "2"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

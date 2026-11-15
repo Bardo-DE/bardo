@@ -1,0 +1,393 @@
+//! The `Ds` root as markup: exactly the attributes it stamps, the stylesheet only when inlined,
+//! the frame layers on a Window and grouped on shell chrome, and never the word "system" (design/03-COLOR.md section
+//! 17.1, design/05-MOTION.md section 9 rule 11, spike S12).
+
+use dioxus::core::VirtualDom;
+use dioxus::prelude::*;
+use ds::assembly::ds::Inject;
+use ds::prelude::*;
+use ds_core::vocab::{Activity, InputModality};
+use ds_lint::{LintConfig, Rule, markup};
+use ds_style::appearance::blur::BlurState;
+use ds_style::appearance::system::ReducedMotion;
+use ds_style::space::frame_vars::FrameVars;
+use std::collections::BTreeMap;
+
+#[derive(Props, Clone, PartialEq)]
+struct Setup {
+    appearance: Appearance,
+    system: SystemPrefs,
+    look: SpaceLook,
+    material: Material,
+    blur: BlurState,
+    stylesheet: Inject,
+    modality: Option<InputModality>,
+    activity: Option<Activity>,
+    surface: Option<(Material, Option<Scheme>)>,
+}
+
+impl Default for Setup {
+    fn default() -> Self {
+        Setup {
+            appearance: Appearance::default(),
+            system: SystemPrefs::default(),
+            look: SpaceLook::default(),
+            material: Material::Popover,
+            blur: BlurState::default(),
+            stylesheet: Inject::Host,
+            modality: None,
+            activity: None,
+            surface: None,
+        }
+    }
+}
+
+#[allow(non_snake_case)]
+fn Root(setup: Setup) -> Element {
+    if setup.modality.is_some() || setup.activity.is_some() {
+        use_context_provider(|| HostSignals {
+            modality: Signal::new(setup.modality.unwrap_or_default()),
+            scale: Signal::new(Scale::ONE),
+            activity: Signal::new(setup.activity.unwrap_or(Activity::Active)),
+        });
+    }
+    rsx! {
+        Ds {
+            appearance: setup.appearance,
+            system: setup.system,
+            look: setup.look.clone(),
+            material: setup.material,
+            blur: setup.blur,
+            stylesheet: setup.stylesheet,
+            if let Some((material, theme)) = setup.surface {
+                Surface { material, theme,
+                    p { "inside" }
+                }
+            } else {
+                p { "inside" }
+            }
+        }
+    }
+}
+
+fn render(setup: Setup) -> String {
+    let mut dom = VirtualDom::new_with_props(Root, setup);
+    dom.rebuild_in_place();
+    dioxus_ssr::render(&dom)
+}
+
+/// The attributes of the first tag that opens with `open` (`<div class="ds"`).
+fn attributes_of(markup: &str, nth: usize) -> BTreeMap<String, String> {
+    let start = markup
+        .match_indices("<div class=\"ds\"")
+        .nth(nth)
+        .unwrap_or_else(|| panic!("no .ds number {nth} in {markup}"))
+        .0;
+    let tag = &markup[start + "<div".len()..];
+    let tag = &tag[..tag.find('>').expect("the tag closes")];
+    let mut attributes = BTreeMap::new();
+    let mut rest = tag.trim_start();
+    while let Some(eq) = rest.find("=\"") {
+        let name = rest[..eq].trim().to_owned();
+        let value_start = eq + 2;
+        let value_end = value_start + rest[value_start..].find('"').expect("the value closes");
+        attributes.insert(name, rest[value_start..value_end].to_owned());
+        rest = rest[value_end + 1..].trim_start();
+    }
+    attributes
+}
+
+fn expected(pairs: &[(&str, String)]) -> BTreeMap<String, String> {
+    pairs
+        .iter()
+        .map(|(name, value)| ((*name).to_owned(), value.clone()))
+        .collect()
+}
+
+#[test]
+fn the_root_stamps_exactly_its_attributes() {
+    let dark_reduced = SystemPrefs::default()
+        .with_scheme(Scheme::Dark)
+        .with_motion(ReducedMotion::Reduce);
+    struct Case {
+        name: &'static str,
+        setup: Setup,
+        theme: &'static str,
+        accent: &'static str,
+        motion: &'static str,
+        material: &'static str,
+        blur: &'static str,
+        modality: &'static str,
+        /// `data-activity`, written only while the window is inactive.
+        activity: Option<&'static str>,
+        scheme: Scheme,
+        /// The root chrome's attributes: `data-chrome`, `data-frame`, `data-ground`.
+        chrome: &'static [(&'static str, &'static str)],
+    }
+    let cases = [
+        Case {
+            name: "standard motion and a system theme resolve against a dark, reduced desktop",
+            setup: Setup {
+                appearance: Appearance {
+                    theme: Theme::System,
+                    accent: Accent::Purple,
+                    motion: Motion::Standard,
+                    ..Appearance::default()
+                },
+                system: dark_reduced,
+                blur: BlurState::Available,
+                ..Setup::default()
+            },
+            theme: "dark",
+            accent: "purple",
+            motion: "reduced",
+            material: "popover",
+            blur: "on",
+            modality: "pointer",
+            activity: None,
+            scheme: Scheme::Dark,
+            chrome: &[("data-chrome", "transparent")],
+        },
+        Case {
+            name: "an explicit light theme wins over the desktop, whose reduce-motion still applies",
+            setup: Setup {
+                appearance: Appearance {
+                    theme: Theme::Light,
+                    accent: Accent::Blue,
+                    motion: Motion::Standard,
+                    ..Appearance::default()
+                },
+                system: dark_reduced,
+                material: Material::Bar,
+                ..Setup::default()
+            },
+            theme: "light",
+            accent: "blue",
+            motion: "reduced",
+            material: "bar",
+            blur: "off",
+            modality: "pointer",
+            activity: None,
+            scheme: Scheme::Light,
+            chrome: &[("data-frame", "tinted"), ("data-ground", "frame")],
+        },
+        Case {
+            name: "the Space's own dark theme answers a system app theme",
+            setup: Setup {
+                look: SpaceLook {
+                    theme: Theme::Dark,
+                    ..SpaceLook::default()
+                },
+                modality: Some(InputModality::Keyboard),
+                activity: Some(Activity::Inactive),
+                ..Setup::default()
+            },
+            theme: "dark",
+            accent: "blue",
+            motion: "standard",
+            material: "popover",
+            blur: "off",
+            modality: "keyboard",
+            activity: Some("inactive"),
+            scheme: Scheme::Dark,
+            chrome: &[("data-chrome", "transparent")],
+        },
+    ];
+    for case in cases {
+        let look = case.setup.look.clone();
+        let markup = render(case.setup);
+        // The frame variables, the material's text accent on a Popover, Sheet or Toast
+        // (design/03-COLOR.md section 20.6).
+        let text = match case.material {
+            "popover" | "sheet" | "toast" => "--accent-text:var(--accent-text-material);",
+            _ => "",
+        };
+        let style = format!("{}{text}", FrameVars::of(&look, case.scheme).style_attr());
+        let mut want = expected(&[
+            ("class", "ds".to_owned()),
+            ("data-theme", case.theme.to_owned()),
+            ("data-accent", case.accent.to_owned()),
+            ("data-motion", case.motion.to_owned()),
+            ("data-material", case.material.to_owned()),
+            ("data-blur", case.blur.to_owned()),
+            ("data-modality", case.modality.to_owned()),
+            ("data-hover", "cold".to_owned()),
+            ("style", style),
+        ]);
+        if let Some(activity) = case.activity {
+            want.insert("data-activity".to_owned(), activity.to_owned());
+        }
+        want.extend(expected(
+            &case
+                .chrome
+                .iter()
+                .map(|(name, value)| (*name, (*value).to_owned()))
+                .collect::<Vec<_>>(),
+        ));
+        assert_eq!(attributes_of(&markup, 0), want, "{}", case.name);
+        // The theme and motion always resolve: `system` never reaches the markup.
+        assert!(
+            !markup.to_lowercase().contains("system"),
+            "{}: \"system\" reached the markup: {markup}",
+            case.name
+        );
+    }
+}
+
+#[test]
+fn the_stylesheet_is_inlined_only_when_asked() {
+    let inline = render(Setup {
+        stylesheet: Inject::Inline,
+        ..Setup::default()
+    });
+    assert_eq!(inline.matches("<style").count(), 1, "one <style>: {inline}");
+    let host = render(Setup::default());
+    assert!(!host.contains("<style"), "no <style> with Inject::Host");
+}
+
+/// Which materials draw the Space gradient's two layers and grain, and how: opaque and loose on
+/// a window, grouped in `.ds-frame` (at the tint alpha) on shell chrome, not at all on a sheet,
+/// a toast, or a transparent root (design/21-SPACES.md sections 3 and 5).
+#[test]
+fn chrome_materials_draw_the_layers_in_a_tinted_frame() {
+    // (material, layers, grain, frame groups)
+    const CASES: &[(Material, usize, usize, usize)] = &[
+        (Material::Window, 2, 1, 0),
+        (Material::Bar, 2, 1, 1),
+        (Material::Dock, 2, 1, 1),
+        (Material::Popover, 0, 0, 0),
+        (Material::Sheet, 0, 0, 0),
+        (Material::Toast, 0, 0, 0),
+        (Material::Osd, 2, 1, 1),
+        (Material::Widget, 2, 1, 1),
+    ];
+    for &(material, layers, grain, frames) in CASES {
+        let root = render(Setup {
+            material,
+            ..Setup::default()
+        });
+        assert_eq!(
+            root.matches("class=\"ds-layer\"").count(),
+            layers,
+            "{material:?}: {root}"
+        );
+        assert_eq!(
+            root.matches("class=\"ds-grain\"").count(),
+            grain,
+            "{material:?}"
+        );
+        assert_eq!(
+            root.matches("class=\"ds-frame\"").count(),
+            frames,
+            "{material:?}"
+        );
+    }
+}
+
+#[test]
+fn only_a_window_draws_the_frame_layers_and_grain() {
+    let window = render(Setup {
+        material: Material::Window,
+        ..Setup::default()
+    });
+    // Both layers share the one class; only the hidden one also carries `data-layer="back"`
+    // (checked in `the_hidden_frame_layer_carries_the_back_attribute` below).
+    assert_eq!(window.matches("class=\"ds-layer\"").count(), 2, "{window}");
+    assert_eq!(window.matches("class=\"ds-grain\"").count(), 1, "{window}");
+    let popover = render(Setup::default());
+    assert!(!popover.contains("ds-layer"), "no layers on a popover");
+    assert!(!popover.contains("ds-grain"), "no grain on a popover");
+}
+
+/// FINDINGS "`Ds`'s own `Material::Window` frame layers do not match their own stylesheet
+/// rule": `FrameLayers::render` used to write the hidden layer as `class="ds-layer back"`,
+/// which `utilities.css`'s `.ds-layer[*|data-layer=back]{opacity:0}` never matches (an
+/// attribute selector, not a class). The fix writes `data-layer="back"` instead, so exactly one
+/// of the two layers carries it, and the other carries no `data-layer` at all.
+#[test]
+fn the_hidden_frame_layer_carries_the_back_attribute() {
+    let window = render(Setup {
+        material: Material::Window,
+        ..Setup::default()
+    });
+    assert_eq!(
+        window.matches("data-layer=\"back\"").count(),
+        1,
+        "exactly one hidden layer in {window}"
+    );
+    assert!(
+        !window.contains("ds-layer back"),
+        "the old, never-matched class form must be gone: {window}"
+    );
+}
+
+/// The same gap, proven through the coherence tool a consumer would actually run
+/// (`CONSUMING.md` section 5 rule 2): a `Material::Window` root's markup lints clean, with no
+/// `Rule::UnstyledClass` on the frame layers. Before the fix, `div.ds-layer.back` tripped it,
+/// because no rule in `ds::stylesheet()` styles a class named `back`.
+#[test]
+fn a_window_roots_markup_lints_clean_of_unstyled_classes() {
+    let rendered = render(Setup {
+        material: Material::Window,
+        stylesheet: Inject::Inline,
+        ..Setup::default()
+    });
+    let offences = markup(&rendered, ds::stylesheet(), &LintConfig::new(&ds::kits()));
+    let unstyled: Vec<_> = offences
+        .iter()
+        .filter(|offence| offence.rule == Rule::UnstyledClass)
+        .collect();
+    assert!(unstyled.is_empty(), "{unstyled:#?}");
+}
+
+#[test]
+fn a_surface_nests_a_scope_without_a_stylesheet() {
+    let markup = render(Setup {
+        stylesheet: Inject::Inline,
+        material: Material::Window,
+        surface: Some((Material::Popover, Some(Scheme::Dark))),
+        ..Setup::default()
+    });
+    let nested = attributes_of(&markup, 1);
+    let want = expected(&[
+        ("class", "ds".to_owned()),
+        ("data-theme", "dark".to_owned()),
+        ("data-accent", "blue".to_owned()),
+        ("data-motion", "standard".to_owned()),
+        ("data-material", "popover".to_owned()),
+        ("data-blur", "off".to_owned()),
+        (
+            "style",
+            "--accent-text:var(--accent-text-material);".to_owned(),
+        ),
+    ]);
+    assert_eq!(nested, want);
+    assert_eq!(markup.matches("<style").count(), 1, "the root's only");
+    assert!(markup.contains("inside"), "children render");
+}
+
+#[test]
+fn only_reduced_transparency_is_stamped_and_a_surface_keeps_it() {
+    for (transparency, want) in [
+        (Transparency::System, None),
+        (Transparency::Reduced, Some("reduced")),
+    ] {
+        let markup = render(Setup {
+            appearance: Appearance {
+                transparency,
+                ..Appearance::default()
+            },
+            material: Material::Window,
+            surface: Some((Material::Popover, None)),
+            ..Setup::default()
+        });
+        for nth in 0..2 {
+            let attributes = attributes_of(&markup, nth);
+            assert_eq!(
+                attributes.get("data-transparency").map(String::as_str),
+                want,
+                "{transparency:?} root {nth}: {markup}"
+            );
+        }
+    }
+}

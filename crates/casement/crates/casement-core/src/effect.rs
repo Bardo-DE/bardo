@@ -1,0 +1,285 @@
+//! The closed set of outputs of [`crate::Model::step`]: `casement::exec` is the one place
+//! they are carried out.
+
+use crate::app::{AppKey, Termination};
+use crate::cause::Cause;
+use crate::desktop::DesktopNote;
+use crate::event::ResizeEdges;
+use crate::focus::PressRoute;
+use crate::geometry::LogicalSize;
+use crate::ids::{ClientKey, InputSerial, LayerKey, OutputKey, WindowId};
+use crate::input::{Argv, DbusCall};
+use crate::lock::LockReply;
+use crate::output::{GammaRamp, OutputConfig};
+use crate::privilege::{AskSubject, Book, PowerOutcome};
+use crate::shell::ShellNote;
+use crate::time::{Due, TimerKey};
+use casement_protocols::vocab::{AskId, Attention, Emphasis, Memory, Power, TrialId};
+use std::time::Duration;
+
+/// Something the model wants done.
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[non_exhaustive]
+pub enum Effect {
+    /// Send a toplevel a configure.
+    Configure {
+        /// The window.
+        window: WindowId,
+        /// What to send.
+        configure: ConfigureSpec,
+    },
+    /// List a window on `ext_foreign_toplevel_list_v1`, or send the title and app id it now has.
+    ListWindow(WindowId),
+    /// Withdraw a window from the foreign toplevel list.
+    UnlistWindow(WindowId),
+    /// Ask a toplevel to close.
+    SendClose {
+        /// The window.
+        window: WindowId,
+    },
+    /// Tell a client the person asked its app to quit (`quire_window_manager_v1.quit`, sent in
+    /// place of closing the app's windows to a client that listens for it).
+    SendQuit {
+        /// The client.
+        client: ClientKey,
+    },
+    /// Move keyboard focus.
+    Keyboard(KeyboardTarget),
+    /// Raise these windows, bottom first.
+    Raise(Vec<WindowId>),
+    /// Route the pending press.
+    Route(PressRoute),
+    /// Start an interactive grab.
+    StartGrab(GrabSpec),
+    /// These windows' emphasis changed.
+    Emphasis(Vec<(WindowId, Emphasis)>),
+    /// Ping a client.
+    Ping {
+        /// The client.
+        client: ClientKey,
+    },
+    /// Ring the bell for an app.
+    Bell {
+        /// The app.
+        app: AppKey,
+    },
+    /// An app's attention changed.
+    Attention {
+        /// The app.
+        app: AppKey,
+        /// The level.
+        level: Attention,
+    },
+    /// Arm a timer.
+    ArmTimer(Due),
+    /// Cancel a timer.
+    CancelTimer(TimerKey),
+    /// Lay the scene out again, for this reason.
+    Relayout(Cause),
+    /// Ask for frames on an output.
+    RequestFrames(OutputKey),
+    /// Send a layer surface a configure.
+    ConfigureLayer {
+        /// The surface.
+        layer: LayerKey,
+        /// Its size.
+        size: LogicalSize,
+    },
+    /// Carry out a lock reply.
+    Lock(LockReply),
+    /// Apply an output configuration.
+    ApplyOutput {
+        /// The output.
+        output: OutputKey,
+        /// The configuration.
+        config: OutputConfig,
+    },
+    /// Disconnect a client with a protocol error.
+    Disconnect {
+        /// The client.
+        client: ClientKey,
+        /// Why.
+        fault: ProtocolFault,
+    },
+    /// A diagnostic.
+    Note(CoreNote),
+    /// A binding calls a method on the session bus (sill's launcher, the screenshot tool):
+    /// carried out through the injected `ShellCalls` seam (P1-I1).
+    CallBinding(DbusCall),
+    /// A binding starts a program, through the injected `Spawner` seam (P1-I1).
+    Spawn(Argv),
+    /// Drive this output with this gamma ramp (`zwlr_gamma_control_v1`, night light; P1-M1).
+    SetGamma(OutputKey, GammaRamp),
+    /// Write the Spaces file: the Space ids changed (P1-M2).
+    PersistSpaces,
+    /// Send `ext_workspace` clients the Spaces as they now are (P1-M2).
+    PublishWorkspaces,
+    /// Send `zwlr_foreign_toplevel_management` clients this window's title, app id, state and
+    /// outputs as they now are (P1-M2).
+    PublishToplevel(WindowId),
+    /// Send `quire_desktop_v1` clients this object as it now is (P2-Z; the model emits it with
+    /// the lane P2-Q1).
+    Desktop(DesktopNote),
+    /// Record or send this to the shell (`quire_shell_v1`; P2-Z).
+    Shell(ShellNote),
+    /// Stop an app's processes with a signal (force quit; P3-QU).
+    Terminate(Termination),
+    /// Ask the person whether a program may use a power: the shell shows the question
+    /// (`quire_shell_v1.permission_ask`) and answers with `Event::PermissionAnswered`.
+    AskPermission {
+        /// The question's id on the wire, never reused in a run.
+        ask: AskId,
+        /// The power.
+        power: Power,
+        /// What the shell is told of the program.
+        subject: AskSubject,
+        /// Whether the answer is kept (the sheet offers Allow, or Allow Once).
+        memory: Memory,
+    },
+    /// Take a question away from the shell's screen (`permission_withdraw`): it timed out, or
+    /// something else answered it.
+    WithdrawAsk {
+        /// The question.
+        ask: AskId,
+    },
+    /// Ask the person whether to keep the displays as a program changed them
+    /// (`quire_shell_v1.displays_trial`): the shell shows "Keep these display settings?" and
+    /// answers with `Event::DisplaysAnswered`. Sent again, with the same id, when a further
+    /// change restarts the time.
+    AskKeepDisplays {
+        /// The trial's id on the wire.
+        trial: TrialId,
+        /// How long the person has.
+        within: Duration,
+    },
+    /// The question about the displays is over (`displays_trial_end`): answered, timed out and
+    /// reverted, or the shell changed the displays itself.
+    EndDisplaysTrial {
+        /// The trial.
+        trial: TrialId,
+    },
+    /// Write the person's book: it is the whole book as it now is.
+    SaveBook(Box<Book>),
+    /// A client's use of a power came out: replay what was held, give the protocol's denial,
+    /// or end the use. The protocol layer keeps the latest outcome per client and power and
+    /// does not ask again until it is [`PowerOutcome::Denied`] or `Revoked` and the client
+    /// tries again.
+    Resolve {
+        /// The client.
+        client: ClientKey,
+        /// The power.
+        power: Power,
+        /// How it came out.
+        outcome: PowerOutcome,
+    },
+}
+
+/// A toplevel configure.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ConfigureSpec {
+    /// The size to ask for.
+    pub size: ConfigureSize,
+    /// The states to send.
+    pub states: ToplevelStates,
+    /// `xdg_toplevel.configure_bounds`: the largest useful size.
+    pub bounds: LogicalSize,
+}
+
+/// The size a configure asks for.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ConfigureSize {
+    /// The client chooses (`0x0`).
+    Keep,
+    /// This size.
+    Exact(LogicalSize),
+}
+
+/// The `xdg_toplevel` states a configure carries.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ToplevelStates {
+    /// `activated`.
+    pub activated: bool,
+    /// `maximized`.
+    pub maximised: bool,
+    /// `fullscreen`.
+    pub full_screen: bool,
+    /// `tiled_*`.
+    pub tiled: TiledEdges,
+    /// `resizing`.
+    pub resizing: bool,
+}
+
+/// Which edges of a toplevel touch a neighbour or the usable area's edge.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct TiledEdges {
+    /// `tiled_top`.
+    pub top: bool,
+    /// `tiled_bottom`.
+    pub bottom: bool,
+    /// `tiled_left`.
+    pub left: bool,
+    /// `tiled_right`.
+    pub right: bool,
+}
+
+/// Who gets the keyboard.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum KeyboardTarget {
+    /// A window.
+    Window(WindowId),
+    /// A layer surface.
+    Layer(LayerKey),
+    /// The lock surface on an output.
+    LockSurface(OutputKey),
+    /// Nothing.
+    Nothing,
+}
+
+/// An interactive grab.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GrabSpec {
+    /// A move.
+    Move {
+        /// The window.
+        window: WindowId,
+        /// The press it answers.
+        serial: InputSerial,
+    },
+    /// A resize.
+    Resize {
+        /// The window.
+        window: WindowId,
+        /// The press it answers.
+        serial: InputSerial,
+        /// The edges it moves.
+        edges: ResizeEdges,
+    },
+}
+
+/// Why a client is disconnected.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum ProtocolFault {
+    /// A serial that answers no press.
+    BadSerial,
+    /// A role the surface cannot take.
+    BadRole,
+    /// A request its connection may not make.
+    Privilege,
+}
+
+/// A diagnostic the edge logs.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum CoreNote {
+    /// A window's activation was refused (A7).
+    RefusedActivation(WindowId),
+    /// A window that was not key asked to go full screen and was refused (CASC-07).
+    RefusedFullScreen(WindowId),
+    /// A timer fired for something that is gone.
+    StaleTimer(TimerKey),
+    /// An event named a window the model does not know.
+    UnknownWindow(WindowId),
+    /// A client's request to change an output was refused (P1-M1).
+    RefusedOutput(crate::output::OutputRefusal),
+    /// A request to reopen an app with no windows, which waits for the launch intent (P4).
+    ReopenDeferred,
+}

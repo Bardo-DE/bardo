@@ -1,0 +1,64 @@
+[package]
+name = "anyview-peek"
+description = "The viewer's light tier: one peek per kind of file, the registry that maps every kind to its peek, and the card that draws what was peeked at."
+
+# `media` (on by default) is the recording's peek: pure-Rust parsers read its facts and, for audio,
+# its cover (symphonia, mp4parse, matroska-demuxer). Off, a recording is peeked as a file of a kind with no back end: its type, size and date.
+# `pane` (on by default) is everything that draws or rasterises: the `Card` component (dioxus) and a
+# PDF's first page (ds-blitz, which brings the renderer). Off, a headless caller (a mail client
+# peeking at attachments, a terminal) builds none of that, and a PDF is peeked as facts only.
+version = "0.1.0-beta.1"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/anyview"
+publish = false
+[features]
+default = []
+media = ["dep:symphonia", "dep:mp4parse", "dep:matroska-demuxer"]
+pane = ["dep:dioxus", "dep:ds", "dep:ds-blitz"]
+
+[dependencies]
+anyview-archive = {path = "../anyview-archive"}
+anyview-book = {path = "../anyview-book"}
+anyview-core = {path = "../anyview-core"}
+anyview-font = {path = "../anyview-font"}
+anyview-image = {path = "../anyview-image"}
+# `OnDisk`, `is_regular` and `open_regular`: core does no I/O, so a path is opened here.
+anyview-fs = {path = "../anyview-fs"}
+anyview-text = {path = "../anyview-text"}
+ds-core = {path = "../../../quire/crates/ds-core"}
+# A look that panics or is refused is logged; the binary installs the logger.
+log = {version = "0.4"}
+# The `pane` feature: the component, and the PDF page cache. Nothing outside `card/` names a type of
+# `ds` or dioxus, so a headless build links neither.
+dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"], optional = true}
+ds = {optional = true, path = "../../../quire/crates/ds"}
+# `pdf`: `pdf_thumb_blocking`, the first page of a PDF rasterised by pdfrum and cached. pdfrum is
+# reached only through it.
+ds-blitz = {features = ["pdf"], optional = true, path = "../../../quire/crates/ds-blitz"}
+thiserror = {version = "2"}
+# The `media` feature: pure-Rust readers of a recording's header (never a decoder).
+matroska-demuxer = {version = "0.8", optional = true}
+mp4parse = {version = "0.17", optional = true}
+symphonia = {version = "0.6", default-features = false, features = ["aac", "aiff", "alac", "flac", "id3v1", "id3v2", "ape", "isomp4", "mp3", "ogg", "pcm", "vorbis", "wav"], optional = true}
+
+[dev-dependencies]
+ds = {path = "../../../quire/crates/ds"}
+# Pins the time zone the expected dates are written in.
+anyview-core = {path = "../anyview-core", features = ["testing"]}
+ds-harness = {features = ["pdf"], path = "../../../quire/crates/ds-harness"}
+ds-lint = {path = "../../../quire/crates/ds-lint"}
+dioxus-ssr = {version = "0.7"}
+tempfile = {version = "3"}
+# Builds the zip the archive peek reads (a test fixture, never a normal dependency).
+zip = {version = "9", default-features = false, features = ["deflate"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+
+[lints.clippy]
+unwrap_used = "deny"
+wildcard_enum_match_arm = "deny"
+match_wildcard_for_single_variants = "deny"

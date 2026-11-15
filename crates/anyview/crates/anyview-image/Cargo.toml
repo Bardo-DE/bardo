@@ -1,0 +1,49 @@
+[package]
+name = "anyview-image"
+description = "Raster and vector images for the viewer: decode, downscaled peek, EXIF facts and orientation, encode for export, lossless JPEG rotation."
+version = "0.1.0-beta.1"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/anyview"
+publish = false
+
+[features]
+# AVIF decoding needs the dav1d C library (BSD-2-Clause, linked dynamically) and pkg-config.
+# Off by default so the default build needs no C toolchain pieces.
+avif = ["image/avif-native"]
+# Writing pictures: the encoders (the AVIF one is ravif and rav1e, a large pure-Rust tree), the
+# metadata carried across a re-encode (img-parts), the lossless-where-possible edits and the exports.
+# Off, the crate only reads: a caller that peeks at pictures (a launcher, a mail client) links none of
+# it. The viewer and its exports turn it on.
+encode = ["dep:ravif", "dep:img-parts"]
+
+[dependencies]
+anyview-core = {path = "../anyview-core"}
+ds-core = {path = "../../../quire/crates/ds-core"}
+# The pinned block enables png and jpeg; the other formats the viewer opens are added here.
+image = {version = "0.25.6", default-features = false, features = ["bmp", "exr", "gif", "hdr", "ico", "jpeg", "png", "qoi", "tga", "tiff", "webp"]}
+img-parts = {version = "0.4", optional = true}
+png = {version = "0.18"}
+tiff = {version = "0.11"}
+icns = {version = "0.3", default-features = false}
+psd = {version = "0.3.5"}
+jxl-oxide = {version = "0.12"}
+kamadak-exif = {version = "0.6"}
+ravif = {version = "0.13", default-features = false, optional = true}
+resvg = {version = "0.48", default-features = false}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+# `OnDisk`: the input of a fixture on disk (core opens no file).
+anyview-fs = {path = "../anyview-fs"}
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+
+[lints.clippy]
+unwrap_used = "deny"
+wildcard_enum_match_arm = "deny"
+match_wildcard_for_single_variants = "deny"

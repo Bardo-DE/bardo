@@ -1,0 +1,93 @@
+[package]
+name = "docket-accept"
+description = "Test only: the first end-to-end acceptance of the agent tier. The real intentd, companiond, readerd, memoryd and inferd run as processes on a private bus (inferd replaying cassettes), beside a mail provider and a Confirm1 server, and SPEC section 5 flows (a) and (c) run through them."
+publish = false
+
+# The daemons run as their own processes from these thin mains: the same daemon the packaged
+# binaries run (`run_with`, given the proc root and model tap from the environment), under names that cannot collide with theirs in one target directory. memoryd's
+# memoryd and inferd are not here: `build.rs` builds the packaged binaries of almanac (with its
+# `test-keys` feature), porter and steward, from git at the revs the workspace pins.
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+[[bin]]
+name = "accept-intentd"
+path = "src/bin/accept-intentd.rs"
+
+[[bin]]
+name = "accept-companiond"
+path = "src/bin/accept-companiond.rs"
+
+[[bin]]
+name = "accept-acp"
+path = "src/bin/accept-acp.rs"
+
+[[bin]]
+name = "accept-docket-agent"
+path = "src/bin/accept-docket-agent.rs"
+
+[[bin]]
+name = "accept-readerd"
+path = "src/bin/accept-readerd.rs"
+
+# `quire-do` itself: the packaged main, built under a name of the acceptance harness (a test of this
+# package can only name this package's binaries).
+[[bin]]
+name = "accept-quire-do"
+path = "../docket-cli/src/main.rs"
+
+[[bin]]
+name = "accept-actions-mcp"
+path = "src/bin/accept-actions-mcp.rs"
+
+[[bin]]
+name = "accept-bus-relay"
+path = "src/bin/accept-bus-relay.rs"
+
+[[bin]]
+name = "accept-fake-agent"
+path = "src/bin/accept-fake-agent.rs"
+
+[dependencies]
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+actions-mcp = {path = "../actions-mcp"}
+companion-wire = {path = "../companion-wire"}
+companiond = {path = "../companiond"}
+docket-acp = {path = "../docket-acp"}
+docket-acp-bin = {path = "../docket-acp-bin", features = ["testing"]}
+docket-cli = {path = "../docket-cli"}
+docket-client = {path = "../docket-client", default-features = false, features = ["dbus", "in_process"]}
+docket-permissions-core = {path = "../docket-permissions-core"}
+docket-provider = {path = "../docket-provider", features = ["dbus"]}
+docket-core = {path = "../docket-core"}
+docket-wire = {path = "../docket-wire"}
+docket-manifest = {path = "../docket-manifest", features = ["manifest-file"]}
+docket-vocab = {path = "../docket-vocab"}
+docket-dbus = {path = "../docket-dbus", features = ["fixture-callers", "inferd"]}
+docket-log = {path = "../docket-log"}
+docket-trace = {path = "../docket-trace"}
+docket-router = {path = "../docket-router"}
+docket-session = {path = "../docket-session"}
+docket-testbus = {path = "../docket-testbus"}
+fnv = {version = "1"}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+intentd = {path = "../intentd"}
+readerd = {path = "../readerd"}
+almanac-core = {path = "../../../almanac/crates/almanac-core"}
+almanac-client = {default-features = false, features = ["dbus"], path = "../../../almanac/crates/almanac-client"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-callers = {path = "../../../porter/crates/porter-callers"}
+porter-infer = {path = "../../../steward/crates/porter-infer"}
+prov = {path = "../../../prov/prov"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+tempfile = {version = "3"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,24 @@
+[package]
+name = "sill-launcher"
+description = "Launcher core: providers, queries, ranking and frecency, with no I/O."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.91"
+repository = "https://github.com/Bardo-DE/sill"
+publish = false
+
+[dependencies]
+docket-vocab = {path = "../../../docket/crates/docket-vocab"}
+nucleo-matcher = {version = "0.3.1"}
+ds-core = {path = "../../../quire/crates/ds-core"}
+chordkit = {features = ["serde"], path = "../../../chordkit/crates/chordkit"}
+docket-core = {path = "../../../docket/crates/docket-core"}
+almanac-core = {path = "../../../almanac/crates/almanac-core"}
+prov = {path = "../../../prov/prov"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,100 @@
+//! `PickColor`: the person picks a colour from the screen, in a picker the shell shows.
+
+use std::sync::Mutex;
+
+use transom_core::Rgb;
+
+use crate::BoxFuture;
+use crate::chooser::ShellError;
+use crate::link::BusLink;
+use crate::shell::{Door, answered};
+
+/// The seam: show the colour picker and return the colour, or `None` if the person cancelled.
+pub trait ColorPicker: Send + Sync + std::fmt::Debug {
+    /// Ask. `app_label` is the app's name as the person knows it.
+    fn pick<'a>(&'a self, app_label: &'a str) -> BoxFuture<'a, Result<Option<Rgb>, ShellError>>;
+}
+
+/// The real picker: `org.quire.Shell1.PickColor(app_label: s) -> (color: a(ddd))`. The shell
+/// answers with no tuple for a cancel and one tuple of red, green and blue (each 0 to 1) for a
+/// pick.
+#[derive(Debug)]
+pub struct ShellColorPicker {
+    link: BusLink,
+}
+
+impl ShellColorPicker {
+    /// A picker that asks through `link`, the connection that owns the portal's name.
+    pub fn new(link: BusLink) -> Self {
+        Self { link }
+    }
+}
+
+impl ColorPicker for ShellColorPicker {
+    fn pick<'a>(&'a self, app_label: &'a str) -> BoxFuture<'a, Result<Option<Rgb>, ShellError>> {
+        Box::pin(async move {
+            let Door { shell, mut watch } = Door::open(&self.link).await?;
+            let picked = answered(&mut watch, shell.pick_color(app_label)).await?;
+            color_from_wire(&picked)
+        })
+    }
+}
+
+/// Turn the shell's answer into a colour. No tuple is a cancel; one tuple whose channels are
+/// each in 0 to 1 is the colour; anything else is a bad answer.
+pub fn color_from_wire(picked: &[(f64, f64, f64)]) -> Result<Option<Rgb>, ShellError> {
+    match picked {
+        [] => Ok(None),
+        [(r, g, b)] if [r, g, b].iter().all(|c| (0.0..=1.0).contains(*c)) => Ok(Some(Rgb {
+            r: *r,
+            g: *g,
+            b: *b,
+        })),
+        _ => Err(ShellError::BadAnswer),
+    }
+}
+
+/// A picker that always cancels: what a service nobody set up does.
+#[derive(Debug, Default)]
+pub struct NoColorPicker;
+
+impl ColorPicker for NoColorPicker {
+    fn pick<'a>(&'a self, _: &'a str) -> BoxFuture<'a, Result<Option<Rgb>, ShellError>> {
+        Box::pin(async { Ok(None) })
+    }
+}
+
+/// A picker that answers from a script, for tests: each call takes the next answer; when the
+/// script is empty the person cancels.
+#[derive(Debug, Default)]
+pub struct FakeColorPicker {
+    answers: Mutex<Vec<Option<Rgb>>>,
+    asked: Mutex<Vec<String>>,
+}
+
+impl FakeColorPicker {
+    /// A picker that will give these answers in order (`None` is a cancel).
+    pub fn new(answers: Vec<Option<Rgb>>) -> Self {
+        let mut answers = answers;
+        answers.reverse();
+        Self {
+            answers: Mutex::new(answers),
+            asked: Mutex::new(Vec::new()),
+        }
+    }
+
+    /// The app labels asked about so far.
+    pub fn asked(&self) -> Vec<String> {
+        self.asked.lock().map(|a| a.clone()).unwrap_or_default()
+    }
+}
+
+impl ColorPicker for FakeColorPicker {
+    fn pick<'a>(&'a self, app_label: &'a str) -> BoxFuture<'a, Result<Option<Rgb>, ShellError>> {
+        if let Ok(mut asked) = self.asked.lock() {
+            asked.push(app_label.to_owned());
+        }
+        let next = self.answers.lock().ok().and_then(|mut a| a.pop()).flatten();
+        Box::pin(async move { Ok(next) })
+    }
+}

@@ -1,0 +1,46 @@
+[package]
+name = "sill-model"
+description = "The shell's pure vocabulary: units, ids, attempts, and every service's state, commands, events and pure step."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.91"
+repository = "https://github.com/Bardo-DE/sill"
+publish = false
+
+[dependencies]
+cua-action = {path = "../../../stoker/crates/cua-action"}
+docket-wire = {path = "../../../docket/crates/docket-wire"}
+companion-model = {path = "../../../docket/crates/companion-model"}
+docket-permissions-core = {path = "../../../docket/crates/docket-permissions-core"}
+docket-manifest = {path = "../../../docket/crates/docket-manifest"}
+docket-vocab = {path = "../../../docket/crates/docket-vocab"}
+porter-sheet = {path = "../../../porter/crates/porter-sheet"}
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+sill-launcher = {path = "../sill-launcher"}
+chordkit = {path = "../../../chordkit/crates/chordkit"}
+ds-core = {path = "../../../quire/crates/ds-core"}
+ds-helpers = {path = "../../../quire/crates/ds-helpers", default-features = false}
+keycap-protocol = {path = "../../../keycap/crates/keycap-protocol"}
+docket-core = {path = "../../../docket/crates/docket-core"}
+companion-wire = {path = "../../../docket/crates/companion-wire"}
+voice-wire = {path = "../../../docket/crates/voice-wire"}
+cua-bus = {path = "../../../cua/crates/cua-bus"}
+almanac-core = {path = "../../../almanac/crates/almanac-core"}
+prov = {path = "../../../prov/prov"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-infer = {path = "../../../steward/crates/porter-infer"}
+casement-protocols = {path = "../../../casement-protocols"}
+jiff = {version = "0.2"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+zeroize = {version = "1"}
+
+[dev-dependencies]
+serde_json = {version = "1"}
+toml = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

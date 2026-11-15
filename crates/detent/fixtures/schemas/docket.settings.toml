@@ -1,0 +1,323 @@
+# docket's settings schema in the design/22 format (section 9.2). Installed to
+# $XDG_DATA_DIRS/quire/settings/docket.settings.toml; `actions-mcp --write-schema <dir>` writes it
+# for a local install. The values live in $XDG_CONFIG_HOME/docket/settings.toml, for example
+# `[agent.mcp] expose = "on"`; the daemons read them live (crates/docket-settings). Every row is
+# hands-off for an agent (no `agent = "settable"`): agent.* is never agent-settable, so the
+# companion can never loosen its own limits. The main page has the Assistant rows and the Auto and Manual
+# sections; the rest are Advanced (Limits).
+app = "docket"
+file = "docket/settings.toml"
+version = 1
+
+[[key]]
+path = "agent.start_mode"
+default = "auto"
+label = "New conversations start in"
+help = "How a new conversation starts; you can switch it where you type."
+section = "Assistant"
+exposure = "basic"
+
+[key.kind]
+kind = "segmented"
+
+[key.kind.v]
+variants = ["auto", "manual"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+auto = "Auto"
+manual = "Manual"
+
+[[key]]
+path = "agent.auto.inside"
+default = "runs"
+label = "Changes it can undo, within what you asked"
+help = "Changes like archiving or moving, only to what you asked about."
+section = "Auto"
+exposure = "basic"
+
+[key.kind]
+kind = "segmented"
+
+[key.kind.v]
+variants = ["runs", "asks"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+runs = "Goes ahead"
+asks = "Asks"
+
+[[key]]
+path = "agent.auto.other"
+default = "check"
+label = "Other changes it can undo"
+help = "Undoable changes beyond what you asked about."
+section = "Auto"
+exposure = "basic"
+
+[key.kind]
+kind = "segmented"
+
+[key.kind.v]
+variants = ["check", "asks"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+check = "Checked first"
+asks = "Asks"
+
+[[key]]
+path = "agent.auto.send"
+default = "asks"
+label = "Sending"
+help = "Mail and messages that leave this computer."
+section = "Auto"
+exposure = "basic"
+
+[key.kind]
+kind = "segmented"
+
+[key.kind.v]
+variants = ["asks", "runs"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+asks = "Asks"
+runs = "Goes ahead"
+
+[[key]]
+path = "agent.auto.delete"
+default = "asks"
+label = "Deleting"
+help = "Things that cannot be brought back."
+section = "Auto"
+exposure = "basic"
+
+[key.kind]
+kind = "segmented"
+
+[key.kind.v]
+variants = ["asks", "runs"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+asks = "Asks"
+runs = "Goes ahead"
+
+[[key]]
+path = "agent.auto.screen"
+default = "once"
+label = "Using another app's window"
+help = "Working in an app by looking at the screen and using the mouse and keys."
+section = "Auto"
+exposure = "basic"
+
+[key.kind]
+kind = "segmented"
+
+[key.kind.v]
+variants = ["once", "each"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+once = "Asks once"
+each = "Asks at each change"
+
+[[key]]
+path = "agent.manual.inside"
+default = "asks"
+label = "Changes it can undo, within what you asked"
+help = "Changes like archiving or moving, only to what you asked about."
+section = "Manual"
+exposure = "basic"
+
+[key.kind]
+kind = "segmented"
+
+[key.kind.v]
+variants = ["runs", "asks"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+runs = "Goes ahead"
+asks = "Asks"
+
+[[key]]
+path = "agent.manual.other"
+default = "asks"
+label = "Other changes it can undo"
+help = "Undoable changes beyond what you asked about."
+section = "Manual"
+exposure = "basic"
+
+[key.kind]
+kind = "segmented"
+
+[key.kind.v]
+variants = ["check", "asks"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+check = "Checked first"
+asks = "Asks"
+
+[[key]]
+path = "agent.manual.send"
+default = "asks"
+label = "Sending"
+help = "Mail and messages that leave this computer."
+section = "Manual"
+exposure = "basic"
+
+[key.kind]
+kind = "segmented"
+
+[key.kind.v]
+variants = ["asks", "runs"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+asks = "Asks"
+runs = "Goes ahead"
+
+[[key]]
+path = "agent.manual.delete"
+default = "asks"
+label = "Deleting"
+help = "Things that cannot be brought back."
+section = "Manual"
+exposure = "basic"
+
+[key.kind]
+kind = "segmented"
+
+[key.kind.v]
+variants = ["asks", "runs"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+asks = "Asks"
+runs = "Goes ahead"
+
+[[key]]
+path = "agent.manual.screen"
+default = "each"
+label = "Using another app's window"
+help = "Working in an app by looking at the screen and using the mouse and keys."
+section = "Manual"
+exposure = "basic"
+
+[key.kind]
+kind = "segmented"
+
+[key.kind.v]
+variants = ["once", "each"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+once = "Asks once"
+each = "Asks at each change"
+
+[[key]]
+path = "agent.mcp.expose"
+default = "off"
+label = "Other apps"
+help = "Lets other apps use the actions your apps offer."
+section = "Assistant"
+exposure = "basic"
+
+[key.kind]
+kind = "toggle"
+
+[key.kind.v]
+variants = ["off", "on"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+off = "Off"
+on = "On"
+
+[[key]]
+path = "agent.acp.expose"
+default = "off"
+label = "Code editors"
+help = "Lets a code editor talk to the assistant."
+section = "Assistant"
+exposure = "advanced"
+
+[key.kind]
+kind = "toggle"
+
+[key.kind.v]
+variants = ["off", "on"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+off = "Off"
+on = "On"
+
+[[key]]
+path = "agent.acp.agents"
+default = "off"
+label = "Coding agents"
+help = "Lets the assistant use coding agents as helpers."
+section = "Assistant"
+exposure = "basic"
+
+[key.kind]
+kind = "toggle"
+
+[key.kind.v]
+variants = ["off", "on"]
+
+[key.page]
+kind = "intelligence"
+
+[key.labels]
+off = "Off"
+on = "On"
+
+[[key]]
+path = "agent.budget.spend_microusd"
+default = 0
+label = "Spending per task"
+help = "The most a task may spend on paid models. 0 keeps it on this computer."
+section = "Limits"
+exposure = "advanced"
+
+[key.kind]
+kind = "bounded"
+
+[key.kind.v]
+min = 0
+max = 1000000000
+unit = "millionths of a dollar"
+
+[key.page]
+kind = "intelligence"

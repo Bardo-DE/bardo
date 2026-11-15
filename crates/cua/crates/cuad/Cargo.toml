@@ -1,0 +1,83 @@
+[package]
+name = "cuad"
+description = "The computer-use daemon and its library: the supervisor of runs wired to the system seams of cua-system, the org.quire.Cua provider and org.quire.Cua1. The binary serves both names on the session bus."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/cua"
+publish = false
+
+[lib]
+name = "cuad"
+path = "src/lib.rs"
+
+[[bin]]
+name = "cuad"
+path = "src/main.rs"
+
+[features]
+# The person's own keymap (and this desktop's bindings) from keycap, for the shortcut line the
+# model is told. On for the daemon; off, only the platform's conventions apply.
+default = ["keycap"]
+keycap = ["dep:keycap-client"]
+# A test build only: callers are read from a fixture process tree and a callers file the harness
+# names (`CUAD_TEST_PROC_ROOT`, `CUAD_TEST_SYSTEM_CALLERS`) in place of `/proc` and `/etc/quire`.
+# Never on in a shipped build.
+fixture-callers = ["docket-dbus/fixture-callers"]
+
+[dependencies]
+docket-wire = {path = "../../../docket/crates/docket-wire"}
+docket-manifest = {path = "../../../docket/crates/docket-manifest"}
+docket-vocab = {path = "../../../docket/crates/docket-vocab"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+cua-desktop = {path = "../cua-desktop"}
+cua-system = {path = "../cua-system"}
+cua-bus = {path = "../cua-bus"}
+cua-run = {path = "../cua-run"}
+chordkit = {path = "../../../chordkit/crates/chordkit"}
+keycap-client = {optional = true, path = "../../../keycap/crates/keycap-client"}
+cua-host = {path = "../cua-host"}
+cua-dbus = {path = "../cua-dbus"}
+docket-core = {path = "../../../docket/crates/docket-core"}
+docket-client = {default-features = false, features = ["dbus"], path = "../../../docket/crates/docket-client"}
+docket-provider = {features = ["dbus"], path = "../../../docket/crates/docket-provider"}
+docket-dbus = {path = "../../../docket/crates/docket-dbus"}
+prov = {path = "../../../prov/prov"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-daemon = {path = "../../../porter/crates/porter-daemon"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+toml = {version = "1"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+
+[dev-dependencies]
+docket-gate-wire = {path = "../../../docket/crates/docket-gate-wire"}
+docket-permissions-core = {path = "../../../docket/crates/docket-permissions-core"}
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+# The tests present their processes as a fixture tree, which porter reads only in a test build.
+docket-dbus = {features = ["fixture-callers"], path = "../../../docket/crates/docket-dbus"}
+almanac-core = {path = "../../../almanac/crates/almanac-core"}
+cua-action = {path = "../../../stoker/crates/cua-action"}
+cua-fake = {path = "../cua-fake"}
+porter-infer = {path = "../../../steward/crates/porter-infer"}
+model-provider = {path = "../../../stoker/crates/model-provider"}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+seat-input = {path = "../seat-input"}
+maskcap = {path = "../maskcap"}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
+tempfile = {version = "3"}
+serde_json = {version = "1"}
+intentd = {path = "../../../docket/crates/intentd"}
+docket-fake = {path = "../../../docket/crates/docket-fake"}
+docket-router = {path = "../../../docket/crates/docket-router"}
+almanac-fake = {path = "../../../almanac/crates/almanac-fake"}
+almanac-service = {path = "../../../almanac/crates/almanac-service"}
+almanac-client = {default-features = false, features = ["dbus", "in_process"], path = "../../../almanac/crates/almanac-client"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

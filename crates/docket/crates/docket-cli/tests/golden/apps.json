@@ -1,0 +1,45 @@
+{
+  "vocab": 1,
+  "apps": [
+    {
+      "slug": "acpagent",
+      "app": "org.quire.AcpAgent",
+      "actions": 15,
+      "kinds": []
+    },
+    {
+      "slug": "companion",
+      "app": "org.quire.Companion",
+      "actions": 8,
+      "kinds": [
+        "companion.task"
+      ]
+    },
+    {
+      "slug": "files",
+      "app": "org.quire.Files",
+      "actions": 5,
+      "kinds": [
+        "files.file",
+        "files.person"
+      ]
+    },
+    {
+      "slug": "mail",
+      "app": "org.quire.Mail",
+      "actions": 7,
+      "kinds": [
+        "mail.thread",
+        "mail.contact"
+      ]
+    },
+    {
+      "slug": "memory",
+      "app": "org.quire.Memory",
+      "actions": 3,
+      "kinds": [
+        "memory.fact"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+[package]
+name = "ds-core"
+description = "The design system's pure base: vocabulary, geometry units, colour, time, the Spawner trait, errors, text clip and image encodings."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/quire"
+publish = false
+
+[dependencies]
+ds-core-derive = {path = "../ds-core-derive"}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+futures-timer = {version = "3"}
+keyboard-types = {version = "0.7"}
+# The keymap nouns (actions, chords, platforms) and the resolver; pure, no source crates.
+chordkit = {path = "../../../chordkit/crates/chordkit"}
+# `testing::word_matches_serde`, for the tests of crates that store a `Word`.
+serde_json = {version = "1", optional = true}
+
+[dev-dependencies]
+serde_json = {version = "1"}
+
+[features]
+# `ds_core::testing`: checks a stored `Word` against its serde form.
+testing = ["dep:serde_json"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

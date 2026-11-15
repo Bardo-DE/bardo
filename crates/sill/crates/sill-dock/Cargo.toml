@@ -1,0 +1,39 @@
+[package]
+name = "sill-dock"
+description = "The dock: tiles, magnification, machines and its context menu."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.91"
+repository = "https://github.com/Bardo-DE/sill"
+publish = false
+
+[dependencies]
+dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+chordkit = {path = "../../../chordkit/crates/chordkit"}
+ds = {path = "../../../quire/crates/ds"}
+ds-blitz = {path = "../../../quire/crates/ds-blitz"}
+sill-shell-kit = {path = "../sill-shell-kit"}
+shell-host = {path = "../../../shell-host/crates/shell-host"}
+sill-launcher = {path = "../sill-launcher"}
+sill-model = {path = "../sill-model"}
+sill-services = {path = "../sill-services"}
+sill-settings = {path = "../sill-settings"}
+sill-ui-kit = {path = "../sill-ui-kit"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
+
+[dev-dependencies]
+desktop-client = {path = "../../../casement-protocols/desktop-client", features = ["fake"]}
+sill-testkit = {path = "../sill-testkit"}
+ds-harness = {path = "../../../quire/crates/ds-harness"}
+sill-ui-kit = {path = "../sill-ui-kit", features = ["harness"]}
+ds-lint = {path = "../../../quire/crates/ds-lint"}
+ds-settings = {path = "../../../quire/crates/ds-settings", features = ["dioxus", "tokio"]}
+shell-host = {path = "../../../shell-host/crates/shell-host", features = ["debug-inject"]}
+
+[[example]]
+name = "dock_demo"
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,39 @@
+[package]
+name = "anyview-archive"
+description = "Archives for the viewer: zip, tar, 7z and compressed-stream listings, extracting one entry, and the archive peek."
+version = "0.1.0-beta.1"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/anyview"
+publish = false
+
+[dependencies]
+anyview-core = {path = "../anyview-core"}
+bzip2 = {version = "0.6"}
+ds-core = {path = "../../../quire/crates/ds-core"}
+flate2 = {version = "1", default-features = false, features = ["rust_backend"]}
+lzma-rust2 = {version = "0.16", default-features = false, features = ["std", "xz"]}
+quick-xml = {version = "0.41"}
+ruzstd = {version = "0.9.1"}
+sevenz-rust2 = {version = "0.20", default-features = false}
+tar = {version = "0.4"}
+thiserror = {version = "2"}
+zip = {version = "9", default-features = false, features = ["deflate"]}
+
+[dev-dependencies]
+# `OnDisk`: the input of a file in the scratch folder (core opens no file).
+anyview-fs = {path = "../anyview-fs"}
+# Builds the .xz fixtures the tests read.
+lzma-rs = {version = "0.3"}
+sevenz-rust2 = {version = "0.20", default-features = false, features = ["compress"]}
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+
+[lints.clippy]
+unwrap_used = "deny"
+wildcard_enum_match_arm = "deny"
+match_wildcard_for_single_variants = "deny"

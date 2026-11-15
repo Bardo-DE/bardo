@@ -1,0 +1,218 @@
+//! The banner column: one transparent Toast root as tall as the surface, the `--notifications-*`
+//! geometry tokens read from the sheet, holding quire's `BannerStack` of the
+//! deck's listed cards, each quire's `NotificationCard` (through [`NoteCard`]) that pauses the hold
+//! under the pointer and swipes away. It follows the notifications service's live banners and the
+//! [`BannerLink`] (only the output the link names shows cards), maps its surface while any card is
+//! drawn and unmaps it once the stack has played the last one out (`on_hidden`), and keeps the
+//! input and blur regions on the cards (`elements.rs`).
+//!
+//! [`BannerLink`]: sill_ui_kit::links::BannerLink
+
+use dioxus::prelude::*;
+use ds::prelude::*;
+use shell_host::{OutputInfo, SurfaceHandle, Visibility, use_watch};
+use sill_model::notifications::{NotificationId, Notifications};
+use sill_services::NotificationsService;
+use sill_shell_kit::notifications::banner_stack::BannerKey;
+use sill_shell_kit::notifications::parts::Hover;
+use sill_shell_kit::notifications::swipe::NotificationSwipe;
+use sill_shell_kit::prelude::*;
+
+use super::deck::{DeckIn, Entry, EntryKey};
+use super::deck_keys::KeysIn;
+use super::elements::{CardShape, Regions, element_regions};
+use super::io::{Column, use_column};
+use super::keys::banner_key;
+use super::layer::{ROOM, margin, size};
+use super::stack::stack;
+use super::step::{BannerIn, BannerParams};
+use sill_ui_kit::hooks::{use_control, use_follow_place, use_follow_visibility, use_service_part};
+use sill_ui_kit::links::{BannerLink, KeyWhat, Transient};
+use sill_ui_kit::notification_card::{
+    CardPart, CardPlace, CardPress, NoteCard, part_id, use_notification_tokens, wall_now,
+};
+use sill_ui_kit::root::SurfaceRoot;
+
+/// The column's stylesheet (lint-clean under `Profile::Strict`, `tests/banners_lint.rs`).
+pub const BANNERS_CSS: &str = include_str!("style.css");
+
+/// The custom properties the column writes on itself, for the stylesheet lint.
+pub const BANNER_VARS: [&str; 1] = ["--sill-banner-room"];
+
+/// The most cards shown at once; the rest wait their turn.
+const STACK_MAX: usize = 3;
+
+/// The column on `output`.
+pub(super) fn banners(output: OutputInfo) -> Element {
+    rsx! {
+        SurfaceRoot {
+            output: output.clone(),
+            material: Material::Toast,
+            chrome: Some(RootChrome::Transparent),
+            extent: RootExtent::Viewport,
+            AppStyle { css: BANNERS_CSS }
+            ColumnView { output: output.id }
+        }
+    }
+}
+
+/// The cards, inside the root.
+#[component]
+fn ColumnView(output: shell_host::OutputId) -> Element {
+    let control = use_control::<NotificationsService>();
+    let link = use_context::<BannerLink>();
+    let (resolved, tokens) = use_notification_tokens();
+    use_follow_place(size(&tokens), margin(&tokens));
+    let column = use_column(BannerParams::default(), control, link.clone());
+    let live = use_service_part::<NotificationsService, _>(|notes| notes.live.clone());
+    let shows = use_watch(link.subscribe());
+    use_follow_stack(column, live, shows, output, STACK_MAX);
+    use_map_while_showing(column);
+    use_keyboard_asks(column, &link);
+    let deck = (column.deck)();
+    let shapes: Vec<CardShape> = deck
+        .drawn()
+        .into_iter()
+        .filter_map(|e| {
+            Some(CardShape {
+                note: e.card.newest()?,
+                count: e.card.count(),
+            })
+        })
+        .collect();
+    use_regions(element_regions(&shapes));
+    let notes = live();
+    let banners: Vec<sill_shell_kit::notifications::banner_stack::Banner> = deck
+        .listed()
+        .into_iter()
+        .filter_map(|entry| banner(column, &notes, entry))
+        .collect();
+    let style = format!("--sill-banner-room:{ROOM}px;");
+    rsx! {
+        div {
+            class: "sill-banners",
+            onmounted: move |event| resolved.mounted(event),
+            style,
+            onkeydown: move |event: KeyboardEvent| {
+                if let Some(input) = banner_key(&event.key()) {
+                    event.prevent_default();
+                    event.stop_propagation();
+                    column.keys(input);
+                }
+            },
+            BannerStack {
+                banners,
+                on_hidden: move |key: BannerKey| column.hidden(EntryKey(key.0)),
+            }
+        }
+    }
+}
+
+/// One listed card as quire's banner.
+fn banner(
+    column: Column,
+    notes: &Notifications,
+    entry: &Entry,
+) -> Option<sill_shell_kit::notifications::banner_stack::Banner> {
+    let id = entry.card.newest()?;
+    let note = note_of(notes, id, &column)?;
+    let key = entry.key;
+    let card = entry.card.clone();
+    let pressed = note.clone();
+    let swiped = EventHandler::new(move |()| column.input(DeckIn::Card(key, BannerIn::Swiped)));
+    let element = rsx! {
+        div { id: part_id(id, CardPart::Whole), class: "sill-banner",
+            NoteCard {
+                note,
+                count: entry.card.count(),
+                place: CardPlace::Banner,
+                now: wall_now(),
+                id: part_id(id, CardPart::Plate),
+                swipe: NotificationSwipe::Dismiss(swiped),
+                on_hover: move |hover: Hover| column.hovered(key, hover),
+                on_press: move |what: CardPress| column.pressed(key, card.clone(), &pressed, what),
+            }
+        }
+    };
+    Some(sill_shell_kit::notifications::banner_stack::Banner {
+        key: BannerKey(key.0),
+        card: element,
+    })
+}
+
+/// The notification a card draws: the live one, else the copy the column kept.
+fn note_of(
+    notes: &Notifications,
+    id: NotificationId,
+    column: &Column,
+) -> Option<sill_model::notifications::Notification> {
+    notes
+        .banner(id)
+        .map(|b| b.note.clone())
+        .or_else(|| column.kept(id))
+}
+
+/// Feed the deck the stack whenever the banners, the link or the cap change.
+fn use_follow_stack(
+    column: Column,
+    live: ReadSignal<Notifications>,
+    shows: ReadSignal<sill_ui_kit::links::BannerOutput>,
+    output: shell_host::OutputId,
+    max: usize,
+) {
+    use_effect(use_reactive!(|max| {
+        let banners = live.read().banners.clone();
+        let cards = match shows.read().shows_on(output) {
+            true => stack(&banners, max),
+            false => Vec::new(),
+        };
+        column.keep(&banners);
+        column.input(DeckIn::Cards(cards));
+    }));
+}
+
+/// Follow the link's keyboard events: `sill focus-latest` choosing the banners, and the
+/// compositor taking the keyboard away.
+fn use_keyboard_asks(column: Column, link: &BannerLink) {
+    let keys = use_watch(link.subscribe_keys());
+    let mut heard = use_hook(|| CopyValue::new(keys.peek().serial));
+    use_effect(move || {
+        let event = *keys.read();
+        if *heard.peek() == event.serial {
+            return;
+        }
+        heard.set(event.serial);
+        match event.what {
+            KeyWhat::Asked(Transient::Banner) => column.keys(KeysIn::Asked),
+            KeyWhat::Lost(Transient::Banner) => column.keys(KeysIn::Lost),
+            KeyWhat::Idle | KeyWhat::Asked(_) | KeyWhat::Lost(_) => {}
+        }
+    });
+}
+
+/// Keep the surface's input and blur regions on `regions`, sending them only when they change.
+/// Nothing to do without a host (a test, an SSR render).
+fn use_regions(regions: Regions) {
+    let surface = try_use_context::<SurfaceHandle>();
+    let mut last = use_hook(|| CopyValue::new(None::<Regions>));
+    if last.peek().as_ref() == Some(&regions) {
+        return;
+    }
+    if let Some(surface) = surface {
+        surface.set_input_region(regions.input.clone());
+        surface.set_blur(regions.blur.clone());
+    }
+    last.set(Some(regions));
+}
+
+/// Map the surface once a card is drawn; unmap it once none is (the stack has played the last
+/// one out and said so).
+fn use_map_while_showing(column: Column) {
+    use_follow_visibility(move || {
+        if column.deck.read().showing() {
+            Visibility::Shown
+        } else {
+            Visibility::Hidden
+        }
+    });
+}

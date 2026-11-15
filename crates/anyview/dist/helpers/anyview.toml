@@ -1,0 +1,69 @@
+# The distro tools anyview's plugins run, for quire's missing-helpers prompt (quire CONSUMING.md,
+# "Missing helpers"). install.sh puts this at <prefix>/share/quire/helpers/anyview.toml. When a
+# tool is missing the viewer offers to install it through PackageKit ("Viewer needs mpv to play
+# videos."); the person is asked first and the system asks for the password. The table names are
+# `anyview_core::Helper`'s slugs and a test holds the two together.
+#
+# Package names, per distribution family, in preference order (the first that exists in the
+# repositories is installed).
+#   dnf     `dnf repoquery --whatprovides /usr/bin/<tool>` on Fedora 44
+#   apt     `apt-file search -x '^/usr/bin/<tool>$'` on Ubuntu 24.04 (noble, with universe)
+#   pacman  `pacman -F usr/bin/<tool>` on Arch (2026-10-16)
+#   zypper  `zypper se --provides /usr/bin/<tool>` on openSUSE Tumbleweed (2026-10-16)
+#   unverified  written from memory of the distribution's package lists, not looked up: PackageKit
+#               answers "not found" for a wrong name and the sheet says so, nothing wrong is installed
+
+# Playback of video, and of audio the built-in player does not decode (it plays most audio without mpv).
+[video-playback]
+tool = "mpv"
+purpose = "play videos"
+probe = ["mpv"]
+[video-playback.packages]
+# Ubuntu 24.04's mpv is 0.37, which the plugin builds against and loads in.
+dnf = ["mpv"]
+apt = ["mpv"]
+pacman = ["mpv"]
+zypper = ["mpv"]
+
+# Facts, thumbnails and exports of recordings. Every family's package provides both ffmpeg and
+# ffprobe. On Fedora, `ffmpeg-free` is all the default repositories carry and it has no H.264, HEVC
+# or AAC, the codecs most recordings use: RPM Fusion's `ffmpeg` is what plays them, and it is listed
+# first so it is the one installed wherever RPM Fusion is enabled (`ffmpeg-free` otherwise, for the
+# open codecs). Ubuntu's and Arch's `ffmpeg` carry the full set.
+[media-probe]
+tool = "FFmpeg"
+purpose = "read and convert audio and video"
+probe = ["ffprobe", "ffmpeg"]
+[media-probe.packages]
+dnf = ["ffmpeg", "ffmpeg-free"]
+apt = ["ffmpeg"]
+pacman = ["ffmpeg"]
+# openSUSE's own repositories carry both, without the patented codecs; Packman's build has them.
+zypper = ["ffmpeg-7", "ffmpeg"]
+
+# HEIC and HEIF pictures. libheif-tools provides heif-dec and heif-convert (verified on Fedora 44).
+[heic-decode]
+tool = "libheif tools"
+purpose = "open HEIC photos"
+probe = ["heif-dec", "heif-convert"]
+[heic-decode.packages]
+dnf = ["libheif-tools"]
+# Ubuntu 24.04's libheif-examples (libheif 1.17) ships heif-convert but not heif-dec; the plugin
+# takes either. Arch's libheif ships both.
+apt = ["libheif-examples"]
+pacman = ["libheif"]
+# unverified: openSUSE's own repositories ship neither heif-dec nor heif-convert (HEVC is
+# patent-encumbered there); this is the Fedora name, for a third-party repository that has it
+zypper = ["libheif-tools"]
+
+# Camera raw files developed in full. LibRaw-samples provides dcraw_emu and dcraw provides dcraw
+# (both verified on Fedora 44); the viewer shows a raw file's embedded preview without either.
+[raw-decode]
+tool = "LibRaw tools"
+purpose = "open camera RAW photos in full quality"
+probe = ["dcraw_emu", "dcraw"]
+[raw-decode.packages]
+dnf = ["LibRaw-samples", "dcraw"]
+apt = ["libraw-bin", "dcraw"]
+pacman = ["libraw", "dcraw"]
+zypper = ["libraw-tools", "dcraw"]

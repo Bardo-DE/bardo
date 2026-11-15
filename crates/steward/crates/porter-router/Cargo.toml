@@ -1,0 +1,46 @@
+[package]
+name = "porter-router"
+description = "Who answers an inference session and what runs on this computer: the router over a list of models, what loading a model would cost, the catalogue and the local model book, the attached engines the person runs, the session machine and the seams a session server leans on. A library: no bus, no runtime, no daemon."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/steward"
+publish = false
+
+[features]
+# The helpers inferd's tests and this crate's own share (`testkit`): a scratch directory, the test
+# catalog entries and the local models they make. For dev-dependencies only.
+testing = []
+
+[dependencies]
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-tailnet = {path = "../porter-tailnet"}
+porter-tailscale = {path = "../../../porter/crates/porter-tailscale"}
+porter-match = {path = "../../../porter/crates/porter-match"}
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+porter-infer = {path = "../porter-infer"}
+cua-action = {path = "../../../stoker/crates/cua-action"}
+# Which program an engine kind runs (`Engine`), and the folder a person pointed at (Strata).
+engine-spec = {path = "../../../stoker/crates/engine-spec"}
+engine-probe = {path = "../../../stoker/crates/engine-probe"}
+engine-supervisor = {path = "../../../stoker/crates/engine-supervisor"}
+model-catalog = {path = "../../../stoker/crates/model-catalog"}
+# The types of an engine's address and token only: no `client`, no `tls`, so no runtime.
+model-http = {path = "../../../stoker/crates/model-http"}
+model-openai-compat = {path = "../../../stoker/crates/model-openai-compat"}
+model-provider = {path = "../../../stoker/crates/model-provider"}
+speech-provider = {path = "../../../stoker/crates/speech-provider"}
+vision-prep = {path = "../../../stoker/crates/vision-prep"}
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+serde = {version = "1", features = ["derive"]}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+test-kit = {path = "../../../porter/crates/test-kit"}
+toml = {version = "1"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

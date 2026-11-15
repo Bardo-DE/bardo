@@ -1,0 +1,172 @@
+//! Building a host's wiring from this computer: the settings and `agents.toml` that allow an
+//! agent to run, the sandbox, the bus and the launcher on it. `docket-agent` on a terminal and
+//! its service (`serve`) both start from here, so the two hold an agent to the same rules.
+
+use super::fault::AgentFault;
+use super::host::Wiring;
+use super::places::Places;
+use super::sibling;
+use bulkhead::Detected;
+use docket_acp_host::{Fallback, ToolsOffer};
+use docket_dbus::BusConnection;
+use docket_dbus::callers::Identity;
+use docket_host::EditorDesk;
+use docket_launch::dbus::DbusAccounts;
+use docket_launch::{AgentsFile, AgentsPermit, ChildProc, Registry, Supervisor};
+use docket_settings::AgentSettings;
+use std::sync::Arc;
+
+/// Whether the agent is offered the desktop's actions.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Tools {
+    /// When `actions-mcp` is beside this program; an entry in `agents.toml` can still switch it
+    /// off for its program.
+    Wanted,
+    /// Never: a start that only reads what the agent offers.
+    Unwanted,
+}
+
+/// What `agent.acp.agents` and `agents.toml` say, before anything starts: the proof the setting
+/// is on, and the programs that may start.
+#[derive(Debug)]
+pub struct Allowed {
+    /// The proof that `agent.acp.agents` is on.
+    pub permit: AgentsPermit,
+    /// The programs that may start.
+    pub file: Arc<AgentsFile>,
+}
+
+/// Reads the setting and `agents.toml`. Off, or no file, or a file that is wrong, is a fault.
+pub fn allowed(places: &Places) -> Result<Allowed, AgentFault> {
+    let loaded = places.locator().read(AgentSettings::default());
+    let permit = AgentsPermit::from_setting(loaded.value.agents)
+        .map_err(|e| AgentFault::Permit(e.to_string()))?;
+    let text = std::fs::read_to_string(places.config_dir().join("docket/agents.toml"))
+        .map_err(|_| AgentFault::NoAgentsFile)?;
+    let agents = places.agents_dir();
+    let file = Arc::new(
+        AgentsFile::parse_in(&text, Some(&agents))
+            .map_err(|e| AgentFault::Agents(e.to_string()))?,
+    );
+    Ok(Allowed { permit, file })
+}
+
+/// The wiring of a host on `bus`: the sandbox, the launcher registered on the bus and the tool
+/// edge. `fallback` says who answers the sheets of the agent's session; `places` is what
+/// `main` read of the environment.
+pub async fn build(
+    allowed: Allowed,
+    tools: Tools,
+    fallback: Fallback,
+    bus: BusConnection,
+    limits: SandboxLimits,
+    places: Places,
+) -> Result<Wiring<DbusAccounts>, AgentFault> {
+    let Allowed { permit, file } = allowed;
+    let bwrap = match limits.probe(places.path()) {
+        Detected::Bwrap(bwrap) => bwrap,
+        Detected::Missing(why) => return Err(AgentFault::NoSandbox(why)),
+    };
+    let forwarder = sibling("docket-net-forward").ok_or(AgentFault::NoForwarder)?;
+    // Without the exec stage the agent is held by the sandbox alone: say so, never hide it.
+    let enter = sibling("docket-net-enter").filter(|p| std::path::Path::new(p.as_str()).exists());
+    if enter.is_none() {
+        eprintln!(
+            "docket-agent: no docket-net-enter beside this program: the kernel does not limit the agent's files or network"
+        );
+    }
+    let run_dir = places
+        .runtime_dir()
+        .ok_or(AgentFault::NoRuntimeDir)?
+        .to_path_buf();
+    // The desktop's actions go to the agent as an MCP server it starts itself: the `actions-mcp`
+    // program beside this one, as the bridge to this host. Whether a program is offered it (an
+    // entry can switch it off) and which of the actions is decided where its backend is made.
+    let offered = (tools == Tools::Wanted)
+        .then(|| sibling("actions-mcp"))
+        .flatten()
+        .filter(|bridge| std::path::Path::new(bridge.as_str()).exists())
+        .map(|bridge| ToolsOffer {
+            run_dir: run_dir.clone(),
+            bridge,
+        });
+    if offered.is_none() && tools == Tools::Wanted {
+        eprintln!(
+            "docket-agent: no agent is offered the desktop's actions (no actions-mcp beside this program)"
+        );
+    }
+
+    let table = crate::callers::read(&|name: &str| places.var(name))
+        .map_err(|e| AgentFault::Callers(e.to_string()))?;
+    let callers = Arc::new(Identity::on_system(bus.clone(), table));
+    let accounts = Arc::new(
+        DbusAccounts::connect(&bus)
+            .await
+            .map_err(|e| AgentFault::Bus(e.to_string()))?,
+    );
+    let registry: Registry<ChildProc> = Registry::default();
+    let supervisor = Supervisor::new(
+        accounts.clone(),
+        file.clone(),
+        registry.clone(),
+        places.login_runner(),
+    );
+    supervisor
+        .register()
+        .await
+        .map_err(|e| AgentFault::Bus(e.to_string()))?;
+    tokio::spawn(async move { supervisor.run().await });
+
+    if places.data_dir().join("acp-agent-grants.json").exists() {
+        eprintln!(
+            "docket-agent: ignoring the old acp-agent-grants.json in the data directory: \
+             an agent's grants are docket's now (Settings lists and revokes them); allow \
+             \"always\" again where you want one"
+        );
+    }
+    Ok(Wiring {
+        bus,
+        accounts,
+        file,
+        permit,
+        bwrap: Detected::Bwrap(bwrap),
+        forwarder,
+        enter,
+        run_dir,
+        registry,
+        tools: offered,
+        fallback,
+        desk: EditorDesk::new(),
+        callers,
+        agents: Some(places.agents_dir()),
+        places,
+    })
+}
+
+/// How the sandbox bounds what an agent uses.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum SandboxLimits {
+    /// A scope of the person's systemd user manager holds the agent's memory and tasks: what the
+    /// packaged program always uses.
+    #[default]
+    Scope,
+    /// Per-process limits instead, for a machine with no user manager. Only the acceptance
+    /// harness passes it (its jail and its live worlds run no systemd).
+    PerProcess,
+}
+
+impl SandboxLimits {
+    /// The sandbox here, bounded this way.
+    pub fn probe(self, path: &str) -> Detected {
+        match self {
+            SandboxLimits::Scope => Detected::probe(path),
+            SandboxLimits::PerProcess => {
+                let hardening = bulkhead::Hardening {
+                    limits: bulkhead::LimitPolicy::Rlimit(bulkhead::Limits::default()),
+                    ..bulkhead::Hardening::default()
+                };
+                Detected::probe_with(path, &hardening, &bulkhead::UserSession::from_env())
+            }
+        }
+    }
+}

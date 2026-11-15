@@ -1,0 +1,7 @@
+/* The screenshot thumbnail (design/20 §1.13; surfaces/screenshot_thumb). The card, its motion,
+   its hover row and its swipe are quire's `ShotThumbnail`; quire's `BannerStack` holds it
+   at the bottom right. This only makes the stack's column fill the surface, the room around the
+   card written inline (`ROOM`). Tokens only. */
+
+.sill-thumb-column{ position:absolute; top:0; right:0; bottom:0; left:0; display:flex; flex-direction:column;
+  align-items:flex-end; justify-content:flex-end; box-sizing:border-box; overflow:hidden; }

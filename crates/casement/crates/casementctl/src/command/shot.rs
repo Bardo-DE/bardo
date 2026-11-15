@@ -1,0 +1,212 @@
+//! `shot [--output NAME | --window ID | --region X,Y,W,H] [--masked] OUT.png`.
+
+use super::plan::Call;
+use super::{CommandError, ShotTarget};
+use std::path::{Path, PathBuf};
+
+fn bad(message: impl Into<String>) -> CommandError {
+    CommandError::BadArgument(message.into())
+}
+
+/// What `shot` was asked to take.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ShotArgs {
+    /// What to capture.
+    pub target: ShotTarget,
+    /// Whether sensitive regions are masked (`--masked`).
+    pub masked: bool,
+    /// Where the PNG goes.
+    pub out: PathBuf,
+}
+
+/// The target, masking and output path `args` (after `shot`) name.
+pub fn parse_shot(args: &[String]) -> Result<ShotArgs, CommandError> {
+    let mut target = None;
+    let mut masked = false;
+    let mut out = None;
+    let mut rest = args.iter();
+    while let Some(word) = rest.next() {
+        let mut value = |flag: &str| {
+            rest.next()
+                .ok_or_else(|| bad(format!("{flag} needs a value")))
+        };
+        let named = match word.as_str() {
+            "--masked" => {
+                masked = true;
+                continue;
+            }
+            "--output" => ShotTarget::Output(value("--output")?.clone()),
+            "--window" => ShotTarget::Window(window_id(value("--window")?)?),
+            "--region" => region(value("--region")?)?,
+            flag if flag.starts_with("--") => return Err(bad(format!("unknown flag {flag}"))),
+            path => {
+                if out.replace(PathBuf::from(path)).is_some() {
+                    return Err(bad("shot takes one output path"));
+                }
+                continue;
+            }
+        };
+        if target.replace(named).is_some() {
+            return Err(bad("shot takes one of --output, --window, --region"));
+        }
+    }
+    let out = out.ok_or_else(|| bad("shot needs an output path"))?;
+    Ok(ShotArgs {
+        target: target.unwrap_or(ShotTarget::Default),
+        masked,
+        out,
+    })
+}
+
+/// Why a shot cannot be taken yet (exit 2: could not run), or the Debug1 call that takes it.
+/// A named output is captured over ext-image-copy-capture (`capture.rs`); the default output and
+/// a region of one are still written by casement's debug object, from inside the compositor.
+/// A window is drawn alone by the same debug object (P2-Q3); a masked shot (P4) waits for its
+/// pass.
+pub fn call(
+    target: &ShotTarget,
+    masked: bool,
+    out: &Path,
+    cwd: &Path,
+) -> Result<Call, &'static str> {
+    let area = match (masked, target) {
+        (true, _) => return Err("shot --masked needs the mask pass (P4)"),
+        (false, ShotTarget::Window(id)) => format!("window:{id}"),
+        (false, ShotTarget::Default) => "output".to_owned(),
+        (false, ShotTarget::Output(name)) => format!("output:{name}"),
+        (false, ShotTarget::Region { x, y, w, h }) => format!("region:{x},{y},{w},{h}"),
+    };
+    Ok(Call::Shot {
+        area,
+        path: cwd.join(out).to_string_lossy().into_owned(),
+    })
+}
+
+fn window_id(text: &str) -> Result<u64, CommandError> {
+    text.parse()
+        .map_err(|_| bad(format!("--window: not a window id: {text}")))
+}
+
+/// `X,Y,W,H`: a point (may be negative) and a size (not empty).
+fn region(text: &str) -> Result<ShotTarget, CommandError> {
+    let parts: Vec<&str> = text.split(',').collect();
+    let [x, y, w, h] = parts.as_slice() else {
+        return Err(bad(format!("--region wants X,Y,W,H: {text}")));
+    };
+    let parsed = (x.parse(), y.parse(), w.parse::<u32>(), h.parse::<u32>());
+    match parsed {
+        (Ok(x), Ok(y), Ok(w), Ok(h)) if w > 0 && h > 0 => Ok(ShotTarget::Region { x, y, w, h }),
+        _ => Err(bad(format!("--region wants X,Y,W,H with a size: {text}"))),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_shot_becomes_a_debug_call_with_an_absolute_path() {
+        let cwd = Path::new("/run/work");
+        let planned = |target, masked, out: &str| call(&target, masked, Path::new(out), cwd);
+        assert_eq!(
+            planned(ShotTarget::Default, false, "a.png"),
+            Ok(Call::Shot {
+                area: "output".to_owned(),
+                path: "/run/work/a.png".to_owned()
+            })
+        );
+        assert_eq!(
+            planned(ShotTarget::Output("HEADLESS-2".into()), false, "/x/b.png"),
+            Ok(Call::Shot {
+                area: "output:HEADLESS-2".to_owned(),
+                path: "/x/b.png".to_owned()
+            })
+        );
+        assert_eq!(
+            planned(
+                ShotTarget::Region {
+                    x: -1,
+                    y: 2,
+                    w: 3,
+                    h: 4
+                },
+                false,
+                "c.png"
+            ),
+            Ok(Call::Shot {
+                area: "region:-1,2,3,4".to_owned(),
+                path: "/run/work/c.png".to_owned()
+            })
+        );
+        assert_eq!(
+            planned(ShotTarget::Window(7), false, "d.png"),
+            Ok(Call::Shot {
+                area: "window:7".to_owned(),
+                path: "/run/work/d.png".to_owned()
+            })
+        );
+        assert!(planned(ShotTarget::Default, true, "e.png").is_err());
+    }
+
+    fn shot(text: &str) -> Result<ShotArgs, CommandError> {
+        parse_shot(
+            &text
+                .split_whitespace()
+                .map(str::to_owned)
+                .collect::<Vec<_>>(),
+        )
+    }
+
+    #[test]
+    fn a_shot_names_its_target_masking_and_path_in_any_order() {
+        assert_eq!(
+            shot("out.png").expect("default"),
+            ShotArgs {
+                target: ShotTarget::Default,
+                masked: false,
+                out: PathBuf::from("out.png")
+            }
+        );
+        assert_eq!(
+            shot("--masked a/b.png --output HEADLESS-2").expect("output"),
+            ShotArgs {
+                target: ShotTarget::Output("HEADLESS-2".to_owned()),
+                masked: true,
+                out: PathBuf::from("a/b.png")
+            }
+        );
+        assert_eq!(
+            shot("--window 17 w.png").expect("window").target,
+            ShotTarget::Window(17)
+        );
+        assert_eq!(
+            shot("--region -5,10,640,480 r.png").expect("region").target,
+            ShotTarget::Region {
+                x: -5,
+                y: 10,
+                w: 640,
+                h: 480
+            }
+        );
+    }
+
+    #[test]
+    fn a_malformed_shot_is_refused() {
+        for text in [
+            "",
+            "--window x out.png",
+            "--region 1,2,3 out.png",
+            "--region 0,0,0,5 out.png",
+            "--region 0,0,-1,5 out.png",
+            "--output out.png",
+            "--output A-1 --window 3 out.png",
+            "--frobnicate out.png",
+            "a.png b.png",
+        ] {
+            assert!(
+                matches!(shot(text), Err(CommandError::BadArgument(_))),
+                "{text}"
+            );
+        }
+    }
+}

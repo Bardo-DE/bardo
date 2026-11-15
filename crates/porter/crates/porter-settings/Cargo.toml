@@ -1,0 +1,26 @@
+[package]
+name = "porter-settings"
+description = "The rows of an account in a daemon's settings module: the AccountRow trait, one unit struct per row every account has (its label, place, state, how it signs in, its provider and group, and the actions to sign in again and to remove it), and the paths they live under. accountd and inferd list their accounts through it and only host the module."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+porter-core = {path = "../porter-core"}
+porter-capability = {path = "../porter-capability"}
+porter-ids = {path = "../porter-ids"}
+porter-sheet = {path = "../porter-sheet"}
+porter-provider = {path = "../porter-provider"}
+porter-service-core = {path = "../porter-service-core"}
+ds-settings = {features = ["live", "tokio"], path = "../../../quire/crates/ds-settings"}
+toml = {version = "1"}
+
+[dev-dependencies]
+porter-fake = {path = "../porter-fake"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

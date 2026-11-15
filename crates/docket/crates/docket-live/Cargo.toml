@@ -1,0 +1,72 @@
+[package]
+name = "docket-live"
+description = "Operator tools over the acceptance world: docket-live runs the eval corpora and the acceptance flows against a real model or a cassette on a private bus, and docket-bringup starts the agent services on a demo shell's bus. Not shipped; docket-accept holds the world they run in."
+publish = false
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+
+[[bin]]
+name = "docket-live"
+path = "src/bin/docket-live.rs"
+
+[[bin]]
+name = "docket-bringup"
+path = "src/bin/docket-bringup.rs"
+
+# The daemons the world starts are docket-accept's binaries (`accept-intentd` and the rest), found
+# beside the running program (`Binaries::beside`): build them first with `cargo build -p docket-accept --bins`.
+[dependencies]
+porter-match = {path = "../../../porter/crates/porter-match"}
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+action-review = {path = "../action-review"}
+agents-core = {path = "../agents-core"}
+bulkhead = {path = "../../../bulkhead"}
+clap = {version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context"]}
+companion-wire = {path = "../companion-wire"}
+docket-accept = {path = "../docket-accept"}
+docket-acp-bin = {path = "../docket-acp-bin", features = ["testing"]}
+docket-acp-host = {path = "../docket-acp-host"}
+docket-client = {path = "../docket-client", default-features = false, features = ["dbus", "in_process"]}
+docket-core = {path = "../docket-core"}
+docket-wire = {path = "../docket-wire"}
+docket-manifest = {path = "../docket-manifest", features = ["manifest-file"]}
+docket-permissions-core = {path = "../docket-permissions-core"}
+docket-vocab = {path = "../docket-vocab"}
+docket-dbus = {path = "../docket-dbus", features = ["fixture-callers", "inferd"]}
+docket-eval = {path = "../docket-eval"}
+docket-fake = {path = "../docket-fake"}
+docket-host = {path = "../docket-host"}
+docket-launch = {path = "../docket-launch"}
+docket-models = {path = "../docket-models"}
+docket-planner = {path = "../docket-planner"}
+docket-reader = {path = "../docket-reader"}
+docket-session = {path = "../docket-session", features = ["testing"]}
+docket-store = {path = "../docket-store"}
+docket-tasks = {path = "../docket-tasks"}
+docket-testbus = {path = "../docket-testbus"}
+docket-trace = {path = "../docket-trace"}
+eval-core = {path = "../eval-core"}
+inferd-client = {features = ["dbus"], path = "../../../steward/crates/inferd-client"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+model-provider = {path = "../../../stoker/crates/model-provider"}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+porter-infer = {path = "../../../steward/crates/porter-infer"}
+prov = {path = "../../../prov/prov"}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+toml = {version = "1"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[dev-dependencies]
+docket-settings = {path = "../docket-settings"}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+tempfile = {version = "3"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

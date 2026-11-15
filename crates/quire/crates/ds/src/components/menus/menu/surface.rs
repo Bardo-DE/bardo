@@ -1,0 +1,87 @@
+//! Where a menu's element is drawn: a placed popover surface in the overlay,
+//! on the layer stack, or bare rows in its caller's flow. Split from `menu`.
+
+use crate::components::menus::menu::hung::Hung;
+use crate::components::menus::menu::placement::MIN_ROOM;
+use crate::components::menus::menu::placement::MenuPlacement;
+use crate::components::overlays::flow::Flow;
+use crate::components::overlays::popover::{Float, Stacking, max_height_style, position_style};
+use crate::host::measure::Anchor;
+use ds_core::geometry::units::Point;
+use ds_core::vocab::Dismiss;
+
+/// A floating menu is a layer that Escape and an outside press close; an inline one is part of
+/// its caller's card and stays off the stack.
+pub(crate) fn stacking(flow: Flow) -> Stacking {
+    match flow {
+        Flow::Floating => Stacking::Layer(Dismiss::Transient),
+        Flow::Inline => Stacking::Passive,
+    }
+}
+
+/// The style of a menu whose anchor is not measured yet.
+const UNPLACED: &str = ";visibility:hidden;pointer-events:none";
+
+/// How the menu's element is drawn: a placed popover surface, or bare rows in the flow.
+pub(crate) struct Surface {
+    pub class: &'static str,
+    pub elevation: Option<&'static str>,
+    pub layer: Option<&'static str>,
+    pub style: Option<String>,
+}
+
+impl Surface {
+    pub(crate) fn of(
+        flow: Flow,
+        float: Float,
+        anchor: &Anchor,
+        placement: MenuPlacement,
+        hung: Hung,
+    ) -> Self {
+        match flow {
+            Flow::Floating => {
+                let field = float.anchor_rect(anchor);
+                let wanted = field.map(|rect| placement.placement(rect));
+                // The menu grows to its rows until it meets the edge it opens toward, less the
+                // margin, and is placed at that height; the stylesheet's window-high cap holds
+                // until that is known. A context menu is not held to the edge it opens toward:
+                // placement shifts it back inside the window (as every desktop's does), so it
+                // scrolls only when the window itself is too short for its rows, and the
+                // window-high cap is its limit.
+                let held = match placement {
+                    MenuPlacement::Context => None,
+                    MenuPlacement::Bar | MenuPlacement::Popup => wanted
+                        .and_then(|(rect, want, gap)| float.held(Some(rect), want, gap, MIN_ROOM)),
+                };
+                let (at, room) = match held {
+                    Some((at, room)) => (at, max_height_style(room)),
+                    None => (
+                        wanted.map_or_else(Point::default, |(rect, want, gap)| {
+                            float.origin(Some(rect), want, gap)
+                        }),
+                        String::new(),
+                    ),
+                };
+                let width = hung.width_style(field).unwrap_or_default();
+                // Until the anchor and the menu itself are measured the menu has no place: it is
+                // laid out (so it can be measured) but not drawn, and a press cannot land on it.
+                let waiting = match (field, float.measured()) {
+                    (Some(_), true) => "",
+                    (None, _) | (_, false) => UNPLACED,
+                };
+                Surface {
+                    class: "ds-popover ds-menu",
+                    elevation: Some("pop"),
+                    layer: Some("menu"),
+                    style: Some(position_style(at) + &width + &room + waiting),
+                }
+            }
+            Flow::Inline => Surface {
+                class: "ds-menu",
+                elevation: None,
+                layer: None,
+                style: None,
+            },
+        }
+    }
+}

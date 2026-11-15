@@ -1,0 +1,6 @@
+/* The missing-helper sheet: an alert (`alert.css`) whose installing phase carries a spinner in
+   place of its buttons; the unsupported phase may carry an install command to copy. */
+
+.ds-helper-progress{ display:flex; justify-content:center; padding:var(--s-8) 0 var(--s-4); }
+/* The install command (`CommandLine`, `command_line.css`): set below the alert's words. */
+.ds-alert .ds-command-line{ margin-top:var(--s-12); }

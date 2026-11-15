@@ -1,0 +1,25 @@
+[package]
+name = "porter-service-accounts"
+description = "The accounts domain of the service: add an account, sign it in again, ask for more access, rediscover what it can do, switch its kinds, remove it, and the agent sign-in and local runtimes that are accounts too."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+porter-service-core = {path = "../porter-service-core"}
+porter-core = {path = "../porter-core"}
+porter-tailscale = {path = "../porter-tailscale"}
+porter-match = {path = "../porter-match"}
+porter-capability = {path = "../porter-capability"}
+porter-sheet = {path = "../porter-sheet"}
+porter-wire = {path = "../porter-wire"}
+porter-ids = {path = "../porter-ids"}
+porter-provider = {path = "../porter-provider"}
+porter-secrets = {path = "../porter-secrets"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

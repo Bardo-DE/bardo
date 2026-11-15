@@ -1,0 +1,23 @@
+[package]
+name = "docket-memory-core"
+description = "docket's memory seam, pure: the audit trail as almanac records (`record_of`, `kind_tag_of`, `space_named_by`) and the bounded queue the router appends them to (`QueuedSink`). Values in, values out: no almanac client, no bus, no runtime."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+almanac-core = {path = "../../../almanac/crates/almanac-core"}
+docket-core = {path = "../docket-core"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+prov = {path = "../../../prov/prov"}
+serde_json = {version = "1"}
+
+[dev-dependencies]
+companion-model = {path = "../companion-model"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

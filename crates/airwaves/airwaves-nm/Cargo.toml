@@ -1,0 +1,28 @@
+[package]
+name = "airwaves-nm"
+description = "Typed zbus proxies for NetworkManager's D-Bus API: the manager, devices, Wi-Fi, access points, active and saved connections."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.91"
+repository = "https://github.com/Bardo-DE/airwaves"
+publish = false
+
+[dependencies]
+zbus = {version = "5.19", default-features = false}
+
+[features]
+# zbus runs on its own executor by default. A tokio program turns `default-features` off and
+# `tokio` on, and zbus then runs on that runtime.
+default = ["async-io"]
+async-io = ["zbus/async-io"]
+tokio = ["zbus/tokio"]
+
+[[test]]
+name = "it"
+path = "tests/it/main.rs"
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+missing_debug_implementations = "warn"

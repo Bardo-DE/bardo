@@ -1,0 +1,77 @@
+[package]
+name = "anyview-platform"
+description = "The platform edge: single instance, media session, thumbnail cache, print, share, reveal and window stacking, each a trait with a Linux implementation and a fake."
+version = "0.1.0-beta.1"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/anyview"
+publish = false
+
+[features]
+# The Linux desktop's services: D-Bus (single instance with bus activation, the media session, the
+# file chooser and print portals, the file manager) and the freedesktop application entries. Opt in:
+# the default build is the traits, the portable implementations and the `testing` fakes, with no zbus.
+# The code behind the feature is also gated on `target_os = "linux"`, so a build for another platform
+# ignores it (quire design/36).
+default = []
+quire-desktop = ["dep:docket-provider", "dep:docket-core", "dep:docket-dbus", "dep:docket-vocab", "dep:docket-manifest", "dep:docket-wire", "dep:porter-ids", "dep:porter-core", "dep:prov", "dep:toml", "dep:zbus", "dep:memfd", "dep:futures-util"]
+# The fakes (`anyview_platform::testing`), for the tests of the crates that consume the traits.
+testing = ["dep:tempfile"]
+
+[dependencies]
+# Capped reads and atomic writes of the thumbnail and cover caches: quire's, shared by the desktop's apps.
+ds-helpers = {default-features = false, path = "../../../quire/crates/ds-helpers"}
+anyview-core = {path = "../anyview-core"}
+anyview-plugin = {path = "../anyview-plugin"}
+anyview-plugin-protocol = {path = "../anyview-plugin-protocol"}
+bayonet = {default-features = false, features = ["host"], path = "../../../bayonet"}
+dirs = {version = "6"}
+ds-core = {path = "../../../quire/crates/ds-core"}
+# The folder scan of Extensions and the file that turns some off; ds-settings without its D-Bus client reads that file.
+ds-extensions = {path = "../../../quire/crates/ds-extensions"}
+ds-settings = {default-features = false, path = "../../../quire/crates/ds-settings"}
+latchkey = {path = "../../../latchkey"}
+log = {version = "0.4"}
+md-5 = {version = "0.10"}
+percent-encoding = {version = "2"}
+png = {version = "0.18"}
+serde_json = {version = "1"}
+tempfile = {version = "3", optional = true}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+# Only a Linux build has a session bus and the freedesktop entries; `quire-desktop` names them.
+[target.'cfg(target_os = "linux")'.dependencies]
+futures-util = {version = "0.3", default-features = false, optional = true}
+memfd = {version = "0.6", optional = true}
+zbus = {version = "5.19", default-features = false, features = ["tokio"], optional = true}
+docket-provider = {features = ["dbus"], optional = true, path = "../../../docket/crates/docket-provider"}
+docket-core = {optional = true, path = "../../../docket/crates/docket-core"}
+docket-dbus = {optional = true, path = "../../../docket/crates/docket-dbus"}
+docket-vocab = {optional = true, path = "../../../docket/crates/docket-vocab"}
+docket-manifest = {optional = true, path = "../../../docket/crates/docket-manifest"}
+docket-wire = {optional = true, path = "../../../docket/crates/docket-wire"}
+prov = {optional = true, path = "../../../prov/prov"}
+porter-core = {optional = true, path = "../../../porter/crates/porter-core"}
+porter-ids = {optional = true, path = "../../../porter/crates/porter-ids"}
+toml = {version = "1", optional = true}
+
+[dev-dependencies]
+# The integration tests use the fakes and, with `quire-desktop`, the private bus behind `testing`.
+anyview-platform = { path = ".", default-features = false, features = ["testing"] }
+tempfile = {version = "3"}
+
+# The agent tests stand in for intentd with a fixture /proc, which docket-dbus reads only with
+# `fixture-callers`: a test build's feature, never a shipped one (check-boundary.sh).
+[target.'cfg(target_os = "linux")'.dev-dependencies]
+docket-dbus = {features = ["fixture-callers"], path = "../../../docket/crates/docket-dbus"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+
+[lints.clippy]
+unwrap_used = "deny"
+wildcard_enum_match_arm = "deny"
+match_wildcard_for_single_variants = "deny"

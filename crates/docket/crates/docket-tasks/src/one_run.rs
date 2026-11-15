@@ -1,0 +1,298 @@
+//! One run at a time. An on-screen run (`cua.run.start`, the `Tier::Cua` way in) holds its window
+//! until it reports back, and a second start only reaches the person as another sheet before the
+//! run daemon refuses it as busy. So a planner that already holds a live run of its own is
+//! refused here, before the call is made: no sheet, no call, and the history says busy, which the
+//! planner is told with the same hint as the daemon's own refusal.
+//!
+//! The runs are counted as they happen ([`LiveRuns`]): a start that was done adds one, a report
+//! from a run that lands (anything but progress) takes one away. The count is not stored, so a
+//! task brought back after a restart holds no run: a report that fell out of the restart window
+//! can never leave it refused for good, and the daemon's own refusal still covers a run that
+//! outlived the restart. Another task's runs are not this task's.
+//!
+//! A start refused this way is not a refusal the planner must reason about: the call is not
+//! made, the history says the task's own run is still going (`Held::Running`), and the turn rests
+//! until that run reports. The report of a run the task started wakes it (`RunEnd::Ours`): the
+//! planner is asked again, whatever the run came to.
+//!
+//! A start that was done rests the turn the same way, at once (`loop_end`): the history keeps it
+//! as done, but the loop is told the call ended held as running, so the planner makes no other
+//! call while the run drives the screen (each would raise a sheet over the run's own window). The
+//! task is asked again when the run reports, or when the person sends it a message.
+
+use crate::task::TaskRuntime;
+use agent_loop::CompletionNote;
+use docket_core::{Held, InboundLine, StepEnd};
+use docket_vocab::ActionRef;
+use prov::{AgentRef, MessageKind, ReportStatus};
+
+/// The app whose runs are on screen.
+const CUA_APP: &str = "org.quire.Cua";
+/// The action that starts one.
+const RUN_START: &str = "cua.run.start";
+
+/// How many runs a task started in this process that have not reported back.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct LiveRuns(u32);
+
+/// Whose run a landed message ended.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RunEnd {
+    /// A run this task started and counted: its report wakes the task.
+    Ours,
+    /// Not a run's last word, or a run this task did not start (or lost count of in a restart).
+    Others,
+}
+
+/// Whether `action` starts a run in an app that has one run at a time.
+fn starts_screen_run(action: &ActionRef) -> bool {
+    action.app.as_str() == CUA_APP && action.name.as_str() == RUN_START
+}
+
+/// Whether `line` is a run's last word: a report from a run that is not progress.
+fn ends_run(line: &InboundLine) -> bool {
+    matches!(line.from.agent, AgentRef::Cua { .. })
+        && matches!(line.kind, MessageKind::Report { status } if status != ReportStatus::Progress)
+}
+
+/// How a call that ended with `end` is told to the loop: a start of a run that was done leaves
+/// the task resting until the run reports, so it reaches the loop as held running; every other
+/// end is told as it is. The history keeps the end as it was.
+pub(crate) fn loop_end(action: &ActionRef, end: StepEnd) -> StepEnd {
+    match end {
+        StepEnd::Done { .. } if starts_screen_run(action) => StepEnd::Held(Held::Running),
+        other => other,
+    }
+}
+
+impl TaskRuntime {
+    /// Whether `action` starts a run while this task already has one live.
+    pub fn holds_run(&self, action: &ActionRef) -> bool {
+        starts_screen_run(action) && self.live_runs != LiveRuns::default()
+    }
+
+    /// Counts a step that just ended: a run start that was done is a live run.
+    pub(crate) fn note_step(&mut self, action: &ActionRef, end: &StepEnd) {
+        if starts_screen_run(action) && matches!(end, StepEnd::Done { .. }) {
+            self.live_runs = LiveRuns(self.live_runs.0.saturating_add(1));
+        }
+    }
+
+    /// Counts a message that just landed: a run's report ends one live run, and says whether it
+    /// was one this task held.
+    pub(crate) fn note_message(&mut self, line: &InboundLine) -> RunEnd {
+        if !ends_run(line) {
+            return RunEnd::Others;
+        }
+        let run = if self.live_runs == LiveRuns::default() {
+            RunEnd::Others
+        } else {
+            RunEnd::Ours
+        };
+        self.live_runs = LiveRuns(self.live_runs.0.saturating_sub(1));
+        run
+    }
+
+    /// Keeps the report of an own run for after the loop's current turn.
+    pub(crate) fn wake_after(&mut self, note: CompletionNote) {
+        self.woken = Some(note);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use docket_core::{InboundLine, StepShown};
+    use docket_vocab::CallId;
+    use prov::{ActionName, Address, Crossing, Effect, MessageId, SpaceId, TaskId, ThreadId};
+
+    fn action(app: &str, name: &str) -> ActionRef {
+        ActionRef {
+            app: porter_core::AppName::parse(app).expect("app"),
+            name: ActionName::parse(name).expect("name"),
+        }
+    }
+
+    fn start() -> ActionRef {
+        action(CUA_APP, RUN_START)
+    }
+
+    fn line(action: ActionRef, end: StepEnd) -> docket_core::StepLine {
+        docket_core::StepLine {
+            call: CallId(0),
+            action,
+            effect: Effect::Read,
+            end,
+            shown: StepShown::Full,
+            with: Vec::new(),
+        }
+    }
+
+    fn done() -> StepEnd {
+        StepEnd::Done {
+            said: None,
+            value: None,
+            undo: None,
+        }
+    }
+
+    fn report(status: ReportStatus, from: AgentRef) -> InboundLine {
+        InboundLine {
+            id: MessageId::parse("m-1").expect("id"),
+            thread: ThreadId::parse("m-1").expect("thread"),
+            to: Address::new(AgentRef::Companion, SpaceId::desktop()),
+            from: Address::new(from, SpaceId::desktop()),
+            crossing: Crossing::Within,
+            kind: MessageKind::Report { status },
+            parts: Vec::new(),
+        }
+    }
+
+    fn cua() -> AgentRef {
+        AgentRef::Cua {
+            run: prov::RunId::parse("r-1").expect("run"),
+        }
+    }
+
+    fn task(history: Vec<docket_core::StepLine>, inbox: Vec<InboundLine>) -> TaskRuntime {
+        let mut rt = TaskRuntime::new(
+            prov::SessionId::parse("s-1").expect("session"),
+            SpaceId::desktop(),
+            AgentRef::Worker {
+                task: TaskId::parse("t-1").expect("task"),
+            },
+            None,
+            prov::UnixSeconds(0),
+        );
+        for step in &history {
+            rt.note_step(&step.action, &step.end);
+        }
+        for message in &inbox {
+            rt.note_message(message);
+        }
+        rt
+    }
+
+    #[test]
+    fn a_report_wakes_the_task_only_for_a_run_it_started() {
+        let mut rt = task(vec![line(start(), done())], vec![]);
+        let table = [
+            (
+                "progress",
+                report(ReportStatus::Progress, cua()),
+                RunEnd::Others,
+            ),
+            (
+                "another sender",
+                report(ReportStatus::Done, AgentRef::Companion),
+                RunEnd::Others,
+            ),
+            (
+                "its run failed",
+                report(ReportStatus::Failed, cua()),
+                RunEnd::Ours,
+            ),
+            (
+                "none left",
+                report(ReportStatus::Done, cua()),
+                RunEnd::Others,
+            ),
+        ];
+        for (name, message, want) in table {
+            assert_eq!(rt.note_message(&message), want, "case {name}");
+        }
+        // A task that started nothing (or lost count in a restart) is not woken by a report.
+        let mut other = task(vec![], vec![]);
+        assert_eq!(
+            other.note_message(&report(ReportStatus::Done, cua())),
+            RunEnd::Others
+        );
+    }
+
+    #[test]
+    fn a_started_run_rests_the_loop_and_nothing_else_does() {
+        let other = action("org.quire.Mail", "mail.thread.archive");
+        let table = [
+            (
+                "a start done",
+                start(),
+                done(),
+                StepEnd::Held(Held::Running),
+            ),
+            (
+                "a start that did not run",
+                start(),
+                StepEnd::Interrupted,
+                StepEnd::Interrupted,
+            ),
+            ("another action done", other, done(), done()),
+            (
+                "another action of the app",
+                action(CUA_APP, "cua.run.stop"),
+                done(),
+                done(),
+            ),
+        ];
+        for (name, action, end, want) in table {
+            assert_eq!(loop_end(&action, end), want, "case {name}");
+        }
+    }
+
+    #[test]
+    fn a_planner_holds_a_run_from_its_start_until_the_run_reports_back() {
+        let started = || line(start(), done());
+        let table = [
+            ("nothing started", task(vec![], vec![]), false),
+            ("a run live", task(vec![started()], vec![]), true),
+            (
+                "a start that did not run",
+                task(vec![line(start(), StepEnd::Interrupted)], vec![]),
+                false,
+            ),
+            (
+                "progress is not the end",
+                task(vec![started()], vec![report(ReportStatus::Progress, cua())]),
+                true,
+            ),
+            (
+                "the run reported done",
+                task(vec![started()], vec![report(ReportStatus::Done, cua())]),
+                false,
+            ),
+            (
+                "the run reported failed, a second is live",
+                task(
+                    vec![started(), started()],
+                    vec![report(ReportStatus::Failed, cua())],
+                ),
+                true,
+            ),
+            (
+                "a report from another sender",
+                task(
+                    vec![started()],
+                    vec![report(ReportStatus::Done, AgentRef::Companion)],
+                ),
+                true,
+            ),
+            (
+                "another action of the app",
+                task(vec![line(action(CUA_APP, "cua.run.stop"), done())], vec![]),
+                false,
+            ),
+        ];
+        for (name, rt, want) in table {
+            assert_eq!(rt.holds_run(&start()), want, "case {name}");
+        }
+        // The check is for the run-start action only, however live the task's run is.
+        let live = task(vec![line(start(), done())], vec![]);
+        assert!(!live.holds_run(&action("org.quire.Mail", "mail.thread.archive")));
+        // Another task has no run of its own: this task's run does not block it.
+        assert!(!task(vec![], vec![]).holds_run(&start()));
+        // A task brought back after a restart has its history but no count: a start whose report
+        // fell out of the restart window does not hold it.
+        let mut restored = task(vec![], vec![]);
+        restored.history = vec![line(start(), done())];
+        assert!(!restored.holds_run(&start()));
+    }
+}

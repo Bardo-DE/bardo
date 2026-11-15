@@ -1,0 +1,56 @@
+# accountd as a systemd user unit: the identities signed in on this computer, Spaces, Tailscale
+# and the AI keys with the permits that let an app use them (org.quire.Accounts1 on the session
+# bus). It is found, and started, by D-Bus activation (dbus/org.quire.Accounts1.service) the first
+# time an app asks which identities there are. Sync's sign-ins are syncd's.
+#
+# accountd talks to the session bus, the Secret Service on it (items under `porter.accountd`),
+# the sheet host (sill) on it, and the network (provider sign-in and revocation, and the check of
+# a new AI key). It reads /proc to know who is calling, so the unit must not hide other processes'
+# cgroups (no ProtectProc, no PrivatePID).
+#
+# The keys inferd held before are copied in when accountd starts, read from inferd's state
+# directory under ProtectHome=read-only (sandbox.conf). accountd never writes there: inferd
+# removes its own old files. A key goes to inferd, and to the launcher's processes, on a sealed
+# memfd, so the unit needs no directory to put a key in.
+[Unit]
+Description=quire identities (org.quire.Accounts1)
+
+[Service]
+# Fixed role (peephole's LOADER_VARIABLES, checked by its `Full` proof): the manager's environment must not reach this unit.
+UnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT GCONV_PATH GIO_EXTRA_MODULES GTK_MODULES GTK_PATH GST_PLUGIN_PATH GST_PLUGIN_SYSTEM_PATH LIBGL_DRIVERS_PATH MESA_LOADER_DRIVER_OVERRIDE __EGL_VENDOR_LIBRARY_DIRS __EGL_VENDOR_LIBRARY_FILENAMES GBM_BACKENDS_PATH LIBVA_DRIVERS_PATH VK_ICD_FILENAMES VK_DRIVER_FILES VK_ADD_DRIVER_FILES VK_LAYER_PATH VK_ADD_LAYER_PATH VK_INSTANCE_LAYERS VK_LOADER_LAYERS_ENABLE
+Type=dbus
+BusName=org.quire.Accounts1
+ExecStart=/usr/libexec/quire/accountd
+Restart=on-failure
+RestartSec=2
+# 78: accountd found a registry file it cannot read and stopped on purpose (it says which files
+# in the journal). Restarting would only repeat that every two seconds, so the unit stays
+# stopped until the person has looked at it.
+RestartPreventExitStatus=78
+KillMode=control-group
+TimeoutStopSec=20
+
+# --- Sandbox ---
+# The keys that need a mount namespace are in the drop-in sandbox.conf (see its header).
+# Unix sockets for the bus, and the internet for the providers.
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+# What accountd writes: the registry (porter/ under $XDG_STATE_HOME), its audit file
+# (quire/accountd/ there) and the user's clients file and caller table (porter/ under
+# $XDG_CONFIG_HOME; Settings writes them through accountd). systemd creates them before the
+# sandbox starts. The rest of the person's files are put out of reach by the mount-namespace keys
+# in sandbox.conf (dist/accountd.service.d).
+StateDirectory=porter quire/accountd
+ConfigurationDirectory=porter
+NoNewPrivileges=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+RestrictSUIDSGID=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+# Files accountd creates are private to it.
+UMask=0077
+
+[Install]
+WantedBy=default.target

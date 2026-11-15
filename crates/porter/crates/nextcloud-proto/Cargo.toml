@@ -1,0 +1,21 @@
+[package]
+name = "nextcloud-proto"
+description = "Nextcloud's own protocol with no IO: Login Flow v2, the OCS capabilities, the app-password revoke and the paths of a server, as requests (http::Request<Vec<u8>>) and parsers over the replies. The WebDAV walk is dav-proto's."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+porter-core = {path = "../porter-core"}
+porter-capability = {path = "../porter-capability"}
+porter-ids = {path = "../porter-ids"}
+http = {version = "1"}
+serde_json = {version = "1"}
+thiserror = {version = "2"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

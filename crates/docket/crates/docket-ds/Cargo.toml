@@ -1,0 +1,32 @@
+[package]
+name = "docket-ds"
+description = "The adapter quire apps use: ds-intents' view marks to and from docket's wire (context chips, things, summon answers), the context source and summon target over ds, and the voice bridge."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+docket-core = {path = "../docket-core"}
+docket-wire = {path = "../docket-wire"}
+docket-manifest = {path = "../docket-manifest"}
+docket-vocab = {path = "../docket-vocab"}
+docket-provider = {path = "../docket-provider"}
+companion-wire = {path = "../companion-wire"}
+voice-wire = {path = "../voice-wire"}
+ds-intents = {path = "../../../quire/crates/ds-intents"}
+prov = {path = "../../../prov/prov"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+docket-permissions-core = {path = "../docket-permissions-core"}
+porter-infer = {path = "../../../steward/crates/porter-infer"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

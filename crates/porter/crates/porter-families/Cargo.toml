@@ -1,0 +1,72 @@
+[package]
+name = "porter-families"
+description = "The registry of the protocol families: DynProvider is porter-provider's Provider as a trait object, the family that serves each provider file, and the small families (an API key, a coding agent that signs itself in, Tailscale). The families with a protocol of their own are porter-family-oauth, -generic and -nextcloud."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/porter"
+publish = false
+
+[dependencies]
+porter-family-kit = {path = "../porter-family-kit"}
+porter-family-nextcloud = {path = "../porter-family-nextcloud", optional = true}
+porter-family-generic = {path = "../porter-family-generic", optional = true}
+porter-family-oauth = {path = "../porter-family-oauth", optional = true}
+porter-core = {path = "../porter-core"}
+porter-capability = {path = "../porter-capability"}
+porter-sheet = {path = "../porter-sheet"}
+porter-ids = {path = "../porter-ids"}
+porter-provider = {path = "../porter-provider"}
+porter-http = {path = "../porter-http"}
+porter-http-reqwest = {path = "../porter-http-reqwest", optional = true}
+porter-discover = {path = "../porter-discover", optional = true}
+porter-tailscale = {path = "../porter-tailscale", optional = true}
+thiserror = {version = "2", optional = true}
+
+[dev-dependencies]
+test-kit = {path = "../test-kit"}
+porter-fake = {path = "../porter-fake"}
+porter-fake-servers = {path = "../porter-fake-servers"}
+tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
+porter-http-reqwest = {path = "../porter-http-reqwest"}
+porter-secrets = {path = "../porter-secrets", features = ["testing"]}
+porter-service = {path = "../porter-service"}
+porter-service-core = {path = "../porter-service-core"}
+porter-service-accounts = {path = "../porter-service-accounts"}
+porter-wire = {path = "../porter-wire"}
+porter-match = {path = "../porter-match"}
+porter-discover = {path = "../porter-discover"}
+porter-oauth = {path = "../porter-oauth", features = ["io"]}
+porter-proxy = {path = "../porter-proxy", features = ["tls"]}
+dav-proto = {path = "../dav-proto"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+base64 = {version = "0.22"}
+
+[features]
+# `set`: which provider files a daemon serves and the family of each (`set::load_specs`,
+# `family_of`, `served`, `FamilyIo`), over every family it maps: nextcloud, generic, oauth,
+# api_key, agent_login and tailnet, with the system resolver.
+set = ["nextcloud", "generic", "oauth", "api_key", "agent_login", "tailnet", "dep:thiserror", "dep:porter-discover", "porter-discover/io", "dep:porter-http-reqwest"]
+# Nextcloud (porter-family-nextcloud): Login Flow v2, OCS discovery, WebDAV, CalDAV, CardDAV, Notes.
+nextcloud = ["dep:porter-family-nextcloud"]
+# Generic IMAP/SMTP and DAV with a password or app password, found by autoconfig
+# (porter-family-generic). The password is tried at the incoming mail server before the account is
+# added (the relay's own login).
+generic = ["dep:porter-family-generic"]
+# OAuth (porter-family-oauth): PKCE through a loopback redirect, one family for every issuer (the
+# rules of Google and Microsoft, and any issuer whose data in porter-provider's `issuers.toml`
+# says who answered). Google: Calendar, People, Tasks, the Drive app folder, Photos, and Gmail
+# IMAP/SMTP XOAUTH2 for a client of the person's own. Microsoft: IMAP/SMTP XOAUTH2 and Graph.
+oauth = ["dep:porter-family-oauth"]
+# AI providers with a pasted API key (Anthropic, OpenAI).
+api_key = ["dep:porter-http-reqwest"]
+# Coding agents that sign themselves in (Claude Code, Gemini CLI, Codex): no credential held.
+agent_login = []
+# Tailscale on this computer: asked over its unix socket, no credential held.
+tailnet = ["dep:porter-tailscale", "porter-tailscale/io"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

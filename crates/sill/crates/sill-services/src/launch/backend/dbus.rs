@@ -1,0 +1,141 @@
+//! The D-Bus half of launching: `org.freedesktop.Application.Activate` for a `DBusActivatable`
+//! entry, and `org.freedesktop.FileManager1.ShowItems` for "Show in Files" (dock Cmd-click).
+
+use std::collections::HashMap;
+
+use sill_model::apps::App;
+use sill_model::launch::{LaunchRequest, SETTINGS_BUS_NAME, SettingsOpen};
+use zbus::Connection;
+use zbus::zvariant::Value;
+
+use super::open::{file_manager, show_items_at};
+use super::uri::file_uri;
+
+/// `org.freedesktop.Application.Activate` on the app's bus name ([`App::bus_name`]: what the
+/// entry declares in `X-Quire-BusNames`, else its desktop id), object path derived from it
+/// (GApplication's own convention: each `.` becomes `/`, each `-` becomes `_`, prefixed with
+/// `/`), with the activation token as `platform_data["desktop-startup-id"]` when one was
+/// granted.
+pub async fn activate(
+    connection: &Connection,
+    app: &App,
+    request: &LaunchRequest,
+) -> zbus::Result<()> {
+    let mut platform_data: HashMap<&str, Value<'_>> = HashMap::new();
+    if let Some(token) = &request.token {
+        platform_data.insert("desktop-startup-id", Value::from(token.as_str()));
+    }
+    connection
+        .call_method(
+            Some(app.bus_name()),
+            object_path(app.bus_name()).as_str(),
+            Some("org.freedesktop.Application"),
+            "Activate",
+            &(platform_data,),
+        )
+        .await?;
+    Ok(())
+}
+
+/// Settings at the place `open` names, with the token that lets Settings take focus. Settings
+/// serves one action for every place, `open-target`, taking the target's own text.
+pub async fn open_settings(connection: &Connection, open: &SettingsOpen) -> zbus::Result<()> {
+    settings_action(
+        connection,
+        OPEN_TARGET,
+        &open.link.to_string(),
+        open.token.as_deref(),
+    )
+    .await
+}
+
+/// Settings' action for a place, by the target's text.
+const OPEN_TARGET: &str = "open-target";
+
+/// One action of Settings with its one string parameter.
+async fn settings_action(
+    connection: &Connection,
+    action: &str,
+    target: &str,
+    token: Option<&str>,
+) -> zbus::Result<()> {
+    let mut platform_data: HashMap<&str, Value<'_>> = HashMap::new();
+    if let Some(token) = token {
+        platform_data.insert("activation-token", Value::from(token));
+    }
+    connection
+        .call_method(
+            Some(SETTINGS_BUS_NAME),
+            object_path(SETTINGS_BUS_NAME).as_str(),
+            Some("org.freedesktop.Application"),
+            "ActivateAction",
+            &(action, vec![Value::from(target)], platform_data),
+        )
+        .await?;
+    Ok(())
+}
+
+/// `org.freedesktop.FileManager1.ShowItems([file:// URI of the entry's own .desktop file], "")`,
+/// to the file manager a reveal asks (the desktop's own Files first). The URI is
+/// percent-encoded (a space or `#` in the path would otherwise break it).
+pub async fn show_in_files(connection: &Connection, app: &App) -> zbus::Result<()> {
+    let Some(name) = file_manager(connection).await? else {
+        return Ok(());
+    };
+    show_items_at(connection, name, vec![file_uri(&app.path)], "").await
+}
+
+/// `/` followed by `id` with every `.` turned into `/` and every `-` into `_` (D-Bus object
+/// paths may not contain `-`): the object path a `DBusActivatable` entry's own id maps to.
+fn object_path(id: &str) -> String {
+    let mut path = String::with_capacity(id.len() + 1);
+    path.push('/');
+    for c in id.chars() {
+        path.push(match c {
+            '.' => '/',
+            '-' => '_',
+            other => other,
+        });
+    }
+    path
+}
+
+#[cfg(test)]
+mod tests {
+    use std::path::Path;
+
+    use super::{file_uri, object_path};
+
+    #[test]
+    fn a_desktop_files_uri_is_percent_encoded() {
+        const CASES: &[(&str, &str)] = &[
+            (
+                "/usr/share/applications/org.mozilla.firefox.desktop",
+                "file:///usr/share/applications/org.mozilla.firefox.desktop",
+            ),
+            (
+                "/home/p/.local/share/applications/My App.desktop",
+                "file:///home/p/.local/share/applications/My%20App.desktop",
+            ),
+            (
+                "/home/p/apps/c#-ide.desktop",
+                "file:///home/p/apps/c%23-ide.desktop",
+            ),
+        ];
+        for (path, want) in CASES {
+            assert_eq!(file_uri(Path::new(path)), *want, "{path}");
+        }
+    }
+
+    #[test]
+    fn object_paths_replace_dots_and_dashes() {
+        const CASES: &[(&str, &str)] = &[
+            ("org.mozilla.firefox", "/org/mozilla/firefox"),
+            ("foot", "/foot"),
+            ("spotify-launcher", "/spotify_launcher"),
+        ];
+        for (id, want) in CASES {
+            assert_eq!(object_path(id), *want, "{id}");
+        }
+    }
+}

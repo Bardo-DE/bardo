@@ -1,0 +1,86 @@
+//! The companion's task model, portable: one identity over many tasks. It owns the front pointer
+//! (the task the launcher returns to), the roster, the side-conversation tracker and the idle
+//! pass; each task is its own docket session, with its own taint, budget and task policy, opened
+//! through `Intents1` in the role `companion`. The pure machines are `agent-loop`'s; this crate
+//! carries their effects out against a router link, a `Planner`, a clock and a surface.
+//!
+//! companiond is the bus adapter over it (the system clock, a surface that fans changes out on
+//! the bus); `docket-inapp` hosts it in one app with the app's own clock and a quiet surface. No
+//! bus, no runtime: a crate that needs to wait gets a future from its surface.
+//!
+//! - [`Companion`]: the runtime and the entry points a host calls.
+//! - [`Surface`], [`Quiet`]: the seam beyond the link, the model and the clock.
+//! - [`Shared`], [`Change`]: what a surface reads without waiting for the loop.
+//! - [`RecentSource`], [`recover`], [`replay_of`]: restart, from what the eventlog holds, read
+//!   through `Recent` with `BodyMode::Json`.
+//! - [`RouterLog`]: the stored sessions read through `Session.Stored` (`docket-native` is the
+//!   durable-session backend over them).
+//! - [`primer_of`], [`profile_of`], [`hits_of`], [`episodes_of`], [`answer_read`]: the router's
+//!   memory and reader, one step at a time, for any smaller agent built on the same machines.
+//! - [`Tap`]: how a turn is told as it runs and a call is held at its gate.
+//! - [`completion_effects`]: how a finished worker or run reaches the front task.
+
+mod act;
+mod adopt;
+mod best_effort;
+mod choices;
+mod compaction;
+mod completion;
+mod deadline;
+mod desk;
+mod drive;
+mod fault;
+mod finish;
+mod handoff;
+mod held;
+mod helpers;
+mod idle;
+mod inbox;
+mod linger;
+mod memory;
+mod one_run;
+mod plan;
+mod prefetch;
+mod read;
+mod records;
+mod recover;
+mod resume;
+mod router_log;
+mod run_ends;
+mod runtime;
+mod seams;
+mod shared;
+mod sources;
+mod stored_roster;
+mod tap;
+mod task;
+mod voices;
+
+pub use act::{Acting, card_id};
+pub use completion::completion_effects;
+pub use desk::{
+    HelperDesk, Pending, PostFromPerson, PostFromPlanner, Proposal, RoutineAsk, RoutineFor,
+    SayFromPerson,
+};
+pub use drive::{MOST_TASK_DEPTH, refusal_of};
+pub use fault::ServeFault;
+pub use handoff::Handoff;
+pub use helpers::{conversation_voice, helper_query, helper_records_of, open_options, role_text};
+pub use memory::{episodes_of, hits_of, primer_of, profile_of};
+pub use one_run::LiveRuns;
+pub use read::answer_read;
+pub use recover::{
+    RecentSource, ReplayFault, RouterRecent, rebuild_from, recent_events, recover, replay_of,
+    restart_query,
+};
+pub use resume::Restarted;
+pub use router_log::RouterLog;
+pub use run_ends::report_end;
+pub use runtime::{Begun, Companion, idle_state};
+pub use seams::{Quiet, Surface};
+pub use shared::{Change, Shared};
+pub use sources::nowhere;
+pub use stored_roster::{events_of, stored_events};
+pub use tap::{Go, NoTap, Tap};
+pub use task::{Failure, TaskRuntime, kept_all};
+pub use voices::Voices;

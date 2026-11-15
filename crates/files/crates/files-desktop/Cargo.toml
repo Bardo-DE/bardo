@@ -1,0 +1,58 @@
+[package]
+name = "files-desktop"
+description = "How files meets the desktop: the file manager service, its actions for agents, UDisks2 disks, one running instance, and opening files with apps."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/files"
+publish = false
+
+[features]
+# `FakeSpawn`, `FakeActivate` and `FakeUsers`, for tests of the crates above.
+testing = []
+
+[dependencies]
+docket-wire = {path = "../../../docket/crates/docket-wire"}
+docket-manifest = {path = "../../../docket/crates/docket-manifest"}
+docket-vocab = {path = "../../../docket/crates/docket-vocab"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+docket-provider = {features = ["dbus"], path = "../../../docket/crates/docket-provider"}
+docket-core = {path = "../../../docket/crates/docket-core"}
+docket-dbus = {path = "../../../docket/crates/docket-dbus"}
+ds-helpers = {default-features = false, path = "../../../quire/crates/ds-helpers"}
+files-core = {path = "../files-core"}
+files-fs = {path = "../files-fs"}
+futures-util = {version = "0.3", default-features = false, features = ["std"]}
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-dbus = {path = "../../../porter/crates/porter-dbus"}
+ferry-bus = {path = "../../../ferry/crates/ferry-bus"}
+prov = {path = "../../../prov/prov"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process"]}
+toml = {version = "1"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+
+[dev-dependencies]
+files-desktop = { path = ".", features = ["testing"] }
+files-fs = {path = "../files-fs", features = ["testing"]}
+# Porter's fake Storage1, served on the tests' private bus (test tooling, never shipped).
+syncd-fakes = {path = "../../../ferry/crates/syncd-fakes"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+tempfile = {version = "3"}
+
+[[test]]
+name = "it"
+path = "tests/it/main.rs"
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"
+missing_docs = "warn"
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+wildcard_enum_match_arm = "deny"
+match_wildcard_for_single_variants = "deny"

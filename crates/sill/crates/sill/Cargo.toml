@@ -1,0 +1,70 @@
+[package]
+name = "sill"
+description = "The sill daemon and command line."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.91"
+repository = "https://github.com/Bardo-DE/sill"
+publish = false
+
+[dependencies]
+sill-model = {path = "../sill-model"}
+prov = {path = "../../../prov/prov"}
+clap = {version = "4", features = ["derive"]}
+ds-lint = {path = "../../../quire/crates/ds-lint"}
+ds-blitz = {path = "../../../quire/crates/ds-blitz"}
+ds = {path = "../../../quire/crates/ds"}
+ds-core = {path = "../../../quire/crates/ds-core"}
+ds-settings = {path = "../../../quire/crates/ds-settings", features = ["tokio"]}
+ds-extensions = {path = "../../../quire/crates/ds-extensions"}
+notify = {version = "8.2"}
+sill-shell-kit = {path = "../sill-shell-kit"}
+latchkey = {path = "../../../latchkey"}
+shell-host = {path = "../../../shell-host/crates/shell-host"}
+shell-verbs = {path = "../../../casement-protocols/shell-verbs"}
+sill-ipc = {path = "../sill-ipc", features = ["cli"]}
+sill-launcher = {path = "../sill-launcher"}
+sill-search = {path = "../sill-search"}
+sill-services = {path = "../sill-services"}
+sill-settings = {path = "../sill-settings"}
+sill-ui-kit = {path = "../sill-ui-kit"}
+sill-bar = {path = "../sill-bar"}
+sill-launcher-ui = {path = "../sill-launcher-ui", default-features = false}
+sill-dock = {path = "../sill-dock"}
+sill-notify-ui = {path = "../sill-notify-ui"}
+sill-overlays = {path = "../sill-overlays"}
+thiserror = {version = "2"}
+rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
+serde = {version = "1", features = ["derive"]}
+toml = {version = "1"}
+
+[dev-dependencies]
+serde_json = {version = "1"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+voice-wire = {path = "../../../docket/crates/voice-wire"}
+ds-harness = {path = "../../../quire/crates/ds-harness"}
+sill-testkit = {path = "../sill-testkit"}
+# `tests/lint.rs` mounts every surface on the harness and lints its markup and stylesheet.
+sill-ui-kit = {path = "../sill-ui-kit", features = ["harness"]}
+# The key a `debug key` request parses to (dispatch/debug/inject.rs tests).
+keyboard-types = {version = "0.7"}
+# A Space's id in the full-screen rows (edge_reveal.rs tests).
+porter-core = {path = "../../../porter/crates/porter-core"}
+# The voice bench shared with sill-services' tests names who its stand-in voiced is.
+peephole-bus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../../peephole/peephole-bus"}
+
+[features]
+default = ["media"]
+# The launcher's preview pane reads a recording's facts and an audio cover (anyview-peek's `media`,
+# pure-Rust header parsers). `--no-default-features` leaves them out of the daemon.
+media = ["sill-launcher-ui/media"]
+# `sill debug pointer|leave|capture|key` act on surfaces (shell-host's per-surface injection).
+# Without it those requests answer `Failed(Unsupported)`; `debug stats` always works. It also gives
+# `sill run` the stand-in flags (`--fake-ddc`, `--dev-callers`, ...); a release build has none.
+debug = ["shell-host/debug-inject", "sill-services/dev-callers"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

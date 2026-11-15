@@ -1,0 +1,55 @@
+/* Table (design/30 section 2.6, `NSTableView`). Attribute selectors carry `*|` (spike S2). The
+   header and every row lay their cells on the grid `--table-cols` the root carries, so a resize
+   moves one number and every row follows. No row is striped; the header is `--row-compact-h` high with no line under it (design/34-MODERN-LOOK.md section 3.5; the
+   line that appears once the content scrolls is the scroll-edge of step 2) and a
+   column's title darkens under the pointer (the one hover a table shows). The edge between two
+   headers is a 6 px drag zone with the resize cursor and a hairline at its middle. */
+
+.ds-table{ --table-cols:1fr; display:flex; flex-direction:column; min-width:0; }
+.ds-table-header{
+  display:grid; grid-template-columns:var(--table-cols); align-items:stretch; flex:none; height:var(--row-compact-h);
+  position:relative;
+}
+.ds-table-column{
+  display:flex; align-items:center; gap:var(--s-4); min-width:0; padding:0 var(--s-8); border:0; background:transparent;
+  justify-content:flex-start; font:inherit; font-size:var(--fs-help); font-weight:600; color:var(--ink-soft); text-align:start; cursor:default;
+}
+.ds-table-column[*|data-align=trailing]{ justify-content:flex-end; }
+.ds-table-column[*|data-align=center]{ justify-content:center; }
+.ds-table-column:hover{ color:var(--ink); }
+.ds-table-column[*|aria-disabled=true]:hover{ color:var(--ink-soft); }
+.ds-table-column[*|aria-sort=ascending],
+.ds-table-column[*|aria-sort=descending]{ color:var(--ink); }
+.ds-table-sort{ display:inline-flex; flex:none; line-height:0; color:var(--ink-faint); }
+.ds-table-title{ min-width:0; overflow:hidden; white-space:nowrap; }
+
+.ds-table-head{ position:relative; display:flex; min-width:0; }
+.ds-table-head > .ds-table-column{ flex:1 1 auto; }
+.ds-table-resize{ position:absolute; top:0; bottom:0; right:-3px; width:6px; z-index:var(--z-raise); cursor:ew-resize; }
+.ds-table-resize::after{ content:""; position:absolute; top:5px; bottom:5px; left:3px; width:var(--hair); background:var(--line); }
+
+.ds-table-cells{ display:grid; grid-template-columns:var(--table-cols); align-items:center; flex:1 1 auto; min-width:0; }
+.ds-table-cell{ min-width:0; padding:0 var(--s-8); }
+/* A trailing cell (numbers, sizes, dates) does not fade: `.ds-truncate`'s fade covers its last 1.5em
+   even when the text fits, and end-aligned text always ends there. Overflow still clips. */
+.ds-table-cell[*|data-align=trailing]{ text-align:end; mask-image:none; }
+.ds-table-cell[*|data-align=center]{ text-align:center; mask-image:none; }
+.ds-table .ds-row{ min-height:var(--row-compact-h); padding:0; }
+.ds-table .ds-row-words{ display:flex; flex-direction:row; }
+
+/* Column rules (`ColumnRules::Hairline`, Numbers): a hairline between each cell and the next, the
+   full row high, and the header's drag-edge line drawn the header's whole height. */
+.ds-table[*|data-rules=hairline] .ds-row{ align-items:stretch; }
+.ds-table[*|data-rules=hairline] .ds-row-words{ align-self:stretch; }
+.ds-table[*|data-rules=hairline] .ds-table-cells{ align-items:stretch; }
+.ds-table[*|data-rules=hairline] .ds-table-cell{ display:flex; align-items:center; }
+.ds-table[*|data-rules=hairline] .ds-table-cell > *{ min-width:0; overflow:hidden; white-space:nowrap; }
+.ds-table[*|data-rules=hairline] .ds-table-cell[*|data-align=trailing]{ justify-content:flex-end; }
+.ds-table[*|data-rules=hairline] .ds-table-cell[*|data-align=center]{ justify-content:center; }
+.ds-table[*|data-rules=hairline] .ds-table-cell + .ds-table-cell{ border-left:var(--hair) solid var(--line); }
+.ds-table[*|data-rules=hairline] .ds-table-resize::after{ top:0; bottom:0; }
+
+/* Header rule (`HeaderRule::WhenScrolled`, Finder): a hairline under the header once the rows have
+   scrolled beneath it. */
+.ds-table-header::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:var(--hair); background:var(--line); opacity:0; pointer-events:none; }
+.ds-table[*|data-scrolled=yes] .ds-table-header::after{ opacity:1; }

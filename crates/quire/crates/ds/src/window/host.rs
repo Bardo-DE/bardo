@@ -1,0 +1,169 @@
+//! The host seam a window frame drives (FINDINGS "Window frame"). `ds` stays renderer-free: it
+//! names what a client-decorated window asks of its platform, and each host fills it in —
+//! ds-blitz over the winit window `launch` opens (`ds_blitz::window`), sill over shell-host's
+//! `SurfaceHandle` (`begin_move`, `begin_resize(edge)`, `set_maximized`, `use_toplevel_state`).
+//! A trait: each host holds its own window handle, and a test's stub records what it was asked.
+//!
+//! The host is provided as [`WindowHost`] context, which also carries the last [`WindowState`]
+//! as a signal, so the frame redraws when the window is zoomed or loses the keyboard. The host
+//! pushes a change with [`WindowHost::refresh`] (re-read its own `state`) or
+//! [`WindowHost::publish`] (a state it was told, as an xdg configure).
+
+use super::icon::WindowIcon;
+use super::tiled::Tiled;
+use super::vocab::{PageZoom, ResizeEdge, TileError, WindowState, WindowTile, Zoom};
+use dioxus::prelude::*;
+use std::rc::Rc;
+
+/// What a client-decorated window asks of its platform. Every request is fire-and-forget: the
+/// compositor answers with a configure (a new size, a new state), which the host reports through
+/// [`WindowHost::refresh`] or [`WindowHost::publish`].
+pub trait HostWindow {
+    /// Start an interactive move with the pointer button that is down now. Call it while the
+    /// button is still held: Wayland's `xdg_toplevel.move` needs the press's serial.
+    fn begin_move(&self);
+    /// Start an interactive resize from `edge` with the pointer button that is down now.
+    fn begin_resize(&self, edge: ResizeEdge);
+    /// Maximize, restore or toggle between the two.
+    fn zoom(&self, zoom: Zoom);
+    /// Minimize (a Wayland client cannot un-minimize itself).
+    fn minimize(&self);
+    /// Close the window, as the compositor's close would.
+    fn close(&self);
+    /// Place the window: [`WindowTile::Fill`] maximizes; the others need a client that can
+    /// place itself, and answer [`TileError::Unsupported`] where it cannot.
+    fn tile(&self, tile: WindowTile) -> Result<(), TileError>;
+    /// Whether [`HostWindow::tile`] would place the window there, asked before the menu offers it.
+    fn supports(&self, tile: WindowTile) -> bool;
+    /// The window's state now.
+    fn state(&self) -> WindowState;
+    /// Change the window's title, the name the compositor shows in its switcher and task list.
+    /// A host with no such name keeps the default and ignores it.
+    fn set_title(&self, _title: &str) {}
+    /// Change the window's icon, where the platform takes one from the window (X11 and Windows; macOS
+    /// takes the dock icon from the app bundle). A host with no such icon (Wayland reads it from the app's desktop entry) keeps the
+    /// default and ignores it.
+    fn set_icon(&self, _icon: &WindowIcon) {}
+    /// The edges the compositor has tiled; a host that cannot tell keeps the default, none.
+    fn tiled(&self) -> Tiled {
+        Tiled::NONE
+    }
+    /// Zoom the page one step, or back to its own size. A host that draws at one size ignores it.
+    fn page_zoom(&self, _step: PageZoom) {}
+}
+
+/// The host's window, as root context: the seam and its last reported state.
+#[derive(Clone)]
+pub struct WindowHost {
+    host: Rc<dyn HostWindow>,
+    state: Signal<WindowState>,
+    tiled: Signal<Tiled>,
+}
+
+impl std::fmt::Debug for WindowHost {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("WindowHost")
+            .field("state", &*self.state.peek())
+            .finish_non_exhaustive()
+    }
+}
+
+impl WindowHost {
+    /// Wrap `host`, reading its state once. Call it inside a component (the state is a signal
+    /// the calling scope owns); [`use_window_host_provider`] does and provides it.
+    pub fn new(host: Rc<dyn HostWindow>) -> Self {
+        let state = Signal::new(host.state());
+        let tiled = Signal::new(host.tiled());
+        WindowHost { host, state, tiled }
+    }
+
+    /// The seam.
+    pub fn host(&self) -> &dyn HostWindow {
+        self.host.as_ref()
+    }
+
+    /// The last reported state; a component that reads it redraws when it changes.
+    pub fn state(&self) -> WindowState {
+        (self.state)()
+    }
+
+    /// The last reported tiled edges; a component that reads it redraws when they change.
+    pub fn tiled(&self) -> Tiled {
+        (self.tiled)()
+    }
+
+    /// Report the tiled edges a compositor configure named. Writes only a change.
+    pub fn publish_tiled(&self, tiled: Tiled) {
+        let mut signal = self.tiled;
+        if *signal.peek() != tiled {
+            signal.set(tiled);
+        }
+    }
+
+    /// Retitle the window, as the app asks after launch.
+    pub fn set_title(&self, title: &str) {
+        self.host.set_title(title);
+    }
+
+    /// Change the window's icon, as the app asks after launch.
+    pub fn set_icon(&self, icon: &WindowIcon) {
+        self.host.set_icon(icon);
+    }
+
+    /// Zoom the page one step, or back to its own size, as the app's Bigger, Smaller and Actual
+    /// Size ask.
+    pub fn page_zoom(&self, step: PageZoom) {
+        self.host.page_zoom(step);
+    }
+
+    /// Re-read the host's own state, after a window event that may have changed it (a resize, a
+    /// focus change).
+    pub fn refresh(&self) {
+        self.publish(self.host.state());
+        self.publish_tiled(self.host.tiled());
+    }
+
+    /// Report `state`, as a host told it by its compositor does. Writes only a change.
+    pub fn publish(&self, state: WindowState) {
+        let mut signal = self.state;
+        if *signal.peek() != state {
+            signal.set(state);
+        }
+    }
+}
+
+/// Provide `host` to the calling component's subtree, once. ds-blitz's `launch` does this for
+/// its winit window; sill does it for a shell-host surface; a test does it with a stub.
+pub fn use_window_host_provider(host: impl FnOnce() -> Rc<dyn HostWindow>) -> WindowHost {
+    use_context_provider(|| WindowHost::new(host()))
+}
+
+/// The enclosing host's window, if there is one (none in an SSR render or a shell
+/// surface that has not provided one).
+pub fn use_window_host() -> Option<WindowHost> {
+    try_use_context::<WindowHost>()
+}
+
+/// The window's state, redrawn on every change the host reports; the default (its own size,
+/// not fullscreen, active) with no host.
+pub fn use_window_state() -> WindowState {
+    use_window_host().map_or_else(WindowState::default, |host| host.state())
+}
+
+/// Keep the window's title at `title`: set when the window first draws and again each time
+/// `title` changes. Does nothing with no host.
+pub fn use_window_title(title: impl Into<String>) {
+    let title = title.into();
+    let host = use_window_host();
+    use_effect(use_reactive!(|title| {
+        if let Some(host) = host.as_ref() {
+            host.set_title(&title);
+        }
+    }));
+}
+
+/// The edges the window is tiled on, redrawn on every change the host reports; none with no
+/// host.
+pub fn use_window_tiled() -> Tiled {
+    use_window_host().map_or(Tiled::NONE, |host| host.tiled())
+}

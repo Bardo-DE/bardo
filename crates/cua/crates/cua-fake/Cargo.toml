@@ -1,0 +1,42 @@
+[package]
+name = "cua-fake"
+description = "Test support for cua: a fake agent seat, an in-process EIS server, scripted capture, desktop, accessibility tree, model, gate and event sinks, and the harness that drives a run over them."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/cua"
+publish = false
+
+[dependencies]
+docket-gate-wire = {path = "../../../docket/crates/docket-gate-wire"}
+docket-wire = {path = "../../../docket/crates/docket-wire"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+cua-action = {path = "../../../stoker/crates/cua-action"}
+cua-desktop = {path = "../cua-desktop"}
+maskcap = {path = "../maskcap"}
+seat-input = {path = "../seat-input"}
+a11y-tree = {path = "../a11y-tree"}
+cua-bus = {path = "../cua-bus"}
+cua-run = {path = "../cua-run"}
+docket-core = {path = "../../../docket/crates/docket-core"}
+prov = {path = "../../../prov/prov"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+porter-infer = {path = "../../../steward/crates/porter-infer"}
+model-replay = {path = "../../../stoker/crates/model-replay"}
+model-provider = {path = "../../../stoker/crates/model-provider"}
+cua-parse = {path = "../../../stoker/crates/cua-parse"}
+reis = {version = "0.7"}
+rustix = {version = "1.1", default-features = false, features = ["std", "fs"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+serde_json = {version = "1"}
+toml = {version = "1"}
+thiserror = {version = "2"}
+
+[dev-dependencies]
+docket-permissions-core = {path = "../../../docket/crates/docket-permissions-core"}
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

@@ -1,0 +1,30 @@
+[package]
+name = "docket-provider"
+description = "The app side of org.quire.Intents1: the IntentProvider, ContextSource and SummonTarget traits an app implements, and (behind the dbus feature) serve and serve_on, which answer org.quire.IntentProvider1 on the app's own bus name. The caller side is docket-client."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/docket"
+publish = false
+
+[dependencies]
+docket-core = {path = "../docket-core"}
+docket-wire = {path = "../docket-wire"}
+docket-manifest = {path = "../docket-manifest"}
+docket-vocab = {path = "../docket-vocab"}
+docket-dbus = {path = "../docket-dbus", optional = true}
+futures-util = {version = "0.3", default-features = false, features = ["std"], optional = true}
+prov = {path = "../../../prov/prov"}
+serde = {version = "1", features = ["derive"], optional = true}
+serde_json = {version = "1", optional = true}
+thiserror = {version = "2"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"], optional = true}
+
+[features]
+# `serve` and `serve_on`: the provider on the session bus (Linux, the desktop's intentd calls it).
+dbus = ["dep:docket-dbus", "dep:futures-util", "dep:serde", "dep:serde_json", "dep:zbus"]
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

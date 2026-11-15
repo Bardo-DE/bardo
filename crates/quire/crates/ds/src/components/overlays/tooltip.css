@@ -1,0 +1,9 @@
+/* Tooltip (design/30 section 2.5, `NSToolTip`): one line on the popover's surface, below its
+   target, opened by the Tip profile through the hover hub (1 s cold, at once while the hub is
+   warm) and gone the moment the pointer leaves. It fades in and out over `--t-quick`, no
+   spring (design/30 section 1.3). The text follows the shell scale's tip size. A dock label
+   (`ds-dock-label`, the shell's sheet) is the same hint above its target. */
+
+.ds-popover.ds-tooltip{ width:auto; max-width:260px; padding:var(--s-3) var(--s-8); font-size:var(--fs-shell-tip); border-radius:var(--r-item);
+  animation:fade var(--t-quick) var(--e-out); pointer-events:none; }
+.ds-popover.ds-tooltip[*|data-presence=leaving]{ animation:menu-out var(--t-quick) var(--e-exit) forwards; }

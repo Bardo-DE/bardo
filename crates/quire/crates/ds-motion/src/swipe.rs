@@ -1,0 +1,283 @@
+//! Swipe to dismiss as a pure machine (design/13 section 13.3.6 "Swipe right to
+//! dismiss"): a pointer drag moves the card 1:1 to the right and a quarter of the distance to
+//! the left; released past the distance or the speed threshold it flies out to the right from
+//! where it is, and under both it springs back. A horizontal scroll (a touchpad, a mouse's
+//! tilt wheel) is summed into the same offset and decided the same way once the deltas stop,
+//! since Blitz carries no scroll phase: each delta moves the quiet deadline, and the machine's wake
+//! at that deadline is the decision.
+//!
+//! [`SwipeState`] is a `Machine`: it decides, and `use_swipe` runs it and draws the offset.
+
+use ds_core::geometry::units::Px;
+use ds_core::machine::{Elapsed, Machine};
+use ds_core::time::stamp::Stamp;
+use ds_core::vocab::Fraction;
+use ds_core::word::Word;
+use ds_style::tokens::delay::DelayToken;
+use std::time::Duration;
+
+/// A speed in logical pixels per second.
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Default)]
+pub struct Speed(pub f32);
+
+/// The swipe's thresholds (`notifications.swipe_dismiss_px`, `swipe_dismiss_velocity_px_s`,
+/// `swipe_damping`).
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct SwipeMetrics {
+    /// How far right a release must be to dismiss, 80.
+    pub dismiss: Px,
+    /// How fast rightwards a release must be moving to dismiss, 600 px/s.
+    pub velocity: Speed,
+    /// How much of a leftward drag the card follows, 250 (a quarter).
+    pub damping: Fraction,
+}
+
+impl Default for SwipeMetrics {
+    /// The keys' defaults (design/22 section 3.12).
+    fn default() -> Self {
+        SwipeMetrics {
+            dismiss: Px(80.0),
+            velocity: Speed(600.0),
+            damping: Fraction(250),
+        }
+    }
+}
+
+/// How far a press may move and still be a press, not a drag (the pull tab's 3 px).
+const TAP_SLOP: f32 = 3.0;
+
+/// One pointer position along the swipe, and when.
+#[derive(Debug, Clone, Copy, PartialEq)]
+struct Sample {
+    x: Px,
+    at: Stamp,
+}
+
+/// What moves the card.
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum Source {
+    /// Nothing: the card rests at its offset (0, or springing back to it).
+    Idle,
+    /// A pointer that went down at `from`; the last two positions give the release speed.
+    Pointer {
+        from: Px,
+        last: Sample,
+        before: Option<Sample>,
+    },
+    /// Scroll deltas, summed into `raw` (undamped); no delta by `quiet_until` decides them.
+    Scroll { raw: Px, quiet_until: Stamp },
+    /// Released or scrolled past a threshold: flying out from the offset it had.
+    Gone,
+}
+
+/// Where a card is in a swipe: what moves it, how far it is off its place, and whether the next
+/// click ends a drag (swallowed, so a swipe never also opens the notification) or is a press.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct SwipeState {
+    source: Source,
+    offset: Px,
+    swallows_click: bool,
+}
+
+impl Default for SwipeState {
+    fn default() -> Self {
+        SwipeState {
+            source: Source::Idle,
+            offset: Px(0.0),
+            swallows_click: false,
+        }
+    }
+}
+
+/// What happened to a card.
+#[derive(Debug, Clone, Copy, PartialEq)]
+#[non_exhaustive]
+pub enum SwipeInput {
+    /// The pointer went down at `x`.
+    Down { x: Px },
+    /// The pointer moved to `x` with the button down.
+    Move { x: Px },
+    /// The pointer was released (or left the card, or a move came with no button down).
+    Up,
+    /// A scroll delta: `dx` rightwards and `dy` downwards, in pixels.
+    Scroll { dx: Px, dy: Px },
+    /// A click was heard: the next one passes again.
+    Clicked,
+    /// The quiet spell after the last scroll delta has run out.
+    Elapsed,
+}
+
+impl From<Elapsed> for SwipeInput {
+    fn from(_: Elapsed) -> Self {
+        SwipeInput::Elapsed
+    }
+}
+
+/// What the hook does after a step.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[non_exhaustive]
+pub enum SwipeEffect {
+    /// The card is dismissed: it flies out to the right from its offset.
+    Dismiss,
+}
+
+/// How the offset is drawn: following the input with no transition, or easing to where it is.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
+pub enum SwipeLook {
+    /// At rest or springing back to rest: the offset eases (`--t-move --e-out`).
+    Rest,
+    /// Following a pointer or a scroll: no transition.
+    Live,
+    /// Dismissed: flying out.
+    Gone,
+}
+
+impl SwipeState {
+    /// How far right of its place the card is drawn (negative: left).
+    pub fn offset(&self) -> Px {
+        self.offset
+    }
+
+    /// How the offset is drawn.
+    pub fn look(&self) -> SwipeLook {
+        match self.source {
+            Source::Idle => SwipeLook::Rest,
+            Source::Pointer { .. } | Source::Scroll { .. } => SwipeLook::Live,
+            Source::Gone => SwipeLook::Gone,
+        }
+    }
+
+    /// Whether the next click ends a drag and is not a press.
+    pub fn swallows_click(&self) -> bool {
+        self.swallows_click
+    }
+}
+
+impl Machine for SwipeState {
+    type In = SwipeInput;
+    type Out = SwipeEffect;
+    type Params = SwipeMetrics;
+    type Ctx = ();
+
+    fn step(
+        self,
+        input: SwipeInput,
+        at: Stamp,
+        metrics: &SwipeMetrics,
+        _: &(),
+    ) -> (Self, Vec<SwipeEffect>) {
+        let none = |state| (state, Vec::new());
+        match (self.source, input) {
+            (_, SwipeInput::Clicked) => none(SwipeState {
+                swallows_click: false,
+                ..self
+            }),
+            (Source::Gone, _) => none(self),
+            (Source::Idle | Source::Scroll { .. }, SwipeInput::Down { x }) => none(SwipeState {
+                source: Source::Pointer {
+                    from: x,
+                    last: Sample { x, at },
+                    before: None,
+                },
+                offset: Px(0.0),
+                swallows_click: false,
+            }),
+            (Source::Pointer { from, last, .. }, SwipeInput::Move { x }) => {
+                let raw = Px(x.0 - from.0);
+                let moved = (raw.0.abs() >= TAP_SLOP) || self.swallows_click;
+                none(SwipeState {
+                    source: Source::Pointer {
+                        from,
+                        last: Sample { x, at },
+                        before: Some(last),
+                    },
+                    offset: shaped(raw, *metrics),
+                    swallows_click: moved,
+                })
+            }
+            (Source::Pointer { last, before, .. }, SwipeInput::Up) => {
+                let speed = release_speed(last, before, at);
+                self.decide(speed, *metrics)
+            }
+            (Source::Idle | Source::Scroll { .. }, SwipeInput::Scroll { dx, dy }) => {
+                if dx.0.abs() <= dy.0.abs() {
+                    return none(self);
+                }
+                let raw = match self.source {
+                    Source::Scroll { raw, .. } => Px(raw.0 + dx.0),
+                    _ => dx,
+                };
+                none(SwipeState {
+                    source: Source::Scroll {
+                        raw,
+                        quiet_until: at.after_span(DelayToken::SwipeQuiet.delay()),
+                    },
+                    offset: shaped(raw, *metrics),
+                    swallows_click: self.swallows_click,
+                })
+            }
+            (Source::Scroll { quiet_until, .. }, SwipeInput::Elapsed) if at >= quiet_until => {
+                self.decide(Speed(0.0), *metrics)
+            }
+            (Source::Idle | Source::Scroll { .. } | Source::Pointer { .. }, _) => none(self),
+        }
+    }
+
+    fn wake(&self) -> Option<Stamp> {
+        match self.source {
+            Source::Scroll { quiet_until, .. } => Some(quiet_until),
+            Source::Idle | Source::Pointer { .. } | Source::Gone => None,
+        }
+    }
+}
+
+impl SwipeState {
+    /// The end of a gesture moving at `speed`: past a threshold it is dismissed from where it
+    /// is; under both it springs back to its place.
+    fn decide(self, speed: Speed, metrics: SwipeMetrics) -> (Self, Vec<SwipeEffect>) {
+        let far = self.offset.0 >= metrics.dismiss.0;
+        let fast = self.offset.0 > 0.0 && speed.0 >= metrics.velocity.0;
+        if far || fast {
+            let gone = SwipeState {
+                source: Source::Gone,
+                ..self
+            };
+            return (gone, vec![SwipeEffect::Dismiss]);
+        }
+        let back = SwipeState {
+            source: Source::Idle,
+            offset: Px(0.0),
+            swallows_click: self.swallows_click,
+        };
+        (back, Vec::new())
+    }
+}
+
+/// The offset a raw distance draws: all of it to the right, `damping` of it to the left.
+fn shaped(raw: Px, metrics: SwipeMetrics) -> Px {
+    if raw.0 >= 0.0 {
+        raw
+    } else {
+        Px(raw.0 * f32::from(metrics.damping.clamped().0) / 1000.0)
+    }
+}
+
+/// The pointer's speed at a release at `at`, from its last two positions; nothing when it had
+/// stopped (its last move was more than [`DelayToken::ReleaseWindow`] before the release) or moved once.
+fn release_speed(last: Sample, before: Option<Sample>, at: Stamp) -> Speed {
+    let Some(before) = before else {
+        return Speed(0.0);
+    };
+    if Duration::from_millis(at.since(last.at)) > DelayToken::ReleaseWindow.delay() {
+        return Speed(0.0);
+    }
+    let seconds = last.at.since(before.at) as f32 / 1000.0;
+    if seconds <= 0.0 {
+        return Speed(0.0);
+    }
+    Speed((last.x.0 - before.x.0) / seconds)
+}
+
+#[cfg(test)]
+#[path = "swipe_tests.rs"]
+mod tests;

@@ -1,0 +1,43 @@
+[package]
+name = "cua-host"
+description = "The run executor, as a library: the supervisor of runs over the seams, the drive loop, the router's gate and the message and record links, and the person's settings read from text. No backend, no bus connection and no file watch: the seams are the caller's. cuad is its daemon."
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.92"
+repository = "https://github.com/Bardo-DE/cua"
+publish = false
+
+[dependencies]
+docket-gate-wire = {path = "../../../docket/crates/docket-gate-wire"}
+docket-wire = {path = "../../../docket/crates/docket-wire"}
+docket-permissions-core = {path = "../../../docket/crates/docket-permissions-core"}
+porter-capability = {path = "../../../porter/crates/porter-capability"}
+porter-ids = {path = "../../../porter/crates/porter-ids"}
+a11y-tree = {path = "../a11y-tree"}
+cua-desktop = {path = "../cua-desktop"}
+maskcap = {path = "../maskcap"}
+cua-bus = {path = "../cua-bus"}
+cua-run = {path = "../cua-run"}
+docket-core = {path = "../../../docket/crates/docket-core"}
+docket-client = {default-features = false, path = "../../../docket/crates/docket-client"}
+prov = {path = "../../../prov/prov"}
+porter-core = {path = "../../../porter/crates/porter-core"}
+model-provider = {path = "../../../stoker/crates/model-provider"}
+rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+almanac-core = {path = "../../../almanac/crates/almanac-core"}
+almanac-client = {default-features = false, path = "../../../almanac/crates/almanac-client"}
+serde = {version = "1", features = ["derive"]}
+serde_json = {version = "1"}
+toml = {version = "1"}
+thiserror = {version = "2"}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+
+[dev-dependencies]
+porter-infer = {path = "../../../steward/crates/porter-infer"}
+cua-action = {path = "../../../stoker/crates/cua-action"}
+cua-fake = {path = "../cua-fake"}
+
+[lints.rust]
+unsafe_code = "deny"
+missing_debug_implementations = "warn"

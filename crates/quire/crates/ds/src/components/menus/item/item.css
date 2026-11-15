@@ -1,0 +1,100 @@
+/* MenuItem (design/30 section 2.4, `NSMenuItem`): a row of 22 (`--shell-menu-row`) in the text
+   menu's type (`--fs-shell-menu` at 400), with the state column (a check, a dash for mixed), the
+   image column, the title and, at the end, the key equivalent or a submenu's chevron. The
+   highlight is a `FocusStyle::Highlight` fill that snaps, with no fade: the accent under its ink
+   while the menu's window is active, the grey wash otherwise. A menu tracks the pointer, so
+   there is no hover rule. Attribute selectors carry `*|` (spike S2). */
+
+.ds-menu-item{
+  display:flex; align-items:center; gap:var(--s-4); min-height:var(--shell-menu-row); padding:0 var(--s-8) 0 var(--s-2); border-radius:var(--r-shell-highlight);
+  font-size:var(--fs-shell-menu); font-weight:400; color:var(--ink); cursor:default; white-space:nowrap; position:relative;
+}
+/* A row's tooltip zone: transparent, over the whole row, so a disabled row still has a pointer
+   target; the row's own handlers hear the events that bubble from it. */
+.ds-menu-tip{ position:absolute; top:0; right:0; bottom:0; left:0; }
+/* A menu with no state column: the title starts as far from the highlight's edge as the key
+   equivalent ends, rather than 2 px in (the 2 px assumes the 22 px check column beside it). */
+.ds-menu-item[*|data-state-column=absent]{ padding-left:var(--s-8); }
+.ds-menu-state{ display:inline-flex; align-items:center; justify-content:center; flex:none; width:22px; color:var(--ink); }
+.ds-menu-image{ display:inline-flex; align-items:center; justify-content:center; flex:none; width:22px; color:var(--ink-soft); }
+.ds-menu-image[*|data-image=none]{ visibility:hidden; }
+.ds-menu-image[*|data-image=image] > .ds-ext-icon{ width:100%; height:100%; }
+.ds-menu-label{ flex:1 1 auto; min-width:0; }
+.ds-menu-trailing{ display:inline-flex; align-items:center; flex:none; margin-left:auto; padding-left:var(--s-12); font-family:var(--font-data); font-variant-numeric:tabular-nums; font-size:var(--fs-help); color:var(--ink-faint); }
+.ds-menu-trailing[*|data-mark=chevron]{ padding-left:var(--s-4); }
+/* A hint: a short faint word at the end (design/30 section 2.4; the Mac's menu has no second
+   line), before the key equivalent, which then keeps to it. */
+.ds-menu-hint{ display:inline-flex; align-items:center; flex:none; margin-left:auto; padding-left:var(--s-12); font-size:var(--fs-help); color:var(--ink-faint); font-variant-numeric:tabular-nums; }
+.ds-menu-hint + .ds-menu-trailing{ margin-left:0; }
+
+.ds-menu-item[*|data-focus=highlight][*|data-selected=true],
+.ds-menu-item[*|data-focus=highlight][*|aria-expanded=true]{ background:var(--accent); color:var(--accent-ink); }
+.ds-menu-item[*|data-focus=highlight][*|data-selected=true] .ds-menu-state,
+.ds-menu-item[*|data-focus=highlight][*|data-selected=true] .ds-menu-image,
+.ds-menu-item[*|data-focus=highlight][*|data-selected=true] .ds-menu-trailing,
+.ds-menu-item[*|data-focus=highlight][*|data-selected=true] .ds-menu-hint,
+.ds-menu-item[*|data-focus=highlight][*|data-selected=true] .ds-ic,
+.ds-menu-item[*|data-focus=highlight][*|aria-expanded=true] .ds-menu-trailing,
+.ds-menu-item[*|data-focus=highlight][*|aria-expanded=true] .ds-ic{ color:var(--accent-ink); }
+.ds[*|data-activity=inactive] .ds-menu-item[*|data-focus=highlight][*|data-selected=true],
+.ds[*|data-activity=inactive] .ds-menu-item[*|data-focus=highlight][*|aria-expanded=true]{ background:var(--surface-2); color:var(--ink); }
+.ds[*|data-activity=inactive] .ds-menu-item[*|data-focus=highlight][*|data-selected=true] .ds-menu-state,
+.ds[*|data-activity=inactive] .ds-menu-item[*|data-focus=highlight][*|data-selected=true] .ds-menu-image,
+.ds[*|data-activity=inactive] .ds-menu-item[*|data-focus=highlight][*|data-selected=true] .ds-menu-trailing,
+.ds[*|data-activity=inactive] .ds-menu-item[*|data-focus=highlight][*|data-selected=true] .ds-menu-hint,
+.ds[*|data-activity=inactive] .ds-menu-item[*|data-focus=highlight][*|data-selected=true] .ds-ic,
+.ds[*|data-activity=inactive] .ds-menu-item[*|data-focus=highlight][*|aria-expanded=true] .ds-menu-trailing,
+.ds[*|data-activity=inactive] .ds-menu-item[*|data-focus=highlight][*|aria-expanded=true] .ds-ic{ color:var(--ink); }
+
+/* A swatch (`MenuImage::Swatch`): a 12 px dot in the tag's colour (`data-tag`), ringed by a
+   hairline so a pale tag reads on the highlight; it keeps its colour when the row is highlighted. */
+.ds-menu-image[*|data-image=swatch]{ color:inherit; }
+.ds-menu-swatch{ display:block; width:12px; height:12px; border-radius:var(--r-pill); box-shadow:var(--shadow-mark); }
+.ds-menu-swatch[*|data-tag=red]{ background:var(--tag-red); }
+.ds-menu-swatch[*|data-tag=orange]{ background:var(--tag-orange); }
+.ds-menu-swatch[*|data-tag=yellow]{ background:var(--tag-yellow); }
+.ds-menu-swatch[*|data-tag=green]{ background:var(--tag-green); }
+.ds-menu-swatch[*|data-tag=mint]{ background:var(--tag-mint); }
+.ds-menu-swatch[*|data-tag=teal]{ background:var(--tag-teal); }
+.ds-menu-swatch[*|data-tag=cyan]{ background:var(--tag-cyan); }
+.ds-menu-swatch[*|data-tag=blue]{ background:var(--tag-blue); }
+.ds-menu-swatch[*|data-tag=indigo]{ background:var(--tag-indigo); }
+.ds-menu-swatch[*|data-tag=purple]{ background:var(--tag-purple); }
+.ds-menu-swatch[*|data-tag=pink]{ background:var(--tag-pink); }
+.ds-menu-swatch[*|data-tag=brown]{ background:var(--tag-brown); }
+
+/* Disabled (design/13 section 13.3.3): opacity .35, not selectable. */
+.ds-menu-item[*|aria-disabled=true]{ opacity:.35; }
+
+/* A group title: the heading type (sentence case, 11 px, secondary ink) over the rows it heads. */
+.ds-menu-header{ padding:var(--s-7) var(--s-8) var(--s-3); font-family:var(--font-ui); font-weight:600; font-size:var(--fs-eyebrow); letter-spacing:0; font-variant-numeric:tabular-nums; color:var(--ink-soft); white-space:nowrap; }
+
+/* A status line (bar gaps): an item's row and weight, no eyebrow, not a choice, so no selection
+   and the arrow keys pass it. */
+.ds-menu-info{ display:flex; flex-direction:column; padding:var(--s-6) var(--s-8); cursor:default; }
+.ds-menu-info-title{ font-size:var(--fs-shell-menu); font-weight:600; color:var(--ink); }
+.ds-menu-info-detail{ font-size:var(--fs-help); color:var(--ink-faint); line-height:1.3; }
+
+/* A result row (design/04-COMPONENTS.md section 7): the characters a query matched are semibold
+   in the title's own ink, and a second line sits under the title in the faint ink. A row with a
+   second line is taller than 22 (its text decides) and keeps the same 3 px above and below. An
+   avatar fills the image column's 22 px. */
+.ds-menu-mark{ font-weight:600; }
+.ds-menu-title{ display:block; overflow:hidden; }
+.ds-menu-subtitle{ display:block; overflow:hidden; font-size:var(--fs-help); color:var(--ink-faint); line-height:1.3; }
+.ds-menu-item[*|data-lines=two]{ padding-top:var(--s-3); padding-bottom:var(--s-3); }
+.ds-menu-image[*|data-image=avatar]{ color:inherit; width:auto; min-width:22px; }
+.ds-menu-item[*|data-focus=highlight][*|data-selected=true] .ds-menu-subtitle{ color:var(--accent-ink); }
+.ds[*|data-activity=inactive] .ds-menu-item[*|data-focus=highlight][*|data-selected=true] .ds-menu-subtitle{ color:var(--ink-faint); }
+
+/* A row of swatches (`MenuItem::Swatches`, Finder's tag colours): the dots side by side and
+   centred, each a 20 px target that rings in the accent when the keys or the pointer rest on it
+   (`data-selected`) and carries the 12 px `.ds-menu-swatch` in its tag's colour. A dot whose tag
+   is on the files draws a check (or a dash for some of them) in the dot, in the ink that sits on
+   the accent. The row is not one of the item rows, so it keeps no state or image column. */
+.ds-menu-swatches{ display:flex; flex-direction:row; align-items:center; justify-content:center; gap:var(--s-4); min-height:var(--shell-menu-row); padding:var(--s-2) var(--s-8); }
+.ds-menu-dot{ position:relative; display:inline-flex; align-items:center; justify-content:center; flex:none; box-sizing:border-box; width:20px; height:20px; border:2px solid transparent; border-radius:var(--r-pill); cursor:default; }
+.ds-menu-dot[*|data-focus=highlight][*|data-selected=true]{ border-color:var(--accent); }
+.ds[*|data-activity=inactive] .ds-menu-dot[*|data-focus=highlight][*|data-selected=true]{ border-color:var(--ink-faint); }
+.ds-menu-dot[*|aria-disabled=true]{ opacity:.35; }
+.ds-menu-dot .ds-menu-swatch{ display:flex; align-items:center; justify-content:center; color:var(--accent-ink); }
