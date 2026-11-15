@@ -1,9 +1,6 @@
-//! The user's picture picker as markup (design/25-EMOJI.md section 7): the picker matches its golden under `tests/snapshots/user_picture/`, lint clean, and use
-//! only `ds-` classes the stylesheet styles. A sheet's `data:` URI is replaced in the goldens by
-//! its length, so a golden stays readable and still notices a different sheet. The stored
+//! The user's picture picker as markup (design/25-EMOJI.md section 7): the picker lints clean and uses
+//! only `ds-` classes the stylesheet styles. The stored
 //! choice round-trips through serde by its stable names, and `resolve_picture` follows its table.
-//!
-//! `DS_BLESS=1 cargo test -p ds --features lint --test it user_picture_ssr` rewrites the goldens.
 
 use crate::support::specimens::Specimen;
 

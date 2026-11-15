@@ -1,8 +1,6 @@
-//! MonthGrid as markup (design/04-COMPONENTS.md section 39): the goldens are
-//! `tests/snapshots/month_grid/<name>.html` (plain, week numbers, pressable), each linted and
-//! every `ds-` class in it styled by the stylesheet; and the markup says what the data says.
-//!
-//! `DS_BLESS=1 cargo test -p ds --features lint --test it month_grid_ssr` rewrites the goldens.
+//! MonthGrid as markup (design/04-COMPONENTS.md section 39): each specimen (plain, week numbers,
+//! pressable) is linted and every `ds-` class in it styled by the stylesheet; and the markup says
+//! what the data says.
 
 use crate::support::month_sample;
 use crate::support::specimens::Specimen;

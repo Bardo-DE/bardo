@@ -10,7 +10,7 @@ use sill_shell_kit::notifications::banner_stack::{Banner, BannerKey, BannerPosit
 use sill_shell_kit::notifications::parts::{AppMark, CardAction, GroupCount, StackLayers};
 use sill_shell_kit::prelude::*;
 
-/// A specimen: its golden name and how it is made.
+/// A specimen: its name and how it is made.
 pub type Specimen = (&'static str, fn() -> Element);
 
 /// Every specimen.

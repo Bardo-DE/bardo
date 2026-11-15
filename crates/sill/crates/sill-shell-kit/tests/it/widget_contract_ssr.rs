@@ -1,10 +1,8 @@
 //! The widget contract as markup (design/23-WIDGETS.md section 9): quire's own widgets drawn
 //! only through `WidgetCard`, each size and state they take, with the card quire owns around
-//! them. Each golden is `tests/snapshots/widget-contract/<name>.html`; each lints clean and
-//! every `ds-` class in it is styled by the stylesheet. The timeline's clock behaviour is
-//! proven on the virtual clock in `ds-conformance/tests/widget_timeline.rs`.
-//!
-//! `DS_BLESS=1 cargo test -p ds --features lint --test it widget_contract_ssr` rewrites the goldens.
+//! them. Each specimen lints clean and every `ds-` class in it is styled by the stylesheet. The
+//! timeline's clock behaviour is proven on the virtual clock in
+//! `ds-conformance/tests/widget_timeline.rs`.
 
 use crate::support::specimens::Specimen;
 
@@ -47,7 +45,7 @@ fn render(make: fn() -> Element) -> String {
     dioxus_ssr::render(&dom)
 }
 
-/// `body` in the notification center in `theme`, under Reduced motion, so a ring's golden is
+/// `body` in the notification center in `theme`, under Reduced motion, so a ring's specimen is
 /// its level at rest.
 fn themed(theme: Theme, body: Element) -> Element {
     rsx! {

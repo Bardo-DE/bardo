@@ -1,9 +1,6 @@
 //! The lock screen, the polkit prompt and the app switcher as markup (M11): every part in every
-//! state matches its golden under `tests/snapshots/lock_switcher/`, lints clean, and uses only
-//! `ds-` classes the stylesheet styles; the markup carries what the props say, and no state
-//! writes a password field's `value`.
-//!
-//! `DS_BLESS=1 cargo test -p ds --features lint --test it lock_switcher_ssr` rewrites the goldens.
+//! state lints clean and uses only `ds-` classes the stylesheet styles; the markup carries what
+//! the props say, and no state writes a password field's `value`.
 
 use crate::support::specimens::Specimen;
 

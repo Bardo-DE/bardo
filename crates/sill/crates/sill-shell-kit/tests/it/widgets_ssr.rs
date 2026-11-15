@@ -1,9 +1,6 @@
 //! The widget parts as markup (design/04-COMPONENTS.md "Widgets"):
-//! the frame in each size, and the battery at three levels and charging. Each golden is
-//! `tests/snapshots/widgets/<name>.html`; each lints clean and every `ds-` class in it is
-//! styled by the stylesheet.
-//!
-//! `DS_BLESS=1 cargo test -p ds --features lint --test it widgets_ssr` rewrites the goldens.
+//! the frame in each size, and the battery at three levels and charging. Each specimen lints
+//! clean and every `ds-` class in it is styled by the stylesheet.
 
 use crate::support::specimens::Specimen;
 
@@ -38,7 +35,7 @@ fn render(make: fn() -> Element) -> String {
 }
 
 /// `body` on a transparent Widget root under Reduced motion: a battery ring draws its level on its first
-/// frame instead of sweeping to it, so its golden is the ring at rest.
+/// frame instead of sweeping to it, so the specimen is the ring at rest.
 fn settled(theme: Theme, body: Element) -> Element {
     rsx! {
         Ds { appearance: Appearance { theme, motion: Motion::Reduced, ..Appearance::default() }, material: Material::Widget, chrome: Some(RootChrome::Transparent), stylesheet: Inject::Host,

@@ -1,9 +1,7 @@
 //! MonthGrid's density as markup (design/04-COMPONENTS.md section 39): forced
 //! compact, and `Auto` inside a small desktop `WidgetFrame` (compact) and a medium one
-//! (regular). Each golden is `tests/snapshots/month_grid/<name>.html`, linted and every `ds-`
-//! class in it styled by the stylesheet. The month is August 2026 from Monday, six weeks.
-//!
-//! `DS_BLESS=1 cargo test -p ds --features lint --test it month_grid_density_ssr` rewrites them.
+//! (regular). Each specimen is linted and every `ds-` class in it styled by the stylesheet. The
+//! month is August 2026 from Monday, six weeks.
 
 use crate::support::month_sample;
 use crate::support::specimens::Specimen;

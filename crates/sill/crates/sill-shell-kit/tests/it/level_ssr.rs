@@ -1,9 +1,7 @@
 //! The level slider, the level indicator and the OSD card as markup (the user's brief of
 //! 2026-09-25): each look and style, each glyph state, read-only and interactive, and the OSD
-//! card shown at either anchor and hidden. Each golden is `tests/snapshots/level/<name>.html`, and every `ds-`
+//! card shown at either anchor and hidden. Each specimen lints clean and every `ds-`
 //! class in it must be styled by the stylesheet.
-//!
-//! `DS_BLESS=1 cargo test -p sill-shell-kit --test it level_ssr` rewrites the goldens.
 
 use crate::support::specimens::{Checks, Specimen};
 

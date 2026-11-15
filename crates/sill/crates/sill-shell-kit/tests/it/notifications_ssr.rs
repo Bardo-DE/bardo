@@ -1,8 +1,5 @@
-//! The notification parts as markup: every specimen matches its golden under
-//! `tests/snapshots/notifications/`, lints clean, and uses only `ds-` classes the stylesheet
-//! styles.
-//!
-//! `DS_BLESS=1 cargo test -p ds --features lint --test it notifications_ssr` rewrites the goldens.
+//! The notification parts as markup: every specimen lints clean and uses only `ds-` classes
+//! the stylesheet styles.
 
 #[path = "notifications/cases.rs"]
 mod cases;

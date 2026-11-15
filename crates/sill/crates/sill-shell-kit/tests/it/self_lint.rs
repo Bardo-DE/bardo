@@ -3,7 +3,7 @@
 //! (`ds-shell/tests/self_lint.rs`); these are the ones that moved here, so every rule a consumer
 //! obeys holds for them, one sheet at a time. One rule is set aside whole: [`Rule::DsInternals`],
 //! because these sheets style the `ds-*` classes of the components this crate draws (the markup
-//! the shell has always rendered, which the goldens pin). The details grammar's two rules are
+//! the shell has always rendered, which the specimens exercise). The details grammar's two rules are
 //! judged per sheet in `details_lint.rs`.
 
 use ds_lint::{LintConfig, Offence, Profile, Rule, stylesheet};

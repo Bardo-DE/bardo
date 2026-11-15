@@ -1,8 +1,5 @@
-//! The control center's parts as markup: every control glyph renders and
-//! lints clean; the goldens are `tests/snapshots/control_center/<name>.html`, each linted and
-//! every `ds-` class in it styled by the stylesheet.
-//!
-//! `DS_BLESS=1 cargo test -p ds --features lint --test it control_center_ssr` rewrites the goldens.
+//! The control center's parts as markup: every control glyph renders, each specimen lints clean,
+//! and every `ds-` class in it is styled by the stylesheet.
 
 use crate::support::specimens::Specimen;
 #[path = "control_center/panels.rs"]
@@ -61,7 +58,7 @@ fn every_control_glyph_renders_and_lints_clean() {
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
-/// A rendered specimen: its golden name and markup.
+/// A rendered specimen: its name and markup.
 type Rendered = (String, String);
 
 fn tile_markup(case: tiles::TileCase) -> String {
@@ -88,7 +85,7 @@ fn rendered() -> Vec<Rendered> {
     tiles.chain(rows).chain(panes).chain(parts).collect()
 }
 
-/// Every specimen with its golden.
+/// Every specimen.
 pub(crate) fn specimens() -> Vec<Specimen> {
     rendered()
         .into_iter()

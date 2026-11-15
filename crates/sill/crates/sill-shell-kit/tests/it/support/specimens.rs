@@ -1,7 +1,7 @@
 //! The checks every `*_ssr` module's specimens share: each is linted
 //! against the stylesheet, and every `ds-` class in it must be styled. A module lists its
 //! specimens as [`Specimen`]s; `ssr_specimens` runs these checks over all of them at once, so a
-//! failure names `<golden directory>/<specimen>`.
+//! failure names `<directory>/<specimen>`.
 
 use ds_lint::{LintConfig, markup};
 
@@ -19,7 +19,7 @@ pub enum Checks {
 /// One rendered specimen.
 #[derive(Debug, Clone)]
 pub struct Specimen {
-    /// The golden's path under `tests/snapshots`, which also names the specimen.
+    /// The specimen's name, `dir/name.html`.
     pub golden: String,
     /// The markup as rendered, which is linted.
     pub html: String,
@@ -27,7 +27,7 @@ pub struct Specimen {
 }
 
 impl Specimen {
-    /// The specimen whose golden is `golden` (`dir/name.html`), rendered as `html`.
+    /// The specimen named `golden` (`dir/name.html`), rendered as `html`.
     pub fn of(golden: &str, html: String) -> Specimen {
         Specimen {
             golden: golden.to_owned(),

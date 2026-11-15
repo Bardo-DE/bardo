@@ -1,8 +1,5 @@
-//! DatePicker as markup (design/30 section 2.3): the goldens are
-//! `tests/snapshots/date_picker/<name>.html`, each linted against the stylesheet and every
-//! `ds-date-picker` class in it styled by the picker's sheet.
-//!
-//! `DS_BLESS=1 cargo test -p sill-shell-kit --test it date_picker_ssr` rewrites the goldens.
+//! DatePicker as markup (design/30 section 2.3): each specimen is linted against the stylesheet and
+//! every `ds-date-picker` class in it is styled by the picker's sheet.
 
 use crate::support::specimens::{Checks, Specimen};
 

@@ -1,9 +1,6 @@
 //! The screenshot thumbnail as markup: the card shown, the card with its actions, a
-//! portrait picture pillarboxed in a dark root, and the drag ghost each match their golden under
-//! `tests/snapshots/shot_thumbnail/`, lint clean, and use only `ds-` classes the stylesheet
-//! styles.
-//!
-//! `DS_BLESS=1 cargo test -p ds --features lint --test it shot_thumbnail_ssr` rewrites the goldens.
+//! portrait picture pillarboxed in a dark root, and the drag ghost each lint clean and use only
+//! `ds-` classes the stylesheet styles.
 
 use crate::support::specimens::Specimen;
 
@@ -98,7 +95,7 @@ fn ghost() -> Element {
     )
 }
 
-/// A specimen: its golden name and how it is made.
+/// A specimen: its name and how it is made.
 type Case = (&'static str, fn() -> Element);
 
 const SPECIMENS: &[Case] = &[

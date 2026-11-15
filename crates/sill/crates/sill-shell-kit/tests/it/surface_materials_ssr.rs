@@ -1,9 +1,6 @@
 //! The materials as markup (FINDINGS "Materials, blur and colour"): a plate, a squircle surface and
 //! root, the bar item, the workspace pills, the dock's dot and floor, the palette's squircle
-//! card. Each golden is `tests/snapshots/materials/<name>.html`, and every `ds-` class in it must
-//! be styled by the stylesheet.
-//!
-//! `DS_BLESS=1 cargo test -p sill-shell-kit --test it surface_materials_ssr` rewrites the goldens.
+//! card. Each specimen lints clean and every `ds-` class in it must be styled by the stylesheet.
 
 use crate::support::specimens::{Checks, Specimen};
 
@@ -57,7 +54,7 @@ fn render(make: fn() -> Element) -> String {
     dioxus_ssr::render(&dom)
 }
 
-/// A specimen's golden name and how it renders.
+/// A specimen's name and how it renders.
 type Case = (&'static str, fn() -> Element);
 
 const CASES: &[Case] = &[

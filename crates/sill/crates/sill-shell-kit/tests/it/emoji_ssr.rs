@@ -1,9 +1,5 @@
 //! Animated emoji as markup (design/25-EMOJI.md): a pick at each size, with and
-//! without its disc, in both schemes, match goldens under `tests/snapshots/emoji/`, lint clean,
-//! and use only `ds-` classes the stylesheet styles. The sheet's `data:` URI is replaced in the
-//! goldens by its length, so a golden stays readable and still notices a different sheet.
-//!
-//! `DS_BLESS=1 cargo test -p ds --features lint --test it emoji_ssr` rewrites the goldens.
+//! without its disc, in both schemes, lints clean and uses only `ds-` classes the stylesheet styles.
 
 use crate::support::specimens::Specimen;
 
