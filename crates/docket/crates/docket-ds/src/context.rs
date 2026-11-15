@@ -3,7 +3,7 @@
 //! each text labelled by the kind's declared title trust.
 
 use docket_core::{
-    ContextScope, ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy,
+    ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy,
 };
 use docket_manifest::TitleTrust;
 use docket_provider::ContextSource;
@@ -44,7 +44,7 @@ impl<W: WindowFacts> ContextSource for DsContextSource<W> {
     /// `Here`, `Selection` and `Visible` is not built yet, and until it is the source says
     /// nothing about the window rather than something wrong (or, as it once did, panic). The
     /// router drops everything but the app from a `Private` snapshot, and no field is reported.
-    fn snapshot(&self, _scope: ContextScope) -> ContextSnapshot {
+    fn snapshot(&self) -> ContextSnapshot {
         // Held for the mapping to come; nothing of them is reported yet.
         let _ = (&self.model, &self.window);
         ContextSnapshot {
