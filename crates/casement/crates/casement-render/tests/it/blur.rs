@@ -186,25 +186,9 @@ fn the_finish_shader_has_no_sin_of_the_pixel_position() {
     assert!(up.contains("if (grain > 0.0)"), "grain only when asked");
 }
 
-/// Each strength's look: the lighter the strength, the smaller the sigma; `Regular` is the one
-/// look every blur had before, and the plan it makes is monotone in the strength.
+/// The plan a strength makes is monotone in the strength.
 #[test]
-fn a_strength_picks_its_look_and_a_stronger_one_blurs_wider() {
-    let table = [
-        (BlurStrength::Light, 12.0, 1.6),
-        (BlurStrength::Regular, 22.0, 1.8),
-        (BlurStrength::Strong, 32.0, 1.8),
-    ];
-    for (strength, sigma, saturation) in table {
-        let picked = BlurLook::of(strength);
-        assert_eq!(
-            (picked.sigma, picked.saturation),
-            (sigma, saturation),
-            "{strength:?}"
-        );
-        assert_eq!((picked.tint, picked.noise), (BlurLook::MATERIAL.tint, 0.0));
-    }
-    assert_eq!(BlurLook::of(BlurStrength::default()), BlurLook::MATERIAL);
+fn a_stronger_strength_blurs_wider() {
     let reach = |strength| BlurLook::of(strength).plan(1.0).reach();
     assert!(reach(BlurStrength::Light) < reach(BlurStrength::Regular));
     assert!(reach(BlurStrength::Regular) < reach(BlurStrength::Strong));

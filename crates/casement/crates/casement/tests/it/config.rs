@@ -67,8 +67,9 @@ fn the_defaults_come_from() {
 
 #[test]
 fn the_keys_a_document_sets_reach_the_model() {
-    let settings = settings_of(
-        r#"
+    {
+        let settings = settings_of(
+            r#"
 [windows]
 minimise_effect = "scale"
 double_click_title = "fill"
@@ -92,34 +93,32 @@ repeat_rate = 30
 first_sight_scale = "fixed"
 fixed_scale = 150
 "#,
-    );
-    let defaults = CasementSettings::defaults();
-    assert_eq!(settings.windows.minimise_effect, MinimiseEffect::Scale);
-    assert_eq!(settings.windows.double_click_title, TitleDoubleClick::Fill);
-    assert_eq!(settings.windows.tile_margins, Enabled::Off);
-    assert_eq!(settings.windows.tile_edges, defaults.windows.tile_edges);
-    assert_eq!(settings.windows.first_click, FirstClick::ActivateAndClick);
-    assert_eq!(settings.windows.quit_grace, Duration::from_millis(500));
-    assert_eq!(settings.windows.not_responding, Duration::from_millis(8000));
-    assert_eq!(settings.spaces.per_display, Enabled::Off);
-    assert_eq!(settings.spaces.auto_rearrange, Enabled::On);
-    assert_eq!(
-        settings.spaces.switch_on_activate,
-        defaults.spaces.switch_on_activate
-    );
-    assert_eq!(settings.keyboard.layout.layout, "us,de");
-    assert_eq!(settings.keyboard.layout.variant, ",nodeadkeys");
-    assert_eq!(settings.keyboard.layout.options, "caps:escape");
-    assert_eq!(settings.keyboard.layout.rules, "");
-    assert_eq!(settings.keyboard.repeat_delay, Duration::from_millis(250));
-    assert_eq!(settings.keyboard.repeat_rate, RepeatRate(30));
-    assert_eq!(settings.outputs.first_sight, ScalePolicy::Fixed(Scale(180)));
-}
-
-#[test]
-fn the_pointer_and_touchpad_keys_reach_the_model() {
-    let settings = settings_of(
-        r#"
+        );
+        let defaults = CasementSettings::defaults();
+        assert_eq!(settings.windows.minimise_effect, MinimiseEffect::Scale);
+        assert_eq!(settings.windows.double_click_title, TitleDoubleClick::Fill);
+        assert_eq!(settings.windows.tile_margins, Enabled::Off);
+        assert_eq!(settings.windows.tile_edges, defaults.windows.tile_edges);
+        assert_eq!(settings.windows.first_click, FirstClick::ActivateAndClick);
+        assert_eq!(settings.windows.quit_grace, Duration::from_millis(500));
+        assert_eq!(settings.windows.not_responding, Duration::from_millis(8000));
+        assert_eq!(settings.spaces.per_display, Enabled::Off);
+        assert_eq!(settings.spaces.auto_rearrange, Enabled::On);
+        assert_eq!(
+            settings.spaces.switch_on_activate,
+            defaults.spaces.switch_on_activate
+        );
+        assert_eq!(settings.keyboard.layout.layout, "us,de");
+        assert_eq!(settings.keyboard.layout.variant, ",nodeadkeys");
+        assert_eq!(settings.keyboard.layout.options, "caps:escape");
+        assert_eq!(settings.keyboard.layout.rules, "");
+        assert_eq!(settings.keyboard.repeat_delay, Duration::from_millis(250));
+        assert_eq!(settings.keyboard.repeat_rate, RepeatRate(30));
+        assert_eq!(settings.outputs.first_sight, ScalePolicy::Fixed(Scale(180)));
+    }
+    {
+        let settings = settings_of(
+            r#"
 [pointer]
 accel = "flat"
 natural_scroll = "on"
@@ -129,37 +128,36 @@ scroll_factor = 2000
 tap = "off"
 disable_while_typing = "off"
 "#,
-    );
-    let defaults = CasementSettings::defaults();
-    assert_eq!(settings.pointer.mouse.accel, AccelProfile::Flat);
-    assert_eq!(settings.pointer.mouse.natural_scroll, Enabled::On);
-    assert_eq!(settings.pointer.mouse.scroll_factor, Fraction(2000));
-    assert_eq!(settings.pointer.mouse.tap, defaults.pointer.mouse.tap);
-    assert_eq!(settings.pointer.touchpad.tap, Enabled::Off);
-    assert_eq!(settings.pointer.touchpad.disable_while_typing, Enabled::Off);
-    assert_eq!(
-        settings.pointer.touchpad.natural_scroll,
-        defaults.pointer.touchpad.natural_scroll
-    );
-}
-
-#[test]
-fn the_gesture_keys_reach_the_model() {
-    use casement_core::settings::SwipeFingers;
-    let settings = settings_of(
-        r#"
+        );
+        let defaults = CasementSettings::defaults();
+        assert_eq!(settings.pointer.mouse.accel, AccelProfile::Flat);
+        assert_eq!(settings.pointer.mouse.natural_scroll, Enabled::On);
+        assert_eq!(settings.pointer.mouse.scroll_factor, Fraction(2000));
+        assert_eq!(settings.pointer.mouse.tap, defaults.pointer.mouse.tap);
+        assert_eq!(settings.pointer.touchpad.tap, Enabled::Off);
+        assert_eq!(settings.pointer.touchpad.disable_while_typing, Enabled::Off);
+        assert_eq!(
+            settings.pointer.touchpad.natural_scroll,
+            defaults.pointer.touchpad.natural_scroll
+        );
+    }
+    {
+        use casement_core::settings::SwipeFingers;
+        let settings = settings_of(
+            r#"
 [gestures]
 spaces = "three"
 natural = "off"
 "#,
-    );
-    let defaults = CasementSettings::defaults();
-    assert_eq!(settings.gestures.spaces, SwipeFingers::Three);
-    assert_eq!(settings.gestures.natural, Enabled::Off);
-    assert_eq!(
-        settings.gestures.mission_control,
-        defaults.gestures.mission_control
-    );
+        );
+        let defaults = CasementSettings::defaults();
+        assert_eq!(settings.gestures.spaces, SwipeFingers::Three);
+        assert_eq!(settings.gestures.natural, Enabled::Off);
+        assert_eq!(
+            settings.gestures.mission_control,
+            defaults.gestures.mission_control
+        );
+    }
 }
 
 #[test]

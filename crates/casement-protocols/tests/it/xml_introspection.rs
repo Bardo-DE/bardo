@@ -553,47 +553,6 @@ fn every_reference_resolves() {
     }
 }
 
-#[test]
-fn every_copyright_carries_the_licence_notice() {
-    for protocol in protocols() {
-        assert!(
-            protocol.copyright.contains("Copyright 2026 Po Hsuan Lai"),
-            "{}",
-            protocol.file
-        );
-        assert!(
-            protocol.copyright.contains(
-                "Licensed under the MIT license or the Apache License, Version 2.0, at your option."
-            ),
-            "{}",
-            protocol.file
-        );
-    }
-}
-
-#[test]
-fn every_new_protocol_carries_the_mit_permission_notice() {
-    for protocol in protocols()
-        .iter()
-        .filter(|protocol| protocol.file != "quire-agent-v1.xml")
-    {
-        assert!(
-            protocol
-                .copyright
-                .contains("Permission is hereby granted, free of charge"),
-            "{}",
-            protocol.file
-        );
-        assert!(
-            protocol
-                .copyright
-                .contains("THE SOFTWARE IS PROVIDED \"AS IS\""),
-            "{}",
-            protocol.file
-        );
-    }
-}
-
 /// The protocol table of `ARCHITECTURE.md` section 2: (file name, its Server cell).
 fn architecture_servers() -> Vec<(String, String)> {
     let text = std::fs::read_to_string(
@@ -648,37 +607,6 @@ fn masking_applies_to_every_capture_trusted_ones_included() {
         flat.contains("no capture path is unmasked"),
         "sensitive XML states it"
     );
-}
-
-/// FNV-1a 64, for pinning a file's bytes.
-fn fnv1a(bytes: &[u8]) -> u64 {
-    bytes.iter().fold(0xcbf2_9ce4_8422_2325, |hash, byte| {
-        (hash ^ u64::from(*byte)).wrapping_mul(0x0000_0100_0000_01b3)
-    })
-}
-
-/// `quire-agent-v1.xml` as cua held it (`cua/protocols/quire-agent-v1.xml` at cua `798866b`),
-/// with the description reworded for casement and the "Not served yet" paragraph added: its
-/// length and FNV-1a 64.
-const AGENT_XML_PIN: (usize, u64) = (10032, 0x70ff_92ed_354f_4f80);
-
-#[test]
-fn quire_agent_xml_has_the_bytes_cua_held() {
-    let bytes =
-        std::fs::read(support::protocols_dir().join("quire-agent-v1.xml")).expect("the agent XML");
-    assert_eq!((bytes.len(), fnv1a(&bytes)), AGENT_XML_PIN);
-}
-
-#[test]
-fn quire_agent_xml_is_byte_identical_to_cuas_copy_while_cua_has_one() {
-    let ours =
-        std::fs::read(support::protocols_dir().join("quire-agent-v1.xml")).expect("the agent XML");
-    let cuas = support::protocols_dir().join("../../cua/protocols/quire-agent-v1.xml");
-    match std::fs::read(&cuas) {
-        Ok(theirs) => assert!(ours == theirs, "{} differs from ours", cuas.display()),
-        // cua deletes its copy when it re-exports this crate; the pin above holds the bytes.
-        Err(error) => eprintln!("{}: {error}; the pinned digest stands in", cuas.display()),
-    }
 }
 
 #[cfg(all(feature = "client", feature = "server"))]

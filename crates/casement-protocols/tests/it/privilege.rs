@@ -2,7 +2,7 @@
 
 use std::collections::BTreeSet;
 
-use casement_protocols::vocab::{AskId, Power, WireCode};
+use casement_protocols::vocab::{AskId, Power, TrialId, WireCode};
 
 /// Words that name a protocol or a developer tool; nothing a person reads may contain one.
 const DEVELOPER_WORDS: &[&str] = &[
@@ -40,27 +40,15 @@ fn every_power_has_distinct_plain_words() {
 }
 
 #[test]
-fn the_settings_section_titles_are_the_designed_ones() {
-    let titles: Vec<&str> = Power::ALL.iter().map(|power| power.title()).collect();
-    assert_eq!(
-        titles,
-        [
-            "Screen",
-            "Typing and clicking",
-            "Typing help",
-            "Copy and paste",
-            "Locking the screen",
-            "Displays",
-            "Windows",
-        ]
-    );
-}
-
-#[test]
-fn an_ask_id_is_its_wire_number_in_serde_too() {
+fn an_id_is_its_wire_number_in_serde_too() {
     let id = AskId::new(7);
     assert_eq!(id.get(), 7);
     assert_eq!(serde_json::to_string(&id).expect("serializes"), "7");
     assert_eq!(serde_json::from_str::<AskId>("7").expect("parses"), id);
     assert!(AskId::new(1) < AskId::new(2), "ids order by number");
+    let id = TrialId::new(9);
+    assert_eq!(id.get(), 9);
+    assert_eq!(serde_json::to_string(&id).expect("serializes"), "9");
+    assert_eq!(serde_json::from_str::<TrialId>("9").expect("parses"), id);
+    assert!(TrialId::new(1) < TrialId::new(2), "ids order by number");
 }

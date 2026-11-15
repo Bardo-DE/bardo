@@ -23,7 +23,6 @@ pub const FILES: &[&str] = &[
 pub struct Protocol {
     pub file: String,
     pub name: String,
-    pub copyright: String,
     pub interfaces: Vec<Interface>,
 }
 
@@ -126,12 +125,6 @@ pub fn parse(file: &str) -> Protocol {
             }
             Ok(Event::End(_)) => {
                 stack.pop();
-            }
-            Ok(Event::Text(text)) if stack.last().map(String::as_str) == Some("copyright") => {
-                let text = text
-                    .decode()
-                    .unwrap_or_else(|error| panic!("{file}: {error}"));
-                protocol.copyright.push_str(&text);
             }
             Ok(Event::Eof) => break,
             Ok(_) => {}

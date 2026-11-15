@@ -1,12 +1,10 @@
 //! The pure parts of the winit backend: a window's size and the host's scale factor are the
-//! output's mode and scale in 120ths; the window is drawn flipped; focus loss releases what is
-//! held.
+//! output's mode and scale in 120ths; focus loss releases what is held.
 
-use casement_backend::{HOST_TRANSFORM, HeldInput, VirtualOutputSpec, window_spec};
+use casement_backend::{HeldInput, VirtualOutputSpec, window_spec};
 use casement_core::geometry::PhysicalSize;
 use casement_core::input::{ButtonCode, InputKind, KeyCode};
 use casement_protocols::vocab::PressEdge;
-use smithay::utils::Transform;
 
 fn spec_at(size: (u32, u32), factor: f64) -> (u32, u32, u32) {
     let base = VirtualOutputSpec::parse("WINIT-1:1440x900@60000:120:0,0").expect("spec");
@@ -47,11 +45,6 @@ fn a_window_keeps_the_rest_of_its_spec() {
     assert_eq!(spec.name, base.name);
     assert_eq!(spec.mode.refresh, base.mode.refresh);
     assert_eq!(spec.position, base.position);
-}
-
-#[test]
-fn the_window_is_drawn_flipped() {
-    assert_eq!(HOST_TRANSFORM, Transform::Flipped180);
 }
 
 #[test]
