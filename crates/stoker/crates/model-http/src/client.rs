@@ -1,8 +1,8 @@
 //! The client: one endpoint, and the types a transport and a sink share. The request seam is
 //! `Transport` (`exchange`); the response body is pushed into a sink as it arrives.
 
-#[cfg(feature = "client")]
 use std::ops::ControlFlow;
+#[cfg(feature = "client")]
 use std::sync::Arc;
 
 use serde::{Deserialize, Serialize};

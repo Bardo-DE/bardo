@@ -9,13 +9,8 @@ use porter_ids::{Count, Permille, Tokens};
 use serde::{Deserialize, Serialize};
 
 pub use model_provider::{
-    Effort, Knob, Reasoning, StopReason, ThoughtSeal, ToolChoice, ToolParallelism,
+    Effort, Knob, Reasoning, Seed, StopReason, ThoughtSeal, ToolChoice, ToolParallelism,
 };
-
-/// A random seed. 32 bits.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct Seed(pub u32);
 
 /// How a model samples its next token. Thousandths: `Permille(700)` is a temperature of 0.7.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

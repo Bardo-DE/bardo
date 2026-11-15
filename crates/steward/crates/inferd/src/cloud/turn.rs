@@ -81,10 +81,7 @@ impl<S: ChatSink> sp::TurnSink for Forward<'_, S> {
     fn event(&mut self, event: sp::TurnEvent) -> ControlFlow<()> {
         self.gathered.take(&event);
         match bridge::event(&event) {
-            Some(out) => match self.sink.event(out) {
-                ControlFlow::Break(()) => ControlFlow::Break(()),
-                _ => ControlFlow::Continue(()),
-            },
+            Some(out) => self.sink.event(out),
             None => ControlFlow::Continue(()),
         }
     }

@@ -32,21 +32,18 @@ fn slipway_apply_installs_a_folder_and_nothing_else() {
 }
 
 #[test]
-fn slipway_rollback_takes_no_arguments() {
-    let table: [(&[&str], Parsed<()>); 5] = [
+fn slipway_rollback_takes_no_arguments_and_health_knows_two_words() {
+    let rollback: [(&[&str], Parsed<()>); 5] = [
         (&[], Parsed::Run(())),
         (&["--help"], Parsed::Help),
         (&["-h"], Parsed::Help),
         (&["/some/folder"], Parsed::Bad),
         (&["--help", "x"], Parsed::Bad),
     ];
-    for (args, expected) in table {
+    for (args, expected) in rollback {
         assert_eq!(parse_rollback(words(args)), expected, "{args:?}");
     }
-}
 
-#[test]
-fn slipway_health_knows_two_words() {
     let table: [(&[&str], Parsed<HealthRequest>); 7] = [
         (&["recover"], Parsed::Run(HealthRequest::Recover)),
         (&["confirmed"], Parsed::Run(HealthRequest::Confirmed)),

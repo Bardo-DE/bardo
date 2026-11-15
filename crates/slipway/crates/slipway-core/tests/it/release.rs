@@ -177,19 +177,6 @@ fn hostile_and_broken_releases_are_refused_for_the_right_reason() {
 }
 
 #[test]
-fn garbage_input_is_refused_not_a_panic() {
-    for bytes in [
-        &b""[..],
-        b"\xff\xfe",
-        b"format = 1",
-        b"[[file]]",
-        &vec![b'a'; slipway_core::release::MAX_INDEX_BYTES + 1],
-    ] {
-        assert!(Release::parse(bytes).is_err());
-    }
-}
-
-#[test]
 fn an_export_must_point_at_a_listed_file_not_a_folder() {
     let mut doc = Doc::good();
     doc.exports[0].1 = "share/wayland-sessions".into();

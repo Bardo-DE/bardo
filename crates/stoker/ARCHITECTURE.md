@@ -197,7 +197,7 @@ pub trait Provider: Send + Sync {
     fn turn<K: TurnSink>(&self, request: &TurnRequest, sink: &mut K)
         -> impl Future<Output = Result<TurnEnd, ProviderError>> + Send;
 }
-pub trait TurnSink: Send { fn event(&mut self, event: TurnEvent) -> Flow; }
+pub trait TurnSink: Send { fn event(&mut self, event: TurnEvent) -> ControlFlow<()>; }
 
 // cua-vendors: one per vendor, as the closed enum WireCodecs.
 pub trait WireCodec {
@@ -228,8 +228,8 @@ pub trait TextToSpeech: Send + Sync {
         -> impl Future<Output = Result<TtsEnd, ProviderError>> + Send;
 }
 pub trait AudioSource: Send { fn next(&mut self) -> impl Future<Output = AudioPull> + Send; }
-pub trait TranscriptSink: Send { fn event(&mut self, event: TranscriptEvent) -> Flow; }
-pub trait AudioSink: Send { fn chunk(&mut self, chunk: AudioChunk) -> Flow; }   // Flow::Stop = barge-in
+pub trait TranscriptSink: Send { fn event(&mut self, event: TranscriptEvent) -> ControlFlow<()>; }
+pub trait AudioSink: Send { fn chunk(&mut self, chunk: AudioChunk) -> ControlFlow<()>; }   // ControlFlow::Break(()) = barge-in
 // synchronous: CPU only, one 32 ms frame, no I/O (EnergyGate, SileroVad, ScriptedVad)
 pub trait VoiceActivity: Send { fn push(&mut self, frame: &Frame512) -> (Voiced, SpeechProb); fn reset(&mut self); }
 
@@ -239,8 +239,8 @@ pub trait SpeechCassetteSink: Send + Sync { fn write(&self, line: &SpeechInterac
 
 // model-http: where a response goes as it arrives (the head first), and what delivers an exchange.
 pub trait BodySink: Send {
-    fn head(&mut self, head: &ResponseHead) -> ChunkFlow;
-    fn chunk(&mut self, bytes: &[u8]) -> ChunkFlow;
+    fn head(&mut self, head: &ResponseHead) -> ControlFlow<()>;
+    fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()>;
 }
 pub trait Transport: Send + Sync {
     fn exchange<K: BodySink>(&self, ex: &Exchange, sink: &mut K)

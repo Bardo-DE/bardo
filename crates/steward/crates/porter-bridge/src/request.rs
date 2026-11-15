@@ -164,7 +164,7 @@ fn sampling(sampling: pi::Sampling) -> sp::Sampling {
         top_k: knob(sampling.top_k, |count| sp::Count(count.0)),
         min_p: knob(sampling.min_p, milli),
         repeat_penalty: sp::Knob::Off,
-        seed: knob(sampling.seed, |seed| sp::Seed(seed.0)),
+        seed: sampling.seed,
     }
 }
 
