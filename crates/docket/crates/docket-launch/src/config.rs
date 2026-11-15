@@ -15,7 +15,7 @@
 //! state = ["/home/me/.claude"]              # read-write: its own login and settings
 //! home = "/home/me"
 //! label = "Claude Code"             # optional: what the audit and the journal call it
-//! tools = "offered"                  # offered (default) | off: the desktop's actions as an MCP server
+//! tools = true                      # true (default) | false: the desktop's actions as an MCP server
 //! profile = "claude-code"            # optional: confine the program's own extras (see `managed`)
 //! sign_in = "oauth-personal"         # optional: the way the agent signs itself in at start
 //! model = "claude-sonnet-4"          # optional: the model to switch to, one the agent offers
@@ -87,18 +87,6 @@ pub enum Route {
     Login,
 }
 
-/// Whether the agent is offered the desktop's actions over the per-session tool edge
-/// (`docket_acp_host::ToolsEdge`).
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum ToolsMode {
-    /// `session/new` offers an MCP server whose calls are router calls of this session.
-    #[default]
-    Offered,
-    /// The agent has its own tools and the host's `fs/*` and `terminal/*` only.
-    Off,
-}
-
 /// Which model the endpoint serves.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -120,6 +108,11 @@ pub enum EndpointKind {
     Account,
     /// A model on this computer or an attached engine.
     Model,
+}
+
+/// The default of `tools`: the agent is offered the desktop's actions.
+fn offered() -> bool {
+    true
 }
 
 #[derive(Debug, Deserialize)]
@@ -156,8 +149,8 @@ struct Raw {
     login: Vec<String>,
     #[serde(default)]
     logout: Vec<String>,
-    #[serde(default)]
-    tools: ToolsMode,
+    #[serde(default = "offered")]
+    tools: bool,
     label: Option<String>,
     profile: Option<String>,
     sign_in: Option<String>,
@@ -251,8 +244,11 @@ pub struct Entry {
     pub login: Vec<String>,
     /// The logout command, if it has one.
     pub logout: Vec<String>,
-    /// Whether the agent is offered the desktop's actions.
-    pub tools: ToolsMode,
+    /// Whether the agent is offered the desktop's actions over the per-session tool edge
+    /// (`docket_acp_host::ToolsEdge`): `session/new` offers an MCP server whose calls are router
+    /// calls of this session. Off, the agent has its own tools and the host's `fs/*` and
+    /// `terminal/*` only.
+    pub tools: bool,
     /// What the person calls it, shown in the audit and the journal. Written here and nowhere
     /// else: never taken from what the agent says of itself.
     pub label: Option<prov::AgentLabel>,

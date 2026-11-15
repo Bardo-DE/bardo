@@ -115,7 +115,7 @@ fn the_entry_is_an_agents_toml_entry_under_the_scratch_home() {
         entry.home.as_ref().map(|h| h.as_str()),
         Some("/scratch/world-1")
     );
-    assert_eq!(entry.tools, docket_launch::ToolsMode::Offered);
+    assert!(entry.tools);
     assert_eq!(entry.set[0].1, "a \"quoted\" value");
 }
 

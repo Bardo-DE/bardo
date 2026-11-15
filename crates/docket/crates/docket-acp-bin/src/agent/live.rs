@@ -21,7 +21,7 @@ use docket_dbus::CONFIRM_PATH;
 use docket_host::EditorDesk;
 use docket_launch::{
     Accounts, AgentSpawn, AgentsFile, BwrapProcs, ChildProc, Entry, Registry,
-    ToolsMode, login_run,
+    login_run,
 };
 use docket_manifest::ValidManifest;
 use docket_permissions_core::ACP_AGENT_APP;
@@ -272,7 +272,7 @@ impl<A: Accounts + 'static> Live<A> {
     fn tools_for(&self, program: &ProgramName) -> Option<ToolsOffer> {
         self.file
             .get(program)
-            .filter(|entry| entry.tools == ToolsMode::Offered)
+            .filter(|entry| entry.tools)
             .and_then(|_| self.tools.clone())
     }
 

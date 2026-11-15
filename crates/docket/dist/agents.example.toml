@@ -27,7 +27,7 @@ login = ["konsole", "-e", "claude", "login"]
 # The desktop's actions (mail, contacts, memory) are offered to the agent as an MCP server it starts itself
 # (the `actions-mcp` program beside docket-agent); every call is a call of this session, asked about like the
 # planner's. "off" keeps the agent to its own tools and the host's file and terminal methods.
-tools = "offered"
+tools = true
 # Confines what Claude Code brings of its own (profile = "claude-code"). Claude Code ignores a managed-settings
 # file outside its hosted mode, so docket sends the settings the way the ACP adapter takes them: in the
 # `session/new` request it writes itself (`_meta.claudeCode.options.settings`, Claude Code's flag-settings tier,

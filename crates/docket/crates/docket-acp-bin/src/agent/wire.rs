@@ -16,16 +16,6 @@ use docket_launch::{AgentsFile, ChildProc, Registry, Supervisor};
 use docket_settings::AgentSettings;
 use std::sync::Arc;
 
-/// Whether the agent is offered the desktop's actions.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Tools {
-    /// When `actions-mcp` is beside this program; an entry in `agents.toml` can still switch it
-    /// off for its program.
-    Wanted,
-    /// Never: a start that only reads what the agent offers.
-    Unwanted,
-}
-
 /// What `agents.toml` says, once `agent.acp.agents` is on and before anything starts: the programs
 /// that may start.
 #[derive(Debug)]
@@ -53,11 +43,13 @@ pub fn allowed(places: &Places) -> Result<Allowed, AgentFault> {
 }
 
 /// The wiring of a host on `bus`: the sandbox, the launcher registered on the bus and the tool
-/// edge. `fallback` says who answers the sheets of the agent's session; `places` is what
+/// edge (`tools`: whether the agent may be offered the desktop's actions, when `actions-mcp` is
+/// beside this program; an entry in `agents.toml` can still switch it off for its program; a
+/// start that only reads what the agent offers passes false). `fallback` says who answers the sheets of the agent's session; `places` is what
 /// `main` read of the environment.
 pub async fn build(
     allowed: Allowed,
-    tools: Tools,
+    tools: bool,
     fallback: Fallback,
     bus: BusConnection,
     limits: SandboxLimits,
@@ -83,7 +75,7 @@ pub async fn build(
     // The desktop's actions go to the agent as an MCP server it starts itself: the `actions-mcp`
     // program beside this one, as the bridge to this host. Whether a program is offered it (an
     // entry can switch it off) and which of the actions is decided where its backend is made.
-    let offered = (tools == Tools::Wanted)
+    let offered = tools
         .then(|| sibling("actions-mcp"))
         .flatten()
         .filter(|bridge| std::path::Path::new(bridge.as_str()).exists())
@@ -91,7 +83,7 @@ pub async fn build(
             run_dir: run_dir.clone(),
             bridge,
         });
-    if offered.is_none() && tools == Tools::Wanted {
+    if offered.is_none() && tools {
         eprintln!(
             "docket-agent: no agent is offered the desktop's actions (no actions-mcp beside this program)"
         );

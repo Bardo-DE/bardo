@@ -46,7 +46,7 @@ use prov::UnixSeconds;
 use std::sync::Arc;
 use tokio::io::{AsyncBufReadExt, BufReader, Stdin};
 use tokio::sync::Mutex;
-use wire::{SandboxLimits, Tools, allowed};
+use wire::{SandboxLimits, allowed};
 
 type Lines = Arc<Mutex<tokio::io::Lines<BufReader<Stdin>>>>;
 
@@ -63,10 +63,7 @@ pub async fn run(
     args: Args,
     env: impl Fn(&str) -> Option<String> + Send + Sync + 'static,
 ) -> Result<(), AgentFault> {
-    let tools = match args.mode {
-        Mode::Session => Tools::Wanted,
-        Mode::Refresh => Tools::Unwanted,
-    };
+    let tools = args.mode == Mode::Session;
     let places = Places::read(env);
     let bus = docket_dbus::session_connection(&|name: &str| places.var(name))
         .await

@@ -232,7 +232,7 @@ impl AcpSpec {
             ));
             out.push_str(&format!("home = {}\n", path(home)));
         }
-        out.push_str("tools = \"offered\"\n");
+        out.push_str("tools = true\n");
         if let Some(profile) = &self.profile {
             out.push_str(&format!("profile = {}\n", quote(profile)));
         }

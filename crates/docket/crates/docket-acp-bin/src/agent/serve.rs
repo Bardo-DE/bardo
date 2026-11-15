@@ -27,7 +27,7 @@ use super::helper_host::HelperHost;
 use super::host::{Hosted, open_on};
 use super::live::Live;
 use super::places::Places;
-use super::wire::{self, SandboxLimits, Tools};
+use super::wire::{self, SandboxLimits};
 use bulkhead::NetworkMode;
 use companion_model::helper::{AppsAsk, AppsReply};
 use docket_acp_host::Fallback;
@@ -142,7 +142,7 @@ impl Service {
             .get_or_try_init(|| async {
                 let wiring = wire::build(
                     wire::allowed(&self.places)?,
-                    Tools::Wanted,
+                    true,
                     Fallback::Off,
                     self.bus.clone(),
                     self.limits,

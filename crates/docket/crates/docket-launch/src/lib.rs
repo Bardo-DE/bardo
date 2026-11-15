@@ -42,7 +42,7 @@ pub use accounts::{
 };
 pub use child::{Child, Registry};
 pub use config::{
-    AgentsFile, ConfigFault, Endpoint, EndpointKind, Entry, Route, SESSION_MARK, ToolsMode,
+    AgentsFile, ConfigFault, Endpoint, EndpointKind, Entry, Route, SESSION_MARK,
 };
 pub use confine::Confinement;
 pub use login_only::LoginOnly;
