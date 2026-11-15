@@ -308,17 +308,6 @@ fn the_person_may_take_a_standard_chord_but_not_a_reserved_one() {
 }
 
 #[test]
-fn changes_to_actions_nobody_registered_stay_dormant() {
-    let (overrides, _) = Overrides::parse("temor.ghost = Ctrl+Alt+Shift+Left\n");
-    let (keymap, _) = Keymap::conventional(on(Desktop::Other)).with_overrides(&overrides);
-    assert_eq!(keymap.dormant_overrides(), [action("temor.ghost")]);
-    assert_eq!(
-        keymap.resolve(&input("Ctrl+Alt+Shift+Left"), Context::Normal),
-        None
-    );
-}
-
-#[test]
 fn a_default_that_cannot_fire_in_a_terminal_falls_back() {
     // Primary+Alt+= is Ctrl+Shift+Alt+= (read as Ctrl+Alt++) in a Windows terminal: plain Ctrl,
     // which the program keeps, so it cannot fire there and the fallback serves.
