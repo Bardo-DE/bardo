@@ -11,7 +11,7 @@ use casement_core::WindowId;
 use casement_core::window::FrameStyle;
 use casement_motion::OutputFrame;
 use casement_render::ClosingFrame;
-use ds_core::vocab::Activity;
+
 use std::collections::BTreeMap;
 
 /// What is kept of a framed window.
@@ -22,7 +22,7 @@ pub(crate) struct Kept {
     /// The window's title.
     pub(crate) title: String,
     /// Whether it was the window in use.
-    pub(crate) activity: Activity,
+    pub(crate) activity: bool,
 }
 
 /// Keeps the frame of every window in `styles` (the framed windows of the model) as it is now.

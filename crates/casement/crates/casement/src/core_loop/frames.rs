@@ -22,7 +22,7 @@ use casement_render::{ClientRound, CursorDraw, CursorShape, margin_of, window_co
 use casement_wayland::seat::{Candidate, SurfaceAt, surface_under};
 use casement_wayland::serial::{PressKind, PressRecord};
 use casement_wayland::xdg_decoration::DecorationMode;
-use ds_core::vocab::Activity;
+
 use smithay::input::Seat;
 use std::collections::BTreeMap;
 
@@ -123,11 +123,8 @@ fn styles_where(state: &State, keep: fn(&WindowState) -> bool) -> BTreeMap<Windo
 }
 
 /// Whether `window` is the one the person works in: its frame and title draw in the key ink.
-pub(super) fn activity_of(window: &casement_core::window::Window) -> Activity {
-    match window.emphasis {
-        Emphasis::Key | Emphasis::Main => Activity::Active,
-        _ => Activity::Inactive,
-    }
+pub(super) fn activity_of(window: &casement_core::window::Window) -> bool {
+    matches!(window.emphasis, Emphasis::Key | Emphasis::Main)
 }
 
 /// The windows whose client was answered server-side and whose state `keep` accepts.

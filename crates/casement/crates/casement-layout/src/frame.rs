@@ -7,7 +7,7 @@
 use casement_core::window::{
     FrameColour, FrameLook, FrameMetrics, FrameStyle, Light, LightDraw, ShadowLayer,
 };
-use ds_core::vocab::{Activity, Shown};
+
 use ds_style::appearance::theme::{Scheme, Theme};
 use ds_style::tokens::chrome::light_hue::{Light as HueLight, light_hue};
 use ds_style::tokens::chrome::{ChromeToken, GroupHover, LightFill, LightState, light_state};
@@ -31,12 +31,13 @@ pub fn metrics() -> FrameMetrics {
 
 /// The frame as it looks in `scheme` for a window in `activity` with the pointer as `hover`
 /// says.
-pub fn frame_style(scheme: Scheme, activity: Activity, hover: GroupHover) -> FrameStyle {
+pub fn frame_style(scheme: Scheme, activity: bool, hover: GroupHover) -> FrameStyle {
     let state = light_state(activity, hover);
     let token = |token: ColourToken| colour(token.value(scheme));
-    let ground = match activity {
-        Activity::Active => ColourToken::Paper,
-        Activity::Inactive => ColourToken::Surface2,
+    let ground = if activity {
+        ColourToken::Paper
+    } else {
+        ColourToken::Surface2
     };
     FrameStyle {
         metrics: metrics(),
@@ -74,9 +75,8 @@ pub fn scheme_of(theme: Theme) -> Scheme {
 /// ```
 /// use casement_core::window::Light;
 /// use casement_layout::{GroupHover, Scheme, frame_style, pressed};
-/// use ds_core::vocab::Activity;
 ///
-/// let rest = frame_style(Scheme::Light, Activity::Active, GroupHover::Away);
+/// let rest = frame_style(Scheme::Light, true, GroupHover::Away);
 /// let down = pressed(rest, Light::Close, Scheme::Light);
 /// assert!(down.look.light(Light::Close).mark.is_some());
 /// assert_eq!(down.look.light(Light::Zoom), rest.look.light(Light::Zoom));
@@ -120,10 +120,7 @@ fn light(state: LightState, which: Light, scheme: Scheme) -> LightDraw {
             colour(ColourToken::InkFaint.value(scheme)),
         ),
     };
-    let mark = match state.marks {
-        Shown::Visible => Some(rgb(ink)),
-        Shown::Hidden => None,
-    };
+    let mark = state.marks.then(|| rgb(ink));
     LightDraw { fill, ring, mark }
 }
 
@@ -214,35 +211,11 @@ mod tests {
 
     #[test]
     fn the_lights_follow_activity_and_hover() {
-        const CASES: &[(&str, Activity, GroupHover, bool, bool)] = &[
-            (
-                "key at rest",
-                Activity::Active,
-                GroupHover::Away,
-                true,
-                false,
-            ),
-            (
-                "key hovered",
-                Activity::Active,
-                GroupHover::Over,
-                true,
-                true,
-            ),
-            (
-                "inactive at rest",
-                Activity::Inactive,
-                GroupHover::Away,
-                false,
-                false,
-            ),
-            (
-                "inactive hovered",
-                Activity::Inactive,
-                GroupHover::Over,
-                true,
-                true,
-            ),
+        const CASES: &[(&str, bool, GroupHover, bool, bool)] = &[
+            ("key at rest", true, GroupHover::Away, true, false),
+            ("key hovered", true, GroupHover::Over, true, true),
+            ("inactive at rest", false, GroupHover::Away, false, false),
+            ("inactive hovered", false, GroupHover::Over, true, true),
         ];
         for (name, activity, hover, coloured, marked) in CASES {
             let draw = frame_style(Scheme::Light, *activity, *hover);
@@ -261,7 +234,7 @@ mod tests {
 
     #[test]
     fn a_pressed_light_is_darker_with_its_mark_and_the_others_stay() {
-        let rest = frame_style(Scheme::Light, Activity::Inactive, GroupHover::Away);
+        let rest = frame_style(Scheme::Light, false, GroupHover::Away);
         for light in Light::ALL {
             let down = pressed(rest, light, Scheme::Light);
             let (was, now) = (rest.look.light(light), down.look.light(light));
@@ -287,15 +260,15 @@ mod tests {
 
     #[test]
     fn a_dark_frame_has_a_dark_titlebar() {
-        let light = frame_style(Scheme::Light, Activity::Active, GroupHover::Away);
-        let dark = frame_style(Scheme::Dark, Activity::Active, GroupHover::Away);
+        let light = frame_style(Scheme::Light, true, GroupHover::Away);
+        let dark = frame_style(Scheme::Dark, true, GroupHover::Away);
         assert!(dark.look.titlebar.r < light.look.titlebar.r);
     }
 
     #[test]
     fn an_inactive_titlebar_is_lighter() {
-        let key = frame_style(Scheme::Light, Activity::Active, GroupHover::Away);
-        let idle = frame_style(Scheme::Light, Activity::Inactive, GroupHover::Away);
+        let key = frame_style(Scheme::Light, true, GroupHover::Away);
+        let idle = frame_style(Scheme::Light, false, GroupHover::Away);
         assert!(idle.look.titlebar.r > key.look.titlebar.r);
     }
 
@@ -304,7 +277,7 @@ mod tests {
     #[test]
     fn the_radius_is_quires_window_radius() {
         for scheme in SCHEMES {
-            let look = frame_style(scheme, Activity::Active, GroupHover::Away).look;
+            let look = frame_style(scheme, true, GroupHover::Away).look;
             assert_eq!(look.radius, u32::from(Radius::Window.px()), "{scheme:?}");
         }
     }
@@ -314,7 +287,7 @@ mod tests {
         for scheme in SCHEMES {
             let quire = Shadow::Window.layers(scheme);
             assert_eq!(quire.len(), 2, "{scheme:?}: FrameLook holds two layers");
-            let look = frame_style(scheme, Activity::Active, GroupHover::Away).look;
+            let look = frame_style(scheme, true, GroupHover::Away).look;
             for (ours, theirs) in look.shadow.iter().zip(quire) {
                 let [r, g, b, a] = theirs.rgba();
                 assert_eq!(
@@ -335,13 +308,13 @@ mod tests {
     #[test]
     fn the_lights_are_quires_hues_and_inks_in_both_schemes() {
         for scheme in SCHEMES {
-            let marked = frame_style(scheme, Activity::Active, GroupHover::Over).look;
+            let marked = frame_style(scheme, true, GroupHover::Over).look;
             for light in Light::ALL {
                 let (disc, ink) = light_hue(hue_light(light), scheme);
                 let draw = marked.light(light);
                 assert_eq!(draw.fill, rgb(disc), "{scheme:?} {light:?} disc");
                 assert_eq!(draw.mark, Some(rgb(ink)), "{scheme:?} {light:?} mark");
-                let rest = frame_style(scheme, Activity::Active, GroupHover::Away);
+                let rest = frame_style(scheme, true, GroupHover::Away);
                 let held = pressed(rest, light, scheme).look.light(light);
                 assert_eq!(held.mark, Some(rgb(ink)), "{scheme:?} {light:?} held mark");
                 assert_eq!(

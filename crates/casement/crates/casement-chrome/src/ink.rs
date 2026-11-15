@@ -1,7 +1,6 @@
 //! The title's ink: quire's primary ink for the key window, its secondary ink for the others,
 //! in the scheme the frame is drawn in.
 
-use ds_core::vocab::Activity;
 use ds_style::appearance::theme::Scheme;
 use ds_style::tokens::colour::ColourToken;
 use ds_style::tokens::hex::Colour;
@@ -44,18 +43,18 @@ impl Ink {
 ///
 /// ```
 /// use casement_chrome::ink;
-/// use ds_core::vocab::Activity;
 /// use ds_style::appearance::theme::Scheme;
 ///
 /// assert_ne!(
-///     ink(Scheme::Light, Activity::Active),
-///     ink(Scheme::Light, Activity::Inactive)
+///     ink(Scheme::Light, true),
+///     ink(Scheme::Light, false)
 /// );
 /// ```
-pub fn ink(scheme: Scheme, activity: Activity) -> Ink {
-    let token = match activity {
-        Activity::Active => ColourToken::Ink,
-        Activity::Inactive => ColourToken::InkSoft,
+pub fn ink(scheme: Scheme, activity: bool) -> Ink {
+    let token = if activity {
+        ColourToken::Ink
+    } else {
+        ColourToken::InkSoft
     };
     Ink::of(token.value(scheme))
 }
@@ -116,11 +115,11 @@ mod tests {
 
     #[test]
     fn the_ink_is_the_token_per_scheme_and_activity() {
-        const CASES: &[(Scheme, Activity, ColourToken)] = &[
-            (Scheme::Light, Activity::Active, ColourToken::Ink),
-            (Scheme::Light, Activity::Inactive, ColourToken::InkSoft),
-            (Scheme::Dark, Activity::Active, ColourToken::Ink),
-            (Scheme::Dark, Activity::Inactive, ColourToken::InkSoft),
+        const CASES: &[(Scheme, bool, ColourToken)] = &[
+            (Scheme::Light, true, ColourToken::Ink),
+            (Scheme::Light, false, ColourToken::InkSoft),
+            (Scheme::Dark, true, ColourToken::Ink),
+            (Scheme::Dark, false, ColourToken::InkSoft),
         ];
         for (scheme, activity, token) in CASES {
             assert_eq!(
@@ -133,7 +132,7 @@ mod tests {
 
     #[test]
     fn dark_ink_is_lighter_than_light_ink() {
-        for activity in [Activity::Active, Activity::Inactive] {
+        for activity in [true, false] {
             let (light, dark) = (ink(Scheme::Light, activity), ink(Scheme::Dark, activity));
             assert!(dark.r > light.r, "{activity:?}");
         }

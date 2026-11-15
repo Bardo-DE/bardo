@@ -2,7 +2,7 @@
 
 use crate::place::device;
 use ds_core::geometry::scale::Scale;
-use ds_core::vocab::Activity;
+
 use ds_style::appearance::theme::Scheme;
 
 /// The most characters of a title that are ever shaped. A client's title is untrusted text of
@@ -24,7 +24,7 @@ pub struct TitleKey {
     /// The scheme the frame is drawn in.
     pub scheme: Scheme,
     /// Whether the window is the key window (primary ink) or not (secondary ink).
-    pub activity: Activity,
+    pub activity: bool,
 }
 
 impl TitleKey {
@@ -33,10 +33,9 @@ impl TitleKey {
     /// ```
     /// use casement_chrome::TitleKey;
     /// use ds_core::geometry::scale::Scale;
-    /// use ds_core::vocab::Activity;
     /// use ds_style::appearance::theme::Scheme;
     ///
-    /// let key = TitleKey::new("a\nb", 400, 28, Scale(180), Scheme::Light, Activity::Active);
+    /// let key = TitleKey::new("a\nb", 400, 28, Scale(180), Scheme::Light, true);
     /// assert_eq!(key.title, "a b");
     /// assert_eq!(key.device_size(), (600, 42));
     /// ```
@@ -46,7 +45,7 @@ impl TitleKey {
         height: u32,
         scale: Scale,
         scheme: Scheme,
-        activity: Activity,
+        activity: bool,
     ) -> TitleKey {
         TitleKey {
             title: tidy(title),
@@ -121,28 +120,28 @@ mod tests {
             (333, 28, 240, 666, 56),
         ];
         for (w, h, scale, want_w, want_h) in CASES {
-            let key = TitleKey::new("t", *w, *h, Scale(*scale), Scheme::Light, Activity::Active);
+            let key = TitleKey::new("t", *w, *h, Scale(*scale), Scheme::Light, true);
             assert_eq!(key.device_size(), (*want_w, *want_h), "{w}x{h} at {scale}");
         }
     }
 
     #[test]
     fn every_field_is_part_of_the_key() {
-        let base = TitleKey::new("t", 400, 28, Scale(120), Scheme::Light, Activity::Active);
+        let base = TitleKey::new("t", 400, 28, Scale(120), Scheme::Light, true);
         let others = [
-            TitleKey::new("u", 400, 28, Scale(120), Scheme::Light, Activity::Active),
-            TitleKey::new("t", 401, 28, Scale(120), Scheme::Light, Activity::Active),
-            TitleKey::new("t", 400, 29, Scale(120), Scheme::Light, Activity::Active),
-            TitleKey::new("t", 400, 28, Scale(180), Scheme::Light, Activity::Active),
-            TitleKey::new("t", 400, 28, Scale(120), Scheme::Dark, Activity::Active),
-            TitleKey::new("t", 400, 28, Scale(120), Scheme::Light, Activity::Inactive),
+            TitleKey::new("u", 400, 28, Scale(120), Scheme::Light, true),
+            TitleKey::new("t", 401, 28, Scale(120), Scheme::Light, true),
+            TitleKey::new("t", 400, 29, Scale(120), Scheme::Light, true),
+            TitleKey::new("t", 400, 28, Scale(180), Scheme::Light, true),
+            TitleKey::new("t", 400, 28, Scale(120), Scheme::Dark, true),
+            TitleKey::new("t", 400, 28, Scale(120), Scheme::Light, false),
         ];
         for other in &others {
             assert_ne!(&base, other);
         }
         assert_eq!(
             base,
-            TitleKey::new(" t\n", 400, 28, Scale(120), Scheme::Light, Activity::Active)
+            TitleKey::new(" t\n", 400, 28, Scale(120), Scheme::Light, true)
         );
     }
 }

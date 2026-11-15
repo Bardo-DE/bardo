@@ -24,7 +24,7 @@ use casement_render::{
     Rgba8, shown_length,
 };
 use casement_wayland::xdg_toplevel_icon::icon_of;
-use ds_core::vocab::Activity;
+
 use std::collections::BTreeMap;
 
 /// The narrowest a window's title under it is made (a very small window still gets a readable
@@ -242,14 +242,7 @@ fn label_of(
         .render
         .labels
         .get_or_insert_with(|| TitleRaster::system(Margins { left: 0, right: 0 }));
-    let key = TitleKey::new(
-        title,
-        size.w,
-        size.h,
-        view.scale,
-        Scheme::Dark,
-        Activity::Active,
-    );
+    let key = TitleKey::new(title, size.w, size.h, view.scale, Scheme::Dark, true);
     let draw = raster.render(&key).ok()?;
     Some((size, draw))
 }

@@ -24,7 +24,7 @@ use casement_testclient::{Pattern, shm_buffer};
 use casement_testkit::fakes::callers;
 use casement_testkit::{ClientId, Fixture, FixtureSpec, TestOrigin};
 use casement_wayland::foreign_toplevel_list::identifier_of;
-use ds_core::vocab::Activity;
+
 use porter_core::SandboxFacts;
 use std::time::Duration;
 
@@ -327,7 +327,7 @@ fn resting_on_the_green_light_shows_the_menu_and_a_pick_tiles_the_window() {
 
     // The light is where the frame puts it round the content (the layout's rectangle).
     let content = fixture.framed_content_of(window);
-    let style = frame_style(Scheme::Light, Activity::Active, GroupHover::Away);
+    let style = frame_style(Scheme::Light, true, GroupHover::Away);
     let light = style.around(content).light(Light::Zoom);
     let device = pointer(&mut fixture);
     fixture.input().pointer_to(device, light.centre());

@@ -11,7 +11,7 @@ use casement_core::{OutputName, WindowId};
 use casement_layout::{GroupHover, Scheme, frame_style};
 use casement_testclient::Pattern;
 use casement_testkit::{Fixture, FixtureSpec, FrameCount, ShotTarget};
-use ds_core::vocab::Activity;
+
 use std::time::Duration;
 
 const APP: &str = "org.example.frames";
@@ -42,7 +42,7 @@ fn geometry(
     fixture: &Fixture,
     window: WindowId,
     scheme: Scheme,
-    activity: Activity,
+    activity: bool,
     hover: GroupHover,
 ) -> casement_core::window::FrameGeometry {
     frame_style(scheme, activity, hover).around(fixture.framed_content_of(window))
@@ -83,14 +83,7 @@ fn a_large_windows_shadow_at_2x_is_seamless() {
     desk.kept.keep(top);
     let window = only_window(desk.fixture);
     let shot = desk.shoot();
-    let frame = geometry(
-        desk.fixture,
-        window,
-        Scheme::Light,
-        Activity::Active,
-        GroupHover::Away,
-    )
-    .outline();
+    let frame = geometry(desk.fixture, window, Scheme::Light, true, GroupHover::Away).outline();
     let at = |x: i32, y: i32| -> [u8; 4] {
         let clamp = |v: i32, limit: u32| {
             u32::try_from(v.max(0))
@@ -151,14 +144,7 @@ fn the_shadow_fades_with_the_window() {
     let top = desk.framed_window(APP, "Closing", (600, 400), Pattern::Gradient, Dpi::One);
     let window = only_window(desk.fixture);
     desk.fixture.advance(Duration::from_secs(1));
-    let frame = geometry(
-        desk.fixture,
-        window,
-        Scheme::Light,
-        Activity::Active,
-        GroupHover::Away,
-    )
-    .outline();
+    let frame = geometry(desk.fixture, window, Scheme::Light, true, GroupHover::Away).outline();
     let probe = LogicalPoint {
         x: frame.origin.x - 4,
         y: frame.origin.y + i32::try_from(frame.size.h / 2).expect("a small height"),
@@ -274,10 +260,10 @@ fn the_frame_follows_the_scheme_with_a_centred_title_lit_lights_and_round_corner
         let of = |window: WindowId, activity, hover| {
             geometry(desk.fixture, window, scheme, activity, hover)
         };
-        let bar = of(key, Activity::Active, GroupHover::Away);
+        let bar = of(key, true, GroupHover::Away);
         let key_close = bar.light(Light::Close);
-        let other_away = of(other, Activity::Inactive, GroupHover::Away);
-        let other_over = of(other, Activity::Inactive, GroupHover::Over);
+        let other_away = of(other, false, GroupHover::Away);
+        let other_over = of(other, false, GroupHover::Over);
         let (other_close, group) = (other_away.light(Light::Close), other_away.lights());
         let over_close = other_over.light(Light::Close);
         let content = desk.fixture.framed_content_of(key);

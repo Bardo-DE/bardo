@@ -58,11 +58,10 @@ impl TitleRaster {
     /// ```
     /// use casement_chrome::{Margins, TitleKey, TitleRaster};
     /// use ds_core::geometry::scale::Scale;
-    /// use ds_core::vocab::Activity;
     /// use ds_style::appearance::theme::Scheme;
     ///
     /// let mut titles = TitleRaster::system(Margins { left: 73, right: 13 });
-    /// let key = TitleKey::new("Notes", 400, 28, Scale(240), Scheme::Light, Activity::Active);
+    /// let key = TitleKey::new("Notes", 400, 28, Scale(240), Scheme::Light, true);
     /// let pixels = titles.render(&key).expect("a title fits");
     /// assert_eq!((pixels.width, pixels.height), (800, 56));
     /// assert_eq!(pixels.rgba.len(), 800 * 56 * 4);
@@ -198,7 +197,7 @@ impl TitleRaster {
 mod tests {
     use super::*;
     use ds_core::geometry::scale::Scale;
-    use ds_core::vocab::Activity;
+
     use ds_style::appearance::theme::Scheme;
 
     fn engine() -> TitleRaster {
@@ -208,7 +207,7 @@ mod tests {
         })
     }
 
-    fn key(title: &str, width: u32, scale: u32, activity: Activity) -> TitleKey {
+    fn key(title: &str, width: u32, scale: u32, activity: bool) -> TitleKey {
         TitleKey::new(title, width, 28, Scale(scale), Scheme::Light, activity)
     }
 
@@ -232,7 +231,7 @@ mod tests {
             (400, 240, (800, 56)),
         ] {
             let pixels = titles
-                .render(&key("Notes", width, scale, Activity::Active))
+                .render(&key("Notes", width, scale, true))
                 .expect("fits");
             assert_eq!((pixels.width, pixels.height), want, "at {scale}");
             assert_eq!(pixels.rgba.len(), (want.0 * want.1 * 4) as usize);
@@ -244,29 +243,13 @@ mod tests {
     fn a_title_that_cannot_be_drawn_says_why() {
         let mut titles = engine();
         let cases = [
-            (
-                "empty",
-                key("", 400, 120, Activity::Active),
-                TitleError::Empty,
-            ),
-            (
-                "blank",
-                key(" \n ", 400, 120, Activity::Active),
-                TitleError::Empty,
-            ),
-            (
-                "no room",
-                key("Notes", 80, 120, Activity::Active),
-                TitleError::NoRoom,
-            ),
-            (
-                "no bar",
-                key("Notes", 0, 120, Activity::Active),
-                TitleError::NoRoom,
-            ),
+            ("empty", key("", 400, 120, true), TitleError::Empty),
+            ("blank", key(" \n ", 400, 120, true), TitleError::Empty),
+            ("no room", key("Notes", 80, 120, true), TitleError::NoRoom),
+            ("no bar", key("Notes", 0, 120, true), TitleError::NoRoom),
             (
                 "too wide",
-                key("Notes", 70_000, 120, Activity::Active),
+                key("Notes", 70_000, 120, true),
                 TitleError::TooLarge {
                     width: 70_000,
                     height: 28,
@@ -281,18 +264,14 @@ mod tests {
     #[test]
     fn a_kept_raster_is_the_same_one_and_a_changed_key_is_a_new_one() {
         let mut titles = engine();
-        let first = titles
-            .render(&key("Notes", 400, 120, Activity::Active))
-            .expect("fits");
-        let again = titles
-            .render(&key("Notes", 400, 120, Activity::Active))
-            .expect("fits");
+        let first = titles.render(&key("Notes", 400, 120, true)).expect("fits");
+        let again = titles.render(&key("Notes", 400, 120, true)).expect("fits");
         assert!(Arc::ptr_eq(&first.rgba, &again.rgba));
         for other in [
-            key("Notes!", 400, 120, Activity::Active),
-            key("Notes", 401, 120, Activity::Active),
-            key("Notes", 400, 180, Activity::Active),
-            key("Notes", 400, 120, Activity::Inactive),
+            key("Notes!", 400, 120, true),
+            key("Notes", 401, 120, true),
+            key("Notes", 400, 180, true),
+            key("Notes", 400, 120, false),
         ] {
             let made = titles.render(&other).expect("fits");
             assert_ne!(made.id, first.id);
@@ -303,9 +282,7 @@ mod tests {
     fn a_long_title_is_cut_and_stays_off_the_lights_and_the_edge() {
         let mut titles = engine();
         let long = "A very long document title that cannot fit in a narrow window".repeat(3);
-        let pixels = titles
-            .render(&key(&long, 300, 120, Activity::Active))
-            .expect("fits");
+        let pixels = titles.render(&key(&long, 300, 120, true)).expect("fits");
         let (left, right) = Margins {
             left: 73,
             right: 13,
@@ -325,7 +302,7 @@ mod tests {
         let mut titles = engine();
         for n in 0..(KEPT * 2) {
             titles
-                .render(&key(&format!("Window {n}"), 400, 120, Activity::Active))
+                .render(&key(&format!("Window {n}"), 400, 120, true))
                 .expect("fits");
         }
         assert_eq!(titles.kept.len(), KEPT);
