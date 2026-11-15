@@ -215,9 +215,8 @@ def derive_system(files):
     return out
 
 
-def read_components(manifest, extra):
-    with open(manifest, "rb") as f:
-        comps = {name: repo["rev"] for name, repo in tomllib.load(f).get("repo", {}).items()}
+def read_components(extra):
+    comps = {}
     if extra and os.path.exists(extra):
         for line in open(extra, encoding="utf-8"):
             if line.strip() and not line.startswith("#"):
@@ -276,7 +275,7 @@ def pack(a):
     top = os.path.join(a["stage"], *PREFIX.split("/"))
     exports = derive_exports(files, a["exports"])
     system = derive_system(files)
-    comps = read_components(a["manifest"], a["components"])
+    comps = read_components(a["components"])
     notes = open(a["notes"], encoding="utf-8").read().strip()
     epoch = int(os.environ.get("SOURCE_DATE_EPOCH", "0")) or None
     now = datetime.datetime.fromtimestamp(epoch, datetime.UTC) if epoch else datetime.datetime.now(datetime.UTC)
@@ -492,7 +491,7 @@ def main(argv):
     cmd, rest = argv[0], argv[1:]
     try:
         if cmd == "pack":
-            keys = ("stage", "version", "notes", "out", "manifest", "exports", "components")
+            keys = ("stage", "version", "notes", "out", "exports", "components")
             pack(dict(zip(keys, rest + [""] * (len(keys) - len(rest)))))
         elif cmd == "verify":
             verify(rest[0], rest[1])

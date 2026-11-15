@@ -8,7 +8,7 @@
 #   --notes FILE      plain-text release notes
 #   --out DIR         where the three files go
 #   --exports FILE    extra exports (default release/exports.toml)
-#   --components FILE extra "name rev" lines that are not in manifest.toml (build.sh writes it)
+#   --components FILE the "name rev" lines of the components (build.sh writes them: components.d/*.txt joined)
 #
 # Environment: MINISIGN_KEY_FILE (the secret key), MINISIGN_PASSWORD (read by minisign from stdin; empty
 # for a key without one). SOURCE_DATE_EPOCH fixes the date. The bundle is deterministic: sorted, mtime 0,
@@ -37,4 +37,4 @@ done
 for tool in python3 zstd minisign; do
   command -v "$tool" >/dev/null || { echo "pack.sh: $tool is not installed ($(install_hint "$tool"))" >&2; exit 2; }
 done
-exec python3 -I "$HERE/release.py" pack "$stage" "$version" "$notes" "$out" "$HERE/../manifest.toml" "$exports" "$comps"
+exec python3 -I "$HERE/release.py" pack "$stage" "$version" "$notes" "$out" "$exports" "$comps"

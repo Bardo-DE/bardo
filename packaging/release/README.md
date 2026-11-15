@@ -1,16 +1,16 @@
 # Releases
 
-A signed binary bundle of the whole desktop, built by GitHub Actions at the revs `manifest.toml` pins and
-published to the public repo `PoHsuanLai/desktop-releases` (binaries only; the source repos stay private).
+A signed binary bundle of the whole desktop, built by GitHub Actions from one commit of the bardo tree and
+published to the public repo `PoHsuanLai/desktop-releases` (binaries only; the source stays private).
 slipway, the updater, reads it.
 
 | File | What |
 |---|---|
-| `build.sh` | builds each component (`cargo build --release --locked`, run from `/` with `--manifest-path` so the system linker is used; see `install/cargo.sh`) and installs it under `/opt/quire/current` into a staging root |
+| `build.sh` | builds each component from this tree (`cargo build --release --locked -p ...`, run from `/` with `--manifest-path` so the system linker is used, into one target directory; see `install/cargo.sh`) and installs it under `/opt/quire/current` into a staging root |
 | `pack.sh` | stage -> `release.toml` (digests, modes, components, exports), `bundle.tar.zst` (deterministic), `release.toml.minisig` |
 | `verify.sh` | checks a packed release the way slipway will; the CI runs it before publishing |
 | `system-files.list` | the system files a release may place, one rule each (a committed copy of slipway's `ALLOWED_SYSTEM_FILES`); `release.py` reads it, so `pack` and `verify` refuse a `system/` path no rule names |
-| `check-system-list.sh` | fails unless that list equals slipway's own (the workflow runs it against the pinned slipway checkout) |
+| `check-system-list.sh` | fails unless that list equals slipway's own (the workflow runs it; the slipway crate is in this tree) |
 | `check-helpers.sh` | fails unless slipway's own install is complete: `slipway-apply`, `slipway-rollback` and `slipway-health` in `/usr/libexec`, and the one polkit file with its three actions (installing and the good-start note need no password at the keyboard, going back asks for the administrator's); `smoke.sh` and `bootstrap.sh` run it |
 | `health-scenarios.sh` | two scenarios with slipway's real programs on a throwaway computer: two logins that run `recover` and `confirm` keep the newest release, and restarts that never confirm put the previous release back on the third; the workflow's `health` job runs it in a privileged container, and publishing waits for it |
 | `selftest.sh` | packs a fake stage with a throwaway key, verifies it, and checks that hostile releases are refused; a SKIP (exit 2) without minisign; run by `gate/desktop-gate.sh --self` |
@@ -22,7 +22,6 @@ slipway, the updater, reads it.
 | `smoke.sh` | installs a packed release with slipway's helper on a throwaway machine (a CI container) and checks the links, system files, libraries and a repeat install |
 | `lib.sh` | sourced by the scripts: the distribution family and the one-line install hint for a missing tool |
 | `bootstrap.sh` | first install on a machine: downloads the latest release, verifies it, runs slipway's helper |
-| `checkout.sh` | checks out every manifest repo at its rev, side by side (used by the workflow) |
 | `exports.toml` | exports beyond the ones derived from the staged tree (`/usr/local/bin` links) |
 | `release.pub` | the public key (you commit it once, step 3) |
 | `../.github/workflows/release.yml` | the workflow |
@@ -32,7 +31,7 @@ slipway, the updater, reads it.
 Tag `v<semver>`; assets `release.toml`, `release.toml.minisig`, `bundle.tar.zst`.
 
 `release.toml`: `format = 1`, `version`, `date`, `notes`, `bundle = { name, sha256, size }`, a `[components]`
-table (repo -> rev, from `manifest.toml`, plus the repos built that it does not list), one `[[file]]`
+table (component -> rev, from build.sh's `components.d/`: the tree's commit), one `[[file]]`
 (`path`, `sha256`, `mode = 0o755`) per regular file sorted by path, and `[[export]]` (`link`, `target`
 relative to `/opt/quire/current`). The bundle is a tar.zst of regular files and directories only (no links),
 clean relative paths, owner 0, mtime 0, modes 0644 or 0755. Exports may only go under
@@ -99,7 +98,7 @@ and palmrest are system files in `/usr/lib/systemd/system` and were never links.
 
 4. Make two fine-grained personal access tokens (GitHub, Settings, Developer settings):
 
-   - `RELEASE_READ_TOKEN`: resource owner PoHsuanLai, repositories: every private repo in `manifest.toml`
+   - `RELEASE_READ_TOKEN`: resource owner PoHsuanLai, repositories: the bardo repository
      plus slipway (quire, sill, shell-host, blitz-kit, keycap, palmrest, porter, stoker, almanac, docket,
      cua, latchkey, bulkhead, bayonet, mailo, files, detent, transom, anyview, mpv-wgpu, casement-protocols, casement,
      slipway); permission Contents: Read-only, and nothing else.
@@ -111,11 +110,11 @@ and palmrest are system files in `/usr/lib/systemd/system` and were never links.
 
    ```
    for env in release-signing release-publish; do
-     gh api -X PUT repos/PoHsuanLai/desktop/environments/$env \
+     gh api -X PUT repos/Bardo-DE/bardo/environments/$env \
        -F 'deployment_branch_policy[protected_branches]=false' -F 'deployment_branch_policy[custom_branch_policies]=true' \
        -F 'reviewers[][type]=User' -F "reviewers[][id]=$(gh api user --jq .id)"
-     gh api -X POST repos/PoHsuanLai/desktop/environments/$env/deployment-branch-policies -f name=master -f type=branch
-     gh api -X POST repos/PoHsuanLai/desktop/environments/$env/deployment-branch-policies -f name='v*' -f type=tag
+     gh api -X POST repos/Bardo-DE/bardo/environments/$env/deployment-branch-policies -f name=master -f type=branch
+     gh api -X POST repos/Bardo-DE/bardo/environments/$env/deployment-branch-policies -f name='v*' -f type=tag
    done
    ```
 
@@ -128,13 +127,13 @@ and palmrest are system files in `/usr/lib/systemd/system` and were never links.
    run from any branch, which is what the environments are there to prevent:
 
    ```
-   gh secret set MINISIGN_SECRET_KEY --env release-signing --repo PoHsuanLai/desktop < ~/.config/quire-release/release.key
-   gh secret set MINISIGN_PASSWORD   --env release-signing --repo PoHsuanLai/desktop
-   gh secret set RELEASES_TOKEN      --env release-publish --repo PoHsuanLai/desktop
-   gh secret set RELEASE_READ_TOKEN  --repo PoHsuanLai/desktop
-   gh secret delete MINISIGN_SECRET_KEY --repo PoHsuanLai/desktop   # only if an earlier setup made it
-   gh secret delete MINISIGN_PASSWORD   --repo PoHsuanLai/desktop   # only if an earlier setup made it
-   gh secret delete RELEASES_TOKEN      --repo PoHsuanLai/desktop   # only if an earlier setup made it
+   gh secret set MINISIGN_SECRET_KEY --env release-signing --repo Bardo-DE/bardo < ~/.config/quire-release/release.key
+   gh secret set MINISIGN_PASSWORD   --env release-signing --repo Bardo-DE/bardo
+   gh secret set RELEASES_TOKEN      --env release-publish --repo Bardo-DE/bardo
+   gh secret set RELEASE_READ_TOKEN  --repo Bardo-DE/bardo
+   gh secret delete MINISIGN_SECRET_KEY --repo Bardo-DE/bardo   # only if an earlier setup made it
+   gh secret delete MINISIGN_PASSWORD   --repo Bardo-DE/bardo   # only if an earlier setup made it
+   gh secret delete RELEASES_TOKEN      --repo Bardo-DE/bardo   # only if an earlier setup made it
    ```
 
 What this does not do: there is one signing key, and slipway's privileged helper trusts exactly that key file, so
@@ -144,10 +143,10 @@ decision, recorded in FINDINGS).
 
 ## Cutting a release
 
-Pin the revs you want in `manifest.toml` (slipway included), push, then either:
+Commit what you want released (every component is built from the tree's commit), push, then either:
 
 ```
-gh workflow run release.yml --repo PoHsuanLai/desktop -f version=0.2.0 -f notes="What changed, in plain words."
+gh workflow run release.yml --repo Bardo-DE/bardo -f version=0.2.0 -f notes="What changed, in plain words."
 ```
 
 or tag: `git tag -a v0.2.0 -m "What changed" && git push origin v0.2.0` (the tag's message is the notes).
@@ -156,7 +155,7 @@ The workflow builds the components in parallel jobs (casement, sill, anyview, ma
 Arch as well), checks their glibc and library needs, packs and signs, verifies, installs the signed release with
 slipway's helper in clean Ubuntu 24.04, Fedora 44 and Arch containers, and only then creates the release
 `v0.2.0` in desktop-releases. Watch it with
-`gh run watch --repo PoHsuanLai/desktop`. A tag that already exists in desktop-releases fails the last step;
+`gh run watch --repo Bardo-DE/bardo`. A tag that already exists in desktop-releases fails the last step;
 nothing is overwritten.
 
 Each build job may supply only the paths `release/stage-owners.list` gives it. Before the stage tars are merged, the pack job runs
@@ -207,7 +206,7 @@ Release N is the first to carry the four turnstile files. slipway's privileged h
 a release that lists a file its rule list does not name, so **everyone re-runs slipway's install by hand before that release** (the
 `cd slipway && cargo build ... && sudo sh -c 'umask 022 && scripts/install.sh ...'` lines above, with a slipway that has the four rules and, in
 `apply/settle.rs`, the step that reloads systemd and the device rules and starts `turnstile.socket`). A computer that skips it keeps working
-at the version it has: the release is refused whole and says why. `release/system-files.list` and slipway's pin in `manifest.toml` move in
+at the version it has: the release is refused whole and says why. `release/system-files.list` and the slipway crate of this tree move in
 the same step; until then `release/check-system-list.sh` fails against the old pin, on purpose.
 
 Carried by a release: `/usr/lib/keycap/keycap.toml` (Caps Lock switches the input method), keycap's vendor file. `/etc/keycap/keycap.toml` stays the
@@ -218,8 +217,7 @@ carries the input service, so a computer whose helper is older than that rule mu
 ## Local trial
 
 `release/selftest.sh` needs only python3, zstd and minisign. A real local build is
-`release/build.sh --version 0.0.0-dev --out /tmp/rel` (siblings beside this repo, at the manifest revs, or
-`RELEASE_ALLOW_DIRTY_REVS=1`), then `release/pack.sh --stage /tmp/rel/stage --version 0.0.0-dev --notes notes.txt
+`release/build.sh --version 0.0.0-dev --out /tmp/rel` (from this tree; the tree's commit is each component's rev), then `release/pack.sh --stage /tmp/rel/stage --version 0.0.0-dev --notes notes.txt
 --out /tmp/rel/out --components /tmp/rel/components.txt` (`cat /tmp/rel/components.d/*.txt >components.txt`) with
 `MINISIGN_KEY_FILE` set, and `release/verify.sh /tmp/rel/out --pubkey release/release.pub`.
 
