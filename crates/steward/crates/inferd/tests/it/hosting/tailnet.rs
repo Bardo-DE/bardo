@@ -131,37 +131,13 @@ pub fn free_port() -> u16 {
         .port()
 }
 
-/// How the other computer is seen from a network.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Seen {
-    /// A computer of the same user.
-    Mine,
-    /// Tagged as a server.
-    Tagged,
-    /// Another person's.
-    Another,
-    /// Shared in by another person.
-    Shared,
-}
-
 /// The network of the computer `me` (called `me_name`, user 1, at `me_at`), which sees the
-/// other computer (`other_id`, `other_name`, at `other_at`) as `seen`.
+/// other computer (`other_id`, `other_name`, at `other_at`) as one of the same user.
 pub fn network(
     (me_id, me_name, me_at): (&str, &str, IpAddr),
     (other_id, other_name, other_at): (&str, &str, IpAddr),
-    seen: Seen,
 ) -> Network {
-    let other = FakePeer::new(
-        other_id,
-        other_name,
-        if seen == Seen::Another { 2 } else { 1 },
-        &other_at.to_string(),
-    );
-    let other = match seen {
-        Seen::Tagged => other.tagged("tag:ci"),
-        Seen::Shared => other.shared_in(),
-        Seen::Mine | Seen::Another => other,
-    };
+    let other = FakePeer::new(other_id, other_name, 1, &other_at.to_string());
     Network::new(
         "ada@example.org",
         "ada@example.org",

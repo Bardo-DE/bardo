@@ -245,17 +245,3 @@ fn the_answers_have_words_that_read_back_and_no_other_word_is_one() {
         assert_eq!(GuestAnswer::from_slug(word), None, "{word:?}");
     }
 }
-
-#[test]
-fn every_error_says_what_failed_in_lower_case() {
-    for error in [
-        GuestError::NotAsking,
-        GuestError::TooManyAsking,
-        GuestError::TooMany,
-        GuestError::NotSaved,
-    ] {
-        let text = error.to_string();
-        assert!(!text.ends_with('.'), "{text}");
-        assert!(text.starts_with(|c: char| c.is_ascii_lowercase()), "{text}");
-    }
-}

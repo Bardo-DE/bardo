@@ -508,16 +508,10 @@ impl Daemon {
         let broker = Porter::over(Bus::over(connection.clone())).ai_accounts();
         let engines_news = Arc::new(tokio::sync::Notify::new());
         let account_list = AccountList::default();
-        // Whatever an earlier inferd left of its own store is removed once accountd, which copies
-        // it when it starts, has answered.
-        let old = dirs.clone();
         crate::broker::follow(
             broker.clone(),
             account_list.clone(),
             Arc::clone(&engines_news),
-            move || {
-                crate::old_keys::retire(&old);
-            },
         );
         let broker = AccountdBroker::new(broker);
         // The hosted models of the catalogue, reached through the accounts inferd holds the keys of.

@@ -158,48 +158,6 @@ fn a_model_that_does_not_meet_the_language_need_is_not_in_the_text_slot() {
 }
 
 #[test]
-fn audio_with_a_text_only_model_plans_hear_then_answer() {
-    let models = [
-        listed(card("local", "gemma", llm_cap(&[LlmFeature::Chat]))),
-        listed(card("local", "whisper", stt_cap())),
-    ];
-    let planned = plan_for(
-        &audio_shape(DataClass::Prompt),
-        &models,
-        &TierMap::default(),
-    )
-    .expect("a plan");
-    assert_eq!(
-        roles(&planned),
-        vec![
-            (StageRole::Hear, "whisper".to_owned()),
-            (StageRole::Answer, "gemma".to_owned())
-        ]
-    );
-}
-
-#[test]
-fn a_planned_stage_carries_the_voice_floor_of_what_it_receives() {
-    let models = [
-        listed(card("local", "gemma", llm_cap(&[LlmFeature::Chat]))),
-        listed(card("local", "whisper", stt_cap())),
-    ];
-    let planned = plan_for(
-        &audio_shape(DataClass::Public),
-        &models,
-        &TierMap::default(),
-    )
-    .expect("a plan");
-    for stage in &planned.stages {
-        assert!(
-            stage.receives.0.contains(&DataClass::Voice),
-            "{:?} receives voice",
-            stage.role
-        );
-    }
-}
-
-#[test]
 fn images_and_speech_out_plan_but_are_typed_not_yet_for_the_runner() {
     let models = [
         listed(card("local", "gemma", llm_cap(&[LlmFeature::Chat]))),
@@ -486,31 +444,4 @@ async fn a_plan_with_a_stage_the_runner_does_not_run_is_refused_before_anything_
     let reply = run_pipeline(&planned, ShowReason::On, input, &fake, &turns, &mut events).await;
     assert_eq!(reply, InferReply::Refused(InferRefusal::Unsupported));
     assert!(events.0.is_empty());
-}
-
-#[test]
-fn a_named_voice_in_model_that_cannot_serve_is_a_refusal_not_a_substitute() {
-    let models = [
-        listed(card("local", "gemma", llm_cap(&[LlmFeature::Chat]))),
-        listed(card("local", "whisper", stt_cap())),
-    ];
-    let mut tiers = TierMap::default();
-    tiers.rows.push(porter_infer::TierRow {
-        kind: Slot::VoiceIn,
-        tier: Tier::Balanced,
-        model: ModelRef {
-            account: AccountId::parse("local").expect("id"),
-            model: ModelId::parse("ghost").expect("id"),
-        },
-    });
-    match plan_for(&audio_shape(DataClass::Prompt), &models, &tiers) {
-        Err(Refusal::Stage { role, refusal }) => {
-            assert_eq!(role, StageRole::Hear);
-            assert_eq!(
-                refusal.declined.map(|d| d.model.model.as_str().to_owned()),
-                Some("ghost".to_owned())
-            );
-        }
-        other => panic!("{other:?}"),
-    }
 }

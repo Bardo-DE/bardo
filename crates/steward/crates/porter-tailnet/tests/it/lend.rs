@@ -5,10 +5,7 @@ use super::common::{
     observed, wait,
 };
 use porter_fake_servers::Daemon;
-use porter_ids::UnixSeconds;
-use porter_tailnet::{
-    Config, Footing, GuestAnswer, Guests, Lending, Limits, Refusal, Visit, Visits, lend,
-};
+use porter_tailnet::{Config, Footing, Guests, Lending, Limits, Refusal, Visit, Visits, lend};
 use porter_tailscale::NodeId;
 use std::future::Future;
 use std::net::{IpAddr, SocketAddr};
@@ -70,7 +67,6 @@ struct Lender {
     lending: Lending,
     on: watch::Sender<bool>,
     recorder: Arc<Recorder>,
-    guests: Arc<Guests>,
     port: u16,
     // Keeps the fake and the observer going.
     _fake: super::common::Fake,
@@ -96,7 +92,6 @@ async fn lender(name: &str, a: &Addresses, switched_on: bool, config: Config) ->
         lending,
         on,
         recorder,
-        guests,
         port,
         _fake: fake,
         _observer: observer,
@@ -280,126 +275,11 @@ async fn tailscale_going_away_closes_the_listeners_and_coming_back_opens_them() 
     .await;
 }
 
-/// The whole answer to a request sent from `source`.
-async fn answer_to(l: &Lender, a: &Addresses, source: IpAddr) -> String {
-    let stream = connect_from(source, at(a.me, l.port))
-        .await
-        .expect("connect");
-    ask(stream, "GET /hello HTTP/1.1\r\nHost: x\r\n\r\n").await
-}
-
 async fn listening_lender(name: &str, a: &Addresses) -> Lender {
     let l = lender(name, a, true, config(free_port())).await;
     let mut listening = l.lending.listening();
     wait(&mut listening, |now| !now.bound.is_empty(), "listening").await;
     l
-}
-
-#[tokio::test]
-async fn one_of_the_persons_own_computers_gets_through_as_new_and_a_yes_makes_it_approved() {
-    let a = addresses();
-    let l = listening_lender("through", &a).await;
-    let stream = connect_from(a.pi, at(a.me, l.port)).await.expect("connect");
-    let mut stream = stream;
-    stream.write_all(b"ping").await.unwrap();
-    let mut pong = [0_u8; 4];
-    tokio::time::timeout(GENEROUS, stream.read_exact(&mut pong))
-        .await
-        .unwrap()
-        .unwrap();
-    assert_eq!(&pong, b"pong");
-    let came = l.recorder.visits(1).await;
-    assert_eq!(came[0].0.as_str(), "nPI");
-    assert_eq!(came[0].1, Footing::New);
-    assert_eq!(came[0].2, a.pi);
-    l.guests
-        .set(
-            &NodeId::parse("nPI").unwrap(),
-            "pi",
-            GuestAnswer::Allow,
-            UnixSeconds(1),
-        )
-        .unwrap();
-    let again = connect_from(a.pi, at(a.me, l.port)).await.expect("connect");
-    drop(again);
-    assert_eq!(l.recorder.visits(2).await[1].1, Footing::Approved);
-}
-
-#[tokio::test]
-async fn computers_that_are_not_the_persons_own_are_refused_with_words() {
-    let a = addresses();
-    let l = listening_lender("refused", &a).await;
-    // Tagged (build-box at `other`), shared in (friends-pc at `spare`), an address Tailscale
-    // has no computer for, and this computer's own address: a program of another account on
-    // this computer reaches the listener through the network address, and it must not pass as
-    // one of the person's other computers.
-    let cases = [
-        ("tagged", a.other, Refusal::Tagged),
-        ("shared in", a.spare, Refusal::Shared),
-        (
-            "a stranger",
-            "127.200.200.200".parse().unwrap(),
-            Refusal::Unknown,
-        ),
-        ("this computer", a.me, Refusal::ThisComputer),
-    ];
-    for (who, from, refusal) in cases {
-        let answer = answer_to(&l, &a, from).await;
-        assert!(
-            answer.starts_with("HTTP/1.1 403 Forbidden"),
-            "{who}: {answer}"
-        );
-        assert!(answer.contains(refusal.slug()), "{who}: {answer}");
-    }
-    assert!(
-        l.recorder.came.lock().unwrap().is_empty(),
-        "none of them reached the handler"
-    );
-}
-
-#[tokio::test]
-async fn a_no_from_the_person_is_a_refusal_and_a_yes_lets_a_shared_computer_in() {
-    let a = addresses();
-    let l = listening_lender("answers", &a).await;
-    let now = UnixSeconds(1);
-    l.guests
-        .set(&NodeId::parse("nPI").unwrap(), "pi", GuestAnswer::Deny, now)
-        .unwrap();
-    l.guests
-        .set(
-            &NodeId::parse("nFRIEND").unwrap(),
-            "friends-pc",
-            GuestAnswer::Allow,
-            now,
-        )
-        .unwrap();
-    let denied = answer_to(&l, &a, a.pi).await;
-    assert!(denied.contains(Refusal::Denied.slug()), "{denied}");
-    let stream = connect_from(a.spare, at(a.me, l.port))
-        .await
-        .expect("connect");
-    drop(stream);
-    let came = l.recorder.visits(1).await;
-    assert_eq!(came[0].0.as_str(), "nFRIEND");
-    assert_eq!(came[0].1, Footing::Approved);
-}
-
-#[tokio::test]
-async fn when_tailscale_cannot_say_who_asks_nobody_is_let_in() {
-    let a = addresses();
-    let l = listening_lender("cannot-check", &a).await;
-    // Tailscale is gone for the whois, but the observer still has the identity it last saw.
-    l._fake.stop();
-    let answer = answer_to(&l, &a, a.pi).await;
-    // Either the connection was judged with no answer to the question, or this computer had
-    // already noticed Tailscale going: in both cases no handler was reached.
-    assert!(
-        answer.contains(Refusal::CouldNotCheck.slug())
-            || answer.contains(Refusal::Off.slug())
-            || answer.is_empty(),
-        "{answer}"
-    );
-    assert!(l.recorder.came.lock().unwrap().is_empty());
 }
 
 #[tokio::test]

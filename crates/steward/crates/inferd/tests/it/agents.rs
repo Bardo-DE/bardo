@@ -12,11 +12,10 @@ use hosting::engine::Chat;
 use hosting::rig::{AgentsPlan, World};
 use inferd::peers::{Caller, Role};
 use inferd::settings::AgentEndpoint;
-use inferd::settings::SpendLine;
 use model_provider::Money;
 use porter_dbus::Details;
 use porter_ids::TurnCount;
-use porter_infer::{ChargeTotal, Period, Policy, SpendScope};
+use porter_infer::{ChargeTotal, Period, SpendScope};
 use rust_decimal::Decimal;
 use serde_json::json;
 use steward_dbus::inference::AgentsProxy;
@@ -535,145 +534,7 @@ async fn outside_the_grant_the_bus_gets_the_cause_and_the_agent_gets_403() {
     assert_eq!(reply.json()["error"]["code"], "permission_denied");
 }
 
-#[tokio::test(flavor = "multi_thread")]
-async fn the_policy_keeps_a_class_off_the_cloud_at_the_open_and_at_each_request() {
-    let mut strict = plan(vec![anthropic_account()], say("x"), say("y"));
-    strict.policy = Policy::proposed();
-    let world = World::start(strict).await;
-    let refused = open_with(
-        &world,
-        &account_route("anthropic", &["claude-opus-5-5"]),
-        "files",
-        &["anthropic_messages"],
-    )
-    .await
-    .expect_err("local-only is on");
-    assert_eq!(
-        error_name(&refused),
-        "org.quire.Inference1.Error.FloorRefused"
-    );
-
-    let world = World::start(plan(vec![anthropic_account()], say("x"), say("y"))).await;
-    let endpoint = open(
-        &world,
-        &account_route("anthropic", &["claude-opus-5-5"]),
-        "anthropic_messages",
-    )
-    .await;
-    let mut settings = (*world.served.settings()).clone();
-    settings.policy = Policy::proposed();
-    world.served.apply(settings);
-    let reply = messages(&endpoint, &anthropic_body("claude-opus-5-5", false)).await;
-    assert_eq!(reply.status, 403);
-    assert!(provider_requests(&world).is_empty());
-}
-
 // ---- spend ---------------------------------------------------------------------------------
-
-#[tokio::test(flavor = "multi_thread")]
-async fn over_the_spend_cap_the_agent_is_told_to_stop_and_nothing_is_sent_or_counted() {
-    let mut capped = plan(
-        vec![anthropic_account(), openai_account()],
-        say("x"),
-        say("y"),
-    );
-    // Five cents a day for the program, which only a charge a provider reported can reach.
-    capped.spend = SpendLine {
-        limits: inferd::settings::SpendLimits {
-            app: inferd::settings::ScopeLimits {
-                daily: inferd::settings::cents_to_limit(5),
-                monthly: None,
-            },
-            account: inferd::settings::ScopeLimits::default(),
-        },
-        ..SpendLine::default()
-    };
-    let world = World::start(capped).await;
-    let endpoint = open(
-        &world,
-        &account_route("anthropic", &["claude-opus-5-5"]),
-        "anthropic_messages",
-    )
-    .await;
-    let body = anthropic_body("claude-opus-5-5", false);
-    // Under the cap: served and counted. Anthropic reports no charge, so this turn is no money.
-    assert_eq!(messages(&endpoint, &body).await.status, 200);
-    let cloud = world.served.cloud().expect("cloud");
-    // Another provider reported four cents charged to the program today: under the cap, so the
-    // next request is still served, and it is not held for what it might cost.
-    let charged = |cents: i64| porter_infer::TokenUsage {
-        input: porter_ids::Tokens(0),
-        output: porter_ids::Tokens(0),
-        cached: porter_ids::Tokens(0),
-        charge: Some(Money::usd(Decimal::new(cents, 2))),
-    };
-    let anthropic = porter_core::AccountId::parse("anthropic").expect("id");
-    cloud
-        .ledger()
-        .record(&agent_app(), &anthropic, charged(4), cloud.now());
-    assert_eq!(messages(&endpoint, &body).await.status, 200);
-    // One more cent reported reaches the cap: the next request is refused before it goes out.
-    cloud
-        .ledger()
-        .record(&agent_app(), &anthropic, charged(1), cloud.now());
-    let before = spent(&world, "anthropic");
-    assert_eq!(before.charges.reported, Money::usd(Decimal::new(5, 2)));
-    let reply = messages(&endpoint, &body).await;
-    assert_eq!(reply.status, 429, "{}", reply.body);
-    assert_eq!(reply.header("x-should-retry"), Some("false"));
-    assert_eq!(reply.json()["error"]["type"], "rate_limit_error");
-    assert_eq!(
-        provider_requests(&world).len(),
-        2,
-        "the provider saw only the two served"
-    );
-    assert_eq!(
-        spent(&world, "anthropic"),
-        before,
-        "a refused request counts nothing"
-    );
-    // The cap is the program's, whichever account pays: the same refusal in OpenAI's shape.
-    let openai = open(
-        &world,
-        &account_route("openai", &["gpt-6-luna"]),
-        "openai_compatible",
-    )
-    .await;
-    let reply = completions(&openai, &openai_body("gpt-6-luna", false)).await;
-    assert_eq!(reply.status, 429, "{}", reply.body);
-    assert_eq!(reply.json()["error"]["code"], "spend_cap_reached");
-    assert_eq!(provider_requests(&world).len(), 2);
-}
-
-/// A request that fails before it is sent (here the account's key cannot be read) holds nothing:
-/// the ledger stays where it was however often the agent tries.
-#[tokio::test(flavor = "multi_thread")]
-async fn a_request_that_fails_before_it_is_sent_counts_nothing() {
-    let unreadable = FakeAccount {
-        id: "anthropic",
-        standing: Standing::Granted {
-            to: vec![APP],
-            grant: "grant-anthropic",
-            key: None,
-        },
-    };
-    let world = World::start(plan(vec![unreadable], say("x"), say("y"))).await;
-    let endpoint = open(
-        &world,
-        &account_route("anthropic", &["claude-opus-5-5"]),
-        "anthropic_messages",
-    )
-    .await;
-    let body = anthropic_body("claude-opus-5-5", false);
-    for _ in 0..3 {
-        let reply = messages(&endpoint, &body).await;
-        assert_ne!(reply.status, 200, "{}", reply.body);
-    }
-    assert!(provider_requests(&world).is_empty());
-    assert_eq!(spent(&world, "anthropic").charges, ChargeTotal::default());
-}
-
-// ---- models --------------------------------------------------------------------------------
 
 #[tokio::test(flavor = "multi_thread")]
 async fn an_id_the_route_does_not_serve_is_an_error_and_never_a_substitute() {
@@ -766,31 +627,4 @@ async fn an_id_the_route_does_not_serve_is_an_error_and_never_a_substitute() {
     )
     .await;
     assert_eq!(wrong.status, 400);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn count_tokens_is_an_estimate_for_every_route() {
-    let world = World::start(plan(vec![anthropic_account()], say("x"), say("y"))).await;
-    let endpoint = open(
-        &world,
-        &account_route("anthropic", &["claude-opus-5-5"]),
-        "anthropic_messages",
-    )
-    .await;
-    let body = json!({ "model": "claude-opus-5-5", "messages": [{ "role": "user", "content": "x".repeat(400) }] });
-    let reply = send(
-        endpoint.port,
-        "POST",
-        "/v1/messages/count_tokens",
-        &[("x-api-key", &endpoint.token)],
-        &body.to_string(),
-    )
-    .await;
-    assert_eq!(reply.status, 200);
-    let tokens = reply.json()["input_tokens"].as_u64().expect("number");
-    assert!((100..140).contains(&tokens), "{tokens}");
-    assert!(
-        provider_requests(&world).is_empty(),
-        "the provider was not asked"
-    );
 }

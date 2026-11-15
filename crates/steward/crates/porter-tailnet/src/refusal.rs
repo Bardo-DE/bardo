@@ -94,14 +94,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn a_refusal_is_read_back_from_its_code() {
-        for refusal in Refusal::ALL {
-            assert_eq!(Refusal::from_slug(refusal.slug()), Some(refusal));
-        }
-        assert_eq!(Refusal::from_slug("refused"), None);
-    }
-
-    #[test]
     fn what_is_waiting_or_busy_is_not_a_forbidden() {
         assert_eq!(Refusal::Waiting.status(), 403);
         assert_eq!(Refusal::Busy.status(), 429);

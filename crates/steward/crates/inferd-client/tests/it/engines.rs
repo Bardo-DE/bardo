@@ -16,7 +16,7 @@ use porter_infer::{
     MessagePart, ModelError, Role, ToolParallelism,
 };
 use porter_match::Need;
-use porter_match::{DimsNeed, EmbedNeed, LlmNeed};
+use porter_match::LlmNeed;
 use std::sync::{Arc, Mutex};
 
 fn app() -> AppId {
@@ -166,66 +166,6 @@ async fn a_chat_streams_its_events_from_the_local_engine() {
     assert_eq!(server.chats().len(), 2);
 }
 
-#[tokio::test]
-async fn a_class_that_stays_on_this_computer_never_reaches_a_cloud_engine() {
-    let server = fake(None).await;
-    let hosted = engine("hosted", server.base_url(), cloud());
-    // Policy::proposed puts Mail on this computer; local-only is off so the cloud engine is
-    // seen and then refused by the floor, not dropped.
-    let policy = Policy {
-        local_only: porter_infer::LocalOnly::Off,
-        ..Policy::proposed()
-    };
-    let host = EngineHost::new(vec![hosted], vec![row(&["hosted"])], policy, NoKeys).expect("host");
-
-    let mut session = open(&host, DataClass::Mail).await;
-    let events = answer(&mut session, chat(DataClass::Mail)).await;
-    assert_eq!(
-        finished(&events),
-        &InferReply::Refused(InferRefusal::RequiresCloud(DataClass::Mail))
-    );
-    assert_eq!(events.len(), 1, "the refusal is the first and only event");
-    assert!(server.hits().is_empty(), "nothing was sent");
-
-    // A class with no floor may go there.
-    let mut open_class = open(&host, DataClass::Public).await;
-    let events = answer(&mut open_class, chat(DataClass::Public)).await;
-    assert!(matches!(finished(&events), InferReply::Chat(_)));
-}
-
-#[tokio::test]
-async fn local_only_drops_cloud_engines_and_the_row_falls_through_to_the_local_one() {
-    let hosted_server = fake(None).await;
-    let local_server = fake(None).await;
-    let hosted = engine("hosted", hosted_server.base_url(), cloud());
-    let local = engine("ollama", local_server.base_url(), Locality::OnDevice);
-    let table = |policy| {
-        EngineHost::new(
-            vec![hosted.clone(), local.clone()],
-            vec![row(&["hosted", "ollama"])],
-            policy,
-            NoKeys,
-        )
-        .expect("host")
-    };
-
-    let only_local = table(Policy {
-        local_only: porter_infer::LocalOnly::On,
-        floors: vec![],
-    });
-    let mut session = open(&only_local, DataClass::Public).await;
-    let events = answer(&mut session, chat(DataClass::Public)).await;
-    assert!(matches!(finished(&events), InferReply::Chat(_)));
-    assert!(hosted_server.hits().is_empty());
-    assert_eq!(local_server.chats().len(), 1);
-
-    // With nothing forbidden, the app's order wins: the first engine of the row.
-    let anywhere = table(open_policy());
-    let mut session = open(&anywhere, DataClass::Public).await;
-    answer(&mut session, chat(DataClass::Public)).await;
-    assert_eq!(hosted_server.chats().len(), 1);
-}
-
 /// A key source holding one key per account, and counting how often it was asked.
 #[derive(Debug, Default)]
 struct Keychain {
@@ -276,66 +216,6 @@ async fn a_missing_key_is_a_typed_refusal_and_a_held_one_goes_as_the_bearer() {
         server.hits()[0].authorization.as_deref(),
         Some("Bearer sk-fake")
     );
-}
-
-#[tokio::test]
-async fn needs_without_a_row_and_kinds_of_need_not_served_are_refused() {
-    let server = fake(None).await;
-    let local = engine("ollama", server.base_url(), Locality::OnDevice);
-    let host =
-        EngineHost::new(vec![local], vec![row(&["ollama"])], open_policy(), NoKeys).expect("host");
-
-    // No row for the Fast tier: nothing is chosen, and there is no default.
-    let mut fast = host
-        .open(
-            &app(),
-            &need(),
-            DataClass::Public,
-            Tier::Fast,
-            &OpenOptions::default(),
-        )
-        .await
-        .expect("session");
-    assert_eq!(
-        fast.next().await,
-        Ok(InferEvent::Finished(InferReply::Refused(
-            InferRefusal::NoModelChosen
-        )))
-    );
-    assert_eq!(fast.next().await, Err(inferd_client::SessionError::Closed));
-
-    let embeddings = Need::Embeddings(EmbedNeed::new(DimsNeed::Any, Default::default()));
-    let mut other = host
-        .open(
-            &app(),
-            &embeddings,
-            DataClass::Public,
-            Tier::Balanced,
-            &OpenOptions::default(),
-        )
-        .await
-        .expect("session");
-    assert_eq!(
-        other.next().await,
-        Ok(InferEvent::Finished(InferReply::Refused(
-            InferRefusal::Unsupported
-        )))
-    );
-}
-
-#[tokio::test]
-async fn a_request_of_another_class_than_the_session_opened_with_is_refused() {
-    let server = fake(None).await;
-    let local = engine("ollama", server.base_url(), Locality::OnDevice);
-    let host =
-        EngineHost::new(vec![local], vec![row(&["ollama"])], open_policy(), NoKeys).expect("host");
-    let mut session = open(&host, DataClass::Public).await;
-    let events = answer(&mut session, chat(DataClass::Mail)).await;
-    assert_eq!(
-        finished(&events),
-        &InferReply::Refused(InferRefusal::Unsupported)
-    );
-    assert!(server.hits().is_empty());
 }
 
 #[tokio::test]

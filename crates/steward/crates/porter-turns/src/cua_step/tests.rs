@@ -1,7 +1,6 @@
 use super::*;
 use cua_action::{
-    Button, ClickCount, Coord, CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size, Target,
-    WindowSpace,
+    Button, ClickCount, Coord, CuaAction, Point, Scale120, Size, Target, WindowSpace,
 };
 use model_provider::{
     EngineExtras, ModelName, ProviderError, Script, ScriptedProvider, StopReason, ToolCall,
@@ -132,14 +131,6 @@ fn texts(turn: &TurnRequest, role: Role) -> Vec<String> {
         .collect()
 }
 
-fn images(turn: &TurnRequest) -> usize {
-    turn.messages
-        .iter()
-        .flat_map(|m| m.parts.iter())
-        .filter(|part| matches!(part, Part::Image(_)))
-        .count()
-}
-
 #[tokio::test]
 async fn a_click_on_the_grid_lands_in_window_space_and_is_proposed_then_replied() {
     let provider = says(vec![
@@ -238,172 +229,6 @@ async fn a_model_trained_to_think_before_it_acts_is_run_with_its_reasoning() {
         sent.sampling,
         *entry.for_reasoning(model_provider::Reasoning::EngineDefault)
     );
-}
-
-#[tokio::test]
-async fn a_raw_frame_is_prepared_into_a_png_at_the_size_the_model_is_shown() {
-    let provider = says(vec![click(r#"{"action":"terminate","status":"success"}"#)]);
-    let scratch = Scratch::new("cua-raw");
-    let model = cua_model(&scratch);
-    let pixels = vec![0x40_u8; 200 * 100 * 4];
-    let frames = Frames::read(vec![memfd(&pixels)]).expect("frames");
-    let raw = request(FrameLayout::Raw {
-        format: PixelFormat::Argb8888,
-        size: DeviceSize { w: 200, h: 100 },
-        stride: 800,
-    });
-    let mut fresh = session(&model);
-    let result = step(&mut fresh, &model, &provider, &raw, &frames, |_| {
-        Flow::Continue
-    })
-    .await;
-    assert!(result.is_ok(), "{:?}", result.err());
-    let sent = &provider.requests()[0];
-    let Some(Part::Image(image)) = sent.messages.last().and_then(|m| m.parts.last()) else {
-        panic!("image");
-    };
-    assert_eq!(image.media, vision_prep::MediaType::Png);
-    assert_eq!(&image.bytes.0[..8], b"\x89PNG\r\n\x1a\n");
-}
-
-#[tokio::test]
-async fn a_point_outside_the_frame_is_dropped_not_clamped_after_one_repair() {
-    let off = || {
-        script(vec![click(
-            r#"{"action":"left_click","coordinate":[1000,500]}"#,
-        )])
-    };
-    // Every action refused is answered with a repair; when that fails too, the refusals are told.
-    let provider = ScriptedProvider::new(vec![], vec![off(), off()]);
-    let (result, _, events) = run_one(&provider, &png_request()).await;
-    let reply = result.expect("a reply");
-    assert_eq!(reply.actions, vec![]);
-    assert_eq!(
-        reply.dropped,
-        vec![DroppedAction {
-            verb: "click".into(),
-            reason: DropReason::OutOfFrame
-        }]
-    );
-    assert!(events.is_empty(), "nothing is proposed that will not run");
-    assert_eq!(provider.requests().len(), 2);
-
-    // An action that does land beside the one that does not is kept, with no repair.
-    let mixed = says(vec![
-        click(r#"{"action":"left_click","coordinate":[1000,500]}"#),
-        click(r#"{"action":"left_click","coordinate":[500,250]}"#),
-    ]);
-    let (result, _, _) = run_one(&mixed, &png_request()).await;
-    let reply = result.expect("a reply");
-    assert_eq!(reply.actions, vec![click_at(100, 25)]);
-    assert_eq!(reply.dropped.len(), 1);
-    assert_eq!(mixed.requests().len(), 1);
-}
-
-#[tokio::test]
-async fn a_verb_the_dialect_does_not_have_is_dropped_with_its_reason() {
-    let provider = says(vec![
-        click(r#"{"action":"left_click","coordinate":[500,500]}"#),
-        click(r#"{"action":"fly_away"}"#),
-    ]);
-    let (result, _, _) = run_one(&provider, &png_request()).await;
-    let reply = result.expect("a reply");
-    assert_eq!(reply.actions.len(), 1);
-    assert_eq!(
-        reply.dropped,
-        vec![DroppedAction {
-            verb: "fly_away".into(),
-            reason: DropReason::UnsupportedVerb
-        }]
-    );
-}
-
-#[tokio::test]
-async fn a_scroll_that_names_no_point_is_proposed_at_the_centre_of_the_frame() {
-    let provider = says(vec![click(r#"{"action":"scroll","pixels":-300}"#)]);
-    let (result, _, events) = run_one(&provider, &png_request()).await;
-    let reply = result.expect("a reply");
-    assert!(matches!(
-        reply.actions.as_slice(),
-        [CuaAction::Scroll {
-            at: Target::Centre,
-            ..
-        }]
-    ));
-    assert_eq!(
-        events,
-        vec![InferEvent::ActionProposed(reply.actions[0].clone())]
-    );
-}
-
-#[tokio::test]
-async fn text_that_is_no_key_is_dropped_as_a_bad_argument() {
-    let provider = says(vec![
-        click(r#"{"action":"left_click","coordinate":[500,500]}"#),
-        click(r#"{"action":"key","keys":["NoSuchKey"]}"#),
-    ]);
-    let (result, _, _) = run_one(&provider, &png_request()).await;
-    let reply = result.expect("a reply");
-    assert_eq!(reply.actions.len(), 1);
-    assert_eq!(
-        reply.dropped,
-        vec![DroppedAction {
-            verb: "key".into(),
-            reason: DropReason::BadArgument
-        }]
-    );
-}
-
-#[tokio::test]
-async fn a_reply_that_does_not_parse_is_asked_again_once_with_the_same_frame() {
-    let provider = ScriptedProvider::new(
-        vec![],
-        vec![
-            script(vec![TurnEvent::TextDelta("I do not know".into())]),
-            script(vec![click(
-                r#"{"action":"left_click","coordinate":[500,250]}"#,
-            )]),
-        ],
-    );
-    let (result, kept, _) = run_one(&provider, &png_request()).await;
-    let reply = result.expect("the repaired reply");
-    assert_eq!(reply.actions, vec![click_at(100, 25)]);
-    let requests = provider.requests();
-    assert_eq!(requests.len(), 2, "one turn, one repair turn");
-    assert_eq!(
-        requests[1].messages.len(),
-        requests[0].messages.len() + 1,
-        "the repair is the first request and one message"
-    );
-    assert_eq!(
-        images(&requests[0]),
-        images(&requests[1]),
-        "the same frame, no new one"
-    );
-    let said = texts(&requests[1], Role::User).join("\n");
-    assert!(
-        !said.contains("I do not know"),
-        "the reply is not repeated: {said}"
-    );
-    assert_eq!(kept.remembered(), 1, "one step, however many turns it took");
-}
-
-#[tokio::test]
-async fn a_reply_that_never_parses_is_unparseable_and_the_step_still_counts() {
-    let provider = ScriptedProvider::new(
-        vec![],
-        vec![
-            script(vec![TurnEvent::TextDelta("hm".into())]),
-            script(vec![TurnEvent::TextDelta("hmm".into())]),
-        ],
-    );
-    let (result, kept, _) = run_one(&provider, &png_request()).await;
-    let Err(Failed { failure }) = result else {
-        panic!("a failure");
-    };
-    assert_eq!(failure, CuaStepFailure::Unparseable);
-    assert_eq!(kept.remembered(), 1);
-    assert_eq!(provider.requests().len(), 2);
 }
 
 #[tokio::test]

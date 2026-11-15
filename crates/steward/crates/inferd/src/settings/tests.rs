@@ -504,42 +504,6 @@ fn a_cap_out_of_range_is_no_cap_and_is_named() {
 }
 
 #[test]
-fn the_old_tables_still_read_and_the_rows_at_their_paths_win_over_them() {
-    let old = "[policy]\nlocal_only = \"off\"\nfloors = [{ class = \"mail\", floor = \"anywhere\" }]\n\
-               [[tiers.rows]]\nkind = \"llm\"\ntier = \"fast\"\nmodel = { account = \"local\", model = \"alpha\" }\n\
-               [[tiers.rows]]\nkind = \"llm\"\ntier = \"best\"\nmodel = { account = \"local\", model = \"beta\" }\n";
-    let s = settings(old);
-    assert_eq!(s.policy.local_only, LocalOnly::Off);
-    assert_eq!(
-        s.policy.floor(DataClass::Mail),
-        porter_infer::Floor::Anywhere
-    );
-    assert!(
-        matches!(s.tiers.pick(Slot::Text, Tier::Fast), Some(Pick::Named(m)) if m.model.as_str() == "alpha")
-    );
-    // The same file with rows at the settings paths: they win, field by field.
-    let both = format!(
-        "{old}\n[ai]\nlocal_only = \"on\"\n[ai.floor]\nmail = \"on_device\"\n[ai.model.llm]\nfast = \"auto\"\nbest = \"\"\n"
-    );
-    let s = settings(&both);
-    assert_eq!(s.policy.local_only, LocalOnly::On);
-    assert_eq!(
-        s.policy.floor(DataClass::Mail),
-        porter_infer::Floor::OnDevice
-    );
-    assert!(matches!(
-        s.tiers.pick(Slot::Text, Tier::Fast),
-        Some(Pick::Auto { .. })
-    ));
-    assert_eq!(s.tiers.pick(Slot::Text, Tier::Best), None);
-    // What the old tables said and the rows did not touch stays.
-    assert_eq!(
-        s.policy.floor(DataClass::Photos),
-        porter_infer::Floor::Anywhere
-    );
-}
-
-#[test]
 fn a_value_a_row_does_not_accept_is_named_and_falls_back_for_that_row_only() {
     let text = "[ai]\nlocal_only = \"maybe\"\n[ai.floor]\nmail = \"nowhere\"\ntelepathy = \"anywhere\"\nnotes = \"anywhere\"\n\
                 [ai.model.llm]\nfast = \"no-slash\"\nhuge = \"local/a\"\nbalanced = \"local/alpha\"\n\

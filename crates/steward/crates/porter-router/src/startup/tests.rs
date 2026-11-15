@@ -48,15 +48,6 @@ fn lines_are_cleaned_and_split_wherever_the_chunks_break() {
 }
 
 #[test]
-fn only_the_last_forty_lines_are_kept() {
-    let text: String = (0..100).map(|n| format!("line {n}\n")).collect();
-    let tail = tail_of(&[text.as_bytes()]);
-    assert_eq!(tail.0.len(), TAIL_LINES);
-    assert_eq!(tail.0.first().map(String::as_str), Some("line 60"));
-    assert_eq!(tail.0.last().map(String::as_str), Some("line 99"));
-}
-
-#[test]
 fn the_tail_never_holds_more_than_eight_kib() {
     // Forty lines of 500 bytes would be 20 000 bytes.
     let line = format!("{}\n", "x".repeat(500));

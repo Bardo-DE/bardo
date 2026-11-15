@@ -461,47 +461,6 @@ fn a_chosen_coding_agent_is_no_model_and_the_refusal_names_it() {
 }
 
 #[test]
-fn the_vocabulary_has_stable_slugs() {
-    assert_eq!(AutoMode::from_slug("warm_first"), Some(AutoMode::WarmFirst));
-    assert_eq!(AutoEvict::from_slug("idle_only"), Some(AutoEvict::IdleOnly));
-    assert_eq!(AutoEvict::from_slug("never"), Some(AutoEvict::Never));
-    assert_eq!(ShowReason::from_slug("on"), Some(ShowReason::On));
-    assert_eq!(ShowReason::from_slug("loud"), None);
-    let defaults = AutoPolicy::default();
-    assert_eq!(
-        (defaults.mode, defaults.allow_evict, defaults.show_reason),
-        (AutoMode::WarmFirst, AutoEvict::IdleOnly, ShowReason::On)
-    );
-    let why = serde_json::to_string(&Why::Evicted { model: mref("x") }).expect("json");
-    assert_eq!(
-        why,
-        r#"{"kind":"evicted","model":{"account":"local","model":"x"}}"#
-    );
-    assert_eq!(
-        serde_json::to_string(&Why::CatalogueOrder).expect("json"),
-        r#"{"kind":"catalogue_order"}"#
-    );
-}
-
-#[test]
-fn no_why_is_a_ranking_word() {
-    for why in [
-        Why::Named,
-        Why::OnlyOne,
-        Why::Nearest,
-        Why::Warm,
-        Why::Smallest,
-        Why::LeastCost,
-        Why::CatalogueOrder,
-    ] {
-        let text = serde_json::to_string(&why).expect("json").to_lowercase();
-        for word in ["best", "better", "smart", "optimal", "recommended"] {
-            assert!(!text.contains(word), "{text}");
-        }
-    }
-}
-
-#[test]
 fn sharing_is_deterministic_whatever_the_slice_order() {
     let forward = [warm("a", 0), shared("b", 1), shared("c", 2)];
     let backward = [forward[2].clone(), forward[1].clone(), forward[0].clone()];

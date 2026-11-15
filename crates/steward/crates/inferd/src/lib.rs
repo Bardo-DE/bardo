@@ -28,7 +28,6 @@ pub mod engines;
 pub mod failure;
 pub mod hosts;
 pub mod installed;
-pub mod old_keys;
 pub mod peers;
 pub mod pipeline;
 pub mod probe;

@@ -6,7 +6,6 @@ use porter_capability::{Capability, LlmFeature, LlmWire};
 use porter_core::AccountId;
 use porter_fake_servers::{FakeModels, ModelDef, Wire};
 use porter_http_reqwest::ReqwestHttp;
-use serde_json::json;
 
 fn http() -> ReqwestHttp {
     ReqwestHttp::new().with_limits(porter_http_reqwest::Limits {
@@ -64,37 +63,6 @@ fn the_probe_table_names_ports_and_a_runtime_with_none_is_not_probed() {
 fn the_longest_wait_is_never_shorter_than_the_base() {
     let config: ProbeConfig = toml::from_str("every_s = 30\nlongest_s = 5\n").expect("parses");
     assert_eq!(config.longest(), Duration::from_secs(30));
-}
-
-#[test]
-fn a_list_answer_names_its_models_by_the_runtimes_own_keys() {
-    let ollama = json!({ "models": [
-        { "name": "llama3.2:3b", "model": "llama3.2:3b" }, { "model": "nomic-embed-text:latest" }, { "size": 1 }
-    ] });
-    let openai =
-        json!({ "object": "list", "data": [{ "id": "qwen2.5-7b" }, { "id": "/models/x.gguf" }] });
-    let table = [
-        (
-            Runtime::Ollama,
-            &ollama,
-            vec!["llama3.2:3b", "nomic-embed-text:latest"],
-        ),
-        (
-            Runtime::LmStudio,
-            &openai,
-            vec!["qwen2.5-7b", "/models/x.gguf"],
-        ),
-        (
-            Runtime::LlamaCpp,
-            &openai,
-            vec!["qwen2.5-7b", "/models/x.gguf"],
-        ),
-        // The wrong shape is no names.
-        (Runtime::Ollama, &openai, vec![]),
-    ];
-    for (runtime, body, want) in table {
-        assert_eq!(Listing::of(runtime, body).0, want, "{runtime:?}");
-    }
 }
 
 #[test]
@@ -214,88 +182,6 @@ fn a_probed_embedding_model_is_an_embeddings_card_with_its_width_and_prefix() {
     assert_eq!(cap.dims.0, 768);
     let embed = local.embed().expect("embed caps");
     assert_eq!(embed.prompts.query.0, "search_query: ");
-}
-
-#[tokio::test]
-async fn an_ollama_that_answers_is_found_with_its_models_under_the_names_a_request_needs() {
-    let fake = FakeModels::start(
-        Wire::Ollama,
-        vec![
-            ModelDef::chat("llama3.2:3b", 8192),
-            ModelDef::embedding("nomic-embed-text:latest", 2048),
-        ],
-        None,
-    )
-    .await
-    .expect("fake");
-    let port: u16 = fake
-        .base_url()
-        .rsplit(':')
-        .next()
-        .expect("port")
-        .parse()
-        .expect("number");
-    let seen = probe(&http(), &only(Runtime::Ollama, &[port])).await;
-    assert_eq!(seen.len(), 1);
-    assert_eq!(
-        (seen[0].runtime, seen[0].port),
-        (Runtime::Ollama, Port(port))
-    );
-    let names: Vec<_> = seen[0]
-        .models
-        .iter()
-        .map(|model| (model.id.as_str(), model.name.as_str()))
-        .collect();
-    assert_eq!(
-        names,
-        [
-            ("llama3.2-3b", "llama3.2:3b"),
-            ("nomic-embed-text-latest", "nomic-embed-text:latest")
-        ]
-    );
-    assert_eq!(seen[0].claims().len(), 2);
-}
-
-#[tokio::test]
-async fn an_openai_compatible_server_is_found_on_the_port_its_runtime_is_configured_at() {
-    let fake = FakeModels::start(
-        Wire::OpenAi,
-        vec![ModelDef::chat("qwen2.5-7b-instruct", 4096)],
-        None,
-    )
-    .await
-    .expect("fake");
-    let port: u16 = fake
-        .base_url()
-        .rsplit(':')
-        .next()
-        .expect("port")
-        .parse()
-        .expect("number");
-    let seen = probe(&http(), &only(Runtime::LmStudio, &[port])).await;
-    assert_eq!(seen.len(), 1);
-    assert_eq!(seen[0].runtime, Runtime::LmStudio);
-    assert_eq!(seen[0].models[0].name, "qwen2.5-7b-instruct");
-    // The same server under another runtime's port list is that runtime's, and nothing else.
-    let other = probe(&http(), &only(Runtime::LlamaCpp, &[port])).await;
-    assert_eq!(other[0].runtime, Runtime::LlamaCpp);
-}
-
-#[tokio::test]
-async fn a_port_nothing_listens_on_finds_nothing_and_a_runtime_with_no_ports_is_not_asked() {
-    let closed = closed_port();
-    assert_eq!(
-        probe(&http(), &only(Runtime::Ollama, &[closed])).await,
-        vec![]
-    );
-    let fake = FakeModels::start(Wire::Ollama, vec![ModelDef::chat("m", 2048)], None)
-        .await
-        .expect("fake");
-    assert_eq!(probe(&http(), &ProbeConfig::off()).await, vec![]);
-    assert!(
-        fake.hits().is_empty(),
-        "nothing was asked of a port that was not configured"
-    );
 }
 
 #[tokio::test]

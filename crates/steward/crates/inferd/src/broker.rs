@@ -151,17 +151,9 @@ const RETRY: Duration = Duration::from_secs(2);
 
 /// Keeps `list` current and wakes `news` each time accountd says an AI account, a permit or a
 /// switch changed (so a listener reads `Places` again). It subscribes before it looks, asks
-/// again when accountd comes back after it went, and ends with the runtime. `first` runs once,
-/// after the first look that worked: accountd is up then, and has copied what it found of
-/// inferd's old store.
-pub fn follow(
-    accounts: AiAccounts<Bus>,
-    list: AccountList,
-    news: Arc<Notify>,
-    first: impl FnOnce() + Send + 'static,
-) {
+/// again when accountd comes back after it went, and ends with the runtime.
+pub fn follow(accounts: AiAccounts<Bus>, list: AccountList, news: Arc<Notify>) {
     tokio::spawn(async move {
-        let mut first = Some(first);
         loop {
             // Subscribed before the first look, so a change between the two is not missed.
             let Ok(mut changes) = accounts.changes().await else {
@@ -172,9 +164,6 @@ pub fn follow(
                 match accounts.accounts().await {
                     Ok(rows) => {
                         list.replace(rows);
-                        if let Some(first) = first.take() {
-                            first();
-                        }
                     }
                     Err(error) => eprintln!("inferd: the AI accounts could not be listed: {error}"),
                 }

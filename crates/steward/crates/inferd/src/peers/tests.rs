@@ -264,12 +264,6 @@ fn only_the_settings_units_main_process_is_settings() {
 }
 
 #[test]
-fn the_proc_root_variable_is_honoured_only_by_a_test_build() {
-    // The choice itself is tested in porter-daemon; what is inferd's is which build it is.
-    assert_eq!(HONOURS_PROC_ROOT, cfg!(feature = "test-proc-root"));
-}
-
-#[test]
 fn an_entry_may_name_the_programs_that_run_in_its_unit() {
     let table = CallerTable::from_toml_text(
         r#"

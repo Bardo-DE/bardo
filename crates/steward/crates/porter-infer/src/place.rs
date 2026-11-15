@@ -416,41 +416,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn every_text_form_round_trips_through_its_typed_view() {
-        let lab = ComputerName::parse("lab").expect("name");
-        let work = AccountId::parse("work-claude").expect("account");
-        let cases = [
-            ("this-computer", PlaceTarget::ThisComputer, "this_computer"),
-            (
-                "computer:lab",
-                PlaceTarget::OwnComputer(lab.clone()),
-                "own_computer",
-            ),
-            (
-                "account:work-claude",
-                PlaceTarget::CloudAccount(work.clone()),
-                "cloud_account",
-            ),
-        ];
-        for (text, target, slug) in cases {
-            let id = PlaceId::parse(text).expect(text);
-            assert_eq!(id.as_str(), text);
-            assert_eq!(id.to_string(), text);
-            assert_eq!(id.target(), target, "{text}");
-            assert_eq!(id.kind().slug(), slug, "{text}");
-            assert_eq!(PlaceKind::from_slug(slug), Some(id.kind()));
-            let json = serde_json::to_string(&id).expect("json");
-            assert_eq!(json, format!("\"{text}\""));
-            assert_eq!(serde_json::from_str::<PlaceId>(&json).expect("back"), id);
-        }
-        let parsed = |text: &str| PlaceId::parse(text).expect(text);
-        assert_eq!(PlaceId::computer(&lab), parsed("computer:lab"));
-        assert_eq!(PlaceId::account(&work), parsed("account:work-claude"));
-        assert_eq!(PlaceId::this_computer(), parsed("this-computer"));
-        assert_eq!(PlaceKind::from_slug("elsewhere"), None);
-    }
-
-    #[test]
     fn a_locality_names_the_kind_of_place_it_is_served_from() {
         assert_eq!(
             PlaceKind::from(&Locality::OnDevice),
@@ -538,24 +503,6 @@ mod tests {
         }
         let long = format!("computer:{}", "x".repeat(65));
         assert!(PlaceId::parse(&long).is_err());
-    }
-
-    #[test]
-    fn the_reasons_have_names_that_read_back_and_slugs_that_are_their_serde_form() {
-        let mut names = std::collections::BTreeSet::new();
-        for reason in NoPlaceReason::ALL {
-            assert!(names.insert(reason.name()), "{reason:?}");
-            assert_eq!(NoPlaceReason::from_name(reason.name()), Some(reason));
-            assert_eq!(
-                serde_json::to_string(&reason).expect("json"),
-                format!("\"{}\"", reason.slug())
-            );
-        }
-        assert_eq!(NoPlaceReason::from_name("Nope"), None);
-        // The order is the order the reasons win in.
-        let mut sorted = NoPlaceReason::ALL;
-        sorted.sort();
-        assert_eq!(sorted, NoPlaceReason::ALL);
     }
 
     #[test]

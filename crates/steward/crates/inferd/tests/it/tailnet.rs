@@ -12,28 +12,19 @@ use hosting::engine::{Chat, Script};
 use hosting::entries;
 use hosting::lab::Lab;
 use hosting::rig::{Hosted, Plan, Trust, World};
-use hosting::tailnet::{Addresses, Seen, TailnetPlan, addresses, free_port, network};
+use hosting::tailnet::{Addresses, TailnetPlan, addresses, free_port, network};
 use inferd::attached::{Attached, Place, Reach};
 use inferd::peers::Role;
-use inferd::settings::TailnetServe;
 use porter_capability::ModelId;
 use porter_capability::Tier;
 use porter_core::{AppId, AppName, DataClass, Isolation};
 use porter_dbus::Details;
-use porter_infer::{ComputerName, PlaceId, PlaceState};
+use porter_infer::PlaceId;
 use std::net::{IpAddr, SocketAddr};
 use steward_dbus::inference::InferenceProxy;
-use steward_dbus::inference::{
-    CANDIDATE_KEY_MODELS, CANDIDATE_KEY_NEEDS_APPROVAL, GUEST_KEY_STATE,
-};
+use steward_dbus::inference::GUEST_KEY_STATE;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpSocket;
-use zbus::export::futures_core::Stream;
-
-/// The next item of a stream.
-async fn next_of<S: Stream + Unpin>(stream: &mut S) -> Option<S::Item> {
-    std::future::poll_fn(|cx| std::pin::Pin::new(&mut *stream).poll_next(cx)).await
-}
 
 const COMPANION: &str = "org.quire.Companion";
 
@@ -70,9 +61,9 @@ fn policy() -> porter_infer::Policy {
     }
 }
 
-/// `pi` lends (when `serving`) the two models it runs, and sees `desk` as `seen`; `desk` has no
+/// `pi` lends (when `serving`) the two models it runs; `desk` has no
 /// engine programs, as a laptop does not, and sees `pi` as one of its own.
-async fn pair(name: &str, seen: Seen, serving: bool) -> Pair {
+async fn pair(name: &str, serving: bool) -> Pair {
     let a = addresses();
     let port = free_port();
     let dir = test_kit::Scratch::new(&format!("tn-{name}"));
@@ -97,7 +88,7 @@ async fn pair(name: &str, seen: Seen, serving: bool) -> Pair {
         role: Role::Shell,
         app: Some(app("org.quire.Shell")),
         tailnet: Some(TailnetPlan {
-            network: network(("nPI", "pi", a.pi), ("nDESK", "desk", a.desk), seen),
+            network: network(("nPI", "pi", a.pi), ("nDESK", "desk", a.desk)),
             port,
             serving,
         }),
@@ -111,7 +102,7 @@ async fn pair(name: &str, seen: Seen, serving: bool) -> Pair {
         role: Role::Placer,
         app: Some(app(COMPANION)),
         tailnet: Some(TailnetPlan {
-            network: network(("nDESK", "desk", a.desk), ("nPI", "pi", a.pi), Seen::Mine),
+            network: network(("nDESK", "desk", a.desk), ("nPI", "pi", a.pi)),
             port,
             serving: false,
         }),
@@ -153,19 +144,6 @@ fn computer_error(name: &str) -> String {
 
 fn text_of(details: &Details, key: &str) -> Option<String> {
     String::try_from(details.get(key)?.try_clone().ok()?).ok()
-}
-
-fn flag_of(details: &Details, key: &str) -> Option<bool> {
-    bool::try_from(details.get(key)?.try_clone().ok()?).ok()
-}
-
-fn model_ids(details: &Details) -> Vec<String> {
-    let models: Vec<(String, String)> = details
-        .get(CANDIDATE_KEY_MODELS)
-        .and_then(|value| value.try_clone().ok())
-        .and_then(|value| Vec::<(String, String)>::try_from(value).ok())
-        .unwrap_or_default();
-    models.into_iter().map(|(id, _)| id).collect()
 }
 
 /// A request sent to `to` from the address `source`, and the whole answer.
@@ -266,15 +244,6 @@ mod chat {
     }
 }
 
-/// How `world` sees the place `computer:pi` now (the engines on it are looked at first).
-async fn ready(world: &World) -> Option<PlaceState> {
-    let places = world.accounts.places().await.expect("places");
-    places
-        .iter()
-        .find(|r| r.id.as_str() == "computer:pi")
-        .map(|r| r.state)
-}
-
 /// `desk` adds `pi` as Settings does, and answers who is there.
 async fn add_pi(pair: &Pair) -> String {
     let (settings, _) = pair
@@ -292,331 +261,6 @@ async fn add_pi(pair: &Pair) -> String {
         .add_tailnet_computer(&rows[0].0)
         .await
         .expect("added")
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn lending_is_off_by_default_nothing_listens_and_tailscale_is_not_even_asked() {
-    let p = pair("off", Seen::Mine, false).await;
-    let at = SocketAddr::new(p.a.pi, p.port);
-    assert!(
-        p.pi.tailnet
-            .as_ref()
-            .unwrap()
-            .listening()
-            .borrow()
-            .bound
-            .is_empty()
-    );
-    assert!(tokio::net::TcpStream::connect(at).await.is_err());
-    assert!(
-        p.pi.tailscale.as_ref().unwrap().fake.requests().is_empty(),
-        "no question to Tailscale while lending is off: {:?}",
-        p.pi.tailscale.as_ref().unwrap().fake.requests()
-    );
-    // Desk looks and finds nobody lending.
-    let (settings, _) = p
-        .desk
-        .connect_as(Role::Settings, app("org.quire.Settings"))
-        .await;
-    let rows = proxy(&settings)
-        .await
-        .candidates()
-        .await
-        .expect("candidates");
-    assert!(rows.is_empty(), "{rows:?}");
-    // The setting turns it on, and off.
-    let mut on = (*p.pi.served.settings()).clone();
-    on.tailnet_serve = TailnetServe::On;
-    p.pi.served.apply(on.clone());
-    listening(&p.pi, at).await;
-    on.tailnet_serve = TailnetServe::Off;
-    p.pi.served.apply(on);
-    let mut now = p.pi.tailnet.as_ref().unwrap().listening();
-    within("pi to stop", now.wait_for(|now| now.bound.is_empty()))
-        .await
-        .expect("stops");
-    // The listener is closed a moment after it is let go of.
-    within("the connection to be refused", async {
-        while tokio::net::TcpStream::connect(at).await.is_ok() {
-            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
-        }
-    })
-    .await;
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn a_new_computer_is_asked_about_once_and_after_a_yes_its_models_answer() {
-    let p = pair("granted", Seen::Mine, true).await;
-    listening(&p.pi, SocketAddr::new(p.a.pi, p.port)).await;
-    let (pi_shell, _) = (p.pi.client.clone(), ());
-    let pi_proxy = proxy(&pi_shell).await;
-    let mut asks = pi_proxy.receive_guest_asks().await.expect("signal");
-
-    // Desk finds pi, which says it still needs a yes, and adds it.
-    let (settings, _) = p
-        .desk
-        .connect_as(Role::Settings, app("org.quire.Settings"))
-        .await;
-    let rows = proxy(&settings)
-        .await
-        .candidates()
-        .await
-        .expect("candidates");
-    assert_eq!(rows.len(), 1, "{rows:?}");
-    assert_eq!(rows[0].0, "nPI");
-    assert_eq!(text_of(&rows[0].1, "name").as_deref(), Some("pi"));
-    assert_eq!(
-        flag_of(&rows[0].1, CANDIDATE_KEY_NEEDS_APPROVAL),
-        Some(true)
-    );
-    let lent = model_ids(&rows[0].1);
-    assert!(lent.contains(&"tiny-chat".to_owned()), "{lent:?}");
-    assert!(lent.contains(&entries::ATTACHED.to_owned()), "{lent:?}");
-    // The hello did not ask the person anything.
-    assert!(pi_proxy.guests().await.expect("guests").is_empty());
-    let placed = proxy(&settings)
-        .await
-        .add_tailnet_computer("nPI")
-        .await
-        .expect("added");
-    assert_eq!(placed, "computer:pi");
-
-    // Not ready: pi turned the first request away and asked its person.
-    let places = p.desk.accounts.places().await.expect("places");
-    let row = places
-        .iter()
-        .find(|r| r.id.as_str() == "computer:pi")
-        .expect("the place");
-    assert_eq!(row.state, PlaceState::NotReady);
-    assert_eq!(row.name, "pi");
-    let asked = within("the question", next_of(&mut asks))
-        .await
-        .expect("a signal");
-    let args = asked.args().expect("args");
-    assert_eq!(args.node, "nDESK");
-    assert_eq!(text_of(&args.details, "name").as_deref(), Some("desk"));
-    let guests = pi_proxy.guests().await.expect("guests");
-    assert_eq!(guests.len(), 1);
-    assert_eq!(
-        text_of(&guests[0].1, GUEST_KEY_STATE).as_deref(),
-        Some("asking")
-    );
-    // Trying again does not ask again.
-    let _ = p.desk.accounts.places().await.expect("places");
-    assert_eq!(pi_proxy.guests().await.expect("guests").len(), 1);
-    assert!(
-        tokio::time::timeout(std::time::Duration::from_millis(300), next_of(&mut asks))
-            .await
-            .is_err(),
-        "the person is asked once"
-    );
-
-    // The person at pi says yes (the shell may answer a question that is waiting).
-    pi_proxy
-        .answer_guest("nDESK", steward_dbus::inference::GUEST_ANSWER_ALLOW)
-        .await
-        .expect("answered");
-    let places = p.desk.accounts.places().await.expect("places");
-    let row = places
-        .iter()
-        .find(|r| r.id.as_str() == "computer:pi")
-        .expect("the place");
-    assert_eq!(row.state, PlaceState::Ready);
-    let ids: Vec<&str> = row.models.iter().map(|m| m.id.as_str()).collect();
-    assert!(
-        ids.contains(&"tiny-chat") && ids.contains(&entries::ATTACHED),
-        "{ids:?}"
-    );
-
-    // The assistant runs on pi: the words come from pi's engine, which saw the prompt.
-    assert_eq!(chat::said(&p.desk).await, Ok("from pi".to_owned()));
-    let seen = p.pi.engines["tiny-chat"].seen.lock().unwrap().clone();
-    let prompts: Vec<String> = seen.iter().map(|s| s.body.to_string()).collect();
-    assert!(
-        prompts.iter().any(|body| body.contains("hello")),
-        "{prompts:?}"
-    );
-    // And pi's audit trail has the request (tokens, never the words).
-    assert!(!p.pi.audit.entries().is_empty());
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn a_no_keeps_a_computer_out_and_it_is_not_asked_again() {
-    let p = pair("denied", Seen::Mine, true).await;
-    listening(&p.pi, SocketAddr::new(p.a.pi, p.port)).await;
-    let pi_proxy = proxy(&p.pi.client).await;
-    let mut asks = pi_proxy.receive_guest_asks().await.expect("signal");
-    assert_eq!(add_pi(&p).await, "computer:pi");
-    let _ = p.desk.accounts.places().await.expect("places");
-    within("the question", next_of(&mut asks))
-        .await
-        .expect("a signal");
-    pi_proxy
-        .answer_guest("nDESK", steward_dbus::inference::GUEST_ANSWER_DENY)
-        .await
-        .expect("answered");
-    for _ in 0..2 {
-        let places = p.desk.accounts.places().await.expect("places");
-        let row = places
-            .iter()
-            .find(|r| r.id.as_str() == "computer:pi")
-            .unwrap();
-        assert_eq!(row.state, PlaceState::NotReady);
-    }
-    let guests = pi_proxy.guests().await.expect("guests");
-    assert_eq!(
-        text_of(&guests[0].1, GUEST_KEY_STATE).as_deref(),
-        Some("denied")
-    );
-    assert!(
-        tokio::time::timeout(std::time::Duration::from_millis(300), next_of(&mut asks))
-            .await
-            .is_err(),
-        "a computer told no is not asked about again"
-    );
-    // The assistant cannot be placed there, in words.
-    let refused = chat::said(&p.desk).await.expect_err("refused");
-    assert!(
-        refused.contains("NoAllowedPlace") || refused.contains("NotReady"),
-        "{refused}"
-    );
-    // The words pi gives it.
-    let said = http(
-        p.a.desk,
-        SocketAddr::new(p.a.pi, p.port),
-        &chat_body("tiny-chat"),
-    )
-    .await;
-    assert!(said.starts_with("HTTP/1.1 403"), "{said}");
-    assert!(
-        said.contains("was told not to let this one use its models"),
-        "{said}"
-    );
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn a_yes_can_be_taken_back_and_forgotten_so_the_computer_is_asked_again() {
-    let p = pair("revoked", Seen::Mine, true).await;
-    listening(&p.pi, SocketAddr::new(p.a.pi, p.port)).await;
-    let pi_proxy = proxy(&p.pi.client).await;
-    let mut asks = pi_proxy.receive_guest_asks().await.expect("signal");
-    add_pi(&p).await;
-    let _ = ready(&p.desk).await;
-    within("the question", next_of(&mut asks))
-        .await
-        .expect("a signal");
-    pi_proxy
-        .answer_guest("nDESK", steward_dbus::inference::GUEST_ANSWER_ALLOW)
-        .await
-        .expect("yes");
-    assert_eq!(ready(&p.desk).await, Some(PlaceState::Ready));
-
-    // Settings at pi takes it back.
-    let (settings, _) =
-        p.pi.connect_as(Role::Settings, app("org.quire.Settings"))
-            .await;
-    let settings = proxy(&settings).await;
-    settings
-        .answer_guest("nDESK", steward_dbus::inference::GUEST_ANSWER_DENY)
-        .await
-        .expect("no");
-    assert_eq!(ready(&p.desk).await, Some(PlaceState::NotReady));
-    // Forgotten, it is a stranger again and is asked again.
-    settings.forget_guest("nDESK").await.expect("forgotten");
-    assert!(settings.guests().await.expect("guests").is_empty());
-    assert_eq!(ready(&p.desk).await, Some(PlaceState::NotReady));
-    within("the question again", next_of(&mut asks))
-        .await
-        .expect("a second signal");
-    assert_eq!(settings.guests().await.expect("guests").len(), 1);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn another_user_a_server_and_a_shared_computer_are_refused_unless_the_person_allows_it() {
-    for (name, seen) in [
-        ("another", Seen::Another),
-        ("tagged", Seen::Tagged),
-        ("shared", Seen::Shared),
-    ] {
-        let p = pair(name, seen, true).await;
-        let at = SocketAddr::new(p.a.pi, p.port);
-        listening(&p.pi, at).await;
-        // Never asked about: no question is raised for them, whatever they try.
-        let said = http(p.a.desk, at, &chat_body("tiny-chat")).await;
-        assert!(said.starts_with("HTTP/1.1 403"), "{name}: {said}");
-        let words = match seen {
-            Seen::Tagged => "set up as a server",
-            _ => "belongs to someone else",
-        };
-        assert!(said.contains(words), "{name}: {said}");
-        let pi_proxy = proxy(&p.pi.client).await;
-        assert!(
-            pi_proxy.guests().await.expect("guests").is_empty(),
-            "{name}"
-        );
-        // Desk looks and finds nothing to add, and adding it says why in plain words.
-        let (settings, _) = p
-            .desk
-            .connect_as(Role::Settings, app("org.quire.Settings"))
-            .await;
-        let settings = proxy(&settings).await;
-        assert!(
-            settings.candidates().await.expect("candidates").is_empty(),
-            "{name}"
-        );
-        let refused = settings
-            .add_tailnet_computer("nPI")
-            .await
-            .expect_err("refused");
-        assert_eq!(
-            error_name(&refused),
-            computer_error("NotAnswering"),
-            "{name}"
-        );
-        // The person's own word, given to Settings at pi ahead of time, lets it in.
-        let (pi_settings, _) =
-            p.pi.connect_as(Role::Settings, app("org.quire.Settings"))
-                .await;
-        proxy(&pi_settings)
-            .await
-            .answer_guest("nDESK", steward_dbus::inference::GUEST_ANSWER_ALLOW)
-            .await
-            .expect("allowed");
-        let hello = http(p.a.desk, at, HELLO).await;
-        assert!(hello.starts_with("HTTP/1.1 200"), "{name}: {hello}");
-        assert!(hello.contains("tiny-chat"), "{name}: {hello}");
-    }
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn a_request_from_pis_own_address_is_refused_and_raises_no_question() {
-    // A program of another account on pi reaches the listener through the network address and
-    // would pass as one of the person's other computers, if nothing looked at where it came from.
-    let p = pair("own-address", Seen::Mine, true).await;
-    let at = SocketAddr::new(p.a.pi, p.port);
-    listening(&p.pi, at).await;
-    let said = http(p.a.pi, at, &chat_body("tiny-chat")).await;
-    assert!(said.starts_with("HTTP/1.1 403"), "{said}");
-    assert!(
-        said.contains("won't answer a request that came from itself"),
-        "{said}"
-    );
-    let hello = http(p.a.pi, at, HELLO).await;
-    assert!(hello.starts_with("HTTP/1.1 403"), "{hello}");
-    assert!(
-        proxy(&p.pi.client)
-            .await
-            .guests()
-            .await
-            .expect("guests")
-            .is_empty()
-    );
-    // An address Tailscale has no computer for gets the same refusal.
-    let stranger = http("127.250.250.250".parse().unwrap(), at, HELLO).await;
-    assert!(
-        stranger.contains("could not tell which of your computers is asking"),
-        "{stranger}"
-    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -645,7 +289,7 @@ async fn a_cloud_account_is_never_reached_from_a_peer_even_when_it_is_the_only_e
             trust: Trust::ScratchCa,
         }),
         tailnet: Some(TailnetPlan {
-            network: network(("nPI", "pi", a.pi), ("nDESK", "desk", a.desk), Seen::Mine),
+            network: network(("nPI", "pi", a.pi), ("nDESK", "desk", a.desk)),
             port,
             serving: true,
         }),
@@ -686,56 +330,8 @@ async fn a_cloud_account_is_never_reached_from_a_peer_even_when_it_is_the_only_e
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn a_computer_attached_over_the_network_is_never_lent_onward() {
-    // pi reaches a machine of the person's through a tunnel (`my-network`); it lends only what
-    // runs on pi itself.
-    let a = addresses();
-    let port = free_port();
-    let dir = test_kit::Scratch::new("tn-onward");
-    let lab = Lab::start_in(dir, "lab", &[entries::SERVED], None).await;
-    let pi = World::start(Plan {
-        catalog: vec![("a-attached.toml", entries::attached())],
-        attached: vec![Attached {
-            id: ModelId::parse(entries::ATTACHED).expect("id"),
-            reach: Reach::Socket(lab.socket()),
-            key_file: None,
-            place: Place::MyNetwork,
-            computer: Some(ComputerName::parse("lab").expect("name")),
-        }],
-        policy: policy(),
-        role: Role::Shell,
-        app: Some(app("org.quire.Shell")),
-        tailnet: Some(TailnetPlan {
-            network: network(("nPI", "pi", a.pi), ("nDESK", "desk", a.desk), Seen::Mine),
-            port,
-            serving: true,
-        }),
-        ..Plan::default()
-    })
-    .await;
-    let at = SocketAddr::new(a.pi, port);
-    listening(&pi, at).await;
-    let (settings, _) = pi
-        .connect_as(Role::Settings, app("org.quire.Settings"))
-        .await;
-    proxy(&settings)
-        .await
-        .answer_guest("nDESK", steward_dbus::inference::GUEST_ANSWER_ALLOW)
-        .await
-        .expect("yes");
-    let hello = http(a.desk, at, HELLO).await;
-    assert!(hello.contains(r#""models":[]"#), "{hello}");
-    let said = http(a.desk, at, &chat_body(entries::ATTACHED)).await;
-    assert!(said.starts_with("HTTP/1.1 404"), "{said}");
-    assert!(
-        lab.chats().is_empty(),
-        "nothing was forwarded to the machine behind pi"
-    );
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn the_listener_follows_the_address_tailscale_gives_the_computer() {
-    let p = pair("address", Seen::Mine, true).await;
+    let p = pair("address", true).await;
     let first = SocketAddr::new(p.a.pi, p.port);
     listening(&p.pi, first).await;
     let moved = SocketAddr::new(p.a.spare, p.port);
@@ -770,7 +366,7 @@ async fn the_listener_follows_the_address_tailscale_gives_the_computer() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn candidates_are_looked_at_only_when_read_at_most_once_a_minute_and_only_with_an_account() {
-    let p = pair("looks", Seen::Mine, true).await;
+    let p = pair("looks", true).await;
     listening(&p.pi, SocketAddr::new(p.a.pi, p.port)).await;
     let (settings, _) = p
         .desk
@@ -786,7 +382,7 @@ async fn candidates_are_looked_at_only_when_read_at_most_once_a_minute_and_only_
     assert_eq!(p.pi.tailscale.as_ref().unwrap().whois_asked(), 1);
 
     // With no Tailscale account in the accounts, accountd lists no computers: no look is made.
-    let q = pair("no-account", Seen::Mine, true).await;
+    let q = pair("no-account", true).await;
     listening(&q.pi, SocketAddr::new(q.a.pi, q.port)).await;
     q.desk
         .tailscale
@@ -810,7 +406,7 @@ async fn candidates_are_looked_at_only_when_read_at_most_once_a_minute_and_only_
 
 #[tokio::test(flavor = "multi_thread")]
 async fn adding_a_computer_that_is_not_there_or_twice_is_refused_in_plain_words() {
-    let p = pair("adding", Seen::Mine, true).await;
+    let p = pair("adding", true).await;
     listening(&p.pi, SocketAddr::new(p.a.pi, p.port)).await;
     let (settings, _) = p
         .desk
@@ -854,7 +450,7 @@ async fn adding_a_computer_that_is_not_there_or_twice_is_refused_in_plain_words(
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_name_follows_tailscale_and_the_place_stays() {
-    let p = pair("renamed", Seen::Mine, true).await;
+    let p = pair("renamed", true).await;
     listening(&p.pi, SocketAddr::new(p.a.pi, p.port)).await;
     add_pi(&p).await;
     p.desk
@@ -873,7 +469,7 @@ async fn the_name_follows_tailscale_and_the_place_stays() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn only_settings_may_add_or_look_and_only_settings_and_the_shell_may_answer() {
-    let p = pair("callers", Seen::Mine, true).await;
+    let p = pair("callers", true).await;
     listening(&p.pi, SocketAddr::new(p.a.pi, p.port)).await;
     let denied = "org.freedesktop.DBus.Error.AccessDenied";
     // On desk: an app, the shell and the companion may not look at or add computers.

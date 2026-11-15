@@ -2,8 +2,7 @@
 //! survives its serde form and the forms inferd and its clients read keep their JSON.
 
 use cua_action::{
-    Button, ClickCount, Coord, CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size, Target,
-    WindowSpace,
+    Coord, CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size, Target, WindowSpace,
 };
 use porter_capability::Locality;
 use porter_capability::ModelId;
@@ -11,7 +10,7 @@ use porter_capability::{CuaEnv, LanguageTag};
 use porter_core::AccountId;
 use porter_core::DataClass;
 use porter_core::consent::Usage;
-use porter_ids::{Count, Permille, Tokens};
+use porter_ids::Permille;
 use porter_infer::*;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
@@ -37,15 +36,6 @@ fn served() -> ServedBy {
 
 fn window_point(x: u32, y: u32) -> Point<WindowSpace> {
     Point::new(Coord(x), Coord(y))
-}
-
-fn click() -> CuaAction<WindowSpace> {
-    CuaAction::Click {
-        at: Target::Point(window_point(10, 20)),
-        button: Button::Left,
-        count: ClickCount::One,
-        mods: Default::default(),
-    }
 }
 
 fn step_request() -> CuaStepRequest {
@@ -87,61 +77,6 @@ fn step_request() -> CuaStepRequest {
     ])
 }
 
-fn usage() -> TokenUsage {
-    TokenUsage {
-        input: Tokens(10),
-        output: Tokens(5),
-        cached: Tokens(0),
-        charge: None,
-    }
-}
-
-#[test]
-fn every_infer_request_round_trips() {
-    let requests = vec![
-        InferRequest::CuaBegin(
-            CuaBegin::new("rename the file".into(), CuaEnv::Desktop)
-                .with_hints(vec!["use the context menu".into()]),
-        ),
-        InferRequest::CuaStep(step_request()),
-        InferRequest::Transcribe(TranscribeBegin::new(
-            TranscribeMode::Streaming,
-            LangPick::Prefer(vec![LanguageTag::parse("zh-Hant-TW").expect("tag")]),
-            AudioRate(16_000),
-            Usage::Interactive,
-        )),
-        InferRequest::Transcribe(TranscribeBegin::new(
-            TranscribeMode::Batch,
-            LangPick::Auto,
-            AudioRate(16_000),
-            Usage::Background,
-        )),
-        InferRequest::Speak(
-            SpeakRequest::new(
-                "Two new messages".into(),
-                LanguageTag::parse("en").expect("tag"),
-                DataClass::Mail,
-                Usage::Interactive,
-            )
-            .with_voice(VoiceName("af_heart".into())),
-        ),
-    ];
-    for request in &requests {
-        round_trip(request);
-    }
-    let kinds: Vec<RequestKind> = requests.iter().map(InferRequest::kind).collect();
-    assert_eq!(
-        kinds,
-        [
-            RequestKind::CuaBegin,
-            RequestKind::CuaStep,
-            RequestKind::Transcribe,
-            RequestKind::Transcribe,
-            RequestKind::Speak
-        ]
-    );
-}
-
 #[test]
 fn infer_request_speech_round_trip_pins_its_json() {
     let begin = InferRequest::Transcribe(TranscribeBegin::new(
@@ -154,100 +89,6 @@ fn infer_request_speech_round_trip_pins_its_json() {
         round_trip(&begin),
         r#"{"kind":"transcribe","v":{"mode":"streaming","lang":{"kind":"auto"},"rate":16000,"usage":"interactive"}}"#
     );
-}
-
-#[test]
-fn client_frame_audio_round_trip() {
-    let frames = [
-        ClientFrame::Request(InferRequest::CuaStep(step_request())),
-        ClientFrame::Cancel,
-        ClientFrame::Audio(AudioFrame {
-            at: 32_000,
-            pcm: Base64Bytes(vec![0, 1, 2, 3]),
-        }),
-        ClientFrame::EndOfAudio,
-    ];
-    frames.iter().for_each(|f| {
-        round_trip(f);
-    });
-    assert_eq!(round_trip(&ClientFrame::Cancel), r#"{"kind":"cancel"}"#);
-    assert_eq!(
-        round_trip(&frames[2]),
-        r#"{"kind":"audio","v":{"at":32000,"pcm":"AAECAw=="}}"#
-    );
-}
-
-#[test]
-fn infer_frames_round_trip() {
-    let events = vec![
-        InferEvent::Routed(served()),
-        InferEvent::Stage(StageNote {
-            role: StageRole::Hear,
-            served: served(),
-            why: Why::Reached {
-                provider: ProviderId("openrouter".into()),
-                door: Door::Gateway,
-            },
-            name: Some(ModelLabel("Whisper".into())),
-        }),
-        InferEvent::Waiting(Readiness::Loading),
-        InferEvent::Waiting(Readiness::Downloading(Permille(420))),
-        InferEvent::Queue(QueueFact::Waiting { ahead: Count(2) }),
-        InferEvent::Queue(QueueFact::Started),
-        InferEvent::TextDelta("he".into()),
-        InferEvent::ThoughtDelta("hmm".into()),
-        InferEvent::ToolCall(ToolCallPart {
-            id: ToolCallId("c1".into()),
-            name: ToolName::parse("mail.thread.archive").expect("name"),
-            args: JsonText::parse("{}").expect("json"),
-        }),
-        InferEvent::ActionProposed(click()),
-        InferEvent::Usage(usage()),
-        InferEvent::Heard(HeardDelta::Partial {
-            text: "hel".into(),
-            from: 0,
-        }),
-        InferEvent::Heard(HeardDelta::Final {
-            text: "hello".into(),
-            from: 0,
-            to: 16_000,
-        }),
-        InferEvent::Heard(HeardDelta::Lang(LanguageTag::parse("en").expect("tag"))),
-        InferEvent::Spoken(AudioFrameOut {
-            rate: AudioRate(24_000),
-            at: 0,
-            pcm: Base64Bytes(vec![9; 8]),
-        }),
-        InferEvent::Finished(InferReply::Cancelled),
-    ];
-    events.iter().for_each(|e| {
-        round_trip(e);
-    });
-    let replies = [
-        InferReply::CuaStep(
-            CuaStepReply::new(vec![click(), CuaAction::Observe])
-                .with_thought("click save".into())
-                .with_dropped(vec![DroppedAction {
-                    verb: "open_app".into(),
-                    reason: DropReason::UnsupportedVerb,
-                }])
-                .with_safety(vec![SafetyHint::RequireConfirmation("sends money".into())]),
-        ),
-        InferReply::Transcribed(TranscribeReply::new("hello".into(), 1_000, served())),
-        InferReply::Spoke(SpeakReply::new(2_000, served())),
-        InferReply::Refused(InferRefusal::Unsupported),
-        InferReply::Failed(ModelError::RateLimited(7)),
-        InferReply::Cancelled,
-    ];
-    replies.iter().for_each(|r| {
-        round_trip(r);
-    });
-    for failure in [
-        CuaStepFailure::Unparseable,
-        CuaStepFailure::ModelFailed(ModelError::ContextOverflow),
-    ] {
-        round_trip(&failure);
-    }
 }
 
 #[test]

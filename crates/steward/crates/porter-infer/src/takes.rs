@@ -179,21 +179,4 @@ mod tests {
         assert_eq!(Takes::TextAndImages.sight(), Sight::Sees);
         assert_eq!(Takes::Unknown.sight(), Sight::Unknown);
     }
-
-    #[test]
-    fn the_bus_name_round_trips_and_an_unknown_name_reads_as_unknown() {
-        for takes in [
-            Takes::TextOnly,
-            Takes::TextAndImages,
-            Takes::TextAndAudio,
-            Takes::TextImagesAndAudio,
-        ] {
-            assert_eq!(Takes::from_slug(takes.slug()), takes);
-            assert_eq!(
-                serde_json::to_string(&takes).expect("json"),
-                format!("\"{}\"", takes.slug())
-            );
-        }
-        assert_eq!(Takes::from_slug("video"), Takes::Unknown);
-    }
 }

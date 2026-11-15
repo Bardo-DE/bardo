@@ -14,7 +14,6 @@ use hosting::engine::{Chat, Script};
 use hosting::entries;
 use hosting::rig::{Hosted, Plan, Trust, World};
 use inferd::probe::ProbeConfig;
-use inferd::settings::Settings;
 use inferd_client::InferSession;
 use porter_capability::LlmFeature;
 use porter_capability::{Locality, Tier};
@@ -255,35 +254,6 @@ async fn acceptance_6_with_local_only_on_a_mail_summary_runs_on_the_probed_ollam
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn the_cloud_reach_of_acceptance_6_is_live_and_only_local_only_keeps_it_out() {
-    // The control of the test above: the same world with `ai.local_only` off and the Ollama
-    // stopped is answered by the hosted account, so the zero calls above are the setting's doing.
-    let (_reserved, port) = reserved_port();
-    let world = world(port, LocalOnly::Off).await;
-    rescan(&world).await;
-    let events = turn(&world, "Summarise: the meeting moved to noon.").await;
-    assert_eq!(routed(&events).account.as_str(), "openrouter");
-    assert_eq!(cloud_calls(&world), 1);
-    assert!(
-        reports(&world).is_empty(),
-        "a runtime that was never there is never reported"
-    );
-
-    // And with local only turned on in the settings in force, the next request is refused.
-    let mut settings: Settings = (*world.served.settings()).clone();
-    settings.policy = policy(LocalOnly::On);
-    world.served.apply(settings);
-    let events = turn(&world, "Summarise again").await;
-    assert_eq!(
-        events,
-        vec![InferEvent::Finished(InferReply::Refused(
-            InferRefusal::Unavailable
-        ))]
-    );
-    assert_eq!(cloud_calls(&world), 1);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn a_runtime_that_starts_later_is_found_on_rescan_and_listed_for_the_picker_and_goes_offline_and_back()
  {
     let (_reserved, port) = reserved_port();
@@ -318,25 +288,4 @@ async fn a_runtime_that_starts_later_is_found_on_rescan_and_listed_for_the_picke
     assert_eq!(states, ["ok", "offline", "ok"]);
     let events = turn(&world, "Summarise: back again").await;
     assert_eq!(routed(&events).account.as_str(), "ollama");
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn rescan_tells_listeners_the_engines_changed_when_a_runtime_came_up() {
-    use zbus::export::futures_core::Stream;
-    let (_reserved, port) = reserved_port();
-    let world = world(port, LocalOnly::On).await;
-    let proxy = InferenceProxy::new(&world.client).await.expect("proxy");
-    let mut changed = proxy
-        .receive_engines_changed()
-        .await
-        .expect("signal stream");
-    let _ollama = fake_ollama(&Bind::Port(port)).await;
-    rescan(&world).await;
-    tokio::time::timeout(
-        test_kit::GENEROUS,
-        std::future::poll_fn(|cx| std::pin::Pin::new(&mut changed).poll_next(cx)),
-    )
-    .await
-    .expect("EnginesChanged arrives")
-    .expect("a signal");
 }

@@ -3,7 +3,6 @@ use crate::settings::{ScopeLimits, SpendLimits};
 use porter_core::{AppName, Isolation};
 use porter_ids::{Tokens, TurnCount};
 use rust_decimal::Decimal;
-use serde_json::json;
 use test_kit::Scratch;
 
 fn app(name: &str) -> AppId {
@@ -399,75 +398,4 @@ fn usage_names_what_the_app_used_and_each_cap_that_is_set() {
     assert_eq!(got, want);
     assert_eq!(written(Money::usd(Decimal::new(9500, 6))), "0.0095 USD");
     assert_eq!(written(Money::usd(Decimal::ZERO)), "0 USD");
-}
-
-/// A ledger file from before the meter counted only reported charges has dollar amounts worked out
-/// from prices. They are not read as money: the token counts and the lost period carry over, the
-/// charges start empty, the file is rewritten in the new format, and the daemon says so.
-#[test]
-fn a_ledger_file_from_before_reported_charges_keeps_tokens_and_drops_its_dollars() {
-    let dir = scratch("before");
-    let file = dir.join("spend.json");
-    let who = app("org.quire.Companion");
-    let mut row = serde_json::to_value(Key {
-        scope: SpendScope::App(who.clone()),
-        period: Period::Daily,
-        bucket: day_of(LEAP_NOON),
-    })
-    .expect("key")
-    .as_object()
-    .expect("an object")
-    .clone();
-    row.insert(
-        "spent".to_owned(),
-        json!({"micro_usd": 123_456_789, "tokens_in": 70, "tokens_out": 30}),
-    );
-    let before = json!({ "rows": [row] }).to_string();
-    std::fs::write(&file, before).expect("write");
-    let ledger = Ledger::open_at(file.clone(), LEAP_NOON);
-    let scope = SpendScope::App(who.clone());
-    assert_eq!(
-        ledger.spent(&scope, Period::Daily, LEAP_NOON),
-        Spent {
-            charges: ChargeTotal::default(),
-            tokens_in: 70,
-            tokens_out: 30
-        },
-        "the old micro-dollars are not a charge"
-    );
-    assert_eq!(
-        ledger.verdict(line(10), &who, &account("openrouter"), LEAP_NOON),
-        SpendVerdict::Within
-    );
-    assert!(
-        !dir.join(format!("spend.json.corrupt-{}", LEAP_NOON.0))
-            .exists(),
-        "an old file is read, not set aside"
-    );
-    let text = std::fs::read_to_string(&file).expect("the file");
-    assert!(text.contains("\"format\":2"), "rewritten at once: {text}");
-    assert!(!text.contains("micro_usd"), "{text}");
-    ledger.record(&who, &account("openrouter"), charged(1, 1, 5), LEAP_NOON);
-    let again = Ledger::open_at(file, LEAP_NOON);
-    assert_eq!(
-        again.spent(&scope, Period::Daily, LEAP_NOON),
-        Spent {
-            charges: milli(5),
-            tokens_in: 71,
-            tokens_out: 31
-        }
-    );
-}
-
-/// A file a later inferd wrote is not guessed at: it is set aside like one that does not read.
-#[test]
-fn a_ledger_file_of_a_format_not_known_is_set_aside() {
-    let dir = scratch("later");
-    let file = dir.join("spend.json");
-    std::fs::write(&file, r#"{"format":3,"rows":[]}"#).expect("write");
-    let _ledger = Ledger::open_at(file, LEAP_NOON);
-    assert!(
-        dir.join(format!("spend.json.corrupt-{}", LEAP_NOON.0))
-            .exists()
-    );
 }

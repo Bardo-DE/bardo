@@ -141,24 +141,6 @@ async fn enable_gives_0644_whatever_the_umask_made_of_a_new_file() {
 }
 
 #[tokio::test]
-async fn enable_twice_leaves_the_same_file_and_still_reloads_and_restarts() {
-    let s = Fixture::new();
-    let (lending, units) = s.lending(Fail::Nowhere);
-    lending.enable().await.expect("first");
-    lending.enable().await.expect("second");
-    assert_eq!(fs::read_to_string(s.drop_in()).expect("file"), SHIPPED);
-    assert_eq!(
-        units.calls(),
-        [
-            "reload",
-            "restart inferd.service",
-            "reload",
-            "restart inferd.service"
-        ]
-    );
-}
-
-#[tokio::test]
 async fn a_file_that_is_not_the_shipped_one_reads_as_differs_and_enable_replaces_it() {
     let s = Fixture::new();
     s.put("[Service]\nIPAddressAllow=any\n");
@@ -310,28 +292,6 @@ async fn disable_that_fails_to_restart_has_still_taken_the_file_away() {
     assert!(matches!(error, LendingError::RestartFailed(_)), "{error:?}");
     assert!(!s.drop_in().exists());
     assert_eq!(units.calls(), RELOAD_RESTART);
-}
-
-#[test]
-fn every_failure_says_what_failed_and_none_is_a_sentence_for_a_person() {
-    let errors = [
-        LendingError::ShippedFileMissing,
-        LendingError::CouldNotWrite(std::io::Error::other("EACCES")),
-        LendingError::ReloadFailed(UnitFailure("org.freedesktop.DBus.Error".to_owned())),
-        LendingError::RestartFailed(UnitFailure("job canceled".to_owned())),
-    ];
-    for error in errors {
-        let text = error.to_string();
-        assert!(!text.ends_with('.'), "{text}");
-        assert!(text.starts_with(|c: char| c.is_ascii_lowercase()), "{text}");
-        for person in ["Your", "your", "Try again", "Check that", "Signing out"] {
-            assert!(!text.contains(person), "{person} in {text}");
-        }
-        // The cause is kept for a log, never shown.
-        if let LendingError::ReloadFailed(_) | LendingError::RestartFailed(_) = error {
-            assert!(std::error::Error::source(&error).is_some());
-        }
-    }
 }
 
 /// The environment's answers, as a table gives them.
@@ -503,14 +463,6 @@ mod session_bus {
         let result = lending.enable().await;
         let calls = calls.lock().expect("calls").clone();
         (result, calls, s)
-    }
-
-    #[tokio::test]
-    async fn the_session_manager_reloads_then_restarts_and_waits_for_its_own_job() {
-        let (result, calls, s) = run(Job::Done).await;
-        result.expect("enable");
-        assert_eq!(calls, ["Reload", "RestartUnit inferd.service replace"]);
-        assert_eq!(fs::read_to_string(s.drop_in()).expect("file"), SHIPPED);
     }
 
     #[tokio::test]

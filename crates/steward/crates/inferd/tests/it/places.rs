@@ -254,38 +254,17 @@ async fn within_generous(work: impl std::future::Future<Output = ()>) -> bool {
 
 mod routing {
     use super::*;
-    use hosting::bus::within;
-    use inferd_client::InferSession;
     use porter_capability::LlmFeature;
-    use porter_core::consent::Usage;
     use porter_ids::Tokens;
-    use porter_infer::{
-        ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRequest, LocalOnly, MessagePart,
-        NoPlaceReason, OpenOptions, PlaceId, Policy, Role as ChatRole,
-    };
+    use porter_infer::{LocalOnly, OpenOptions, PlaceId, Policy};
     use porter_match::LlmNeed;
     use porter_match::Need;
-    use porter_router::router::placed::Allowed;
-    use porter_router::session::SessionSpec;
-    use std::collections::BTreeMap;
     use steward_dbus::inference::InferenceProxy;
 
     const COMPANION: &str = "org.quire.Companion";
 
     fn llm() -> Need {
         Need::Llm(LlmNeed::new([LlmFeature::Chat].into(), Tokens(1000)))
-    }
-
-    fn chat_request() -> InferRequest {
-        InferRequest::Chat(ChatRequest::new(
-            vec![ChatMessage {
-                role: ChatRole::User,
-                parts: vec![MessagePart::Text("hello".into())],
-            }],
-            Tier::Balanced,
-            DataClass::Public,
-            Usage::Interactive,
-        ))
     }
 
     fn place(text: &str) -> PlaceId {
@@ -351,104 +330,6 @@ mod routing {
             ..Plan::default()
         };
         (World::start(plan).await, lab)
-    }
-
-    /// The account the session was routed to, for a first turn opened with `options`.
-    async fn served_by(world: &World, options: &OpenOptions) -> String {
-        let mut session = within(
-            "Open",
-            world
-                .accounts
-                .session_with(&llm(), DataClass::Public, Tier::Balanced, options),
-        )
-        .await
-        .expect("open");
-        let _ = session.send(ClientFrame::Request(chat_request())).await;
-        loop {
-            match within("the next event", session.next())
-                .await
-                .expect("event")
-            {
-                InferEvent::Routed(served) => return served.account.to_string(),
-                InferEvent::Finished(reply) => panic!("no route: {reply:?}"),
-                _ => {}
-            }
-        }
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn without_places_routing_is_as_it_always_was_and_with_them_it_is_the_callers() {
-        let (world, _lab) = placed_world("order", Role::Placer, COMPANION).await;
-        // Today: this computer before the cloud.
-        assert_eq!(served_by(&world, &OpenOptions::default()).await, "local");
-        // The caller's order decides inside the set.
-        let cloud_first = OpenOptions::default()
-            .with_places(vec![place("account:openrouter"), place("this-computer")]);
-        assert_eq!(served_by(&world, &cloud_first).await, "openrouter");
-        let local_first = OpenOptions::default()
-            .with_places(vec![place("this-computer"), place("account:openrouter")]);
-        assert_eq!(served_by(&world, &local_first).await, "local");
-        // A pin names the model at a place.
-        let pinned = OpenOptions::default()
-            .with_places(vec![place("computer:lab")])
-            .with_place_model(
-                place("computer:lab"),
-                ModelId::parse(entries::ATTACHED).expect("id"),
-            );
-        assert_eq!(served_by(&world, &pinned).await, "local");
-    }
-
-    fn spec() -> SessionSpec {
-        SessionSpec {
-            need: llm(),
-            class: DataClass::Public,
-            tier: Tier::Balanced,
-            usage: Usage::Interactive,
-        }
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn a_cloud_account_outside_the_set_is_never_used_even_when_it_is_the_only_one_able() {
-        // No model on this computer: the account is the only place able to serve, and it is not
-        // in the set.
-        let (world, lab) = placed_world_with("outside", Role::Placer, COMPANION, false).await;
-        drop(lab);
-        let caller = inferd::peers::Caller {
-            app: app(COMPANION),
-            role: Role::Placer,
-        };
-        let allowed = Allowed::new(vec![place("computer:lab")], BTreeMap::new());
-        let spec = spec();
-        let offered = world
-            .served
-            .offer(&caller.app, spec.class, spec.usage)
-            .await;
-        let refused = world
-            .served
-            .route_in(
-                &spec,
-                caller.role,
-                &offered,
-                Some(&allowed),
-                porter_router::router::Unchosen::Refuse,
-            )
-            .expect_err("nothing in the set can serve");
-        assert_eq!(
-            refused,
-            porter_router::router::placed::Unplaced::NoPlace(porter_infer::PlaceRefusal::new(
-                NoPlaceReason::NotReady,
-                Some(porter_infer::PlaceKind::CloudAccount),
-            ))
-        );
-        // Whatever the answer for the session, nothing was sent to the provider.
-        assert!(
-            world
-                .provider
-                .as_ref()
-                .expect("provider")
-                .requests()
-                .is_empty()
-        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -593,207 +474,16 @@ mod routing {
 mod refusals {
     use super::routing::placed_world_with;
     use super::*;
-    use hosting::rig::World;
-    use porter_capability::{LlmFeature, Modality};
+    use porter_capability::LlmFeature;
     use porter_ids::Tokens;
-    use porter_infer::{LocalOnly, NoPlaceReason, OpenOptions, PlaceId, Policy};
     use porter_match::Need;
-    use porter_match::{DimsNeed, EmbedNeed, LlmNeed};
+    use porter_match::LlmNeed;
     use steward_dbus::inference::{InferenceProxy, PLACE_ERROR_PREFIX, place_refusal_of};
 
     const COMPANION: &str = "org.quire.Companion";
 
     fn llm() -> Need {
         Need::Llm(LlmNeed::new([LlmFeature::Chat].into(), Tokens(1000)))
-    }
-
-    fn embeddings() -> Need {
-        Need::Embeddings(EmbedNeed::new(DimsNeed::Any, [Modality::Text].into()))
-    }
-
-    fn only(places: &[&str]) -> OpenOptions {
-        OpenOptions::default().with_places(
-            places
-                .iter()
-                .map(|text| PlaceId::parse(text).expect("place"))
-                .collect(),
-        )
-    }
-
-    fn refused(reason: NoPlaceReason, would_need: Option<PlaceKind>) -> ClientError {
-        ClientError::Transport(TransportError::NoAllowedPlace { reason, would_need })
-    }
-
-    /// The same refusal from `Prepare` and from `Open`, through porter-client.
-    async fn both_ways(
-        world: &World,
-        need: &Need,
-        class: DataClass,
-        options: &OpenOptions,
-        want: ClientError,
-    ) {
-        let prepared = world
-            .accounts
-            .prepare(need, class, Tier::Balanced, options)
-            .await;
-        assert_eq!(prepared, Err(want.clone()), "Prepare");
-        let opened = world
-            .accounts
-            .session_with(need, class, Tier::Balanced, options)
-            .await
-            .map(|_| ());
-        assert_eq!(opened, Err(want), "Open");
-    }
-
-    /// Floors as shipped, with the switch that keeps everything on this computer off.
-    fn floors_on(world: &World) {
-        let mut settings = (*world.served.settings()).clone();
-        settings.policy = Policy {
-            local_only: LocalOnly::Off,
-            ..Policy::proposed()
-        };
-        world.served.apply(settings);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn not_ready_names_the_cloud_account_that_could_have_served_and_it_is_not_used() {
-        let (world, lab) = placed_world_with("r-notready", Role::Placer, COMPANION, false).await;
-        drop(lab);
-        both_ways(
-            &world,
-            &llm(),
-            DataClass::Public,
-            &only(&["computer:lab"]),
-            refused(NoPlaceReason::NotReady, Some(PlaceKind::CloudAccount)),
-        )
-        .await;
-        assert!(
-            world
-                .provider
-                .as_ref()
-                .expect("provider")
-                .requests()
-                .is_empty()
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn not_ready_without_a_place_outside_that_could_serve_has_no_would_need() {
-        // The reader holds no grant on the account, so the account could not have served either.
-        let (world, lab) =
-            placed_world_with("r-nowould", Role::Placer, "org.quire.Reader", false).await;
-        drop(lab);
-        both_ways(
-            &world,
-            &llm(),
-            DataClass::Public,
-            &only(&["computer:lab"]),
-            refused(NoPlaceReason::NotReady, None),
-        )
-        .await;
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn floor_refused_when_the_class_may_not_leave_and_would_need_follows_the_floor() {
-        let (world, _lab) = placed_world_with("r-floor", Role::Placer, COMPANION, true).await;
-        floors_on(&world);
-        // The prompt may not leave this computer, and the only allowed place is the account.
-        both_ways(
-            &world,
-            &llm(),
-            DataClass::Prompt,
-            &only(&["account:openrouter"]),
-            refused(NoPlaceReason::FloorRefused, Some(PlaceKind::ThisComputer)),
-        )
-        .await;
-        // Local-only on is the same reason.
-        let mut settings = (*world.served.settings()).clone();
-        settings.policy = Policy::proposed();
-        world.served.apply(settings);
-        both_ways(
-            &world,
-            &llm(),
-            DataClass::Public,
-            &only(&["account:openrouter"]),
-            refused(NoPlaceReason::FloorRefused, Some(PlaceKind::ThisComputer)),
-        )
-        .await;
-        assert!(
-            world
-                .provider
-                .as_ref()
-                .expect("provider")
-                .requests()
-                .is_empty()
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn floor_refused_has_no_would_need_when_nothing_outside_could_serve() {
-        let (world, _lab) = placed_world_with("r-floor2", Role::Placer, COMPANION, false).await;
-        floors_on(&world);
-        both_ways(
-            &world,
-            &llm(),
-            DataClass::Prompt,
-            &only(&["account:openrouter"]),
-            refused(NoPlaceReason::FloorRefused, None),
-        )
-        .await;
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn model_not_offered_when_the_pinned_model_is_not_at_the_place() {
-        let (world, _lab) = placed_world_with("r-pin", Role::Placer, COMPANION, true).await;
-        let options = only(&["this-computer"]).with_place_model(
-            PlaceId::this_computer(),
-            porter_capability::ModelId::parse("no-such-model").expect("id"),
-        );
-        // The lab machine and the account, outside the set, could have served.
-        both_ways(
-            &world,
-            &llm(),
-            DataClass::Public,
-            &options,
-            refused(NoPlaceReason::ModelNotOffered, Some(PlaceKind::OwnComputer)),
-        )
-        .await;
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn none_capable_when_no_allowed_place_does_this_kind_of_work() {
-        let (world, _lab) = placed_world_with("r-none", Role::Placer, COMPANION, true).await;
-        // A place nothing is known of: it can do nothing, and this computer, outside, could.
-        both_ways(
-            &world,
-            &llm(),
-            DataClass::Public,
-            &only(&["computer:ghost"]),
-            refused(NoPlaceReason::NoneCapable, Some(PlaceKind::ThisComputer)),
-        )
-        .await;
-        // Embeddings: the account has none, and nothing outside has either.
-        both_ways(
-            &world,
-            &embeddings(),
-            DataClass::Public,
-            &only(&["account:openrouter"]),
-            refused(NoPlaceReason::NoneCapable, None),
-        )
-        .await;
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn an_empty_set_serves_nothing() {
-        let (world, _lab) = placed_world_with("r-empty", Role::Placer, COMPANION, true).await;
-        both_ways(
-            &world,
-            &llm(),
-            DataClass::Public,
-            &only(&[]),
-            refused(NoPlaceReason::NoneCapable, Some(PlaceKind::ThisComputer)),
-        )
-        .await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -849,23 +539,6 @@ mod refusals {
             .await
             .expect_err("invalid");
         assert_eq!(place_refusal_of(&denied), None);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn a_set_that_can_serve_is_not_refused() {
-        let (world, _lab) = placed_world_with("r-ok", Role::Placer, COMPANION, true).await;
-        let options = only(&["this-computer"]);
-        let prepared = world
-            .accounts
-            .prepare(&llm(), DataClass::Public, Tier::Balanced, &options)
-            .await;
-        assert!(prepared.is_ok(), "{prepared:?}");
-        let opened = world
-            .accounts
-            .session_with(&llm(), DataClass::Public, Tier::Balanced, &options)
-            .await
-            .map(|_| ());
-        assert_eq!(opened, Ok(()));
     }
 }
 

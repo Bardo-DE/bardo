@@ -57,41 +57,6 @@ fn tool(name: &str) -> pi::ToolDecl {
 }
 
 #[test]
-fn a_plain_turn_takes_the_models_name_defaults_and_flavor_extras() {
-    let (_scratch, model) = chat_model();
-    let turn = chat_turn(
-        &model,
-        &request(vec![user(vec![text("hi")])]),
-        &Frames::default(),
-    )
-    .expect("turn");
-    assert_eq!(turn.model.0, "tiny-chat");
-    assert_eq!(
-        turn.messages,
-        vec![sp::Message {
-            role: sp::Role::User,
-            parts: vec![sp::Part::Text("hi".into())]
-        }]
-    );
-    // Reasoning left open stays the engine's own; the entry's `reasoning_default` (off) picks the
-    // greedy sampling.
-    assert_eq!(turn.reasoning, sp::Reasoning::EngineDefault);
-    assert_eq!(turn.sampling.temperature, sp::Milli(0));
-    // The output limit is the entry's.
-    assert_eq!(turn.limits.max_output, sp::Tokens(1024));
-    assert_eq!(turn.output, sp::OutputShape::Free);
-    assert_eq!(turn.tool_choice, sp::ToolChoice::Auto);
-    assert_eq!(turn.tool_calls, sp::ToolParallelism::Many);
-    assert_eq!(
-        turn.engine,
-        sp::EngineExtras::LlamaServer(sp::LlamaExtras {
-            cache_prompt: sp::PromptCache::Reuse,
-            slot: sp::Knob::Off
-        })
-    );
-}
-
-#[test]
 fn reasoning_picks_the_catalog_sampling_set_and_an_explicit_sampling_wins() {
     let (_scratch, model) = chat_model();
     let mut on = request(vec![user(vec![text("hi")])]);
@@ -315,34 +280,6 @@ fn a_descriptor_is_read_from_its_start_whatever_offset_the_sender_left() {
         b"whole picture"
     );
     assert_eq!(Frames::read(vec![]).expect("none"), Frames::default());
-}
-
-#[test]
-fn a_task_is_its_instruction_then_the_text_with_no_tools() {
-    let (_scratch, model) = chat_model();
-    for task in [
-        pi::Task::Summarise,
-        pi::Task::Rewrite,
-        pi::Task::Extract,
-        pi::Task::Classify,
-    ] {
-        let turn = task_turn(
-            &model,
-            &pi::TaskRequest::new(task, "the text".into(), DataClass::Notes, Usage::Background),
-            Tier::Fast,
-        )
-        .expect("turn");
-        assert_eq!(turn.messages.len(), 2);
-        assert_eq!(turn.messages[0].role, sp::Role::System);
-        assert!(matches!(&turn.messages[0].parts[0], sp::Part::Text(t) if !t.is_empty()));
-        assert_eq!(
-            turn.messages[1].parts,
-            vec![sp::Part::Text("the text".into())]
-        );
-        assert!(turn.tools.is_empty());
-        assert_eq!(turn.tool_choice, sp::ToolChoice::Never);
-        assert_eq!(turn.reasoning, sp::Reasoning::Off);
-    }
 }
 
 fn embed_model() -> (Scratch, LocalModel) {

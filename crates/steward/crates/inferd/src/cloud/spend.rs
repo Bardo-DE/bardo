@@ -42,8 +42,7 @@ impl Spent {
     }
 }
 
-/// The ledger file's format: version 2 holds the charges providers reported. A file without a
-/// `format` is the one before, read by [`Before`].
+/// The ledger file's format: version 2 holds the charges providers reported.
 const FORMAT: u32 = 2;
 
 /// The days since 1970-01-01 of `at` (UTC).
@@ -102,64 +101,14 @@ impl Default for Document {
     }
 }
 
-/// A ledger file as it was before the meter counted only what providers report. Its dollars were
-/// worked out from a price table, which is not a charge any provider reported, so they are not
-/// read as money: its token counts and its unknown period are kept.
-#[derive(Debug, Deserialize)]
-struct Before {
-    rows: Vec<BeforeRow>,
-    #[serde(default)]
-    unknown: Option<Unknown>,
-}
-
-#[derive(Debug, Deserialize)]
-struct BeforeRow {
-    #[serde(flatten)]
-    key: Key,
-    spent: BeforeSpent,
-}
-
-#[derive(Debug, Deserialize)]
-struct BeforeSpent {
-    tokens_in: u64,
-    tokens_out: u64,
-}
-
-impl Before {
-    fn into_document(self) -> Document {
-        Document {
-            format: FORMAT,
-            rows: self
-                .rows
-                .into_iter()
-                .map(|row| Row {
-                    key: row.key,
-                    spent: Spent {
-                        tokens_in: row.spent.tokens_in,
-                        tokens_out: row.spent.tokens_out,
-                        ..Spent::default()
-                    },
-                })
-                .collect(),
-            unknown: self.unknown,
-        }
-    }
-}
-
-/// What a ledger file holds, and whether it was of the older format.
-fn read_document(text: &str) -> Result<(Document, bool), ()> {
-    let value: serde_json::Value = serde_json::from_str(text).map_err(|_| ())?;
-    match value.get("format") {
-        None => serde_json::from_value::<Before>(value)
-            .map(|before| (before.into_document(), true))
-            .map_err(|_| ()),
-        Some(format) if format.as_u64() == Some(u64::from(FORMAT)) => {
-            serde_json::from_value::<Document>(value)
-                .map(|document| (document, false))
-                .map_err(|_| ())
-        }
-        // A format a later inferd wrote: not guessed at.
-        Some(_) => Err(()),
+/// What a ledger file holds.
+fn read_document(text: &str) -> Result<Document, ()> {
+    let document: Document = serde_json::from_str(text).map_err(|_| ())?;
+    // A format a later inferd wrote: not guessed at.
+    if document.format == FORMAT {
+        Ok(document)
+    } else {
+        Err(())
     }
 }
 
@@ -210,24 +159,16 @@ impl Ledger {
     pub fn open_at(file: PathBuf, now: UnixSeconds) -> Self {
         let read = match std::fs::read_to_string(&file) {
             Ok(text) => read_document(&text),
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok((Document::default(), false)),
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(Document::default()),
             Err(_) => Err(()),
         };
-        let (document, lost, older) = match read {
-            Ok((document, older)) => (document, false, older),
+        let (document, lost) = match read {
+            Ok(document) => (document, false),
             Err(()) => {
                 set_aside(&file, now);
-                (Document::default(), true, false)
+                (Document::default(), true)
             }
         };
-        if older {
-            eprintln!(
-                "inferd: spend: {} was written before spending showed only what providers \
-                 report: its token counts are kept and its dollar amounts, which were worked \
-                 out from prices, are not read as charges.",
-                file.display()
-            );
-        }
         // A loss from an earlier run counts while its period lasts.
         let unknown = match lost {
             true => Some(Unknown::at(now)),
@@ -247,9 +188,8 @@ impl Ledger {
             file: Some(file),
             unknown,
         };
-        if lost || older {
-            // Keep the loss, or the file in its new format, at once: a restart before the first
-            // record must not forget the one or read the other again.
+        if lost {
+            // Keep the loss at once: a restart before the first record must not forget it.
             ledger.save(&ledger.rows.lock().unwrap_or_else(PoisonError::into_inner));
         }
         ledger

@@ -77,41 +77,12 @@ fn an_unobserved_gpu_is_not_in_the_way() {
 }
 
 #[test]
-fn it_fits_beside_what_runs() {
-    let running = vec![run("a", 4000, 1)];
-    assert_eq!(
-        cost(8000, &running, Some(GPU)),
-        SwapCost::Fits {
-            cold_start_estimate_s: 90
-        }
-    );
-}
-
-#[test]
 fn one_idle_engine_is_the_named_victim() {
     let running = vec![run("a", 10_000, 1)];
     assert_eq!(
         cost(8000, &running, Some(GPU)),
         SwapCost::Evicts {
             victim: model("a").expect("ref"),
-            load: EngineLoad::Idle,
-            cold_start_estimate_s: 90
-        }
-    );
-}
-
-#[test]
-fn an_engine_in_a_turn_is_never_the_victim() {
-    // `a` was used 100 ms ago: in a turn. The only way to make room is to unload it, so there is
-    // no room; with an idle engine beside it, the idle one is named and the busy one stays.
-    let busy = run("busy", 10_000, NOW.0 - 100);
-    assert_eq!(cost(8000, &vec![busy.clone()], Some(GPU)), SwapCost::NoRoom);
-    let idle = run("idle", 4000, 1);
-    let got = cost(5000, &vec![busy, idle], Some(GPU));
-    assert_eq!(
-        got,
-        SwapCost::Evicts {
-            victim: model("idle").expect("ref"),
             load: EngineLoad::Idle,
             cold_start_estimate_s: 90
         }

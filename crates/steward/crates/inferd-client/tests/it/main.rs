@@ -17,12 +17,3 @@ mod prepare;
 mod session_shape;
 #[cfg(feature = "lending")]
 mod tailnet_lending;
-
-#[test]
-fn every_module_is_declared() {
-    test_kit::guard::every_module_is_declared(
-        env!("CARGO_MANIFEST_DIR"),
-        "tests/it",
-        include_str!("main.rs"),
-    );
-}

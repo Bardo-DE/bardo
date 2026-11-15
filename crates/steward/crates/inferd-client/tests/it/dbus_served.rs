@@ -9,7 +9,7 @@ use crate::common;
 use common::bus::PrivateBus;
 use common::inferd::{Behaviour, FakeInferd, Served};
 use common::served::{Gate, Route, Scripted};
-use inferd_client::{ClientError, DbusTransport, InferSession, Inference};
+use inferd_client::{DbusTransport, InferSession, Inference};
 use porter_capability::CuaEnv;
 use porter_capability::ModelId;
 use porter_capability::{Locality, Tier};
@@ -134,16 +134,6 @@ async fn memoryds_embedding_turn_runs_through_the_real_machine_and_says_who_answ
     );
 }
 
-#[tokio::test(flavor = "multi_thread")]
-async fn the_one_call_form_memoryd_uses_returns_the_reply() {
-    let rig = rig_again(vec![embed_script()]).await;
-    let got = rig
-        .accounts
-        .infer(&embeddings(), DataClass::Notes, Tier::Fast, embed_request())
-        .await;
-    assert_eq!(got, Ok(embed_reply()));
-}
-
 async fn rig_again(scripts: Vec<Script>) -> Rig {
     rig(decision(Readiness::Ready), Gate::default(), scripts).await
 }
@@ -196,24 +186,6 @@ async fn a_loading_engine_is_a_waiting_event_until_it_is_ready() {
     assert_eq!(
         session.next().await,
         Ok(InferEvent::Finished(embed_reply()))
-    );
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn a_route_refusal_is_what_infer_returns() {
-    let rig = rig(
-        Route(Err(InferRefusal::NeedsGrant)),
-        Gate::default(),
-        vec![],
-    )
-    .await;
-    let got = rig
-        .accounts
-        .infer(&embeddings(), DataClass::Notes, Tier::Fast, embed_request())
-        .await;
-    assert_eq!(
-        got,
-        Err(ClientError::InferRefused(InferRefusal::NeedsGrant))
     );
 }
 

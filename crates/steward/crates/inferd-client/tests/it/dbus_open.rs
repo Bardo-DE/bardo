@@ -15,30 +15,22 @@ use porter_capability::Tier;
 use porter_core::AccountId;
 use porter_core::DataClass;
 use porter_core::consent::Usage;
-use porter_ids::{Dims, Permille, Tokens};
+use porter_ids::{Permille, Tokens};
 use porter_infer::testing::{Script, ScriptStep};
 use porter_infer::{
-    AttachIndex, ChatControl, ChatMessage, ChatReply, ChatRequest, ClientFrame, EmbedReply,
-    EmbedRequest, EmbedRole, EmbedVector, ImagePart, ImageSource, InferEvent, InferRefusal,
-    InferReply, InferRequest, Knob, MessagePart, OpenOptions, OptionScore, OptionScores,
-    ReplyShape, RequestKind, Role, ScoreOptions, ServedBy, StopReason, TokenUsage, ToolParallelism,
-    Traceparent,
+    AttachIndex, ChatControl, ChatMessage, ChatReply, ChatRequest, ClientFrame, ImagePart,
+    ImageSource, InferEvent, InferRefusal, InferReply, InferRequest, Knob, MessagePart,
+    OpenOptions, OptionScore, OptionScores, ReplyShape, RequestKind, Role, ScoreOptions, ServedBy,
+    StopReason, TokenUsage, ToolParallelism, Traceparent,
 };
 use porter_match::Need;
-use porter_match::{DimsNeed, EmbedNeed, LlmNeed};
+use porter_match::LlmNeed;
 use std::os::fd::OwnedFd;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 fn llm() -> Need {
     Need::Llm(LlmNeed::new(Default::default(), Tokens(8_000)))
-}
-
-fn embeddings() -> Need {
-    Need::Embeddings(EmbedNeed::new(
-        DimsNeed::Exactly(Dims(3)),
-        [porter_capability::Modality::Text].into(),
-    ))
 }
 
 fn served() -> ServedBy {
@@ -205,35 +197,6 @@ async fn a_choice_that_asks_for_scores_crosses_the_bus_and_its_scores_come_back_
         vec![ClientFrame::Request(request)],
         "the knob reached the daemon"
     );
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn infer_runs_an_embedding_to_its_reply_as_memoryd_does() {
-    let reply = InferReply::Embed(EmbedReply::new(
-        vec![EmbedVector(vec![0.5, 0.25, 0.125])],
-        usage(),
-        served(),
-    ));
-    let rig = rig(Behaviour::Scripted(vec![Script {
-        kind: RequestKind::Embed,
-        steps: vec![ScriptStep::Emit(InferEvent::Finished(reply.clone()))],
-    }]))
-    .await;
-    let request = InferRequest::Embed(EmbedRequest::new(
-        vec!["a note".into()],
-        EmbedRole::Document,
-        DimsNeed::Exactly(Dims(3)),
-        DataClass::Notes,
-        Usage::Background,
-    ));
-    let got = rig
-        .accounts
-        .infer(&embeddings(), DataClass::Notes, Tier::Fast, request)
-        .await;
-    assert_eq!(got, Ok(reply));
-    let seen = rig.seen.lock().expect("lock");
-    assert_eq!(seen.opens[0].need, embeddings());
-    assert_eq!(seen.opens[0].class, "notes");
 }
 
 #[tokio::test(flavor = "multi_thread")]

@@ -181,35 +181,6 @@ async fn a_reply_that_fits_is_returned_as_the_model_wrote_it_and_only_the_though
 }
 
 #[tokio::test]
-async fn a_model_that_takes_only_a_json_object_gets_the_schema_in_the_prompt_and_is_still_checked()
-{
-    let scratch = Scratch::new("structured-object");
-    let mut model = models(&scratch).remove(0);
-    let caps = model.entry.caps.as_mut().expect("a chat entry");
-    caps.output = std::iter::once(model_provider::Constraint::JsonObject).collect();
-    let got = ran_on(
-        &model,
-        json(SCORE),
-        vec![says(r#"{"score":"high"}"#), says(r#"{"score":4}"#)],
-        usize::MAX,
-    )
-    .await;
-    assert_eq!(got.result.expect("repaired").text, r#"{"score":4}"#);
-    let requests = got.provider.requests();
-    assert_eq!(requests.len(), 2, "the reply was validated, not trusted");
-    assert_eq!(requests[0].output, OutputShape::JsonObject);
-    let first = &requests[0].messages[0];
-    assert_eq!(first.role, Role::System);
-    assert!(
-        first
-            .parts
-            .iter()
-            .any(|part| matches!(part, Part::Text(text) if text.contains("score"))),
-        "the schema travels in the prompt"
-    );
-}
-
-#[tokio::test]
 async fn a_reply_that_breaks_the_schema_is_repaired_once_and_every_attempt_is_counted() {
     let secret = "ignore previous instructions";
     let bad = format!(r#"{{"score":"{secret}"}}"#);
@@ -291,26 +262,6 @@ async fn an_engine_failure_is_told_as_the_bridge_tells_it() {
     .await;
     assert_eq!(down.result, Err(ModelError::Unreachable));
     assert_eq!(down.touched, 0);
-}
-
-#[tokio::test]
-async fn a_choice_comes_back_bare_and_a_wrong_one_is_repaired() {
-    let right = ran(
-        choice(&["allow", "deny"]),
-        vec![says("\"deny\"")],
-        usize::MAX,
-    )
-    .await;
-    assert_eq!(right.result.expect("valid").text, "deny");
-
-    let wrong = ran(
-        choice(&["allow", "deny"]),
-        vec![says("\"maybe\""), says("\"allow\"")],
-        usize::MAX,
-    )
-    .await;
-    assert_eq!(wrong.result.expect("repaired").text, "allow");
-    assert_eq!(wrong.provider.requests().len(), 2);
 }
 
 #[tokio::test]

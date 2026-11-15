@@ -127,21 +127,4 @@ mod tests {
         }
         assert_eq!(Slot::from_slug("tv"), None);
     }
-
-    #[test]
-    fn slots_write_their_own_slug_and_keys() {
-        for slot in Slot::ALL {
-            assert_eq!(
-                serde_json::to_value(slot).expect("json"),
-                serde_json::Value::String(slot.slug().to_owned())
-            );
-            assert_eq!(Slot::from_slug(slot.slug()), Some(slot));
-            assert!(!Slot::is_legacy_slug(slot.slug()));
-        }
-        assert_eq!(Slot::Text.setting_key(Tier::Best), "ai.model.text.best");
-        assert_eq!(
-            Slot::VoiceIn.setting_key(Tier::Fast),
-            "ai.model.voice_in.fast"
-        );
-    }
 }

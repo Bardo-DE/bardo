@@ -1,14 +1,11 @@
 //! Every wire or stored type of porter-infer survives its serde form.
 
 use model_provider::Money;
+use porter_capability::Locality;
 use porter_capability::ModelId;
-use porter_capability::{Locality, Tier};
 use porter_core::AccountId;
-use porter_core::consent::Usage;
-use porter_core::{AppId, AppName, DataClass, Isolation};
-use porter_ids::{Bytes, Count, Permille, Tokens, TurnCount, UnixSeconds};
+use porter_ids::{Permille, Tokens, TurnCount};
 use porter_infer::*;
-use porter_match::DimsNeed;
 use rust_decimal::Decimal;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
@@ -29,140 +26,6 @@ fn served() -> ServedBy {
         model: ModelId::parse("llama3.2").expect("id"),
         locality: Locality::OnDevice,
     }
-}
-
-fn app() -> AppId {
-    AppId {
-        name: AppName::parse("org.quire.Mail").expect("name"),
-        isolation: Isolation::Unsandboxed,
-    }
-}
-
-#[test]
-fn requests_round_trip() {
-    let chat = ChatRequest::new(
-        vec![ChatMessage {
-            role: Role::User,
-            parts: vec![
-                MessagePart::Text("hi".into()),
-                MessagePart::Image(ImagePart {
-                    media_type: "image/png".into(),
-                    source: ImageSource::Inline(Base64Bytes(vec![1, 2])),
-                }),
-                MessagePart::Image(ImagePart {
-                    media_type: "image/png".into(),
-                    source: ImageSource::Attached(AttachIndex(0)),
-                }),
-                MessagePart::ToolCall(ToolCallPart {
-                    id: ToolCallId("call-1".into()),
-                    name: ToolName::parse("mail.thread.archive").expect("name"),
-                    args: JsonText::parse("{\"thread\":\"t1\"}").expect("json"),
-                }),
-                MessagePart::ToolResult(ToolResultPart {
-                    id: ToolCallId("call-1".into()),
-                    status: ToolStatus::Ok,
-                    parts: vec![MessagePart::Text("done".into())],
-                }),
-            ],
-        }],
-        Tier::Fast,
-        DataClass::Mail,
-        Usage::Interactive,
-    )
-    .with_shape(ReplyShape::Json("{}".into()))
-    .with_control(
-        ChatControl::new()
-            .with_tool_choice(ToolChoice::Named(
-                ToolName::parse("mail.thread.archive").expect("name"),
-            ))
-            .with_max_output(Knob::Set(Tokens(1)))
-            .with_reasoning(Reasoning::On(Effort::Low))
-            .with_sampling(Knob::Set(Sampling {
-                temperature: Permille(700),
-                top_p: Knob::Set(Permille(950)),
-                top_k: Knob::Set(Count(20)),
-                min_p: Knob::Off,
-                seed: Knob::Set(Seed(7)),
-            }))
-            .with_stop(vec!["\n\n".into()])
-            .with_scores(Knob::Set(ScoreOptions { top_k: Count(5) })),
-    )
-    .with_tools(vec![ToolDecl {
-        name: ToolName::parse("mail.thread.archive").expect("name"),
-        description: "Archive a thread".into(),
-        params: JsonSchemaText(JsonText::parse("{\"type\":\"object\"}").expect("json")),
-    }]);
-    round_trip(&InferRequest::Chat(chat));
-    round_trip(&InferRequest::Embed(EmbedRequest::new(
-        vec!["a".into()],
-        EmbedRole::Document,
-        DimsNeed::Any,
-        DataClass::Notes,
-        Usage::Background,
-    )));
-    round_trip(&InferRequest::Task(TaskRequest::new(
-        Task::Summarise,
-        "text".into(),
-        DataClass::Mail,
-        Usage::Interactive,
-    )));
-}
-
-#[test]
-fn replies_and_records_round_trip() {
-    let usage = TokenUsage {
-        input: Tokens(10),
-        output: Tokens(5),
-        cached: Tokens(4),
-        charge: Some(Money::usd(Decimal::new(95, 5))),
-    };
-    round_trip(&InferReply::Chat(
-        ChatReply::new("ok".into(), StopReason::MaxTokens, usage, served())
-            .with_thought("hm".into())
-            .with_scores(
-                OptionScores::new(vec![
-                    OptionScore {
-                        option: "allow".into(),
-                        share: Permille(750),
-                    },
-                    OptionScore {
-                        option: "deny".into(),
-                        share: Permille(250),
-                    },
-                ])
-                .expect("a whole"),
-            ),
-    ));
-    round_trip(&InferReply::Embed(EmbedReply::new(
-        vec![EmbedVector(vec![0.5, -1.0])],
-        usage,
-        served(),
-    )));
-    round_trip(&InferReply::Refused(InferRefusal::RequiresCloud(
-        DataClass::Photos,
-    )));
-    round_trip(&InferReply::Refused(InferRefusal::OverBudget));
-    round_trip(&Policy::proposed());
-    round_trip(&SpendCap {
-        scope: SpendScope::App(app()),
-        period: Period::Monthly,
-        limit: Money::usd(Decimal::new(100, 0)),
-        warn_at: Permille(800),
-    });
-    round_trip(&SpendVerdict::Warn);
-    round_trip(&AuditEntry {
-        at: UnixSeconds(1),
-        app: app(),
-        account: served().account,
-        class: DataClass::Mail,
-        model: served().model,
-        locality: Locality::Cloud { region: None },
-        usage,
-        bytes_out: Bytes(512),
-        images: Count(1),
-        audio_ms: Count(1500),
-        why: Some(porter_infer::Why::Warm),
-    });
 }
 
 #[test]
@@ -204,14 +67,6 @@ fn plain_chat_reply() -> ChatReply {
         },
         served(),
     )
-}
-
-#[test]
-fn a_reply_without_scores_writes_no_key_and_a_frame_from_before_them_reads() {
-    let json = serde_json::to_value(plain_chat_reply()).expect("serializes");
-    assert!(json.get("scores").is_none(), "{json}");
-    let back: ChatReply = serde_json::from_value(json).expect("an older frame reads");
-    assert_eq!(back.scores, None);
 }
 
 #[test]

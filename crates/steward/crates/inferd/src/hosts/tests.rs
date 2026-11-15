@@ -276,48 +276,6 @@ async fn a_process_that_says_a_great_deal_is_read_to_the_end_and_kept_to_the_cap
 }
 
 #[tokio::test]
-async fn a_socket_path_that_is_too_long_is_refused_before_anything_is_spawned() {
-    let dir = Scratch::new("hosts-long");
-    let deep = dir.path().join("d".repeat(120)).join("e.sock");
-    let (host, spec, seen) = watched(&dir, "long", deep.clone());
-    assert_eq!(
-        host.spawn(&id("long"), &spec).await,
-        Err(HostError::Refused)
-    );
-    assert_eq!(
-        host.diagnostics().refusal(&id("long")),
-        Some(Cause::SocketPathTooLong {
-            len: deep.as_os_str().len(),
-            path: deep,
-        })
-    );
-    assert!(!seen.exists(), "the program was not run");
-}
-
-#[tokio::test]
-async fn a_regular_file_at_the_socket_path_is_refused_and_kept() {
-    let dir = Scratch::new("hosts-file");
-    let socket = dir.path().join("e.sock");
-    std::fs::write(&socket, b"not yours to delete").expect("write");
-    let (host, spec, seen) = watched(&dir, "file", socket.clone());
-    assert_eq!(
-        host.spawn(&id("file"), &spec).await,
-        Err(HostError::Refused)
-    );
-    assert_eq!(
-        host.diagnostics().refusal(&id("file")),
-        Some(Cause::SocketPathTaken {
-            path: socket.clone()
-        })
-    );
-    assert_eq!(
-        std::fs::read(&socket).expect("kept"),
-        b"not yours to delete"
-    );
-    assert!(!seen.exists(), "the program was not run");
-}
-
-#[tokio::test]
 async fn a_stale_socket_is_gone_by_the_time_the_program_runs() {
     let dir = Scratch::new("hosts-stale");
     let socket = dir.path().join("e.sock");

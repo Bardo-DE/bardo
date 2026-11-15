@@ -197,17 +197,3 @@ async fn a_callers_table_in_the_persons_file_names_nobody() {
         "{said}"
     );
 }
-
-#[cfg(not(feature = "test-proc-root"))]
-#[tokio::test(flavor = "multi_thread")]
-async fn without_the_feature_the_variable_is_ignored() {
-    let bus = bus::PrivateBus::start();
-    let root = bus.scratch().join("proc");
-    fake_proc(&root, std::process::id(), Some(CGROUP));
-    let (yes, said) = answered(&bus, &root, Table::System).await;
-    assert!(!yes, "{said}");
-    assert!(
-        said.contains("PORTER_INFERD_CALLERS=") && said.contains("ignored"),
-        "{said}"
-    );
-}

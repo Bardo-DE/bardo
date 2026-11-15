@@ -331,16 +331,7 @@ async fn the_list_of_accounts_is_kept_and_the_news_is_woken_once_the_first_look_
     let rig = rig().await;
     let list = AccountList::default();
     let news = Arc::new(Notify::new());
-    let (first, told) = tokio::sync::oneshot::channel();
-    follow(
-        rig.accounts.clone(),
-        list.clone(),
-        Arc::clone(&news),
-        move || {
-            let _ = first.send(());
-        },
-    );
-    within("the first look", told).await.expect("told");
+    follow(rig.accounts.clone(), list.clone(), Arc::clone(&news));
     within("the news", news.notified()).await;
     let now = list.now();
     assert_eq!(now.len(), 2);

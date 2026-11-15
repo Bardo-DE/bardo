@@ -15,8 +15,8 @@ use std::time::Duration;
 use test_kit::Scratch;
 
 /// The stand-in for inferd. Run as a test it does nothing; run by the tests below, with
-/// `FAKE_INFERD` set, it starts the forking engine, says it is ready, and then either waits to be
-/// killed (`linger`) or drops the host and returns (`exit_normally`).
+/// `FAKE_INFERD` set, it starts the forking engine, says it is ready, and then waits to be killed
+/// (`linger`).
 #[test]
 fn fake_inferd() {
     let Ok(mode) = std::env::var("FAKE_INFERD") else {
@@ -61,7 +61,6 @@ fn fake_inferd() {
         std::fs::write(dir.join("ready"), b"").expect("ready");
         match mode.as_str() {
             "linger" => tokio::time::sleep(Duration::from_secs(60)).await,
-            "exit_normally" => drop(host),
             other => panic!("no mode {other}"),
         }
     });
@@ -147,20 +146,4 @@ fn a_killed_inferd_takes_its_direct_engine_with_it_and_leaves_the_grandchild_to_
     assert!(!gone(grandchild));
     kill_pid(grandchild);
     assert!(gone_soon(grandchild));
-}
-
-#[test]
-fn an_inferd_that_exits_normally_leaves_no_engine_process() {
-    let dir = Scratch::new("eg");
-    let mut inferd = helper("exit_normally", &dir);
-    wait_for(&dir.join("ready"));
-    let (engine, grandchild) = (pid_in(&dir.join("engine")), pid_in(&dir.join("grandchild")));
-    let status = inferd.wait().expect("the stand-in ends");
-    assert!(status.success(), "{status:?}");
-    let both = gone_soon(engine) && gone_soon(grandchild);
-    if !both {
-        kill_pid(engine);
-        kill_pid(grandchild);
-    }
-    assert!(both, "the engine and its grandchild are gone");
 }

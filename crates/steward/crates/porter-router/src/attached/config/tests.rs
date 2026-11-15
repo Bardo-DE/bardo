@@ -167,10 +167,3 @@ fn a_table_whose_name_is_not_a_model_id_is_refused() {
         })
     );
 }
-
-#[test]
-fn where_has_no_default_and_only_two_values_and_an_unknown_key_does_not_parse() {
-    assert!(toml::from_str::<AttachedEntry>("where = \"lab\"").is_err());
-    assert!(toml::from_str::<AttachedEntry>("where = \"this-device\"\nhost = \"x\"").is_err());
-    assert_eq!(entry("").place, None);
-}

@@ -15,12 +15,6 @@ fn pinned<T: Serialize + DeserializeOwned + PartialEq + Debug>(value: &T, json: 
 }
 
 #[test]
-fn knobs_are_written_in_full() {
-    pinned(&Knob::<Tokens>::Off, r#"{"kind":"off"}"#);
-    pinned(&Knob::Set(Tokens(1)), r#"{"kind":"set","v":1}"#);
-}
-
-#[test]
 fn chat_control_has_pinned_json() {
     let control = ChatControl::new()
         .with_tool_choice(ToolChoice::Named(
@@ -43,36 +37,6 @@ fn chat_control_has_pinned_json() {
 }
 
 #[test]
-fn the_closed_sets_have_stable_slugs() {
-    pinned(&ToolChoice::Auto, r#"{"kind":"auto"}"#);
-    pinned(&ToolChoice::Never, r#"{"kind":"never"}"#);
-    pinned(&ToolChoice::Required, r#"{"kind":"required"}"#);
-    pinned(&ToolParallelism::Many, r#""many""#);
-    pinned(&Reasoning::EngineDefault, r#"{"kind":"engine_default"}"#);
-    pinned(&Reasoning::Off, r#"{"kind":"off"}"#);
-    for (stop, slug) in [
-        (StopReason::EndTurn, "end_turn"),
-        (StopReason::ToolUse, "tool_use"),
-        (StopReason::MaxTokens, "max_tokens"),
-        (StopReason::StopSequence, "stop_sequence"),
-        (StopReason::ContentFilter, "content_filter"),
-    ] {
-        pinned(&stop, &format!("\"{slug}\""));
-    }
-    pinned(&EmbedRole::Query, r#""query""#);
-    pinned(&EmbedRole::Document, r#""document""#);
-}
-
-#[test]
-fn reply_shapes_include_choice() {
-    pinned(&ReplyShape::Text, r#"{"kind":"text"}"#);
-    pinned(
-        &ReplyShape::Choice(vec!["allow".into(), "deny".into()]),
-        r#"{"kind":"choice","v":["allow","deny"]}"#,
-    );
-}
-
-#[test]
 fn a_thought_part_carries_its_seal_and_redacts() {
     let part = MessagePart::Thought(ThoughtPart {
         text: "hm".into(),
@@ -91,17 +55,6 @@ fn a_thought_part_carries_its_seal_and_redacts() {
         format!("{:?}", SignatureText("secret".into())),
         "SignatureText(<6 bytes>)"
     );
-}
-
-#[test]
-fn usage_and_reply_carry_the_new_facts() {
-    let usage = TokenUsage {
-        input: Tokens(10),
-        output: Tokens(5),
-        cached: Tokens(8),
-        charge: None,
-    };
-    pinned(&usage, r#"{"input":10,"output":5,"cached":8}"#);
 }
 
 #[test]

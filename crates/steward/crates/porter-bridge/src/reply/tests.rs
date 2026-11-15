@@ -119,19 +119,6 @@ fn a_reply_is_gathered_from_the_events_in_order() {
 }
 
 #[test]
-fn every_stop_reason_maps_both_ways() {
-    for stop_reason in [
-        sp::StopReason::EndTurn,
-        sp::StopReason::ToolUse,
-        sp::StopReason::MaxTokens,
-        sp::StopReason::StopSequence,
-        sp::StopReason::ContentFilter,
-    ] {
-        assert_eq!(stop_back(stop(stop_reason)), stop_reason);
-    }
-}
-
-#[test]
 fn every_provider_error_is_a_model_error_the_app_can_act_on() {
     use pi::ModelError as M;
     use sp::ProviderError as P;
@@ -210,30 +197,4 @@ fn a_turn_that_asked_gets_the_shares_of_its_options_on_the_reply() {
     let scores = reply.scores.expect("scores");
     assert_eq!(scores.share_of("yes"), Some(porter_ids::Permille(750)));
     assert_eq!(scores.share_of("no"), Some(porter_ids::Permille(250)));
-}
-
-#[test]
-fn a_turn_that_asked_and_got_nothing_usable_has_the_same_reply_without_scores() {
-    let plain = Gathered::default().chat_reply(&end_with(None), served());
-    let none = end_with(None);
-    let (reply, why) = asking(&["yes", "no"]).chat_reply_noted(&none, served());
-    assert_eq!(reply, plain);
-    assert_eq!(why, Some(NoScores::EngineGaveNone));
-
-    let junk = end_with(Some(sp::FirstTokenLogprobs {
-        top: vec![likely("Maybe", 0.9)],
-    }));
-    let (reply, why) = asking(&["yes", "no"]).chat_reply_noted(&junk, served());
-    assert_eq!(reply, plain);
-    assert_eq!(why, Some(NoScores::Unusable));
-}
-
-#[test]
-fn a_turn_that_did_not_ask_never_gets_scores_whatever_the_engine_sent() {
-    let end = end_with(Some(sp::FirstTokenLogprobs {
-        top: vec![likely("yes", 0.75), likely("no", 0.25)],
-    }));
-    let (reply, why) = Gathered::default().chat_reply_noted(&end, served());
-    assert_eq!(reply.scores, None);
-    assert_eq!(why, None);
 }

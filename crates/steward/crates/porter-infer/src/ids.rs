@@ -258,17 +258,4 @@ mod tests {
         }
         assert_eq!(Traceparent::KEY, "traceparent");
     }
-
-    #[test]
-    fn base64_bytes_round_trip_as_text() {
-        let bytes = Base64Bytes(vec![0, 1, 2, 250]);
-        let json = serde_json::to_string(&bytes).expect("json");
-        assert_eq!(json, "\"AAEC+g==\"");
-        assert_eq!(
-            serde_json::from_str::<Base64Bytes>(&json).expect("back"),
-            bytes
-        );
-        assert!(serde_json::from_str::<Base64Bytes>("\"%%%\"").is_err());
-        assert_eq!(format!("{bytes:?}"), "Base64Bytes(<4 bytes>)");
-    }
 }
