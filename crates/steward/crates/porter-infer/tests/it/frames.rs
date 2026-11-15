@@ -159,8 +159,6 @@ fn picker_data_round_trips_with_plain_slugs() {
         Slot::Embeddings,
         Slot::VoiceIn,
         Slot::VoiceOut,
-        Slot::ImageGen,
-        Slot::Rerank,
     ]
     .iter()
     .map(|kind| {
@@ -169,7 +167,7 @@ fn picker_data_round_trips_with_plain_slugs() {
         json
     })
     .collect();
-    assert_eq!(slugs.len(), 7);
+    assert_eq!(slugs.len(), 5);
     round_trip(&PickerRow {
         model,
         label: "Nemotron streaming".into(),

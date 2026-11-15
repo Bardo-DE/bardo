@@ -90,8 +90,6 @@ pub fn slot_of_need(need: &Need) -> Option<Slot> {
         Need::Embeddings(_) => Some(Slot::Embeddings),
         Need::Speech(speech) if speech.modes.contains(&SpeechMode::Tts) => Some(Slot::VoiceOut),
         Need::Speech(_) => Some(Slot::VoiceIn),
-        Need::ImageGen(_) => Some(Slot::ImageGen),
-        Need::Rerank(_) => Some(Slot::Rerank),
         _ => None,
     }
 }
