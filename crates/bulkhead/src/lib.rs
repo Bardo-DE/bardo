@@ -56,11 +56,11 @@ pub use harden::{AcceptNoLimits, Bytes, Hardening, LimitPolicy, Limits, OptDir, 
 pub use launch::{Enforcement, UserSession};
 pub use net::{AgentNet, EndpointBind, NetFault, NetworkMode, RESOLVER_FILES};
 pub use output::{Shown, Tail, shown};
-pub use path::{AbsPath, Cover, PathFault, RootState};
+pub use path::{AbsPath, Cover, PathFault};
 pub use profile::Profile;
 pub use redact::{MASK, redact};
 pub use sandbox::{
-    Argv, ByteLimit, Captured, Cut, EnvVar, ExitReport, Job, KILLED, Network, RunSpec, Sandbox,
+    Argv, ByteLimit, Captured, EnvVar, ExitReport, Job, KILLED, Network, RunSpec, Sandbox,
     StartFault,
 };
 pub use seccomp::{SeccompFault, default_filter};

@@ -2,7 +2,7 @@
 //! the same code that builds the bubblewrap command line (`build`) and parsed strictly here.
 //! `words` and `parse` are each other's inverse, so the two cannot drift.
 
-use crate::{AbsPath, PathFault, RootState};
+use crate::{AbsPath, PathFault};
 use serde::{Deserialize, Serialize};
 
 const READ: &str = "--read";
@@ -195,8 +195,8 @@ impl EnterPlan {
 fn path(text: &str) -> Result<AbsPath, EnterFault> {
     let path = AbsPath::parse(text).map_err(EnterFault::BadPath)?;
     match path.is_root() {
-        RootState::Root => Err(EnterFault::Root),
-        RootState::Below => Ok(path),
+        true => Err(EnterFault::Root),
+        false => Ok(path),
     }
 }
 

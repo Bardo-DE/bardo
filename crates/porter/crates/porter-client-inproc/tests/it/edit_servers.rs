@@ -20,8 +20,8 @@ use porter_http_reqwest::ReqwestHttp;
 use porter_provider::parse_provider;
 use porter_secrets::MemorySecrets;
 use porter_sheet::{
-    EditServers, FieldAnswer, FieldKind, FieldValue, Hop, MailServers, Manual,
-    ServersFixed, SheetInput,
+    EditServers, FieldAnswer, FieldKind, FieldValue, Hop, MailServers, Manual, ServersFixed,
+    SheetInput,
 };
 use porter_wire::{ParentWindow, Refusal};
 

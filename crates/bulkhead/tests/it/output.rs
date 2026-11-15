@@ -1,6 +1,6 @@
 //! Output is bounded and redacted; the environment is rebuilt from an allowlist.
 
-use bulkhead::{ByteLimit, Captured, Cut, Tail, redact, sandbox_env, shown};
+use bulkhead::{ByteLimit, Captured, Tail, redact, sandbox_env, shown};
 
 fn names(env: &[bulkhead::EnvVar]) -> Vec<&str> {
     env.iter().map(|v| v.name.as_str()).collect()
@@ -77,11 +77,11 @@ fn secrets_are_masked_and_ordinary_text_is_not() {
 fn the_tail_keeps_the_last_bytes_and_says_it_cut() {
     let mut tail = Tail::new(ByteLimit(10));
     tail.push(b"abcde");
-    assert_eq!(tail.captured().cut, Cut::Whole);
+    assert!(!tail.captured().cut);
     tail.push(b"fghijklmno");
     let got = tail.captured();
     assert_eq!(got.bytes, b"fghijklmno");
-    assert_eq!(got.cut, Cut::Head);
+    assert!(got.cut);
 }
 
 /// One captured output shown three ways. Each step names itself in its failure message.
@@ -89,17 +89,17 @@ fn the_tail_keeps_the_last_bytes_and_says_it_cut() {
 fn shown_cuts_at_a_character_boundary_and_replaces_invalid_utf8() {
     let multi = Captured {
         bytes: "ééééé".as_bytes().to_vec(),
-        cut: Cut::Whole,
+        cut: false,
     };
     let got = shown(&multi, ByteLimit(5));
     assert_eq!(got.text, "éé", "step multi-byte cut: text");
-    assert_eq!(got.cut, Cut::Head, "step multi-byte cut: cut marker");
+    assert!(got.cut, "step multi-byte cut: cut marker");
     let whole = shown(&multi, ByteLimit(100));
     assert_eq!(whole.text, "ééééé", "step whole: text");
-    assert_eq!(whole.cut, Cut::Whole, "step whole: cut marker");
+    assert!(!whole.cut, "step whole: cut marker");
     let invalid = Captured {
         bytes: vec![b'a', 0xff, b'b'],
-        cut: Cut::Whole,
+        cut: false,
     };
     assert_eq!(
         shown(&invalid, ByteLimit(100)).text,

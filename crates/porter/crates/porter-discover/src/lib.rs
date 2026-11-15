@@ -26,9 +26,7 @@ pub use autoconfig::{ISPDB, autoconfig_urls, parse_autoconfig, parse_autoconfig_
 pub use dns::{Dns, DnsFault, MxRecord, SrvRecord};
 #[cfg(feature = "io")]
 pub use dns_io::HickoryDns;
-pub use found::{
-    DiscoverFault, Found, OAuthOffer, OAuthServer, Pop3Server, SearchOptions, Source,
-};
+pub use found::{DiscoverFault, Found, OAuthOffer, OAuthServer, Pop3Server, SearchOptions, Source};
 pub use mx::{ProviderLead, ispdb_candidates, lookup_mx, mx_hosts, provider_leads};
 pub use search::{Miss, NotFound, Outcome, Tried, discover_mail, discover_mail_with};
 pub use srv::{SrvAnswers, found_from_srv, found_from_srv_with, lookup_srv, srv_names};

@@ -3,14 +3,14 @@
 //! character boundary from the start, as a byte limit on output is usually meant).
 
 use crate::redact::redact;
-use crate::sandbox::{ByteLimit, Captured, Cut};
+use crate::sandbox::{ByteLimit, Captured};
 
 /// A buffer that keeps the last `cap` bytes pushed to it.
 #[derive(Debug, Clone)]
 pub struct Tail {
     cap: usize,
     bytes: Vec<u8>,
-    cut: Cut,
+    cut: bool,
 }
 
 impl Tail {
@@ -19,7 +19,7 @@ impl Tail {
         Self {
             cap: cap.0.max(1),
             bytes: Vec::new(),
-            cut: Cut::Whole,
+            cut: false,
         }
     }
 
@@ -35,7 +35,7 @@ impl Tail {
         let drop = self.bytes.len().saturating_sub(self.cap);
         if drop > 0 {
             self.bytes.drain(..drop);
-            self.cut = Cut::Head;
+            self.cut = true;
         }
     }
 
@@ -44,7 +44,7 @@ impl Tail {
         let over = self.bytes.len().saturating_sub(self.cap);
         Captured {
             bytes: self.bytes[over..].to_vec(),
-            cut: if over > 0 { Cut::Head } else { self.cut },
+            cut: over > 0 || self.cut,
         }
     }
 }
@@ -55,7 +55,7 @@ pub struct Shown {
     /// Valid UTF-8, secrets masked, at most the limit.
     pub text: String,
     /// Whether the beginning was dropped.
-    pub cut: Cut,
+    pub cut: bool,
 }
 
 /// `captured` as text within `limit` bytes.
@@ -65,7 +65,7 @@ pub fn shown(captured: &Captured, limit: ByteLimit) -> Shown {
     while !text.is_char_boundary(start) {
         start += 1;
     }
-    let cut = if start > 0 { Cut::Head } else { captured.cut };
+    let cut = start > 0 || captured.cut;
     Shown {
         text: text[start..].to_owned(),
         cut,

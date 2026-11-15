@@ -149,16 +149,6 @@ pub enum Fault {
     ReportFromUser,
 }
 
-/// Whether the stamped sender is the actor the transport saw.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum SenderCheck {
-    /// `from.agent` is the roster party the actor is.
-    Matches,
-    /// It is not (a forged sender, or an actor that is not on the roster).
-    Mismatch,
-}
-
 impl Message {
     /// The text parts joined by newlines: what recall indexes.
     pub fn text(&self) -> String {
@@ -201,11 +191,9 @@ impl Message {
         }
     }
 
-    /// Whether `from.agent` is the roster party `actor` is.
-    pub fn sender_matches(&self, actor: &Actor) -> SenderCheck {
-        match AgentRef::of(actor) {
-            Some(agent) if agent == self.from.agent => SenderCheck::Matches,
-            _ => SenderCheck::Mismatch,
-        }
+    /// Whether `from.agent` is the roster party `actor` is. It is not for a forged sender, or an
+    /// actor that is not on the roster.
+    pub fn sender_matches(&self, actor: &Actor) -> bool {
+        AgentRef::of(actor).is_some_and(|agent| agent == self.from.agent)
     }
 }

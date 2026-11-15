@@ -249,12 +249,9 @@ fn the_roster_reference_follows_the_actor() {
     let as_worker = companion(AgentRole::Worker {
         task: TaskId::parse("t-4").expect("task"),
     });
-    assert_eq!(m.sender_matches(&as_worker), SenderCheck::Matches);
-    assert_eq!(
-        m.sender_matches(&companion(AgentRole::Planner)),
-        SenderCheck::Mismatch
-    );
-    assert_eq!(m.sender_matches(&Actor::Unknown), SenderCheck::Mismatch);
+    assert!(m.sender_matches(&as_worker));
+    assert!(!m.sender_matches(&companion(AgentRole::Planner)));
+    assert!(!m.sender_matches(&Actor::Unknown));
 }
 
 #[test]

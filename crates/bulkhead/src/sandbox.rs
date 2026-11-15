@@ -94,22 +94,13 @@ pub struct RunSpec {
     pub keep: ByteLimit,
 }
 
-/// Whether captured output lost its beginning.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Cut {
-    /// Everything the command wrote is here.
-    Whole,
-    /// The oldest bytes were dropped to stay within the limit.
-    Head,
-}
-
 /// What a job has written so far (stdout and stderr in the order they arrived).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Captured {
     /// The bytes kept.
     pub bytes: Vec<u8>,
     /// Whether any were dropped.
-    pub cut: Cut,
+    pub cut: bool,
 }
 
 /// How a job ended.

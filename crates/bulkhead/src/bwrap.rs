@@ -21,7 +21,7 @@ use crate::launch::{Enforcement, Env, Feed, Launcher, UserSession};
 use crate::profile::Profile;
 use crate::sandbox::{RunSpec, Sandbox, StartFault};
 use crate::seccomp::default_filter;
-use crate::{AbsPath, CannotSandbox, RootState, SandboxState};
+use crate::{AbsPath, CannotSandbox, SandboxState};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
@@ -222,7 +222,7 @@ fn bwrap_runs(program: &Path, extra: &[&str], stdin: Option<&[u8]>) -> bool {
 /// never `/home` or `/tmp` themselves), so the writable place is a project and not a system root.
 fn usable(cwd: &AbsPath) -> bool {
     let deep = cwd.as_str().matches('/').count() >= 2;
-    cwd.is_root() == RootState::Below && deep && Path::new(cwd.as_str()).is_dir()
+    !cwd.is_root() && deep && Path::new(cwd.as_str()).is_dir()
 }
 
 impl Sandbox for BwrapSandbox {

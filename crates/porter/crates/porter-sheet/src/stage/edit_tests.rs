@@ -6,10 +6,10 @@ use super::*;
 use crate::fields::{FieldAnswer, FieldKind, FieldValue};
 use crate::input::SheetInput;
 use crate::manual::{Hop, MailServers, Manual};
-use porter_core::Tls;
 use crate::progress::{Progress, SignInFault, SignInInput};
 use crate::view::{FieldProblem, ProblemKind, SheetView};
 use porter_core::SecretText;
+use porter_core::Tls;
 
 fn provider() -> ProviderId {
     ProviderId::parse("generic-imap").expect("id")

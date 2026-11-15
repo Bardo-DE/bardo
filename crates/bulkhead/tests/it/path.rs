@@ -1,16 +1,13 @@
 //! `AbsPath`: absolute, normalised, never stepping up.
 
-use bulkhead::{AbsPath, PathFault, RootState};
+use bulkhead::{AbsPath, PathFault};
 
 #[test]
 fn dots_and_doubled_slashes_fold_away_and_only_slash_is_the_root() {
     let path = AbsPath::parse("/a//b/./c/").expect("path");
     assert_eq!(path.as_str(), "/a/b/c");
-    assert_eq!(
-        AbsPath::parse("/").expect("root").is_root(),
-        RootState::Root
-    );
-    assert_eq!(AbsPath::parse("/a").expect("a").is_root(), RootState::Below);
+    assert!(AbsPath::parse("/").expect("root").is_root());
+    assert!(!AbsPath::parse("/a").expect("a").is_root());
 }
 
 #[test]

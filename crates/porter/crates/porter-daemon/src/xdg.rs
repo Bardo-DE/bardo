@@ -160,10 +160,7 @@ mod tests {
     #[test]
     fn no_home_and_no_variable_is_an_error_but_a_variable_alone_is_enough() {
         let none = Xdg::new(env(&[]));
-        assert_eq!(
-            none.dir("XDG_STATE_HOME", ".local/state"),
-            Err(PathError)
-        );
+        assert_eq!(none.dir("XDG_STATE_HOME", ".local/state"), Err(PathError));
         let relative_home = Xdg::new(env(&[("HOME", "home/ada")]));
         assert_eq!(relative_home.home(), None);
         assert_eq!(

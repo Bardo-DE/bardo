@@ -39,7 +39,6 @@ pub use label::{
 };
 pub use message::{
     Fault, MAX_PARTS, MAX_TEXT_BYTES, Message, MessageKind, MessageText, Part, ReportStatus,
-    SenderCheck,
 };
 /// Re-exported so `prov` is the one import for identity vocabulary.
 pub use porter_capability::AgentProgram;

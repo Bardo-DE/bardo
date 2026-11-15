@@ -3,9 +3,7 @@
 
 use bulkhead::fake::{FakeSandbox, Fate, Script};
 use bulkhead::{AbsPath, CannotSandbox};
-use bulkhead::{
-    Argv, Cut, ExitReport, Launch, MAX_TERMINALS, Network, Shell, ShellFault, StartFault,
-};
+use bulkhead::{Argv, ExitReport, Launch, MAX_TERMINALS, Network, Shell, ShellFault, StartFault};
 
 fn launch(line: &[&str]) -> Launch {
     let words: Vec<String> = line.iter().map(|s| (*s).to_owned()).collect();
@@ -72,7 +70,7 @@ fn the_output_cap_keeps_the_tail() {
     let id = shell.create(&ask).expect("created");
     let snap = shell.output(id).expect("output");
     assert_eq!(snap.shown.text, "abcdef");
-    assert_eq!(snap.shown.cut, Cut::Head);
+    assert!(snap.shown.cut);
 }
 
 #[test]

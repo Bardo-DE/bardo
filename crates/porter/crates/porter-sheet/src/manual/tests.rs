@@ -261,14 +261,8 @@ fn each_protocol_parses_to_its_servers() {
     let Manual::Imap(m) = parse_manual(&starttls).expect("starttls") else {
         panic!()
     };
-    assert_eq!(
-        (m.incoming.port, m.incoming.security),
-        (143, Tls::StartTls)
-    );
-    assert_eq!(
-        (m.outgoing.port, m.outgoing.security),
-        (587, Tls::StartTls)
-    );
+    assert_eq!((m.incoming.port, m.incoming.security), (143, Tls::StartTls));
+    assert_eq!((m.outgoing.port, m.outgoing.security), (587, Tls::StartTls));
 
     let pop = with(imap_answers(), FieldKind::Protocol, "pop3");
     let Manual::Pop3(m) = parse_in(&pop, ALL).expect("pop3") else {
@@ -411,10 +405,7 @@ fn plain_is_for_this_computer_only() {
     let Manual::Imap(m) = parse_manual(&local).expect("loopback may be plain") else {
         panic!()
     };
-    assert_eq!(
-        (m.incoming.security, m.incoming.port),
-        (Tls::Plain, 143)
-    );
+    assert_eq!((m.incoming.security, m.incoming.port), (Tls::Plain, 143));
 }
 
 #[test]

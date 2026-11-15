@@ -916,12 +916,7 @@ fn the_facts_of_a_sign_in_are_judged_in_one_table() {
             Fact::SignedInBefore,
             Verdict::Restart,
         ),
-        (
-            add(),
-            confirming(),
-            Fact::SignedInBefore,
-            Verdict::Restart,
-        ),
+        (add(), confirming(), Fact::SignedInBefore, Verdict::Restart),
         (
             add(),
             browser(),

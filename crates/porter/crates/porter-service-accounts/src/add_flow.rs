@@ -665,12 +665,7 @@ impl<E: Ports> Accounts<'_, E> {
     /// Starts the sign-in of the sheet's provider again, as a first sign-in, in place of the one
     /// that ended. One that cannot be started ends the sheet as unreadable, as the answer it
     /// replaces.
-    async fn restart<J: Job>(
-        &self,
-        sheet: &Sheet,
-        job: &J,
-        run: &mut RunOf<E, J>,
-    ) -> SheetEvent {
+    async fn restart<J: Job>(&self, sheet: &Sheet, job: &J, run: &mut RunOf<E, J>) -> SheetEvent {
         if let Some(identity) = run.identity.as_mut() {
             identity.history = ConsentHistory::FirstSignIn;
         }

@@ -11,12 +11,12 @@
 //! the bubblewrap process, never in its arguments, so a key is not on a command line);
 //! no capabilities; a new session; death with its parent.
 
+use crate::AbsPath;
 use crate::confinement::confinement;
 use crate::enter::{INSIDE_ENTER, plan_for};
 use crate::net::{AgentNet, EndpointBind};
 use crate::profile::Profile;
 use crate::sandbox::{Argv, EnvVar};
-use crate::{AbsPath, RootState};
 
 /// Where the forwarder and its socket appear inside the sandbox.
 pub const INSIDE_FORWARDER: &str = "/run/bulkhead/forward";
@@ -145,7 +145,7 @@ impl AgentRun {
             .as_str()
             .strip_prefix(self.cwd.as_str())
             .is_some_and(|rest| rest.starts_with('/'))
-            || self.cwd.is_root() == RootState::Root && path.is_root() == RootState::Below;
+            || self.cwd.is_root() && !path.is_root();
         if !inside {
             return Err(ProtectFault::OutsideCwd);
         }

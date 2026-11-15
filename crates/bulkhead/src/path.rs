@@ -35,15 +35,6 @@ pub enum Cover {
     Misses,
 }
 
-/// Whether a path is `/`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RootState {
-    /// It is `/`.
-    Root,
-    /// It is below `/`.
-    Below,
-}
-
 impl AbsPath {
     /// `text` as an absolute path, `.` and doubled slashes folded away.
     pub fn parse(text: &str) -> Result<Self, PathFault> {
@@ -70,37 +61,30 @@ impl AbsPath {
     }
 
     /// Whether this is `/`.
-    pub fn is_root(&self) -> RootState {
-        if self.0 == "/" {
-            RootState::Root
-        } else {
-            RootState::Below
-        }
+    pub fn is_root(&self) -> bool {
+        self.0 == "/"
     }
 
     /// Whether `other` is this path or lies below it, by whole components.
     pub fn covers(&self, other: &AbsPath) -> Cover {
-        let under = match self.is_root() {
-            RootState::Root => true,
-            RootState::Below => other
+        let under = self.is_root()
+            || other
                 .0
                 .strip_prefix(&self.0)
-                .is_some_and(|rest| rest.is_empty() || rest.starts_with('/')),
-        };
+                .is_some_and(|rest| rest.is_empty() || rest.starts_with('/'));
         if under { Cover::Covers } else { Cover::Misses }
     }
 
     /// The directory above, none for `/`.
     pub fn parent(&self) -> Option<AbsPath> {
         let cut = self.0.rfind('/')?;
-        match self.is_root() {
-            RootState::Root => None,
-            RootState::Below => Some(AbsPath(if cut == 0 {
+        (!self.is_root()).then(|| {
+            AbsPath(if cut == 0 {
                 "/".to_owned()
             } else {
                 self.0[..cut].to_owned()
-            })),
-        }
+            })
+        })
     }
 
     /// The deepest path that covers both.
