@@ -42,6 +42,9 @@ pub fn run(base: Option<&str>, all: bool) -> Result<bool> {
         for var in SESSION_VARS {
             cmd.env_remove(var);
         }
+        // A gate builds each sha once: incremental state is only disk (about half the target
+        // dir on a whole-workspace run) and is never reused.
+        cmd.env("CARGO_INCREMENTAL", "0");
         if !run_logged(&ws.root, &mut cmd)? {
             return Ok(finish("gate", false));
         }
