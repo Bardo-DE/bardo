@@ -14,15 +14,6 @@ use wayland_protocols_wlr::output_power_management::v1::client::{
     zwlr_output_power_v1::{self, ZwlrOutputPowerV1},
 };
 
-/// Whether an output is lit, as the protocol says it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum PowerMode {
-    /// Lit.
-    On,
-    /// Dark.
-    Off,
-}
-
 /// Which control a request or an answer is about.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct ControlId(pub u32);
@@ -32,8 +23,8 @@ pub struct ControlId(pub u32);
 pub enum ControlState {
     /// Nothing yet.
     Silent,
-    /// The control reported this mode last.
-    Reported(PowerMode),
+    /// The control reported this last: lit (`true`) or dark.
+    Reported(bool),
     /// The compositor sent `failed`.
     Failed,
 }
@@ -44,7 +35,7 @@ struct Control {
     id: ControlId,
     proxy: ZwlrOutputPowerV1,
     state: ControlState,
-    modes: Vec<PowerMode>,
+    modes: Vec<bool>,
 }
 
 /// What the side queue dispatches into.
@@ -162,12 +153,12 @@ impl OutputPowers {
         Ok(id)
     }
 
-    /// Asks for `mode` on a control.
-    pub fn set_mode(&mut self, id: ControlId, mode: PowerMode) -> Result<(), ClientError> {
+    /// Asks for the control to light (`true`) or darken (`false`) its output.
+    pub fn set_mode(&mut self, id: ControlId, lit: bool) -> Result<(), ClientError> {
         let control = self.find(id)?;
-        control.proxy.set_mode(match mode {
-            PowerMode::On => zwlr_output_power_v1::Mode::On,
-            PowerMode::Off => zwlr_output_power_v1::Mode::Off,
+        control.proxy.set_mode(match lit {
+            true => zwlr_output_power_v1::Mode::On,
+            false => zwlr_output_power_v1::Mode::Off,
         });
         self.flush()
     }
@@ -182,7 +173,7 @@ impl OutputPowers {
     }
 
     /// Every mode a control reported, in order.
-    pub fn reported(&self, id: ControlId) -> Vec<PowerMode> {
+    pub fn reported(&self, id: ControlId) -> Vec<bool> {
         self.seen
             .controls
             .iter()
@@ -257,10 +248,7 @@ impl Dispatch<ZwlrOutputPowerV1, ControlId> for Seen {
         };
         match event {
             zwlr_output_power_v1::Event::Mode { mode } => {
-                let reported = match mode.into_result() {
-                    Ok(zwlr_output_power_v1::Mode::On) => PowerMode::On,
-                    _ => PowerMode::Off,
-                };
+                let reported = matches!(mode.into_result(), Ok(zwlr_output_power_v1::Mode::On));
                 control.modes.push(reported);
                 control.state = ControlState::Reported(reported);
             }

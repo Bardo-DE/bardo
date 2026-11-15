@@ -11,7 +11,7 @@ use casement_core::privilege::{HELD_REQUESTS, Verdict};
 use casement_core::time::Millihertz;
 use casement_protocols::vocab::{Answer as Reply, Power};
 use casement_testclient::manage::output_management::{
-    Answer, ConfigId, HeadPlan, Intent, Lit, ModeChoice, OutputManager, Preference, Properties,
+    ConfigId, ConfigOutcome, ConfigPurpose, HeadPlan, ModeChoice, OutputManager, Properties,
     Setting,
 };
 use casement_testkit::{ASKED_PROGRAM, Fixture, FixtureSpec};
@@ -87,7 +87,7 @@ fn the_manager_lists_every_output_as_a_head() {
             .values()
             .find(|state| state.facts.name == name(&head.name))
             .expect("the head's output");
-        assert_eq!(head.lit, Lit::On, "{}", head.name);
+        assert!(head.lit, "{}", head.name);
         assert_eq!(head.modes.len(), 1, "{}", head.name);
         let current = head.current.expect("a current mode");
         assert_eq!(
@@ -98,7 +98,7 @@ fn the_manager_lists_every_output_as_a_head() {
                 60_000
             )
         );
-        assert_eq!(current.preferred, Preference::Preferred);
+        assert!(current.preferred);
         assert_eq!(head.position, (config.position.x, config.position.y));
         assert_eq!(head.transform, Transform::Normal);
         assert!(
@@ -138,11 +138,11 @@ fn an_applied_configuration_changes_the_mode() {
         scale: Some(1.5),
     };
     let wanted = manager
-        .configure(None, &[plan("HEADLESS-1", properties)], Intent::Apply)
+        .configure(None, &[plan("HEADLESS-1", properties)], ConfigPurpose::Apply)
         .expect("a configuration");
     settle(&mut fixture, &mut manager);
 
-    assert_eq!(manager.answer(wanted), Some(Answer::Succeeded));
+    assert_eq!(manager.answer(wanted), Some(ConfigOutcome::Succeeded));
     let config = config_of(&fixture, "HEADLESS-1");
     assert_eq!(config.mode, SMALLER);
     assert_eq!(config.scale, Scale(180));
@@ -179,12 +179,12 @@ fn disabling_a_head_darkens_its_output() {
     // A configuration names every head; the other one stays as it is.
     let other = plan("HEADLESS-2", Properties::default());
     let first = manager
-        .configure(None, &[off, other.clone()], Intent::Apply)
+        .configure(None, &[off, other.clone()], ConfigPurpose::Apply)
         .expect("off");
     settle(&mut fixture, &mut manager);
-    assert_eq!(manager.answer(first), Some(Answer::Succeeded));
-    assert_eq!(lit(&manager, "HEADLESS-1"), Some(Lit::Off));
-    assert_eq!(lit(&manager, "HEADLESS-2"), Some(Lit::On));
+    assert_eq!(manager.answer(first), Some(ConfigOutcome::Succeeded));
+    assert_eq!(lit(&manager, "HEADLESS-1"), Some(false));
+    assert_eq!(lit(&manager, "HEADLESS-2"), Some(true));
     assert!(!config_of(&fixture, "HEADLESS-1").power);
     assert!(
         fixture.advance(Duration::from_millis(100)).frames > 0,
@@ -193,11 +193,11 @@ fn disabling_a_head_darkens_its_output() {
 
     let on = plan("HEADLESS-1", Properties::default());
     let second = manager
-        .configure(None, &[on, other], Intent::Apply)
+        .configure(None, &[on, other], ConfigPurpose::Apply)
         .expect("on");
     settle(&mut fixture, &mut manager);
-    assert_eq!(manager.answer(second), Some(Answer::Succeeded));
-    assert_eq!(lit(&manager, "HEADLESS-1"), Some(Lit::On));
+    assert_eq!(manager.answer(second), Some(ConfigOutcome::Succeeded));
+    assert_eq!(lit(&manager, "HEADLESS-1"), Some(true));
 }
 
 /// CASC-09: the only lit display cannot be disabled; the configuration fails and it keeps drawing.
@@ -208,10 +208,10 @@ fn the_only_lit_head_cannot_be_disabled() {
         name: "HEADLESS-1".to_owned(),
         setting: Setting::Disable,
     };
-    let refused = manager.configure(None, &[off], Intent::Apply).expect("off");
+    let refused = manager.configure(None, &[off], ConfigPurpose::Apply).expect("off");
     settle(&mut fixture, &mut manager);
-    assert_eq!(manager.answer(refused), Some(Answer::Failed));
-    assert_eq!(manager.heads()[0].lit, Lit::On);
+    assert_eq!(manager.answer(refused), Some(ConfigOutcome::Failed));
+    assert!(manager.heads()[0].lit);
     assert!(fixture.advance(Duration::from_millis(100)).frames > 0);
 }
 
@@ -228,10 +228,10 @@ fn test_stale_and_refused_configurations_answer_correctly() {
         ..Properties::default()
     };
     let tested = manager
-        .configure(None, &[plan("HEADLESS-1", doubled)], Intent::Test)
+        .configure(None, &[plan("HEADLESS-1", doubled)], ConfigPurpose::Test)
         .expect("a test");
     settle(&mut fixture, &mut manager);
-    assert_eq!(manager.answer(tested), Some(Answer::Succeeded));
+    assert_eq!(manager.answer(tested), Some(ConfigOutcome::Succeeded));
     assert_eq!(
         config_of(&fixture, "HEADLESS-1"),
         before,
@@ -243,7 +243,7 @@ fn test_stale_and_refused_configurations_answer_correctly() {
         .configure(
             Some(serial.wrapping_sub(1)),
             &[plan("HEADLESS-1", doubled)],
-            Intent::Apply,
+            ConfigPurpose::Apply,
         )
         .expect("a stale apply");
     let odd = Properties {
@@ -255,19 +255,19 @@ fn test_stale_and_refused_configurations_answer_correctly() {
         ..Properties::default()
     };
     let refused = manager
-        .configure(None, &[plan("HEADLESS-1", odd)], Intent::Apply)
+        .configure(None, &[plan("HEADLESS-1", odd)], ConfigPurpose::Apply)
         .expect("a refused apply");
     let tiny = Properties {
         scale: Some(0.1),
         ..Properties::default()
     };
     let too_small = manager
-        .configure(None, &[plan("HEADLESS-1", tiny)], Intent::Apply)
+        .configure(None, &[plan("HEADLESS-1", tiny)], ConfigPurpose::Apply)
         .expect("a scale below the range");
     settle(&mut fixture, &mut manager);
-    assert_eq!(manager.answer(stale), Some(Answer::Cancelled));
-    assert_eq!(manager.answer(refused), Some(Answer::Failed));
-    assert_eq!(manager.answer(too_small), Some(Answer::Failed));
+    assert_eq!(manager.answer(stale), Some(ConfigOutcome::Cancelled));
+    assert_eq!(manager.answer(refused), Some(ConfigOutcome::Failed));
+    assert_eq!(manager.answer(too_small), Some(ConfigOutcome::Failed));
     assert_eq!(config_of(&fixture, "HEADLESS-1"), before);
 }
 
@@ -279,7 +279,7 @@ fn a_configuration_must_name_every_head() {
         .configure(
             None,
             &[plan("HEADLESS-1", Properties::default())],
-            Intent::Apply,
+            ConfigPurpose::Apply,
         )
         .expect("a partial configuration");
     fixture.pump();
@@ -347,10 +347,10 @@ fn a_configuration_waits_for_the_person_and_is_answered_on_allow() {
         ..Properties::default()
     };
     let tested = manager
-        .configure(None, &[plan("HEADLESS-1", moved)], Intent::Test)
+        .configure(None, &[plan("HEADLESS-1", moved)], ConfigPurpose::Test)
         .expect("a test");
     let applied = manager
-        .configure(None, &[plan("HEADLESS-1", moved)], Intent::Apply)
+        .configure(None, &[plan("HEADLESS-1", moved)], ConfigPurpose::Apply)
         .expect("an apply");
     settle(&mut fixture, &mut manager);
     assert_eq!(shell.asked().len(), 1, "one question for both");
@@ -361,8 +361,8 @@ fn a_configuration_waits_for_the_person_and_is_answered_on_allow() {
 
     shell.answer(&mut fixture, shell.only_ask(), Reply::Allow);
     settle(&mut fixture, &mut manager);
-    assert_eq!(manager.answer(tested), Some(Answer::Succeeded));
-    assert_eq!(manager.answer(applied), Some(Answer::Succeeded));
+    assert_eq!(manager.answer(tested), Some(ConfigOutcome::Succeeded));
+    assert_eq!(manager.answer(applied), Some(ConfigOutcome::Succeeded));
     let after = config_of(&fixture, "HEADLESS-1");
     assert_eq!((after.position.x, after.position.y), (100, 50));
 }
@@ -376,7 +376,7 @@ fn a_waiting_configuration_is_cancelled_when_the_heads_moved_meanwhile() {
         .configure(
             None,
             &[plan("HEADLESS-1", Properties::default())],
-            Intent::Apply,
+            ConfigPurpose::Apply,
         )
         .expect("an apply");
     settle(&mut fixture, &mut manager);
@@ -386,7 +386,7 @@ fn a_waiting_configuration_is_cancelled_when_the_heads_moved_meanwhile() {
 
     shell.answer(&mut fixture, shell.only_ask(), Reply::Allow);
     settle(&mut fixture, &mut manager);
-    assert_eq!(manager.answer(applied), Some(Answer::Cancelled));
+    assert_eq!(manager.answer(applied), Some(ConfigOutcome::Cancelled));
 }
 
 /// Don't Allow fails what waited, changes nothing, and is kept.
@@ -399,12 +399,12 @@ fn a_waiting_configuration_fails_when_the_person_refuses() {
         ..Properties::default()
     };
     let applied = manager
-        .configure(None, &[plan("HEADLESS-1", moved)], Intent::Apply)
+        .configure(None, &[plan("HEADLESS-1", moved)], ConfigPurpose::Apply)
         .expect("an apply");
     settle(&mut fixture, &mut manager);
     shell.answer(&mut fixture, shell.only_ask(), Reply::Deny);
     settle(&mut fixture, &mut manager);
-    assert_eq!(manager.answer(applied), Some(Answer::Failed));
+    assert_eq!(manager.answer(applied), Some(ConfigOutcome::Failed));
     assert_eq!(config_of(&fixture, "HEADLESS-1"), before);
     assert_eq!(
         kept(&fixture, ASKED_PROGRAM, Power::Displays),
@@ -413,10 +413,10 @@ fn a_waiting_configuration_fails_when_the_person_refuses() {
 
     // Refused for good, the next one is failed at once without asking again.
     let again = manager
-        .configure(None, &[plan("HEADLESS-1", moved)], Intent::Apply)
+        .configure(None, &[plan("HEADLESS-1", moved)], ConfigPurpose::Apply)
         .expect("another apply");
     settle(&mut fixture, &mut manager);
-    assert_eq!(manager.answer(again), Some(Answer::Failed));
+    assert_eq!(manager.answer(again), Some(ConfigOutcome::Failed));
     assert_eq!(shell.asked().len(), 1);
 }
 
@@ -431,7 +431,7 @@ fn a_client_holds_at_most_the_cap_of_waiting_configurations() {
                 .configure(
                     None,
                     &[plan("HEADLESS-1", Properties::default())],
-                    Intent::Apply,
+                    ConfigPurpose::Apply,
                 )
                 .expect("an apply")
         })
@@ -439,5 +439,5 @@ fn a_client_holds_at_most_the_cap_of_waiting_configurations() {
     settle(&mut fixture, &mut manager);
     let (kept_waiting, past) = all.split_at(HELD_REQUESTS);
     assert!(kept_waiting.iter().all(|id| manager.answer(*id).is_none()));
-    assert_eq!(manager.answer(past[0]), Some(Answer::Failed));
+    assert_eq!(manager.answer(past[0]), Some(ConfigOutcome::Failed));
 }

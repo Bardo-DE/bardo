@@ -5,7 +5,7 @@
 use super::heads::{HeadData, ModeData};
 use super::wire::transform_from;
 use super::{
-    ConfigSerial, Configuration, ConfigurationAnswer, ConfigurationIntent, HeadRequest,
+    ConfigSerial, Configuration, ConfigurationAnswer, ConfigPurpose, HeadRequest,
     OutputManagementHandler, on_configuration,
 };
 use crate::consent::{self, Admission, Mortal, Pushed};
@@ -30,7 +30,7 @@ use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 #[derive(Debug)]
 pub struct HeldConclusion {
     resource: ZwlrOutputConfigurationV1,
-    intent: ConfigurationIntent,
+    intent: ConfigPurpose,
     configuration: Configuration,
 }
 
@@ -151,7 +151,7 @@ impl ConfigData {
         state: &mut D,
         client: &Client,
         resource: &ZwlrOutputConfigurationV1,
-        intent: ConfigurationIntent,
+        intent: ConfigPurpose,
     ) {
         let heads = {
             let mut draft = locked(&self.draft);
@@ -195,7 +195,7 @@ impl ConfigData {
 fn settle<D: OutputManagementHandler>(
     state: &mut D,
     resource: &ZwlrOutputConfigurationV1,
-    intent: ConfigurationIntent,
+    intent: ConfigPurpose,
     configuration: &Configuration,
 ) {
     let book = state.output_management_outputs().clone();
@@ -216,7 +216,7 @@ fn hold<D: OutputManagementHandler>(
     state: &mut D,
     client: &Client,
     resource: &ZwlrOutputConfigurationV1,
-    intent: ConfigurationIntent,
+    intent: ConfigPurpose,
     configuration: Configuration,
 ) {
     let kept = HeldConclusion {
@@ -283,10 +283,10 @@ where
                 self.add(resource, &head, false);
             }
             zwlr_output_configuration_v1::Request::Apply => {
-                self.conclude(state, client, resource, ConfigurationIntent::Apply);
+                self.conclude(state, client, resource, ConfigPurpose::Apply);
             }
             zwlr_output_configuration_v1::Request::Test => {
-                self.conclude(state, client, resource, ConfigurationIntent::Test);
+                self.conclude(state, client, resource, ConfigPurpose::Test);
             }
             _ => {}
         }

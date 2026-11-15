@@ -17,7 +17,7 @@ use casement_testclient::Pumped;
 use casement_testclient::capture::{BufferAsk, CursorMode, OutputCapture};
 use casement_testclient::manage::gamma::{ControlState as GammaState, GammaControls};
 use casement_testclient::manage::output_power::{
-    ControlState as PowerState, OutputPowers, PowerMode,
+    ControlState as PowerState, OutputPowers,
 };
 use casement_testkit::fakes::{
     FakeKms, FakeLogind, GlassHandle, PrivateBus, SleepPhase, SyntheticTopology,
@@ -306,12 +306,12 @@ fn dpms_off_darkens_the_output_and_on_queues_a_frame_at_once() {
     settle_power(&mut seat.fixture, &mut powers);
     assert_eq!(
         powers.state(control),
-        Some(PowerState::Reported(PowerMode::On))
+        Some(PowerState::Reported(true))
     );
     seat.fixture.advance(ms(50));
     let panel = glass(&seat.world, 1);
 
-    powers.set_mode(control, PowerMode::Off).expect("off");
+    powers.set_mode(control, false).expect("off");
     settle_power(&mut seat.fixture, &mut powers);
     assert!(!power_of(&seat.fixture, "eDP-1"));
     assert_eq!(
@@ -323,7 +323,7 @@ fn dpms_off_darkens_the_output_and_on_queues_a_frame_at_once() {
     seat.fixture.advance(ms(100));
     assert_eq!(panel.queued(), dark, "a dark output queues no frame");
 
-    powers.set_mode(control, PowerMode::On).expect("on");
+    powers.set_mode(control, true).expect("on");
     settle_power(&mut seat.fixture, &mut powers);
     assert_eq!(
         seat.world.kms.power_of(ConnectorId(1)),

@@ -7,6 +7,7 @@
 
 use crate::misc::idle::{pump_queue, side_queue};
 use crate::{ClientError, GlobalList, Pumped};
+pub use desktop_client::output::{ConfigOutcome, ConfigPurpose};
 use wayland_client::protocol::wl_output::Transform;
 use wayland_client::{Connection, Dispatch, EventQueue, QueueHandle, event_created_child};
 use wayland_protocols_wlr::output_management::v1::client::{
@@ -26,26 +27,8 @@ pub struct ModeInfo {
     pub height: i32,
     /// Refresh rate in millihertz.
     pub refresh: i32,
-    /// Whether the display prefers it.
-    pub preferred: Preference,
-}
-
-/// Whether a mode is the display's preferred one.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Preference {
-    /// The compositor sent `preferred`.
-    Preferred,
-    /// It did not.
-    Other,
-}
-
-/// Whether a head is lit.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Lit {
-    /// `enabled` 1.
-    On,
-    /// `enabled` 0 (or never said).
-    Off,
+    /// Whether the compositor sent `preferred` for it.
+    pub preferred: bool,
 }
 
 /// One head as the compositor announced it.
@@ -60,7 +43,7 @@ pub struct HeadInfo {
     /// The EDID model.
     pub model: Option<String>,
     /// Whether the head is lit.
-    pub lit: Lit,
+    pub lit: bool,
     /// Every mode it offers.
     pub modes: Vec<ModeInfo>,
     /// The mode in use.
@@ -127,26 +110,6 @@ pub struct HeadPlan {
     pub setting: Setting,
 }
 
-/// `apply` or `test`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Intent {
-    /// `apply`.
-    Apply,
-    /// `test`.
-    Test,
-}
-
-/// How the compositor answered a configuration.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Answer {
-    /// `succeeded`.
-    Succeeded,
-    /// `failed`.
-    Failed,
-    /// `cancelled`.
-    Cancelled,
-}
-
 /// Which configuration an answer is for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct ConfigId(pub u32);
@@ -177,7 +140,7 @@ struct Roster {
     serial: u32,
     dones: u32,
     finished: bool,
-    answers: Vec<(ConfigId, Answer)>,
+    answers: Vec<(ConfigId, ConfigOutcome)>,
 }
 
 /// A bound `zwlr_output_manager_v1`.
@@ -257,7 +220,7 @@ impl OutputManager {
         &mut self,
         serial: Option<u32>,
         plans: &[HeadPlan],
-        intent: Intent,
+        intent: ConfigPurpose,
     ) -> Result<ConfigId, ClientError> {
         let serial = serial.unwrap_or(self.roster.serial);
         let id = ConfigId(u32::try_from(self.configurations.len()).unwrap_or(u32::MAX));
@@ -279,8 +242,8 @@ impl OutputManager {
             }
         }
         match intent {
-            Intent::Apply => configuration.apply(),
-            Intent::Test => configuration.test(),
+            ConfigPurpose::Apply => configuration.apply(),
+            ConfigPurpose::Test => configuration.test(),
         }
         self.configurations.push(configuration);
         self.flush()?;
@@ -306,7 +269,7 @@ impl OutputManager {
     }
 
     /// How the compositor answered configuration `id`, once it has.
-    pub fn answer(&self, id: ConfigId) -> Option<Answer> {
+    pub fn answer(&self, id: ConfigId) -> Option<ConfigOutcome> {
         self.roster
             .answers
             .iter()
@@ -354,7 +317,7 @@ impl Roster {
                     width,
                     height,
                     refresh,
-                    preferred: Preference::Other,
+                    preferred: false,
                 };
                 let proxy = entry
                     .modes
@@ -416,7 +379,7 @@ impl Dispatch<ZwlrOutputManagerV1, ()> for Roster {
                     description: String::new(),
                     make: None,
                     model: None,
-                    lit: Lit::Off,
+                    lit: false,
                     modes: Vec::new(),
                     current: None,
                     position: (0, 0),
@@ -455,7 +418,7 @@ impl Dispatch<ZwlrOutputHeadV1, ()> for Roster {
                 width: 0,
                 height: 0,
                 refresh: 0,
-                preferred: Preference::Other,
+                preferred: false,
             };
             state.modes.push(ModeEntry {
                 proxy: mode.clone(),
@@ -478,7 +441,7 @@ impl Dispatch<ZwlrOutputHeadV1, ()> for Roster {
             zwlr_output_head_v1::Event::Make { make } => entry.info.make = Some(make),
             zwlr_output_head_v1::Event::Model { model } => entry.info.model = Some(model),
             zwlr_output_head_v1::Event::Enabled { enabled } => {
-                entry.info.lit = if enabled == 0 { Lit::Off } else { Lit::On };
+                entry.info.lit = enabled != 0;
             }
             zwlr_output_head_v1::Event::CurrentMode { mode } => entry.current = Some(mode),
             zwlr_output_head_v1::Event::Position { x, y } => entry.info.position = (x, y),
@@ -516,7 +479,7 @@ impl Dispatch<ZwlrOutputModeV1, ()> for Roster {
                 entry.info.height = height;
             }
             zwlr_output_mode_v1::Event::Refresh { refresh } => entry.info.refresh = refresh,
-            zwlr_output_mode_v1::Event::Preferred => entry.info.preferred = Preference::Preferred,
+            zwlr_output_mode_v1::Event::Preferred => entry.info.preferred = true,
             zwlr_output_mode_v1::Event::Finished => entry.gone = true,
             _ => {}
         }
@@ -533,9 +496,9 @@ impl Dispatch<ZwlrOutputConfigurationV1, ConfigId> for Roster {
         _qh: &QueueHandle<Roster>,
     ) {
         let answer = match event {
-            zwlr_output_configuration_v1::Event::Succeeded => Answer::Succeeded,
-            zwlr_output_configuration_v1::Event::Failed => Answer::Failed,
-            zwlr_output_configuration_v1::Event::Cancelled => Answer::Cancelled,
+            zwlr_output_configuration_v1::Event::Succeeded => ConfigOutcome::Succeeded,
+            zwlr_output_configuration_v1::Event::Failed => ConfigOutcome::Failed,
+            zwlr_output_configuration_v1::Event::Cancelled => ConfigOutcome::Cancelled,
             _ => return,
         };
         state.answers.push((*data, answer));

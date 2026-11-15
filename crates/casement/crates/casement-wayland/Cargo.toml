@@ -11,6 +11,7 @@ publish = false
 [dependencies]
 casement-core = {path = "../casement-core"}
 casement-protocols = {path = "../../../casement-protocols", features = ["server"]}
+desktop-client = {path = "../../../casement-protocols/desktop-client"}
 porter-core = {path = "../../../porter/crates/porter-core"}
 ds-core = {path = "../../../quire/crates/ds-core", default-features = false}
 smithay = {git = "https://github.com/Bardo-DE/smithay", rev = "919d8dcf7fe0b9ad03f3de53bc178dad30823631", default-features = false, features = ["desktop", "wayland_frontend"]}

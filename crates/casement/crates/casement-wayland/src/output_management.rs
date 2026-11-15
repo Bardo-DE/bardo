@@ -24,6 +24,7 @@ use casement_core::output::{
     OutputChangeSet, OutputConfig, OutputFacts, Requester, keeps_one_lit, resolve_change,
 };
 use casement_core::policy::GlobalKind;
+use desktop_client::output::ConfigPurpose;
 use casement_core::{Event, OutputBook, OutputKey};
 use heads::{HeadObjects, create_head};
 use smithay::reexports::wayland_protocols_wlr::output_management::v1::server::{
@@ -122,15 +123,6 @@ pub struct OutputManagementGlobal {
 #[derive(Debug, Clone, Copy, Default)]
 pub struct ManagerData;
 
-/// Whether a configuration is applied or only checked.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum ConfigurationIntent {
-    /// `apply`.
-    Apply,
-    /// `test`.
-    Test,
-}
-
 /// One head's part of a configuration.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct HeadRequest {
@@ -181,20 +173,21 @@ pub enum ConfigurationAnswer {
 ///
 /// ```no_run
 /// use casement_core::OutputBook;
+/// use desktop_client::output::ConfigPurpose;
 /// use casement_core::output::Requester;
 /// use casement_wayland::output_management::{
-///     ConfigSerial, Configuration, ConfigurationIntent, OutputManagementPart, on_configuration,
+///     ConfigSerial, Configuration, OutputManagementPart, on_configuration,
 /// };
 ///
 /// let mut part = OutputManagementPart::default();
 /// let nothing = Configuration::new(ConfigSerial(0), Vec::new(), Requester::Program);
-/// let answer = on_configuration(&mut part, &OutputBook::default(), ConfigurationIntent::Test, &nothing);
+/// let answer = on_configuration(&mut part, &OutputBook::default(), ConfigPurpose::Test, &nothing);
 /// let _ = answer;
 /// ```
 pub fn on_configuration(
     part: &mut OutputManagementPart,
     outputs: &OutputBook,
-    intent: ConfigurationIntent,
+    intent: ConfigPurpose,
     configuration: &Configuration,
 ) -> ConfigurationAnswer {
     if configuration.serial != part.serial {
@@ -215,8 +208,8 @@ pub fn on_configuration(
     let accepted = each_fits && keeps_one_lit(outputs, &changes).is_ok();
     match (accepted, intent) {
         (false, _) => ConfigurationAnswer::Failed,
-        (true, ConfigurationIntent::Test) => ConfigurationAnswer::Succeeded(Vec::new()),
-        (true, ConfigurationIntent::Apply) => ConfigurationAnswer::Succeeded(
+        (true, ConfigPurpose::Test) => ConfigurationAnswer::Succeeded(Vec::new()),
+        (true, ConfigPurpose::Apply) => ConfigurationAnswer::Succeeded(
             configuration
                 .heads
                 .iter()

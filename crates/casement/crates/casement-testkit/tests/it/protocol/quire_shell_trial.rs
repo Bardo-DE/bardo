@@ -10,7 +10,9 @@ use casement_core::output::DISPLAY_CONFIRM_WITHIN;
 use casement_core::policy::ConnectionRole;
 use casement_protocols::client::quire_shell_v1::quire_shell_v1 as wire;
 use casement_protocols::vocab::TrialAnswer;
-use casement_testclient::manage::output_management::{Answer, Intent, OutputManager, Properties};
+use casement_testclient::manage::output_management::{
+    ConfigOutcome, ConfigPurpose, OutputManager, Properties,
+};
 use casement_testkit::Fixture;
 use ds_core::geometry::scale::Scale;
 use std::time::Duration;
@@ -31,10 +33,10 @@ fn rescale(fixture: &mut Fixture, manager: &mut OutputManager, scale: f64) {
         ..Properties::default()
     };
     let wanted = manager
-        .configure(None, &[plan("HEADLESS-1", properties)], Intent::Apply)
+        .configure(None, &[plan("HEADLESS-1", properties)], ConfigPurpose::Apply)
         .expect("a configuration");
     settle(fixture, manager);
-    assert_eq!(manager.answer(wanted), Some(Answer::Succeeded));
+    assert_eq!(manager.answer(wanted), Some(ConfigOutcome::Succeeded));
 }
 
 fn scale_of(fixture: &Fixture) -> Scale {
