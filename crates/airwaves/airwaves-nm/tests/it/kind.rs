@@ -1,24 +1,16 @@
 use airwaves_nm::{ActiveState, Connectivity, DeviceState, DeviceType};
 
 #[test]
-fn device_kinds_from_the_wire() {
+fn wire_numbers_are_read_as_the_names_they_stand_for() {
     assert_eq!(DeviceType::from_wire(1), DeviceType::Ethernet);
     assert_eq!(DeviceType::from_wire(2), DeviceType::Wifi);
     assert_eq!(DeviceType::from_wire(29), DeviceType::WireGuard);
     assert_eq!(DeviceType::from_wire(7), DeviceType::Other(7));
-}
-
-#[test]
-fn device_states_from_the_wire() {
     assert_eq!(DeviceState::from_wire(30), DeviceState::Disconnected);
     assert_eq!(DeviceState::from_wire(60), DeviceState::NeedAuth);
     assert_eq!(DeviceState::from_wire(100), DeviceState::Activated);
     assert_eq!(DeviceState::from_wire(120), DeviceState::Failed);
     assert_eq!(DeviceState::from_wire(55), DeviceState::Other(55));
-}
-
-#[test]
-fn active_states_and_reach_from_the_wire() {
     assert_eq!(ActiveState::from_wire(2), ActiveState::Activated);
     assert_eq!(ActiveState::from_wire(9), ActiveState::Other(9));
     assert_eq!(Connectivity::from_wire(2), Connectivity::Portal);

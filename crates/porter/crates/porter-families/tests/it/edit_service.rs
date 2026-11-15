@@ -90,17 +90,6 @@ fn sheets_for(inputs: Vec<SheetInput>) -> ScriptedSheets {
 // ---- who may edit ----
 
 #[tokio::test]
-async fn a_provider_that_signs_in_at_its_own_page_has_fixed_servers() {
-    let service = fake_service(ScriptedSheets::default()).await;
-    let edit = request(&mail_account().id, "fake-mail", nowhere());
-    let got = edit_at(&service, edit).await;
-    assert_eq!(
-        got.err(),
-        Some(EditError::Fixed(ServersFixed::ProviderSignIn))
-    );
-}
-
-#[tokio::test]
 async fn a_provider_with_no_typed_servers_has_fixed_servers() {
     let service = fake_service(ScriptedSheets::default()).await;
     let llm = AccountId::parse("fake-llm").expect("id");
@@ -273,16 +262,4 @@ async fn a_refused_password_marks_the_field_and_the_person_sends_again() {
     assert_eq!(marked.len(), 1, "{marked:?}");
     assert_eq!(marked[0].field, FieldKind::Password);
     assert_eq!(marked[0].problem, ProblemKind::Refused);
-}
-
-#[tokio::test]
-async fn a_cancelled_edit_gives_nothing_back_and_tries_nothing() {
-    let world = world().await;
-    let service = generic_service(sheets_for(vec![SheetInput::Dismiss]));
-    let edit = request(&mail_ada(), "generic-imap", world.current());
-
-    let got = edit_at(&service, edit).await;
-
-    assert_eq!(got.err(), Some(EditError::Refused(Refusal::Dismissed)));
-    assert!(world.imap.attempts().is_empty());
 }

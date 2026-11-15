@@ -3,9 +3,7 @@
 use porter_discover::{Dns, DnsFault, MxRecord, SrvRecord};
 use porter_fake_servers::browser::split_loopback;
 use porter_fake_servers::http::{Request, Scheme, send};
-use porter_fake_servers::{
-    FakeAutoconfig, FakeDns, FakeModels, ModelDef, Wire, autoconfig_xml,
-};
+use porter_fake_servers::{FakeAutoconfig, FakeDns, FakeModels, ModelDef, Wire, autoconfig_xml};
 use porter_provider::DomainName;
 
 async fn get(base: &str, path: &str, bearer: Option<&str>) -> porter_fake_servers::Response {

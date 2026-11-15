@@ -4,9 +4,9 @@
 use crate::common;
 
 use common::{call, dav, hrefs, nextcloud};
+use porter_fake_servers::FakeDav;
 use porter_fake_servers::browser::split_loopback;
 use porter_fake_servers::http::Request;
-use porter_fake_servers::FakeDav;
 
 #[tokio::test]
 async fn webdav_propfind_quota_and_sync_collection_agree() {
