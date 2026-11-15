@@ -1,7 +1,7 @@
 //! The single-instance lock file, watched. The lock belongs to a file, and a cache cleaner or a
 //! tidy-minded person can delete that file: the next `sill` would lock a new one and start a second
 //! daemon beside this one, which then unlinks this daemon's socket for its own. latchkey's rule for
-//! a daemon is to ask `standing()` now and then and to stop when it is displaced; [`spawn`] is that
+//! a daemon is to ask `displaced()` now and then and to stop when it is displaced; [`spawn`] is that
 //! question, asked on the daemon's async runtime every [`STANDING_EVERY`].
 //!
 //! A displaced shell does what a shell whose bus name was taken does ([`crate::name_guard`]): says
@@ -12,7 +12,6 @@
 use std::sync::mpsc;
 use std::time::Duration;
 
-use latchkey::lock::Standing;
 use shell_host::HostHandle;
 use tokio::runtime::Handle;
 use tokio::time::MissedTickBehavior;
@@ -31,21 +30,6 @@ pub fn line() -> String {
         .to_owned()
 }
 
-/// What to do about a standing.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Verdict {
-    Stay,
-    StepAside,
-}
-
-/// The decision latchkey prescribes: only a lock file that is still ours lets the daemon stay.
-pub fn verdict(standing: Standing) -> Verdict {
-    match standing {
-        Standing::Ours => Verdict::Stay,
-        _ => Verdict::StepAside,
-    }
-}
-
 /// Look at `door` now and then, and return the line to stop with the first time the daemon is
 /// displaced. The first look is at once, so a file gone before this ran is not missed.
 pub async fn until_displaced(door: Door, every: Duration) -> String {
@@ -55,7 +39,7 @@ pub async fn until_displaced(door: Door, every: Duration) -> String {
     loop {
         ticks.tick().await;
         // Two file lookups, once a minute: cheaper than handing them to the blocking pool.
-        if verdict(door.standing()) == Verdict::StepAside {
+        if door.displaced() {
             return line();
         }
     }
@@ -75,10 +59,9 @@ pub fn spawn(rt: &Handle, door: Door, host: HostHandle<ShellMsg>, stopped: mpsc:
 mod tests {
     use std::time::Duration;
 
-    use latchkey::lock::Standing;
     use sill_testkit::TempDir;
 
-    use super::{Verdict, line, until_displaced, verdict};
+    use super::{line, until_displaced};
     use crate::ipc::door::Door;
 
     const QUICK: Duration = Duration::from_millis(10);
@@ -92,17 +75,6 @@ mod tests {
             .unwrap_or_else(|e| panic!("building the agent: {e}"));
         let listening = agent.listen().unwrap_or_else(|e| panic!("listening: {e}"));
         (agent, Door::from(listening))
-    }
-
-    #[test]
-    fn only_a_lock_file_that_is_ours_lets_the_daemon_stay() {
-        let cases = [
-            ("ours", Standing::Ours, Verdict::Stay),
-            ("displaced", Standing::Displaced, Verdict::StepAside),
-        ];
-        for (name, standing, want) in cases {
-            assert_eq!(verdict(standing), want, "{name}");
-        }
     }
 
     #[tokio::test]

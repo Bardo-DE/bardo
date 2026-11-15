@@ -6,7 +6,7 @@
 use docket_core::{
     ConfirmDetail, ConfirmId, ConfirmOffer, ConfirmRequest, Gesture, NeverOffer, TaintNote,
 };
-use docket_permissions_core::{LimitNote, StandingGrantId, UndoOffer};
+use docket_permissions_core::{LimitNote, StandingGrantId};
 use prov::Effect;
 
 use super::brief::BriefView;
@@ -38,7 +38,7 @@ pub struct SheetHeld {
     /// You said: “don't touch Work”
     pub why: String,
     /// Whether the entry may be undone here (an administrator's may not).
-    pub undo: UndoOffer,
+    pub undo: bool,
 }
 
 impl From<&LimitNote> for SheetHeld {

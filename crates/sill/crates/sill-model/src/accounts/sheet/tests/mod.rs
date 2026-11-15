@@ -1,9 +1,7 @@
 mod step;
 
 use porter_core::ProviderId;
-use porter_sheet::{
-    Entry, FieldKind, FieldSpec, Presence, ProviderRow, RowKind, SheetView, SignInView,
-};
+use porter_sheet::{Entry, FieldKind, FieldSpec, ProviderRow, RowKind, SheetView, SignInView};
 
 use super::SheetHandle;
 
@@ -35,26 +33,23 @@ pub(super) fn rows(ids: &[&str]) -> SheetView {
     )
 }
 
-pub(super) fn spec(kind: FieldKind, entry: Entry, presence: Presence) -> FieldSpec {
+pub(super) fn spec(kind: FieldKind, entry: Entry, required: bool) -> FieldSpec {
     FieldSpec {
         kind,
         entry,
-        presence,
+        required,
         prefill: None,
     }
 }
 
 /// An address and a password, both required.
 pub(super) fn form(prefill: Option<&str>) -> SheetView {
-    let mut address = spec(FieldKind::Address, Entry::Plain, Presence::Required);
+    let mut address = spec(FieldKind::Address, Entry::Plain, true);
     address.prefill = prefill.map(str::to_owned);
     SheetView::SignIn(SignInView {
         provider: provider("nextcloud"),
         row: None,
-        fields: vec![
-            address,
-            spec(FieldKind::Password, Entry::Secret, Presence::Required),
-        ],
+        fields: vec![address, spec(FieldKind::Password, Entry::Secret, true)],
         problem: None,
     })
 }

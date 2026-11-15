@@ -4,7 +4,6 @@
 use std::collections::BTreeMap;
 
 use porter_sheet::{ProviderKind, ProviderRow};
-use prov::AgentLabel;
 
 /// Provider-row labels by program id. Only agent-login rows name a program.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
@@ -25,9 +24,9 @@ impl ProgramLabels {
     /// label), else the provider row's label for its program; `None` when neither names it (the
     /// program id is a developer word and is never shown). The agent's own handshake title is
     /// never read.
-    pub fn name_of(&self, program: &str, label: Option<&AgentLabel>) -> Option<String> {
+    pub fn name_of(&self, program: &str, label: Option<&String>) -> Option<String> {
         label
-            .map(|label| label.0.as_str())
+            .map(|label| label.as_str())
             .or_else(|| self.0.get(program).map(String::as_str))
             .map(str::to_owned)
     }

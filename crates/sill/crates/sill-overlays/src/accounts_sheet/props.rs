@@ -25,7 +25,6 @@ use ds_shell::accounts::model::{
     ServiceKey, ServiceLine, ServiceOffer, SignInFault,
 };
 use ds_shell::prelude::{Recovery, WorkingFor};
-use porter_capability::Toggle;
 use porter_core::consent::{AskPurpose, ConsentAsk};
 use porter_core::{AccountId, ProviderId, SessionToken};
 use porter_sheet::{
@@ -374,11 +373,8 @@ fn part_of(kind: FieldKind) -> Option<FormPart> {
     }
 }
 
-fn switch(toggle: Toggle) -> Check {
-    match toggle {
-        Toggle::On => Check::On,
-        Toggle::Off => Check::Off,
-    }
+fn switch(toggle: bool) -> Check {
+    if toggle { Check::On } else { Check::Off }
 }
 
 fn copy_state(draft: &Draft) -> CopyState {

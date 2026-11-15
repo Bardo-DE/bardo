@@ -23,7 +23,6 @@ use std::sync::{Arc, mpsc};
 use std::thread::JoinHandle;
 use std::time::{Duration, Instant};
 
-use latchkey::lock::Standing;
 use latchkey::{Agent, Stream};
 use shell_host::HostHandle;
 use sill_ipc::error::IpcError;
@@ -72,7 +71,7 @@ impl Serving {
     /// there would wait for ever.
     pub fn stop(self, agent: &Agent) -> JoinHandle<()> {
         let _ = self.end.send(());
-        if matches!(self.door.standing(), Standing::Ours) {
+        if !self.door.displaced() {
             let _ = agent.connect();
         }
         self.thread

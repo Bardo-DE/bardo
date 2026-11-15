@@ -1,6 +1,5 @@
 use porter_capability::CapabilityKind;
 use porter_capability::KindToggle;
-use porter_capability::Toggle;
 use porter_core::AccountId;
 use porter_core::SecretText;
 use porter_core::consent::{AccountChoice, ConsentAnswer, ConsentAsk, GrantScope, Usage};
@@ -118,8 +117,8 @@ fn review() -> SheetView {
         review: Review {
             label: AccountLabel("ada".to_owned()),
             services: vec![
-                row(CapabilityKind::Mail, ServiceState::Offered(Toggle::On)),
-                row(CapabilityKind::Calendar, ServiceState::Offered(Toggle::On)),
+                row(CapabilityKind::Mail, ServiceState::Offered(true)),
+                row(CapabilityKind::Calendar, ServiceState::Offered(true)),
                 row(
                     CapabilityKind::Photos,
                     ServiceState::Absent(porter_capability::AbsentReason::ProviderOffersNone),
@@ -324,33 +323,30 @@ fn what_the_person_does_is_what_accountd_is_told() {
         case(
             "the review confirms with its switches",
             review(),
-            vec![
-                Do::Toggle(CapabilityKind::Calendar, Toggle::Off),
-                Do::Confirm,
-            ],
+            vec![Do::Toggle(CapabilityKind::Calendar, false), Do::Confirm],
             vec![SheetInput::Confirm(vec![
                 KindToggle {
                     kind: CapabilityKind::Mail,
-                    toggle: Toggle::On,
+                    toggle: true,
                 },
                 KindToggle {
                     kind: CapabilityKind::Calendar,
-                    toggle: Toggle::Off,
+                    toggle: false,
                 },
             ])],
         ),
         case(
             "a service the provider lacks has no switch",
             review(),
-            vec![Do::Toggle(CapabilityKind::Photos, Toggle::On), Do::Confirm],
+            vec![Do::Toggle(CapabilityKind::Photos, true), Do::Confirm],
             vec![SheetInput::Confirm(vec![
                 KindToggle {
                     kind: CapabilityKind::Mail,
-                    toggle: Toggle::On,
+                    toggle: true,
                 },
                 KindToggle {
                     kind: CapabilityKind::Calendar,
-                    toggle: Toggle::On,
+                    toggle: true,
                 },
             ])],
         ),

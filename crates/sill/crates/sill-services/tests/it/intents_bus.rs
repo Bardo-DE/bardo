@@ -13,7 +13,7 @@ use docket_core::{
     ConfirmRequest, Gesture, GrantScope, NeverOffer, SheetLimits, TaintNote,
 };
 use docket_dbus::{CONFIRM_BUS, ConfirmProxy, INTENTS_BUS};
-use docket_permissions_core::{AskReason, LimitLevel, LimitNote, StandingGrantId, UndoOffer};
+use docket_permissions_core::{AskReason, LimitLevel, LimitNote, StandingGrantId};
 use docket_vocab::{ActionRef, LabelText, Seconds};
 use porter_ids::Count;
 use prov::{ActionName, Actor, AppName, Effect, InputProof, SpaceId};
@@ -402,7 +402,7 @@ fn limited_request(id: &str, hex: &str) -> ConfirmRequest {
         id: StandingGrantId::parse(&format!("sg-{hex}")).unwrap_or_else(|e| panic!("{e}")),
         level: LimitLevel::AlwaysAsk,
         why: "You said: \u{201c}don't touch Work\u{201d}".to_owned(),
-        undo: UndoOffer::Offered,
+        undo: true,
     };
     let limits = SheetLimits {
         never: NeverOffer::Offered,

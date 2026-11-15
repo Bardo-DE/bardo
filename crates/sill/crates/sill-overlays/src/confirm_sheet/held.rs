@@ -7,8 +7,8 @@ use dioxus::prelude::*;
 use ds::components::controls::button::Button;
 use ds::prelude::*;
 use ds::root::common::Common;
+use sill_model::intents::StandingGrantId;
 use sill_model::intents::sheet::SheetView;
-use sill_model::intents::{StandingGrantId, UndoOffer};
 
 /// The Undo button's element id (the tests', and a person's stylesheet's, handle).
 pub(super) const UNDO_ID: &str = "confirm-undo";
@@ -26,7 +26,7 @@ pub(super) fn held_line(
     rsx! {
         div { class: "sill-confirm-held",
             div { class: "sill-confirm-held-why", "{why}" }
-            if held.undo == UndoOffer::Offered {
+            if held.undo {
                 Button {
                     label: "Undo",
                     availability: input,

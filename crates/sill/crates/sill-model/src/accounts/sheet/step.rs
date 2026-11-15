@@ -4,7 +4,7 @@ use porter_core::AccountId;
 use porter_core::consent::{ConsentAnswer, GrantScope};
 use porter_ids::WebUrl;
 use porter_sheet::RowKind;
-use porter_sheet::{FieldKind, FieldSpec, FieldValue, Presence, SheetInput, SheetView};
+use porter_sheet::{FieldKind, FieldSpec, FieldValue, SheetInput, SheetView};
 
 use super::command::{SheetAction, SheetEvent, SheetOut};
 use super::draft::{CopyMark, ListKey, SubmitCount, chosen_among, drafted, fresh, toggled};
@@ -191,7 +191,7 @@ fn submit(specs: &[FieldSpec], draft: Draft) -> (Draft, Option<SheetInput>) {
     let ready = draft
         .fields
         .iter()
-        .all(|field| field.presence == Presence::Optional || !field.is_blank());
+        .all(|field| !field.required || !field.is_blank());
     // Nothing goes while an answer cannot be right either (the same check accountd's machine
     // makes again).
     if !ready || draft.problem(specs).is_some() {

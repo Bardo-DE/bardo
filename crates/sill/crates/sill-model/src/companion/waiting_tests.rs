@@ -6,9 +6,7 @@ use almanac_core::{
     UserText, Validity,
 };
 use ds_core::time::stamp::Stamp;
-use prov::{
-    Actor, AgentLabel, AgentProgram, AppName, EntityId, EntityKey, EntityKind, Label, SystemPart,
-};
+use prov::{Actor, AgentProgram, AppName, EntityId, EntityKey, EntityKind, Label, SystemPart};
 use sill_launcher::Generation;
 
 use super::helpers::HelpersModel;
@@ -60,7 +58,7 @@ fn from_notes() -> SourceView {
 fn agent() -> Actor {
     Actor::Acp {
         program: AgentProgram::parse("claude-code").unwrap_or_else(|e| panic!("{e}")),
-        label: Some(AgentLabel("Claude Code".to_owned())),
+        label: Some("Claude Code".to_owned()),
     }
 }
 

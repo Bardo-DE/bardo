@@ -6,7 +6,6 @@ use ds::prelude::Check;
 use ds_shell::accounts::model::{
     AllowScope, ChoiceKey, ConsentAnswer, FieldRole, FieldText, ProviderPick, ServiceKey,
 };
-use porter_capability::Toggle;
 use porter_core::consent::GrantScope;
 use porter_core::{SecretText, SessionToken};
 use porter_sheet::FieldValue;
@@ -63,13 +62,5 @@ pub(super) fn typed(role: FieldRole, text: FieldText) -> SheetAction {
 
 /// A review switch changed.
 pub(super) fn toggled(key: &ServiceKey, check: Check) -> Option<SheetAction> {
-    service_of(&key.0).map(|kind| {
-        SheetAction::Toggle(
-            kind,
-            match check {
-                Check::On => Toggle::On,
-                Check::Off | Check::Mixed => Toggle::Off,
-            },
-        )
-    })
+    service_of(&key.0).map(|kind| SheetAction::Toggle(kind, matches!(check, Check::On)))
 }

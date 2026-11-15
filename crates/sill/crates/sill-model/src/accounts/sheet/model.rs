@@ -1,7 +1,6 @@
 //! The state types (data only).
 
 use porter_capability::KindToggle;
-use porter_capability::Toggle;
 use porter_core::AccountId;
 use porter_sheet::SheetView;
 
@@ -63,7 +62,7 @@ pub struct Draft {
 
 impl Draft {
     /// The review's switch for `kind`, when the provider offers it.
-    pub fn toggle_of(&self, kind: porter_capability::CapabilityKind) -> Option<Toggle> {
+    pub fn toggle_of(&self, kind: porter_capability::CapabilityKind) -> Option<bool> {
         self.choices
             .iter()
             .find(|choice| choice.kind == kind)

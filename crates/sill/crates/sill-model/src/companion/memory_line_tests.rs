@@ -3,7 +3,7 @@
 use almanac_core::{Count, EntryBody, EventRef, KindTag, ReplicaId, Seq, TimelineEntry, UndoRef};
 use porter_core::ProviderId;
 use porter_sheet::{ProviderKind, ProviderRow, RowKind};
-use prov::{Actor, AgentLabel, AgentProgram, ClientName};
+use prov::{Actor, AgentProgram, ClientName};
 
 use super::{ProgramLabels, memory_line};
 
@@ -29,7 +29,7 @@ fn entry(actor: Actor) -> TimelineEntry {
 fn acp(program: &str, label: Option<&str>) -> Actor {
     Actor::Acp {
         program: AgentProgram::parse(program).unwrap_or_else(|e| panic!("{e}")),
-        label: label.map(|text| AgentLabel(text.to_owned())),
+        label: label.map(str::to_owned),
     }
 }
 

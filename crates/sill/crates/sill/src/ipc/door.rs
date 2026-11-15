@@ -4,13 +4,12 @@
 //! A `latchkey::Listening` unlinks its socket path when it is dropped. After the lock file has
 //! been removed (a cache cleaner ran) a second daemon may have bound that same path, and the
 //! first one's drop would then delete the second one's socket. So a [`Door`] that is dropped
-//! while [`Standing::Displaced`] keeps the `Listening` alive for good: the process is ending, and
+//! while [displaced](Door::displaced) keeps the `Listening` alive for good: the process is ending, and
 //! the descriptors go with it.
 
 use std::io;
 use std::sync::Arc;
 
-use latchkey::lock::Standing;
 use latchkey::{Listening, Stream};
 
 /// A shared handle on the daemon's `Listening`. Cloning shares it.
@@ -29,26 +28,24 @@ impl Door {
         self.0.accept()
     }
 
-    /// Is the lock file still the one this daemon holds?
-    pub fn standing(&self) -> Standing {
-        self.0.standing()
+    /// Is the lock file no longer the one this daemon holds?
+    pub fn displaced(&self) -> bool {
+        self.0.displaced()
     }
 }
 
 impl Drop for Door {
     fn drop(&mut self) {
-        match self.standing() {
-            Standing::Ours => {}
+        if self.displaced() {
             // One count that is never given back: the `Listening` is never dropped, so its drop
             // never unlinks a socket path that now belongs to another daemon.
-            _ => std::mem::forget(Arc::clone(&self.0)),
+            std::mem::forget(Arc::clone(&self.0));
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use latchkey::lock::Standing;
     use sill_testkit::TempDir;
 
     use super::Door;
@@ -77,7 +74,7 @@ mod tests {
             "the socket is there while the door is held"
         );
         std::fs::remove_file(&agent.address().lock).unwrap_or_else(|e| panic!("{e}"));
-        assert_eq!(door.standing(), Standing::Displaced);
+        assert!(door.displaced());
         // Stands for the second daemon having bound the same path: the first must not unlink it.
         drop(door);
         assert!(

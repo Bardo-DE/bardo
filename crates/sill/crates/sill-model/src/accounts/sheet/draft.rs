@@ -2,13 +2,12 @@
 //! what the person is typing into.
 
 use porter_capability::KindToggle;
-use porter_capability::Toggle;
 use porter_core::AccountId;
 use porter_core::ProviderId;
 use porter_core::SecretText;
 use porter_sheet::{
-    Entry, FieldAnswer, FieldKind, FieldProblem, FieldSpec, FieldValue, Presence, ServiceState,
-    SheetView, form_problem, refit,
+    Entry, FieldAnswer, FieldKind, FieldProblem, FieldSpec, FieldValue, ServiceState, SheetView,
+    form_problem, refit,
 };
 
 use super::model::Draft;
@@ -43,8 +42,8 @@ pub struct FieldDraft {
     pub kind: FieldKind,
     /// Shown or hidden.
     pub entry: Entry,
-    /// Required or optional.
-    pub presence: Presence,
+    /// Whether it must have text before the form goes.
+    pub required: bool,
     /// What it holds: the variant follows `entry`.
     pub value: FieldValue,
 }
@@ -64,7 +63,7 @@ impl FieldDraft {
         FieldDraft {
             kind: spec.kind,
             entry: spec.entry,
-            presence: spec.presence,
+            required: spec.required,
             value,
         }
     }
@@ -202,7 +201,7 @@ pub(super) fn chosen_among(draft: &Draft, accounts: &[AccountId]) -> Option<Acco
 pub(super) fn toggled(
     choices: &[KindToggle],
     kind: porter_capability::CapabilityKind,
-    toggle: Toggle,
+    toggle: bool,
 ) -> Vec<KindToggle> {
     choices
         .iter()

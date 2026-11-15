@@ -9,7 +9,7 @@ use ds_shell::accounts::model::{
     ProviderPick, Requirement, ServiceKey, ServiceLine, ServiceOffer, SignInFault,
 };
 use ds_shell::prelude::{Recovery, WorkingFor};
-use porter_capability::{AbsentReason, CapabilityKind, Toggle};
+use porter_capability::{AbsentReason, CapabilityKind};
 use porter_core::consent::{AccountChoice as AskChoice, ConsentAsk, GrantScope, Usage};
 use porter_core::{
     AccountId, AccountLabel, AppId, AppName, DataClass, EndpointUrl, Isolation, LimitReason,
@@ -189,14 +189,10 @@ fn every_sheet_view_becomes_the_props_of_its_part() {
         review: Review {
             label: AccountLabel("ada@work.example".to_owned()),
             services: vec![
-                row(
-                    CapabilityKind::Mail,
-                    ServiceState::Offered(Toggle::On),
-                    None,
-                ),
+                row(CapabilityKind::Mail, ServiceState::Offered(true), None),
                 row(
                     CapabilityKind::Storage,
-                    ServiceState::Offered(Toggle::Off),
+                    ServiceState::Offered(false),
                     Some(LimitReason::AppFolderOnly),
                 ),
                 row(
@@ -472,7 +468,7 @@ fn a_review_switch_shows_what_the_person_chose() {
             label: AccountLabel("ada".to_owned()),
             services: vec![row(
                 CapabilityKind::Calendar,
-                ServiceState::Offered(Toggle::On),
+                ServiceState::Offered(true),
                 None,
             )],
             endpoints: Vec::new(),
@@ -481,7 +477,7 @@ fn a_review_switch_shows_what_the_person_chose() {
     });
     let Some(Step::Review(props)) = shown(
         review,
-        vec![SheetAction::Toggle(CapabilityKind::Calendar, Toggle::Off)],
+        vec![SheetAction::Toggle(CapabilityKind::Calendar, false)],
     ) else {
         panic!("no review");
     };
@@ -599,7 +595,7 @@ fn events_become_what_the_person_did() {
     );
     assert_eq!(
         events::toggled(&ServiceKey("calendar".to_owned()), Check::On),
-        Some(SheetAction::Toggle(CapabilityKind::Calendar, Toggle::On))
+        Some(SheetAction::Toggle(CapabilityKind::Calendar, true))
     );
     assert_eq!(
         events::toggled(&ServiceKey("nothing".to_owned()), Check::On),

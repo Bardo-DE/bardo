@@ -1,7 +1,6 @@
 //! What the sheet can be told, what can happen to it, and what the shell must then do.
 
 use porter_capability::CapabilityKind;
-use porter_capability::Toggle;
 use porter_core::AccountId;
 use porter_core::consent::GrantScope;
 use porter_ids::WebUrl;
@@ -35,7 +34,7 @@ pub enum SheetAction {
     /// "Open Again" on the browser step.
     OpenAgain,
     /// A review switch was flipped.
-    Toggle(CapabilityKind, Toggle),
+    Toggle(CapabilityKind, bool),
     /// The review's last button.
     Confirm,
     /// One step back.

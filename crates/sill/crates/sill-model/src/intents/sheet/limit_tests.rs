@@ -4,7 +4,7 @@
 use docket_core::{
     ConfirmAnswer, ConfirmEnd, ConfirmOffer, ConfirmRequest, NeverOffer, SheetLimits,
 };
-use docket_permissions_core::{LimitLevel, LimitNote, StandingGrantId, UndoOffer};
+use docket_permissions_core::{LimitLevel, LimitNote, StandingGrantId};
 use prov::{Confidentiality, ConfirmReceipt, InputProof, UnixSeconds};
 
 use super::{
@@ -18,7 +18,7 @@ fn entry(hex: &str) -> StandingGrantId {
     StandingGrantId::parse(&format!("sg-{hex}")).unwrap_or_else(|e| panic!("{hex}: {e}"))
 }
 
-fn note(hex: &str, undo: UndoOffer) -> LimitNote {
+fn note(hex: &str, undo: bool) -> LimitNote {
     LimitNote {
         id: entry(hex),
         level: LimitLevel::AlwaysAsk,
@@ -103,12 +103,12 @@ fn the_view_says_whether_never_is_offered_and_which_limit_held() {
         (
             "a held limit",
             NeverOffer::Offered,
-            Some(note("00000000000000a1", UndoOffer::Offered)),
+            Some(note("00000000000000a1", true)),
         ),
         (
             "an administrator's limit",
             NeverOffer::Withheld,
-            Some(note("00000000000000a2", UndoOffer::Withheld)),
+            Some(note("00000000000000a2", false)),
         ),
     ];
     for (name, never, held) in cases {
@@ -131,12 +131,12 @@ fn undoing_a_limit_takes_it_off_every_question_that_named_it_and_nothing_else() 
         limited(
             "c-1",
             NeverOffer::Offered,
-            Some(note("00000000000000b1", UndoOffer::Offered)),
+            Some(note("00000000000000b1", true)),
         ),
         limited(
             "c-2",
             NeverOffer::Offered,
-            Some(note("00000000000000b2", UndoOffer::Offered)),
+            Some(note("00000000000000b2", true)),
         ),
         limited("c-3", NeverOffer::Offered, None),
     ]);
