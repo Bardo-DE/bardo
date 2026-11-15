@@ -122,10 +122,24 @@ fn holo_under_vllm_is_the_pinned_unit() {
     );
 }
 
+/// One engine's unit: its program, its argv pinned, and what it asks of the machine.
+struct Pinned {
+    what: &'static str,
+    entry: ModelEntry,
+    profile: EngineProfile,
+    socket: &'static str,
+    program: &'static str,
+    args: Vec<String>,
+    gpu: Option<GpuAccess>,
+    memory_max: Option<MiB>,
+}
+
 #[test]
-fn llama_server_gets_the_gguf_files_and_the_socket_as_its_host() {
+fn each_engine_gets_its_program_and_its_pinned_argv() {
     let holo = entry(HOLO);
-    let profile = EngineProfile {
+    let nemotron = entry(NEMOTRON);
+    let kokoro = entry(KOKORO);
+    let llama_profile = EngineProfile {
         kind: EngineKind::LlamaServer,
         context_arg: None,
         inputs: None,
@@ -141,93 +155,7 @@ fn llama_server_gets_the_gguf_files_and_the_socket_as_its_host() {
             mmproj: Some(FileName("mmproj-f16.gguf".into())),
         },
     };
-    let unit = command(&holo, &profile, &paths(), &socket("llama-holo"));
-    assert_eq!(
-        unit.program,
-        ProgramPath(PathBuf::from("/opt/llama/bin/llama-server"))
-    );
-    assert_eq!(
-        args(&unit),
-        [
-            "--model",
-            &format!("{HOLO_DIR}/holo-q4_k_m.gguf"),
-            "--mmproj",
-            &format!("{HOLO_DIR}/mmproj-f16.gguf"),
-            "--alias",
-            "holo-3.1-4b",
-            "--host",
-            "/run/user/1000/inferd/llama-holo.sock",
-            "--jinja",
-            "--ctx-size",
-            "32768",
-            "--special",
-        ]
-    );
-    assert_eq!(unit.sandbox.gpu, GpuAccess::Nvidia);
-}
-
-#[test]
-fn the_speech_host_runs_on_the_cpu_with_the_weights_directory_and_the_socket() {
-    let nemotron = entry(NEMOTRON);
-    let unit = command(
-        &nemotron,
-        &nemotron.engines[0],
-        &paths(),
-        &socket("speech-in"),
-    );
-    assert_eq!(
-        unit.program,
-        ProgramPath(PathBuf::from("/opt/stoker/bin/speech-host"))
-    );
-    assert_eq!(
-        args(&unit),
-        [
-            "--model-dir",
-            "/data/hf/hub/models--csukuangfj2--sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11/snapshots/ab43d895f5985b1bbab8b6eac8607fcdc05343f3",
-            "--socket",
-            "/run/user/1000/inferd/speech-in.sock",
-            "--threads",
-            "6",
-            "--chunk-ms",
-            "560",
-        ]
-    );
-    assert_eq!(
-        unit.sandbox.gpu,
-        GpuAccess::Absent,
-        "an all-zero estimate means no GPU"
-    );
-    assert_eq!(
-        unit.sandbox.memory_max,
-        MiB(4096),
-        "a CPU entry still has a host-memory cap"
-    );
-}
-
-#[test]
-fn kokoro_runs_uvicorn_in_its_own_environment_on_the_socket() {
-    let kokoro = entry(KOKORO);
-    let unit = command(&kokoro, &kokoro.engines[0], &paths(), &socket("kokoro"));
-    assert_eq!(
-        unit.program,
-        ProgramPath(PathBuf::from("/opt/kokoro/bin/python"))
-    );
-    assert_eq!(
-        args(&unit),
-        [
-            "-m",
-            "uvicorn",
-            "api.src.main:app",
-            "--uds",
-            "/run/user/1000/inferd/kokoro.sock",
-        ]
-    );
-    assert_eq!(unit.sandbox.gpu, GpuAccess::Absent);
-}
-
-#[test]
-fn strata_runs_its_own_python_with_the_profile_args_only() {
-    let profile = EngineProfile {
+    let strata_profile = EngineProfile {
         kind: EngineKind::Strata,
         context_arg: None,
         inputs: None,
@@ -238,18 +166,94 @@ fn strata_runs_its_own_python_with_the_profile_args_only() {
         ],
         weights: WeightFiles::HfSnapshot,
     };
-    let unit = command(&entry(HOLO), &profile, &paths(), &socket("strata"));
-    assert_eq!(
-        unit.program,
-        ProgramPath(PathBuf::from("/opt/strata/.venv/bin/python"))
-    );
-    assert_eq!(
-        args(&unit),
-        [
-            "serve/server.py",
-            "--socket=/run/user/1000/inferd/strata.sock"
-        ]
-    );
+    let strings = |list: &[&str]| list.iter().map(|a| (*a).to_owned()).collect::<Vec<_>>();
+    let rows = [
+        Pinned {
+            what: "llama-server gets the gguf files and the socket as its host",
+            entry: holo.clone(),
+            profile: llama_profile,
+            socket: "llama-holo",
+            program: "/opt/llama/bin/llama-server",
+            args: vec![
+                "--model".into(),
+                format!("{HOLO_DIR}/holo-q4_k_m.gguf"),
+                "--mmproj".into(),
+                format!("{HOLO_DIR}/mmproj-f16.gguf"),
+                "--alias".into(),
+                "holo-3.1-4b".into(),
+                "--host".into(),
+                "/run/user/1000/inferd/llama-holo.sock".into(),
+                "--jinja".into(),
+                "--ctx-size".into(),
+                "32768".into(),
+                "--special".into(),
+            ],
+            gpu: Some(GpuAccess::Nvidia),
+            memory_max: None,
+        },
+        Pinned {
+            what: "the speech host runs on the cpu with the weights directory and the socket",
+            profile: nemotron.engines[0].clone(),
+            entry: nemotron,
+            socket: "speech-in",
+            program: "/opt/stoker/bin/speech-host",
+            args: strings(&[
+                "--model-dir",
+                "/data/hf/hub/models--csukuangfj2--sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11/snapshots/ab43d895f5985b1bbab8b6eac8607fcdc05343f3",
+                "--socket",
+                "/run/user/1000/inferd/speech-in.sock",
+                "--threads",
+                "6",
+                "--chunk-ms",
+                "560",
+            ]),
+            // An all-zero estimate means no GPU, and a CPU entry still has a host-memory cap.
+            gpu: Some(GpuAccess::Absent),
+            memory_max: Some(MiB(4096)),
+        },
+        Pinned {
+            what: "kokoro runs uvicorn in its own environment on the socket",
+            profile: kokoro.engines[0].clone(),
+            entry: kokoro,
+            socket: "kokoro",
+            program: "/opt/kokoro/bin/python",
+            args: strings(&[
+                "-m",
+                "uvicorn",
+                "api.src.main:app",
+                "--uds",
+                "/run/user/1000/inferd/kokoro.sock",
+            ]),
+            gpu: Some(GpuAccess::Absent),
+            memory_max: None,
+        },
+        Pinned {
+            what: "strata runs its own python with the profile args only",
+            entry: holo,
+            profile: strata_profile,
+            socket: "strata",
+            program: "/opt/strata/.venv/bin/python",
+            args: strings(&["serve/server.py", "--socket=/run/user/1000/inferd/strata.sock"]),
+            gpu: None,
+            memory_max: None,
+        },
+    ];
+    for row in rows {
+        let unit = command(&row.entry, &row.profile, &paths(), &socket(row.socket));
+        assert_eq!(
+            unit.program,
+            ProgramPath(PathBuf::from(row.program)),
+            "{}",
+            row.what
+        );
+        assert_eq!(args(&unit), row.args, "{}", row.what);
+        if let Some(gpu) = row.gpu {
+            assert_eq!(unit.sandbox.gpu, gpu, "{}", row.what);
+        }
+        if let Some(memory) = row.memory_max {
+            assert_eq!(unit.sandbox.memory_max, memory, "{}", row.what);
+        }
+    }
 }
 
 #[test]

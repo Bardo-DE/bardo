@@ -58,38 +58,50 @@ fn a_thought_part_carries_its_seal_and_redacts() {
 }
 
 #[test]
-fn open_options_reserve_the_traceparent() {
+fn open_options_pin_their_json_and_refuse_what_is_not_one() {
+    use porter_core::consent::Usage;
+    use porter_infer::{Asker, ModelRef};
     let parent =
         Traceparent::parse("00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01").expect("ok");
-    pinned(
-        &OpenOptions::default().with_traceparent(parent),
-        r#"{"traceparent":"00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"}"#,
-    );
-    pinned(&OpenOptions::default(), r#"{"traceparent":null}"#);
-    assert!(serde_json::from_str::<OpenOptions>(r#"{"traceparent":"nope"}"#).is_err());
-}
-
-#[test]
-fn open_options_carry_the_asker_and_the_sessions_own_model() {
-    use porter_infer::{Asker, ModelRef};
     let helper = porter_core::HelperId::parse("h-1").expect("helper");
     let model = ModelRef::parse("this-computer/qwen3-4b").expect("model");
-    pinned(
-        &OpenOptions::default()
-            .with_asker(Asker::Helper(helper.clone()))
-            .with_model(model.clone()),
-        r#"{"traceparent":null,"asker":{"helper":"h-1"},"model":{"account":"this-computer","model":"qwen3-4b"}}"#,
-    );
-    pinned(
-        &OpenOptions::default().with_asker(Asker::Person),
-        r#"{"traceparent":null,"asker":"person"}"#,
-    );
-    // Absent reads as the person; an older writer's JSON still reads.
-    let old: OpenOptions = serde_json::from_str(r#"{"traceparent":null}"#).expect("old");
+    let rows = [
+        (
+            OpenOptions::default().with_traceparent(parent),
+            r#"{"traceparent":"00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"}"#,
+        ),
+        (OpenOptions::default(), r#"{"traceparent":null}"#),
+        (
+            OpenOptions::default()
+                .with_asker(Asker::Helper(helper.clone()))
+                .with_model(model.clone()),
+            r#"{"traceparent":null,"asker":{"helper":"h-1"},"model":{"account":"this-computer","model":"qwen3-4b"}}"#,
+        ),
+        (
+            OpenOptions::default().with_asker(Asker::Person),
+            r#"{"traceparent":null,"asker":"person"}"#,
+        ),
+        (
+            OpenOptions::default().with_usage(Usage::Background),
+            r#"{"traceparent":null,"usage":"background"}"#,
+        ),
+        (
+            OpenOptions::default().with_usage(Usage::Interactive),
+            r#"{"traceparent":null,"usage":"interactive"}"#,
+        ),
+    ];
+    for (options, json) in rows {
+        pinned(&options, json);
+    }
+    // Nothing set reads as the person, interactive.
+    let plain = OpenOptions::default();
     assert_eq!(
-        (old.asker_or_default(), old.model.clone()),
-        (Asker::Person, None)
+        (plain.asker_or_default(), plain.usage_or_default(), plain.model.clone()),
+        (Asker::Person, Usage::Interactive, None)
     );
+    for refused in [r#"{"traceparent":"nope"}"#, r#"{"usage":"batch"}"#] {
+        assert!(serde_json::from_str::<OpenOptions>(refused).is_err(), "{refused}");
+    }
     // The bus's text form round-trips and refuses what is not one.
     for asker in [Asker::Person, Asker::Helper(helper)] {
         assert_eq!(Asker::from_text(&asker.to_text()), Some(asker));
@@ -98,24 +110,4 @@ fn open_options_carry_the_asker_and_the_sessions_own_model() {
     assert_eq!(Asker::from_text("someone"), None);
     assert_eq!(ModelRef::parse(&model.to_string()), Some(model));
     assert_eq!(ModelRef::parse("no-slash"), None);
-}
-
-#[test]
-fn open_options_carry_the_usage_as_its_slug() {
-    use porter_core::consent::Usage;
-    pinned(
-        &OpenOptions::default().with_usage(Usage::Background),
-        r#"{"traceparent":null,"usage":"background"}"#,
-    );
-    pinned(
-        &OpenOptions::default().with_usage(Usage::Interactive),
-        r#"{"traceparent":null,"usage":"interactive"}"#,
-    );
-    // Absent is `None` and reads as Interactive; an older writer's JSON still reads.
-    let old: OpenOptions = serde_json::from_str(r#"{"traceparent":null}"#).expect("old");
-    assert_eq!(
-        (old.usage, old.usage_or_default()),
-        (None, Usage::Interactive)
-    );
-    assert!(serde_json::from_str::<OpenOptions>(r#"{"usage":"batch"}"#).is_err());
 }

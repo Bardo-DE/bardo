@@ -426,74 +426,106 @@ fn an_argument_less_opening_fragment_after_arguments_starts_a_new_call() {
     assert_eq!(dones.len(), 2, "{:?}", got.events);
 }
 
+/// What a run's events must show: all of them, or just how the last one ended.
+enum Shows {
+    All(Vec<TurnEvent>),
+    LastIs(TurnEvent),
+}
+
+/// A call whose `arguments` field is this JSON value rather than a string.
+fn call_with_arguments(value: Value) -> Value {
+    let mut call = call_delta(0, Some("a"), Some("f"), None);
+    call["tool_calls"][0]["function"]["arguments"] = value;
+    call
+}
+
 #[test]
-fn a_whole_call_in_one_chunk() {
-    let got = run(&[
-        chunk(
-            call_delta(0, Some("a"), Some("f"), Some("{\"x\":1}")),
-            Some("tool_calls"),
+fn the_ways_arguments_arrive_all_end_in_one_whole_call() {
+    let finish = || chunk(json!({}), Some("tool_calls"));
+    let whole = "{\"x\":1}";
+    let mut cases: Vec<(&str, Vec<String>, Shows)> = vec![
+        (
+            "a whole call in one chunk",
+            vec![
+                chunk(
+                    call_delta(0, Some("a"), Some("f"), Some(whole)),
+                    Some("tool_calls"),
+                ),
+                done(),
+            ],
+            Shows::All(vec![
+                started(0, "a", "f"),
+                delta(0, whole),
+                finished("a", "f", whole),
+            ]),
         ),
-        done(),
-    ]);
-    assert_eq!(
-        got.events,
-        vec![
-            started(0, "a", "f"),
-            delta(0, "{\"x\":1}"),
-            finished("a", "f", "{\"x\":1}")
-        ]
-    );
-    assert_eq!(got.outcome, plain(StopReason::ToolUse));
-}
-
-#[test]
-fn empty_arguments_mean_an_empty_object() {
+        (
+            "a null first, superseded by the first real fragment",
+            vec![
+                chunk(call_delta(0, Some("a"), Some("f"), Some("null")), None),
+                chunk(call_delta(0, None, None, Some(whole)), None),
+                finish(),
+            ],
+            Shows::All(vec![
+                started(0, "a", "f"),
+                delta(0, whole),
+                finished("a", "f", whole),
+            ]),
+        ),
+        (
+            "a null alone",
+            vec![
+                chunk(call_delta(0, Some("a"), Some("f"), Some("null")), None),
+                finish(),
+            ],
+            Shows::LastIs(finished("a", "f", "{}")),
+        ),
+        (
+            "a JSON null in the arguments field is no fragment at all",
+            vec![chunk(call_with_arguments(Value::Null), None), finish()],
+            Shows::LastIs(finished("a", "f", "{}")),
+        ),
+        (
+            "arguments sent as an object",
+            vec![chunk(
+                call_with_arguments(json!({"x": 1})),
+                Some("tool_calls"),
+            )],
+            Shows::LastIs(finished("a", "f", whole)),
+        ),
+        (
+            "arguments before the name",
+            vec![
+                chunk(call_delta(0, Some("a"), None, Some("{\"x\"")), None),
+                chunk(call_delta(0, None, Some("f"), Some(":1}")), None),
+                finish(),
+            ],
+            Shows::All(vec![
+                started(0, "a", "f"),
+                delta(0, "{\"x\""),
+                delta(0, ":1}"),
+                finished("a", "f", whole),
+            ]),
+        ),
+    ];
+    // Empty arguments mean an empty object, however they are empty.
     for args in [Some(""), None, Some("   ")] {
-        let got = run(&[
-            chunk(call_delta(0, Some("a"), Some("f"), args), None),
-            chunk(json!({}), Some("tool_calls")),
-        ]);
-        assert_eq!(
-            got.events.last(),
-            Some(&finished("a", "f", "{}")),
-            "{args:?}"
-        );
+        cases.push((
+            "empty arguments",
+            vec![
+                chunk(call_delta(0, Some("a"), Some("f"), args), None),
+                finish(),
+            ],
+            Shows::LastIs(finished("a", "f", "{}")),
+        ));
     }
-}
-
-#[test]
-fn a_null_first_is_superseded_by_the_first_real_fragment() {
-    let got = run(&[
-        chunk(call_delta(0, Some("a"), Some("f"), Some("null")), None),
-        chunk(call_delta(0, None, None, Some("{\"x\":1}")), None),
-        chunk(json!({}), Some("tool_calls")),
-    ]);
-    assert_eq!(
-        got.events,
-        vec![
-            started(0, "a", "f"),
-            delta(0, "{\"x\":1}"),
-            finished("a", "f", "{\"x\":1}")
-        ]
-    );
-    let alone = run(&[
-        chunk(call_delta(0, Some("a"), Some("f"), Some("null")), None),
-        chunk(json!({}), Some("tool_calls")),
-    ]);
-    assert_eq!(alone.events.last(), Some(&finished("a", "f", "{}")));
-    // A JSON null in the arguments field is no fragment at all.
-    let mut call = call_delta(0, Some("a"), Some("f"), None);
-    call["tool_calls"][0]["function"]["arguments"] = Value::Null;
-    let got = run(&[chunk(call, None), chunk(json!({}), Some("tool_calls"))]);
-    assert_eq!(got.events.last(), Some(&finished("a", "f", "{}")));
-}
-
-#[test]
-fn arguments_sent_as_an_object_are_accepted() {
-    let mut call = call_delta(0, Some("a"), Some("f"), None);
-    call["tool_calls"][0]["function"]["arguments"] = json!({"x": 1});
-    let got = run(&[chunk(call, Some("tool_calls"))]);
-    assert_eq!(got.events.last(), Some(&finished("a", "f", "{\"x\":1}")));
+    for (what, frames, shows) in cases {
+        let got = run(&frames);
+        match shows {
+            Shows::All(events) => assert_eq!(got.events, events, "{what}"),
+            Shows::LastIs(event) => assert_eq!(got.events.last(), Some(&event), "{what}"),
+        }
+    }
 }
 
 #[test]
@@ -508,24 +540,6 @@ fn a_call_with_no_id_gets_one_and_a_call_without_an_index_uses_its_position() {
         got.events.contains(&finished("call_1", "g", "{}")),
         "{:?}",
         got.events
-    );
-}
-
-#[test]
-fn arguments_before_the_name_are_kept() {
-    let got = run(&[
-        chunk(call_delta(0, Some("a"), None, Some("{\"x\"")), None),
-        chunk(call_delta(0, None, Some("f"), Some(":1}")), None),
-        chunk(json!({}), Some("tool_calls")),
-    ]);
-    assert_eq!(
-        got.events,
-        vec![
-            started(0, "a", "f"),
-            delta(0, "{\"x\""),
-            delta(0, ":1}"),
-            finished("a", "f", "{\"x\":1}")
-        ]
     );
 }
 

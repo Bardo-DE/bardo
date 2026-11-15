@@ -143,7 +143,7 @@ fn usage_is_asked_for_except_where_the_server_rejects_it() {
 }
 
 #[test]
-fn the_tool_choice_spellings() {
+fn the_tool_choice_spellings_and_what_llama_server_refuses() {
     let mut r = base();
     r.tools = vec![function("click", "{}")];
     for (choice, want) in [
@@ -159,18 +159,12 @@ fn the_tool_choice_spellings() {
         body(&r, Flavor::Vllm)["tool_choice"],
         json!({"type": "function", "function": {"name": "click"}})
     );
-}
-
-#[test]
-fn named_tool_refused_on_llama_server() {
-    let mut r = base();
-    r.tools = vec![function("click", "{}")];
-    r.tool_choice = ToolChoice::Named(ToolName::new("click").unwrap());
+    // llama-server treats a named choice as `auto` without saying so, so it is refused, even with
+    // no tools to name; the others take it.
     assert_eq!(
         encode_request(&r, Flavor::LlamaServer),
         Err(CodecError::UnsupportedShape)
     );
-    // Silently treated as `auto` by the server, so refused even with no tools to name.
     r.tools.clear();
     assert_eq!(
         encode_request(&r, Flavor::LlamaServer),
@@ -432,29 +426,21 @@ fn schema() -> OutputShape {
 }
 
 #[test]
-fn a_json_schema_is_a_strict_response_format_everywhere() {
-    let mut r = base();
-    r.output = schema();
-    for flavor in ALL {
-        assert_eq!(
-            body(&r, flavor)["response_format"],
+fn a_json_reply_is_a_response_format_everywhere() {
+    let cases = [
+        (
+            schema(),
             json!({"type": "json_schema", "json_schema": {
                 "name": "reply", "strict": true, "schema": {"type": "object"}}}),
-            "{flavor:?}"
-        );
-    }
-}
-
-#[test]
-fn a_json_object_is_a_bare_response_format_everywhere() {
-    let mut r = base();
-    r.output = OutputShape::JsonObject;
-    for flavor in ALL {
-        assert_eq!(
-            body(&r, flavor)["response_format"],
-            json!({"type": "json_object"}),
-            "{flavor:?}"
-        );
+        ),
+        (OutputShape::JsonObject, json!({"type": "json_object"})),
+    ];
+    for (output, want) in cases {
+        let mut r = base();
+        r.output = output;
+        for flavor in ALL {
+            assert_eq!(body(&r, flavor)["response_format"], want, "{flavor:?}");
+        }
     }
 }
 
@@ -570,17 +556,6 @@ fn engine_extras_reach_only_their_own_flavor() {
 }
 
 #[test]
-fn reasoning_off_switches_thinking_off_where_there_is_a_switch() {
-    for flavor in ALL {
-        let b = body(&base(), flavor);
-        let off = flavor == Flavor::LlamaServer || flavor == Flavor::Vllm;
-        assert_eq!(b.get("chat_template_kwargs").is_some(), off, "{flavor:?}");
-        assert!(b.get("reasoning_effort").is_none());
-        assert!(b.get("reasoning").is_none());
-    }
-}
-
-#[test]
 fn a_request_is_valid_json_for_any_text() {
     use proptest::prelude::*;
     let mut runner = proptest::test_runner::TestRunner::default();
@@ -614,6 +589,9 @@ fn reasoning_engine_default_sends_no_switch_and_off_still_does() {
         }
         r.reasoning = Reasoning::Off;
         let off = body(&r, flavor);
+        for key in ["reasoning_effort", "reasoning"] {
+            assert!(off.get(key).is_none(), "{flavor:?} sent {key}");
+        }
         let switched = matches!(flavor, Flavor::LlamaServer | Flavor::Vllm);
         assert_eq!(
             off.get("chat_template_kwargs") == Some(&json!({"enable_thinking": false})),

@@ -101,27 +101,32 @@ fn qwen_click_family() {
         count,
         mods: BTreeSet::new(),
     };
-    let cases = [
+    let mut accepted = vec![
+        (
+            r#"{"action":"mouse_move","coordinate":[1,2]}"#.to_owned(),
+            CuaAction::MoveTo { at: at(1, 2) },
+        ),
+        // Integral floats are numbers.
+        (
+            r#"{"action":"left_click","coordinate":[7.0,9]}"#.to_owned(),
+            left_click(at(7, 9)),
+        ),
+    ];
+    for (action, button, count) in [
         ("right_click", Button::Right, ClickCount::One),
         ("middle_click", Button::Middle, ClickCount::One),
         ("double_click", Button::Left, ClickCount::Two),
         ("triple_click", Button::Left, ClickCount::Three),
-    ];
-    for (action, button, count) in cases {
-        let p = qwen(&format!(r#"{{"action":"{action}","coordinate":[7,9]}}"#));
-        assert_eq!(
-            image_actions(&p),
-            [click(at(7, 9), button, count)],
-            "{action}"
-        );
+    ] {
+        accepted.push((
+            format!(r#"{{"action":"{action}","coordinate":[7,9]}}"#),
+            click(at(7, 9), button, count),
+        ));
     }
-    let p = qwen(r#"{"action":"mouse_move","coordinate":[1,2]}"#);
-    assert_eq!(image_actions(&p), [CuaAction::MoveTo { at: at(1, 2) }]);
-    // Integral floats are numbers; fractions are not.
-    assert_eq!(
-        image_actions(&qwen(r#"{"action":"left_click","coordinate":[7.0,9]}"#)).len(),
-        1
-    );
+    for (args, want) in accepted {
+        assert_eq!(image_actions(&qwen(&args)), [want], "{args}");
+    }
+    // Fractions are not numbers.
     let p = qwen(r#"{"action":"left_click","coordinate":[7.5,9]}"#);
     assert_eq!(drops(&p), [("left_click", DropReason::BadNumber)]);
 }
@@ -147,75 +152,90 @@ fn the_sign_of_a_scroll_is_what_the_models_are_told() {
 
 #[test]
 fn qwen_drag_scroll_wait_and_conclusions() {
-    let p = qwen(r#"{"action":"left_click_drag","start_coordinate":[1,2],"coordinate":[30,40]}"#);
-    assert_eq!(
-        image_actions(&p),
-        [CuaAction::Drag {
-            from: at(1, 2),
-            to: at(30, 40),
-            button: Button::Left
-        }]
-    );
-    let p = qwen(r#"{"action":"left_click_drag","coordinate":[30,40]}"#);
-    assert_eq!(
-        drops(&p),
-        [("left_click_drag", DropReason::MissingArgument)]
-    );
-
-    let scroll = |args: &str| image_actions(&qwen(args))[0].clone();
     let by = |dir, px| CuaAction::Scroll {
         at: at(5, 5),
         dir,
         by: ScrollBy::Distance(Length::new(Coord(px))),
     };
-    assert_eq!(
-        scroll(r#"{"action":"scroll","coordinate":[5,5],"pixels":120}"#),
-        by(ScrollDir::Up, 120)
-    );
-    assert_eq!(
-        scroll(r#"{"action":"scroll","coordinate":[5,5],"pixels":-120}"#),
-        by(ScrollDir::Down, 120)
-    );
-    assert_eq!(
-        scroll(r#"{"action":"hscroll","coordinate":[5,5],"pixels":50}"#),
-        by(ScrollDir::Right, 50)
-    );
-    assert_eq!(
-        scroll(r#"{"action":"hscroll","coordinate":[5,5],"pixels":-50}"#),
-        by(ScrollDir::Left, 50)
-    );
-    let zero = qwen(r#"{"action":"scroll","coordinate":[5,5],"pixels":0}"#);
-    assert_eq!(drops(&zero), [("scroll", DropReason::BadNumber)]);
-    // Qwen's schema makes the coordinate optional: the scroll acts at the centre of the frame.
-    let nowhere = qwen(r#"{"action":"scroll","pixels":10}"#);
-    assert_eq!(
-        image_actions(&nowhere),
-        [CuaAction::Scroll {
-            at: Target::Centre,
-            dir: ScrollDir::Up,
-            by: ScrollBy::Distance(Length::new(Coord(10))),
-        }]
-    );
-    let half = qwen(r#"{"action":"scroll","coordinate":[1],"pixels":10}"#);
-    assert_eq!(drops(&half), [("scroll", DropReason::BadNumber)]);
-    let half = qwen(r#"{"action":"scroll","x":1,"pixels":10}"#);
-    assert_eq!(drops(&half), [("scroll", DropReason::MissingArgument)]);
-
-    let wait = |s: &str| qwen(&format!(r#"{{"action":"wait","time":{s}}}"#));
-    assert_eq!(
-        image_actions(&wait("1.5")),
-        [CuaAction::Wait {
-            for_ms: WaitMs::new(1500).unwrap()
-        }]
-    );
-    assert_eq!(image_actions(&wait("60")).len(), 1);
-    for bad in ["61", "-1", "1e400"] {
-        let p = if bad == "1e400" {
-            qwen(r#"{"action":"wait","time":"1e400"}"#)
-        } else {
-            wait(bad)
-        };
-        assert_eq!(drops(&p), [("wait", DropReason::BadNumber)], "{bad}");
+    let wait = |ms| CuaAction::Wait {
+        for_ms: WaitMs::new(ms).unwrap(),
+    };
+    let accepted = [
+        (
+            r#"{"action":"left_click_drag","start_coordinate":[1,2],"coordinate":[30,40]}"#,
+            CuaAction::Drag {
+                from: at(1, 2),
+                to: at(30, 40),
+                button: Button::Left,
+            },
+        ),
+        (
+            r#"{"action":"scroll","coordinate":[5,5],"pixels":120}"#,
+            by(ScrollDir::Up, 120),
+        ),
+        (
+            r#"{"action":"scroll","coordinate":[5,5],"pixels":-120}"#,
+            by(ScrollDir::Down, 120),
+        ),
+        (
+            r#"{"action":"hscroll","coordinate":[5,5],"pixels":50}"#,
+            by(ScrollDir::Right, 50),
+        ),
+        (
+            r#"{"action":"hscroll","coordinate":[5,5],"pixels":-50}"#,
+            by(ScrollDir::Left, 50),
+        ),
+        // Qwen's schema makes the coordinate optional: the scroll acts at the centre of the frame.
+        (
+            r#"{"action":"scroll","pixels":10}"#,
+            CuaAction::Scroll {
+                at: Target::Centre,
+                dir: ScrollDir::Up,
+                by: ScrollBy::Distance(Length::new(Coord(10))),
+            },
+        ),
+        (r#"{"action":"wait","time":1.5}"#, wait(1500)),
+        (r#"{"action":"wait","time":60}"#, wait(60_000)),
+    ];
+    for (args, want) in accepted {
+        assert_eq!(image_actions(&qwen(args)), [want], "{args}");
+    }
+    let dropped = [
+        (
+            r#"{"action":"left_click_drag","coordinate":[30,40]}"#,
+            "left_click_drag",
+            DropReason::MissingArgument,
+        ),
+        (
+            r#"{"action":"scroll","coordinate":[5,5],"pixels":0}"#,
+            "scroll",
+            DropReason::BadNumber,
+        ),
+        (
+            r#"{"action":"scroll","coordinate":[1],"pixels":10}"#,
+            "scroll",
+            DropReason::BadNumber,
+        ),
+        (
+            r#"{"action":"scroll","x":1,"pixels":10}"#,
+            "scroll",
+            DropReason::MissingArgument,
+        ),
+        (r#"{"action":"wait","time":61}"#, "wait", DropReason::BadNumber),
+        (r#"{"action":"wait","time":-1}"#, "wait", DropReason::BadNumber),
+        (
+            r#"{"action":"wait","time":"1e400"}"#,
+            "wait",
+            DropReason::BadNumber,
+        ),
+        (
+            r#"{"action":"terminate","status":"maybe"}"#,
+            "terminate",
+            DropReason::BadArgument,
+        ),
+    ];
+    for (args, verb, reason) in dropped {
+        assert_eq!(drops(&qwen(args)), [(verb, reason)], "{args}");
     }
 
     let failed = qwen(r#"{"action":"terminate","status":"failure"}"#);
@@ -231,8 +251,6 @@ fn qwen_drag_scroll_wait_and_conclusions() {
         panic!()
     };
     assert_eq!((*outcome, summary.as_str()), (FinishOutcome::Done, "42"));
-    let bad = qwen(r#"{"action":"terminate","status":"maybe"}"#);
-    assert_eq!(drops(&bad), [("terminate", DropReason::BadArgument)]);
 }
 
 #[test]
@@ -318,41 +336,38 @@ fn unknown_verbs_and_shapes_are_dropped_not_guessed() {
 
 #[test]
 fn holo_schema_variants() {
-    assert_eq!(
-        image_actions(&holo("click", r#"{"x":5,"y":6}"#)),
-        [left_click(at(5, 6))]
-    );
-    assert_eq!(
-        image_actions(&holo("click", r#"{"coordinate":[5,6]}"#)),
-        [left_click(at(5, 6))]
-    );
-    // The Qwen function works under Holo too.
-    assert_eq!(
-        image_actions(&holo(
+    let accepted = [
+        ("click", r#"{"x":5,"y":6}"#, left_click(at(5, 6))),
+        ("click", r#"{"coordinate":[5,6]}"#, left_click(at(5, 6))),
+        // The Qwen function works under Holo too.
+        (
             "computer_use",
-            r#"{"action":"left_click","coordinate":[5,6]}"#
-        )),
-        [left_click(at(5, 6))]
-    );
-    let p = holo("drag", r#"{"start_x":1,"start_y":2,"end_x":3,"end_y":4}"#);
-    assert_eq!(
-        image_actions(&p),
-        [CuaAction::Drag {
-            from: at(1, 2),
-            to: at(3, 4),
-            button: Button::Left
-        }]
-    );
-    let p = holo("scroll", r#"{"x":9,"y":9,"direction":"Left"}"#);
-    assert_eq!(
-        image_actions(&p),
-        [CuaAction::Scroll {
-            at: at(9, 9),
-            dir: ScrollDir::Left,
-            by: ScrollBy::Notches(Notches(5))
-        }]
-    );
-    assert_eq!(image_actions(&holo("observe", "{}")), [CuaAction::Observe]);
+            r#"{"action":"left_click","coordinate":[5,6]}"#,
+            left_click(at(5, 6)),
+        ),
+        (
+            "drag",
+            r#"{"start_x":1,"start_y":2,"end_x":3,"end_y":4}"#,
+            CuaAction::Drag {
+                from: at(1, 2),
+                to: at(3, 4),
+                button: Button::Left,
+            },
+        ),
+        (
+            "scroll",
+            r#"{"x":9,"y":9,"direction":"Left"}"#,
+            CuaAction::Scroll {
+                at: at(9, 9),
+                dir: ScrollDir::Left,
+                by: ScrollBy::Notches(Notches(5)),
+            },
+        ),
+        ("observe", "{}", CuaAction::Observe),
+    ];
+    for (name, args, want) in accepted {
+        assert_eq!(image_actions(&holo(name, args)), [want], "{name} {args}");
+    }
     let p = holo(
         "finish",
         r#"{"status":"infeasible","summary":"no such menu"}"#,
