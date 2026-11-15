@@ -44,11 +44,8 @@ impl AtspiSource {
     }
 
     /// Whether a connection is held.
-    pub fn is_connected(&self) -> ConnectionHeld {
-        match self.connection.get() {
-            Some(_) => ConnectionHeld::Yes,
-            None => ConnectionHeld::No,
-        }
+    pub fn is_connected(&self) -> bool {
+        self.connection.get().is_some()
     }
 
     async fn connected(&self) -> Result<&zbus::Connection, A11yError> {
@@ -61,15 +58,6 @@ impl AtspiSource {
             })
             .await
     }
-}
-
-/// Whether a source holds a connection to the bus.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ConnectionHeld {
-    /// It does.
-    Yes,
-    /// It does not yet.
-    No,
 }
 
 impl A11ySource for AtspiSource {
