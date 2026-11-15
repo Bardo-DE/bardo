@@ -22,7 +22,7 @@ fn the_shipped_voiced_toml_parses_and_round_trips() {
 #[test]
 fn a_file_without_a_shell_is_refused() {
     assert_eq!(
-        VoicedConfig::parse("earcons = \"on\"\n[roles]\n"),
+        VoicedConfig::parse("earcons = true\n[roles]\n"),
         Err(ConfigError::NoShell)
     );
     assert!(matches!(
@@ -33,7 +33,7 @@ fn a_file_without_a_shell_is_refused() {
 
 #[test]
 fn the_input_override_is_optional_in_voiced_toml() {
-    let base = "earcons = \"on\"\n";
+    let base = "earcons = true\n";
     let roles = "[roles]\nshell = [\"org.quire.Shell\"]\n";
     let none = VoicedConfig::parse(&format!("{base}{roles}")).expect("parses");
     assert_eq!(none.input, None);

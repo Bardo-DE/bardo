@@ -27,7 +27,7 @@ mod wire;
 
 pub use bus::{SpeechSkeleton, UtteranceSkeleton, VoiceSkeleton};
 pub use callers::{FILE as CALLERS_FILE, read as read_callers, shipped as shipped_callers};
-pub use config::{ConfigError, Earcons, VoiceRole, VoicedConfig};
+pub use config::{ConfigError, VoiceRole, VoicedConfig};
 pub use dictate::{Dictated, dictate};
 pub use error::{VoiceError, refusal_of_name};
 pub use introspect::{VOICE1_FILE, introspection};

@@ -93,7 +93,7 @@ mod tests {
 
     fn config() -> VoicedConfig {
         VoicedConfig::parse(
-            "earcons = \"on\"\n[roles]\nshell = [\"org.quire.Shell\"]\napp = [\"org.quire.Mailo\"]\n",
+            "earcons = true\n[roles]\nshell = [\"org.quire.Shell\"]\napp = [\"org.quire.Mailo\"]\n",
         )
         .expect("config")
     }

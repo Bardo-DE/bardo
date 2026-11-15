@@ -15,16 +15,6 @@ pub enum VoiceRole {
     App,
 }
 
-/// Whether the begin and end sounds play (`voice.earcons`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Earcons {
-    /// Play them.
-    On,
-    /// Silent.
-    Off,
-}
-
 /// Why the file is not a configuration.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum ConfigError {
@@ -41,8 +31,8 @@ pub enum ConfigError {
 pub struct VoicedConfig {
     /// The bus names per role.
     pub roles: BTreeMap<VoiceRole, Vec<AppName>>,
-    /// The earcons.
-    pub earcons: Earcons,
+    /// Whether the begin and end sounds play.
+    pub earcons: bool,
     /// `input = "<node.name>"`: capture from this physical source when it exists, instead of the
     /// person's default source. Absent: follow the default. (Sill's settings could carry it later.)
     #[serde(default, skip_serializing_if = "Option::is_none")]

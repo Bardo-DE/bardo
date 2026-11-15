@@ -309,7 +309,7 @@ where
             UtteranceEffect::StatusChanged => self.status_changed().await,
             UtteranceEffect::Emit(event) => self.emit(event).await,
             UtteranceEffect::Earcon(which) => {
-                if self.earcons == crate::config::Earcons::On {
+                if self.earcons {
                     playback::earcon(self.device.clone(), which);
                 }
             }

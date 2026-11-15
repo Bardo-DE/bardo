@@ -5,7 +5,6 @@
 //! back as events, so a cold engine never delays a `Begin`.
 
 use crate::command::{Caller, Command};
-use crate::config::Earcons;
 use crate::error::VoiceError;
 use crate::frames::Frames;
 use crate::link::{Link, LinkEvent};
@@ -82,7 +81,7 @@ where
     pub transport: Arc<T>,
     pub warm: Arc<W>,
     pub usage: U,
-    pub earcons: Earcons,
+    pub earcons: bool,
     pub input: Option<String>,
     pub max_hold: std::time::Duration,
     pub deadline: Deadline,

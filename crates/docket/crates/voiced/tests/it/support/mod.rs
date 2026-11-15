@@ -163,7 +163,7 @@ pub struct World {
 
 pub fn config() -> VoicedConfig {
     VoicedConfig::parse(&format!(
-        "earcons = \"off\"\n[roles]\nshell = [\"{SHELL}\"]\napp = [\"{MAILO}\"]\n"
+        "earcons = false\n[roles]\nshell = [\"{SHELL}\"]\napp = [\"{MAILO}\"]\n"
     ))
     .expect("config")
 }
@@ -172,7 +172,7 @@ pub fn config() -> VoicedConfig {
 /// caller that began the utterance while the first shell stays.
 pub fn config_with_hold(max_hold_ms: u64) -> VoicedConfig {
     VoicedConfig::parse(&format!(
-        "earcons = \"off\"\nmax_hold_ms = {max_hold_ms}\n[roles]\nshell = [\"{SHELL}\", \"{SECOND_SHELL}\"]\napp = [\"{MAILO}\"]\n"
+        "earcons = false\nmax_hold_ms = {max_hold_ms}\n[roles]\nshell = [\"{SHELL}\", \"{SECOND_SHELL}\"]\napp = [\"{MAILO}\"]\n"
     ))
     .expect("config")
 }
