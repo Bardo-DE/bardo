@@ -195,12 +195,7 @@ fn an_install_puts_every_piece_where_the_session_reads_it() {
     has(".local/share/quire/settings/inferd.settings.toml");
     has(".local/share/porter/providers/openrouter.toml");
     has(".local/share/stoker/catalog/claude-haiku-4.5.toml");
-    for config in [
-        "intentd",
-        "companiond",
-        "memory-callers",
-        "actions-mcp",
-    ] {
+    for config in ["intentd", "companiond", "memory-callers", "actions-mcp"] {
         has(&format!(".config/quire/{config}.toml"));
     }
     has(".config/inferd/inferd.toml");
