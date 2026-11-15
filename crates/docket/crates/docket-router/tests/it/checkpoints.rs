@@ -4,7 +4,7 @@
 
 use crate::acp_agent::{host, program};
 use crate::support::*;
-use companion_model::{AppSessionId, HandTo, WatchOwner, WatchedAgent, WatchedLine, Watching};
+use companion_model::{AppSessionId, RunsIn, WatchOwner, WatchedAgent, WatchedLine, Watching};
 use docket_checkpoint::{CheckpointStore, DropAsk, Tracking, WorkRoot};
 use docket_core::*;
 use docket_fake::FakeSeams;
@@ -798,7 +798,7 @@ fn claude() -> WatchedAgent {
     }
 }
 
-fn hand_request(session: &SessionId, to: HandTo, agent: Option<WatchedAgent>) -> IntentsRequest {
+fn hand_request(session: &SessionId, to: RunsIn, agent: Option<WatchedAgent>) -> IntentsRequest {
     IntentsRequest::CheckpointHandover {
         session: session.clone(),
         to,
@@ -831,12 +831,12 @@ async fn a_conversation_goes_to_the_terminal_and_back_as_one_session() {
     let router = router();
     let session = app_session(&router).await;
     // Only the host of the app, and only with the app's own id for the conversation.
-    let to_terminal = hand_request(&session, HandTo::Terminal, Some(claude()));
+    let to_terminal = hand_request(&session, RunsIn::Terminal, Some(claude()));
     assert_eq!(
         ask(
             &router,
             &host(),
-            hand_request(&session, HandTo::Terminal, None)
+            hand_request(&session, RunsIn::Terminal, None)
         )
         .await,
         IntentsReply::Refused(WireRefusal::Malformed)
@@ -867,7 +867,7 @@ async fn a_conversation_goes_to_the_terminal_and_back_as_one_session() {
     let back = ask(
         &router,
         &host(),
-        hand_request(&session, HandTo::Desktop, None),
+        hand_request(&session, RunsIn::Desktop, None),
     )
     .await;
     assert_eq!(back, IntentsReply::HandedOver(Some(claude())));
@@ -914,7 +914,7 @@ async fn a_terminal_that_names_its_agent_is_listed_for_the_companion_and_handed_
         ask(
             &router,
             &host(),
-            hand_request(&session, HandTo::Desktop, None)
+            hand_request(&session, RunsIn::Desktop, None)
         )
         .await,
         IntentsReply::HandedOver(Some(claude()))
@@ -947,7 +947,7 @@ async fn a_terminal_naming_a_conversation_the_companion_handed_over_gets_that_se
         ask(
             &router,
             &host(),
-            hand_request(&session, HandTo::Terminal, Some(claude()))
+            hand_request(&session, RunsIn::Terminal, Some(claude()))
         )
         .await,
         IntentsReply::HandedOver(Some(claude()))
@@ -983,7 +983,7 @@ async fn watched_count(router: &Router<FakeSeams>) -> usize {
 async fn router_with_own_handed() -> Router<FakeSeams> {
     let router = router();
     let session = app_session(&router).await;
-    let to_terminal = hand_request(&session, HandTo::Terminal, Some(claude()));
+    let to_terminal = hand_request(&session, RunsIn::Terminal, Some(claude()));
     assert_eq!(
         ask(&router, &host(), to_terminal).await,
         IntentsReply::HandedOver(Some(claude()))

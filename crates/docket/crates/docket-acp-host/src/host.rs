@@ -17,7 +17,7 @@ use super::backend::{AcpBackend, Seams};
 use super::running::RunningTurn;
 use acp_core::cause::Step;
 use acp_core::court::{Court, OpenAgent};
-use companion_model::{HandTo, WatchedAgent};
+use companion_model::{RunsIn, WatchedAgent};
 use docket_core::{ConfirmId, Rewind, SheetSurface, TurnEnd as Ended, UserTurn};
 use docket_session::{
     BackendEvent, BackendFault, BackendKind, EndCause, HostFault, Opening, ResumePlan,
@@ -131,7 +131,7 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
     ) -> Result<(), HostFault> {
         self.mine(session)?;
         self.court
-            .hand(session, HandTo::Terminal, Some(agent))
+            .hand(session, RunsIn::Terminal, Some(agent))
             .await
             .map_err(|_| BackendFault::Unavailable)?;
         self.pending = None;
@@ -155,7 +155,7 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
         }
         let agent = self
             .court
-            .hand(&session, HandTo::Desktop, None)
+            .hand(&session, RunsIn::Desktop, None)
             .await
             .ok()
             .flatten()
@@ -171,7 +171,7 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
             self.backend.close().await;
             let _ = self
                 .court
-                .hand(&session, HandTo::Terminal, Some(agent))
+                .hand(&session, RunsIn::Terminal, Some(agent))
                 .await;
             return Err(fault.into());
         }

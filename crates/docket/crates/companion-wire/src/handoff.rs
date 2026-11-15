@@ -6,17 +6,6 @@
 use prov::{AgentProgram, SessionId};
 use serde::{Deserialize, Serialize};
 
-/// Where a conversation with an agent app is running.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum RunsIn {
-    /// In docket: the app runs here.
-    #[default]
-    Desktop,
-    /// In the app's own program, in a terminal window.
-    Terminal,
-}
-
 /// What the person can do about where a conversation is.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]

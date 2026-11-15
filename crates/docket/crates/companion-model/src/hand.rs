@@ -170,21 +170,24 @@ pub struct Watching {
     pub owner: WatchOwner,
 }
 
-/// Where a conversation goes.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// Where a conversation with an agent app is running, or goes: in docket, or in the app's own
+/// program in a terminal (a handover to the terminal makes the session a watch session; back to
+/// the desktop makes it an agent session again).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum HandTo {
-    /// The app's own program in a terminal: the session becomes a watch session.
-    Terminal,
-    /// Back to docket: the session is an agent session again.
+pub enum RunsIn {
+    /// In docket: the app runs here.
+    #[default]
     Desktop,
+    /// In the app's own program, in a terminal window.
+    Terminal,
 }
 
 /// What the log of a session says about where its conversation is, and with whom.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct HandNote {
     /// Where the conversation went.
-    pub to: HandTo,
+    pub to: RunsIn,
     /// The app and its id for the conversation, when they are known.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub agent: Option<WatchedAgent>,

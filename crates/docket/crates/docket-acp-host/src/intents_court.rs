@@ -8,7 +8,7 @@
 
 use acp_core::call::AgentCall;
 use acp_core::court::{Court, CourtFault, OpenAgent, Ruled};
-use companion_model::{HandTo, WatchedAgent};
+use companion_model::{RunsIn, WatchedAgent};
 use docket_client::{Intents, Transport};
 use docket_core::{CallRefusal, ContextKeep, Keep, TurnEnd, TurnIn, TurnVia};
 use docket_permissions_core::DenyCode;
@@ -158,7 +158,7 @@ impl<T: Transport + 'static> Court for IntentsCourt<T> {
     async fn hand(
         &mut self,
         session: &SessionId,
-        to: HandTo,
+        to: RunsIn,
         agent: Option<WatchedAgent>,
     ) -> Result<Option<WatchedAgent>, CourtFault> {
         self.intents

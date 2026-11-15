@@ -20,7 +20,8 @@ pub use answer::{
     PlanWire, RefusalWire, StepWireState,
 };
 pub use ask::{AskWire, FrontTask};
-pub use handoff::{BroughtBack, Handover, RunsIn, TerminalSession};
+pub use companion_model::RunsIn;
+pub use handoff::{BroughtBack, Handover, TerminalSession};
 pub use helpers::{
     HelperCardView, HelperForm, HelperLine, HelperNeeds, HelperReply, HelpersView, JobFrom,
     JobLine, JobShown, JobWords, LoginShown, SayReply, SignInChoice, ToldWire, app_name_of,

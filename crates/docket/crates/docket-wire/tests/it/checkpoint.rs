@@ -1,7 +1,7 @@
 //! The checkpoint requests and replies of the wire.
 
 use companion_model::{
-    AppSessionId, HandNote, HandTo, WatchOwner, WatchedAgent, WatchedLine, Watching,
+    AppSessionId, HandNote, RunsIn, WatchOwner, WatchedAgent, WatchedLine, Watching,
 };
 use docket_core::{
     CheckpointFault, CheckpointId, CheckpointList, RestorePlan, Retention, Rewind, TurnEnd,
@@ -86,7 +86,7 @@ fn a_conversation_moving_between_docket_and_a_terminal_has_its_members_and_shape
     };
     let hand = IntentsRequest::CheckpointHandover {
         session: session.clone(),
-        to: HandTo::Terminal,
+        to: RunsIn::Terminal,
         agent: Some(agent.clone()),
     };
     assert_eq!(watch.member(), Member::CheckpointWatchAgent);
@@ -115,7 +115,7 @@ fn a_conversation_moving_between_docket_and_a_terminal_has_its_members_and_shape
     assert_eq!(
         note,
         HandNote {
-            to: HandTo::Desktop,
+            to: RunsIn::Desktop,
             agent: None
         }
     );

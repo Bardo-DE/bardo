@@ -2,7 +2,8 @@
 //! it sends. Every sentence in it is plain words: a helper has a name, a job, a model and a
 //! pause; nothing here names how the machinery works.
 
-use crate::handoff::{Handover, RunsIn};
+use crate::RunsIn;
+use crate::handoff::Handover;
 use companion_model::helper::{
     Board, Ceiling, GoalSource, HelperCard, HelperKind, HelperModel, HelperName, HelperPhase,
     HelperState, JobId, JobStatus, Need, PauseWhy, Role, SignInWay, TerminalRequest, reach_lines,

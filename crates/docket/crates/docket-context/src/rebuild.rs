@@ -14,7 +14,7 @@ use crate::tasks::{TaskRecord, TaskState};
 use crate::wal::Wal;
 use crate::who::actor_of;
 use almanac_core::EpisodeId;
-use companion_model::HandTo;
+use companion_model::RunsIn;
 use docket_core::{
     ExternalAgent, Ledger, Reveal, SheetSurface, StepEnd, StepLine, StepShown, UserTurn,
 };
@@ -146,7 +146,7 @@ pub fn rebuild(id: &SessionId, plan: &ResumePlan, now: UnixSeconds) -> Rebuilt {
     let in_terminal = plan
         .hand
         .as_ref()
-        .filter(|note| note.to == HandTo::Terminal)
+        .filter(|note| note.to == RunsIn::Terminal)
         .and_then(|note| note.agent.as_ref());
     let rewind = match &opening.backend {
         docket_session::BackendKind::Watch(rewind) => *rewind,

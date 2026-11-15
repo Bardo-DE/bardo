@@ -3,7 +3,7 @@
 
 use crate::intents::{ClientError, Intents};
 use crate::transport::Transport;
-use companion_model::{HandTo, WatchedAgent, WatchedLine, Watching};
+use companion_model::{RunsIn, WatchedAgent, WatchedLine, Watching};
 use docket_core::{CheckpointFault, CheckpointId, CheckpointList, RestorePlan, Rewind};
 use docket_vocab::{TurnId, Workspace};
 use docket_wire::{IntentsReply, IntentsRequest};
@@ -96,7 +96,7 @@ impl<T: Transport> Intents<T> {
     pub async fn checkpoint_handover(
         &self,
         session: SessionId,
-        to: HandTo,
+        to: RunsIn,
         agent: Option<WatchedAgent>,
     ) -> Result<Option<WatchedAgent>, ClientError> {
         self.ask(

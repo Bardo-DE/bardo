@@ -7,7 +7,7 @@
 
 use crate::router::Router;
 use crate::seams::Seams;
-use companion_model::{HandNote, HandTo, WatchedAgent, WatchedLine};
+use companion_model::{HandNote, RunsIn, WatchedAgent, WatchedLine};
 use docket_context::session::SessionState;
 use docket_context::state::SessionKind;
 use docket_core::{ExternalAgent, Rewind, SheetSurface, TurnState};
@@ -36,7 +36,7 @@ impl<S: Seams> Router<S> {
         });
         record.agent_session = Some(agent.session.clone());
         record.wal.note(SessionEntry::Hand(HandNote {
-            to: HandTo::Terminal,
+            to: RunsIn::Terminal,
             agent: Some(agent),
         }));
     }
@@ -48,7 +48,7 @@ impl<S: Seams> Router<S> {
         &self,
         caller: &CallerId,
         session: &SessionId,
-        to: HandTo,
+        to: RunsIn,
         agent: Option<WatchedAgent>,
     ) -> IntentsReply {
         // A turn that is running is the agent's: nothing moves under it.
@@ -63,7 +63,7 @@ impl<S: Seams> Router<S> {
             return IntentsReply::Refused(WireRefusal::NotAllowed);
         }
         let named = match (to, record.kind) {
-            (HandTo::Terminal, SessionKind::Agent) => {
+            (RunsIn::Terminal, SessionKind::Agent) => {
                 let (Some(external), Some(agent)) = (record.external.clone(), agent) else {
                     return IntentsReply::Refused(WireRefusal::Malformed);
                 };
@@ -75,7 +75,7 @@ impl<S: Seams> Router<S> {
                 record.agent_session = Some(agent.session.clone());
                 agent
             }
-            (HandTo::Desktop, SessionKind::Watch(_)) => {
+            (RunsIn::Desktop, SessionKind::Watch(_)) => {
                 let (Some(external), Some(own)) =
                     (record.external.as_ref(), record.agent_session.take())
                 else {

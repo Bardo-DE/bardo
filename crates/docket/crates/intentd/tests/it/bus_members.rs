@@ -383,7 +383,7 @@ async fn every_member_over_the_bus_answers_what_the_router_answers() {
     .await;
     pair.both(IntentsRequest::CheckpointHandover {
         session: SessionId::parse("s-none").expect("session"),
-        to: companion_model::HandTo::Desktop,
+        to: companion_model::RunsIn::Desktop,
         agent: None,
     })
     .await;

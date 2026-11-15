@@ -36,7 +36,7 @@ pub trait Checkpoint {
         agent: &str,
     ) -> zbus::Result<String>;
 
-    /// The host of the agent apps moves a session's conversation (`to` is `HandTo` JSON; `agent`
+    /// The host of the agent apps moves a session's conversation (`to` is `RunsIn` JSON; `agent`
     /// is `WatchedAgent` JSON when it goes to the terminal, and the empty text otherwise).
     /// Answers the `WatchedAgent` JSON the router holds for it, or `null`.
     fn handover(&self, session: &str, to: &str, agent: &str) -> zbus::Result<String>;

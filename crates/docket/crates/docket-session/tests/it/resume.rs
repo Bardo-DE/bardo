@@ -22,18 +22,18 @@ fn a_whole_session_restores_what_was_stored() {
 
 #[test]
 fn the_latest_hand_note_says_where_the_conversation_is() {
-    use companion_model::{HandNote, HandTo};
+    use companion_model::{HandNote, RunsIn};
     let to = |to| SessionEntry::Hand(HandNote { to, agent: None });
     let moved = plan(&[
         SessionEntry::Opened(opening()),
-        to(HandTo::Terminal),
-        to(HandTo::Desktop),
-        to(HandTo::Terminal),
+        to(RunsIn::Terminal),
+        to(RunsIn::Desktop),
+        to(RunsIn::Terminal),
     ]);
     assert_eq!(
         moved.hand,
         Some(HandNote {
-            to: HandTo::Terminal,
+            to: RunsIn::Terminal,
             agent: None
         })
     );

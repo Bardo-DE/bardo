@@ -4,7 +4,7 @@ use crate::bodies::{
     GrantAsk, JournalFilter, NoteAsk, ReadAsk, RecallAsk, SessionModeAsk, StoredAsk, WidenAsk,
 };
 use crate::task::SessionOpen;
-use companion_model::{HandTo, WatchedAgent};
+use companion_model::{RunsIn, WatchedAgent};
 use docket_core::{
     ActivationToken, CheckpointId, HaltCause, InboxAsk, IndexBatch, MessageDraft, Rewind,
     SearchAsk, SuggestAsk, TurnEnd, TurnIn, UndoScope, UserTurn,
@@ -224,7 +224,7 @@ pub enum IntentsRequest {
         /// The session.
         session: SessionId,
         /// Where the conversation goes.
-        to: HandTo,
+        to: RunsIn,
         /// The app and its own id for the conversation, said by the host when it goes to the
         /// terminal (the router cannot know it); not needed to bring it back.
         agent: Option<WatchedAgent>,

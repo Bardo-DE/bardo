@@ -9,7 +9,7 @@
 //! the router should be asked to weigh.
 
 use crate::call::AgentCall;
-use companion_model::{HandTo, WatchedAgent};
+use companion_model::{RunsIn, WatchedAgent};
 use docket_core::{CallRefusal, ExternalAgent, Outcome, Rewind, SheetSurface, TurnEnd};
 use docket_manifest::ValidManifest;
 use docket_permissions_core::ProgramName;
@@ -129,7 +129,7 @@ pub trait Court: Send + Clone + 'static {
     fn hand(
         &mut self,
         _session: &SessionId,
-        _to: HandTo,
+        _to: RunsIn,
         _agent: Option<WatchedAgent>,
     ) -> impl Future<Output = Result<Option<WatchedAgent>, CourtFault>> + Send {
         async { Err(CourtFault::Unavailable) }
