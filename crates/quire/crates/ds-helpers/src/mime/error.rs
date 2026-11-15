@@ -20,18 +20,12 @@ pub enum NameError {
     TooLong,
 }
 
-/// Why a text is not a MIME type.
+/// A text that is not a MIME type: not one `type/subtype` pair of non-empty parts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum MimeError {
-    /// It is not one `type/subtype` pair of non-empty parts.
-    #[error("not a type/subtype pair")]
-    Shape,
-}
+#[error("not a type/subtype pair")]
+pub struct MimeError;
 
-/// Why the file type database could not be loaded.
+/// The file type database could not be loaded: no data folder held any file name patterns.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum LoadError {
-    /// No data folder held any file name patterns.
-    #[error("No file type database was found.")]
-    NoDatabase,
-}
+#[error("No file type database was found.")]
+pub struct LoadError;

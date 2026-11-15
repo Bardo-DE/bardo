@@ -23,7 +23,7 @@ impl MimeType {
         if shaped {
             Ok(MimeType(text.to_ascii_lowercase()))
         } else {
-            Err(MimeError::Shape)
+            Err(MimeError)
         }
     }
 

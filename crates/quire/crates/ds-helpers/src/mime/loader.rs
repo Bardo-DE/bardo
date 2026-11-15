@@ -121,7 +121,7 @@ impl MimeDb {
             .iter()
             .all(|text| data_lines(&text.globs2).next().is_none())
         {
-            return Err(LoadError::NoDatabase);
+            return Err(LoadError);
         }
         let layers: Vec<MimeLayer<'_>> = texts.iter().map(LayerText::layer).collect();
         Ok(Loaded {

@@ -22,7 +22,7 @@ pub struct DesktopFile {
 }
 
 impl DesktopFile {
-    /// The file `text` holds; [`DesktopFileError::TooBig`] when `text` is longer than `cap`
+    /// The file `text` holds; [`DesktopFileError`] when `text` is longer than `cap`
     /// ([`DESKTOP_ENTRY_CAP`] suits a desktop entry).
     pub fn parse(text: &str, cap: ReadCap) -> Result<DesktopFile, DesktopFileError> {
         refuse_over(text.len(), cap)?;
@@ -63,7 +63,7 @@ impl DesktopFile {
 fn refuse_over(size: usize, cap: ReadCap) -> Result<(), DesktopFileError> {
     let size = u64::try_from(size).unwrap_or(u64::MAX);
     if size > cap.limit() {
-        return Err(DesktopFileError::TooBig { size, cap });
+        return Err(DesktopFileError { size, cap });
     }
     Ok(())
 }

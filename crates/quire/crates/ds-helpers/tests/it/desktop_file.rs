@@ -201,14 +201,14 @@ fn a_file_over_the_cap_is_refused_whole() {
     let text = "[Desktop Entry]\nName=x\n";
     assert_eq!(
         DesktopFile::parse(text, cap),
-        Err(DesktopFileError::TooBig {
+        Err(DesktopFileError {
             size: text.len() as u64,
             cap
         })
     );
     assert_eq!(
         DesktopFile::from_bytes(text.as_bytes(), cap),
-        Err(DesktopFileError::TooBig {
+        Err(DesktopFileError {
             size: text.len() as u64,
             cap
         })

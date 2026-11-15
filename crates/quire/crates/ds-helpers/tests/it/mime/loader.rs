@@ -97,7 +97,7 @@ fn no_globs_anywhere_is_no_database() {
     root.write("usr/share/mime/aliases", "a/b c/d\n");
     assert!(matches!(
         MimeDb::load(&dirs(&root)),
-        Err(LoadError::NoDatabase)
+        Err(LoadError)
     ));
 }
 
