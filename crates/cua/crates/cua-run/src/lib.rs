@@ -98,7 +98,7 @@ pub use model::{
 pub use observation::{
     ContextObs, CursorObs, Focus, Observation, TreeAbsence, TreeObs, Visibility, WindowInfo,
 };
-pub use progress::{Effect, Look};
+pub use progress::Look;
 pub use rules::{
     ClassFragments, CommitRules, InjectionRules, Match, PhraseGroup, Rules, Together, WindowRules,
 };

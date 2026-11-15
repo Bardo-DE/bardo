@@ -175,7 +175,7 @@ Cua1.Manager.Start (router or planner only; Disabled while cua.enabled = off)
   Leasing      LeaseControl::lease (one run per window; a Shell window is never leasable)
   loop per step:
     Observing  capture (masked: by cuad on stock, by the compositor on the fork) + a11y snapshot
-               after an input ran: Record(cua.step.seen { effect: Changed | NoVisibleChange })
+               after an input ran: Record(cua.step.seen { unchanged: bool })
     Screening  (inside Observing, before the model) PatternCheck over the title and the tree:
                Clear -> Thinking.  Suspicious -> Record(cua.screen.suspicious), then, unless the
                person already said to go on for this window and kind, WaitingForUser ("The screen

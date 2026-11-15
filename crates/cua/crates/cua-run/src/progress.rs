@@ -6,9 +6,6 @@ use cua_desktop::Digest32;
 use maskcap::FrameDigest;
 use serde::{Deserialize, Serialize};
 
-/// What the last action did to the window, from two looks at it: the record's own type.
-pub use cua_bus::ScreenEffect as Effect;
-
 /// What one look at the window held, as digests: the frame, and the rendered tree when there is
 /// one. No pixels and no text are kept.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -29,12 +26,8 @@ impl Look {
         Look { frame, tree }
     }
 
-    /// What happened between `before` and this look.
-    pub fn effect_since(&self, before: &Look) -> Effect {
-        if self == before {
-            Effect::NoVisibleChange
-        } else {
-            Effect::Changed
-        }
+    /// Whether this look is the same as `before`: the input between them changed nothing.
+    pub fn unchanged_since(&self, before: &Look) -> bool {
+        self == before
     }
 }

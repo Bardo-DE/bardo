@@ -12,11 +12,6 @@ pub struct QuestionId(pub u64);
 #[serde(transparent)]
 pub struct WindowRef(pub u32);
 
-/// A learned procedure (a later wave; the type is frozen so a task can name one).
-#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct ProcedureId(pub String);
-
 /// The vocabulary version of the `Cua1` bodies.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]

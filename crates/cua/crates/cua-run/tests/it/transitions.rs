@@ -1073,9 +1073,9 @@ fn a_chord_for_a_control_the_tree_shows_is_refused_and_one_without_a_tree_is_not
 
 #[test]
 fn the_look_after_an_input_is_recorded_as_changed_or_not() {
-    for (byte, effect) in [
-        (1, cua_bus::ScreenEffect::NoVisibleChange),
-        (2, cua_bus::ScreenEffect::Changed),
+    for (byte, unchanged) in [
+        (1, true),
+        (2, false),
     ] {
         let mut d = Drive::thinking(STOCK, task(model_says()), tree(vec![]));
         d.run.track.outcomes = vec![ActionOutcome {
@@ -1103,7 +1103,7 @@ fn the_look_after_an_input_is_recorded_as_changed_or_not() {
             [&CuaRecord::Seen {
                 run: run_id(),
                 n: StepIndex(2),
-                effect,
+                unchanged,
             }]
         );
     }

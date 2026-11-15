@@ -10,8 +10,8 @@ use cua_action::{
 use cua_bus::{ActionOutcome, ActionResult, LocalRefusal, Refusal, TargetedAction, WindowRef};
 use cua_desktop::{MaskWhere, Stamp};
 use cua_run::{
-    ContextObs, CursorObs, Effect, Focus, Observation, TreeAbsence, TreeObs, Visibility,
-    WindowInfo, note_of, turn, turn_after,
+    ContextObs, CursorObs, Focus, Observation, TreeAbsence, TreeObs, Visibility, WindowInfo,
+    note_of, turn, turn_after,
 };
 use docket_core::{CallRefusal, InboundLine, InboundPart, Reveal};
 use docket_permissions_core::DenyCode;
@@ -316,13 +316,13 @@ fn an_input_that_changed_nothing_is_told_with_plain_words_and_a_repeat_is_refuse
         (
             "changed",
             ActionResult::Done,
-            Effect::Changed,
+            false,
             PrevResult::Done,
         ),
         (
             "no visible change",
             ActionResult::Done,
-            Effect::NoVisibleChange,
+            true,
             PrevResult::Failed(
                 "the click ran but nothing changed on screen: try something visible instead".into(),
             ),
@@ -330,7 +330,7 @@ fn an_input_that_changed_nothing_is_told_with_plain_words_and_a_repeat_is_refuse
         (
             "refused as a repeat",
             ActionResult::Refused(Refusal::Local(LocalRefusal::NoProgress)),
-            Effect::NoVisibleChange,
+            true,
             PrevResult::Refused(
                 "the last click changed nothing on screen: try something visible instead".into(),
             ),
@@ -338,15 +338,15 @@ fn an_input_that_changed_nothing_is_told_with_plain_words_and_a_repeat_is_refuse
         (
             "no control in the tree",
             ActionResult::Refused(Refusal::Local(LocalRefusal::HasControl)),
-            Effect::Changed,
+            false,
             PrevResult::Refused("a control does this".into()),
         ),
     ];
-    for (name, result, effect, want) in table {
+    for (name, result, unchanged, want) in table {
         let obs = Observation {
             prev: vec![outcome(result)],
             ..observation()
         };
-        assert_eq!(turn_after(&obs, effect).0.prev, vec![want], "{name}");
+        assert_eq!(turn_after(&obs, unchanged).0.prev, vec![want], "{name}");
     }
 }

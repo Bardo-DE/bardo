@@ -28,12 +28,10 @@ pub use action::{ActionOutcome, ActionResult, LocalRefusal, Refusal, TargetedAct
 pub use bodies::{AskBody, BudgetBody, WindowBody};
 pub use budget::{BudgetUse, RunBudget, RunBudgetKind};
 pub use control::{ControlRefusal, CuaCaller, CuaMember, permits};
-pub use ids::{CuaEnvelope, CuaVocab, ProcedureId, QuestionId, WindowRef, slug_of};
-pub use record::{
-    AuthorisedBy, ConfirmBy, CuaRecord, FrameNote, ScreenEffect, ThoughtDigest, ThumbRef, cua_actor,
-};
+pub use ids::{CuaEnvelope, CuaVocab, QuestionId, WindowRef, slug_of};
+pub use record::{AuthorisedBy, ConfirmBy, CuaRecord, FrameNote, ThoughtDigest, cua_actor};
 pub use report::{ReportDelivery, RunEnd, report_draft};
-pub use screen::{ScreenAsk, ScreenKind};
+pub use screen::ScreenKind;
 pub use state::{
     BlockedOn, CancelledBy, CuaOutcome, FailReason, ModeGap, ModeSupport, RunStateSlug,
     backend_wire, modes_wire,

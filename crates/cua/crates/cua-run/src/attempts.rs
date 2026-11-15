@@ -2,7 +2,6 @@
 //! ended, never a coordinate, never typed text and never a thought. Pure.
 
 use crate::machine::finish::said_of;
-use crate::progress::Effect;
 use crate::turn::sent_input;
 use cua_action::{CuaAction, WindowSpace};
 use cua_bus::{ActionResult, CuaOutcome, CuaRecord, LocalRefusal, Refusal};
@@ -98,18 +97,16 @@ pub struct Tried {
 }
 
 impl Tried {
-    /// `action` and how it ended. `effect` is what the window showed after it (a stored step's
-    /// comes from the `cua.step.seen` that follows it).
+    /// `action` and how it ended. `unchanged` is whether the window looked the same after it (a
+    /// stored step's comes from the `cua.step.seen` that follows it).
     pub fn of(
         action: &CuaAction<WindowSpace>,
         result: &ActionResult,
-        effect: Effect,
+        unchanged: bool,
     ) -> Option<Tried> {
         let verb = Verb::of(action)?;
         let mark = match result {
-            ActionResult::Done if sent_input(action) && effect == Effect::NoVisibleChange => {
-                Mark::NoChange
-            }
+            ActionResult::Done if sent_input(action) && unchanged => Mark::NoChange,
             ActionResult::Done | ActionResult::Answered(_) | ActionResult::UserActed { .. } => {
                 Mark::Done
             }
@@ -209,20 +206,21 @@ struct Attempt {
 impl Attempt {
     /// A step's action: it reads as done until a look says otherwise.
     fn step(&mut self, action: &CuaAction<WindowSpace>, result: &ActionResult) {
-        let Some(tried) = Tried::of(action, result, Effect::Changed) else {
+        let Some(tried) = Tried::of(action, result, false) else {
             return;
         };
-        if let Some(unchanged) = Tried::of(action, result, Effect::NoVisibleChange) {
+        if let Some(unchanged) = Tried::of(action, result, true) {
             self.unseen.push((self.tried.len(), unchanged));
         }
         self.tried.push(tried);
     }
 
     /// The look after the actions since the last one, as the run itself judged them.
-    fn seen(&mut self, effect: Effect) {
-        for (i, unchanged) in std::mem::take(&mut self.unseen) {
-            if effect == Effect::NoVisibleChange {
-                self.tried[i] = unchanged;
+    fn seen(&mut self, unchanged: bool) {
+        let unseen = std::mem::take(&mut self.unseen);
+        if unchanged {
+            for (i, tried) in unseen {
+                self.tried[i] = tried;
             }
         }
     }
@@ -277,9 +275,9 @@ pub fn digest_within(
                     attempt.step(&action.action, result);
                 }
             }
-            CuaRecord::Seen { run, effect, .. } => {
+            CuaRecord::Seen { run, unchanged, .. } => {
                 if let Some(attempt) = attempts.iter_mut().find(|a| &a.run == run) {
-                    attempt.seen(*effect);
+                    attempt.seen(*unchanged);
                 }
             }
             CuaRecord::Finished { run, outcome, .. } => {

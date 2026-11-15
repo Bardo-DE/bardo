@@ -20,7 +20,7 @@ use crate::screen::{
 };
 use crate::sensitivity::{FORCED_NO, FORCED_YES};
 use crate::turn::turn_after;
-use cua_bus::{BlockedOn, ConfirmBy, CuaOutcome, CuaRecord, FailReason, ScreenAsk, ScreenKind};
+use cua_bus::{BlockedOn, ConfirmBy, CuaOutcome, CuaRecord, FailReason, ScreenKind};
 use cua_desktop::GlowState;
 use porter_infer::StepIndex;
 use prov::{Effect, Labelled};
@@ -56,7 +56,7 @@ pub(super) fn call_model(run: &mut Run, fx: &mut Vec<RunEffect>, n: StepIndex) {
         finish_plain(run, fx, CuaOutcome::Failed(FailReason::Capture));
         return;
     };
-    let (request, frame) = turn_after(obs, run.track.effect);
+    let (request, frame) = turn_after(obs, run.track.unchanged);
     enter(run, fx, RunPhase::Thinking(n));
     fx.push(RunEffect::CallModel {
         request: Box::new(request),
@@ -144,16 +144,11 @@ fn flagged(run: &mut Run, fx: &mut Vec<RunEffect>, n: StepIndex, verdict: &Scree
         .iter()
         .all(|k| run.track.screen.allowed.contains(&(window.clone(), *k)));
     run.track.screen.suspicious = true;
-    let ask = if remembered {
-        ScreenAsk::Remembered
-    } else {
-        ScreenAsk::Asked
-    };
     fx.push(RunEffect::Record(Box::new(CuaRecord::ScreenSuspicious {
         run: run.id.clone(),
         n,
         kinds: kinds.clone(),
-        ask,
+        asked: !remembered,
     })));
     if remembered {
         call_model(run, fx, n);

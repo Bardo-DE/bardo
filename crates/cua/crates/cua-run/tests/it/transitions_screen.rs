@@ -7,8 +7,8 @@ use crate::support::*;
 use a11y_tree::Role;
 use cua_action::{Chord, CuaAction, Modifier, Repeat, WindowSpace};
 use cua_bus::{
-    ActionResult, BlockedOn, CuaOutcome, CuaRecord, LocalRefusal, QuestionId, Refusal, ScreenAsk,
-    ScreenKind, SuccessCheck,
+    ActionResult, BlockedOn, CuaOutcome, CuaRecord, LocalRefusal, QuestionId, Refusal, ScreenKind,
+    SuccessCheck,
 };
 use cua_desktop::{BackendKind, Stamp};
 use cua_run::{
@@ -56,12 +56,12 @@ fn answer(id: u64, text: &str) -> RunInput {
     )
 }
 
-fn screen_records(d: &Drive) -> Vec<(Vec<ScreenKind>, ScreenAsk)> {
+fn screen_records(d: &Drive) -> Vec<(Vec<ScreenKind>, bool)> {
     d.effects
         .iter()
         .filter_map(|e| match e {
             RunEffect::Record(r) => match &**r {
-                CuaRecord::ScreenSuspicious { kinds, ask, .. } => Some((kinds.clone(), *ask)),
+                CuaRecord::ScreenSuspicious { kinds, asked, .. } => Some((kinds.clone(), *asked)),
                 _ => None,
             },
             _ => None,
@@ -88,7 +88,7 @@ fn a_suspicious_look_asks_before_the_model_is_called() {
     assert!(d.run.track.screen.suspicious);
     assert_eq!(
         screen_records(&d),
-        vec![(vec![ScreenKind::Instruction], ScreenAsk::Asked)]
+        vec![(vec![ScreenKind::Instruction], true)]
     );
     let question = d
         .effects
@@ -170,7 +170,7 @@ fn a_yes_calls_the_model_and_is_remembered_for_that_window_and_kind() {
     assert!(!d.has(|e| matches!(e, RunEffect::Emit(CuaSignal::AskUser(..)))));
     assert_eq!(
         screen_records(&d),
-        vec![(vec![ScreenKind::Instruction], ScreenAsk::Remembered)]
+        vec![(vec![ScreenKind::Instruction], false)]
     );
 }
 
@@ -189,7 +189,7 @@ fn a_new_kind_in_the_same_window_asks_again() {
         screen_records(&d),
         vec![(
             vec![ScreenKind::Instruction, ScreenKind::HiddenCharacters],
-            ScreenAsk::Asked
+            true
         )]
     );
     let question = d.effects.iter().find_map(|e| match e {
@@ -361,7 +361,7 @@ fn the_readers_answer_decides_between_the_model_and_the_question() {
     assert!(matches!(d.phase(), RunPhase::WaitingForUser(..)));
     assert_eq!(
         screen_records(&d),
-        vec![(vec![ScreenKind::ReaderFlagged], ScreenAsk::Asked)]
+        vec![(vec![ScreenKind::ReaderFlagged], true)]
     );
     d.feed(answer(1, FORCED_NO));
     assert_eq!(

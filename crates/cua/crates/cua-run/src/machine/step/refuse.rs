@@ -4,7 +4,6 @@
 use crate::machine::ops::nodes_of;
 use crate::machine::run::Run;
 use crate::observation::Observation;
-use crate::progress::Effect;
 use crate::shortcut_guard::control_for;
 use cua_action::{ActionClass, CuaAction, WindowSpace};
 use cua_bus::LocalRefusal;
@@ -20,7 +19,7 @@ pub(super) fn before_input(
         return None;
     }
     let repeats = run.track.last_input.as_ref() == Some(action);
-    if repeats && run.track.effect == Effect::NoVisibleChange {
+    if repeats && run.track.unchanged {
         return Some(LocalRefusal::NoProgress);
     }
     control_for(action, nodes_of(obs)).map(|_| LocalRefusal::HasControl)

@@ -275,7 +275,7 @@ fn an_input_that_ran_and_changed_nothing_is_marked() {
     let seen = Tried::of(
         &click_at(1, 1),
         &ActionResult::Done,
-        cua_run::Effect::NoVisibleChange,
+        true,
     );
     assert_eq!(
         seen,
@@ -287,7 +287,7 @@ fn an_input_that_ran_and_changed_nothing_is_marked() {
     let waited = Tried::of(
         &crate::support::wait(500),
         &ActionResult::Done,
-        cua_run::Effect::NoVisibleChange,
+        true,
     );
     assert_eq!(
         waited,
@@ -298,11 +298,11 @@ fn an_input_that_ran_and_changed_nothing_is_marked() {
     );
 }
 
-fn seen(n: u32, effect: cua_run::Effect) -> CuaRecord {
+fn seen(n: u32, unchanged: bool) -> CuaRecord {
     CuaRecord::Seen {
         run: run(n),
         n: StepIndex(2),
-        effect,
+        unchanged,
     }
 }
 
@@ -311,13 +311,13 @@ fn a_stored_look_marks_the_inputs_since_the_one_before() {
     let records = vec![
         started(1, "org.gimp.GIMP"),
         step(1, click_at(1, 1), ActionResult::Done),
-        seen(1, cua_run::Effect::Changed),
+        seen(1, false),
         step(1, click_at(2, 2), ActionResult::Done),
         step(1, drag(), ActionResult::Done),
-        seen(1, cua_run::Effect::NoVisibleChange),
+        seen(1, true),
         step(1, crate::support::wait(500), ActionResult::Done),
-        seen(1, cua_run::Effect::NoVisibleChange),
-        seen(2, cua_run::Effect::NoVisibleChange),
+        seen(1, true),
+        seen(2, true),
     ];
     let lines = digest(&records, &app("org.gimp.GIMP"), None);
     assert_eq!(

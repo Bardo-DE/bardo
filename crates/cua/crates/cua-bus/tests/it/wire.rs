@@ -170,7 +170,7 @@ fn every_record() -> Vec<(CuaRecord, &'static str)> {
         ),
         (
             CuaRecord::ProcedureLearned {
-                procedure: ProcedureId("org.mozilla.firefox/download-invoice".into()),
+                procedure: "org.mozilla.firefox/download-invoice".into(),
                 from: run(),
             },
             "cua.procedure.learned",
@@ -180,7 +180,7 @@ fn every_record() -> Vec<(CuaRecord, &'static str)> {
                 run: run(),
                 n: step,
                 kinds: vec![ScreenKind::Instruction, ScreenKind::HiddenCharacters],
-                ask: ScreenAsk::Asked,
+                asked: true,
             },
             "cua.screen.suspicious",
         ),
@@ -188,7 +188,7 @@ fn every_record() -> Vec<(CuaRecord, &'static str)> {
             CuaRecord::Seen {
                 run: run(),
                 n: step,
-                effect: cua_bus::ScreenEffect::NoVisibleChange,
+                unchanged: true,
             },
             "cua.step.seen",
         ),

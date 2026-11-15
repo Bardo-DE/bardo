@@ -2,7 +2,7 @@
 //! thought text.
 
 use crate::attempts::Tried;
-use crate::progress::{Effect, Look};
+use crate::progress::Look;
 use crate::screen::ScreenTrack;
 use crate::sensitivity::WindowSensitivity;
 use cua_action::{CuaAction, WindowSpace};
@@ -106,9 +106,9 @@ pub struct RunTrack {
     /// The last look at the window, to tell what the last action changed.
     #[serde(default)]
     pub look: Option<Look>,
-    /// What the last action did to the window, from the last two looks.
+    /// Whether the last action left the window as it was, from the last two looks.
     #[serde(default)]
-    pub effect: Effect,
+    pub unchanged: bool,
     /// The input action that ran last, until a wait: repeating it on an unchanged screen is
     /// refused.
     #[serde(default)]
@@ -135,7 +135,7 @@ impl RunTrack {
             waited: None,
             screen: ScreenTrack::default(),
             look: None,
-            effect: Effect::Changed,
+            unchanged: false,
             last_input: None,
             tried: Vec::new(),
         }

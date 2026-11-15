@@ -21,14 +21,3 @@ pub enum ScreenKind {
     /// The quarantined reader, asked about an excerpt, called it instructions for an assistant.
     ReaderFlagged,
 }
-
-/// Whether the person was asked about a suspicious screen.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum ScreenAsk {
-    /// The run paused and asked.
-    Asked,
-    /// The person already said to go on for this window and this kind in this run: not asked
-    /// again.
-    Remembered,
-}

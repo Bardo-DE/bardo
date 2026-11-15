@@ -9,8 +9,8 @@
 
 use crate::action::{ActionResult, TargetedAction};
 use crate::budget::RunBudget;
-use crate::ids::{ProcedureId, QuestionId};
-use crate::screen::{ScreenAsk, ScreenKind};
+use crate::ids::QuestionId;
+use crate::screen::ScreenKind;
 use crate::state::CuaOutcome;
 use almanac_core::EventRef;
 use cua_action::DeviceSize;
@@ -30,11 +30,6 @@ use serde::{Deserialize, Serialize};
 #[serde(transparent)]
 pub struct ThoughtDigest(pub Digest32);
 
-/// A stored thumbnail, in the Space's encrypted store.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct ThumbRef(pub String);
-
 /// What is kept of a step's frame. `NotKept` is the default; `Kept` needs `cua.screens.keep`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
@@ -48,22 +43,11 @@ pub enum FrameNote {
     },
     /// A thumbnail that expires.
     Kept {
-        /// Where.
-        thumb: ThumbRef,
+        /// Where the thumbnail is, in the Space's encrypted store.
+        thumb: String,
         /// When it goes.
         expires: UnixSeconds,
     },
-}
-
-/// What a step's input did to the window, from the looks before and after it.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum ScreenEffect {
-    /// The frame or the tree is different. Also the answer when there is no earlier look.
-    #[default]
-    Changed,
-    /// The frame and the tree (when there is one) are the same as before the action.
-    NoVisibleChange,
 }
 
 /// Who allowed an action.
@@ -154,8 +138,9 @@ pub enum CuaRecord {
         run: RunId,
         /// The step whose look this is (the one after the actions it judges).
         n: StepIndex,
-        /// What the window showed.
-        effect: ScreenEffect,
+        /// Whether the frame and the tree (when there is one) are the same as before the action.
+        /// A run with no earlier look counts as changed.
+        unchanged: bool,
     },
     /// The model asked the person something.
     #[serde(rename = "cua.asked")]
@@ -216,7 +201,7 @@ pub enum CuaRecord {
     #[serde(rename = "cua.procedure.learned")]
     ProcedureLearned {
         /// The procedure.
-        procedure: ProcedureId,
+        procedure: String,
         /// The run it came from.
         from: RunId,
     },
@@ -231,8 +216,9 @@ pub enum CuaRecord {
         n: StepIndex,
         /// What was found, each kind once.
         kinds: Vec<ScreenKind>,
-        /// Whether the person was asked.
-        ask: ScreenAsk,
+        /// Whether the run paused and asked the person. Not when they already said to go on for
+        /// this window and this kind in this run.
+        asked: bool,
     },
 }
 

@@ -2,7 +2,6 @@
 
 use crate::attempts::Verb;
 use crate::observation::{CursorObs, Observation, TreeObs};
-use crate::progress::Effect;
 use crate::shortcut_guard::control_for;
 use a11y_tree::{A11yNode, render};
 use cua_action::{ActionClass, CuaAction, WindowSpace};
@@ -25,11 +24,9 @@ pub struct FrameAttachment(pub PixelBuf);
 /// How an earlier action ended, in the words the model is told: a refusal says only that it was
 /// refused (the router's reasons are coarse on purpose and are not an oracle to probe), and a
 /// failure names what went wrong with the input.
-fn prev_result(outcome: &ActionOutcome, nodes: &[A11yNode], effect: Effect) -> PrevResult {
+fn prev_result(outcome: &ActionOutcome, nodes: &[A11yNode], unchanged: bool) -> PrevResult {
     match &outcome.result {
-        ActionResult::Done
-            if sent_input(&outcome.action.action) && effect == Effect::NoVisibleChange =>
-        {
+        ActionResult::Done if sent_input(&outcome.action.action) && unchanged => {
             PrevResult::Failed(format!(
                 "the {} ran but nothing changed on screen: try something visible instead",
                 verb(&outcome.action.action)
@@ -137,13 +134,13 @@ fn masked_regions(obs: &Observation) -> MaskedRegions {
 /// person's is their own words, and neither is authority), then the person's answers to the
 /// model's own questions. Pure.
 pub fn turn(obs: &Observation) -> (CuaStepRequest, FrameAttachment) {
-    turn_after(obs, Effect::Changed)
+    turn_after(obs, false)
 }
 
 /// [`turn`], telling the model what the last input did to the window: an input that ran and left
 /// the screen as it was is reported to the model as such (porter's `PrevResult` has no word for
 /// "ran, no change", so it goes as a failure with plain words).
-pub fn turn_after(obs: &Observation, effect: Effect) -> (CuaStepRequest, FrameAttachment) {
+pub fn turn_after(obs: &Observation, unchanged: bool) -> (CuaStepRequest, FrameAttachment) {
     let nodes: &[A11yNode] = match &obs.tree {
         TreeObs::Present(snapshot) => &snapshot.nodes,
         TreeObs::Absent(_) => &[],
@@ -172,7 +169,7 @@ pub fn turn_after(obs: &Observation, effect: Effect) -> (CuaStepRequest, FrameAt
     .with_prev(
         obs.prev
             .iter()
-            .map(|o| prev_result(o, nodes, effect))
+            .map(|o| prev_result(o, nodes, unchanged))
             .collect(),
     )
     .with_masked(masked_regions(obs))

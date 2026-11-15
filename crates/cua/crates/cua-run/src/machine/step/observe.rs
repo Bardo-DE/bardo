@@ -47,17 +47,17 @@ pub(super) fn observed(run: &mut Run, fx: &mut Vec<RunEffect>, mut obs: Observat
     if input_ran(&obs.prev)
         && let Some(before) = &run.track.look
     {
-        run.track.effect = look.effect_since(before);
+        run.track.unchanged = look.unchanged_since(before);
         fx.push(RunEffect::Record(Box::new(CuaRecord::Seen {
             run: run.id.clone(),
             n,
-            effect: run.track.effect,
+            unchanged: run.track.unchanged,
         })));
     }
     run.track.tried.extend(
         obs.prev
             .iter()
-            .filter_map(|o| Tried::of(&o.action.action, &o.result, run.track.effect)),
+            .filter_map(|o| Tried::of(&o.action.action, &o.result, run.track.unchanged)),
     );
     run.track.look = Some(look);
     // A slow job (a render, an export) looks like a screen that stopped changing: while the
