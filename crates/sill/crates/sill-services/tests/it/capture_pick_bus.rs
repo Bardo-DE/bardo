@@ -321,8 +321,9 @@ async fn a_colour_is_asked_one_at_a_time_and_the_click_comes_back_as_floats() {
         .unwrap_or_else(|e| panic!("{e}"))
         .unwrap_or_else(|e| panic!("{e}"));
     assert_eq!(answer, vec![(1.0, 0.0, 51.0 / 255.0)]);
+    // The answer can reach the caller before the service records that the eyedropper is free.
     assert!(
-        service.state.borrow().color.is_none(),
+        wait_for(&mut service.state, |s: &CapturePicker| s.color.is_none()).await,
         "the eyedropper is free again"
     );
 }
