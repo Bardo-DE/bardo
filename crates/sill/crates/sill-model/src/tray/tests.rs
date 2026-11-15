@@ -2,7 +2,7 @@ use super::{
     Check, TRAY_ITEMS_MAX, Tray, TrayEvent, TrayIcon, TrayItem, TrayItemId, TrayMenuEntry,
     TrayMenuIcon, TrayMenuKind, TrayStatus, step,
 };
-use crate::units::{Availability, Visibility};
+use crate::units::Visibility;
 
 fn id(name: &str) -> TrayItemId {
     TrayItemId(format!(":1.{name}/StatusNotifierItem"))
@@ -29,7 +29,7 @@ fn quit_menu() -> Vec<TrayMenuEntry> {
         id: 7,
         kind: TrayMenuKind::Item {
             label: "Quit".to_owned(),
-            enabled: Availability::Enabled,
+            enabled: true,
             visibility: Visibility::Shown,
             check: Check::None,
             icon: TrayMenuIcon::None,
@@ -169,7 +169,7 @@ fn a_menu_with_a_submenu_and_icons_round_trips() {
         id: 1,
         kind: TrayMenuKind::Item {
             label: "Devices".to_owned(),
-            enabled: Availability::Enabled,
+            enabled: true,
             visibility: Visibility::Shown,
             check: Check::Mixed,
             icon: TrayMenuIcon::Named("phone".to_owned()),
@@ -177,7 +177,7 @@ fn a_menu_with_a_submenu_and_icons_round_trips() {
                 id: 2,
                 kind: TrayMenuKind::Item {
                     label: "Ping".to_owned(),
-                    enabled: Availability::Disabled,
+                    enabled: false,
                     visibility: Visibility::Hidden,
                     check: Check::Checked,
                     icon: TrayMenuIcon::Png(vec![137, 80]),

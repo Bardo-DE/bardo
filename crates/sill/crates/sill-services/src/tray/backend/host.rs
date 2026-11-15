@@ -262,7 +262,7 @@ mod tests {
         Check, ScrollAxis, ScrollDelta, TrayIcon, TrayItemId, TrayMenuIcon, TrayMenuKind,
         TrayStatus,
     };
-    use sill_model::units::{Availability, Visibility};
+    use sill_model::units::Visibility;
     use system_tray::item::{IconPixmap as SniPixmap, Status as SniStatus};
     use system_tray::menu::{MenuItem, MenuType, ToggleState, ToggleType};
 
@@ -392,7 +392,7 @@ mod tests {
                 ..
             } => {
                 assert_eq!(label, "Quit");
-                assert_eq!(enabled, Availability::Disabled);
+                assert!(!enabled);
                 assert_eq!(visibility, Visibility::Hidden);
             }
             other => panic!("expected an Item, got {other:?}"),

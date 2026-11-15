@@ -51,7 +51,7 @@ pub use notification_center::{CenterLink, CenterOpening};
 pub use osd::{ChangeSerial, Level, OsdChange, OsdKind, OsdLink};
 pub use outbox::{Outbox, Sent};
 pub use power_menu::{PowerMenuLink, PowerMenuOpening, PowerMenuPayload, Preselect, Showing};
-pub use reveal::{OpenSerial, Opened, Opening, PanelFocus, PanelLink, Reveal};
+pub use reveal::{OpenSerial, Opening, PanelFocus, PanelLink, Reveal};
 pub(crate) use shared::Shared;
 pub use sheets::{SheetLink, SheetOutput};
 pub use spaces_bar::{SpacesBarFeed, SpacesBarLink, SpacesBarPicked};

@@ -12,7 +12,7 @@ use super::{
 };
 use crate::ids::OutputName;
 use crate::tray::{Check, Chord, MenuCommand, TrayMenuEntry, TrayMenuIcon, TrayMenuKind};
-use crate::units::{Availability, Visibility};
+use crate::units::Visibility;
 use crate::windows::{Activity, Sizing, Toplevel, Toplevels, WindowState, WlCommand};
 
 fn node(id: i32, label: &str, children: Vec<Node>) -> Node {
@@ -72,7 +72,7 @@ fn a_layout_becomes_the_trays_rows() {
     let radio = with(node(6, "_Small", Vec::new()), |p| {
         p.toggle = ToggleKind::Radio;
         p.toggle_state = 0;
-        p.enabled = Availability::Disabled;
+        p.enabled = false;
         p.icon_name = Some("zoom-out".to_owned());
     });
     let mixed = with(node(7, "Both", Vec::new()), |p| {
@@ -100,9 +100,9 @@ fn a_layout_becomes_the_trays_rows() {
         .collect();
     let want = [
         (5, "rule"),
-        (6, "Small|Disabled|Unchecked|true"),
-        (7, "Both|Enabled|Mixed|false"),
-        (8, "snake_case|Enabled|None|false"),
+        (6, "Small|false|Unchecked|true"),
+        (7, "Both|true|Mixed|false"),
+        (8, "snake_case|true|None|false"),
     ];
     let want: Vec<(i32, String)> = want.iter().map(|(i, s)| (*i, (*s).to_owned())).collect();
     assert_eq!(kinds, want);
@@ -480,7 +480,7 @@ fn the_new_tray_row_fields_round_trip() {
         id: 3,
         kind: TrayMenuKind::Item {
             label: "Undo".to_owned(),
-            enabled: Availability::Enabled,
+            enabled: true,
             visibility: Visibility::Shown,
             check: Check::None,
             icon: TrayMenuIcon::None,

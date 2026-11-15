@@ -23,19 +23,6 @@ pub enum PanelFocus {
     Held,
 }
 
-/// One opening of a panel: where it shows, which opening it is, and whether it has had keyboard
-/// focus.
-pub trait Opened: Clone {
-    /// The output whose panel shows.
-    fn output(&self) -> OutputId;
-    /// Which opening this is: a new one remounts the panel's contents.
-    fn serial(&self) -> OpenSerial;
-    /// Whether the panel has held keyboard focus since it opened.
-    fn focus(&self) -> PanelFocus;
-    /// This opening once the panel has gained keyboard focus.
-    fn focused(self) -> Self;
-}
-
 /// One opening of any panel: the parts every panel's opening has, and the panel's own `payload`
 /// (what the launcher opens with, which button the power menu focuses; `()` when there is
 /// nothing more). A payload's fields read through the opening (`opening.query`).
@@ -58,27 +45,6 @@ impl<P> Deref for Opening<P> {
     }
 }
 
-impl<P: Clone> Opened for Opening<P> {
-    fn output(&self) -> OutputId {
-        self.output
-    }
-
-    fn serial(&self) -> OpenSerial {
-        self.serial
-    }
-
-    fn focus(&self) -> PanelFocus {
-        self.focus
-    }
-
-    fn focused(self) -> Self {
-        Opening {
-            focus: PanelFocus::Held,
-            ..self
-        }
-    }
-}
-
 /// A link's value: hidden, remembering the last opening's serial so the next one counts on, or
 /// revealed as one opening.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -95,9 +61,9 @@ impl<O> Default for Reveal<O> {
     }
 }
 
-impl<O: Opened> Reveal<O> {
+impl<P: Clone> Reveal<Opening<P>> {
     /// The opening, while revealed.
-    pub fn opening(&self) -> Option<&O> {
+    pub fn opening(&self) -> Option<&Opening<P>> {
         match self {
             Reveal::Revealed(opening) => Some(opening),
             Reveal::Hidden { .. } => None,
@@ -107,7 +73,7 @@ impl<O: Opened> Reveal<O> {
     /// Whether the panel shows on `output`.
     pub fn shows_on(&self, output: OutputId) -> Visibility {
         match self.opening() {
-            Some(opening) if opening.output() == output => Visibility::Shown,
+            Some(opening) if opening.output == output => Visibility::Shown,
             _ => Visibility::Hidden,
         }
     }
@@ -115,13 +81,13 @@ impl<O: Opened> Reveal<O> {
     /// The current or last opening's serial.
     pub fn serial(&self) -> OpenSerial {
         match self {
-            Reveal::Revealed(opening) => opening.serial(),
+            Reveal::Revealed(opening) => opening.serial,
             Reveal::Hidden { last } => *last,
         }
     }
 
     /// Hidden, keeping the serial.
-    pub fn hidden(&self) -> Reveal<O> {
+    pub fn hidden(&self) -> Reveal<Opening<P>> {
         Reveal::Hidden {
             last: self.serial(),
         }
@@ -134,13 +100,16 @@ impl<O: Opened> Reveal<O> {
 
     /// The panel's keyboard focus changed: gaining it is noted, losing it after holding it
     /// closes the panel.
-    pub fn after_focus(&self, focus: KeyboardFocus) -> Reveal<O> {
+    pub fn after_focus(&self, focus: KeyboardFocus) -> Reveal<Opening<P>> {
         match (self, focus) {
             (Reveal::Revealed(opening), KeyboardFocus::Gained) => {
-                Reveal::Revealed(opening.clone().focused())
+                Reveal::Revealed(Opening {
+                    focus: PanelFocus::Held,
+                    ..opening.clone()
+                })
             }
             (Reveal::Revealed(opening), KeyboardFocus::Lost)
-                if opening.focus() == PanelFocus::Held =>
+                if opening.focus == PanelFocus::Held =>
             {
                 self.hidden()
             }

@@ -15,7 +15,7 @@ use sill_shell_kit::month_grid::data::DayMark;
 use sill_shell_kit::month_grid::data::DayPlace;
 use sill_shell_kit::month_grid::data::IsoWeek;
 use sill_shell_kit::month_grid::data::MonthKey;
-use sill_shell_kit::month_grid::data::{DayKey, MonthStep, WeekNumbers};
+use sill_shell_kit::month_grid::data::{DayKey, MonthStep};
 use sill_shell_kit::prelude::*;
 
 /// One specimen.
@@ -43,8 +43,8 @@ struct CaseProps {
 #[allow(non_snake_case)]
 fn Specimen(props: CaseProps) -> Element {
     let (theme, first, weeks) = match props.case {
-        Case::Plain | Case::Pressable => (Theme::Light, First::Monday, WeekNumbers::Hide),
-        Case::WeekNumbers => (Theme::Dark, First::Sunday, WeekNumbers::Show),
+        Case::Plain | Case::Pressable => (Theme::Light, First::Monday, false),
+        Case::WeekNumbers => (Theme::Dark, First::Sunday, true),
     };
     let onstep = match props.case {
         Case::Plain => None,

@@ -15,7 +15,6 @@ use ds::style::tokens::label_hue::LabelHue;
 use sill_shell_kit::battery::device_glyph::Device;
 use sill_shell_kit::month_grid::data::{
     DayKey, DayMark, DayPlace, Eventful, IsoWeek, MonthDay, MonthGridData, MonthKey, MonthWeek,
-    WeekNumbers,
 };
 use sill_shell_kit::prelude::*;
 use sill_shell_kit::widget::calendar::{EventLine, MonthFace, TodayLine};
@@ -114,7 +113,7 @@ fn september_with(events: Vec<EventLine>) -> MonthEntry {
                 days,
             }],
         },
-        weeks: WeekNumbers::Hide,
+        weeks: false,
     }))
 }
 

@@ -5,7 +5,7 @@ use sill_model::tray::{
     Check, Chord, MENU_DEPTH_MAX, MENU_ICON_MAX_BYTES, MENU_LABEL_MAX_CHARS, MENU_ROWS_MAX,
     TrayItemId, TrayMenuEntry, TrayMenuIcon, TrayMenuKind, plain_label, theme_icon_name,
 };
-use sill_model::units::{Availability, Visibility};
+use sill_model::units::Visibility;
 use sill_model::untrusted::for_display;
 use system_tray::client::Client;
 use system_tray::menu::{MenuItem, MenuType, ToggleState, ToggleType};
@@ -70,11 +70,7 @@ fn entry(item: &MenuItem, depth: usize, rows: &mut RowsLeft) -> TrayMenuEntry {
                 &plain_label(item.label.as_deref().unwrap_or_default()),
                 MENU_LABEL_MAX_CHARS,
             ),
-            enabled: if item.enabled {
-                Availability::Enabled
-            } else {
-                Availability::Disabled
-            },
+            enabled: item.enabled,
             visibility: if item.visible {
                 Visibility::Shown
             } else {

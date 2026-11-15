@@ -8,7 +8,7 @@ use sill_model::tray::{
     Check, Tray, TrayEvent, TrayIcon, TrayItem, TrayItemId, TrayMenuEntry, TrayMenuIcon,
     TrayMenuKind, TrayStatus, step,
 };
-use sill_model::units::{Availability as Enabled, Visibility};
+use sill_model::units::Visibility;
 
 use super::{has_rows, menu_items};
 use crate::bar::pick::BarPick;
@@ -29,7 +29,7 @@ fn item_id() -> TrayItemId {
 struct Row {
     id: i32,
     label: &'static str,
-    enabled: Enabled,
+    enabled: bool,
     visibility: Visibility,
     check: Check,
     icon: TrayMenuIcon,
@@ -40,7 +40,7 @@ fn row(id: i32, label: &'static str) -> Row {
     Row {
         id,
         label,
-        enabled: Enabled::Enabled,
+        enabled: true,
         visibility: Visibility::Shown,
         check: Check::None,
         icon: TrayMenuIcon::None,
@@ -231,12 +231,12 @@ fn layouts_become_entries() {
             "disabled rows are drawn disabled, parents too",
             vec![
                 Row {
-                    enabled: Enabled::Disabled,
+                    enabled: false,
                     ..row(1, "Paste")
                 }
                 .entry(),
                 Row {
-                    enabled: Enabled::Disabled,
+                    enabled: false,
                     ..row(2, "More")
                 }
                 .with_children(vec![row(3, "x").entry()])

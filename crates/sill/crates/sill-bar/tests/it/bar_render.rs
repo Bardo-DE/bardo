@@ -10,7 +10,7 @@ use sill_model::tray::{
     Check, Tray, TrayIcon, TrayItem, TrayItemId, TrayMenuEntry, TrayMenuIcon, TrayMenuKind,
     TrayStatus,
 };
-use sill_model::units::{Availability, Presence, Visibility};
+use sill_model::units::{Presence, Visibility};
 use sill_model::windows::Toplevels;
 use sill_ui_kit::harness::SurfaceHarness;
 use sill_ui_kit::links::ControlCenterLink;
@@ -114,7 +114,7 @@ fn each_tray_item_is_a_status_item_and_none_has_a_menu_open() {
         id: 1,
         kind: TrayMenuKind::Item {
             label: "Open".to_owned(),
-            enabled: Availability::Enabled,
+            enabled: true,
             visibility: Visibility::Shown,
             check: Check::None,
             icon: TrayMenuIcon::None,
@@ -149,7 +149,7 @@ fn app_menu(id: i32, title: &str, row: &str) -> TrayMenuEntry {
         id,
         kind: TrayMenuKind::Item {
             label: label.to_owned(),
-            enabled: Availability::Enabled,
+            enabled: true,
             visibility: Visibility::Shown,
             check: Check::None,
             icon: TrayMenuIcon::None,

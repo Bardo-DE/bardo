@@ -16,16 +16,6 @@ pub enum FirstWeekday {
     Sunday,
 }
 
-/// Whether the month grid has a column of ISO week numbers.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]
-#[serde(rename_all = "snake_case")]
-#[word(case = snake)]
-pub enum WeekNumbers {
-    #[default]
-    Hide,
-    Show,
-}
-
 /// The calendar widgets.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ds_settings::SettingsSchema)]
 #[serde(default)]
@@ -53,7 +43,8 @@ pub struct CalendarSettings {
         section = "Calendar",
         advanced
     )]
-    pub week_numbers: WeekNumbers,
+    /// Whether the month grid has a column of ISO week numbers.
+    pub week_numbers: bool,
 }
 
 impl Default for CalendarSettings {
@@ -61,7 +52,7 @@ impl Default for CalendarSettings {
         CalendarSettings {
             sources: "auto".to_owned(),
             first_weekday: FirstWeekday::Monday,
-            week_numbers: WeekNumbers::Hide,
+            week_numbers: false,
         }
     }
 }

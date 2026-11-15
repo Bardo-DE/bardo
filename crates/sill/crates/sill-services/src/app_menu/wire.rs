@@ -8,7 +8,7 @@ use std::collections::HashMap;
 use serde::Deserialize;
 use sill_model::app_menu::{Node, NodeProps, NodeType, ToggleKind};
 use sill_model::tray::{Chord, MenuCommand};
-use sill_model::units::{Availability, Visibility};
+use sill_model::units::Visibility;
 use zbus::Connection;
 use zbus::names::BusName;
 use zbus::zvariant::{OwnedValue, Type, Value};
@@ -140,13 +140,7 @@ pub(crate) fn props_of(props: &HashMap<String, OwnedValue>) -> NodeProps {
             _ => NodeType::Standard,
         },
         label: get(props, "label"),
-        enabled: flag("enabled").map_or(defaults.enabled, |on| {
-            if on {
-                Availability::Enabled
-            } else {
-                Availability::Disabled
-            }
-        }),
+        enabled: flag("enabled").unwrap_or(defaults.enabled),
         visible: flag("visible").map_or(defaults.visible, |on| {
             if on {
                 Visibility::Shown

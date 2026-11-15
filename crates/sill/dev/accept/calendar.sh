@@ -23,7 +23,7 @@
 #      and is Up Next's third-soonest, so it draws nowhere.
 #   3. work.ics rewritten with the review cancelled: within 2 s the bars are the Calendar's team,
 #      then Up Next's team and personal (now the two soonest).
-#   4. `calendar.week_numbers = "show"` and `sill reload`: the center's Calendar is the Medium
+#   4. `calendar.week_numbers = true` and `sill reload`: the center's Calendar is the Medium
 #      card, whose compact month never draws the week column whatever the setting says (quire's
 #      `month_grid::shown_weeks`: "a week column would not fit"), so today's disc stays where it
 #      was (within 2 px) and the card still draws (the reload broke nothing). The week column
@@ -165,14 +165,14 @@ write_settings() {
   cat >"$CONFIG/sill/settings.toml" <<TOML
 [calendar]
 sources = "$CAL/work.ics;$CAL/team.ics;$CAL/personal.ics"
-week_numbers = "$1"
+week_numbers = $1
 TOML
 }
 
 start_daemon() {
   backdrop_seed "$CONFIG" || return 1
   write_fixture
-  write_settings hide
+  write_settings false
   launch_daemon || return 1
   NAME=$(output_name) || return 1
   CENTER="sill-notification-center-$NAME"
@@ -240,7 +240,7 @@ step_edit() {
 step_week_numbers_ignored() {
   local log="$OUT_DIR/weeks.log" seen before after
   : >"$log"
-  write_settings show
+  write_settings true
   sill reload >>"$log" 2>&1 || return 1
   sleep 1
   sill debug capture "$CENTER" "$OUT_DIR/weeks.png" >>"$log" 2>&1 || return 1

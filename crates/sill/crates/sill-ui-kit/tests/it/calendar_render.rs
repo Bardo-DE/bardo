@@ -1,6 +1,6 @@
 //! The Calendar and Up Next widgets on the fake services, in a Popover `Ds` as the notification
 //! center holds them: the month with today on the accent disc and busy days dotted, the week
-//! column on `calendar.week_numbers = "show"`, the previous / next buttons (the card's
+//! column on `calendar.week_numbers = true`, the previous / next buttons (the card's
 //! `MonthIntent::Step`), the Medium card's today column and its next event from the agenda Up
 //! Next reads (the center's month is Medium), Up Next's rows in order with their calendar
 //! colour, its empty and quiet lines, and all through quire's markup lint (coherence rules 1

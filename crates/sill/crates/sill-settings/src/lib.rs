@@ -28,7 +28,7 @@ pub mod voice;
 pub mod wallpaper;
 
 pub use bar::{BarSettings, MenuBarHiding};
-pub use calendar::{CalendarSettings, FirstWeekday, WeekNumbers};
+pub use calendar::{CalendarSettings, FirstWeekday};
 pub use companion::{
     CONFIRM_ARM, CompanionSettings, InField, NotifyWhen, SummonKey, confirm_arm,
     params as companion_params,

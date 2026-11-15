@@ -12,7 +12,7 @@ use dioxus::prelude::*;
 use ds::prelude::*;
 use ds_harness::{Clock, Harness, HarnessConfig, Viewport};
 use month_sample::{AUGUST, First, SEPTEMBER, sample};
-use sill_shell_kit::month_grid::data::{MonthStep, WeekNumbers};
+use sill_shell_kit::month_grid::data::MonthStep;
 use sill_shell_kit::prelude::*;
 use std::time::Duration;
 
@@ -31,7 +31,7 @@ fn SmallCalendar() -> Element {
                 WidgetFrame { size: WidgetSize::Small,
                     MonthGrid {
                         data: sample(AUGUST, First::Monday),
-                        weeks: WeekNumbers::Show,
+                        weeks: true,
                         onstep: move |_: MonthStep| {},
                     }
                 }
@@ -241,7 +241,7 @@ fn WrappedSmallCalendar() -> Element {
                     div { style: "display:flex; justify-content:center;",
                         MonthGrid {
                             data: sample(AUGUST, First::Monday),
-                            weeks: WeekNumbers::Show,
+                            weeks: true,
                             onstep: move |_: MonthStep| {},
                         }
                     }

@@ -11,7 +11,6 @@ use sill_model::now_playing::{
     ARTISTS_MAX, Abilities, Art, Media, MediaCommand, MediaEvent, MediaPlayer, MediaVerb, Micros,
     PLAYERS_MAX, Playback, PlayerId, TEXT_MAX_CHARS, Timeline, Track, step,
 };
-use sill_model::units::Availability;
 use sill_model::untrusted::for_display;
 use tokio::sync::{mpsc, watch};
 use tokio::task::JoinSet;
@@ -325,12 +324,11 @@ async fn press(
 }
 
 fn ability_allows(abilities: &Abilities, verb: MediaVerb) -> bool {
-    let availability = match verb {
+    match verb {
         MediaVerb::PlayPause => abilities.play_pause,
         MediaVerb::Next => abilities.next,
         MediaVerb::Previous => abilities.previous,
-    };
-    availability == Availability::Enabled
+    }
 }
 
 /// One player's full state, read fresh from the bus, and a cover job still to run (the cache had
@@ -442,17 +440,9 @@ async fn abilities_of(player: &PlayerProxy<'_>) -> Abilities {
     let can_next = player.can_go_next().await.unwrap_or(true);
     let can_previous = player.can_go_previous().await.unwrap_or(true);
     Abilities {
-        play_pause: availability_of(can_play || can_pause),
-        next: availability_of(can_next),
-        previous: availability_of(can_previous),
-    }
-}
-
-fn availability_of(can: bool) -> Availability {
-    if can {
-        Availability::Enabled
-    } else {
-        Availability::Disabled
+        play_pause: can_play || can_pause,
+        next: can_next,
+        previous: can_previous,
     }
 }
 

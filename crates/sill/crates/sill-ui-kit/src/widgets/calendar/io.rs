@@ -8,7 +8,6 @@
 use dioxus::prelude::*;
 use jiff::Timestamp;
 use jiff::tz::TimeZone;
-use sill_settings::WeekNumbers;
 use sill_shell_kit::widget::calendar::MonthWidget;
 use sill_shell_kit::widget::calendar::{MonthEntry, MonthFace, MonthIntent, TodayLine};
 
@@ -38,10 +37,7 @@ impl WidgetProvider for CalendarProvider {
         let zone = TimeZone::try_system().unwrap_or(TimeZone::UTC);
         let busy = busy_days(&agenda.events, &zone, month);
         let grid = month_grid(month, calendar.first_weekday, today, &busy);
-        let weeks = match calendar.week_numbers {
-            WeekNumbers::Hide => sill_shell_kit::month_grid::data::WeekNumbers::Hide,
-            WeekNumbers::Show => sill_shell_kit::month_grid::data::WeekNumbers::Show,
-        };
+        let weeks = calendar.week_numbers;
         let face = MonthFace {
             today: Some(TodayLine {
                 weekday: weekday_name(today).to_owned(),

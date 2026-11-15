@@ -11,7 +11,6 @@ use ds::prelude::*;
 use ds_harness::harness::settle_until;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use month_sample::{First, SEPTEMBER, sample, shift};
-use sill_shell_kit::month_grid::data::WeekNumbers;
 use sill_shell_kit::month_grid::data::{DayKey, MonthStep};
 use sill_shell_kit::prelude::*;
 use std::time::Duration;
@@ -35,7 +34,7 @@ fn MonthApp() -> Element {
         Ds { sheet: Some(sill_shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Popover,
             MonthGrid {
                 data: sample(month(), First::Monday),
-                weeks: WeekNumbers::Show,
+                weeks: true,
                 onstep: move |step: MonthStep| {
                     log.with_mut(|log| log.push(format!("{step:?}")));
                     month.set(shift(month(), step));

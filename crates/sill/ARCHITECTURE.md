@@ -542,8 +542,7 @@ pub struct Feed<W: sill_shell_kit::prelude::Widget> {
     pub onintent: Option<EventHandler<W::Intent>>,         // the card's controls; none without any
 }
 #[component] pub fn Card<P: WidgetProvider>(provider: P) -> Element;  // a WidgetCard tile, `SIZE` (Medium)
-pub fn with_provider<A: OnProvider>(kind: CenterWidget, action: A) -> A::Out;  // the only match on the kind
-pub fn card(kind: CenterWidget) -> Element;             // `with_provider(kind, ..)`
+pub fn card(kind: CenterWidget) -> Element;             // the only match on the kind
 ```
 
 Widgets live only in the notification center: `CenterWidgets` draws the fixed list

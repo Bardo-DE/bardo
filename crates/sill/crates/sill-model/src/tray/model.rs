@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::units::{Availability, Visibility};
+use crate::units::Visibility;
 
 /// Every registered status item, in registration order (the bar draws them right to left
 /// from the clock in this order).
@@ -74,7 +74,7 @@ pub enum TrayMenuKind {
     Item {
         label: String,
         /// `enabled`; a disabled row is drawn at .35 and skipped by the keyboard.
-        enabled: Availability,
+        enabled: bool,
         /// `visible`.
         visibility: Visibility,
         /// `toggle-type` + `toggle-state`.

@@ -5,7 +5,7 @@ type Row = (
     u32,
     u32,
     &'static [u32],
-    Result<(Kinds, Plurality, Vec<Pointer>), AskError>,
+    Option<(Kinds, Plurality, Vec<Pointer>)>,
 );
 
 #[test]
@@ -15,13 +15,13 @@ fn kinds_and_cursors_parse_from_the_wire() {
             1,
             0,
             &[1],
-            Ok((Kinds::Screens, Plurality::One, vec![Pointer::Hidden])),
+            Some((Kinds::Screens, Plurality::One, vec![Pointer::Hidden])),
         ),
         (
             2,
             1,
             &[2, 1],
-            Ok((
+            Some((
                 Kinds::Windows,
                 Plurality::Many,
                 vec![Pointer::Hidden, Pointer::Embedded],
@@ -31,7 +31,7 @@ fn kinds_and_cursors_parse_from_the_wire() {
             3,
             0,
             &[4, 4, 2],
-            Ok((
+            Some((
                 Kinds::Both,
                 Plurality::One,
                 vec![Pointer::Embedded, Pointer::Metadata],
@@ -41,16 +41,16 @@ fn kinds_and_cursors_parse_from_the_wire() {
             3 | 8,
             7,
             &[],
-            Ok((Kinds::Both, Plurality::Many, vec![Pointer::Hidden])),
+            Some((Kinds::Both, Plurality::Many, vec![Pointer::Hidden])),
         ),
         (
             1,
             0,
             &[3, 8],
-            Ok((Kinds::Screens, Plurality::One, vec![Pointer::Hidden])),
+            Some((Kinds::Screens, Plurality::One, vec![Pointer::Hidden])),
         ),
-        (0, 0, &[1], Err(AskError::NothingAllowed)),
-        (4, 0, &[1], Err(AskError::NothingAllowed)),
+        (0, 0, &[1], None),
+        (4, 0, &[1], None),
     ];
     for (kinds, multiple, cursors, want) in rows {
         let got = Ask::from_wire("Meet", kinds, multiple, cursors)

@@ -12,7 +12,7 @@ use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
 use ds::prelude::*;
 use month_sample::{AUGUST, First, sample};
-use sill_shell_kit::month_grid::data::{MonthStep, WeekNumbers};
+use sill_shell_kit::month_grid::data::MonthStep;
 use sill_shell_kit::month_grid::density::MonthDensity;
 use sill_shell_kit::prelude::*;
 
@@ -45,7 +45,7 @@ fn grid(density: MonthDensity) -> Element {
     rsx! {
         MonthGrid {
             data: sample(AUGUST, First::Monday),
-            weeks: WeekNumbers::Show,
+            weeks: true,
             density,
             onstep: EventHandler::new(|_: MonthStep| {}),
         }

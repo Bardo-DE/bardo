@@ -14,7 +14,7 @@ pub mod density;
 pub(crate) mod header;
 pub(crate) mod weeks;
 
-use crate::month_grid::data::{DayKey, MonthGridData, MonthKey, MonthStep, WeekNumbers};
+use crate::month_grid::data::{DayKey, MonthGridData, MonthKey, MonthStep};
 use crate::month_grid::density::{Drawn, MonthDensity};
 use crate::month_grid::header::header;
 use crate::month_grid::weeks::{MonthSlide, MonthWeeks};
@@ -45,7 +45,7 @@ use ds::root::common::Common;
 #[component]
 pub fn MonthGrid(
     data: MonthGridData,
-    #[props(default)] weeks: WeekNumbers,
+    #[props(default)] weeks: bool,
     #[props(default)] density: MonthDensity,
     #[props(default)] onstep: Option<EventHandler<MonthStep>>,
     #[props(default)] onpick: Option<EventHandler<DayKey>>,
@@ -92,10 +92,10 @@ pub fn MonthGrid(
 }
 
 /// The weekday heads, behind an empty week-number cell when the numbers show.
-fn heads(heads: &[TextLine; 7], weeks: WeekNumbers) -> Element {
+fn heads(heads: &[TextLine; 7], weeks: bool) -> Element {
     rsx! {
         div { class: "ds-month-row", "data-row": "heads",
-            if weeks == WeekNumbers::Show {
+            if weeks {
                 span { class: "ds-month-week" }
             }
             for (at , head) in heads.iter().enumerate() {
@@ -106,10 +106,10 @@ fn heads(heads: &[TextLine; 7], weeks: WeekNumbers) -> Element {
 }
 
 /// The week numbers drawn: the caller's, except never at the compact density.
-fn shown_weeks(weeks: WeekNumbers, drawn: Drawn) -> WeekNumbers {
+fn shown_weeks(weeks: bool, drawn: Drawn) -> bool {
     match drawn {
         Drawn::Regular => weeks,
-        Drawn::Compact => WeekNumbers::Hide,
+        Drawn::Compact => false,
     }
 }
 

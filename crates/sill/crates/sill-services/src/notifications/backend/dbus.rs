@@ -101,13 +101,6 @@ pub enum CloseAnswer {
     NotHeld,
 }
 
-/// Why a `Notify` was turned away before it was read.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum WireRefusal {
-    /// More than `HINTS_MAX` hints.
-    TooManyHints,
-}
-
 /// `Notify`'s eight arguments as they arrived.
 #[derive(Debug, Clone, PartialEq)]
 pub struct WireNotify {
@@ -127,8 +120,8 @@ pub struct WireNotify {
 /// no image), else `image-path`, `transient` and `resident` (booleans; some senders send a
 /// byte or an int, read as non-zero), `sound-name`, `sound-file`, `suppress-sound`. Unknown
 /// hints are ignored; a hint of the wrong type is as if absent. Every field is cut to its ceiling
-/// (`sill_model::notifications::limits`); more than `HINTS_MAX` hints is refused.
-pub fn posting_from_wire(call: WireNotify) -> Result<Posting, WireRefusal> {
+/// (`sill_model::notifications::limits`); more than `HINTS_MAX` hints is `None`.
+pub fn posting_from_wire(call: WireNotify) -> Option<Posting> {
     super::wire::posting(call)
 }
 
@@ -180,9 +173,7 @@ impl Server {
             hints,
             expire_timeout,
         })
-        .map_err(|WireRefusal::TooManyHints| {
-            fdo::Error::InvalidArgs("too many hints".to_owned())
-        })?;
+        .ok_or_else(|| fdo::Error::InvalidArgs("too many hints".to_owned()))?;
         let (reply, answer) = oneshot::channel();
         self.calls
             .send(Call::Notify {
@@ -300,7 +291,7 @@ mod tests {
     }
 
     fn posting_of(call: WireNotify) -> Posting {
-        posting_from_wire(call).unwrap_or_else(|e| panic!("{e:?}"))
+        posting_from_wire(call).expect("a call within the hint ceiling") // test-only
     }
 
     #[test]

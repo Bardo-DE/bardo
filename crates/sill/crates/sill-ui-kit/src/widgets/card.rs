@@ -52,32 +52,12 @@ pub fn Card<P: WidgetProvider>(provider: P) -> Element {
     }
 }
 
-/// What to do with one kind's provider type: [`with_provider`] picks the type from the kind.
-pub trait OnProvider {
-    type Out;
-    fn on<P: WidgetProvider>(self) -> Self::Out;
-}
-
-/// `action` on `kind`'s provider: the only match on the kind.
-pub fn with_provider<A: OnProvider>(kind: CenterWidget, action: A) -> A::Out {
-    match kind {
-        CenterWidget::Calendar => action.on::<CalendarProvider>(),
-        CenterWidget::UpNext => action.on::<UpNextProvider>(),
-    }
-}
-
-struct CardOf;
-
-impl OnProvider for CardOf {
-    type Out = Element;
-    fn on<P: WidgetProvider>(self) -> Element {
-        rsx! { Card { provider: P::default() } }
-    }
-}
-
-/// `kind`'s card.
+/// `kind`'s card: the only match on the kind.
 pub fn card(kind: CenterWidget) -> Element {
-    with_provider(kind, CardOf)
+    match kind {
+        CenterWidget::Calendar => rsx! { Card { provider: CalendarProvider::default() } },
+        CenterWidget::UpNext => rsx! { Card { provider: UpNextProvider::default() } },
+    }
 }
 
 /// One widget of `kind` on quire's card in the notification center: the kind's provider feeds

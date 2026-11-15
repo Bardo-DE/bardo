@@ -11,7 +11,7 @@ use ds::stack::menu_track::types::MenuTiming;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use shell_host::{PopupPlacement, Rect as HostRect, Size as HostSize};
 use sill_model::tray::{Check, TrayItemId, TrayMenuEntry, TrayMenuIcon, TrayMenuKind};
-use sill_model::units::{Availability as Enabled, Visibility};
+use sill_model::units::Visibility;
 use sill_ui_kit::menu::PopupLook;
 use tokio::sync::{mpsc, watch};
 
@@ -55,7 +55,7 @@ fn row(id: i32, label: &str, children: Vec<TrayMenuEntry>) -> TrayMenuEntry {
         id,
         kind: TrayMenuKind::Item {
             label: label.to_owned(),
-            enabled: Enabled::Enabled,
+            enabled: true,
             visibility: Visibility::Shown,
             check: Check::None,
             icon: TrayMenuIcon::None,

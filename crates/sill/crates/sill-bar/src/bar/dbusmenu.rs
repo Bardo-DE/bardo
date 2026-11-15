@@ -8,7 +8,7 @@ use ds::components::menus::item::item::MenuImage;
 use ds::prelude::Check as DsCheck;
 use ds::prelude::*;
 use sill_model::tray::{Check as TrayCheck, Chord, TrayMenuEntry, TrayMenuIcon, TrayMenuKind};
-use sill_model::units::{Availability as TrayAvailability, Visibility};
+use sill_model::units::Visibility;
 
 use super::pick::BarPick;
 
@@ -59,9 +59,10 @@ fn entry(pick: RowPick, row: &TrayMenuEntry, icon: RowIcon) -> Option<MenuItem<B
     if *visibility == Visibility::Hidden {
         return None;
     }
-    let availability = match enabled {
-        TrayAvailability::Enabled => Availability::Enabled,
-        TrayAvailability::Disabled => Availability::Disabled,
+    let availability = if *enabled {
+        Availability::Enabled
+    } else {
+        Availability::Disabled
     };
     let image = icon(row_icon);
     let children = menu_items(pick, children, icon);

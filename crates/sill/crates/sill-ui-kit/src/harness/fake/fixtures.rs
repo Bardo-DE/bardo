@@ -224,8 +224,7 @@ pub fn power_profiles() -> PowerProfiles {
 pub fn media() -> Media {
     use ds::base::time::stamp::Stamp;
     use sill_model::now_playing::{Abilities, MediaPlayer, Playback, PlayerId, Timeline, Track};
-    use sill_model::units::Availability;
-    Media {
+        Media {
         players: vec![MediaPlayer {
             id: PlayerId("org.mpris.MediaPlayer2.fake".to_owned()),
             identity: "Fake Player".to_owned(),
@@ -239,9 +238,9 @@ pub fn media() -> Media {
             },
             timeline: Timeline::Unknown,
             abilities: Abilities {
-                play_pause: Availability::Enabled,
-                next: Availability::Enabled,
-                previous: Availability::Enabled,
+                play_pause: true,
+                next: true,
+                previous: true,
             },
         }],
     }

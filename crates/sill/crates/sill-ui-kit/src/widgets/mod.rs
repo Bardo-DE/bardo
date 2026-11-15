@@ -2,7 +2,7 @@
 //! history, each on quire's widget interface. quire owns the card
 //! (`sill_shell_kit::prelude::WidgetCard`); a widget is a `sill_shell_kit::prelude::Widget`
 //! (quire's `MonthWidget` and sill's own [`up_next::UpNext`]), and sill only provides each one's
-//! entries from its services ([`Widget`] picks the provider for a kind, [`with_provider`]).
+//! entries from its services ([`Widget`] picks the provider for a kind).
 
 mod card;
 mod kind;
@@ -11,7 +11,7 @@ mod wake;
 pub mod calendar;
 pub mod up_next;
 
-pub use card::{Card, Feed, OnProvider, Widget, WidgetProvider, card, with_provider};
+pub use card::{Card, Feed, Widget, WidgetProvider, card};
 pub use kind::CenterWidget;
 pub use sill_shell_kit::prelude::WidgetSize;
 pub use wake::{provide_widget_wake, use_widget_wake};

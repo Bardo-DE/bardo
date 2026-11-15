@@ -94,7 +94,7 @@ pub struct MonthDay {
 /// One row: its ISO week and its seven days, from the first weekday.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct MonthWeek {
-    /// The row's ISO week, drawn only with `WeekNumbers::Show`.
+    /// The row's ISO week, drawn only when the grid shows week numbers (`calendar.week_numbers`).
     pub number: IsoWeek,
     /// Seven days, the first weekday first.
     pub days: [MonthDay; 7],
@@ -111,21 +111,6 @@ pub struct MonthGridData {
     pub heads: [TextLine; 7],
     /// As many rows as the month touches (four to six), padded with the neighbours' days.
     pub weeks: Vec<MonthWeek>,
-}
-
-/// Whether the grid leads each row with its ISO week (`calendar.week_numbers`, design/22
-/// section 3.21).
-///
-/// A word of the widget contract (a month widget's face carries it), so it stays this crate's
-/// own: the setting's `sill_settings::WeekNumbers` maps onto it in the calendar widget, since
-/// this kit cannot name the settings.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]
-pub enum WeekNumbers {
-    /// Seven columns only.
-    #[default]
-    Hide,
-    /// A quieter column of week numbers first.
-    Show,
 }
 
 /// Which way the header's buttons step the month.

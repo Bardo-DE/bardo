@@ -7,7 +7,7 @@
 //! [`MonthIntent::Step`], and the provider answers with the next month's timeline.
 
 use crate::month_grid::MonthGrid;
-use crate::month_grid::data::{MonthGridData, MonthStep, WeekNumbers};
+use crate::month_grid::data::{MonthGridData, MonthStep};
 use crate::widget::contract::{Widget, WidgetContext, WidgetKind};
 use crate::widget::kind::WidgetSize;
 use dioxus::prelude::*;
@@ -36,7 +36,7 @@ pub struct MonthFace {
     /// The grid, in the provider's words.
     pub grid: MonthGridData,
     /// `calendar.week_numbers`.
-    pub weeks: WeekNumbers,
+    pub weeks: bool,
     /// Today, for the Medium card's today column; none draws the column without it.
     #[serde(default)]
     pub today: Option<TodayLine>,
@@ -51,7 +51,7 @@ pub struct MonthFace {
 
 impl MonthFace {
     /// `grid` with week numbers as `weeks`, no today column and no events.
-    pub fn of(grid: MonthGridData, weeks: WeekNumbers) -> Self {
+    pub fn of(grid: MonthGridData, weeks: bool) -> Self {
         MonthFace {
             grid,
             weeks,

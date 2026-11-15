@@ -196,10 +196,11 @@ fn duration_of(micros: Micros) -> Duration {
 }
 
 /// The service's word for "can do it" as quire's.
-fn available(can: sill_model::units::Availability) -> Availability {
-    match can {
-        sill_model::units::Availability::Enabled => Availability::Enabled,
-        sill_model::units::Availability::Disabled => Availability::Disabled,
+fn available(can: bool) -> Availability {
+    if can {
+        Availability::Enabled
+    } else {
+        Availability::Disabled
     }
 }
 

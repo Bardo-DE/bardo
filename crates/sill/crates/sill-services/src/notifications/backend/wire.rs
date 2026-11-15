@@ -16,18 +16,18 @@ use sill_model::notifications::{
 use sill_model::untrusted::{clip_bytes, cut_bytes};
 use zbus::zvariant::{OwnedValue, Value};
 
-use super::dbus::{WireNotify, WireRefusal};
+use super::dbus::WireNotify;
 use super::picture::pixels;
 
 type HintMap = HashMap<String, OwnedValue>;
 
-/// The posting `call` stands for, or why not.
-pub(crate) fn posting(call: WireNotify) -> Result<Posting, WireRefusal> {
+/// The posting `call` stands for, or `None` when it carries more than `HINTS_MAX` hints.
+pub(crate) fn posting(call: WireNotify) -> Option<Posting> {
     if call.hints.len() > HINTS_MAX {
-        return Err(WireRefusal::TooManyHints);
+        return None;
     }
     let hints = &call.hints;
-    Ok(Posting {
+    Some(Posting {
         replaces: NotificationId::replacing(call.replaces_id),
         app: AppRef {
             name: clip_bytes(&call.app_name, APP_NAME_MAX_BYTES),
@@ -171,7 +171,7 @@ mod tests {
     use zbus::zvariant::{OwnedValue, Value};
 
     use super::posting;
-    use crate::notifications::backend::dbus::{WireNotify, WireRefusal};
+    use crate::notifications::backend::dbus::WireNotify;
 
     fn owned(value: Value<'_>) -> OwnedValue {
         value.try_into_owned().unwrap_or_else(|e| panic!("{e}"))
@@ -212,7 +212,7 @@ mod tests {
         wire.actions = ["k".repeat(5000), long.clone()].to_vec();
         wire.hints
             .insert("category".to_owned(), owned(Value::from(long.as_str())));
-        let posting = posting(wire).unwrap_or_else(|e| panic!("{e:?}"));
+        let posting = posting(wire).expect("a call within the hint ceiling") // test-only;
         assert!(
             posting.app.name.len() <= 128 + 3,
             "{}",
@@ -230,7 +230,7 @@ mod tests {
     fn only_the_first_actions_are_kept() {
         let mut wire = call();
         wire.actions = (0..ACTIONS_MAX * 5).map(|n| n.to_string()).collect();
-        let posting = posting(wire).unwrap_or_else(|e| panic!("{e:?}"));
+        let posting = posting(wire).expect("a call within the hint ceiling") // test-only;
         assert_eq!(posting.actions.len(), ACTIONS_MAX);
     }
 
@@ -241,7 +241,7 @@ mod tests {
             wire.hints
                 .insert(format!("x-{n}"), owned(Value::from(1u32)));
         }
-        assert_eq!(posting(wire).err(), Some(WireRefusal::TooManyHints));
+        assert!(posting(wire).is_none());
         let mut ok = call();
         for n in 0..HINTS_MAX {
             ok.hints.insert(format!("x-{n}"), owned(Value::from(1u32)));
@@ -268,7 +268,7 @@ mod tests {
         for (name, image, kept) in cases {
             let mut wire = call();
             wire.hints.insert("image-data".to_owned(), image);
-            let posting = posting(wire).unwrap_or_else(|e| panic!("{e:?}"));
+            let posting = posting(wire).expect("a call within the hint ceiling") // test-only;
             let has = matches!(posting.hints.image, NoteImage::Pixels(_));
             assert_eq!(has, kept, "{name}");
         }
@@ -281,7 +281,7 @@ mod tests {
             "desktop-entry".to_owned(),
             owned(Value::from("sill-accounts")),
         );
-        let posting = posting(wire).unwrap_or_else(|e| panic!("{e:?}"));
+        let posting = posting(wire).expect("a call within the hint ceiling") // test-only;
         assert_eq!(posting.app.desktop_entry, None);
     }
 }

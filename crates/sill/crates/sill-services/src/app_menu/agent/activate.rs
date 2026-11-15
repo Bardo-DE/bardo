@@ -9,7 +9,6 @@ use sill_model::app_menu::{
     ActionIndex, Identity, ItemKey, Route, effect_of, own_commands, route_of,
 };
 use sill_model::tray::{MenuCommand, TrayMenuEntry, TrayMenuKind};
-use sill_model::units::Availability;
 
 use super::{MenuAgent, Target};
 use crate::app_menu::wire;
@@ -208,7 +207,7 @@ fn find(rows: &[TrayMenuEntry], id: i32) -> Option<&TrayMenuEntry> {
 fn runnable(row: &TrayMenuEntry) -> Result<Option<&MenuCommand>, MenuFault> {
     match &row.kind {
         TrayMenuKind::Item {
-            enabled: Availability::Enabled,
+            enabled: true,
             children,
             command,
             ..

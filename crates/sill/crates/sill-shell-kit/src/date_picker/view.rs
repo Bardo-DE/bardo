@@ -13,7 +13,7 @@
 use crate::date_picker::calendar::{month_after, month_grid};
 use crate::date_picker::model::{DateValue, Elements, PickerStyle, Segment};
 use crate::month_grid::MonthGrid;
-use crate::month_grid::data::{MonthKey, MonthStep, WeekNumbers};
+use crate::month_grid::data::{MonthKey, MonthStep};
 use crate::month_grid::density::MonthDensity;
 use dioxus::prelude::*;
 use ds::components::fields::stepper::model::{Readout, StepDirection};
@@ -172,7 +172,7 @@ pub fn DatePicker(
                     if elements != Elements::Time {
                         MonthGrid {
                             data: month_grid(month, value.day),
-                            weeks: WeekNumbers::Hide,
+                            weeks: false,
                             density: MonthDensity::Regular,
                             onstep: move |step: MonthStep| {
                                 let by = match step {

@@ -6,7 +6,7 @@ use crate::tray::{
     Check, Chord, MENU_DEPTH_MAX, MENU_LABEL_MAX_CHARS, MENU_ROWS_MAX, MenuCommand, TrayMenuEntry,
     TrayMenuIcon, TrayMenuKind, plain_label,
 };
-use crate::units::{Availability, Visibility};
+use crate::units::Visibility;
 use crate::untrusted::for_display;
 
 /// `type`: a row or a rule.
@@ -31,7 +31,7 @@ pub enum ToggleKind {
 pub struct NodeProps {
     pub kind: NodeType,
     pub label: Option<String>,
-    pub enabled: Availability,
+    pub enabled: bool,
     pub visible: Visibility,
     pub toggle: ToggleKind,
     /// `toggle-state` as sent: 0 off, 1 on, anything else indeterminate.
@@ -47,7 +47,7 @@ impl Default for NodeProps {
         NodeProps {
             kind: NodeType::Standard,
             label: None,
-            enabled: Availability::Enabled,
+            enabled: true,
             visible: Visibility::Shown,
             toggle: ToggleKind::None,
             toggle_state: -1,

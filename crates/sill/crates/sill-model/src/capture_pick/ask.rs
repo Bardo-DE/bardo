@@ -67,14 +67,6 @@ impl Remembered {
     }
 }
 
-/// Why a call cannot be asked of the person.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum AskError {
-    /// Neither screens nor windows were allowed.
-    #[error("the request allows nothing to share")]
-    NothingAllowed,
-}
-
 /// A request to pick what to share.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Ask {
@@ -89,19 +81,20 @@ pub struct Ask {
 }
 
 impl Ask {
-    /// The ask a call's arguments make. Unknown kind bits and cursor values are ignored; no
-    /// cursor mode at all means the pointer stays out of the picture.
+    /// The ask a call's arguments make, or `None` when neither screens nor windows are
+    /// allowed. Unknown kind bits and cursor values are ignored; no cursor mode at all means
+    /// the pointer stays out of the picture.
     pub fn from_wire(
         app_label: &str,
         kinds: u32,
         multiple: u32,
         cursor_modes: &[u32],
-    ) -> Result<Ask, AskError> {
+    ) -> Option<Ask> {
         let kinds = match (kinds & 1 != 0, kinds & 2 != 0) {
             (true, true) => Kinds::Both,
             (true, false) => Kinds::Screens,
             (false, true) => Kinds::Windows,
-            (false, false) => return Err(AskError::NothingAllowed),
+            (false, false) => return None,
         };
         let mut pointers: Vec<Pointer> = cursor_modes
             .iter()
@@ -113,7 +106,7 @@ impl Ask {
         if pointers.is_empty() {
             pointers.push(Pointer::Hidden);
         }
-        Ok(Ask {
+        Some(Ask {
             app_label: app_label.to_owned(),
             kinds,
             plurality: if multiple == 0 {

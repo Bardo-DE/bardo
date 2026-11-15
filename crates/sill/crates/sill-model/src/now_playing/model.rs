@@ -4,7 +4,6 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::units::Availability;
 use ds_core::time::stamp::Stamp;
 
 /// Every MPRIS player on the bus, in the order they appeared.
@@ -92,12 +91,23 @@ pub enum Timeline {
 }
 
 /// Which transport buttons the player takes: `CanPlay`/`CanPause`, `CanGoNext`,
-/// `CanGoPrevious` (each `Disabled` also when `CanControl` is false).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+/// `CanGoPrevious` (each false also when `CanControl` is false).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Abilities {
-    pub play_pause: Availability,
-    pub next: Availability,
-    pub previous: Availability,
+    pub play_pause: bool,
+    pub next: bool,
+    pub previous: bool,
+}
+
+impl Default for Abilities {
+    /// Every button works until the player says otherwise.
+    fn default() -> Self {
+        Abilities {
+            play_pause: true,
+            next: true,
+            previous: true,
+        }
+    }
 }
 
 impl Media {

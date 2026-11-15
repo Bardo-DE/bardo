@@ -2,7 +2,6 @@
 //! takes first. The words are the app's own, so the caller labels the whole text untrusted.
 
 use crate::tray::{Check, TrayMenuEntry, TrayMenuKind};
-use crate::units::Availability;
 
 use super::route::ItemKey;
 use super::titles::{shown, titles};
@@ -50,7 +49,7 @@ fn rows_lines(rows: &[TrayMenuEntry], depth: usize, lines: &mut Vec<String>) {
             continue;
         };
         let mut line = format!("{}[{}] {label}", "  ".repeat(depth), row.id);
-        if *enabled == Availability::Disabled {
+        if !*enabled {
             line.push_str(" (disabled)");
         }
         match check {

@@ -3,7 +3,7 @@
 //! (design/04-COMPONENTS.md section 39; design/05-MOTION.md section 7, timers instead of
 //! `animationend`). A render that keeps the month keeps the body, and plays nothing.
 
-use crate::month_grid::data::{DayKey, Eventful, MonthDay, MonthKey, MonthWeek, WeekNumbers};
+use crate::month_grid::data::{DayKey, Eventful, MonthDay, MonthKey, MonthWeek};
 use dioxus::prelude::*;
 use ds::base::word::Word;
 use ds::motion::anim::Anim;
@@ -45,7 +45,7 @@ impl MonthSlide {
 #[component]
 pub(crate) fn MonthWeeks(
     weeks: Vec<MonthWeek>,
-    numbers: WeekNumbers,
+    numbers: bool,
     slide: MonthSlide,
     onpick: Option<EventHandler<DayKey>>,
 ) -> Element {
@@ -59,7 +59,7 @@ pub(crate) fn MonthWeeks(
         div { class, "data-pulse": pulse,
             for week in weeks {
                 div { key: "{week.number.0}", class: "ds-month-row",
-                    if numbers == WeekNumbers::Show {
+                    if numbers {
                         span { class: "ds-month-week", "{week.number.0}" }
                     }
                     for day in week.days {

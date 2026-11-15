@@ -283,7 +283,7 @@ mod tests {
         Check, Chord, Tray, TrayIcon, TrayItem, TrayItemId, TrayMenuEntry, TrayMenuIcon,
         TrayMenuKind, TrayStatus,
     };
-    use sill_model::units::{Availability as Enabled, Visibility};
+    use sill_model::units::Visibility;
     use sill_model::windows::{Activity, Sizing, Toplevel, Toplevels, WindowState};
     use sill_settings::ControlCenterModule;
 
@@ -497,7 +497,7 @@ mod tests {
             id,
             kind: TrayMenuKind::Item {
                 label: (*label).to_owned(),
-                enabled: Enabled::Enabled,
+                enabled: true,
                 visibility: Visibility::Shown,
                 check: Check::None,
                 icon: TrayMenuIcon::None,
@@ -543,7 +543,7 @@ mod tests {
             id,
             kind: TrayMenuKind::Item {
                 label: label.to_owned(),
-                enabled: Enabled::Enabled,
+                enabled: true,
                 visibility: Visibility::Shown,
                 check: Check::None,
                 icon: TrayMenuIcon::None,
