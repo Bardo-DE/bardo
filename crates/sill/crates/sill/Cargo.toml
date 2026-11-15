@@ -44,6 +44,7 @@ toml = {version = "1"}
 serde_json = {version = "1"}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 voice-wire = {path = "../../../docket/crates/voice-wire"}
+zbus-ready = {path = "../../../zbus-ready"}
 ds-harness = {path = "../../../quire/crates/ds-harness"}
 sill-testkit = {path = "../sill-testkit"}
 # `tests/lint.rs` mounts every surface on the harness and lints its markup and stylesheet.
