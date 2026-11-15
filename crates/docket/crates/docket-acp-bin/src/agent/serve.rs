@@ -30,7 +30,6 @@ use super::places::Places;
 use super::wire::{self, SandboxLimits};
 use bulkhead::NetworkMode;
 use companion_model::helper::{AppsAsk, AppsReply};
-use docket_acp_host::bool;
 use docket_core::{HandOver, HandRefusal, HandReply, Handed, Reveal, UserTurn};
 use docket_dbus::callers::Identity;
 use docket_dbus::{AGENT_HOST_BUS, AGENT_HOST_PATH, BusConnection};

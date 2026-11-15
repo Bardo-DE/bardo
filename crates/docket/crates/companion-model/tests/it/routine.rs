@@ -342,7 +342,7 @@ fn an_event_starts_a_job_whose_goal_is_the_persons_words_and_whose_event_is_a_ha
 
 #[test]
 fn a_job_ending_done_starts_what_waits_for_it_and_a_failure_does_not() {
-    let after = Trigger::AfterJob(JobRef(JobId(5)));
+    let after = Trigger::AfterJob(JobId(5));
     let (book, id) = made(RoutineBook::default(), &hid(2), after, Missed::Skip, 0);
 
     let (book, fx) = ended(book, 5, JobEnd::Failed(JobFault::OutOfSteps), 10);

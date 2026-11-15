@@ -9,7 +9,6 @@ use super::rig::{
     run_turn_answering, started, write,
 };
 use action_review::{ReviewReason, ReviewVerdict};
-use docket_acp_host::bool;
 use docket_core::AuditRecord;
 use docket_fake::{ReviewMode, ScriptedReviewer};
 use docket_permissions_core::{GrantCaller, ReasonCode, ReasonText, StandingScope};
