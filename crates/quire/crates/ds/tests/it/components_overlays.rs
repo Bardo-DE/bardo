@@ -1,7 +1,7 @@
 //! The overlay components (design/04-COMPONENTS.md sections 18, 20-25, 29-31): every component
 //! in every state rendered inside a `Ds` through dioxus-ssr and compared with a golden in
 //! `tests/snapshots/overlays/<component>/<state>.html`; the root's toast host;
-//! the layer stack a floating component joins; and the goldens' markup against the stylesheet.
+//! the layer stack a floating component joins. `golden_lints` lints the goldens' markup against the stylesheet.
 //!
 //! `DS_BLESS=1 cargo test -p ds --test it components_overlays` rewrites the goldens.
 
@@ -237,44 +237,6 @@ fn a_toast_slides_in_and_is_dropped_after_it_slides_out() {
     dom.run_for(Duration::from_millis(520));
     let gone = inside_root(&dom);
     assert!(!gone.contains("ds-toast"), "{gone}");
-}
-
-/// Coherence rule 2 on the overlay goldens: every class is one the stylesheet styles and no
-/// element is hand-written markup, except what quire's own components must write inline.
-#[test]
-fn every_overlay_golden_lints_clean() {
-    use ds_lint::{Exception, LintConfig, Rule, markup};
-    const EXCEPTIONS: &[Exception] = &[
-        Exception {
-            rule: Rule::HexColour,
-            selector: "span.ds-avatar",
-            reason: "the person hue and account colour are computed per face (O-7); the letter is #fff (O-3)",
-        },
-        Exception {
-            rule: Rule::RawMarkup,
-            selector: "svg.ds-send-ring",
-            reason: "the send ring is two circles Rust redraws per tick, not a glyph (O-20, spike S6)",
-        },
-    ];
-    let config = LintConfig {
-        exceptions: EXCEPTIONS,
-        ..LintConfig::new(&ds::kits())
-    };
-    let goldens = golden::all_in("overlays");
-    assert!(
-        goldens.len() >= CASES.len(),
-        "only {} goldens",
-        goldens.len()
-    );
-    let failures: Vec<String> = goldens
-        .iter()
-        .flat_map(|(name, html)| {
-            markup(html, ds::stylesheet(), &config)
-                .into_iter()
-                .map(move |offence| format!("{name}: {:?} {}", offence.rule, offence.text))
-        })
-        .collect();
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
 /// A sender card composed from `HoverCardPart`s draws exactly the markup section 22 writes by

@@ -1,6 +1,6 @@
 //! The structure components (design/30 sections 2.1 to 2.7): every component in every state
 //! rendered through dioxus-ssr and compared with a golden in
-//! `tests/snapshots/structure/<component>/<state>.html`, each linted against the stylesheet, and
+//! `tests/snapshots/structure/<component>/<state>.html`, and
 //! every `ds-` class in one styled by its own component's sheet.
 //!
 //! `DS_BLESS=1 cargo test -p ds --test it components_structure` rewrites the goldens.
@@ -11,7 +11,6 @@ use crate::support::golden;
 
 use cases::{CASES, Case};
 use dioxus::prelude::*;
-use ds_lint::{LintConfig, markup};
 
 #[derive(Props, Clone)]
 struct HostProps {
@@ -129,22 +128,6 @@ fn every_structure_component_matches_its_golden() {
     let failures: Vec<String> = CASES
         .iter()
         .filter_map(|case| golden::check(&name(case), &render(case)).err())
-        .collect();
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
-}
-
-#[test]
-fn every_structure_golden_lints_clean() {
-    let config = LintConfig::new(&ds::kits());
-    let css = ds::stylesheet();
-    let failures: Vec<String> = CASES
-        .iter()
-        .flat_map(|case| {
-            let html = render(case);
-            markup(&html, css, &config)
-                .into_iter()
-                .map(move |offence| format!("{}: {:?} {}", name(case), offence.rule, offence.text))
-        })
         .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

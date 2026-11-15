@@ -2,8 +2,8 @@
 //! 26-28, 32-35): every component in every state rendered through dioxus-ssr and compared with
 //! a golden in `tests/snapshots/lists/<component>/<state>.html`; roster-driven lists at each
 //! moment of a row's exit; the drag ghost driven by a `DragTracker`; the Space editor's field
-//! plane decoded and probed; the contrast pills against `space::readout`; and every golden
-//! linted as markup against the stylesheet.
+//! plane decoded and probed; and the contrast pills against `space::readout`. `golden_lints` lints
+//! every golden as markup against the stylesheet.
 //!
 //! `DS_BLESS=1 cargo test -p ds --test it components_lists` rewrites the goldens.
 
@@ -170,57 +170,5 @@ fn every_class_in_a_golden_is_styled_by_its_component() {
             }
         }
     }
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
-}
-
-/// What these components write inline that a consumer may not: colours computed per account,
-/// provider or Space. Each is data the palette or the app computes, not a theme colour.
-const MARKUP_EXCEPTIONS: &[ds_lint::Exception] = {
-    use ds_lint::{Exception, Rule};
-    &[
-        Exception {
-            rule: Rule::HexColour,
-            selector: "span.ds-avatar",
-            reason: "the person hue and account colour are computed per face (O-7); the letter is #fff (O-3)",
-        },
-        Exception {
-            rule: Rule::HexColour,
-            selector: "span.ds-provider",
-            reason: "a provider's identity colour enters as --pc (section 28, O-3)",
-        },
-        Exception {
-            rule: Rule::HexColour,
-            selector: "button.ds-space-dot",
-            reason: "a Space dot is painted with its FrameVars gradient",
-        },
-    ]
-};
-
-/// Coherence rule 2 on these components' output: every golden uses only classes the stylesheet
-/// styles, no hand-written SVG or form control, and no colour inline beyond the exceptions.
-#[test]
-fn every_list_golden_lints_clean() {
-    use ds_lint::{LintConfig, markup};
-    let config = LintConfig {
-        exceptions: MARKUP_EXCEPTIONS,
-        ..LintConfig::new(&ds::kits())
-    };
-    let goldens = golden::all_in("lists");
-    assert!(
-        goldens.len()
-            >= CASES.len() + ROW_CASES.len() + THREAD_ROW_CASES.len() + STRIP_PRESS_CASES.len(),
-        "only {} goldens",
-        goldens.len()
-    );
-    // The picker's Space dot is styled by a sheet above `ds`; a stand-in rule defines its class.
-    let css = format!("{}\n.ds-space-dot{{}}", ds::stylesheet());
-    let failures: Vec<String> = goldens
-        .iter()
-        .flat_map(|(name, html)| {
-            markup(html, &css, &config)
-                .into_iter()
-                .map(move |offence| format!("{name}: {:?} {}", offence.rule, offence.text))
-        })
-        .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

@@ -1,6 +1,6 @@
 //! Form, FormSection, IconTile and PaneStack in every state rendered through dioxus-ssr and compared with
 //! a golden in `tests/snapshots/forms/<component>/<state>.html`; every class in a golden is
-//! styled by the components' sheets; every golden lints clean as markup.
+//! styled by the components' sheets. `golden_lints` lints every golden as markup.
 //!
 //! `DS_BLESS=1 cargo test -p ds --test it forms_ssr` rewrites the goldens.
 
@@ -86,45 +86,6 @@ fn every_class_in_a_forms_golden_is_styled() {
             }
         }
     }
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
-}
-
-/// The tile's colour is data the caller passes (an app's or a pane's identity colour), written
-/// inline as `--tile-bg`; an avatar's is computed per face.
-const MARKUP_EXCEPTIONS: &[ds_lint::Exception] = {
-    use ds_lint::{Exception, Rule};
-    &[
-        Exception {
-            rule: Rule::HexColour,
-            selector: "span.ds-icon-tile",
-            reason: "a tile's ground is the caller's identity colour, entering as --tile-bg",
-        },
-        Exception {
-            rule: Rule::HexColour,
-            selector: "span.ds-avatar",
-            reason: "the person hue is computed per face (O-7)",
-        },
-    ]
-};
-
-#[test]
-fn every_forms_golden_lints_clean() {
-    use ds_lint::{LintConfig, markup};
-    let config = LintConfig {
-        exceptions: MARKUP_EXCEPTIONS,
-        ..LintConfig::new(&ds::kits())
-    };
-    let css = ds::stylesheet();
-    let failures: Vec<String> = CASES
-        .iter()
-        .flat_map(|case| {
-            markup(&render(case), css, &config)
-                .into_iter()
-                .map(move |offence| {
-                    format!("{}: {:?} {}", golden_name(case), offence.rule, offence.text)
-                })
-        })
-        .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 

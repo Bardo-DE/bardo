@@ -1,10 +1,10 @@
 //! Components driven through a real Blitz document: pointer, keys and time.
 //!
-//! The four overlay and list cases are the plan's (a menu opens on click and closes on Escape; a
-//! hover card appears after 500 ms and not before; a toast hides after 5000 ms; a row leaves and
-//! the rows below heal), beside the control cases, the same timings driven through the hubs the
-//! root provides, and the overlay and list props (a field focused on mount takes typing; the
-//! Space editor reports the dot picked inside it).
+//! The root stamps the last input modality; a toggle switches; a hover card appears after 500 ms
+//! and not before; a toast hides after its hold, both driven through the hubs the root provides;
+//! a field focused on mount takes typing; and the Space editor reports the dot picked inside it
+//! and does not pick one when a stop chip is removed. The menu, the row roster and the
+//! button-click rules have their own files.
 
 use dioxus::prelude::*;
 use ds::components::app::space_editor::DotIndex;

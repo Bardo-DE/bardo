@@ -19,13 +19,12 @@ mod components_controls;
 mod components_lists;
 mod components_overlays;
 mod components_structure;
-mod control_goldens_lint;
 #[path = "controls/css_scan.rs"]
 mod css_scan;
 mod edit_surface_ssr;
 mod file_icon_ssr;
 mod forms_ssr;
-mod golden_hygiene;
+mod golden_lints;
 mod hig_lint;
 mod kept_click_rule;
 mod launcher_parts_ssr;

@@ -1,10 +1,9 @@
-//! `List` on a real Blitz document, on the virtual clock: rows of different
-//! heights that the caller stops listing fold out and stay drawn until exactly their batch's
-//! settle; a Clear folds its rows staggered and drops them together; the rows below then heal
-//! by the heights the dropped rows above each one measured, starting where they stood and
-//! ending exactly in their new places; an arrival enters with `row-in` and comes to rest; a row
-//! listed again while it leaves stays; and under Reduced motion a whole Clear settles at
-//! Reduced's length.
+//! `List` on a real Blitz document, on the virtual clock: rows of different heights that the
+//! caller stops listing fold out and stay drawn until exactly their batch's settle; the rows
+//! below then heal by the heights the dropped rows above each one measured, starting where they
+//! stood and ending exactly in their new places; a row listed again while it leaves stays; and
+//! under Reduced motion a whole Clear settles at Reduced's length. The roster's own rules are
+//! `ds-motion`'s.
 
 use dioxus::prelude::*;
 use ds::prelude::*;
