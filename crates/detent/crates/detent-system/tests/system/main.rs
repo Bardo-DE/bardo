@@ -9,4 +9,3 @@ mod private_bus;
 mod spaces_bus;
 mod spaces_fakes;
 mod spaces_owner;
-mod wifi_fake;

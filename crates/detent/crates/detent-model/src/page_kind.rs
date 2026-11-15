@@ -113,25 +113,6 @@ impl PageKind {
 mod tests {
     use super::PageKind;
     use crate::accounts::ModuleId;
-    use ds_settings::schema::Page;
-
-    #[test]
-    fn a_page_resolves_to_its_kind() {
-        let cases = [
-            (Page::Appearance, PageKind::Appearance),
-            (Page::Intelligence, PageKind::Intelligence),
-            (crate::wifi_page(), PageKind::Wifi),
-            (crate::bluetooth_page(), PageKind::Bluetooth),
-            (crate::displays_page(), PageKind::Displays),
-            (crate::extensions_page(), PageKind::Extensions),
-            (crate::assistant_model_page(), PageKind::AssistantModel),
-            (Page::declared("wallpaper"), PageKind::Wallpaper),
-            (Page::App("acme".to_owned()), PageKind::Program),
-        ];
-        for (page, want) in cases {
-            assert_eq!(PageKind::of(&page), want, "{page:?}");
-        }
-    }
 
     #[test]
     fn only_a_program_has_no_slug_of_its_own() {

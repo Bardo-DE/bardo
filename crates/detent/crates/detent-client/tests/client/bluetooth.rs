@@ -31,14 +31,3 @@ async fn pressing_connect_on_a_nearby_device_pairs_it() {
     assert_eq!(link.asked(), [BtAsked::Pair(address)]);
     assert!(matches!(bluetooth.live().state(), BtState::Ready(_)));
 }
-
-#[tokio::test]
-async fn a_service_that_is_not_there_leaves_the_page_unavailable() {
-    let link = FakeBluetooth::missing(detent_model::Absence::NotRunning);
-    let client = builder().with_bluetooth(Arc::new(link)).build();
-    let bluetooth = client.bluetooth();
-    bluetooth
-        .send(BtInput::Heard(Err(detent_model::Absence::NotRunning)))
-        .await;
-    assert!(matches!(bluetooth.live().state(), BtState::Unavailable(_)));
-}

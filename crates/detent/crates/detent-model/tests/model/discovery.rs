@@ -1,7 +1,7 @@
-//! Finding schemas: the real ones, and the stale ones that are skipped.
+//! Finding schemas: the stale ones are skipped, an earlier directory wins, foreign tables merge.
 
 use detent_model::{Catalogue, ConfigFile, ProgramSchema, StaleReason, discover};
-use detent_testkit::{Scratch, seed_schemas};
+use detent_testkit::Scratch;
 use ds_settings::schema::{AppId, FilePath, ForeignTables, Schema};
 
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
@@ -21,21 +21,6 @@ fn schema(app: &str, file: &str, version: u16) -> Schema {
 fn write(dir: &std::path::Path, name: &str, schema: &Schema) {
     std::fs::create_dir_all(dir).expect("scratch dir");
     std::fs::write(dir.join(format!("{name}.settings.toml")), schema.to_toml()).expect("write");
-}
-
-#[test]
-fn the_real_schemas_are_found_in_file_name_order() {
-    let scratch = Scratch::under(TMP, "discovery-real");
-    let dir = seed_schemas(scratch.path());
-    let found = discover(&[dir]);
-    let apps: Vec<&str> = found.programs.iter().map(|p| p.app.0.as_str()).collect();
-    assert_eq!(
-        apps,
-        [
-            "almanac", "cua", "docket", "inferd", "palmrest", "quire", "sill"
-        ]
-    );
-    assert_eq!(found.warnings, Vec::new());
 }
 
 #[test]

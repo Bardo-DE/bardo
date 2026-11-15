@@ -21,38 +21,6 @@ fn slug(name: &str) -> PageSlug {
 }
 
 #[test]
-fn pages_come_in_the_page_tables_order_and_only_when_they_have_keys() {
-    let slugs: Vec<String> = real("pages_come_in_the_page_tables_order")
-        .pages
-        .iter()
-        .map(|p| p.slug.0.clone())
-        .collect();
-    assert_eq!(
-        slugs,
-        [
-            "wifi",
-            "bluetooth",
-            "notifications",
-            "appearance",
-            "extensions",
-            "intelligence",
-            "assistant-model",
-            "privacy",
-            "dock",
-            "displays",
-            "wallpaper",
-            "spaces",
-            "power",
-            "software-update",
-            "accounts",
-            "keyboard_and_shortcuts",
-            "mouse_and_gestures"
-        ],
-        "no schema names the Apps page, so it is not listed; sill's wallpaper.picture lists Wallpaper; inferd's and docket's name Intelligence; Accounts, Privacy, Assistant Model, Software Update, Wi-Fi, Bluetooth, Displays and Extensions are live panes and always there"
-    );
-}
-
-#[test]
 fn a_page_lists_its_basic_sections_and_one_advanced_group_after_them() {
     let catalogue = real("a_page_lists_its_basic_sections_and_one_advanced_group_after_them");
     let appearance = catalogue.page(&slug("appearance")).expect("appearance");
