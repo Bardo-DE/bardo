@@ -6,7 +6,7 @@
 
 use crate::widget::kind::{WidgetSize, WidgetTitle};
 use dioxus::prelude::*;
-use ds::motion::wake::WakeStamp;
+use ds::motion::epoch::Epoch;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
@@ -47,7 +47,7 @@ pub struct WidgetContext<I: 'static> {
     /// The card's size.
     pub size: WidgetSize,
     /// The host's wake stamp: new when its widgets come into view.
-    pub wake: WakeStamp,
+    pub wake: Epoch,
     /// Where the widget's controls send their intents; `None` draws the controls inert.
     pub act: Option<EventHandler<I>>,
 }

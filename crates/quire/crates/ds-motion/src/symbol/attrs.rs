@@ -3,7 +3,7 @@
 //! a table pins when an effect fires: on a change of its trigger, activity or visibility, never
 //! on a render that changes nothing (design/35-SYMBOL-EFFECTS.md section 2).
 
-use super::effect::{EffectActivity, SymbolEffect, TransitionEffect};
+use super::effect::{SymbolEffect, TransitionEffect};
 use super::route::{loop_anim, once_anim};
 use crate::anim::Anim;
 
@@ -40,8 +40,7 @@ pub struct Memory {
 fn key(effect: SymbolEffect) -> u32 {
     match effect {
         SymbolEffect::Once(_, trigger) => trigger.0,
-        SymbolEffect::While(_, EffectActivity::Idle) => 0,
-        SymbolEffect::While(_, EffectActivity::Active) => 1,
+        SymbolEffect::While(_, active) => u32::from(active),
         SymbolEffect::Transition(_, false) => 0,
         SymbolEffect::Transition(_, true) => 1,
     }
@@ -52,7 +51,7 @@ pub fn advance(memory: Memory, effect: SymbolEffect) -> (Memory, SymbolAttrs) {
     let now = key(effect);
     let changed = memory.seen.is_some_and(|seen| seen != now);
     let round = memory.round + u32::from(changed);
-    let running = matches!(effect, SymbolEffect::While(_, EffectActivity::Active));
+    let running = matches!(effect, SymbolEffect::While(_, true));
     let next = Memory {
         seen: Some(now),
         round,
@@ -63,8 +62,8 @@ pub fn advance(memory: Memory, effect: SymbolEffect) -> (Memory, SymbolAttrs) {
     let attrs = match effect {
         SymbolEffect::Once(once, _) if fired => play(once_anim(once), alias),
         SymbolEffect::Once(..) => SymbolAttrs::default(),
-        SymbolEffect::While(looped, EffectActivity::Active) => play(loop_anim(looped), Some("a")),
-        SymbolEffect::While(_, EffectActivity::Idle) if memory.ran => play(Anim::Hold, Some("a")),
+        SymbolEffect::While(looped, true) => play(loop_anim(looped), Some("a")),
+        SymbolEffect::While(_, false) if memory.ran => play(Anim::Hold, Some("a")),
         SymbolEffect::While(..) => SymbolAttrs::default(),
         SymbolEffect::Transition(TransitionEffect::Appear, true) if fired => {
             play(Anim::Appear, alias)
@@ -100,9 +99,8 @@ fn play(anim: Anim, pulse: Option<&'static str>) -> SymbolAttrs {
 mod tests {
     use super::{Memory, SymbolAttrs, advance};
     use crate::anim::Anim;
-    use crate::symbol::effect::{
-        EffectActivity, LoopEffect, OnceEffect, SymbolEffect, TransitionEffect, Trigger,
-    };
+    use crate::epoch::Epoch;
+    use crate::symbol::effect::{LoopEffect, OnceEffect, SymbolEffect, TransitionEffect};
 
     /// What each of a series of renders wears: its anim and alias.
     fn wear(series: &[SymbolEffect]) -> Vec<(Option<Anim>, Option<&'static str>)> {
@@ -119,7 +117,7 @@ mod tests {
 
     #[test]
     fn a_once_effect_fires_on_a_change_of_trigger_and_not_on_a_render_that_changes_nothing() {
-        let bounce = |trigger| SymbolEffect::Once(OnceEffect::Bounce, Trigger(trigger));
+        let bounce = |trigger| SymbolEffect::Once(OnceEffect::Bounce, Epoch(trigger));
         let got = wear(&[bounce(0), bounce(0), bounce(1), bounce(1), bounce(2)]);
         let want = [
             (None, None),
@@ -134,13 +132,14 @@ mod tests {
     #[test]
     fn a_while_effect_runs_while_active_and_holds_when_it_stops() {
         let turn = |activity| SymbolEffect::While(LoopEffect::Rotate, activity);
-        use EffectActivity::{Active, Idle};
+        const ACTIVE: bool = true;
+        const IDLE: bool = false;
         let got = wear(&[
-            turn(Idle),
-            turn(Active),
-            turn(Active),
-            turn(Idle),
-            turn(Idle),
+            turn(IDLE),
+            turn(ACTIVE),
+            turn(ACTIVE),
+            turn(IDLE),
+            turn(IDLE),
         ]);
         let want = [
             (None, None),
@@ -151,7 +150,7 @@ mod tests {
         ];
         assert_eq!(got, want);
         // Active from the first render runs from the first render.
-        assert_eq!(wear(&[turn(Active)]), [(Some(Anim::Turn), Some("a"))]);
+        assert_eq!(wear(&[turn(ACTIVE)]), [(Some(Anim::Turn), Some("a"))]);
     }
 
     #[test]
@@ -165,7 +164,7 @@ mod tests {
             (LoopEffect::Breathe, Anim::BreatheLoop),
             (LoopEffect::Rotate, Anim::Turn),
         ] {
-            let got = wear(&[SymbolEffect::While(effect, EffectActivity::Active)]);
+            let got = wear(&[SymbolEffect::While(effect, true)]);
             assert_eq!(got[0].0, Some(anim), "{effect:?}");
         }
     }

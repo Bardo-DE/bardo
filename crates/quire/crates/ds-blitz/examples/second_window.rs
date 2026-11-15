@@ -99,8 +99,10 @@ fn open_message(subject: &str) -> Option<WindowHandle> {
             subject: subject.to_owned(),
         },
     )
-    .inspect_err(|error| println!("open failed: {error}"))
-    .ok()
+    .or_else(|| {
+        println!("open failed: no window event loop to open a window on");
+        None
+    })
 }
 
 #[allow(non_snake_case)]

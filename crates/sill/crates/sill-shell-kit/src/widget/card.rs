@@ -9,7 +9,7 @@ use crate::widget::kind::WidgetSize;
 use crate::widget::timeline::{RefreshAsk, Timeline};
 use crate::widget::use_widget::use_widget;
 use dioxus::prelude::*;
-use ds::motion::wake::WakeStamp;
+use ds::motion::epoch::Epoch;
 use ds::root::common::Common;
 
 /// `widget` at `size` (held to the sizes it draws), showing `timeline`'s entry for now. `wake`
@@ -22,7 +22,7 @@ pub fn WidgetCard<W: Widget>(
     widget: W,
     #[props(default)] timeline: Timeline<W::Entry>,
     #[props(default)] size: WidgetSize,
-    #[props(default)] wake: WakeStamp,
+    #[props(default)] wake: Epoch,
     #[props(default)] common: Common,
     #[props(default)] onrefresh: Option<EventHandler<RefreshAsk>>,
     #[props(default)] onintent: Option<EventHandler<W::Intent>>,

@@ -2,31 +2,11 @@
 //! when it runs, as one enum a caller writes and a table the stylesheet and the part driver read.
 //!
 //! Each effect has one run mode, and the type says which: a `Once` effect plays when its
-//! [`Trigger`] changes, a `While` effect plays for as long as it is [`EffectActivity::Active`], and a
+//! [`Epoch`] changes, a `While` effect plays for as long as its flag is `true`, and a
 //! `Transition` effect plays when its icon arrives, leaves, draws or is replaced.
 
+use crate::epoch::Epoch;
 use ds_core::word::Word;
-
-/// A value a caller changes to fire a `Once` effect; the same value again fires nothing.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub struct Trigger(pub u32);
-
-impl Trigger {
-    /// The trigger one fire later.
-    pub fn next(self) -> Trigger {
-        Trigger(self.0.wrapping_add(1))
-    }
-}
-
-/// Whether a `While` effect is running.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum EffectActivity {
-    /// Not running: the symbol is at rest.
-    #[default]
-    Idle,
-    /// Running, for as long as it stays so.
-    Active,
-}
 
 /// The effects that play once and settle: a hop, a dip, a few swings, a swell, a turn, the
 /// icon's own moving part, the layers lighting in order.
@@ -90,9 +70,9 @@ pub enum TransitionEffect {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum SymbolEffect {
     /// Plays once each time the trigger changes; the first render plays nothing.
-    Once(OnceEffect, Trigger),
-    /// Plays for as long as the activity is [`EffectActivity::Active`].
-    While(LoopEffect, EffectActivity),
+    Once(OnceEffect, Epoch),
+    /// Plays for as long as the flag is `true`.
+    While(LoopEffect, bool),
     /// Plays when the visibility, or for `Replace` the icon, changes; the first render stands at
     /// the given state.
     Transition(TransitionEffect, bool),

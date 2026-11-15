@@ -5,7 +5,7 @@
 //! frame never leaves 0.
 
 use dioxus::prelude::*;
-use ds::motion::wake::WakeStamp;
+use ds::motion::epoch::Epoch;
 use ds::prelude::*;
 use ds_harness::harness::settle_until;
 use ds_harness::{Clock, Harness, HarnessConfig, Viewport};
@@ -25,7 +25,7 @@ const VIEW: Viewport = Viewport {
 /// Wink's loop is shorter than this (manifest.json).
 const LOOP: Duration = Duration::from_secs(4);
 
-static WAKE: GlobalSignal<WakeStamp> = Signal::global(WakeStamp::default);
+static WAKE: GlobalSignal<Epoch> = Signal::global(Epoch::default);
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
 #[allow(non_snake_case)]

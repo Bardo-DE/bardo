@@ -20,7 +20,7 @@ mod tests;
 
 use crate::user_picture::size::PictureSize;
 use dioxus::prelude::*;
-use ds::motion::wake::WakeStamp;
+use ds::motion::epoch::Epoch;
 use ds::root::common::Common;
 use ds::style::scope::use_scope;
 use sheet::{SheetPx, position, timing, uri};
@@ -39,7 +39,7 @@ pub const EMOJI_ATTRIBUTION: &str = "Animated emoji: Noto Animated Emoji by Goog
 pub fn AnimatedEmoji(
     emoji: EmojiId,
     size: PictureSize,
-    #[props(default)] wake: WakeStamp,
+    #[props(default)] wake: Epoch,
     #[props(default)] disc: EmojiDisc,
     #[props(default)] playback: EmojiPlayback,
     #[props(default)] common: Common,

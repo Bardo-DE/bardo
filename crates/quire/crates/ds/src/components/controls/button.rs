@@ -30,7 +30,7 @@ use ds_core::press::Press;
 use ds_core::vocab::{Availability, Check, HasPopup, Shortcut, aria_word};
 use ds_core::word::Word;
 use ds_motion::detail::{morph::MorphStyle, morph_glyph::MorphGlyph};
-use ds_motion::symbol::effect::{EffectActivity, LoopEffect, SymbolEffect};
+use ds_motion::symbol::effect::{LoopEffect, SymbolEffect};
 use ds_motion::symbol::use_symbol::use_symbol_attrs;
 use ds_style::icon::Icon;
 use ds_style::icon::render::{Glyph, IconSize};
@@ -126,14 +126,7 @@ pub fn Button(
     let turning = busy == BusyLook::TurnIcon && availability == Availability::Busy;
     let glyph = glyph_size(size);
     // The turn is the symbol effect `Rotate` while busy; the wrapper wears what it says.
-    let spin = use_symbol_attrs(SymbolEffect::While(
-        LoopEffect::Rotate,
-        if turning {
-            EffectActivity::Active
-        } else {
-            EffectActivity::Idle
-        },
-    ));
+    let spin = use_symbol_attrs(SymbolEffect::While(LoopEffect::Rotate, turning));
     let tip = use_tip(title.map(|title| TipText::new(title).with_shortcut_opt(title_shortcut)));
     rsx! {
         button {

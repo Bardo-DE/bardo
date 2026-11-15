@@ -48,4 +48,4 @@ pub mod use_spring;
 #[cfg(feature = "dioxus")]
 pub mod use_swipe;
 pub mod velocity;
-pub mod wake;
+pub mod epoch;

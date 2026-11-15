@@ -1,10 +1,9 @@
 //! Which of a symbol's three drivers plays an effect on an icon: the stylesheet on the wrapper,
 //! Rust on the parts inside the SVG, or the draw-on tween (design/35-SYMBOL-EFFECTS.md section 3).
 
-use super::effect::{
-    EffectActivity, LoopEffect, OnceEffect, SymbolEffect, TransitionEffect, Trigger,
-};
+use super::effect::{LoopEffect, OnceEffect, SymbolEffect, TransitionEffect};
 use crate::anim::Anim;
+use crate::epoch::Epoch;
 use ds_style::icon::Icon;
 use ds_style::icon::parts::PartGesture;
 
@@ -12,9 +11,9 @@ use ds_style::icon::parts::PartGesture;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum PartRun {
     /// One play per change of the trigger.
-    Once(Trigger),
+    Once(Epoch),
     /// Plays again and again while active.
-    While(EffectActivity),
+    While(bool),
 }
 
 /// The driver an effect has on an icon.
@@ -92,22 +91,21 @@ pub fn loop_anim(effect: LoopEffect) -> Anim {
 #[cfg(test)]
 mod tests {
     use super::{PartRun, Route, route};
-    use crate::symbol::effect::{
-        EffectActivity, LoopEffect, OnceEffect, SymbolEffect, TransitionEffect, Trigger,
-    };
+    use crate::epoch::Epoch;
+    use crate::symbol::effect::{LoopEffect, OnceEffect, SymbolEffect, TransitionEffect};
     use ds_style::icon::Icon;
     use ds_style::icon::parts::PartGesture;
 
     #[test]
     fn a_part_effect_moves_the_part_where_there_is_one_and_falls_back_where_there_is_not() {
-        let once = |effect| SymbolEffect::Once(effect, Trigger(1));
-        let looped = |effect| SymbolEffect::While(effect, EffectActivity::Active);
+        let once = |effect| SymbolEffect::Once(effect, Epoch(1));
+        let looped = |effect| SymbolEffect::While(effect, true);
         // (effect, icon, driver).
         let cases = [
             (
                 once(OnceEffect::Part),
                 Icon::Trash,
-                Route::Parts(PartGesture::Lift, PartRun::Once(Trigger(1))),
+                Route::Parts(PartGesture::Lift, PartRun::Once(Epoch(1))),
             ),
             (
                 once(OnceEffect::Part),
@@ -117,7 +115,7 @@ mod tests {
             (
                 once(OnceEffect::VariableColor),
                 Icon::Wifi,
-                Route::Parts(PartGesture::Layers, PartRun::Once(Trigger(1))),
+                Route::Parts(PartGesture::Layers, PartRun::Once(Epoch(1))),
             ),
             (
                 once(OnceEffect::VariableColor),
@@ -127,7 +125,7 @@ mod tests {
             (
                 looped(LoopEffect::VariableColor),
                 Icon::Volume2,
-                Route::Parts(PartGesture::Layers, PartRun::While(EffectActivity::Active)),
+                Route::Parts(PartGesture::Layers, PartRun::While(true)),
             ),
             (
                 looped(LoopEffect::Part),
