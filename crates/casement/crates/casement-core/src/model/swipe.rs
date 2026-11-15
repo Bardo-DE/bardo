@@ -125,7 +125,7 @@ impl Model {
         let ours = matches!(model.lock, LockState::Unlocked)
             && (event.origin.is_physical()
                 || event.origin.is_pad()
-                || matches!(event.origin, Origin::Feed(_)));
+                || matches!(event.origin, Origin::Feed));
         let (next, fate) = match ours {
             true => route(
                 model.swipe.route,

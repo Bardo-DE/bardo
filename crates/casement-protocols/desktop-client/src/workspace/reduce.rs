@@ -52,7 +52,7 @@ pub(crate) fn reduce_workspaces(mut workspaces: Workspaces, event: WorkspaceEven
 
 fn apply_group(group: &mut Group, change: GroupChange) {
     match change {
-        GroupChange::Abilities(abilities) => group.abilities = abilities,
+        GroupChange::CanCreateWorkspace(can) => group.can_create_workspace = can,
         GroupChange::OutputEntered(name) => {
             if !group.outputs.contains(&name) {
                 group.outputs.push(name);

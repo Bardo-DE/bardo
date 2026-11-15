@@ -1,7 +1,7 @@
 //! Reach, chords, binding resolution and the I7 table (what P0-F1-input makes pass).
 
 use casement_core::input::{
-    Binding, BindingAction, Bindings, Chord, DesktopCommand, DeviceClass, FeedSource, InputTarget,
+    Binding, BindingAction, Bindings, Chord, DesktopCommand, DeviceClass, InputTarget,
     InputUse, Keysym, Leases, Origin, PortalSessionId, ReachFacts, Refusal, reach, resolve,
 };
 use casement_core::lock::{LockHolder, LockState, LockSurfaces};
@@ -13,7 +13,7 @@ use porter_core::SandboxFacts;
 const KEYBOARD: Origin = Origin::Physical(DeviceClass::Keyboard);
 const POINTER: Origin = Origin::Physical(DeviceClass::Pointer);
 const VIRTUAL: Origin = Origin::Virtual(DeviceClass::Keyboard);
-const FEED: Origin = Origin::Feed(FeedSource::Palmrest);
+const FEED: Origin = Origin::Feed;
 const WINDOW: InputTarget = InputTarget::Window(WindowId(1));
 
 /// A case's name, who sends, where it goes, what for, the lock, and the answer.

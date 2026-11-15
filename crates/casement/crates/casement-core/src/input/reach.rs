@@ -124,7 +124,7 @@ fn refuse_agent(origin: &Origin, target: &InputTarget, leases: &Leases) -> Optio
 
 fn refuse_feed(origin: &Origin, use_: InputUse) -> Option<Refusal> {
     let allowed = matches!(use_, InputUse::Scroll | InputUse::SystemGesture);
-    (matches!(origin, Origin::Feed(_)) && !allowed).then_some(Refusal::FeedKind)
+    (matches!(origin, Origin::Feed) && !allowed).then_some(Refusal::FeedKind)
 }
 
 fn refuse_untrusted(origin: &Origin, target: &InputTarget) -> Option<Refusal> {

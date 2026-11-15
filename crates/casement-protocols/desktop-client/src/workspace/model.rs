@@ -1,6 +1,6 @@
 //! A workspace and a group.
 
-use super::flags::{GroupAbility, Set, WorkspaceAbility, WorkspaceFlag};
+use super::flags::{Set, WorkspaceAbility, WorkspaceFlag};
 use crate::keys::{GroupKey, WorkspaceKey};
 use crate::names::OutputName;
 
@@ -46,8 +46,8 @@ pub struct Group {
     pub key: GroupKey,
     /// The outputs it spans.
     pub outputs: Vec<OutputName>,
-    /// What the client may ask of it.
-    pub abilities: Set<GroupAbility>,
+    /// Whether the client may ask it to create a workspace.
+    pub can_create_workspace: bool,
 }
 
 impl Group {
@@ -56,7 +56,7 @@ impl Group {
         Self {
             key,
             outputs: Vec::new(),
-            abilities: Set::new(),
+            can_create_workspace: false,
         }
     }
 }

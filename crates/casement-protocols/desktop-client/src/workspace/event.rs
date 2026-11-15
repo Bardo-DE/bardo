@@ -1,6 +1,6 @@
 //! What `ext-workspace-v1` reports.
 
-use super::flags::{GroupAbility, Set, WorkspaceAbility, WorkspaceFlag};
+use super::flags::{Set, WorkspaceAbility, WorkspaceFlag};
 use crate::keys::{GroupKey, WorkspaceKey};
 use crate::names::OutputName;
 
@@ -26,8 +26,8 @@ pub enum WorkspaceChange {
 /// One property of a group changing.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum GroupChange {
-    /// The whole ability set.
-    Abilities(Set<GroupAbility>),
+    /// Whether the group lets the client create a workspace.
+    CanCreateWorkspace(bool),
     /// Now on this output.
     OutputEntered(OutputName),
     /// No longer on this output.

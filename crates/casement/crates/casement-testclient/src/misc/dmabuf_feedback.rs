@@ -5,6 +5,7 @@
 //! when this was written, and the probe asks it for nothing but those two handles. The
 //! udmabuf-backed buffers live in `crate::udmabuf` (P0-T-client's).
 
+use crate::ClientError;
 use crate::globals::GlobalList;
 use std::fs::File;
 use std::os::fd::OwnedFd;
@@ -65,14 +66,6 @@ impl FeedbackReport {
     }
 }
 
-/// Why the probe could not start.
-#[derive(Debug, thiserror::Error)]
-pub enum ProbeError {
-    /// The compositor does not advertise a dma-buf global of version 4 or later.
-    #[error("zwp_linux_dmabuf_v1 version 4+ is not advertised")]
-    NotAdvertised,
-}
-
 /// The collecting state the event queue dispatches into.
 #[derive(Debug, Default)]
 struct Collected {
@@ -100,12 +93,12 @@ impl FeedbackProbe {
     pub fn start(
         connection: &Connection,
         globals: &GlobalList,
-    ) -> Result<FeedbackProbe, ProbeError> {
+    ) -> Result<FeedbackProbe, ClientError> {
         let queue = connection.new_event_queue::<Collected>();
         let qh = queue.handle();
         let dmabuf = globals
             .bind::<ZwpLinuxDmabufV1, _, _>(&qh, 4..=6, ())
-            .map_err(|_| ProbeError::NotAdvertised)?;
+            .map_err(|_| ClientError::MissingGlobal("zwp_linux_dmabuf_v1 version 4+".to_owned()))?;
         let feedback = dmabuf.get_default_feedback(&qh, ());
         let _ = connection.flush();
         Ok(FeedbackProbe {

@@ -24,7 +24,7 @@ pub use event::{
 pub use key::{ButtonCode, KeyCode, Keysym};
 pub use lease::Leases;
 pub use maker::Maker;
-pub use origin::{BUS_VIRTUAL, DeviceClass, FeedSource, KernelIds, Origin, PortalSessionId};
+pub use origin::{BUS_VIRTUAL, DeviceClass, KernelIds, Origin, PortalSessionId};
 pub use reach::{InputTarget, InputUse, ReachFacts, Refusal, reach};
 
 #[cfg(test)]

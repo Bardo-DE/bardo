@@ -4,8 +4,8 @@ use std::collections::BTreeSet;
 
 use desktop_client::OutputName;
 use desktop_client::workspace::{
-    GroupAbility, GroupChange, WorkspaceAbility, WorkspaceChange, WorkspaceEvent, WorkspaceFlag,
-    coordinates_from_array,
+    GroupChange, WorkspaceAbility, WorkspaceChange, WorkspaceEvent, WorkspaceFlag,
+    can_create_workspace, coordinates_from_array,
 };
 
 use crate::support::{gk, run, wk, ws, ws_change};
@@ -121,7 +121,7 @@ fn groups_hold_outputs_and_members() {
         }),
         ws(WorkspaceEvent::Group {
             key: gk(7),
-            change: GroupChange::Abilities(set([GroupAbility::CreateWorkspace])),
+            change: GroupChange::CanCreateWorkspace(true),
         }),
         ws(WorkspaceEvent::Opened(wk(1))),
         ws_change(wk(1), WorkspaceChange::GroupEntered(gk(7))),
@@ -129,7 +129,7 @@ fn groups_hold_outputs_and_members() {
     ]);
     let group = state.workspaces.groups().next().unwrap();
     assert_eq!(group.outputs, vec![OutputName::new("DP-1")]);
-    assert_eq!(group.abilities, set([GroupAbility::CreateWorkspace]));
+    assert!(group.can_create_workspace);
     assert_eq!(state.workspaces.get(wk(1)).unwrap().group, Some(gk(7)));
 }
 
@@ -202,11 +202,8 @@ fn bitfields_decode() {
         WorkspaceAbility::set_from_bits(0b1010),
         set([WorkspaceAbility::Deactivate, WorkspaceAbility::Assign])
     );
-    assert_eq!(
-        GroupAbility::set_from_bits(1),
-        set([GroupAbility::CreateWorkspace])
-    );
-    assert_eq!(GroupAbility::set_from_bits(2), set([]));
+    assert!(can_create_workspace(1));
+    assert!(!can_create_workspace(2));
 }
 
 #[test]

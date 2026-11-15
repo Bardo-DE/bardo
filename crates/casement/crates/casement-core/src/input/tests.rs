@@ -2,7 +2,7 @@
 //! and the keysym names behind the chord text.
 
 use super::{
-    Binding, BindingAction, Bindings, Chord, DesktopCommand, DeviceClass, FeedSource, InputTarget,
+    Binding, BindingAction, Bindings, Chord, DesktopCommand, DeviceClass, InputTarget,
     InputUse, Keysym, Leases, Origin, PortalSessionId, ReachFacts, Refusal, reach, resolve,
 };
 use crate::ids::{ClientKey, LayerKey, LeaseId, WindowId};
@@ -27,7 +27,7 @@ fn origin() -> impl Strategy<Value = Origin> {
     prop_oneof![
         device_class().prop_map(Origin::Physical),
         device_class().prop_map(Origin::Virtual),
-        Just(Origin::Feed(FeedSource::Palmrest)),
+        Just(Origin::Feed),
         any::<u64>().prop_map(|n| Origin::Agent(LeaseId(n))),
         any::<u64>().prop_map(|n| Origin::Remote(PortalSessionId(n))),
         Just(Origin::Test),
@@ -133,7 +133,7 @@ proptest! {
     fn a_feed_reaches_only_by_scroll_and_gesture(
         target in target(), use_ in use_(), lock in lock(),
     ) {
-        let feed = Origin::Feed(FeedSource::Palmrest);
+        let feed = Origin::Feed;
         let got = reach(&feed, &target, use_, &ReachFacts { lock: &lock, leases: &Leases::none() });
         if got.is_ok() {
             prop_assert!(matches!(use_, InputUse::Scroll | InputUse::SystemGesture));

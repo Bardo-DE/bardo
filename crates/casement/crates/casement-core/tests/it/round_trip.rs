@@ -6,7 +6,7 @@ use casement_core::app::AppKey;
 use casement_core::geometry::LogicalPoint;
 use casement_core::input::{
     Argv, Binding, BindingAction, Bindings, Chord, DbusCall, DesktopCommand, DeviceClass,
-    FeedSource, Keysym, Origin, PortalSessionId, SpaceStep,
+    Keysym, Origin, PortalSessionId, SpaceStep,
 };
 use casement_core::output::{
     EdidFacts, EdidSerial, OutputConfig, SavedOutputs, ScalePolicy,
@@ -72,8 +72,8 @@ fn origins() {
         r#"{"kind":"virtual","v":"keyboard"}"#,
     );
     pinned(
-        &Origin::Feed(FeedSource::Palmrest),
-        r#"{"kind":"feed","v":"palmrest"}"#,
+        &Origin::Feed,
+        r#"{"kind":"feed"}"#,
     );
     pinned(&Origin::Agent(LeaseId(4)), r#"{"kind":"agent","v":4}"#);
     pinned(

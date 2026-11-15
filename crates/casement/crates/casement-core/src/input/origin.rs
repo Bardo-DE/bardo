@@ -13,7 +13,7 @@ pub enum Origin {
     /// A user-writable virtual device (uinput, `virtual_keyboard`): never physical (I8).
     Virtual(DeviceClass),
     /// A trusted feed (palmrest's stream): scroll and system gestures only.
-    Feed(FeedSource),
+    Feed,
     /// The agent seat of this lease.
     Agent(LeaseId),
     /// A RemoteDesktop portal session.
@@ -105,14 +105,6 @@ pub enum DeviceClass {
     Touch,
     /// A switch (lid, tablet mode).
     Switch,
-}
-
-/// A trusted feed.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum FeedSource {
-    /// palmrest's touchpad stream.
-    Palmrest,
 }
 
 /// One RemoteDesktop portal session.

@@ -11,8 +11,8 @@ use super::wire::{Wire, number_of, raw};
 use crate::event::DesktopEvent;
 use crate::keys::{GroupKey, WorkspaceKey};
 use crate::workspace::{
-    GroupAbility, GroupChange, WorkspaceAbility, WorkspaceChange, WorkspaceEvent, WorkspaceFlag,
-    coordinates_from_array,
+    GroupChange, WorkspaceAbility, WorkspaceChange, WorkspaceEvent, WorkspaceFlag,
+    can_create_workspace, coordinates_from_array,
 };
 
 fn workspace_event(wire: &mut Wire, event: WorkspaceEvent) {
@@ -56,8 +56,8 @@ pub(super) fn on_group(
     use ext_workspace_group_handle_v1::Event;
     match event {
         Event::Capabilities { capabilities } => {
-            let abilities = GroupAbility::set_from_bits(raw(capabilities));
-            group_change(wire, key, GroupChange::Abilities(abilities));
+            let can = can_create_workspace(raw(capabilities));
+            group_change(wire, key, GroupChange::CanCreateWorkspace(can));
         }
         Event::OutputEnter { output } => {
             if let Some(name) = wire.output_name(&output) {

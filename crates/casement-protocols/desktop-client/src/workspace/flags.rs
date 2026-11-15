@@ -26,13 +26,6 @@ pub enum WorkspaceAbility {
     Assign,
 }
 
-/// What a group lets the client request (`group_capabilities`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub enum GroupAbility {
-    /// `create_workspace`.
-    CreateWorkspace,
-}
-
 /// A set of values of an ordered kind; one type for flags and abilities.
 pub(crate) type Set<T> = BTreeSet<T>;
 
@@ -70,11 +63,10 @@ impl WorkspaceAbility {
     }
 }
 
-impl GroupAbility {
-    /// The abilities set in a `group_capabilities` bitfield; unknown bits are skipped.
-    pub fn set_from_bits(bits: u32) -> Set<Self> {
-        set_of(&[(1, Self::CreateWorkspace)], bits)
-    }
+/// Whether a `group_capabilities` bitfield lets the client create a workspace; unknown bits are
+/// skipped.
+pub fn can_create_workspace(bits: u32) -> bool {
+    bits & 1 != 0
 }
 
 /// The coordinates in a wire `coordinates` array (native-endian `u32`s); a trailing partial
