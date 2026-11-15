@@ -67,7 +67,7 @@ pub struct NoVolumes;
 
 impl Volumes for NoVolumes {
     fn list(&self) -> Result<Vec<Volume>, VolumeError> {
-        Err(VolumeError::Unavailable)
+        Err(VolumeError)
     }
 
     fn mount(&self, _id: &VolumeId) -> Result<FolderPath, MountFailure> {
@@ -83,7 +83,7 @@ impl Volumes for NoVolumes {
     }
 
     fn watch(&self, _changed: Changed) -> Result<WatchGuard, VolumeError> {
-        Err(VolumeError::Unavailable)
+        Err(VolumeError)
     }
 }
 

@@ -17,10 +17,7 @@ pub enum ItemError {
     NoName,
 }
 
-/// Why a path is not a folder location.
+/// A path is not a folder location: it is relative, which means nothing without a current folder.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum PathError {
-    /// A relative path, which means nothing without a current folder.
-    #[error("not an absolute path")]
-    Relative,
-}
+#[error("not an absolute path")]
+pub struct PathError;

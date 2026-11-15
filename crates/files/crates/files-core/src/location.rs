@@ -26,7 +26,7 @@ impl FolderPath {
         if path.is_absolute() {
             Ok(FolderPath(path))
         } else {
-            Err(PathError::Relative)
+            Err(PathError)
         }
     }
 

@@ -2,6 +2,7 @@
 //! person's answer to a conflict, and keeps the undo journal.
 
 use std::io;
+use std::ops::ControlFlow;
 use std::sync::Arc;
 use std::sync::mpsc::{Receiver, RecvTimeoutError, Sender, channel};
 use std::time::{Duration, Instant};
@@ -10,7 +11,7 @@ use files_core::{Answer, Conflict, OpEvent, OpPlan, Outcome, Progress, Resolutio
 use files_trash::Trash;
 
 use crate::exec::Executor;
-use crate::host::{CancelToken, Flow, Host};
+use crate::host::{CancelToken, Host};
 use crate::journal::Journal;
 
 /// How often progress is passed on at most.
@@ -170,7 +171,7 @@ impl<T> Host for QueueHost<'_, T> {
         loop {
             match self.answers.recv_timeout(LOOK_EVERY) {
                 Ok(resolution) => return resolution,
-                Err(RecvTimeoutError::Timeout) if self.cancel.flow() == Flow::Go => {}
+                Err(RecvTimeoutError::Timeout) if self.cancel.flow() == ControlFlow::Continue(()) => {}
                 Err(RecvTimeoutError::Timeout | RecvTimeoutError::Disconnected) => {
                     return Resolution::once(Answer::Stop);
                 }
@@ -178,7 +179,7 @@ impl<T> Host for QueueHost<'_, T> {
         }
     }
 
-    fn flow(&self) -> Flow {
+    fn flow(&self) -> ControlFlow<()> {
         self.cancel.flow()
     }
 }

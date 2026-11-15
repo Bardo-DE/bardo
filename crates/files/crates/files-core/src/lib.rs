@@ -42,7 +42,7 @@ pub use cloud::{
     AccountLabel, CloudDrive, CloudItem, CloudKind, CloudNews, CloudState, CloudWords, DriveId,
     DriveState, OnlineUrl, ProviderName, Refused, Saved, SavedCopies, Share, UrlError, Usage,
 };
-pub use conflict::{Answer, Conflict, ConflictKind, Resolution};
+pub use conflict::{Answer, Bring, Conflict, Resolution};
 pub use ds_helpers::mime::{FileName, MimeError, MimeType, NameError};
 pub use entry::{Entry, EntryKind, LinkTo, Special};
 pub use error::{ItemError, PathError};

@@ -2,11 +2,12 @@
 
 use std::collections::VecDeque;
 use std::fs;
+use std::ops::ControlFlow;
 use std::path::Path;
 use std::sync::Arc;
 
 use files_core::{Answer, Conflict, FileName, FolderPath, ItemRef, Progress, Resolution, Transfer};
-use files_ops::{Executor, Flow, Host, Journal};
+use files_ops::{Executor, Host, Journal};
 use files_trash::FakeTrash;
 use tempfile::TempDir;
 
@@ -122,10 +123,10 @@ impl Host for Script {
             .unwrap_or(Resolution::once(Answer::Stop))
     }
 
-    fn flow(&self) -> Flow {
+    fn flow(&self) -> ControlFlow<()> {
         match self.stop_after {
-            Some(limit) if self.progress.len() >= limit => Flow::Stop,
-            Some(_) | None => Flow::Go,
+            Some(limit) if self.progress.len() >= limit => ControlFlow::Break(()),
+            Some(_) | None => ControlFlow::Continue(()),
         }
     }
 }

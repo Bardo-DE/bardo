@@ -14,9 +14,10 @@
 //! the runtime.
 //!
 //! ```
+//! use std::ops::ControlFlow;
 //! use std::sync::Arc;
 //! use files_core::{FileName, FolderPath, ItemRef, OpPlan};
-//! use files_ops::{Executor, Finish, Flow, Host, Journal};
+//! use files_ops::{Executor, Finish, Host, Journal};
 //! use files_trash::FakeTrash;
 //!
 //! /// A host that never has to be asked anything.
@@ -26,7 +27,7 @@
 //!     fn ask(&mut self, _: &files_core::Conflict) -> files_core::Resolution {
 //!         files_core::Resolution::once(files_core::Answer::Stop)
 //!     }
-//!     fn flow(&self) -> Flow { Flow::Go }
+//!     fn flow(&self) -> ControlFlow<()> { ControlFlow::Continue(()) }
 //! }
 //!
 //! let scratch = tempfile::tempdir()?;
@@ -54,7 +55,7 @@ mod worker;
 
 pub use exec::Executor;
 pub use files_core::{Finish, OpEvent, Outcome};
-pub use host::{CancelToken, Flow, Host};
+pub use host::{CancelToken, Host};
 pub use journal::Journal;
 pub use ran::Ran;
 pub use worker::{Job, Sink, Worker};

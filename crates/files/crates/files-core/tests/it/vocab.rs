@@ -4,7 +4,7 @@ use files_core::{ByteSize, Entry, EntryKind, FileName, FolderPath, PathError};
 
 #[test]
 fn a_folder_location_is_absolute_and_walks_up_and_down() {
-    assert_eq!(FolderPath::new("Documents"), Err(PathError::Relative));
+    assert_eq!(FolderPath::new("Documents"), Err(PathError));
     let home = FolderPath::new("/home/p").unwrap();
     let docs = home.join(&FileName::new("Documents").unwrap());
     assert_eq!(docs.as_path(), std::path::Path::new("/home/p/Documents"));

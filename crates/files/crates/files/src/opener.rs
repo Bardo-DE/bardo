@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use ds_helpers::DesktopId;
 use files_core::OnlineUrl;
-use files_desktop::{AppChoice, Launcher};
+use files_desktop::{AppChoice, DesktopLauncher};
 use files_ui::{OpenAs, OpenFailure, Opener};
 
 use crate::clouds::Web;
@@ -16,7 +16,7 @@ use crate::clouds::Web;
 /// the app that opens raises itself as its own policy allows. When quire offers one, it is
 /// passed here.
 pub struct DesktopOpener {
-    launcher: Arc<dyn Launcher>,
+    launcher: Arc<DesktopLauncher>,
     web: Option<Web>,
 }
 
@@ -28,7 +28,7 @@ impl std::fmt::Debug for DesktopOpener {
 
 impl DesktopOpener {
     /// An opener over `launcher`.
-    pub fn new(launcher: Arc<dyn Launcher>) -> DesktopOpener {
+    pub fn new(launcher: Arc<DesktopLauncher>) -> DesktopOpener {
         DesktopOpener {
             launcher,
             web: None,

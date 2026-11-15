@@ -34,7 +34,7 @@ impl Volumes for DesktopVolumes {
     fn list(&self) -> Result<Vec<Volume>, VolumeError> {
         self.runtime
             .block_on(self.disks.list())
-            .map_err(|_| VolumeError::Unavailable)
+            .map_err(|_| VolumeError)
     }
 
     fn mount(&self, id: &VolumeId) -> Result<FolderPath, MountFailure> {
@@ -54,7 +54,7 @@ impl Volumes for DesktopVolumes {
         let mut changes = self
             .runtime
             .block_on(self.disks.changes())
-            .map_err(|_| VolumeError::Unavailable)?;
+            .map_err(|_| VolumeError)?;
         let task = self.runtime.spawn(async move {
             while changes.next().await.is_some() {
                 changed();

@@ -2,12 +2,13 @@
 
 use crate::{FileName, FolderPath};
 
-/// What the work was doing when it found the name taken.
+/// What is done to items brought to a folder, and so what the work was doing when it found a name
+/// taken.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ConflictKind {
-    /// Copying the item there.
+pub enum Bring {
+    /// Leave the originals where they are.
     Copy,
-    /// Moving the item there.
+    /// Take them out of where they were.
     Move,
 }
 
@@ -19,14 +20,14 @@ pub struct Conflict {
     /// The folder it is taken in.
     pub folder: FolderPath,
     /// What was being done.
-    pub kind: ConflictKind,
+    pub kind: Bring,
     /// How many more items are still to come after this one.
     pub rest: usize,
 }
 
 impl Conflict {
     /// The name `item` is taken in `folder` while doing `kind`, with `rest` items still to come.
-    pub fn new(item: FileName, folder: FolderPath, kind: ConflictKind, rest: usize) -> Conflict {
+    pub fn new(item: FileName, folder: FolderPath, kind: Bring, rest: usize) -> Conflict {
         Conflict {
             item,
             folder,

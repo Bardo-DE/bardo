@@ -1,7 +1,7 @@
 //! What is said while files change: the toast after a move to the Trash, the progress sheet and
 //! the questions, in Finder's words. Pure.
 
-use files_core::{Conflict, ConflictKind, OpKind, Summary};
+use files_core::{Conflict, Bring, OpKind, Summary};
 use files_model::ExtensionChange;
 
 /// `“name”` in typographic quotes.
@@ -43,8 +43,8 @@ pub fn conflict_words(conflict: &Conflict) -> (String, &'static str) {
         conflict.item
     );
     let message = match conflict.kind {
-        ConflictKind::Copy => "Do you want to replace it with the one you're copying?",
-        ConflictKind::Move => "Do you want to replace it with the one you're moving?",
+        Bring::Copy => "Do you want to replace it with the one you're copying?",
+        Bring::Move => "Do you want to replace it with the one you're moving?",
     };
     (title, message)
 }

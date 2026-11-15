@@ -1,6 +1,6 @@
 //! A name that is taken where an item is going: every answer, and "for the rest".
 
-use files_core::{Answer, ConflictKind, OpPlan, Resolution};
+use files_core::{Answer, Bring, OpPlan, Resolution};
 use files_ops::Finish;
 
 use super::support::{Script, name, rig};
@@ -50,7 +50,7 @@ fn the_question_says_what_is_taken_and_how_many_come_after() {
     let first = &host.asked[0];
     assert_eq!(first.item, name("a.txt"));
     assert_eq!(first.folder, rig.folder("dest"));
-    assert_eq!(first.kind, ConflictKind::Copy);
+    assert_eq!(first.kind, Bring::Copy);
     assert_eq!(first.rest, 2);
     assert_eq!(host.asked[1].rest, 1);
 }
@@ -104,6 +104,6 @@ fn a_move_asks_with_the_move_kind() {
     let mut host = Script::answering(&[Resolution::once(Answer::Stop)]);
     let plan = OpPlan::Move(rig.transfer(&["home/a.txt"]));
     rig.exec.run(&plan, &mut host);
-    assert_eq!(host.asked[0].kind, ConflictKind::Move);
+    assert_eq!(host.asked[0].kind, Bring::Move);
     assert_eq!(rig.read("home/a.txt"), "new a", "nothing moved");
 }

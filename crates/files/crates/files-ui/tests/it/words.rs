@@ -174,10 +174,10 @@ fn work_in_progress_says_what_it_is() {
 
 #[test]
 fn a_taken_name_is_asked_in_finders_words() {
-    use files_core::{Conflict, ConflictKind};
+    use files_core::{Conflict, Bring};
     let here = files_core::FolderPath::new("/d").unwrap();
     let ask = |kind| Conflict::new(FileName::new("a.txt").unwrap(), here.clone(), kind, 0);
-    let (title, message) = conflict_words(&ask(ConflictKind::Move));
+    let (title, message) = conflict_words(&ask(Bring::Move));
     assert_eq!(
         title,
         "An item named \u{201c}a.txt\u{201d} already exists in this location."
@@ -186,7 +186,7 @@ fn a_taken_name_is_asked_in_finders_words() {
         message,
         "Do you want to replace it with the one you're moving?"
     );
-    let (_, copying) = conflict_words(&ask(ConflictKind::Copy));
+    let (_, copying) = conflict_words(&ask(Bring::Copy));
     assert_eq!(
         copying,
         "Do you want to replace it with the one you're copying?"

@@ -5,6 +5,7 @@ mod tree;
 mod undo;
 
 use std::fs;
+use std::ops::ControlFlow;
 use std::sync::Arc;
 
 use files_core::{
@@ -15,12 +16,12 @@ use files_trash::Trash;
 
 use self::transfer::How;
 use crate::error;
-use crate::host::{Flow, Host};
+use crate::host::Host;
 use crate::journal::Inverse;
 use crate::ran::Ran;
 
 /// The result of one step.
-pub(crate) type Step = Result<Flow, OpFailure>;
+pub(crate) type Step = Result<ControlFlow<()>, OpFailure>;
 
 /// Runs plans on the disk, with a [`Trash`] for the trash and for what a replace puts aside.
 ///
@@ -63,8 +64,8 @@ impl Executor {
 
 fn finish_of(step: Step) -> Finish {
     match step {
-        Ok(Flow::Go) => Finish::Done,
-        Ok(Flow::Stop) => Finish::Stopped,
+        Ok(ControlFlow::Continue(())) => Finish::Done,
+        Ok(ControlFlow::Break(())) => Finish::Stopped,
         Err(failure) => Finish::Failed(failure),
     }
 }
@@ -141,7 +142,7 @@ impl<'a> Run<'a> {
         fs::create_dir(made.path()).map_err(error::io)?;
         self.steps.push(Inverse::RemoveEmpty(made));
         self.touch_folder(parent);
-        Ok(Flow::Go)
+        Ok(ControlFlow::Continue(()))
     }
 
     fn rename(&mut self, item: &ItemRef, to: &FileName) -> Step {
@@ -156,7 +157,7 @@ impl<'a> Run<'a> {
             was: item.name.clone(),
         });
         self.touch_folder(&item.folder);
-        Ok(Flow::Go)
+        Ok(ControlFlow::Continue(()))
     }
 
     fn trash_items(&mut self, items: &[ItemRef]) -> Step {
@@ -172,7 +173,7 @@ impl<'a> Run<'a> {
         self.touch_trash();
         self.progress.items_done = items.len();
         self.emit();
-        Ok(Flow::Go)
+        Ok(ControlFlow::Continue(()))
     }
 
     fn put_back(&mut self, items: &[TrashedItem]) -> Step {
@@ -187,18 +188,18 @@ impl<'a> Run<'a> {
         self.steps.push(Inverse::Trash(originals));
         self.progress.items_done = items.len();
         self.emit();
-        Ok(Flow::Go)
+        Ok(ControlFlow::Continue(()))
     }
 
     fn delete_for_good(&mut self, items: &[TrashedItem]) -> Step {
         self.trash.delete_for_good(items).map_err(error::trash)?;
         self.touch_trash();
-        Ok(Flow::Go)
+        Ok(ControlFlow::Continue(()))
     }
 
     fn empty_trash(&mut self) -> Step {
         self.trash.empty().map_err(error::trash)?;
         self.touch_trash();
-        Ok(Flow::Go)
+        Ok(ControlFlow::Continue(()))
     }
 }

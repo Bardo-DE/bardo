@@ -106,7 +106,7 @@ pub struct Answer {
 impl Answer {
     /// Waits for the window's reading; an error when the window closed first.
     pub async fn wait(self) -> Result<Reading, ReadError> {
-        self.inbox.await.map_err(|_| ReadError::Closed)
+        self.inbox.await.map_err(|_| ReadError)
     }
 
     /// The reading, if it has arrived; for a caller that polls (a test driving a window).
@@ -135,7 +135,7 @@ impl RequestSender {
         let (reply, inbox) = oneshot::channel();
         self.0
             .send(Asked::Read(Read { query, reply }))
-            .map_err(|_| ReadError::Closed)?;
+            .map_err(|_| ReadError)?;
         Ok(Answer { inbox })
     }
 }

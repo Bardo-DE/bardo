@@ -1,21 +1,14 @@
 //! What the work asks of whoever runs it: where to report, whom to ask, and whether to go on.
 
+use std::ops::ControlFlow;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 
 use files_core::{Conflict, Progress, Resolution};
 
-/// Whether the work goes on.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Flow {
-    /// Carry on.
-    Go,
-    /// Stop as soon as it is safe: what is done stays done.
-    Stop,
-}
-
 /// The one who runs the work: it is told how far the work has come, is asked what to do about a
-/// taken name, and says whether to go on.
+/// taken name, and says whether to go on (`Break` means stop as soon as it is safe: what is done
+/// stays done).
 pub trait Host {
     /// How far the work has come.
     fn progress(&mut self, progress: Progress);
@@ -24,7 +17,7 @@ pub trait Host {
     fn ask(&mut self, conflict: &Conflict) -> Resolution;
 
     /// Whether to go on; asked between steps and between chunks of a copy.
-    fn flow(&self) -> Flow;
+    fn flow(&self) -> ControlFlow<()>;
 }
 
 /// A request to stop, which can be made from another thread.
@@ -47,12 +40,12 @@ impl CancelToken {
         self.0.store(false, Ordering::SeqCst);
     }
 
-    /// [`Flow::Stop`] once [`CancelToken::cancel`] has been called.
-    pub fn flow(&self) -> Flow {
+    /// `Break` once [`CancelToken::cancel`] has been called.
+    pub fn flow(&self) -> ControlFlow<()> {
         if self.0.load(Ordering::SeqCst) {
-            Flow::Stop
+            ControlFlow::Break(())
         } else {
-            Flow::Go
+            ControlFlow::Continue(())
         }
     }
 }

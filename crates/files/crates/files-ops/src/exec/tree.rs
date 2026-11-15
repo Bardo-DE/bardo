@@ -2,6 +2,7 @@
 
 use std::fs::{self, File, OpenOptions};
 use std::io::{self, Read, Write};
+use std::ops::ControlFlow;
 use std::os::unix::fs::symlink;
 use std::path::Path;
 
@@ -9,7 +10,6 @@ use files_core::OpFailure;
 
 use super::{Run, Step};
 use crate::error;
-use crate::host::Flow;
 
 /// How much of a file is read and written at a time; progress and cancel are checked between.
 const CHUNK: usize = 256 * 1024;
@@ -25,25 +25,25 @@ impl Run<'_> {
         if kind.is_symlink() {
             let target = fs::read_link(from).map_err(error::io)?;
             symlink(target, to).map_err(error::io)?;
-            return Ok(Flow::Go);
+            return Ok(ControlFlow::Continue(()));
         }
         if kind.is_dir() {
             fs::create_dir(to).map_err(error::io)?;
             for child in fs::read_dir(from).map_err(error::io)? {
                 let child = child.map_err(error::io)?;
                 let step = self.copy_tree(&child.path(), &to.join(child.file_name()))?;
-                if step == Flow::Stop {
-                    return Ok(Flow::Stop);
+                if step == ControlFlow::Break(()) {
+                    return Ok(ControlFlow::Break(()));
                 }
             }
             // After the contents, so a read-only folder can still be filled.
             let _ = fs::set_permissions(to, meta.permissions());
-            return Ok(Flow::Go);
+            return Ok(ControlFlow::Continue(()));
         }
         if kind.is_file() {
             return self.copy_file(from, to, &meta);
         }
-        Ok(Flow::Go)
+        Ok(ControlFlow::Continue(()))
     }
 
     fn copy_file(&mut self, from: &Path, to: &Path, meta: &fs::Metadata) -> Step {
@@ -55,8 +55,8 @@ impl Run<'_> {
             .map_err(error::io)?;
         let mut buffer = vec![0u8; CHUNK];
         loop {
-            if self.host.flow() == Flow::Stop {
-                return Ok(Flow::Stop);
+            if self.host.flow() == ControlFlow::Break(()) {
+                return Ok(ControlFlow::Break(()));
             }
             let read = match input.read(&mut buffer) {
                 Ok(0) => break,
@@ -73,14 +73,14 @@ impl Run<'_> {
         if let Ok(modified) = meta.modified() {
             let _ = output.set_modified(modified);
         }
-        Ok(Flow::Go)
+        Ok(ControlFlow::Continue(()))
     }
 
     /// Moves `from` to `to`, which must not exist: a rename, or when the two are on different
     /// disks a copy followed by removing the original.
     pub(super) fn move_path(&mut self, from: &Path, to: &Path) -> Step {
         match fs::rename(from, to) {
-            Ok(()) => Ok(Flow::Go),
+            Ok(()) => Ok(ControlFlow::Continue(())),
             Err(err) if err.kind() == io::ErrorKind::CrossesDevices => self.move_across(from, to),
             Err(err) => Err(error::io(err)),
         }
@@ -88,10 +88,10 @@ impl Run<'_> {
 
     fn move_across(&mut self, from: &Path, to: &Path) -> Step {
         match self.copy_tree(from, to) {
-            Ok(Flow::Go) => remove_tree(from).map(|()| Flow::Go),
-            Ok(Flow::Stop) => {
+            Ok(ControlFlow::Continue(())) => remove_tree(from).map(|()| ControlFlow::Continue(())),
+            Ok(ControlFlow::Break(())) => {
                 let _ = remove_tree(to);
-                Ok(Flow::Stop)
+                Ok(ControlFlow::Break(()))
             }
             Err(failure) => {
                 let _ = remove_tree(to);

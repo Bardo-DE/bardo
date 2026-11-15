@@ -1,7 +1,7 @@
 //! Changes under way with several tabs: every report of a job goes to the tab that asked for it.
 
 use files_core::{
-    Answer, ByteSize, Conflict, ConflictKind, FileName, Finish, FolderPath, OpEvent, OpFailure,
+    Answer, ByteSize, Conflict, Bring, FileName, Finish, FolderPath, OpEvent, OpFailure,
     OpKind, Outcome, Progress, Resolution, Summary,
 };
 use files_model::{Effect, Input, Question, TabId, Tabbed, Tabs, Work};
@@ -22,7 +22,7 @@ fn summary(kind: OpKind) -> Summary {
 
 fn conflict(text: &str) -> Conflict {
     let folder = FolderPath::new("/home/p").unwrap();
-    Conflict::new(name(text), folder, ConflictKind::Copy, 0)
+    Conflict::new(name(text), folder, Bring::Copy, 0)
 }
 
 fn finished(kind: OpKind, finish: Finish, undo: Option<OpKind>) -> OpEvent {

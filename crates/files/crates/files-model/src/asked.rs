@@ -3,7 +3,7 @@
 //! They become the same plans as the person's own changes, so they run on the same queue, show the
 //! same progress, can be undone the same way, and a taken name asks the same question.
 
-use files_core::{FileName, FolderPath, ItemRef, OpPlan, Split, Transfer, keep_both};
+use files_core::{Bring, FileName, FolderPath, ItemRef, OpPlan, Split, Transfer, keep_both};
 
 use crate::browser::Browser;
 use crate::changes::NEW_FOLDER;
@@ -11,15 +11,6 @@ use crate::effect::Effect;
 use crate::ops::Question;
 
 type Stepped = (Browser, Vec<Effect>);
-
-/// What to do with items brought to a folder.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Bring {
-    /// Leave the originals where they are.
-    Copy,
-    /// Take them out of where they were.
-    Move,
-}
 
 impl Browser {
     /// Move `items` to the Trash.

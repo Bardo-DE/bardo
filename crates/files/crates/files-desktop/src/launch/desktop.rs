@@ -13,7 +13,7 @@ use super::entry::AppEntry;
 use super::exec::{ExecLine, Expand, Takes};
 use super::icons::AppIcons;
 use super::spawn::{Spawn, SpawnCommand};
-use super::{AppChoice, LaunchError, Launcher};
+use super::{AppChoice, LaunchError};
 use crate::token::ActivationToken;
 use crate::uri::file_uri;
 
@@ -182,8 +182,11 @@ fn shown(path: Option<&PathBuf>, fallback: &str) -> String {
     )
 }
 
-impl Launcher for DesktopLauncher {
-    fn open(
+impl DesktopLauncher {
+    /// Opens `targets` with `with`. `token` lets the app raise its window.
+    ///
+    /// Every app that can be started is; the first failure is returned after the others ran.
+    pub fn open(
         &self,
         targets: &[PathBuf],
         with: AppChoice,

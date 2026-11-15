@@ -6,7 +6,7 @@ use std::sync::Arc;
 use ds_helpers::mime::{Associations, DesktopId, MimeApps, MimeDb, MimeLayer};
 use files_desktop::{
     ActivateCall, ActivationToken, AppChoice, AppEntry, Catalog, DesktopLauncher, EntryError,
-    FakeActivate, FakeIcons, FakeSpawn, LaunchError, Launcher, installed_check,
+    FakeActivate, FakeIcons, FakeSpawn, LaunchError, installed_check,
 };
 
 const GLOBS: &str = "50:text/plain:*.txt\n50:image/png:*.png\n50:application/pdf:*.pdf\n\

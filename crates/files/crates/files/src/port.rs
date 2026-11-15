@@ -5,9 +5,9 @@
 use std::future::Future;
 use std::path::{Path, PathBuf};
 
-use files_core::{FileName, FolderPath, ItemRef, Location};
+use files_core::{Bring, FileName, FolderPath, ItemRef, Location};
 use files_desktop::{Ask, Refusal, Reply, Undoing, Window};
-use files_model::{Bring, Input};
+use files_model::Input;
 use files_ui::{Query, ReadError, Reading, Request, RequestSender};
 
 /// What the window is to do with a path an agent named.

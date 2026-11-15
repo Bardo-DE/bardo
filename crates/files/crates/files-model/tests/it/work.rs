@@ -1,7 +1,7 @@
 //! Work under way: undo, what is shown from start to finish, questions and how a change ended.
 
 use files_core::{
-    Answer, ByteSize, Conflict, ConflictKind, Finish, OpEvent, OpFailure, OpKind, Progress,
+    Answer, ByteSize, Conflict, Bring, Finish, OpEvent, OpFailure, OpKind, Progress,
     Resolution,
 };
 use files_model::{Effect, Input, Question, Work};
@@ -56,7 +56,7 @@ fn work_is_shown_from_start_to_finish() {
 
 #[test]
 fn a_taken_name_is_a_question_and_the_answer_goes_to_the_worker() {
-    let conflict = Conflict::new(name("a.txt"), home_folder(), ConflictKind::Move, 2);
+    let conflict = Conflict::new(name("a.txt"), home_folder(), Bring::Move, 2);
     let (asked, _) = loaded(vec![]).step(Input::Op(OpEvent::Asking(conflict.clone())), at(0));
     assert_eq!(asked.question(), &Question::Conflict(conflict));
 
@@ -101,7 +101,7 @@ fn what_a_change_said_when_it_ended() {
 
 #[test]
 fn a_conflict_question_goes_when_its_work_ends() {
-    let conflict = Conflict::new(name("a.txt"), home_folder(), ConflictKind::Copy, 0);
+    let conflict = Conflict::new(name("a.txt"), home_folder(), Bring::Copy, 0);
     let (asked, _) = loaded(vec![]).step(Input::Op(OpEvent::Asking(conflict)), at(0));
     let (ended, _) = asked.step(finished(OpKind::Copy, Finish::Stopped, None), at(0));
     assert_eq!(ended.question(), &Question::None);

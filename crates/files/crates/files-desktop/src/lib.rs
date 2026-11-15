@@ -8,7 +8,7 @@
 //!   to a sink the app gives;
 //! - [`instance`]: [`claim`] the names, or [`forward`] a request to the app that has them;
 //! - [`launch`]: open files with the default app or a chosen one, per the Desktop Entry
-//!   Specification, behind the [`Launcher`] trait;
+//!   Specification, through [`DesktopLauncher`];
 //! - [`intents`]: the app's actions for the assistant and the command line (docket's
 //!   `IntentProvider1`), answered through the [`Window`] trait the caller implements;
 //! - [`disks`]: the computer's disks from UDisks2 on the system bus ([`Disks`]): list, open, eject
@@ -57,7 +57,7 @@ pub use instance::{Bus, Claim, FileManagerName, InstanceError, Served, claim, fo
 pub use intents::{Ask, Reply, Undoing, Window};
 pub use launch::{
     Activate, AppChoice, AppEntry, AppIcons, AppOffer, BusActivate, Catalog, DesktopLauncher,
-    EntryError, ExecError, ExecLine, Expand, IconLookup, LaunchError, Launcher, LauncherBuilder,
+    EntryError, ExecError, ExecLine, Expand, IconLookup, LaunchError, LauncherBuilder,
     NoIcons, Spawn, SpawnCommand, StartError, SystemSpawn, Takes, installed_check, load_apps,
 };
 pub use open_url::{OpenUrlError, open_url};
