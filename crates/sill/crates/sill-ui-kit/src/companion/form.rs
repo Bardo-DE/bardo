@@ -50,10 +50,13 @@ fn field(param: &ParamDecl, values: &Args) -> FormField {
 
 fn input(ty: &ParamType) -> FormInput {
     match ty {
-        ParamType::Text { lines, .. } => match lines {
-            docket_vocab::Lines::One => FormInput::Text,
-            docket_vocab::Lines::Many => FormInput::Lines,
-        },
+        ParamType::Text { multiline, .. } => {
+            if *multiline {
+                FormInput::Lines
+            } else {
+                FormInput::Text
+            }
+        }
         ParamType::Integer { .. } | ParamType::Decimal { .. } | ParamType::Duration => {
             FormInput::Number
         }

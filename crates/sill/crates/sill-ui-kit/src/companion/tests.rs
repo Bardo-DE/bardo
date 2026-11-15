@@ -456,7 +456,7 @@ fn a_form_field_carries_its_need_its_input_and_its_value() {
             label: label("Note"),
             ty: ParamType::Text {
                 max: docket_vocab::CharCount(200),
-                lines: docket_vocab::Lines::Many,
+                multiline: true,
             },
             need: ParamNeed::Optional,
             sink: docket_manifest::ArgSink::Body,
