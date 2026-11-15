@@ -27,13 +27,13 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 DEV="$ROOT/scripts/dev"
 # shellcheck source=scripts/dev/lib/compositor.sh
 source "$DEV/lib/compositor.sh"
-comp_build --manifest-path "$ROOT/Cargo.toml" -p shell-host --features debug-inject \
+comp_build -p shell-host --features debug-inject \
   --example demo_popup_keys --example demo_window || exit 1
 comp_enter "$0" "$@"
 OUT="$(comp_out)"
 mkdir -p "$OUT"
-DEMO_BIN="$ROOT/target/debug/examples/demo_popup_keys"
-WIN_BIN="$ROOT/target/debug/examples/demo_window"
+DEMO_BIN="${CARGO_TARGET_DIR:-$ROOT/../../target}/debug/examples/demo_popup_keys"
+WIN_BIN="${CARGO_TARGET_DIR:-$ROOT/../../target}/debug/examples/demo_window"
 KEYS="$OUT/popup-keys-demo.log"
 TRACE="$OUT/popup-keys-demo-trace.log"
 WTRACE="$OUT/popup-keys-window-trace.log"

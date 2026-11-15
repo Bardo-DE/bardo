@@ -77,13 +77,13 @@ touching the person's session.
 `COMPOSITOR=casement scripts/dev/accept-<name>.sh` (hover, scroll, drag, ime, lock, modifiers,
 popup-keyboard, swipe; lock runs only there) runs a script against casement, our compositor, instead of a headless
 KWin. The script builds its demos outside the jail, then `lib/compositor.sh` re-executes it in
-`~/desktop/harness/jail.sh` (no GPU, no network, no `/dev/input`, no session), where casement's
+`packaging/harness/jail.sh` (no GPU, no network, no `/dev/input`, no session), where casement's
 `dev/up.sh` starts `casement --backend headless` on a private bus and the script's input goes
 through `casementctl debug inject` (`lib/input.sh`; a superset of `fake-input.sh`'s grammar). State
 lives in the jail's scratch directory `scripts/dev/out/casement-<name>/` (logs under `out/`,
 casement's under `casement/`), never in the checkout otherwise.
 
-- `CASEMENT_DIR` (default `../casement`) is the casement checkout; its tools must be built
+- `CASEMENT_DIR` (default `crates/casement` of this tree) is the casement crate; its tools must be built
   first, outside the jail: `$CASEMENT_DIR/dev/bootstrap.sh --build-only` (`CASEMENT_TOOLS` moves
   the directory).
 - `SHELL_HOST_BACKEND` is `cpu` by default under casement (the demos paint into `wl_shm`);

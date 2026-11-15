@@ -4,7 +4,7 @@
 #   COMPOSITOR=kwin       (default) a headless KWin on the host (kwin-virtual.sh), input through
 #                         fake-input.sh. Runs on the host, never the user's session.
 #   COMPOSITOR=casement   casement (our compositor) started by its dev/up.sh inside
-#                         ~/desktop/harness/jail.sh, input through `casementctl debug inject`.
+#                         packaging/harness/jail.sh, input through `casementctl debug inject`.
 #                         The script re-executes itself in the jail (`comp_enter`) after its
 #                         cargo builds, which never happen inside the jail.
 #
@@ -34,7 +34,7 @@ CASEMENT_DIR="${CASEMENT_DIR:-$COMP_ROOT/../casement}"
 export COMPOSITOR CASEMENT_DIR
 COMP_ENV="${COMP_ENV:-}"
 
-# Whether this process is inside ~/desktop/harness/jail.sh (its PID 1 is bwrap, its scratch set).
+# Whether this process is inside packaging/harness/jail.sh (its PID 1 is bwrap, its scratch set).
 # The jail's own structural check (require_jail) still runs in every casement script of ours.
 comp_in_jail() { [ "$(cat /proc/1/comm 2>/dev/null)" = bwrap ] && [ -n "${JAIL_SCRATCH:-}" ]; }
 
@@ -42,7 +42,7 @@ comp_in_jail() { [ "$(cat /proc/1/comm 2>/dev/null)" = bwrap ] && [ -n "${JAIL_S
 # the outside half of the script built everything already).
 comp_build() {
   if comp_in_jail; then return 0; fi
-  cargo build "$@" >&2
+  (cd "$COMP_ROOT/../.." && cargo build "$@") >&2
 }
 
 # comp_tools: the casement tools directory, or exit 3 saying how to build it.
@@ -86,9 +86,8 @@ comp_enter() {
   shift
   name="$(basename "$script" .sh)"
   tools="$(comp_tools)" || exit 3
-  jail="${CASEMENT_DESKTOP:-$COMP_ROOT/../desktop}/harness/jail.sh"
-  [ -x "$jail" ] || jail="$HOME/desktop/harness/jail.sh"
-  [ -x "$jail" ] || { echo "comp: no ~/desktop/harness/jail.sh" >&2; exit 3; }
+  jail="${SHELL_HOST_JAIL:-$COMP_ROOT/../../packaging/harness/jail.sh}"
+  [ -x "$jail" ] || { echo "comp: no jail at $jail (packaging/harness/jail.sh of this tree)" >&2; exit 3; }
   scratch="$COMP_DEV_DIR/out/casement-${name#accept-}"
   rm -rf "$scratch"
   mkdir -p "$scratch"
@@ -96,7 +95,7 @@ comp_enter() {
     --env "SHELL_HOST_BACKEND=${SHELL_HOST_BACKEND:-cpu}")
   # The scripts' own knobs, passed through the jail's cleared environment when set.
   for var in CASEMENT_DMABUF CASEMENT_CLOCK CASEMENT_START_TENTHS FOOT FOOT_LIBS DRAG_ICON \
-    HOVER_TRACE SCROLL_TRACE LOCK_TRACE SILL_DIR; do
+    HOVER_TRACE SCROLL_TRACE LOCK_TRACE IME_LAUNCHER; do
     [ -z "${!var:-}" ] || envs+=(--env "$var=${!var}")
   done
   exec "$jail" --scratch "$scratch" "${envs[@]}" -- "$script" "$@"

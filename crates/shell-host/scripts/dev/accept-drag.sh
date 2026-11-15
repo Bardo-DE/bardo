@@ -50,14 +50,14 @@ FOOT_BIN="$(find_foot)" || { echo "no foot: set FOOT=/path/to/foot" >&2; exit 1;
 FOOT_LIBS="$(dirname "$(dirname "$FOOT_BIN")")/lib64"
 export FOOT="$FOOT_BIN"
 
-comp_build --manifest-path "$ROOT/Cargo.toml" --example demo_drag || exit 1
+comp_build -p shell-host --example demo_drag || exit 1
 comp_enter "$0" "$@"
 OUT="$(comp_out)"
 mkdir -p "$OUT"
 LOG="$OUT/drag.log"
 FOOT_LOG="$OUT/drag-foot.log"
 TYPED="$OUT/drag-foot-typed.txt"
-BIN="$ROOT/target/debug/examples/demo_drag"
+BIN="${CARGO_TARGET_DIR:-$ROOT/../../target}/debug/examples/demo_drag"
 
 comp_start 1920x1080 || exit 1
 

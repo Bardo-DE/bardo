@@ -22,11 +22,11 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 DEV="$ROOT/scripts/dev"
 # shellcheck source=scripts/dev/lib/compositor.sh
 source "$DEV/lib/compositor.sh"
-comp_build --manifest-path "$ROOT/Cargo.toml" -p shell-host --example demo_swipe || exit 1
+comp_build -p shell-host --example demo_swipe || exit 1
 comp_enter "$0" "$@"
 OUT="$(comp_out)"
 mkdir -p "$OUT"
-DEMO_BIN="$ROOT/target/debug/examples/demo_swipe"
+DEMO_BIN="${CARGO_TARGET_DIR:-$ROOT/../../target}/debug/examples/demo_swipe"
 LOG="$OUT/swipe-demo.log"
 TRACE="$OUT/swipe-demo-trace.log"
 INPUT_LOG="$OUT/swipe-input.log"

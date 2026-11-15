@@ -15,7 +15,7 @@
 # The person's answers are `sill debug key SURFACE KEY`: shell-host's Inject::Key, which enters
 # the sheet where an xkb key does, whether or not the compositor gave it the keyboard.
 #
-# docket is built from $DOCKET_DIR (default ../docket beside this repository) into its own target
+# docket is built from $DOCKET_DIR (default crates/docket of this tree) into its own target
 # directory, $OUT_DIR/docket-target (override with DOCKET_TARGET), never docket's own.
 #
 #   1. `quire-do apps` lists `shell`, and `quire-do shell --list` its actions.

@@ -55,7 +55,7 @@ fi
 
 tools="${CASEMENT_TOOLS:-$root/dev/out/tools}"
 mkdir -p "$tools/bin"
-target="${CARGO_TARGET_DIR:-$root/target}"
+target="${CARGO_TARGET_DIR:-$root/../../target}"
 have() { [ "$force" = no ] && [ -e "$1" ]; }
 need() { command -v "$1" >/dev/null || { echo "bootstrap.sh: $1 is not installed: $2" >&2; exit 3; }; }
 

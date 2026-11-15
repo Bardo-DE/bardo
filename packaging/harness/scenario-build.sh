@@ -23,7 +23,7 @@
 #   build/cua-target/debug/cuad                                          cuad (the screen helper) with --features fixture-callers: a plain build identifies nobody
 #   build/docket-target/debug/{docket-bringup,accept-*}                  docket-accept's test builds (the assistant's services on a fake /proc, quire-do)
 #
-# Nothing is written into the tree except the `target` link shell-host's accept scripts expect (git-ignored).
+# Nothing is written into the tree.
 # Exit codes: 0 built, 2 run inside a jail, 3 a host tool is missing or a build failed.
 set -euo pipefail
 only_accounts=0 only_w2=0
@@ -101,10 +101,10 @@ build_transom() {
 
 # The demos shell-host's accept scripts run, built the way those scripts build them (two cargo
 # invocations: the default features, then --features debug-inject, whose binaries the second set of
-# scripts need). The scripts hard-code ROOT/target/debug/examples, so target is a link to the build dir.
+# scripts need). The scripts look in $CARGO_TARGET_DIR/debug/examples, which the scenario sets to this build dir.
 build_shell_host() {
-  local sh="$SCEN_SIB/shell-host" target="$SCEN_BUILD/shell-host-target"
-  mkdir -p "$target"; ln -sfn "$target" "$sh/target"
+  local target="$SCEN_BUILD/shell-host-target"
+  mkdir -p "$target"
   (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$target" cargo build -p shell-host \
     --example demo_hover --example demo_scroll --example demo_ime --example demo_swipe \
     --example demo_switcher --example demo_drag --example demo_lock)

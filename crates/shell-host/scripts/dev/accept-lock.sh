@@ -27,15 +27,15 @@ COMPOSITOR="${COMPOSITOR:-casement}"
 # shellcheck source=scripts/dev/lib/compositor.sh
 source "$DEV/lib/compositor.sh"
 [ "$COMPOSITOR" = casement ] || { echo "accept-lock.sh runs on casement only: KWin has no ext-session-lock-v1" >&2; exit 64; }
-comp_build --manifest-path "$ROOT/Cargo.toml" -p shell-host --example demo_lock || exit 1
-comp_build --manifest-path "$ROOT/Cargo.toml" -p shell-host --features debug-inject \
+comp_build -p shell-host --example demo_lock || exit 1
+comp_build -p shell-host --features debug-inject \
   --example probe_toplevel || exit 1
 comp_enter "$0" "$@"
 OUT="$(comp_out)"
 mkdir -p "$OUT"
 LOG="$OUT/lock.log"
-DEMO_BIN="$ROOT/target/debug/examples/demo_lock"
-PROBE_BIN="$ROOT/target/debug/examples/probe_toplevel"
+DEMO_BIN="${CARGO_TARGET_DIR:-$ROOT/../../target}/debug/examples/demo_lock"
+PROBE_BIN="${CARGO_TARGET_DIR:-$ROOT/../../target}/debug/examples/probe_toplevel"
 SESSION_RUNTIME="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 DEMO="" INPUT="" PROBE="" COMP_SOCKET="" LOCK_SOCKET=""
 

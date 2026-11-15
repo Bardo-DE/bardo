@@ -1,6 +1,6 @@
 # Where the sibling shell-host checkout and this repo are, and the two compositors a script runs
 # on: casement (the sibling casement checkout's dev/up.sh, headless, INSIDE the jail: only
-# dev/accept.sh --compositor casement, or a script run under ~/desktop/harness/jail.sh, can use
+# dev/accept.sh --compositor casement, or a script run under packaging/harness/jail.sh, can use
 # it) and shell-host's headless KWin (kwin-virtual.sh). The KWin harness belongs to shell-host;
 # sill only wraps it.
 #
@@ -11,13 +11,14 @@
 # require_scale, output_scale, output_size, shot, maximised_height and nested (a command in the
 # compositor's environment); input.sh has start_input / input / key / click.
 SILL_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+SILL_TREE="$(cd "$SILL_REPO/../.." && pwd)"   # the bardo tree
 SHELL_HOST_DEV="${SHELL_HOST_DEV:-$SILL_REPO/../shell-host/scripts/dev}"
 if [ ! -x "$SHELL_HOST_DEV/kwin-virtual.sh" ]; then
   echo "dev: shell-host's harness not found at $SHELL_HOST_DEV (set SHELL_HOST_DEV)" >&2
   exit 1
 fi
 # The build every script runs: SILL_PROFILE=debug (the default) or release, from cargo's target
-# directory (CARGO_TARGET_DIR when set, else this checkout's target/). Both carry
+# directory (CARGO_TARGET_DIR when set, else the tree's target/). Both carry
 # `--features debug` (the fake DDC, `sill debug ...`), which `build` passes. The latency budgets
 # (a warm launcher open, a banner's first frame, ...) are release budgets: a debug build is
 # several times slower, so `budgets_apply` is false there (and on a host whose load is past its
@@ -30,7 +31,7 @@ case "$SILL_PROFILE" in
   release) SILL_CARGO_PROFILE=(--release) ;;
   *) echo "dev: SILL_PROFILE must be debug or release, not '$SILL_PROFILE'" >&2; exit 1 ;;
 esac
-SILL_TARGET="${CARGO_TARGET_DIR:-$SILL_REPO/target}"
+SILL_TARGET="${CARGO_TARGET_DIR:-$SILL_TREE/target}"
 SILL_OUT="$SILL_TARGET/$SILL_PROFILE"
 SILL_BIN="${SILL_BIN:-$SILL_OUT/sill}"
 # A budget also needs a host that is not oversubscribed: the figures include `sill debug capture`
@@ -49,11 +50,11 @@ KWIN_ENV="$SHELL_HOST_DEV/.kwin-env"
 SIZE="${SIZE:-1920x1080}"
 WL=
 BUS=
-# Casement: the sibling checkout (a casement worktree beside this one, else ~/casement) and the
+# Casement: the casement crate of this tree and the
 # tools dev/bootstrap.sh built there OUTSIDE the jail (casement, casementctl, casement-probe,
 # fake-logind in dev/out/tools/bin; nothing inside the jail calls cargo). CASEMENT_ENV is the env
 # file of the session start_casement made.
-CASEMENT_REPO="${CASEMENT_REPO:-$(cd "$SILL_REPO/../casement" 2>/dev/null && pwd || echo "$HOME/casement")}"
+CASEMENT_REPO="${CASEMENT_REPO:-$SILL_TREE/crates/casement}"
 CASEMENT_TOOLS="${CASEMENT_TOOLS:-$CASEMENT_REPO/dev/out/tools}"
 CASEMENT_ENV=
 # Casement's own bus (Debug1 lives on it): BUS is the script's, which a script that starts a bus per
@@ -418,10 +419,10 @@ shot() {
 # Casement: `casement-probe toplevel --maximised`, which prints the same facts as JSON lines;
 # returns 2 (an expected skip) while the probe has no such flag (it ignores unknown flags and
 # prints no `maximised` field) or casement's P0 floating windows are never configured maximised.
-PROBE="${SILL_PROBE:-$HOST_REPO/target/release/examples/probe_toplevel}"
+PROBE="${SILL_PROBE:-$SILL_TARGET/release/examples/probe_toplevel}"
 maximised_height() {
   [ "$COMPOSITOR" != casement ] || { maximised_height_casement; return; }
-  [ -x "$PROBE" ] || (cd "$HOST_REPO" && cargo build --release -p shell-host --features debug-inject \
+  [ -x "$PROBE" ] || (cd "$SILL_TREE" && CARGO_TARGET_DIR="$SILL_TARGET" cargo build --release -p shell-host --features debug-inject \
     --example probe_toplevel >&2) || return 1
   local log="$OUT_DIR/probe.log" probe
   # The probe reads commands on stdin, which must be pollable: a pipe, not /dev/null.

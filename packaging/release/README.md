@@ -1,8 +1,13 @@
 # Releases
 
-A signed binary bundle of the whole desktop, built by GitHub Actions from one commit of the bardo tree and
-published to the public repo `PoHsuanLai/desktop-releases` (binaries only; the source stays private).
-slipway, the updater, reads it.
+A signed binary bundle of the whole desktop, built from one commit of the bardo tree by `build.sh`, packed and signed by
+`pack.sh`. slipway, the updater, reads it (its default feed is the public repo `PoHsuanLai/desktop-releases`).
+
+**Release CI is not set up in bardo yet.** There is no workflow in this tree (the old one lived in the desktop
+repo and was not imported), no signing key is committed (`release.pub`), and no secrets, tokens or environments exist for
+this repository. Until they do, a release is cut by hand with the local steps below. Several rows below say "the workflow"
+or "the CI": that is the workflow still to be written; the scripts themselves work on their own. `release/selftest.sh` also
+reads `.github/workflows/release.yml` at its end and fails without it.
 
 | File | What |
 |---|---|
@@ -23,8 +28,7 @@ slipway, the updater, reads it.
 | `lib.sh` | sourced by the scripts: the distribution family and the one-line install hint for a missing tool |
 | `bootstrap.sh` | first install on a machine: downloads the latest release, verifies it, runs slipway's helper |
 | `exports.toml` | exports beyond the ones derived from the staged tree (`/usr/local/bin` links) |
-| `release.pub` | the public key (you commit it once, step 3) |
-| `../.github/workflows/release.yml` | the workflow |
+| `release.pub` | the public key (not committed yet; see "What you do once") |
 
 ## The format (frozen; slipway parses exactly this)
 
@@ -70,95 +74,36 @@ and palmrest are system files in `/usr/lib/systemd/system` and were never links.
 
 ## What you do once
 
-1. Create the public repo that holds the releases:
+Nothing is set up for bardo yet. What a release needs, whichever way it is later automated:
 
-   ```
-   gh repo create PoHsuanLai/desktop-releases --public \
-     --description "Signed binary releases of the quire desktop (binaries only)" --add-readme
-   ```
+1. A minisign key pair (`minisign -G -p release.pub -s release.key`), the secret key kept out of every repo and protected
+   by a password. The public key is committed as `release/release.pub`: `verify.sh` checks against it, and the file slipway reads
+   on a machine is `/usr/share/slipway/release.pub` (the same file). There is one signing key, and slipway's privileged helper
+   trusts exactly that key file, so replacing a lost or stolen key means each person runs slipway's install with the new
+   `--pubkey` again.
+2. A place to publish the three files (`release.toml`, `release.toml.minisig`, `bundle.tar.zst`): slipway's feed and
+   `bootstrap.sh` currently point at `PoHsuanLai/desktop-releases`.
 
-2. Make the signing key. Keep the secret key out of every repo (a password manager, or an offline file
-   with mode 0600) and protect it with a password:
-
-   ```
-   mkdir -p ~/.config/quire-release && chmod 700 ~/.config/quire-release
-   minisign -G -p ~/.config/quire-release/release.pub -s ~/.config/quire-release/release.key
-   ```
-
-3. Commit the public key to this repo, **before the first run**: the pack job stops at once without it. It is what
-   `verify.sh` checks the CI's output against, and the file slipway reads on a machine is
-   `/usr/share/slipway/release.pub` (the same file). Its first line carries the key id; the workflow prints it in every
-   run, and `sed -n 1p release/release.pub` shows it, so a person can compare the two:
-
-   ```
-   cp ~/.config/quire-release/release.pub release/release.pub
-   git add release/release.pub && git commit -m "release: the public signing key"
-   sed -n 1p release/release.pub
-   ```
-
-4. Make two fine-grained personal access tokens (GitHub, Settings, Developer settings):
-
-   - `RELEASE_READ_TOKEN`: resource owner PoHsuanLai, repositories: the bardo repository
-     plus slipway (quire, sill, shell-host, blitz-kit, keycap, palmrest, porter, stoker, almanac, docket,
-     cua, latchkey, bulkhead, bayonet, mailo, files, detent, transom, anyview, mpv-wgpu, casement-protocols, casement,
-     slipway); permission Contents: Read-only, and nothing else.
-   - `RELEASES_TOKEN`: repository PoHsuanLai/desktop-releases only; permission Contents: Read and write.
-
-5. Make the two environments the workflow's signing and publishing jobs run in, each usable only from the default
-   branch and from `v*` tags, each with you as the required reviewer (you approve each run on GitHub; a run from any other
-   branch is refused before it can read a secret). The workflow's `environment:` lines are what bind the jobs to them:
-
-   ```
-   for env in release-signing release-publish; do
-     gh api -X PUT repos/Bardo-DE/bardo/environments/$env \
-       -F 'deployment_branch_policy[protected_branches]=false' -F 'deployment_branch_policy[custom_branch_policies]=true' \
-       -F 'reviewers[][type]=User' -F "reviewers[][id]=$(gh api user --jq .id)"
-     gh api -X POST repos/Bardo-DE/bardo/environments/$env/deployment-branch-policies -f name=master -f type=branch
-     gh api -X POST repos/Bardo-DE/bardo/environments/$env/deployment-branch-policies -f name='v*' -f type=tag
-   done
-   ```
-
-   Also restrict who may create `v*` tags (Settings, Rules, Rulesets: a tag ruleset on `v*` that blocks creation and
-   deletion for everyone but you), because a pushed tag is allowed to use the environments.
-
-6. Store the secrets: the signing key and its password in `release-signing`, the release token in `release-publish`, and
-   the read-only token as a repository secret (the pasted key is the whole file). Then **delete any repository-level copy
-   of the signing key, its password and `RELEASES_TOKEN`**: a repository secret of the same name is readable by a workflow
-   run from any branch, which is what the environments are there to prevent:
-
-   ```
-   gh secret set MINISIGN_SECRET_KEY --env release-signing --repo Bardo-DE/bardo < ~/.config/quire-release/release.key
-   gh secret set MINISIGN_PASSWORD   --env release-signing --repo Bardo-DE/bardo
-   gh secret set RELEASES_TOKEN      --env release-publish --repo Bardo-DE/bardo
-   gh secret set RELEASE_READ_TOKEN  --repo Bardo-DE/bardo
-   gh secret delete MINISIGN_SECRET_KEY --repo Bardo-DE/bardo   # only if an earlier setup made it
-   gh secret delete MINISIGN_PASSWORD   --repo Bardo-DE/bardo   # only if an earlier setup made it
-   gh secret delete RELEASES_TOKEN      --repo Bardo-DE/bardo   # only if an earlier setup made it
-   ```
-
-What this does not do: there is one signing key, and slipway's privileged helper trusts exactly that key file, so
-replacing a lost or stolen key means each person runs slipway's install with the new `--pubkey` again. A second signer
-or a list of next keys would need a change to slipway's key handling and a new helper on every computer (owner's
-decision, recorded in FINDINGS).
+CI (the build matrix, the glibc and library checks, the install in clean Ubuntu, Fedora and Arch containers, the publishing
+secrets) is to be written; this file will describe it when it exists.
 
 ## Cutting a release
 
-Commit what you want released (every component is built from the tree's commit), push, then either:
+Commit what you want released (every component is built from the tree's commit), then by hand, with `MINISIGN_KEY_FILE` set:
 
 ```
-gh workflow run release.yml --repo Bardo-DE/bardo -f version=0.2.0 -f notes="What changed, in plain words."
+release/build.sh --version 0.2.0 --out /tmp/rel
+cat /tmp/rel/components.d/*.txt >/tmp/rel/components.txt
+release/pack.sh --stage /tmp/rel/stage --version 0.2.0 --notes notes.txt --out /tmp/rel/out --components /tmp/rel/components.txt
+release/verify.sh /tmp/rel/out --pubkey release/release.pub
 ```
 
-or tag: `git tag -a v0.2.0 -m "What changed" && git push origin v0.2.0` (the tag's message is the notes).
-The notes for the next release are kept in `docs/release-notes.md` while it is prepared; use them as the text.
-The workflow builds the components in parallel jobs (casement, sill, anyview, mailo, files, porter, steward, ferry, almanac with docket, stoker and cua, turnstile, keycap and palmrest (the programs the system manager starts, a job each), and the small ones together, with xwayland-satellite, which is built from its public repository at the commit in `build.sh`, `SATELLITE_REV`, the one `SATELLITE_TAG` names) in an `ubuntu:24.04` container (the oldest supported base, so the programs load on Fedora and
-Arch as well), checks their glibc and library needs, packs and signs, verifies, installs the signed release with
-slipway's helper in clean Ubuntu 24.04, Fedora 44 and Arch containers, and only then creates the release
-`v0.2.0` in desktop-releases. Watch it with
-`gh run watch --repo Bardo-DE/bardo`. A tag that already exists in desktop-releases fails the last step;
-nothing is overwritten.
+The notes for the next release are kept in `docs/release-notes.md` while it is prepared; use them as the text. `build.sh --only NAMES`
+builds a part (casement, sill, session, porter, steward, ferry, stoker, almanac, docket, cua, detent, transom, turnstile, keycap, palmrest,
+files, slipway, satellite); xwayland-satellite is built from its public repository at the commit in `build.sh`, `SATELLITE_REV`, the one
+`SATELLITE_TAG` names. anyview and mailo are separate repositories and are not built here.
 
-Each build job may supply only the paths `release/stage-owners.list` gives it. Before the stage tars are merged, the pack job runs
+If the build is later split into parallel jobs, each job may supply only the paths `release/stage-owners.list` gives it. Before the stage tars are merged, the pack job runs
 `release/stage-owners.py check` on them and stops when a tar holds a path outside its job's lines (a build script in one job writing
 `bin/turnstile` or `turnstile.service`, say), anything that is not a plain file or folder, or a path that two jobs both supply. A component
 that starts to install a new file needs a line for it in that list. The job is taken from the artifact, not from a file name: the pack job
@@ -181,10 +126,10 @@ Then `release/bootstrap.sh` fetches the latest release from desktop-releases, ch
 checks slipway's install with `check-helpers.sh`, and runs `pkexec /usr/libexec/slipway-apply` on it:
 
 ```
-cd slipway
+cd bardo
 cargo build --release --locked -p slipway-root
-sudo sh -c 'umask 022 && scripts/install.sh --bin-dir target/release --pubkey /path/to/release.pub'
-cd ../desktop && release/bootstrap.sh
+sudo sh -c 'umask 022 && crates/slipway/scripts/install.sh --bin-dir target/release --pubkey /path/to/release.pub'
+packaging/release/bootstrap.sh
 ```
 
 The build runs as yourself, so no build step of the dependency tree runs as root, and the install gets the finished
@@ -198,13 +143,13 @@ without installing. The way back by hand, from a text console, is `pkexec /usr/l
 
 From then on the session does the rest: `desktop-session.target` wants the update service, `desktop-session` runs
 `slipway recover` before the compositor starts, and the shell runs `slipway confirm` about half a minute after it
-answers. CI covers the install on three distributions (`smoke.sh`) and the two start-check cases (`health-scenarios.sh`).
+answers. `smoke.sh` covers the install on a throwaway machine and `health-scenarios.sh` the two start-check cases; neither runs in CI yet.
 
 ### Before the first release that carries the input service
 
 Release N is the first to carry the four turnstile files. slipway's privileged helper is never replaced by a release, and an older one refuses
 a release that lists a file its rule list does not name, so **everyone re-runs slipway's install by hand before that release** (the
-`cd slipway && cargo build ... && sudo sh -c 'umask 022 && scripts/install.sh ...'` lines above, with a slipway that has the four rules and, in
+`cargo build ... -p slipway-root && sudo sh -c 'umask 022 && crates/slipway/scripts/install.sh ...'` lines above, with a slipway that has the four rules and, in
 `apply/settle.rs`, the step that reloads systemd and the device rules and starts `turnstile.socket`). A computer that skips it keeps working
 at the version it has: the release is refused whole and says why. `release/system-files.list` and the slipway crate of this tree move in
 the same step; until then `release/check-system-list.sh` fails against the old pin, on purpose.

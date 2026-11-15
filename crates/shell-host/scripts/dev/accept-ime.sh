@@ -22,9 +22,8 @@
 #              stray ㄋ, ㄧ or letters)
 # McBopomofo commits its composing buffer with Return; Space opens the candidate list instead.
 #
-# SILL_DIR=<sill checkout> (optional) repeats compose and backspace on that checkout's
-# launcher_demo (`cargo build -p sill-surfaces --example launcher_demo` there first; it links
-# whichever shell-host its ../shell-host path names), reading the panel's field back with the
+# IME_LAUNCHER=1 (optional) repeats compose and backspace on sill's launcher_demo (`cargo build -p sill-launcher-ui
+# --example launcher_demo` first), reading the panel's field back with the
 # debug-inject `<panel> focused` verb, and captures the panel to out/ime-launcher.png.
 #
 # Logs: scripts/dev/out/ime-*.log; ime-trace.log / ime-launcher-trace.log are the clients'
@@ -34,15 +33,16 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 DEV="$ROOT/scripts/dev"
 # shellcheck source=scripts/dev/lib/compositor.sh
 source "$DEV/lib/compositor.sh"
-DEMO_BIN="$ROOT/target/debug/examples/demo_ime"
+DEMO_BIN="${CARGO_TARGET_DIR:-$ROOT/../../target}/debug/examples/demo_ime"
 DEMO="" INPUT="" LAUNCHER="" IME=""
 
 command -v fcitx5 >/dev/null || { echo "FAIL setup: no fcitx5 on PATH" >&2; exit 1; }
 [ -f /usr/lib64/fcitx5/mcbopomofo.so ] || [ -f /usr/lib/fcitx5/mcbopomofo.so ] \
   || { echo "FAIL setup: fcitx5-mcbopomofo is not installed" >&2; exit 1; }
-comp_build --manifest-path "$ROOT/Cargo.toml" -p shell-host --example demo_ime || exit 1
-if [ -n "${SILL_DIR:-}" ] && [ ! -x "$SILL_DIR/target/debug/examples/launcher_demo" ]; then
-  echo "FAIL setup: no $SILL_DIR/target/debug/examples/launcher_demo" >&2
+comp_build -p shell-host --example demo_ime || exit 1
+LAUNCHER_DEMO="${CARGO_TARGET_DIR:-$ROOT/../../target}/debug/examples/launcher_demo"
+if [ -n "${IME_LAUNCHER:-}" ] && [ ! -x "$LAUNCHER_DEMO" ]; then
+  echo "FAIL setup: no $LAUNCHER_DEMO" >&2
   exit 1
 fi
 comp_enter "$0" "$@"
@@ -209,14 +209,13 @@ fi
 
 printf 'quit\n' >&4
 for _ in $(seq 50); do kill -0 "$DEMO" 2>/dev/null || break; sleep 0.1; done
-[ -z "${SILL_DIR:-}" ] && exit "$status"
+[ -z "${IME_LAUNCHER:-}" ] && exit "$status"
 
 # --- sill's launcher ----------------------------------------------------------------------------
 : >"$OUT/ime-launcher.log" && : >"$OUT/ime-launcher.out"
 (
   comp_source
-  cd "$SILL_DIR" || exit 1
-  comp_as_shell env WAYLAND_DEBUG=client target/debug/examples/launcher_demo
+  comp_as_shell env WAYLAND_DEBUG=client "$LAUNCHER_DEMO"
 ) <"$OUT/ime-launcher.fifo" >"$OUT/ime-launcher.out" 2>"$OUT/ime-launcher.log" &
 LAUNCHER=$!
 exec 5>"$OUT/ime-launcher.fifo"

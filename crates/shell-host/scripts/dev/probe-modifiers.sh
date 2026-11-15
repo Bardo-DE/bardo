@@ -15,10 +15,10 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 DEV="$ROOT/scripts/dev"
 OUT="$DEV/out"
 mkdir -p "$OUT"
-BIN="$ROOT/target/debug/examples/demo_drag"
+BIN="${CARGO_TARGET_DIR:-$ROOT/../../target}/debug/examples/demo_drag"
 FOOT_BIN="${FOOT:-$(command -v foot || echo "$OUT/foot/usr/bin/foot")}"
 FOOT_LIBS="$(dirname "$(dirname "$FOOT_BIN")")/lib64"
-cargo build --manifest-path "$ROOT/Cargo.toml" --example demo_drag >&2 || exit 1
+cargo build -p shell-host --example demo_drag >&2 || exit 1
 
 probe() {
   local mode=$1 focus=$2 log="$OUT/modifiers-$1-$2.log" demo input foot=""

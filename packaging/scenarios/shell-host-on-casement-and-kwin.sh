@@ -21,7 +21,9 @@ require_jail
 
 SCRIPTS=(hover scroll modifiers swipe drag ime lock popup-keyboard)
 SH="$SCEN_SIB/shell-host"
-EXAMPLES="$SH/target/debug/examples"
+# The demos were built into build/shell-host-target (scenario-build.sh); the accept scripts find them through CARGO_TARGET_DIR.
+export CARGO_TARGET_DIR="$SCEN_BUILD/shell-host-target"
+EXAMPLES="$CARGO_TARGET_DIR/debug/examples"
 scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/casementctl" "$SCEN_TOOLS/bin/fake-logind" "$SCEN_TOOLS/bin/casement-shell-exec" \
   "$SCEN_TOOLS/bin/foot" "$SH/scripts/dev/lib/compositor.sh" \
   "$EXAMPLES/demo_hover" "$EXAMPLES/demo_scroll" "$EXAMPLES/demo_ime" "$EXAMPLES/demo_swipe" \

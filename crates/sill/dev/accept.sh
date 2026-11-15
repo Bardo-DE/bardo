@@ -6,9 +6,9 @@
 #
 # NAME is a script's name (`bar`, `bar.sh` or its path); with none, every dev/accept/*.sh.
 #
-#   --compositor casement   each script runs in its OWN jail (~/desktop/harness/jail.sh) on a headless
+#   --compositor casement   each script runs in its OWN jail (packaging/harness/jail.sh) on a headless
 #                           casement that the script starts itself (dev/lib/compositor.sh's
-#                           start_compositor, through the casement checkout's dev/up.sh): N jails at a
+#                           start_compositor, through casement's dev/up.sh): N jails at a
 #                           time (--jobs, default 4), each with its own scratch dir OUT/NAME/ for its
 #                           runtime dir, buses, logs and captures. The checkout is read-only in the jail,
 #                           and nothing in it calls cargo or the network (A7): the daemon, the examples
@@ -28,7 +28,7 @@
 # (an artefact is missing: run with --build, outside the jail) | 4 a script overran its bound.
 #
 # Environment: SILL_PROFILE (debug, the default, or release), CARGO_TARGET_DIR, CASEMENT_REPO (the
-# casement checkout, default the sibling of this one), CASEMENT_TARGET (its cargo target dir, for --build),
+# casement crate, default crates/casement of this tree), CASEMENT_TARGET (its cargo target dir, for --build),
 # CASEMENT_TOOLS, SILL_JAIL (the jail script).
 set -uo pipefail
 root=$(cd "$(dirname "$0")/.." && pwd)
@@ -84,13 +84,13 @@ prebuild() {
       && cargo build "${flags[@]}" -p sill-services --bins \
       && cargo build "${flags[@]}" -p sill-launcher-ui --example launcher_demo \
       && cargo build --release -p sill-bar --example bar_demo) || return 1
-    echo "== shell-host's probe_toplevel (the maximised-window probe), into its own target dir"
-    (cd "$HOST_REPO" && CARGO_TARGET_DIR="$SILL_TARGET/shell-host-examples" cargo build --release -p shell-host \
+    echo "== shell-host's probe_toplevel (the maximised-window probe)"
+    (cd "$SILL_TREE" && CARGO_TARGET_DIR="$SILL_TARGET" cargo build --release -p shell-host \
       --features debug-inject --example probe_toplevel) || return 1
     echo "== docket (confirm.sh's accept-intentd and quire-do), into its own target dir"
-    (cd "${DOCKET_DIR:-$root/../docket}" && CARGO_TARGET_DIR="$DOCKET_TARGET" cargo build -p docket-accept --bin accept-intentd && CARGO_TARGET_DIR="$DOCKET_TARGET" cargo build -p docket-cli --bins) || return 1
+    (cd "$SILL_TREE" && CARGO_TARGET_DIR="$DOCKET_TARGET" cargo build -p docket-accept --bin accept-intentd && CARGO_TARGET_DIR="$DOCKET_TARGET" cargo build -p docket-cli --bins) || return 1
     echo "== casement's tools"
-    (cd "$CASEMENT_REPO" && CARGO_TARGET_DIR="${CASEMENT_TARGET:-$CASEMENT_REPO/target}" dev/bootstrap.sh --build-only) || return 1
+    (cd "$CASEMENT_REPO" && CARGO_TARGET_DIR="${CASEMENT_TARGET:-$SILL_TARGET}" dev/bootstrap.sh --build-only) || return 1
   } >"$out/build.log" 2>&1 || { echo "accept.sh: the build failed (see $out/build.log)" >&2; return 1; }
 }
 if [ "$build" = yes ]; then
@@ -104,13 +104,12 @@ if [ "$compositor" = casement ]; then
   for artefact in "$SILL_OUT/sill" "$SILL_OUT/sill-nodebug"; do
     [ -x "$artefact" ] || { echo "accept.sh: $artefact is missing: run dev/accept.sh --build (outside the jail)" >&2; exit 3; }
   done
-  desktop="${SILL_DESKTOP:-$(cd "$root/../desktop" 2>/dev/null && pwd || echo "$HOME/desktop")}"
-  jail="${SILL_JAIL:-$desktop/harness/jail.sh}"
+  jail="${SILL_JAIL:-$SILL_TREE/packaging/harness/jail.sh}"
   [ -x "$jail" ] || { echo "accept.sh: the jail script $jail is missing" >&2; exit 3; }
   jail_env=(
     --env SILL_COMPOSITOR=casement --env SILL_PREBUILT=1 --env "SILL_PROFILE=$SILL_PROFILE"
     --env "CARGO_TARGET_DIR=$SILL_TARGET" --env "DOCKET_TARGET=$DOCKET_TARGET"
-    --env "SILL_PROBE=$SILL_TARGET/shell-host-examples/release/examples/probe_toplevel" --env "CASEMENT_REPO=$CASEMENT_REPO" --env "CASEMENT_TOOLS=$CASEMENT_TOOLS"
+    --env "SILL_PROBE=$SILL_TARGET/release/examples/probe_toplevel" --env "CASEMENT_REPO=$CASEMENT_REPO" --env "CASEMENT_TOOLS=$CASEMENT_TOOLS"
   )
   [ -z "${CASEMENT_START_TENTHS:-}" ] || jail_env+=(--env "CASEMENT_START_TENTHS=$CASEMENT_START_TENTHS")
   [ -z "${SHELL_HOST_DEV:-}" ] || jail_env+=(--env "SHELL_HOST_DEV=$SHELL_HOST_DEV")

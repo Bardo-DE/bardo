@@ -32,7 +32,7 @@ if [ -z "$(jail_violations)" ]; then
   exit 2
 fi
 
-target="${CARGO_TARGET_DIR:-$root/target}"
+target="${CARGO_TARGET_DIR:-$root/../../target}"
 manifest="$root/dev/perf/Cargo.toml"
 if [ "$build" = yes ]; then
   CARGO_TARGET_DIR="$target" cargo build --release --manifest-path "$manifest" --bins

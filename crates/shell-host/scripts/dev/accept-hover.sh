@@ -27,12 +27,12 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 DEV="$ROOT/scripts/dev"
 # shellcheck source=scripts/dev/lib/compositor.sh
 source "$DEV/lib/compositor.sh"
-comp_build --manifest-path "$ROOT/Cargo.toml" --example demo_hover || exit 1
+comp_build -p shell-host --example demo_hover || exit 1
 comp_enter "$0" "$@"
 OUT="$(comp_out)"
 mkdir -p "$OUT"
 LOG="$OUT/hover.log"
-BIN="$ROOT/target/debug/examples/demo_hover"
+BIN="${CARGO_TARGET_DIR:-$ROOT/../../target}/debug/examples/demo_hover"
 CX=960 CY=540
 DEMO="" INPUT=""
 
