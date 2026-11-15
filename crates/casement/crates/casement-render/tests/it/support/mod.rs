@@ -1,7 +1,7 @@
 //! Shared helpers for the renderer-only tests: offscreen targets on pixman and on llvmpipe
 //! GLES, one render through `render_output`, the read-back, and the golden environment.
 
-use casement_render::golden::{Golden, GoldenOutcome, GoldenTier, compare};
+use casement_render::golden::{Env, Golden, GoldenOutcome, GoldenTier, compare};
 use casement_render::{CasementElement, Compositor, Rendered, render_output, surfaceless_gles};
 use image::RgbaImage;
 use smithay::backend::allocator::Fourcc;
@@ -11,7 +11,6 @@ use smithay::backend::renderer::pixman::PixmanRenderer;
 use smithay::backend::renderer::{Bind, ExportMem, Offscreen};
 use smithay::reexports::pixman::Image;
 use smithay::utils::{Rectangle, Size, Transform};
-use std::path::PathBuf;
 
 /// A renderer with an offscreen target of one size: what a headless output renders into.
 pub trait Offscreen1: Compositor + ExportMem {
@@ -128,19 +127,6 @@ pub fn beside(images: &[RgbaImage]) -> RgbaImage {
     out
 }
 
-/// Whether goldens are blessed: `CASEMENT_BLESS=1` only, the rule of the test kit's `Env`
-/// (this crate cannot depend on the test kit, which depends on it).
-pub fn bless() -> bool {
-    std::env::var("CASEMENT_BLESS").ok().as_deref() == Some("1")
-}
-
-/// Where differing frames go.
-pub fn out_dir() -> PathBuf {
-    std::env::var_os("CASEMENT_GOLDEN_OUT")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| std::env::temp_dir().join("casement-golden"))
-}
-
 /// Compares `actual` with `tests/golden/<name>.png` under `tier`; panics with the outcome when
 /// it differs.
 pub fn check(name: &str, tier: GoldenTier, actual: &RgbaImage) {
@@ -148,7 +134,8 @@ pub fn check(name: &str, tier: GoldenTier, actual: &RgbaImage) {
         scene: format!("tests/golden/{name}"),
         tier,
     };
-    let outcome = compare(&golden, actual, &out_dir(), bless());
+    let env = Env::of_process();
+    let outcome = compare(&golden, actual, &env.out_dir, env.bless);
     assert!(
         matches!(outcome, GoldenOutcome::Match | GoldenOutcome::Blessed),
         "{name}: {outcome:?}"
