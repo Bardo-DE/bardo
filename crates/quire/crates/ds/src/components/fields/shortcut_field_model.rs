@@ -1,7 +1,8 @@
 //! What the shortcut field decides from a key while it records: the pure step, apart from the
 //! view that carries it out.
 
-use chordkit::{Chord, Key as ChordKey, Modifier, Modifiers as ChordModifiers, NamedKey, Platform};
+use chordkit::keyboard_types::Modifiers as ChordModifiers;
+use chordkit::{Chord, Key as ChordKey, Platform};
 use dioxus::prelude::{Key, Modifiers};
 use ds_core::command::{chord_of, modifiers_of};
 use ds_core::word::Word;
@@ -94,22 +95,21 @@ pub(crate) fn hear(
 fn is_shortcut(kinds: ShortcutKinds, chord: &Chord) -> bool {
     let modifiers = chord.modifiers();
     if kinds == ShortcutKinds::SingleKeys {
-        let shifted = modifiers == ChordModifiers::of(Modifier::Shift)
+        let shifted = modifiers == ChordModifiers::SHIFT
             && matches!(chord.key(), ChordKey::Char(_));
         return modifiers.is_empty() || shifted;
     }
-    let typing = modifiers == ChordModifiers::of(Modifier::Shift)
+    let typing = modifiers == ChordModifiers::SHIFT
         && matches!(chord.key(), ChordKey::Char(_));
-    let function = matches!(chord.key(), ChordKey::Named(NamedKey::F(_)));
+    let function = (1..=24).any(|n| ChordKey::function(n) == Some(chord.key()));
     function || (!modifiers.is_empty() && !typing)
 }
 
 #[cfg(test)]
 mod tests {
     use super::{Heard, ShortcutKinds, hear};
-    use chordkit::{
-        Chord, Desktop, Key as ChordKey, Modifier, Modifiers as ChordModifiers, NamedKey, Platform,
-    };
+    use chordkit::keyboard_types::{Modifiers as ChordModifiers, NamedKey};
+    use chordkit::{Chord, Desktop, Key as ChordKey, Platform};
     use dioxus::prelude::{Key, Modifiers};
 
     fn ours() -> Platform {
@@ -118,11 +118,8 @@ mod tests {
         }
     }
 
-    fn chord(modifiers: &[Modifier], key: ChordKey) -> Heard {
-        Heard::Offer(Chord::new(
-            modifiers.iter().copied().collect::<ChordModifiers>(),
-            key,
-        ))
+    fn chord(modifiers: ChordModifiers, key: ChordKey) -> Heard {
+        Heard::Offer(Chord::new(modifiers, key))
     }
 
     #[test]
@@ -182,31 +179,31 @@ mod tests {
                 "command and a letter",
                 letter("k"),
                 Modifiers::SUPER,
-                chord(&[Modifier::Super], ChordKey::Char('k')),
+                chord(ChordModifiers::META, ChordKey::Char('k')),
             ),
             (
                 "shift command and a letter",
                 letter("K"),
                 Modifiers::SUPER | Modifiers::SHIFT,
-                chord(&[Modifier::Super, Modifier::Shift], ChordKey::Char('k')),
+                chord(ChordModifiers::META | ChordModifiers::SHIFT, ChordKey::Char('k')),
             ),
             (
                 "control and an arrow",
                 Key::ArrowLeft,
                 Modifiers::CONTROL,
-                chord(&[Modifier::Ctrl], ChordKey::Named(NamedKey::Left)),
+                chord(ChordModifiers::CONTROL, ChordKey::Named(NamedKey::ArrowLeft)),
             ),
             (
                 "a function key needs no modifier",
                 Key::F5,
                 Modifiers::empty(),
-                chord(&[], ChordKey::Named(NamedKey::F(5))),
+                chord(ChordModifiers::empty(), ChordKey::Named(NamedKey::F5)),
             ),
             (
                 "option escape is a combination",
                 Key::Escape,
                 Modifiers::ALT,
-                chord(&[Modifier::Alt], ChordKey::Named(NamedKey::Escape)),
+                chord(ChordModifiers::ALT, ChordKey::Named(NamedKey::Escape)),
             ),
         ];
         for (name, key, modifiers, want) in cases {
@@ -226,19 +223,19 @@ mod tests {
                 "a bare letter is offered",
                 letter("j"),
                 Modifiers::empty(),
-                chord(&[], ChordKey::Char('j')),
+                chord(ChordModifiers::empty(), ChordKey::Char('j')),
             ),
             (
                 "shift and a letter is offered",
                 letter("J"),
                 Modifiers::SHIFT,
-                chord(&[Modifier::Shift], ChordKey::Char('j')),
+                chord(ChordModifiers::SHIFT, ChordKey::Char('j')),
             ),
             (
                 "delete is a key",
                 Key::Delete,
                 Modifiers::empty(),
-                chord(&[], ChordKey::Named(NamedKey::Delete)),
+                chord(ChordModifiers::empty(), ChordKey::Named(NamedKey::Delete)),
             ),
             (
                 "backspace clears",
@@ -257,7 +254,7 @@ mod tests {
                 "a bare arrow is offered",
                 Key::ArrowUp,
                 Modifiers::empty(),
-                chord(&[], ChordKey::Named(NamedKey::Up)),
+                chord(ChordModifiers::empty(), ChordKey::Named(NamedKey::ArrowUp)),
             ),
             (
                 "control and a letter waits",

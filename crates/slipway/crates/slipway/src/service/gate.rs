@@ -19,10 +19,10 @@
 use crate::problem::Problem;
 use peephole_bus::peephole::RealProc;
 use peephole_bus::peephole_core::{Proof, Refused, Requirement, Table, roles};
-use peephole_bus::{BusPeers, ManagerCheck, Tokio};
+use peephole_bus::{BusPeers, ManagerCheck, Offload};
 
 /// The bus identification the service uses: the system's `/proc`, probes run off the async threads.
-pub type Peers = BusPeers<RealProc, Tokio>;
+pub type Peers = BusPeers<RealProc>;
 
 /// The identification for `connection`, judging against `table`. The unit manager's answers are
 /// believed only when the manager is the system's own.
@@ -32,7 +32,7 @@ pub fn peers_on(connection: zbus::Connection, table: Table) -> Peers {
         table,
         ManagerCheck::Verified(Requirement::new(roles::MANAGER, Proof::Exe)),
     )
-    .with_offload(Tokio)
+    .with_offload(Offload::Tokio)
 }
 
 /// Who may start an update.

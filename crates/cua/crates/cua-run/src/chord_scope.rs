@@ -7,9 +7,10 @@
 //! restates a chord. `Super` is not banned as a whole: on our desktop it is the Command key, and
 //! Command+C is an ordinary write.
 
+use chordkit::keyboard_types::{Modifiers, NamedKey};
 use chordkit::{
-    Action, Chord as KeyChord, Context, Desktop, Key as ChordKey, Keymap, Modifier as KeyModifier,
-    Modifiers, NamedKey, Platform, StandardAction, reserved_reason,
+    Action, Chord as KeyChord, Context, Desktop, Key as ChordKey, Keymap, Platform, StandardAction,
+    reserved_reason,
 };
 use cua_action::{Chord, Modifier};
 use keyboard_types::Key;
@@ -47,16 +48,14 @@ fn desktop_wide(action: StandardAction) -> bool {
 }
 
 fn modifiers_of(chord: &Chord) -> Modifiers {
-    chord
-        .mods
-        .iter()
-        .map(|m| match m {
-            Modifier::Ctrl => KeyModifier::Ctrl,
-            Modifier::Alt => KeyModifier::Alt,
-            Modifier::Shift => KeyModifier::Shift,
-            Modifier::Super => KeyModifier::Super,
-        })
-        .collect()
+    chord.mods.iter().fold(Modifiers::empty(), |held, m| {
+        held | match m {
+            Modifier::Ctrl => Modifiers::CONTROL,
+            Modifier::Alt => Modifiers::ALT,
+            Modifier::Shift => Modifiers::SHIFT,
+            Modifier::Super => Modifiers::META,
+        }
+    })
 }
 
 /// The key as chordkit writes it; `None` for a key no desktop shortcut here uses.
@@ -66,7 +65,7 @@ fn key_of(key: &Key) -> Option<ChordKey> {
         Key::Character(text) => {
             let mut chars = text.chars();
             match (chars.next(), chars.next()) {
-                (Some(' '), None) => named(NamedKey::Space),
+                (Some(' '), None) => Some(ChordKey::SPACE),
                 (Some(c), None) => Some(ChordKey::character(c)),
                 _ => None,
             }
@@ -74,12 +73,12 @@ fn key_of(key: &Key) -> Option<ChordKey> {
         Key::Tab => named(NamedKey::Tab),
         Key::Enter => named(NamedKey::Enter),
         Key::Escape => named(NamedKey::Escape),
-        Key::ArrowLeft => named(NamedKey::Left),
-        Key::ArrowRight => named(NamedKey::Right),
-        Key::ArrowUp => named(NamedKey::Up),
-        Key::ArrowDown => named(NamedKey::Down),
+        Key::ArrowLeft => named(NamedKey::ArrowLeft),
+        Key::ArrowRight => named(NamedKey::ArrowRight),
+        Key::ArrowUp => named(NamedKey::ArrowUp),
+        Key::ArrowDown => named(NamedKey::ArrowDown),
         Key::Delete => named(NamedKey::Delete),
-        Key::Super | Key::Meta => Some(ChordKey::Tap(KeyModifier::Super)),
+        Key::Super | Key::Meta => named(NamedKey::Meta),
         other => function_key(other),
     }
 }

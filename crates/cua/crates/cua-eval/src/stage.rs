@@ -6,7 +6,8 @@
 use crate::keys::{Decoded, decode};
 use crate::surface::{Cond, Surface, render, snapshot};
 use a11y_tree::A11ySnapshot;
-use chordkit::{Action, Context, Key, KeyInput, Keymap, Modifier, Modifiers};
+use chordkit::keyboard_types::Modifiers;
+use chordkit::{Action, Context, Key, KeyInput, Keymap};
 use cua_action::Button;
 use cua_desktop::Stamp;
 use maskcap::PixelBuf;
@@ -71,7 +72,7 @@ impl Stage {
                 pointer: [0, 0],
                 down: None,
                 down_right: None,
-                held: Modifiers::NONE,
+                held: Modifiers::empty(),
                 generation: 0,
                 reported: 0,
                 violated: BTreeSet::new(),
@@ -217,10 +218,10 @@ fn act(state: &mut State, keymap: &Keymap, op: &InputOp) {
 
 fn key_op(state: &mut State, keymap: &Keymap, key: Decoded, dir: Press) {
     // Shift alone only changes what a character is; with another modifier it is part of a chord.
-    let chorded = !state.held.without(Modifier::Shift).is_empty();
+    let chorded = !state.held.difference(Modifiers::SHIFT).is_empty();
     match (key, dir) {
-        (Decoded::Modifier(m), Press::Down) => state.held = state.held.with(m),
-        (Decoded::Modifier(m), Press::Up) => state.held = state.held.without(m),
+        (Decoded::Modifier(m), Press::Down) => state.held.insert(m),
+        (Decoded::Modifier(m), Press::Up) => state.held.remove(m),
         (_, Press::Up) | (Decoded::Other, _) => {}
         (Decoded::Char(c), Press::Down) if chorded => shortcut(state, keymap, c),
         (_, Press::Down) if chorded => {}

@@ -161,12 +161,18 @@ pub fn facts<P: ProcFs>(fs: &P, pid: Pid, cgroup: &CgroupPath) -> Result<UnitFac
     process::check(fs, pid)?;
     let files = UnitText::find(fs, manager, &name)?;
     let settings = files.settings(fs)?;
+    let exec = settings.exec.and_then(|text| ExePath::new(&text).ok());
+    // As the manager's producer does: who can write the program, `None` when it cannot be read.
+    let exec_trust = exec
+        .as_ref()
+        .and_then(|exec| path_trust(fs, exec.as_path()).ok());
     Ok(UnitFacts {
         main_pid: Some(pid),
         fragment: files.fragment,
         drop_ins: files.drop_ins,
         transient: transient(fs, manager, &name)?,
-        exec: settings.exec.and_then(|text| ExePath::new(&text).ok()),
+        exec,
+        exec_trust,
         loader: Loader::from_unset(&settings.unset),
         name,
     })

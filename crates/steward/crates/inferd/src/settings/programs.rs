@@ -89,6 +89,7 @@ impl Row {
             groups: BTreeMap::new(),
             places: BTreeMap::new(),
             note: None,
+            ends: None,
         }
     }
 }

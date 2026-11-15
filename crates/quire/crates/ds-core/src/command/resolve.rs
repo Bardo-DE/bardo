@@ -2,7 +2,7 @@
 //! event, so a compositor or a test reads a key the way a window does.
 
 use super::key_input::{chord_key_of, key_input, modifiers_of};
-use chordkit::{Action, Chord, Context, Key as ChordKey, KeyInput, Keymap, NamedKey, Platform};
+use chordkit::{Action, Chord, Context, Key as ChordKey, KeyInput, Keymap, Platform};
 use keyboard_types::{Key, Modifiers};
 
 /// The action `key` with `modifiers` held triggers in `context`, if any.
@@ -36,12 +36,9 @@ pub fn types_text(key: &Key, modifiers: Modifiers) -> bool {
 /// Whether `held` holds `platform`'s primary modifier (Command on a Mac or our desktop, Ctrl
 /// elsewhere): the test for a wheel zoom, which has no key to resolve.
 pub fn holds_primary(platform: Platform, held: Modifiers) -> bool {
-    let probe = KeyInput::new(modifiers_of(held), ChordKey::Named(NamedKey::Space));
+    let probe = KeyInput::new(modifiers_of(held), ChordKey::SPACE);
     let folded = probe.normalise(platform).modifiers();
-    platform
-        .primary(Context::Normal)
-        .iter()
-        .all(|modifier| folded.contains(modifier))
+    folded.contains(platform.primary(Context::Normal))
 }
 
 #[cfg(test)]

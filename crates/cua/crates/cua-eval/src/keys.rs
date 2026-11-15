@@ -3,7 +3,7 @@
 //! back into what it stands for.
 
 use crate::surface::Stroke;
-use chordkit::Modifier;
+use chordkit::keyboard_types::Modifiers;
 use keyboard_types::Key;
 use seat_input::{Keycode, Keymap, KeymapEntry, Produces, ShiftLevel};
 
@@ -39,7 +39,7 @@ pub enum Decoded {
     /// A key a surface answers to.
     Stroke(Stroke),
     /// A modifier going down or up: held, it makes the next key a shortcut.
-    Modifier(Modifier),
+    Modifier(Modifiers),
     /// Any other key.
     Other,
 }
@@ -76,10 +76,10 @@ pub fn decode(code: Keycode) -> Decoded {
         Some(Key::Tab) => Decoded::Stroke(Stroke::Tab),
         Some(Key::Backspace) => Decoded::Stroke(Stroke::Backspace),
         Some(Key::Escape) => Decoded::Stroke(Stroke::Escape),
-        Some(Key::Control) => Decoded::Modifier(Modifier::Ctrl),
-        Some(Key::Alt) => Decoded::Modifier(Modifier::Alt),
-        Some(Key::Shift) => Decoded::Modifier(Modifier::Shift),
-        Some(Key::Meta) => Decoded::Modifier(Modifier::Super),
+        Some(Key::Control) => Decoded::Modifier(Modifiers::CONTROL),
+        Some(Key::Alt) => Decoded::Modifier(Modifiers::ALT),
+        Some(Key::Shift) => Decoded::Modifier(Modifiers::SHIFT),
+        Some(Key::Meta) => Decoded::Modifier(Modifiers::META),
         _ => Decoded::Other,
     }
 }

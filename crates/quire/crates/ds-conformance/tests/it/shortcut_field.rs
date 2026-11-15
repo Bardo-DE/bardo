@@ -1,7 +1,8 @@
 //! ShortcutField on a real Blitz document: a click makes it listen, a combination is offered, Escape
 //! cancels, Backspace clears, and while it listens no key reaches the window's actions.
 
-use chordkit::{Chord, Key as ChordKey, Modifier, Modifiers as ChordModifiers};
+use chordkit::keyboard_types::Modifiers as ChordModifiers;
+use chordkit::{Chord, Key as ChordKey};
 use dioxus::prelude::*;
 use ds::keys::on_action;
 use ds::prelude::*;
@@ -18,7 +19,7 @@ const VIEW: Viewport = Viewport {
 const WELL: &str = ".ds-shortcut-field-well";
 
 fn start() -> Chord {
-    Chord::new(ChordModifiers::of(Modifier::Super), ChordKey::Char('j'))
+    Chord::new(ChordModifiers::META, ChordKey::Char('j'))
 }
 
 #[allow(non_snake_case)]

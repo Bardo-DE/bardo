@@ -296,6 +296,7 @@ impl<P: Peers> InferdSettings<P> {
             groups,
             places,
             note: None,
+            ends: None,
             agent: AgentSetting::HandsOff,
         }
     }
@@ -337,6 +338,7 @@ impl<P: Peers> InferdSettings<P> {
             groups,
             places,
             note: None,
+            ends: None,
             agent: AgentSetting::HandsOff,
         }
     }

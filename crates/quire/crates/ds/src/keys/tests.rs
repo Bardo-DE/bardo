@@ -3,9 +3,10 @@ use super::state::KeyState;
 use super::use_keys_provider;
 use chordkit::{
     Action, AppAction, AppId, Chord, Conflict, Context, DefaultChord, Desktop, KeyInput, Keymap,
-    KeymapSource, Modifier, Overrides, Platform, Registration, SourceError, StandardAction,
+    KeymapSource, Overrides, Platform, Registration, SourceError, StandardAction,
     SystemBinding,
 };
+use chordkit::keyboard_types::Modifiers as ChordModifiers;
 use dioxus::prelude::*;
 use std::cell::RefCell;
 use std::sync::{Arc, Mutex};
@@ -29,11 +30,8 @@ fn row(id: &str, chord: &str) -> (AppAction, DefaultChord) {
     )
 }
 
-fn press(modifiers: &[Modifier], key: char) -> KeyInput {
-    KeyInput::new(
-        modifiers.iter().copied().collect::<chordkit::Modifiers>(),
-        chordkit::Key::Char(key),
-    )
+fn press(modifiers: ChordModifiers, key: char) -> KeyInput {
+    KeyInput::new(modifiers, chordkit::Key::Char(key))
 }
 
 /// A source whose Copy chords the test changes, as a person editing their settings would.
@@ -83,7 +81,7 @@ fn a_reload_applies_the_sources_change_and_registers_again_over_it() {
         state.register(&mail(), &rows(std::slice::from_ref(&compose))),
         Ok(())
     );
-    let ctrl_shift_n = press(&[Modifier::Ctrl, Modifier::Shift], 'j');
+    let ctrl_shift_n = press(ChordModifiers::CONTROL | ChordModifiers::SHIFT, 'j');
     assert_eq!(
         state.keymap.resolve(&ctrl_shift_n, Context::Normal),
         Some(Action::App(compose.0.clone()))
@@ -123,7 +121,7 @@ fn an_unreadable_source_falls_back_to_the_conventions_and_says_why() {
     assert_eq!(
         state
             .keymap
-            .resolve(&press(&[Modifier::Ctrl], 'c'), Context::Normal),
+            .resolve(&press(ChordModifiers::CONTROL, 'c'), Context::Normal),
         Some(Action::Standard(StandardAction::Copy))
     );
 }
@@ -211,7 +209,7 @@ fn app_action(id: &str) -> Option<Action> {
 #[test]
 fn an_app_forgoes_what_it_does_not_offer_and_never_what_every_app_honours() {
     let mut state = ours_state();
-    let command_t = press(&[Modifier::Super], 't');
+    let command_t = press(ChordModifiers::META, 't');
     let tab = row("mail.tab", "Primary+T");
     let refused = state.register(&mail(), &rows(std::slice::from_ref(&tab)));
     assert!(
@@ -242,7 +240,7 @@ fn an_app_forgoes_what_it_does_not_offer_and_never_what_every_app_honours() {
 #[test]
 fn registering_an_app_again_replaces_its_earlier_registration() {
     let mut state = ours_state();
-    let command_shift_n = press(&[Modifier::Super, Modifier::Shift], 'j');
+    let command_shift_n = press(ChordModifiers::META | ChordModifiers::SHIFT, 'j');
     let old = row("mail.compose", "Primary+Shift+J");
     let new = row("mail.write", "Primary+Shift+J");
     assert_eq!(state.register(&mail(), &rows(&[old])), Ok(()));
@@ -279,8 +277,8 @@ fn app_overrides_lie_on_the_source_and_survive_a_reload() {
     let mut state = KeyState::load(source);
     let compose = row("mail.compose", "Primary+Shift+J");
     assert_eq!(state.register(&mail(), &rows(&[compose])), Ok(()));
-    let rebound = press(&[Modifier::Super, Modifier::Alt], 'j');
-    let default = press(&[Modifier::Super, Modifier::Shift], 'j');
+    let rebound = press(ChordModifiers::META | ChordModifiers::ALT, 'j');
+    let default = press(ChordModifiers::META | ChordModifiers::SHIFT, 'j');
     for _ in 0..2 {
         assert_eq!(
             state.keymap.resolve(&rebound, Context::Normal),
@@ -303,9 +301,9 @@ fn set_overrides_rebinds_and_an_empty_set_restores_the_default() {
         .action(compose.0, compose.1)
         .action(tab.0, tab.1);
     assert_eq!(state.register(&mail(), &tabs), Ok(()));
-    let rebound = press(&[Modifier::Super, Modifier::Alt], 'j');
-    let default = press(&[Modifier::Super, Modifier::Shift], 'j');
-    let command_t = press(&[Modifier::Super], 't');
+    let rebound = press(ChordModifiers::META | ChordModifiers::ALT, 'j');
+    let default = press(ChordModifiers::META | ChordModifiers::SHIFT, 'j');
+    let command_t = press(ChordModifiers::META, 't');
     let (overrides, parsed) = Overrides::parse("mail.compose = Primary+Alt+J\n");
     assert!(parsed.is_empty(), "{parsed:?}");
     state.set_overrides(overrides);

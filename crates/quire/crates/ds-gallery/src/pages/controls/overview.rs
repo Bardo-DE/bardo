@@ -4,7 +4,8 @@ use crate::pages::content::external_icons::ExternalIcons;
 use crate::pages::content::glyphs::Glyphs;
 use crate::pages::content::plate_tints::PlateTints;
 use crate::pages::{Section, Specimen};
-use chordkit::{Chord, Key as ChordKey, Modifier, Modifiers as ChordModifiers, NamedKey};
+use chordkit::keyboard_types::{Modifiers as ChordModifiers, NamedKey};
+use chordkit::{Chord, Key as ChordKey};
 use dioxus::prelude::*;
 use ds::components::app::command_pill::CommandPill;
 use ds::components::app::pin_tile::{PinFace, PinTile};
@@ -29,7 +30,7 @@ use ds_core::colour::contrast::Verdict;
 /// The chord the specimens start with: Shift and Command and K.
 fn sample_chord() -> Chord {
     Chord::new(
-        ChordModifiers::of(Modifier::Super).with(Modifier::Shift),
+        ChordModifiers::META | ChordModifiers::SHIFT,
         ChordKey::Char('k'),
     )
 }
@@ -153,10 +154,10 @@ fn Choosers() -> Element {
                     ShortcutField { label: "Clashing shortcut", value: Some(sample_chord()), clash: ShortcutClash::With("New Space".to_owned()), onrecord: |_| {} }
                 }
                 Specimen { name: "single keys",
-                    ShortcutField { label: "Single key", value: Some(Chord::new(ChordModifiers::default(), ChordKey::Char('j'))), accepts: ShortcutKinds::SingleKeys, onrecord: |_| {} }
+                    ShortcutField { label: "Single key", value: Some(Chord::new(ChordModifiers::empty(), ChordKey::Char('j'))), accepts: ShortcutKinds::SingleKeys, onrecord: |_| {} }
                 }
                 Specimen { name: "extra keys",
-                    ShortcutField { label: "Two keys", value: Some(Chord::new(ChordModifiers::default(), ChordKey::Char('j'))), more: vec![Chord::new(ChordModifiers::default(), ChordKey::Named(NamedKey::Down))], accepts: ShortcutKinds::SingleKeys, onrecord: |_| {} }
+                    ShortcutField { label: "Two keys", value: Some(Chord::new(ChordModifiers::empty(), ChordKey::Char('j'))), more: vec![Chord::new(ChordModifiers::empty(), ChordKey::Named(NamedKey::ArrowDown))], accepts: ShortcutKinds::SingleKeys, onrecord: |_| {} }
                 }
                 Specimen { name: "disabled",
                     ShortcutField { label: "Disabled shortcut", value: Some(sample_chord()), availability: Availability::Disabled, onrecord: |_| {} }

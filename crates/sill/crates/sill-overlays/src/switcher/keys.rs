@@ -9,7 +9,7 @@
 //! key, not only the modifiers. A release before the surface has the keyboard is never seen as
 //! a key; that needs shell-host's modifiers on focus.
 
-use chordkit::Modifier;
+use chordkit::keyboard_types::Modifiers as ChordModifiers;
 use dioxus::prelude::{Key, Modifiers};
 
 use ds::base::command::modifiers_of;
@@ -46,20 +46,17 @@ pub fn sw_key(key: &Key, modifiers: Modifiers) -> Option<SwKey> {
 /// in `modifiers`; any other key-up leaves it as `modifiers` say.
 pub fn chord_after_keyup(key: &Key, modifiers: Modifiers) -> Chord {
     match key {
-        Key::Alt => held_while(&OS_KEY, modifiers),
-        Key::Meta | Key::Super => held_while(&[Modifier::Alt], modifiers),
-        _ => held_while(&[Modifier::Alt, Modifier::Super, Modifier::Meta], modifiers),
+        Key::Alt => held_while(ChordModifiers::META, modifiers),
+        Key::Meta | Key::Super => held_while(ChordModifiers::ALT, modifiers),
+        _ => held_while(ChordModifiers::ALT | ChordModifiers::META, modifiers),
     }
 }
 
-/// The Command key as a window reports it: Super or Meta.
-const OS_KEY: [Modifier; 2] = [Modifier::Super, Modifier::Meta];
-
 /// Held while any of `holding` is in `modifiers`. This reads a modifier's release, which is not a
 /// chord, so it is not the keymap's to resolve.
-fn held_while(holding: &[Modifier], modifiers: Modifiers) -> Chord {
-    let held = modifiers_of(modifiers);
-    if holding.iter().any(|modifier| held.contains(*modifier)) {
+/// The Command key arrives as `META` whether the window reported Super or Meta.
+fn held_while(holding: ChordModifiers, modifiers: Modifiers) -> Chord {
+    if modifiers_of(modifiers).intersects(holding) {
         Chord::Held
     } else {
         Chord::Released

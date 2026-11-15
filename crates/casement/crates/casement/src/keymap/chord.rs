@@ -2,10 +2,38 @@
 
 use casement_core::input::{Chord, Keysym};
 use casement_protocols::vocab::HeldMods;
-use chordkit::{Key, Modifier, Modifiers, NamedKey};
+use chordkit::keyboard_types::{Modifiers, NamedKey};
+use chordkit::Key;
 
 /// `F1`'s keysym; the function keys follow in order.
 const F1: u32 = 0xffbe;
+/// `F1` to `F24`, in keysym order.
+const FUNCTION_KEYS: [NamedKey; 24] = [
+    NamedKey::F1,
+    NamedKey::F2,
+    NamedKey::F3,
+    NamedKey::F4,
+    NamedKey::F5,
+    NamedKey::F6,
+    NamedKey::F7,
+    NamedKey::F8,
+    NamedKey::F9,
+    NamedKey::F10,
+    NamedKey::F11,
+    NamedKey::F12,
+    NamedKey::F13,
+    NamedKey::F14,
+    NamedKey::F15,
+    NamedKey::F16,
+    NamedKey::F17,
+    NamedKey::F18,
+    NamedKey::F19,
+    NamedKey::F20,
+    NamedKey::F21,
+    NamedKey::F22,
+    NamedKey::F23,
+    NamedKey::F24,
+];
 /// The first keysym of the Unicode range: `0x0100_0000 + code point`.
 const UNICODE_BASE: u32 = 0x0100_0000;
 
@@ -32,14 +60,15 @@ pub fn chord_of(chord: chordkit::Chord) -> Option<Chord> {
 }
 
 fn mods_of(mods: Modifiers) -> HeldMods {
-    mods.iter().fold(HeldMods::NONE, |held, one| {
-        held.with(match one {
-            Modifier::Ctrl => HeldMods::CONTROL,
-            Modifier::Alt => HeldMods::OPTION,
-            Modifier::Shift => HeldMods::SHIFT,
-            Modifier::Super | Modifier::Meta => HeldMods::COMMAND,
-        })
-    })
+    [
+        (Modifiers::CONTROL, HeldMods::CONTROL),
+        (Modifiers::ALT, HeldMods::OPTION),
+        (Modifiers::SHIFT, HeldMods::SHIFT),
+        (Modifiers::META, HeldMods::COMMAND),
+    ]
+    .into_iter()
+    .filter(|(flag, _)| mods.contains(*flag))
+    .fold(HeldMods::NONE, |held, (_, one)| held.with(one))
 }
 
 fn keysym_of(key: Key) -> Option<Keysym> {
@@ -49,13 +78,11 @@ fn keysym_of(key: Key) -> Option<Keysym> {
             code => UNICODE_BASE + code,
         })),
         Key::Named(named) => named_keysym(named).map(Keysym),
-        Key::Tap(_) => None,
     }
 }
 
 fn named_keysym(key: NamedKey) -> Option<u32> {
     match key {
-        NamedKey::Space => Some(0x20),
         NamedKey::Tab => Some(0xff09),
         NamedKey::Enter => Some(0xff0d),
         NamedKey::Escape => Some(0xff1b),
@@ -66,12 +93,16 @@ fn named_keysym(key: NamedKey) -> Option<u32> {
         NamedKey::End => Some(0xff57),
         NamedKey::PageUp => Some(0xff55),
         NamedKey::PageDown => Some(0xff56),
-        NamedKey::Up => Some(0xff52),
-        NamedKey::Down => Some(0xff54),
-        NamedKey::Left => Some(0xff51),
-        NamedKey::Right => Some(0xff53),
+        NamedKey::ArrowUp => Some(0xff52),
+        NamedKey::ArrowDown => Some(0xff54),
+        NamedKey::ArrowLeft => Some(0xff51),
+        NamedKey::ArrowRight => Some(0xff53),
         NamedKey::PrintScreen => Some(0xff61),
-        NamedKey::F(n) => (1..=24).contains(&n).then(|| F1 + u32::from(n) - 1),
+        other => FUNCTION_KEYS
+            .iter()
+            .position(|f| *f == other)
+            .and_then(|index| u32::try_from(index).ok())
+            .map(|index| F1 + index),
     }
 }
 
@@ -115,8 +146,8 @@ mod tests {
 
     #[test]
     fn the_symbols_shift_makes_come_back_as_shifted_keys() {
-        let plus = chordkit::Chord::new(Modifiers::of(Modifier::Super), Key::Char('+'));
-        let question = chordkit::Chord::new(Modifiers::of(Modifier::Super), Key::Char('?'));
+        let plus = chordkit::Chord::new(Modifiers::META, Key::Char('+'));
+        let question = chordkit::Chord::new(Modifiers::META, Key::Char('?'));
         let want = |text| Some(Chord::parse(text).expect("a chord"));
         assert_eq!(chord_of(plus), want("shift+cmd+equal"));
         assert_eq!(chord_of(question), want("shift+cmd+slash"));
@@ -124,7 +155,7 @@ mod tests {
 
     #[test]
     fn a_character_outside_latin_one_is_a_unicode_keysym() {
-        let euro = chordkit::Chord::new(Modifiers::NONE, Key::Char('\u{20ac}'));
+        let euro = chordkit::Chord::new(Modifiers::empty(), Key::Char('\u{20ac}'));
         assert_eq!(
             chord_of(euro).map(|chord| chord.key),
             Some(Keysym(0x0100_20ac))

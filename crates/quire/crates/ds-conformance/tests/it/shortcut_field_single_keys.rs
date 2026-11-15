@@ -2,7 +2,8 @@
 //! recorded, Escape and Backspace still cancel and clear, and `more` draws a cap per extra key
 //! beside the value without being touched by a recording.
 
-use chordkit::{Chord, Key as ChordKey, Modifiers as ChordModifiers};
+use chordkit::keyboard_types::Modifiers as ChordModifiers;
+use chordkit::{Chord, Key as ChordKey};
 use dioxus::prelude::*;
 use ds::prelude::*;
 use ds_blitz::FocusFallback;
@@ -18,7 +19,7 @@ const VIEW: Viewport = Viewport {
 const WELL: &str = ".ds-shortcut-field-well";
 
 fn plain(c: char) -> Chord {
-    Chord::new(ChordModifiers::default(), ChordKey::Char(c))
+    Chord::new(ChordModifiers::empty(), ChordKey::Char(c))
 }
 
 #[allow(non_snake_case)]

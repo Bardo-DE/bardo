@@ -4,7 +4,8 @@
 
 use crate::standard_action::normalized;
 use crate::vocab::{Shortcut, ShortcutKey};
-use chordkit::{Chord, DefaultChord, Key, Modifier, Modifiers, NamedKey, PrimaryUse};
+use chordkit::keyboard_types::{Modifiers, NamedKey};
+use chordkit::{Chord, DefaultChord, Key, PrimaryUse};
 
 impl Shortcut {
     /// The portable chord this shortcut is: Command is `Primary`. `None` for no key at all, or
@@ -16,7 +17,10 @@ impl Shortcut {
         } else {
             PrimaryUse::Unused
         };
-        let modifiers: Modifiers = keys.iter().filter_map(|key| modifier_of(*key)).collect();
+        let modifiers = keys
+            .iter()
+            .filter_map(|key| modifier_of(*key))
+            .fold(Modifiers::empty(), |flags, flag| flags | flag);
         let key = keys.iter().find(|key| key.modifier_rank().is_none())?;
         Some(DefaultChord::new(
             primary,
@@ -29,44 +33,44 @@ impl Shortcut {
     pub fn from_default_chord(chord: DefaultChord) -> Option<Shortcut> {
         let base = chord.base();
         let held = match chord.primary() {
-            PrimaryUse::Held => Some(Modifier::Super),
-            PrimaryUse::Unused => None,
+            PrimaryUse::Held => Modifiers::META,
+            PrimaryUse::Unused => Modifiers::empty(),
         };
-        let modifiers = base.modifiers().iter().chain(held).map(shortcut_modifier);
+        let modifiers = SHORTCUT_MODIFIERS
+            .iter()
+            .filter(|(flag, _)| (base.modifiers() | held).contains(*flag))
+            .map(|(_, key)| *key);
         let keys = modifiers.chain([shortcut_key(base.key())?]);
         Some(Shortcut(normalized(keys)))
     }
 }
 
-fn modifier_of(key: ShortcutKey) -> Option<Modifier> {
-    match key {
-        ShortcutKey::Ctrl => Some(Modifier::Ctrl),
-        ShortcutKey::Alt => Some(Modifier::Alt),
-        ShortcutKey::Shift => Some(Modifier::Shift),
-        _ => None,
-    }
-}
+/// Each modifier flag and the shortcut key that is it; the OS key is Command.
+const SHORTCUT_MODIFIERS: [(Modifiers, ShortcutKey); 4] = [
+    (Modifiers::CONTROL, ShortcutKey::Ctrl),
+    (Modifiers::ALT, ShortcutKey::Alt),
+    (Modifiers::SHIFT, ShortcutKey::Shift),
+    (Modifiers::META, ShortcutKey::Super),
+];
 
-fn shortcut_modifier(modifier: Modifier) -> ShortcutKey {
-    match modifier {
-        Modifier::Ctrl => ShortcutKey::Ctrl,
-        Modifier::Alt => ShortcutKey::Alt,
-        Modifier::Shift => ShortcutKey::Shift,
-        Modifier::Super | Modifier::Meta => ShortcutKey::Super,
-    }
+fn modifier_of(key: ShortcutKey) -> Option<Modifiers> {
+    SHORTCUT_MODIFIERS
+        .iter()
+        .find(|(_, candidate)| *candidate == key)
+        .map(|(flag, _)| *flag)
+        .filter(|flag| *flag != Modifiers::META)
 }
 
 /// Each named key chordkit and the shortcut vocabulary both have.
-const NAMED: [(ShortcutKey, NamedKey); 15] = [
-    (ShortcutKey::Space, NamedKey::Space),
+const NAMED: [(ShortcutKey, NamedKey); 14] = [
     (ShortcutKey::Enter, NamedKey::Enter),
     (ShortcutKey::Escape, NamedKey::Escape),
     (ShortcutKey::Tab, NamedKey::Tab),
     (ShortcutKey::Backspace, NamedKey::Backspace),
-    (ShortcutKey::Up, NamedKey::Up),
-    (ShortcutKey::Down, NamedKey::Down),
-    (ShortcutKey::Left, NamedKey::Left),
-    (ShortcutKey::Right, NamedKey::Right),
+    (ShortcutKey::Up, NamedKey::ArrowUp),
+    (ShortcutKey::Down, NamedKey::ArrowDown),
+    (ShortcutKey::Left, NamedKey::ArrowLeft),
+    (ShortcutKey::Right, NamedKey::ArrowRight),
     (ShortcutKey::Home, NamedKey::Home),
     (ShortcutKey::End, NamedKey::End),
     (ShortcutKey::Delete, NamedKey::Delete),
@@ -78,6 +82,7 @@ const NAMED: [(ShortcutKey, NamedKey); 15] = [
 fn chord_key(key: ShortcutKey) -> Option<Key> {
     match key {
         ShortcutKey::Char(c) => Some(Key::character(c)),
+        ShortcutKey::Space => Some(Key::SPACE),
         ShortcutKey::F(n) if ShortcutKey::function(n).is_some() => Key::function(n),
         other => NAMED
             .iter()
@@ -88,13 +93,17 @@ fn chord_key(key: ShortcutKey) -> Option<Key> {
 
 fn shortcut_key(key: Key) -> Option<ShortcutKey> {
     match key {
+        Key::SPACE => Some(ShortcutKey::Space),
         Key::Char(c) => Some(ShortcutKey::Char(c)),
-        Key::Named(NamedKey::F(n)) => ShortcutKey::function(n),
-        Key::Named(named) => NAMED
-            .iter()
-            .find(|(_, candidate)| *candidate == named)
-            .map(|(shortcut, _)| *shortcut),
-        Key::Tap(_) => None,
+        Key::Named(named) => (1..=24)
+            .find(|n| Key::function(*n) == Some(Key::Named(named)))
+            .and_then(ShortcutKey::function)
+            .or_else(|| {
+                NAMED
+                    .iter()
+                    .find(|(_, candidate)| *candidate == named)
+                    .map(|(shortcut, _)| *shortcut)
+            }),
     }
 }
 

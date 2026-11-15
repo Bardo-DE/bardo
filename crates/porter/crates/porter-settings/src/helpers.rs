@@ -32,6 +32,7 @@ pub fn spec(
         groups: Default::default(),
         places: Default::default(),
         note: None,
+        ends: None,
         agent: AgentSetting::HandsOff,
     }
 }
