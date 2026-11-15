@@ -20,6 +20,8 @@ rust_decimal = {version = "1", default-features = false, features = ["std", "ser
 iso_currency = {version = "0.7", features = ["with-serde"]}
 
 [dev-dependencies]
+# The integration tests use ScriptedProvider; before, they built only when another crate turned it on.
+model-provider = {path = ".", features = ["testing"]}
 proptest = {version = "1"}
 
 

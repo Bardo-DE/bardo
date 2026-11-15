@@ -20,7 +20,7 @@ thiserror = {version = "2"}
 # Safe wrappers of renameat2 (no-replace renames), extended attributes, ownership, `kill(pid, 0)` and
 # the store's `flock`: `src/sys/unix.rs`. Windows takes the standard library's (`src/sys/windows.rs`).
 [target.'cfg(unix)'.dependencies]
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+rustix = {version = "1.1.6", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
 
 [dev-dependencies]
 tempfile = {version = "3"}

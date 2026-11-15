@@ -9450,6 +9450,7 @@ dependencies = [
  "cua-action",
  "genai-names",
  "iso_currency",
+ "model-provider",
  "proptest",
  "rust_decimal",
  "serde",

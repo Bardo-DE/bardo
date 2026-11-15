@@ -3,7 +3,10 @@
 
 use super::Claimed;
 use rustix::fs::{Access, CWD, FlockOperation, RenameFlags, XattrFlags};
-use rustix::fs::{access, fgetxattr, flistxattr, flock, fsetxattr, getxattr, renameat_with};
+use rustix::fs::{
+    access, fgetxattr, fgetxattr_query, flistxattr, flistxattr_query, flock, fsetxattr, getxattr,
+    renameat_with,
+};
 use rustix::io::Errno;
 use std::fs::{File, Metadata, OpenOptions, Permissions};
 use std::io;
@@ -72,8 +75,7 @@ pub(crate) fn copy_attributes(from: &File, to: &File, meta: &Metadata) {
 }
 
 fn copy_xattrs(from: &File, to: &File) {
-    let probe: &mut [u8] = &mut [];
-    let Ok(size) = flistxattr(from, probe) else {
+    let Ok(size) = flistxattr_query(from) else {
         return;
     };
     let mut names = vec![0_u8; size];
@@ -87,8 +89,7 @@ fn copy_xattrs(from: &File, to: &File) {
         let Ok(name) = std::ffi::CString::new(name) else {
             continue;
         };
-        let probe: &mut [u8] = &mut [];
-        let Ok(length) = fgetxattr(from, name.as_c_str(), probe) else {
+        let Ok(length) = fgetxattr_query(from, name.as_c_str()) else {
             continue;
         };
         let mut value = vec![0_u8; length];
