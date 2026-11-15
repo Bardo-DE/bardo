@@ -209,7 +209,7 @@ pub(crate) struct Aside {
     actions: Vec<sill_launcher::Action>,
     icon: Option<IconSource>,
     focused: Option<usize>,
-    shown: ds::prelude::Shown,
+    shown: bool,
     serial: sill_ui_kit::links::OpenSerial,
     touch: ds::motion::detail::touch::Touch,
 }
@@ -243,7 +243,7 @@ fn use_aside(
                     .and_then(|item| icon_source(icons.tile(item))),
                 actions: selected.map(|item| item.actions).unwrap_or_default(),
                 focused: shown.pane.preview.focus,
-                shown: ds::prelude::Shown::Visible,
+                shown: true,
                 serial: shown.session.serial,
                 touch,
             };
@@ -255,7 +255,7 @@ fn use_aside(
             .clone()
             .filter(|leaving| leaving.serial == shown.session.serial)
             .map(|leaving| Aside {
-                shown: ds::prelude::Shown::Hidden,
+                shown: false,
                 focused: None,
                 touch,
                 ..leaving
