@@ -6,7 +6,7 @@
 use crate::support::{Spec, gtk4_dialog, snapshot};
 use a11y_tree::{
     A11yNode, A11ySnapshot, NameMatch, NodeBudget, NodeSelector, NodeValue, Parent, Resolution,
-    Role, SelectorStep, SlotName, Truncation, TypedHint, prune, render, resolve,
+    Role, SelectorStep, Truncation, TypedHint, prune, render, resolve,
 };
 use cua_action::NodeId;
 use std::path::PathBuf;
@@ -184,7 +184,7 @@ fn selectors_name_nothing_for_slots_empty_paths_or_a_missing_root() {
     let slot = NodeSelector {
         path: vec![
             step(Role::Dialog, NameMatch::Any),
-            step(Role::Button, NameMatch::Slot(SlotName("which".into()))),
+            step(Role::Button, NameMatch::Slot("which".into())),
         ],
     };
     assert_eq!(resolve(&dialog, &slot), Resolution::None);

@@ -2,7 +2,7 @@
 //! crates read.
 
 use a11y_tree::{
-    A11yError, A11yTarget, NameMatch, NodeSelector, Resolution, Role, SelectorStep, SlotName,
+    A11yError, A11yTarget, NameMatch, NodeSelector, Resolution, Role, SelectorStep,
     TreeDiff,
 };
 use cua_action::{Coord, NodeId, Size};
@@ -27,7 +27,7 @@ fn selectors_resolutions_and_diffs_round_trip() {
             },
             SelectorStep {
                 role: Role::Heading,
-                name: NameMatch::Slot(SlotName("month".into())),
+                name: NameMatch::Slot("month".into()),
             },
             SelectorStep {
                 role: Role::Other(116),

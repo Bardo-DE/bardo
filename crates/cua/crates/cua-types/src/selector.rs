@@ -4,11 +4,6 @@
 use crate::role::Role;
 use serde::{Deserialize, Serialize};
 
-/// A named slot of a procedure: a parameter filled at replay, never a stored value.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct SlotName(pub String);
-
 /// How a step matches a node's name.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
@@ -17,8 +12,9 @@ pub enum NameMatch {
     Any,
     /// This name exactly.
     Exact(String),
-    /// The slot's value.
-    Slot(SlotName),
+    /// The value of the named slot of a procedure: a parameter filled at replay, never a stored
+    /// value.
+    Slot(String),
 }
 
 /// One step down the tree.

@@ -21,5 +21,5 @@ pub use model::{
 };
 pub use ops::{TreeDiff, diff, prune, render, resolve, secret_rects, secret_rects_of};
 pub use render::role_word;
-pub use selector::{NameMatch, NodeSelector, Resolution, SelectorStep, SlotName};
+pub use selector::{NameMatch, NodeSelector, Resolution, SelectorStep};
 pub use source::{A11yError, A11ySource, A11yTarget};

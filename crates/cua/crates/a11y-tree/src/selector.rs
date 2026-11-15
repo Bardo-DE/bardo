@@ -2,7 +2,7 @@
 //! `SuccessCheck` can name them. The selector itself lives in `cua-types`, re-exported here.
 
 use cua_action::NodeId;
-pub use cua_types::{NameMatch, NodeSelector, SelectorStep, SlotName};
+pub use cua_types::{NameMatch, NodeSelector, SelectorStep};
 use serde::{Deserialize, Serialize};
 
 /// What a selector found.

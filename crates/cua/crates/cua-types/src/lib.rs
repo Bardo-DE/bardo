@@ -15,4 +15,4 @@ mod selector;
 pub use digest::FrameDigest;
 pub use role::Role;
 pub use seat::{InputOrigin, InputReceipt, SeatError, TextPath};
-pub use selector::{NameMatch, NodeSelector, SelectorStep, SlotName};
+pub use selector::{NameMatch, NodeSelector, SelectorStep};
