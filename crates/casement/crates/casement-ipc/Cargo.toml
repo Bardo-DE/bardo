@@ -42,6 +42,8 @@ zbus-ready = { path = "../../../zbus-ready" }
 peephole-bus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../../peephole/peephole-bus"}
 
 [features]
+# `test_bus::PrivateBus`: a private dbus-daemon for other crates' tests.
+testing = []
 # org.quire.Casement.Debug1 on the private bus (B10): never in a release build.
 debug-inject = ["dep:casement-backend", "casement-backend/debug-inject"]
 # Developer rows (peephole's `dev-rows`): a program named in a file the person owns is a desktop

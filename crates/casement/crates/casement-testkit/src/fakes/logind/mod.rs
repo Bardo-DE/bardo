@@ -7,7 +7,6 @@
 //! The server only ever connects to the address it is given: a [`PrivateBus`] in a test, the
 //! jail's private bus in a scenario. It never touches the system bus.
 
-mod bus;
 mod control;
 mod inhibit;
 mod log;
@@ -17,7 +16,7 @@ mod server;
 pub mod session;
 mod signals;
 
-pub use bus::{PrivateBus, PrivateBusError};
+pub use casement_ipc::test_bus::PrivateBus;
 pub use manager::SleepPhase;
 pub use server::FakeLogind;
 pub use session::{IdleHint, PauseKind};

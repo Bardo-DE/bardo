@@ -549,12 +549,12 @@ fn a_whole_session_from_start_to_suspend_and_back() {
 
     // Suspend: logind says so on a private bus, the watcher pushes it into the session, the
     // backend lets go of its devices and only then does logind's inhibitor go.
-    let bus = PrivateBus::start().expect("a private bus");
-    let logind = FakeLogind::serve(bus.address()).expect("the fake logind");
+    let bus = PrivateBus::start();
+    let logind = FakeLogind::serve(&bus.address).expect("the fake logind");
     let mut session = seat.world.session.clone();
     let link = session.sleep_link().expect("the session hears a suspend");
     let _watch =
-        suspend::watch(link, Some(bus.address().to_owned())).expect("the watcher subscribes");
+        suspend::watch(link, Some(bus.address.clone())).expect("the watcher subscribes");
     assert_eq!(logind.held_inhibitors(), ["sleep"]);
     let (pauses, resumes) = seat.world.kms.seat_changes();
 

@@ -31,8 +31,8 @@ impl FakeLogind {
     ///
     /// ```no_run
     /// use casement_testkit::fakes::{FakeLogind, PrivateBus};
-    /// let bus = PrivateBus::start().expect("bus");
-    /// let logind = FakeLogind::serve(bus.address()).expect("serve");
+    /// let bus = PrivateBus::start();
+    /// let logind = FakeLogind::serve(&bus.address).expect("serve");
     /// assert!(logind.calls().is_empty());
     /// ```
     pub fn serve(address: &str) -> Result<FakeLogind, LogindError> {

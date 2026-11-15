@@ -23,7 +23,7 @@ casement-layout = {path = "../casement-layout"}
 casement-render = {path = "../casement-render", features = ["testing"]}
 casement-backend = {path = "../casement-backend", features = ["testing"]}
 casement-wayland = {path = "../casement-wayland"}
-casement-ipc = {path = "../casement-ipc"}
+casement-ipc = {path = "../casement-ipc", features = ["testing"]}
 casement-testclient = {path = "../casement-testclient"}
 casement-protocols = {path = "../../../casement-protocols", features = ["client"]}
 porter-core = {path = "../../../porter/crates/porter-core"}

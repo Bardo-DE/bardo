@@ -14,8 +14,8 @@ mod shot;
 mod stop_on_drop;
 mod wait;
 
-#[cfg(test)]
-mod test_bus;
+#[cfg(any(test, feature = "testing"))]
+pub mod test_bus;
 #[cfg(test)]
 mod test_served;
 
