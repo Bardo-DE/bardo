@@ -135,8 +135,6 @@ pub struct ResumePlan {
     pub budget: ResumedBudget,
     /// The skills it loaded; a version mismatch against the installed one warns.
     pub skills: Vec<(SkillId, SkillVersion)>,
-    /// Legacy records skipped (`Replied`, `Finished`).
-    pub legacy_skipped: Count,
     /// What was wrong with the log.
     pub faults: Vec<ResumeFault>,
 }

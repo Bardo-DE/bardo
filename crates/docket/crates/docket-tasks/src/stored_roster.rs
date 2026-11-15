@@ -1,7 +1,7 @@
 //! The roster and the front task from the sessions the router stores. companiond keeps no state
 //! of its own; after a restart it asks the router for the sessions it may bring back
 //! (`Session.Stored`) and folds each into the events the rebuild reads: an opening, the person's
-//! turns, and the legacy `Replied` / `Finished` notes a log may still hold.
+//! turns.
 //!
 //! A session an editor opened (its opening records a directory) is not the companion's: it never
 //! reaches the roster or the front pointer, whatever else the log says about it.
@@ -61,7 +61,6 @@ pub fn events_of(rows: &[Logged]) -> Vec<ReplayEvent> {
                 }
                 _ => None,
             },
-            Read::Legacy(record) => Some(record.as_ref().clone()),
             Read::Unreadable(_) => None,
         };
         if let Some(record) = what {
@@ -96,7 +95,6 @@ pub async fn stored_events<L: SessionLog>(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use companion_wire::AnswerPhase;
     use docket_core::{TurnVia, UserTurn};
     use docket_session::{BackendKind, Seq};
     use docket_vocab::{Caller, TurnId, Workspace};
@@ -145,30 +143,20 @@ mod tests {
     }
 
     #[test]
-    fn a_session_is_an_opening_its_turns_and_what_legacy_notes_say_of_its_end() {
-        let finished = SessionRecord::Finished {
-            task: TaskId::parse("t-1").expect("task"),
-            phase: AnswerPhase::Done,
-        };
-        let events = events_of(&rows(vec![
-            entry(opening("t-1", None)),
-            entry(turn(50)),
-            Read::Legacy(Box::new(finished)),
-        ]));
+    fn a_session_is_an_opening_and_its_turns() {
+        let events = events_of(&rows(vec![entry(opening("t-1", None)), entry(turn(50))]));
         let rebuilt = agent_loop::rebuild(&events);
-        assert_eq!(rebuilt.front, None, "the task finished");
         assert_eq!(rebuilt.tasks.len(), 1);
-        assert_eq!(rebuilt.tasks[0].state, docket_core::RosterState::Done);
         // The opening has no time of its own: it takes its first turn's.
         assert_eq!(
             events.iter().map(|e| e.at.0).collect::<Vec<_>>(),
-            [50, 50, 50]
+            [50, 50]
         );
     }
 
     #[test]
     fn an_editors_session_adds_nothing_whatever_else_its_rows_say() {
-        // A legacy opening (no directory) comes first and the native one, with it, after.
+        // An opening with no directory comes first and the editor's, with it, after.
         let events = events_of(&rows(vec![
             entry(opening("t-2", None)),
             entry(turn(60)),

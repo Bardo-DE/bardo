@@ -1,11 +1,10 @@
 //! The stored form: `{"version":1,"seq":n,"kind":"turn","v":{...}}`, written as an eventlog
 //! `Area { Companion }` body of kind `companion.session.<slug>`. The version is explicit and read
 //! first, so a body from a future docket is `Unreadable::UnknownVersion`, never a guess. A body
-//! with no version is a record companiond wrote before this crate (`legacy`).
+//! with no version is `Unreadable::BadVersion`.
 
 use crate::entry::{Seq, SessionEntry, UnknownEntry};
-use crate::legacy::read_legacy;
-use companion_wire::{SESSION_KIND_PREFIX, SessionRecord};
+use companion_wire::SESSION_KIND_PREFIX;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
@@ -84,10 +83,8 @@ pub enum Unreadable {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum Read {
-    /// An entry of this crate's form, or a legacy record that maps onto one.
+    /// An entry of this crate's form.
     Entry(Box<SessionEntry>),
-    /// A legacy record with no entry to become (`Replied`, `Finished`): kept, not folded.
-    Legacy(Box<SessionRecord>),
     /// A body that could not be read.
     Unreadable(Unreadable),
 }
@@ -95,7 +92,7 @@ pub enum Read {
 /// One row of a session's log, in log order.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Logged {
-    /// Its position: the stored `seq`, or the row's place in the log for a legacy body.
+    /// Its position: the stored `seq`, or the row's place in the log.
     pub seq: Seq,
     /// What it holds.
     pub read: Read,
@@ -130,7 +127,7 @@ pub fn decode(slug: &str, json: &str, place: Seq) -> Logged {
         return unread(Unreadable::NotJson);
     };
     let Some(version) = body.remove("version") else {
-        return read_legacy(slug, Value::Object(body), place);
+        return unread(Unreadable::BadVersion);
     };
     let Some(version) = version.as_u64().and_then(|v| u32::try_from(v).ok()) else {
         return unread(Unreadable::BadVersion);

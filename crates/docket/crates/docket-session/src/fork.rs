@@ -76,7 +76,7 @@ pub fn fork(
     }
     let carried = kept.into_iter().skip(1).filter_map(|r| match r.read {
         Read::Entry(e) => Some(*e),
-        Read::Legacy(_) | Read::Unreadable(_) => None,
+        Read::Unreadable(_) => None,
     });
     child.extend(carried.filter(|e| {
         !matches!(

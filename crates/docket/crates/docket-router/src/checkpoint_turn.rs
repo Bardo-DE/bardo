@@ -40,7 +40,7 @@ pub(crate) fn notes_of(rows: &[Logged]) -> Vec<CheckpointNote> {
                 SessionEntry::Checkpoint(note) => Some(note.clone()),
                 _ => None,
             },
-            Read::Legacy(_) | Read::Unreadable(_) => None,
+            Read::Unreadable(_) => None,
         })
         .collect()
 }

@@ -4,7 +4,6 @@
 
 use crate::codec::{Logged, Read};
 use crate::entry::{Seq, SessionEntry};
-use porter_ids::Count;
 use prov::SessionId;
 use serde::{Deserialize, Serialize};
 
@@ -18,10 +17,8 @@ pub struct SessionExport {
     pub export_version: u32,
     /// The session.
     pub session: SessionId,
-    /// Its entries, in order (legacy records mapped; the rest counted below).
+    /// Its entries, in order (a row that cannot be read fails the export).
     pub entries: Vec<SessionEntry>,
-    /// Legacy records that map to no entry (`Replied`, `Finished`): left out, counted.
-    pub legacy_skipped: Count,
 }
 
 /// Why an export or an import failed.
@@ -41,11 +38,9 @@ pub enum ExportFault {
 /// The export of `session`'s rows.
 pub fn export(session: &SessionId, rows: &[Logged]) -> Result<SessionExport, ExportFault> {
     let mut entries = Vec::new();
-    let mut skipped = 0u32;
     for row in rows {
         match &row.read {
             Read::Entry(e) => entries.push(e.as_ref().clone()),
-            Read::Legacy(_) => skipped = skipped.saturating_add(1),
             Read::Unreadable(_) => return Err(ExportFault::Unreadable(row.seq)),
         }
     }
@@ -53,7 +48,6 @@ pub fn export(session: &SessionId, rows: &[Logged]) -> Result<SessionExport, Exp
         export_version: EXPORT_VERSION,
         session: session.clone(),
         entries,
-        legacy_skipped: Count(skipped),
     })
 }
 

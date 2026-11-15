@@ -319,7 +319,6 @@ mod tests {
                 calls_since: Count(0),
             },
             skills: vec![],
-            legacy_skipped: Count(0),
             faults: vec![],
         }
     }

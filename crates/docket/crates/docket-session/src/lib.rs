@@ -8,8 +8,6 @@
 //!   come back as labels, and a gap or an unreadable entry fails closed.
 //! - `checkpoint_rows`: the log's restore-point notes folded into a list's rows.
 //! - `fork` and `export`: a child's first entries, and a stable JSON document.
-//! - `legacy`: the records companiond wrote before (`companion_wire::SessionRecord`) read as
-//!   entries.
 //! - `contract` (feature `testing`): the rules every backend keeps, written once for each
 //!   backend's test to run. Its checks panic by design, so a release build does not carry them.
 //! - `fake` and `fake_host` (feature `testing`): a scripted backend, an in-memory log and a
@@ -33,7 +31,6 @@ pub mod fake;
 #[cfg(feature = "testing")]
 pub mod fake_host;
 mod fork;
-pub mod legacy;
 mod log;
 mod plan;
 mod restore_rule;

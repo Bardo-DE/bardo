@@ -3,7 +3,6 @@ mod checkpoints;
 mod codec;
 mod contract;
 mod fork_export;
-mod legacy;
 mod restore_rule;
 mod resume;
 mod support;

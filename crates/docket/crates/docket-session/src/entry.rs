@@ -4,7 +4,7 @@
 //! never a handle's content, never a secret.
 //!
 //! Named apart from `docket_context::state::SessionRecord` (the router's in-memory session) and
-//! `companion_wire::SessionRecord` (companiond's roster facts, read back by `legacy`).
+//! `companion_wire::SessionRecord` (companiond's roster facts).
 
 use companion_model::HandNote;
 use companion_model::helper::HelperSeat;

@@ -48,7 +48,6 @@ struct Fold {
     tripped: Option<BreakerTrip>,
     closed: Option<EndCause>,
     skills: Vec<(SkillId, SkillVersion)>,
-    legacy_skipped: u32,
     blocker: Option<Blocker>,
     faults: Vec<ResumeFault>,
 }
@@ -71,7 +70,6 @@ impl Fold {
             tripped: None,
             closed: None,
             skills: Vec::new(),
-            legacy_skipped: 0,
             blocker: None,
             faults: Vec::new(),
         }
@@ -196,7 +194,6 @@ impl Fold {
                 calls_since: Count(self.calls_since),
             },
             skills: self.skills,
-            legacy_skipped: Count(self.legacy_skipped),
             faults: self.faults,
         }
     }
@@ -226,7 +223,6 @@ pub fn resume_plan(rows: &[Logged]) -> Result<ResumePlan, PlanRefusal> {
         expected = row.seq.next();
         match &row.read {
             Read::Entry(entry) => fold.apply(row.seq, entry.as_ref().clone()),
-            Read::Legacy(_) => fold.legacy_skipped = fold.legacy_skipped.saturating_add(1),
             Read::Unreadable(why) => fold.block(
                 Blocker::Unreadable,
                 ResumeFault::Unreadable {
