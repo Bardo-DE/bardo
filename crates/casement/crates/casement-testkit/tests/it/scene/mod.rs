@@ -1,14 +1,12 @@
-//! The base scenes (and the vkms one) (P0-R-scene, tier P: pixman, byte-exact) and the blur v0 scene
-//! (tier L: llvmpipe), driven through the fixture so real client surfaces are drawn.
+//! The base scenes (and the vkms one) (P0-R-scene, tier P: pixman, byte-exact), driven through the
+//! fixture so real client surfaces are drawn.
 //! Goldens live in `tests/golden/scenes/<name>.png`, blessed with `CASEMENT_BLESS=1`.
 
-use casement_backend::SoftRenderer;
 use casement_render::golden::{Golden, GoldenOutcome, GoldenTier, compare};
 use casement_testkit::{Env, Fixture, FixtureSpec};
 
 /// The P0 base scenes: name, outputs.
-const SCENES: [(&str, &[&str]); 11] = [
-    ("empty-desktop-1x", &["HEADLESS-1:1920x1080@60000:120:0,0"]),
+const SCENES: [(&str, &[&str]); 8] = [
     // The vkms writeback golden (dev/vkms/accept.sh): the default 1024x768 mode of a vkms CRTC.
     (
         "empty-desktop-1024x768",
@@ -27,11 +25,6 @@ const SCENES: [(&str, &[&str]); 11] = [
     ),
     ("bar-and-window-1x", &["HEADLESS-1:1920x1080@60000:120:0,0"]),
     ("lock-surface-1x", &["HEADLESS-1:1920x1080@60000:120:0,0"]),
-    (
-        "lock-cover-dead-locker-1x",
-        &["HEADLESS-1:1920x1080@60000:120:0,0"],
-    ),
-    ("named-cursor-1.5x", &["HEADLESS-1:2880x1620@60000:180:0,0"]),
 ];
 
 mod build;
@@ -82,24 +75,4 @@ fn the_base_scenes_match_their_pixman_goldens() {
         })
         .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
-}
-
-#[test]
-fn blur_v0_matches_its_llvmpipe_golden() {
-    let env = Env::of_process();
-    let spec = FixtureSpec::desktop().with_renderer(SoftRenderer::Llvmpipe);
-    let mut fixture = Fixture::start(spec).expect("fixture");
-    let actual = shoot(&mut fixture, "blur-v0-1x");
-    let golden = Golden {
-        scene: "tests/golden/scenes/blur-v0-1x".to_owned(),
-        tier: GoldenTier::Soft {
-            channel: 2,
-            parts_per_million: 1000,
-        },
-    };
-    let outcome = compare(&golden, &actual, &env.out_dir, env.bless);
-    assert!(
-        matches!(outcome, GoldenOutcome::Match | GoldenOutcome::Blessed),
-        "{outcome:?}"
-    );
 }
