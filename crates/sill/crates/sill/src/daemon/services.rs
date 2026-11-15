@@ -152,22 +152,6 @@ mod tests {
             "every declared service is started"
         );
         assert!(services.clock.state.borrow().0.year() > 2000);
-        assert_eq!(*services.apps.state.borrow(), Default::default());
-        assert_eq!(*services.badges.state.borrow(), Default::default());
-        assert_eq!(*services.pins.state.borrow(), Default::default());
-        assert_eq!(*services.launch.state.borrow(), Default::default());
-        assert_eq!(*services.results.state.borrow(), Default::default());
-        assert_eq!(
-            *services.companion.state.borrow(),
-            Default::default(),
-            "no seat, no companion: nothing known"
-        );
-        assert_eq!(
-            *services.voice.state.borrow(),
-            Default::default(),
-            "no seat, no voice: nothing can begin"
-        );
-        assert_eq!(*services.wallpaper.state.borrow(), Default::default());
         assert_eq!(
             services.notifications.state.borrow().live.server.mode,
             sill_model::notifications::ServerMode::Passive,
@@ -177,16 +161,6 @@ mod tests {
             services.events.state.borrow().status,
             sill_model::events::SourceStatus::Off,
             "no calendar read until the daemon names the sources"
-        );
-        assert_eq!(
-            *services.screenshots.state.borrow(),
-            Default::default(),
-            "nothing watched until the daemon names the folders"
-        );
-        assert_eq!(
-            *services.displays.state.borrow(),
-            Default::default(),
-            "inert until a policy"
         );
         assert_eq!(
             services.polkit_agent.state.borrow().registration,

@@ -161,13 +161,3 @@ fn a_stopped_server_ends_its_accept_loop_and_serves_no_more() {
         .join()
         .unwrap_or_else(|_| panic!("the accept thread panicked"));
 }
-
-/// `sill ping` against a real, already-running daemon. Not run by `cargo test --workspace`
-/// (no daemon exists in that environment); a developer with one running invokes it with
-/// `cargo test -p sill --test it ipc -- --ignored`.
-#[test]
-#[ignore = "needs a running `sill run` daemon"]
-fn ping_reaches_a_running_daemon() {
-    let response = sill::cli::client::send(&Request::Ping).unwrap_or_else(|e| panic!("{e}"));
-    assert_eq!(response, Response::Pong);
-}

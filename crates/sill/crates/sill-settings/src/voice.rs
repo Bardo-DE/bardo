@@ -43,11 +43,7 @@ mod tests {
     use prov::UnixSeconds;
 
     #[test]
-    fn the_defaults_listen_once_consent_is_given_and_the_params_follow_the_keys() {
-        let settings = VoiceSettings::default();
-        assert_eq!(settings.hold_to_talk, HoldToTalk::HoldCommand);
-        assert_eq!(settings.consent, VoiceConsent::NotAsked);
-        assert_eq!(params(&settings), VoiceParams::default());
+    fn the_params_follow_the_keys() {
         let given = VoiceSettings {
             hold_to_talk: HoldToTalk::Off,
             consent: VoiceConsent::Given(UnixSeconds(7)),

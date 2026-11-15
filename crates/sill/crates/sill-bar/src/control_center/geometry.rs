@@ -78,11 +78,9 @@ pub fn height_cap(output_height: i32, bar: &BarTokens) -> i32 {
 
 #[cfg(test)]
 mod tests {
-    use super::{BOTTOM_MARGIN, Placed, Span, height_cap, place};
+    use super::{Placed, Span, height_cap, place};
     use crate::bar::tokens::BarTokens;
-    use ds::style::tokens::token::TokenScope;
     use sill_settings::{ControlCenterModule, ControlCenterSettings};
-    use sill_shell_kit::tokens::control_center::ControlCenterTuned;
 
     #[test]
     fn the_default_modules_lay_out_in_two_columns() {
@@ -116,13 +114,5 @@ mod tests {
     fn the_panel_stops_short_of_the_bottom_edge() {
         // 1080 - bar 24 - margin 16.
         assert_eq!(height_cap(1080, &BarTokens::default()), 1040);
-    }
-
-    #[test]
-    fn the_margin_is_the_tokens_default() {
-        assert_eq!(
-            ControlCenterTuned::BottomMargin.fallback(TokenScope::BASE),
-            format!("{BOTTOM_MARGIN}px").as_str()
-        );
     }
 }

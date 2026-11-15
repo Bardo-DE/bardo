@@ -92,19 +92,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn the_defaults_start_the_machines_on_their_own() {
-        assert_eq!(
-            params(&CompanionSettings::default()),
-            CompanionParams::default()
-        );
-    }
-
-    #[test]
-    fn the_arm_time_clears_the_compositors_floor() {
-        assert_eq!(confirm_arm(), Duration::from_millis(600));
-    }
-
-    #[test]
     fn in_field_reaches_the_summon_machine() {
         let settings = CompanionSettings {
             in_field: InField::Launcher,

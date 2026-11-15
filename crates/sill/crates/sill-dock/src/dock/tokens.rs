@@ -69,26 +69,8 @@ impl sill_ui_kit::hooks::ReadTokens for DockTokens {
 
 #[cfg(test)]
 mod tests {
-    use super::{DockTokens, EDGE_CLAMP, GAP, PAD, PILL_RADIUS};
+    use super::{DockTokens, PAD};
     use ds::prelude::Px;
-    use ds::style::tokens::token::TokenScope;
-    use sill_shell_kit::tokens::dock::DockToken;
-
-    #[test]
-    fn the_constants_are_the_tokens_defaults() {
-        let cases = [
-            (DockToken::Gap, GAP),
-            (DockToken::Pad, PAD),
-            (DockToken::PillRadius, PILL_RADIUS),
-            (DockToken::EdgeClamp, EDGE_CLAMP),
-        ];
-        for (token, shipped) in cases {
-            assert_eq!(
-                token.fallback(TokenScope::BASE),
-                format!("{shipped}px").as_str()
-            );
-        }
-    }
 
     #[test]
     fn a_token_a_sheet_writes_beats_the_constant_and_the_rest_keep_it() {

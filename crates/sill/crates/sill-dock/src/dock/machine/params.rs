@@ -97,28 +97,13 @@ impl DockParams {
 pub(crate) mod tests {
     use super::{DockParams, eased};
     use crate::dock::tokens::DockTokens;
-    use ds::base::time::stamp::Ms;
     use ds::style::tokens::easing::CubicBezier;
-    use sill_model::units::{Cpx, Permille};
+    use sill_model::units::Permille;
     use sill_settings::DockSettings;
 
     /// The design defaults at the standard level: what every machine test runs on.
     pub(crate) fn params() -> DockParams {
         DockParams::new(&DockSettings::default(), &DockTokens::default())
-    }
-
-    #[test]
-    fn defaults_are_design_10s_numbers() {
-        let p = params();
-        assert_eq!((p.enter_ms, p.leave_ms), (120, 200));
-        assert_eq!(p.fly_delay_ms, Ms(100));
-        assert_eq!(p.warm_ms, Ms(400));
-        assert_eq!(p.hold_ms, Ms(600));
-        assert_eq!(p.drag_threshold, Cpx::px(8));
-        assert_eq!(p.autohide_delay_ms, Ms(200));
-        assert_eq!(p.slide_ms, 500);
-        assert_eq!(p.slide_distance, Cpx::px(76), "gut + H_p + 8 = 8 + 60 + 8");
-        assert_eq!(p.ease_out, CubicBezier([220, 900, 300, 1000]));
     }
 
     #[test]

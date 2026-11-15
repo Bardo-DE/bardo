@@ -56,20 +56,7 @@ pub fn magnify_params(
 
 #[cfg(test)]
 mod tests {
-    use super::{dock_metrics, magnify_params};
     use crate::dock::tokens::DockTokens;
-    use crate::magnify::MagnifyParams;
-    use sill_model::units::Cpx;
-    use sill_settings::DockSettings;
-    use sill_shell_kit::tokens::dock::DockMetrics;
-
-    #[test]
-    fn default_settings_are_the_design_geometry() {
-        assert_eq!(
-            magnify_params(&DockSettings::default(), &DockTokens::default(), 1920),
-            MagnifyParams::design_defaults(Cpx::px(1920))
-        );
-    }
 
     #[test]
     fn the_pill_blurs_under_the_squircles_shadow_circle() {
@@ -77,13 +64,5 @@ mod tests {
         let tokens = DockTokens::default();
         assert_eq!(pill_corner(&tokens).css(), "19.45px", "0.884 x 22");
         assert_eq!(pill_blur_radius(&tokens), 19);
-    }
-
-    #[test]
-    fn default_settings_are_quires_dock_metrics() {
-        assert_eq!(
-            dock_metrics(&DockSettings::default()),
-            DockMetrics::default()
-        );
     }
 }

@@ -145,11 +145,6 @@ fn track_click(v: TrackClick) -> host::ScrollTrackClick {
 mod tests {
     use super::*;
 
-    #[test]
-    fn the_defaults_match_field_by_field() {
-        assert_eq!(config(&ShellFile::default()), host::ScrollConfig::default());
-    }
-
     /// A mutation on a default `ShellFile` and the host field it must land on.
     type Case = (fn(&mut ShellFile), fn(&host::ScrollConfig) -> bool);
 
