@@ -55,8 +55,7 @@ async fn a_change_in_the_file_applies_to_the_router_without_a_restart() {
     // A bad value falls back to the base for that key; the good key beside it still applies.
     write_atomically(
         home.path(),
-        // The old key still reads: trust_more is Auto.
-        "[agent]\nstrictness = \"trust_more\"\n[agent.budget]\nspend_microusd = -1\n",
+        "[agent]\nstart_mode = \"auto\"\n[agent.budget]\nspend_microusd = -1\n",
     );
     while router.agent_config().start_mode != Mode::Auto {
         apply_next(&router, &mut watch)

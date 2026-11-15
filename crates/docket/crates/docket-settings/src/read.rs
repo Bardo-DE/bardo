@@ -2,7 +2,7 @@
 //! key alone, never fails the file, and is reported so the daemon can log it.
 
 use crate::AgentSettings;
-use crate::keys::{Rule, legacy, table};
+use crate::keys::{Rule, table};
 use std::collections::BTreeSet;
 use std::fmt;
 
@@ -129,7 +129,7 @@ pub fn read(text: &str, base: AgentSettings) -> Loaded {
     let mut value = base;
     let mut fallbacks = Vec::new();
     let keys = table();
-    for key in legacy().iter().chain(&keys) {
+    for key in &keys {
         let Some(found) = find(&doc, key.path) else {
             continue;
         };
@@ -162,12 +162,7 @@ pub fn read(text: &str, base: AgentSettings) -> Loaded {
             why,
         }));
     }
-    let known: BTreeSet<&str> = keys
-        .iter()
-        .map(|k| k.path)
-        .chain(legacy().iter().map(|k| k.path))
-        .chain(["version"])
-        .collect();
+    let known: BTreeSet<&str> = keys.iter().map(|k| k.path).chain(["version"]).collect();
     let mut seen = Vec::new();
     leaves("", &doc, &mut seen);
     let unknown = seen

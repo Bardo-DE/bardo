@@ -6,7 +6,6 @@ use super::sections::{
     OutputsSection, PointerSection, SpacesSection, TouchpadSection, WindowsSection,
     XwaylandSection,
 };
-use super::version::Version;
 use ds_settings::{AppName, ConfigRoot, FileName, Format, SettingsDoc, Store, Watch};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
@@ -16,10 +15,6 @@ use std::path::Path;
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 #[serde(default)]
 pub struct CasementDoc {
-    /// `version`: which defaults the file was written under (see [`Version`]); none in a file
-    /// written before the file had one. [`load`] brings it to the current version.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub version: Option<Version>,
     /// `windows.*`.
     pub windows: WindowsSection,
     /// `spaces.*`.
@@ -66,7 +61,7 @@ pub fn load(home: Option<&Path>) -> Result<CasementDoc, ConfigError> {
     for key in &loaded.invalid {
         tracing::warn!("settings.toml: {key}");
     }
-    Ok(loaded.value.migrated())
+    Ok(loaded.value)
 }
 
 /// The `xwayland.*` keys of `home`'s document, read without the log lines `load` writes (the

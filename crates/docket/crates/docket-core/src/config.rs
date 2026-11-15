@@ -135,9 +135,8 @@ fn checkpoint_turn_max() -> Seconds {
 /// Every proposed value in one place.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AgentConfig {
-    /// `agent.start_mode`: the mode a new conversation starts in (an old `strictness` or
-    /// `permissions` still reads).
-    #[serde(default, alias = "strictness", alias = "permissions")]
+    /// `agent.start_mode`: the mode a new conversation starts in.
+    #[serde(default)]
     pub start_mode: Mode,
     /// `agent.auto.*` and `agent.manual.*`: what each mode does without asking.
     #[serde(default)]

@@ -7,7 +7,6 @@ mod convert;
 mod doc;
 mod schema;
 mod sections;
-mod version;
 
 pub use action::ActionWords;
 pub use convert::to_core;
@@ -19,7 +18,6 @@ pub use sections::{
     OutputsSection, PointerSection, SpacesSection, TouchpadSection, WindowsSection,
     XwaylandSection, XwaylandUse,
 };
-pub use version::{Version, stamp_version};
 
 /// Why the settings could not be read or the schema written.
 #[derive(Debug, thiserror::Error)]

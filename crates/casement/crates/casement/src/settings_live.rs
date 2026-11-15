@@ -48,12 +48,8 @@ pub fn followed(current: &CasementSettings, doc: &CasementDoc) -> CasementSettin
     }
 }
 
-/// Stamps the file's version (a file written before the file had one, once), then follows the
-/// file. A file that cannot be watched is logged and the settings read at start are kept.
+/// Follows the file. A file that cannot be watched is logged and the settings read at start are kept.
 pub fn attach(state: &mut State, home: Option<&Path>) -> Result<(), crate::StartError> {
-    if let Err(error) = config::stamp_version(home) {
-        tracing::warn!(%error, "the settings file could not be marked with its version");
-    }
     let (sender, receiver) = channel::channel::<CasementDoc>();
     let mut watch = config::watch(home, &ThreadSpawner);
     ThreadSpawner.spawn(Box::pin(async move {

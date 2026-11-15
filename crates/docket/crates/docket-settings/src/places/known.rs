@@ -45,11 +45,4 @@ impl Places {
         }
         self
     }
-
-    /// The setting of a machine that has only the older switches (`ai.local_only`, the floors):
-    /// nothing in them says yes to a particular computer or account, so every known place is Off.
-    /// The text is not read at all; that is the point.
-    pub fn migrated(_older: &str, known: &Known) -> Self {
-        Self::none().merged(known)
-    }
 }

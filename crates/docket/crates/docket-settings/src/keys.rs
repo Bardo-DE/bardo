@@ -57,30 +57,6 @@ fn parse_into<T: DeserializeOwned>(slot: &mut T, word: &str) -> bool {
     }
 }
 
-/// Keys an older settings file may still hold, read before the table so a new key beside them
-/// wins. They are not schema rows.
-pub(crate) fn legacy() -> Vec<Key> {
-    vec![
-        // `ask_more` is Manual, `default` and `trust_more` are Auto: `Mode` reads all three.
-        word(
-            "agent.strictness",
-            &["ask_more", "default", "trust_more"],
-            |s, w| parse_into(&mut s.agent.start_mode, w),
-        ),
-        // The single row of the first permissions release: its word is the start mode.
-        word("agent.permissions", &["auto", "manual"], |s, w| {
-            parse_into(&mut s.agent.start_mode, w)
-        }),
-    ]
-}
-
-const fn toggle(path: &'static str, set: fn(&mut AgentSettings, bool)) -> Key {
-    Key {
-        path,
-        rule: Rule::Toggle { set },
-    }
-}
-
 const fn word(
     path: &'static str,
     words: &'static [&'static str],

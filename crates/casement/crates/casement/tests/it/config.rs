@@ -3,8 +3,7 @@
 //! scratch directory standing in for `$XDG_CONFIG_HOME`; nothing here reads the real one.
 
 use casement::config::{
-    ActionWords, BindingsSection, CasementDoc, Version, load, schema, stamp_version, to_core,
-    write_schema,
+    ActionWords, BindingsSection, CasementDoc, load, schema, to_core, write_schema,
 };
 use casement_core::input::{
     Argv, Binding, BindingAction, Bindings, Chord, DbusCall, DesktopCommand, SpaceStep,
@@ -46,8 +45,8 @@ fn the_defaults_come_from() {
             let doc = load(Some(home.path())).expect("load");
             assert_eq!(
                 doc,
-                CasementDoc::default().migrated(),
-                "a missing document is the default one, at the current version"
+                CasementDoc::default(),
+                "a missing document is the default one"
             );
             to_core(&doc)
         }),
@@ -354,7 +353,7 @@ fn every_kind_of_binding_survives_the_document() {
     };
     let (_dir, home) = home_with(&toml::to_string(&doc).expect("serialises"));
     let loaded = load(Some(&home)).expect("load");
-    assert_eq!(loaded, doc.migrated());
+    assert_eq!(loaded, doc);
     let mut got: Vec<BindingAction> = to_core(&loaded)
         .bindings
         .0
@@ -440,130 +439,6 @@ fn the_binary_answers_help() {
         .status()
         .expect("the casement binary runs");
     assert!(status.success());
-}
-
-/// Each row: a file as an older casement wrote it, and what a mouse's natural scrolling is when
-/// it is read. The old default (off) was written by every save; only a file that predates the
-/// version loses it, and a value the person set to anything else, or a file that says it is
-/// current, is kept.
-#[test]
-fn an_old_file_drops_the_retired_default_and_keeps_what_the_person_set() {
-    let table: &[(&str, &str, bool)] = &[
-        ("no file keys", "", true),
-        (
-            "the old default, no version",
-            "[pointer]\nnatural_scroll = false\n",
-            true,
-        ),
-        (
-            "the old default, version 1",
-            "version = 1\n[pointer]\nnatural_scroll = false\n",
-            true,
-        ),
-        ("on, no version", "[pointer]\nnatural_scroll = true\n", true),
-        (
-            "off, chosen after the migration",
-            "version = 2\n[pointer]\nnatural_scroll = false\n",
-            false,
-        ),
-        (
-            "off in a file from a newer casement",
-            "version = 9\n[pointer]\nnatural_scroll = false\n",
-            false,
-        ),
-    ];
-    for (what, text, want) in table {
-        assert_eq!(
-            settings_of(text).pointer.mouse.natural_scroll,
-            *want,
-            "{what}"
-        );
-    }
-}
-
-/// The other keys of an old file are the person's, whatever they equal.
-#[test]
-fn migration_touches_only_the_retired_default() {
-    let settings = settings_of(
-        "[pointer]\nnatural_scroll = false\ntap = true\n[touchpad]\nnatural_scroll = false\n",
-    );
-    assert!(settings.pointer.mouse.natural_scroll);
-    assert!(settings.pointer.mouse.tap);
-    assert!(
-        !settings.pointer.touchpad.natural_scroll,
-        "the touchpad's default never changed, so this was a choice"
-    );
-}
-
-#[test]
-fn a_migrated_document_is_written_at_the_current_version() {
-    let doc = CasementDoc::default().migrated();
-    assert_eq!(doc.version, Some(Version::CURRENT));
-    let text = toml::to_string(&doc).expect("serialises");
-    assert!(text.starts_with("version = 2\n"), "{text}");
-    let (_dir, home) = home_with(&text);
-    assert_eq!(load(Some(&home)).expect("load"), doc);
-}
-
-#[test]
-fn stamping_writes_only_the_version_and_only_once() {
-    let old = "# mine\n[pointer]\nnatural_scroll = false\n";
-    let (dir, home) = home_with(old);
-    let file = dir.path().join("casement/settings.toml");
-    assert!(stamp_version(Some(&home)).expect("stamp"));
-    let stamped = std::fs::read_to_string(&file).expect("read");
-    assert_eq!(stamped, format!("version = 2\n{old}"));
-    assert!(!stamp_version(Some(&home)).expect("stamp"));
-    assert_eq!(std::fs::read_to_string(&file).expect("read"), stamped);
-    // The choice made after the stamp survives the next read.
-    assert_eq!(
-        to_core(&load(Some(&home)).expect("load"))
-            .pointer
-            .mouse
-            .natural_scroll,
-        false
-    );
-}
-
-/// CASB-13, CASB-14: a pipe where the settings file should be is not waited on (start-up would
-/// hang before READY), and a settings file that is a link stays a link with its target stamped.
-#[test]
-fn stamping_never_waits_on_a_pipe_and_keeps_a_link_a_link() {
-    let (dir, home) = home_with("");
-    let file = dir.path().join("casement/settings.toml");
-    std::fs::remove_file(&file).expect("the empty file goes");
-    rustix::fs::mkfifoat(
-        rustix::fs::CWD,
-        &file,
-        rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
-    )
-    .expect("a pipe");
-    assert!(!stamp_version(Some(&home)).expect("stamp"));
-    std::fs::remove_file(&file).expect("the pipe goes");
-
-    let target = dir.path().join("dotfiles-settings.toml");
-    std::fs::write(&target, "[pointer]\nnatural_scroll = false\n").expect("a target");
-    std::os::unix::fs::symlink(&target, &file).expect("a link");
-    assert!(stamp_version(Some(&home)).expect("stamp"));
-    assert!(
-        std::fs::symlink_metadata(&file)
-            .expect("there")
-            .file_type()
-            .is_symlink(),
-        "the link is still a link"
-    );
-    assert!(
-        std::fs::read_to_string(&target)
-            .expect("read")
-            .starts_with("version = 2\n")
-    );
-}
-
-#[test]
-fn stamping_a_missing_file_writes_nothing() {
-    let dir = tempfile::tempdir().expect("temp dir");
-    assert!(!stamp_version(Some(dir.path())).expect("stamp"));
-    assert!(!dir.path().join("casement").exists());
 }
 
 /// Each row: what a change in the file does to the settings casement runs with. Only the

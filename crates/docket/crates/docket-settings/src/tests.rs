@@ -301,27 +301,6 @@ fn each_key_lands_in_the_typed_value_the_design_names() {
         rows_of("manual", "screen", "once").manual.screen,
         ScreenRow::Once
     );
-    // An old file's `agent.strictness` and the first release's `agent.permissions` still read
-    // into the start mode: ask_more is Manual; default and trust_more are Auto. The new key
-    // beside them wins.
-    let old = |key: &str, w: &str| {
-        let loaded = read(&doc(key, word(w)), AgentSettings::default());
-        assert_eq!((loaded.fallbacks, loaded.unknown), (vec![], vec![]), "{w}");
-        loaded.value.agent.start_mode
-    };
-    assert_eq!(old("agent.strictness", "ask_more"), Mode::Manual);
-    assert_eq!(old("agent.strictness", "default"), Mode::Auto);
-    assert_eq!(old("agent.strictness", "trust_more"), Mode::Auto);
-    assert_eq!(old("agent.permissions", "manual"), Mode::Manual);
-    assert_eq!(old("agent.permissions", "auto"), Mode::Auto);
-    let both = merged(&[
-        ("agent.strictness", word("ask_more")),
-        ("agent.start_mode", word("auto")),
-    ]);
-    assert_eq!(
-        read(&both, AgentSettings::default()).value.agent.start_mode,
-        Mode::Auto
-    );
     let on = toml::Value::Boolean(true);
     assert!(read_one("agent.mcp.expose", on.clone()).expose);
     assert!(read_one("agent.acp.expose", on.clone()).acp);

@@ -130,14 +130,11 @@ fn round_trip_and_bad_values_are_off() {
 }
 
 #[test]
-fn migration_never_widens() {
+fn merging_never_widens() {
     let known = Known(vec![
         KnownPlace::OwnComputer(name("lab")),
         KnownPlace::Cloud(name("acme"), "Acme".to_owned()),
     ]);
-    let migrated = Places::migrated("[ai]\nlocal_only = false\n", &known);
-    assert!(!migrated.own[0].allowed);
-    assert_eq!(migrated.cloud[0].allowed, CloudAllowed::Off);
     let set = Places {
         cloud: vec![cloud("acme", CloudAllowed::On)],
         ..Places::none()
