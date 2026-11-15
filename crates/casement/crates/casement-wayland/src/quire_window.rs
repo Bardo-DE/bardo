@@ -18,8 +18,8 @@
 mod hints;
 
 pub use hints::{
-    A11Y_MAX_LEN, A11yTooLong, BadRole, PendingHints, a11y_of,
-    first_mouse_of, forgotten, frame_of, placement_events, role_request,
+    A11Y_MAX_LEN, A11yTooLong, BadRole, PendingHints, a11y_of, first_mouse_of, forgotten, frame_of,
+    placement_events, role_request,
 };
 
 use crate::client::ClientState;

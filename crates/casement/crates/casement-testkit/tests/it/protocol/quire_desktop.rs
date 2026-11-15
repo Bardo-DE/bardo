@@ -12,8 +12,8 @@ use casement_core::window::{SpacePlace, WindowState};
 use casement_testclient::ClientError;
 use casement_testclient::quire::desktop::{
     AppLifeKind, AppRequest, AppVisibility, Assign, DesktopWatch, ManagerError, PlaceKind,
-    PlaceTarget, PlacementMark, ProofKind, SpaceKind, SpaceRequest, Toggle,
-    WindowRequest, WindowStateKind,
+    PlaceTarget, PlacementMark, ProofKind, SpaceKind, SpaceRequest, Toggle, WindowRequest,
+    WindowStateKind,
 };
 use casement_testclient::quire::window::WindowManager;
 use casement_testclient::surface::toplevel::{Toplevel, WmBase};
@@ -80,11 +80,7 @@ fn ask(
 
 /// The Spaces the manager has not ended.
 fn live_spaces(watch: &DesktopWatch) -> usize {
-    watch
-        .spaces()
-        .iter()
-        .filter(|space| !space.gone)
-        .count()
+    watch.spaces().iter().filter(|space| !space.gone).count()
 }
 
 /// The shell and the agent tier are offered the manager; the public socket and a sandbox are not
@@ -463,11 +459,7 @@ fn the_manager_follows_what_goes_away() {
     settle(&mut fixture, &mut watch);
     assert!(watch.windows()[0].gone);
     assert!(!watch.windows()[1].gone);
-    assert_eq!(
-        watch.apps()[0].gone,
-        false,
-        "the app still runs"
-    );
+    assert_eq!(watch.apps()[0].gone, false, "the app still runs");
 
     ask(&mut fixture, &mut watch, |w| w.create_space());
     assert_eq!(live_spaces(&watch), 2);

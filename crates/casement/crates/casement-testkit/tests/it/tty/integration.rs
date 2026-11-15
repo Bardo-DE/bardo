@@ -23,7 +23,7 @@ use casement_testkit::gpu::{
     CrossSupport, FabricatedSysRoot, FormatSet, GpuTopology, SoftGpu, SoftRenderer, VendorFact,
 };
 use casement_testkit::{Fixture, FixtureSpec, FrameCount, TtyWorld};
-use casement_wayland::dmabuf::{MainDevice};
+use casement_wayland::dmabuf::MainDevice;
 use std::time::Duration;
 
 const KEYBOARD: DeviceId = DeviceId(1);
@@ -180,10 +180,7 @@ fn clients_are_offered_the_render_plans_dmabuf_feedback() {
         .collect();
     assert_eq!(
         shape,
-        [
-            (render, true, 1),
-            (render, false, 1)
-        ],
+        [(render, true, 1), (render, false, 1)],
         "the plane's XRGB8888 first, then ARGB8888 for compositing"
     );
 }

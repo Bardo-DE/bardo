@@ -46,7 +46,7 @@ pub use limits::{
     ASK_TTL, ASKS_PER_MINUTE, HELD_REQUESTS, MAX_FILE_BYTES, MAX_GRANTS, OPEN_ASKS, RATE_WINDOW,
     REASK_AFTER, SHELL_WAIT,
 };
-pub use rows::{PrivacyRow};
+pub use rows::PrivacyRow;
 pub use standing::{AskSubject, ClientStanding, ServiceRole};
 pub use step::PowerOutcome;
 pub use subject::{Engine, ProgramPath, SandboxAppId, Subject};
@@ -218,12 +218,7 @@ impl Privilege {
     /// an allow, and the book within its cap.
     pub(crate) fn in_step(&self) -> bool {
         let ids: BTreeSet<_> = self.asks.open.iter().map(|ask| ask.id).collect();
-        let shown = self
-            .asks
-            .open
-            .iter()
-            .filter(|ask| ask.shown)
-            .count();
+        let shown = self.asks.open.iter().filter(|ask| ask.shown).count();
         self.asks.open.len() <= OPEN_ASKS
             && shown <= 1
             && ids.len() == self.asks.open.len()

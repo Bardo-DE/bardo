@@ -226,7 +226,10 @@ fn nobody(power: Power) -> Listed {
 fn filled(rows: &[PrivacyRow]) -> BTreeSet<&Subject> {
     [false, true]
         .into_iter()
-        .flat_map(|administrator| rows.iter().filter(move |row| row.administrator == administrator))
+        .flat_map(|administrator| {
+            rows.iter()
+                .filter(move |row| row.administrator == administrator)
+        })
         .map(|row| &row.subject)
         .fold(BTreeSet::new(), |mut chosen, subject| {
             if chosen.len() < FILLED_PROGRAMS {
@@ -368,12 +371,7 @@ mod tests {
     #[test]
     fn a_program_has_a_switch_for_every_power_and_the_unanswered_ones_stand_at_ask() {
         let grim = program("/usr/bin/grim");
-        let rows = [row(
-            grim.clone(),
-            Power::Screen,
-            Verdict::Allow,
-            false,
-        )];
+        let rows = [row(grim.clone(), Power::Screen, Verdict::Allow, false)];
         let keys = listed(&rows);
         for &power in <Power as WireCode>::ALL {
             let want = match power {
@@ -406,12 +404,7 @@ mod tests {
     #[test]
     fn answering_a_power_gives_the_row_the_path_it_had_while_unanswered() {
         let grim = program("/usr/bin/grim");
-        let base = [row(
-            grim.clone(),
-            Power::Screen,
-            Verdict::Allow,
-            false,
-        )];
+        let base = [row(grim.clone(), Power::Screen, Verdict::Allow, false)];
         let before = listed(&base);
         let mut after_rows = base.to_vec();
         after_rows.push(row(grim, Power::Keys, Verdict::Deny, false));
@@ -449,12 +442,7 @@ mod tests {
             .collect();
         // Sorts after every administrator program, so only "persons first" keeps it.
         let theirs = program("/usr/bin/zzz");
-        rows.push(row(
-            theirs.clone(),
-            Power::Windows,
-            Verdict::Allow,
-            false,
-        ));
+        rows.push(row(theirs.clone(), Power::Windows, Verdict::Allow, false));
         let keys = listed(&rows);
         let asking = standing_of(&keys, Power::Keys);
         assert_eq!(asking.len(), FILLED_PROGRAMS);
@@ -473,12 +461,7 @@ mod tests {
         let grim = program("/usr/bin/grim");
         let rows = [
             row(grim.clone(), Power::Screen, Verdict::Allow, false),
-            row(
-                program("/usr/bin/foo"),
-                Power::Screen,
-                Verdict::Deny,
-                true,
-            ),
+            row(program("/usr/bin/foo"), Power::Screen, Verdict::Deny, true),
         ];
         let keys = listed(&rows);
         let screen: Vec<&Listed> = keys
@@ -504,12 +487,7 @@ mod tests {
         let grim = program("/usr/bin/grim");
         let same_both_ways = [
             row(grim.clone(), Power::Screen, Verdict::Allow, false),
-            row(
-                grim.clone(),
-                Power::Screen,
-                Verdict::Deny,
-                true,
-            ),
+            row(grim.clone(), Power::Screen, Verdict::Deny, true),
             row(
                 Subject::Sandboxed {
                     app: SandboxAppId::parse("org.gnome.Loupe").expect("an app"),
@@ -527,22 +505,14 @@ mod tests {
         assert_eq!(fnv1a([]), 0xcbf2_9ce4_8422_2325);
         assert_eq!(fnv1a(*b"a"), 0xaf63_dc4c_8601_ec8c);
         assert_eq!(short(false, &grim), short(false, &grim));
-        assert_ne!(
-            short(false, &grim),
-            short(true, &grim)
-        );
+        assert_ne!(short(false, &grim), short(true, &grim));
         assert_eq!(short(false, &grim).len(), 12);
     }
 
     #[test]
     fn what_changed_is_what_settings_is_told() {
         let grim = program("/usr/bin/grim");
-        let allowed = [row(
-            grim.clone(),
-            Power::Screen,
-            Verdict::Allow,
-            false,
-        )];
+        let allowed = [row(grim.clone(), Power::Screen, Verdict::Allow, false)];
         let denied = [row(grim, Power::Screen, Verdict::Deny, false)];
         let moved = changes(&allowed, &denied);
         assert_eq!(moved.len(), 1);

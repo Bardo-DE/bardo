@@ -29,8 +29,7 @@ use casement_core::{Effect, InputSerial, KeyboardTarget, Model};
 use casement_protocols::vocab::HeldMods;
 use casement_protocols::vocab::PressEdge;
 use casement_wayland::seat::{
-    self, GestureDelivery, KeyDelivery, PointerDelivery, Pressed,
-    SurfaceAt,
+    self, GestureDelivery, KeyDelivery, PointerDelivery, Pressed, SurfaceAt,
 };
 use casement_wayland::serial::{PressKind, PressRecord};
 use casement_wayland::shortcuts_inhibit;

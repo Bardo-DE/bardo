@@ -5,8 +5,7 @@ use super::{DeviceVerb, InjectLine, InjectOrigin};
 use crate::error::IpcError;
 use casement_core::geometry::{LogicalPoint, SubPoint, SubPx};
 use casement_core::input::{
-    AxisFrame, AxisSource, ButtonCode, DeviceClass, GestureStep, Keysym, PinchDelta,
-    TouchStep,
+    AxisFrame, AxisSource, ButtonCode, DeviceClass, GestureStep, Keysym, PinchDelta, TouchStep,
 };
 use casement_protocols::vocab::PressEdge;
 use ds_core::vocab::Fraction;

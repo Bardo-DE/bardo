@@ -191,12 +191,7 @@ mod tests {
             (HAND, KERNEL, COPY, false),
             (HAND, PROTOCOL, COPY, false),
             (Origin::Test, PROTOCOL, COPY, false),
-            (
-                Origin::Virtual(DeviceClass::Pointer),
-                PROTOCOL,
-                COPY,
-                false,
-            ),
+            (Origin::Virtual(DeviceClass::Pointer), PROTOCOL, COPY, false),
         ];
         for (origin, device, facts, want) in cases {
             assert_eq!(

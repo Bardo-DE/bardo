@@ -2,8 +2,8 @@
 //! sizes all read.
 
 use super::{
-    Anchors, ExclusiveZone, KeyboardInteractivity, LayerBook, LayerLevel, LayerSpec,
-    Margins, ShellRoleTag,
+    Anchors, ExclusiveZone, KeyboardInteractivity, LayerBook, LayerLevel, LayerSpec, Margins,
+    ShellRoleTag,
 };
 use crate::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use crate::ids::{LayerKey, OutputKey, OutputName};

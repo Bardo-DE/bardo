@@ -4,8 +4,7 @@
 use casement_core::OutputKey;
 use casement_core::geometry::LogicalSize;
 use casement_core::layer::{
-    Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerSpec, Margins,
-    ShellRoleTag,
+    Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerSpec, Margins, ShellRoleTag,
 };
 use smithay::wayland::shell::wlr_layer::{
     Anchor as WireAnchor, ExclusiveZone as WireZone, KeyboardInteractivity as WireKeyboard,

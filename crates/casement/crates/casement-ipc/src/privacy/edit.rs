@@ -10,9 +10,8 @@ use casement_core::privilege::{Edit, PrivacyRow};
 /// moment later; this one lets Settings read its own change back.
 pub(super) fn applied(edit: &Edit, rows: &[PrivacyRow]) -> Vec<PrivacyRow> {
     let (subject, power) = edit.target();
-    let ours = |row: &PrivacyRow| {
-        !row.administrator && row.power == power && row.subject == *subject
-    };
+    let ours =
+        |row: &PrivacyRow| !row.administrator && row.power == power && row.subject == *subject;
     let first = (!rows.iter().any(ours))
         .then(|| edit.verdict())
         .flatten()
@@ -58,12 +57,7 @@ mod tests {
 
     #[test]
     fn the_first_answer_for_a_power_adds_the_persons_row() {
-        let rows = vec![row(
-            "/usr/bin/grim",
-            Power::Screen,
-            Verdict::Allow,
-            false,
-        )];
+        let rows = vec![row("/usr/bin/grim", Power::Screen, Verdict::Allow, false)];
         let allow = Edit::Allow(subject("/usr/bin/grim"), Power::Keys);
         let after = applied(&allow, &rows);
         assert_eq!(after.len(), 2);
@@ -79,19 +73,9 @@ mod tests {
     #[test]
     fn an_edit_changes_only_the_persons_row_it_names() {
         let rows = vec![
-            row(
-                "/usr/bin/grim",
-                Power::Screen,
-                Verdict::Allow,
-                false,
-            ),
+            row("/usr/bin/grim", Power::Screen, Verdict::Allow, false),
             row("/usr/bin/grim", Power::Keys, Verdict::Allow, false),
-            row(
-                "/usr/bin/grim",
-                Power::Screen,
-                Verdict::Deny,
-                true,
-            ),
+            row("/usr/bin/grim", Power::Screen, Verdict::Deny, true),
         ];
         let deny = Edit::Deny(subject("/usr/bin/grim"), Power::Screen);
         let after = applied(&deny, &rows);

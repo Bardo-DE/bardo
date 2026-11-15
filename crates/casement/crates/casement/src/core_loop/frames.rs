@@ -12,8 +12,8 @@ use casement_core::focus::{HitPart, Press};
 use casement_core::geometry::{LogicalPoint, LogicalRect};
 use casement_core::input::{ButtonCode, InputEvent};
 use casement_core::window::{
-    ArmInput, ArmOutcome, ChromeAction, FrameHit, FrameLook, FrameStyle, LightArm,
-    LightAt, WindowState, chrome_action, round_of,
+    ArmInput, ArmOutcome, ChromeAction, FrameHit, FrameLook, FrameStyle, LightArm, LightAt,
+    WindowState, chrome_action, round_of,
 };
 use casement_core::{Effect, Event, ResizeEdges, ToplevelRequest, WindowId};
 use casement_layout::{GroupHover, frame_metrics, frame_style, pressed};

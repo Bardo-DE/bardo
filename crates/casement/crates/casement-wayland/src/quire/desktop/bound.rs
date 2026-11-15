@@ -80,10 +80,7 @@ impl Outcome {
 
 impl Bound {
     /// A manager just bound: it has no objects and has been told nothing.
-    pub(super) fn new(
-        manager: super::QuireDesktopManagerV1,
-        manages: bool,
-    ) -> Bound {
+    pub(super) fn new(manager: super::QuireDesktopManagerV1, manages: bool) -> Bound {
         Bound {
             manager,
             manages,

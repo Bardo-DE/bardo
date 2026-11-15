@@ -246,13 +246,15 @@ where
             filter,
         ));
     }
-    Ok(match keyboard.input_intercept(state, code, key_state, filter).0 {
-        FilterResult::Intercept(answer) => Some(answer),
-        FilterResult::Forward => {
-            key_route::send_past_grab(&keyboard, &delivery);
-            None
-        }
-    })
+    Ok(
+        match keyboard.input_intercept(state, code, key_state, filter).0 {
+            FilterResult::Intercept(answer) => Some(answer),
+            FilterResult::Forward => {
+                key_route::send_past_grab(&keyboard, &delivery);
+                None
+            }
+        },
+    )
 }
 
 /// Changes the repeat rate and delay every keyboard of the seat advertises (a settings

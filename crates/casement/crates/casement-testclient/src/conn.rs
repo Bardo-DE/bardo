@@ -222,11 +222,7 @@ impl TestClient {
         }
         moved += self.dispatch();
         moved += self.relay();
-        if moved == 0 {
-            false
-        } else {
-            true
-        }
+        if moved == 0 { false } else { true }
     }
 
     fn dispatch(&mut self) -> usize {

@@ -7,8 +7,7 @@ use casement_core::desktop::{DesktopRequest, WindowAsk};
 use casement_core::focus::TokenCheck;
 use casement_core::input::{InputTarget, InputUse, Origin, Refusal};
 use casement_core::layer::{
-    Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerSpec, Margins,
-    ShellRoleTag,
+    Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerSpec, Margins, ShellRoleTag,
 };
 use casement_core::lock::{LockEvent, LockHolder, LockReply, LockState, LockSurfaces};
 use casement_core::policy::ConnectionRole;

@@ -156,10 +156,7 @@ impl Asks {
 
     /// The open question `id`, taken out, if it is on screen.
     pub(super) fn take_shown(&mut self, id: AskId) -> Option<OpenAsk> {
-        let at = self
-            .open
-            .iter()
-            .position(|ask| ask.id == id && ask.shown)?;
+        let at = self.open.iter().position(|ask| ask.id == id && ask.shown)?;
         Some(self.open.remove(at))
     }
 
@@ -189,9 +186,7 @@ impl Asks {
 
     /// Nothing is on screen any more (the shell went): every question waits again.
     pub(super) fn requeue(&mut self) {
-        self.open
-            .iter_mut()
-            .for_each(|ask| ask.shown = false);
+        self.open.iter_mut().for_each(|ask| ask.shown = false);
     }
 
     /// `who` is not asked about `power` again before [`REASK_AFTER`] from `now`. The table is

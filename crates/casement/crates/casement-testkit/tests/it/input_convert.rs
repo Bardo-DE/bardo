@@ -11,8 +11,8 @@ use casement_backend::input::{
 use casement_core::DeviceId;
 use casement_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, SubPoint, SubPx};
 use casement_core::input::{
-    AxisFrame, AxisSource, ButtonCode, DeviceClass, GestureStep, InputKind, KeyCode,
-    Origin, PinchDelta, SwipeDelta, SwitchStep, TouchStep,
+    AxisFrame, AxisSource, ButtonCode, DeviceClass, GestureStep, InputKind, KeyCode, Origin,
+    PinchDelta, SwipeDelta, SwitchStep, TouchStep,
 };
 use casement_core::settings::CasementSettings;
 use casement_core::time::Mono;

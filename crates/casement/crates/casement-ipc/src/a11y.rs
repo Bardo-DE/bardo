@@ -170,11 +170,7 @@ mod tests {
         let unique = name_of(&owner);
         let cases = [
             ("its own unique name", ask(ours, &unique), true),
-            (
-                "someone else's process",
-                ask(theirs, &unique),
-                false,
-            ),
+            ("someone else's process", ask(theirs, &unique), false),
             ("a name nobody owns", ask(ours, ":1.987654"), false),
             (
                 "a well-known name nobody owns",

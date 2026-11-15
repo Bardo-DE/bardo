@@ -94,7 +94,7 @@ mod tests {
     use super::*;
     use crate::error::IpcError;
     use casement_core::geometry::SubPx;
-    use casement_core::input::{AxisSource};
+    use casement_core::input::AxisSource;
 
     #[test]
     fn every_fake_input_line_parses() {

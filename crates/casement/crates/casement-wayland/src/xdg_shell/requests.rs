@@ -221,18 +221,8 @@ mod tests {
             ("touch", Some(PressKind::Touch), false, true),
             ("pen", Some(PressKind::TabletTip), false, true),
             ("key", Some(PressKind::Key), false, false),
-            (
-                "key opens a menu",
-                Some(PressKind::Key),
-                true,
-                true,
-            ),
-            (
-                "button grabs a popup",
-                Some(PressKind::Button),
-                true,
-                true,
-            ),
+            ("key opens a menu", Some(PressKind::Key), true, true),
+            ("button grabs a popup", Some(PressKind::Button), true, true),
             (
                 "a release opens a menu",
                 Some(PressKind::Release),

@@ -3,8 +3,8 @@
 use casement_backend::headless::ConnectorEvent;
 use casement_backend::tty::{
     CommitVerdict, ConnectorId, ConnectorStatus, CrtcId, DevicePath, EdidError, Kms, KmsCommit,
-    KmsError, KmsRefusal, KnownConnectors, OutputCommit, TtyDevices, output_facts,
-    parse_edid, plan_outputs, reconcile,
+    KmsError, KmsRefusal, KnownConnectors, OutputCommit, TtyDevices, output_facts, parse_edid,
+    plan_outputs, reconcile,
 };
 use casement_core::OutputName;
 use casement_core::geometry::PhysicalSize;
@@ -263,10 +263,7 @@ fn an_unplugged_connector_goes_dark_and_cannot_be_driven() {
         kms.test(&commit),
         CommitVerdict::Refused(KmsRefusal::Unsupported)
     );
-    assert_eq!(
-        plan_outputs(&kms.resources(), &no_wishes(), false).len(),
-        2
-    );
+    assert_eq!(plan_outputs(&kms.resources(), &no_wishes(), false).len(), 2);
 }
 
 #[test]

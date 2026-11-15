@@ -8,9 +8,7 @@ use crate::dbus::COMPOSITOR_BUS_NAME;
 use crate::test_served::{Served, WHOLE_TEST, outcome, service};
 use calloop::channel::Channel;
 use casement_core::policy::Power;
-use casement_core::privilege::{
-    Edit, PrivacyRow, ProgramPath, Subject, UnixSeconds, Verdict,
-};
+use casement_core::privilege::{Edit, PrivacyRow, ProgramPath, Subject, UnixSeconds, Verdict};
 use ds_settings::live::LiveSchema;
 use ds_settings::schema::{KeyKind, KeySpec};
 use peephole_bus::peephole::fake::introduced_program;
@@ -39,18 +37,8 @@ fn row(path: &str, power: Power, verdict: Verdict, administrator: bool) -> Priva
 fn served() -> (Served, Channel<Edit>) {
     let (link, channel) = PrivacyLink::new();
     link.board().publish(vec![
-        row(
-            "/usr/bin/grim",
-            Power::Screen,
-            Verdict::Allow,
-            false,
-        ),
-        row(
-            "/usr/bin/evil",
-            Power::Screen,
-            Verdict::Deny,
-            true,
-        ),
+        row("/usr/bin/grim", Power::Screen, Verdict::Allow, false),
+        row("/usr/bin/evil", Power::Screen, Verdict::Deny, true),
     ]);
     (Served::start(WHOLE_TEST, true, Some(link)), channel)
 }

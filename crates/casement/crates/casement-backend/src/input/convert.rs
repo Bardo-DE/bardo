@@ -5,8 +5,8 @@
 
 use casement_core::geometry::{LogicalPoint, LogicalRect, SubPoint, SubPx};
 use casement_core::input::{
-    AxisFrame, AxisSource as CoreSource, ButtonCode, GestureStep, InputKind, KeyCode,
-    PinchDelta, SwipeDelta, SwitchStep, TouchStep,
+    AxisFrame, AxisSource as CoreSource, ButtonCode, GestureStep, InputKind, KeyCode, PinchDelta,
+    SwipeDelta, SwitchStep, TouchStep,
 };
 use casement_protocols::vocab::PressEdge;
 use ds_core::vocab::Fraction;

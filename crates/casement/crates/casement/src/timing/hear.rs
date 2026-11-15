@@ -7,7 +7,7 @@ use super::stamp::Stamp;
 use super::token::Token;
 use super::trigger::{FeedKind, press_in};
 use crate::state::State;
-use casement_core::layer::{ShellRoleTag};
+use casement_core::layer::ShellRoleTag;
 use casement_core::policy::ConnectionRole;
 use casement_core::time::Mono;
 use casement_core::window::WindowOrigin;

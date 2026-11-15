@@ -36,9 +36,7 @@ impl LayerSpec {
     /// when the person clicks it (CASC-02).
     pub fn granted_keyboard(&self) -> KeyboardInteractivity {
         match (self.keyboard, self.from_shell) {
-            (KeyboardInteractivity::Exclusive, false) => {
-                KeyboardInteractivity::OnDemand
-            }
+            (KeyboardInteractivity::Exclusive, false) => KeyboardInteractivity::OnDemand,
             (asked, _) => asked,
         }
     }

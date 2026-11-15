@@ -24,7 +24,7 @@ use super::{divider, frames, overview};
 use crate::state::State;
 use casement_core::geometry::LogicalPoint;
 use casement_core::input::{InputEvent, InputKind, Origin};
-use casement_core::layer::{LayerLevel};
+use casement_core::layer::LayerLevel;
 use casement_core::{LeaseId, WindowId};
 use casement_protocols::vocab::PressEdge;
 use casement_wayland::compositor::root_of;

@@ -7,7 +7,7 @@ use crate::flight::FlightEnds;
 use crate::goals::{Goal, Goals};
 use crate::pose::Pose;
 use crate::space_slide::SlideLeg;
-use crate::window_motion::{WindowLegs};
+use crate::window_motion::WindowLegs;
 use casement_core::Cause;
 use casement_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use casement_core::time::Mono;
@@ -135,19 +135,17 @@ impl Step<'_> {
     /// already is). A window nothing tracks and the old arrangement did not hold is nothing.
     fn away(&self, known: Option<WindowLegs>, was: Option<&Goal>) -> Option<WindowLegs> {
         let legs = known.or_else(|| was.map(|was| self.standing(was)))?;
-        match legs.leaving {
-            true => Some(legs),
-            false => {
-                let here = legs.pose(self.now);
-                let exit = self.leaving_to(here);
-                let flight = self.flight(rect_of(here));
-                Some(
-                    legs.with_leaving(true)
-                        .aimed(exit, self.travel, self.level, self.now)
-                        .with_flight(flight),
-                )
-            }
+        if legs.leaving {
+            return Some(legs);
         }
+        let here = legs.pose(self.now);
+        let exit = self.leaving_to(here);
+        let flight = self.flight(rect_of(here));
+        Some(
+            legs.with_leaving(true)
+                .aimed(exit, self.travel, self.level, self.now)
+                .with_flight(flight),
+        )
     }
 
     /// The ends of a flight between `window` and the dock tile, when this retarget is a minimise

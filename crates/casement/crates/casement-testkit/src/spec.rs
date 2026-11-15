@@ -115,7 +115,10 @@ impl FixtureSpec {
 
     /// The same, with this ack policy.
     pub fn with_lenient_acks(self, lenient_acks: bool) -> FixtureSpec {
-        FixtureSpec { lenient_acks, ..self }
+        FixtureSpec {
+            lenient_acks,
+            ..self
+        }
     }
 
     /// The same, with these outputs.

@@ -107,11 +107,7 @@ pub(crate) struct Served {
 impl Served {
     /// Compositor1 on a new private bus, counting calls per `window`, with the Privacy list
     /// served too when `privacy` is given. The stand-in loop reads the channel when `reads`.
-    pub(crate) fn start(
-        window: Duration,
-        reads: bool,
-        privacy: Option<PrivacyLink>,
-    ) -> Served {
+    pub(crate) fn start(window: Duration, reads: bool, privacy: Option<PrivacyLink>) -> Served {
         let bus = PrivateBus::start();
         let peers: Arc<OnceLock<Arc<Peers>>> = Arc::default();
         let slot = Arc::clone(&peers);

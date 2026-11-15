@@ -8,8 +8,8 @@ use casement_core::geometry::{SubPoint, SubPx};
 use casement_core::input::gesture_route::{Axis, Drive, Fate, Route, route};
 use casement_core::input::lift::{Lift, LiftEnd, LiftIn, LiftOut};
 use casement_core::input::{
-    BUS_VIRTUAL, DesktopCommand, DeviceClass, GestureStep, InputEvent, InputKind,
-    KernelIds, Maker, Origin, SwipeDelta,
+    BUS_VIRTUAL, DesktopCommand, DeviceClass, GestureStep, InputEvent, InputKind, KernelIds, Maker,
+    Origin, SwipeDelta,
 };
 use casement_core::overview::Overview;
 use casement_core::settings::{CasementSettings, Enabled, GestureSettings, SwipeFingers};
@@ -146,14 +146,8 @@ fn an_axis_nobody_wants_at_that_count_is_swallowed_to_its_end() {
 #[test]
 fn a_cancelled_swipe_is_cancelled() {
     let s = GestureSettings::defaults();
-    let steps = routed(
-        vec![begin(4), by(30, 0), GestureStep::End(true)],
-        &s,
-    );
-    assert_eq!(
-        steps[2].1,
-        Some(vec![Drive::Cancelled(Axis::Horizontal)])
-    );
+    let steps = routed(vec![begin(4), by(30, 0), GestureStep::End(true)], &s);
+    assert_eq!(steps[2].1, Some(vec![Drive::Cancelled(Axis::Horizontal)]));
 }
 
 /// The vertical machine over `(ms, dy)` moves, then a lift at `lift_at`.

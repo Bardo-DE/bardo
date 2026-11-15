@@ -38,7 +38,9 @@ impl Privilege {
             at: Some(grant.at),
         });
         let mut rows: Vec<PrivacyRow> = person.chain(administrator).collect();
-        rows.sort_by(|a, b| (a.power, &a.subject, a.administrator).cmp(&(b.power, &b.subject, b.administrator)));
+        rows.sort_by(|a, b| {
+            (a.power, &a.subject, a.administrator).cmp(&(b.power, &b.subject, b.administrator))
+        });
         rows
     }
 }

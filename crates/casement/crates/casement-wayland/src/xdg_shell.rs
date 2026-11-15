@@ -38,8 +38,8 @@ pub use popup::{
     on_reposition, on_room_changed, popups_of,
 };
 pub use requests::{
-    edges_of, grab_proven, on_full_screen, on_maximise, on_minimise, on_move, on_pong,
-    on_resize, on_window_menu,
+    edges_of, grab_proven, on_full_screen, on_maximise, on_minimise, on_move, on_pong, on_resize,
+    on_window_menu,
 };
 
 use crate::client::key_of_surface;

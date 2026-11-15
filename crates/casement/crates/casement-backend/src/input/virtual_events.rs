@@ -5,8 +5,8 @@ use super::convert::SwipeUnaccelerated;
 use super::virtual_input::{VirtualDevice, VirtualInput};
 use casement_core::geometry::{LogicalPoint, SubPoint, SubPx};
 use casement_core::input::{
-    AxisFrame, AxisSource as CoreSource, ButtonCode, KeyCode, PinchDelta, SwipeDelta,
-    SwitchStep, TouchStep,
+    AxisFrame, AxisSource as CoreSource, ButtonCode, KeyCode, PinchDelta, SwipeDelta, SwitchStep,
+    TouchStep,
 };
 use casement_core::time::Mono;
 use casement_protocols::vocab::PressEdge;

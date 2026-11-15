@@ -7,9 +7,7 @@ use crate::support;
 use casement_core::geometry::{LogicalPoint, LogicalSize, SubPx};
 use casement_core::{Cause, MinimiseTarget, SwipeRelease, WindowId};
 use casement_layout::{Arrangement, SpaceTarget};
-use casement_motion::{
-    CommittedSizes, MotionBook, WindowLooks, retarget, retarget_driven, sample,
-};
+use casement_motion::{CommittedSizes, MotionBook, WindowLooks, retarget, retarget_driven, sample};
 use casement_protocols::vocab::{Emphasis, FrameMode};
 use ds_core::vocab::Fraction;
 use ds_motion::velocity::Velocity;

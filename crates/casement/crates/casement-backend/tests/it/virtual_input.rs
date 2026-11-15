@@ -7,8 +7,8 @@ use casement_backend::{DeviceName, DeviceSpec, VirtualInput};
 use casement_core::DeviceId;
 use casement_core::geometry::{LogicalPoint, SubPoint, SubPx};
 use casement_core::input::{
-    AxisFrame, AxisSource as Source, ButtonCode, DeviceClass, GestureStep, InputKind,
-    KeyCode, Origin, PinchDelta, SwipeDelta, SwitchStep, TouchStep,
+    AxisFrame, AxisSource as Source, ButtonCode, DeviceClass, GestureStep, InputKind, KeyCode,
+    Origin, PinchDelta, SwipeDelta, SwitchStep, TouchStep,
 };
 use casement_core::settings::XkbNames;
 use casement_core::time::Mono;
@@ -353,11 +353,7 @@ fn gestures_carry_fingers_deltas_scale_and_how_they_ended() {
         })),
         at(2),
     );
-    input.push(
-        id,
-        InputKind::Swipe(GestureStep::End(false)),
-        at(3),
-    );
+    input.push(id, InputKind::Swipe(GestureStep::End(false)), at(3));
     let pinch = PinchDelta {
         scale: Fraction(1250),
         rotation_millideg: 15_500,
@@ -367,11 +363,7 @@ fn gestures_carry_fingers_deltas_scale_and_how_they_ended() {
         },
     };
     input.push(id, InputKind::Pinch(GestureStep::Update(pinch)), at(4));
-    input.push(
-        id,
-        InputKind::Pinch(GestureStep::End(true)),
-        at(5),
-    );
+    input.push(id, InputKind::Pinch(GestureStep::End(true)), at(5));
     input.push(
         id,
         InputKind::Hold(GestureStep::Begin { fingers: 2 }),

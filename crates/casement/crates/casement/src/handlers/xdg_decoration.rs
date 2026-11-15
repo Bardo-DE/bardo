@@ -35,10 +35,7 @@ impl State {
         // configure; wlcs' decoration tests wait for it without ever committing, so under the
         // lenient policy the initial configure goes out with it (`testing` builds only).
         #[cfg(feature = "testing")]
-        if self.lenient_acks
-            && toplevel.alive()
-            && !toplevel.is_initial_configure_sent()
-        {
+        if self.lenient_acks && toplevel.alive() && !toplevel.is_initial_configure_sent() {
             toplevel.send_configure();
         }
     }

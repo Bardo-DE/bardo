@@ -2,9 +2,8 @@
 //! person's book (precedence), the book's and the floor's text, and the caps.
 
 use casement_core::privilege::{
-    Book, BookError, Decision, Engine, Floor, FloorError, FloorRule, Grant,
-    MAX_FILE_BYTES, MAX_GRANTS, ProgramPath, SandboxAppId, Subject, UnixSeconds, Verdict, decide,
-    decide_trusted,
+    Book, BookError, Decision, Engine, Floor, FloorError, FloorRule, Grant, MAX_FILE_BYTES,
+    MAX_GRANTS, ProgramPath, SandboxAppId, Subject, UnixSeconds, Verdict, decide, decide_trusted,
 };
 use casement_protocols::vocab::{Memory, Power, WireCode};
 use proptest::prelude::*;

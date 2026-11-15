@@ -22,7 +22,6 @@ pub(crate) struct WindowLegs {
     pub(crate) output: OutputKey,
     /// Its place in the arrangement's order, bottom of the stack first.
     pub(crate) stack: u32,
-    /// Whether it is meant to be shown.
     /// Whether it left the arrangement: fading out, then gone from every frame.
     pub(crate) leaving: bool,
     /// The ends of the minimise flight it is on, if it is on one.
