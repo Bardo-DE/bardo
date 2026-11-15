@@ -15,28 +15,18 @@ pub enum Tier {
     Cua,
 }
 
-/// Whether a tier is there.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Offer {
-    /// It is.
-    Offered,
-    /// It is not.
-    Absent,
-}
-
-/// What reaches an app.
+/// What reaches an app: for each tier, whether it is there.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Availability {
     /// A typed action covers the goal.
-    pub typed: Offer,
+    pub typed: bool,
     /// A hook covers it.
-    pub hook: Offer,
+    pub hook: bool,
     /// Computer use is on for the app (`cua.enabled`, off by default).
-    pub cua: Offer,
+    pub cua: bool,
 }
 
-/// The first tier that is offered, in order; none when nothing reaches the app (the answer is
+/// The first tier that is there, in order; none when nothing reaches the app (the answer is
 /// `RefusalWire::NoWay`).
 pub fn choose_tier(available: &Availability) -> Option<Tier> {
     [
@@ -45,5 +35,5 @@ pub fn choose_tier(available: &Availability) -> Option<Tier> {
         (Tier::Cua, available.cua),
     ]
     .into_iter()
-    .find_map(|(tier, offer)| (offer == Offer::Offered).then_some(tier))
+    .find_map(|(tier, offered)| offered.then_some(tier))
 }

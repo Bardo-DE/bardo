@@ -7,50 +7,49 @@ use prov::{AgentRef, ReportStatus, RunId};
 
 #[test]
 fn the_tier_rule_prefers_typed_then_hook_then_pixels() {
-    use Offer::{Absent, Offered};
     let cases = [
         (
             "typed wins",
             Availability {
-                typed: Offered,
-                hook: Offered,
-                cua: Offered,
+                typed: true,
+                hook: true,
+                cua: true,
             },
             Some(Tier::Typed),
         ),
         (
             "hook next",
             Availability {
-                typed: Absent,
-                hook: Offered,
-                cua: Offered,
+                typed: false,
+                hook: true,
+                cua: true,
             },
             Some(Tier::Hook),
         ),
         (
             "pixels last",
             Availability {
-                typed: Absent,
-                hook: Absent,
-                cua: Offered,
+                typed: false,
+                hook: false,
+                cua: true,
             },
             Some(Tier::Cua),
         ),
         (
             "nothing reaches the app",
             Availability {
-                typed: Absent,
-                hook: Absent,
-                cua: Absent,
+                typed: false,
+                hook: false,
+                cua: false,
             },
             None,
         ),
         (
             "cua off by default is not offered",
             Availability {
-                typed: Absent,
-                hook: Offered,
-                cua: Absent,
+                typed: false,
+                hook: true,
+                cua: false,
             },
             Some(Tier::Hook),
         ),

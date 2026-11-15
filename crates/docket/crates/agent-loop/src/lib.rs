@@ -47,4 +47,4 @@ pub use side::{SideConv, SideEffect, SideEnd, SideInput, SideTable, side_episode
 pub use step::{
     FinishedAs, LoopEffect, LoopInput, LoopPhase, LoopState, ModelOutput, PlannedCall, agent_step,
 };
-pub use tier::{Availability, Offer, Tier, choose_tier};
+pub use tier::{Availability, Tier, choose_tier};

@@ -5,7 +5,7 @@
 use crate::plain::without_ids;
 use crate::planner::{PlanFault, TOOL_ANSWER, TOOL_ASK, TOOL_FINISH, TOOL_READ, TOOL_RELATED};
 use crate::read_ask::read_output;
-use agent_loop::{Availability, ModelOutput, Offer, PlannedCall, choose_tier, leaked_call};
+use agent_loop::{Availability, ModelOutput, PlannedCall, choose_tier, leaked_call};
 use docket_core::{HandleShape, OneOf, PlannerView, ReplyFault};
 use docket_manifest::{ArgsFault, RELATION_ARG, Why};
 use docket_vocab::{Args, CallRequest, Handle, Origin, ParamName, TargetValue, Value};
@@ -157,9 +157,9 @@ fn related_output(args: &Json, view: &PlannerView) -> ModelOutput {
         return wrong(RELATION_ARG, Why::Range);
     };
     let Some(tier) = choose_tier(&Availability {
-        typed: Offer::Offered,
-        hook: Offer::Absent,
-        cua: Offer::Absent,
+        typed: true,
+        hook: false,
+        cua: false,
     }) else {
         return ModelOutput::Unread(ReplyFault::NoSuchTool(String::new()));
     };

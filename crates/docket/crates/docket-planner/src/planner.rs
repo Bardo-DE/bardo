@@ -23,7 +23,7 @@ use crate::show::finish_output;
 use crate::summarise::{SummariseFault, Summarised};
 use crate::voice::Voice;
 use agent_loop::{
-    Availability, ModelOutput, Offer, PlannedCall, SummaryInput, choose_tier, leaked_call,
+    Availability, ModelOutput, PlannedCall, SummaryInput, choose_tier, leaked_call,
 };
 use companion_wire::{RouteLog, RouteNote};
 use docket_core::{OneOf, PlannerView, ReplyFault};
@@ -382,9 +382,9 @@ impl<P: Transport> PlannerModel<P> {
         }
         let read = read_call(tool, &json).map_err(|fault| ReplyFault::Args(plain_fault(fault)))?;
         let tier = choose_tier(&Availability {
-            typed: Offer::Offered,
-            hook: Offer::Absent,
-            cua: Offer::Absent,
+            typed: true,
+            hook: false,
+            cua: false,
         })
         .ok_or(ReplyFault::NoSuchTool(String::new()))?;
         Ok(PlannedCall {
