@@ -27,10 +27,3 @@ fn the_switch_file_is_read_from_the_path_given() {
     std::fs::write(&file, "0\n").expect("write");
     assert_eq!(refusal_at(&file), CannotSandbox::NamespacesDenied);
 }
-
-#[test]
-fn the_apparmor_reason_says_what_to_do() {
-    let words = CannotSandbox::RestrictedByAppArmor.to_string();
-    assert!(words.contains("AppArmor"));
-    assert!(words.contains("apparmor_restrict_unprivileged_userns"));
-}

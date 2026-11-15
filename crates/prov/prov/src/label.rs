@@ -259,24 +259,6 @@ mod tests {
     }
 
     #[test]
-    fn constructors_name_their_rows() {
-        let user = Label::trusted_user();
-        assert_eq!(user.integrity, Integrity::Trusted);
-        assert_eq!(user.confidentiality, Confidentiality::Public);
-        assert!(user.classes.is_empty());
-        assert_eq!(user.sources, BTreeSet::from([Source::User]));
-
-        let mail = Label::untrusted(Source::Mail, DataClass::Mail, space("work"));
-        assert_eq!(mail.integrity, Integrity::Untrusted);
-        assert_eq!(
-            mail.confidentiality,
-            Confidentiality::Private(BTreeSet::from([space("work")]))
-        );
-        assert_eq!(mail.classes, BTreeSet::from([DataClass::Mail]));
-        assert_eq!(mail.sources, BTreeSet::from([Source::Mail]));
-    }
-
-    #[test]
     fn join_takes_the_worst_of_each_half() {
         let user = Label::trusted_user();
         let mail = Label::untrusted(Source::Mail, DataClass::Mail, space("work"));

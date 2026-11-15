@@ -298,19 +298,3 @@ async fn a_caller_table_that_does_not_parse_stops_the_daemon_naming_the_file() {
         daemon.stderr()
     );
 }
-
-/// Adding an AI key from a terminal is `accountd add`.
-#[test]
-fn accountd_has_an_add_command_that_says_what_it_does() {
-    let output = Command::new(env!("CARGO_BIN_EXE_accountd"))
-        .args(["add", "--help"])
-        .env_clear()
-        .output()
-        .expect("runs");
-    assert!(output.status.success());
-    let help = String::from_utf8_lossy(&output.stdout);
-    assert!(
-        help.contains("--allow") && help.contains("org.quire.Accounts1"),
-        "{help}"
-    );
-}

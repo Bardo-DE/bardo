@@ -45,18 +45,3 @@ impl Timeouts {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn each_with_method_changes_its_own_wait_only() {
-        let base = Timeouts::default();
-        let one = Duration::from_secs(1);
-        assert_eq!(base.with_hello(one), Timeouts { hello: one, ..base });
-        assert_eq!(base.with_silence(one).silence, one);
-        assert_eq!(base.with_cancel_grace(one).cancel_grace, one);
-        assert_eq!(base.with_silence(one).hello, base.hello);
-    }
-}

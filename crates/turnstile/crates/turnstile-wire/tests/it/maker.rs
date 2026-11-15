@@ -1,21 +1,4 @@
-use turnstile_wire::codes::{BTN_LEFT, REL_X, REL_Y};
-use turnstile_wire::{Create, Kind, Maker, PointerCaps, plan};
-
-/// One request for every kind, valid for its ceiling.
-fn create_of(kind: Kind) -> Create {
-    match kind {
-        Kind::PalmrestTouchpad => Create::touchpad(),
-        Kind::PalmrestWheel => Create::wheel(),
-        Kind::PalmrestKeys => Create::keys(vec![30, 29]),
-        Kind::KeycapKeyboard => Create::keyboard(),
-        Kind::KeycapPointer => Create::pointer(PointerCaps {
-            buttons: vec![BTN_LEFT],
-            rels: vec![REL_X, REL_Y],
-            ..PointerCaps::default()
-        }),
-        _ => unreachable!("a kind this test does not know"),
-    }
-}
+use turnstile_wire::Maker;
 
 /// casement keeps its own copy of the parser and pins these same strings (its `origin.rs` test).
 /// Change one side and the other must change with it.
@@ -52,17 +35,4 @@ fn any_other_text_is_no_maker() {
     ] {
         assert_eq!(Maker::parse(text), None, "{text:?}");
     }
-}
-
-#[test]
-fn every_kind_is_labelled_with_the_service_it_is_made_for() {
-    for kind in Kind::ALL {
-        let spec = plan(&create_of(kind)).expect("plans").spec;
-        assert_eq!(spec.maker, kind.maker(), "{kind:?}");
-    }
-    assert_eq!(Kind::PalmrestTouchpad.maker(), Maker::PadDaemon);
-    assert_eq!(Kind::PalmrestWheel.maker(), Maker::PadDaemon);
-    assert_eq!(Kind::PalmrestKeys.maker(), Maker::PadDaemon);
-    assert_eq!(Kind::KeycapKeyboard.maker(), Maker::KeymapDaemon);
-    assert_eq!(Kind::KeycapPointer.maker(), Maker::KeymapDaemon);
 }

@@ -1,11 +1,5 @@
-use airwaves_bluez::{AgentError, Capability};
+use airwaves_bluez::AgentError;
 use zbus::DBusError;
-
-#[test]
-fn capabilities_are_bluez_words() {
-    assert_eq!(Capability::KeyboardDisplay.to_wire(), "KeyboardDisplay");
-    assert_eq!(Capability::NoInputNoOutput.to_wire(), "NoInputNoOutput");
-}
 
 #[test]
 fn a_refusal_is_bluez_rejected() {

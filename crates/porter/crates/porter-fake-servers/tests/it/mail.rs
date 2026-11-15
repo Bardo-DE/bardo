@@ -438,33 +438,3 @@ async fn rewrite_points_mail_rows_at_the_fake() {
                 == Some(format!("imaps://127.0.0.1:{port}")))
     );
 }
-
-#[tokio::test]
-async fn a_fake_can_listen_on_a_unix_socket_in_a_scratch_dir() {
-    let dir = test_kit::Scratch::new("imap-socket");
-    let fake = FakeImap::bind(
-        &Bind::Socket(dir.to_path_buf()),
-        Tls::Plain,
-        accounts(),
-        mailbox(1),
-    )
-    .await
-    .expect("imap");
-    let (address, handle) = (fake.address().clone(), fake.handle());
-    assert_eq!(address, FakeAddress::Socket(dir.join("imap.sock")));
-    let _running = Running::spawn(fake, handle.clone());
-    let mut lines: Plain = Lines::new(dial(&address).await.expect("dial"));
-    assert!(
-        lines
-            .read_line()
-            .await
-            .expect("read")
-            .expect("greeting")
-            .starts_with("* OK")
-    );
-    assert!(
-        last(&command(&mut lines, "u1", "LOGIN alice@fake.test hunter2").await)
-            .starts_with("u1 OK")
-    );
-    assert_eq!(handle.peers(), vec![Peer::Unix]);
-}

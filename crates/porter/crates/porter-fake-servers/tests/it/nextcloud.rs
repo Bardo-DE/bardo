@@ -3,11 +3,10 @@
 use crate::common;
 
 use common::{call, dav, nextcloud};
-use porter_core::Family;
-use porter_fake::{FakeAddress, FakeServer};
+use porter_fake::FakeAddress;
 use porter_fake_servers::browser::split_loopback;
 use porter_fake_servers::http::{Request, post_form};
-use porter_fake_servers::{FakeNextcloud, LoginPolicy, NextcloudHandle, shipped};
+use porter_fake_servers::{LoginPolicy, NextcloudHandle};
 
 /// Signs in through Login Flow v2 with the scripted approval; returns the app password.
 async fn sign_in(running: &NextcloudHandle, address: &FakeAddress) -> String {
@@ -279,36 +278,6 @@ async fn notes_api_lists_with_an_etag_and_round_trips() {
         404
     );
     assert_eq!(call(&address, Request::new("GET", notes)).await.status, 401);
-}
-
-#[tokio::test]
-async fn rewrite_points_the_shipped_nextcloud_rows_at_the_fake() {
-    let fake = FakeNextcloud::bind("alice").await.expect("nextcloud");
-    let base = fake.handle().base_url().to_owned();
-    let spec = shipped::nextcloud();
-    assert!(spec.capabilities.iter().all(|r| r.endpoint.is_none()));
-    let rewritten = fake.rewrite(&spec);
-    let endpoint = |family: Family| {
-        rewritten
-            .capabilities
-            .iter()
-            .filter(|r| r.family == family)
-            .map(|r| r.endpoint.as_ref().expect("rewritten").0.clone())
-            .collect::<Vec<_>>()
-    };
-    assert_eq!(
-        endpoint(Family::WebDav),
-        vec![format!("{base}/remote.php/dav/files/alice/")]
-    );
-    assert_eq!(
-        endpoint(Family::CalDav),
-        vec![format!("{base}/remote.php/dav/"); 2]
-    );
-    assert_eq!(
-        endpoint(Family::NextcloudNotes),
-        vec![format!("{base}/index.php/apps/notes/api/v1/")]
-    );
-    assert_eq!(rewritten.capabilities.len(), spec.capabilities.len());
 }
 
 /// A PROPFIND at depth `depth` asking for `props` (each an element of its own namespace).

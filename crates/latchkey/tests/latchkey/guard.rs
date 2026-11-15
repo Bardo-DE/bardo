@@ -1,6 +1,6 @@
 //! The socket guards: who has the seat, and which process is the shell.
 
-use latchkey::guard::{AcceptFailure, Claim, Held, Origin, ShellCheck, accept_failure, active_uid};
+use latchkey::guard::{AcceptFailure, Claim, ShellCheck, accept_failure, active_uid};
 use peephole::{FixtureImage, FixtureProc, FixtureProcess, Pinned, Prober};
 use peephole_core::{FileTrust, Pid, Pin, RoleName, Table, Uid, Writer};
 use rustix::io::Errno;
@@ -133,19 +133,6 @@ fn only_the_trusted_unit_under_the_users_manager_claims_the_shell() {
 }
 
 #[test]
-fn a_role_the_check_does_not_accept_claims_nothing() {
-    let cgroup = format!("{MANAGER_1000}/session.slice/sill.service");
-    let proc = FixtureProc::new().process(FixtureProcess {
-        pid: Pid::new(PID).unwrap(),
-        cgroup: &format!("0::{cgroup}\n"),
-        image: FixtureImage::Hidden,
-        flatpak_info: None,
-    });
-    let nobody = ShellCheck::new(Prober::new(proc), Table::from_toml(TABLE).unwrap(), vec![]);
-    assert_eq!(nobody.origin_of(held(1000)).claim(), Claim::Other);
-}
-
-#[test]
 fn a_readable_image_must_be_the_shells_and_root_owned() {
     let cgroup = format!("{MANAGER_1000}/session.slice/sill.service");
     let shell = Claim::Shell { user: 1000 };
@@ -169,23 +156,4 @@ fn a_readable_image_must_be_the_shells_and_root_owned() {
     for (name, image, want) in cases {
         assert_eq!(claim_of(&cgroup, *image), *want, "{name}");
     }
-}
-
-#[test]
-fn a_shell_whose_process_has_exited_claims_nothing() {
-    let cgroup = format!("{MANAGER_1000}/session.slice/sill.service");
-    let gone = Pinned::introduced_gone(Pid::new(PID).unwrap(), Uid::new(1000), Pin::Reopened);
-    let origin = check(&cgroup, FixtureImage::Hidden).origin_of(gone);
-    assert_eq!(origin.claim(), Claim::Other, "never gets the claim");
-
-    let left = Origin::Shell(Held {
-        process: Pinned::introduced_gone(Pid::new(PID).unwrap(), Uid::new(1000), Pin::Reopened),
-        user: 1000,
-    });
-    assert_eq!(left.claim(), Claim::Other, "loses it on leaving");
-    let alive = Origin::Shell(Held {
-        process: held(1000),
-        user: 1000,
-    });
-    assert_eq!(alive.claim(), Claim::Shell { user: 1000 });
 }

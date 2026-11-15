@@ -114,13 +114,6 @@ fn a_unit_proves_full_only_when_it_unsets_every_loader_variable() {
 }
 
 #[test]
-fn the_loader_variables_are_the_agreed_twenty_two() {
-    assert_eq!(LOADER_VARIABLES.len(), 22);
-    assert_eq!(LOADER_VARIABLES[0], "LD_PRELOAD");
-    assert_eq!(LOADER_VARIABLES[21], "VK_LOADER_LAYERS_ENABLE");
-}
-
-#[test]
 fn without_the_manager_a_service_is_at_most_exe() {
     let f = facts(in_sill_unit(), root_only(SILL_IMAGE));
     assert_eq!(

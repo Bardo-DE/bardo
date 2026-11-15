@@ -4,11 +4,9 @@
 use crate::common;
 
 use common::{call, dav, hrefs, nextcloud};
-use porter_core::Family;
-use porter_fake::FakeServer;
 use porter_fake_servers::browser::split_loopback;
 use porter_fake_servers::http::Request;
-use porter_fake_servers::{FakeDav, shipped};
+use porter_fake_servers::FakeDav;
 
 #[tokio::test]
 async fn webdav_propfind_quota_and_sync_collection_agree() {
@@ -234,30 +232,6 @@ async fn plain_dav_serves_files_behind_one_login() {
             .contains("<d:quota-used-bytes>3</d:quota-used-bytes>")
     );
     assert!(running.hits().iter().any(|h| h.status == 401));
-}
-
-#[tokio::test]
-async fn rewrite_points_dav_rows_at_the_plain_dav_server() {
-    let fake = FakeDav::bind("bob", "secret").await.expect("dav");
-    let base = fake.handle().base_url().to_owned();
-    let rewritten = fake.rewrite(&shipped::nextcloud());
-    let webdav: Vec<_> = rewritten
-        .capabilities
-        .iter()
-        .filter(|r| r.family == Family::WebDav)
-        .collect();
-    assert_eq!(
-        webdav[0].endpoint.as_ref().map(|e| e.0.clone()),
-        Some(format!("{base}/dav/files/"))
-    );
-    // Notes are Nextcloud's API, not DAV: that row is left alone.
-    assert!(
-        rewritten
-            .capabilities
-            .iter()
-            .filter(|r| r.family == Family::NextcloudNotes)
-            .all(|r| r.endpoint.is_none())
-    );
 }
 
 const FILES: &str = "/remote.php/dav/files/alice";

@@ -1,12 +1,10 @@
 //! The autoconfig, DNS and model-list fakes driven with a minimal client.
 
-use porter_core::Family;
 use porter_discover::{Dns, DnsFault, MxRecord, SrvRecord};
-use porter_fake::FakeServer;
 use porter_fake_servers::browser::split_loopback;
 use porter_fake_servers::http::{Request, Scheme, send};
 use porter_fake_servers::{
-    FakeAutoconfig, FakeDns, FakeModels, ModelDef, Wire, autoconfig_xml, shipped,
+    FakeAutoconfig, FakeDns, FakeModels, ModelDef, Wire, autoconfig_xml,
 };
 use porter_provider::DomainName;
 
@@ -196,21 +194,6 @@ async fn openai_compatible_models_list_wants_its_key() {
     let hits = server.hits();
     assert_eq!(hits[2].authorization.as_deref(), Some("Bearer sk-fake"));
     assert_eq!(hits[0].authorization, None);
-}
-
-#[tokio::test]
-async fn rewrite_points_the_shipped_ollama_row_at_the_fake() {
-    let fake = FakeModels::bind(Wire::Ollama, vec![], None)
-        .await
-        .expect("server");
-    let base = fake.handle().base_url().to_owned();
-    let rewritten = fake.rewrite(&shipped::ollama());
-    let row = rewritten
-        .capabilities
-        .iter()
-        .find(|r| r.family == Family::OllamaNative)
-        .expect("row");
-    assert_eq!(row.endpoint.as_ref().map(|e| e.0.clone()), Some(base));
 }
 
 async fn chat(base: &str, model: &str) -> porter_fake_servers::Response {

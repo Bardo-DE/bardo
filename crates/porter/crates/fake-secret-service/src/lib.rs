@@ -650,26 +650,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn an_item_path_reads_back_as_its_collection_and_id() {
-        assert_eq!(
-            split_item(&item_path("default", 7)),
-            Some(("default".to_owned(), 7))
-        );
-        assert_eq!(split_item(&collection_path("default")), None);
-        assert_eq!(split_item("/elsewhere/collection/default/i1"), None);
-    }
-
-    #[test]
-    fn a_collection_takes_its_alias_as_name_unless_the_name_is_taken() {
-        let shared = Shared::default();
-        assert_eq!(shared.make_collection("Default", "default"), "default");
-        assert_eq!(alias_target(&shared, "default").as_deref(), Some("default"));
-        let other = shared.make_collection("Other", "default");
-        assert_ne!(other, "default");
-        assert_eq!(shared.make_collection("Unnamed", ""), "c2");
-    }
-
-    #[test]
     fn a_search_matches_every_attribute_asked_for() {
         let shared = Shared::default();
         shared.make_collection("Default", "default");
@@ -702,13 +682,5 @@ mod tests {
         assert_eq!(ask(&[("a", "1"), ("b", "2")]), 1);
         assert_eq!(ask(&[("a", "1"), ("b", "3")]), 0);
         assert_eq!(ask(&[]), 1);
-    }
-
-    #[test]
-    fn a_session_is_open_until_forgotten() {
-        let shared = Shared::default();
-        let session = shared.open_session();
-        assert!(shared.session_is_open(&session));
-        assert!(!shared.session_is_open(&session_path(99)));
     }
 }

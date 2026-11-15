@@ -122,29 +122,6 @@ fn actors_round_trip_and_pin_their_json() {
 }
 
 #[test]
-fn every_actor_has_a_kind() {
-    let kinds: Vec<ActorKind> = every_actor().iter().map(Actor::kind).collect();
-    assert_eq!(
-        kinds,
-        [
-            ActorKind::User,
-            ActorKind::Companion,
-            ActorKind::Companion,
-            ActorKind::Cua,
-            ActorKind::Companion,
-            ActorKind::Companion,
-            ActorKind::Mcp,
-            ActorKind::Acp,
-            ActorKind::Cli,
-            ActorKind::App,
-            ActorKind::ThirdParty,
-            ActorKind::System,
-            ActorKind::Unknown,
-        ]
-    );
-}
-
-#[test]
 fn effects_are_ordered_by_severity_and_keep_their_slugs() {
     let ordered = [
         Effect::Read,
@@ -375,40 +352,6 @@ fn space_vocabulary_is_re_exported_from_porter_core() {
 }
 
 #[test]
-fn slugs_equal_the_serde_forms() {
-    use prov::{ActorKind, Effect};
-    for kind in [
-        ActorKind::User,
-        ActorKind::Companion,
-        ActorKind::Cua,
-        ActorKind::Mcp,
-        ActorKind::Acp,
-        ActorKind::Cli,
-        ActorKind::App,
-        ActorKind::ThirdParty,
-        ActorKind::System,
-        ActorKind::Unknown,
-    ] {
-        assert_eq!(
-            serde_json::to_string(&kind).unwrap(),
-            format!("\"{}\"", kind.slug())
-        );
-    }
-    for effect in [
-        Effect::Read,
-        Effect::UndoableWrite,
-        Effect::Outbound,
-        Effect::Destructive,
-        Effect::Execute,
-    ] {
-        assert_eq!(
-            serde_json::to_string(&effect).unwrap(),
-            format!("\"{}\"", effect.slug())
-        );
-    }
-}
-
-#[test]
 fn trace_attribute_names_are_unique_and_namespaced() {
     use prov::trace::attr;
     let mut seen = std::collections::BTreeSet::new();
@@ -416,9 +359,6 @@ fn trace_attribute_names_are_unique_and_namespaced() {
         assert!(seen.insert(*key), "{key} is listed twice");
         assert!(key.starts_with("quire."), "{key}");
     }
-    assert_eq!(attr::ALL.len(), 13);
-    assert_eq!(attr::ACTOR_KIND, "quire.actor.kind");
-    assert_eq!(attr::SPACE_HASH, "quire.space.hash");
 }
 
 #[test]

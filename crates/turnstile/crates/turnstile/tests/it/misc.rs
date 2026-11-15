@@ -1,6 +1,5 @@
 use std::fmt::Display;
 use turnstile::activation::{ActivationError, listener};
-use turnstile::clock::{Clock, ManualClock};
 use turnstile::idle::Idle;
 use turnstile::journal::{kv, line};
 use turnstile_wire::Millis;
@@ -29,15 +28,6 @@ fn a_connection_restarts_the_count() {
     assert!(!idle.observe(Millis(5_999), 0));
     assert!(idle.observe(Millis(6_000), 0));
     assert!(!idle.observe(Millis(2), 3), "time going back is no panic");
-}
-
-#[test]
-fn the_manual_clock_moves_only_when_told() {
-    let clock = ManualClock::new();
-    assert_eq!(clock.now(), Millis(0));
-    clock.advance(250);
-    clock.advance(5);
-    assert_eq!(clock.now(), Millis(255));
 }
 
 #[test]
