@@ -10,8 +10,8 @@ use std::time::Duration;
 use porter_core::{ProviderId, SecretText};
 use porter_dbus::accounts::AccountsSheetProxy;
 use porter_sheet::{
-    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, ProviderRow, SheetInput,
-    SheetView, SignInView,
+    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, ProviderRow, SheetInput, SheetView,
+    SignInView,
 };
 use sill_model::accounts::sheet::{
     AccountsSheetCommand, AccountsSheets, SheetAction, SheetHandle, SheetLink,

@@ -93,7 +93,7 @@ fn place_of(locality: &Locality, account: &str) -> ServedPlace {
 mod tests {
     use super::place_of;
     use ds::components::companion::answer::footer::ServedPlaceKind;
-    use porter_capability::{Locality, Region};
+    use porter_capability::Locality;
 
     #[test]
     fn a_model_ran_on_this_computer_on_the_network_or_at_a_provider() {
@@ -107,7 +107,7 @@ mod tests {
             ),
             (
                 Locality::Cloud {
-                    region: Some(Region("eu-west-1".to_owned())),
+                    region: Some("eu-west-1".to_owned()),
                 },
                 ServedPlaceKind::Cloud,
                 Some("acme"),

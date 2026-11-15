@@ -28,7 +28,7 @@ use ds_shell::prelude::{Recovery, WorkingFor};
 use porter_core::consent::{AskPurpose, ConsentAsk};
 use porter_core::{AccountId, ProviderId, SessionToken};
 use porter_sheet::{
-    Entry, FieldKind, FieldValue, Presence, ProblemKind as PorterProblem, ServiceState, SheetView,
+    Entry, FieldKind, FieldValue, ProblemKind as PorterProblem, ServiceState, SheetView,
 };
 use sill_model::accounts::sheet::{CopyMark, Draft, ListKey, OpenSheet};
 
@@ -314,10 +314,7 @@ fn form_fields(draft: &Draft, provider: &ProviderId) -> Vec<FormField> {
         .map(|field| {
             let base = FormField::new(
                 role_of(field.kind),
-                match field.presence {
-                    Presence::Required => true,
-                    Presence::Optional => false,
-                },
+                field.required,
                 match (&field.value, field.entry) {
                     (FieldValue::Secret(text), _) => FieldText::Secret(Hidden::new(text.expose())),
                     (FieldValue::Plain(text), Entry::Plain | Entry::Secret) => {

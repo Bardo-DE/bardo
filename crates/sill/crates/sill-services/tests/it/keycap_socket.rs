@@ -6,8 +6,8 @@ use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
 use keycap_protocol::{
-    Grab, Keyboard, KeyboardInfo, PROTOCOL_VERSION, ProfileName, Status, Steer, ToClient,
-    ToDaemon, decode, encode,
+    Grab, Keyboard, KeyboardInfo, PROTOCOL_VERSION, ProfileName, Status, Steer, ToClient, ToDaemon,
+    decode, encode,
 };
 use rustix::event::{PollFd, PollFlags, poll};
 use rustix::net::{
@@ -477,10 +477,7 @@ async fn the_notice_is_posted_replaced_and_withdrawn_as_keycap_needs() {
         ..Default::default()
     });
 
-    peer.tell(&ToClient::Status(status(
-        true,
-        &[("k1", Grab::Active)],
-    )));
+    peer.tell(&ToClient::Status(status(true, &[("k1", Grab::Active)])));
     let replaced = next_notice(&mut rig.notices).await;
     let NotificationsCommand::Post(posting) = replaced else {
         panic!("{replaced:?}");

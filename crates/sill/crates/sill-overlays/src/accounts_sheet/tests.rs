@@ -17,7 +17,7 @@ use porter_core::{
 };
 use porter_ids::WebUrl;
 use porter_sheet::{
-    Entry, FieldKind, FieldSpec, FieldValue, Presence, ProblemKind as PorterProblem, ProviderKind,
+    Entry, FieldKind, FieldSpec, FieldValue, ProblemKind as PorterProblem, ProviderKind,
     ProviderRow, Review, ReviewView, RowKind, ServiceRow, ServiceState, SheetView,
     SignInFault as PorterFault, SignInView, UserCode,
 };
@@ -61,11 +61,11 @@ fn shown(view: SheetView, acts: Vec<SheetAction>) -> Option<Step> {
     sheets.open.first().and_then(step_of)
 }
 
-fn spec(kind: FieldKind, entry: Entry, presence: Presence) -> FieldSpec {
+fn spec(kind: FieldKind, entry: Entry, required: bool) -> FieldSpec {
     FieldSpec {
         kind,
         entry,
-        presence,
+        required,
         prefill: None,
     }
 }
@@ -173,9 +173,9 @@ fn every_sheet_view_becomes_the_props_of_its_part() {
         provider: provider("nextcloud"),
         row: Some(named("nextcloud")),
         fields: vec![
-            spec(FieldKind::Address, Entry::Plain, Presence::Required),
-            spec(FieldKind::Password, Entry::Secret, Presence::Required),
-            spec(FieldKind::Server, Entry::Plain, Presence::Optional),
+            spec(FieldKind::Address, Entry::Plain, true),
+            spec(FieldKind::Password, Entry::Secret, true),
+            spec(FieldKind::Server, Entry::Plain, false),
         ],
         problem: Some(porter_sheet::FieldProblem {
             field: FieldKind::Password,
@@ -403,8 +403,8 @@ fn the_draft_reaches_the_props() {
             provider: provider("nextcloud"),
             row: Some(named("nextcloud")),
             fields: vec![
-                spec(FieldKind::Address, Entry::Plain, Presence::Required),
-                spec(FieldKind::Password, Entry::Secret, Presence::Required),
+                spec(FieldKind::Address, Entry::Plain, true),
+                spec(FieldKind::Password, Entry::Secret, true),
             ],
             problem: None,
         })
@@ -841,8 +841,8 @@ fn an_app_password_field_says_where_the_provider_makes_one() {
             provider: provider(id),
             row: Some(named(id)),
             fields: vec![
-                spec(FieldKind::Address, Entry::Plain, Presence::Required),
-                spec(FieldKind::AppPassword, Entry::Secret, Presence::Required),
+                spec(FieldKind::Address, Entry::Plain, true),
+                spec(FieldKind::AppPassword, Entry::Secret, true),
             ],
             problem: None,
         });
