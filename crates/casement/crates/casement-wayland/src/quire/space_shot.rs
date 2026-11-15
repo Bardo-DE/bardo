@@ -42,15 +42,6 @@ pub struct SpaceShot {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct Look(pub u64);
 
-/// What the damage gate decided for a frame request.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum FrameDecision {
-    /// The Space changed since the session's last frame (or it had none): draw it.
-    Draw,
-    /// Nothing changed: the request waits until [`SpaceShotBook::changed`] says so.
-    Hold,
-}
-
 /// The sources made, the sessions running and what each was last given.
 #[derive(Debug, Default)]
 pub struct SpaceShotBook {
@@ -169,16 +160,15 @@ impl SpaceShotBook {
     /// let mut book = SpaceShotBook::default();
     /// assert!(book.request(SpaceSessionId(9), Look(1)).is_none());
     /// ```
-    pub fn request(&mut self, session: SpaceSessionId, look: Look) -> Option<FrameDecision> {
+    pub fn request(&mut self, session: SpaceSessionId, look: Look) -> Option<bool> {
         if !self.sessions.contains_key(&session) {
             return None;
         }
-        match self.delivered.get(&session) == Some(&look) {
-            true => {
-                self.waiting.insert(session);
-                Some(FrameDecision::Hold)
-            }
-            false => Some(FrameDecision::Draw),
+        if self.delivered.get(&session) == Some(&look) {
+            self.waiting.insert(session);
+            Some(false)
+        } else {
+            Some(true)
         }
     }
 
@@ -322,9 +312,9 @@ mod tests {
     #[test]
     fn the_first_frame_is_drawn_and_the_same_look_is_held_until_it_changes() {
         let (mut book, session) = book_with_session();
-        assert_eq!(book.request(session, Look(1)), Some(FrameDecision::Draw));
+        assert_eq!(book.request(session, Look(1)), Some(true));
         book.delivered(session, Look(1));
-        assert_eq!(book.request(session, Look(1)), Some(FrameDecision::Hold));
+        assert_eq!(book.request(session, Look(1)), Some(false));
         assert!(book.changed(|_| Look(1)).is_empty(), "nothing changed");
         assert_eq!(book.changed(|_| Look(2)), vec![session]);
         assert!(book.changed(|_| Look(2)).is_empty(), "released once");
@@ -335,7 +325,7 @@ mod tests {
         let (mut book, session) = book_with_session();
         book.delivered(session, Look(1));
         book.forget(session);
-        assert_eq!(book.request(session, Look(1)), Some(FrameDecision::Draw));
+        assert_eq!(book.request(session, Look(1)), Some(true));
     }
 
     #[test]

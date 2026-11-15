@@ -20,7 +20,7 @@ use casement_core::geometry::{PhysicalRect, PhysicalSize};
 use casement_render::pass::{CapturedFrame, ThumbLayer, compose_thumb, thumb_dest};
 use casement_wayland::image_capture::CaptureFailure;
 use casement_wayland::quire::space_shot::{
-    FrameDecision, Look, SpaceSessionId, SpaceShot, SpaceSourceId, look_of,
+    Look, SpaceSessionId, SpaceShot, SpaceSourceId, look_of,
 };
 use smithay::reexports::wayland_server::protocol::wl_shm::Format;
 use smithay::utils::{Buffer, Rectangle, Size, Transform};
@@ -132,8 +132,8 @@ pub(super) fn serve(state: &mut State, session: &SessionRef, frame: Frame, id: S
     }
     let now = look(state, &shot);
     match state.wl.quire_shell.shots.book.request(id, now) {
-        Some(FrameDecision::Draw) => answer(state, id, &shot, now, frame),
-        Some(FrameDecision::Hold) => state.wl.quire_shell.shots.hold_frame(id, frame),
+        Some(true) => answer(state, id, &shot, now, frame),
+        Some(false) => state.wl.quire_shell.shots.hold_frame(id, frame),
         None => frame.fail(CaptureFailure::Renderer.reason()),
     }
 }

@@ -82,11 +82,11 @@ impl Bound {
     /// A manager just bound: it has no objects and has been told nothing.
     pub(super) fn new(
         manager: super::QuireDesktopManagerV1,
-        standing: super::DesktopAccess,
+        manages: bool,
     ) -> Bound {
         Bound {
             manager,
-            standing,
+            manages,
             apps: BTreeMap::new(),
             windows: BTreeMap::new(),
             spaces: BTreeMap::new(),
@@ -132,7 +132,7 @@ impl Bound {
             (false, false) => {
                 let data = SpaceData {
                     space: id.clone(),
-                    standing: self.standing,
+                    manages: self.manages,
                     manager: self.manager.clone(),
                 };
                 let Some(object) = makers.make_space(&self.manager, data) else {
@@ -164,7 +164,7 @@ impl Bound {
             (false, false) => {
                 let data = AppData {
                     app: key.clone(),
-                    standing: self.standing,
+                    manages: self.manages,
                     manager: self.manager.clone(),
                 };
                 let Some(object) = makers.make_app(&self.manager, data) else {
@@ -194,7 +194,7 @@ impl Bound {
         }
         let data = WindowData {
             window: Some(id),
-            standing: self.standing,
+            manages: self.manages,
             manager: self.manager.clone(),
         };
         if let Some(object) = makers.make_window(&self.manager, data) {

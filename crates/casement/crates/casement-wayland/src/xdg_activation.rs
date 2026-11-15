@@ -59,33 +59,19 @@ pub struct IssuedToken {
     /// Whether that client held a recent press: the token's serial answers a recent press
     /// delivered to it (not: no serial, an unknown one, an old one, or another client's).
     pub pressed: bool,
-    /// What the token is for, which sets how long it stays good.
-    pub reach: TokenReach,
+    /// What the token is for, which sets how long it stays good: launching an app it named
+    /// (good for [`LAUNCH_LIFETIME`]) rather than activating a window of the asker's, or one it
+    /// hands on (good for [`TOKEN_LIFETIME`]).
+    pub launch: bool,
 }
 
-/// What a token was asked for.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum TokenReach {
-    /// Activating a window of the asker's, or one it hands on: good for [`TOKEN_LIFETIME`].
-    Press,
-    /// Launching an app it named: good for [`LAUNCH_LIFETIME`].
-    Launch,
-}
-
-impl TokenReach {
-    /// The reach of a token asked for naming `app_id` (or none).
-    pub fn of(app_id: Option<&str>) -> TokenReach {
-        match app_id {
-            Some(_) => TokenReach::Launch,
-            None => TokenReach::Press,
-        }
-    }
-
-    /// How long a token of this reach stays good once issued.
-    pub fn lifetime(self) -> Duration {
-        match self {
-            TokenReach::Press => TOKEN_LIFETIME,
-            TokenReach::Launch => LAUNCH_LIFETIME,
+impl IssuedToken {
+    /// How long this token stays good once issued.
+    pub fn lifetime(&self) -> Duration {
+        if self.launch {
+            LAUNCH_LIFETIME
+        } else {
+            TOKEN_LIFETIME
         }
     }
 }
@@ -132,7 +118,7 @@ pub fn earned_by_press(record: Option<&PressRecord>, now: Mono) -> bool {
 /// `Stale` (an unknown token is a bad one, not a missing one).
 pub fn judge(issued: Option<&IssuedToken>, now: Mono) -> TokenCheck {
     match issued {
-        Some(token) if token.pressed && now.since(token.at) <= token.reach.lifetime() => {
+        Some(token) if token.pressed && now.since(token.at) <= token.lifetime() => {
             TokenCheck::Valid
         }
         Some(_) | None => TokenCheck::Stale,
@@ -180,7 +166,7 @@ pub fn on_token_request(
             at: now,
             by: ask.requester,
             pressed: ask.pressed,
-            reach: TokenReach::of(data.app_id.as_deref()),
+            launch: data.app_id.is_some(),
         },
     );
     true
@@ -233,13 +219,13 @@ mod tests {
             at: at(ms),
             by: Some(ClientKey(1)),
             pressed,
-            reach: TokenReach::Press,
+            launch: false,
         }
     }
 
     fn launch(ms: u64, pressed: bool) -> IssuedToken {
         IssuedToken {
-            reach: TokenReach::Launch,
+            launch: true,
             ..issued(ms, pressed)
         }
     }

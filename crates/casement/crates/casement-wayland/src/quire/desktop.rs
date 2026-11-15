@@ -55,32 +55,13 @@ pub const SUBJECT_SINCE: u32 = 2;
 /// created at 1 whatever the manager's version is.
 const OBJECT_VERSION: u32 = 1;
 
-/// What a connection may do through the desktop manager.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum DesktopAccess {
-    /// The shell: read the model and manage it.
-    Manager,
-    /// The agent tier: read only; every management request is `not_permitted`.
-    ReadOnly,
-}
-
-impl DesktopAccess {
-    /// The standing a connection of `role` has: the shell manages, everything else reads.
-    pub fn of(role: &ConnectionRole) -> DesktopAccess {
-        match role {
-            ConnectionRole::Shell => DesktopAccess::Manager,
-            _ => DesktopAccess::ReadOnly,
-        }
-    }
-}
-
 /// One bound manager and the objects it was given.
 #[derive(Debug)]
 pub struct Bound {
     /// The manager.
     pub manager: QuireDesktopManagerV1,
-    /// What its connection may do.
-    pub standing: DesktopAccess,
+    /// Whether its connection may manage the model (the shell), not only read it.
+    pub manages: bool,
     /// Its app objects.
     pub apps: BTreeMap<AppKey, QuireDesktopAppV1>,
     /// Its window objects.
@@ -256,8 +237,8 @@ pub struct DesktopGlobal {
 /// A bound manager's data.
 #[derive(Debug, Clone, Copy)]
 pub struct ManagerData {
-    /// What its connection may do.
-    pub standing: DesktopAccess,
+    /// Whether its connection may manage the model (the shell), not only read it.
+    pub manages: bool,
 }
 
 /// An app object's data.
@@ -266,7 +247,7 @@ pub struct AppData {
     /// The app.
     pub app: AppKey,
     /// What the connection may do.
-    pub standing: DesktopAccess,
+    pub manages: bool,
     /// The manager it came from, which a refused request is raised on.
     pub manager: QuireDesktopManagerV1,
 }
@@ -277,7 +258,7 @@ pub struct WindowData {
     /// The window, when the toplevel handle named a live one.
     pub window: Option<WindowId>,
     /// What the connection may do.
-    pub standing: DesktopAccess,
+    pub manages: bool,
     /// The manager it came from, which a refused request is raised on.
     pub manager: QuireDesktopManagerV1,
 }
@@ -288,7 +269,7 @@ pub struct SpaceData {
     /// The Space.
     pub space: SpaceId,
     /// What the connection may do.
-    pub standing: DesktopAccess,
+    pub manages: bool,
     /// The manager it came from, which a refused request is raised on.
     pub manager: QuireDesktopManagerV1,
 }
@@ -306,10 +287,12 @@ where
         data_init: &mut DataInit<'_, D>,
     ) {
         let role = ClientState::of(client).map_or(ConnectionRole::Public, |data| data.role.clone());
-        let standing = DesktopAccess::of(&role);
-        let manager = data_init.init(resource, ManagerData { standing });
+        // The shell manages the model; everything else reads it (every management request is
+        // `not_permitted`).
+        let manages = matches!(role, ConnectionRole::Shell);
+        let manager = data_init.init(resource, ManagerData { manages });
         let DesktopParts { part, view } = state.quire_desktop_parts();
-        if let Err(fault) = on_bind(part, &view, manager, standing) {
+        if let Err(fault) = on_bind(part, &view, manager, manages) {
             tracing::warn!(%fault, "a desktop manager could not be given its state");
         }
     }
@@ -322,17 +305,15 @@ where
 /// Posts the manager's `not_permitted` (an agent connection made a management request) and
 /// says whether the request was refused. The error is the manager's, so it goes on the
 /// manager, whichever of its objects asked.
-fn refused(standing: DesktopAccess, manager: &QuireDesktopManagerV1) -> bool {
-    match standing {
-        DesktopAccess::Manager => false,
-        DesktopAccess::ReadOnly => {
-            manager.post_error(
-                quire_desktop_manager_v1::Error::NotPermitted,
-                "management requests are not permitted on this connection",
-            );
-            true
-        }
+fn refused(manages: bool, manager: &QuireDesktopManagerV1) -> bool {
+    if manages {
+        return false;
     }
+    manager.post_error(
+        quire_desktop_manager_v1::Error::NotPermitted,
+        "management requests are not permitted on this connection",
+    );
+    true
 }
 
 impl<D> Dispatch2<QuireDesktopManagerV1, D> for ManagerData
@@ -356,7 +337,7 @@ where
                     id,
                     WindowData {
                         window,
-                        standing: self.standing,
+                        manages: self.manages,
                         manager: resource.clone(),
                     },
                 );
@@ -369,7 +350,7 @@ where
                 }
             }
             quire_desktop_manager_v1::Request::CreateSpace { output } => {
-                if refused(self.standing, resource) {
+                if refused(self.manages, resource) {
                     return;
                 }
                 let DesktopParts { part, view } = state.quire_desktop_parts();
@@ -426,7 +407,7 @@ where
             quire_desktop_app_v1::Request::Reopen => AppAsk::Reopen,
             _ => return,
         };
-        if refused(self.standing, &self.manager) {
+        if refused(self.manages, &self.manager) {
             return;
         }
         let events = on_app(state.quire_desktop_parts().part, &self.app, ask);
@@ -472,7 +453,7 @@ where
         let (Some(ask), Some(window)) = (ask, self.window) else {
             return;
         };
-        if refused(self.standing, &self.manager) {
+        if refused(self.manages, &self.manager) {
             return;
         }
         let events = on_window(state.quire_desktop_parts().part, window, ask);
@@ -501,7 +482,7 @@ where
             }
             _ => return,
         };
-        if refused(self.standing, &self.manager) {
+        if refused(self.manages, &self.manager) {
             return;
         }
         let events = on_space(state.quire_desktop_parts().part, &self.space, ask);
@@ -517,10 +498,10 @@ pub fn on_bind(
     part: &mut QuireDesktopPart,
     view: &DesktopView<'_>,
     manager: QuireDesktopManagerV1,
-    standing: DesktopAccess,
+    manages: bool,
 ) -> Result<(), WaylandFault> {
     let QuireDesktopPart { bound, makers, .. } = part;
-    let mut fresh = Bound::new(manager, standing);
+    let mut fresh = Bound::new(manager, manages);
     for space in view.model.spaces().iter() {
         fresh.space(makers, view, &space.id);
     }
