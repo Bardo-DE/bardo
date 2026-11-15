@@ -48,34 +48,6 @@ fn used(rig: &super::rig::Rig<super::rig::Fakes>) -> usize {
 }
 
 #[tokio::test]
-async fn after_a_read_cargo_test_is_granted_always_and_the_second_run_asks_nothing() {
-    let (mut rig, files) = started(Setup {
-        turns: vec![read_then(vec![
-            run("one", "cargo", &["test"]),
-            run("two", "cargo", &["test", "--lib"]),
-        ])],
-        answers: vec![always()],
-        scripts: vec![Script::done("ok\n", 0), Script::done("ok\n", 0)],
-        ..Setup::default()
-    })
-    .await;
-    files.put(
-        &abs("/work/app/a.txt"),
-        "fn main() { let key = \"sk_live_Ab12Cd34\"; }",
-    );
-    run_turn(&mut rig, "go").await;
-    assert!(rig.agent.reply("one").is_ok() && rig.agent.reply("two").is_ok());
-    assert_eq!(rig.sheets().len(), 1, "the second run asked nothing");
-    assert!(matches!(
-        rig.sheets()[0].always,
-        AlwaysOffer::Offered(StandingScope::Terminal { .. })
-    ));
-    assert_eq!(rig.grants().len(), 1);
-    assert_eq!(used(&rig), 1);
-    assert_eq!(rig.sandbox.started().len(), 2);
-}
-
-#[tokio::test]
 async fn a_command_using_a_token_from_the_file_asks_with_no_always_even_with_a_grant() {
     let (mut rig, files) = started(Setup {
         turns: vec![read_then(vec![

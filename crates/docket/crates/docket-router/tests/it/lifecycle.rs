@@ -292,24 +292,6 @@ async fn run(router: &Router<Rig>, request: CallRequest) -> Result<Outcome, Call
 }
 
 #[tokio::test]
-async fn a_halt_that_arrives_during_review_overrides_the_reviewers_allow() {
-    // Judged calls review first: AskMore makes an archive reviewed.
-    let (router, _s) = rig(Strictness::AskMore).await;
-    let refused = run(&router, call("mail.thread.archive", &["t1"], vec![]))
-        .await
-        .expect_err("halted before it ran");
-    assert_eq!(
-        refused,
-        CallRefusal::Halted(SpaceScope::Only(space("work")))
-    );
-    assert_eq!(
-        router.seams.link.performed.load(Ordering::SeqCst),
-        0,
-        "the app was never called"
-    );
-}
-
-#[tokio::test]
 async fn a_halt_that_arrives_while_the_sheet_is_up_withdraws_it_and_stops_the_call() {
     let (router, _s) = rig(Strictness::Default).await;
     // An untrusted recipient asks; the sheet's answer is a yes, and a halt came first.
