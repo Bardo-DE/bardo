@@ -225,16 +225,6 @@ pub struct Limit {
     pub at: UnixSeconds,
 }
 
-/// Whether the sheet may offer Undo for a limit.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum UndoOffer {
-    /// The person made it or can unmake it: the revoke path removes it.
-    Offered,
-    /// The administrator's: no revoke removes it.
-    Withheld,
-}
-
 /// Why a call asks or is refused, in plain words, with the id Undo removes.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct LimitNote {
@@ -244,8 +234,9 @@ pub struct LimitNote {
     pub level: LimitLevel,
     /// The short reason, in plain words.
     pub why: String,
-    /// Whether Undo is offered.
-    pub undo: UndoOffer,
+    /// Whether the sheet may offer Undo: true when the person made the limit or can unmake it
+    /// (the revoke path removes it), false for the administrator's (no revoke removes it).
+    pub undo: bool,
 }
 
 impl Limit {
@@ -274,10 +265,7 @@ impl Limit {
             (None, _, LimitLevel::AlwaysAsk) => "You asked to be asked first.".to_owned(),
             (None, _, LimitLevel::Never) => "You said never to do this.".to_owned(),
         };
-        let undo = match self.by {
-            LimitMaker::Floor => UndoOffer::Withheld,
-            LimitMaker::Person | LimitMaker::Assistant => UndoOffer::Offered,
-        };
+        let undo = !matches!(self.by, LimitMaker::Floor);
         LimitNote {
             id: self.id.clone(),
             level: self.key.level,

@@ -159,7 +159,7 @@ fn the_strongest_covering_limit_wins_and_the_floor_wins_a_tie() {
     );
     match tie {
         Limited::Ask(note) => {
-            assert_eq!(note.undo, UndoOffer::Withheld);
+            assert!(!note.undo);
             assert!(note.why.contains("administrator"), "{}", note.why);
         }
         other => panic!("expected an ask, got {other:?}"),
@@ -219,7 +219,7 @@ fn what_the_assistant_adds_is_theirs_to_remove_by_id_only() {
     assert_eq!(made.by, LimitMaker::Assistant);
     let note = made.note();
     assert_eq!(note.id, made.id);
-    assert_eq!(note.undo, UndoOffer::Offered);
+    assert!(note.undo);
     assert!(
         note.why.contains("don't touch my Work folder"),
         "{}",

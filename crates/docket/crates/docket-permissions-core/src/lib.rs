@@ -33,12 +33,12 @@ pub use agent_app::{ACP_AGENT_APP, FILES_READ, FILES_SENSITIVE, FILES_WRITE, Per
 pub use agent_app::{action as acp_agent_action, app as acp_agent_app};
 pub use exec_derive::{Derivation, MIN_TOKEN, Served};
 pub use exec_facts::{DERIVES_OWN, DERIVES_PARAM, DERIVES_READ, ExecFacts, NETWORK_CLOSED, NETWORK_OPEN, NETWORK_PARAM, derives_choice, network_choice};
-pub use exec_reach::{NetAccess, NetPrograms, NetReach};
+pub use exec_reach::{NetPrograms, net_reach};
 pub use execute::{CannotSandbox, EXECUTE_AS, SandboxState};
 pub use floor::{Floor, FloorEntry, FloorFault, FloorFile, LockedRow};
 pub use grant::{ActionGrant, ActionGrantKey, GrantCaller, GrantTarget, ProgramName, ProgramNameError};
 pub use grant_space::{Ended, GrantEnd, GrantListFault, KnownSpaces, Reconciled, decode_grants, reconcile, without_space};
-pub use limit::{Level, Limit, LimitCall, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitNote, LimitScope, Limited, NotATightening, Said, SaidFault, Tighten, UndoOffer, decode_limits, encode_limits, limited, limits_with, limits_without};
+pub use limit::{Level, Limit, LimitCall, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitNote, LimitScope, Limited, NotATightening, Said, SaidFault, Tighten, decode_limits, encode_limits, limited, limits_with, limits_without};
 pub use mode::{AskOrRun, Mode, ModeRows, OtherRow, RowSets, ScreenRow};
 pub use policy_change::{PolicyChange, PolicyChangeKind};
 pub use reach_menu::{COMPANION_APP, HAND_ON_JOB, PROPOSE_ROUTINE, SKILL_LOAD, TASK_START, offered_to};

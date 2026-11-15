@@ -5,7 +5,7 @@
 use crate::support::*;
 use docket_core::*;
 use docket_fake::ScriptedConfirmer;
-use docket_permissions_core::{AlwaysOffer, AskReason, COMPANION_APP, DenyCode, Floor, FloorEntry, FloorFile, Limit, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope, UndoOffer, rule_ids};
+use docket_permissions_core::{AlwaysOffer, AskReason, COMPANION_APP, DenyCode, Floor, FloorEntry, FloorFile, Limit, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope, rule_ids};
 use docket_router::GrantStore;
 use docket_vocab::{CallId, CallRequest, ChoiceId, Origin, TargetValue, Value};
 use docket_wire::{IntentsReply, IntentsRequest};
@@ -244,7 +244,7 @@ async fn an_ask_first_rule_makes_the_next_call_ask_and_removing_it_by_id_restore
         .as_ref()
         .expect("the sheet names the rule");
     assert_eq!(held.id, ids[0]);
-    assert_eq!(held.undo, UndoOffer::Offered);
+    assert!(held.undo);
     assert!(matches!(shown[0].always, AlwaysOffer::Withheld(_)));
     // Undo is the one revoke path: the rule leaves the file and the next call runs unasked.
     assert!(router.revoke_standing(&ids[0]));

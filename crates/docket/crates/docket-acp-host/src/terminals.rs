@@ -24,7 +24,7 @@ use bulkhead::{AbsPath, Cover};
 use bulkhead::{
     Argv, Cut, ExitReport, Launch, Network, Sandbox, Shell, ShellFault, StartFault, TermId,
 };
-use docket_permissions_core::{NetAccess, SandboxState};
+use docket_permissions_core::{SandboxState};
 use std::collections::BTreeMap;
 use std::time::{Duration, Instant};
 
@@ -120,8 +120,8 @@ impl<S: Sandbox> Terminals<S> {
         }
     }
 
-    /// What network the commands have, for the router's rule on commands that can send data out.
-    pub fn access(&self) -> NetAccess {
+    /// Whether the commands have a network, for the router's rule on commands that can send data out.
+    pub fn access(&self) -> bool {
         bulk::access(self.shell.network())
     }
 

@@ -23,7 +23,7 @@ use agent_client_protocol::schema::v1::{
 };
 use bulkhead::AbsPath;
 use bulkhead::{Network, NetworkMode, Sandbox};
-use docket_permissions_core::{Derivation, NetAccess, Served};
+use docket_permissions_core::{Derivation, Served};
 use docket_vocab::UndoToken;
 use prov::SessionId;
 use std::collections::BTreeMap;
@@ -74,7 +74,7 @@ pub(super) struct Inner<F, S: Sandbox> {
     pub(super) files: F,
     pub(super) terminals: Terminals<S>,
     /// What network the agent process itself has (R12); closed until told.
-    pub(super) agent_net: NetAccess,
+    pub(super) agent_net: bool,
     pub(super) scopes: BTreeMap<SessionId, Scope>,
     pub(super) served: BTreeMap<SessionId, Served>,
     pub(super) held: BTreeMap<StageId, Held>,
@@ -115,7 +115,7 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
             inner: Arc::new(Mutex::new(Inner {
                 files,
                 terminals: Terminals::with_network(sandbox, network),
-                agent_net: NetAccess::Closed,
+                agent_net: false,
                 scopes: BTreeMap::new(),
                 served: BTreeMap::new(),
                 held: BTreeMap::new(),
@@ -203,7 +203,7 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
         session: &SessionId,
         words: &[String],
         cwd: &AbsPath,
-    ) -> (Derivation, NetAccess) {
+    ) -> (Derivation, bool) {
         let inner = self.lock();
         let derivation = inner
             .served
@@ -211,7 +211,7 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
             .map_or(Derivation::Derived, |s| s.derivation(words, cwd));
         (
             derivation,
-            inner.terminals.access().combine(inner.agent_net),
+            inner.terminals.access() || inner.agent_net,
         )
     }
 

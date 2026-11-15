@@ -3,7 +3,7 @@
 
 use docket_core::Invocation;
 use docket_permissions_core::{
-    AskReason, LimitLevel, LimitNote, Limited, Ruling, StandingGrantId, UndoOffer,
+    AskReason, LimitLevel, LimitNote, Limited, Ruling, StandingGrantId,
 };
 use docket_vocab::{ParamName, Value};
 use prov::Effect;
@@ -61,7 +61,7 @@ pub fn rule_limit(ruling: &Ruling) -> Limited {
                     id,
                     level: LimitLevel::AlwaysAsk,
                     why: why.clone(),
-                    undo: UndoOffer::Offered,
+                    undo: true,
                 })
             }
             _ => None,

@@ -7,7 +7,7 @@
 //! conservative way: derived, with the network open. So a missing fact can only cost a question.
 
 use crate::exec_derive::Derivation;
-use crate::exec_reach::{NetAccess, NetPrograms, NetReach};
+use crate::exec_reach::{NetPrograms, net_reach};
 use crate::review::AskReason;
 use serde::{Deserialize, Serialize};
 
@@ -33,12 +33,9 @@ pub fn derives_choice(derivation: Derivation) -> &'static str {
     }
 }
 
-/// The choice id the host sends for `access`.
-pub fn network_choice(access: NetAccess) -> &'static str {
-    match access {
-        NetAccess::Closed => NETWORK_CLOSED,
-        NetAccess::Open => NETWORK_OPEN,
-    }
+/// The choice id the host sends for a network that is `open` or closed.
+pub fn network_choice(open: bool) -> &'static str {
+    if open { NETWORK_OPEN } else { NETWORK_CLOSED }
 }
 
 /// What the grant rule reads about a terminal command.
@@ -47,7 +44,7 @@ pub struct ExecFacts {
     /// Whether its arguments derive from what the agent read.
     pub derivation: Derivation,
     /// Whether it can send data out.
-    pub reach: NetReach,
+    pub reach: bool,
 }
 
 impl ExecFacts {
@@ -62,13 +59,10 @@ impl ExecFacts {
             Some(DERIVES_OWN) => Derivation::Independent,
             _ => Derivation::Derived,
         };
-        let access = match network {
-            Some(NETWORK_CLOSED) => NetAccess::Closed,
-            _ => NetAccess::Open,
-        };
+        let network_open = network != Some(NETWORK_CLOSED);
         Self {
             derivation,
-            reach: NetReach::of(line, access, programs),
+            reach: net_reach(line, network_open, programs),
         }
     }
 
@@ -77,7 +71,7 @@ impl ExecFacts {
     /// taint then says nothing about this command (the Rule of Two needs a channel out; an
     /// untrusted sink needs an untrusted argument).
     pub fn is_session_taint_only(&self) -> bool {
-        self.derivation == Derivation::Independent && self.reach == NetReach::None
+        self.derivation == Derivation::Independent && !self.reach
     }
 
     /// Whether `reason` is the session's taint and nothing more.
@@ -107,7 +101,7 @@ mod tests {
         let own = ExecFacts::from_choices(Some("own"), Some("closed"), "cargo test", &curl());
         assert_eq!(
             (own.derivation, own.reach),
-            (Derivation::Independent, NetReach::None)
+            (Derivation::Independent, false)
         );
         for (derives, network) in [
             (None, Some("closed")),

@@ -6,43 +6,11 @@
 //! The table is a belt, not the lock: the terminal sandbox has no network today, so a program in
 //! the table is stopped by the sandbox as well. It is the rule that holds when a sandbox is given
 //! a network, and what keeps a grant for such a program from ever existing. It cannot see what a
-//! script or an interpreter does with a socket, which is why `NetAccess::Open` makes every command
-//! `Possible`.
+//! script or an interpreter does with a socket, which is why an open network makes every command
+//! reach it.
 
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
-
-/// What network the sandbox the command runs in has.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum NetAccess {
-    /// No network at all (`NetworkMode::None`).
-    #[default]
-    Closed,
-    /// Anything else: the model endpoint only, or the host's network.
-    Open,
-}
-
-impl NetAccess {
-    /// The network a command really has when it runs under two sandboxes' worth of network (its
-    /// own, and the agent process's that asked for it, R12): open when either is open.
-    pub const fn combine(self, other: NetAccess) -> NetAccess {
-        match (self, other) {
-            (NetAccess::Closed, NetAccess::Closed) => NetAccess::Closed,
-            _ => NetAccess::Open,
-        }
-    }
-}
-
-/// Whether the command can send data out.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum NetReach {
-    /// It cannot, as far as the program and the sandbox say.
-    None,
-    /// It can (or might): it always asks and is never granted.
-    Possible,
-}
 
 /// The programs that reach the network, by the basename of the word that names them: the shipped
 /// `dist/network-programs.toml`.
@@ -91,32 +59,26 @@ fn single_program(line: &str) -> bool {
     crate::standing::CommandPrefix::parse(line).is_ok()
 }
 
-impl NetReach {
-    /// Whether `line` (a command and its arguments) can send data out when it runs in a sandbox
-    /// with `access`. With network open everything can. Otherwise the program is looked up by the
-    /// basename of its first word; a subcommand program (`git`, `npm`) reaches when any later
-    /// word names one of its network subcommands (so `git -C dir push` does too). A wrapper
-    /// (`sh -c`, `env`, `xargs`) or a line with a shell operator is searched word by word, so a
-    /// network tool anywhere in it counts. These false positives are on purpose: a word that only
-    /// looks like a network tool asks, which is the safe side.
-    pub fn of(line: &str, access: NetAccess, programs: &NetPrograms) -> NetReach {
-        if access == NetAccess::Open {
-            return NetReach::Possible;
-        }
-        let words = tokens(line);
-        let search_all = !single_program(line) || words.first().is_some_and(|w| programs.wraps(w));
-        let heads = if search_all {
-            words.len()
-        } else {
-            1.min(words.len())
-        };
-        let hit = (0..heads).any(|i| programs.reaches(words[i], &words[i + 1..]));
-        if hit {
-            NetReach::Possible
-        } else {
-            NetReach::None
-        }
+/// Whether `line` (a command and its arguments) can send data out when it runs in a sandbox
+/// whose network is `network_open` (anything but no network at all; two sandboxes' worth of
+/// network is open when either is). With network open everything can. Otherwise the program is
+/// looked up by the basename of its first word; a subcommand program (`git`, `npm`) reaches when
+/// any later word names one of its network subcommands (so `git -C dir push` does too). A wrapper
+/// (`sh -c`, `env`, `xargs`) or a line with a shell operator is searched word by word, so a
+/// network tool anywhere in it counts. These false positives are on purpose: a word that only
+/// looks like a network tool asks, which is the safe side.
+pub fn net_reach(line: &str, network_open: bool, programs: &NetPrograms) -> bool {
+    if network_open {
+        return true;
     }
+    let words = tokens(line);
+    let search_all = !single_program(line) || words.first().is_some_and(|w| programs.wraps(w));
+    let heads = if search_all {
+        words.len()
+    } else {
+        1.min(words.len())
+    };
+    (0..heads).any(|i| programs.reaches(words[i], &words[i + 1..]))
 }
 
 #[cfg(test)]
@@ -134,60 +96,36 @@ mod tests {
 
     #[test]
     fn a_program_reaches_by_its_name_or_its_subcommand() {
-        use NetReach::{None as No, Possible as Yes};
+        let (yes, no) = (true, false);
         let cases = [
-            ("curl https://a.test/x", Yes),
-            ("/usr/bin/curl -s a.test", Yes),
-            ("git push origin main", Yes),
-            ("git -C /home/u/proj push", Yes),
-            ("git status", No),
-            ("ls -la", No),
-            ("sh -c 'curl a.test'", Yes),
-            ("env FOO=1 nc a.test", Yes),
-            ("echo hi; curl a.test", Yes),
-            ("ls | nc host 9", Yes),
-            ("cat curl.txt", No),
-            ("echo $(curl h)", Yes),
+            ("curl https://a.test/x", yes),
+            ("/usr/bin/curl -s a.test", yes),
+            ("git push origin main", yes),
+            ("git -C /home/u/proj push", yes),
+            ("git status", no),
+            ("ls -la", no),
+            ("sh -c 'curl a.test'", yes),
+            ("env FOO=1 nc a.test", yes),
+            ("echo hi; curl a.test", yes),
+            ("ls | nc host 9", yes),
+            ("cat curl.txt", no),
+            ("echo $(curl h)", yes),
         ];
         let programs = programs();
         for (line, want) in cases {
-            assert_eq!(
-                NetReach::of(line, NetAccess::Closed, &programs),
-                want,
-                "{line}"
-            );
+            assert_eq!(net_reach(line, false, &programs), want, "{line}");
         }
     }
 
     #[test]
     fn an_open_sandbox_reaches_with_every_command() {
         for line in ["ls", "cargo test", "pwd", "git status"] {
-            assert_eq!(
-                NetReach::of(line, NetAccess::Open, &programs()),
-                NetReach::Possible
-            );
-        }
-    }
-
-    #[test]
-    fn combine_is_open_when_either_is() {
-        use NetAccess::{Closed, Open};
-        let table = [
-            (Closed, Closed, Closed),
-            (Closed, Open, Open),
-            (Open, Closed, Open),
-            (Open, Open, Open),
-        ];
-        for (a, b, want) in table {
-            assert_eq!(a.combine(b), want, "{a:?} {b:?}");
+            assert!(net_reach(line, true, &programs()));
         }
     }
 
     #[test]
     fn an_empty_line_reaches_nothing() {
-        assert_eq!(
-            NetReach::of("", NetAccess::Closed, &programs()),
-            NetReach::None
-        );
+        assert!(!net_reach("", false, &programs()));
     }
 }

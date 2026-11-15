@@ -5,7 +5,6 @@
 //! never-grantable (permanent delete). For those the offer is simply absent.
 
 use crate::exec_facts::ExecFacts;
-use crate::exec_reach::NetReach;
 use crate::grant::GrantCaller;
 use crate::review::AskReason;
 use crate::standing::{CommandPrefix, StandingScope};
@@ -130,7 +129,7 @@ pub fn blocker(f: &AskFacts<'_>) -> Option<Withheld> {
     if f.over_budget {
         return Some(Withheld::OverBudget);
     }
-    if f.exec.is_some_and(|e| e.reach == NetReach::Possible) {
+    if f.exec.is_some_and(|e| e.reach) {
         return Some(Withheld::CanSendOut);
     }
     if f.effect == Effect::Destructive {

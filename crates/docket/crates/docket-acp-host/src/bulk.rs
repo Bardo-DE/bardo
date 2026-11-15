@@ -3,7 +3,7 @@
 //! the edge.
 
 use bulkhead::{CannotSandbox as ShellCannot, Network, NetworkMode, SandboxState as ShellState};
-use docket_permissions_core::{CannotSandbox, NetAccess, SandboxState};
+use docket_permissions_core::{CannotSandbox, SandboxState};
 
 /// Why bulkhead cannot confine, as docket-core words it.
 pub const fn cannot(why: ShellCannot) -> CannotSandbox {
@@ -27,19 +27,13 @@ pub const fn state(state: ShellState) -> SandboxState {
     }
 }
 
-/// The network a terminal's sandbox has.
-pub const fn access(network: Network) -> NetAccess {
-    match network {
-        Network::Off => NetAccess::Closed,
-        Network::Host => NetAccess::Open,
-    }
+/// Whether a terminal's sandbox has a network.
+pub const fn access(network: Network) -> bool {
+    matches!(network, Network::Host)
 }
 
-/// The network an agent process's sandbox has: anything but none can reach something.
-pub const fn mode_access(mode: NetworkMode) -> NetAccess {
-    match mode {
-        NetworkMode::None => NetAccess::Closed,
-        // An allowlist reaches the named hosts: open, as far as a command is concerned.
-        NetworkMode::EndpointOnly | NetworkMode::Allowlist | NetworkMode::Host => NetAccess::Open,
-    }
+/// Whether an agent process's sandbox has a network: anything but none can reach something. An
+/// allowlist reaches the named hosts: open, as far as a command is concerned.
+pub const fn mode_access(mode: NetworkMode) -> bool {
+    !matches!(mode, NetworkMode::None)
 }

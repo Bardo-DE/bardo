@@ -6,7 +6,7 @@
 use crate::confine::Care;
 use bulkhead::AbsPath;
 use docket_permissions_core::{
-    DERIVES_PARAM, Derivation, FILES_READ, FILES_SENSITIVE, FILES_WRITE, NETWORK_PARAM, NetAccess,
+    DERIVES_PARAM, Derivation, FILES_READ, FILES_SENSITIVE, FILES_WRITE, NETWORK_PARAM,
     PermissionKind, REPORTED, TERMINAL_RUN, acp_agent_action, derives_choice, network_choice,
 };
 use docket_vocab::{CallRequest, ChoiceId, FileRef, Origin, TargetValue, Value};
@@ -53,8 +53,8 @@ pub struct Command {
 pub struct RunFacts {
     /// Whether the arguments derive from what the agent was served.
     pub derives: Derivation,
-    /// What network the command's sandbox has.
-    pub network: NetAccess,
+    /// Whether the command's sandbox has a network.
+    pub network: bool,
 }
 
 /// A permission request, reduced to what the router can rule on. The agent's own title is not
@@ -366,7 +366,7 @@ mod tests {
             },
             facts: RunFacts {
                 derives: Derivation::Independent,
-                network: NetAccess::Closed,
+                network: false,
             },
             stage: StageId::numbered(1),
         };
