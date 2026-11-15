@@ -21,10 +21,15 @@ mod launcher;
 mod spaces;
 mod tailnet;
 
+pub use ai_accounts::AiAccounts;
+pub use ai_keys::AiKeys;
 pub use credential::{ChildKey, ChildKeyError, Delivery, Inherit, ProcessCredential, Revoked};
+pub use identities::Identities;
 pub use launcher::{Launcher, LauncherError, LauncherRequest};
-pub use porter_wire::AskKind;
 use porter_client::{LinkError, Porter};
+pub use porter_wire::AskKind;
+pub use spaces::Spaces;
+pub use tailnet::Tailnet;
 
 use porter_dbus::Destination;
 use zbus::Connection;

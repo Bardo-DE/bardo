@@ -9,7 +9,7 @@ use accountd::{Options, TableCallers, serve_with};
 use common::bus::PrivateBus;
 use porter_callers::{Caller, CallerRole};
 use porter_capability::{CapabilityKind, StorageScope};
-use porter_client::{AiAccountsError, LinkError, Porter};
+use porter_client::{AiAccountsError, LinkError};
 use porter_client_dbus::Bus;
 use porter_core::consent::{Decision, Grant, GrantScope, Usage, Verdict};
 use porter_core::{AccountId, AppId, AppName, Credential, DataClass, GrantId, GrantKey};
@@ -135,7 +135,7 @@ impl World {
 #[tokio::test(flavor = "multi_thread")]
 async fn the_broker_reads_verdicts_accounts_and_a_key_once_where_the_permit_is_once() {
     let world = World::start().await;
-    let accounts = Porter::over(Bus::over(world.client(CallerRole::AiBroker).await)).ai_accounts();
+    let accounts = Bus::over(world.client(CallerRole::AiBroker).await).ai_accounts();
     let verdicts = accounts
         .verdicts(&notes(), DataClass::Prompt, Usage::Interactive)
         .await
@@ -182,7 +182,7 @@ async fn the_broker_reads_verdicts_accounts_and_a_key_once_where_the_permit_is_o
 #[tokio::test(flavor = "multi_thread")]
 async fn a_change_to_the_registry_reaches_the_broker_as_a_change() {
     let world = World::start().await;
-    let accounts = Porter::over(Bus::over(world.client(CallerRole::AiBroker).await)).ai_accounts();
+    let accounts = Bus::over(world.client(CallerRole::AiBroker).await).ai_accounts();
     let mut changes = accounts.changes().await.expect("changes");
     // The broker has called, so accountd knows it.
     accounts.accounts().await.expect("accounts");
@@ -210,7 +210,7 @@ async fn no_other_caller_is_served() {
         CallerRole::Agent,
         CallerRole::AgentLauncher,
     ] {
-        let accounts = Porter::over(Bus::over(world.client(role).await)).ai_accounts();
+        let accounts = Bus::over(world.client(role).await).ai_accounts();
         assert!(
             matches!(
                 accounts.accounts().await,

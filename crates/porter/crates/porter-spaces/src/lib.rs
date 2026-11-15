@@ -1,7 +1,7 @@
 //! The registry of desktop-wide Spaces (lane spaces): what `org.quire.Spaces1` serves, kept in
 //! `spaces.json` beside `registry.json` with the same atomic save and `.bak` ([`AtomicFile`]).
-//! [`SpacesApi`] is the domain's trait and [`SpaceBook`] the book that implements it; the daemon
-//! only hosts it.
+//! [`SpaceBook`] is the book: how Spaces are made, registered, renamed, restyled and removed; the
+//! daemon only hosts it.
 //!
 //! - Ids are minted here from a counter (`space-<n>`), never from the name, so a rename keeps
 //!   the id. An id that is taken (an adopted or a registered one) is skipped.
@@ -18,7 +18,6 @@ use porter_fs::atomic::AtomicFile;
 use porter_ids::UnixSeconds;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, VecDeque};
-use std::future::Future;
 use std::path::Path;
 use std::time::{Duration, Instant};
 
@@ -165,58 +164,14 @@ impl SpaceBook {
     }
 }
 
-/// The Spaces domain: how Spaces are made, registered, renamed, restyled and removed.
-pub trait SpacesApi {
+impl SpaceBook {
     /// Every Space, in the order they were made.
-    fn list(&self) -> &[DesktopSpaceRecord];
-
-    /// Makes a Space for `app`, and answers its new id.
-    fn create(
-        &mut self,
-        app: &AppName,
-        name: SpaceName,
-        look: SpaceLook,
-        now: (Instant, UnixSeconds),
-    ) -> impl Future<Output = Result<DesktopSpace, SpaceFault>> + Send;
-
-    /// Registers a Space whose id `app` minted (the compositor, per workspace). An id already
-    /// registered is left as it is, name and look included (the person may have renamed it), so
-    /// a compositor registers every workspace again at each start; only a new one counts toward
-    /// the per-app limit. It answers whether the Space is new.
-    fn register(
-        &mut self,
-        app: &AppName,
-        id: DesktopSpace,
-        name: SpaceName,
-        look: SpaceLook,
-        now: (Instant, UnixSeconds),
-    ) -> impl Future<Output = Result<bool, SpaceFault>> + Send;
-
-    /// Renames a Space.
-    fn rename(
-        &mut self,
-        id: &DesktopSpace,
-        name: SpaceName,
-    ) -> impl Future<Output = Result<(), SpaceFault>> + Send;
-
-    /// Gives a Space a new look.
-    fn set_look(
-        &mut self,
-        id: &DesktopSpace,
-        look: SpaceLook,
-    ) -> impl Future<Output = Result<(), SpaceFault>> + Send;
-
-    /// Removes a Space.
-    fn remove(&mut self, id: &DesktopSpace) -> impl Future<Output = Result<(), SpaceFault>> + Send;
-}
-
-impl SpacesApi for SpaceBook {
-    fn list(&self) -> &[DesktopSpaceRecord] {
+    pub fn list(&self) -> &[DesktopSpaceRecord] {
         &self.doc.spaces
     }
 
     /// Makes a Space for `app`, and answers its new id.
-    async fn create(
+    pub async fn create(
         &mut self,
         app: &AppName,
         name: SpaceName,
@@ -250,7 +205,7 @@ impl SpacesApi for SpaceBook {
     /// registered is left as it is, name and look included (the person may have renamed it), so
     /// a compositor registers every workspace again at each start; only a new one counts toward
     /// the per-app limit. It answers whether the Space is new.
-    async fn register(
+    pub async fn register(
         &mut self,
         app: &AppName,
         id: DesktopSpace,
@@ -278,17 +233,17 @@ impl SpacesApi for SpaceBook {
     }
 
     /// Renames a Space.
-    async fn rename(&mut self, id: &DesktopSpace, name: SpaceName) -> Result<(), SpaceFault> {
+    pub async fn rename(&mut self, id: &DesktopSpace, name: SpaceName) -> Result<(), SpaceFault> {
         self.change(id, |record| record.name = name).await
     }
 
     /// Gives a Space a new look.
-    async fn set_look(&mut self, id: &DesktopSpace, look: SpaceLook) -> Result<(), SpaceFault> {
+    pub async fn set_look(&mut self, id: &DesktopSpace, look: SpaceLook) -> Result<(), SpaceFault> {
         self.change(id, |record| record.look = look).await
     }
 
     /// Removes a Space.
-    async fn remove(&mut self, id: &DesktopSpace) -> Result<(), SpaceFault> {
+    pub async fn remove(&mut self, id: &DesktopSpace) -> Result<(), SpaceFault> {
         let mut doc = self.doc.clone();
         let before = doc.spaces.len();
         doc.spaces.retain(|s| s.id != *id);

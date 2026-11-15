@@ -10,8 +10,8 @@
 
 use clap::Subcommand;
 use porter_capability::AgentProgram;
-use porter_client::{Accounts, AccountsError, AiKeysError, Identities, IdentitiesError, Porter};
-use porter_client_dbus::{Bus, Launcher, LauncherError};
+use porter_client::{Accounts, AccountsError, AiKeysError, IdentitiesError, Porter};
+use porter_client_dbus::{Bus, Identities, Launcher, LauncherError};
 use porter_core::ProviderHint;
 use porter_core::SessionToken;
 use porter_core::consent::Usage;
@@ -204,8 +204,8 @@ fn refused(refusal: porter_wire::Refusal, emit: &mut impl FnMut(Value)) -> bool 
 }
 
 /// The Identities of this app on `connection`.
-fn identities_of(connection: &zbus::Connection) -> Identities<Bus> {
-    Porter::over(Bus::over(connection.clone())).identities()
+fn identities_of(connection: &zbus::Connection) -> Identities {
+    Bus::over(connection.clone()).identities()
 }
 
 async fn identities_list(connection: &zbus::Connection, emit: &mut impl FnMut(Value)) -> bool {
@@ -283,7 +283,7 @@ async fn ai_keys_request(
     ask: &Ask,
     emit: &mut impl FnMut(Value),
 ) -> bool {
-    let permit = Porter::over(Bus::over(connection.clone()))
+    let permit = Bus::over(connection.clone())
         .ai_keys()
         .request_key(ask.class, ask.usage, &ParentWindow::Unparented)
         .await;

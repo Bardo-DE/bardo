@@ -35,7 +35,7 @@ use porter_core::{AccountLabel, DataClass, Identity, IdentityId, IdentityKind};
 use porter_dbus::accounts::sheet::SheetKind;
 use porter_dbus::accounts::{IdentitiesServed, IdentitiesServer, identity_to_dbus};
 use porter_dbus::{Call, Details};
-use porter_identities::{IdentitiesApi, Unsaved};
+use porter_identities::Unsaved;
 use porter_secrets::sealed_key;
 use porter_service_core::registry::Registry;
 use porter_wire::Refusal;

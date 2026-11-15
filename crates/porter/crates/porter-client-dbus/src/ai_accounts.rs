@@ -1,10 +1,24 @@
-//! accountd's `Broker` over the bus: the AI broker's questions.
+//! What the AI broker (inferd) asks of the daemon that keeps the AI keys
+//! (`org.quire.Accounts1.Broker`): which accounts an app holds a permit on, and the key behind a
+//! permit. inferd is the one daemon that sends a key to an AI company, so the calls are its alone:
+//! any other caller is refused. A key arrives on a sealed memfd, once, and is read into a
+//! [`SecretText`], which shows nothing of itself.
+//!
+//! ```ignore
+//! let accounts = bus.ai_accounts();
+//! let mut changes = accounts.changes().await?;                 // subscribe first
+//! for row in accounts.verdicts(&app, DataClass::Prompt, Usage::Interactive).await? {
+//!     if let Verdict::Granted { grant, .. } = row.verdict {
+//!         let key = accounts.key(&grant).await?;               // for one request, then dropped
+//!     }
+//! }
+//! ```
 
 use crate::Bus;
 use crate::failure::{ai_accounts_error, link_error};
 use futures_util::StreamExt;
 use porter_capability::Claim;
-use porter_client::{AiAccountsError, AiAccountsLink, Changes, LinkError, Malformed};
+use porter_client::{AiAccountsError, Changes, LinkError, Malformed};
 use porter_core::consent::Usage;
 use porter_core::{AccountId, AccountState, AiAccountRow, AppId, DataClass, GrantId};
 use porter_core::{LlmVerdict, OwnServerRow, ProviderId, SecretText};
@@ -44,8 +58,23 @@ fn read_key(fd: porter_dbus::zvariant::OwnedFd) -> Result<SecretText, AiAccounts
     Ok(SecretText::new(text.as_str()))
 }
 
-impl AiAccountsLink for Bus {
-    async fn verdicts(
+/// The AI accounts of accountd, as the AI broker asks them, over the bus.
+#[derive(Debug, Clone)]
+pub struct AiAccounts {
+    bus: Bus,
+}
+
+impl Bus {
+    /// The handle on ai accounts.
+    pub fn ai_accounts(&self) -> AiAccounts {
+        AiAccounts { bus: self.clone() }
+    }
+}
+
+impl AiAccounts {
+    /// What the permits say for `app` on each account that serves language models, for data of
+    /// `class` used as `usage` says.
+    pub async fn verdicts(
         &self,
         app: &AppId,
         class: DataClass,
@@ -55,7 +84,8 @@ impl AiAccountsLink for Bus {
             app.name.as_str().to_owned(),
             word_of(&app.isolation).to_owned(),
         );
-        self.broker()
+        self.bus
+            .broker()
             .await?
             .verdicts(&who, word_of(&class), word_of(&usage))
             .await
@@ -65,9 +95,12 @@ impl AiAccountsLink for Bus {
             .collect()
     }
 
-    async fn key(&self, grant: &GrantId) -> Result<SecretText, AiAccountsError> {
+    /// The key behind the allow permit `grant` of the language-model kind, read once; an
+    /// allow-once permit is spent by a read that succeeded. Hold it for one request and drop it.
+    pub async fn key(&self, grant: &GrantId) -> Result<SecretText, AiAccountsError> {
         read_key(
-            self.broker()
+            self.bus
+                .broker()
                 .await?
                 .read_key(grant.as_str())
                 .await
@@ -75,8 +108,11 @@ impl AiAccountsLink for Bus {
         )
     }
 
-    async fn accounts(&self) -> Result<Vec<AiAccountRow>, AiAccountsError> {
-        self.broker()
+    /// The AI accounts (the services, the programs on this computer and the assistants), for the
+    /// rows the broker adds to them.
+    pub async fn accounts(&self) -> Result<Vec<AiAccountRow>, AiAccountsError> {
+        self.bus
+            .broker()
             .await?
             .accounts()
             .await
@@ -86,8 +122,10 @@ impl AiAccountsLink for Bus {
             .collect()
     }
 
-    async fn servers(&self) -> Result<Vec<OwnServerRow>, AiAccountsError> {
-        self.broker()
+    /// The accounts that are servers of the person's own.
+    pub async fn servers(&self) -> Result<Vec<OwnServerRow>, AiAccountsError> {
+        self.bus
+            .broker()
             .await?
             .servers()
             .await
@@ -97,9 +135,12 @@ impl AiAccountsLink for Bus {
             .collect()
     }
 
-    async fn server_key(&self, account: &AccountId) -> Result<SecretText, AiAccountsError> {
+    /// The key of the own server `account`, for the one request that asks it for its models. It
+    /// needs no permit.
+    pub async fn server_key(&self, account: &AccountId) -> Result<SecretText, AiAccountsError> {
         read_key(
-            self.broker()
+            self.bus
+                .broker()
                 .await?
                 .read_server_key(account.as_str())
                 .await
@@ -107,7 +148,9 @@ impl AiAccountsLink for Bus {
         )
     }
 
-    async fn report_local(
+    /// Reports a probed local runtime as the account of `provider`, its models as `claims`, in
+    /// `state` (`Ok` or `Offline`); the account's id.
+    pub async fn report_local(
         &self,
         provider: &ProviderId,
         claims: &[Claim],
@@ -124,7 +167,10 @@ impl AiAccountsLink for Bus {
         AccountId::parse(&id).map_err(|_| malformed(Malformed::Id))
     }
 
-    async fn changes(&self) -> Result<Changes<()>, AiAccountsError> {
+    /// "An AI account, a permit or a switch changed", from now on; each item says only that
+    /// something moved, and the listener asks again. Subscribe before the first look, so a change
+    /// between the look and the subscription is not missed.
+    pub async fn changes(&self) -> Result<Changes<()>, AiAccountsError> {
         let stream = self
             .broker()
             .await?

@@ -5,25 +5,18 @@
 use crate::accounts::{
     AccountChange, AccountRef, AccountView, AccountsError, EditError, NeedsReauth,
 };
-use crate::ai_accounts::AiAccountsError;
-use crate::ai_keys::AiKeysError;
 use crate::authenticated::AuthenticatedStream;
 use crate::changes::Changes;
 use crate::error::LinkError;
 use crate::found::ConsentOffer;
 use crate::grants::{GrantsError, ListedAccount};
-use crate::identities::{IdentitiesError, Picked};
-use crate::spaces::SpacesError;
-use porter_capability::{CapabilityKind, Claim};
+use porter_capability::CapabilityKind;
 use porter_core::consent::{Availability, Grant, Usage};
 use porter_core::{
-    AccountId, AccountState, AiAccountRow, AppId, AppName, Candidate, DataClass, DesktopSpace,
-    DesktopSpaceRecord, EndpointUrl, GrantId, Identity, IdentityId, LlmVerdict, OwnServerRow,
-    ProviderHint, ProviderId, SecretText, SpaceChange, SpaceLook, SpaceName,
+    AccountId, Candidate, DataClass, EndpointUrl, GrantId, ProviderHint, ProviderId,
 };
 use porter_match::Need;
 use porter_sheet::{EditServers, EditedServers};
-use porter_tailscale::Machine;
 use porter_wire::ParentWindow;
 use std::future::Future;
 
@@ -143,145 +136,4 @@ pub trait AccountWatch: AccountsLink {
 
     /// The accounts added and removed, and every change of an account's state, from now on.
     fn watch(&self) -> impl Future<Output = Result<Changes<AccountChange>, LinkError>> + Send;
-}
-
-/// The identities signed in on this machine ("Continue as"). The bus only.
-pub trait IdentitiesLink: Send + Sync + 'static {
-    /// The identities signed in on this machine, in accountd's order.
-    fn list(&self) -> impl Future<Output = Result<Vec<Identity>, IdentitiesError>> + Send;
-
-    /// "Continue as": shows the person the identity picker and waits for the pick.
-    fn offer(
-        &self,
-        hint: &ProviderHint,
-        window: &ParentWindow,
-    ) -> impl Future<Output = Result<Picked, IdentitiesError>> + Send;
-
-    /// The password of the identity the person just picked, once.
-    fn take_password(
-        &self,
-        id: &IdentityId,
-    ) -> impl Future<Output = Result<SecretText, IdentitiesError>> + Send;
-
-    /// Says that this app signed in with `id`.
-    fn register_use(
-        &self,
-        id: &IdentityId,
-    ) -> impl Future<Output = Result<(), IdentitiesError>> + Send;
-
-    /// The apps that signed in with `id`. Only Settings and the shell may ask.
-    fn uses(
-        &self,
-        id: &IdentityId,
-    ) -> impl Future<Output = Result<Vec<AppName>, IdentitiesError>> + Send;
-
-    /// The identities removed from now on.
-    fn watch_removals(
-        &self,
-    ) -> impl Future<Output = Result<Changes<IdentityId>, IdentitiesError>> + Send;
-}
-
-/// The desktop-wide Spaces. The bus only.
-pub trait SpacesLink: Send + Sync + 'static {
-    /// Every desktop-wide Space, in the order they were made.
-    fn list(&self) -> impl Future<Output = Result<Vec<DesktopSpaceRecord>, SpacesError>> + Send;
-
-    /// Makes a Space and answers its id.
-    fn create(
-        &self,
-        name: &SpaceName,
-        look: &SpaceLook,
-    ) -> impl Future<Output = Result<DesktopSpace, SpacesError>> + Send;
-
-    /// Registers a Space whose id the caller minted (the compositor, per workspace).
-    fn register(
-        &self,
-        id: &DesktopSpace,
-        name: &SpaceName,
-        look: &SpaceLook,
-    ) -> impl Future<Output = Result<(), SpacesError>> + Send;
-
-    /// Renames a Space.
-    fn rename(
-        &self,
-        id: &DesktopSpace,
-        name: &SpaceName,
-    ) -> impl Future<Output = Result<(), SpacesError>> + Send;
-
-    /// Gives a Space a new look.
-    fn set_look(
-        &self,
-        id: &DesktopSpace,
-        look: &SpaceLook,
-    ) -> impl Future<Output = Result<(), SpacesError>> + Send;
-
-    /// Removes a Space.
-    fn remove(&self, id: &DesktopSpace) -> impl Future<Output = Result<(), SpacesError>> + Send;
-
-    /// The changes to the Spaces, from now on.
-    fn watch(
-        &self,
-    ) -> impl Future<Output = Result<Changes<(DesktopSpace, SpaceChange)>, SpacesError>> + Send;
-}
-
-/// The person's computers on their Tailscale network. The bus only.
-pub trait TailnetLink: Send + Sync + 'static {
-    /// The other computers on the person's network, none for this one, in accountd's order.
-    fn machines(&self) -> impl Future<Output = Result<Vec<Machine>, LinkError>> + Send;
-
-    /// The changes to the list, from now on; read the list again on each.
-    fn watch(&self) -> impl Future<Output = Result<Changes<()>, LinkError>> + Send;
-}
-
-/// accountd's `Keys`: an app's permit to use the person's AI keys. The bus only.
-pub trait AiKeysLink: Send + Sync + 'static {
-    /// Shows the person accountd's consent sheet for this app's use of one of their AI keys; the
-    /// permit it answers is the person's yes, within the scope they chose.
-    fn request_key(
-        &self,
-        class: DataClass,
-        usage: Usage,
-        window: &ParentWindow,
-    ) -> impl Future<Output = Result<GrantId, AiKeysError>> + Send;
-}
-
-/// accountd's `Broker`: what the AI broker (inferd) asks of the daemon that keeps the AI keys.
-/// The bus only.
-pub trait AiAccountsLink: Send + Sync + 'static {
-    /// What the permits say for `app` on each account that serves language models.
-    fn verdicts(
-        &self,
-        app: &AppId,
-        class: DataClass,
-        usage: Usage,
-    ) -> impl Future<Output = Result<Vec<LlmVerdict>, AiAccountsError>> + Send;
-
-    /// The key behind the allow permit `grant`, read once.
-    fn key(
-        &self,
-        grant: &GrantId,
-    ) -> impl Future<Output = Result<SecretText, AiAccountsError>> + Send;
-
-    /// The AI accounts, for the rows the broker adds to them.
-    fn accounts(&self) -> impl Future<Output = Result<Vec<AiAccountRow>, AiAccountsError>> + Send;
-
-    /// The accounts that are servers of the person's own.
-    fn servers(&self) -> impl Future<Output = Result<Vec<OwnServerRow>, AiAccountsError>> + Send;
-
-    /// The key of the own server `account`, for the one request that asks it for its models.
-    fn server_key(
-        &self,
-        account: &AccountId,
-    ) -> impl Future<Output = Result<SecretText, AiAccountsError>> + Send;
-
-    /// Reports a probed local runtime as the account of `provider`.
-    fn report_local(
-        &self,
-        provider: &ProviderId,
-        claims: &[Claim],
-        state: AccountState,
-    ) -> impl Future<Output = Result<AccountId, AiAccountsError>> + Send;
-
-    /// "An AI account, a permit or a switch changed", from now on.
-    fn changes(&self) -> impl Future<Output = Result<Changes<()>, AiAccountsError>> + Send;
 }

@@ -24,7 +24,7 @@ use porter_dbus::{Call, Details};
 use porter_ids::clock::Clock;
 use porter_ids::word::word as word_of;
 use porter_service_core::audit::AuditEvent;
-use porter_spaces::{CREATES_PER_WINDOW, SpaceFault, SpacesApi};
+use porter_spaces::{CREATES_PER_WINDOW, SpaceFault};
 use porter_wire::names::SPACES_PATH;
 use std::sync::Arc;
 use zbus::message::Header;

@@ -9,8 +9,8 @@ use super::common;
 use common::bus::PrivateBus;
 use common::eventually;
 use common::fake_accountd::{FakeAccountd, Sheets};
-use porter_client::{AiKeys, AiKeysError, LinkError, Porter};
-use porter_client_dbus::Bus;
+use porter_client::{AiKeysError, LinkError};
+use porter_client_dbus::{AiKeys, Bus};
 use porter_core::DataClass;
 use porter_core::consent::Usage;
 use porter_wire::{ParentWindow, Refusal};
@@ -21,7 +21,7 @@ struct Rig {
     bus: PrivateBus,
     daemon: zbus::Connection,
     fake: FakeAccountd,
-    keys: AiKeys<Bus>,
+    keys: AiKeys,
 }
 
 async fn rig(sheets: Sheets, forged: bool) -> Rig {
@@ -32,7 +32,7 @@ async fn rig(sheets: Sheets, forged: bool) -> Rig {
         fake = fake.forged_by(bus.connect().await);
     }
     fake.serve(&daemon).await;
-    let keys = Porter::over(Bus::over(bus.connect().await)).ai_keys();
+    let keys = Bus::over(bus.connect().await).ai_keys();
     Rig {
         bus,
         daemon,
@@ -91,7 +91,7 @@ async fn every_way_a_sheet_can_end_is_a_typed_error() {
     }
     // With no accountd on the bus there is nobody to ask.
     let bus = PrivateBus::start();
-    let keys = Porter::over(Bus::over(bus.connect().await)).ai_keys();
+    let keys = Bus::over(bus.connect().await).ai_keys();
     assert_eq!(
         keys.request_key(
             DataClass::Files,

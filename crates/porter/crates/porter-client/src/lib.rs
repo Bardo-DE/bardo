@@ -29,7 +29,7 @@
 //! No feature is on by default, and the crate reaches no zbus and no service crate. No
 //! credential crosses a bus: over D-Bus an app asks accountd's `Grants1` for a grant and for a
 //! stream to the account's server that accountd has signed in ([`Grants`]), `Identities1` for
-//! "Continue as" ([`Identities`]) and for a permit to use the person's AI keys ([`AiKeys`]).
+//! "Continue as" and for a permit to use the person's AI keys (both in `porter-client-dbus`).
 //! Inference is `inferd-client`'s.
 
 mod accounts;
@@ -44,23 +44,18 @@ mod identities;
 mod link;
 mod porter;
 mod spaces;
-mod tailnet;
 
 pub use accounts::{
     AccountChange, AccountRef, AccountView, Accounts, AccountsError, EditError, NeedsReauth,
 };
-pub use ai_accounts::{AiAccounts, AiAccountsError};
-pub use ai_keys::{AiKeys, AiKeysError};
+pub use ai_accounts::AiAccountsError;
+pub use ai_keys::AiKeysError;
 pub use authenticated::AuthenticatedStream;
 pub use changes::Changes;
 pub use error::{LinkError, Malformed};
 pub use found::{ConsentOffer, Found, NoAccount, found};
 pub use grants::{Grants, GrantsError, ListedAccount};
-pub use identities::{Identities, IdentitiesError, Picked};
-pub use link::{
-    AccountWatch, AccountsLink, AiAccountsLink, AiKeysLink, GrantsLink, IdentitiesLink,
-    ServerEdits, SpacesLink, TailnetLink,
-};
+pub use identities::{IdentitiesError, Picked};
+pub use link::{AccountWatch, AccountsLink, GrantsLink, ServerEdits};
 pub use porter::Porter;
-pub use spaces::{Spaces, SpacesError};
-pub use tailnet::Tailnet;
+pub use spaces::SpacesError;

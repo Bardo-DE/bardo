@@ -1,14 +1,46 @@
-//! `Identities1` over the bus.
+//! The identities signed in on this machine (`org.quire.Identities1` on accountd), for an app
+//! that wants to say "Continue as ada@example.org" without holding the sign-in itself. An
+//! identity is an address, a provider and a kind; nothing here is a token.
+//!
+//! ```ignore
+//! let identities = bus.identities();
+//! match identities.offer(&ProviderHint::Any, &window).await {   // the person picks in a sheet
+//!     Ok(picked) => {
+//!         // Sign in to your own service as `picked.address`, then say so:
+//!         identities.register_use(&picked.id).await?;
+//!         // A password identity may hand its password over, once, right after the pick:
+//!         let password = identities.take_password(&picked.id).await?;
+//!     }
+//!     Err(IdentitiesError::Cancelled) => { /* the person closed the sheet */ }
+//!     Err(IdentitiesError::NoIdentity) => { /* offer to sign one in */ }
+//!     Err(other) => report(other),
+//! }
+//! let mut removed = identities.watch_removals().await?;        // subscribe before reading the list
+//! while let Some(id) = removed.next().await { /* forget your own copies of it */ }
+//! ```
 
 use crate::Bus;
 use crate::failure::{identities_error, link_error};
 use futures_util::StreamExt;
-use porter_client::{Changes, IdentitiesError, IdentitiesLink, LinkError, Malformed, Picked};
+use porter_client::{Changes, IdentitiesError, LinkError, Malformed, Picked};
 use porter_core::SecretText;
 use porter_core::{AppName, Identity, IdentityAddress, IdentityId, ProviderHint, ProviderId};
 use porter_dbus::accounts::{IdentitiesProxy, IdentityRemoved, identity_from_dbus};
 use porter_wire::ParentWindow;
 use std::io::Read;
+
+/// accountd's identities, as an app uses it over the bus.
+#[derive(Debug, Clone)]
+pub struct Identities {
+    bus: Bus,
+}
+
+impl Bus {
+    /// The handle on identities.
+    pub fn identities(&self) -> Identities {
+        Identities { bus: self.clone() }
+    }
+}
 
 impl Bus {
     async fn identities_proxy(&self) -> Result<IdentitiesProxy<'static>, IdentitiesError> {
@@ -28,9 +60,11 @@ fn removed(signal: IdentityRemoved) -> Result<IdentityId, Malformed> {
     IdentityId::parse(args.identity_id).map_err(|_| Malformed::Id)
 }
 
-impl IdentitiesLink for Bus {
-    async fn list(&self) -> Result<Vec<Identity>, IdentitiesError> {
-        let proxy = self.identities_proxy().await?;
+impl Identities {
+    /// The identities signed in on this machine, in accountd's order. Local runtimes, Tailscale,
+    /// AI keys and agent logins are not among them. A row that cannot be read fails the list.
+    pub async fn list(&self) -> Result<Vec<Identity>, IdentitiesError> {
+        let proxy = self.bus.identities_proxy().await?;
         proxy
             .list()
             .await
@@ -40,12 +74,16 @@ impl IdentitiesLink for Bus {
             .collect()
     }
 
-    async fn offer(
+    /// "Continue as": shows the person the identity picker and waits for the pick. `hint` limits
+    /// it to one provider's identities, or [`ProviderHint::Any`]; the sheet sits over `window`.
+    /// The app has one picker open at a time ([`IdentitiesError::Busy`]); the person closing it is
+    /// [`IdentitiesError::Cancelled`].
+    pub async fn offer(
         &self,
         hint: &ProviderHint,
         window: &ParentWindow,
     ) -> Result<Picked, IdentitiesError> {
-        let proxy = self.identities_proxy().await?;
+        let proxy = self.bus.identities_proxy().await?;
         let word = match hint {
             ProviderHint::Provider(provider) => provider.as_str(),
             _ => "",
@@ -65,8 +103,12 @@ impl IdentitiesLink for Bus {
         ))
     }
 
-    async fn take_password(&self, id: &IdentityId) -> Result<SecretText, IdentitiesError> {
-        let proxy = self.identities_proxy().await?;
+    /// The password (or app password) of the identity the person just picked in this app's
+    /// [`Identities::offer`]. It is handed over once per pick, only for a password identity, and
+    /// accountd records that it was; any other call is `Link(LinkError::Denied)`. Keep it in the
+    /// app's own secret store.
+    pub async fn take_password(&self, id: &IdentityId) -> Result<SecretText, IdentitiesError> {
+        let proxy = self.bus.identities_proxy().await?;
         let fd = proxy
             .take_password(id.as_str())
             .await
@@ -78,16 +120,21 @@ impl IdentitiesLink for Bus {
         Ok(SecretText::new(text))
     }
 
-    async fn register_use(&self, id: &IdentityId) -> Result<(), IdentitiesError> {
-        self.identities_proxy()
+    /// Says that this app signed in with `id`: it joins the list Settings shows as the apps using
+    /// the identity. Saying it again changes nothing.
+    pub async fn register_use(&self, id: &IdentityId) -> Result<(), IdentitiesError> {
+        self.bus
+            .identities_proxy()
             .await?
             .register_use(id.as_str())
             .await
             .map_err(|e| identities_error(&e))
     }
 
-    async fn uses(&self, id: &IdentityId) -> Result<Vec<AppName>, IdentitiesError> {
-        self.identities_proxy()
+    /// The apps that signed in with `id`. Only Settings and the shell may ask.
+    pub async fn uses(&self, id: &IdentityId) -> Result<Vec<AppName>, IdentitiesError> {
+        self.bus
+            .identities_proxy()
             .await?
             .uses(id.as_str())
             .await
@@ -97,8 +144,10 @@ impl IdentitiesLink for Bus {
             .collect()
     }
 
-    async fn watch_removals(&self) -> Result<Changes<IdentityId>, IdentitiesError> {
-        let proxy = self.identities_proxy().await?;
+    /// The identities removed from now on. It subscribes, then reads the list once so accountd
+    /// counts this connection among those it tells.
+    pub async fn watch_removals(&self) -> Result<Changes<IdentityId>, IdentitiesError> {
+        let proxy = self.bus.identities_proxy().await?;
         let stream = proxy
             .receive_identity_removed()
             .await

@@ -1,9 +1,22 @@
-//! `Spaces1` over the bus.
+//! The desktop-wide Spaces an app's own Space can link to (`org.quire.Spaces1` on accountd).
+//!
+//! An app keeps its own Spaces (quire's Spaces kit) and stores, per Space, an optional link: the
+//! id of a desktop-wide Space from this list. It makes the `SpaceId` it hands memory and consent
+//! with `porter_core::SpaceId::for_app`. When a desktop-wide Space is removed, the watch says so
+//! and the app falls back to its own Space; that is the app's choice.
+//!
+//! ```ignore
+//! let spaces = bus.spaces();
+//! let mut changes = spaces.watch().await?;          // subscribe before reading the list
+//! let list = spaces.list().await?;
+//! let id = spaces.create(&SpaceName::parse("Work")?, &look).await?;
+//! while let Some(change) = changes.next().await { /* (id, SpaceChange) */ }
+//! ```
 
 use crate::Bus;
 use crate::failure::{link_error, spaces_error};
 use futures_util::StreamExt;
-use porter_client::{Changes, LinkError, Malformed, SpacesError, SpacesLink};
+use porter_client::{Changes, LinkError, Malformed, SpacesError};
 use porter_core::{DesktopSpace, DesktopSpaceRecord, SpaceChange, SpaceLook, SpaceName};
 use porter_dbus::Details;
 use porter_dbus::accounts::{
@@ -11,6 +24,19 @@ use porter_dbus::accounts::{
 };
 use porter_ids::UnixSeconds;
 use porter_ids::word::from_word;
+
+/// accountd's registry of desktop-wide Spaces, as an app uses it over the bus.
+#[derive(Debug, Clone)]
+pub struct Spaces {
+    bus: Bus,
+}
+
+impl Bus {
+    /// The handle on spaces.
+    pub fn spaces(&self) -> Spaces {
+        Spaces { bus: self.clone() }
+    }
+}
 
 impl Bus {
     async fn spaces_proxy(&self) -> Result<SpacesProxy<'static>, SpacesError> {
@@ -58,9 +84,11 @@ fn change(signal: SpaceChanged) -> Result<(DesktopSpace, SpaceChange), Malformed
     ))
 }
 
-impl SpacesLink for Bus {
-    async fn list(&self) -> Result<Vec<DesktopSpaceRecord>, SpacesError> {
-        self.spaces_proxy()
+impl Spaces {
+    /// Every desktop-wide Space, in the order they were made.
+    pub async fn list(&self) -> Result<Vec<DesktopSpaceRecord>, SpacesError> {
+        self.bus
+            .spaces_proxy()
             .await?
             .list()
             .await
@@ -70,7 +98,9 @@ impl SpacesLink for Bus {
             .collect()
     }
 
-    async fn create(
+    /// Makes a desktop-wide Space and answers its id, which a rename keeps. accountd lets an app
+    /// make only a few a minute (ten); more is [`SpacesError::TooMany`].
+    pub async fn create(
         &self,
         name: &SpaceName,
         look: &SpaceLook,
@@ -84,45 +114,56 @@ impl SpacesLink for Bus {
         DesktopSpace::parse(&id).map_err(|_| malformed(Malformed::Id))
     }
 
-    async fn register(
+    /// Registers a Space whose id the caller minted (the compositor, per workspace); one already
+    /// registered is left as it is. Only the compositor, Settings and the shell may.
+    pub async fn register(
         &self,
         id: &DesktopSpace,
         name: &SpaceName,
         look: &SpaceLook,
     ) -> Result<(), SpacesError> {
-        self.spaces_proxy()
+        self.bus
+            .spaces_proxy()
             .await?
             .register(id.as_str(), name.as_str(), look.as_str())
             .await
             .map_err(|e| spaces_error(&e))
     }
 
-    async fn rename(&self, id: &DesktopSpace, name: &SpaceName) -> Result<(), SpacesError> {
-        self.spaces_proxy()
+    /// Renames a Space. Only Settings and the shell may.
+    pub async fn rename(&self, id: &DesktopSpace, name: &SpaceName) -> Result<(), SpacesError> {
+        self.bus
+            .spaces_proxy()
             .await?
             .rename(id.as_str(), name.as_str())
             .await
             .map_err(|e| spaces_error(&e))
     }
 
-    async fn set_look(&self, id: &DesktopSpace, look: &SpaceLook) -> Result<(), SpacesError> {
-        self.spaces_proxy()
+    /// Gives a Space a new look. Only Settings and the shell may.
+    pub async fn set_look(&self, id: &DesktopSpace, look: &SpaceLook) -> Result<(), SpacesError> {
+        self.bus
+            .spaces_proxy()
             .await?
             .set_look(id.as_str(), look.as_str())
             .await
             .map_err(|e| spaces_error(&e))
     }
 
-    async fn remove(&self, id: &DesktopSpace) -> Result<(), SpacesError> {
-        self.spaces_proxy()
+    /// Removes a Space. Only Settings and the shell may.
+    pub async fn remove(&self, id: &DesktopSpace) -> Result<(), SpacesError> {
+        self.bus
+            .spaces_proxy()
             .await?
             .remove(id.as_str())
             .await
             .map_err(|e| spaces_error(&e))
     }
 
-    async fn watch(&self) -> Result<Changes<(DesktopSpace, SpaceChange)>, SpacesError> {
-        let proxy = self.spaces_proxy().await?;
+    /// The changes to the Spaces, from now on: which Space, and what became of it. It subscribes,
+    /// then calls `List` once so accountd counts this connection among those it tells.
+    pub async fn watch(&self) -> Result<Changes<(DesktopSpace, SpaceChange)>, SpacesError> {
+        let proxy = self.bus.spaces_proxy().await?;
         let stream = proxy
             .receive_changed()
             .await

@@ -1,8 +1,28 @@
-//! accountd's `Keys` over the bus.
+//! The person's AI keys, as an app asks for them (`org.quire.Accounts1.Keys` on accountd). An AI
+//! key is accountd's, and inferd is the one that sends it to an AI company: an app never sees
+//! one. What an app gets is the person's yes to use their keys, a permit ([`GrantId`]), after
+//! accountd shows the consent sheet; an app that holds a permit already is answered with it and
+//! no sheet is drawn.
+//!
+//! ```ignore
+//! let keys = bus.ai_keys();
+//! match keys.request_key(DataClass::Documents, Usage::Interactive, &window).await {
+//!     Ok(permit) => { /* ask inferd for a session as usual; the permit is what lets it */ }
+//!     Err(AiKeysError::Refused(Refusal::Dismissed)) => { /* the person closed the sheet */ }
+//!     Err(AiKeysError::Refused(Refusal::NoFittingAccount)) => {
+//!         // no key is added: send the person to add one (`Accounts::add`), then ask again
+//!     }
+//!     Err(other) => report(other),
+//! }
+//! ```
+//!
+//! Adding a key is `Accounts::add`, the same sheet as for any account. Settings lists and revokes
+//! permits through accountd's settings rows, not here. The agent, the agent launcher, the
+//! computer-use daemon, the terminal and the compositor are refused.
 
 use crate::Bus;
 use crate::failure::{ai_keys_error, link_error};
-use porter_client::{AiKeysError, AiKeysLink, LinkError, Malformed};
+use porter_client::{AiKeysError, LinkError, Malformed};
 use porter_core::consent::Usage;
 use porter_core::{DataClass, GrantId};
 use porter_dbus::accounts::sheet::{SheetKind, reply_of};
@@ -30,8 +50,24 @@ fn sheet_error(error: SheetError) -> AiKeysError {
     }
 }
 
-impl AiKeysLink for Bus {
-    async fn request_key(
+/// The Keys interface of accountd, over the bus.
+#[derive(Debug, Clone)]
+pub struct AiKeys {
+    bus: Bus,
+}
+
+impl Bus {
+    /// The handle on ai keys.
+    pub fn ai_keys(&self) -> AiKeys {
+        AiKeys { bus: self.clone() }
+    }
+}
+
+impl AiKeys {
+    /// Shows the person accountd's consent sheet for this app's use of one of their AI keys, for
+    /// data of `class` used as `usage` says, over `window`. The permit it answers is the person's
+    /// yes, within the scope they chose.
+    pub async fn request_key(
         &self,
         class: DataClass,
         usage: Usage,
@@ -39,11 +75,11 @@ impl AiKeysLink for Bus {
     ) -> Result<GrantId, AiKeysError> {
         let proxy: KeysProxy<'static> = self
             .accounts
-            .proxy(&self.connection)
+            .proxy(&self.bus.connection)
             .await
             .map_err(|e| AiKeysError::Link(link_error(&e)))?;
         let (class, usage, window) = (word_of(&class), word_of(&usage), wire(window));
-        let mut listener = Sheet::subscribe_on(&self.connection, ServiceRoot::Accounts)
+        let mut listener = Sheet::subscribe_on(&self.bus.connection, ServiceRoot::Accounts)
             .await
             .map_err(|e| ai_keys_error(&e))?;
         // Armed before the call: a dropped call may already have made the sheet.

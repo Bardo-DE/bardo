@@ -11,8 +11,6 @@
 //!
 //! - [`IdentityDesk`]: the picker ("Continue as") and the read of a picked identity's password.
 //!
-//! [`IdentitiesApi`] is the domain's trait over the uses; the daemon only hosts it.
-//!
 //! A `identity-uses.json` that cannot be read is never written over: the list is served empty and
 //! every change is refused until the person mends or moves the file.
 
@@ -20,7 +18,6 @@ use porter_core::{AppName, IdentityId};
 use porter_fs::atomic::AtomicFile;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
-use std::future::Future;
 use std::path::Path;
 use std::sync::{Mutex, PoisonError};
 
@@ -114,27 +111,9 @@ impl UseBook {
     }
 }
 
-/// The identities domain: which apps use each identity.
-pub trait IdentitiesApi {
+impl UseBook {
     /// The apps that use `identity`, in name order.
-    fn apps(&self, identity: &IdentityId) -> Vec<AppName>;
-
-    /// Records that `app` uses `identity`. An app that is recorded already changes nothing and
-    /// writes nothing.
-    fn record(
-        &mut self,
-        identity: IdentityId,
-        app: AppName,
-    ) -> impl Future<Output = Result<(), Unsaved>> + Send;
-
-    /// Forgets the apps of `identity`, which was removed. Nothing to forget changes nothing.
-    fn forget(&mut self, identity: &IdentityId)
-    -> impl Future<Output = Result<(), Unsaved>> + Send;
-}
-
-impl IdentitiesApi for UseBook {
-    /// The apps that use `identity`, in name order.
-    fn apps(&self, identity: &IdentityId) -> Vec<AppName> {
+    pub fn apps(&self, identity: &IdentityId) -> Vec<AppName> {
         self.doc
             .uses
             .get(identity)
@@ -144,7 +123,7 @@ impl IdentitiesApi for UseBook {
 
     /// Records that `app` uses `identity`. An app that is recorded already changes nothing and
     /// writes nothing.
-    async fn record(&mut self, identity: IdentityId, app: AppName) -> Result<(), Unsaved> {
+    pub async fn record(&mut self, identity: IdentityId, app: AppName) -> Result<(), Unsaved> {
         if !self.writable {
             return Err(Unsaved);
         }
@@ -162,7 +141,7 @@ impl IdentitiesApi for UseBook {
     }
 
     /// Forgets the apps of `identity`, which was removed. Nothing to forget changes nothing.
-    async fn forget(&mut self, identity: &IdentityId) -> Result<(), Unsaved> {
+    pub async fn forget(&mut self, identity: &IdentityId) -> Result<(), Unsaved> {
         if !self.writable {
             return Err(Unsaved);
         }

@@ -10,7 +10,6 @@ publish = false
 
 [dependencies]
 porter-core = {path = "../porter-core"}
-porter-tailscale = {path = "../porter-tailscale"}
 porter-match = {path = "../porter-match"}
 porter-capability = {path = "../porter-capability"}
 porter-wire = {path = "../porter-wire"}
