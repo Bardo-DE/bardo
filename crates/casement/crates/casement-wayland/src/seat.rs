@@ -19,7 +19,7 @@ mod under;
 
 pub use agent_down::{AgentDown, Pressed};
 pub use grab::Drag;
-pub use key_route::{KeyRoute, PastKeys, RouteFacts, deliver_past_grab, route_facts};
+pub use key_route::{PastKeys, RouteFacts, deliver_past_grab, route_facts};
 pub use live::Live;
 pub use pointer::{apply_axis, apply_gesture, apply_pointer, apply_refocus, end_grab, forget_dead};
 pub use taken::Taken;

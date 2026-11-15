@@ -38,7 +38,7 @@ pub use popup::{
     on_reposition, on_room_changed, popups_of,
 };
 pub use requests::{
-    GrabUse, edges_of, grab_proven, on_full_screen, on_maximise, on_minimise, on_move, on_pong,
+    edges_of, grab_proven, on_full_screen, on_maximise, on_minimise, on_move, on_pong,
     on_resize, on_window_menu,
 };
 

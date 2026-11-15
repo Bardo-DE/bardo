@@ -31,15 +31,6 @@ use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 use smithay::wayland::input_method::InputMethodSeat;
 use std::collections::BTreeSet;
 
-/// The way a key goes.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum KeyRoute {
-    /// Through the keyboard: the held-key count, the bindings, the input method's grab.
-    ThroughGrab,
-    /// Straight to the focused client's keyboards.
-    PastGrab,
-}
-
 /// What the seat says about one key now: the grab, and whether the key is down.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct RouteFacts {
@@ -64,19 +55,20 @@ pub fn route_facts<D: SeatHandler + 'static>(seat: &Seat<D>, code: KeyCode) -> R
 pub struct PastKeys(BTreeSet<(DeviceId, KeyCode)>);
 
 impl PastKeys {
-    /// The way `key` goes, given what the seat says now, and the record after it.
-    pub fn route(mut self, key: &KeyDelivery, facts: RouteFacts) -> (PastKeys, KeyRoute) {
+    /// Whether `key` goes straight to the focused client past the keyboard's grab (`false`: through
+    /// the keyboard, the bindings and the input method's grab), given what the seat says now, and the
+    /// record after it.
+    pub fn route(mut self, key: &KeyDelivery, facts: RouteFacts) -> (PastKeys, bool) {
         let held = (key.device, key.code);
         let route = match key.edge {
-            PressEdge::Release if self.0.remove(&held) => KeyRoute::PastGrab,
-            PressEdge::Release => KeyRoute::ThroughGrab,
-            PressEdge::Press => match press_route(&key.origin, key.device, facts) {
-                KeyRoute::PastGrab => {
+            PressEdge::Release => self.0.remove(&held),
+            PressEdge::Press => {
+                let past = press_route(&key.origin, key.device, facts);
+                if past {
                     self.0.insert(held);
-                    KeyRoute::PastGrab
                 }
-                KeyRoute::ThroughGrab => KeyRoute::ThroughGrab,
-            },
+                past
+            }
         };
         (self, route)
     }
@@ -92,11 +84,11 @@ impl PastKeys {
 /// The way a press goes: past only for a copy from a virtual keyboard made through the protocol
 /// (its ids start at [`VIRTUAL_KEYBOARD_DEVICE`]) while the input method holds the keyboard. A
 /// kernel keyboard, keycap's among them, goes through as before.
-fn press_route(origin: &Origin, device: DeviceId, facts: RouteFacts) -> KeyRoute {
+fn press_route(origin: &Origin, device: DeviceId, facts: RouteFacts) -> bool {
     let protocol = device.0 >= VIRTUAL_KEYBOARD_DEVICE.0;
     match (origin, facts.grabbed, facts.down) {
-        (Origin::Virtual(DeviceClass::Keyboard), true, true) if protocol => KeyRoute::PastGrab,
-        _ => KeyRoute::ThroughGrab,
+        (Origin::Virtual(DeviceClass::Keyboard), true, true) if protocol => true,
+        _ => false,
     }
 }
 
@@ -171,7 +163,7 @@ mod tests {
         }
     }
 
-    fn press(origin: Origin, device: DeviceId, facts: RouteFacts) -> KeyRoute {
+    fn press(origin: Origin, device: DeviceId, facts: RouteFacts) -> bool {
         PastKeys::default()
             .route(&key(origin, device, PressEdge::Press), facts)
             .1
@@ -188,22 +180,22 @@ mod tests {
             down: false,
         };
         let cases = [
-            (VIRTUAL, PROTOCOL, COPY, KeyRoute::PastGrab),
-            (VIRTUAL, LAST_PROTOCOL, COPY, KeyRoute::PastGrab),
-            (VIRTUAL, PROTOCOL, free, KeyRoute::ThroughGrab),
+            (VIRTUAL, PROTOCOL, COPY, true),
+            (VIRTUAL, LAST_PROTOCOL, COPY, true),
+            (VIRTUAL, PROTOCOL, free, false),
             // An on-screen keyboard's own key: nothing real is held, the grab takes it.
-            (VIRTUAL, PROTOCOL, own_key, KeyRoute::ThroughGrab),
+            (VIRTUAL, PROTOCOL, own_key, false),
             // An unlabelled uinput keyboard (ydotool) is virtual but a kernel device.
-            (VIRTUAL, KERNEL, COPY, KeyRoute::ThroughGrab),
-            (VIRTUAL, LAST_KERNEL, COPY, KeyRoute::ThroughGrab),
-            (HAND, KERNEL, COPY, KeyRoute::ThroughGrab),
-            (HAND, PROTOCOL, COPY, KeyRoute::ThroughGrab),
-            (Origin::Test, PROTOCOL, COPY, KeyRoute::ThroughGrab),
+            (VIRTUAL, KERNEL, COPY, false),
+            (VIRTUAL, LAST_KERNEL, COPY, false),
+            (HAND, KERNEL, COPY, false),
+            (HAND, PROTOCOL, COPY, false),
+            (Origin::Test, PROTOCOL, COPY, false),
             (
                 Origin::Virtual(DeviceClass::Pointer),
                 PROTOCOL,
                 COPY,
-                KeyRoute::ThroughGrab,
+                false,
             ),
         ];
         for (origin, device, facts, want) in cases {
@@ -224,22 +216,22 @@ mod tests {
         // Past at the press, the grab ends: the release still goes past.
         let (past, route) =
             PastKeys::default().route(&key(VIRTUAL, PROTOCOL, PressEdge::Press), COPY);
-        assert_eq!(route, KeyRoute::PastGrab);
+        assert!(route);
         let (past, route) = past.route(&key(VIRTUAL, PROTOCOL, PressEdge::Release), free);
-        assert_eq!(route, KeyRoute::PastGrab);
+        assert!(route);
         assert_eq!(past, PastKeys::default(), "nothing is left held");
         // Through at the press, the grab starts: the release goes through.
         let (past, route) = past.route(&key(VIRTUAL, PROTOCOL, PressEdge::Press), free);
-        assert_eq!(route, KeyRoute::ThroughGrab);
+        assert!(!route);
         let (past, route) = past.route(&key(VIRTUAL, PROTOCOL, PressEdge::Release), COPY);
-        assert_eq!(route, KeyRoute::ThroughGrab);
+        assert!(!route);
         // Another device's release of the same key is its own.
         let (past, _) = past.route(&key(VIRTUAL, PROTOCOL, PressEdge::Press), COPY);
         let other = DeviceId(PROTOCOL.0 + 1);
         let (past, route) = past.route(&key(VIRTUAL, other, PressEdge::Release), COPY);
-        assert_eq!(route, KeyRoute::ThroughGrab);
+        assert!(!route);
         let (past, route) = past.route(&key(VIRTUAL, PROTOCOL, PressEdge::Release), free);
-        assert_eq!(route, KeyRoute::PastGrab);
+        assert!(route);
         assert_eq!(past, PastKeys::default(), "nothing is left held");
     }
 
@@ -252,13 +244,9 @@ mod tests {
         let (past, _) = PastKeys::default().route(&key(VIRTUAL, PROTOCOL, PressEdge::Press), COPY);
         let past = past.refused_release(PROTOCOL, KeyCode(30));
         let (past, route) = past.route(&key(VIRTUAL, PROTOCOL, PressEdge::Press), free);
-        assert_eq!(route, KeyRoute::ThroughGrab);
+        assert!(!route);
         let (past, route) = past.route(&key(VIRTUAL, PROTOCOL, PressEdge::Release), free);
-        assert_eq!(
-            route,
-            KeyRoute::ThroughGrab,
-            "the release follows its press"
-        );
+        assert!(!route, "the release follows its press");
         assert_eq!(past, PastKeys::default());
     }
 }

@@ -5,7 +5,7 @@ use crate::state::State;
 use casement_core::{Event, InputSerial, WindowId};
 use casement_protocols::vocab::{Emphasis, PlacementMark};
 use casement_wayland::quire_window::{QuireWindowHandler, QuireWindowPart, WindowFacts};
-use casement_wayland::xdg_shell::{GrabUse, base_role, grab_proven};
+use casement_wayland::xdg_shell::{base_role, grab_proven};
 use smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::XdgToplevel;
 use smithay::reexports::wayland_server::Client;
 
@@ -58,7 +58,7 @@ impl QuireWindowHandler for State {
     }
 
     fn press_proves(&self, client: &Client, serial: InputSerial) -> bool {
-        grab_proven(self.press_of(client, serial).as_ref(), GrabUse::AnyPress)
+        grab_proven(self.press_of(client, serial).as_ref(), true)
     }
 }
 

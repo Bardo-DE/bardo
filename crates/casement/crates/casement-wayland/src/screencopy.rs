@@ -59,15 +59,6 @@ pub const VERSION: u32 = 3;
 /// instead of the list growing for the session.
 const MAX_DELIVERIES: usize = 256;
 
-/// Whether a copy reports damage.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Damage {
-    /// `copy`: the frame as it is now.
-    Whole,
-    /// `copy_with_damage`: waits for a frame newer than the client's last of this output.
-    Fresh,
-}
-
 /// What the composition root knows of an output a client named. Plain data the root fills, so
 /// not `non_exhaustive`.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -134,8 +125,9 @@ pub struct PendingCopy {
     pub buffer: WlBuffer,
     /// What to copy.
     pub target: Target,
-    /// Whether it reports damage.
-    pub damage: Damage,
+    /// Whether it reports damage (`copy_with_damage`: waits for a frame newer than the client's
+    /// last of this output) rather than the frame as it is now (`copy`).
+    pub fresh: bool,
     /// Whether the frame has the cursor in it.
     pub cursor: bool,
 }
@@ -252,10 +244,7 @@ pub fn apply_ready(
     at: Mono,
     damage: &[PhysicalRect],
 ) {
-    let damage = match copy.damage {
-        Damage::Whole => None,
-        Damage::Fresh => Some(damage),
-    };
+    let damage = copy.fresh.then_some(damage);
     wire::send_ready(&copy.frame, damage, at);
     part.note_delivery(copy, at);
 }
@@ -410,7 +399,7 @@ impl FrameData {
         asked_by: (&Client, &DisplayHandle),
         frame: &ZwlrScreencopyFrameV1,
         buffer: WlBuffer,
-        damage: Damage,
+        fresh: bool,
     ) {
         if self.take_use() {
             frame.post_error(
@@ -442,7 +431,7 @@ impl FrameData {
             frame: frame.clone(),
             buffer,
             target,
-            damage,
+            fresh,
             cursor: self.cursor,
         };
         match consent::admit(state, client, Power::Screen) {
@@ -471,10 +460,10 @@ where
     ) {
         match request {
             zwlr_screencopy_frame_v1::Request::Copy { buffer } => {
-                self.copy(state, (client, handle), resource, buffer, Damage::Whole);
+                self.copy(state, (client, handle), resource, buffer, false);
             }
             zwlr_screencopy_frame_v1::Request::CopyWithDamage { buffer } => {
-                self.copy(state, (client, handle), resource, buffer, Damage::Fresh);
+                self.copy(state, (client, handle), resource, buffer, true);
             }
             _ => {}
         }

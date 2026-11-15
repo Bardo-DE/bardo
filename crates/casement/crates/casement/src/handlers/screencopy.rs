@@ -13,7 +13,7 @@ use casement_core::privilege::PowerOutcome;
 use casement_core::{ClientKey, OutputKey};
 use casement_wayland::image_capture::CaptureFailure;
 use casement_wayland::screencopy::{
-    self, Damage, PendingCopy, ScreencopyHandler, ScreencopyOutput, ScreencopyPart,
+    self, PendingCopy, ScreencopyHandler, ScreencopyOutput, ScreencopyPart,
 };
 use smithay::output::Output;
 use smithay::reexports::wayland_server::Resource;
@@ -89,19 +89,18 @@ fn answer(state: &mut State, copy: &PendingCopy) -> bool {
     };
     // `copy_with_damage` answers once something changed in what it copies since the client's
     // last frame (the whole area for its first); a plain `copy` answers at once.
-    let damage = match copy.damage {
-        Damage::Fresh => {
-            let last = state.wl.screencopy.last_delivery(copy);
-            let since = state
-                .wl
-                .image_capture
-                .damage
-                .since(&copy.target.output, last);
-            since.within(copy.target.area)
-        }
-        _ => Vec::new(),
+    let damage = if copy.fresh {
+        let last = state.wl.screencopy.last_delivery(copy);
+        let since = state
+            .wl
+            .image_capture
+            .damage
+            .since(&copy.target.output, last);
+        since.within(copy.target.area)
+    } else {
+        Vec::new()
     };
-    if copy.damage == Damage::Fresh && damage.is_empty() {
+    if copy.fresh && damage.is_empty() {
         return true;
     }
     // The part of the frame that `copy` names, drawn into its buffer by the GPU or read back.

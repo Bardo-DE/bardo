@@ -14,7 +14,7 @@ use casement_wayland::convert::{point_of, serial_of};
 use casement_wayland::limits::{self, Limit};
 use casement_wayland::serial::PressRecord;
 use casement_wayland::xdg_shell::{
-    self, GrabUse, edges_of, grab_proven, heaviest_holder, on_app_id, on_full_screen, on_maximise,
+    self, edges_of, grab_proven, heaviest_holder, on_app_id, on_full_screen, on_maximise,
     on_minimise, on_move, on_new_toplevel, on_parent, on_pong, on_resize, on_title,
     on_toplevel_destroyed, on_window_menu,
 };
@@ -55,11 +55,11 @@ impl State {
         self.wl.seat.serials.answers(serial, key).copied()
     }
 
-    /// Whether `serial`, sent by the owner of `surface`, answers a press that `use_` accepts.
-    fn serial_proves(&self, surface: &WlSurface, serial: InputSerial, use_: GrabUse) -> bool {
+    /// Whether `serial`, sent by the owner of `surface`, answers a press that `any_press` accepts.
+    fn serial_proves(&self, surface: &WlSurface, serial: InputSerial, any_press: bool) -> bool {
         surface
             .client()
-            .is_some_and(|client| grab_proven(self.press_of(&client, serial).as_ref(), use_))
+            .is_some_and(|client| grab_proven(self.press_of(&client, serial).as_ref(), any_press))
     }
 
     /// Whether `serial` is the latest input its client's seat delivered to it and a popup grab
@@ -72,7 +72,7 @@ impl State {
             return false;
         };
         let record = self.wl.seat.serials.answers_latest(serial, key);
-        grab_proven(record, GrabUse::AnyPress)
+        grab_proven(record, true)
     }
 
     /// Who is cut because the session holds as many windows as it may and `asker` wants one more:
@@ -166,7 +166,7 @@ impl XdgShellHandler for State {
 
     fn move_request(&mut self, surface: ToplevelSurface, _seat: WlSeat, serial: Serial) {
         let serial = serial_of(serial);
-        if !self.serial_proves(surface.wl_surface(), serial, GrabUse::Drag) {
+        if !self.serial_proves(surface.wl_surface(), serial, false) {
             tracing::debug!(?serial, "a move that answers no press is ignored");
             return;
         }
@@ -185,7 +185,7 @@ impl XdgShellHandler for State {
         let Some(edges) = edges_of(edges) else {
             return;
         };
-        if !self.serial_proves(surface.wl_surface(), serial, GrabUse::Drag) {
+        if !self.serial_proves(surface.wl_surface(), serial, false) {
             tracing::debug!(?serial, "a resize that answers no press is ignored");
             return;
         }
@@ -243,7 +243,7 @@ impl XdgShellHandler for State {
         serial: Serial,
         location: Point<i32, Logical>,
     ) {
-        if !self.serial_proves(surface.wl_surface(), serial_of(serial), GrabUse::Drag) {
+        if !self.serial_proves(surface.wl_surface(), serial_of(serial), false) {
             return;
         }
         let events = on_window_menu(&mut self.wl.xdg_shell, &surface, point_of(location));

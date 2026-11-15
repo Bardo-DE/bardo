@@ -29,7 +29,7 @@ use casement_core::{Effect, InputSerial, KeyboardTarget, Model};
 use casement_protocols::vocab::HeldMods;
 use casement_protocols::vocab::PressEdge;
 use casement_wayland::seat::{
-    self, GestureDelivery, KeyDelivery, KeyRoute, PointerDelivery, Pressed,
+    self, GestureDelivery, KeyDelivery, PointerDelivery, Pressed,
     SurfaceAt,
 };
 use casement_wayland::serial::{PressKind, PressRecord};
@@ -325,9 +325,9 @@ pub(super) fn deliver_keys(state: &mut State, seat: &Seat<State>, keys: Vec<KeyD
 /// screen a key goes to the lock surface past any input method's grab (`apply_key`'s `to_focus`).
 fn deliver_key(state: &mut State, seat: &Seat<State>, key: KeyDelivery) {
     let facts = seat::route_facts(seat, key.code);
-    let (past, route) = std::mem::take(&mut state.wl.seat.past).route(&key, facts);
+    let (past, past_grab) = std::mem::take(&mut state.wl.seat.past).route(&key, facts);
     state.wl.seat.past = past;
-    if route == KeyRoute::PastGrab {
+    if past_grab {
         seat::deliver_past_grab(seat, &key);
         if key.edge == PressEdge::Press {
             remember_key_press(state, seat, &key);

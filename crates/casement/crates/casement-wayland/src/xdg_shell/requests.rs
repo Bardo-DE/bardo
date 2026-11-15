@@ -20,28 +20,20 @@ use casement_protocols::vocab::Toggle;
 use smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::{ResizeEdge, State};
 use smithay::wayland::shell::xdg::ToplevelSurface;
 
-/// What a serial is offered as proof for.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum GrabUse {
-    /// An interactive move, resize or window menu: a pointer button, a touch or a pen tip.
-    Drag,
-    /// A popup grab or a placement request: any press, a key included (a menu opened from the
-    /// keyboard, a placement chosen with a shortcut), and a button release (a menu opened on it).
-    AnyPress,
-}
-
 /// Whether the press `record` (what the seat remembers of the serial the client sent, if it
-/// was delivered to that client and is recent) is proof enough for `use_`.
+/// was delivered to that client and is recent) is proof enough for `any_press`: `false` for an
+/// interactive move, resize or window menu (a pointer button, a touch or a pen tip), `true` for
+/// a popup grab or a placement request (any press, a key included, and a button release).
 ///
 /// An agent lease's press is never proof of a drag: an interactive move or resize is the
 /// compositor's own interaction, which the agent never drives (a popup grab inside its window is
 /// still allowed: a menu it opened).
-pub fn grab_proven(record: Option<&PressRecord>, use_: GrabUse) -> bool {
-    match (record.map(|press| (press.kind, press.origin)), use_) {
+pub fn grab_proven(record: Option<&PressRecord>, any_press: bool) -> bool {
+    match (record.map(|press| (press.kind, press.origin)), any_press) {
         (None, _) => false,
-        (Some((_, Origin::Agent(_))), GrabUse::Drag) => false,
-        (Some((PressKind::Key | PressKind::Release, _)), GrabUse::Drag) => false,
-        (Some(_), GrabUse::Drag | GrabUse::AnyPress) => true,
+        (Some((_, Origin::Agent(_))), false) => false,
+        (Some((PressKind::Key | PressKind::Release, _)), false) => false,
+        (Some(_), _) => true,
     }
 }
 
@@ -215,48 +207,48 @@ mod tests {
             origin: Origin::Agent(casement_core::LeaseId(3)),
             ..press(PressKind::Button)
         };
-        assert!(!grab_proven(Some(&agent), GrabUse::Drag));
-        assert!(grab_proven(Some(&agent), GrabUse::AnyPress));
+        assert!(!grab_proven(Some(&agent), false));
+        assert!(grab_proven(Some(&agent), true));
     }
 
     /// A press proves a drag unless it was a key; no press proves nothing.
     #[test]
     fn a_grab_needs_a_press_that_can_drag() {
         let rows = [
-            ("no press", None, GrabUse::Drag, false),
-            ("no press, popup", None, GrabUse::AnyPress, false),
-            ("button", Some(PressKind::Button), GrabUse::Drag, true),
-            ("touch", Some(PressKind::Touch), GrabUse::Drag, true),
-            ("pen", Some(PressKind::TabletTip), GrabUse::Drag, true),
-            ("key", Some(PressKind::Key), GrabUse::Drag, false),
+            ("no press", None, false, false),
+            ("no press, popup", None, true, false),
+            ("button", Some(PressKind::Button), false, true),
+            ("touch", Some(PressKind::Touch), false, true),
+            ("pen", Some(PressKind::TabletTip), false, true),
+            ("key", Some(PressKind::Key), false, false),
             (
                 "key opens a menu",
                 Some(PressKind::Key),
-                GrabUse::AnyPress,
+                true,
                 true,
             ),
             (
                 "button grabs a popup",
                 Some(PressKind::Button),
-                GrabUse::AnyPress,
+                true,
                 true,
             ),
             (
                 "a release opens a menu",
                 Some(PressKind::Release),
-                GrabUse::AnyPress,
+                true,
                 true,
             ),
             (
                 "a release starts no drag",
                 Some(PressKind::Release),
-                GrabUse::Drag,
+                false,
                 false,
             ),
         ];
-        for (case, kind, use_, want) in rows {
+        for (case, kind, any_press, want) in rows {
             let record = kind.map(press);
-            assert_eq!(grab_proven(record.as_ref(), use_), want, "{case}");
+            assert_eq!(grab_proven(record.as_ref(), any_press), want, "{case}");
         }
     }
 
