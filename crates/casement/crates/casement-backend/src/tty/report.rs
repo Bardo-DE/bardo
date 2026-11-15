@@ -98,10 +98,7 @@ fn output_json(output: &ReportedOutput) -> String {
         "{}x{}@{}",
         output.mode.size.w, output.mode.size.h, output.mode.refresh.0
     );
-    let power = match output.power {
-        true => "on",
-        false => "off",
-    };
+    let power = if output.power { "on" } else { "off" };
     format!(
         r#"{{"name":{},"mode":"{mode}","power":"{power}"}}"#,
         json_string(output.name.as_str())

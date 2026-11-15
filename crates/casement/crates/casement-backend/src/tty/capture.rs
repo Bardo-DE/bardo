@@ -98,14 +98,13 @@ impl TtyBackend {
         radius: u32,
         source: &dyn FrameSource,
     ) -> Result<smithay::backend::renderer::gles::GlesTexture, BackendError> {
-        match self.body_on_gpu() {
-            true => self
-                .devices
-                .capture_gpu()
-                .ok_or(BackendError::NoFrame)?
-                .render_window_texture(size, scale, radius, source),
-            false => Err(BackendError::NoFrame),
+        if !self.body_on_gpu() {
+            return Err(BackendError::NoFrame);
         }
+        self.devices
+            .capture_gpu()
+            .ok_or(BackendError::NoFrame)?
+            .render_window_texture(size, scale, radius, source)
     }
 
     /// Whether the display GPU can draw a capture into a dma-buf of format `wanted` (a window:

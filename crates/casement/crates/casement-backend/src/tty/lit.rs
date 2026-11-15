@@ -85,9 +85,10 @@ impl TtyBackend {
             return Ok(Lighting::Deferred);
         }
         let (path, connector) = self.driver_of(name)?;
-        match config.power {
-            false => self.darken(name, &path, &connector),
-            true => self.light(name, &path, &connector, config, now),
+        if config.power {
+            self.light(name, &path, &connector, config, now)
+        } else {
+            self.darken(name, &path, &connector)
         }
     }
 

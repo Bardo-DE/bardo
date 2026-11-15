@@ -60,17 +60,16 @@ impl HeadObjects {
     /// 0`.
     fn send_state(&self) {
         let config = &self.config;
-        match config.power {
-            false => self.head.enabled(0),
-            true => {
-                self.head.enabled(1);
-                if let Some((_, mode)) = self.modes.iter().find(|(mode, _)| *mode == config.mode) {
-                    self.head.current_mode(mode);
-                }
-                self.head.position(config.position.x, config.position.y);
-                self.head.transform(transform_to(config.transform));
-                self.head.scale(config.scale.as_f64());
+        if config.power {
+            self.head.enabled(1);
+            if let Some((_, mode)) = self.modes.iter().find(|(mode, _)| *mode == config.mode) {
+                self.head.current_mode(mode);
             }
+            self.head.position(config.position.x, config.position.y);
+            self.head.transform(transform_to(config.transform));
+            self.head.scale(config.scale.as_f64());
+        } else {
+            self.head.enabled(0);
         }
     }
 }

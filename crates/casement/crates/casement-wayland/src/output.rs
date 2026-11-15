@@ -126,9 +126,10 @@ fn build(wire: &OutputWire) -> Output {
         },
     );
     let mode = mode_to(&wire.mode);
-    match wire.mode.preferred {
-        true => output.set_preferred(mode),
-        false => output.add_mode(mode),
+    if wire.mode.preferred {
+        output.set_preferred(mode);
+    } else {
+        output.add_mode(mode);
     }
     apply_state(&output, wire);
     output

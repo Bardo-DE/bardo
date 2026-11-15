@@ -98,10 +98,7 @@ fn transform_word(transform: Transform) -> &'static str {
 }
 
 fn output_json(name: &OutputName, key: &OutputKey, config: &OutputConfig) -> String {
-    let power = match config.power {
-        true => "on",
-        false => "off",
-    };
+    let power = if config.power { "on" } else { "off" };
     let rect = config.logical_rect();
     format!(
         "{{\"name\":{},\"key\":{},\"width\":{},\"height\":{},\"refresh\":{},\"scale\":{},\"x\":{},\"y\":{},\"logical\":[{},{}],\"transform\":{},\"power\":{}}}",

@@ -156,9 +156,10 @@ impl OutputPowers {
     /// Asks for the control to light (`true`) or darken (`false`) its output.
     pub fn set_mode(&mut self, id: ControlId, lit: bool) -> Result<(), ClientError> {
         let control = self.find(id)?;
-        control.proxy.set_mode(match lit {
-            true => zwlr_output_power_v1::Mode::On,
-            false => zwlr_output_power_v1::Mode::Off,
+        control.proxy.set_mode(if lit {
+            zwlr_output_power_v1::Mode::On
+        } else {
+            zwlr_output_power_v1::Mode::Off
         });
         self.flush()
     }

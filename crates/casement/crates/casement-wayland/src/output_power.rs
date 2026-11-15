@@ -124,10 +124,11 @@ pub fn on_set_mode(
     power: bool,
     by: Requester,
 ) -> Vec<Event> {
-    match power {
-        false => part.darkened.insert(output.clone()),
-        true => part.darkened.remove(&output),
-    };
+    if power {
+        part.darkened.remove(&output);
+    } else {
+        part.darkened.insert(output.clone());
+    }
     vec![Event::OutputRequested {
         output,
         change: OutputChangeSet::none().with_power(power),
@@ -195,9 +196,10 @@ pub fn follow(part: &mut OutputPowerPart, outputs: &OutputBook) {
 }
 
 fn wire_mode(power: bool) -> zwlr_output_power_v1::Mode {
-    match power {
-        true => zwlr_output_power_v1::Mode::On,
-        false => zwlr_output_power_v1::Mode::Off,
+    if power {
+        zwlr_output_power_v1::Mode::On
+    } else {
+        zwlr_output_power_v1::Mode::Off
     }
 }
 

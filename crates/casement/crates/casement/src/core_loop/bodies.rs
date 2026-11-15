@@ -180,11 +180,12 @@ fn make_body(
     id: u64,
     (radius, scale): (u32, Scale),
 ) -> Option<ClosingBody> {
-    let on_gpu = match body_on_gpu(state) {
-        true => window_texture(state, window, radius)
+    let on_gpu = if body_on_gpu(state) {
+        window_texture(state, window, radius)
             .ok()
-            .map(|(texture, size)| ClosingBody::from_texture(id, size, texture)),
-        false => None,
+            .map(|(texture, size)| ClosingBody::from_texture(id, size, texture))
+    } else {
+        None
     };
     on_gpu.or_else(|| {
         let frame = window_rgba(state, window).ok()?;
