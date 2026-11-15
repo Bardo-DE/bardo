@@ -338,7 +338,7 @@ params = []
 
 const HIDE_MD: &str = "---\nname: hiding\ndescription: Hide a window.\n---\n# Hiding\n\nHide it.\n";
 
-const HIDE_SKILL: &str = "vocab = 1\nid = \"hiding\"\nowner = \"org.quire.Shell\"\nversion = \"0.1.0\"\nuses = [\"org.quire.Shell:shell.window.hide\"]\n[when]\nalways = \"yes\"\n";
+const HIDE_SKILL: &str = "vocab = 1\nid = \"hiding\"\nowner = \"org.quire.Shell\"\nversion = \"0.1.0\"\nuses = [\"org.quire.Shell:shell.window.hide\"]\n[when]\nalways = true\n";
 
 fn skill_repo(dir: &Path) {
     put(dir, "dist/skills/hiding/skill.toml", HIDE_SKILL);

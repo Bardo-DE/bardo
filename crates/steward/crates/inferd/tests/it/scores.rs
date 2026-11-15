@@ -33,8 +33,8 @@ fn llm() -> Need {
 /// `Choice` is asked of it natively.
 fn chat_choice() -> String {
     entries::chat().replace(
-        r#"output = ["json_schema"]"#,
-        r#"output = ["json_schema", "choice"]"#,
+        r#"structured = ["json_schema"]"#,
+        r#"structured = ["json_schema", "choice"]"#,
     )
 }
 

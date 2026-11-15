@@ -59,7 +59,7 @@ impl InferdWorld {
             write(&root.join("cassette.jsonl"), cassette);
         }
         write(
-            &root.join("config/quire/inferd.toml"),
+            &root.join("config/inferd/inferd.toml"),
             &inferd_toml(root, model, None),
         );
         let keys = options.keys_home.as_ref().map(|home| {

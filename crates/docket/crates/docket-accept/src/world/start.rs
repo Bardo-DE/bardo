@@ -102,7 +102,7 @@ impl World {
             write(&root.join("cassette.jsonl"), cassette);
         }
         write(
-            &root.join("config/quire/inferd.toml"),
+            &root.join("config/inferd/inferd.toml"),
             &inferd_toml(root, model, record.as_deref()),
         );
         write(

@@ -287,7 +287,7 @@ fn the_shell_is_sill_in_the_fake_proc_root() {
     assert_eq!(shell["role"].as_str(), Some("sheet_host"));
     assert!(root.join("data/quire/memory/spaces.toml").is_file());
     assert_eq!(
-        std::fs::read_to_string(root.join("config/quire/inferd.toml")).expect("inferd.toml"),
+        std::fs::read_to_string(root.join("config/inferd/inferd.toml")).expect("inferd.toml"),
         text
     );
     assert_eq!(
