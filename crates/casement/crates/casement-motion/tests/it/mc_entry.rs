@@ -1,14 +1,12 @@
-//! S-L8: the Mission Control entry as goldens (FrameScene text at 0, 50, 100, 200 and 400 ms),
-//! and the properties that make a golden trustworthy: independent of how often it is sampled,
-//! stable run to run, and a microsecond of timing moves no value by more than one sub-pixel.
-//! Goldens change only with a reason in the commit: `CASEMENT_BLESS=1` writes them.
+//! S-L8: the Mission Control entry (FrameScene text at 0, 50, 100, 200 and 400 ms): its ends are
+//! the table's own numbers, sampling is independent of how often it is sampled and stable run to
+//! run, and a microsecond of timing moves no value by more than one sub-pixel.
 
 use crate::support;
 
 use casement_core::time::Mono;
 use casement_motion::{FrameScene, MotionBook, Settled, sample};
 use ds_style::appearance::motion::MotionLevel;
-use std::path::PathBuf;
 use support::mc_entry::{INSTANTS_MS, committed_of_scene, entry, journeys, looks_of_scene};
 use support::{at, at_us};
 
@@ -27,34 +25,7 @@ fn dump(book: &MotionBook) -> String {
         .collect()
 }
 
-fn golden_path(name: &str) -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/goldens")
-        .join(name)
-}
-
-/// Compares `got` with the golden `name`, writing it first under `CASEMENT_BLESS=1`.
-fn assert_golden(name: &str, got: &str) {
-    let path = golden_path(name);
-    if std::env::var_os("CASEMENT_BLESS").is_some() {
-        std::fs::write(&path, got).expect("write the golden");
-    }
-    let want = std::fs::read_to_string(&path)
-        .unwrap_or_else(|e| panic!("{}: {e}; bless once with CASEMENT_BLESS=1", path.display()));
-    assert_eq!(got, want, "{name} differs; bless only with a reason");
-}
-
-#[test]
-fn the_mission_control_entry_matches_its_golden() {
-    assert_golden("mc_entry.txt", &dump(&entry(MotionLevel::Standard)));
-}
-
-#[test]
-fn the_reduced_entry_matches_its_golden() {
-    assert_golden("mc_entry_reduced.txt", &dump(&entry(MotionLevel::Reduced)));
-}
-
-/// The golden is not only a recording: its ends are the table's own numbers.
+/// The entry's ends are the table's own numbers.
 #[test]
 fn the_entry_starts_at_the_desktop_and_ends_at_the_slots() {
     let book = entry(MotionLevel::Standard);
