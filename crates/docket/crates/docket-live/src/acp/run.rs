@@ -10,7 +10,7 @@ use crate::warm_bus::warm_world;
 use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, FooterWire};
 use docket_accept::confirm::ByEffect;
 use docket_accept::drive::Launcher;
-use docket_accept::world::{AcpSetting, Binaries, ModelSource, Options, TapMode, World};
+use docket_accept::world::{AcpSetting, Binaries, ModelSource, Options, World};
 use docket_core::Reveal;
 use docket_session::SheetChoice;
 use docket_session::TurnEnd;
@@ -158,7 +158,7 @@ pub async fn run_flow_acp(
 ) -> AcpFlowReport {
     let options = Options {
         keep_in,
-        tap: TapMode::On,
+        tap: true,
         keys_home: None,
         catalog,
         acp: AcpSetting::Agents,
@@ -256,7 +256,7 @@ pub async fn list_models_acp(
 ) -> Result<String, PlayFault> {
     let options = Options {
         keep_in,
-        tap: TapMode::On,
+        tap: true,
         keys_home: None,
         catalog,
         acp: AcpSetting::Agents,

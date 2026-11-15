@@ -150,10 +150,10 @@ pub struct Options {
     /// Where the scratch root is made, and kept when the run ends (a live run's traces live in
     /// it). Absent: a temporary directory that goes with the world.
     pub keep_in: Option<PathBuf>,
-    /// Turn on the model tap in every daemon (`DOCKET_MODEL_TRACE`): every request a daemon
+    /// Whether to turn on the model tap in every daemon (`DOCKET_MODEL_TRACE`): every request a daemon
     /// sends a model and its answer, appended to `<scratch>/model.jsonl`. THIS WRITES PROMPTS TO
     /// DISK, in the scratch root.
-    pub tap: TapMode,
+    pub tap: bool,
     /// A durable home that already holds the cloud key (`--keys-home`): inferd's keys are the
     /// file in it and its non-secret records are copied into the scratch root, so no key is
     /// typed per world.
@@ -161,8 +161,9 @@ pub struct Options {
     /// A catalogue directory whose `*.toml` entries are copied into the scratch root before
     /// inferd starts (see `catalog`).
     pub catalog: Option<PathBuf>,
-    /// Whether inferd's replay engine writes down every request it is asked.
-    pub record: Record,
+    /// Whether inferd's replay engine records the request bodies it is asked, to
+    /// `<scratch>/record.jsonl`; a world prints them when it is dropped.
+    pub record: bool,
     /// Whether the person switched the ACP edge on.
     pub acp: AcpSetting,
     /// What is open in the app's window, which "this thread" means.
@@ -177,27 +178,6 @@ pub fn copy_catalog(from: Option<&Path>, root: &Path) {
         crate::catalog::copy_entries(from, &crate::catalog::world_dir(root))
             .unwrap_or_else(|e| panic!("catalogue {}: {e}", from.display()));
     }
-}
-
-/// Whether inferd's replay engine records the request bodies it is asked, to
-/// `<scratch>/record.jsonl`; a world prints them when it is dropped.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
-pub enum Record {
-    /// Nothing is recorded.
-    #[default]
-    Off,
-    /// Every request body is.
-    On,
-}
-
-/// Whether the daemons tap their model link.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
-pub enum TapMode {
-    /// No daemon keeps a copy of any prompt.
-    #[default]
-    Off,
-    /// Every daemon appends its exchanges to the scratch root's `model.jsonl`.
-    On,
 }
 
 /// A scratch root: temporary, or kept where the run was told to leave it.

@@ -10,7 +10,7 @@ use docket_accept::drive::Launcher;
 use docket_accept::keys_home::KeysHome;
 use docket_accept::provider::{Focus, Sending};
 use docket_accept::things::App;
-use docket_accept::world::{Binaries, Consent, ModelSource, Options, TapMode, World};
+use docket_accept::world::{Binaries, Consent, ModelSource, Options, World};
 use docket_core::ModelExchange;
 use docket_session::SheetChoice;
 use docket_wire::JournalFilter;
@@ -83,7 +83,7 @@ pub(crate) async fn observe(
 ) -> Result<Played, WarmFault> {
     let options = Options {
         keep_in,
-        tap: TapMode::On,
+        tap: true,
         keys_home: keys_home.cloned(),
         catalog,
         focus: script.focus,

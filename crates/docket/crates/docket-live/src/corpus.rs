@@ -10,7 +10,7 @@ use crate::trace_dir::{TraceDir, TraceDirError};
 use crate::warm::WarmFault;
 use crate::warm_bus::warm_up;
 use action_review::{InferReviewer, ReviewRequest, ReviewVerdict, Reviewer};
-use docket_accept::world::{Binaries, Options, TapMode};
+use docket_accept::world::{Binaries, Options};
 use docket_core::{AgentConfig, ModelExchange, ReviewTimeouts};
 use docket_dbus::Watched;
 use docket_eval::{Harness, PolicyMode, run_case_traced};
@@ -178,7 +178,7 @@ pub async fn run_corpus_live(
         &model,
         &Options {
             keep_in: Some(options.out.join("scratch")),
-            tap: TapMode::Off,
+            tap: false,
             keys_home: options.keys_home.clone(),
             catalog: options.catalog.clone(),
             ..Options::default()

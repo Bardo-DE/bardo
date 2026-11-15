@@ -2,7 +2,7 @@
 
 use super::{
     AcpSetting, Binaries, Cassette, Cgroup, Consent, DaemonEnv, MEMORY_CALLERS, ModelSource,
-    Options, Record, SPACES, Scratch, TapMode, World, copy_catalog, inferd_toml, place, spawn,
+    Options, SPACES, Scratch, World, copy_catalog, inferd_toml, place, spawn,
     within, write, write_system_callers,
 };
 use crate::confirm;
@@ -90,10 +90,7 @@ impl World {
 
         // Files the daemons read: memoryd's callers, its Spaces, intentd's manifest and consent.
         // The test process is the shell (sill): the fake proc root says so.
-        let record = match options.record {
-            Record::On => Some(root.join("record.jsonl")),
-            Record::Off => None,
-        };
+        let record = options.record.then(|| root.join("record.jsonl"));
         place(root, std::process::id(), Cgroup::Unit("sill"));
         write(
             &root.join("config/quire/memory-callers.toml"),
@@ -124,10 +121,7 @@ impl World {
             &settings_toml(options.acp),
         );
         copy_catalog(options.catalog.as_deref(), root);
-        let tap = match options.tap {
-            TapMode::On => Some(root.join("model.jsonl")),
-            TapMode::Off => None,
-        };
+        let tap = options.tap.then(|| root.join("model.jsonl"));
         let keys = options
             .keys_home
             .as_ref()

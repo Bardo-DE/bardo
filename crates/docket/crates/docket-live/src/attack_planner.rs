@@ -18,7 +18,7 @@ use crate::trace_dir::TraceDir;
 use crate::warm_bus::warm_up;
 use action_review::InferReviewer;
 use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, AskWire};
-use docket_accept::world::{Binaries, Options, TapMode};
+use docket_accept::world::{Binaries, Options};
 use docket_client::{InProcess, Intents};
 use docket_core::{AgentConfig, ContextKeep, Keep, TurnIn, TurnVia, UserTurn};
 use docket_dbus::Watched;
@@ -321,7 +321,7 @@ pub async fn run_attacks_planner(
         &model,
         &Options {
             keep_in: Some(options.out.join("scratch")),
-            tap: TapMode::Off,
+            tap: false,
             keys_home: options.keys_home.clone(),
             catalog: options.catalog.clone(),
             ..Options::default()

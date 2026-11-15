@@ -35,15 +35,6 @@ impl ByEffect {
     }
 }
 
-/// When the person's answer reaches intentd.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Release {
-    /// As soon as the sheet is shown.
-    AtOnce,
-    /// Only when the test calls [`Sheet::release`]: the sheet is seen waiting first.
-    WhenReleased,
-}
-
 /// An answer the test holds back until [`Sheet::release`].
 #[derive(Debug)]
 struct Held {
@@ -56,7 +47,9 @@ struct Held {
 #[derive(Debug, Default)]
 struct Inner {
     by_effect: Option<ByEffect>,
-    verdicts: VecDeque<(SheetChoice, Release)>,
+    /// Each verdict, and whether its answer is held until [`Sheet::release`] (the sheet is seen
+    /// waiting first) rather than sent as soon as the sheet is shown.
+    verdicts: VecDeque<(SheetChoice, bool)>,
     held: Vec<Held>,
     shown: Vec<ConfirmRequest>,
     cancelled: Vec<String>,
@@ -77,13 +70,13 @@ impl Sheet {
 
     /// Queues what the person does with the next sheet that has no verdict yet.
     pub fn will(&self, verdict: SheetChoice) {
-        self.edit(|i| i.verdicts.push_back((verdict, Release::AtOnce)));
+        self.edit(|i| i.verdicts.push_back((verdict, false)));
     }
 
     /// Queues what the person does with the next sheet, but holds the answer until
     /// [`Sheet::release`], so the test can see the turn waiting on the sheet first.
     pub fn will_when_released(&self, verdict: SheetChoice) {
-        self.edit(|i| i.verdicts.push_back((verdict, Release::WhenReleased)));
+        self.edit(|i| i.verdicts.push_back((verdict, true)));
     }
 
     /// Sends every answer held back by [`Sheet::will_when_released`], first waiting for one to be
@@ -171,7 +164,7 @@ impl ConfirmObject {
                 i.next,
                 i.verdicts.pop_front().or_else(|| {
                     i.by_effect
-                        .map(|r| (r.verdict_for(&parsed), Release::AtOnce))
+                        .map(|r| (r.verdict_for(&parsed), false))
                 }),
             )
         });
@@ -182,11 +175,11 @@ impl ConfirmObject {
             .into();
         let caller = header.sender().map(|s| s.to_owned());
         // No verdict queued: the sheet stays open until intentd withdraws it.
-        if let (Some((verdict, release)), Some(caller)) = (verdict, caller) {
+        if let (Some((verdict, held)), Some(caller)) = (verdict, caller) {
             let reply = serde_json::to_string(&answer_of(verdict, &parsed))
                 .map_err(|e| fdo::Error::Failed(e.to_string()))?;
             let connection = connection.clone();
-            if release == Release::WhenReleased {
+            if held {
                 self.sheet.edit(|i| {
                     i.held.push(Held {
                         connection,
