@@ -5,8 +5,8 @@ use crate::support::driver::{Op, plug, run, run_from};
 use crate::support::{display, headless, mode, ms};
 use casement_core::geometry::LogicalPoint;
 use casement_core::output::{
-    GammaRamp, GammaTable, Kelvin, MinuteOfDay, ModePreference, NightLight, OutputChangeSet,
-    OutputConfig, OutputPower, OutputRefusal, Requester, Schedule, keeps_one_lit, resolve_change,
+    GammaRamp, GammaTable, Kelvin, MinuteOfDay, NightLight, OutputChangeSet,
+    OutputConfig, OutputRefusal, Requester, Schedule, keeps_one_lit, resolve_change,
 };
 use casement_core::settings::{CasementSettings, NightLightSettings};
 use casement_core::space::SpaceSeed;
@@ -20,7 +20,7 @@ fn current(facts: &casement_core::output::OutputFacts) -> OutputConfig {
         scale: Scale(120),
         transform: Transform::Normal,
         position: LogicalPoint { x: 0, y: 0 },
-        power: OutputPower::On,
+        power: true,
     }
 }
 
@@ -28,16 +28,16 @@ fn current(facts: &casement_core::output::OutputFacts) -> OutputConfig {
 fn a_change_of_power_keeps_the_rest() {
     let facts = display(
         "DP-1",
-        vec![mode(1920, 1080, 60_000, ModePreference::Preferred)],
+        vec![mode(1920, 1080, 60_000, true)],
         (527, 296),
     );
     let config = current(&facts);
-    let want = OutputChangeSet::none().with_power(OutputPower::Off);
+    let want = OutputChangeSet::none().with_power(false);
     let resolved = resolve_change(&facts, &config, &want).expect("resolved");
     assert_eq!(
         resolved,
         OutputConfig {
-            power: OutputPower::Off,
+            power: false,
             ..config
         }
     );
@@ -47,11 +47,11 @@ fn a_change_of_power_keeps_the_rest() {
 fn a_mode_the_display_does_not_offer_is_refused() {
     let facts = display(
         "DP-1",
-        vec![mode(1920, 1080, 60_000, ModePreference::Preferred)],
+        vec![mode(1920, 1080, 60_000, true)],
         (527, 296),
     );
     let config = current(&facts);
-    let odd = mode(1234, 567, 60_000, ModePreference::Other);
+    let odd = mode(1234, 567, 60_000, false);
     let mut want = OutputChangeSet::none();
     want.mode = Some(odd);
     assert_eq!(
@@ -64,7 +64,7 @@ fn a_mode_the_display_does_not_offer_is_refused() {
 fn a_scale_outside_what_outputs_take_is_refused() {
     let facts = display(
         "DP-1",
-        vec![mode(1920, 1080, 60_000, ModePreference::Preferred)],
+        vec![mode(1920, 1080, 60_000, true)],
         (527, 296),
     );
     let config = current(&facts);
@@ -82,7 +82,7 @@ fn a_scale_outside_what_outputs_take_is_refused() {
 fn scale_transform_and_position_replace_only_themselves() {
     let facts = display(
         "DP-1",
-        vec![mode(1920, 1080, 60_000, ModePreference::Preferred)],
+        vec![mode(1920, 1080, 60_000, true)],
         (527, 296),
     );
     let config = current(&facts);
@@ -138,7 +138,7 @@ fn the_model_notes_a_refused_request_and_changes_nothing() {
     let key = headless("HEADLESS-1").key;
     let before = run(vec![plug("HEADLESS-1")]).model.outputs().0[&key].config;
     let mut want = OutputChangeSet::none();
-    want.mode = Some(mode(1234, 567, 60_000, ModePreference::Other));
+    want.mode = Some(mode(1234, 567, 60_000, false));
     let (model, effects) = requested(want);
     assert_eq!(model.outputs().0[&key].config, before);
     assert!(
@@ -164,7 +164,7 @@ fn refused(effects: &[Effect]) -> bool {
 fn a_position_far_outside_any_arrangement_is_refused() {
     let facts = display(
         "DP-1",
-        vec![mode(1920, 1080, 60_000, ModePreference::Preferred)],
+        vec![mode(1920, 1080, 60_000, true)],
         (527, 296),
     );
     let config = current(&facts);
@@ -194,7 +194,7 @@ fn a_position_far_outside_any_arrangement_is_refused() {
 #[test]
 fn a_request_cannot_darken_the_last_lit_output() {
     let (a, b) = (headless("HEADLESS-1").key, headless("HEADLESS-2").key);
-    let dark = OutputChangeSet::none().with_power(OutputPower::Off);
+    let dark = OutputChangeSet::none().with_power(false);
     let ask = |output: &OutputKey| {
         Op::Event(Event::OutputRequested {
             output: output.clone(),
@@ -203,14 +203,14 @@ fn a_request_cannot_darken_the_last_lit_output() {
         })
     };
     let alone = run(vec![plug("HEADLESS-1"), ask(&a)]);
-    assert_eq!(alone.model.outputs().0[&a].config.power, OutputPower::On);
+    assert!(alone.model.outputs().0[&a].config.power);
     assert!(refused(alone.effects.last().expect("a step")));
 
     let two = run(vec![plug("HEADLESS-1"), plug("HEADLESS-2"), ask(&a)]);
-    assert_eq!(two.model.outputs().0[&a].config.power, OutputPower::Off);
+    assert!(!two.model.outputs().0[&a].config.power);
     assert!(!refused(two.effects.last().expect("a step")));
     let both = run_from(two.model, vec![ask(&b)]);
-    assert_eq!(both.model.outputs().0[&b].config.power, OutputPower::On);
+    assert!(both.model.outputs().0[&b].config.power);
     assert!(refused(both.effects.last().expect("a step")));
 
     // The same rule over a whole configuration.
@@ -223,7 +223,7 @@ fn a_request_cannot_darken_the_last_lit_output() {
     let swap = [
         (
             a.clone(),
-            OutputChangeSet::none().with_power(OutputPower::On),
+            OutputChangeSet::none().with_power(true),
         ),
         (b, dark),
     ];

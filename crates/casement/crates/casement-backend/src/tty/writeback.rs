@@ -27,7 +27,6 @@ use super::{SeatState, TtyBackend};
 use casement_core::OutputName;
 use casement_core::geometry::PhysicalSize;
 use casement_core::gpu::Fourcc;
-use casement_core::output::OutputPower;
 
 /// How many flips of the output pass between queueing a writeback job and reading it: the
 /// device composes the job's frame at the next vblank, and one more is slack.
@@ -144,7 +143,7 @@ impl TtyBackend {
         let (output, crtc, size) = self
             .lit
             .iter()
-            .find(|(_, lit)| lit.power() == OutputPower::On)
+            .find(|(_, lit)| lit.power())
             .map(|(name, lit)| (name.clone(), lit.crtc, lit.config.mode.size))
             .ok_or(WritebackError::NoOutput)?;
         let seam = self

@@ -1,6 +1,6 @@
 //! Placing outputs in the global logical space.
 
-use super::{ModeWish, OutputConfig, OutputFacts, OutputPower, SavedOutputs, ScalePolicy};
+use super::{ModeWish, OutputConfig, OutputFacts, SavedOutputs, ScalePolicy};
 use super::{first_sight_scale, pick_mode};
 use crate::geometry::{LogicalPoint, LogicalSize, PhysicalSize};
 use crate::ids::OutputKey;
@@ -45,7 +45,7 @@ fn fresh(facts: &OutputFacts, policy: ScalePolicy, position: LogicalPoint) -> Ou
         scale: first_sight_scale(facts, &policy),
         transform: Transform::Normal,
         position,
-        power: OutputPower::On,
+        power: true,
     }
 }
 

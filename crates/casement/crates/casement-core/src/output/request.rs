@@ -1,7 +1,7 @@
 //! A client's request to change an output (`zwlr_output_manager_v1`, `zwlr_output_power_v1`):
 //! what it may change, and the pure check that turns the request into a configuration.
 
-use super::{Mode, OutputConfig, OutputFacts, OutputPower};
+use super::{Mode, OutputConfig, OutputFacts};
 use crate::geometry::LogicalPoint;
 use crate::ids::OutputKey;
 use crate::model::OutputBook;
@@ -20,7 +20,7 @@ pub struct OutputChangeSet {
     /// A new position in the global logical space.
     pub position: Option<LogicalPoint>,
     /// Lit or dark.
-    pub power: Option<OutputPower>,
+    pub power: Option<bool>,
 }
 
 impl OutputChangeSet {
@@ -37,7 +37,7 @@ impl OutputChangeSet {
 
     /// The same, also setting the power.
     #[must_use]
-    pub fn with_power(self, power: OutputPower) -> OutputChangeSet {
+    pub fn with_power(self, power: bool) -> OutputChangeSet {
         OutputChangeSet {
             power: Some(power),
             ..self
@@ -81,12 +81,12 @@ const MAX_POSITION: i32 = 100_000;
 /// offers.
 ///
 /// ```
-/// use casement_core::output::{OutputChangeSet, OutputConfig, OutputPower, resolve_change};
+/// use casement_core::output::{OutputChangeSet, OutputConfig, resolve_change};
 ///
 /// # fn demo(facts: &casement_core::output::OutputFacts, current: &OutputConfig) {
-/// let dark = OutputChangeSet::none().with_power(OutputPower::Off);
+/// let dark = OutputChangeSet::none().with_power(false);
 /// let resolved = resolve_change(facts, current, &dark).expect("a power change is always fine");
-/// assert_eq!(resolved.power, OutputPower::Off);
+/// assert!(!resolved.power);
 /// # }
 /// ```
 pub fn resolve_change(
@@ -133,7 +133,7 @@ pub fn keeps_one_lit(
     outputs: &OutputBook,
     changes: &[(OutputKey, OutputChangeSet)],
 ) -> Result<(), OutputRefusal> {
-    let power_after = |key: &OutputKey, now: OutputPower| {
+    let power_after = |key: &OutputKey, now: bool| {
         changes
             .iter()
             .rev()
@@ -144,10 +144,10 @@ pub fn keeps_one_lit(
     let lit_after = outputs
         .0
         .iter()
-        .any(|(key, state)| power_after(key, state.config.power) == OutputPower::On);
+        .any(|(key, state)| power_after(key, state.config.power));
     let darkened = outputs.0.iter().any(|(key, state)| {
-        state.config.power == OutputPower::On
-            && power_after(key, state.config.power) == OutputPower::Off
+        state.config.power
+            && !power_after(key, state.config.power)
     });
     match (lit_after, darkened) {
         (false, true) => Err(OutputRefusal::NoneLeftLit),

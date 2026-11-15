@@ -6,7 +6,7 @@ use crate::support;
 
 use casement_core::geometry::{LogicalPoint, PhysicalSize};
 use casement_core::output::{
-    ModePreference, ModeWish, OutputConfig, OutputPower, SavedOutputs, ScalePolicy,
+    ModeWish, OutputConfig, SavedOutputs, ScalePolicy,
     first_sight_scale, pick_mode, place_outputs,
 };
 use casement_protocols::vocab::Transform;
@@ -14,8 +14,8 @@ use ds_core::geometry::scale::Scale;
 use std::collections::BTreeMap;
 use support::{display, headless, mode};
 
-const PREFERRED: ModePreference = ModePreference::Preferred;
-const OTHER: ModePreference = ModePreference::Other;
+const PREFERRED: bool = true;
+const OTHER: bool = false;
 
 #[test]
 fn first_sight_scales() {
@@ -146,7 +146,7 @@ fn placing_outputs() {
         scale: Scale(scale),
         transform: Transform::Normal,
         position: LogicalPoint { x, y: 0 },
-        power: OutputPower::On,
+        power: true,
     };
     let got = place_outputs(
         &[small.clone(), big.clone()],
@@ -198,7 +198,7 @@ fn an_output_in_logical_pixels() {
         scale: Scale(scale),
         transform,
         position: LogicalPoint { x: at.0, y: at.1 },
-        power: OutputPower::On,
+        power: true,
     };
     let cases = [
         (

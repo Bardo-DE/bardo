@@ -10,7 +10,7 @@ use casement_backend::tty::{
     Kms, KmsCommit, KmsError, KmsOpener, KmsRefusal, KmsResources, Lit, RenderMode, Routes,
     ScanoutSurface, judge, output_facts,
 };
-use casement_core::output::{GammaRamp, Mode, OutputConfig, OutputPower};
+use casement_core::output::{GammaRamp, Mode, OutputConfig};
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
@@ -35,7 +35,7 @@ pub struct KmsWorld {
     /// What each lit connector is set to now.
     pub lit: Lit,
     /// The power each connector was last given.
-    pub power: BTreeMap<ConnectorId, OutputPower>,
+    pub power: BTreeMap<ConnectorId, bool>,
     /// The gamma each connector was last given.
     pub gamma: BTreeMap<ConnectorId, GammaRamp>,
     /// The connector events not yet taken by `events`.
@@ -169,7 +169,7 @@ impl FakeKms {
     }
 
     /// The power `connector` was last given.
-    pub fn power_of(&self, connector: ConnectorId) -> Option<OutputPower> {
+    pub fn power_of(&self, connector: ConnectorId) -> Option<bool> {
         self.world().power.get(&connector).copied()
     }
 
@@ -245,7 +245,7 @@ impl Kms for FakeKms {
         Ok(())
     }
 
-    fn set_power(&mut self, connector: ConnectorId, power: OutputPower) -> Result<(), KmsError> {
+    fn set_power(&mut self, connector: ConnectorId, power: bool) -> Result<(), KmsError> {
         let mut world = self.world();
         FakeKms::known(&world, connector)?;
         world.power.insert(connector, power);

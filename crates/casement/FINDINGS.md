@@ -345,7 +345,7 @@ byte-exact for tier P and 2 per channel on at most 1000 ppm of pixels for tier L
 - **Layout reads the usable area, not the output** (A26): `spec_of` fills `OutputSpec.usable`
   from `LayerBook::usable_area`, so maximised and filled windows respect exclusive zones.
   `pick_mode` returns a 0x0 mode for a display with no modes; the model leaves such an output
-  dark (`OutputPower::Off`) and still gives it a desktop.
+  dark (`false`) and still gives it a desktop.
 - **A new window is unplaced** (A28): it maps as `WindowState::New(first_size)` on the shown
   desktop of the output the key window is on (else the leftmost lit output), and layout
   places it (centre, then cascade). A window on every Space (shell role) is arranged on the
@@ -938,7 +938,7 @@ P1-M1 advertises `zwlr_output_manager_v1` (4), `zwlr_output_power_manager_v1` (1
   change; a configuration made at an older one is `cancelled`.
 - **`apply_heads` takes a `DisplayHandle` and the dispatch type** (`apply_heads::<State>(part, display, outputs)`): the
   frozen signature had neither, and a new head is a server-created object.
-- **Disabled is dark.** `disable_head` is `OutputPower::Off`, `enable_head` is `On` (the output keeps its place in the
+- **Disabled is dark.** `disable_head` is `false`, `enable_head` is `On` (the output keeps its place in the
   arrangement; no output is removed from the layout). A disabled head sends only `enabled 0`.
 - **Every head must be configured.** `apply` or `test` with a head left out is the protocol error `unconfigured_head`
   (what wlroots does); the frozen `Configuration` doc said "left out are disabled" and now says the protocol makes the

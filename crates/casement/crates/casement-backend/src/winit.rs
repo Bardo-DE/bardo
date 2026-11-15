@@ -17,7 +17,7 @@ use crate::winit_spec::{HOST_TRANSFORM, physical_of, spec_of_window};
 use casement_core::DeviceId;
 use casement_core::geometry::PhysicalRect;
 use casement_core::input::{DeviceClass, InputEvent, InputKind, Origin};
-use casement_core::output::{OutputConfig, OutputPower};
+use casement_core::output::OutputConfig;
 use casement_core::time::VblankSeq;
 use casement_render::render_output;
 use smithay::backend::input::InputEvent as RawInput;
@@ -117,7 +117,7 @@ impl WinitBackend {
             scale: self.output.scale,
             transform: self.output.transform,
             position: self.output.position,
-            power: OutputPower::On,
+            power: true,
         }
     }
 

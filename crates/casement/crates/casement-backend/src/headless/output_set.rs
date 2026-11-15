@@ -5,7 +5,7 @@ use super::bare::BareLayer;
 use super::renderer::Canvas;
 use super::{PresentedFrame, VirtualOutputSpec};
 use casement_core::OutputName;
-use casement_core::output::{GammaRamp, OutputPower};
+use casement_core::output::GammaRamp;
 use casement_protocols::vocab::Transform as CoreTransform;
 use smithay::backend::renderer::damage::OutputDamageTracker;
 use smithay::utils::Transform;
@@ -21,7 +21,7 @@ pub struct VirtualOutput {
     /// The last frame it presented.
     pub last: Option<PresentedFrame>,
     /// Whether it is lit (a dark output presents nothing).
-    pub power: OutputPower,
+    pub power: bool,
     /// How many frames it has presented.
     pub presented: u64,
     /// The gamma ramp a client last set on it (`zwlr_gamma_control_v1`; the identity curve
@@ -41,7 +41,7 @@ impl VirtualOutput {
             tracker: tracker_of(&spec),
             spec,
             last: None,
-            power: OutputPower::On,
+            power: true,
             presented: 0,
             gamma: GammaRamp::Identity,
             canvas,

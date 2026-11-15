@@ -8,7 +8,7 @@
 //! follow the model: [`apply_heads`] runs after every batch of events, announces the new, changed
 //! and gone outputs, and sends `done` with a new serial.
 //!
-//! Disabling a head is `OutputPower::Off`, enabling it `OutputPower::On` (the output keeps its
+//! Disabling a head is `false`, enabling it `true` (the output keeps its
 //! place in the arrangement). Hidden from sandboxed clients (I7).
 
 mod configuration;

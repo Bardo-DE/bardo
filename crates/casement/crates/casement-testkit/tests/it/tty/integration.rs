@@ -10,7 +10,6 @@ use casement_backend::tty::{ConnectorId, SeatState};
 use casement_core::input::{
     Argv, Binding, BindingAction, Bindings, Chord, DeviceClass, InputKind, KeyCode,
 };
-use casement_core::output::OutputPower;
 use casement_core::policy::ConnectionRole;
 use casement_core::{DeviceId, OutputName};
 use casement_protocols::vocab::PressEdge;
@@ -105,7 +104,7 @@ fn glass(world: &TtyWorld, connector: u32) -> GlassHandle {
         .expect("a scanout surface was handed out")
 }
 
-fn power_of(fixture: &Fixture, connector: &str) -> OutputPower {
+fn power_of(fixture: &Fixture, connector: &str) -> bool {
     let wanted = name(connector);
     fixture
         .model()
@@ -314,10 +313,10 @@ fn dpms_off_darkens_the_output_and_on_queues_a_frame_at_once() {
 
     powers.set_mode(control, PowerMode::Off).expect("off");
     settle_power(&mut seat.fixture, &mut powers);
-    assert_eq!(power_of(&seat.fixture, "eDP-1"), OutputPower::Off);
+    assert!(!power_of(&seat.fixture, "eDP-1"));
     assert_eq!(
         seat.world.kms.power_of(ConnectorId(1)),
-        Some(OutputPower::Off)
+        Some(false)
     );
     assert_eq!(panel.blanks(), 1);
     let dark = panel.queued();
@@ -328,7 +327,7 @@ fn dpms_off_darkens_the_output_and_on_queues_a_frame_at_once() {
     settle_power(&mut seat.fixture, &mut powers);
     assert_eq!(
         seat.world.kms.power_of(ConnectorId(1)),
-        Some(OutputPower::On)
+        Some(true)
     );
     assert!(
         panel.queued() > dark,

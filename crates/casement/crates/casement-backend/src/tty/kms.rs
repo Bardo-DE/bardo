@@ -21,7 +21,7 @@ use crate::headless::ConnectorEvent;
 use casement_core::OutputName;
 use casement_core::gpu::FormatEntry;
 use casement_core::output::{
-    GammaRamp, Mode, OutputConfig, OutputPower, PhysicalMm, VrrCapability,
+    GammaRamp, Mode, OutputConfig, PhysicalMm, VrrCapability,
 };
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -340,7 +340,7 @@ pub trait Kms: std::fmt::Debug {
     fn commit(&mut self, commit: KmsCommit) -> Result<(), KmsError>;
 
     /// Lights or darkens one connector (DPMS).
-    fn set_power(&mut self, connector: ConnectorId, power: OutputPower) -> Result<(), KmsError>;
+    fn set_power(&mut self, connector: ConnectorId, power: bool) -> Result<(), KmsError>;
 
     /// Loads a gamma ramp on one connector's CRTC (the plan's sketch has no gamma call;
     /// `Effect::SetGamma` needs one: FINDINGS).

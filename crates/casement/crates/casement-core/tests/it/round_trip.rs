@@ -9,7 +9,7 @@ use casement_core::input::{
     FeedSource, Keysym, Origin, PortalSessionId, SpaceStep,
 };
 use casement_core::output::{
-    EdidFacts, EdidSerial, ModePreference, OutputConfig, OutputPower, SavedOutputs, ScalePolicy,
+    EdidFacts, EdidSerial, OutputConfig, SavedOutputs, ScalePolicy,
 };
 use casement_core::space::{Space, SpaceContent, SpaceIndex, SplitPair, TaskToken};
 use casement_core::{LeaseId, WindowId};
@@ -124,15 +124,15 @@ fn outputs() {
         r#"{"make":"Dell","model":"U2723QE","serial":{"kind":"known","v":"7XK"}}"#,
     );
     let config = OutputConfig {
-        mode: mode(3840, 2160, 59_997, ModePreference::Preferred),
+        mode: mode(3840, 2160, 59_997, true),
         scale: Scale(240),
         transform: Transform::R90,
         position: LogicalPoint { x: -1920, y: 0 },
-        power: OutputPower::On,
+        power: true,
     };
     pinned(
         &config,
-        r#"{"mode":{"size":{"w":3840,"h":2160},"refresh":59997,"preference":"preferred"},"scale":240,"transform":"r90","position":{"x":-1920,"y":0},"power":"on"}"#,
+        r#"{"mode":{"size":{"w":3840,"h":2160},"refresh":59997,"preferred":true},"scale":240,"transform":"r90","position":{"x":-1920,"y":0},"power":true}"#,
     );
     pinned(&ScalePolicy::WholeLikeMac, r#"{"kind":"whole_like_mac"}"#);
     pinned(

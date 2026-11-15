@@ -4,9 +4,7 @@ use super::wire::{side, transform_to};
 use crate::states::WaylandFault;
 use casement_core::OutputKey;
 use casement_core::OutputState;
-use casement_core::output::{
-    EdidSerial, Mode, ModePreference, OutputConfig, OutputFacts, OutputPower,
-};
+use casement_core::output::{EdidSerial, Mode, OutputConfig, OutputFacts};
 use smithay::reexports::wayland_protocols_wlr::output_management::v1::server::{
     zwlr_output_head_v1::{self, ZwlrOutputHeadV1},
     zwlr_output_manager_v1::ZwlrOutputManagerV1,
@@ -63,8 +61,8 @@ impl HeadObjects {
     fn send_state(&self) {
         let config = &self.config;
         match config.power {
-            OutputPower::Off => self.head.enabled(0),
-            OutputPower::On => {
+            false => self.head.enabled(0),
+            true => {
                 self.head.enabled(1);
                 if let Some((_, mode)) = self.modes.iter().find(|(mode, _)| *mode == config.mode) {
                     self.head.current_mode(mode);
@@ -134,7 +132,7 @@ where
         head.mode(&object);
         object.size(side(mode.size.w), side(mode.size.h));
         object.refresh(side(mode.refresh.0));
-        if mode.preference == ModePreference::Preferred {
+        if mode.preferred {
             object.preferred();
         }
         modes.push((*mode, object));

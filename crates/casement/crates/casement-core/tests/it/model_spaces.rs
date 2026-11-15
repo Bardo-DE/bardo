@@ -6,7 +6,6 @@ use crate::support;
 use casement_core::focus::TokenCheck;
 use casement_core::geometry::LogicalPoint;
 use casement_core::input::{DesktopCommand, SpaceStep};
-use casement_core::output::OutputPower;
 use casement_core::space::SpaceContent;
 use casement_core::window::{SpacePlace, WindowState};
 use casement_core::{Cause, Effect, Event, ToplevelRequest, WindowId};
@@ -96,7 +95,7 @@ fn a_display_with_no_mode_is_left_dark() {
     )))]);
     assert_eq!(
         run.model.outputs().0[&key("HEADLESS-1")].config.power,
-        OutputPower::Off
+        false
     );
 }
 

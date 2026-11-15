@@ -136,7 +136,7 @@ use casement_core::gpu::{
     DisplayKind, GpuChoice, OutputRoute, RenderPlan, keep_displays, plan_for,
 };
 use casement_core::input::Keysym;
-use casement_core::output::{Mode, OutputConfig, OutputPower};
+use casement_core::output::{Mode, OutputConfig};
 use casement_core::settings::PointerSettings;
 use casement_core::time::Mono;
 use casement_core::{DeviceId, OutputName};
@@ -615,7 +615,7 @@ impl TtyBackend {
         let dark = self
             .lit
             .get(output)
-            .is_some_and(|lit| lit.power() == OutputPower::Off);
+            .is_some_and(|lit| !lit.power());
         if self.seat != SeatState::Held || dark {
             return Ok(PresentOutcome::Waiting);
         }
@@ -670,7 +670,7 @@ impl TtyBackend {
                 let enabled: Vec<OutputName> = self
                     .lit
                     .iter()
-                    .filter(|(_, lit)| lit.power() == OutputPower::On)
+                    .filter(|(_, lit)| lit.power())
                     .map(|(name, _)| name.clone())
                     .collect();
                 self.scanouts.health_of(now, &enabled)

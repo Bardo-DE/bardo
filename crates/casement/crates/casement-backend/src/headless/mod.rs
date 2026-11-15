@@ -28,7 +28,7 @@ use bare::BareLayer;
 pub(crate) use bare::Cursorless;
 use casement_core::geometry::{LogicalPoint, PhysicalRect, PhysicalSize};
 use casement_core::output::{
-    EdidFacts, EdidSerial, Mode, OutputConfig, OutputFacts, OutputPower, PhysicalMm,
+    EdidFacts, EdidSerial, Mode, OutputConfig, OutputFacts, PhysicalMm,
 };
 use casement_core::time::{Mono, VblankSeq};
 use casement_core::{OutputKey, OutputName};
@@ -337,7 +337,7 @@ impl HeadlessBackend {
         let Some(output) = self.outputs.get_mut(name) else {
             return Ok(Shown::Dark);
         };
-        if output.power == OutputPower::Off {
+        if !output.power {
             return Ok(Shown::Dark);
         }
         let size = output.spec.mode.size;
@@ -534,7 +534,7 @@ pub enum OutputChange {
     /// A new position in the global logical space.
     Position(LogicalPoint),
     /// Powered on or off.
-    Power(OutputPower),
+    Power(bool),
 }
 
 /// What a connector did: the one event shape headless and KMS both produce.

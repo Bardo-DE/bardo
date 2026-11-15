@@ -420,7 +420,7 @@ pub trait Kms: Debug {
     fn resources(&self) -> KmsResources;
     fn test(&mut self, commit: &KmsCommit) -> CommitVerdict;         // TEST_ONLY
     fn commit(&mut self, commit: KmsCommit) -> Result<(), KmsError>;
-    fn set_power(&mut self, connector: ConnectorId, power: OutputPower) -> Result<(), KmsError>;
+    fn set_power(&mut self, connector: ConnectorId, power: bool) -> Result<(), KmsError>;
     fn set_gamma(&mut self, connector: ConnectorId, ramp: &GammaRamp) -> Result<(), KmsError>;
     fn events(&mut self) -> Vec<ConnectorEvent>;
     fn scanout(&mut self, connector: ConnectorId, config: &OutputConfig)   // P1-T: the D2 to D3 hand-off

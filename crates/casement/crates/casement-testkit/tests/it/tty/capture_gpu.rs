@@ -7,7 +7,7 @@ use casement_backend::tty::{DevicePath, NoGpus, TtyBackend, TtySeams};
 use casement_core::OutputName;
 use casement_core::geometry::LogicalPoint;
 use casement_core::gpu::GpuChoice;
-use casement_core::output::{OutputConfig, OutputPower};
+use casement_core::output::OutputConfig;
 use casement_core::time::Mono;
 use casement_protocols::vocab::Transform;
 use casement_testkit::fakes::{
@@ -90,7 +90,7 @@ fn watched(scenes: SceneBehaviour, frames: u64) -> (TtyBackend, FakeCaptureGpu, 
         scale: Scale::ONE,
         transform: Transform::Normal,
         position: LogicalPoint { x: 0, y: 0 },
-        power: OutputPower::On,
+        power: true,
     };
     let mut backend = backend(kms);
     assert_eq!(backend.announce().len(), 1, "the panel is announced");
@@ -162,7 +162,7 @@ fn an_unwatched_output_frees_its_scene() {
         scale: Scale::ONE,
         transform: Transform::Normal,
         position: LogicalPoint { x: 0, y: 0 },
-        power: OutputPower::On,
+        power: true,
     };
     backend.watch(&name, &config, false).expect("unwatched");
     assert_eq!(gpu.world().forgotten, std::slice::from_ref(&name));

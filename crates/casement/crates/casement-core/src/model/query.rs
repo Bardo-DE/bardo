@@ -5,7 +5,6 @@ use super::Model;
 use crate::focus::FocusView;
 use crate::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use crate::ids::OutputKey;
-use crate::output::OutputPower;
 use crate::space::{Space, SpaceContent};
 use crate::window::{SpacePlace, Window};
 use porter_core::SpaceId;
@@ -50,7 +49,7 @@ impl Model {
             .iter()
             .min_by_key(|(key, state)| {
                 let config = state.config;
-                let dark = matches!(config.power, OutputPower::Off);
+                let dark = !config.power;
                 (dark, config.position.x, config.position.y, (*key).clone())
             })
             .map(|(key, _)| key.clone())

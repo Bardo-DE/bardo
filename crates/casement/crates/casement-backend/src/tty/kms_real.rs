@@ -38,7 +38,7 @@ use casement_core::OutputName;
 use casement_core::geometry::PhysicalSize;
 use casement_core::gpu::{FormatEntry, Fourcc, Modifier, OutputRoute};
 use casement_core::output::{
-    GammaRamp, Mode, ModePreference, OutputConfig, OutputPower, PhysicalMm, VrrCapability,
+    GammaRamp, Mode, OutputConfig, PhysicalMm, VrrCapability,
 };
 use casement_core::time::Millihertz;
 use smithay::backend::drm::{DrmDevice, DrmDeviceFd, DrmEvent, DrmNode, DrmSurface, NodeType};
@@ -95,7 +95,7 @@ pub struct RealKms {
     /// The connectors whose surface is out with a scanout (gone when the scanout is dropped).
     out: BTreeMap<ConnectorId, Weak<()>>,
     lit: Lit,
-    power: BTreeMap<ConnectorId, OutputPower>,
+    power: BTreeMap<ConnectorId, bool>,
     known: KnownConnectors,
     last: KmsResources,
 }
@@ -343,7 +343,7 @@ impl Kms for RealKms {
         Ok(())
     }
 
-    fn set_power(&mut self, connector: ConnectorId, power: OutputPower) -> Result<(), KmsError> {
+    fn set_power(&mut self, connector: ConnectorId, power: bool) -> Result<(), KmsError> {
         if !self
             .resources()
             .connectors
@@ -355,7 +355,7 @@ impl Kms for RealKms {
         // Off clears a surface still in hand (CRTC inactive); one out with a scanout is
         // cleared by the scanout (`ScanoutSurface::blank`). The surface comes back on the next
         // frame the scanout queues, so On only records the intent.
-        if let (OutputPower::Off, Some(surface)) = (power, self.surfaces.get(&connector)) {
+        if let (false, Some(surface)) = (power, self.surfaces.get(&connector)) {
             surface.clear().map_err(io_error)?;
         }
         self.power.insert(connector, power);
@@ -434,17 +434,14 @@ fn mode_of(raw: &control::Mode) -> Mode {
         0 => raw.vrefresh().saturating_mul(1000),
         pixels => u32::try_from(u64::from(raw.clock()) * 1_000_000 / pixels).unwrap_or(u32::MAX),
     };
-    let preference = match raw.mode_type().contains(ModeTypeFlags::PREFERRED) {
-        true => ModePreference::Preferred,
-        false => ModePreference::Other,
-    };
+    let preferred = raw.mode_type().contains(ModeTypeFlags::PREFERRED);
     Mode {
         size: PhysicalSize {
             w: u32::from(w),
             h: u32::from(h),
         },
         refresh: Millihertz(refresh),
-        preference,
+        preferred,
     }
 }
 

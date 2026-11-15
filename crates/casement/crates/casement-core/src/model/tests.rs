@@ -11,7 +11,7 @@ use crate::layer::{
     Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerSpec, Margins, ShellRoleTag,
 };
 use crate::lock::LockEvent;
-use crate::output::{EdidFacts, EdidSerial, Mode, ModePreference, PhysicalMm, VrrCapability};
+use crate::output::{EdidFacts, EdidSerial, Mode, PhysicalMm, VrrCapability};
 use crate::space::{Space, SpaceContent, SpaceIndex, SplitPair};
 use crate::time::Millihertz;
 use crate::window::{SizeLimits, SpacePlace, StackRank, WindowOrigin, WindowState};
@@ -46,7 +46,7 @@ fn facts(name: &str) -> OutputFacts {
         modes: vec![Mode {
             size: PhysicalSize { w: 1920, h: 1080 },
             refresh: Millihertz(60_000),
-            preference: ModePreference::Preferred,
+            preferred: true,
         }],
         physical: PhysicalMm { w: 0, h: 0 },
         vrr: VrrCapability::Incapable,

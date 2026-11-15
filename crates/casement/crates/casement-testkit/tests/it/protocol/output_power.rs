@@ -1,7 +1,6 @@
 //! `output_power` (P1-M1): output power works on virtual outputs.
 
 use super::consent::{ScriptedShell, kept, program};
-use casement_core::output::OutputPower;
 use casement_core::policy::ConnectionRole;
 use casement_core::privilege::{HELD_REQUESTS, UnixSeconds, Verdict};
 use casement_core::{Event, OutputName};
@@ -34,7 +33,7 @@ fn settle(fixture: &mut Fixture, powers: &mut OutputPowers) {
     powers.pump().expect("pump");
 }
 
-fn power_of(fixture: &Fixture, connector: &str) -> OutputPower {
+fn power_of(fixture: &Fixture, connector: &str) -> bool {
     let wanted = OutputName::parse(connector).expect("a connector name");
     fixture
         .model()
@@ -63,7 +62,7 @@ fn power_off_darkens_a_virtual_output_and_on_lights_it() {
 
     powers.set_mode(control, PowerMode::Off).expect("off");
     settle(&mut fixture, &mut powers);
-    assert_eq!(power_of(&fixture, "HEADLESS-1"), OutputPower::Off);
+    assert!(!power_of(&fixture, "HEADLESS-1"));
     assert_eq!(powers.reported(control), [PowerMode::On, PowerMode::Off]);
     let one = fixture.advance(Duration::from_millis(100)).frames;
     assert!(
@@ -73,7 +72,7 @@ fn power_off_darkens_a_virtual_output_and_on_lights_it() {
 
     powers.set_mode(control, PowerMode::On).expect("on");
     settle(&mut fixture, &mut powers);
-    assert_eq!(power_of(&fixture, "HEADLESS-1"), OutputPower::On);
+    assert!(power_of(&fixture, "HEADLESS-1"));
     assert_eq!(
         powers.reported(control),
         [PowerMode::On, PowerMode::Off, PowerMode::On]
@@ -93,8 +92,8 @@ fn the_last_lit_output_stays_lit() {
     settle(&mut fixture, &mut powers);
     powers.set_mode(two, PowerMode::Off).expect("off");
     settle(&mut fixture, &mut powers);
-    assert_eq!(power_of(&fixture, "HEADLESS-1"), OutputPower::Off);
-    assert_eq!(power_of(&fixture, "HEADLESS-2"), OutputPower::On, "refused");
+    assert!(!power_of(&fixture, "HEADLESS-1"));
+    assert_eq!(power_of(&fixture, "HEADLESS-2"), true, "refused");
     assert!(fixture.advance(Duration::from_millis(100)).frames > 0);
 }
 
@@ -106,20 +105,20 @@ fn a_darkened_output_is_lit_again_when_the_control_goes() {
     settle(&mut fixture, &mut powers);
     powers.set_mode(control, PowerMode::Off).expect("off");
     settle(&mut fixture, &mut powers);
-    assert_eq!(power_of(&fixture, "HEADLESS-1"), OutputPower::Off);
+    assert!(!power_of(&fixture, "HEADLESS-1"));
     powers.destroy(control).expect("destroyed");
     settle(&mut fixture, &mut powers);
-    assert_eq!(power_of(&fixture, "HEADLESS-1"), OutputPower::On);
+    assert!(power_of(&fixture, "HEADLESS-1"));
 
     // The same when the client goes without destroying anything.
     let again = powers.control("HEADLESS-2").expect("a control");
     settle(&mut fixture, &mut powers);
     powers.set_mode(again, PowerMode::Off).expect("off");
     settle(&mut fixture, &mut powers);
-    assert_eq!(power_of(&fixture, "HEADLESS-2"), OutputPower::Off);
+    assert!(!power_of(&fixture, "HEADLESS-2"));
     drop(powers);
     fixture.disconnect(id);
-    assert_eq!(power_of(&fixture, "HEADLESS-2"), OutputPower::On);
+    assert!(power_of(&fixture, "HEADLESS-2"));
 }
 
 /// A second control on the same output is `failed`; once the first is destroyed a new one works.
@@ -154,8 +153,8 @@ fn controls_follow_their_own_output() {
     settle(&mut fixture, &mut powers);
     powers.set_mode(two, PowerMode::Off).expect("off");
     settle(&mut fixture, &mut powers);
-    assert_eq!(power_of(&fixture, "HEADLESS-1"), OutputPower::On);
-    assert_eq!(power_of(&fixture, "HEADLESS-2"), OutputPower::Off);
+    assert!(power_of(&fixture, "HEADLESS-1"));
+    assert!(!power_of(&fixture, "HEADLESS-2"));
     assert_eq!(powers.reported(one), [PowerMode::On]);
 
     fixture.unplug(&OutputName::parse("HEADLESS-2").expect("a name"));
@@ -195,7 +194,7 @@ fn a_control_made_while_asked_is_inert_until_the_person_allows() {
     settle(&mut fixture, &mut powers);
     assert_eq!(
         power_of(&fixture, "HEADLESS-1"),
-        OutputPower::On,
+        true,
         "nothing changed"
     );
     assert_eq!(powers.state(control), Some(ControlState::Silent));
@@ -208,7 +207,7 @@ fn a_control_made_while_asked_is_inert_until_the_person_allows() {
     );
     powers.set_mode(control, PowerMode::Off).expect("off");
     settle(&mut fixture, &mut powers);
-    assert_eq!(power_of(&fixture, "HEADLESS-1"), OutputPower::Off);
+    assert!(!power_of(&fixture, "HEADLESS-1"));
     assert!(fixture.client(id).protocol_error().is_none());
 }
 
@@ -223,7 +222,7 @@ fn a_control_made_while_asked_fails_when_the_person_refuses() {
     assert_eq!(powers.state(control), Some(ControlState::Failed));
     powers.set_mode(control, PowerMode::Off).expect("off");
     settle(&mut fixture, &mut powers);
-    assert_eq!(power_of(&fixture, "HEADLESS-1"), OutputPower::On);
+    assert!(power_of(&fixture, "HEADLESS-1"));
     assert_eq!(
         kept(&fixture, ASKED_PROGRAM, Power::Displays),
         Some(Verdict::Deny)
@@ -241,7 +240,7 @@ fn a_power_taken_back_fails_the_control_and_lights_its_output() {
     settle(&mut fixture, &mut powers);
     powers.set_mode(control, PowerMode::Off).expect("off");
     settle(&mut fixture, &mut powers);
-    assert_eq!(power_of(&fixture, "HEADLESS-1"), OutputPower::Off);
+    assert!(!power_of(&fixture, "HEADLESS-1"));
 
     fixture.feed_events(vec![Event::PrivilegeEdited {
         edit: casement_core::privilege::Edit::Deny(program(ASKED_PROGRAM), Power::Displays),
@@ -251,12 +250,12 @@ fn a_power_taken_back_fails_the_control_and_lights_its_output() {
     assert_eq!(powers.state(control), Some(ControlState::Failed));
     assert_eq!(
         power_of(&fixture, "HEADLESS-1"),
-        OutputPower::On,
+        true,
         "lit again"
     );
     powers.set_mode(control, PowerMode::Off).expect("off");
     settle(&mut fixture, &mut powers);
-    assert_eq!(power_of(&fixture, "HEADLESS-1"), OutputPower::On);
+    assert!(power_of(&fixture, "HEADLESS-1"));
 }
 
 /// A client keeps at most `HELD_REQUESTS` controls waiting for the answer; the next one fails

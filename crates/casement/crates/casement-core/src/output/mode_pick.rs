@@ -1,6 +1,6 @@
 //! Choosing a mode from what a display offers.
 
-use super::{Mode, ModePreference, OutputFacts};
+use super::{Mode, OutputFacts};
 use crate::geometry::PhysicalSize;
 use crate::time::Millihertz;
 use std::cmp::Reverse;
@@ -21,7 +21,7 @@ pub enum ModeWish {
 const NO_MODE: Mode = Mode {
     size: PhysicalSize { w: 0, h: 0 },
     refresh: Millihertz(0),
-    preference: ModePreference::Other,
+    preferred: false,
 };
 
 /// The mode `wish` picks from `facts.modes`, falling back to the preferred mode when the wish
@@ -58,7 +58,7 @@ fn fastest_at(modes: &[Mode], size: PhysicalSize) -> Option<Mode> {
 fn preferred(modes: &[Mode]) -> Option<Mode> {
     modes
         .iter()
-        .find(|mode| mode.preference == ModePreference::Preferred)
+        .find(|mode| mode.preferred)
         .copied()
 }
 

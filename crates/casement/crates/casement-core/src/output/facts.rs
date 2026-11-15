@@ -33,18 +33,8 @@ pub struct Mode {
     pub size: PhysicalSize,
     /// The refresh rate.
     pub refresh: Millihertz,
-    /// Whether the display prefers it.
-    pub preference: ModePreference,
-}
-
-/// Whether a display marks a mode as its preferred one.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum ModePreference {
-    /// Its native mode.
-    Preferred,
-    /// Any other.
-    Other,
+    /// Whether the display marks it as its preferred one.
+    pub preferred: bool,
 }
 
 /// A display's physical size in millimetres (zero when unknown: a projector, a headless output).

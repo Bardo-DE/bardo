@@ -8,7 +8,7 @@ use casement_backend::tty::{
 use casement_core::OutputName;
 use casement_core::geometry::PhysicalSize;
 use casement_core::gpu::{FormatEntry, Fourcc, Modifier};
-use casement_core::output::{Mode, ModePreference, PhysicalMm, VrrCapability};
+use casement_core::output::{Mode, PhysicalMm, VrrCapability};
 use casement_core::time::Millihertz;
 use std::path::Path;
 
@@ -126,11 +126,11 @@ fn device(connectors: Vec<ConnectorFacts>, crtcs: u32) -> KmsResources {
     KmsResources::new(connectors, crtcs, planes)
 }
 
-fn mode(w: u32, h: u32, hz: u32, preference: ModePreference) -> Mode {
+fn mode(w: u32, h: u32, hz: u32, preferred: bool) -> Mode {
     Mode {
         size: PhysicalSize { w, h },
         refresh: Millihertz(hz * 1000),
-        preference,
+        preferred,
     }
 }
 
@@ -142,9 +142,9 @@ fn connector(id: u32, name: &str) -> ConnectorFacts {
 fn panel(id: u32) -> ConnectorFacts {
     connector(id, "eDP-1")
         .with_modes(vec![
-            mode(2880, 1800, 120, ModePreference::Preferred),
-            mode(2880, 1800, 60, ModePreference::Other),
-            mode(1920, 1200, 60, ModePreference::Other),
+            mode(2880, 1800, 120, true),
+            mode(2880, 1800, 60, false),
+            mode(1920, 1200, 60, false),
         ])
         .with_physical(PhysicalMm { w: 300, h: 190 })
         .with_edid(edid("BOE", "NE135A1M", None))
@@ -154,10 +154,10 @@ fn panel(id: u32) -> ConnectorFacts {
 fn dell(id: u32) -> ConnectorFacts {
     connector(id, "DP-1")
         .with_modes(vec![
-            mode(3840, 2160, 60, ModePreference::Preferred),
-            mode(2560, 1440, 144, ModePreference::Other),
-            mode(2560, 1440, 60, ModePreference::Other),
-            mode(1920, 1080, 60, ModePreference::Other),
+            mode(3840, 2160, 60, true),
+            mode(2560, 1440, 144, false),
+            mode(2560, 1440, 60, false),
+            mode(1920, 1080, 60, false),
         ])
         .with_physical(PhysicalMm { w: 600, h: 340 })
         .with_edid(edid("DEL", "DELL U2723QE", Some("7GXK123")))
@@ -166,8 +166,8 @@ fn dell(id: u32) -> ConnectorFacts {
 fn hdmi(id: u32) -> ConnectorFacts {
     connector(id, "HDMI-A-1")
         .with_modes(vec![
-            mode(1920, 1080, 60, ModePreference::Preferred),
-            mode(1280, 720, 60, ModePreference::Other),
+            mode(1920, 1080, 60, true),
+            mode(1280, 720, 60, false),
         ])
         .with_physical(PhysicalMm { w: 510, h: 290 })
         .with_edid(edid("GSM", "LG FULL HD", None))
@@ -176,9 +176,9 @@ fn hdmi(id: u32) -> ConnectorFacts {
 fn retrainer(id: u32) -> ConnectorFacts {
     connector(id, "DP-1")
         .with_modes(vec![
-            mode(3840, 2160, 60, ModePreference::Preferred),
-            mode(3840, 2160, 30, ModePreference::Other),
-            mode(1920, 1080, 60, ModePreference::Other),
+            mode(3840, 2160, 60, true),
+            mode(3840, 2160, 30, false),
+            mode(1920, 1080, 60, false),
         ])
         .with_physical(PhysicalMm { w: 600, h: 340 })
         .with_edid(edid("DEL", "DELL U2723QE", Some("7GXK456")))

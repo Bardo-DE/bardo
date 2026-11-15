@@ -4,7 +4,7 @@
 //! A mode a monitor lists can still be refused by the kernel (the cable cannot carry it, a
 //! dock's link is short of bandwidth). Without a way back the output stays dark.
 
-use casement_core::output::{Mode, ModePreference};
+use casement_core::output::Mode;
 
 /// The modes to try for a display that lists `listed`, in order and each once (by size and
 /// refresh rate): `wanted`, then `previous` (what it was showing), then the preferred mode,
@@ -14,16 +14,16 @@ use casement_core::output::{Mode, ModePreference};
 /// ```
 /// use casement_backend::tty::mode_ladder;
 /// use casement_core::geometry::PhysicalSize;
-/// use casement_core::output::{Mode, ModePreference};
+/// use casement_core::output::Mode;
 /// use casement_core::time::Millihertz;
 ///
-/// let mode = |w, h, preference| Mode {
+/// let mode = |w, h, preferred| Mode {
 ///     size: PhysicalSize { w, h },
 ///     refresh: Millihertz(60_000),
-///     preference,
+///     preferred,
 /// };
-/// let big = mode(3840, 2160, ModePreference::Preferred);
-/// let small = mode(1024, 768, ModePreference::Other);
+/// let big = mode(3840, 2160, true);
+/// let small = mode(1024, 768, false);
 /// let ladder = mode_ladder(big, None, &[big, small], None);
 /// assert_eq!(ladder, [big, small]);
 /// assert_eq!(mode_ladder(big, None, &[big, small], Some(big)), [small]);
@@ -36,7 +36,7 @@ pub fn mode_ladder(
 ) -> Vec<Mode> {
     let preferred = listed
         .iter()
-        .find(|mode| mode.preference == ModePreference::Preferred)
+        .find(|mode| mode.preferred)
         .copied();
     let smallest = listed
         .iter()
@@ -75,20 +75,20 @@ mod tests {
     use casement_core::geometry::PhysicalSize;
     use casement_core::time::Millihertz;
 
-    fn mode(w: u32, h: u32, hz: u32, preference: ModePreference) -> Mode {
+    fn mode(w: u32, h: u32, hz: u32, preferred: bool) -> Mode {
         Mode {
             size: PhysicalSize { w, h },
             refresh: Millihertz(hz * 1000),
-            preference,
+            preferred,
         }
     }
 
     #[test]
     fn the_ladder_goes_wanted_previous_preferred_smallest_each_once() {
-        let native = mode(3840, 2160, 60, ModePreference::Preferred);
-        let fast = mode(3840, 2160, 144, ModePreference::Other);
-        let hd = mode(1920, 1080, 60, ModePreference::Other);
-        let vga = mode(640, 480, 60, ModePreference::Other);
+        let native = mode(3840, 2160, 60, true);
+        let fast = mode(3840, 2160, 144, false);
+        let hd = mode(1920, 1080, 60, false);
+        let vga = mode(640, 480, 60, false);
         let listed = [native, fast, hd, vga];
         // name, wanted, previous, ladder
         let cases = [
@@ -114,15 +114,15 @@ mod tests {
 
     #[test]
     fn a_mode_that_showed_nothing_is_left_out_unless_it_is_all_there_is() {
-        let only = mode(1024, 768, 60, ModePreference::Preferred);
-        let big = mode(2560, 1440, 60, ModePreference::Other);
+        let only = mode(1024, 768, 60, true);
+        let big = mode(2560, 1440, 60, false);
         assert_eq!(mode_ladder(big, None, &[only, big], Some(big)), [only]);
         assert_eq!(mode_ladder(only, None, &[only], Some(only)), [only]);
     }
 
     #[test]
     fn a_display_that_lists_no_mode_gets_the_one_asked_for() {
-        let wanted = mode(800, 600, 60, ModePreference::Other);
+        let wanted = mode(800, 600, 60, false);
         assert_eq!(mode_ladder(wanted, None, &[], None), [wanted]);
     }
 }

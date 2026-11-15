@@ -12,7 +12,7 @@ use super::scanouts::Scanout;
 use super::udev::DevicePath;
 use crate::backend::BackendError;
 use casement_core::OutputName;
-use casement_core::output::{Mode, OutputConfig, OutputPower};
+use casement_core::output::{Mode, OutputConfig};
 use casement_core::time::{Mono, VblankClock};
 use std::time::Duration;
 
@@ -35,7 +35,7 @@ pub struct LitOutput {
 
 impl LitOutput {
     /// Whether it is lit.
-    pub fn power(&self) -> OutputPower {
+    pub fn power(&self) -> bool {
         self.config.power
     }
 }
@@ -86,8 +86,8 @@ impl TtyBackend {
         }
         let (path, connector) = self.driver_of(name)?;
         match config.power {
-            OutputPower::Off => self.darken(name, &path, &connector),
-            OutputPower::On => self.light(name, &path, &connector, config, now),
+            false => self.darken(name, &path, &connector),
+            true => self.light(name, &path, &connector, config, now),
         }
     }
 
@@ -116,13 +116,13 @@ impl TtyBackend {
         connector: &ConnectorFacts,
     ) -> Result<Lighting, BackendError> {
         if let Some(device) = self.devices.devices.get_mut(path) {
-            device.kms.set_power(connector.id, OutputPower::Off)?;
+            device.kms.set_power(connector.id, false)?;
         }
         if let Some(scanout) = self.scanouts.get_mut(name) {
             scanout.blank()?;
         }
         if let Some(lit) = self.lit.get_mut(name) {
-            lit.config.power = OutputPower::Off;
+            lit.config.power = false;
         }
         Ok(Lighting::Dark)
     }
@@ -202,9 +202,9 @@ impl TtyBackend {
             .get_mut(path)
             .ok_or_else(|| KmsError::DeviceGone(path.0.clone()))?;
         device.kms.commit(commit)?;
-        let was_dark = was.as_ref().map(LitOutput::power) == Some(OutputPower::Off);
+        let was_dark = was.as_ref().map(LitOutput::power) == Some(false);
         if was_dark {
-            device.kms.set_power(connector.id, OutputPower::On)?;
+            device.kms.set_power(connector.id, true)?;
         }
         if remade || self.scanouts.get(name).is_none() {
             let surface = device.kms.scanout(connector.id, config)?;

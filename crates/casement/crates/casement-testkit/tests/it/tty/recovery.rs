@@ -13,7 +13,7 @@ use casement_backend::tty::{
 use casement_core::OutputName;
 use casement_core::geometry::LogicalPoint;
 use casement_core::gpu::GpuChoice;
-use casement_core::output::{GammaRamp, Mode, OutputConfig, OutputPower};
+use casement_core::output::{GammaRamp, Mode, OutputConfig};
 use casement_core::time::{Millihertz, Mono, VblankClock, VblankSeq};
 use casement_protocols::vocab::Transform;
 use casement_testkit::fakes::{EmptyScene, FakeKms, FakeScanout, FakeUdev, SyntheticTopology};
@@ -97,7 +97,7 @@ impl Kms for Picky {
     fn set_power(
         &mut self,
         connector: casement_backend::tty::ConnectorId,
-        power: OutputPower,
+        power: bool,
     ) -> Result<(), KmsError> {
         self.inner.set_power(connector, power)
     }
@@ -196,7 +196,7 @@ fn config(mode: Mode) -> OutputConfig {
         scale: Scale::ONE,
         transform: Transform::Normal,
         position: LogicalPoint { x: 0, y: 0 },
-        power: OutputPower::On,
+        power: true,
     }
 }
 

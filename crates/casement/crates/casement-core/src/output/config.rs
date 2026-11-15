@@ -21,7 +21,7 @@ pub struct OutputConfig {
     /// Its top-left corner in the global logical space.
     pub position: LogicalPoint,
     /// Whether it is lit.
-    pub power: OutputPower,
+    pub power: bool,
 }
 
 impl OutputConfig {
@@ -56,16 +56,6 @@ fn turned(size: PhysicalSize, transform: Transform) -> PhysicalSize {
         }
         Transform::Normal | Transform::R180 | Transform::Flipped | Transform::Flipped180 => size,
     }
-}
-
-/// Whether an output is lit.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum OutputPower {
-    /// Lit.
-    On,
-    /// Dark (DPMS off).
-    Off,
 }
 
 /// The configuration of every display seen, by key (`$XDG_STATE_HOME/casement/outputs.toml`).

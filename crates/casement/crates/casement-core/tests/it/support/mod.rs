@@ -5,7 +5,7 @@ pub mod driver;
 use casement_core::app::AppKey;
 use casement_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, PhysicalSize};
 use casement_core::output::{
-    EdidFacts, EdidSerial, Mode, ModePreference, OutputFacts, PhysicalMm, VrrCapability,
+    EdidFacts, EdidSerial, Mode, OutputFacts, PhysicalMm, VrrCapability,
 };
 use casement_core::space::{Space, SpaceContent, SpaceIndex};
 use casement_core::time::{Millihertz, Mono};
@@ -40,11 +40,11 @@ pub fn space_id(text: &str) -> SpaceId {
     SpaceId::parse(text).expect("space id")
 }
 
-pub fn mode(w: u32, h: u32, millihertz: u32, preference: ModePreference) -> Mode {
+pub fn mode(w: u32, h: u32, millihertz: u32, preferred: bool) -> Mode {
     Mode {
         size: PhysicalSize { w, h },
         refresh: Millihertz(millihertz),
-        preference,
+        preferred,
     }
 }
 
@@ -70,7 +70,7 @@ pub fn display(name: &str, modes: Vec<Mode>, mm: (u32, u32)) -> OutputFacts {
 pub fn headless(name: &str) -> OutputFacts {
     display(
         name,
-        vec![mode(1920, 1080, 60_000, ModePreference::Preferred)],
+        vec![mode(1920, 1080, 60_000, true)],
         (0, 0),
     )
 }

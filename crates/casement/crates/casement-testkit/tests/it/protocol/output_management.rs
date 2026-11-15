@@ -5,7 +5,7 @@
 use super::consent::{ScriptedShell, kept};
 use casement_core::OutputName;
 use casement_core::geometry::PhysicalSize;
-use casement_core::output::{Mode, ModePreference, OutputConfig, OutputPower};
+use casement_core::output::{Mode, OutputConfig};
 use casement_core::policy::ConnectionRole;
 use casement_core::privilege::{HELD_REQUESTS, Verdict};
 use casement_core::time::Millihertz;
@@ -27,7 +27,7 @@ const TWO: [&str; 2] = [
 const SMALLER: Mode = Mode {
     size: PhysicalSize { w: 1280, h: 720 },
     refresh: Millihertz(60_000),
-    preference: ModePreference::Other,
+    preferred: false,
 };
 
 /// A fixture with `outputs`, and a manager that has read the heads.
@@ -185,7 +185,7 @@ fn disabling_a_head_darkens_its_output() {
     assert_eq!(manager.answer(first), Some(Answer::Succeeded));
     assert_eq!(lit(&manager, "HEADLESS-1"), Some(Lit::Off));
     assert_eq!(lit(&manager, "HEADLESS-2"), Some(Lit::On));
-    assert_eq!(config_of(&fixture, "HEADLESS-1").power, OutputPower::Off);
+    assert!(!config_of(&fixture, "HEADLESS-1").power);
     assert!(
         fixture.advance(Duration::from_millis(100)).frames > 0,
         "the other display draws"

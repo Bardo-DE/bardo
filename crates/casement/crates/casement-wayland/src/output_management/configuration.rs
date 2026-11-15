@@ -10,7 +10,7 @@ use super::{
 };
 use crate::consent::{self, Admission, Mortal, Pushed};
 use casement_core::geometry::{LogicalPoint, PhysicalSize};
-use casement_core::output::{Mode, ModePreference, OutputChangeSet, OutputFacts, OutputPower};
+use casement_core::output::{Mode, OutputChangeSet, OutputFacts};
 use casement_core::privilege::PowerOutcome;
 use casement_core::time::Millihertz;
 use casement_core::{ClientKey, OutputKey};
@@ -108,7 +108,7 @@ fn custom_mode(facts: Option<&OutputFacts>, size: PhysicalSize, refresh: u32) ->
     offered.copied().unwrap_or(Mode {
         size,
         refresh: Millihertz(refresh),
-        preference: ModePreference::Other,
+        preferred: false,
     })
 }
 
@@ -118,7 +118,7 @@ impl ConfigData {
         &self,
         resource: &ZwlrOutputConfigurationV1,
         head: &ZwlrOutputHeadV1,
-        power: OutputPower,
+        power: bool,
     ) {
         let Some(output) = head.data::<HeadData>().map(|data| data.output.clone()) else {
             return;
@@ -277,10 +277,10 @@ where
                         output,
                     },
                 );
-                self.add(resource, &head, OutputPower::On);
+                self.add(resource, &head, true);
             }
             zwlr_output_configuration_v1::Request::DisableHead { head } => {
-                self.add(resource, &head, OutputPower::Off);
+                self.add(resource, &head, false);
             }
             zwlr_output_configuration_v1::Request::Apply => {
                 self.conclude(state, client, resource, ConfigurationIntent::Apply);

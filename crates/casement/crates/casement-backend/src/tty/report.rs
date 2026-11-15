@@ -11,7 +11,7 @@
 
 use super::{SeatState, TtyBackend};
 use casement_core::OutputName;
-use casement_core::output::{Mode, OutputPower};
+use casement_core::output::Mode;
 use casement_core::time::Mono;
 use std::time::Duration;
 
@@ -26,12 +26,12 @@ pub struct ReportedOutput {
     /// The mode it is lit with.
     pub mode: Mode,
     /// Lit or dark.
-    pub power: OutputPower,
+    pub power: bool,
 }
 
 impl ReportedOutput {
     /// An output of the report.
-    pub fn new(name: OutputName, mode: Mode, power: OutputPower) -> ReportedOutput {
+    pub fn new(name: OutputName, mode: Mode, power: bool) -> ReportedOutput {
         ReportedOutput { name, mode, power }
     }
 }
@@ -99,8 +99,8 @@ fn output_json(output: &ReportedOutput) -> String {
         output.mode.size.w, output.mode.size.h, output.mode.refresh.0
     );
     let power = match output.power {
-        OutputPower::On => "on",
-        OutputPower::Off => "off",
+        true => "on",
+        false => "off",
     };
     format!(
         r#"{{"name":{},"mode":"{mode}","power":"{power}"}}"#,
@@ -177,18 +177,17 @@ impl TtyBackend {
 mod tests {
     use super::*;
     use casement_core::geometry::PhysicalSize;
-    use casement_core::output::ModePreference;
     use casement_core::time::Millihertz;
 
     fn mode() -> Mode {
         Mode {
             size: PhysicalSize { w: 1024, h: 768 },
             refresh: Millihertz(60_000),
-            preference: ModePreference::Preferred,
+            preferred: true,
         }
     }
 
-    fn output(name: &str, power: OutputPower) -> ReportedOutput {
+    fn output(name: &str, power: bool) -> ReportedOutput {
         ReportedOutput::new(OutputName::parse(name).expect("a name"), mode(), power)
     }
 
@@ -199,8 +198,8 @@ mod tests {
             0,
             SeatState::Held,
             vec![
-                output("Virtual-1", OutputPower::On),
-                output("Virtual-2", OutputPower::Off),
+                output("Virtual-1", true),
+                output("Virtual-2", false),
             ],
         );
         assert_eq!(

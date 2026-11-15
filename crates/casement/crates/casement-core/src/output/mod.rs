@@ -15,9 +15,9 @@ mod tag;
 mod trial;
 
 pub use arrangement::place_outputs;
-pub use config::{OutputConfig, OutputPower, SavedOutputs};
+pub use config::{OutputConfig, SavedOutputs};
 pub use facts::{
-    EdidFacts, EdidSerial, Mode, ModePreference, OutputFacts, PhysicalMm, VrrCapability,
+    EdidFacts, EdidSerial, Mode, OutputFacts, PhysicalMm, VrrCapability,
 };
 pub use gamma::{GammaRamp, GammaTable};
 pub use gamut::{Chromaticity, D65, DISPLAY_P3, Gamut, Primaries, SRGB};

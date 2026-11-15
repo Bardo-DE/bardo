@@ -5,7 +5,7 @@
 use crate::{State, core_loop};
 use casement_backend::{BackendKind, VirtualOutputSpec};
 use casement_core::geometry::LogicalPoint;
-use casement_core::output::{Mode, OutputConfig, OutputPower};
+use casement_core::output::{Mode, OutputConfig};
 use casement_core::time::Millihertz;
 use casement_core::{OutputKey, OutputName, WindowId};
 use casement_ipc::WaitPredicate;
@@ -99,8 +99,8 @@ fn transform_word(transform: Transform) -> &'static str {
 
 fn output_json(name: &OutputName, key: &OutputKey, config: &OutputConfig) -> String {
     let power = match config.power {
-        OutputPower::On => "on",
-        OutputPower::Off => "off",
+        true => "on",
+        false => "off",
     };
     let rect = config.logical_rect();
     format!(
@@ -316,8 +316,8 @@ fn change(config: OutputConfig, key: &str, value: &str) -> Option<OutputConfig> 
         }
         "power" => OutputConfig {
             power: match value {
-                "on" => OutputPower::On,
-                "off" => OutputPower::Off,
+                "on" => true,
+                "off" => false,
                 _ => return None,
             },
             ..config

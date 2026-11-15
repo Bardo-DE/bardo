@@ -1,8 +1,7 @@
 //! sill's whole `PreferWhole` table, ported to 120ths, and properties over modes and places.
 
 use super::{
-    EdidFacts, EdidSerial, Mode, ModePreference, ModeWish, OutputConfig, OutputFacts, OutputPower,
-    PhysicalMm, SavedOutputs, ScalePolicy, VrrCapability, first_sight_scale, pick_mode,
+    EdidFacts, EdidSerial, Mode, ModeWish, OutputConfig, OutputFacts, PhysicalMm, SavedOutputs, ScalePolicy, VrrCapability, first_sight_scale, pick_mode,
     place_outputs,
 };
 use crate::geometry::{LogicalPoint, PhysicalSize};
@@ -13,11 +12,11 @@ use ds_core::geometry::scale::Scale;
 use proptest::prelude::*;
 use std::collections::BTreeMap;
 
-fn mode(w: u32, h: u32, millihertz: u32, preference: ModePreference) -> Mode {
+fn mode(w: u32, h: u32, millihertz: u32, preferred: bool) -> Mode {
     Mode {
         size: PhysicalSize { w, h },
         refresh: Millihertz(millihertz),
-        preference,
+        preferred,
     }
 }
 
@@ -163,7 +162,7 @@ fn whole_like_mac_matches_sills_prefer_whole_table() {
     for (label, (w, h), mm, want) in rows {
         let facts = display(
             "DP-1",
-            vec![mode(w, h, 60_000, ModePreference::Preferred)],
+            vec![mode(w, h, 60_000, true)],
             mm.unwrap_or((0, 0)),
         );
         assert_eq!(
@@ -179,8 +178,8 @@ fn the_scale_follows_the_preferred_mode_not_the_fastest() {
     let facts = display(
         "DP-1",
         vec![
-            mode(1920, 1080, 240_000, ModePreference::Other),
-            mode(3840, 2160, 60_000, ModePreference::Preferred),
+            mode(1920, 1080, 240_000, false),
+            mode(3840, 2160, 60_000, true),
         ],
         (597, 336),
     );
@@ -195,7 +194,7 @@ fn an_output_without_modes_has_no_mode_and_the_smallest_scale() {
     let facts = display("DP-1", Vec::new(), (597, 336));
     assert_eq!(
         pick_mode(&facts, &ModeWish::Preferred),
-        mode(0, 0, 0, ModePreference::Other)
+        mode(0, 0, 0, false)
     );
     assert_eq!(
         first_sight_scale(&facts, &ScalePolicy::WholeLikeMac),
@@ -207,12 +206,12 @@ fn an_output_without_modes_has_no_mode_and_the_smallest_scale() {
 fn a_saved_rotated_display_takes_its_turned_width() {
     let big = display(
         "DP-1",
-        vec![mode(3840, 2160, 60_000, ModePreference::Preferred)],
+        vec![mode(3840, 2160, 60_000, true)],
         (597, 336),
     );
     let newcomer = display(
         "DP-2",
-        vec![mode(1920, 1080, 60_000, ModePreference::Preferred)],
+        vec![mode(1920, 1080, 60_000, true)],
         (0, 0),
     );
     let saved = SavedOutputs(BTreeMap::from([(
@@ -222,7 +221,7 @@ fn a_saved_rotated_display_takes_its_turned_width() {
             scale: Scale(240),
             transform: Transform::R90,
             position: LogicalPoint { x: 100, y: -50 },
-            power: OutputPower::Off,
+            power: false,
         },
     )]));
     let got = place_outputs(
@@ -240,11 +239,7 @@ fn arbitrary_mode() -> impl Strategy<Value = Mode> {
     (1u32..8000, 1u32..5000, 1u32..500_000, any::<bool>()).prop_map(|(w, h, hz, preferred)| Mode {
         size: PhysicalSize { w, h },
         refresh: Millihertz(hz),
-        preference: if preferred {
-            ModePreference::Preferred
-        } else {
-            ModePreference::Other
-        },
+        preferred,
     })
 }
 
@@ -277,7 +272,7 @@ proptest! {
         prop_assume!((45.0..=590.0).contains(&ppi(small + 100)) && (45.0..=590.0).contains(&ppi(small + bigger + 100)));
         let at = |diagonal_tenths: u32| {
             let (mw, mh) = size_of(f64::from(diagonal_tenths) / 10.0, w, h);
-            let facts = display("DP-1", vec![mode(w, h, 60_000, ModePreference::Preferred)], (mw, mh));
+            let facts = display("DP-1", vec![mode(w, h, 60_000, true)], (mw, mh));
             first_sight_scale(&facts, &ScalePolicy::WholeLikeMac)
         };
         let larger_panel = at(small + bigger + 100);
@@ -289,7 +284,7 @@ proptest! {
     fn a_first_scale_is_a_step_the_renderer_draws(
         w in 640u32..8000, h in 480u32..4500, mw in 0u32..1200, mh in 0u32..700,
     ) {
-        let facts = display("DP-1", vec![mode(w, h, 60_000, ModePreference::Preferred)], (mw, mh));
+        let facts = display("DP-1", vec![mode(w, h, 60_000, true)], (mw, mh));
         let scale = first_sight_scale(&facts, &ScalePolicy::WholeLikeMac);
         let steps = [100u16, 125, 150, 175, 200, 250, 300].map(Scale::from_percent);
         prop_assert!(steps.contains(&scale), "{scale:?}");
@@ -304,7 +299,7 @@ proptest! {
             .iter()
             .enumerate()
             .map(|(n, (w, h))| {
-                display(&format!("DP-{n}"), vec![mode(*w, *h, 60_000, ModePreference::Preferred)], (0, 0))
+                display(&format!("DP-{n}"), vec![mode(*w, *h, 60_000, true)], (0, 0))
             })
             .collect();
         let first = place_outputs(&present, &SavedOutputs::default(), &ScalePolicy::WholeLikeMac);

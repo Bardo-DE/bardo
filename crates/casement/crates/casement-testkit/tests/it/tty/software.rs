@@ -9,7 +9,7 @@ use casement_backend::tty::{
 use casement_core::OutputName;
 use casement_core::geometry::LogicalPoint;
 use casement_core::gpu::GpuChoice;
-use casement_core::output::{OutputConfig, OutputPower};
+use casement_core::output::OutputConfig;
 use casement_core::time::{Mono, VblankSeq};
 use casement_protocols::vocab::Transform;
 use casement_testkit::fakes::{
@@ -57,7 +57,7 @@ fn rig(mode: RenderMode) -> Rig {
                 scale: Scale::ONE,
                 transform: Transform::Normal,
                 position: LogicalPoint { x: 0, y: 0 },
-                power: OutputPower::On,
+                power: true,
             };
             (connector.name, config)
         })

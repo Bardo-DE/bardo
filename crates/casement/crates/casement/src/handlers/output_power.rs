@@ -4,7 +4,6 @@
 
 use crate::state::State;
 use casement_core::OutputKey;
-use casement_core::output::OutputPower;
 use casement_wayland::output_power::{OutputPowerHandler, OutputPowerPart};
 
 impl OutputPowerHandler for State {
@@ -12,7 +11,7 @@ impl OutputPowerHandler for State {
         &mut self.wl.output_power
     }
 
-    fn output_power_of(&self, output: &OutputKey) -> Option<OutputPower> {
+    fn output_power_of(&self, output: &OutputKey) -> Option<bool> {
         self.core
             .model
             .outputs()

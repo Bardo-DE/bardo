@@ -15,7 +15,7 @@
 use crate::consent::{self, Admission, ConsentHandler, Held, Mortal, Pushed};
 use crate::handler::OutputLookup;
 use crate::states::{GlobalFilter, WaylandFault};
-use casement_core::output::{OutputChangeSet, OutputPower, Requester};
+use casement_core::output::{OutputChangeSet, Requester};
 use casement_core::policy::GlobalKind;
 use casement_core::privilege::PowerOutcome;
 use casement_core::{ClientKey, Event, OutputBook, OutputKey};
@@ -42,7 +42,7 @@ pub struct OutputPowerPart {
     /// Our global (none until [`OutputPowerPart::new`]).
     pub global: Option<GlobalId>,
     objects: BTreeMap<OutputKey, ZwlrOutputPowerV1>,
-    shown: BTreeMap<OutputKey, OutputPower>,
+    shown: BTreeMap<OutputKey, bool>,
     /// The outputs a control asked to darken and has not lit again: lit when it goes (CASC-09).
     darkened: BTreeSet<OutputKey>,
     /// The controls made while the person had not answered, inert until they do.
@@ -85,7 +85,7 @@ pub trait OutputPowerHandler: ConsentHandler + OutputLookup + Sized {
     /// The part.
     fn output_power_part(&mut self) -> &mut OutputPowerPart;
     /// Whether the model has `output` lit; none when it is not plugged.
-    fn output_power_of(&self, output: &OutputKey) -> Option<OutputPower>;
+    fn output_power_of(&self, output: &OutputKey) -> Option<bool>;
 }
 
 /// The global's data: the filter its `can_view` asks.
@@ -109,24 +109,24 @@ pub struct PowerData {
 /// control's client is: a program's change is a trial the person keeps or reverts.
 ///
 /// ```no_run
-/// use casement_core::output::{OutputPower, Requester};
+/// use casement_core::output::Requester;
 /// use casement_wayland::output_power::{OutputPowerPart, on_set_mode};
 ///
 /// # fn demo(key: casement_core::OutputKey) {
 /// let mut part = OutputPowerPart::default();
-/// let events = on_set_mode(&mut part, key, OutputPower::Off, Requester::Program);
+/// let events = on_set_mode(&mut part, key, false, Requester::Program);
 /// assert_eq!(events.len(), 1);
 /// # }
 /// ```
 pub fn on_set_mode(
     part: &mut OutputPowerPart,
     output: OutputKey,
-    power: OutputPower,
+    power: bool,
     by: Requester,
 ) -> Vec<Event> {
     match power {
-        OutputPower::Off => part.darkened.insert(output.clone()),
-        OutputPower::On => part.darkened.remove(&output),
+        false => part.darkened.insert(output.clone()),
+        true => part.darkened.remove(&output),
     };
     vec![Event::OutputRequested {
         output,
@@ -144,7 +144,7 @@ pub fn on_released(part: &mut OutputPowerPart, output: &OutputKey) -> Vec<Event>
     match part.darkened.remove(output) {
         true => vec![Event::OutputRequested {
             output: output.clone(),
-            change: OutputChangeSet::none().with_power(OutputPower::On),
+            change: OutputChangeSet::none().with_power(true),
             by: Requester::Restore,
         }],
         false => Vec::new(),
@@ -155,7 +155,7 @@ pub fn on_released(part: &mut OutputPowerPart, output: &OutputKey) -> Vec<Event>
 pub fn apply_mode(
     part: &mut OutputPowerPart,
     output: &OutputKey,
-    power: OutputPower,
+    power: bool,
 ) -> Result<(), WaylandFault> {
     let control = part.objects.get(output).ok_or(WaylandFault::SurfaceGone)?;
     control.mode(wire_mode(power));
@@ -194,10 +194,10 @@ pub fn follow(part: &mut OutputPowerPart, outputs: &OutputBook) {
     }
 }
 
-fn wire_mode(power: OutputPower) -> zwlr_output_power_v1::Mode {
+fn wire_mode(power: bool) -> zwlr_output_power_v1::Mode {
     match power {
-        OutputPower::On => zwlr_output_power_v1::Mode::On,
-        OutputPower::Off => zwlr_output_power_v1::Mode::Off,
+        true => zwlr_output_power_v1::Mode::On,
+        false => zwlr_output_power_v1::Mode::Off,
     }
 }
 
@@ -269,7 +269,7 @@ fn register(
     part: &mut OutputPowerPart,
     control: ZwlrOutputPowerV1,
     output: &OutputKey,
-    power: OutputPower,
+    power: bool,
 ) {
     part.objects.insert(output.clone(), control);
     part.controls.insert(output.clone());
@@ -370,8 +370,8 @@ where
             return;
         }
         let power = match mode.into_result() {
-            Ok(zwlr_output_power_v1::Mode::On) => OutputPower::On,
-            Ok(zwlr_output_power_v1::Mode::Off) => OutputPower::Off,
+            Ok(zwlr_output_power_v1::Mode::On) => true,
+            Ok(zwlr_output_power_v1::Mode::Off) => false,
             _ => {
                 resource.post_error(
                     zwlr_output_power_v1::Error::InvalidMode,

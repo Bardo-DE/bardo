@@ -8,7 +8,7 @@ use casement_backend::tty::{
 };
 use casement_core::OutputName;
 use casement_core::geometry::PhysicalSize;
-use casement_core::output::{EdidSerial, GammaRamp, ModeWish, OutputPower, pick_mode};
+use casement_core::output::{EdidSerial, GammaRamp, ModeWish, pick_mode};
 use casement_testkit::fakes::{FakeKms, FakeKmsOpener, SyntheticTopology, edid, load_fixture};
 use std::collections::BTreeMap;
 use std::path::PathBuf;
@@ -199,13 +199,13 @@ fn a_device_added_after_the_announcement_reports_its_connectors_at_once() {
 fn dpms_off_and_on_reach_the_device() {
     let mut kms = FakeKms::synthetic(SyntheticTopology::Dock);
     let id = ConnectorId(2);
-    kms.set_power(id, OutputPower::Off).expect("off");
-    assert_eq!(kms.power_of(id), Some(OutputPower::Off));
-    kms.set_power(id, OutputPower::On).expect("on");
-    assert_eq!(kms.power_of(id), Some(OutputPower::On));
+    kms.set_power(id, false).expect("off");
+    assert_eq!(kms.power_of(id), Some(false));
+    kms.set_power(id, true).expect("on");
+    assert_eq!(kms.power_of(id), Some(true));
     assert_eq!(kms.power_of(ConnectorId(1)), None);
     assert!(matches!(
-        kms.set_power(ConnectorId(99), OutputPower::Off),
+        kms.set_power(ConnectorId(99), false),
         Err(KmsError::UnknownConnector(ConnectorId(99)))
     ));
     kms.set_gamma(id, &GammaRamp::Identity).expect("gamma");

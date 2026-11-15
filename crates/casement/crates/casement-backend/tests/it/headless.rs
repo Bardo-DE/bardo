@@ -6,7 +6,7 @@ use casement_backend::{
     VirtualOutputSpec,
 };
 use casement_core::geometry::LogicalPoint;
-use casement_core::output::{OutputConfig, OutputPower};
+use casement_core::output::OutputConfig;
 use casement_core::{OutputKey, OutputName};
 use casement_protocols::vocab::Transform;
 use ds_core::geometry::scale::Scale;
@@ -143,10 +143,10 @@ fn a_change_updates_the_output_and_reports_it() {
     mode.size.h = 720;
     backend.set(&target, OutputChange::Mode(mode));
     assert_eq!(to(&backend).mode.size.w, 1280);
-    backend.set(&target, OutputChange::Power(OutputPower::Off));
+    backend.set(&target, OutputChange::Power(false));
     assert_eq!(
         backend.outputs().get(&target).expect("plugged").power,
-        OutputPower::Off
+        false
     );
 }
 
@@ -163,7 +163,7 @@ fn apply_sets_the_whole_configuration_at_once() {
         scale: Scale(150),
         transform: Transform::R90,
         position: LogicalPoint { x: -2560, y: 0 },
-        power: OutputPower::Off,
+        power: false,
     };
     assert!(matches!(
         backend.apply(&target, &wanted),
@@ -174,7 +174,7 @@ fn apply_sets_the_whole_configuration_at_once() {
     assert_eq!(output.spec.scale, Scale(150));
     assert_eq!(output.spec.transform, Transform::R90);
     assert_eq!(output.spec.position, wanted.position);
-    assert_eq!(output.power, OutputPower::Off);
+    assert!(!output.power);
 }
 
 #[test]

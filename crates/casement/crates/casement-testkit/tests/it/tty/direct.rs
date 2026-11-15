@@ -13,7 +13,7 @@ use casement_backend::tty::{
 use casement_core::OutputName;
 use casement_core::geometry::{LogicalPoint, PhysicalSize};
 use casement_core::gpu::GpuChoice;
-use casement_core::output::{Mode, OutputConfig, OutputPower};
+use casement_core::output::{Mode, OutputConfig};
 use casement_core::time::Mono;
 use casement_protocols::vocab::Transform;
 use casement_testkit::fakes::{
@@ -82,7 +82,7 @@ fn rig() -> Rig {
 }
 
 impl Rig {
-    fn config(&self, power: OutputPower) -> OutputConfig {
+    fn config(&self, power: bool) -> OutputConfig {
         OutputConfig {
             mode: self.mode,
             scale: Scale::ONE,
@@ -93,7 +93,7 @@ impl Rig {
     }
 
     fn light(&mut self) {
-        let config = self.config(OutputPower::On);
+        let config = self.config(true);
         self.backend
             .apply(&self.name, &config, at(0))
             .expect("the panel is lit");
@@ -205,7 +205,7 @@ fn the_report_counts_flips_and_names_each_output() {
     assert!(line.contains(&want), "{line}");
     assert!(line.contains(r#""seat":"held""#), "{line}");
     // DPMS off keeps the output in the report, dark.
-    let dark = rig.config(OutputPower::Off);
+    let dark = rig.config(false);
     rig.backend.apply(&rig.name, &dark, at(10)).expect("dark");
     assert!(
         rig.backend
@@ -220,7 +220,7 @@ fn a_dark_output_stops_the_flips_and_lighting_it_restarts_them() {
     let mut rig = rig();
     rig.light();
     rig.frames(4);
-    let dark = rig.config(OutputPower::Off);
+    let dark = rig.config(false);
     rig.backend.apply(&rig.name, &dark, at(10)).expect("dark");
     let before = rig.backend.report().flips;
     rig.frames(4);

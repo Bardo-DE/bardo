@@ -4,7 +4,7 @@
 
 use crate::states::{GlobalFilter, WaylandFault};
 use casement_core::geometry::LogicalPoint;
-use casement_core::output::{EdidFacts, EdidSerial, Mode, ModePreference, PhysicalMm};
+use casement_core::output::{EdidFacts, EdidSerial, Mode, PhysicalMm};
 use casement_core::{OutputKey, OutputName};
 use casement_protocols::vocab::Transform;
 use ds_core::geometry::scale::Scale;
@@ -126,9 +126,9 @@ fn build(wire: &OutputWire) -> Output {
         },
     );
     let mode = mode_to(&wire.mode);
-    match wire.mode.preference {
-        ModePreference::Preferred => output.set_preferred(mode),
-        ModePreference::Other => output.add_mode(mode),
+    match wire.mode.preferred {
+        true => output.set_preferred(mode),
+        false => output.add_mode(mode),
     }
     apply_state(&output, wire);
     output
@@ -217,7 +217,7 @@ mod tests {
             mode: Mode {
                 size: PhysicalSize { w: 2880, h: 1620 },
                 refresh: Millihertz(60_000),
-                preference: ModePreference::Preferred,
+                preferred: true,
             },
             scale: Scale(scale),
             transform: Transform::R90,

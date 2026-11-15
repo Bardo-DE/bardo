@@ -94,8 +94,7 @@ mod tests {
     use casement_core::OutputState;
     use casement_core::geometry::{LogicalPoint, PhysicalSize};
     use casement_core::output::{
-        EdidFacts, EdidSerial, Mode, ModePreference, OutputConfig, OutputFacts, OutputPower,
-        PhysicalMm, VrrCapability,
+        EdidFacts, EdidSerial, Mode, OutputConfig, OutputFacts, PhysicalMm, VrrCapability,
     };
     use casement_core::time::Millihertz;
     use casement_core::{OutputKey, OutputName};
@@ -112,7 +111,7 @@ mod tests {
         let mode = Mode {
             size: PhysicalSize { w: 1920, h: 1080 },
             refresh: Millihertz(60_000),
-            preference: ModePreference::Preferred,
+            preferred: true,
         };
         let facts = OutputFacts {
             name,
@@ -127,7 +126,7 @@ mod tests {
             scale: Scale(scale),
             transform: Turn::Normal,
             position: LogicalPoint { x: at.0, y: at.1 },
-            power: OutputPower::On,
+            power: true,
         };
         (key, OutputState { facts, config })
     }

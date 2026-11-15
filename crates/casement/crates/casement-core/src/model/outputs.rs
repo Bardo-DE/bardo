@@ -8,7 +8,7 @@ use crate::effect::Effect;
 use crate::focus::FocusIn;
 use crate::ids::OutputKey;
 use crate::layer::LayerBook;
-use crate::output::{OutputConfig, OutputFacts, OutputPower, SavedOutputs, place_outputs};
+use crate::output::{OutputConfig, OutputFacts, SavedOutputs, place_outputs};
 use crate::reveal::RevealEdge;
 use crate::space::SpaceContent;
 use crate::time::TimerKey;
@@ -223,7 +223,7 @@ fn dark_config(facts: &OutputFacts) -> OutputConfig {
         scale: ds_core::geometry::scale::Scale::ONE,
         transform: casement_protocols::vocab::Transform::Normal,
         position: crate::geometry::LogicalPoint { x: 0, y: 0 },
-        power: OutputPower::Off,
+        power: false,
     })
 }
 
@@ -231,7 +231,7 @@ fn dark_config(facts: &OutputFacts) -> OutputConfig {
 fn lit_if_it_has_a_mode(config: OutputConfig) -> OutputConfig {
     match (config.mode.size.w, config.mode.size.h) {
         (0, _) | (_, 0) => OutputConfig {
-            power: OutputPower::Off,
+            power: false,
             ..config
         },
         _ => config,
