@@ -6,7 +6,6 @@
 //! `AccessDenied`. The signals `AgentLoginRequested`, `AgentLogoutRequested` and
 //! `ProcessCredentialRevoked` are sent to the registering connection alone.
 
-use super::launchers::Ask;
 use crate::callers::Callers;
 use crate::errors::RefusedError;
 use crate::host::Host;
@@ -18,7 +17,7 @@ use porter_core::SessionToken;
 use porter_dbus::accounts::LauncherServer;
 use porter_dbus::{Call, Details};
 use porter_service_accounts::{AgentFault, LoginEnd};
-use porter_wire::{ParentWindow, Refusal};
+use porter_wire::{AskKind, ParentWindow, Refusal};
 use std::sync::Arc;
 use zbus::message::Header;
 use zbus::zvariant::{OwnedFd, OwnedObjectPath};
@@ -148,7 +147,7 @@ impl<H: Host, C: Callers> LauncherServer for LauncherObject<H, C> {
         outcome: String,
         reason: String,
     ) -> Result<(), RefusedError> {
-        self.report(&header, Ask::Login, &request, &outcome, &reason)
+        self.report(&header, AskKind::Login, &request, &outcome, &reason)
             .await
     }
 
@@ -161,7 +160,7 @@ impl<H: Host, C: Callers> LauncherServer for LauncherObject<H, C> {
         outcome: String,
         reason: String,
     ) -> Result<(), RefusedError> {
-        self.report(&header, Ask::Logout, &request, &outcome, &reason)
+        self.report(&header, AskKind::Logout, &request, &outcome, &reason)
             .await
     }
 
@@ -192,7 +191,7 @@ impl<H: Host, C: Callers> LauncherObject<H, C> {
     async fn report(
         &self,
         header: &Header<'_>,
-        kind: Ask,
+        kind: AskKind,
         request: &str,
         outcome: &str,
         reason: &str,
@@ -205,8 +204,8 @@ impl<H: Host, C: Callers> LauncherObject<H, C> {
         let pending = self.0.launchers.take(&sender, &request, kind)?;
         // The state first, so whoever waits finds the account as the report left it.
         let state = match (kind, outcome) {
-            (Ask::Login, LoginOutcome::Ready) => Some(AgentState::Ready),
-            (Ask::Logout, LoginOutcome::Ready) => Some(AgentState::NeedsLogin),
+            (AskKind::Login, LoginOutcome::Ready) => Some(AgentState::Ready),
+            (AskKind::Logout, LoginOutcome::Ready) => Some(AgentState::NeedsLogin),
             _ => None,
         };
         let saved = match state {

@@ -7,7 +7,7 @@ use crate::found::*;
 use crate::search::{Outcome, discover_mail, discover_mail_with};
 use crate::testing::{ADDRESS, Records, Table, doc, respond, server};
 use crate::{DiscoverFault, parse_autoconfig, parse_autoconfig_with};
-use porter_core::{LoginName, Tls};
+use porter_core::{Direction, LoginName, Tls};
 use porter_provider::ProviderSet;
 
 const OWN: &str =

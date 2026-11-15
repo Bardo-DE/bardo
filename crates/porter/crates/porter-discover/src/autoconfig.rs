@@ -17,10 +17,10 @@
 
 use crate::config::{self, AuthMethod, ClientConfig, Server, ServerProtocol, SocketType};
 use crate::found::{
-    Direction, DiscoverFault, Found, OAuthOffer, OAuthServer, Pop3Server, SearchOptions, Source,
+    DiscoverFault, Found, OAuthOffer, OAuthServer, Pop3Server, SearchOptions, Source,
 };
 use crate::mail::{imap_claim, imap_endpoint, smtp_endpoint};
-use porter_core::{LoginName, ServiceEndpoint, Tls};
+use porter_core::{Direction, LoginName, ServiceEndpoint, Tls};
 use porter_ids::WebUrl;
 use porter_provider::DomainName;
 

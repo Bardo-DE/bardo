@@ -22,7 +22,8 @@ mod spaces;
 mod tailnet;
 
 pub use credential::{ChildKey, ChildKeyError, Delivery, Inherit, ProcessCredential, Revoked};
-pub use launcher::{AskKind, KeyCandidate, Launcher, LauncherError, LauncherRequest};
+pub use launcher::{Launcher, LauncherError, LauncherRequest};
+pub use porter_wire::AskKind;
 use porter_client::{LinkError, Porter};
 
 use porter_dbus::Destination;

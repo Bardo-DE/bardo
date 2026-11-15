@@ -124,14 +124,14 @@ async fn asking_for_an_agents_key_answers_the_chosen_account_and_its_permit() {
         .request_agent_key(&program("claude-code"), DataClass::Files, Some(&session))
         .await
         .expect("a key");
-    assert_eq!(key.permit.as_str(), "permit-7");
+    assert_eq!(key.grant.as_str(), "permit-7");
     assert_eq!(key.account.as_str(), "anthropic");
     let key = rig
         .launcher
         .request_agent_key(&program("claude-code"), DataClass::Files, None)
         .await
         .expect("a key");
-    assert_eq!(key.permit.as_str(), "permit-7");
+    assert_eq!(key.grant.as_str(), "permit-7");
     assert_eq!(
         rig.fake.seen(|seen| seen.agent_key_requests.clone()),
         [

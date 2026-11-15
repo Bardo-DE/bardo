@@ -20,7 +20,7 @@ use porter_http_reqwest::ReqwestHttp;
 use porter_provider::parse_provider;
 use porter_secrets::MemorySecrets;
 use porter_sheet::{
-    EditServers, FieldAnswer, FieldKind, FieldValue, Hop, MailServers, Manual, Security,
+    EditServers, FieldAnswer, FieldKind, FieldValue, Hop, MailServers, Manual,
     ServersFixed, SheetInput,
 };
 use porter_wire::{ParentWindow, Refusal};
@@ -42,7 +42,7 @@ fn plain(kind: FieldKind, text: &str) -> FieldAnswer {
     }
 }
 
-fn hop(host: &str, port: u16, security: Security) -> Hop {
+fn hop(host: &str, port: u16, security: Tls) -> Hop {
     Hop {
         host: host.to_owned(),
         port,
@@ -89,8 +89,8 @@ fn mail_family() -> Box<dyn DynProvider> {
 fn stored_before() -> Kept {
     Kept {
         servers: Manual::Imap(MailServers {
-            incoming: hop("imap.example.test", 993, Security::Tls),
-            outgoing: hop("smtp.example.test", 465, Security::Tls),
+            incoming: hop("imap.example.test", 993, Tls::Implicit),
+            outgoing: hop("smtp.example.test", 465, Tls::Implicit),
             login: None,
         }),
         name: Some("Ada".to_owned()),
@@ -152,8 +152,8 @@ async fn a_hosted_app_edits_an_imap_accounts_host_and_port_and_the_stored_accoun
         kept,
         Kept {
             servers: Manual::Imap(MailServers {
-                incoming: hop("127.0.0.1", imap, Security::Plain),
-                outgoing: hop("127.0.0.1", smtp, Security::Plain),
+                incoming: hop("127.0.0.1", imap, Tls::Plain),
+                outgoing: hop("127.0.0.1", smtp, Tls::Plain),
                 login: None,
             }),
             name: Some("Ada Lovelace".to_owned()),

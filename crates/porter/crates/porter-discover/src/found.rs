@@ -1,7 +1,7 @@
 //! What a discovery step returns.
 
 use porter_capability::Claim;
-use porter_core::ServiceEndpoint;
+use porter_core::{Direction, ServiceEndpoint};
 
 /// Where a finding came from, for the review step ("from the provider's autoconfig", "via MX").
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -39,15 +39,6 @@ pub struct Found {
     /// the search was asked to report them ([`SearchOptions::report_pop3`]); `endpoints` stay IMAP and
     /// SMTP whatever this holds.
     pub pop3: Vec<Pop3Server>,
-}
-
-/// Which half of an account a server serves.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Direction {
-    /// `incomingServer`.
-    Incoming,
-    /// `outgoingServer`.
-    Outgoing,
 }
 
 /// A server that lists `OAuth2` among its authentications, its host's placeholders filled in.

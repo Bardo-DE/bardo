@@ -329,7 +329,7 @@ async fn launcher_request_key(
         Ok(key) => {
             emit(json!({
                 "result": "granted",
-                "permit": key.permit.as_str(),
+                "permit": key.grant.as_str(),
                 "account": key.account.as_str(),
             }));
             true

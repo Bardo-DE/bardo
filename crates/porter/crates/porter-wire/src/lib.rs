@@ -2,6 +2,7 @@
 //! travel as D-Bus arguments (porter-dbus) and, for a session, as frames on the socket
 //! `Inference1.Open` returns. Pure values and the framing of a stream of them; no I/O.
 
+mod ask_kind;
 mod error;
 mod frame;
 mod launcher_fault;
@@ -9,6 +10,7 @@ pub mod names;
 mod reply;
 mod request;
 
+pub use ask_kind::AskKind;
 pub use error::FrameError;
 pub use frame::{Envelope, MAX_FRAME, decode_frame, encode_frame};
 pub use launcher_fault::LauncherFault;

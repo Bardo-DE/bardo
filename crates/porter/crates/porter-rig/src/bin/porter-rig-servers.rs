@@ -1,12 +1,12 @@
 //! `porter-rig-servers --dir <scratch> [--imap] [--smtp] [--pop3] [--dav] [--nextcloud]
 //! [--oauth] [--google] [--token-lifetime-s N] [--ollama] [--llm-api]
-//! [--tls implicit|starttls|plain]`
+//! [--tls tls|starttls|plain]`
 //!
 //! Starts the fakes on 127.0.0.1, writes `<scratch>/rig.json` and `<scratch>/ca.pem`, serves
 //! the control endpoint (see `porter_rig::control`) and waits. SIGTERM, SIGINT or
 //! `POST /stop` ends it cleanly and removes `rig.json`.
 
-use clap::{Parser, ValueEnum};
+use clap::Parser;
 use porter_core::Tls;
 use porter_rig::control::{Levers, serve_levers};
 use porter_rig::rigfile::RigFile;
@@ -17,11 +17,8 @@ use std::sync::{Arc, Mutex};
 use tokio::signal::unix::{SignalKind, signal};
 use tokio::sync::Notify;
 
-#[derive(Debug, Clone, Copy, ValueEnum)]
-enum TlsArg {
-    Implicit,
-    Starttls,
-    Plain,
+fn parse_tls(text: &str) -> Result<Tls, String> {
+    Tls::from_word(text).ok_or_else(|| format!("`{text}` is not tls, starttls or plain"))
 }
 
 /// Fake servers for a jailed scenario (test tooling, never installed).
@@ -64,8 +61,8 @@ struct Args {
     #[arg(long)]
     llm_api: bool,
     /// How the mail servers are secured.
-    #[arg(long, value_enum, default_value = "implicit")]
-    tls: TlsArg,
+    #[arg(long, value_parser = parse_tls, default_value = "tls")]
+    tls: Tls,
 }
 
 fn fail(why: impl std::fmt::Display) -> ExitCode {
@@ -88,11 +85,7 @@ async fn main() -> ExitCode {
         token_lifetime_s: args.token_lifetime_s,
         ollama: args.ollama,
         llm_api: args.llm_api,
-        tls: match args.tls {
-            TlsArg::Implicit => Tls::Implicit,
-            TlsArg::Starttls => Tls::StartTls,
-            TlsArg::Plain => Tls::Plain,
-        },
+        tls: args.tls,
     };
     let Ok(mut term) = signal(SignalKind::terminate()) else {
         return fail("cannot listen for SIGTERM");

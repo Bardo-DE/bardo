@@ -5,7 +5,8 @@
 use super::*;
 use crate::fields::{FieldAnswer, FieldKind, FieldValue};
 use crate::input::SheetInput;
-use crate::manual::{Hop, MailServers, Manual, Security};
+use crate::manual::{Hop, MailServers, Manual};
+use porter_core::Tls;
 use crate::progress::{Progress, SignInFault, SignInInput};
 use crate::view::{FieldProblem, ProblemKind, SheetView};
 use porter_core::SecretText;
@@ -21,8 +22,8 @@ fn servers() -> Manual {
         security,
     };
     Manual::Imap(MailServers {
-        incoming: hop("imap.example.test", 993, Security::Tls),
-        outgoing: hop("smtp.example.test", 587, Security::StartTls),
+        incoming: hop("imap.example.test", 993, Tls::Implicit),
+        outgoing: hop("smtp.example.test", 587, Tls::StartTls),
         login: Some("ada.login".to_owned()),
     })
 }

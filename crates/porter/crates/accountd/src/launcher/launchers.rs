@@ -26,7 +26,7 @@ use porter_ids::clock::SystemClock;
 use porter_service_accounts::{Launchers as LaunchersSeam, LoginEnd, NoLauncher, Roster, Waiting};
 use porter_service_core::audit::AuditSink;
 use porter_service_core::audit::{AuditEntry, AuditEvent};
-use porter_wire::LauncherFault;
+use porter_wire::{AskKind, LauncherFault};
 use porter_wire::names::ACCOUNTS_PATH;
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, PoisonError};
@@ -47,19 +47,11 @@ pub const DEFAULT_BOUND: Duration = Duration::from_secs(600);
 /// How often a pending request's bound is looked at.
 pub const DEFAULT_TICK: Duration = Duration::from_secs(1);
 
-/// What a launcher is asked to do.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Ask {
-    Login,
-    Logout,
-}
-
-impl Ask {
-    fn signal(self) -> &'static str {
-        match self {
-            Ask::Login => "AgentLoginRequested",
-            Ask::Logout => "AgentLogoutRequested",
-        }
+/// The signal that asks a launcher to do `kind`.
+fn signal(kind: AskKind) -> &'static str {
+    match kind {
+        AskKind::Login => "AgentLoginRequested",
+        AskKind::Logout => "AgentLogoutRequested",
     }
 }
 
@@ -134,7 +126,7 @@ impl std::fmt::Debug for LoginTiming {
 #[derive(Debug)]
 pub(crate) struct Pending {
     owner: String,
-    ask: Ask,
+    ask: AskKind,
     pub(crate) account: AccountId,
     deadline: UnixSeconds,
     done: oneshot::Sender<LoginEnd>,
@@ -364,7 +356,7 @@ impl Launchers {
         &self,
         owner: &str,
         request: &LoginRequestId,
-        kind: Ask,
+        kind: AskKind,
     ) -> Result<Pending, RefusedError> {
         let mut state = held(&self.state);
         match state.pending.get(request) {
@@ -377,7 +369,7 @@ impl Launchers {
 
     async fn ask(
         &self,
-        kind: Ask,
+        kind: AskKind,
         account: &AccountId,
         program: &AgentProgram,
     ) -> Result<Waiting, NoLauncher> {
@@ -418,8 +410,8 @@ impl Launchers {
                 None,
                 Some(account.clone()),
                 match kind {
-                    Ask::Login => AuditEvent::AgentLoginAsked { request, program },
-                    Ask::Logout => AuditEvent::AgentLogoutAsked { request, program },
+                    AskKind::Login => AuditEvent::AgentLoginAsked { request, program },
+                    AskKind::Logout => AuditEvent::AgentLogoutAsked { request, program },
                 },
             ));
         }
@@ -439,7 +431,7 @@ impl Launchers {
     /// The signal, to `owner` alone.
     async fn send(
         &self,
-        kind: Ask,
+        kind: AskKind,
         owner: &str,
         request: &LoginRequestId,
         account: &AccountId,
@@ -450,7 +442,7 @@ impl Launchers {
         emitter
             .emit(
                 LAUNCHER_INTERFACE,
-                kind.signal(),
+                signal(kind),
                 &(request.as_str(), account.as_str(), program.as_str()),
             )
             .await
@@ -513,7 +505,7 @@ impl LaunchersSeam for Launchers {
         account: &AccountId,
         program: &AgentProgram,
     ) -> Result<Waiting, NoLauncher> {
-        self.ask(Ask::Login, account, program).await
+        self.ask(AskKind::Login, account, program).await
     }
 
     async fn ask_logout(
@@ -521,7 +513,7 @@ impl LaunchersSeam for Launchers {
         account: &AccountId,
         program: &AgentProgram,
     ) -> Result<Waiting, NoLauncher> {
-        self.ask(Ask::Logout, account, program).await
+        self.ask(AskKind::Logout, account, program).await
     }
 }
 

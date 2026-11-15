@@ -17,7 +17,7 @@ use porter_provider::{
     Provider, SignIn, SignInMode, SignInStart, SignInStep, Signed, parse_provider,
 };
 use porter_sheet::{
-    FieldAnswer, FieldKind, Hop, MailServers, Manual, Security, SignInFault, SignInInput, edit_form,
+    FieldAnswer, FieldKind, Hop, MailServers, Manual, SignInFault, SignInInput, edit_form,
 };
 
 const ADDRESS: &str = "ada@example.test";
@@ -55,7 +55,7 @@ fn on_this_computer(port: u16) -> Hop {
     Hop {
         host: "127.0.0.1".to_owned(),
         port,
-        security: Security::Plain,
+        security: Tls::Plain,
     }
 }
 

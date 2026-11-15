@@ -24,7 +24,7 @@ fn an_address_has_a_domain_only_when_it_is_one() {
     }
 }
 
-fn hop(host: &str, port: u16, security: Security) -> Hop {
+fn hop(host: &str, port: u16, security: Tls) -> Hop {
     Hop {
         host: host.to_owned(),
         port,
@@ -52,8 +52,8 @@ fn shown(servers: &MailServers, address: &str) -> Vec<(Family, String, Tls, Stri
 #[test]
 fn typed_servers_make_imap_and_smtp_as_their_ports_and_securities_say() {
     let tls = servers(
-        hop("mail.example.org", 993, Security::Tls),
-        hop("smtp.example.org", 465, Security::Tls),
+        hop("mail.example.org", 993, Tls::Implicit),
+        hop("smtp.example.org", 465, Tls::Implicit),
         None,
     );
     assert_eq!(
@@ -74,8 +74,8 @@ fn typed_servers_make_imap_and_smtp_as_their_ports_and_securities_say() {
         ]
     );
     let starttls = servers(
-        hop("mail.example.org", 1143, Security::StartTls),
-        hop("mail.example.org", 2587, Security::StartTls),
+        hop("mail.example.org", 1143, Tls::StartTls),
+        hop("mail.example.org", 2587, Tls::StartTls),
         None,
     );
     assert_eq!(
@@ -100,8 +100,8 @@ fn typed_servers_make_imap_and_smtp_as_their_ports_and_securities_say() {
 #[test]
 fn a_typed_login_name_is_the_login_of_both_servers() {
     let named = servers(
-        hop("mail.example.org", 993, Security::Tls),
-        hop("smtp.example.org", 587, Security::StartTls),
+        hop("mail.example.org", 993, Tls::Implicit),
+        hop("smtp.example.org", 587, Tls::StartTls),
         Some("ada.l"),
     );
     let logins: Vec<_> = shown(&named, "ada@example.org")
@@ -114,8 +114,8 @@ fn a_typed_login_name_is_the_login_of_both_servers() {
 #[test]
 fn plain_is_for_loopback_only() {
     let local = servers(
-        hop("127.0.0.1", 143, Security::Plain),
-        hop("127.0.0.1", 587, Security::Plain),
+        hop("127.0.0.1", 143, Tls::Plain),
+        hop("127.0.0.1", 587, Tls::Plain),
         None,
     );
     let tls: Vec<_> = shown(&local, "ada@example.org")
@@ -124,8 +124,8 @@ fn plain_is_for_loopback_only() {
         .collect();
     assert_eq!(tls, [Tls::Plain, Tls::Plain]);
     let elsewhere = servers(
-        hop("mail.example.org", 143, Security::Plain),
-        hop("smtp.example.org", 587, Security::StartTls),
+        hop("mail.example.org", 143, Tls::Plain),
+        hop("smtp.example.org", 587, Tls::StartTls),
         None,
     );
     assert_eq!(
@@ -137,8 +137,8 @@ fn plain_is_for_loopback_only() {
 #[test]
 fn a_pop3_account_claims_a_pop3_mailbox_and_an_imap_one_keeps_the_files_claim() {
     let same = servers(
-        hop("pop.example.org", 995, Security::Tls),
-        hop("smtp.example.org", 465, Security::Tls),
+        hop("pop.example.org", 995, Tls::Implicit),
+        hop("smtp.example.org", 465, Tls::Implicit),
         None,
     );
     let transport = |family| {

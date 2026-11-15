@@ -1,5 +1,6 @@
 use super::*;
-use crate::manual::{Hop, MailServers, Security};
+use crate::manual::{Hop, MailServers};
+use porter_core::Tls;
 
 fn plain(kind: FieldKind, text: &str) -> FieldAnswer {
     FieldAnswer {
@@ -72,7 +73,7 @@ fn an_edit_reads_the_servers_the_name_and_a_new_password_and_keeps_none_of_them_
     };
     assert_eq!(
         (host.as_str(), *port, *security),
-        ("mail.example.test", 1993, Security::Tls)
+        ("mail.example.test", 1993, Tls::Implicit)
     );
     let shown = format!("{edited:?}");
     assert!(!shown.contains("hunter2-correct-horse"), "{shown}");

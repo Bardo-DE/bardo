@@ -45,6 +45,33 @@ pub enum Tls {
     Plain,
 }
 
+impl Tls {
+    /// The word a person types for it: `tls`, `starttls` or `plain`.
+    pub fn word(self) -> &'static str {
+        match self {
+            Tls::Implicit => "tls",
+            Tls::StartTls => "starttls",
+            Tls::Plain => "plain",
+        }
+    }
+
+    /// The security a typed word names.
+    pub fn from_word(text: &str) -> Option<Tls> {
+        [Tls::Implicit, Tls::StartTls, Tls::Plain]
+            .into_iter()
+            .find(|tls| tls.word() == text)
+    }
+}
+
+/// Which half of a mail account a server serves.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Direction {
+    /// Where mail is read from (`incomingServer`).
+    Incoming,
+    /// Where mail is sent through (`outgoingServer`).
+    Outgoing,
+}
+
 /// The login name an endpoint wants. Not a secret, so it has a plain `Debug`.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]

@@ -156,11 +156,12 @@ fn a_sign_in_starts_without_a_hint_and_with_a_first_consent() {
 
 #[test]
 fn an_edit_mode_shows_no_password_in_debug() {
-    use porter_sheet::{Hop, MailServers, Manual, Security};
+    use porter_core::Tls;
+    use porter_sheet::{Hop, MailServers, Manual};
     let hop = |host: &str| Hop {
         host: host.to_owned(),
         port: 993,
-        security: Security::Tls,
+        security: Tls::Implicit,
     };
     let mode = SignInMode::EditServers {
         account: AccountId::parse("ada").expect("id"),

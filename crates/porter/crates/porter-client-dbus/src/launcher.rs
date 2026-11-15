@@ -35,12 +35,11 @@ use crate::failure::{launcher_error, link_error};
 use futures_util::StreamExt;
 use futures_util::stream::select;
 use porter_capability::AgentProgram;
-use porter_capability::{Capability, Subject};
 use porter_capability::{LoginOutcome, LoginRequestId};
 use porter_client::{Changes, LinkError, Malformed};
 use porter_core::audit::CredentialEnd;
-use porter_core::{AccountId, GrantId, ProviderId};
-use porter_core::{AccountLabel, Candidate, DataClass, Restriction};
+use porter_core::{AccountId, GrantId};
+use porter_core::{Candidate, DataClass};
 use porter_core::{ProcessCredentialId, SessionToken};
 use porter_dbus::accounts::sheet::{SheetKind, reply_of};
 use porter_dbus::accounts::{
@@ -49,6 +48,7 @@ use porter_dbus::accounts::{
 };
 use porter_ids::word::{from_word, word as word_of};
 use porter_wire::AccountsReply;
+use porter_wire::AskKind;
 use porter_wire::LauncherFault;
 use porter_wire::Refusal;
 
@@ -70,15 +70,6 @@ pub enum LauncherError {
     Link(#[from] LinkError),
 }
 
-/// What accountd asks of the launcher.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum AskKind {
-    /// Have the agent sign itself in.
-    Login,
-    /// Have the agent sign itself out.
-    Logout,
-}
-
 /// One request accountd sent to this launcher alone.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LauncherRequest {
@@ -90,41 +81,6 @@ pub struct LauncherRequest {
     pub account: AccountId,
     /// The program (one the launcher registered) that is to sign in or out.
     pub program: AgentProgram,
-}
-
-/// The key the person chose for an agent, and the permit that lets the agent use it: what
-/// [`Launcher::request_agent_key`] answers. It is a `Candidate` with the permit where a grant
-/// was.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct KeyCandidate {
-    /// The account that holds the key.
-    pub account: AccountId,
-    /// Its label.
-    pub label: AccountLabel,
-    /// Its provider, for the mark.
-    pub provider: ProviderId,
-    /// The account, or the model of it, that fits.
-    pub subject: Subject,
-    /// The capability that fits.
-    pub capability: Capability,
-    /// What limits it.
-    pub restriction: Restriction,
-    /// The person's yes for this agent to use the key; `issue_credential` is asked by it.
-    pub permit: GrantId,
-}
-
-impl From<Candidate> for KeyCandidate {
-    fn from(candidate: Candidate) -> Self {
-        Self {
-            account: candidate.account,
-            label: candidate.label,
-            provider: candidate.provider,
-            subject: candidate.subject,
-            capability: candidate.capability,
-            restriction: candidate.restriction,
-            permit: candidate.grant,
-        }
-    }
 }
 
 fn malformed(what: Malformed) -> LauncherError {
@@ -232,7 +188,7 @@ impl Launcher {
         program: &AgentProgram,
         class: DataClass,
         session: Option<&SessionToken>,
-    ) -> Result<KeyCandidate, LauncherError> {
+    ) -> Result<Candidate, LauncherError> {
         let proxy = self.bus.launcher_proxy().await?;
         let mut listener = Sheet::subscribe_on(&self.bus.connection, ServiceRoot::Accounts)
             .await
@@ -259,7 +215,7 @@ impl Launcher {
         let (code, results) = listener.response(&path).await.map_err(sheet_error)?;
         abandon.answered();
         match reply_of(SheetKind::Choose, code, results).map_err(|_| malformed(Malformed::Reply))? {
-            AccountsReply::Chosen(candidate) => Ok(candidate.into()),
+            AccountsReply::Chosen(candidate) => Ok(candidate),
             AccountsReply::Refused(refusal) => Err(LauncherError::Refused(refusal)),
             _ => Err(malformed(Malformed::Reply)),
         }

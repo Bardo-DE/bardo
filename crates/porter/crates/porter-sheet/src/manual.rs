@@ -21,7 +21,7 @@ use super::fields::{
     Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, Presence, first_missing,
 };
 use super::view::{FieldProblem, ProblemKind};
-use porter_core::{AuthKind, SecretText};
+use porter_core::{AuthKind, Direction, SecretText, Tls};
 use porter_core::{EndpointUrl, server_address, server_address_shape};
 use porter_ids::UrlScheme;
 use porter_ids::word::{from_word, word};
@@ -54,37 +54,6 @@ impl Protocol {
     }
 }
 
-/// How a connection to a typed server is secured.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Security {
-    /// TLS from the first byte.
-    Tls,
-    /// Plain first, upgraded with STARTTLS before any credential is sent.
-    StartTls,
-    /// No TLS; this computer only.
-    Plain,
-}
-
-impl Security {
-    fn slug(self) -> &'static str {
-        match self {
-            Security::Tls => "tls",
-            Security::StartTls => "starttls",
-            Security::Plain => "plain",
-        }
-    }
-
-    fn parse(text: &str) -> Option<Security> {
-        match text {
-            "tls" => Some(Security::Tls),
-            "starttls" => Some(Security::StartTls),
-            "plain" => Some(Security::Plain),
-            _ => None,
-        }
-    }
-}
-
 /// One server as typed: where, and how the connection is secured.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Hop {
@@ -93,7 +62,7 @@ pub struct Hop {
     /// The port, 1 to 65535.
     pub port: u16,
     /// How the connection is secured.
-    pub security: Security,
+    pub security: Tls,
 }
 
 /// An IMAP or POP3 account's two servers.
@@ -149,23 +118,14 @@ impl Manual {
     }
 }
 
-/// Which of an account's two servers a form row is about.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Direction {
-    /// Where mail is read from.
-    Incoming,
-    /// Where mail is sent through.
-    Outgoing,
-}
-
 /// The port a server of this kind usually listens on for `security`.
-fn usual_port(protocol: Protocol, direction: Direction, security: Security) -> u16 {
+fn usual_port(protocol: Protocol, direction: Direction, security: Tls) -> u16 {
     match (direction, protocol, security) {
-        (Direction::Outgoing, _, Security::Tls) => 465,
+        (Direction::Outgoing, _, Tls::Implicit) => 465,
         (Direction::Outgoing, _, _) => 587,
-        (Direction::Incoming, Protocol::Pop3, Security::Tls) => 995,
+        (Direction::Incoming, Protocol::Pop3, Tls::Implicit) => 995,
         (Direction::Incoming, Protocol::Pop3, _) => 110,
-        (Direction::Incoming, _, Security::Tls) => 993,
+        (Direction::Incoming, _, Tls::Implicit) => 993,
         (Direction::Incoming, _, _) => 143,
     }
 }
@@ -203,7 +163,7 @@ pub fn manual_form(protocol: Protocol, domain: Option<&str>) -> Vec<FieldSpec> {
         Presence::Required,
         Some(word(&protocol).to_owned()),
     )];
-    let port = |direction| Some(usual_port(protocol, direction, Security::Tls).to_string());
+    let port = |direction| Some(usual_port(protocol, direction, Tls::Implicit).to_string());
     match protocol {
         Protocol::Jmap => fields.extend([
             spec(
@@ -223,7 +183,7 @@ pub fn manual_form(protocol: Protocol, domain: Option<&str>) -> Vec<FieldSpec> {
             spec(
                 FieldKind::Security,
                 Presence::Required,
-                Some(Security::Tls.slug().to_owned()),
+                Some(Tls::Implicit.word().to_owned()),
             ),
             spec(
                 FieldKind::Port,
@@ -234,7 +194,7 @@ pub fn manual_form(protocol: Protocol, domain: Option<&str>) -> Vec<FieldSpec> {
             spec(
                 FieldKind::OutgoingSecurity,
                 Presence::Required,
-                Some(Security::Tls.slug().to_owned()),
+                Some(Tls::Implicit.word().to_owned()),
             ),
             spec(
                 FieldKind::OutgoingPort,
@@ -295,7 +255,7 @@ pub fn edit_form(auth: AuthKind, current: &Manual, name: Option<&str>) -> Vec<Fi
                         hop_of(field.kind).map(|h| h.host.clone())
                     }
                     FieldKind::Security | FieldKind::OutgoingSecurity => {
-                        hop_of(field.kind).map(|h| h.security.slug().to_owned())
+                        hop_of(field.kind).map(|h| h.security.word().to_owned())
                     }
                     FieldKind::Port | FieldKind::OutgoingPort => {
                         hop_of(field.kind).map(|h| h.port.to_string())
@@ -406,8 +366,8 @@ fn refit_in(fields: &[FieldSpec], answers: &[FieldAnswer], choices: &[&str]) -> 
         .unwrap_or(Protocol::Imap);
     let security = |kind| {
         text(answers, kind)
-            .and_then(|t| Security::parse(&t))
-            .unwrap_or(Security::Tls)
+            .and_then(|t| Tls::from_word(&t))
+            .unwrap_or(Tls::Implicit)
     };
     let kept = |kind: FieldKind, base: Option<String>| {
         text(answers, kind).or(base).filter(|t| !t.is_empty())
@@ -436,7 +396,7 @@ fn refit_in(fields: &[FieldSpec], answers: &[FieldAnswer], choices: &[&str]) -> 
             field.prefill = match field.kind {
                 FieldKind::Protocol => Some(word(&protocol).to_owned()),
                 FieldKind::Security | FieldKind::OutgoingSecurity => {
-                    Some(security(field.kind).slug().to_owned())
+                    Some(security(field.kind).word().to_owned())
                 }
                 FieldKind::Port | FieldKind::OutgoingPort => {
                     let direction = match field.kind == FieldKind::OutgoingPort {
@@ -529,8 +489,8 @@ fn hop(
     }
     let security = text(answers, security_kind)
         .ok_or(missing(security_kind))
-        .and_then(|t| Security::parse(&t).ok_or(invalid(security_kind)))?;
-    if security == Security::Plain && !is_loopback(&host) {
+        .and_then(|t| Tls::from_word(&t).ok_or(invalid(security_kind)))?;
+    if security == Tls::Plain && !is_loopback(&host) {
         return Err(invalid(security_kind));
     }
     let port = match text(answers, port_kind) {

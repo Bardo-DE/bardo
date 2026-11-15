@@ -7,7 +7,7 @@ use porter_capability::{Claim, Offer};
 use porter_core::{EndpointUrl, Family, LoginName, ServiceEndpoint, Tls};
 use porter_ids::UrlScheme;
 use porter_provider::{DomainName, ProviderSpec};
-use porter_sheet::{Hop, MailServers, Security};
+use porter_sheet::{Hop, MailServers};
 
 /// The domain of an address, when it is one.
 pub fn domain_of(address: &str) -> Option<DomainName> {
@@ -20,15 +20,15 @@ pub fn domain_of(address: &str) -> Option<DomainName> {
 /// `pop3`, `smtp` with STARTTLS) or plain (this computer only; `check` refuses it anywhere else).
 fn endpoint(family: Family, hop: &Hop, login: &LoginName) -> Option<ServiceEndpoint> {
     let (scheme, tls) = match (family, hop.security) {
-        (Family::Imap, Security::Tls) => ("imaps", Tls::Implicit),
-        (Family::Imap, Security::StartTls) => ("imap", Tls::StartTls),
-        (Family::Imap, Security::Plain) => ("imap", Tls::Plain),
-        (Family::Pop3, Security::Tls) => ("pop3s", Tls::Implicit),
-        (Family::Pop3, Security::StartTls) => ("pop3", Tls::StartTls),
-        (Family::Pop3, Security::Plain) => ("pop3", Tls::Plain),
-        (Family::Smtp, Security::Tls) => ("smtps", Tls::Implicit),
-        (Family::Smtp, Security::StartTls) => ("smtp", Tls::StartTls),
-        (Family::Smtp, Security::Plain) => ("smtp", Tls::Plain),
+        (Family::Imap, Tls::Implicit) => ("imaps", Tls::Implicit),
+        (Family::Imap, Tls::StartTls) => ("imap", Tls::StartTls),
+        (Family::Imap, Tls::Plain) => ("imap", Tls::Plain),
+        (Family::Pop3, Tls::Implicit) => ("pop3s", Tls::Implicit),
+        (Family::Pop3, Tls::StartTls) => ("pop3", Tls::StartTls),
+        (Family::Pop3, Tls::Plain) => ("pop3", Tls::Plain),
+        (Family::Smtp, Tls::Implicit) => ("smtps", Tls::Implicit),
+        (Family::Smtp, Tls::StartTls) => ("smtp", Tls::StartTls),
+        (Family::Smtp, Tls::Plain) => ("smtp", Tls::Plain),
         _ => return None,
     };
     let endpoint = ServiceEndpoint {

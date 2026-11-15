@@ -248,9 +248,9 @@ fn each_protocol_parses_to_its_servers() {
             m.incoming.port,
             m.incoming.security
         ),
-        ("mail.example.org", 993, Security::Tls)
+        ("mail.example.org", 993, Tls::Implicit)
     );
-    assert_eq!((m.outgoing.port, m.outgoing.security), (465, Security::Tls));
+    assert_eq!((m.outgoing.port, m.outgoing.security), (465, Tls::Implicit));
     assert_eq!(m.login, None);
 
     let starttls = with(
@@ -263,11 +263,11 @@ fn each_protocol_parses_to_its_servers() {
     };
     assert_eq!(
         (m.incoming.port, m.incoming.security),
-        (143, Security::StartTls)
+        (143, Tls::StartTls)
     );
     assert_eq!(
         (m.outgoing.port, m.outgoing.security),
-        (587, Security::StartTls)
+        (587, Tls::StartTls)
     );
 
     let pop = with(imap_answers(), FieldKind::Protocol, "pop3");
@@ -413,7 +413,7 @@ fn plain_is_for_this_computer_only() {
     };
     assert_eq!(
         (m.incoming.security, m.incoming.port),
-        (Security::Plain, 143)
+        (Tls::Plain, 143)
     );
 }
 

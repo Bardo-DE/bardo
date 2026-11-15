@@ -27,7 +27,7 @@ use porter_service_accounts::{AccountsApi, EditError};
 use porter_service_core::registry::Registry;
 use porter_sheet::{
     EditServers, EditedServers, FieldAnswer, FieldKind, Hop, MailServers, Manual, ProblemKind,
-    Security, ServersFixed, SheetInput, SheetView, edit_form,
+    ServersFixed, SheetInput, SheetView, edit_form,
 };
 use porter_wire::{ParentWindow, Refusal};
 
@@ -45,7 +45,7 @@ fn hop(port: u16) -> Hop {
     Hop {
         host: "127.0.0.1".to_owned(),
         port,
-        security: Security::Plain,
+        security: Tls::Plain,
     }
 }
 

@@ -27,7 +27,7 @@ pub use dns::{Dns, DnsFault, MxRecord, SrvRecord};
 #[cfg(feature = "io")]
 pub use dns_io::HickoryDns;
 pub use found::{
-    Direction, DiscoverFault, Found, OAuthOffer, OAuthServer, Pop3Server, SearchOptions, Source,
+    DiscoverFault, Found, OAuthOffer, OAuthServer, Pop3Server, SearchOptions, Source,
 };
 pub use mx::{ProviderLead, ispdb_candidates, lookup_mx, mx_hosts, provider_leads};
 pub use search::{Miss, NotFound, Outcome, Tried, discover_mail, discover_mail_with};
