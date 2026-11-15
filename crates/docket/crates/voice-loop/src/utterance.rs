@@ -241,7 +241,13 @@ pub fn utterance_step(
                 E::StatusChanged,
             ],
         ),
-        (S::Listening, V::Audio { level, engine_ready }) => (
+        (
+            S::Listening,
+            V::Audio {
+                level,
+                engine_ready,
+            },
+        ) => (
             S::Listening,
             vec![
                 E::Emit(VoiceEvent::Level(level)),

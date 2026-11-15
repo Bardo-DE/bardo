@@ -15,9 +15,7 @@ use docket_client::DbusTransport;
 use docket_dbus::BusConnection;
 use docket_dbus::callers::Identity;
 use docket_host::EditorDesk;
-use docket_launch::{
-    Accounts, AgentSpawn, AgentsFile, BwrapProcs, ChildProc, Registry,
-};
+use docket_launch::{Accounts, AgentSpawn, AgentsFile, BwrapProcs, ChildProc, Registry};
 use docket_permissions_core::ProgramName;
 use docket_session::{BackendKind, HostFault, Opening, SessionHost};
 use docket_vocab::Workspace;

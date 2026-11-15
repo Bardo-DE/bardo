@@ -41,7 +41,10 @@ use companion_model::helper::SignInWay;
 use docket_core::UserTurn;
 use docket_permissions_core::PermissionKind;
 use docket_permissions_core::ProgramName;
-use docket_session::{BackendEvent, BackendFault, BackendKind, Choices, ResumePlan, Resumed, SessionBackend, StartSession, TurnEnd};
+use docket_session::{
+    BackendEvent, BackendFault, BackendKind, Choices, ResumePlan, Resumed, SessionBackend,
+    StartSession, TurnEnd,
+};
 use docket_store::Waits;
 use docket_vocab::CallId;
 use prov::Effect;

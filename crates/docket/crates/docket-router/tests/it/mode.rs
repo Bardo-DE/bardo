@@ -8,9 +8,12 @@ use cua_action::{RunMode, WindowTrust};
 use docket_core::*;
 use docket_fake::ScriptedConfirmer;
 use docket_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
-use docket_permissions_core::{Floor, FloorFile, AskOrRun, Level, LockedRow, Mode, Strictness};
+use docket_permissions_core::{AskOrRun, Floor, FloorFile, Level, LockedRow, Mode, Strictness};
 use docket_vocab::{CallRequest, CallerRole, Origin};
-use docket_wire::{CallerId, GrantAnswer, GrantAsk, IntentsReply, IntentsRequest, SessionModeAsk, SessionOpen, SessionOpened, WireRefusal};
+use docket_wire::{
+    CallerId, GrantAnswer, GrantAsk, IntentsReply, IntentsRequest, SessionModeAsk, SessionOpen,
+    SessionOpened, WireRefusal,
+};
 use prov::{AgentRef, ConfirmReceipt, Effect, InputProof, Label, RunId, SessionId, UnixSeconds};
 
 fn yes() -> ConfirmAnswer {

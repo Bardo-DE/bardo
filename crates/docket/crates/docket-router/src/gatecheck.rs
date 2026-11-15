@@ -18,7 +18,10 @@ use docket_gate::gate::{GateInputs, Pending, gate};
 use docket_gate::prepared::grant_state;
 use docket_gate_wire::{CuaAsk, GateAnswer};
 use docket_manifest::{AgentReach, Lasting};
-use docket_permissions_core::{ActionGrantKey, AskReason, GrantCaller, GrantTarget, Impact, Level, LimitCall, SessionSaw, SinkIntegrity};
+use docket_permissions_core::{
+    ActionGrantKey, AskReason, GrantCaller, GrantTarget, Impact, Level, LimitCall, SessionSaw,
+    SinkIntegrity,
+};
 use docket_vocab::{Clock, Depth, LabelText, Origin};
 use docket_wire::{GrantAnswer, GrantAsk, IntentsReply};
 use policy_point::{

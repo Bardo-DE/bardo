@@ -38,12 +38,7 @@ impl Hosts for OneRouter {
         if let Some(id) = &start.resume {
             backend = backend.resuming(id);
         }
-        AgentHost::new(
-            backend,
-            self.court.clone(),
-            self.desk.clone(),
-            false,
-        )
+        AgentHost::new(backend, self.court.clone(), self.desk.clone(), false)
     }
 
     fn opening(&self) -> Opening {

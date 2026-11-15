@@ -54,7 +54,7 @@ where
             level,
             engine_ready,
         })
-            .await;
+        .await;
         let Some(utt) = self.utt.as_mut() else { return };
         let silent = match (utt.state, utt.dictation.as_mut()) {
             (UtteranceState::Listening, Some(dictation)) => dictation.ended(&framed),

@@ -49,7 +49,10 @@ pub use codec::{
     CURRENT, EncodeFault, Encoded, EntryVersion, Logged, Read, Unreadable, decode, encode, kind_tag,
 };
 pub use desk::{DeskFault, NoDesk, SheetDesk};
-pub use entry::{BackendKind, BreakerNote, CallOpen, Compacted, CompactedBy, EndCause, ForkPoint, HandleLabel, Opening, Seq, SessionEntry, SkillUse, TaintCause, TaintNote, UnknownEntry};
+pub use entry::{
+    BackendKind, BreakerNote, CallOpen, Compacted, CompactedBy, EndCause, ForkPoint, HandleLabel,
+    Opening, Seq, SessionEntry, SkillUse, TaintCause, TaintNote, UnknownEntry,
+};
 pub use export::{EXPORT_VERSION, ExportFault, SessionExport, export, from_json, to_json};
 pub use fork::{ForkFault, child_names, fork, forks_of};
 pub use log::{Appended, LogFault, LogPage, PageSize, SessionLog, read_all};

@@ -22,9 +22,7 @@ use crate::seam::Planner;
 use crate::show::finish_output;
 use crate::summarise::{SummariseFault, Summarised};
 use crate::voice::Voice;
-use agent_loop::{
-    Availability, ModelOutput, PlannedCall, SummaryInput, choose_tier, leaked_call,
-};
+use agent_loop::{Availability, ModelOutput, PlannedCall, SummaryInput, choose_tier, leaked_call};
 use companion_wire::{RouteLog, RouteNote};
 use docket_core::{OneOf, PlannerView, ReplyFault};
 use docket_vocab::{ActionRef, CallRequest, Handle, Origin};

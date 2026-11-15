@@ -8,7 +8,10 @@
 //! must not stop a call over a disk), so a failed write is kept for the app to ask for
 //! ([`FileGrantStore::take_fault`]); the grant still counts for this run.
 
-use docket_permissions_core::{ActionGrant, StandingGrant, StandingGrantId, decode_standing, encode_standing, held_with, held_without};
+use docket_permissions_core::{
+    ActionGrant, StandingGrant, StandingGrantId, decode_standing, encode_standing, held_with,
+    held_without,
+};
 use docket_router::GrantStore;
 use docket_store::{GrantFileError, read_grant_list, write_grant_list};
 use std::path::{Path, PathBuf};

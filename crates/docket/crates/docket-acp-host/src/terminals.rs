@@ -24,7 +24,7 @@ use bulkhead::{AbsPath, Cover};
 use bulkhead::{
     Argv, Cut, ExitReport, Launch, Network, Sandbox, Shell, ShellFault, StartFault, TermId,
 };
-use docket_permissions_core::{SandboxState};
+use docket_permissions_core::SandboxState;
 use std::collections::BTreeMap;
 use std::time::{Duration, Instant};
 

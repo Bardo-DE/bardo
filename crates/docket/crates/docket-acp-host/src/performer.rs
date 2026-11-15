@@ -209,10 +209,7 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
             .served
             .get(session)
             .map_or(Derivation::Derived, |s| s.derivation(words, cwd));
-        (
-            derivation,
-            inner.terminals.access() || inner.agent_net,
-        )
+        (derivation, inner.terminals.access() || inner.agent_net)
     }
 
     /// The session is over: whatever it staged and never used is dropped.

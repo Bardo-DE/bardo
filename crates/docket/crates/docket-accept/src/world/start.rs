@@ -2,8 +2,8 @@
 
 use super::{
     AcpSetting, Binaries, Cassette, Cgroup, Consent, DaemonEnv, MEMORY_CALLERS, ModelSource,
-    Options, SPACES, Scratch, World, copy_catalog, inferd_toml, place, spawn,
-    within, write, write_system_callers,
+    Options, SPACES, Scratch, World, copy_catalog, inferd_toml, place, spawn, within, write,
+    write_system_callers,
 };
 use crate::confirm;
 use crate::provider::{AcceptMail, QuietWindow};

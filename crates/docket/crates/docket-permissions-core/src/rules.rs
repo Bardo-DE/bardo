@@ -8,7 +8,7 @@
 
 use crate::grant::GrantCaller;
 use crate::limit::{Limit, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope};
-use crate::standing::{StandingGrantId};
+use crate::standing::StandingGrantId;
 use prov::{Effect, SpaceScope};
 
 /// The rules file a limit is written to.

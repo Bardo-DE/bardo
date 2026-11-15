@@ -77,13 +77,7 @@ pub fn session_step(
         (_, V::SpaceHalted) => (S::Closed(CloseCause::SpaceHalted), vec![]),
         (_, V::WallExhausted) => (S::Closed(CloseCause::WallExhausted), vec![]),
         (S::Open(_), V::UntrustedReveal) => (S::Open(true), vec![]),
-        (S::Paused { trip, .. }, V::UntrustedReveal) => (
-            S::Paused {
-                taint: true,
-                trip,
-            },
-            vec![],
-        ),
+        (S::Paused { trip, .. }, V::UntrustedReveal) => (S::Paused { taint: true, trip }, vec![]),
         (S::Open(taint), V::BreakerTrip(trip)) => {
             (S::Paused { taint, trip }, vec![E::EmitBreakerTripped(trip)])
         }

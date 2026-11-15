@@ -8,7 +8,9 @@
 //! failed check.
 
 use bulkhead::AbsPath;
-use docket_permissions_core::{ActionGrant, ActionGrantKey, GrantCaller, GrantTarget, StandingGrant, StandingScope};
+use docket_permissions_core::{
+    ActionGrant, ActionGrantKey, GrantCaller, GrantTarget, StandingGrant, StandingScope,
+};
 use docket_router::GrantStore;
 use docket_vocab::ActionRef;
 use porter_core::consent::{Decision, Grant, GrantScope, Usage};

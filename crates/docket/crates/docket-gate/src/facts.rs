@@ -3,7 +3,7 @@
 //! the policy only as a context value; the refusal they bring about is Cedar's ruling.
 
 use docket_core::{Budget, Cost, KillSwitch, Ledger, charge, halted};
-use docket_permissions_core::{Limited};
+use docket_permissions_core::Limited;
 use policy_point::{BudgetFact, HaltFact, LimitFact};
 use prov::{Effect, SpaceId, SpaceScope, UnixSeconds};
 

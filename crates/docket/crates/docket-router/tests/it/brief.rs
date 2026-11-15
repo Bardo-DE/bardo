@@ -7,7 +7,9 @@ use companion_model::helper::JobRefusal;
 use docket_core::*;
 use docket_fake::{FakeSeams, ScriptedConfirmer, host_companion};
 use docket_gate::companion_names::{BRIEF_CONFIRM, HELPER_POST_JOB};
-use docket_permissions_core::{ActionGrantKey, ActionMatch, COMPANION_APP, GrantCaller, GrantTarget};
+use docket_permissions_core::{
+    ActionGrantKey, ActionMatch, COMPANION_APP, GrantCaller, GrantTarget,
+};
 use docket_router::{GrantStore, Router};
 use docket_vocab::{ActionRef, CallRequest, Handle, Origin, TargetValue, Value};
 use docket_wire::{IntentsReply, IntentsRequest};

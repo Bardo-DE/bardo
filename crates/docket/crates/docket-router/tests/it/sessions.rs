@@ -384,8 +384,10 @@ async fn only_the_reader_may_resolve_a_handle_and_the_screen_may_display_it() {
         IntentsReply::Text("secret words".into())
     );
     let st = router.state.lock().expect("lock");
-    assert!(st.sessions[&s.session].saw.untrusted,
-        "the reader has now seen it");
+    assert!(
+        st.sessions[&s.session].saw.untrusted,
+        "the reader has now seen it"
+    );
 }
 
 #[tokio::test]

@@ -56,12 +56,12 @@ mod tests {
     use docket_core::{
         AgentConfig, Covers, StepEnd, StepLine, StepShown, Summary, SummaryText, TurnVia, UserTurn,
     };
+    use docket_fake::{FixedClock, fake_router};
+    use docket_planner::{ScriptedPlanner, Summarised};
     use docket_session::{
         BackendKind, Compacted, CompactedBy, Logged, Opening, Read, Seq, SessionEntry, TaintCause,
         TaintNote, resume_plan,
     };
-    use docket_fake::{FixedClock, fake_router};
-    use docket_planner::{ScriptedPlanner, Summarised};
     use docket_vocab::{ActionRef, CallId, Caller, CallerRole, LabelText, TurnId};
     use docket_wire::{CallerId, SessionOpen};
     use porter_capability::Tier;
@@ -224,10 +224,7 @@ mod tests {
             steps: Count(30),
         };
         let text = SummaryText::parse("archived the first thirty items", &[]).expect("summary");
-        for (written, integrity) in [
-            (false, Integrity::Trusted),
-            (true, Integrity::Untrusted),
-        ] {
+        for (written, integrity) in [(false, Integrity::Trusted), (true, Integrity::Untrusted)] {
             let mut entries = vec![SessionEntry::Opened(opening())];
             if written {
                 entries.push(SessionEntry::Taint(TaintNote {
@@ -276,10 +273,7 @@ mod tests {
             steps: Count(30),
         };
         let text = SummaryText::parse("archived the first thirty items", &[]).expect("summary");
-        for (written, integrity) in [
-            (false, Integrity::Trusted),
-            (true, Integrity::Untrusted),
-        ] {
+        for (written, integrity) in [(false, Integrity::Trusted), (true, Integrity::Untrusted)] {
             let mut entries = vec![SessionEntry::Opened(opening())];
             if written {
                 entries.push(SessionEntry::Taint(TaintNote {

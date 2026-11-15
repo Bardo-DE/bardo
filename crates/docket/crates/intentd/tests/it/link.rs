@@ -121,10 +121,7 @@ async fn every_member_reaches_the_app_and_comes_back_typed() {
     );
 
     // Context, preview and suggestions.
-    let context = link
-        .context(&mail())
-        .await
-        .expect("a snapshot");
+    let context = link.context(&mail()).await.expect("a snapshot");
     assert_eq!(context.app, mail());
     assert!(
         link.preview(&mail(), &thread("t1")).await.is_ok(),
@@ -159,10 +156,7 @@ async fn an_app_that_is_away_is_unavailable_and_never_a_panic() {
         link.undo(&gone, &token, &Actor::Cli).await,
         Err(UndoFault::AppUnavailable)
     );
-    assert_eq!(
-        link.context(&gone).await,
-        Err(LinkFault::Unavailable)
-    );
+    assert_eq!(link.context(&gone).await, Err(LinkFault::Unavailable));
     assert_eq!(
         link.preview(&gone, &thread("x")).await,
         Err(LinkFault::Unavailable)

@@ -181,7 +181,13 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
 
     /// A subagent's report: its roster line moves, and the task gets a typed note (and, for a run
     /// it started itself, a planner turn).
-    fn reported(&mut self, task: &TaskId, line: &InboundLine, status: ReportStatus, ours_run: bool) {
+    fn reported(
+        &mut self,
+        task: &TaskId,
+        line: &InboundLine,
+        status: ReportStatus,
+        ours_run: bool,
+    ) {
         let from = line.from.agent.clone();
         let (steps, values) = counts(line);
         let ours = self.runtimes.values().any(|rt| rt.agent == from);

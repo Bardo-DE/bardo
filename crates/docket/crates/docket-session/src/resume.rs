@@ -16,7 +16,9 @@
 //!    be read blocks new turns and taints.
 
 use crate::codec::{Logged, Read};
-use crate::entry::{BreakerNote, CallOpen, Compacted, EndCause, HandleLabel, Opening, Seq, SessionEntry};
+use crate::entry::{
+    BreakerNote, CallOpen, Compacted, EndCause, HandleLabel, Opening, Seq, SessionEntry,
+};
 use crate::plan::{
     Blocker, Interrupted, PlanRefusal, ResumeFault, ResumePlan, ResumedBudget, Standing,
 };

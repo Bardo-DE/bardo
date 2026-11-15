@@ -104,7 +104,13 @@ fn a_restart_rebuilds_the_board_from_what_it_wrote_and_nothing_is_still_running(
     );
     board = apply(
         board,
-        job_for(&inbox, "sort", GoalOrigin::Planner { saw_untrusted: false }),
+        job_for(
+            &inbox,
+            "sort",
+            GoalOrigin::Planner {
+                saw_untrusted: false,
+            },
+        ),
     );
     let blocked = board.jobs()[1].id;
     board = apply(

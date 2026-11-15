@@ -218,27 +218,9 @@ fn a_summary_is_a_note_on_top_of_a_whole_history() {
 fn a_summary_never_lowers_taint_and_a_tainted_one_taints() {
     // (entries before the summary, taint it says, the plan's taint, its integrity, faults)
     let table = [
-        (
-            vec![],
-            false,
-            false,
-            prov::Integrity::Trusted,
-            0,
-        ),
-        (
-            vec![taint()],
-            false,
-            true,
-            prov::Integrity::Untrusted,
-            0,
-        ),
-        (
-            vec![],
-            true,
-            true,
-            prov::Integrity::Untrusted,
-            1,
-        ),
+        (vec![], false, false, prov::Integrity::Trusted, 0),
+        (vec![taint()], false, true, prov::Integrity::Untrusted, 0),
+        (vec![], true, true, prov::Integrity::Untrusted, 1),
     ];
     for (before, says, taint_is, integrity, faults) in table {
         let mut entries = vec![SessionEntry::Opened(opening())];
@@ -253,10 +235,7 @@ fn a_summary_never_lowers_taint_and_a_tainted_one_taints() {
 
 #[test]
 fn a_summary_that_covers_more_than_was_logged_or_less_than_before_is_ignored() {
-    let over = plan(&[
-        SessionEntry::Opened(opening()),
-        compacted(1, 0, false),
-    ]);
+    let over = plan(&[SessionEntry::Opened(opening()), compacted(1, 0, false)]);
     assert_eq!(over.summary, None);
     assert_eq!(over.faults, vec![ResumeFault::BadCompaction { at: Seq(1) }]);
     let shrinks = plan(&[

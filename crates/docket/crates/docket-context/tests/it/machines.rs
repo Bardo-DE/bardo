@@ -41,33 +41,21 @@ fn session_machine_table() {
             "a trip pauses and signals",
             S::Open(true),
             V::BreakerTrip(trip),
-            S::Paused {
-                taint: true,
-                trip,
-            },
+            S::Paused { taint: true, trip },
             vec![E::EmitBreakerTripped(trip)],
         ),
         (
             "a user turn resumes and resets",
-            S::Paused {
-                taint: false,
-                trip,
-            },
+            S::Paused { taint: false, trip },
             V::UserTurn,
             S::Open(false),
             vec![E::ResetBreaker],
         ),
         (
             "a perform while paused is refused",
-            S::Paused {
-                taint: false,
-                trip,
-            },
+            S::Paused { taint: false, trip },
             V::Perform,
-            S::Paused {
-                taint: false,
-                trip,
-            },
+            S::Paused { taint: false, trip },
             vec![E::Refuse(CallRefusal::Paused(trip))],
         ),
         (
@@ -79,28 +67,16 @@ fn session_machine_table() {
         ),
         (
             "a second trip while paused keeps the first",
-            S::Paused {
-                taint: false,
-                trip,
-            },
+            S::Paused { taint: false, trip },
             V::BreakerTrip(BreakerTrip::Probing),
-            S::Paused {
-                taint: false,
-                trip,
-            },
+            S::Paused { taint: false, trip },
             vec![],
         ),
         (
             "a reveal while paused still taints",
-            S::Paused {
-                taint: false,
-                trip,
-            },
+            S::Paused { taint: false, trip },
             V::UntrustedReveal,
-            S::Paused {
-                taint: true,
-                trip,
-            },
+            S::Paused { taint: true, trip },
             vec![],
         ),
         (
@@ -112,10 +88,7 @@ fn session_machine_table() {
         ),
         (
             "a halted Space closes a paused session",
-            S::Paused {
-                taint: false,
-                trip,
-            },
+            S::Paused { taint: false, trip },
             V::SpaceHalted,
             S::Closed(CloseCause::SpaceHalted),
             vec![],

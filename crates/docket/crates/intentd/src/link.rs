@@ -3,8 +3,7 @@
 
 use docket_core::LinkFault;
 use docket_core::{
-    AppRefusal, ContextSnapshot, FailText, Invocation, Outcome, Preview, SuggestAsk,
-    UndoFault,
+    AppRefusal, ContextSnapshot, FailText, Invocation, Outcome, Preview, SuggestAsk, UndoFault,
 };
 use docket_dbus::{BusConnection, Details, IntentProviderProxy};
 use docket_manifest::Latency;
@@ -276,9 +275,12 @@ impl AppLink for DbusLink {
 
     async fn context(&self, app: &AppName) -> Result<ContextSnapshot, LinkFault> {
         let text = self
-            .ask(app, Wake::IfRunning, READ, |p| async move {
-                p.context().await
-            })
+            .ask(
+                app,
+                Wake::IfRunning,
+                READ,
+                |p| async move { p.context().await },
+            )
             .await?;
         read(&text)
     }

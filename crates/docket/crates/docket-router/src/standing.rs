@@ -9,7 +9,9 @@ use crate::seams::{GrantStore, Seams};
 use docket_core::AuditRecord;
 use docket_core::EventSink;
 use docket_gate::prepared::Prepared;
-use docket_permissions_core::{CallFacts, GrantCaller, StandingGrant, StandingGrantId, StandingScope};
+use docket_permissions_core::{
+    CallFacts, GrantCaller, StandingGrant, StandingGrantId, StandingScope,
+};
 use docket_vocab::Clock;
 
 impl<S: Seams> Router<S> {

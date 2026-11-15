@@ -15,17 +15,9 @@ fn job(id: &str, read: bool) -> EpisodeJob {
 fn the_idle_pass_waits_for_quiet_runs_one_narrative_and_yields_to_the_person() {
     let rules = rules();
     let state = IdleState::quiet_since(at(0));
-    let (state, effects) = idle_step(
-        state,
-        IdleInput::EpisodeClosed(job("t-1", true)),
-        &rules,
-    );
+    let (state, effects) = idle_step(state, IdleInput::EpisodeClosed(job("t-1", true)), &rules);
     assert!(effects.is_empty());
-    let (state, effects) = idle_step(
-        state,
-        IdleInput::EpisodeClosed(job("t-2", false)),
-        &rules,
-    );
+    let (state, effects) = idle_step(state, IdleInput::EpisodeClosed(job("t-2", false)), &rules);
     assert!(effects.is_empty());
     let (state, effects) = idle_step(state, IdleInput::Tick(at(29)), &rules);
     assert!(effects.is_empty(), "29 s of quiet is not 30");

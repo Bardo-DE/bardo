@@ -172,7 +172,9 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
             };
             let origin = match from_checked_brief(&outcome) {
                 true => GoalOrigin::ConfirmedBrief,
-                false => GoalOrigin::Planner { saw_untrusted: false },
+                false => GoalOrigin::Planner {
+                    saw_untrusted: false,
+                },
             };
             desk.post_from_planner(PostFromPlanner {
                 helper,

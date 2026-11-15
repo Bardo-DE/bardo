@@ -43,4 +43,3 @@ pub trait MemoryLink: Send + Sync {
         async { false }
     }
 }
-

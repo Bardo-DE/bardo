@@ -51,7 +51,9 @@ fn kind_of(fault: &ConfigFault) -> &'static str {
 }
 
 fn plain(extra: &str) -> String {
-    format!("[[agent]]\nprogram = \"plain\"\ncommand = \"/usr/bin/true\"\nroute = \"login\"\n{extra}\n")
+    format!(
+        "[[agent]]\nprogram = \"plain\"\ncommand = \"/usr/bin/true\"\nroute = \"login\"\n{extra}\n"
+    )
 }
 
 /// Every way a file is refused whole, named by what is wrong with it.
@@ -66,7 +68,11 @@ fn a_file_that_does_not_make_sense_is_refused_whole() {
     );
     let table: Vec<(&str, String, &str)> = vec![
         // The endpoint route cannot reach its endpoint with no network.
-        ("endpoint without network", entry("route = \"endpoint\"\nnetwork = \"none\""), "entry"),
+        (
+            "endpoint without network",
+            entry("route = \"endpoint\"\nnetwork = \"none\""),
+            "entry",
+        ),
         // An endpoint route needs its pair of variables and its target.
         (
             "endpoint without variables",
@@ -75,14 +81,28 @@ fn a_file_that_does_not_make_sense_is_refused_whole() {
         ),
         (
             "endpoint without target",
-            entry("route = \"endpoint\"\nnetwork = \"endpoint_only\"\nkey_env = \"K\"\nbase_url_env = \"B\""),
+            entry(
+                "route = \"endpoint\"\nnetwork = \"endpoint_only\"\nkey_env = \"K\"\nbase_url_env = \"B\"",
+            ),
             "entry",
         ),
         // A handed-off key is for a program that reaches its provider, and says so.
-        ("handoff without network", entry("route = \"handoff\"\nkey_env = \"K\""), "entry"),
+        (
+            "handoff without network",
+            entry("route = \"handoff\"\nkey_env = \"K\""),
+            "entry",
+        ),
         // endpoint_only belongs to the endpoint route.
-        ("endpoint_only elsewhere", login("network = \"endpoint_only\""), "entry"),
-        ("relative state", login("state = [\"relative/dir\"]"), "entry"),
+        (
+            "endpoint_only elsewhere",
+            login("network = \"endpoint_only\""),
+            "entry",
+        ),
+        (
+            "relative state",
+            login("state = [\"relative/dir\"]"),
+            "entry",
+        ),
         ("root read", login("reads = [\"/\"]"), "entry"),
         (
             "relative command",
@@ -99,7 +119,8 @@ fn a_file_that_does_not_make_sense_is_refused_whole() {
         ("not toml", "not toml [".to_owned(), "syntax"),
         (
             "program name",
-            "[[agent]]\nprogram = \"Not Lower\"\ncommand = \"/usr/bin/x\"\nroute = \"login\"\n".to_owned(),
+            "[[agent]]\nprogram = \"Not Lower\"\ncommand = \"/usr/bin/x\"\nroute = \"login\"\n"
+                .to_owned(),
             "entry",
         ),
         (
@@ -112,7 +133,11 @@ fn a_file_that_does_not_make_sense_is_refused_whole() {
             entry("route = \"handoff\"\nkey_env = \"K\"\ndelivery = \"file\""),
             "delivery",
         ),
-        ("model id with a space", login("model = \"two words\""), "entry"),
+        (
+            "model id with a space",
+            login("model = \"two words\""),
+            "entry",
+        ),
     ];
     for (name, text, expected) in &table {
         let fault = refused(text);
@@ -189,10 +214,7 @@ fn the_desktops_actions_are_offered_unless_the_entry_says_off() {
             .map(|f| f.by_program(&"plain".parse_program()).expect("entry").tools)
     };
     assert_eq!(tools_of(text("")), Ok(true));
-    assert_eq!(
-        tools_of(text("tools = false\n")),
-        Ok(false)
-    );
+    assert_eq!(tools_of(text("tools = false\n")), Ok(false));
     assert!(tools_of(text("tools = \"yes\"\n")).is_err());
 }
 

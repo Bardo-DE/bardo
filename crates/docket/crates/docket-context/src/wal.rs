@@ -49,13 +49,7 @@ impl Wal {
 
     /// Queues a taint entry when the session is not yet tainted on the record.
     pub fn note_taint(&mut self, cause: TaintCause, at_call: Option<CallId>) {
-        if matches!(
-            self,
-            Wal::On {
-                taint: false,
-                ..
-            }
-        ) {
+        if matches!(self, Wal::On { taint: false, .. }) {
             self.note(SessionEntry::Taint(TaintNote { cause, at_call }));
         }
     }

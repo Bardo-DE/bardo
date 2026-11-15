@@ -316,7 +316,9 @@ fn the_floor_file_is_none_when_missing_and_an_error_when_it_does_not_read() {
 
 #[test]
 fn limits_are_kept_beside_the_grants_and_removed_by_the_one_revoke_path() {
-    use docket_permissions_core::{Limit, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope};
+    use docket_permissions_core::{
+        Limit, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope,
+    };
     let dir = tempfile::tempdir().expect("scratch");
     let path = dir.path().join("quire/grants.json");
     let store = FileGrants::at(path.clone());

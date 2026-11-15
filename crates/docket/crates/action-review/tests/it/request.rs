@@ -4,7 +4,9 @@
 use action_review::*;
 use docket_core::*;
 use docket_manifest::{ArgSink, Lasting};
-use docket_permissions_core::{ArgLabels, ReasonCode, ReasonText, ReviewError, SessionSaw, Stage, Strictness};
+use docket_permissions_core::{
+    ArgLabels, ReasonCode, ReasonText, ReviewError, SessionSaw, Stage, Strictness,
+};
 use docket_vocab::{ActionRef, CallId, Caller, CharCount, LabelText, ParamName, TurnId};
 use porter_core::AppName;
 use porter_ids::Count;

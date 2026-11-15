@@ -23,7 +23,6 @@ use prov::{
 };
 use std::collections::{BTreeMap, BTreeSet};
 
-
 /// How many parents the chain is followed through: a cycle can never spin.
 const MAX_HOPS: usize = 8;
 

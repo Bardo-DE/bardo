@@ -18,8 +18,7 @@ use companion_model::{SeenCommand, WatchedAgent};
 use docket_dbus::CONFIRM_PATH;
 use docket_host::EditorDesk;
 use docket_launch::{
-    Accounts, AgentSpawn, AgentsFile, BwrapProcs, ChildProc, Entry, Registry,
-    login_run,
+    Accounts, AgentSpawn, AgentsFile, BwrapProcs, ChildProc, Entry, Registry, login_run,
 };
 use docket_manifest::ValidManifest;
 use docket_permissions_core::ACP_AGENT_APP;

@@ -282,7 +282,10 @@ fn each_key_lands_in_the_typed_value_the_design_names() {
         rows_of("manual", "other", "check").manual.other,
         OtherRow::Check
     );
-    assert_eq!(rows_of("manual", "send", "runs").manual.send, AskOrRun::Runs);
+    assert_eq!(
+        rows_of("manual", "send", "runs").manual.send,
+        AskOrRun::Runs
+    );
     assert_eq!(
         rows_of("manual", "delete", "runs").manual.delete,
         AskOrRun::Runs

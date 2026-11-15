@@ -56,4 +56,3 @@ pub fn grant_policy(record: &SessionRecord, decl: &ActionDecl, mass_at: Count) -
         state: TaskPolicyState::Active,
     }
 }
-

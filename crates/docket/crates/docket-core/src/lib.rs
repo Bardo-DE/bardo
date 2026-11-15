@@ -65,9 +65,9 @@ pub use confirm::{
     SheetLimits, Shown, TaintNote,
 };
 pub use context::{
-    CharRange, ContextKeep, ContextSnapshot, ContextView, EditTarget, EntityLine,
-    Here, HereView, Keep, Reveal, Selection, SelectionView, TextPurpose, TextTarget,
-    TextTargetView, Visible, VisibleView, WindowPrivacy,
+    CharRange, ContextKeep, ContextSnapshot, ContextView, EditTarget, EntityLine, Here, HereView,
+    Keep, Reveal, Selection, SelectionView, TextPurpose, TextTarget, TextTargetView, Visible,
+    VisibleView, WindowPrivacy,
 };
 pub use derived::{Corrected, Derived, PolicyWriter};
 pub use external::{ExternalAgent, SheetSurface};

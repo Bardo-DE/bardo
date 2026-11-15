@@ -8,7 +8,7 @@ use super::rig::{Rig, Setup, abs, always, ended_with, no, once, program, run_tur
 use docket_acp_host::{ToolsEdge, ToolsOffer};
 use docket_core::AuditRecord;
 use docket_fake::{MailContact, MailThread};
-use docket_permissions_core::{GrantCaller};
+use docket_permissions_core::GrantCaller;
 use docket_session::{SessionHost, TurnEnd};
 use prov::{Actor, SessionId};
 use serde_json::{Value, json};

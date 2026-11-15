@@ -2,9 +2,7 @@
 
 use super::Focus;
 use crate::provider::threads;
-use docket_core::{
-    ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy,
-};
+use docket_core::{ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy};
 use docket_provider::{ContextSource, SummonTarget};
 use docket_vocab::EntityRef;
 use docket_wire::{SummonAnswer, SummonOrigin, SummonSerial};

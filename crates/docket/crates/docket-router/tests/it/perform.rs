@@ -6,7 +6,9 @@ use docket_context::session::SessionState;
 use docket_core::*;
 use docket_fake::{ReviewMode, ScriptedReviewer};
 use docket_manifest::ArgSink;
-use docket_permissions_core::{AskReason, BreakerTrip, DenyCode, ReasonCode, ReasonText, ReviewError, Stage};
+use docket_permissions_core::{
+    AskReason, BreakerTrip, DenyCode, ReasonCode, ReasonText, ReviewError, Stage,
+};
 use docket_router::GrantStore;
 use docket_vocab::{ActionRef, Args, CallRequest, Handle, Origin, TargetValue, Value};
 use docket_wire::{IntentsReply, IntentsRequest, JournalFilter, WireRefusal};
@@ -104,10 +106,7 @@ async fn a_planner_gets_untrusted_text_as_a_handle_never_plain() {
     );
     assert!(record.saw.untrusted);
     assert!(record.saw.private, "a thread of mail is private");
-    assert_eq!(
-        record.state,
-        SessionState::Open(true)
-    );
+    assert_eq!(record.state, SessionState::Open(true));
 }
 
 #[tokio::test]

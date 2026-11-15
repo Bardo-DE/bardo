@@ -8,8 +8,7 @@ pub mod host;
 pub mod infer;
 
 use docket_core::{
-    ConfirmId, ConfirmRequest, ContextSnapshot, Here, Selection, TextTarget, Visible,
-    WindowPrivacy,
+    ConfirmId, ConfirmRequest, ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy,
 };
 use docket_host::ConfirmSheet;
 use docket_provider::ContextSource;

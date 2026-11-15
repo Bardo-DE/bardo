@@ -232,8 +232,7 @@ pub(crate) async fn until_closed(connection: &BusConnection) {
 mod tests {
     use super::*;
     use docket_core::{
-        AppRefusal, ContextSnapshot, Hit, Invocation, Outcome, Preview, SuggestAsk,
-        UndoFault,
+        AppRefusal, ContextSnapshot, Hit, Invocation, Outcome, Preview, SuggestAsk, UndoFault,
     };
     use docket_vocab::{EntityRef, UndoToken};
     use docket_wire::{SummonAnswer, SummonOrigin};

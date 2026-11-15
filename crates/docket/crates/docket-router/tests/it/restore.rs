@@ -8,7 +8,7 @@ use docket_core::*;
 use docket_fake::{
     FixedClock, MailContact, MailThread, ScriptedReviewer, ScriptedWriter, fake_router_on,
 };
-use docket_permissions_core::{TaskPolicy};
+use docket_permissions_core::TaskPolicy;
 use docket_router::{RestoreFault, Router};
 use docket_session::fake::{LogMood, MemoryLog};
 use docket_session::{
@@ -229,8 +229,10 @@ async fn a_reveal_whose_entry_cannot_be_kept_is_withheld_from_the_reply() {
         .restore_session(&opened.session)
         .await
         .expect("restored");
-    assert!(restored.taint,
-        "the taint was on the record before the value could be revealed");
+    assert!(
+        restored.taint,
+        "the taint was on the record before the value could be revealed"
+    );
 }
 
 #[tokio::test]
@@ -492,8 +494,7 @@ async fn untrusted_handles_with_no_taint_before_them_restore_tainted_and_are_rep
         .expect("handle");
     let router = world(&log, None);
     let restored = router.restore_session(&id).await.expect("restored");
-    assert!(restored.taint,
-        "it cannot launder itself clean");
+    assert!(restored.taint, "it cannot launder itself clean");
     assert_eq!(
         router.restore_session(&id).await.expect_err("not twice"),
         RestoreFault::Live
@@ -550,8 +551,10 @@ async fn taint_survives_a_crash(ops: &[Op], cut: u32) {
     let again = world(&log, None);
     let session = session.expect("a session");
     match again.restore_session(&session).await {
-        Ok(restored) if revealed => assert!(restored.taint,
-            "ops {ops:?} cut at {cut}: an untrusted value was revealed and the restore is clean"),
+        Ok(restored) if revealed => assert!(
+            restored.taint,
+            "ops {ops:?} cut at {cut}: an untrusted value was revealed and the restore is clean"
+        ),
         Ok(_) => {}
         Err(RestoreFault::Unknown(_)) => assert!(
             !revealed,

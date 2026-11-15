@@ -13,7 +13,9 @@ use docket_memory::AlmanacSessionLog;
 use docket_permissions_core::{
     ActionGrantKey, ActionMatch, GrantCaller, GrantTarget, TaskPolicy, TaskPolicyState,
 };
-use docket_session::{BackendKind, LogFault, Opening, PageSize, Read, Seq, SessionEntry, SessionLog};
+use docket_session::{
+    BackendKind, LogFault, Opening, PageSize, Read, Seq, SessionEntry, SessionLog,
+};
 use docket_vocab::{ActionRef, CallRequest, CallerRole, LabelText, Origin, TargetValue, TurnId};
 use docket_wire::{CallerId, IntentsReply, IntentsRequest, SessionOpen};
 use porter_core::AppName;

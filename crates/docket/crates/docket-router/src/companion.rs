@@ -21,7 +21,7 @@ use docket_core::{
 use docket_gate::companion_names::{
     HELPER_POST_JOB, HELPER_PROPOSE, LIMIT_ADD, ROUTINE_PROPOSE, task_entity, task_of,
 };
-use docket_permissions_core::{COMPANION_APP};
+use docket_permissions_core::COMPANION_APP;
 use docket_vocab::{CallerRole, ChoiceId, Clock, LabelText, ParamName, TargetValue, Value};
 use docket_wire::{CallerId, IntentsReply, SessionOpen, SessionOpened, TaskStart, WireRefusal};
 use porter_core::{AppId, AppName, Isolation};
@@ -177,7 +177,9 @@ impl<S: Seams> Router<S> {
             return Ok(GoalOrigin::ConfirmedBrief);
         }
         self.clean_words(inv, session, "goal", JobRefusal::UntrustedGoal)
-            .map(|_| GoalOrigin::Planner { saw_untrusted: false })
+            .map(|_| GoalOrigin::Planner {
+                saw_untrusted: false,
+            })
     }
 
     fn helper_post_job(&self, inv: &Invocation) -> Result<Outcome, AppRefusal> {

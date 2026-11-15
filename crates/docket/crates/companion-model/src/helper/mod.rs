@@ -51,7 +51,9 @@ pub use card::{
     HelperState, HelperTextFault, Need, PauseWhy, Role, TaskRef,
 };
 pub use hand::{BackOutcome, BroughtOutcome, HandFault, TerminalHand, ToTerminalOutcome};
-pub use job::{GoalFault, GoalOrigin, GoalSource, GoalText, Job, JobFault, JobId, JobStatus, ResultHandle};
+pub use job::{
+    GoalFault, GoalOrigin, GoalSource, GoalText, Job, JobFault, JobId, JobStatus, ResultHandle,
+};
 pub use notice::{Notice, owned_sentence};
 pub use post::{Post, PostId, PostPart, PostTo};
 pub use reach::{Ceiling, ReachFault, reach_lines, reach_policy};

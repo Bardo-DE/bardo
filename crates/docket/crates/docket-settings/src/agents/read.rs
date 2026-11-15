@@ -1,8 +1,6 @@
 //! Reads the rows from `agents.toml` text and the records beside the agents.
 
-use super::model::{
-    AgentRow, Agents, Availability, ModelState, Offers, SignInState, Source,
-};
+use super::model::{AgentRow, Agents, Availability, ModelState, Offers, SignInState, Source};
 use agents_core::dirs::AgentsDir;
 use agents_core::offered::{Offered, Start};
 use agents_core::record::{FILE, Record};

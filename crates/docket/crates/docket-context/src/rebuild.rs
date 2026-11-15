@@ -376,10 +376,7 @@ mod tests {
         let rebuilt = rebuild(&id(), &plan(Standing::Paused(trip)), UnixSeconds(1));
         assert_eq!(
             rebuilt.record.state,
-            SessionState::Paused {
-                taint: false,
-                trip
-            }
+            SessionState::Paused { taint: false, trip }
         );
         assert_eq!(rebuilt.task.state, TaskState::NeedsYou);
         assert!(rebuilt.record.wal.is_on());
@@ -443,8 +440,7 @@ mod tests {
             at: docket_session::Seq(1),
         }];
         let rebuilt = rebuild(&id(), &p, UnixSeconds(1));
-        assert!(!rebuilt.durable,
-            "the repair is still to be written");
+        assert!(!rebuilt.durable, "the repair is still to be written");
         let Wal::On { pending, .. } = &rebuilt.record.wal else {
             panic!("on the record")
         };

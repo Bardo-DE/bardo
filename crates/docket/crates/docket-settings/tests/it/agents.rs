@@ -94,12 +94,7 @@ fn a_program_of_your_own_is_there_when_its_file_is() {
     let dir = AgentsDir::at(&tmp.path().join("agents"));
     let row = read_agents(&file(&program), &dir).rows.remove(0);
     assert_eq!(row.install_line(), "Not installed");
-    assert_eq!(
-        row.source,
-        Source::Own {
-            installed: false
-        }
-    );
+    assert_eq!(row.source, Source::Own { installed: false });
     std::fs::write(&program, "#!/bin/sh\n").expect("program");
     let row = read_agents(&file(&program), &dir).rows.remove(0);
     assert_eq!(row.install_line(), "Installed");

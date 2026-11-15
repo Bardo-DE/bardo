@@ -15,17 +15,17 @@ mod tests;
 use docket_core::AgentConfig;
 
 pub use agents::{
-    AddFault, AgentChoice, AgentRow, Agents, Availability, ChoiceFault, Found, KNOWN,
-    KnownAgent, ModelState, NewAgent, Offers, Pick, REFRESH_PROGRAM, RefreshRequest, SignInState,
-    Source, dirs_of, edit_agent_add, edit_agent_choice, edit_agent_remove, edit_agent_rewind,
-    find_known, read_agents, unlisted, write_agent_add, write_agent_choice, write_agent_remove,
+    AddFault, AgentChoice, AgentRow, Agents, Availability, ChoiceFault, Found, KNOWN, KnownAgent,
+    ModelState, NewAgent, Offers, Pick, REFRESH_PROGRAM, RefreshRequest, SignInState, Source,
+    dirs_of, edit_agent_add, edit_agent_choice, edit_agent_remove, edit_agent_rewind, find_known,
+    read_agents, unlisted, write_agent_add, write_agent_choice, write_agent_remove,
     write_agent_rewind,
 };
 pub use locate::Locator;
 pub use places::{
     CloudAccount, CloudAllowed, Floor, Known, KnownPlace, ModelChoice, OwnComputer, PLACES_PATH,
-    Place, PlaceKind, PlaceName, PlaceSource, Places, PlacesLoaded, Routed,
-    confirm_turn_on, kind_label, no_place_says, read_places, route, write_places,
+    Place, PlaceKind, PlaceName, PlaceSource, Places, PlacesLoaded, Routed, confirm_turn_on,
+    kind_label, no_place_says, read_places, route, write_places,
 };
 pub use read::{Fallback, Loaded, Why, read};
 

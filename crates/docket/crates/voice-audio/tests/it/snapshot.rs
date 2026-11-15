@@ -1,6 +1,9 @@
 //! One enumeration against an expiry.
 
-use voice_audio::{AudioDevice, AudioNode, CaptureFormat, DeviceError, FakeAudioDevice, FakeCapture, FakePlayback, NodeId, NodeKind, PlaybackFormat, Snapshot, snapshot_before};
+use voice_audio::{
+    AudioDevice, AudioNode, CaptureFormat, DeviceError, FakeAudioDevice, FakeCapture, FakePlayback,
+    NodeId, NodeKind, PlaybackFormat, Snapshot, snapshot_before,
+};
 
 fn node(id: u32, kind: NodeKind, class: &str) -> AudioNode {
     AudioNode {

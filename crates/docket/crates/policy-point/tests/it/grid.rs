@@ -2,7 +2,9 @@
 //! the steps of a screen run.
 
 use crate::support::*;
-use docket_permissions_core::{AskReason, AskOrRun, Mode, ModeRows, OtherRow, PolicyId, ScreenRow, SessionSaw};
+use docket_permissions_core::{
+    AskOrRun, AskReason, Mode, ModeRows, OtherRow, PolicyId, ScreenRow, SessionSaw,
+};
 use porter_core::AppName;
 use prov::Effect;
 

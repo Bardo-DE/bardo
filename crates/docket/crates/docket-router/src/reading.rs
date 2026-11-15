@@ -9,9 +9,7 @@ use docket_context::handles::{HandleTable, HandleValue};
 use docket_context::labels::{absorb, fold_labels};
 use docket_context::session::SessionState;
 use docket_core::LinkFault;
-use docket_core::{
-    CallRefusal, ContextSnapshot, ReadFault, Reader, Reveal, Selection, conforms,
-};
+use docket_core::{CallRefusal, ContextSnapshot, ReadFault, Reader, Reveal, Selection, conforms};
 use docket_vocab::{Handle, Value};
 use docket_wire::{Displayed, IntentsReply, ReadAsk, Resolved, WireRefusal};
 use porter_core::AppName;

@@ -7,7 +7,7 @@ use super::host::Wiring;
 use super::places::Places;
 use super::sibling;
 use bulkhead::Detected;
-use docket_acp_host::{ToolsOffer};
+use docket_acp_host::ToolsOffer;
 use docket_dbus::BusConnection;
 use docket_dbus::callers::Identity;
 use docket_host::EditorDesk;

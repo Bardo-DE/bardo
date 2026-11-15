@@ -164,26 +164,14 @@ mod tests {
     fn a_report_wakes_the_task_only_for_a_run_it_started() {
         let mut rt = task(vec![line(start(), done())], vec![]);
         let table = [
-            (
-                "progress",
-                report(ReportStatus::Progress, cua()),
-                false,
-            ),
+            ("progress", report(ReportStatus::Progress, cua()), false),
             (
                 "another sender",
                 report(ReportStatus::Done, AgentRef::Companion),
                 false,
             ),
-            (
-                "its run failed",
-                report(ReportStatus::Failed, cua()),
-                true,
-            ),
-            (
-                "none left",
-                report(ReportStatus::Done, cua()),
-                false,
-            ),
+            ("its run failed", report(ReportStatus::Failed, cua()), true),
+            ("none left", report(ReportStatus::Done, cua()), false),
         ];
         for (name, message, want) in table {
             assert_eq!(rt.note_message(&message), want, "case {name}");

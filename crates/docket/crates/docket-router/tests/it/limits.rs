@@ -5,7 +5,10 @@
 use crate::support::*;
 use docket_core::*;
 use docket_fake::ScriptedConfirmer;
-use docket_permissions_core::{AlwaysOffer, AskReason, COMPANION_APP, DenyCode, Floor, FloorEntry, FloorFile, Limit, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope, rule_ids};
+use docket_permissions_core::{
+    AlwaysOffer, AskReason, COMPANION_APP, DenyCode, Floor, FloorEntry, FloorFile, Limit,
+    LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope, rule_ids,
+};
 use docket_router::GrantStore;
 use docket_vocab::{CallId, CallRequest, ChoiceId, Origin, TargetValue, Value};
 use docket_wire::{IntentsReply, IntentsRequest};

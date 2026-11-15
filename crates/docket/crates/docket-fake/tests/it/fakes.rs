@@ -6,7 +6,10 @@ use docket_core::*;
 use docket_fake::*;
 use docket_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
 use docket_manifest::{Lasting, TitleTrust, ValidManifest};
-use docket_permissions_core::{ArgLabels, GrantCaller, Recipient, ReviewError, SessionSaw, Stage, StandingGrant, StandingScope, Strictness};
+use docket_permissions_core::{
+    ArgLabels, GrantCaller, Recipient, ReviewError, SessionSaw, Stage, StandingGrant,
+    StandingScope, Strictness,
+};
 use docket_provider::IntentProvider;
 use docket_router::GrantStore;
 use docket_vocab::{

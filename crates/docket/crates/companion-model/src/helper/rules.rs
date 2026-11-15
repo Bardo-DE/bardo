@@ -37,8 +37,12 @@ impl JobRefusal {
 pub fn admit_goal(origin: GoalOrigin) -> Result<GoalSource, JobRefusal> {
     match origin {
         GoalOrigin::Person => Ok(GoalSource::Person),
-        GoalOrigin::Planner { saw_untrusted: false } => Ok(GoalSource::PlannerOnTrusted),
-        GoalOrigin::Planner { saw_untrusted: true } => Err(JobRefusal::UntrustedGoal),
+        GoalOrigin::Planner {
+            saw_untrusted: false,
+        } => Ok(GoalSource::PlannerOnTrusted),
+        GoalOrigin::Planner {
+            saw_untrusted: true,
+        } => Err(JobRefusal::UntrustedGoal),
         GoalOrigin::ConfirmedBrief => Ok(GoalSource::Brief),
     }
 }

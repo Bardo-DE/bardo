@@ -2,11 +2,11 @@
 //! and output, the environment, the clock and the buses. Nothing here reads a global; `main` (and
 //! the acceptance harness's copy of it) collects those and passes them in.
 
+use crate::SessionBus;
 use crate::{
     Command, Exit, Invocation, JsonFlag, NoBus, Report, Stdin, Stdout, ask_companion, exit,
     needs_bus, parse, run_in,
 };
-use crate::SessionBus;
 use docket_client::Intents;
 use prov::{SpaceId, UnixSeconds};
 use std::time::{SystemTime, UNIX_EPOCH};

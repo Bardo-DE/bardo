@@ -26,12 +26,7 @@ const ARCHIVE_USE: &str = "org.quire.Mail:mail.thread.archive";
 
 fn installed() -> Vec<Skill> {
     vec![
-        skill(
-            "basics",
-            LOAD_USE,
-            "[when]\nalways = true\n",
-            "BASICS-BODY",
-        ),
+        skill("basics", LOAD_USE, "[when]\nalways = true\n", "BASICS-BODY"),
         skill(
             "shell-tips",
             LOAD_USE,

@@ -11,7 +11,10 @@ pub fn exposed(text: &str) -> bool {
 
 /// Whether the first settings file of the configuration directories says it is on; none is off.
 pub fn exposed_in(env: &impl Fn(&str) -> Option<String>) -> bool {
-    Locator::from_env(env).read(AgentSettings::default()).value.acp
+    Locator::from_env(env)
+        .read(AgentSettings::default())
+        .value
+        .acp
 }
 
 #[cfg(test)]

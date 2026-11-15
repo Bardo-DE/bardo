@@ -41,9 +41,7 @@ pub use accounts::{
     AccountFault, Accounts, AskKind, Heard, Issued, LoginAsk, OpenedEndpoint, RouteWish,
 };
 pub use child::{Child, Registry};
-pub use config::{
-    AgentsFile, ConfigFault, Endpoint, EndpointKind, Entry, Route, SESSION_MARK,
-};
+pub use config::{AgentsFile, ConfigFault, Endpoint, EndpointKind, Entry, Route, SESSION_MARK};
 pub use confine::Confinement;
 pub use login_only::LoginOnly;
 pub use names::launcher_session;

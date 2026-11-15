@@ -2,7 +2,10 @@
 
 use docket_core::AuditRecord;
 use docket_core::EventSink;
-use docket_permissions_core::{ActionGrant, Limit, RuleFile, StandingGrant, StandingGrantId, held_with, held_without, limits_with, limits_without, with_rule, without_rule};
+use docket_permissions_core::{
+    ActionGrant, Limit, RuleFile, StandingGrant, StandingGrantId, held_with, held_without,
+    limits_with, limits_without, with_rule, without_rule,
+};
 use docket_router::GrantStore;
 use policy_point::Presets;
 use std::sync::Mutex;

@@ -141,8 +141,10 @@ async fn what_a_relation_takes_from_somebody_elses_words_is_untrusted_whatever_t
     assert_eq!(label.integrity, Integrity::Untrusted);
     assert!(label.sources.contains(&prov::Source::Mail), "{label:?}");
     let st = router.state.lock().expect("lock");
-    assert!(st.sessions[&session].saw.untrusted,
-        "the planner is now one that has been shown untrusted things");
+    assert!(
+        st.sessions[&session].saw.untrusted,
+        "the planner is now one that has been shown untrusted things"
+    );
 }
 
 #[tokio::test]

@@ -4,9 +4,8 @@
 #![allow(dead_code)]
 
 use docket_core::{
-    AppRefusal, ConfirmAnswer, ConfirmEnd, ConfirmRequest, ContextSnapshot, Here,
-    Hit, Invocation, Outcome, Preview, Selection, SuggestAsk, TextTarget, UndoFault, Visible,
-    WindowPrivacy,
+    AppRefusal, ConfirmAnswer, ConfirmEnd, ConfirmRequest, ContextSnapshot, Here, Hit, Invocation,
+    Outcome, Preview, Selection, SuggestAsk, TextTarget, UndoFault, Visible, WindowPrivacy,
 };
 use docket_dbus::BusConnection;
 use docket_dbus::callers::{Identity, Role};

@@ -210,10 +210,7 @@ fn the_oldest_masked_steps_go_first_when_the_task_is_over_budget_and_the_turns_n
         3,
         "the newest three stay in full even over budget"
     );
-    assert!(
-        !task_fits(&tiny, &view),
-        "the loop splits the task"
-    );
+    assert!(!task_fits(&tiny, &view), "the loop splits the task");
 }
 
 #[test]

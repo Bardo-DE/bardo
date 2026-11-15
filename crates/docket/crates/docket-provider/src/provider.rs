@@ -1,8 +1,7 @@
 //! What an app implements.
 
 use docket_core::{
-    AppRefusal, ContextSnapshot, Hit, Invocation, Outcome, Preview, SuggestAsk,
-    UndoFault,
+    AppRefusal, ContextSnapshot, Hit, Invocation, Outcome, Preview, SuggestAsk, UndoFault,
 };
 use docket_manifest::ValidManifest;
 use docket_vocab::{EntityRef, UndoToken};

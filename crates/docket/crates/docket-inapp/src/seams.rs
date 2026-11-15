@@ -14,7 +14,9 @@ use docket_core::{
 use docket_core::{EventSink, LinkFault, MemoryLink};
 use docket_host::{ConfirmSheet, SheetConfirmer};
 use docket_memory_core::QueuedSink;
-use docket_permissions_core::{ActionGrant, ReviewError, StandingGrant, StandingGrantId, held_with, held_without};
+use docket_permissions_core::{
+    ActionGrant, ReviewError, StandingGrant, StandingGrantId, held_with, held_without,
+};
 use docket_provider::{ContextSource, IntentProvider};
 use docket_router::{GrantStore, NoLog, NoStore, Seams};
 use docket_vocab::{Clock, Value};

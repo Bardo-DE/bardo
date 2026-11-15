@@ -2,9 +2,7 @@
 //! and a reach, and the limit a generated rule puts into a ruling.
 
 use docket_core::Invocation;
-use docket_permissions_core::{
-    AskReason, LimitLevel, LimitNote, Limited, Ruling, StandingGrantId,
-};
+use docket_permissions_core::{AskReason, LimitLevel, LimitNote, Limited, Ruling, StandingGrantId};
 use docket_vocab::{ParamName, Value};
 use prov::Effect;
 

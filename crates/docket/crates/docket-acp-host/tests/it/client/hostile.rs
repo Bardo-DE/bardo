@@ -9,7 +9,10 @@ use super::rig::{
     tool, write,
 };
 use docket_core::AuditRecord;
-use docket_permissions_core::{AlwaysOffer, FILES_READ, GrantCaller, StandingGrant, StandingScope, TERMINAL_RUN, Withheld, acp_agent_action};
+use docket_permissions_core::{
+    AlwaysOffer, FILES_READ, GrantCaller, StandingGrant, StandingScope, TERMINAL_RUN, Withheld,
+    acp_agent_action,
+};
 use docket_session::{BackendEvent, CallEvent, TurnEnd};
 use serde_json::json;
 

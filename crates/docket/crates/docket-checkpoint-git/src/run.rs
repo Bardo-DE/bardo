@@ -156,8 +156,7 @@ pub(crate) async fn run_git(cmd: GitCommand) -> Result<GitOut, GitFault> {
         tracing::warn!(kind = ?why.kind(), "git could not be started");
         GitFault::Spawn
     })?;
-    let (Some(mut stdout), Some(mut stderr)) = (child.stdout.take(), child.stderr.take())
-    else {
+    let (Some(mut stdout), Some(mut stderr)) = (child.stdout.take(), child.stderr.take()) else {
         let _ = child.kill().await;
         tracing::warn!("git's pipes were not set up");
         return Err(GitFault::Io);

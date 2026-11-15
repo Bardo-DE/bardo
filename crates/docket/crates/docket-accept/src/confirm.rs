@@ -162,10 +162,9 @@ impl ConfirmObject {
             i.next += 1;
             (
                 i.next,
-                i.verdicts.pop_front().or_else(|| {
-                    i.by_effect
-                        .map(|r| (r.verdict_for(&parsed), false))
-                }),
+                i.verdicts
+                    .pop_front()
+                    .or_else(|| i.by_effect.map(|r| (r.verdict_for(&parsed), false))),
             )
         });
         let _ = self.seen.send(parsed.clone());

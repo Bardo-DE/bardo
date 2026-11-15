@@ -6,8 +6,8 @@
 use bulkhead::Sandbox;
 use docket_acp_host::{Files, Performer};
 use docket_core::{
-    AppRefusal, ContextSnapshot, Here, Hit, Invocation, Outcome, Preview, Selection,
-    SuggestAsk, TextTarget, UndoFault, Visible, WindowPrivacy,
+    AppRefusal, ContextSnapshot, Here, Hit, Invocation, Outcome, Preview, Selection, SuggestAsk,
+    TextTarget, UndoFault, Visible, WindowPrivacy,
 };
 use docket_manifest::ValidManifest;
 use docket_provider::{ContextSource, IntentProvider, SummonTarget};
