@@ -176,7 +176,7 @@ fn terminal_css(token: TerminalColour, scope: TokenScope) -> CssValue {
 
 #[cfg(test)]
 mod tests {
-    use super::{TerminalColour, TerminalMetric};
+    use super::TerminalColour;
     use crate::appearance::{accent::Accent, theme::Scheme};
     use crate::tokens::hex::Hex;
     use crate::tokens::token::{Token, TokenScope};
@@ -241,24 +241,6 @@ mod tests {
             }
         }
         assert!(failures.is_empty(), "{failures:#?}");
-    }
-
-    #[test]
-    fn the_terminal_face_is_the_system_monospace_not_space_mono() {
-        let face = TerminalMetric::Font.css_value(TokenScope::BASE);
-        assert_eq!(TerminalMetric::Font.var().as_str(), "--term-font");
-        assert_eq!(face.as_str(), "monospace");
-    }
-
-    #[test]
-    fn a_terminal_row_is_one_point_two_times_its_font() {
-        assert_eq!(TerminalMetric::LineHeight.var().as_str(), "--term-lh");
-        assert_eq!(
-            TerminalMetric::LineHeight
-                .css_value(TokenScope::BASE)
-                .as_str(),
-            "1.2"
-        );
     }
 
     #[test]

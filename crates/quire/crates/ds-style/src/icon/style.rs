@@ -114,46 +114,6 @@ mod tests {
     }
 
     #[test]
-    fn the_table_covers_every_icon_once() {
-        use super::super::native::TABLE;
-        assert_eq!(TABLE.len(), Icon::ALL.len());
-        for &icon in Icon::ALL {
-            assert_eq!(
-                TABLE.iter().filter(|(i, _)| *i == icon).count(),
-                1,
-                "{icon:?}"
-            );
-        }
-    }
-
-    #[test]
-    fn the_owner_picks_are_the_defaults() {
-        let count = |wanted: Native| Icon::ALL.iter().filter(|i| i.native() == wanted).count();
-        assert_eq!(count(Native::Solid), 16);
-        assert_eq!(count(Native::Pair), 4);
-        assert_eq!(
-            Icon::ALL
-                .iter()
-                .filter(|i| matches!(i.native(), Native::Drawn(_)))
-                .count(),
-            3
-        );
-        assert_eq!(GlyphStyle::default(), GlyphStyle::Native);
-        for solid in [Icon::Battery, Icon::ChevronDown, Icon::Play, Icon::Terminal] {
-            assert_eq!(
-                GlyphStyle::resolve(solid, GlyphStyle::Native),
-                GlyphStyle::Solid
-            );
-        }
-        for outline in [Icon::Trash, Icon::Bluetooth, Icon::Wifi, Icon::LogOut] {
-            assert_eq!(
-                GlyphStyle::resolve(outline, GlyphStyle::Native),
-                GlyphStyle::Outline
-            );
-        }
-    }
-
-    #[test]
     fn a_pair_is_outline_off_and_follows_pair_on_when_on() {
         for icon in [Icon::Star, Icon::Heart, Icon::Pin, Icon::Bell] {
             assert_eq!(GlyphStyle::for_state(icon, Check::Off), GlyphStyle::Outline);

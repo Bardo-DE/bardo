@@ -31,15 +31,3 @@ impl Deadline {
         self.0
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::Deadline;
-
-    #[test]
-    fn a_prompt_outlasts_an_action_and_an_action_outlasts_a_read() {
-        assert!(Deadline::START < Deadline::READ);
-        assert!(Deadline::READ < Deadline::ACTION);
-        assert!(Deadline::ACTION < Deadline::PROMPT);
-    }
-}

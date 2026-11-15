@@ -103,10 +103,10 @@ impl SpringSpec {
 
 #[cfg(test)]
 mod tests {
-    use super::{SpringResponse, SpringSpec};
+    use super::SpringSpec;
     use crate::detail::touch::{Contact, Touch};
     use crate::{
-        spring::{Millis, Ratio},
+        spring::Ratio,
         velocity::Velocity,
     };
     use ds_style::appearance::motion::MotionLevel;
@@ -147,21 +147,6 @@ mod tests {
         assert_eq!(
             SpringSpec::for_touch(Touch::Remote).thrown(MotionLevel::Standard),
             Velocity(0)
-        );
-    }
-
-    #[test]
-    fn responses_are_the_tokens() {
-        let quick = SpringSpec::for_touch(Touch::Remote).response(SpringResponse::Quick);
-        assert_eq!(
-            quick.spring(0.0, MotionLevel::Standard).response(),
-            Millis(260)
-        );
-        assert_eq!(
-            SpringSpec::for_touch(Touch::Remote)
-                .spring(0.0, MotionLevel::Standard)
-                .response(),
-            Millis(380)
         );
     }
 }

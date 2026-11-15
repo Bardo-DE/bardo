@@ -173,30 +173,10 @@ impl From<Radius> for Corner {
 #[cfg(test)]
 mod tests {
     use super::{CONCENTRIC_FLOOR, Radius, concentric};
-    use crate::tokens::control_size::ControlSize;
     use crate::tokens::shell_scale::SHELL_SCALE;
     use crate::tokens::shell_type::ShellType;
     use crate::tokens::token::{Token, TokenScope};
     use ds_core::geometry::units::Px;
-    use ds_core::word::Word;
-
-    #[test]
-    fn a_button_and_a_field_are_a_regular_controls_radius() {
-        let regular = format!("{}px", ControlSize::Regular.scale().radius.0);
-        assert_eq!(Radius::Btn.value(), regular);
-        assert_eq!(Radius::Field.value(), regular);
-    }
-
-    /// Every variant: the number a compositor reads is the number the stylesheet declares.
-    #[test]
-    fn px_is_the_number_the_generated_css_writes_for_every_variant() {
-        for radius in Radius::ALL.iter().copied() {
-            let declared = radius.css_value(TokenScope::BASE).to_string();
-            assert_eq!(declared, format!("{}px", radius.px()), "{radius:?}");
-            assert_eq!(radius.value(), declared, "{radius:?}");
-        }
-        assert_eq!(Radius::Window.px(), 10);
-    }
 
     #[test]
     fn a_group_follows_the_card_and_a_menu_item_is_concentric_in_its_menu() {

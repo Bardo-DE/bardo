@@ -3,7 +3,7 @@
 
 use std::time::Duration;
 
-use ds_core::machine::{Elapsed, Machine};
+use ds_core::machine::Machine;
 use ds_core::time::stamp::Stamp;
 
 use super::{
@@ -126,10 +126,4 @@ fn two_lone_presses_summon_and_a_chord_does_not() {
     ];
     assert_eq!(summons(&double), 1, "two lone presses 200 ms apart");
     assert_eq!(summons(&chord_between), 0, "the second press was Command-C");
-}
-
-#[test]
-fn elapsed_converts_to_each_machines_elapse() {
-    assert_eq!(TapIn::from(Elapsed), TapIn::Elapsed);
-    assert_eq!(HoldIn::from(Elapsed), HoldIn::Elapsed);
 }

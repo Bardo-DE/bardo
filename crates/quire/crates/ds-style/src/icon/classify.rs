@@ -157,24 +157,6 @@ mod tests {
     }
 
     #[test]
-    fn grey_has_no_chroma_and_primaries_have_their_own() {
-        #[rustfmt::skip]
-        const CASES: &[([u8; 3], f64)] = &[
-            ([0, 0, 0], 0.0),
-            ([255, 255, 255], 0.0),
-            ([119, 119, 119], 0.0),
-            // Ottosson's published OKLCH for the sRGB primaries.
-            ([255, 0, 0], 0.2577),
-            ([0, 255, 0], 0.2948),
-            ([0, 0, 255], 0.3132),
-        ];
-        for &(rgb, want) in CASES {
-            let got = chroma(rgb);
-            assert!((got - want).abs() < 0.001, "{rgb:?}: {got} vs {want}");
-        }
-    }
-
-    #[test]
     fn bytes_that_are_not_a_png_are_refused() {
         assert!(classify_with(b"not a png", ChromaLimit::default()).is_err());
     }

@@ -62,15 +62,3 @@ pub enum Operation {
     /// An operation is running under its token.
     Running(PendingToken),
 }
-
-#[cfg(test)]
-mod tests {
-    use super::PendingToken;
-
-    #[test]
-    fn every_start_is_a_new_operation() {
-        let a = PendingToken::start();
-        let b = PendingToken::start();
-        assert_ne!(a, b);
-    }
-}

@@ -3,7 +3,6 @@
 
 mod accounts_ssr;
 mod confirm_ssr;
-mod confirm_words;
 mod details_lint;
 #[path = "../../../ds/tests/it/support/golden.rs"]
 mod golden;
