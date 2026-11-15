@@ -15,7 +15,7 @@ rect = [16, 110, 600, 48]
 text = "Master password"
 echo = "masked"
 role = "password_text"
-sensitivity = "secret"
+secret = true
 
 [[screen.item]]
 kind = "button"

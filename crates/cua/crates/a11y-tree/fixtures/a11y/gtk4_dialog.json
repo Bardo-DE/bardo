@@ -55,7 +55,7 @@
       "typed": {
         "kind": "none"
       },
-      "sensitivity": "normal"
+      "secret": false
     },
     {
       "id": 1,
@@ -111,7 +111,7 @@
       "typed": {
         "kind": "none"
       },
-      "sensitivity": "normal"
+      "secret": false
     },
     {
       "id": 2,
@@ -172,7 +172,7 @@
       "typed": {
         "kind": "none"
       },
-      "sensitivity": "normal"
+      "secret": false
     },
     {
       "id": 3,
@@ -233,7 +233,7 @@
       "typed": {
         "kind": "none"
       },
-      "sensitivity": "normal"
+      "secret": false
     },
     {
       "id": 4,
@@ -294,7 +294,7 @@
       "typed": {
         "kind": "none"
       },
-      "sensitivity": "normal"
+      "secret": false
     }
   ],
   "truncated": {

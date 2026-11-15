@@ -1,7 +1,7 @@
-//! A surface as an accessibility tree: the role, name and sensitivity of what the window shows.
+//! A surface as an accessibility tree: the role, name and secrecy of what the window shows.
 //!
 //! The tree is what the run reads to rule on a window (a password entry makes it sensitive
-//! whatever its title says). An item says what it is to the tree with `role` and `sensitivity`;
+//! whatever its title says). An item says what it is to the tree with `role` and `secret`;
 //! when it says nothing, its kind does.
 //!
 //! The bounds are empty on purpose. The eval aims by pixels and classes a click by the pixels
@@ -12,7 +12,7 @@
 use super::def::{AxRole, Kind, View};
 use super::state::{Placed, Surface};
 use a11y_tree::{
-    A11yNode, A11ySnapshot, NodeAction, NodeState, NodeValue, Parent, Role, Sensitivity,
+    A11yNode, A11ySnapshot, NodeAction, NodeState, NodeValue, Parent, Role,
     TreeSource, Truncation, TypedHint,
 };
 use cua_action::{Coord, NodeId, Point, Rect, Size};
@@ -92,7 +92,7 @@ fn node_of(placed: &Placed<'_>, focused: bool, label: &Label) -> A11yNode {
         bounds: empty_at(placed.rect[0], placed.rect[1]),
         actions,
         typed: TypedHint::None,
-        sensitivity: placed.item.sensitivity.unwrap_or(Sensitivity::Normal),
+        secret: placed.item.secret,
     }
 }
 
@@ -110,7 +110,7 @@ pub fn snapshot(surface: &Surface, taken: Stamp, label: &Label) -> A11ySnapshot 
         bounds: empty_at(0, 0),
         actions: vec![],
         typed: TypedHint::None,
-        sensitivity: Sensitivity::Normal,
+        secret: false,
     };
     let items = surface.visible().into_iter().map(|placed| {
         let has_focus =

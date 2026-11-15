@@ -78,7 +78,7 @@ fn children_are_indented_under_their_parents() {
 fn a_password_entry_is_hidden_even_when_the_source_did_not_mark_it_secret() {
     let mut form = crate::support::firefox_form();
     for node in &mut form.nodes {
-        node.sensitivity = a11y_tree::Sensitivity::Normal;
+        node.secret = false;
     }
     let text = render(&form);
     assert!(!text.contains("correct horse"), "{text}");

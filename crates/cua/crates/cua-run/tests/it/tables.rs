@@ -2,7 +2,7 @@
 
 use crate::support::rules;
 use a11y_tree::{
-    A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, Sensitivity, TreeSource,
+    A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, TreeSource,
     Truncation, TypedHint,
 };
 use cua_action::{
@@ -73,12 +73,12 @@ fn screen_label() -> Label {
 }
 
 fn node_with_typed_action() -> A11yNode {
-    let mut node = secret_node(1, Role::Button, "Archive", Sensitivity::Normal, "");
+    let mut node = secret_node(1, Role::Button, "Archive", false, "");
     node.typed = TypedHint::Action(ActionName::parse("mail.thread.archive").unwrap());
     node
 }
 
-fn secret_node(id: u32, role: Role, name: &str, sensitivity: Sensitivity, value: &str) -> A11yNode {
+fn secret_node(id: u32, role: Role, name: &str, secret: bool, value: &str) -> A11yNode {
     A11yNode {
         id: cua_action::NodeId(id),
         parent: if id == 0 {
@@ -100,7 +100,7 @@ fn secret_node(id: u32, role: Role, name: &str, sensitivity: Sensitivity, value:
         },
         actions: vec![],
         typed: TypedHint::None,
-        sensitivity,
+        secret,
     }
 }
 
@@ -279,7 +279,7 @@ fn classify_effect_table() {
 #[test]
 fn a_click_on_a_commit_control_in_a_form_window_is_outbound() {
     use WindowClass::{Banking, MailCompose, Ordinary, Payments, Terminal};
-    let named = |role, name: &str| secret_node(1, role, name, Sensitivity::Normal, "");
+    let named = |role, name: &str| secret_node(1, role, name, false, "");
     let outbound = |class| (Effect::Outbound, EffectBasis::WindowClass(class));
     let plain = |class| match class {
         Ordinary => (Effect::UndoableWrite, EffectBasis::DefaultTable),
@@ -325,8 +325,8 @@ fn a_click_on_a_commit_control_in_a_form_window_is_outbound() {
 #[test]
 fn a_pay_button_on_screen_makes_an_untitled_window_a_payment_form() {
     let app = AppName::parse("org.mozilla.firefox").unwrap();
-    let pay = secret_node(1, Role::Button, "Pay now", Sensitivity::Normal, "");
-    let back = secret_node(2, Role::Button, "Back", Sensitivity::Normal, "");
+    let pay = secret_node(1, Role::Button, "Pay now", false, "");
+    let back = secret_node(2, Role::Button, "Back", false, "");
     let class = |nodes: &[A11yNode]| cua_run::window_class_in(&rules(), &app, "Shop", nodes);
     assert_eq!(class(&[back.clone(), pay]), WindowClass::Payments);
     assert_eq!(class(&[back]), WindowClass::Ordinary);
@@ -478,19 +478,19 @@ fn form_tree() -> A11ySnapshot {
         source: TreeSource::Atspi,
         taken: Stamp(900),
         nodes: vec![
-            secret_node(0, Role::Document, "Sign in", Sensitivity::Normal, ""),
+            secret_node(0, Role::Document, "Sign in", false, ""),
             secret_node(
                 1,
                 Role::Entry,
                 "Email",
-                Sensitivity::Normal,
+                false,
                 "ada@example.org",
             ),
             secret_node(
                 2,
                 Role::PasswordText,
                 "Password",
-                Sensitivity::Secret,
+                true,
                 "hunter2-hunter2",
             ),
         ],

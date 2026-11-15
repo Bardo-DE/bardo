@@ -4,7 +4,7 @@ use super::map;
 use super::tree::{AtspiTree, Extents, RawNode};
 use a11y_tree::{A11yError, A11yTarget};
 use a11y_tree::{
-    A11yNode, A11ySnapshot, NodeBudget, NodeValue, Parent, Sensitivity, TreeSource, Truncation,
+    A11yNode, A11ySnapshot, NodeBudget, NodeValue, Parent, TreeSource, Truncation,
     TypedHint,
 };
 use cua_action::{Coord, NodeId, Point, Rect, Size, WindowSpace};
@@ -154,10 +154,7 @@ fn node_of<K>(
         bounds: local(raw.extents, origin),
         actions: raw.actions.iter().map(|a| map::action(a)).collect(),
         typed: TypedHint::None,
-        sensitivity: match role {
-            a11y_tree::Role::PasswordText => Sensitivity::Secret,
-            _ => Sensitivity::Normal,
-        },
+        secret: role == a11y_tree::Role::PasswordText,
     }
 }
 

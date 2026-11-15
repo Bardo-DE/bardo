@@ -1,7 +1,6 @@
 //! The data a fake surface is made of: screens, the items on them, and what a click does. A
 //! surface is a small deterministic application, written as a TOML file under `eval/surfaces/`.
 
-use a11y_tree::Sensitivity;
 use serde::Deserialize;
 
 /// A whole fake application.
@@ -182,9 +181,9 @@ pub struct ItemDef {
     /// entry, a row a list item).
     #[serde(default)]
     pub role: Option<AxRole>,
-    /// Whether the accessibility tree marks it secret; when none is declared, it is ordinary.
+    /// Whether the accessibility tree marks it secret.
     #[serde(default)]
-    pub sensitivity: Option<Sensitivity>,
+    pub secret: bool,
     /// Whether it is drawn on the window or only listed in the tree.
     #[serde(default)]
     pub view: View,

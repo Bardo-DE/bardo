@@ -9,7 +9,7 @@
 
 use crate::rules::Rules;
 use crate::window_class::window_class_in;
-use a11y_tree::{A11yNode, Role, Sensitivity};
+use a11y_tree::{A11yNode, Role};
 use cua_action::WindowClass;
 use porter_core::AppName;
 use serde::{Deserialize, Serialize};
@@ -52,7 +52,7 @@ impl WindowSensitivity {
 }
 
 fn holds_secret(node: &A11yNode) -> bool {
-    node.role == Role::PasswordText || node.sensitivity == Sensitivity::Secret
+    node.role == Role::PasswordText || node.secret
 }
 
 fn title_has(title: &str, fragments: &[String]) -> bool {
@@ -97,7 +97,7 @@ mod tests {
     use prov::{Label, Labelled};
     use std::collections::BTreeSet;
 
-    fn node(role: Role, name: &str, sensitivity: Sensitivity) -> A11yNode {
+    fn node(role: Role, name: &str, secret: bool) -> A11yNode {
         A11yNode {
             id: NodeId(1),
             parent: Parent::Root,
@@ -111,7 +111,7 @@ mod tests {
             },
             actions: vec![],
             typed: TypedHint::None,
-            sensitivity,
+            secret,
         }
     }
 
@@ -146,15 +146,15 @@ mod tests {
             row("org.mozilla.firefox", "Bank transfer", Payment),
             row("org.quire.Shell", "Panel", Ordinary),
             Row {
-                nodes: vec![node(Role::PasswordText, "", Sensitivity::Secret)],
+                nodes: vec![node(Role::PasswordText, "", true)],
                 ..row("org.mozilla.firefox", "Account", Credentials)
             },
             Row {
-                nodes: vec![node(Role::Entry, "Token", Sensitivity::Secret)],
+                nodes: vec![node(Role::Entry, "Token", true)],
                 ..row("org.mozilla.firefox", "Account", Credentials)
             },
             Row {
-                nodes: vec![node(Role::Entry, "Name", Sensitivity::Normal)],
+                nodes: vec![node(Role::Entry, "Name", false)],
                 ..row("org.mozilla.firefox", "Account", Ordinary)
             },
         ];

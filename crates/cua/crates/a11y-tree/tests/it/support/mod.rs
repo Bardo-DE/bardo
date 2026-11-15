@@ -3,7 +3,7 @@
 //! kind of window the specs name; the JSON under `fixtures/a11y/` is their serde form.
 
 use a11y_tree::{
-    A11yNode, A11ySnapshot, NodeAction, NodeState, NodeValue, Parent, Role, Sensitivity,
+    A11yNode, A11ySnapshot, NodeAction, NodeState, NodeValue, Parent, Role,
     TreeSource, Truncation, TypedHint,
 };
 use cua_action::{Coord, NodeId, Point, Rect, Size};
@@ -36,7 +36,7 @@ pub struct Spec {
     pub bounds: (u32, u32, u32, u32),
     pub actions: Vec<NodeAction>,
     pub typed: TypedHint,
-    pub sensitivity: Sensitivity,
+    pub secret: bool,
 }
 
 impl Spec {
@@ -57,7 +57,7 @@ impl Spec {
             bounds,
             actions: Vec::new(),
             typed: TypedHint::None,
-            sensitivity: Sensitivity::Normal,
+            secret: false,
         }
     }
 }
@@ -80,7 +80,7 @@ pub fn snapshot(app: &str, source: TreeSource, specs: Vec<Spec>) -> A11ySnapshot
                 },
                 actions: s.actions,
                 typed: s.typed,
-                sensitivity: s.sensitivity,
+                secret: s.secret,
             }
         })
         .collect();
@@ -152,7 +152,7 @@ pub fn firefox_form() -> A11ySnapshot {
         "org.mozilla.firefox",
         "correct horse battery staple",
     ));
-    password.sensitivity = Sensitivity::Secret;
+    password.secret = true;
     let mut remember = Spec::new(
         5,
         under(0),

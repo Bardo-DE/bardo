@@ -56,7 +56,7 @@ fn the_password_fixture_is_marked_secret_and_nothing_else_is() {
     let secret: Vec<_> = form
         .nodes
         .iter()
-        .filter(|n| n.sensitivity == a11y_tree::Sensitivity::Secret)
+        .filter(|n| n.secret)
         .map(|n| n.role)
         .collect();
     assert_eq!(secret, vec![a11y_tree::Role::PasswordText]);

@@ -125,16 +125,6 @@ pub enum TypedHint {
     Action(ActionName),
 }
 
-/// Whether a node's content may reach a model.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Sensitivity {
-    /// Ordinary.
-    Normal,
-    /// A password entry or a quire-declared sensitive control.
-    Secret,
-}
-
 /// How many nodes a snapshot keeps (cuad uses 400).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -161,6 +151,7 @@ pub struct A11yNode {
     pub actions: Vec<NodeAction>,
     /// The typed action a quire widget maps it to.
     pub typed: TypedHint,
-    /// Whether its content may reach a model.
-    pub sensitivity: Sensitivity,
+    /// Whether its content must never reach a model: a password entry or a quire-declared
+    /// sensitive control.
+    pub secret: bool,
 }

@@ -5,7 +5,7 @@
 use ::atspi::{Role as Atspi, State, StateSet};
 use a11y_atspi::{AtspiTree, Extents, RawNode, read_window};
 use a11y_tree::{
-    A11yError, A11yTarget, NodeAction, NodeBudget, NodeState, Parent, Role, Sensitivity,
+    A11yError, A11yTarget, NodeAction, NodeBudget, NodeState, Parent, Role,
     TreeSource, Truncation, secret_rects,
 };
 use cua_action::{Coord, Point, Rect, Size};
@@ -193,7 +193,7 @@ async fn a_password_field_is_secret_and_its_rectangle_is_a_mask() {
     let secret: Vec<&str> = snapshot
         .nodes
         .iter()
-        .filter(|n| n.sensitivity == Sensitivity::Secret)
+        .filter(|n| n.secret)
         .map(|n| n.name.value.as_str())
         .collect();
     assert_eq!(secret, ["Password"]);

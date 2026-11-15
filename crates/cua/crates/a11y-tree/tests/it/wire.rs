@@ -90,5 +90,5 @@ fn a_node_pins_its_json_with_the_screen_label_on_its_name() {
         json.contains(r#""name":{"value":"Save","label":{"integrity":"untrusted""#),
         "{json}"
     );
-    assert!(json.contains(r#""sensitivity":"normal""#), "{json}");
+    assert!(json.contains(r#""secret":false"#), "{json}");
 }

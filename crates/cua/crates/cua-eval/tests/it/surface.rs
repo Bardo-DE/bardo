@@ -1,7 +1,7 @@
 //! The fake surfaces: what a click, a key and the wheel do, and what they draw.
 
 use crate::support::eval_dir;
-use a11y_tree::{Role, Sensitivity};
+use a11y_tree::Role;
 use cua_action::ScrollDir;
 use cua_desktop::Stamp;
 use cua_eval::surface::{Cond, Hit, Stroke, Surface, SurfaceDef, render, snapshot};
@@ -203,7 +203,7 @@ fn the_tree_has_a_node_for_each_visible_item_and_marks_only_what_a_surface_decla
         let secrets: Vec<&str> = tree
             .nodes
             .iter()
-            .filter(|n| n.sensitivity == Sensitivity::Secret)
+            .filter(|n| n.secret)
             .map(|n| n.name.value.as_str())
             .collect();
         assert_eq!(secrets, secret.into_iter().collect::<Vec<_>>(), "{name}");

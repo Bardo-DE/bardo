@@ -1,7 +1,7 @@
 //! The tree as the model reads it.
 
 use crate::model::{
-    A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, Sensitivity, Truncation, TypedHint,
+    A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, Truncation, TypedHint,
 };
 use cua_action::NodeId;
 use std::collections::BTreeMap;
@@ -85,7 +85,7 @@ fn quoted(text: &str) -> String {
 /// A node whose content never reaches a model: marked secret, or a password entry whatever
 /// the source said.
 pub(crate) fn is_secret(node: &A11yNode) -> bool {
-    node.sensitivity == Sensitivity::Secret || node.role == Role::PasswordText
+    node.secret || node.role == Role::PasswordText
 }
 
 fn value_text(node: &A11yNode) -> Option<String> {

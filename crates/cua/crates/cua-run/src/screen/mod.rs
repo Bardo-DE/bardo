@@ -33,7 +33,7 @@ pub use unseen::{UnseenWhy, Withheld, secret_masks, split_unseen};
 
 use crate::observation::{Observation, TreeObs};
 use crate::rules::InjectionRules;
-use a11y_tree::{A11yNode, NodeValue, Role, Sensitivity};
+use a11y_tree::{A11yNode, NodeValue, Role};
 use cua_action::{Size, WindowSpace};
 use cua_bus::ScreenKind;
 use cua_desktop::Digest32;
@@ -196,7 +196,7 @@ pub struct PatternCheck<'a> {
 
 /// A node whose content never reaches a model.
 fn is_secret(node: &A11yNode) -> bool {
-    node.sensitivity == Sensitivity::Secret || node.role == Role::PasswordText
+    node.secret || node.role == Role::PasswordText
 }
 
 /// The text of a node: its name, then its value when that is text.

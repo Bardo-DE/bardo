@@ -3,7 +3,7 @@
 //! feeds inputs one at a time and keeps the effects of the last one.
 
 use a11y_tree::{
-    A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, Sensitivity, TreeSource,
+    A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, TreeSource,
     Truncation, TypedHint,
 };
 use cua_action::{
@@ -167,7 +167,7 @@ pub fn node(id: u32, role: Role, name: &str, bounds: (u32, u32, u32, u32)) -> A1
         },
         actions: vec![],
         typed: TypedHint::None,
-        sensitivity: Sensitivity::Normal,
+        secret: false,
     }
 }
 

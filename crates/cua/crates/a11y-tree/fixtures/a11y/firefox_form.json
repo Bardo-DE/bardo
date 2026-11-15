@@ -55,7 +55,7 @@
       "typed": {
         "kind": "none"
       },
-      "sensitivity": "normal"
+      "secret": false
     },
     {
       "id": 1,
@@ -111,7 +111,7 @@
       "typed": {
         "kind": "none"
       },
-      "sensitivity": "normal"
+      "secret": false
     },
     {
       "id": 2,
@@ -168,7 +168,7 @@
       "typed": {
         "kind": "none"
       },
-      "sensitivity": "normal"
+      "secret": false
     },
     {
       "id": 3,
@@ -249,7 +249,7 @@
       "typed": {
         "kind": "none"
       },
-      "sensitivity": "normal"
+      "secret": false
     },
     {
       "id": 4,
@@ -330,7 +330,7 @@
       "typed": {
         "kind": "none"
       },
-      "sensitivity": "secret"
+      "secret": true
     },
     {
       "id": 5,
@@ -392,7 +392,7 @@
       "typed": {
         "kind": "none"
       },
-      "sensitivity": "normal"
+      "secret": false
     },
     {
       "id": 6,
@@ -453,7 +453,7 @@
       "typed": {
         "kind": "none"
       },
-      "sensitivity": "normal"
+      "secret": false
     },
     {
       "id": 7,
@@ -514,7 +514,7 @@
       "typed": {
         "kind": "none"
       },
-      "sensitivity": "normal"
+      "secret": false
     }
   ],
   "truncated": {
