@@ -6,7 +6,7 @@
 //! A window is picture in picture when its client said so (`quire_window_v1.set_role(pip)`).
 //! Browsers do not know that protocol, so a window that declared nothing and whose title and
 //! app id are a known browser's picture-in-picture window is treated the same way
-//! ([`PipSource::Guessed`]); a client that later sets a role of its own overrides the guess.
+//! (a guess); a client that later sets a role of its own overrides the guess.
 
 use super::{Window, WindowState};
 use crate::app::AppKey;
@@ -15,15 +15,6 @@ use casement_protocols::vocab::WindowRole;
 
 /// The gap between a snapped window and the screen's edge, in logical pixels.
 pub const PIP_MARGIN: u32 = 16;
-
-/// Why a window counts as picture in picture.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum PipSource {
-    /// Its client asked (`set_role(pip)`).
-    Declared,
-    /// Its title and app id are a browser's picture-in-picture window (a guess).
-    Guessed,
-}
 
 /// The most area a window may have and still float above the rest, in logical pixels squared
 /// (about 1140 x 560): a picture in picture window is a corner thumbnail, and one that fills
@@ -46,18 +37,19 @@ const BROWSER_IDS: [&str; 8] = [
 /// The titles browsers give those windows (case-insensitive, spaces or hyphens alike).
 const BROWSER_TITLES: [&str; 2] = ["picture-in-picture", "picture in picture"];
 
-/// Whether `window` is picture in picture, and why.
+/// Whether `window` is picture in picture, and why: `Some(true)` when its client declared it,
+/// `Some(false)` when it is only guessed from a browser's title and app id.
 ///
 /// ```
-/// use casement_core::window::{PipSource, pip_source_of};
+/// use casement_core::window::pip_source_of;
 ///
-/// assert_eq!(pip_source_of(casement_protocols::vocab::WindowRole::Pip, "", ""), Some(PipSource::Declared));
+/// assert_eq!(pip_source_of(casement_protocols::vocab::WindowRole::Pip, "", ""), Some(true));
 /// assert_eq!(pip_source_of(casement_protocols::vocab::WindowRole::Document, "Mail", "org.quire.Mail"), None);
 /// ```
-pub fn pip_source_of(role: WindowRole, title: &str, app_id: &str) -> Option<PipSource> {
+pub fn pip_source_of(role: WindowRole, title: &str, app_id: &str) -> Option<bool> {
     match role {
-        WindowRole::Pip => Some(PipSource::Declared),
-        WindowRole::Document => browser_pip(title, app_id).then_some(PipSource::Guessed),
+        WindowRole::Pip => Some(true),
+        WindowRole::Document => browser_pip(title, app_id).then_some(false),
         WindowRole::Dialog | WindowRole::Utility | WindowRole::Shell => None,
     }
 }
@@ -78,8 +70,8 @@ pub fn floats_above(window: &Window) -> bool {
         window.claimed_id.as_str(),
     );
     let believed = match (source, &window.app) {
-        (Some(PipSource::Declared), _) | (Some(PipSource::Guessed), AppKey::Proven(_)) => true,
-        (Some(PipSource::Guessed), AppKey::Claimed(_)) | (None, _) => false,
+        (Some(true), _) | (Some(false), AppKey::Proven(_)) => true,
+        (Some(false), AppKey::Claimed(_)) | (None, _) => false,
     };
     let size = match &window.state {
         WindowState::New(size) => Some(*size),
@@ -245,20 +237,20 @@ mod tests {
     fn declared_and_guessed_picture_in_picture() {
         use WindowRole::{Dialog, Document, Pip};
         let cases = [
-            ("declared", Pip, "", "", Some(PipSource::Declared)),
+            ("declared", Pip, "", "", Some(true)),
             (
                 "firefox",
                 Document,
                 "Picture-in-Picture",
                 "firefox",
-                Some(PipSource::Guessed),
+                Some(false),
             ),
             (
                 "chrome",
                 Document,
                 "Picture in picture",
                 "google-chrome",
-                Some(PipSource::Guessed),
+                Some(false),
             ),
             (
                 "other app",
