@@ -338,6 +338,116 @@ incremental = true
 [profile.dev.package."*"]
 debug = false
 
+# Window-drawing tests (style, layout, text, raster) run unbearably slowly unoptimised.
+[profile.dev.package.anyrender]
+opt-level = 2
+
+[profile.dev.package.anyrender_svg]
+opt-level = 2
+
+[profile.dev.package.anyrender_vello_cpu]
+opt-level = 2
+
+[profile.dev.package.anyrender_vello_hybrid]
+opt-level = 2
+
+[profile.dev.package."blitz-dom"]
+opt-level = 2
+
+[profile.dev.package."blitz-html"]
+opt-level = 2
+
+[profile.dev.package."blitz-paint"]
+opt-level = 2
+
+[profile.dev.package."blitz-shell"]
+opt-level = 2
+
+[profile.dev.package."blitz-traits"]
+opt-level = 2
+
+[profile.dev.package.fontdb]
+opt-level = 2
+
+[profile.dev.package.fontique]
+opt-level = 2
+
+[profile.dev.package.harfrust]
+opt-level = 2
+
+[profile.dev.package.image]
+opt-level = 2
+
+[profile.dev.package."image-webp"]
+opt-level = 2
+
+[profile.dev.package.kurbo]
+opt-level = 2
+
+[profile.dev.package.parley]
+opt-level = 2
+
+[profile.dev.package.peniko]
+opt-level = 2
+
+[profile.dev.package.png]
+opt-level = 2
+
+[profile.dev.package."read-fonts"]
+opt-level = 2
+
+[profile.dev.package.resvg]
+opt-level = 2
+
+[profile.dev.package.selectors]
+opt-level = 2
+
+[profile.dev.package.skrifa]
+opt-level = 2
+
+[profile.dev.package.stylo]
+opt-level = 2
+
+[profile.dev.package.stylo_dom]
+opt-level = 2
+
+[profile.dev.package.stylo_taffy]
+opt-level = 2
+
+[profile.dev.package.taffy]
+opt-level = 2
+
+[profile.dev.package."tiny-skia"]
+opt-level = 2
+
+[profile.dev.package."tiny-skia-path"]
+opt-level = 2
+
+[profile.dev.package.usvg]
+opt-level = 2
+
+[profile.dev.package.vello_common]
+opt-level = 2
+
+[profile.dev.package.vello_cpu]
+opt-level = 2
+
+[profile.dev.package.vello_hybrid]
+opt-level = 2
+
+[profile.dev.package."zune-inflate"]
+opt-level = 2
+
+[profile.dev.package."zune-jpeg"]
+opt-level = 2
+
+[profile.dev.package."casement-render"]
+opt-level = 2
+
+[profile.dev.package."casement-testclient"]
+opt-level = 2
+
+
 [profile.dev.package.pbkdf2]
 opt-level = 3
 
