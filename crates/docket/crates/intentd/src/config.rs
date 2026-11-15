@@ -40,8 +40,10 @@ impl IntentdConfig {
     pub fn parse(text: &str) -> Result<Self, ConfigError> {
         let config: IntentdConfig =
             toml::from_str(text).map_err(|e| ConfigError::Toml(e.to_string()))?;
-        if let Some(set) = &config.reviewers {
-            set.check().map_err(|_| ConfigError::SameFamily)?;
+        if let Some(set) = &config.reviewers
+            && !set.second_is_other_family()
+        {
+            return Err(ConfigError::SameFamily);
         }
         Ok(config)
     }

@@ -116,22 +116,10 @@ pub struct ReviewerSet {
     pub second: ModelChoice,
 }
 
-/// Why a reviewer set is not usable.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum SetFault {
-    /// The second opinion shares the deliberate model's family.
-    #[error("the second opinion must come from another model family")]
-    SameFamily,
-}
-
 impl ReviewerSet {
     /// Whether the second opinion is a different family from the deliberate model. Without
     /// one, high-impact allows fall back to asking.
-    pub fn check(&self) -> Result<(), SetFault> {
-        if self.second.family == self.deliberate.family {
-            Err(SetFault::SameFamily)
-        } else {
-            Ok(())
-        }
+    pub fn second_is_other_family(&self) -> bool {
+        self.second.family != self.deliberate.family
     }
 }

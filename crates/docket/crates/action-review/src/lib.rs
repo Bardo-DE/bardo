@@ -19,7 +19,7 @@ pub use breaker::{
     ArgDigest, Breaker, DecisionMark, DenialMark, DeniedBy, GoalKey, RepeatState, note, repeated,
 };
 pub use cascade::{
-    Gate, ModelChoice, ModelFamily, Reviewer, ReviewerSet, SetFault, escalate, plan, tighten,
+    Gate, ModelChoice, ModelFamily, Reviewer, ReviewerSet, escalate, plan, tighten,
 };
 pub use infer::{InferReviewer, REVIEW_CLASS};
 pub use parse::parse_verdict;

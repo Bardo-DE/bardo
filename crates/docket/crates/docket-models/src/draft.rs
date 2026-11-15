@@ -223,7 +223,7 @@ fn settled_ceiling(
     needed: Effect,
 ) -> (Effect, Vec<Corrected>) {
     match floor.filter(|floor| asked < *floor) {
-        Some(to) => (to, vec![Corrected::CeilingRaised { from: asked, to }]),
+        Some(to) => (to, vec![Corrected { from: asked, to }]),
         None => (asked.min(needed), Vec::new()),
     }
 }

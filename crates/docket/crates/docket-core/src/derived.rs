@@ -8,18 +8,15 @@ use prov::{Effect, SpaceId, TaskId};
 use serde::{Deserialize, Serialize};
 use std::future::Future;
 
-/// One thing the checker changed in a model's draft because the draft contradicted itself.
+/// What the checker changed in a model's draft because the draft contradicted itself: the draft's
+/// ceiling was below the effect of an action it chose itself, and was raised to that effect. The
+/// actions list is untouched, so nothing more is allowed than was chosen.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-pub enum Corrected {
-    /// The draft's ceiling was below the effect of an action it chose itself, and was raised to
-    /// that effect. The actions list is untouched, so nothing more is allowed than was chosen.
-    CeilingRaised {
-        /// What the draft said.
-        from: Effect,
-        /// The highest effect among the actions it chose.
-        to: Effect,
-    },
+pub struct Corrected {
+    /// What the draft said.
+    pub from: Effect,
+    /// The highest effect among the actions it chose.
+    pub to: Effect,
 }
 
 /// A derived policy and the corrections made to the draft it came from.

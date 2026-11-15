@@ -77,7 +77,7 @@ async fn archive_with_a_read_ceiling_is_raised_to_undoable_write_and_says_so() {
     assert_eq!(derived.policy.ceiling, Effect::UndoableWrite);
     assert_eq!(
         derived.corrected,
-        vec![Corrected::CeilingRaised {
+        vec![Corrected {
             from: Effect::Read,
             to: Effect::UndoableWrite
         }]

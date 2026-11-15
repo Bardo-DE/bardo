@@ -227,8 +227,8 @@ fn the_second_opinion_must_come_from_another_family() {
         deliberate: choice(d),
         second: choice(s),
     };
-    assert_eq!(set("qwen", "qwen").check(), Err(SetFault::SameFamily));
-    assert_eq!(set("qwen", "llama").check(), Ok(()));
+    assert!(!set("qwen", "qwen").second_is_other_family());
+    assert!(set("qwen", "llama").second_is_other_family());
 }
 
 #[test]
