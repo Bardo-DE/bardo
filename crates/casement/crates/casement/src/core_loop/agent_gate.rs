@@ -24,7 +24,7 @@ use super::{divider, frames, overview};
 use crate::state::State;
 use casement_core::geometry::LogicalPoint;
 use casement_core::input::{InputEvent, InputKind, Origin};
-use casement_core::layer::{LayerLevel, LayerOwner};
+use casement_core::layer::{LayerLevel};
 use casement_core::{LeaseId, WindowId};
 use casement_protocols::vocab::PressEdge;
 use casement_wayland::compositor::root_of;
@@ -213,5 +213,5 @@ fn on_shell_overlay(state: &State, kind: &InputKind, at: Option<LogicalPoint>) -
         .model
         .layers()
         .get(&layer)
-        .is_some_and(|spec| spec.level == LayerLevel::Overlay && spec.owner == LayerOwner::Shell)
+        .is_some_and(|spec| spec.level == LayerLevel::Overlay && spec.from_shell)
 }

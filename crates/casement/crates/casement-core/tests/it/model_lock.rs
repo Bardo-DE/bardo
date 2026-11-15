@@ -7,7 +7,7 @@ use casement_core::desktop::{DesktopRequest, WindowAsk};
 use casement_core::focus::TokenCheck;
 use casement_core::input::{InputTarget, InputUse, Origin, Refusal};
 use casement_core::layer::{
-    Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerOwner, LayerSpec, Margins,
+    Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerSpec, Margins,
     ShellRoleTag,
 };
 use casement_core::lock::{LockEvent, LockHolder, LockReply, LockState, LockSurfaces};
@@ -49,7 +49,7 @@ fn bar(output: &str, zone: ExclusiveZone) -> LayerSpec {
         namespace: "bar".to_owned(),
         size: casement_core::geometry::LogicalSize::ZERO,
         role: ShellRoleTag::Unassigned,
-        owner: LayerOwner::Client,
+        from_shell: false,
     }
 }
 
@@ -710,7 +710,7 @@ fn while_locked_no_window_or_layer_hears_the_keyboard() {
     let launcher = LayerSpec {
         level: LayerLevel::Overlay,
         keyboard: KeyboardInteractivity::Exclusive,
-        owner: LayerOwner::Shell,
+        from_shell: true,
         ..bar("HEADLESS-1", ExclusiveZone::Ignore)
     };
     let run = run(vec![

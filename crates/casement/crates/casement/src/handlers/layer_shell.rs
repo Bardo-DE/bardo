@@ -4,7 +4,6 @@ use super::xdg_shell::popups;
 use crate::core_loop;
 use crate::state::State;
 use casement_core::OutputKey;
-use casement_core::layer::LayerOwner;
 use casement_core::policy::ConnectionRole;
 use casement_wayland::ClientState;
 use casement_wayland::handler::OutputLookup;
@@ -54,15 +53,12 @@ fn primary_output(state: &State) -> Option<OutputKey> {
 
 /// Whose connection `surface` came through: the shell's own, or another client's (a surface
 /// whose client is gone counts as another client's).
-fn owner_of(surface: &LayerSurface) -> LayerOwner {
+fn owner_of(surface: &LayerSurface) -> bool {
     let role = surface
         .wl_surface()
         .client()
         .and_then(|client| ClientState::of(&client).map(|state| state.role.clone()));
-    match role {
-        Some(ConnectionRole::Shell) => LayerOwner::Shell,
-        Some(_) | None => LayerOwner::Client,
-    }
+    matches!(role, Some(ConnectionRole::Shell))
 }
 
 impl WlrLayerShellHandler for State {

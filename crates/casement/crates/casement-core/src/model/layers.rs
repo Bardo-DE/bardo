@@ -6,7 +6,7 @@ use crate::cause::Cause;
 use crate::effect::Effect;
 use crate::geometry::{LogicalPoint, LogicalSize};
 use crate::ids::{LayerKey, OutputKey};
-use crate::layer::{ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerOwner, LayerSpec};
+use crate::layer::{ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerSpec};
 use crate::lock::LockState;
 use crate::time::Mono;
 use std::collections::BTreeMap;
@@ -24,7 +24,7 @@ impl Model {
             return Moved::of(self);
         }
         let takes_keyboard = spec.keyboard == KeyboardInteractivity::OnDemand
-            && spec.owner == LayerOwner::Shell
+            && spec.from_shell
             && matches!(spec.level, LayerLevel::Top | LayerLevel::Overlay)
             && matches!(self.lock, LockState::Unlocked)
             && self.exclusive_layer().is_none();

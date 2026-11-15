@@ -25,8 +25,9 @@ pub struct LayerSpec {
     pub namespace: String,
     /// The shell role sill gave it through `quire_shell_v1`.
     pub role: ShellRoleTag,
-    /// Whose connection it came through.
-    pub owner: LayerOwner,
+    /// Whether it came through the shell's own connection (the bar, the dock, the launcher:
+    /// trusted with the keyboard and with room taken from windows), not any other client's.
+    pub from_shell: bool,
 }
 
 impl LayerSpec {
@@ -34,23 +35,13 @@ impl LayerSpec {
     /// shell's surfaces keep it; any other client's is on-demand, and takes the keyboard only
     /// when the person clicks it (CASC-02).
     pub fn granted_keyboard(&self) -> KeyboardInteractivity {
-        match (self.keyboard, self.owner) {
-            (KeyboardInteractivity::Exclusive, LayerOwner::Client) => {
+        match (self.keyboard, self.from_shell) {
+            (KeyboardInteractivity::Exclusive, false) => {
                 KeyboardInteractivity::OnDemand
             }
-            (asked, LayerOwner::Shell | LayerOwner::Client) => asked,
+            (asked, _) => asked,
         }
     }
-}
-
-/// Whose connection a layer surface came through.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum LayerOwner {
-    /// The shell's own (the bar, the dock, the launcher): trusted with the keyboard and with
-    /// room taken from windows.
-    Shell,
-    /// Any other client.
-    Client,
 }
 
 /// The four layers, bottom to top.

@@ -6,7 +6,7 @@ use crate::support;
 use casement_core::focus::TokenCheck;
 use casement_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use casement_core::layer::{
-    Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerOwner, LayerSpec, Margins,
+    Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerSpec, Margins,
     ShellRoleTag,
 };
 use casement_protocols::vocab::Transform;
@@ -45,7 +45,7 @@ fn bar(output: &str, zone: ExclusiveZone) -> LayerSpec {
         namespace: "bar".to_owned(),
         size: casement_core::geometry::LogicalSize::ZERO,
         role: ShellRoleTag::Unassigned,
-        owner: LayerOwner::Shell,
+        from_shell: true,
     }
 }
 
@@ -590,7 +590,7 @@ fn an_on_demand_panel_takes_the_keyboard_on_mapping_and_gives_it_back() {
 /// `spec` from another client's connection instead of the shell's.
 fn client(spec: LayerSpec) -> LayerSpec {
     LayerSpec {
-        owner: LayerOwner::Client,
+        from_shell: false,
         ..spec
     }
 }

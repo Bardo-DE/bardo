@@ -3,7 +3,7 @@
 //! leave windows half of it.
 
 use super::arrange_tests::{ask, output, rect};
-use super::{ExclusiveZone, LayerBook, LayerOwner};
+use super::{ExclusiveZone, LayerBook};
 use crate::geometry::LogicalRect;
 use crate::ids::LayerKey;
 
@@ -30,40 +30,40 @@ fn a_client_zone_is_capped_and_the_shells_is_not() {
     let cases: Vec<Case> = vec![
         (
             "a client bar of a sensible size gets it",
-            vec![("tlr", 28, LayerOwner::Client)],
+            vec![("tlr", 28, false)],
             rect(100, 78, 1920, 1052),
         ),
         (
             "a client asking for the whole axis gets a quarter",
-            vec![("tlr", u32::MAX, LayerOwner::Client)],
+            vec![("tlr", u32::MAX, false)],
             rect(100, 320, 1920, 810),
         ),
         (
             "the shell asking for the same gets what it asked for",
-            vec![("tlr", 600, LayerOwner::Shell)],
+            vec![("tlr", 600, true)],
             rect(100, 650, 1920, 480),
         ),
         (
             "a left client dock is held to a quarter of the width",
-            vec![("ltb", 5000, LayerOwner::Client)],
+            vec![("ltb", 5000, false)],
             rect(580, 50, 1440, 1080),
         ),
         (
             "client bars stacked on one edge leave half the height",
             vec![
-                ("tlr", 270, LayerOwner::Client),
-                ("tlr", 270, LayerOwner::Client),
-                ("tlr", 270, LayerOwner::Client),
+                ("tlr", 270, false),
+                ("tlr", 270, false),
+                ("tlr", 270, false),
             ],
             rect(100, 590, 1920, 540),
         ),
         (
             "four client surfaces on four edges leave half of each axis",
             vec![
-                ("tlr", u32::MAX, LayerOwner::Client),
-                ("blr", u32::MAX, LayerOwner::Client),
-                ("ltb", u32::MAX, LayerOwner::Client),
-                ("rtb", u32::MAX, LayerOwner::Client),
+                ("tlr", u32::MAX, false),
+                ("blr", u32::MAX, false),
+                ("ltb", u32::MAX, false),
+                ("rtb", u32::MAX, false),
             ],
             rect(580, 320, 960, 540),
         ),

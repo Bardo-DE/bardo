@@ -4,7 +4,7 @@
 use casement_core::OutputKey;
 use casement_core::geometry::LogicalSize;
 use casement_core::layer::{
-    Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerOwner, LayerSpec, Margins,
+    Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerSpec, Margins,
     ShellRoleTag,
 };
 use smithay::wayland::shell::wlr_layer::{
@@ -69,7 +69,7 @@ pub fn spec_of(
     output: &OutputKey,
     cached: &LayerSurfaceCachedState,
     namespace: &str,
-    owner: LayerOwner,
+    from_shell: bool,
 ) -> LayerSpec {
     LayerSpec {
         output: output.clone(),
@@ -84,7 +84,7 @@ pub fn spec_of(
         keyboard: keyboard_of(cached.keyboard_interactivity),
         namespace: namespace.to_owned(),
         role: ShellRoleTag::Unassigned,
-        owner,
+        from_shell: owner,
     }
 }
 
@@ -109,7 +109,7 @@ mod tests {
             margin,
             ..LayerSurfaceCachedState::default()
         };
-        spec_of(&output_key(), &cached, "bar", LayerOwner::Client)
+        spec_of(&output_key(), &cached, "bar", false)
     }
 
     const NO_MARGIN: WireMargins = WireMargins {
@@ -142,16 +142,16 @@ mod tests {
         let s = spec(WireAnchor::TOP, NO_MARGIN);
         assert_eq!(s.namespace, "bar");
         assert_eq!(s.role, ShellRoleTag::Unassigned);
-        assert_eq!(s.owner, LayerOwner::Client);
+        assert_eq!(s.from_shell, false);
         assert_eq!(
             spec_of(
                 &output_key(),
                 &LayerSurfaceCachedState::default(),
                 "bar",
-                LayerOwner::Shell
+                true
             )
-            .owner,
-            LayerOwner::Shell
+            .from_shell,
+            true
         );
     }
 }

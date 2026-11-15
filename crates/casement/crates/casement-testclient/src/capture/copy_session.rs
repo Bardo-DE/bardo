@@ -66,25 +66,18 @@ struct Announced {
     formats: Vec<ShmFormat>,
     dmabuf: Vec<DmabufFormat>,
     device: Option<u64>,
-    done: Done,
-}
-
-/// Whether the constraints round is complete.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
-enum Done {
-    #[default]
-    Open,
-    Complete,
+    /// Whether the constraints round is complete.
+    done: bool,
 }
 
 impl Announced {
     /// A constraint arrived: one after a `done` starts a new round.
     fn round(&mut self) {
-        if self.done == Done::Complete {
+        if self.done {
             self.formats.clear();
             self.dmabuf.clear();
             self.device = None;
-            self.done = Done::Open;
+            self.done = false;
         }
     }
 }
@@ -108,7 +101,7 @@ impl Capturing {
     /// Starts the next frame's capture from the remembered constraints, if the last one was
     /// taken and the session announced complete constraints.
     fn reopen(&mut self) {
-        if self.desktop.captures.get(ID).is_some() || self.announced.done == Done::Open {
+        if self.desktop.captures.get(ID).is_some() || !self.announced.done {
             return;
         }
         if let Some(size) = self.announced.size {
@@ -488,7 +481,7 @@ impl Dispatch<ExtImageCopyCaptureSessionV1, ()> for Capturing {
                     .push(DmabufFormat { format, modifiers });
             }
             Event::Done => {
-                state.announced.done = Done::Complete;
+                state.announced.done = true;
                 state.fold(CaptureEvent::ConstraintsDone);
             }
             Event::Stopped => {

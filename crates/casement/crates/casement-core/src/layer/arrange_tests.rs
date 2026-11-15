@@ -2,7 +2,7 @@
 //! sizes all read.
 
 use super::{
-    Anchors, ExclusiveZone, KeyboardInteractivity, LayerBook, LayerLevel, LayerOwner, LayerSpec,
+    Anchors, ExclusiveZone, KeyboardInteractivity, LayerBook, LayerLevel, LayerSpec,
     Margins, ShellRoleTag,
 };
 use crate::geometry::{LogicalPoint, LogicalRect, LogicalSize};
@@ -37,7 +37,7 @@ pub(super) struct Ask {
     zone: ExclusiveZone,
     margin: Margins,
     committed: (u32, u32),
-    owner: LayerOwner,
+    from_shell: bool,
 }
 
 pub(super) fn ask(edges: &'static str, zone: ExclusiveZone, committed: (u32, u32)) -> Ask {
@@ -47,14 +47,14 @@ pub(super) fn ask(edges: &'static str, zone: ExclusiveZone, committed: (u32, u32
         zone,
         margin: NONE,
         committed,
-        owner: LayerOwner::Shell,
+        from_shell: true,
     }
 }
 
 impl Ask {
-    /// The same layer, from `owner`'s connection (the shell's by default).
-    pub(super) fn owned_by(self, owner: LayerOwner) -> Ask {
-        Ask { owner, ..self }
+    /// The same layer, from the shell's connection or not (the shell's by default).
+    pub(super) fn owned_by(self, from_shell: bool) -> Ask {
+        Ask { from_shell, ..self }
     }
 
     pub(super) fn spec(&self) -> LayerSpec {
@@ -74,7 +74,7 @@ impl Ask {
             namespace: "test".to_owned(),
             size: crate::geometry::LogicalSize::ZERO,
             role: ShellRoleTag::Unassigned,
-            owner: self.owner,
+            from_shell: self.from_shell,
         }
     }
 }

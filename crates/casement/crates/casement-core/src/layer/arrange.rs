@@ -9,7 +9,7 @@
 //! whose positive zone its anchoring does not make meaningful, is arranged inside what is left
 //! at the end; one that ignores zones (`-1`) inside the whole output.
 
-use super::{Anchors, ExclusiveZone, LayerOwner, LayerSpec, Margins};
+use super::{Anchors, ExclusiveZone, LayerSpec, Margins};
 use crate::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use crate::ids::{LayerKey, OutputKey};
 use casement_protocols::vocab::ScreenEdge;
@@ -94,7 +94,7 @@ impl super::LayerBook {
             |(usable, mut slots), (key, spec)| {
                 slots.insert(*key, slot(spec, usable, self.pin(key)));
                 let left = reservation(spec)
-                    .map(|taken| allowed(spec.owner, taken, usable, full))
+                    .map(|taken| allowed(spec.from_shell, taken, usable, full))
                     .map_or(usable, |taken| shrink(usable, taken));
                 (left, slots)
             },
@@ -181,19 +181,19 @@ const CLIENT_ZONE_DIVISOR: u32 = 4;
 /// of them there are: four client surfaces on the four edges cannot shrink the area to nothing.
 const CLIENT_KEEPS_DIVISOR: u32 = 2;
 
-/// `taken` as `owner` may have it. The shell's surfaces reserve what they ask for. Another
+/// `taken` as a surface from the shell's connection (`from_shell`) or another client's may have it. The shell's surfaces reserve what they ask for. Another
 /// client's reserves at most a quarter of the output along the axis, and nothing that would
 /// leave windows less than half of it (`usable` is what the earlier zones left, `full` the
 /// whole output).
 fn allowed(
-    owner: LayerOwner,
+    from_shell: bool,
     taken: Reservation,
     usable: LogicalRect,
     full: LogicalRect,
 ) -> Reservation {
-    match owner {
-        LayerOwner::Shell => taken,
-        LayerOwner::Client => {
+    match from_shell {
+        true => taken,
+        false => {
             let (whole, left) = match taken.edge {
                 ScreenEdge::Top | ScreenEdge::Bottom => (full.size.h, usable.size.h),
                 ScreenEdge::Left | ScreenEdge::Right => (full.size.w, usable.size.w),

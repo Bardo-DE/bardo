@@ -7,7 +7,7 @@ use super::stamp::Stamp;
 use super::token::Token;
 use super::trigger::{FeedKind, press_in};
 use crate::state::State;
-use casement_core::layer::{LayerOwner, ShellRoleTag};
+use casement_core::layer::{ShellRoleTag};
 use casement_core::policy::ConnectionRole;
 use casement_core::time::Mono;
 use casement_core::window::WindowOrigin;
@@ -158,7 +158,7 @@ fn shell_shown(state: &mut State, output: &OutputKey, at: Stamp) {
         .model
         .layers()
         .iter()
-        .filter(|(_, spec)| spec.output == *output && spec.owner == LayerOwner::Shell)
+        .filter(|(_, spec)| spec.output == *output && spec.from_shell)
         .filter(|(key, _)| state.render.textures.layer(key).is_some())
         .filter_map(|(_, spec)| match spec.role {
             ShellRoleTag::Assigned(role) => ShellSurface::of(role),

@@ -190,7 +190,7 @@ mod tests {
             namespace: "test".to_owned(),
             size: crate::geometry::LogicalSize::ZERO,
             role: ShellRoleTag::Unassigned,
-            owner: crate::layer::LayerOwner::Shell,
+            from_shell: true,
         }
     }
 

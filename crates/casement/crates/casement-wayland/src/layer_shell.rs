@@ -15,7 +15,7 @@ pub use spec::{anchors_of, exclusive_of, keyboard_of, level_of, margins_of, spec
 use crate::client::key_of_surface;
 use crate::states::{GlobalFilter, WaylandFault};
 use casement_core::geometry::LogicalSize;
-use casement_core::layer::{LayerLevel, LayerOwner, LayerSpec};
+use casement_core::layer::{LayerLevel, LayerSpec};
 use casement_core::policy::GlobalKind;
 use casement_core::{ClientKey, Event, LayerKey, OutputKey};
 use smithay::reexports::wayland_protocols_wlr::layer_shell::v1::server::zwlr_layer_shell_v1::ZwlrLayerShellV1;
@@ -47,7 +47,7 @@ pub struct LayerRecord {
     /// The namespace its client gave (`"bar"`, `"dock"`).
     pub namespace: LayerNamespace,
     /// Whose connection it came through.
-    pub owner: LayerOwner,
+    pub from_shell: bool,
     /// What the model knows of it: nothing before its first commit or after it unmapped, else
     /// what it was mapped, or last changed, to.
     pub known: Option<LayerSpec>,
@@ -106,7 +106,7 @@ pub fn on_new_layer(
     output: Option<OutputKey>,
     level: LayerLevel,
     namespace: LayerNamespace,
-    owner: LayerOwner,
+    from_shell: bool,
     layer: LayerKey,
 ) -> Vec<Event> {
     // The level is also in the committed state, which wins from the first commit on.
@@ -117,7 +117,7 @@ pub fn on_new_layer(
         LayerRecord {
             output,
             namespace,
-            owner,
+            from_shell: owner,
             known: None,
             has_buffer: false,
         },
@@ -142,7 +142,7 @@ pub fn on_layer_commit(part: &mut LayerShellPart, surface: &WlSurface) -> Vec<Ev
     let Some(output) = record.output.clone() else {
         return Vec::new();
     };
-    let spec = spec_of(&output, &cached, &record.namespace.0, record.owner);
+    let spec = spec_of(&output, &cached, &record.namespace.0, record.from_shell);
     let known = record.known.take();
     let (known, events) = after_commit(known, had_buffer, has_buffer, spec, layer);
     record.known = known;
@@ -249,7 +249,7 @@ mod tests {
             keyboard: KeyboardInteractivity::Exclusive,
             namespace: "bar".to_owned(),
             role: ShellRoleTag::Unassigned,
-            owner: casement_core::layer::LayerOwner::Client,
+            from_shell: false,
         }
     }
 

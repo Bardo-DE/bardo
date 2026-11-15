@@ -39,7 +39,7 @@ fn spec(on: &str, edges: [bool; 4], zone: u32, margin: i32) -> LayerSpec {
         namespace: "test".to_owned(),
         size: crate::geometry::LogicalSize::ZERO,
         role: ShellRoleTag::Unassigned,
-        owner: crate::layer::LayerOwner::Shell,
+        from_shell: true,
     }
 }
 
