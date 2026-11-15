@@ -2,7 +2,7 @@
 //! surface's blur region (`pass/blur_kawase.rs`), saturated and clipped to the region's
 //! rectangles. The element's geometry is the region grown by the blur's reach, so damage that
 //! close to the region blurs again; nothing is drawn outside the region. On renderers without
-//! effect shaders ([`crate::EffectSupport::Plain`]) it draws its solid stand-in. The type keeps
+//! effect shaders (pixman and the dummy renderer) it draws its solid stand-in. The type keeps
 //! its P0 name so the elements that hold it need not change.
 
 use super::reduced::BlurFinish;

@@ -1,6 +1,6 @@
 //! Drawing one output's elements through smithay's damage tracker.
 
-use crate::compositor::{Compositor, EffectSupport};
+use crate::compositor::Compositor;
 use crate::element::{CasementElement, Rgba8, pixman_can_draw};
 use crate::scene::convert::ours;
 use casement_core::geometry::PhysicalRect;
@@ -84,7 +84,7 @@ pub fn routed<'a, R: Compositor>(
     renderer: &mut R,
     elements: &'a [CasementElement<R>],
 ) -> Vec<Routed<'a, R>> {
-    let effects = renderer.effects();
+    let shaders = renderer.runs_shaders();
     elements
         .iter()
         .map(|element| Routed { element, effects })
@@ -96,7 +96,7 @@ pub fn routed<'a, R: Compositor>(
 /// Made by [`routed`].
 pub struct Routed<'a, R: Compositor> {
     element: &'a CasementElement<R>,
-    effects: EffectSupport,
+    shaders: bool,
 }
 
 impl<R: Compositor> std::fmt::Debug for Routed<'_, R> {
@@ -155,8 +155,8 @@ impl<R: Compositor> Element for Routed<'_, R> {
 
     /// A blur reads the framebuffer only where shaders run; its stand-in reads nothing.
     fn is_framebuffer_effect(&self) -> bool {
-        match (self.element, self.effects) {
-            (CasementElement::Blur(_), EffectSupport::Plain) => false,
+        match (self.element, self.shaders) {
+            (CasementElement::Blur(_), false) => false,
             (element, _) => element.is_framebuffer_effect(),
         }
     }
@@ -176,7 +176,7 @@ impl<R: Compositor> RenderElement<R> for Routed<'_, R> {
             CasementElement::MemoryStrip(_)
             | CasementElement::SurfaceStrip(_)
             | CasementElement::ClipStrip(_)
-                if self.effects == EffectSupport::Plain && !pixman_can_draw(src, dst) =>
+                if !self.shaders && !pixman_can_draw(src, dst) =>
             {
                 Ok(())
             }

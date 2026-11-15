@@ -15,14 +15,15 @@ use smithay::utils::{Buffer, Physical, Rectangle};
 /// sketch, FINDINGS). Textures are `Clone + Send + 'static`, which smithay's surface and
 /// memory elements need (true of every renderer casement uses).
 ///
-/// The effect hooks have default bodies, the solid stand-ins of [`EffectSupport::Plain`]; a
+/// The effect hooks have default bodies, the solid stand-ins of a renderer without shaders; a
 /// renderer with shaders overrides them. [`crate::render_output`] routes effect elements
 /// through them (a `render_elements!` enum cannot name a renderer per variant).
 pub trait Compositor:
     RendererSuper<TextureId: Clone + Send + 'static> + Renderer + ImportAll + ImportMem + Sized
 {
-    /// Whether this renderer runs effect shaders or draws their solid stand-ins.
-    fn effects(&mut self) -> EffectSupport;
+    /// Whether this renderer runs effect shaders (GLES) or draws their solid stand-ins (pixman
+    /// and the dummy renderer).
+    fn runs_shaders(&mut self) -> bool;
 
     /// Blur, before its draw: blur what lies under `dst` into `cache` as `blur` asks (smithay
     /// calls it whenever that changed). The stand-in needs nothing.
@@ -83,18 +84,9 @@ pub trait Compositor:
     }
 }
 
-/// Whether effect passes (blur, shadow, rounded clip, dim, genie, glow) run their shaders.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum EffectSupport {
-    /// GLES: the shaders run.
-    Shaders,
-    /// pixman and the dummy renderer: each effect draws its solid stand-in.
-    Plain,
-}
-
 impl Compositor for GlesRenderer {
-    fn effects(&mut self) -> EffectSupport {
-        EffectSupport::Shaders
+    fn runs_shaders(&mut self) -> bool {
+        true
     }
 
     fn capture_blur_v0(
@@ -142,14 +134,14 @@ impl Compositor for GlesRenderer {
 }
 
 impl Compositor for PixmanRenderer {
-    fn effects(&mut self) -> EffectSupport {
-        EffectSupport::Plain
+    fn runs_shaders(&mut self) -> bool {
+        false
     }
 }
 
 #[cfg(feature = "testing")]
 impl Compositor for smithay::backend::renderer::test::DummyRenderer {
-    fn effects(&mut self) -> EffectSupport {
-        EffectSupport::Plain
+    fn runs_shaders(&mut self) -> bool {
+        false
     }
 }

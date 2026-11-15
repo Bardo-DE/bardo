@@ -31,7 +31,7 @@ pub mod pass;
 #[cfg(feature = "testing")]
 pub mod golden;
 
-pub use compositor::{Compositor, EffectSupport};
+pub use compositor::Compositor;
 pub use damage::{RenderError, RenderSync, Rendered, Routed, render_output, routed};
 pub use element::{
     BlurFinish, BlurV0Element, CasementElement, ClientRound, ClipAsk, ClipShape, ClipStripElement,

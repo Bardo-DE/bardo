@@ -6,15 +6,6 @@
 use casement_core::input::{ButtonCode, KeyCode};
 use std::collections::BTreeSet;
 
-/// Whether a release answers a press a client saw.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum PressFate {
-    /// The press was taken: the release is taken too.
-    Taken,
-    /// The press was delivered (or is not known): the release is delivered.
-    Delivered,
-}
-
 /// The buttons and keys whose presses were taken and are still down.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Taken {
@@ -41,24 +32,22 @@ impl Taken {
     }
 
     /// `button` was released: what became of its press. The press stops being remembered.
-    pub fn release_button(mut self, button: ButtonCode) -> (Taken, PressFate) {
+    pub fn release_button(mut self, button: ButtonCode) -> (Taken, bool) {
         let fate = fate_of(self.buttons.take(&button));
         (self, fate)
     }
 
     /// `key` was released: what became of its press. The press stops being remembered.
-    pub fn release_key(mut self, key: KeyCode) -> (Taken, PressFate) {
+    pub fn release_key(mut self, key: KeyCode) -> (Taken, bool) {
         let fate = fate_of(self.keys.take(&key));
         (self, fate)
     }
 }
 
-/// What the release of a press is, given the press's entry if it was one taken.
-fn fate_of<T>(taken: Option<T>) -> PressFate {
-    match taken {
-        Some(_) => PressFate::Taken,
-        None => PressFate::Delivered,
-    }
+/// Whether a release answers a press a client never saw (`true`: the press was taken, so the
+/// release is taken too), given the press's entry if it was one taken.
+fn fate_of<T>(taken: Option<T>) -> bool {
+    taken.is_some()
 }
 
 #[cfg(test)]
@@ -70,20 +59,16 @@ mod tests {
         let button = ButtonCode(0x110);
         let taken = Taken::none().take_button(button);
         let (taken, first) = taken.release_button(button);
-        assert_eq!(first, PressFate::Taken);
+        assert!(first);
         let (_, second) = taken.release_button(button);
-        assert_eq!(
-            second,
-            PressFate::Delivered,
-            "the next release is a client's own"
-        );
+        assert!(!second, "the next release is a client's own");
     }
 
     #[test]
     fn buttons_and_keys_are_remembered_apart() {
         let taken = Taken::none().take_key(KeyCode(0x110));
         let (taken, fate) = taken.release_button(ButtonCode(0x110));
-        assert_eq!(fate, PressFate::Delivered);
-        assert_eq!(taken.release_key(KeyCode(0x110)).1, PressFate::Taken);
+        assert!(!fate);
+        assert!(taken.release_key(KeyCode(0x110)).1);
     }
 }

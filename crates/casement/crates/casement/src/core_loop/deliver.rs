@@ -29,7 +29,7 @@ use casement_core::{Effect, InputSerial, KeyboardTarget, Model};
 use casement_protocols::vocab::HeldMods;
 use casement_protocols::vocab::PressEdge;
 use casement_wayland::seat::{
-    self, GestureDelivery, KeyDelivery, KeyForward, KeyRoute, PointerDelivery, PressFate, Pressed,
+    self, GestureDelivery, KeyDelivery, KeyRoute, PointerDelivery, Pressed,
     SurfaceAt,
 };
 use casement_wayland::serial::{PressKind, PressRecord};
@@ -322,7 +322,7 @@ pub(super) fn deliver_keys(state: &mut State, seat: &Seat<State>, keys: Vec<KeyD
 /// is locked, no chord resolves. The release of a key a binding took is not delivered. A copy
 /// the input method sends back through its virtual keyboard goes past its grab, straight to the
 /// focus (`seat::key_route`): the real key already went through the bindings. On the lock
-/// screen a key goes to the lock surface past any input method's grab (`KeyForward::Focus`).
+/// screen a key goes to the lock surface past any input method's grab (`apply_key`'s `to_focus`).
 fn deliver_key(state: &mut State, seat: &Seat<State>, key: KeyDelivery) {
     let facts = seat::route_facts(seat, key.code);
     let (past, route) = std::mem::take(&mut state.wl.seat.past).route(&key, facts);
@@ -336,7 +336,7 @@ fn deliver_key(state: &mut State, seat: &Seat<State>, key: KeyDelivery) {
     }
     // A lease's keys are never the person's taken ones (`agent_gate`): its release delivers.
     let fate = match key.origin {
-        Origin::Agent(_) => PressFate::Delivered,
+        Origin::Agent(_) => false,
         _ => {
             let (taken, fate) = std::mem::take(&mut state.wl.seat.taken).release_key(key.code);
             state.wl.seat.taken = taken;
@@ -348,12 +348,12 @@ fn deliver_key(state: &mut State, seat: &Seat<State>, key: KeyDelivery) {
         && key.edge == PressEdge::Press;
     let bindings = state.core.model.settings().bindings.clone();
     let origin = key.origin;
-    let forward = match state.core.model.keyboard_target() {
-        KeyboardTarget::LockSurface(_) => KeyForward::Focus,
-        _ => KeyForward::Grab,
-    };
-    let answer = seat::apply_key(seat, state, key, forward, |state, mods, handle| {
-        if key.edge == PressEdge::Release && fate == PressFate::Taken {
+    let to_focus = matches!(
+        state.core.model.keyboard_target(),
+        KeyboardTarget::LockSurface(_)
+    );
+    let answer = seat::apply_key(seat, state, key, to_focus, |state, mods, handle| {
+        if key.edge == PressEdge::Release && fate {
             return FilterResult::Intercept(None);
         }
         // A VT chord is the seat's, not a binding's: it works under a lock and a shortcut
@@ -655,7 +655,7 @@ fn press_edge(
         // A lease's release is never the end of a press the person's frame took.
         let (taken, fate) = std::mem::take(&mut state.wl.seat.taken).release_button(button);
         state.wl.seat.taken = taken;
-        if fate == PressFate::Taken {
+        if fate {
             frames::released(state, seat, button);
             return;
         }
