@@ -2,6 +2,8 @@
 
 use serde::{Deserialize, Serialize};
 
+pub use model_http::WaitMs;
+
 macro_rules! unit {
     ($(#[$doc:meta])* $name:ident($inner:ty)) => {
         $(#[$doc])*
@@ -50,10 +52,6 @@ unit!(
     BatchMax(u32)
 );
 unit!(
-    /// A duration in milliseconds.
-    WaitMs(u32)
-);
-unit!(
     /// A duration in seconds.
     Seconds(u32)
 );
@@ -64,6 +62,11 @@ unit!(
 unit!(
     /// The number of the try in a retry loop, from 1.
     Attempt(u8)
+);
+unit!(
+    /// How many repair prompts a session may spend on a reply that does not fit. A setting the
+    /// daemon reads; no default lives here.
+    RepairBudget(u8)
 );
 unit!(
     /// A server's slot number (llama-server's `id_slot`).

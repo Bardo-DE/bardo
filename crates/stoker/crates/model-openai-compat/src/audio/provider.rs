@@ -6,7 +6,7 @@ use model_http::{
 };
 use model_provider::{ModelName, ProviderError};
 use speech_provider::{
-    AudioChunk, AudioMs, AudioPull, AudioSink, AudioSource, SampleIndex, SpeechCaps, SpeechIo,
+    AudioChunk, AudioMs, AudioSink, AudioSource, SampleIndex, SpeechCaps, SpeechIo,
     SpeechModelInfo, SpeechToText, SttEnd, SttRequest, TextToSpeech, TranscriptEvent,
     TranscriptSink, TtsEnd, TtsRequest,
 };
@@ -133,7 +133,7 @@ fn length(audio: &[AudioChunk]) -> AudioMs {
 async fn drain<A: AudioSource>(audio: &mut A) -> Result<Vec<AudioChunk>, ProviderError> {
     let mut chunks = Vec::new();
     let mut bytes = 0_usize;
-    while let AudioPull::Chunk(chunk) = audio.next().await {
+    while let Some(chunk) = audio.next().await {
         bytes = bytes.saturating_add(chunk.pcm.len());
         if bytes > UPLOAD_PCM_MAX {
             return Err(ProviderError::BadRequest(

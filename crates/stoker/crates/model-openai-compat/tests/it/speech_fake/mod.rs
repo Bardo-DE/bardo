@@ -15,7 +15,7 @@ use model_http::{
 use model_openai_compat::{KOKORO_FORMAT, KokoroSpeech, OpenAiTranscription};
 use model_provider::{ModelName};
 use speech_provider::{
-    AudioChunk, AudioFormat, AudioPull, AudioSink, AudioSource, Lang, LangChoice, PcmBytes,
+    AudioChunk, AudioFormat, AudioSink, AudioSource, Lang, LangChoice, PcmBytes,
     PcmFormat, SampleIndex, SampleRate, SpokenText, SttMode, SttRequest, TranscriptEvent,
     TranscriptSink, TtsRequest, VoiceId,
 };
@@ -222,8 +222,8 @@ pub fn chunk(at: u64, samples: u16) -> AudioChunk {
 pub struct Spoken(pub VecDeque<AudioChunk>);
 
 impl AudioSource for Spoken {
-    async fn next(&mut self) -> AudioPull {
-        self.0.pop_front().map_or(AudioPull::End, AudioPull::Chunk)
+    async fn next(&mut self) -> Option<AudioChunk> {
+        self.0.pop_front()
     }
 }
 

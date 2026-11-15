@@ -12,7 +12,7 @@ use std::sync::Mutex;
 use model_provider::{ModelName, ProviderError, Support};
 use serde::{Deserialize, Serialize};
 use speech_provider::{
-    AudioChunk, AudioFormat, AudioMs, AudioPull, AudioSink, AudioSource, HeardText, Lang,
+    AudioChunk, AudioFormat, AudioMs, AudioSink, AudioSource, HeardText, Lang,
     LangChoice, LangSet, PcmBytes, PcmFormat, SampleIndex, SampleRate, SpeechCaps, SpeechDir,
     SpeechIo, SpeechModelInfo, SpeechToText, SttEnd, SttMode, SttRequest, TextToSpeech,
     TranscriptEvent, TranscriptSink, TtsEnd, TtsRequest, VoiceId,
@@ -438,7 +438,7 @@ impl SpeechToText for SpeechReplay {
         sink: &mut K,
     ) -> Result<SttEnd, ProviderError> {
         let mut heard = Vec::new();
-        while let AudioPull::Chunk(chunk) = audio.next().await {
+        while let Some(chunk) = audio.next().await {
             heard.push(chunk);
         }
         let got = SttPrint::of(request, &heard);
@@ -547,9 +547,9 @@ struct TeeSource<'a, A: AudioSource> {
 }
 
 impl<A: AudioSource> AudioSource for TeeSource<'_, A> {
-    async fn next(&mut self) -> AudioPull {
+    async fn next(&mut self) -> Option<AudioChunk> {
         let pull = self.inner.next().await;
-        if let AudioPull::Chunk(chunk) = &pull {
+        if let Some(chunk) = &pull {
             self.seen.push(chunk.clone());
         }
         pull

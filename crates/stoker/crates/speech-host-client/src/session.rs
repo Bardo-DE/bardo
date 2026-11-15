@@ -6,7 +6,7 @@ use std::pin::Pin;
 use model_provider::{ProviderError};
 use serde::Serialize;
 use speech_provider::{
-    AudioPull, AudioSource, HostIn, HostOut, HostVocab, SpeechModelInfo, SttEnd, SttRequest,
+    AudioChunk, AudioSource, HostIn, HostOut, HostVocab, SpeechModelInfo, SttEnd, SttRequest,
     TranscriptSink,
 };
 use tokio::net::UnixStream;
@@ -95,9 +95,9 @@ enum Listening {
     No,
 }
 
-type Pull<'s> = Option<Pin<Box<dyn Future<Output = AudioPull> + Send + 's>>>;
+type Pull<'s> = Option<Pin<Box<dyn Future<Output = Option<AudioChunk>> + Send + 's>>>;
 
-async fn pulled(source: &mut Pull<'_>) -> AudioPull {
+async fn pulled(source: &mut Pull<'_>) -> Option<AudioChunk> {
     match source {
         Some(pull) => pull.as_mut().await,
         None => std::future::pending().await,
@@ -125,12 +125,12 @@ pub async fn utterance<A: AudioSource, K: TranscriptSink>(
             Step::Audio(pull) => {
                 source = None;
                 let sent = match pull {
-                    AudioPull::Chunk(chunk) => {
+                    Some(chunk) => {
                         let sent = wire.send(&HostIn::Audio(chunk)).await;
                         source = Some(Box::pin(audio.next()));
                         sent
                     }
-                    AudioPull::End => wire.send(&HostIn::End).await,
+                    None => wire.send(&HostIn::End).await,
                 };
                 if let Err(error) = sent {
                     // A host that failed and hung up says why before it goes.
@@ -169,6 +169,6 @@ pub async fn utterance<A: AudioSource, K: TranscriptSink>(
 }
 
 enum Step {
-    Audio(AudioPull),
+    Audio(Option<AudioChunk>),
     Host(Result<HostOut, ProviderError>),
 }

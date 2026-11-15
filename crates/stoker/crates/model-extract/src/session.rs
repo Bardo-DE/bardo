@@ -13,9 +13,7 @@ use crate::repair::{FINAL_RESULT_DESCRIPTION, prompted_text, repair_text};
 /// The name of the synthetic tool of `ExtractMode::ToolCall`.
 pub const FINAL_RESULT_TOOL: &str = "final_result";
 
-/// How many repairs a session may spend. A setting the daemon reads; no default lives here.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct RepairBudget(pub u8);
+pub use model_provider::RepairBudget;
 
 /// Repairs still available.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]

@@ -45,19 +45,10 @@ pub fn audio_ms(rate: AudioRate, samples: u64) -> u32 {
     ms.map_or(0, |ms| u32::try_from(ms).unwrap_or(u32::MAX))
 }
 
-/// What the audio source of a turn yields.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum AudioPull {
-    /// A frame, already checked by [`check_audio`].
-    Frame(AudioFrame),
-    /// `EndOfAudio` arrived.
-    End,
-}
-
 /// Where a `Transcribe` turn reads its audio (the fd server, or a fake in tests).
 pub trait AudioIn: Send {
-    /// The next frame or the end.
-    fn next(&mut self) -> impl Future<Output = AudioPull> + Send;
+    /// The next frame, already checked by [`check_audio`], or `None` when `EndOfAudio` arrived.
+    fn next(&mut self) -> impl Future<Output = Option<AudioFrame>> + Send;
 }
 
 #[cfg(test)]

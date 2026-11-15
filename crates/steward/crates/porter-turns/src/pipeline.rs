@@ -10,7 +10,7 @@ use porter_infer::{
     MessagePart, ModelError, ModelLabel, ModelRef, Pipeline, Refusal, Role, ShowReason, Stage,
     StageNote, StageRole, TranscribeBegin, TranscribeReply, Why,
 };
-use porter_router::audio::{AudioIn, AudioPull};
+use porter_router::audio::AudioIn;
 use porter_router::seams::{RunningTurn, TurnRunner, TurnStep};
 use std::collections::{BTreeMap, VecDeque};
 use std::future::Future;
@@ -33,11 +33,8 @@ pub trait Transcriber: Send + Sync {
 pub struct VecAudio(pub VecDeque<AudioFrame>);
 
 impl AudioIn for VecAudio {
-    async fn next(&mut self) -> AudioPull {
-        match self.0.pop_front() {
-            Some(frame) => AudioPull::Frame(frame),
-            None => AudioPull::End,
-        }
+    async fn next(&mut self) -> Option<AudioFrame> {
+        self.0.pop_front()
     }
 }
 

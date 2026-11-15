@@ -38,9 +38,7 @@ impl FrameBudget {
     }
 }
 
-/// How many repair prompts a step may spend on a reply that does not parse.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct RepairBudget(pub u8);
+pub use model_provider::RepairBudget;
 
 /// How many earlier steps the prompt lists as one line each (the frames are `FrameBudget`'s).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

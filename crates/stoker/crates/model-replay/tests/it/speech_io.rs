@@ -11,7 +11,7 @@ use model_replay::{
     SpeechCassetteSink, SpeechInteraction, SpeechReplay, SttPrint, TtsPrint,
 };
 use speech_provider::{
-    AudioChunk, AudioFormat, AudioMs, AudioPull, AudioSink, AudioSource, HeardText, Lang,
+    AudioChunk, AudioFormat, AudioMs, AudioSink, AudioSource, HeardText, Lang,
     LangChoice, LangSet, PcmBytes, PcmFormat, SampleIndex, SampleRate, SpeechCaps, SpeechIo,
     SpeechToText, SpokenText, SttEnd, SttMode, SttRequest, TextToSpeech, TranscriptEvent,
     TranscriptSink, TtsEnd, TtsRequest, VoiceId,
@@ -50,8 +50,8 @@ fn chunk(at: u64, bytes: Vec<u8>) -> AudioChunk {
 struct Pulls(VecDeque<AudioChunk>);
 
 impl AudioSource for Pulls {
-    fn next(&mut self) -> impl Future<Output = AudioPull> + Send {
-        std::future::ready(self.0.pop_front().map_or(AudioPull::End, AudioPull::Chunk))
+    fn next(&mut self) -> impl Future<Output = Option<AudioChunk>> + Send {
+        std::future::ready(self.0.pop_front())
     }
 }
 

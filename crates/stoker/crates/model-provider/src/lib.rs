@@ -73,6 +73,6 @@ pub use shape::{
 };
 pub use units::{
     Attempt, BatchMax, CallIndex, CharCount, Count, Dims, ImageCount, Knob, Milli, Permille,
-    RetrySeconds, Seconds, Seed, ServerStatus, SlotId, Tokens, WaitMs,
+    RepairBudget, RetrySeconds, Seconds, Seed, ServerStatus, SlotId, Tokens, WaitMs,
 };
 pub use vision_prep::ResizeRule;

@@ -6,7 +6,7 @@ use std::sync::Mutex;
 use model_provider::{ProviderError};
 
 use crate::{
-    AudioChunk, AudioMs, AudioPull, AudioSink, AudioSource, Frame512, PcmBytes, SampleIndex,
+    AudioChunk, AudioMs, AudioSink, AudioSource, Frame512, PcmBytes, SampleIndex,
     SpeechModelInfo, SpeechProb, SpeechToText, SttEnd, SttRequest, TextToSpeech, TranscriptEvent,
     TranscriptSink, TtsEnd, TtsRequest, VoiceActivity, Voiced,
 };
@@ -62,11 +62,11 @@ impl SpeechToText for ScriptedStt {
             loop {
                 let pulled = audio.next().await;
                 let (position, last) = match pulled {
-                    AudioPull::Chunk(chunk) => (
+                    Some(chunk) => (
                         Some(chunk.at.0.saturating_add(u64::from(chunk.samples()))),
                         false,
                     ),
-                    AudioPull::End => (None, true),
+                    None => (None, true),
                 };
                 heard = position.map_or(heard, |p| heard.max(p));
                 // Each event goes out once, when the audio pulled so far reaches its index; at

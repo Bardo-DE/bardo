@@ -202,7 +202,7 @@ impl Transcriber for FakeEars {
         sink: &mut S,
     ) -> Result<TranscribeReply, ModelError> {
         let mut frames = 0;
-        while let porter_router::audio::AudioPull::Frame(_) = audio.next().await {
+        while audio.next().await.is_some() {
             frames += 1;
         }
         self.heard

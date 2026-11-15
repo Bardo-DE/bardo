@@ -167,9 +167,9 @@ async fn no_host_listening_is_unreachable() {
 struct Held(mpsc::UnboundedReceiver<AudioFrame>);
 
 impl AudioIn for Held {
-    async fn next(&mut self) -> AudioPull {
+    async fn next(&mut self) -> Option<AudioFrame> {
         match self.0.recv().await {
-            Some(frame) => AudioPull::Frame(frame),
+            Some(frame) => Some(frame),
             None => std::future::pending().await,
         }
     }

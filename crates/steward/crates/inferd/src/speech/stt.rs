@@ -18,14 +18,14 @@ use porter_infer::{
     ChatSink, HeardDelta, InferEvent, LangPick, ModelError, ModelRef, ServedBy, Stage,
     TranscribeBegin, TranscribeMode, TranscribeReply,
 };
-use porter_router::audio::{AudioIn, AudioPull};
+use porter_router::audio::AudioIn;
 use porter_router::local::LocalModel;
 use porter_router::seams::EngineHost;
 use porter_turns::bridge;
 use porter_turns::pipeline::Transcriber;
 use speech_host_client::{HostSocket, SpeechHostClient};
 use speech_provider::{
-    AudioChunk, AudioFormat, AudioMs, AudioPull as SourcePull, AudioSource, Lang, LangChoice,
+    AudioChunk, AudioFormat, AudioMs, AudioSource, Lang, LangChoice,
     PcmBytes, PcmFormat, SampleIndex, SampleRate, SpeechToText, SttEnd, SttMode, SttRequest,
     TranscriptEvent, TranscriptSink,
 };
@@ -200,16 +200,13 @@ struct Source<'a, A> {
 }
 
 impl<A: AudioIn> AudioSource for Source<'_, A> {
-    async fn next(&mut self) -> SourcePull {
+    async fn next(&mut self) -> Option<AudioChunk> {
         self.touch.used();
-        match self.audio.next().await {
-            AudioPull::Frame(frame) => SourcePull::Chunk(AudioChunk {
-                format: self.format,
-                at: SampleIndex(frame.at),
-                pcm: PcmBytes::new(frame.pcm.0.clone()),
-            }),
-            AudioPull::End => SourcePull::End,
-        }
+        self.audio.next().await.map(|frame| AudioChunk {
+            format: self.format,
+            at: SampleIndex(frame.at),
+            pcm: PcmBytes::new(frame.pcm.0.clone()),
+        })
     }
 }
 
@@ -225,10 +222,7 @@ impl<S: ChatSink> TranscriptSink for Heard<'_, S> {
         let Some(delta) = heard(event) else {
             return ControlFlow::Continue(());
         };
-        match self.sink.event(InferEvent::Heard(delta)) {
-            ControlFlow::Continue(()) => ControlFlow::Continue(()),
-            ControlFlow::Break(()) => ControlFlow::Break(()),
-        }
+        self.sink.event(InferEvent::Heard(delta))
     }
 }
 
@@ -254,11 +248,8 @@ fn heard(event: TranscriptEvent) -> Option<HeardDelta> {
 pub struct ChannelAudio(pub(crate) mpsc::UnboundedReceiver<porter_infer::AudioFrame>);
 
 impl AudioIn for ChannelAudio {
-    async fn next(&mut self) -> AudioPull {
-        match self.0.recv().await {
-            Some(frame) => AudioPull::Frame(frame),
-            None => AudioPull::End,
-        }
+    async fn next(&mut self) -> Option<porter_infer::AudioFrame> {
+        self.0.recv().await
     }
 }
 

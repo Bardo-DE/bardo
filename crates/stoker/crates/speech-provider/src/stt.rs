@@ -49,17 +49,10 @@ pub struct SttEnd {
     pub served: ModelName,
 }
 
-/// What a source answers when asked for more audio.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum AudioPull {
-    Chunk(AudioChunk),
-    /// No more audio: the hold ended.
-    End,
-}
-
 /// Where audio comes from, a chunk at a time.
 pub trait AudioSource: Send {
-    fn next(&mut self) -> impl Future<Output = AudioPull> + Send;
+    /// The next chunk, or `None` when there is no more audio (the hold ended).
+    fn next(&mut self) -> impl Future<Output = Option<AudioChunk>> + Send;
 }
 
 /// Where transcript events go. `ControlFlow::Break(())` ends the transcription early.
