@@ -97,7 +97,7 @@ fn a_program_of_your_own_is_there_when_its_file_is() {
     assert_eq!(
         row.source,
         Source::Own {
-            installed: Install::NotInstalled
+            installed: false
         }
     );
     std::fs::write(&program, "#!/bin/sh\n").expect("program");

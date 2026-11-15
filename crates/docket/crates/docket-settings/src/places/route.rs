@@ -1,6 +1,6 @@
 //! Routing over the allowed places: the floor first, then closest first.
 
-use super::model::{CloudAllowed, Floor, Place, PlaceKind, Places, Toggle};
+use super::model::{CloudAllowed, Floor, Place, PlaceKind, Places};
 
 /// What routing decided for one task.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -28,10 +28,13 @@ enum Say {
 fn say(place: &Place) -> Say {
     match place {
         Place::ThisComputer { .. } => Say::Yes,
-        Place::OwnComputer(o) => match o.allowed {
-            Toggle::On => Say::Yes,
-            Toggle::Off => Say::No,
-        },
+        Place::OwnComputer(o) => {
+            if o.allowed {
+                Say::Yes
+            } else {
+                Say::No
+            }
+        }
         Place::Cloud(c) => match c.allowed {
             CloudAllowed::On => Say::Yes,
             CloudAllowed::AskEachTime => Say::Ask,

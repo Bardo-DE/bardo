@@ -14,22 +14,13 @@ pub enum Source {
         /// The pinned version.
         version: String,
         /// Whether that version is there.
-        installed: Install,
+        installed: bool,
     },
     /// A program the person named by its path.
     Own {
         /// Whether that file is there.
-        installed: Install,
+        installed: bool,
     },
-}
-
-/// Whether the pinned version is installed.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Install {
-    /// It is.
-    Installed,
-    /// It is not (never installed, or removed).
-    NotInstalled,
 }
 
 /// What the agent last offered.

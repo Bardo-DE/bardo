@@ -17,7 +17,7 @@ pub use add::{
     AddFault, NewAgent, edit_agent_add, edit_agent_remove, write_agent_add, write_agent_remove,
 };
 pub use detect::{Found, KNOWN, KnownAgent, dirs_of, find_known, unlisted};
-pub use model::{AgentRow, Agents, Availability, Install, ModelState, Offers, SignInState, Source};
+pub use model::{AgentRow, Agents, Availability, ModelState, Offers, SignInState, Source};
 pub use read::read_agents;
 pub use refresh::{REFRESH_PROGRAM, RefreshRequest};
 pub use write::{

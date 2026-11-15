@@ -1,6 +1,6 @@
 //! Writes the places as the `assistant` table of a settings document.
 
-use super::model::{CloudAllowed, ModelChoice, Places, Toggle};
+use super::model::{CloudAllowed, ModelChoice, Places};
 
 fn row(name: &str, allowed: &str, model: Option<&ModelChoice>) -> toml::Table {
     let mut t = toml::Table::new();
@@ -18,10 +18,7 @@ pub fn write_places(places: &Places) -> String {
         .own
         .iter()
         .map(|o| {
-            let allowed = match o.allowed {
-                Toggle::On => "on",
-                Toggle::Off => "off",
-            };
+            let allowed = if o.allowed { "on" } else { "off" };
             row(&o.name.0, allowed, o.model.as_ref()).into()
         })
         .collect();

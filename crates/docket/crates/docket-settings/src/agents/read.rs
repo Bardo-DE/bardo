@@ -1,7 +1,7 @@
 //! Reads the rows from `agents.toml` text and the records beside the agents.
 
 use super::model::{
-    AgentRow, Agents, Availability, Install, ModelState, Offers, SignInState, Source,
+    AgentRow, Agents, Availability, ModelState, Offers, SignInState, Source,
 };
 use agents_core::dirs::AgentsDir;
 use agents_core::offered::{Offered, Start};
@@ -32,16 +32,14 @@ fn offered(dir: &AgentsDir, id: &str) -> Option<Offered> {
 fn source(entry: &toml::Table, dir: &AgentsDir) -> Source {
     let (Some(id), Some(version)) = (text(entry, "registry"), text(entry, "version")) else {
         // The program the person named is there if the file is: nothing is run to find out.
-        let installed = text(entry, "command")
-            .filter(|command| std::path::Path::new(command).is_file())
-            .map_or(Install::NotInstalled, |_| Install::Installed);
+        let installed =
+            text(entry, "command").is_some_and(|command| std::path::Path::new(&command).is_file());
         return Source::Own { installed };
     };
     let installed = Slug::parse(&id)
         .ok()
         .zip(Slug::parse(&version).ok())
-        .filter(|(id, version)| is_installed(dir, id, version))
-        .map_or(Install::NotInstalled, |_| Install::Installed);
+        .is_some_and(|(id, version)| is_installed(dir, &id, &version));
     Source::Registry {
         id,
         version,

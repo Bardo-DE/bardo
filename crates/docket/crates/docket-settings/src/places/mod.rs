@@ -15,7 +15,7 @@ mod write;
 pub use known::{Known, KnownPlace};
 pub use model::{
     CloudAccount, CloudAllowed, Floor, ModelChoice, OwnComputer, Place, PlaceKind, PlaceName,
-    Places, Toggle,
+    Places,
 };
 pub use read::{PLACES_PATH, PlacesLoaded, read_places};
 pub use route::{Routed, route};

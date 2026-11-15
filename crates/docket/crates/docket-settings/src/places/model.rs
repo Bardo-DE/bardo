@@ -32,15 +32,6 @@ impl Floor {
     }
 }
 
-/// An on/off choice.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Toggle {
-    /// May be used.
-    On,
-    /// May not be used.
-    Off,
-}
-
 /// A cloud account's choice: the only place that may ask each time.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CloudAllowed {
@@ -57,8 +48,8 @@ pub enum CloudAllowed {
 pub struct OwnComputer {
     /// Its name.
     pub name: PlaceName,
-    /// On or off.
-    pub allowed: Toggle,
+    /// Whether it may be used.
+    pub allowed: bool,
     /// The model the person picked for it, if any.
     pub model: Option<ModelChoice>,
 }

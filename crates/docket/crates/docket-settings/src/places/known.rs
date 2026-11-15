@@ -1,7 +1,7 @@
 //! What the machine knows about (inferd's listing, as data) merged into the setting without ever
 //! widening it: a place the setting has no row for starts Off.
 
-use super::model::{CloudAccount, CloudAllowed, OwnComputer, PlaceName, Places, Toggle};
+use super::model::{CloudAccount, CloudAllowed, OwnComputer, PlaceName, Places};
 
 /// One place inferd lists.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -26,7 +26,7 @@ impl Places {
                 KnownPlace::OwnComputer(name) if !self.own.iter().any(|o| &o.name == name) => {
                     self.own.push(OwnComputer {
                         name: name.clone(),
-                        allowed: Toggle::Off,
+                        allowed: false,
                         model: None,
                     });
                 }

@@ -1,8 +1,6 @@
 //! The lenient reader of the places: anything it does not clearly understand is Off, never On.
 
-use super::model::{
-    CloudAccount, CloudAllowed, ModelChoice, OwnComputer, PlaceName, Places, Toggle,
-};
+use super::model::{CloudAccount, CloudAllowed, ModelChoice, OwnComputer, PlaceName, Places};
 use crate::{Fallback, Why};
 
 /// Where the places live in the settings file.
@@ -80,8 +78,8 @@ pub fn read_places(text_in: &str) -> PlacesLoaded {
                     row,
                     "own_computers",
                     &["off", "on"],
-                    &[Toggle::Off, Toggle::On],
-                    Toggle::Off,
+                    &[false, true],
+                    false,
                     &mut fallbacks,
                 ),
                 model: model(row),
