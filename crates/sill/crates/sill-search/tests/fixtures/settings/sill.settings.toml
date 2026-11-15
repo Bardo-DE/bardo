@@ -11,7 +11,7 @@ section = "Magnification"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["on", "off"]
@@ -28,7 +28,7 @@ section = "Scrolling"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["on", "off"]

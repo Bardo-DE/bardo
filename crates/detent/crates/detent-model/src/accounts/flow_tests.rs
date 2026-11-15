@@ -54,13 +54,7 @@ pub(super) fn action(key: &str, name: &str) -> KeySpec {
 }
 
 pub(super) fn toggle(key: &str) -> KeySpec {
-    spec(
-        key,
-        "Keep files",
-        KeyKind::Toggle {
-            variants: ["on".to_owned(), "off".to_owned()],
-        },
-    )
+    spec(key, "Keep files", KeyKind::Toggle)
 }
 
 fn described(keys: Vec<KeySpec>, values: &[(&str, &str)]) -> Described {
@@ -244,7 +238,7 @@ fn the_remove_question_says_kept_files_go_too_only_when_a_sync_row_is_on() {
         action("accounts.a.remove", "Remove account"),
     ];
     let remove = ModuleRow::new(ModuleId::Accountd, KeyPath("accounts.a.remove".to_owned()));
-    for (word, kept) in [("on", true), ("off", false)] {
+    for (word, kept) in [("true", true), ("false", false)] {
         let state = ready_with(keys.clone(), &[("accounts.a.sync.files", word)]);
         let (asked, _) = accounts_step(state, AccountsInput::AskRemove(remove.clone()));
         assert_eq!(state_of(asked).confirming.map(|q| q.files_kept), Some(kept));

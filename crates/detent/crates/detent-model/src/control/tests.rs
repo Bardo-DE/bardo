@@ -1,4 +1,4 @@
-use super::{Control, FileOnly, TogglePair};
+use super::{Control, FileOnly};
 use ds_settings::schema::{
     ActionLabel, ActionWeight, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, LiveAction, Page,
     Section,
@@ -30,10 +30,6 @@ fn words(list: &[&str]) -> Vec<String> {
     list.iter().map(|w| (*w).to_owned()).collect()
 }
 
-fn pair(a: &str, b: &str) -> Option<TogglePair> {
-    TogglePair::of(&[a.to_owned(), b.to_owned()])
-}
-
 #[test]
 fn every_key_kind_has_its_one_control() {
     let cases: Vec<(&str, KeyKind, Value, Control)> = vec![
@@ -47,11 +43,9 @@ fn every_key_kind_has_its_one_control() {
         ),
         (
             "toggle",
-            KeyKind::Toggle {
-                variants: ["on".to_owned(), "off".to_owned()],
-            },
-            Value::String("on".to_owned()),
-            Control::Toggle(pair("on", "off").unwrap()),
+            KeyKind::Toggle,
+            Value::Boolean(true),
+            Control::Toggle,
         ),
         (
             "segmented",
@@ -135,9 +129,12 @@ fn every_key_kind_has_its_one_control() {
 
 #[test]
 fn a_control_admits_only_its_own_values() {
-    let toggle = Control::Toggle(pair("on", "off").unwrap());
+    let toggle = Control::Toggle;
     let text = |s: &str| Value::String(s.to_owned());
-    assert_eq!(toggle.admit(&text("on")), Some(text("on")));
+    assert_eq!(
+        toggle.admit(&Value::Boolean(true)),
+        Some(Value::Boolean(true))
+    );
     assert_eq!(toggle.admit(&text("bounceyy")), None);
     assert_eq!(toggle.admit(&Value::Integer(1)), None);
     assert_eq!(Control::Text.admit(&text("hello")), Some(text("hello")));
@@ -198,24 +195,4 @@ fn a_key_that_asks_for_the_corners_gets_them_whatever_its_kind_and_holds_words_o
         let want = kept.then(|| value.clone());
         assert_eq!(Control::HotCorners.admit(&value), want, "{value}");
     }
-}
-
-#[test]
-fn a_two_word_key_is_drawn_as_the_rule_says() {
-    let two = |a: &str, b: &str| {
-        Control::of(&spec(
-            KeyKind::Toggle {
-                variants: [a.to_owned(), b.to_owned()],
-            },
-            Value::String(a.to_owned()),
-        ))
-    };
-    assert_eq!(
-        two("on", "off"),
-        Control::Toggle(pair("on", "off").unwrap())
-    );
-    assert_eq!(
-        two("ring", "bar"),
-        Control::Segmented(words(&["ring", "bar"]))
-    );
 }

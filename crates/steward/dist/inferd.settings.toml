@@ -29,7 +29,7 @@ section = "Models"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["on", "off"]
@@ -50,7 +50,7 @@ section = "Models"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["off", "on"]
@@ -71,7 +71,7 @@ section = "Models"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["off", "on"]
@@ -92,7 +92,7 @@ section = "Models"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["off", "on"]
@@ -419,7 +419,7 @@ section = "Automatic"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["never", "idle_only"]
@@ -440,7 +440,7 @@ section = "Automatic"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["off", "on"]
@@ -683,7 +683,7 @@ section = "Models"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["off", "on"]

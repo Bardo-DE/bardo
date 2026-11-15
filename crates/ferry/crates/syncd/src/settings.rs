@@ -285,10 +285,8 @@ fn account_keys(account: &Account, provider_label: Option<&str>, files: FilesRow
             section,
             label,
             help,
-            KeyKind::Toggle {
-                variants: ["on".to_owned(), "off".to_owned()],
-            },
-            toml::Value::String("off".to_owned()),
+            KeyKind::Toggle,
+            toml::Value::Boolean(false),
         ));
     }
     if files.offered {
@@ -298,10 +296,8 @@ fn account_keys(account: &Account, provider_label: Option<&str>, files: FilesRow
             section,
             label,
             help,
-            KeyKind::Toggle {
-                variants: ["on".to_owned(), "off".to_owned()],
-            },
-            toml::Value::String("off".to_owned()),
+            KeyKind::Toggle,
+            toml::Value::Boolean(false),
         );
         row.note = files.not_on.then(|| Note(FILES_NOT_ON.to_owned()));
         keys.push(row);
@@ -313,10 +309,8 @@ fn account_keys(account: &Account, provider_label: Option<&str>, files: FilesRow
             section,
             label,
             help,
-            KeyKind::Toggle {
-                variants: ["on".to_owned(), "off".to_owned()],
-            },
-            toml::Value::String("off".to_owned()),
+            KeyKind::Toggle,
+            toml::Value::Boolean(false),
         );
         row.note = files
             .short_of_room
@@ -376,12 +370,7 @@ fn failed(why: impl ToString) -> LiveError {
 }
 
 fn toggle_of(value: &toml::Value) -> Option<bool> {
-    match value {
-        toml::Value::String(s) if s == "on" => Some(true),
-        toml::Value::String(s) if s == "off" => Some(false),
-        toml::Value::Boolean(on) => Some(*on),
-        _ => None,
-    }
+    value.as_bool()
 }
 
 /// The module over the accounts and what syncd keeps of them.
@@ -557,11 +546,9 @@ fn bytes_of(value: &toml::Value) -> Option<u64> {
 
 /// Tells the pane what changed: `Changed(<key>, <word>)`. The pane reads the schema again on any
 /// `Changed`, so a new or removed account shows by the news of its state row.
-async fn announce(served: &OnceLock<Served>, key: &Key, word: &str) {
+async fn announce(served: &OnceLock<Served>, key: &Key, value: impl Into<toml::Value>) {
     if let Some(served) = served.get() {
-        let _ = served
-            .changed(&KeyPath(path(key)), &toml::Value::String(word.to_owned()))
-            .await;
+        let _ = served.changed(&KeyPath(path(key)), &value.into()).await;
     }
 }
 
@@ -618,27 +605,19 @@ impl<T: GrantsLink + AccountsLink, C: Callers> LiveModule for SyncSettings<T, C>
             Key::State(id) => text(porter_ids::word::word(&account(&id)?.state)),
             Key::Sync(id, class) => {
                 account(&id)?;
-                text(if sync_allowed(&snapshot.grants, &id, class) {
-                    "on"
-                } else {
-                    "off"
-                })
+                Ok(toml::Value::Boolean(sync_allowed(
+                    &snapshot.grants,
+                    &id,
+                    class,
+                )))
             }
             Key::Files(id) => {
                 account(&id)?;
-                text(if drive_allowed(&snapshot.grants, &id) {
-                    "on"
-                } else {
-                    "off"
-                })
+                Ok(toml::Value::Boolean(drive_allowed(&snapshot.grants, &id)))
             }
             Key::KeepAll(id) => {
                 account(&id)?;
-                text(if self.keep.keeps_everything(&id) {
-                    "on"
-                } else {
-                    "off"
-                })
+                Ok(toml::Value::Boolean(self.keep.keeps_everything(&id)))
             }
             Key::Add | Key::Remove(_) => Ok(off()),
             Key::CacheLimit => {
@@ -676,7 +655,7 @@ impl<T: GrantsLink + AccountsLink, C: Callers> LiveModule for SyncSettings<T, C>
             }
             Key::Sync(id, class) => {
                 let toggle = toggle_of(&value)
-                    .ok_or_else(|| LiveError::BadValue("a sync row is `on` or `off`".into()))?;
+                    .ok_or_else(|| LiveError::BadValue("a sync row is `true` or `false`".into()))?;
                 // The app folder's switch, hidden once the drive is shown in Files, is not
                 // turned on again.
                 if class == SyncClass::Files
@@ -698,12 +677,12 @@ impl<T: GrantsLink + AccountsLink, C: Callers> LiveModule for SyncSettings<T, C>
             }
             Key::Files(id) => {
                 let toggle = toggle_of(&value)
-                    .ok_or_else(|| LiveError::BadValue("this row is `on` or `off`".into()))?;
+                    .ok_or_else(|| LiveError::BadValue("this row is `true` or `false`".into()))?;
                 self.set_files(&snapshot, id, toggle).await?;
             }
             Key::KeepAll(id) => {
                 let toggle = toggle_of(&value)
-                    .ok_or_else(|| LiveError::BadValue("this row is `on` or `off`".into()))?;
+                    .ok_or_else(|| LiveError::BadValue("this row is `true` or `false`".into()))?;
                 self.keep
                     .keep_everything(&id, toggle)
                     .await
@@ -716,8 +695,7 @@ impl<T: GrantsLink + AccountsLink, C: Callers> LiveModule for SyncSettings<T, C>
                             failed("That could not be saved.")
                         }
                     })?;
-                let word = if toggle { "on" } else { "off" };
-                announce(&self.served, &Key::KeepAll(id), word).await;
+                announce(&self.served, &Key::KeepAll(id), toggle).await;
             }
             Key::Remove(id) => {
                 let kept = self.keep.remove(&id).await.map_err(failed)?;
@@ -743,7 +721,7 @@ impl<T: GrantsLink + AccountsLink, C: Callers> LiveModule for SyncSettings<T, C>
                     failed("That could not be saved.")
                 })?;
                 knob.send_replace(limit);
-                announce(&self.served, &Key::CacheLimit, &bytes.to_string()).await;
+                announce(&self.served, &Key::CacheLimit, bytes.to_string()).await;
             }
             Key::Label(_) | Key::Provider(_) | Key::State(_) => {
                 return Err(LiveError::NotPermitted("this row is a read-out".into()));
@@ -799,18 +777,18 @@ impl<T: GrantsLink + AccountsLink, C> SyncSettings<T, C> {
             Arc::clone(&self.not_on),
         );
         tokio::spawn(async move {
-            let word = match keep.show_in_files(&id, true).await {
-                Ok(()) => "on",
+            let on = match keep.show_in_files(&id, true).await {
+                Ok(()) => true,
                 Err(why) => {
                     eprintln!("syncd: Show in Files was not turned on: {why}");
                     not_on
                         .lock()
                         .unwrap_or_else(PoisonError::into_inner)
                         .insert(id.clone());
-                    "off"
+                    false
                 }
             };
-            announce(&served, &Key::Files(id), word).await;
+            announce(&served, &Key::Files(id), on).await;
         });
         Ok(())
     }
@@ -847,12 +825,7 @@ pub async fn serve_settings<T: GrantsLink + AccountsLink, C: Callers>(
                 Err(tokio::sync::broadcast::error::RecvError::Closed) => return,
             };
             for id in accounts {
-                let word = if keep.keeps_everything(&id) {
-                    "on"
-                } else {
-                    "off"
-                };
-                announce(&served_slot, &Key::KeepAll(id), word).await;
+                announce(&served_slot, &Key::KeepAll(id), keep.keeps_everything(&id)).await;
             }
         }
     });

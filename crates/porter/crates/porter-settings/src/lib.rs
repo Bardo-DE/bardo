@@ -178,13 +178,7 @@ impl std::fmt::Debug for Row {
     }
 }
 
-/// The text of `value` as the switch of a service says it, `on` or `off`.
+/// `value` as the switch of a service says it, `true` or `false`.
 pub(crate) fn toggle_of(value: &toml::Value) -> Option<bool> {
-    match value {
-        toml::Value::String(s) if s == "on" => Some(true),
-        toml::Value::String(s) if s == "off" => Some(false),
-        toml::Value::Boolean(true) => Some(true),
-        toml::Value::Boolean(false) => Some(false),
-        _ => None,
-    }
+    value.as_bool()
 }

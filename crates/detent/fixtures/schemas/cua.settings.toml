@@ -22,7 +22,7 @@ section = "Computer use"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["off", "on"]
@@ -99,7 +99,7 @@ section = "Computer use"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["on", "off"]
@@ -120,7 +120,7 @@ section = "Computer use"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["on", "off"]

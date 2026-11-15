@@ -46,7 +46,7 @@ pub fn Control(
         .as_ref()
         .map(|ends| (ends.low.0.clone(), ends.high.0.clone()));
     match entry.control {
-        Kind::Toggle(pair) => rsx! { ToggleControl { label, pair, value, onchange } },
+        Kind::Toggle => rsx! { ToggleControl { label, value, onchange } },
         Kind::Segmented(words) | Kind::Menu(words) if swatch_words(&words) => {
             rsx! { SwatchControl { label, value, onchange } }
         }

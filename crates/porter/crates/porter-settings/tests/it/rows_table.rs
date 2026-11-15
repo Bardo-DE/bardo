@@ -255,7 +255,7 @@ fn line(out: &mut String, registry: &Registry, used: &UsedBy, text: &str) {
 fn render(spec: &KeySpec) -> String {
     let kind = match &spec.kind {
         KeyKind::Fixed { variant } => format!("fixed {variant}"),
-        KeyKind::Toggle { variants } => format!("toggle {}/{}", variants[0], variants[1]),
+        KeyKind::Toggle => "toggle".to_owned(),
         KeyKind::Text => "text".to_owned(),
         KeyKind::Live { action } => {
             let weight = match action.weight == ActionWeight::Destructive {

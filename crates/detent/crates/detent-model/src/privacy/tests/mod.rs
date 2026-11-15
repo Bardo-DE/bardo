@@ -51,8 +51,8 @@ impl Publication {
         self.keys.push(spec(
             &base,
             subject,
-            KeyKind::Toggle {
-                variants: ["on".to_owned(), "off".to_owned()],
+            KeyKind::Segmented {
+                variants: ["on", "off", "ask"].map(str::to_owned).to_vec(),
             },
         ));
         self.keys.push(spec(
@@ -75,8 +75,8 @@ impl Publication {
         self.keys.push(spec(
             &base,
             subject,
-            KeyKind::Toggle {
-                variants: ["on".to_owned(), "off".to_owned()],
+            KeyKind::Segmented {
+                variants: ["on", "off", "ask"].map(str::to_owned).to_vec(),
             },
         ));
         self.values.insert(KeyPath(base), "ask".to_owned());

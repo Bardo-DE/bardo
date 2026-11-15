@@ -103,7 +103,7 @@ async fn the_administrators_rows_are_read_only() {
     );
     assert_eq!(get(&module, &evil.path.0).await, "off");
     let grim = key_of(&schema, "/usr/bin/grim");
-    assert!(matches!(grim.kind, KeyKind::Toggle { .. }));
+    assert!(matches!(grim.kind, KeyKind::Segmented { .. }));
     assert_eq!(get(&module, &grim.path.0).await, "on");
 
     assert_eq!(

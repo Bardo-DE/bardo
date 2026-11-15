@@ -19,7 +19,7 @@ section = "Memory"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["sealed", "plain"]
@@ -62,7 +62,7 @@ section = "Memory"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["auto", "review"]

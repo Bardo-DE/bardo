@@ -18,9 +18,8 @@ const SYNC_KEY: &str = "sync/";
 /// The `place` row's word for an account that is a program on this computer.
 const THIS_COMPUTER: &str = "this_computer";
 
-/// The words a switch is stored as.
-pub(super) const ON: &str = "on";
-pub(super) const OFF: &str = "off";
+/// The word a switch that is on reads as in [`Described::values`](crate::Described).
+pub(super) const ON: &str = "true";
 
 /// An account's id, as it stands in the rows' paths.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]

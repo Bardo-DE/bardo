@@ -74,7 +74,7 @@ pub(super) fn classify<'a>(
     let key = |id: &str| AccountKey::of(module, id);
     let held = |path: &KeyPath| described.values.get(path).is_some_and(|word| word == ON);
     match &spec.kind {
-        KeyKind::Toggle { .. } => {
+        KeyKind::Toggle => {
             if let Some((id, kind)) = rest.rsplit_once(SERVICE) {
                 return Some((key(id), Row::AccountService(kind, held(&spec.path))));
             }

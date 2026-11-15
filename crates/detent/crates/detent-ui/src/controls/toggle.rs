@@ -1,30 +1,22 @@
-//! A two-word enum: a switch.
+//! A `true` or `false`: a switch.
 
-use detent_model::TogglePair;
 use detent_model::external::toml;
 use dioxus::prelude::*;
 use ds::prelude::*;
 
-/// On when the value is the pair's on word.
+/// On when the value is `true`.
 #[component]
 pub fn ToggleControl(
     label: String,
-    pair: TogglePair,
     value: toml::Value,
     onchange: EventHandler<toml::Value>,
 ) -> Element {
-    let on = value.as_str() == Some(pair.on.as_str());
+    let on = value.as_bool() == Some(true);
     rsx! {
         Toggle {
             label,
             value: if on { Check::On } else { Check::Off },
-            onchange: move |next| {
-                let word = match next {
-                    Check::On => pair.on.clone(),
-                    Check::Off | Check::Mixed => pair.off.clone(),
-                };
-                onchange.call(toml::Value::String(word));
-            },
+            onchange: move |next| onchange.call(toml::Value::Boolean(next == Check::On)),
         }
     }
 }

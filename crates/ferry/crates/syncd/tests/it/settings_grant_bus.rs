@@ -201,7 +201,7 @@ fn row(path: &str) -> KeyPath {
 }
 
 fn word(on: bool) -> toml::Value {
-    toml::Value::String(if on { "on" } else { "off" }.to_owned())
+    toml::Value::Boolean(on)
 }
 
 async fn eventually(what: &str, mut check: impl FnMut() -> bool) {

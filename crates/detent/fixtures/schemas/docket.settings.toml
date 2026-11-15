@@ -249,7 +249,7 @@ section = "Assistant"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["off", "on"]
@@ -270,7 +270,7 @@ section = "Assistant"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["off", "on"]
@@ -291,7 +291,7 @@ section = "Assistant"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["off", "on"]

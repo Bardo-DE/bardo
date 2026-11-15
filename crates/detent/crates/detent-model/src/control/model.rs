@@ -1,7 +1,6 @@
 //! The one control that draws a key (design/22 section 9.1's fixed table), and which values it
 //! accepts.
 
-use super::toggle::TogglePair;
 use crate::hot_corners::{HOT_CORNERS_CONTROL, corner_admits};
 use crate::range::Range;
 use crate::rows::Columns;
@@ -24,9 +23,9 @@ pub enum FileOnly {
 pub enum Control {
     /// A one-word enum: read-only text.
     Readout(String),
-    /// A two-word enum that is on and off: a switch.
-    Toggle(TogglePair),
-    /// Three to five words, or two that are not on and off: a segmented control.
+    /// A `true` or `false`: a switch.
+    Toggle,
+    /// Two to five words: a segmented control.
     Segmented(Vec<String>),
     /// More: a pop-up button.
     Menu(Vec<String>),
@@ -83,8 +82,7 @@ impl Control {
         }
         match &spec.kind {
             KeyKind::Fixed { variant } => Control::Readout(variant.clone()),
-            KeyKind::Toggle { variants } => TogglePair::of(variants)
-                .map_or_else(|| Control::Segmented(variants.to_vec()), Control::Toggle),
+            KeyKind::Toggle => Control::Toggle,
             KeyKind::Segmented { variants } => Control::Segmented(variants.clone()),
             KeyKind::Menu { variants } => Control::Menu(variants.clone()),
             KeyKind::Bounded { .. } => {
@@ -111,7 +109,7 @@ impl Control {
         };
         match self {
             Control::Readout(word) => word_of(std::slice::from_ref(word)),
-            Control::Toggle(pair) => word_of(&[pair.on.clone(), pair.off.clone()]),
+            Control::Toggle => value.is_bool().then(|| value.clone()),
             Control::Segmented(words) | Control::Menu(words) => word_of(words),
             Control::Slider(range) => range.admit(value),
             Control::Text | Control::Colour | Control::Picture | Control::Provided(_) => {

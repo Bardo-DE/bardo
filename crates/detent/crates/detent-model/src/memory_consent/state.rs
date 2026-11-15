@@ -45,7 +45,7 @@ pub fn kept_value(entry: &KeyEntry, setting: &WaitingSetting) -> KeptValue {
     let value = entry.control.from_text(wire).ok();
     match (&entry.control, value) {
         (Control::Slider(range), Some(value)) => KeptValue::Measured(range.display(&value)),
-        (Control::Toggle(_) | Control::Segmented(_) | Control::Menu(_), Some(_)) => {
+        (Control::Toggle | Control::Segmented(_) | Control::Menu(_), Some(_)) => {
             KeptValue::Named(word_label(&entry.spec.labels, wire))
         }
         _ => KeptValue::Written(wire.to_owned()),

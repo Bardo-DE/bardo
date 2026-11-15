@@ -210,7 +210,7 @@ fn answer_of(
     };
     let standing = standing_of(described.values.get(&spec.path)?)?;
     let kind = match spec.kind {
-        KeyKind::Toggle { .. } => CellKind::Remembered {
+        KeyKind::Segmented { .. } => CellKind::Remembered {
             switch: spec.path.clone(),
             forget: forgets.get(&(power, id)).map(|path| (*path).clone()),
         },

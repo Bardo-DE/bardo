@@ -291,10 +291,7 @@ fn file_with(path: &str, value: toml::Value) -> String {
 fn other_than_default(key: &KeySpec) -> Option<toml::Value> {
     let text = |v: &str| toml::Value::String(v.to_owned());
     match &key.kind {
-        KeyKind::Toggle { variants } => variants
-            .iter()
-            .find(|v| toml::Value::String((*v).clone()) != key.default)
-            .map(|v| text(v)),
+        KeyKind::Toggle => key.default.as_bool().map(|on| toml::Value::Boolean(!on)),
         KeyKind::Segmented { variants } | KeyKind::Menu { variants } => variants
             .iter()
             .find(|v| toml::Value::String((*v).clone()) != key.default)

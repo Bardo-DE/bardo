@@ -203,9 +203,9 @@ fn a_folder_is_system_only_when_root_owns_it_and_every_folder_above_it() {
 }
 
 #[test]
-fn quires_schema_marks_theme_accent_look_file_icons_and_use_my_styles_and_use_my_styles_is_a_switch()
+fn quires_schema_marks_theme_accent_look_file_icons_and_use_my_styles_and_use_my_styles_is_two_segments()
  {
-    use detent_model::{Control, PageSlug, TogglePair};
+    use detent_model::{Control, PageSlug};
     let scratch = Scratch::under(TMP, "marks-quire-appearance");
     let dir = scratch.join("d");
     std::fs::create_dir_all(&dir).expect("dir");
@@ -236,10 +236,7 @@ fn quires_schema_marks_theme_accent_look_file_icons_and_use_my_styles_and_use_my
         .expect("the key is in the catalogue");
     assert_eq!(
         entry.control,
-        Control::Toggle(TogglePair {
-            on: "use".to_owned(),
-            off: "off".to_owned()
-        })
+        Control::Segmented(vec!["use".to_owned(), "off".to_owned()])
     );
     let page = found
         .page(&PageSlug("appearance".to_owned()))

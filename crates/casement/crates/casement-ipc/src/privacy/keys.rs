@@ -148,8 +148,8 @@ fn switch_at(
             base.to_owned(),
             power,
             subject.text(),
-            KeyKind::Toggle {
-                variants: [ON.to_owned(), OFF.to_owned()],
+            KeyKind::Segmented {
+                variants: vec![ON.to_owned(), OFF.to_owned(), ASK.to_owned()],
             },
             toml::Value::String(default.to_owned()),
         ),
@@ -357,7 +357,7 @@ mod tests {
     fn standing_of(keys: &[Listed], power: Power) -> Vec<(String, String)> {
         keys.iter()
             .filter(|key| key.spec.section.0 == power.title())
-            .filter(|key| matches!(key.spec.kind, KeyKind::Toggle { .. }))
+            .filter(|key| matches!(key.spec.kind, KeyKind::Segmented { .. }))
             .map(|key| {
                 let word = match &key.value {
                     toml::Value::String(word) => word.clone(),
@@ -469,7 +469,7 @@ mod tests {
             .filter(|key| key.spec.section.0 == Power::Screen.title())
             .collect();
         assert_eq!(screen.len(), 3, "a switch, its action and a read-out");
-        assert!(matches!(screen[0].spec.kind, KeyKind::Toggle { .. }));
+        assert!(matches!(screen[0].spec.kind, KeyKind::Segmented { .. }));
         assert_eq!(screen[0].value, toml::Value::String(ON.to_owned()));
         assert_eq!(screen[0].write, Write::Choose(grim.clone(), Power::Screen));
         assert!(screen[1].spec.path.0.ends_with(".forget"));

@@ -49,6 +49,9 @@ async fn pass(module: &impl Rows, valued: fn(&KeyKind) -> bool) -> Result<Descri
             toml::Value::String(word) => {
                 values.insert(spec.path.clone(), word);
             }
+            toml::Value::Boolean(on) => {
+                values.insert(spec.path.clone(), on.to_string());
+            }
             toml::Value::Array(items) => {
                 lists.insert(spec.path.clone(), words_of(&items));
             }

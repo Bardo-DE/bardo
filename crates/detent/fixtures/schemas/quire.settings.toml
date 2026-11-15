@@ -48,7 +48,7 @@ exposure = "basic"
 note = "The desktop's own reduce-motion setting always applies."
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["standard", "reduced"]
@@ -65,7 +65,7 @@ section = "Accessibility"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["system", "reduced"]
@@ -122,7 +122,7 @@ agent = "settable"
 note = "Turn this off if a style makes something hard to use."
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["use", "off"]

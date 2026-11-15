@@ -1,6 +1,6 @@
 //! A key's value as text, for the callers that have no control to click: a command line, an
 //! agent. The words a person reads in the window stay the window's business; text here is the
-//! stored form (`off`, `75`, `/home/ada/pics`).
+//! stored form (`false`, `75`, `/home/ada/pics`).
 
 use crate::control::Control;
 use crate::range::Number;
@@ -31,7 +31,14 @@ impl Control {
         };
         match self {
             Control::Readout(only) => word(vec![only.clone()]),
-            Control::Toggle(pair) => word(vec![pair.on.clone(), pair.off.clone()]),
+            Control::Toggle => match text {
+                "true" => Ok(toml::Value::Boolean(true)),
+                "false" => Ok(toml::Value::Boolean(false)),
+                _ => Err(TextFault::NotAWord(vec![
+                    "true".to_owned(),
+                    "false".to_owned(),
+                ])),
+            },
             Control::Segmented(words) | Control::Menu(words) => word(words.clone()),
             Control::Slider(range) => {
                 let parsed = match range.number {
@@ -68,7 +75,7 @@ pub fn show_value(value: &toml::Value) -> String {
 #[cfg(test)]
 mod tests {
     use super::{TextFault, show_value};
-    use crate::control::{Control, TogglePair};
+    use crate::control::Control;
     use crate::range::{Number, Range};
     use toml::Value;
 
@@ -87,17 +94,14 @@ mod tests {
 
     #[test]
     fn text_becomes_the_value_each_control_holds() {
-        let toggle = Control::Toggle(TogglePair {
-            on: "on".into(),
-            off: "off".into(),
-        });
+        let toggle = Control::Toggle;
         let segments = Control::Segmented(words(&["light", "dark", "auto"]));
         let cases: Vec<(Control, &str, Result<Value, TextFault>)> = vec![
-            (toggle.clone(), "off", Ok(Value::String("off".into()))),
+            (toggle.clone(), "false", Ok(Value::Boolean(false))),
             (
                 toggle,
                 "maybe",
-                Err(TextFault::NotAWord(words(&["on", "off"]))),
+                Err(TextFault::NotAWord(words(&["true", "false"]))),
             ),
             (segments.clone(), "dark", Ok(Value::String("dark".into()))),
             (

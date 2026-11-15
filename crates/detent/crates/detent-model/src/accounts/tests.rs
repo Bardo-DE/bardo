@@ -51,13 +51,7 @@ pub(super) fn fixed(key: &str, label: &str, variant: &str) -> KeySpec {
 }
 
 pub(super) fn toggle(key: &str, kind: &str) -> KeySpec {
-    spec(
-        key,
-        kind,
-        KeyKind::Toggle {
-            variants: ["on".to_owned(), "off".to_owned()],
-        },
-    )
+    spec(key, kind, KeyKind::Toggle)
 }
 
 /// A grant row: labelled with the sentence, its action named `Revoke`.
@@ -128,10 +122,10 @@ pub(super) fn described() -> Described {
         ),
     ];
     let values: BTreeMap<KeyPath, String> = [
-        ("accounts.home.service.storage", "on"),
-        ("accounts.home.service.calendar", "off"),
-        ("accounts.home.sync.photos", "on"),
-        ("accounts.work.example.service.mail", "on"),
+        ("accounts.home.service.storage", "true"),
+        ("accounts.home.service.calendar", "false"),
+        ("accounts.home.sync.photos", "true"),
+        ("accounts.work.example.service.mail", "true"),
         ("accounts.clients.microsoft", "abc"),
     ]
     .into_iter()

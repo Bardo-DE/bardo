@@ -96,10 +96,8 @@ pub(super) fn rows_of(held: &Held) -> Vec<KeySpec> {
             format!("accounts.{id}.service.{kind}"),
             section,
             kind,
-            KeyKind::Toggle {
-                variants: ["on".to_owned(), "off".to_owned()],
-            },
-            toml::Value::String("on".to_owned()),
+            KeyKind::Toggle,
+            toml::Value::Boolean(true),
         ));
     }
     for (leaf, _) in &held.sync {
@@ -111,10 +109,8 @@ pub(super) fn rows_of(held: &Held) -> Vec<KeySpec> {
             format!("accounts.{id}.sync.{leaf}"),
             section,
             label,
-            KeyKind::Toggle {
-                variants: ["on".to_owned(), "off".to_owned()],
-            },
-            toml::Value::String("off".to_owned()),
+            KeyKind::Toggle,
+            toml::Value::Boolean(false),
         );
         if leaf == "photos" {
             row.help = Help(
@@ -130,10 +126,8 @@ pub(super) fn rows_of(held: &Held) -> Vec<KeySpec> {
             format!("accounts.{id}.storage.files"),
             section,
             "Show in Files",
-            KeyKind::Toggle {
-                variants: ["on".to_owned(), "off".to_owned()],
-            },
-            toml::Value::String("off".to_owned()),
+            KeyKind::Toggle,
+            toml::Value::Boolean(false),
         );
         row.help = Help(help.clone());
         rows.push(row);

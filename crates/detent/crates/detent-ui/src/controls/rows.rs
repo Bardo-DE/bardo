@@ -4,7 +4,7 @@
 use detent_model::external::toml;
 use detent_model::{Columns, humanize};
 use dioxus::prelude::*;
-use ds::components::controls::button_model::{Bezel};
+use ds::components::controls::button_model::Bezel;
 use ds::components::menus::pop_up_button::PopUpButton;
 use ds::prelude::*;
 use ds::style::tokens::control_size::ControlSize;

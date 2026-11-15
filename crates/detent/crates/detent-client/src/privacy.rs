@@ -17,7 +17,7 @@ const NOT_AVAILABLE: &str = "Privacy isn\u{2019}t available right now. Try again
 
 /// The rows whose value is read with the rows: the switches and the administrator's read-outs.
 fn is_valued(kind: &KeyKind) -> bool {
-    matches!(kind, KeyKind::Toggle { .. } | KeyKind::Fixed { .. })
+    matches!(kind, KeyKind::Segmented { .. } | KeyKind::Fixed { .. })
 }
 
 /// The Privacy pane's handle: cheap to clone, one live value behind it.

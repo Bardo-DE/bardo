@@ -65,10 +65,8 @@ impl AccountRow for Service {
                     at.section(),
                     kind.name().to_owned(),
                     "Whether apps may use this service of the account.",
-                    KeyKind::Toggle {
-                        variants: ["on".to_owned(), "off".to_owned()],
-                    },
-                    toml::Value::String("on".to_owned()),
+                    KeyKind::Toggle,
+                    toml::Value::Boolean(true),
                     Exposure::Basic,
                 )
             })
@@ -82,9 +80,7 @@ impl AccountRow for Service {
             .capabilities
             .iter()
             .any(|c| c.offer.kind() == kind && matches!(c.offer, Offer::Present(_)));
-        Some(toml::Value::String(
-            if on { "on" } else { "off" }.to_owned(),
-        ))
+        Some(toml::Value::Boolean(on))
     }
 
     fn write<'a>(
@@ -99,7 +95,7 @@ impl AccountRow for Service {
         };
         match toggle_of(&value) {
             Some(to) => acts.switch(&at.account.id, kind, to),
-            None => refused(LiveError::BadValue("a service is `on` or `off`".into())),
+            None => refused(LiveError::BadValue("a service is `true` or `false`".into())),
         }
     }
 }

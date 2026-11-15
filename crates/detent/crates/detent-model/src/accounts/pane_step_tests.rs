@@ -18,7 +18,7 @@ fn a_switch_sets_the_word_at_once_and_waits_for_the_answer() {
         effects,
         [AccountsEffect::Set {
             row: storage.clone(),
-            value: toml::Value::String("off".to_owned()),
+            value: toml::Value::Boolean(false),
         }]
     );
     let up = state_of(state.clone());

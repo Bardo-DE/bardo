@@ -3,7 +3,7 @@
 use super::add_account::AddEnd;
 use super::effect::{AccountsEffect, AccountsNotice};
 use super::input::AccountsInput;
-use super::model::{AccountsPane, AccountsReady, AccountsState, Ask, OFF, ON, RemovalQuestion};
+use super::model::{AccountsPane, AccountsReady, AccountsState, Ask, RemovalQuestion};
 use super::module::{ModuleId, ModuleRow, Sources};
 use super::sign_in_client::{ClientChange, ClientText, SignInClient};
 use crate::Absence;
@@ -209,7 +209,7 @@ fn switched(ready: &mut AccountsReady, row: ModuleRow, on: bool) -> Option<Accou
     ready.pending = Some(row.clone());
     Some(AccountsEffect::Set {
         row,
-        value: toml::Value::String(if on { ON } else { OFF }.to_owned()),
+        value: toml::Value::Boolean(on),
     })
 }
 

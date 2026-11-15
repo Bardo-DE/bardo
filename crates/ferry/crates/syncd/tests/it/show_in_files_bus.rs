@@ -249,7 +249,7 @@ fn row() -> KeyPath {
 }
 
 fn word(on: bool) -> toml::Value {
-    toml::Value::String(if on { "on" } else { "off" }.to_owned())
+    toml::Value::Boolean(on)
 }
 
 fn id() -> AccountId {

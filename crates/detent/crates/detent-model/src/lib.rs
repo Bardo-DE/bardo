@@ -99,7 +99,7 @@ pub use computers::{
     computers_step, server_models,
 };
 pub use config_file::ConfigFile;
-pub use control::{Control, FileOnly, TogglePair};
+pub use control::{Control, FileOnly};
 pub use discovery::{Discovery, ProgramSchema, discover, discover_under};
 pub use displays::{
     ArrangeSide, Brightness, BrightnessList, DISPLAYS_SLUG, DisplayChange, DisplayEdit,

@@ -54,12 +54,7 @@ fn action(key: &str, name: &str) -> KeySpec {
 }
 
 fn toggle(key: &str) -> KeySpec {
-    spec(
-        key,
-        KeyKind::Toggle {
-            variants: ["on".to_owned(), "off".to_owned()],
-        },
-    )
+    spec(key, KeyKind::Toggle)
 }
 
 fn module(keys: Vec<KeySpec>, values: &[(&str, &str)]) -> Described {
@@ -109,7 +104,7 @@ fn syncd() -> Described {
             action("accounts.me.remove", "Remove account"),
             action("accounts.sync.add", "Continue as\u{2026}"),
         ],
-        &[("accounts.me.sync.files", "off")],
+        &[("accounts.me.sync.files", "false")],
     )
 }
 
@@ -186,7 +181,7 @@ fn a_switch_and_an_action_go_back_to_the_module_that_has_the_row() {
         effects,
         [AccountsEffect::Set {
             row: files,
-            value: toml::Value::String("on".to_owned())
+            value: toml::Value::Boolean(true)
         }]
     );
     assert!(ready(state).pane.accounts[2].sync[0].on);

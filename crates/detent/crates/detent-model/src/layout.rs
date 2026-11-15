@@ -177,8 +177,8 @@ mod tests {
             ends: None,
             control: None,
             path: KeyPath("appearance.custom_styles".to_owned()),
-            kind: KeyKind::Toggle {
-                variants: ["use".to_owned(), "off".to_owned()],
+            kind: KeyKind::Segmented {
+                variants: vec!["use".to_owned(), "off".to_owned()],
             },
             default: toml::Value::String("use".to_owned()),
             label: Label("Use my styles".to_owned()),

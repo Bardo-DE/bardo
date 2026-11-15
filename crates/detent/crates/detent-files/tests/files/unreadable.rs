@@ -35,7 +35,11 @@ fn text_that_is_not_utf8_is_reported_and_not_written_over() {
         Some(&word("bottom")),
         "the defaults are shown"
     );
-    assert_refused_and_untouched(save_key(&home, "dock.bounce", word("off")), &path, bytes);
+    assert_refused_and_untouched(
+        save_key(&home, "dock.bounce", toml::Value::Boolean(false)),
+        &path,
+        bytes,
+    );
 }
 
 #[test]
@@ -50,7 +54,7 @@ fn a_file_the_person_cannot_read_is_reported_and_not_written_over() {
     }
     let loaded = load(&home, &spec());
     assert_eq!(loaded.invalid.len(), 1, "{:?}", loaded.invalid);
-    let refused = save_key(&home, "dock.bounce", word("off"));
+    let refused = save_key(&home, "dock.bounce", toml::Value::Boolean(false));
     assert!(
         matches!(refused, Err(FilesError::Unreadable { .. })),
         "{refused:?}"
@@ -65,7 +69,7 @@ fn a_directory_in_the_files_place_is_refused() {
     let path = home.path_of(&spec().file);
     std::fs::create_dir_all(&path).expect("a directory where the file goes");
     assert_eq!(load(&home, &spec()).invalid.len(), 1);
-    let refused = save_key(&home, "dock.bounce", word("off"));
+    let refused = save_key(&home, "dock.bounce", toml::Value::Boolean(false));
     assert!(
         matches!(refused, Err(FilesError::Unreadable { .. })),
         "{refused:?}"
@@ -81,7 +85,11 @@ fn a_file_far_larger_than_settings_are_is_refused_whole() {
     let bytes = vec![b'#'; 2 * 1024 * 1024];
     std::fs::write(&path, &bytes).expect("write");
     assert_eq!(load(&home, &spec()).invalid.len(), 1);
-    assert_refused_and_untouched(save_key(&home, "dock.bounce", word("off")), &path, &bytes);
+    assert_refused_and_untouched(
+        save_key(&home, "dock.bounce", toml::Value::Boolean(false)),
+        &path,
+        &bytes,
+    );
 }
 
 #[test]
@@ -94,7 +102,7 @@ fn a_link_to_a_device_is_not_read() {
     assert_eq!(load(&home, &spec()).invalid.len(), 1);
     // Refused before the first byte: the regular-file check, or the update lock that would sit
     // beside the link's target (in /dev, which this program cannot write).
-    let refused = save_key(&home, "dock.bounce", word("off"));
+    let refused = save_key(&home, "dock.bounce", toml::Value::Boolean(false));
     assert!(
         matches!(
             refused,
@@ -108,7 +116,7 @@ fn a_link_to_a_device_is_not_read() {
 fn the_refusal_is_in_plain_words() {
     let (_scratch, home) = home("unreadable-words");
     write_file(&home, "[dock\nbounce = ");
-    let garbled = save_key(&home, "dock.bounce", word("off")).expect_err("refused");
+    let garbled = save_key(&home, "dock.bounce", toml::Value::Boolean(false)).expect_err("refused");
     let text = garbled.to_string();
     assert!(text.contains("Fix it by hand"), "{text}");
     for word in ["TOML", "D-Bus"] {

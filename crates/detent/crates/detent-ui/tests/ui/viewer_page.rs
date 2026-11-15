@@ -68,10 +68,8 @@ fn anyview() -> Schema {
                 "viewer.history.enabled",
                 "Keep history",
                 "History",
-                KeyKind::Toggle {
-                    variants: ["on".to_owned(), "off".to_owned()],
-                },
-                toml::Value::String("on".to_owned()),
+                KeyKind::Toggle,
+                toml::Value::Boolean(true),
             ),
             key(
                 "viewer.chrome.hide_after_ms",

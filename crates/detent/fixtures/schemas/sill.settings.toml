@@ -71,7 +71,7 @@ section = "Dock"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["on", "off"]
@@ -112,7 +112,7 @@ exposure = "basic"
 note = "The Dock slides away until the pointer reaches the bottom edge."
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["on", "off"]
@@ -130,7 +130,7 @@ exposure = "basic"
 note = "A small dot shows under apps that are open."
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["on", "off"]
@@ -147,7 +147,7 @@ section = "Behaviour"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["on", "off"]
@@ -164,7 +164,7 @@ section = "Dock"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["on", "off"]
@@ -181,7 +181,7 @@ section = "Clipboard"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["off", "memory"]
@@ -215,7 +215,7 @@ section = "Search"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["on", "off"]
@@ -232,7 +232,7 @@ section = "Search"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["off", "ecb"]
@@ -250,7 +250,7 @@ exposure = "basic"
 note = "Content moves the way your fingers move."
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["natural", "traditional"]
@@ -267,7 +267,7 @@ section = "Momentum"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["on", "off"]
@@ -284,7 +284,7 @@ section = "Scroll bars"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["when_scrolling", "always"]
@@ -301,7 +301,7 @@ section = "Scroll bars"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["page_toward_click", "jump_to_click"]
@@ -319,7 +319,7 @@ exposure = "basic"
 note = "Critical notifications still come through."
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["on", "off"]
@@ -355,7 +355,7 @@ exposure = "advanced"
 note = "Kept notifications wait in the notification center."
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["keep_in_center", "dismiss"]
@@ -392,7 +392,7 @@ section = "Menu bar"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["show", "hide"]
@@ -409,7 +409,7 @@ section = "Menu bar"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["show", "hide"]
@@ -426,7 +426,7 @@ section = "Menu bar"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["show", "hide"]
@@ -443,7 +443,7 @@ section = "Menu bar"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["show", "hide"]
@@ -460,7 +460,7 @@ section = "Menu bar"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["show", "hide"]
@@ -477,7 +477,7 @@ section = "Menu bar"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["show", "hide"]
@@ -494,7 +494,7 @@ section = "Display"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["pointer_output", "all_outputs"]
@@ -512,7 +512,7 @@ exposure = "advanced"
 note = "Only monitors that accept volume changes."
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["off", "when_monitor_is_output"]
@@ -530,7 +530,7 @@ exposure = "advanced"
 note = "Only external monitors that support it change."
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["off", "hardware"]
@@ -570,7 +570,7 @@ section = "Display"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["auto", "off"]
@@ -621,7 +621,7 @@ section = "Calendar"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["monday", "sunday"]
@@ -631,7 +631,7 @@ kind = "notifications"
 
 [[key]]
 path = "calendar.week_numbers"
-default = "hide"
+default = false
 label = "Week numbers"
 help = "Shows week numbers beside the month."
 section = "Calendar"
@@ -639,9 +639,6 @@ exposure = "advanced"
 
 [key.kind]
 kind = "toggle"
-
-[key.kind.v]
-variants = ["hide", "show"]
 
 [key.page]
 kind = "notifications"
@@ -655,7 +652,7 @@ section = "Screenshots"
 exposure = "advanced"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["show", "hide"]
@@ -823,7 +820,7 @@ exposure = "advanced"
 note = "Waking quickly can still skip the password (see Lock screen)."
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["screen_off", "never"]
@@ -874,7 +871,7 @@ exposure = "basic"
 note = "Press the command key twice in a row."
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["double_tap_command", "off"]
@@ -891,7 +888,7 @@ section = "Opening"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["prompt", "launcher"]
@@ -908,7 +905,7 @@ section = "Alerts"
 exposure = "basic"
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["needs_you", "never"]
@@ -926,7 +923,7 @@ exposure = "basic"
 note = "Nothing is heard until you allow the microphone."
 
 [key.kind]
-kind = "toggle"
+kind = "segmented"
 
 [key.kind.v]
 variants = ["hold_command", "off"]

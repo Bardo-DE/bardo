@@ -647,7 +647,7 @@ mod tests {
         let grant = GrantId::parse("g.1").expect("id");
         assert_eq!(
             read(Key::Account(id.clone(), SERVICE, "service.llm".to_owned())),
-            Some(toml::Value::String("on".into()))
+            Some(toml::Value::Boolean(true))
         );
         assert_eq!(
             read(Key::permit(id.clone(), SINCE, &grant)),

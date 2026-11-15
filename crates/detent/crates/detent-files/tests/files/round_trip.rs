@@ -41,13 +41,7 @@ pub(crate) fn spec() -> FileSpec {
         file,
         foreign: Default::default(),
         keys: vec![
-            key(
-                "dock.bounce",
-                KeyKind::Toggle {
-                    variants: ["on".to_owned(), "off".to_owned()],
-                },
-                word("on"),
-            ),
+            key("dock.bounce", KeyKind::Toggle, Value::Boolean(true)),
             key(
                 "dock.position",
                 KeyKind::Segmented {
@@ -121,7 +115,7 @@ fn a_bad_value_costs_only_its_own_key() {
     let got = |path: &str| loaded.value.get(&KeyPath(path.to_owned())).cloned();
     assert_eq!(
         got("dock.bounce"),
-        Some(word("on")),
+        Some(Value::Boolean(true)),
         "unknown word: default"
     );
     assert_eq!(
@@ -198,8 +192,8 @@ fn a_write_sets_one_key_and_keeps_every_other_byte() {
 #[test]
 fn a_write_to_a_missing_file_holds_only_that_key() {
     let (_scratch, home) = home("files-missing-write");
-    save_key(&home, "dock.bounce", word("off")).expect("save");
-    assert_eq!(read_file(&home), "[dock]\nbounce = \"off\"\n");
+    save_key(&home, "dock.bounce", Value::Boolean(false)).expect("save");
+    assert_eq!(read_file(&home), "[dock]\nbounce = false\n");
 }
 
 #[test]
@@ -238,7 +232,7 @@ fn a_file_that_is_not_toml_is_left_alone() {
         1,
         "the whole file is the one invalid key"
     );
-    let refused = save_key(&home, "dock.bounce", word("off"));
+    let refused = save_key(&home, "dock.bounce", Value::Boolean(false));
     assert!(
         matches!(refused, Err(FilesError::Garbled { .. })),
         "{refused:?}"
@@ -255,7 +249,7 @@ fn a_files_own_version_is_neither_reported_nor_touched() {
     let (_scratch, home) = home("files-version");
     write_file(&home, "version = 1\n[dock]\nposition = \"left\"\n");
     assert_eq!(load(&home, &spec()).unknown, Vec::new());
-    save_key(&home, "dock.bounce", word("off")).expect("save");
+    save_key(&home, "dock.bounce", Value::Boolean(false)).expect("save");
     assert!(
         read_file(&home).starts_with("version = 1\n"),
         "{}",
