@@ -1,6 +1,5 @@
 //! The stage's state types.
 
-use ds::prelude::*;
 use shell_host::Visibility;
 
 use crate::surface::Pointer;

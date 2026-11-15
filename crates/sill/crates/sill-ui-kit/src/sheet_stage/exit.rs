@@ -3,8 +3,6 @@
 //! settled. Pure; quire's `Sheet` plays the exit, and the caller feeds its `on_hidden` back as
 //! [`ExitIn::Settled`].
 
-use ds::prelude::*;
-
 use crate::surface::Pointer;
 
 /// Whether a sheet is up, or leaving with the answer to carry out once it has gone.

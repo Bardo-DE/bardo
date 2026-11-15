@@ -6,7 +6,6 @@ use crate::components::content::title_tip::use_tip;
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use ds_core::vocab::{Check, Shortcut, selected_word};
-use ds_core::word::Word;
 use ds_style::space::dot_paint::DotPaint;
 use ds_style::space::frame_vars::FrameVars;
 

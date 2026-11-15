@@ -7,7 +7,6 @@
 
 use dioxus::prelude::*;
 use ds::base::press::{PointerButton, Press};
-use ds::prelude::*;
 use shell_host::OutputInfo;
 use sill_model::ids::OutputName;
 use sill_model::windows::{Activity, WlCommand, Workspace};

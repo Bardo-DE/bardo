@@ -5,7 +5,6 @@ use super::cases::Case;
 use super::rows::strip_actions;
 use dioxus::prelude::*;
 use ds::components::app::hover_strip::{ActionId, HoverStrip};
-use ds::prelude::*;
 
 pub const STRIP_PRESS_CASES: &[Case] = &[Case {
     component: "hover_strip",

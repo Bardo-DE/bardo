@@ -159,7 +159,6 @@ fn id_of(key: BannerKey) -> ShotId {
 
 #[cfg(test)]
 mod tests {
-    use ds::prelude::*;
     use sill_model::screenshots::ShotId;
 
     use super::row_of;

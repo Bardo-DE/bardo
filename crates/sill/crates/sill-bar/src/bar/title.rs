@@ -6,7 +6,6 @@
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
 use ds::host::measure::RectProbe;
-use ds::prelude::*;
 use shell_host::Point;
 use sill_shell_kit::bar::pointer::BarPointer;
 

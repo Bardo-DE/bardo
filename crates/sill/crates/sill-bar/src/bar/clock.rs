@@ -3,7 +3,6 @@
 //! `MenuBarItem`, on while the center is open here.
 
 use dioxus::prelude::*;
-use ds::prelude::*;
 use ds::root::common::Common;
 use ds::root::pass_through::ExtraClass;
 use shell_host::{OutputInfo, use_watch};

@@ -3,7 +3,6 @@
 //! leaving after a Q. Pure: `io.rs` holds it and carries out what it says.
 
 use super::apps::{AppShown, SwitcherApp, activate, hide, quit};
-use ds::prelude::*;
 use ds_behaviour::switcher::SwOut;
 use sill_launcher::AppId;
 use sill_model::windows::WlCommand;
@@ -119,7 +118,6 @@ impl Session {
 #[cfg(test)]
 mod tests {
     use crate::switcher::apps::{AppShown, SwitcherApp};
-    use ds::prelude::*;
     use ds_behaviour::switcher::SwOut;
     use sill_launcher::{AppId, WindowKey};
     use sill_model::windows::WlCommand;

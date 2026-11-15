@@ -2,7 +2,6 @@
 
 use dioxus::prelude::*;
 use ds::host::measure::use_rect;
-use ds::prelude::*;
 use ds::root::common::Common;
 use shell_host::OutputInfo;
 use sill_model::ids::OutputName;

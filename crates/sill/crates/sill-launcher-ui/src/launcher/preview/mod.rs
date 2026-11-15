@@ -110,7 +110,6 @@ mod tests {
     use super::content::Load;
     use super::moment::PaneState;
     use super::pane_state;
-    use ds::prelude::*;
     use sill_launcher::PreviewKind;
 
     #[test]
