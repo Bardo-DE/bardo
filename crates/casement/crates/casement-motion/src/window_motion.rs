@@ -13,15 +13,6 @@ use ds_style::appearance::motion::MotionLevel;
 /// is worth a thousand pixels).
 const PX_PER_UNIT: [f64; 5] = [1.0, 1.0, 1.0, 1.0, 1000.0];
 
-/// Whether a window is meant to be on screen.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Fate {
-    /// It is in the arrangement.
-    Present,
-    /// It left it: fading out, then gone from every frame.
-    Leaving,
-}
-
 /// The legs that move one window (x, y, width, height, opacity), all begun at `began`.
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) struct WindowLegs {
@@ -32,7 +23,8 @@ pub(crate) struct WindowLegs {
     /// Its place in the arrangement's order, bottom of the stack first.
     pub(crate) stack: u32,
     /// Whether it is meant to be shown.
-    pub(crate) fate: Fate,
+    /// Whether it left the arrangement: fading out, then gone from every frame.
+    pub(crate) leaving: bool,
     /// The ends of the minimise flight it is on, if it is on one.
     pub(crate) flight: Option<FlightEnds>,
 }
@@ -46,7 +38,7 @@ impl WindowLegs {
             began: now,
             output,
             stack,
-            fate: Fate::Present,
+            leaving: false,
             flight: None,
         }
     }
@@ -92,7 +84,7 @@ impl WindowLegs {
 
     /// Whether it has finished leaving: nothing of it is drawn any more.
     pub(crate) fn is_gone(&self, now: Mono) -> bool {
-        self.fate == Fate::Leaving && !self.is_moving(now)
+        self.leaving && !self.is_moving(now)
     }
 
     /// The legs aimed at `goal` from where they are at `now`, speeds kept; `Snap` puts them
@@ -122,8 +114,8 @@ impl WindowLegs {
     }
 
     /// The same legs, marked as meant to be shown or as leaving.
-    pub(crate) fn with_fate(self, fate: Fate) -> WindowLegs {
-        WindowLegs { fate, ..self }
+    pub(crate) fn with_leaving(self, leaving: bool) -> WindowLegs {
+        WindowLegs { leaving, ..self }
     }
 
     /// The same legs, on a minimise flight between `flight`'s ends (or on none).

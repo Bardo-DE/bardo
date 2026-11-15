@@ -7,7 +7,7 @@ use crate::flight::FlightEnds;
 use crate::goals::{Goal, Goals};
 use crate::pose::Pose;
 use crate::space_slide::SlideLeg;
-use crate::window_motion::{Fate, WindowLegs};
+use crate::window_motion::{WindowLegs};
 use casement_core::Cause;
 use casement_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use casement_core::time::Mono;
@@ -108,7 +108,7 @@ impl Step<'_> {
         let shown = Pose::shown(goal.rect);
         // Coming back is a window that was leaving or that nothing knew: a flight out of the tile.
         let returning = match (&known, was) {
-            (Some(legs), _) => legs.fate == Fate::Leaving,
+            (Some(legs), _) => legs.leaving,
             (None, was) => was.is_none(),
         };
         let flight = match returning {
@@ -117,7 +117,7 @@ impl Step<'_> {
         };
         let legs = match known.or_else(|| was.map(|was| self.standing(was))) {
             Some(legs) => legs
-                .with_fate(Fate::Present)
+                .with_leaving(false)
                 .placed(goal.output.clone(), goal.stack)
                 .aimed(shown, self.travel, self.level, self.now),
             None => WindowLegs::still(
@@ -135,14 +135,14 @@ impl Step<'_> {
     /// already is). A window nothing tracks and the old arrangement did not hold is nothing.
     fn away(&self, known: Option<WindowLegs>, was: Option<&Goal>) -> Option<WindowLegs> {
         let legs = known.or_else(|| was.map(|was| self.standing(was)))?;
-        match legs.fate {
-            Fate::Leaving => Some(legs),
-            Fate::Present => {
+        match legs.leaving {
+            true => Some(legs),
+            false => {
                 let here = legs.pose(self.now);
                 let exit = self.leaving_to(here);
                 let flight = self.flight(rect_of(here));
                 Some(
-                    legs.with_fate(Fate::Leaving)
+                    legs.with_leaving(true)
                         .aimed(exit, self.travel, self.level, self.now)
                         .with_flight(flight),
                 )

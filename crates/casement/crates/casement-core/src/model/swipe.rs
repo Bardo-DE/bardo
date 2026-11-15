@@ -128,11 +128,11 @@ impl Model {
         };
         model.swipe.route = next;
         let drives = match fate {
-            Fate::Pass => {
+            None => {
                 model.swipe.desktop_owns = false;
                 Vec::new()
             }
-            Fate::Take(drives) => {
+            Some(drives) => {
                 model.swipe.desktop_owns = true;
                 drives
             }
@@ -336,8 +336,8 @@ impl Model {
 /// where it is: a swipe it was driving is cancelled, any other is the clients' as it was.
 fn abandoned(route: Route) -> (Route, Fate) {
     match route {
-        Route::Driving { axis, .. } => (Route::Idle, Fate::Take(vec![Drive::Cancelled(axis)])),
-        _ => (Route::Idle, Fate::Pass),
+        Route::Driving { axis, .. } => (Route::Idle, Some(vec![Drive::Cancelled(axis)])),
+        _ => (Route::Idle, None),
     }
 }
 

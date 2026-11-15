@@ -71,14 +71,9 @@ pub enum Drive {
     Cancelled(Axis),
 }
 
-/// Whose a swipe step is.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Fate {
-    /// The clients': deliver it.
-    Pass,
-    /// The desktop's: hold it back from the clients, and do these.
-    Take(Vec<Drive>),
-}
+/// Whose a swipe step is: `None` is the clients' (deliver it), `Some` the desktop's (hold it
+/// back from the clients, and do these).
+pub type Fate = Option<Vec<Drive>>;
 
 /// The route after `step`, and whose step it was.
 ///
@@ -89,10 +84,10 @@ pub enum Fate {
 ///
 /// let settings = GestureSettings::defaults();
 /// let (_, fate) = route(Route::Idle, GestureStep::Begin { fingers: 2 }, &settings);
-/// assert_eq!(fate, Fate::Pass);
+/// assert_eq!(fate, None);
 /// let (next, fate) = route(Route::Idle, GestureStep::Begin { fingers: 4 }, &settings);
 /// assert!(matches!(next, Route::Deciding { fingers: 4, .. }));
-/// assert_eq!(fate, Fate::Take(Vec::new()));
+/// assert_eq!(fate, Some(Vec::new()));
 /// ```
 pub fn route(
     state: Route,
@@ -101,8 +96,8 @@ pub fn route(
 ) -> (Route, Fate) {
     match (state, step) {
         (_, GestureStep::Begin { fingers }) => begin(fingers, *settings),
-        (Route::Idle, _) | (Route::Passing, GestureStep::End(_)) => (Route::Idle, Fate::Pass),
-        (Route::Passing, GestureStep::Update(_)) => (Route::Passing, Fate::Pass),
+        (Route::Idle, _) | (Route::Passing, GestureStep::End(_)) => (Route::Idle, None),
+        (Route::Passing, GestureStep::Update(_)) => (Route::Passing, None),
         (Route::Deciding { fingers, x, y }, GestureStep::Update(delta)) => decide(
             fingers,
             x + i64::from(delta.x.0),
@@ -110,17 +105,17 @@ pub fn route(
             *settings,
         ),
         (Route::Deciding { .. } | Route::Dead, GestureStep::End(_)) => {
-            (Route::Idle, Fate::Take(Vec::new()))
+            (Route::Idle, Some(Vec::new()))
         }
-        (Route::Dead, GestureStep::Update(_)) => (Route::Dead, Fate::Take(Vec::new())),
+        (Route::Dead, GestureStep::Update(_)) => (Route::Dead, Some(Vec::new())),
         (Route::Driving { axis, carry }, GestureStep::Update(delta)) => {
             drive(axis, carry, delta, *settings)
         }
         (Route::Driving { axis, .. }, GestureStep::End(false)) => {
-            (Route::Idle, Fate::Take(vec![Drive::Ended(axis)]))
+            (Route::Idle, Some(vec![Drive::Ended(axis)]))
         }
         (Route::Driving { axis, .. }, GestureStep::End(true)) => {
-            (Route::Idle, Fate::Take(vec![Drive::Cancelled(axis)]))
+            (Route::Idle, Some(vec![Drive::Cancelled(axis)]))
         }
     }
 }
@@ -134,16 +129,16 @@ fn begin(fingers: u8, settings: GestureSettings) -> (Route, Fate) {
                 x: 0,
                 y: 0,
             },
-            Fate::Take(Vec::new()),
+            Some(Vec::new()),
         ),
-        false => (Route::Passing, Fate::Pass),
+        false => (Route::Passing, None),
     }
 }
 
 /// The fingers have moved `(x, y)` sub-pixels in all: pick the axis once they went far enough.
 fn decide(fingers: u8, x: i64, y: i64, settings: GestureSettings) -> (Route, Fate) {
     if x.abs().max(y.abs()) < LOCK {
-        return (Route::Deciding { fingers, x, y }, Fate::Take(Vec::new()));
+        return (Route::Deciding { fingers, x, y }, Some(Vec::new()));
     }
     let (axis, along, wanted) = if x.abs() >= y.abs() {
         (Axis::Horizontal, x, settings.spaces.matches(fingers))
@@ -151,14 +146,14 @@ fn decide(fingers: u8, x: i64, y: i64, settings: GestureSettings) -> (Route, Fat
         (Axis::Vertical, y, settings.mission_control.matches(fingers))
     };
     match wanted {
-        false => (Route::Dead, Fate::Take(Vec::new())),
+        false => (Route::Dead, Some(Vec::new())),
         true => {
             let (route, moved) = advance(axis, 0, along, settings);
             let drives = [Some(Drive::Began(axis)), moved]
                 .into_iter()
                 .flatten()
                 .collect();
-            (route, Fate::Take(drives))
+            (route, Some(drives))
         }
     }
 }
@@ -170,7 +165,7 @@ fn drive(axis: Axis, carry: i64, delta: SubPoint, settings: GestureSettings) -> 
         Axis::Vertical => i64::from(delta.y.0),
     };
     let (route, moved) = advance(axis, carry, along, settings);
-    (route, Fate::Take(moved.into_iter().collect()))
+    (route, Some(moved.into_iter().collect()))
 }
 
 /// `along` more sub-pixels on `axis` after `carry`: the route with the new remainder, and the

@@ -15,16 +15,6 @@ use crate::ids::ClientKey;
 use crate::time::{Due, Mono, TimerKey};
 use casement_protocols::vocab::{Answer, AskId, Memory, Power};
 
-/// How the clients waiting on a closed question are settled.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum Settle {
-    /// An allow that lasts for the connection: a client the book does not let in is let in
-    /// once.
-    Once,
-    /// What the book and the floor say now; a client they leave to a question is refused.
-    ByRecord,
-}
-
 impl Privilege {
     /// The person answered the question on screen. An answer to a question that is not on
     /// screen (unknown, queued, already closed, timed out) changes nothing.
@@ -46,16 +36,16 @@ impl Privilege {
         match (answer, kept) {
             (Answer::Allow, true) => {
                 self.remember(out, &ask, Verdict::Allow, at);
-                self.settle(out, &ask, Settle::ByRecord);
+                self.settle(out, &ask, false);
             }
             (Answer::Deny, true) => {
                 self.remember(out, &ask, Verdict::Deny, at);
-                self.settle(out, &ask, Settle::ByRecord);
+                self.settle(out, &ask, false);
             }
-            (Answer::Allow, false) => self.settle(out, &ask, Settle::Once),
+            (Answer::Allow, false) => self.settle(out, &ask, true),
             (Answer::Deny, false) | (Answer::Dismissed, _) => {
                 self.asks.cool(ask.reask.clone(), ask.key.power, ctx.now);
-                self.settle(out, &ask, Settle::ByRecord);
+                self.settle(out, &ask, false);
             }
         }
     }
@@ -80,21 +70,23 @@ impl Privilege {
         }
     }
 
-    /// Resolves every client that waited on the closed question `ask`.
-    pub(super) fn settle(&mut self, out: &mut Vec<Effect>, ask: &OpenAsk, how: Settle) {
+    /// Resolves every client that waited on the closed question `ask`: by what the book and the
+    /// floor say now (a client they leave to a question is refused), or with `once`, an allow
+    /// that lasts for the connection (a client the book does not let in is let in once).
+    pub(super) fn settle(&mut self, out: &mut Vec<Effect>, ask: &OpenAsk, once: bool) {
         let power = ask.key.power;
         for client in &ask.waiting {
             let decision = self
                 .clients
                 .get(client)
                 .map(|record| self.decision_for(&record.class, power));
-            let outcome = match (decision, how) {
+            let outcome = match (decision, once) {
                 (None, _) => continue,
                 (Some(Decision::Open), _) => PowerOutcome::Allowed,
-                (Some(Decision::Closed), _) | (Some(Decision::Ask(_)), Settle::ByRecord) => {
+                (Some(Decision::Closed), _) | (Some(Decision::Ask(_)), false) => {
                     PowerOutcome::Denied
                 }
-                (Some(Decision::Ask(_)), Settle::Once) => {
+                (Some(Decision::Ask(_)), true) => {
                     if let Some(record) = self.clients.get_mut(client) {
                         record.once.insert(power);
                     }
@@ -202,7 +194,7 @@ impl Privilege {
                 if ask.shown {
                     out.push(Effect::WithdrawAsk { ask: ask.id });
                 }
-                self.settle(out, &ask, Settle::ByRecord);
+                self.settle(out, &ask, false);
             }
         }
     }
@@ -233,7 +225,7 @@ impl Privilege {
                 out.push(Effect::WithdrawAsk { ask: ask.id });
                 self.asks.cool(ask.reask.clone(), ask.key.power, ctx.now);
             }
-            self.settle(out, &ask, Settle::ByRecord);
+            self.settle(out, &ask, false);
         }
     }
 

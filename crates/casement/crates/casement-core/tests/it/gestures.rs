@@ -69,7 +69,7 @@ fn the_router_passes_other_finger_counts_and_takes_the_configured_ones() {
     ];
     for (name, s, fingers, taken) in cases {
         let (_, fate) = route(Route::Idle, begin(fingers), &s);
-        assert_eq!(matches!(fate, Fate::Take(_)), taken, "{name}");
+        assert_eq!(fate.is_some(), taken, "{name}");
     }
 }
 
@@ -84,16 +84,16 @@ fn the_router_locks_an_axis_then_drives_whole_pixels() {
     assert_eq!(
         fates,
         vec![
-            Fate::Take(vec![]),
-            Fate::Take(vec![]),
-            Fate::Take(vec![]),
+            Some(vec![]),
+            Some(vec![]),
+            Some(vec![]),
             // 16 px right, 2 down: locked horizontal on the third step, with all 16 so far
-            Fate::Take(vec![
+            Some(vec![
                 Drive::Began(Axis::Horizontal),
                 Drive::Moved(Axis::Horizontal, 16)
             ]),
-            Fate::Take(vec![]),
-            Fate::Take(vec![Drive::Ended(Axis::Horizontal)]),
+            Some(vec![]),
+            Some(vec![Drive::Ended(Axis::Horizontal)]),
         ]
     );
 }
@@ -109,8 +109,8 @@ fn the_router_carries_the_sub_pixel_remainder() {
     let (state, _) = route(state, by(10, 0), &s);
     let (state, first) = route(state, half, &s);
     let (_, second) = route(state, half, &s);
-    assert_eq!(first, Fate::Take(vec![Drive::Moved(Axis::Horizontal, 1)]));
-    assert_eq!(second, Fate::Take(vec![Drive::Moved(Axis::Horizontal, 2)]));
+    assert_eq!(first, Some(vec![Drive::Moved(Axis::Horizontal, 1)]));
+    assert_eq!(second, Some(vec![Drive::Moved(Axis::Horizontal, 2)]));
 }
 
 #[test]
@@ -119,7 +119,7 @@ fn natural_direction_off_reverses_the_spaces_but_not_mission_control() {
     let sideways = routed(vec![begin(4), by(20, 0)], &s);
     assert_eq!(
         sideways[1].1,
-        Fate::Take(vec![
+        Some(vec![
             Drive::Began(Axis::Horizontal),
             Drive::Moved(Axis::Horizontal, -20)
         ])
@@ -127,7 +127,7 @@ fn natural_direction_off_reverses_the_spaces_but_not_mission_control() {
     let upward = routed(vec![begin(4), by(0, -20)], &s);
     assert_eq!(
         upward[1].1,
-        Fate::Take(vec![
+        Some(vec![
             Drive::Began(Axis::Vertical),
             Drive::Moved(Axis::Vertical, -20)
         ])
@@ -139,7 +139,7 @@ fn an_axis_nobody_wants_at_that_count_is_swallowed_to_its_end() {
     let s = settings(SwipeFingers::Three, SwipeFingers::Four, Enabled::On);
     let steps = routed(vec![begin(3), by(0, -30), by(0, -30), LIFT], &s);
     assert_eq!(steps[1].0, Route::Dead);
-    assert!(steps.iter().all(|(_, fate)| *fate == Fate::Take(vec![])));
+    assert!(steps.iter().all(|(_, fate)| *fate == Some(vec![])));
     assert_eq!(steps[3].0, Route::Idle);
 }
 
@@ -152,7 +152,7 @@ fn a_cancelled_swipe_is_cancelled() {
     );
     assert_eq!(
         steps[2].1,
-        Fate::Take(vec![Drive::Cancelled(Axis::Horizontal)])
+        Some(vec![Drive::Cancelled(Axis::Horizontal)])
     );
 }
 
