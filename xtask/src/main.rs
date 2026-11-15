@@ -19,6 +19,7 @@ usage: cargo xtask <command>
 commands:
   gate [--base <rev>] [--all]   fmt, clippy and tests on the affected set
   check deny                    cargo deny check (needs cargo-deny)
+  check test-modules            every tests/it file is a module of its main.rs
   check legacy [<repo>]         run the old per-repo check-*.sh scripts unchanged
 ";
 
@@ -59,12 +60,16 @@ fn run() -> Result<bool> {
         "check" => {
             let which = parser
                 .value()
-                .context("`check` needs a name: deny or legacy")?
+                .context("`check` needs a name: deny, test-modules or legacy")?
                 .string()?;
             match which.as_str() {
                 "deny" => {
                     reject_extra(&mut parser)?;
                     tasks::deny::run()
+                }
+                "test-modules" => {
+                    reject_extra(&mut parser)?;
+                    tasks::test_modules::run()
                 }
                 "legacy" => {
                     let mut only = None;

@@ -3,6 +3,7 @@
 pub mod deny;
 pub mod gate;
 pub mod legacy;
+pub mod test_modules;
 
 use std::path::Path;
 use std::process::Command;

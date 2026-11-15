@@ -58,16 +58,3 @@ mod user_style_ssr;
 mod voice_orb_ssr;
 mod window_frame_ssr;
 mod window_tiled;
-
-#[path = "support/module_guard.rs"]
-mod module_guard;
-
-#[test]
-fn every_test_file_is_a_module() {
-    let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/it");
-    let left_out = module_guard::undeclared(&dir);
-    assert!(
-        left_out.is_empty(),
-        "not a module of main.rs, so never run: {left_out:?}"
-    );
-}
