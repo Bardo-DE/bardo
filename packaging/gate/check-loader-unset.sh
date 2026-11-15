@@ -5,11 +5,11 @@
 # name is refused at run time, so the screen cannot be shared, the shell is not trusted. The list is peephole's constant, read from
 # its source here; nothing in this repository copies it by hand except the drop-in, which this check compares.
 #
-#   gate/check-loader-unset.sh [--peephole DIR] [--siblings DIR] [--table FILE] [--pending FILE] [--dropin FILE]...
+#   gate/check-loader-unset.sh [--peephole DIR] [--crates DIR] [--table FILE] [--pending FILE] [--dropin FILE]...
 #
-#   --peephole DIR   a peephole checkout (default: $PEEPHOLE_DIR, then the repo beside this one, then ~/peephole). None: exit 2
-#   --siblings DIR   the component checkouts, where the unit files are looked for under <repo>/dist, <repo>/dbus and one folder
-#                    deeper (default: the parent of this repo). A unit whose file is not found is noted and skipped
+#   --peephole DIR   the peephole crate (default: $PEEPHOLE_DIR, then the peephole crate of this tree). None: exit 2
+#   --crates DIR   the component crate folders (crates/<name> of this tree), where the unit files are looked for under <repo>/dist, <repo>/dbus and one folder
+#                    deeper (default: crates/ of this tree). A unit whose file is not found is noted and skipped
 #   --table FILE     the table of the desktop's programs (default dist/desktop-callers.toml): its `unit` rows are the units checked,
 #                    xdg-desktop-portal.service excepted (it is the distro's; its drop-in is checked instead), plus turnstile.service
 #   --pending FILE   units that wait for their own repository to carry the line (default gate/loader-unset-pending.txt: `unit
@@ -23,12 +23,12 @@ set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 usage() { sed -n '2,/^set -uo/p' "${BASH_SOURCE[0]}" | sed '$d' | sed 's/^# \{0,1\}//'; }
-table="$ROOT/dist/desktop-callers.toml" peephole="" siblings="$(dirname "$ROOT")" pending="$HERE/loader-unset-pending.txt"
+table="$ROOT/dist/desktop-callers.toml" peephole="" crates_dir="$(dirname "$ROOT")/crates" pending="$HERE/loader-unset-pending.txt"
 dropins=("$ROOT/session/xdg-desktop-portal.service.d/10-quire.conf")
 while [ $# -gt 0 ]; do
   case "$1" in
     --peephole) peephole=${2:?}; shift ;;
-    --siblings) siblings=${2:?}; shift ;;
+    --crates) crates_dir=${2:?}; shift ;;
     --table) table=${2:?}; shift ;;
     --pending) pending=${2:?}; shift ;;
     --dropin) dropins+=("${2:?}"); shift ;;
@@ -39,21 +39,21 @@ while [ $# -gt 0 ]; do
 done
 command -v python3 >/dev/null || { echo "check-loader-unset: python3 is not installed" >&2; exit 2; }
 if [ -z "$peephole" ]; then
-  for d in "${PEEPHOLE_DIR:-}" "$ROOT/../peephole" "$HOME/peephole"; do
+  for d in "${PEEPHOLE_DIR:-}" "$ROOT/../crates/peephole"; do
     if [ -n "$d" ] && [ -f "$d/peephole-core/src/facts.rs" ]; then peephole=$d; break; fi
   done
 fi
 if [ -z "$peephole" ] || [ ! -f "$peephole/peephole-core/src/facts.rs" ]; then
-  echo "check-loader-unset: no peephole checkout (peephole-core/src/facts.rs): give --peephole DIR or set PEEPHOLE_DIR" >&2
+  echo "check-loader-unset: no peephole crate (peephole-core/src/facts.rs): give --peephole DIR or set PEEPHOLE_DIR" >&2
   exit 2
 fi
-exec python3 -I - "$peephole/peephole-core/src/facts.rs" "$table" "$siblings" "$pending" "${dropins[@]}" <<'PY'
+exec python3 -I - "$peephole/peephole-core/src/facts.rs" "$table" "$crates_dir" "$pending" "${dropins[@]}" <<'PY'
 import os
 import re
 import sys
 import tomllib
 
-facts, table, siblings, pending_file, *dropins = sys.argv[1:]
+facts, table, crates_dir, pending_file, *dropins = sys.argv[1:]
 src = open(facts, encoding="utf-8").read()
 m = re.search(r"pub const LOADER_VARIABLES: \[&str; (\d+)\] = \[(.*?)\];", src, re.S)
 if not m:
@@ -98,8 +98,8 @@ if "turnstile.service" not in units:
     units.append("turnstile.service")  # the input service is not a table row but root runs it and keycap trusts the socket
 
 found = {}
-for repo in sorted(os.listdir(siblings)):
-    base = os.path.join(siblings, repo)
+for repo in sorted(os.listdir(crates_dir)):
+    base = os.path.join(crates_dir, repo)
     if not os.path.isdir(base):
         continue
     for sub in ("dist", "dbus", os.path.join("dist", "systemd")):

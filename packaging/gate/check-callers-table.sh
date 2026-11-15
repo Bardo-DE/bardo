@@ -3,13 +3,13 @@
 # is complete and well formed. It is read by the update service, the portal backend and the input service, and each
 # refuses every caller when a row it needs is missing, so a hole here is a desktop that cannot update or share a screen.
 #
-#   gate/check-callers-table.sh [--table FILE] [--peephole DIR] [--siblings DIR]
+#   gate/check-callers-table.sh [--table FILE] [--peephole DIR] [--crates DIR]
 #
 #   --table FILE     the table (default dist/desktop-callers.toml of this repo)
-#   --peephole DIR   a peephole checkout: its peephole-core/src/roles.rs lists the roles (default: $PEEPHOLE_DIR, then the
-#                    repo beside this one, then ~/peephole). Without one the check cannot say which roles are missing: exit 2
-#   --siblings DIR   the component checkouts, to compare each unit's ExecStart program with the row's `exe` list
-#                    (default: the parent of this repo; a unit whose file is not found there is noted and skipped)
+#   --peephole DIR   the peephole crate: its peephole-core/src/roles.rs lists the roles (default: $PEEPHOLE_DIR, then the
+#                    peephole crate of this tree). Without one the check cannot say which roles are missing: exit 2
+#   --crates DIR   the component crate folders (crates/<name> of this tree), to compare each unit's ExecStart program with the row's `exe` list
+#                    (default: crates/ of this tree; a unit whose file is not found there is noted and skipped)
 #
 # Checks: the file parses; every key is one the reader knows; every row has an app, a role and a non-empty list of
 # `exe` paths, each absolute, without `..`, without `**` and with at most one `*` per path segment; no unit twice;
@@ -22,12 +22,12 @@ set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 usage() { sed -n '2,/^set -uo/p' "${BASH_SOURCE[0]}" | sed '$d' | sed 's/^# \{0,1\}//'; }
-table="$ROOT/dist/desktop-callers.toml" peephole="" siblings="$(dirname "$ROOT")"
+table="$ROOT/dist/desktop-callers.toml" peephole="" crates_dir="$(dirname "$ROOT")/crates"
 while [ $# -gt 0 ]; do
   case "$1" in
     --table) table=${2:?}; shift ;;
     --peephole) peephole=${2:?}; shift ;;
-    --siblings) siblings=${2:?}; shift ;;
+    --crates) crates_dir=${2:?}; shift ;;
     -h|--help) usage; exit 0 ;;
     *) usage >&2; exit 2 ;;
   esac
@@ -36,22 +36,22 @@ done
 command -v python3 >/dev/null || { echo "check-callers-table: python3 is not installed" >&2; exit 2; }
 [ -f "$table" ] || { echo "check-callers-table: no table at $table" >&2; exit 2; }
 if [ -z "$peephole" ]; then
-  for d in "${PEEPHOLE_DIR:-}" "$ROOT/../peephole" "$HOME/peephole"; do
+  for d in "${PEEPHOLE_DIR:-}" "$ROOT/../crates/peephole"; do
     if [ -n "$d" ] && [ -f "$d/peephole-core/src/roles.rs" ]; then peephole=$d; break; fi
   done
 fi
 if [ -z "$peephole" ] || [ ! -f "$peephole/peephole-core/src/roles.rs" ]; then
-  echo "check-callers-table: no peephole checkout (peephole-core/src/roles.rs): give --peephole DIR or set PEEPHOLE_DIR" >&2
+  echo "check-callers-table: no peephole crate (peephole-core/src/roles.rs): give --peephole DIR or set PEEPHOLE_DIR" >&2
   exit 2
 fi
-exec python3 -I - "$table" "$peephole/peephole-core/src/roles.rs" "$siblings" <<'PY'
+exec python3 -I - "$table" "$peephole/peephole-core/src/roles.rs" "$crates_dir" <<'PY'
 import fnmatch
 import os
 import re
 import sys
 import tomllib
 
-table_path, roles_path, siblings = sys.argv[1:4]
+table_path, roles_path, crates_dir = sys.argv[1:4]
 problems = []
 
 
@@ -157,10 +157,10 @@ def segment_glob(pattern, path):
 
 
 unit_files = {}
-if os.path.isdir(siblings):
-    for repo in sorted(os.listdir(siblings)):
+if os.path.isdir(crates_dir):
+    for repo in sorted(os.listdir(crates_dir)):
         for sub in ("dist", "dbus", "dist/systemd"):
-            d = os.path.join(siblings, repo, sub)
+            d = os.path.join(crates_dir, repo, sub)
             if os.path.isdir(d):
                 for name in sorted(os.listdir(d)):
                     if name.endswith(".service"):
@@ -193,5 +193,5 @@ if problems:
         print(f"check-callers-table: {p}")
     print(f"check-callers-table: FAIL ({len(problems)} problem(s))")
     sys.exit(1)
-print(f"check-callers-table: ok ({len(rows)} rows, {len(roles)} roles; {checked} unit(s) compared with their files, {skipped} not found in {siblings})")
+print(f"check-callers-table: ok ({len(rows)} rows, {len(roles)} roles; {checked} unit(s) compared with their files, {skipped} not found in {crates_dir})")
 PY

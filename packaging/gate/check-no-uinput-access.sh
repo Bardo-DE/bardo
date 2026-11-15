@@ -10,10 +10,10 @@
 #   - an install or release script that places keycap's stand-alone pieces (`70-keycap.rules`, `keycap.uinput.conf`,
 #     `10-uinput.conf`, `keycap-modules.conf`, `palmrest-modules.conf`), which only a machine without the input service needs.
 #
-#   gate/check-no-uinput-access.sh [--siblings DIR] [--stage DIR]...
+#   gate/check-no-uinput-access.sh [--crates DIR] [--stage DIR]...
 #
-#   --siblings DIR  the component checkouts: the rule and service files the scripts name (`dist/<file>`) are read from
-#                   turnstile, keycap, palmrest and sill there (default: the parent of this repo)
+#   --crates DIR  the component crate folders (crates/<name> of this tree): the rule and service files the scripts name (`dist/<file>`) are read from
+#                   turnstile, keycap, palmrest and sill there (default: crates/ of this tree)
 #   --stage DIR     also read a staged tree (a release stage/, or an installer's --destdir): every *.rules, *.service and
 #                   *.service.d/*.conf in it. May be given more than once.
 # Not a proof: it reads rule text, it does not run udev. A rule that reaches the node without naming it is not seen.
@@ -22,10 +22,10 @@ set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 usage() { sed -n '2,/^set -uo/p' "${BASH_SOURCE[0]}" | sed '$d' | sed 's/^# \{0,1\}//'; }
-siblings="$(dirname "$ROOT")" stages=()
+crates_dir="$(dirname "$ROOT")/crates" stages=()
 while [ $# -gt 0 ]; do
   case "$1" in
-    --siblings) siblings=${2:?}; shift ;;
+    --crates) crates_dir=${2:?}; shift ;;
     --stage) stages+=("${2:?}"); shift ;;
     -h|--help) usage; exit 0 ;;
     *) usage >&2; exit 2 ;;
@@ -33,12 +33,12 @@ while [ $# -gt 0 ]; do
   shift
 done
 command -v python3 >/dev/null || { echo "check-no-uinput-access: python3 is not installed" >&2; exit 2; }
-exec python3 -I - "$ROOT" "$siblings" "${stages[@]}" <<'PY'
+exec python3 -I - "$ROOT" "$crates_dir" "${stages[@]}" <<'PY'
 import os
 import re
 import sys
 
-root, siblings, stages = sys.argv[1], sys.argv[2], sys.argv[3:]
+root, crates_dir, stages = sys.argv[1], sys.argv[2], sys.argv[3:]
 found = []
 looked = 0
 
@@ -107,10 +107,10 @@ for path in scripts:
         for match in re.finditer(r"dist/([A-Za-z0-9._-]+\.(?:rules|service))", text):
             named.add(match.group(1))
 for name in sorted(named):
-    where = [os.path.join(siblings, repo, "dist", name) for repo in ("turnstile", "keycap", "palmrest", "sill")] + [os.path.join(root, "dist", name)]
+    where = [os.path.join(crates_dir, repo, "dist", name) for repo in ("turnstile", "keycap", "palmrest", "sill")] + [os.path.join(root, "dist", name)]
     for path in where:
         if os.path.isfile(path):
-            check_file(path, os.path.relpath(path, siblings) if path.startswith(siblings) else os.path.relpath(path, root))
+            check_file(path, os.path.relpath(path, crates_dir) if path.startswith(crates_dir) else os.path.relpath(path, root))
 
 # 2. Staged trees.
 for stage in stages:

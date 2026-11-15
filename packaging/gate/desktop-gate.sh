@@ -1,23 +1,18 @@
 #!/usr/bin/env bash
 # The desktop gate (plan §4.14, §6.4). Every exit code is checked; nothing is piped or tailed.
 #
-#   desktop-gate.sh --self                 the repo's own checks, nothing built
-#   desktop-gate.sh --merge  [--only REPO] [--keep]
-#   desktop-gate.sh --phase P<n> [--only REPO] [--keep]
+#   desktop-gate.sh --self                 the packaging's own checks, nothing built
+#   desktop-gate.sh --merge
+#   desktop-gate.sh --phase P<n>
 #
-# --self    the jail's selftest (inside, 2 fabricated GPUs), its negative check (outside), the
-#           manifest's shape, install.sh against stub installers (gate/installer-check.sh), release/selftest.sh (a SKIP, exit 2, when minisign is missing), the distro helpers (gate/distro-check.sh), the three input and caller checks (gate/check-callers-table.sh: every role of peephole's list has a row in dist/desktop-callers.toml; gate/check-no-fake.sh; gate/check-no-uinput-access.sh; gate/check-loader-unset.sh: every trusted unit throws away peephole's loader variables) with their own test on generated trees, and every scenario in the jail (an unlisted SKIP fails). The table check needs a peephole checkout (exit 2, a SKIP that fails, without one).
-# --merge   --self, plus each manifest repo with `gate = "lane"` checked out at its manifest rev
-#           (a detached git worktree under $DESKTOP_GATE_DIR, siblings side by side so path
-#           dependencies resolve at the manifest's revs) and run through
-#           ~/rs-wt/gate-lane-jailed.sh, plus manifest-check (Cargo.lock agreement).
+# --self    the jail's selftest (inside, 2 fabricated GPUs), its negative check (outside), install.sh against stub installers (gate/installer-check.sh), release/selftest.sh (a SKIP, exit 2, when minisign is missing), the distro helpers (gate/distro-check.sh), the three input and caller checks (gate/check-callers-table.sh: every role of peephole's list has a row in dist/desktop-callers.toml; gate/check-no-fake.sh; gate/check-no-uinput-access.sh; gate/check-loader-unset.sh: every trusted unit throws away peephole's loader variables) with their own test on generated trees, and every scenario in the jail (an unlisted SKIP fails). The table check reads peephole's list from the peephole crate of this tree.
+# --merge   --self, plus the whole tree through ~/rs-wt/gate-lane-jailed.sh (it hands the bardo tree to its own gate), and the
+#           check that no trace of the removed compositor stack is left in the tree.
 # --phase   --merge, and additionally an entry of expected-skips.toml whose `closes` is P<n> or
 #           earlier must be gone: the list is empty at that phase's exit; and sill's own acceptance
-#           suite on casement (dev/accept.sh --compositor casement from the pinned sill, its skips
+#           suite on casement (crates/sill/dev/accept.sh --compositor casement, its skips
 #           listed in sill-accept-skips.txt). The scenarios launcher-p95-on-casement and
 #           detent-on-casement-at-1.5 are the phase's other checks and run with every scenario.
-# --only    with --merge/--phase: gate just that repo (its siblings are still checked out)
-# --keep    leave the checkouts in place
 #
 # Exit codes (plan §6.1): 0 green; otherwise the worst step's code. Prints
 # "DESKTOP GATE GREEN (<tier>)" only when every step passed.
@@ -31,21 +26,19 @@ source "$ROOT/install/distro.sh"
 # shellcheck source=../install/packages.sh
 source "$ROOT/install/packages.sh"
 JAIL="$ROOT/harness/jail.sh"
+TREE="$(cd "$ROOT/.." && pwd)"
 LANE_GATE="${GATE_LANE_JAILED:-$HOME/rs-wt/gate-lane-jailed.sh}"
-LANE_DIR="${DESKTOP_GATE_DIR:-$HOME/rs-wt/desktop-gate}"
 
-tier="" phase="" only="" keep=0
+tier="" phase=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --self) tier=self; shift ;;
     --merge) tier=merge; shift ;;
     --phase) tier=phase; phase=${2:-}; [[ "$phase" =~ ^P[0-9]+$ ]] || { echo "usage: --phase P<n>" >&2; exit 64; }; shift 2 ;;
-    --only) only=${2:-}; shift 2 ;;
-    --keep) keep=1; shift ;;
-    *) sed -n '2,23p' "$0" >&2; exit 64 ;;
+    *) sed -n '2,19p' "$0" >&2; exit 64 ;;
   esac
 done
-[ -n "$tier" ] || { sed -n '2,23p' "$0" >&2; exit 64; }
+[ -n "$tier" ] || { sed -n '2,19p' "$0" >&2; exit 64; }
 label=$tier; [ "$tier" != phase ] || label="phase $phase"
 
 # Preflight: environment incomplete is exit 3 with the fix printed.
@@ -96,35 +89,14 @@ run_scenario() {
   return 0
 }
 
-checkout_repos() {
-  mkdir -p "$LANE_DIR"
-  ln -sfn "$ROOT" "$LANE_DIR/desktop"
-  local r rev d
-  for r in $(manifest_repos); do
-    rev=$(manifest_repo_get "$r" rev); d="$LANE_DIR/$r"
-    if [ -e "$d" ]; then git -C "$HOME/$r" worktree remove --force "$d" >/dev/null 2>&1 || rm -rf "$d"; fi
-    git -C "$HOME/$r" worktree prune
-    git -C "$HOME/$r" worktree add --detach "$d" "$rev" >/dev/null 2>&1 || { echo "cannot check out $r at $rev"; return 3; }
-  done
-}
-
-remove_checkouts() {
-  local r
-  for r in $(manifest_repos); do
-    git -C "$HOME/$r" worktree remove --force "$LANE_DIR/$r" >/dev/null 2>&1 || true
-    git -C "$HOME/$r" worktree prune
-  done
-  rm -f "$LANE_DIR/desktop"
-}
-
 # sill's own acceptance suite on casement (plan 20 §5.2: "sill's 19 minus listed WM-state steps"), from
-# the checkout at the manifest pin, every script in its own jail on a headless casement. Everything is
+# this tree, every script in its own jail on a headless casement. Everything is
 # built outside the jail first (accept.sh --build: sill, the testkit's examples, sill-services' bins,
-# docket's intentd, casement's tools from the pinned casement). Exit 0 and 2 (SKIP) are accepted; a SKIP
+# docket's intentd, casement's tools from this tree). Exit 0 and 2 (SKIP) are accepted; a SKIP
 # only for a script listed in sill-accept-skips.txt whose phase has not closed; any FAIL is rerun once,
 # alone and one at a time (a loaded host starves the timing-sensitive scripts), and says so.
 sill_accept() {
-  local work="$ROOT/build/sill-accept" sill="$LANE_DIR/sill" log rc=0 name why closes
+  local work="$ROOT/build/sill-accept" sill="$TREE/crates/sill" log rc=0 name why closes
   local -a failed=() skipped=()
   rm -rf "$work"; mkdir -p "$work"; log="$work/accept.log"
   export CARGO_TARGET_DIR="$work/target" CASEMENT_TARGET="$work/casement-target" CASEMENT_TOOLS="$work/casement-tools"
@@ -156,25 +128,15 @@ sill_accept() {
   return "$rc"
 }
 
-# The lane gate script names its logs $LANE_DIR/gate-target.<step>.log, one set shared by every repo
-# (each repo's run overwrites the last): clear them before a repo's gate and keep that repo's set under
-# build/lane-logs/<repo>/ when it ends, so a failure's cause survives the repos gated after it.
-lane_gate() { # REPO
-  local r=$1 rc=0 dest="$ROOT/build/lane-logs/$1" f
-  rm -f "$LANE_DIR"/gate-target.*.log
-  lane_gate_run "$r" || rc=1
+# The lane gate script names its logs gate-target.<step>.log beside the tree: keep them under build/lane-logs/ when it
+# ends, so a failure's cause survives the next run.
+lane_gate() {
+  local rc=0 dest="$ROOT/build/lane-logs" f
+  rm -f "$(dirname "$TREE")"/gate-target.*.log
+  "$LANE_GATE" "$TREE" || rc=1
   rm -rf "$dest"; mkdir -p "$dest"
-  for f in "$LANE_DIR"/gate-target.*.log; do [ ! -e "$f" ] || mv "$f" "$dest/"; done
-  [ "$rc" = 0 ] || echo "  $r logs kept in $dest/"
-  return "$rc"
-}
-
-lane_gate_run() { # REPO
-  local r=$1 args extra rc=0
-  args=$(manifest_repo_get "$r" gate_args); extra=$(manifest_repo_get "$r" gate_extra)
-  # shellcheck disable=SC2086  # gate_args is a word list on purpose
-  "$LANE_GATE" "$LANE_DIR/$r" $args || return 1
-  if [ -n "$extra" ]; then (cd "$LANE_DIR/$r" && eval "$extra") || rc=1; fi
+  for f in "$(dirname "$TREE")"/gate-target.*.log; do [ ! -e "$f" ] || mv "$f" "$dest/"; done
+  [ "$rc" = 0 ] || echo "  logs kept in $dest/"
   return "$rc"
 }
 
@@ -186,7 +148,6 @@ step preflight preflight || true
 
 step "selftest (jail, 2 fabricated GPUs)" "$JAIL" --fabricate-gpus 2 -- "$ROOT/harness/selftest.sh" || true
 step "selftest negative (outside the jail)" "$ROOT/harness/selftest.sh" --negative || true
-step "manifest shape" "$HERE/manifest-check.sh" --syntax || true
 step "installer (dry run and stubs)" "$HERE/installer-check.sh" || true
 step "release (pack, verify, hostile releases; SKIP without minisign)" "$ROOT/release/selftest.sh" || true
 step "legacy-free check (generated trees)" "$HERE/legacy-free-selftest.sh" || true
@@ -206,21 +167,12 @@ for s in "$ROOT"/scenarios/*.sh; do
 done
 
 if [ "$tier" != self ]; then
-  step "check out manifest revs" checkout_repos || true
-  step "no removed-compositor traces in any manifest repo" "$HERE/check-legacy-free.sh" "$LANE_DIR" || true
-  if [ -d "$LANE_DIR/sill" ]; then   # the checkouts exist: every lane gate runs, whatever failed before
-    for r in $(manifest_repos); do
-      [ "$(manifest_repo_get "$r" gate)" = lane ] || continue
-      [ -z "$only" ] || [ "$only" = "$r" ] || continue
-      step "lane gate $r @ $(manifest_repo_get "$r" rev | cut -c1-9)" lane_gate "$r" || true
-    done
+  step "no removed-compositor traces in the tree" "$HERE/check-legacy-free.sh" "$TREE" || true
+  step "lane gate of the whole tree" lane_gate || true
+  # Whatever failed before, this check still runs: a phase gate names every failure.
+  if [ "$tier" = phase ]; then
+    step "sill acceptance on casement (dev/accept.sh --compositor casement)" sill_accept || true
   fi
-  # Whatever failed before, this check still runs (the checkouts exist): a phase gate names every failure.
-  if [ "$tier" = phase ] && [ -d "$LANE_DIR/sill" ] && { [ -z "$only" ] || [ "$only" = sill ]; }; then
-    step "sill acceptance on casement (dev/accept.sh --compositor casement, pinned sill)" sill_accept || true
-  fi
-  [ "$keep" = 1 ] || remove_checkouts
-  step "manifest agrees with every Cargo.lock" "$HERE/manifest-check.sh" || true
 fi
 
 if [ "$STEP_WORST" = 0 ]; then echo "DESKTOP GATE GREEN ($label)"; else echo "DESKTOP GATE FAIL ($label, exit $STEP_WORST)"; fi
