@@ -9,9 +9,7 @@ use super::world::{Fakes, TheCourt};
 use companion_model::helper::HandFault;
 use companion_model::{AppSessionId, WatchedAgent};
 use docket_acp_host::fake::{FakeFiles, FakeSpawn};
-use docket_acp_host::{
-    AcpBackend, AgentEnd, AgentHost, Fallback, HelperAgent, Hosts, Parts, Start,
-};
+use docket_acp_host::{AcpBackend, AgentEnd, AgentHost, HelperAgent, Hosts, Parts, Start};
 use docket_client::{InProcess, Intents};
 use docket_host::EditorDesk;
 use docket_session::Opening;
@@ -44,7 +42,7 @@ impl Hosts for OneRouter {
             backend,
             self.court.clone(),
             self.desk.clone(),
-            Fallback::Off,
+            false,
         )
     }
 

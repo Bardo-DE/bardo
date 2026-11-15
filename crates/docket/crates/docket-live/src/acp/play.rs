@@ -11,7 +11,7 @@ use bulkhead::AbsPath;
 use docket_accept::runlink::short_run;
 use docket_accept::world::{Binaries, Cgroup, World};
 use docket_acp_bin::harness::host::{HostError, Hosted, Places, SandboxLimits, Wiring, host};
-use docket_acp_host::{Fallback, Models, ToolsOffer};
+use docket_acp_host::{Models, ToolsOffer};
 use docket_core::{TurnVia, UserTurn};
 use docket_host::EditorDesk;
 use docket_launch::{AgentsFile, LoginOnly, Registry};
@@ -143,7 +143,7 @@ async fn open(
             run_dir: short_run(home),
             bridge,
         }),
-        fallback: Fallback::Off,
+        terminal_fallback: false,
         desk: EditorDesk::new(),
         agents: dir,
         // Only the scratch home: the world is `env -i`.

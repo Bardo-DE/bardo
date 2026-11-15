@@ -9,7 +9,7 @@ use super::rig::{
     run_turn_answering, started, write,
 };
 use action_review::{ReviewReason, ReviewVerdict};
-use docket_acp_host::Fallback;
+use docket_acp_host::bool;
 use docket_core::AuditRecord;
 use docket_fake::{ReviewMode, ScriptedReviewer};
 use docket_permissions_core::{GrantCaller, ReasonCode, ReasonText, StandingScope};
@@ -183,7 +183,7 @@ async fn the_sheet_goes_to_the_desktops_confirmer_and_its_answer_comes_back() {
 async fn the_hosts_own_sheet_exists_only_with_the_development_flag() {
     let (mut rig, files) = started(Setup {
         turns: vec![taint_then_writes(&["/work/app/a.rs", "/work/app/b.rs"])],
-        fallback: Fallback::Terminal,
+        terminal_fallback: true,
         ..Setup::default()
     })
     .await;
@@ -219,7 +219,7 @@ async fn the_hosts_own_sheet_exists_only_with_the_development_flag() {
 async fn a_sheet_the_person_refuses_on_the_host_refuses_the_call() {
     let (mut rig, files) = started(Setup {
         turns: vec![taint_then_writes(&["/work/app/a.rs"])],
-        fallback: Fallback::Terminal,
+        terminal_fallback: true,
         ..Setup::default()
     })
     .await;
@@ -281,7 +281,7 @@ async fn the_host_runs_one_agent_session_of_an_agent_program() {
     use docket_acp_host::AgentHost;
     use docket_session::{BackendKind, HostFault, SessionHost};
     let wired = wired_over::<Fakes>(docket_acp_host::fake::FakeFiles::new(), Setup::default());
-    let mut host = AgentHost::new(wired.backend, wired.court, wired.desk, Fallback::Off);
+    let mut host = AgentHost::new(wired.backend, wired.court, wired.desk, false);
     let mut native = super::rig::opening("/work/app");
     native.backend = BackendKind::Native;
     assert!(host.open(native).await.is_err(), "not an agent program");

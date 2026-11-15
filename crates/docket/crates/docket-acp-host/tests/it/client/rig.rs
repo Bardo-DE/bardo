@@ -9,9 +9,7 @@ use bulkhead::AbsPath;
 use bulkhead::fake::{FakeSandbox, Script, Seen};
 use bulkhead::{Network, NetworkMode};
 use docket_acp_host::fake::{FakeFiles, FakeSpawn, SpawnSeen};
-use docket_acp_host::{
-    AcpBackend, AgentHost, Fallback, IntentsCourt, Parts, Performer, Seams, ToolsOffer,
-};
+use docket_acp_host::{AcpBackend, AgentHost, IntentsCourt, Parts, Performer, Seams, ToolsOffer};
 use docket_client::InProcess;
 use docket_core::{AgentConfig, ConfirmAnswer, ConfirmEnd, ConfirmRequest, TurnVia, UserTurn};
 use docket_fake::{
@@ -128,7 +126,7 @@ pub struct Setup {
     /// The person's answers on the desktop's sheet, in order; then they dismiss it.
     pub answers: Vec<ConfirmAnswer>,
     pub scripts: Vec<Script>,
-    pub fallback: Fallback,
+    pub terminal_fallback: bool,
     pub policy: Policy,
     pub reviewer: ScriptedReviewer,
     /// Standing grants already held in docket's store.
@@ -165,7 +163,7 @@ impl Default for Setup {
             turns: Vec::new(),
             answers: Vec::new(),
             scripts: Vec::new(),
-            fallback: Fallback::Off,
+            terminal_fallback: false,
             policy: Policy::Wide,
             reviewer: ScriptedReviewer::always_allow(),
             held: Vec::new(),
@@ -256,7 +254,7 @@ pub struct Wired<X: Seams<Court = TheCourt, Sandbox = FakeSandbox, Spawn = FakeS
     pub agent: View,
     pub performer: Performer<X::Files, FakeSandbox>,
     pub court: TheCourt,
-    pub fallback: Fallback,
+    pub terminal_fallback: bool,
 }
 
 pub fn wired_over<X>(files: X::Files, setup: Setup) -> Wired<X>
@@ -328,7 +326,7 @@ where
         agent: view,
         performer,
         court,
-        fallback: setup.fallback,
+        terminal_fallback: setup.terminal_fallback,
     }
 }
 
@@ -344,7 +342,7 @@ where
         wired.backend,
         wired.court.clone(),
         wired.desk.clone(),
-        wired.fallback,
+        wired.terminal_fallback,
     )
     .with_rewind(rewind);
     let session = host

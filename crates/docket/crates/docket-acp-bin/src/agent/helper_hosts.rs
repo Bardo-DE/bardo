@@ -6,7 +6,7 @@ use super::host::Hosting;
 use super::live::Live;
 use super::places::Places;
 use companion_model::helper::HelperCard;
-use docket_acp_host::{AgentHost, EdgeMenu, Fallback, Hosts, Start};
+use docket_acp_host::{AgentHost, EdgeMenu, Hosts, Start};
 use docket_host::EditorDesk;
 use docket_launch::Accounts;
 use docket_permissions_core::{ProgramName, TaskPolicy};
@@ -84,7 +84,7 @@ impl<A: Accounts + 'static> Hosts for HelperHosts<A> {
             backend,
             self.live.court.clone(),
             self.live.desk.clone(),
-            Fallback::Off,
+            false,
         )
         .with_rewind(rewind)
         .for_helper(self.helper.clone())

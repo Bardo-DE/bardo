@@ -28,7 +28,7 @@ async fn open_with(
         wired.backend,
         wired.court.clone(),
         wired.desk.clone(),
-        wired.fallback,
+        wired.terminal_fallback,
     );
     let opened = host.open(opening(CWD)).await.map(|_| ());
     (opened, wired.agent)

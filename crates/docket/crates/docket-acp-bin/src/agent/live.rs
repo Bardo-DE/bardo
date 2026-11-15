@@ -8,9 +8,7 @@ use crate::agent::places::Places;
 use crate::agent::provider::{PerformerProvider, Quiet};
 use agents_core::dirs::AgentsDir;
 use bulkhead::{BwrapSandbox, Detected, NetworkMode};
-use docket_acp_host::{
-    AcpBackend, EdgeMenu, Fallback, IntentsCourt, OsFiles, Parts, Performer, ToolsOffer,
-};
+use docket_acp_host::{AcpBackend, EdgeMenu, IntentsCourt, OsFiles, Parts, Performer, ToolsOffer};
 use docket_client::DbusTransport;
 use docket_permissions_core::ProgramName;
 
@@ -51,7 +49,7 @@ pub struct Live<A: Accounts + 'static> {
     /// The desk the sheets routed to the host land on.
     pub desk: EditorDesk,
     /// Who answers the sheets of an agent's session.
-    pub fallback: Fallback,
+    pub terminal_fallback: bool,
     /// The agents directory a registry agent was installed in; none writes nothing.
     pub agents: Option<AgentsDir>,
     places: Places,
@@ -115,7 +113,7 @@ impl<A: Accounts + 'static> Live<A> {
             run_dir,
             registry,
             tools,
-            fallback,
+            terminal_fallback,
             desk,
             callers,
             agents,
@@ -133,7 +131,7 @@ impl<A: Accounts + 'static> Live<A> {
             .with_command_deadline(acp_core::command_deadline::CommandDeadline::DEFAULT);
         let manifest: ValidManifest = docket_manifest::parse(MANIFEST)?;
         let quiet = Quiet(docket_permissions_core::acp_agent_app().ok_or(LiveFault::NoAppName)?);
-        if fallback == Fallback::Terminal {
+        if terminal_fallback {
             // Served before the name is claimed, so the first sheet finds it.
             bus.object_server()
                 .at(
@@ -164,7 +162,7 @@ impl<A: Accounts + 'static> Live<A> {
             performer,
             court,
             desk,
-            fallback,
+            terminal_fallback,
             agents,
             places,
             placeholder: Placeholder::new()?,

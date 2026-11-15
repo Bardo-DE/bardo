@@ -4,7 +4,7 @@
 //! from the person's words, as for a launcher), and runs the turn on an `AcpBackend`.
 //!
 //! **Sheets.** The router asks the person through its confirmer, like any call: sill's sheet, by
-//! default, and the host sees nothing of it. In the development fallback (`Fallback::Terminal`,
+//! default, and the host sees nothing of it. In the development fallback (`true`,
 //! `docket-agent --tty`) the host tells the router that it shows this session's sheets itself,
 //! and each one comes out of `next_event` as `BackendEvent::Confirm` and goes back through
 //! `answer_sheet`, as an editor's do. Without the flag the host asks for no such route and holds
@@ -29,24 +29,6 @@ use prov::SessionId;
 use std::future::Future;
 use std::pin::{Pin, pin};
 
-/// Where the person answers the router's sheets for this agent.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Fallback {
-    /// The desktop's sheet, through the router's confirmer: the normal path.
-    Off,
-    /// This host, on the terminal: a development fallback, never the default.
-    Terminal,
-}
-
-impl Fallback {
-    fn surface(self) -> SheetSurface {
-        match self {
-            Fallback::Off => SheetSurface::Desktop,
-            Fallback::Terminal => SheetSurface::Host,
-        }
-    }
-}
-
 type Recording = Pin<Box<dyn Future<Output = Result<TurnId, acp_core::court::CourtFault>> + Send>>;
 
 /// A turn the router is recording and the agent has not yet been given.
@@ -60,7 +42,10 @@ pub struct AgentHost<X: Seams, D: SheetDesk> {
     backend: AcpBackend<X>,
     court: X::Court,
     desk: D,
-    fallback: Fallback,
+    /// Whether the person answers the router's sheets on this host, on the terminal (a development
+    /// fallback, never the default) rather than on the desktop's sheet through the router's
+    /// confirmer.
+    terminal_fallback: bool,
     rewind: Rewind,
     helper: Option<prov::HelperId>,
     session: Option<SessionId>,
@@ -79,12 +64,12 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
     /// A host over `backend` and the `court` it calls the router through (a clone of the
     /// backend's), with `desk` holding the sheets the router puts to this host when `fallback`
     /// asks for them.
-    pub fn new(backend: AcpBackend<X>, court: X::Court, desk: D, fallback: Fallback) -> Self {
+    pub fn new(backend: AcpBackend<X>, court: X::Court, desk: D, terminal_fallback: bool) -> Self {
         Self {
             backend,
             court,
             desk,
-            fallback,
+            terminal_fallback,
             rewind: Rewind::default(),
             helper: None,
             session: None,
@@ -191,7 +176,7 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
     }
 
     fn is_terminal(&self) -> bool {
-        self.fallback == Fallback::Terminal
+        self.terminal_fallback
     }
 }
 
@@ -231,7 +216,11 @@ impl<X: Seams, D: SheetDesk> SessionHost for AgentHost<X, D> {
             .open(OpenAgent {
                 program,
                 cwd,
-                sheets: self.fallback.surface(),
+                sheets: if self.terminal_fallback {
+                    SheetSurface::Host
+                } else {
+                    SheetSurface::Desktop
+                },
                 space: opening.space.clone(),
                 label: opening.label.clone(),
                 rewind: self.rewind,
@@ -277,11 +266,11 @@ impl<X: Seams, D: SheetDesk> SessionHost for AgentHost<X, D> {
             if let Some(pending) = self.pending.as_mut() {
                 let sheet = pin!(self.desk.next_sheet(session));
                 let recorded = match (
-                    self.fallback,
+                    self.terminal_fallback,
                     select(pending.recording.as_mut(), sheet).await,
                 ) {
                     (_, Either::Left((recorded, _))) => recorded,
-                    (Fallback::Terminal, Either::Right((Some(request), _))) => {
+                    (true, Either::Right((Some(request), _))) => {
                         return Ok(Some(BackendEvent::Confirm(Box::new(request))));
                     }
                     // No desk is asked for: nothing can be on it.

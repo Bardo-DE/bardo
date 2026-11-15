@@ -10,7 +10,7 @@ use crate::agent::remember::remember;
 use agents_core::dirs::AgentsDir;
 use bulkhead::AbsPath;
 use bulkhead::{Detected, NetworkMode};
-use docket_acp_host::{AgentHost, EdgeMenu, Fallback, IntentsCourt, OsFiles, Seams, ToolsOffer};
+use docket_acp_host::{AgentHost, EdgeMenu, IntentsCourt, OsFiles, Seams, ToolsOffer};
 use docket_client::DbusTransport;
 use docket_dbus::BusConnection;
 use docket_dbus::callers::Identity;
@@ -63,7 +63,7 @@ pub struct Wiring<A: Accounts + 'static> {
     /// The tool edge to offer the agent, when the host has one to give.
     pub tools: Option<ToolsOffer>,
     /// Who answers sheets the router routes to the host.
-    pub fallback: Fallback,
+    pub terminal_fallback: bool,
     /// The desk those sheets land on, served as `Confirm1` by the caller when it is used.
     pub desk: EditorDesk,
     /// Who is intentd on the bus: the only process that may ask or withdraw a sheet the host
@@ -141,7 +141,7 @@ pub async fn open_on<A: Accounts + 'static>(
         backend,
         live.court.clone(),
         live.desk.clone(),
-        live.fallback,
+        live.terminal_fallback,
     )
     .with_rewind(rewind);
     let opened = host

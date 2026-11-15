@@ -65,7 +65,7 @@ pub use helper_agent::{
     AgentEnd, Away, HelperAgent, Hosts, SignInStep, SignOutStep, Start, Trouble,
 };
 pub use helper_agents::{HelperAgents, Logout};
-pub use host::{AgentHost, Fallback};
+pub use host::{AgentHost};
 pub use intents_court::IntentsCourt;
 pub use models::{ModelId, ModelIdRefused, Models};
 pub use performer::{Performer, UndoNote};

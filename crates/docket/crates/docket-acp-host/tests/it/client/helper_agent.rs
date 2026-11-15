@@ -48,7 +48,7 @@ impl Hosts for Worlds {
         if let Some(id) = &start.resume {
             backend = backend.resuming(id);
         }
-        AgentHost::new(backend, world.court, world.desk, world.fallback)
+        AgentHost::new(backend, world.court, world.desk, world.terminal_fallback)
             .for_helper(self.helper.clone())
     }
 

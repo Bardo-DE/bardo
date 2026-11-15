@@ -71,7 +71,7 @@ pub async fn run(
     let wiring = wire::build(
         allowed(&places)?,
         tools,
-        args.fallback,
+        args.terminal_fallback,
         bus,
         SandboxLimits::Scope,
         places.clone(),

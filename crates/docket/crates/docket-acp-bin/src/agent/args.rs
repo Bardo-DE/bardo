@@ -5,7 +5,7 @@
 
 use clap::error::ErrorKind;
 use clap::{ArgAction, CommandFactory, Parser};
-use docket_acp_host::Fallback;
+use docket_acp_host::bool;
 use docket_permissions_core::ProgramName;
 
 use prov::SpaceId;
@@ -31,7 +31,7 @@ pub struct Args {
     pub space: SpaceId,
     /// Where the person answers its sheets: the desktop's, unless `--tty` asked for this
     /// terminal (a development fallback).
-    pub fallback: Fallback,
+    pub terminal_fallback: bool,
     /// A session, or a refresh of what the agent offers.
     pub mode: Mode,
 }
@@ -94,10 +94,7 @@ impl Cli {
                 program,
                 cwd: self.cwd.unwrap_or(here),
                 space: self.space.unwrap_or_else(SpaceId::desktop),
-                fallback: match self.tty {
-                    0 => Fallback::Off,
-                    _ => Fallback::Terminal,
-                },
+                terminal_fallback: self.tty != 0,
                 mode: match self.refresh {
                     0 => Mode::Session,
                     _ => Mode::Refresh,
@@ -135,13 +132,13 @@ mod tests {
     fn the_desktops_sheet_is_the_default_and_the_terminal_needs_its_flag() {
         let here = PathBuf::from("/home/u/p");
         let plain = run("claude-code", here.as_path()).expect("args");
-        assert_eq!(plain.fallback, Fallback::Off);
+        assert!(!plain.terminal_fallback);
         assert_eq!(plain.cwd, here);
         assert_eq!(plain.space, SpaceId::desktop());
         let work = run("claude-code --space work", here.as_path()).expect("args");
         assert_eq!(work.space.as_str(), "work");
         let tty = run("claude-code --tty --cwd /home/u/q", here.as_path()).expect("args");
-        assert_eq!(tty.fallback, Fallback::Terminal);
+        assert!(tty.terminal_fallback);
         assert_eq!(tty.cwd, PathBuf::from("/home/u/q"));
     }
 

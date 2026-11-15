@@ -26,7 +26,7 @@ async fn open_with(offer: Offer, wanted: Option<ModelId>) -> (Result<(), HostFau
         wired.backend,
         wired.court.clone(),
         wired.desk.clone(),
-        wired.fallback,
+        wired.terminal_fallback,
     );
     let opened = host.open(opening(CWD)).await.map(|_| ());
     (opened, wired.agent)
@@ -102,7 +102,7 @@ async fn no_model_configured_leaves_the_agents_own_and_lists_what_it_offers() {
         wired.backend,
         wired.court.clone(),
         wired.desk.clone(),
-        wired.fallback,
+        wired.terminal_fallback,
     );
     host.open(opening(CWD)).await.expect("open");
     assert!(wired.agent.switches().is_empty());
