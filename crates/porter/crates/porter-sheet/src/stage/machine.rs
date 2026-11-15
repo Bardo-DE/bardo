@@ -23,7 +23,7 @@
 //! The consent alert is not a stage: it is one call (`Sheets::consent`), so `Answer` is not
 //! this machine's input and is dropped here.
 
-use super::{Purpose, Restart, Sheet, SheetEffect, SheetEnd, SheetEvent, Stage};
+use super::{Purpose, Sheet, SheetEffect, SheetEnd, SheetEvent, Stage};
 use crate::fields::{FieldAnswer, FieldKind, FieldSpec, FieldValue};
 use crate::input::SheetInput;
 use crate::manual;
@@ -61,7 +61,7 @@ pub(super) enum Verdict {
     /// The sign-in ends here with this fault.
     Fail(SignInFault),
     /// The sign-in is started again, once.
-    Restart(Restart),
+    Restart,
     /// The fact means nothing to this sheet.
     Ignore,
 }
@@ -79,7 +79,7 @@ pub(super) fn decide(sheet: &Sheet, fact: Fact) -> Verdict {
         Fact::SignedInBefore
             if adding && matches!(sheet.stage, Stage::Working(_) | Stage::Confirming { .. }) =>
         {
-            Verdict::Restart(Restart::FirstSignIn)
+            Verdict::Restart
         }
         Fact::SignedInBefore => Verdict::Fail(SignInFault::Unreadable),
     }
@@ -88,7 +88,7 @@ pub(super) fn decide(sheet: &Sheet, fact: Fact) -> Verdict {
 fn on_fact(sheet: Sheet, fact: Fact) -> (Sheet, Vec<SheetEffect>) {
     match decide(&sheet, fact) {
         Verdict::Fail(fault) => on_progress(sheet, Progress::Failed(fault)),
-        Verdict::Restart(how) => (sheet, vec![SheetEffect::Restart(how)]),
+        Verdict::Restart => (sheet, vec![SheetEffect::Restart]),
         Verdict::Ignore => ignore(sheet),
     }
 }

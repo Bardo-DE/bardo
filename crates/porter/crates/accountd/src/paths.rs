@@ -253,7 +253,7 @@ mod tests {
 
     #[test]
     fn no_home_and_no_xdg_is_an_error() {
-        assert_eq!(Paths::resolve(env(&[]), &[]), Err(PathError::NoHome));
+        assert_eq!(Paths::resolve(env(&[]), &[]), Err(PathError));
         assert!(
             Paths::resolve(
                 env(&[

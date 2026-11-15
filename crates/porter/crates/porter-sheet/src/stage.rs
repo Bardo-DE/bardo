@@ -182,13 +182,6 @@ pub enum SheetEnd {
     Failed(SignInFault),
 }
 
-/// How a sign-in is started again (`SheetEffect::Restart`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Restart {
-    /// As a first sign-in, with the consent screen the provider shows then.
-    FirstSignIn,
-}
-
 /// What the host must do next.
 #[derive(Debug, Clone, PartialEq, Eq)]
 // `Show` grew past clippy's threshold with `ProviderRow::mark_face`; boxing it would change a
@@ -204,8 +197,9 @@ pub enum SheetEffect {
     /// Open the browser page again (`OpenAgain`), through the portal path: the page is the one
     /// the view being shown names.
     OpenBrowser,
-    /// Start the sign-in again, in this mode, with the one that ran dropped.
-    Restart(Restart),
+    /// Start the sign-in again, as a first sign-in with the consent screen the provider shows
+    /// then, with the one that ran dropped.
+    Restart,
     /// Close the sheet.
     Close(SheetEnd),
 }

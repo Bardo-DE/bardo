@@ -24,7 +24,7 @@ use porter_service_core::Ports;
 use porter_service_core::refusal::refusal_of;
 use porter_sheet::host::{SheetFault, SheetLink, SheetOpen, Sheets};
 use porter_sheet::{
-    EditedServers, FieldAnswer, Manual, Progress, ProviderRow, Purpose, Restart, RowKind, Sheet,
+    EditedServers, FieldAnswer, Manual, Progress, ProviderRow, Purpose, RowKind, Sheet,
     SheetEffect, SheetEnd, SheetEvent, SignInFault, SignInInput, servers_fixed, step,
 };
 use porter_wire::AccountsReply;
@@ -596,9 +596,7 @@ impl<E: Ports> Accounts<'_, E> {
                         link.update(sheet.view()).await.map_err(left)?;
                         None
                     }
-                    SheetEffect::Restart(how) => {
-                        Some(self.restart(&sheet, job, &mut run, how).await)
-                    }
+                    SheetEffect::Restart => Some(self.restart(&sheet, job, &mut run).await),
                     SheetEffect::Close(end) => {
                         return finish::<J>(end, run.stored.take(), run.already.take());
                     }
@@ -664,16 +662,15 @@ impl<E: Ports> Accounts<'_, E> {
         said(run, step)
     }
 
-    /// Starts the sign-in of the sheet's provider again, as `how` says, in place of the one that
-    /// ended. One that cannot be started ends the sheet as unreadable, as the answer it replaces.
+    /// Starts the sign-in of the sheet's provider again, as a first sign-in, in place of the one
+    /// that ended. One that cannot be started ends the sheet as unreadable, as the answer it
+    /// replaces.
     async fn restart<J: Job>(
         &self,
         sheet: &Sheet,
         job: &J,
         run: &mut RunOf<E, J>,
-        how: Restart,
     ) -> SheetEvent {
-        let Restart::FirstSignIn = how;
         if let Some(identity) = run.identity.as_mut() {
             identity.history = ConsentHistory::FirstSignIn;
         }

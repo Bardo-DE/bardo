@@ -9,7 +9,6 @@ use crate::input::SheetInput;
 use crate::progress::{
     Progress, Review, ServiceRow, ServiceState, SignInFault, SignInInput, UserCode,
 };
-use crate::stage::Restart;
 use crate::view::{FieldProblem, ProblemKind, ProviderKind, ProviderRow, RowKind, SheetView};
 use porter_capability::CapabilityKind;
 use porter_capability::Toggle;
@@ -824,7 +823,7 @@ fn leaks(effect: &SheetEffect) -> bool {
         SheetEffect::Store(choices) => serde_json::to_string(choices).expect("choices"),
         SheetEffect::Close(end) => format!("{end:?}"),
         SheetEffect::OpenBrowser => String::new(),
-        SheetEffect::Restart(how) => format!("{how:?}"),
+        SheetEffect::Restart => String::new(),
         SheetEffect::Feed(SignInInput::Fields(_)) => return false,
         SheetEffect::Feed(other) => format!("{other:?}"),
     };
@@ -915,13 +914,13 @@ fn the_facts_of_a_sign_in_are_judged_in_one_table() {
             add(),
             working.clone(),
             Fact::SignedInBefore,
-            Verdict::Restart(Restart::FirstSignIn),
+            Verdict::Restart,
         ),
         (
             add(),
             confirming(),
             Fact::SignedInBefore,
-            Verdict::Restart(Restart::FirstSignIn),
+            Verdict::Restart,
         ),
         (
             add(),
@@ -963,7 +962,7 @@ fn a_duplicate_or_a_missing_launcher_fails_the_working_sheet_as_the_sign_in_sayi
 fn a_consent_less_sign_in_that_ends_unreadable_restarts_once_without_a_redraw() {
     let (stage, effects) = in_stage(add(), Stage::Working(nc()), SheetEvent::SignedInBefore);
     assert_eq!(stage, Stage::Working(nc()));
-    assert_eq!(effects, vec![SheetEffect::Restart(Restart::FirstSignIn)]);
+    assert_eq!(effects, vec![SheetEffect::Restart]);
     // Elsewhere the unreadable answer stands.
     let (stage, _) = in_stage(reauth(), Stage::Working(nc()), SheetEvent::SignedInBefore);
     assert_eq!(stage, failed(SignInFault::Unreadable));

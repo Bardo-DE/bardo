@@ -9,12 +9,11 @@
 use std::path::{Path, PathBuf};
 
 /// Why a directory could not be resolved.
+///
+/// Neither `HOME` nor the XDG variable of a directory is set to an absolute path.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum PathError {
-    /// Neither `HOME` nor the XDG variable of a directory is set to an absolute path.
-    #[error("neither HOME nor an XDG variable is an absolute path")]
-    NoHome,
-}
+#[error("neither HOME nor an XDG variable is an absolute path")]
+pub struct PathError;
 
 /// The absolute path `value` names; `None` for no value, an empty one or a relative one.
 pub fn absolute(value: Option<String>) -> Option<PathBuf> {
@@ -43,7 +42,7 @@ impl<F: Fn(&str) -> Option<String>> Xdg<F> {
         match (absolute((self.var)(name)), &self.home) {
             (Some(dir), _) => Ok(dir),
             (None, Some(home)) => Ok(home.join(fallback)),
-            (None, None) => Err(PathError::NoHome),
+            (None, None) => Err(PathError),
         }
     }
 
@@ -163,13 +162,13 @@ mod tests {
         let none = Xdg::new(env(&[]));
         assert_eq!(
             none.dir("XDG_STATE_HOME", ".local/state"),
-            Err(PathError::NoHome)
+            Err(PathError)
         );
         let relative_home = Xdg::new(env(&[("HOME", "home/ada")]));
         assert_eq!(relative_home.home(), None);
         assert_eq!(
             relative_home.dir("XDG_STATE_HOME", ".local/state"),
-            Err(PathError::NoHome)
+            Err(PathError)
         );
         let alone = Xdg::new(env(&[("XDG_STATE_HOME", "/s")]));
         assert_eq!(alone.dir("XDG_STATE_HOME", ".local/state"), Ok("/s".into()));
