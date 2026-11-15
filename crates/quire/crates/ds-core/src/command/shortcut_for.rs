@@ -34,7 +34,7 @@ fn caps_of(text: &str) -> Vec<KeyCap> {
     split_caps(text)
         .into_iter()
         .map(|text| KeyCap {
-            kind: arrow(&text),
+            arrow: arrow(&text),
             text,
         })
         .collect()

@@ -3,16 +3,6 @@
 //! Palette derivation needs this at runtime, and the legibility tests measure every token pair
 //! with it.
 
-/// Whether a measured pair clears its floor: the answer a contrast check gives, and what a
-/// status chip shows (`data-status="ok|bad"`, design/04-COMPONENTS.md section 10).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Verdict {
-    /// The pair reaches its floor.
-    Pass,
-    /// The pair falls short of its floor.
-    Fail,
-}
-
 /// The WCAG 2.1 contrast ratio between two literal hex colours (`#rgb` or `#rrggbb`,
 /// any case). `None` when either is not one: the caller must treat that as a failure
 /// naming the token, never as a pair to skip.

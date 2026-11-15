@@ -5,7 +5,6 @@ use super::effect::{
     EffectActivity, LoopEffect, OnceEffect, SymbolEffect, TransitionEffect, Trigger,
 };
 use crate::anim::Anim;
-use ds_core::vocab::Shown;
 use ds_style::icon::Icon;
 use ds_style::icon::parts::PartGesture;
 
@@ -26,7 +25,7 @@ pub enum Route {
     /// Rust, on the icon's annotated parts.
     Parts(PartGesture, PartRun),
     /// Rust, drawing the strokes on or off.
-    Draw(Shown),
+    Draw(bool),
     /// The glyph morph.
     Replace,
 }
@@ -96,7 +95,6 @@ mod tests {
     use crate::symbol::effect::{
         EffectActivity, LoopEffect, OnceEffect, SymbolEffect, TransitionEffect, Trigger,
     };
-    use ds_core::vocab::Shown;
     use ds_style::icon::Icon;
     use ds_style::icon::parts::PartGesture;
 
@@ -142,12 +140,12 @@ mod tests {
                 Route::Css(once(OnceEffect::Bounce)),
             ),
             (
-                SymbolEffect::Transition(TransitionEffect::DrawOn, Shown::Hidden),
+                SymbolEffect::Transition(TransitionEffect::DrawOn, false),
                 Icon::Mail,
-                Route::Draw(Shown::Hidden),
+                Route::Draw(false),
             ),
             (
-                SymbolEffect::Transition(TransitionEffect::Replace, Shown::Visible),
+                SymbolEffect::Transition(TransitionEffect::Replace, true),
                 Icon::Mail,
                 Route::Replace,
             ),

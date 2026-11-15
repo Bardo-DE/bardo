@@ -6,7 +6,6 @@
 use super::effect::{EffectActivity, SymbolEffect, TransitionEffect};
 use super::route::{loop_anim, once_anim};
 use crate::anim::Anim;
-use ds_core::vocab::Shown;
 
 /// What the wrapper wears.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -43,8 +42,8 @@ fn key(effect: SymbolEffect) -> u32 {
         SymbolEffect::Once(_, trigger) => trigger.0,
         SymbolEffect::While(_, EffectActivity::Idle) => 0,
         SymbolEffect::While(_, EffectActivity::Active) => 1,
-        SymbolEffect::Transition(_, Shown::Hidden) => 0,
-        SymbolEffect::Transition(_, Shown::Visible) => 1,
+        SymbolEffect::Transition(_, false) => 0,
+        SymbolEffect::Transition(_, true) => 1,
     }
 }
 
@@ -67,21 +66,21 @@ pub fn advance(memory: Memory, effect: SymbolEffect) -> (Memory, SymbolAttrs) {
         SymbolEffect::While(looped, EffectActivity::Active) => play(loop_anim(looped), Some("a")),
         SymbolEffect::While(_, EffectActivity::Idle) if memory.ran => play(Anim::Hold, Some("a")),
         SymbolEffect::While(..) => SymbolAttrs::default(),
-        SymbolEffect::Transition(TransitionEffect::Appear, Shown::Visible) if fired => {
+        SymbolEffect::Transition(TransitionEffect::Appear, true) if fired => {
             play(Anim::Appear, alias)
         }
-        SymbolEffect::Transition(TransitionEffect::Appear, Shown::Hidden) => SymbolAttrs {
+        SymbolEffect::Transition(TransitionEffect::Appear, false) => SymbolAttrs {
             hidden: true,
             ..SymbolAttrs::default()
         },
-        SymbolEffect::Transition(TransitionEffect::Disappear, Shown::Hidden) if fired => {
+        SymbolEffect::Transition(TransitionEffect::Disappear, false) if fired => {
             play(Anim::Disappear, alias)
         }
-        SymbolEffect::Transition(TransitionEffect::Disappear, Shown::Hidden) => SymbolAttrs {
+        SymbolEffect::Transition(TransitionEffect::Disappear, false) => SymbolAttrs {
             hidden: true,
             ..SymbolAttrs::default()
         },
-        SymbolEffect::Transition(TransitionEffect::Disappear, Shown::Visible) if fired => {
+        SymbolEffect::Transition(TransitionEffect::Disappear, true) if fired => {
             play(Anim::Hold, alias)
         }
         SymbolEffect::Transition(..) => SymbolAttrs::default(),
@@ -104,7 +103,6 @@ mod tests {
     use crate::symbol::effect::{
         EffectActivity, LoopEffect, OnceEffect, SymbolEffect, TransitionEffect, Trigger,
     };
-    use ds_core::vocab::Shown;
 
     /// What each of a series of renders wears: its anim and alias.
     fn wear(series: &[SymbolEffect]) -> Vec<(Option<Anim>, Option<&'static str>)> {
@@ -176,7 +174,7 @@ mod tests {
     fn a_transition_stands_at_its_first_state_and_plays_on_the_next() {
         let appear = |shown| SymbolEffect::Transition(TransitionEffect::Appear, shown);
         let disappear = |shown| SymbolEffect::Transition(TransitionEffect::Disappear, shown);
-        let (visible, hidden) = (Shown::Visible, Shown::Hidden);
+        let (visible, hidden) = (true, false);
         let anims = |series: &[SymbolEffect]| -> Vec<Option<Anim>> {
             wear(series).into_iter().map(|(anim, _)| anim).collect()
         };
@@ -200,15 +198,15 @@ mod tests {
         let hidden = |effect| advance(Memory::default(), effect).1.hidden;
         assert!(hidden(SymbolEffect::Transition(
             TransitionEffect::Appear,
-            Shown::Hidden
+            false
         )));
         assert!(hidden(SymbolEffect::Transition(
             TransitionEffect::Disappear,
-            Shown::Hidden
+            false
         )));
         assert!(!hidden(SymbolEffect::Transition(
             TransitionEffect::Appear,
-            Shown::Visible
+            true
         )));
         assert_eq!(
             advance(Memory::default(), SymbolEffect::NONE).1,

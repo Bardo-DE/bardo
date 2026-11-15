@@ -21,7 +21,6 @@ use crate::{
 };
 use dioxus::core::queue_effect;
 use dioxus::prelude::*;
-use ds_core::vocab::Shown;
 
 /// How many pixels the whole showing spans, for the spring's rest: a hundredth of it is well
 /// under a visible step of a slide or a fade.
@@ -54,21 +53,18 @@ pub enum Step {
 }
 
 /// The step from `stage` given the caller's `shown`.
-pub(crate) fn step(stage: Stage, shown: Shown) -> Step {
+pub(crate) fn step(stage: Stage, shown: bool) -> Step {
     match (stage, shown) {
-        (Stage::Leaving | Stage::Gone | Stage::Unmounted, Shown::Visible) => Step::Enter,
-        (Stage::Arrival | Stage::Up, Shown::Hidden) => Step::Leave,
-        (Stage::Arrival | Stage::Up, Shown::Visible)
-        | (Stage::Leaving | Stage::Gone | Stage::Unmounted, Shown::Hidden) => Step::Stay,
+        (Stage::Leaving | Stage::Gone | Stage::Unmounted, true) => Step::Enter,
+        (Stage::Arrival | Stage::Up, false) => Step::Leave,
+        (Stage::Arrival | Stage::Up, true)
+        | (Stage::Leaving | Stage::Gone | Stage::Unmounted, false) => Step::Stay,
     }
 }
 
 /// Where the spring stands for `shown`.
-fn place(shown: Shown) -> f32 {
-    match shown {
-        Shown::Visible => 1.0,
-        Shown::Hidden => 0.0,
-    }
+fn place(shown: bool) -> f32 {
+    if shown { 1.0 } else { 0.0 }
 }
 
 /// The surface's showing for one render.
@@ -127,23 +123,24 @@ impl SpringPresence {
 /// The showing hook. `shown` is the caller's (`None`: always shown); `entrance` is the keyframe
 /// its first showing plays; `on_hidden` runs when a hidden surface's spring comes to rest.
 pub fn use_spring_presence(
-    shown: Option<Shown>,
+    shown: Option<bool>,
     on_hidden: Option<EventHandler<()>>,
     entrance: Anim,
 ) -> SpringPresence {
-    let now = shown.unwrap_or(Shown::Visible);
+    let now = shown.unwrap_or(true);
     let timer = use_motion_timer(entrance);
     let spring = use_spring_motion(place(now), PxPerUnit(SHOWING_PX));
     // Subscribe: each frame, and the rest, renders the surface again.
     let frame = spring.frame();
     let mut stage = use_hook(|| {
-        CopyValue::new(match now {
-            Shown::Visible => Stage::Arrival,
-            Shown::Hidden => Stage::Unmounted,
+        CopyValue::new(if now {
+            Stage::Arrival
+        } else {
+            Stage::Unmounted
         })
     });
     use_hook(|| {
-        if now == Shown::Visible {
+        if now {
             timer.start(EventHandler::new(|()| {}));
         }
     });
@@ -179,17 +176,16 @@ pub fn use_spring_presence(
 #[cfg(test)]
 mod tests {
     use super::{Stage, Step, step};
-    use ds_core::vocab::Shown;
 
     #[test]
     fn each_stage_steps_by_what_the_host_asks() {
-        const CASES: &[(Stage, Shown, Step)] = &[
-            (Stage::Up, Shown::Visible, Step::Stay),
-            (Stage::Up, Shown::Hidden, Step::Leave),
-            (Stage::Leaving, Shown::Hidden, Step::Stay),
-            (Stage::Leaving, Shown::Visible, Step::Enter),
-            (Stage::Gone, Shown::Hidden, Step::Stay),
-            (Stage::Gone, Shown::Visible, Step::Enter),
+        const CASES: &[(Stage, bool, Step)] = &[
+            (Stage::Up, true, Step::Stay),
+            (Stage::Up, false, Step::Leave),
+            (Stage::Leaving, false, Step::Stay),
+            (Stage::Leaving, true, Step::Enter),
+            (Stage::Gone, false, Step::Stay),
+            (Stage::Gone, true, Step::Enter),
         ];
         for &(stage, shown, want) in CASES {
             assert_eq!(step(stage, shown), want, "{stage:?} {shown:?}");

@@ -7,17 +7,14 @@ use super::model::{Life, PresenceIn, PresenceOut, PresenceParams};
 use crate::settle::settle;
 use ds_core::machine::Machine;
 use ds_core::time::stamp::Stamp;
-use ds_core::vocab::Shown;
 
 /// The input a render's `shown` makes, from `last` (`None` before the first render). A surface
 /// mounted shown plays its entrance; one mounted hidden stays hidden and says nothing.
-pub fn change(last: Option<Shown>, now: Shown) -> Option<PresenceIn> {
+pub fn change(last: Option<bool>, now: bool) -> Option<PresenceIn> {
     match (last, now) {
-        (None | Some(Shown::Hidden), Shown::Visible) => Some(PresenceIn::Show),
-        (Some(Shown::Visible), Shown::Hidden) => Some(PresenceIn::Hide),
-        (Some(Shown::Visible), Shown::Visible) | (None | Some(Shown::Hidden), Shown::Hidden) => {
-            None
-        }
+        (None | Some(false), true) => Some(PresenceIn::Show),
+        (Some(true), false) => Some(PresenceIn::Hide),
+        (Some(true), true) | (None | Some(false), false) => None,
     }
 }
 
@@ -94,7 +91,6 @@ mod tests {
     use crate::presence::{EntranceAlias as A, Exit};
     use ds_core::machine::Machine;
     use ds_core::time::stamp::Stamp;
-    use ds_core::vocab::Shown;
     use ds_style::appearance::motion::MotionLevel;
 
     const OUT: P = P::Leaving(Exit::OsdOut);
@@ -167,12 +163,12 @@ mod tests {
     fn only_a_change_of_shown_is_an_input() {
         #[rustfmt::skip]
         let cases = [
-            (None, Shown::Visible, Some(I::Show)),
-            (None, Shown::Hidden, None),
-            (Some(Shown::Hidden), Shown::Visible, Some(I::Show)),
-            (Some(Shown::Visible), Shown::Hidden, Some(I::Hide)),
-            (Some(Shown::Visible), Shown::Visible, None),
-            (Some(Shown::Hidden), Shown::Hidden, None),
+            (None, true, Some(I::Show)),
+            (None, false, None),
+            (Some(false), true, Some(I::Show)),
+            (Some(true), false, Some(I::Hide)),
+            (Some(true), true, None),
+            (Some(false), false, None),
         ];
         for (last, now, want) in cases {
             assert_eq!(change(last, now), want, "{last:?} -> {now:?}");
@@ -182,8 +178,8 @@ mod tests {
     #[test]
     fn only_a_drawn_surface_has_a_presence() {
         assert_eq!(P::Hidden.drawn_slug(), None);
-        assert_eq!(P::Hidden.shown(), Shown::Hidden);
+        assert!(!P::Hidden.shown());
         assert_eq!(OUT.drawn_slug(), Some("leaving"));
-        assert_eq!(P::Entering.shown(), Shown::Visible);
+        assert!(P::Entering.shown());
     }
 }

@@ -320,7 +320,7 @@ fn the_readout_is_the_ratio_of_the_derived_tokens() {
         card::{POST_DARK, POST_LIGHT},
         readout::readout,
     };
-    use ds_core::colour::contrast::{Verdict, ratio};
+    use ds_core::colour::contrast::ratio;
     for scheme in [Scheme::Light, Scheme::Dark] {
         let dark = scheme == Scheme::Dark;
         let space = SpaceLook {
@@ -351,7 +351,7 @@ fn the_readout_is_the_ratio_of_the_derived_tokens() {
         let got: Vec<f64> = checks.iter().map(|check| check.measured).collect();
         assert_eq!(got, want, "dark={dark}");
         assert!(
-            checks.iter().all(|check| check.verdict() == Verdict::Pass),
+            checks.iter().all(|check| check.clears()),
             "dark={dark}: {checks:?}"
         );
     }

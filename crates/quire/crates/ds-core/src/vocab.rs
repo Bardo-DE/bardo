@@ -1,7 +1,8 @@
 //! The props vocabulary every component shares (design/04-COMPONENTS.md "Shared vocabulary").
 //!
-//! No `bool` props: every two-state prop is one of these enums, so a call site reads
-//! `Availability::Disabled`, never `true`.
+//! A yes/no prop is a `bool` (`shown`, `selected`, `muted`, `active`); an enum here is a choice
+//! with more than two states, or one that carries more than a fact. The `*_word` functions write a
+//! `bool` as the stylesheet word its `data-*` attribute selects on.
 
 use crate::word::Word;
 use serde::{Deserialize, Serialize};
@@ -39,18 +40,6 @@ pub enum Severity {
     Danger,
 }
 
-/// Whether what a control shows or opens is up (design/30 section 1.5): a surface or a tooltip
-/// its caller drives, a menu, popover or disclosure a trigger opens (`aria-expanded`), a
-/// notification group's expansion.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum Shown {
-    /// Up, at once.
-    Visible,
-    /// Down, even under the pointer.
-    #[default]
-    Hidden,
-}
-
 /// What kind of surface a control opens (`aria-haspopup`): the word that tells assistive
 /// technology a press brings up a menu, a dialog or a list of choices.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
@@ -61,27 +50,6 @@ pub enum HasPopup {
     Dialog,
     /// A list of options to choose one from.
     Listbox,
-}
-
-/// Whether an option is the selected one (`aria-selected`), or the place the person is
-/// (`aria-current`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum Selection {
-    /// The selected option.
-    Selected,
-    /// Any other option.
-    #[default]
-    Unselected,
-}
-
-/// Unread weight versus read weight: `data-emphasis="strong|plain"`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum Emphasis {
-    /// Heavier: unread.
-    Strong,
-    /// Lighter: read.
-    #[default]
-    Plain,
 }
 
 /// Where an item stands in a drag (design/04-COMPONENTS.md section 34): the place under the
@@ -158,70 +126,18 @@ impl PressPhase {
     }
 }
 
-/// How the person last drove the surface: `data-modality` on `.ds` (design/30 section 1.5).
-///
-/// blitz-dom hard-codes `:focus-visible` and `:focus-within` to false and a click does not focus
-/// a button (spike S12), so the focus ring is `.ds[*|data-modality=keyboard] :focus` and the host
-/// says which modality is current.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum InputModality {
-    /// The last input was a pointer: no focus rings.
-    #[default]
-    Pointer,
-    /// The last input was a key: focus rings show.
-    Keyboard,
-}
-
-/// How focus is drawn on an element (design/30 section 1.4, `data-focus`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum FocusStyle {
-    /// A translucent accent ring around the element, for keyboard modality only: controls and
-    /// fields.
-    #[default]
-    Ring,
-    /// The element's own fill: accent with accent ink while its list is focused in the active
-    /// window, grey otherwise. List rows, menu rows and launcher rows.
-    Highlight,
-}
-
 /// The state every row shares (design/30 section 1.5): list, menu, palette, sidebar and
 /// settings rows are drawn from the same four facts, so a row takes one prop, not four.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct RowState {
-    /// Whether the row is the selected one, or the place the person is.
-    pub selection: Selection,
-    /// Whether the row is unread or read weight.
-    pub emphasis: Emphasis,
+    /// Whether the row is the selected one, or the place the person is (`aria-selected`).
+    pub selection: bool,
+    /// Whether the row is in unread (strong) weight; `false` is read weight.
+    pub emphasis: bool,
     /// Whether the row takes input, and whether it is working.
     pub availability: Availability,
     /// The row's part in a drag.
     pub drop: DropState,
-}
-
-/// Whether a thing is heard, or shown at full strength (design/30 section 1.5): a volume's
-/// speaker glyph, an avatar's colour (an account not in view keeps its hue at .55 of its
-/// chroma; `data-muting`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum Muting {
-    /// Heard, or the colour as given.
-    #[default]
-    Audible,
-    /// Muted: a speaker's waves go and a slash comes in; a colour keeps its lightness and hue
-    /// at .55 of its chroma.
-    Muted,
-}
-
-/// Whether a thing is taking part right now (`data-activity`, design/30 section 1.5): an
-/// `Active` orb listens and turns; an `Inactive` one is held still, and nothing runs for it. A
-/// window is `Active` while it is the one the person works in (`.ds[data-activity]`); a prop of
-/// a component that has no window to ask defaults to `Inactive`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum Activity {
-    /// Taking part.
-    Active,
-    /// At rest.
-    #[default]
-    Inactive,
 }
 
 /// A proportion in thousandths: 0 is none, 1000 is all. Written inline as `--f`.
@@ -311,16 +227,6 @@ pub enum ShortcutKey {
     F(u8),
 }
 
-/// A shape a key's glyph draws as, for `KeyEquivalent`'s `data-glyph`: a hook for a face rule that only
-/// some glyphs need. `Arrow` is the only member today — a Small cap's `data-glyph="arrow"`
-/// draws Up, Down, Left and Right larger than the rest of the small face (at 9.5 px
-/// an arrow's stroke reads as a dash).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-pub enum GlyphKind {
-    /// Up, Down, Left, Right.
-    Arrow,
-}
-
 /// A key combination, modifiers first, rendered as glyphs with no separator: `⌃T`
 /// (design/04-COMPONENTS.md O-2). Bind a standard one with [`Shortcut::standard`] and an app's
 /// own with [`Shortcut::custom`], which refuses a reserved combination (design/27 section 6.2).
@@ -395,15 +301,14 @@ impl ShortcutKey {
         (1..=12).contains(&n).then_some(ShortcutKey::F(n))
     }
 
-    /// The `data-glyph` shape `KeyEquivalent` writes for this key, or `None` for every key whose glyph
-    /// needs no face rule of its own.
-    pub fn glyph_kind(self) -> Option<GlyphKind> {
-        match self {
-            ShortcutKey::Up | ShortcutKey::Down | ShortcutKey::Left | ShortcutKey::Right => {
-                Some(GlyphKind::Arrow)
-            }
-            _ => None,
-        }
+    /// Whether this is an arrow key: `KeyEquivalent` writes `data-glyph="arrow"` for it, so the
+    /// cap draws Up, Down, Left and Right larger than the rest of the small face (at 9.5 px an
+    /// arrow's stroke reads as a dash).
+    pub fn is_arrow(self) -> bool {
+        matches!(
+            self,
+            ShortcutKey::Up | ShortcutKey::Down | ShortcutKey::Left | ShortcutKey::Right
+        )
     }
 }
 
@@ -463,46 +368,38 @@ impl Check {
     }
 }
 
-impl Shown {
-    /// The other state: what a press on a trigger asks for.
-    pub fn flipped(self) -> Self {
-        match self {
-            Shown::Visible => Shown::Hidden,
-            Shown::Hidden => Shown::Visible,
-        }
-    }
-
-    /// The `aria-expanded` word.
-    pub fn aria(self) -> &'static str {
-        match self {
-            Shown::Visible => "true",
-            Shown::Hidden => "false",
-        }
-    }
+/// The `aria-expanded`, `aria-selected`, `aria-current` or `aria-pressed` word for a fact.
+pub fn aria_word(on: bool) -> &'static str {
+    if on { "true" } else { "false" }
 }
 
-impl Selection {
-    /// The `aria-current` word, where the selected one is the place the person is.
-    pub fn aria_current(self) -> &'static str {
-        self.aria()
-    }
+/// `data-shown`: `visible` while a thing is up, `hidden` while it is down.
+pub fn shown_word(shown: bool) -> &'static str {
+    if shown { "visible" } else { "hidden" }
+}
 
-    /// The `aria-selected` word.
-    pub fn aria(self) -> &'static str {
-        match self {
-            Selection::Selected => "true",
-            Selection::Unselected => "false",
-        }
-    }
+/// `data-selected`: `selected` for the selected option, `unselected` for any other.
+pub fn selected_word(selected: bool) -> &'static str {
+    if selected { "selected" } else { "unselected" }
+}
 
-    /// `Selected` when `a == b`.
-    pub fn of<T: PartialEq>(a: &T, b: &T) -> Self {
-        if a == b {
-            Selection::Selected
-        } else {
-            Selection::Unselected
-        }
-    }
+/// `data-activity`: `active` while a thing takes part, `inactive` at rest.
+pub fn activity_word(active: bool) -> &'static str {
+    if active { "active" } else { "inactive" }
+}
+
+/// `data-emphasis`: `strong` for unread weight, `plain` for read weight.
+pub fn emphasis_word(strong: bool) -> &'static str {
+    if strong { "strong" } else { "plain" }
+}
+
+/// `data-modality` on `.ds`: `keyboard` after a key (focus rings show), `pointer` after a pointer.
+///
+/// blitz-dom hard-codes `:focus-visible` and `:focus-within` to false and a click does not focus
+/// a button (spike S12), so the focus ring is `.ds[*|data-modality=keyboard] :focus` and the host
+/// says which modality is current.
+pub fn modality_word(keyboard: bool) -> &'static str {
+    if keyboard { "keyboard" } else { "pointer" }
 }
 
 impl Fraction {
@@ -638,9 +535,8 @@ mod fraction_tests {
 #[cfg(test)]
 mod word_tests {
     use super::{
-        Activity, ActorMark, Availability, Check, CompanionPresence, Dismiss, DropState,
-        EffectMark, Emphasis, FocusStyle, InputModality, MemoryVerb, Muting, PressPhase, Selection,
-        Severity, Shown,
+        ActorMark, Availability, Check, CompanionPresence, Dismiss, DropState, EffectMark,
+        MemoryVerb, PressPhase, Severity,
     };
     use crate::word::Word;
 
@@ -655,7 +551,6 @@ mod word_tests {
 
     #[test]
     fn every_vocabulary_word_parses_back_from_its_slug() {
-        round_trips::<Activity>();
         round_trips::<ActorMark>();
         round_trips::<Availability>();
         round_trips::<Check>();
@@ -663,19 +558,13 @@ mod word_tests {
         round_trips::<Dismiss>();
         round_trips::<DropState>();
         round_trips::<EffectMark>();
-        round_trips::<Emphasis>();
-        round_trips::<FocusStyle>();
-        round_trips::<InputModality>();
         round_trips::<MemoryVerb>();
-        round_trips::<Muting>();
         round_trips::<PressPhase>();
-        round_trips::<Selection>();
         round_trips::<Severity>();
-        round_trips::<Shown>();
     }
 
     #[test]
-    fn check_and_shown_write_their_aria_words_and_flip() {
+    fn check_writes_its_aria_word_and_flips() {
         const CHECKS: &[(Check, &str, Check)] = &[
             (Check::On, "true", Check::Off),
             (Check::Off, "false", Check::On),
@@ -684,14 +573,6 @@ mod word_tests {
         for &(check, aria, flipped) in CHECKS {
             assert_eq!(check.aria(), aria, "{check:?}");
             assert_eq!(check.flipped(), flipped, "{check:?}");
-        }
-        const SHOWN: &[(Shown, &str, Shown)] = &[
-            (Shown::Visible, "true", Shown::Hidden),
-            (Shown::Hidden, "false", Shown::Visible),
-        ];
-        for &(shown, aria, flipped) in SHOWN {
-            assert_eq!(shown.aria(), aria, "{shown:?}");
-            assert_eq!(shown.flipped(), flipped, "{shown:?}");
         }
     }
 }

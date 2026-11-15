@@ -11,7 +11,6 @@ use super::step::change;
 use super::{Life, Presence, PresenceOut, PresenceParams};
 use crate::machine::use_machine;
 use dioxus::prelude::*;
-use ds_core::vocab::Shown;
 use ds_style::scope::use_scope_signal;
 
 pub use super::EntranceAlias;
@@ -29,7 +28,7 @@ pub struct Presented {
 /// `shown` steps the machine at once (so the render draws the new phase), and its settle timer
 /// is the machine's wake. `on_hidden` runs when the exit has settled.
 pub fn use_presence(
-    shown: Shown,
+    shown: bool,
     spec: PresenceSpec,
     on_hidden: Option<EventHandler<()>>,
 ) -> Presented {
@@ -49,7 +48,7 @@ pub fn use_presence(
             }
         },
     );
-    let mut last = use_hook(|| CopyValue::new(None::<Shown>));
+    let mut last = use_hook(|| CopyValue::new(None::<bool>));
     let input = change(*last.peek(), shown);
     last.set(Some(shown));
     if let Some(input) = input {

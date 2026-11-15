@@ -4,7 +4,6 @@
 use crate::appearance::{blur::BlurState, material::Material};
 use crate::appearance::{resolve::Resolved, theme::Scheme};
 use dioxus::prelude::*;
-use ds_core::vocab::{Activity, InputModality};
 
 /// The enclosing scope, as `Ds` and `Surface` provide it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -17,10 +16,11 @@ pub struct Scope {
     pub material: Material,
     /// Whether the compositor blurs behind this surface.
     pub blur: BlurState,
-    /// How the person last drove the surface.
-    pub modality: InputModality,
+    /// Whether the person last drove the surface with the keyboard (focus rings show); `false`
+    /// after a pointer.
+    pub modality: bool,
     /// Whether the window is the one the person is working in.
-    pub activity: Activity,
+    pub activity: bool,
 }
 
 /// The enclosing scope. Panics outside a `Ds`: every quire component is drawn inside one.

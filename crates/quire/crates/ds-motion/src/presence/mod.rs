@@ -15,8 +15,6 @@ pub use exit::Exit;
 pub use model::{EntranceAlias, Life, PresenceIn, PresenceOut, PresenceParams};
 pub use step::change;
 
-use ds_core::vocab::Shown;
-
 /// An item's motion state: `data-presence`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Presence {
@@ -50,10 +48,10 @@ impl Presence {
     }
 
     /// The `data-shown` value: whether anything is drawn.
-    pub fn shown(self) -> Shown {
+    pub fn shown(self) -> bool {
         match self {
-            Presence::Hidden => Shown::Hidden,
-            Presence::Entering | Presence::Present | Presence::Leaving(_) => Shown::Visible,
+            Presence::Hidden => false,
+            Presence::Entering | Presence::Present | Presence::Leaving(_) => true,
         }
     }
 }

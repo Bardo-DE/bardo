@@ -9,7 +9,7 @@ use crate::detail::morph::MorphStyle;
 use crate::detail::morph_glyph::MorphGlyph;
 use crate::detail::tween::use_tween;
 use dioxus::prelude::*;
-use ds_core::vocab::{Fraction, Shown};
+use ds_core::vocab::Fraction;
 use ds_style::icon::Icon;
 use ds_style::icon::posed::{PartPose, PosedGlyph, Thousandths};
 use ds_style::icon::render::{Glyph, IconSize};
@@ -17,7 +17,7 @@ use ds_style::icon::render::{Glyph, IconSize};
 /// How much of the strokes a draw-on has drawn when `route` is at rest.
 fn drawn_target(route: Route) -> Fraction {
     match route {
-        Route::Draw(Shown::Hidden) => Fraction(0),
+        Route::Draw(false) => Fraction(0),
         _ => Fraction(1000),
     }
 }

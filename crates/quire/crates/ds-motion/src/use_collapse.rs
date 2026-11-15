@@ -4,7 +4,7 @@
 
 use crate::detail::tween::{TweenSpec, use_tween};
 use ds_core::geometry::units::Px;
-use ds_core::vocab::{Fraction, Shown};
+use ds_core::vocab::Fraction;
 use ds_style::tokens::{easing::EasingToken, timing::DurationToken};
 
 /// How open the content is, thousandths: 0 closed, 1000 open.
@@ -51,11 +51,8 @@ impl Collapse {
 
 /// Follow `shown`: it stands where `shown` says on mount, and each change moves it there from
 /// wherever it is now, so a toggle mid-move reverses without a jump.
-pub fn use_collapse(shown: Shown) -> Collapse {
-    let target = match shown {
-        Shown::Visible => OPEN,
-        Shown::Hidden => Fraction(0),
-    };
+pub fn use_collapse(shown: bool) -> Collapse {
+    let target = if shown { OPEN } else { Fraction(0) };
     let open = use_tween(
         target,
         TweenSpec {

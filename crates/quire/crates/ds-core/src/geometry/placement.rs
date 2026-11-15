@@ -27,16 +27,6 @@ pub enum Align {
     End,
 }
 
-/// Whether the surface may move to the opposite side when it does not fit.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Flip {
-    /// Flip, then clamp: menus.
-    Allowed,
-    /// Only clamp: hover cards slide along the edge instead (design/06-INTERACTIONS.md
-    /// section 3).
-    Never,
-}
-
 /// Where a surface wants to be. The prose `Placement::BottomEnd` in the component docs is
 /// `Placement::new(Side::Bottom, Align::End)`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -45,8 +35,9 @@ pub struct Placement {
     pub side: Side,
     /// The alignment along it.
     pub align: Align,
-    /// Whether it may flip.
-    pub flip: Flip,
+    /// Whether it may move to the opposite side when it does not fit: menus flip, then clamp;
+    /// hover cards only clamp and slide along the edge (design/06-INTERACTIONS.md section 3).
+    pub flip: bool,
 }
 
 impl Placement {
@@ -55,14 +46,14 @@ impl Placement {
         Placement {
             side,
             align,
-            flip: Flip::Allowed,
+            flip: true,
         }
     }
 
     /// The same placement, never flipping.
     pub const fn no_flip(self) -> Self {
         Placement {
-            flip: Flip::Never,
+            flip: false,
             ..self
         }
     }
@@ -78,7 +69,7 @@ pub struct Placed {
 }
 
 /// Place `content` against `anchor` inside `bounds`, `gap` away from it: flip when it does
-/// not fit (unless [`Flip::Never`]), then clamp 8 px inside the bounds.
+/// not fit (unless `want.flip` is false), then clamp 8 px inside the bounds.
 ///
 /// `Align::Start` lines the leading edges up exactly; an offset such as a floating menu's
 /// `left - 8` is the caller's, applied by moving the anchor. The origin is relative to the
@@ -86,9 +77,10 @@ pub struct Placed {
 /// fits, or if it has more room than the wanted one; the clamp then keeps the surface 8 px
 /// inside the bounds, its top-left edge winning when the surface is larger than the bounds.
 pub fn place(anchor: Rect, content: Size, bounds: Rect, want: Placement, gap: Px) -> Placed {
-    let side = match want.flip {
-        Flip::Never => want.side,
-        Flip::Allowed => choose_side(anchor, content, bounds, want.side, gap),
+    let side = if want.flip {
+        choose_side(anchor, content, bounds, want.side, gap)
+    } else {
+        want.side
     };
     let at = origin_on(side, want.align, anchor, content, gap);
     let x = clamp_axis(at.x, content.width, bounds.left(), bounds.right());

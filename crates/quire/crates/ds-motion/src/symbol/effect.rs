@@ -5,7 +5,6 @@
 //! [`Trigger`] changes, a `While` effect plays for as long as it is [`EffectActivity::Active`], and a
 //! `Transition` effect plays when its icon arrives, leaves, draws or is replaced.
 
-use ds_core::vocab::Shown;
 use ds_core::word::Word;
 
 /// A value a caller changes to fire a `Once` effect; the same value again fires nothing.
@@ -96,13 +95,12 @@ pub enum SymbolEffect {
     While(LoopEffect, EffectActivity),
     /// Plays when the visibility, or for `Replace` the icon, changes; the first render stands at
     /// the given state.
-    Transition(TransitionEffect, Shown),
+    Transition(TransitionEffect, bool),
 }
 
 impl SymbolEffect {
     /// The effect that plays nothing: a symbol whose motion is driven another way renders it.
-    pub const NONE: SymbolEffect =
-        SymbolEffect::Transition(TransitionEffect::Replace, Shown::Visible);
+    pub const NONE: SymbolEffect = SymbolEffect::Transition(TransitionEffect::Replace, true);
 
     /// The effect's name, `data-symbol`.
     pub fn slug(self) -> &'static str {

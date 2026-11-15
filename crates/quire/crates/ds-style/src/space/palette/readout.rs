@@ -3,14 +3,14 @@
 //! Every number here is `contrast::ratio` of a colour [`derive`] produced, or of the Post
 //! card's own literals. The editor shows these and computes nothing of its own.
 //!
-//! A pass or fail is a [`Verdict`] (design/03-COLOR.md section 6).
+//! A pass or fail is a `bool` (design/03-COLOR.md section 6).
 
 use super::derive;
 use crate::appearance::{accent::Accent, theme::Scheme};
 use crate::space::look::SpaceLook;
 use crate::space::palette::card::card;
 use crate::tokens::{accent_table::accent_of, hex::Hex};
-use ds_core::colour::contrast::{Verdict, ratio};
+use ds_core::colour::contrast::ratio;
 
 /// One measured pair, and the floor it has to clear.
 #[derive(Debug, Clone, PartialEq)]
@@ -25,12 +25,8 @@ pub struct ContrastCheck {
 
 impl ContrastCheck {
     /// Whether the pair clears its floor.
-    pub fn verdict(&self) -> Verdict {
-        if self.measured >= self.need {
-            Verdict::Pass
-        } else {
-            Verdict::Fail
-        }
+    pub fn clears(&self) -> bool {
+        self.measured >= self.need
     }
 }
 

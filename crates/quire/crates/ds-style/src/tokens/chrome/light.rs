@@ -3,8 +3,6 @@
 //! the group. The window frame's stylesheet draws it; a compositor that draws the lights itself
 //! asks here.
 
-use ds_core::vocab::{Activity, Shown};
-
 /// Whether the pointer is over any of the three lights.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum GroupHover {
@@ -30,20 +28,20 @@ pub struct LightState {
     /// The disc.
     pub fill: LightFill,
     /// Whether the mark (x, minus, arrows) is on the disc.
-    pub marks: Shown,
+    pub marks: bool,
 }
 
 /// The lights in the window `activity` describes, with the pointer as `hover` says: coloured in
 /// the key window and whenever the pointer is over the group, grey otherwise; the marks show only
 /// over the group.
-pub fn light_state(activity: Activity, hover: GroupHover) -> LightState {
+pub fn light_state(activity: bool, hover: GroupHover) -> LightState {
     let fill = match (activity, hover) {
-        (Activity::Active, _) | (Activity::Inactive, GroupHover::Over) => LightFill::Colour,
-        (Activity::Inactive, GroupHover::Away) => LightFill::Grey,
+        (true, _) | (false, GroupHover::Over) => LightFill::Colour,
+        (false, GroupHover::Away) => LightFill::Grey,
     };
     let marks = match hover {
-        GroupHover::Over => Shown::Visible,
-        GroupHover::Away => Shown::Hidden,
+        GroupHover::Over => true,
+        GroupHover::Away => false,
     };
     LightState { fill, marks }
 }
@@ -51,36 +49,35 @@ pub fn light_state(activity: Activity, hover: GroupHover) -> LightState {
 #[cfg(test)]
 mod tests {
     use super::{GroupHover, LightFill, LightState, light_state};
-    use ds_core::vocab::{Activity, Shown};
 
-    const CASES: &[(&str, Activity, GroupHover, LightFill, Shown)] = &[
+    const CASES: &[(&str, bool, GroupHover, LightFill, bool)] = &[
         (
             "key window at rest",
-            Activity::Active,
+            true,
             GroupHover::Away,
             LightFill::Colour,
-            Shown::Hidden,
+            false,
         ),
         (
             "key window under the pointer",
-            Activity::Active,
+            true,
             GroupHover::Over,
             LightFill::Colour,
-            Shown::Visible,
+            true,
         ),
         (
             "inactive window at rest",
-            Activity::Inactive,
+            false,
             GroupHover::Away,
             LightFill::Grey,
-            Shown::Hidden,
+            false,
         ),
         (
             "inactive window under the pointer",
-            Activity::Inactive,
+            false,
             GroupHover::Over,
             LightFill::Colour,
-            Shown::Visible,
+            true,
         ),
     ];
 

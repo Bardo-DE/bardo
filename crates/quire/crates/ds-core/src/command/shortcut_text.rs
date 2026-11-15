@@ -4,7 +4,7 @@
 //! included); any other shortcut shows its own chord with Command as the platform's primary.
 
 use crate::standard_action::DESIGN_PLATFORM;
-use crate::vocab::{GlyphKind, Shortcut};
+use crate::vocab::Shortcut;
 use chordkit::{Action, Chord, Context, Convention, ConventionTable, Keymap, StandardAction};
 
 /// One key cap of a drawn shortcut.
@@ -12,8 +12,8 @@ use chordkit::{Action, Chord, Context, Convention, ConventionTable, Keymap, Stan
 pub struct KeyCap {
     /// The text on the cap.
     pub text: String,
-    /// The face rule the cap needs, if any (arrows draw larger).
-    pub kind: Option<GlyphKind>,
+    /// Whether the cap is an arrow, which draws larger (`data-glyph="arrow"`).
+    pub arrow: bool,
 }
 
 /// `shortcut` as `keymap`'s platform shows it.
@@ -44,14 +44,14 @@ pub fn shortcut_caps(keymap: &Keymap, shortcut: &Shortcut) -> Vec<KeyCap> {
             .into_iter()
             .map(|key| KeyCap {
                 text: key.glyph(),
-                kind: key.glyph_kind(),
+                arrow: key.is_arrow(),
             })
             .collect();
     }
     split_caps(&shortcut_text(keymap, shortcut))
         .into_iter()
         .map(|text| KeyCap {
-            kind: arrow(&text),
+            arrow: arrow(&text),
             text,
         })
         .collect()
@@ -112,8 +112,8 @@ pub(super) fn split_caps(text: &str) -> Vec<String> {
         .collect()
 }
 
-pub(super) fn arrow(cap: &str) -> Option<GlyphKind> {
-    matches!(cap, "↑" | "↓" | "←" | "→").then_some(GlyphKind::Arrow)
+pub(super) fn arrow(cap: &str) -> bool {
+    matches!(cap, "↑" | "↓" | "←" | "→")
 }
 
 #[cfg(test)]
@@ -208,7 +208,7 @@ mod tests {
     fn arrows_ask_for_the_larger_face() {
         let up = Shortcut::standard(StandardAction::MissionControl);
         let caps = shortcut_caps(&keymap(ours()), &up);
-        assert_eq!(caps.last().and_then(|cap| cap.kind), Some(GlyphKind::Arrow));
-        assert_eq!(caps.first().and_then(|cap| cap.kind), None);
+        assert_eq!(caps.last().map(|cap| cap.arrow), Some(true));
+        assert_eq!(caps.first().map(|cap| cap.arrow), Some(false));
     }
 }
