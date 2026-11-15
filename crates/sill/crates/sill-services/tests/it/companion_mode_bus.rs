@@ -8,13 +8,11 @@ use crate::companion_support;
 use std::sync::{Arc, Mutex};
 
 use companion_support::stand_ins::{ActsAs, StandInCompanion, StandInModeSession, SwitchAnswer};
-use companion_support::{Desk, json, wire};
+use companion_support::{Desk, ask_input, json, serve, wire};
 use companion_wire::AnswerPhase;
-use docket_core::{ContextKeep, Keep};
 use docket_dbus::{COMPANION_BUS, INTENTS_BUS};
 use docket_permissions_core::Mode;
-use prov::SpaceId;
-use sill_model::companion::{AskInput, CompanionCommand, ModeMsg, mode_view};
+use sill_model::companion::{CompanionCommand, ModeMsg, mode_view};
 use zbus::Connection;
 
 struct Bench {
@@ -28,39 +26,29 @@ async fn bench() -> Option<Bench> {
     let mut desk = companion_support::desk().await?;
     let view = Arc::new(Mutex::new(json(&wire(AnswerPhase::Done, "Done."))));
     let companiond = desk.peer(COMPANION_BUS).await;
-    companiond
-        .object_server()
-        .at(
-            "/org/quire/Companion1",
-            StandInCompanion {
-                session: Some("s-1".to_owned()),
-                log: desk.log.clone(),
-                view,
-                acts: ActsAs::Accepts,
-                routing: None,
-            },
-        )
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&companiond)
-        .await
-        .expect("the object server answers");
+    serve(
+        &companiond,
+        "/org/quire/Companion1",
+        StandInCompanion {
+            session: Some("s-1".to_owned()),
+            log: desk.log.clone(),
+            view,
+            acts: ActsAs::Accepts,
+            routing: None,
+        },
+    )
+    .await;
     let answer = Arc::new(Mutex::new(SwitchAnswer::Done));
     let intentd = desk.peer(INTENTS_BUS).await;
-    intentd
-        .object_server()
-        .at(
-            "/org/quire/Intents1",
-            StandInModeSession {
-                log: desk.log.clone(),
-                answer: answer.clone(),
-            },
-        )
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&intentd)
-        .await
-        .expect("the object server answers");
+    serve(
+        &intentd,
+        "/org/quire/Intents1",
+        StandInModeSession {
+            log: desk.log.clone(),
+            answer: answer.clone(),
+        },
+    )
+    .await;
     desk.seated().await;
     Some(Bench {
         desk,
@@ -72,19 +60,8 @@ async fn bench() -> Option<Bench> {
 
 impl Bench {
     fn ask(&self) {
-        self.desk.send(CompanionCommand::Ask(AskInput {
-            prompt: "tidy the inbox".to_owned(),
-            keep: ContextKeep {
-                query: Keep::Dropped,
-                results: Keep::Dropped,
-                selection: Keep::Dropped,
-                window: Keep::Dropped,
-            },
-            window: None,
-            app: None,
-            space: SpaceId::desktop(),
-            via: docket_core::TurnVia::Typed,
-        }));
+        self.desk
+            .send(CompanionCommand::Ask(ask_input("tidy the inbox")));
     }
 
     fn mode(&self, msg: ModeMsg) {

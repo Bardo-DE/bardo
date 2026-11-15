@@ -235,10 +235,7 @@ fn focused_is_the_active_toplevel_and_its_entry() {
         ),
         (
             "the active one among others",
-            toplevels(vec![
-                toplevel(1, "game", false),
-                toplevel(2, "foot", true),
-            ]),
+            toplevels(vec![toplevel(1, "game", false), toplevel(2, "foot", true)]),
             Some(("foot", Some("foot"))),
         ),
         (
@@ -298,10 +295,7 @@ fn the_wanted_profile_follows_the_active_window() {
         (
             "only the active window counts",
             &none,
-            on(vec![
-                toplevel(1, "foot", false),
-                toplevel(3, "plain", true),
-            ]),
+            on(vec![toplevel(1, "foot", false), toplevel(3, "plain", true)]),
             "default",
         ),
     ];

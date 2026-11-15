@@ -4,9 +4,7 @@ use desktop_client::DesktopState;
 use desktop_client::toplevel::{Toplevel as WireToplevel, ToplevelFlag, ToplevelFlags};
 use sill_launcher::WindowKey;
 use sill_model::ids::WorkspaceKey;
-use sill_model::windows::toplevels::{
-    Sizing, Toplevel, ToplevelEvent, Toplevels, step,
-};
+use sill_model::windows::toplevels::{Sizing, Toplevel, ToplevelEvent, Toplevels, step};
 
 use super::ids::{output_name, window_key, workspace_key};
 use super::view::identifier;

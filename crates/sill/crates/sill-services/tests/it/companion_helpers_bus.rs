@@ -11,7 +11,7 @@ use companion_model::routine::RoutineId;
 use companion_model::{
     helper::HelperKind, helper::HelperModel, helper::HelperName, helper::HelperPhase,
 };
-use companion_support::{Log, app, json};
+use companion_support::{Log, app, json, serve};
 use companion_wire::{
     Handover, HelperCardView, HelperLine, HelperNeeds, HelperReply, HelpersView, LoginShown,
     RoutineForm, RoutineReply, RoutinesView, RunsIn, ToldWire,
@@ -180,20 +180,15 @@ async fn companion_with(desk: &Desk, view: HelpersView) -> (Connection, Held) {
         reply: Arc::new(Mutex::new(HelperReply::Done)),
     };
     let companion = desk.peer(COMPANION_BUS).await;
-    companion
-        .object_server()
-        .at(
-            PATH,
-            StandInHelpers {
-                log: desk.log.clone(),
-                held: held.clone(),
-            },
-        )
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&companion)
-        .await
-        .expect("the object server answers");
+    serve(
+        &companion,
+        PATH,
+        StandInHelpers {
+            log: desk.log.clone(),
+            held: held.clone(),
+        },
+    )
+    .await;
     (companion, held)
 }
 

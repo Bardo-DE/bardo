@@ -45,11 +45,7 @@ pub fn plan(
         .0
         .iter()
         .copied()
-        .filter(|key| {
-            windows
-                .iter()
-                .any(|w| w.key == *key && w.minimized)
-        })
+        .filter(|key| windows.iter().any(|w| w.key == *key && w.minimized))
         .collect();
     if !restore.is_empty() {
         let commands = restore.into_iter().map(WlCommand::Unminimize).collect();
@@ -57,9 +53,7 @@ pub fn plan(
     }
     let minimize: Vec<WindowKey> = windows
         .iter()
-        .filter(|w| {
-            !w.minimized && w.workspaces.iter().any(|ws| active.contains(ws))
-        })
+        .filter(|w| !w.minimized && w.workspaces.iter().any(|ws| active.contains(ws)))
         .map(|w| w.key)
         .collect();
     let commands = minimize.iter().copied().map(WlCommand::Minimize).collect();

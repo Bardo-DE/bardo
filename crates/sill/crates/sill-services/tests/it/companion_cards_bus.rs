@@ -11,18 +11,18 @@ use std::sync::{Arc, Mutex};
 use companion_support::stand_ins::{
     ActsAs, StandInCompanion, StandInMessage, StandInRegistry, StandInRun, StandInSession,
 };
-use companion_support::{Desk, app, json, task, wire};
+use companion_support::{Desk, app, ask_input, json, serve, task, wire};
 use companion_wire::{
     AnswerBody, AnswerPhase, AnswerWire, CardWire, NeedsYou, PlanStepWire, PlanWire, StepWireState,
 };
-use docket_core::{CallRefusal, ConfirmEnd, ConfirmId, ContextKeep, Keep, Reveal, UserTurn};
+use docket_core::{CallRefusal, ConfirmEnd, ConfirmId, Reveal, UserTurn};
 use docket_dbus::{COMPANION_BUS, INTENTS_BUS, answer_path};
 use docket_manifest::{Manifest, validate};
 use docket_vocab::{
     ActionRef, Args, CallRequest, CardActionId, Handle, LabelText, Origin, StepId, TargetValue,
 };
 use prov::{ActionName, AgentRef, AppName, Effect, EntityId, EntityKey, EntityKind, SpaceId};
-use sill_model::companion::{AskInput, Busy, Companion, CompanionCommand, Opener, answer_line};
+use sill_model::companion::{Busy, Companion, CompanionCommand, Opener, answer_line};
 use zbus::Connection;
 
 fn mail() -> AppName {
@@ -80,26 +80,6 @@ fn plan_wire(phase: AnswerPhase, state: StepWireState) -> AnswerWire {
     }
 }
 
-fn no_context() -> ContextKeep {
-    ContextKeep {
-        query: Keep::Dropped,
-        results: Keep::Dropped,
-        selection: Keep::Dropped,
-        window: Keep::Dropped,
-    }
-}
-
-fn ask_input() -> AskInput {
-    AskInput {
-        prompt: "draft a reply".to_owned(),
-        keep: no_context(),
-        window: None,
-        app: None,
-        space: SpaceId::desktop(),
-        via: docket_core::TurnVia::Typed,
-    }
-}
-
 /// The bench for an answer: stand-in companiond and intentd are up, the shell holds its seat, and
 /// an ask has made the answer, whose view is `first`.
 struct Bench {
@@ -114,34 +94,27 @@ async fn bench(acts: ActsAs, first: &AnswerWire) -> Option<Bench> {
     let mut desk = companion_support::desk().await?;
     let view = Arc::new(Mutex::new(json(first)));
     let companiond = desk.peer(COMPANION_BUS).await;
-    companiond
-        .object_server()
-        .at(
-            "/org/quire/Companion1",
-            StandInCompanion {
-                session: None,
-                log: desk.log.clone(),
-                view: view.clone(),
-                acts,
-                routing: None,
-            },
-        )
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&companiond)
-        .await
-        .expect("the object server answers");
+    serve(
+        &companiond,
+        "/org/quire/Companion1",
+        StandInCompanion {
+            session: None,
+            log: desk.log.clone(),
+            view: view.clone(),
+            acts,
+            routing: None,
+        },
+    )
+    .await;
     let intentd = desk.peer(INTENTS_BUS).await;
-    intentd
-        .object_server()
-        .at("/org/quire/Intents1", StandInSession(desk.log.clone()))
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&intentd)
-        .await
-        .expect("the object server answers");
+    serve(
+        &intentd,
+        "/org/quire/Intents1",
+        StandInSession(desk.log.clone()),
+    )
+    .await;
     desk.seated().await;
-    desk.send(CompanionCommand::Ask(ask_input()));
+    desk.send(CompanionCommand::Ask(ask_input("draft a reply")));
     // The follower reads the view once it has subscribed to `Updated`: when the card is in the
     // state, an update emitted now is not lost.
     desk.state(|c| {
@@ -535,23 +508,18 @@ async fn something_said_to_a_subagent_is_recorded_sent_and_told_to_the_companion
     let mut desk = desk_or_return!();
     let view = Arc::new(Mutex::new(json(&wire(AnswerPhase::Done, ""))));
     let companiond = desk.peer(COMPANION_BUS).await;
-    companiond
-        .object_server()
-        .at(
-            "/org/quire/Companion1",
-            StandInCompanion {
-                session: None,
-                log: desk.log.clone(),
-                view,
-                acts: ActsAs::Accepts,
-                routing: None,
-            },
-        )
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&companiond)
-        .await
-        .expect("the object server answers");
+    serve(
+        &companiond,
+        "/org/quire/Companion1",
+        StandInCompanion {
+            session: None,
+            log: desk.log.clone(),
+            view,
+            acts: ActsAs::Accepts,
+            routing: None,
+        },
+    )
+    .await;
     let intentd = desk.peer(INTENTS_BUS).await;
     for object in [
         intentd

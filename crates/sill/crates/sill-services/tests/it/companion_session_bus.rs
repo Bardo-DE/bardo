@@ -11,13 +11,12 @@ use std::sync::{Arc, Mutex};
 use companion_support::stand_ins::{
     ActsAs, MAIL_HANDLE, StandInAnswer, StandInCompanion, StandInOlderSession, StandInSession,
 };
-use companion_support::{Desk, json, task, wire};
+use companion_support::{Desk, ask_input, json, serve, task, wire};
 use companion_wire::{AnswerBody, AnswerPhase, AnswerWire};
-use docket_core::{ContextKeep, Keep, Reveal};
+use docket_core::Reveal;
 use docket_dbus::{COMPANION_BUS, INTENTS_BUS, answer_path};
 use docket_vocab::Handle;
-use prov::SpaceId;
-use sill_model::companion::{AskInput, CompanionCommand, answer_line};
+use sill_model::companion::{CompanionCommand, answer_line};
 use zbus::Connection;
 use zbus::zvariant::ObjectPath;
 
@@ -64,23 +63,18 @@ async fn bench_on(session: Option<&str>, router: Router, handle: Handle) -> Opti
     let mut desk = companion_support::desk().await?;
     let view = Arc::new(Mutex::new(json(&holding(handle))));
     let companiond = desk.peer(COMPANION_BUS).await;
-    companiond
-        .object_server()
-        .at(
-            "/org/quire/Companion1",
-            StandInCompanion {
-                session: session.map(str::to_owned),
-                log: desk.log.clone(),
-                view: view.clone(),
-                acts: ActsAs::Accepts,
-                routing: None,
-            },
-        )
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&companiond)
-        .await
-        .expect("the object server answers");
+    serve(
+        &companiond,
+        "/org/quire/Companion1",
+        StandInCompanion {
+            session: session.map(str::to_owned),
+            log: desk.log.clone(),
+            view: view.clone(),
+            acts: ActsAs::Accepts,
+            routing: None,
+        },
+    )
+    .await;
     let intentd = desk.peer(INTENTS_BUS).await;
     let served = intentd.object_server();
     match router {
@@ -117,19 +111,8 @@ macro_rules! bench {
 impl Bench {
     /// The shell asks; the stand-in opens session `s-1` and makes the answer.
     fn ask(&self) {
-        self.desk.send(CompanionCommand::Ask(AskInput {
-            prompt: "find the receipts".to_owned(),
-            keep: ContextKeep {
-                query: Keep::Dropped,
-                results: Keep::Dropped,
-                selection: Keep::Dropped,
-                window: Keep::Dropped,
-            },
-            window: None,
-            app: None,
-            space: SpaceId::desktop(),
-            via: docket_core::TurnVia::Typed,
-        }));
+        self.desk
+            .send(CompanionCommand::Ask(ask_input("find the receipts")));
     }
 
     /// An answer somebody else started appears: the shell never asked for it.

@@ -32,7 +32,9 @@ use companion_support::stand_ins::{
     ActsAs, StandInApp, StandInCompanion, StandInControl, StandInManager, StandInMemory,
     StandInRun, StandInRunObject, StandInSearch, StandInSession, StandInWaiting,
 };
-use companion_support::{app, entry, fast, focus, hit, json, run_path, task, timeline_entry, wire};
+use companion_support::{
+    app, entry, fast, focus, hit, json, run_path, serve, task, timeline_entry, wire,
+};
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn two_taps_with_no_serving_app_open_the_launcher_in_companion_mode() {
@@ -57,37 +59,28 @@ async fn a_serving_app_takes_the_summon_and_the_launcher_stays_shut() {
     let mut desk = desk_or_return!();
     desk.seated().await;
     let mail = desk.peer("org.quire.Mail").await;
-    mail.object_server()
-        .at(
-            PROVIDER_PATH,
-            StandInApp {
-                answer: Some(SummonAnswer::TookField),
-                log: desk.log.clone(),
-            },
-        )
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&mail)
-        .await
-        .expect("the object server answers");
+    serve(
+        &mail,
+        PROVIDER_PATH,
+        StandInApp {
+            answer: Some(SummonAnswer::TookField),
+            log: desk.log.clone(),
+        },
+    )
+    .await;
     let companion = desk.peer(COMPANION_BUS).await;
-    companion
-        .object_server()
-        .at(
-            "/org/quire/Companion1",
-            StandInCompanion {
-                session: None,
-                log: desk.log.clone(),
-                view: Arc::default(),
-                acts: ActsAs::Accepts,
-                routing: None,
-            },
-        )
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&companion)
-        .await
-        .expect("the object server answers");
+    serve(
+        &companion,
+        "/org/quire/Companion1",
+        StandInCompanion {
+            session: None,
+            log: desk.log.clone(),
+            view: Arc::default(),
+            acts: ActsAs::Accepts,
+            routing: None,
+        },
+    )
+    .await;
     // The app has all the time it needs: this test is about an app that answers.
     desk.send(CompanionCommand::Params(CompanionParams {
         summon: SummonParams {
@@ -127,19 +120,15 @@ async fn summon_falls_back_to_launcher_after_app_wait() {
     let mut desk = desk_or_return!();
     desk.seated().await;
     let mail = desk.peer("org.quire.Mail").await;
-    mail.object_server()
-        .at(
-            PROVIDER_PATH,
-            StandInApp {
-                answer: None,
-                log: desk.log.clone(),
-            },
-        )
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&mail)
-        .await
-        .expect("the object server answers");
+    serve(
+        &mail,
+        PROVIDER_PATH,
+        StandInApp {
+            answer: None,
+            log: desk.log.clone(),
+        },
+    )
+    .await;
     desk.send(CompanionCommand::Params(fast()));
     desk.send(CompanionCommand::Summon(focus(
         Some("org.quire.Mail"),
@@ -159,33 +148,26 @@ async fn summon_falls_back_to_launcher_after_app_wait() {
 async fn an_ask_opens_a_session_records_the_turn_and_follows_the_answer() {
     let mut desk = desk_or_return!();
     let intentd = desk.peer(INTENTS_BUS).await;
-    intentd
-        .object_server()
-        .at("/org/quire/Intents1", StandInSession(desk.log.clone()))
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&intentd)
-        .await
-        .expect("the object server answers");
+    serve(
+        &intentd,
+        "/org/quire/Intents1",
+        StandInSession(desk.log.clone()),
+    )
+    .await;
     let view = Arc::new(Mutex::new(json(&wire(AnswerPhase::Thinking, ""))));
     let companiond = desk.peer(COMPANION_BUS).await;
-    companiond
-        .object_server()
-        .at(
-            "/org/quire/Companion1",
-            StandInCompanion {
-                session: None,
-                log: desk.log.clone(),
-                view: view.clone(),
-                acts: ActsAs::Accepts,
-                routing: None,
-            },
-        )
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&companiond)
-        .await
-        .expect("the object server answers");
+    serve(
+        &companiond,
+        "/org/quire/Companion1",
+        StandInCompanion {
+            session: None,
+            log: desk.log.clone(),
+            view: view.clone(),
+            acts: ActsAs::Accepts,
+            routing: None,
+        },
+    )
+    .await;
     desk.seated().await;
     desk.send(CompanionCommand::Ask(AskInput {
         prompt: "forward the receipts".to_owned(),
@@ -268,14 +250,7 @@ async fn a_search_answers_for_its_generation_and_late_hits_extend_it() {
         log: desk.log.clone(),
         hits: Arc::new(Mutex::new(vec![hit("a")])),
     };
-    intentd
-        .object_server()
-        .at("/org/quire/Intents1", search)
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&intentd)
-        .await
-        .expect("the object server answers");
+    serve(&intentd, "/org/quire/Intents1", search).await;
     let rows = Arc::new(Mutex::new(vec![entry(
         1,
         "Archived 3 threads",
@@ -353,14 +328,12 @@ async fn the_journal_is_read_and_follows_the_intentd_signal_and_an_undo_reads_it
         .at("/org/quire/Intents1", StandInControl(rows.clone()))
         .await
         .unwrap_or_else(|e| panic!("{e}"));
-    intentd
-        .object_server()
-        .at("/org/quire/Intents1", StandInRun(desk.log.clone()))
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&intentd)
-        .await
-        .expect("the object server answers");
+    serve(
+        &intentd,
+        "/org/quire/Intents1",
+        StandInRun(desk.log.clone()),
+    )
+    .await;
     desk.seated().await;
     let first = desk
         .state(|c| (!c.journal.is_empty()).then(|| c.journal.clone()))
@@ -400,19 +373,15 @@ async fn runs_follow_cuad_and_are_steered_through_their_objects() {
     let mut desk = desk_or_return!();
     let cuad = desk.peer("org.quire.Cua1").await;
     let sight = Arc::new(Mutex::new("No model here can see the screen.".to_owned()));
-    cuad.object_server()
-        .at(
-            "/org/quire/Cua1",
-            StandInManager {
-                runs: vec![run_path("r_1")],
-                sight: sight.clone(),
-            },
-        )
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&cuad)
-        .await
-        .expect("the object server answers");
+    serve(
+        &cuad,
+        "/org/quire/Cua1",
+        StandInManager {
+            runs: vec![run_path("r_1")],
+            sight: sight.clone(),
+        },
+    )
+    .await;
     let object = StandInRunObject {
         id: "r-1",
         log: desk.log.clone(),
@@ -495,20 +464,16 @@ async fn a_run_is_named_by_its_id_property_and_removed_by_the_path_it_was_added_
         )
         .await
         .unwrap_or_else(|e| panic!("{e}"));
-    cuad.object_server()
-        .at(
-            path.clone(),
-            StandInRunObject {
-                id: "r_9",
-                log: desk.log.clone(),
-                state: Arc::new(Mutex::new("acting".to_owned())),
-            },
-        )
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&cuad)
-        .await
-        .expect("the object server answers");
+    serve(
+        &cuad,
+        path.clone(),
+        StandInRunObject {
+            id: "r_9",
+            log: desk.log.clone(),
+            state: Arc::new(Mutex::new("acting".to_owned())),
+        },
+    )
+    .await;
     desk.seated().await;
     let run = RunId::parse("r-9").unwrap_or_else(|e| panic!("{e}"));
     let known = desk.state(|c| c.runs.keys().next().cloned()).await;
@@ -529,19 +494,15 @@ async fn a_run_is_named_by_its_id_property_and_removed_by_the_path_it_was_added_
 async fn stop_all_pauses_each_run_that_is_going_and_no_other() {
     let mut desk = desk_or_return!();
     let cuad = desk.peer("org.quire.Cua1").await;
-    cuad.object_server()
-        .at(
-            "/org/quire/Cua1",
-            StandInManager {
-                runs: vec![run_path("r_1"), run_path("r_2")],
-                ..StandInManager::default()
-            },
-        )
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&cuad)
-        .await
-        .expect("the object server answers");
+    serve(
+        &cuad,
+        "/org/quire/Cua1",
+        StandInManager {
+            runs: vec![run_path("r_1"), run_path("r_2")],
+            ..StandInManager::default()
+        },
+    )
+    .await;
     for (id, state) in [("r_1", "acting"), ("r_2", "paused")] {
         cuad.object_server()
             .at(
@@ -567,17 +528,12 @@ async fn stop_all_pauses_each_run_that_is_going_and_no_other() {
 async fn the_timeline_is_read_for_the_generation_that_asked() {
     let mut desk = desk_or_return!();
     let memoryd = desk.peer("org.quire.Memory1").await;
-    memoryd
-        .object_server()
-        .at(
-            "/org/quire/Memory1",
-            StandInMemory(vec![timeline_entry(1), timeline_entry(2)]),
-        )
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&memoryd)
-        .await
-        .expect("the object server answers");
+    serve(
+        &memoryd,
+        "/org/quire/Memory1",
+        StandInMemory(vec![timeline_entry(1), timeline_entry(2)]),
+    )
+    .await;
     desk.seated().await;
     desk.send(CompanionCommand::Timeline {
         generation: Generation(3),
@@ -618,20 +574,15 @@ async fn keeping_sends_the_shells_receipt_and_not_keeping_sends_a_discard() {
     let mut desk = desk_or_return!();
     let memoryd = desk.peer("org.quire.Memory1").await;
     let (kept, dropped) = (waiting_fact('1'), waiting_fact('2'));
-    memoryd
-        .object_server()
-        .at(
-            "/org/quire/Memory1",
-            StandInWaiting {
-                facts: vec![kept.clone(), dropped.clone()],
-                log: desk.log.clone(),
-            },
-        )
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&memoryd)
-        .await
-        .expect("the object server answers");
+    serve(
+        &memoryd,
+        "/org/quire/Memory1",
+        StandInWaiting {
+            facts: vec![kept.clone(), dropped.clone()],
+            log: desk.log.clone(),
+        },
+    )
+    .await;
     desk.seated().await;
     desk.send(CompanionCommand::Timeline {
         generation: Generation(1),

@@ -130,4 +130,3 @@ fn a_refusal_opens_nothing_by_itself() {
         state = next;
     }
 }
-

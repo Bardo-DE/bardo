@@ -129,8 +129,8 @@ mod tests {
 
     #[test]
     fn the_text_is_read_and_anything_unusable_is_empty() {
-        let dir = std::env::temp_dir().join(format!("shell-host-gestures-{}", std::process::id()));
-        std::fs::create_dir_all(&dir).expect("temp dir");
+        let scratch = crate::scratch::Dir::new();
+        let dir = scratch.path();
         let file = dir.join("gestures.toml");
         assert_eq!(read(&file), "", "no file");
         assert_eq!(stamp(&file), Stamp::Absent);
@@ -141,7 +141,6 @@ mod tests {
         assert_eq!(read(&file), "", "over the bound");
         std::fs::write(&file, [0xff, 0xfe]).expect("write");
         assert_eq!(read(&file), "", "not text");
-        assert_eq!(read(&dir), "", "not a regular file");
-        let _ = std::fs::remove_dir_all(&dir);
+        assert_eq!(read(dir), "", "not a regular file");
     }
 }

@@ -264,12 +264,7 @@ mod tests {
     #[test]
     fn a_minimized_app_and_no_trash() {
         let toplevels = Toplevels {
-            windows: vec![window(
-                1,
-                "firefox",
-                false,
-                true,
-            )],
+            windows: vec![window(1, "firefox", false, true)],
         };
         let items = dock_items(&pins(&[]), &toplevels, &index(), OnOff::Off);
         assert_eq!(
@@ -293,10 +288,7 @@ mod tests {
         let after = dock_items(
             &pins(&[]),
             &Toplevels {
-                windows: vec![
-                    term,
-                    window(1, "firefox", false, false),
-                ],
+                windows: vec![term, window(1, "firefox", false, false)],
             },
             &index(),
             OnOff::On,

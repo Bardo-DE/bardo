@@ -212,7 +212,7 @@ mod tests {
         wire.actions = ["k".repeat(5000), long.clone()].to_vec();
         wire.hints
             .insert("category".to_owned(), owned(Value::from(long.as_str())));
-        let posting = posting(wire).expect("a call within the hint ceiling") // test-only;
+        let posting = posting(wire).expect("a call within the hint ceiling"); // test-only
         assert!(
             posting.app.name.len() <= 128 + 3,
             "{}",
@@ -230,7 +230,7 @@ mod tests {
     fn only_the_first_actions_are_kept() {
         let mut wire = call();
         wire.actions = (0..ACTIONS_MAX * 5).map(|n| n.to_string()).collect();
-        let posting = posting(wire).expect("a call within the hint ceiling") // test-only;
+        let posting = posting(wire).expect("a call within the hint ceiling"); // test-only
         assert_eq!(posting.actions.len(), ACTIONS_MAX);
     }
 
@@ -268,7 +268,7 @@ mod tests {
         for (name, image, kept) in cases {
             let mut wire = call();
             wire.hints.insert("image-data".to_owned(), image);
-            let posting = posting(wire).expect("a call within the hint ceiling") // test-only;
+            let posting = posting(wire).expect("a call within the hint ceiling"); // test-only
             let has = matches!(posting.hints.image, NoteImage::Pixels(_));
             assert_eq!(has, kept, "{name}");
         }
@@ -281,7 +281,7 @@ mod tests {
             "desktop-entry".to_owned(),
             owned(Value::from("sill-accounts")),
         );
-        let posting = posting(wire).expect("a call within the hint ceiling") // test-only;
+        let posting = posting(wire).expect("a call within the hint ceiling"); // test-only
         assert_eq!(posting.app.desktop_entry, None);
     }
 }

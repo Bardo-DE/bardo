@@ -10,12 +10,10 @@ use crate::companion_support;
 use std::sync::{Arc, Mutex};
 
 use companion_support::stand_ins::{ActsAs, StandInAnswer, StandInCompanion, StandInSession};
-use companion_support::{Desk, haiku_notes, json, route_notes, task, wire};
+use companion_support::{Desk, ask_input, haiku_notes, json, route_notes, serve, task, wire};
 use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, RefusalWire, RouteNote, footer_line};
-use docket_core::{ContextKeep, Keep};
 use docket_dbus::{COMPANION_BUS, INTENTS_BUS, answer_path};
-use prov::SpaceId;
-use sill_model::companion::{AskInput, CompanionCommand};
+use sill_model::companion::CompanionCommand;
 use zbus::Connection;
 
 const HAIKU_LINE: &str = "Answered by Claude Haiku 4.5 via OpenRouter (already loaded)";
@@ -35,32 +33,25 @@ async fn bench(first: Option<&str>) -> Option<Bench> {
     let view = Arc::new(Mutex::new(json(&wire(AnswerPhase::Thinking, "first"))));
     let routing = Arc::new(Mutex::new(first.unwrap_or_default().to_owned()));
     let companiond = desk.peer(COMPANION_BUS).await;
-    companiond
-        .object_server()
-        .at(
-            "/org/quire/Companion1",
-            StandInCompanion {
-                session: Some("s-1".to_owned()),
-                log: desk.log.clone(),
-                view: view.clone(),
-                acts: ActsAs::Accepts,
-                routing: first.map(|_| routing.clone()),
-            },
-        )
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&companiond)
-        .await
-        .expect("the object server answers");
+    serve(
+        &companiond,
+        "/org/quire/Companion1",
+        StandInCompanion {
+            session: Some("s-1".to_owned()),
+            log: desk.log.clone(),
+            view: view.clone(),
+            acts: ActsAs::Accepts,
+            routing: first.map(|_| routing.clone()),
+        },
+    )
+    .await;
     let intentd = desk.peer(INTENTS_BUS).await;
-    intentd
-        .object_server()
-        .at("/org/quire/Intents1", StandInSession(desk.log.clone()))
-        .await
-        .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&intentd)
-        .await
-        .expect("the object server answers");
+    serve(
+        &intentd,
+        "/org/quire/Intents1",
+        StandInSession(desk.log.clone()),
+    )
+    .await;
     desk.seated().await;
     Some(Bench {
         desk,
@@ -82,19 +73,8 @@ macro_rules! bench {
 
 impl Bench {
     fn ask(&self) {
-        self.desk.send(CompanionCommand::Ask(AskInput {
-            prompt: "find the receipts".to_owned(),
-            keep: ContextKeep {
-                query: Keep::Dropped,
-                results: Keep::Dropped,
-                selection: Keep::Dropped,
-                window: Keep::Dropped,
-            },
-            window: None,
-            app: None,
-            space: SpaceId::desktop(),
-            via: docket_core::TurnVia::Typed,
-        }));
+        self.desk
+            .send(CompanionCommand::Ask(ask_input("find the receipts")));
     }
 
     /// The answer's view becomes `wire`, and the object says so.

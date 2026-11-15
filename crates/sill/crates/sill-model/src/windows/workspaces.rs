@@ -171,12 +171,7 @@ mod tests {
         let group = |key, output: &str, keys: [u64; 2], active| WorkspaceGroup {
             key: GroupKey(key),
             outputs: vec![OutputName(output.to_owned())],
-            workspaces: keys
-                .iter()
-                .map(|&k| {
-                    ws(k, k == active)
-                })
-                .collect(),
+            workspaces: keys.iter().map(|&k| ws(k, k == active)).collect(),
         };
         Workspaces {
             groups: vec![

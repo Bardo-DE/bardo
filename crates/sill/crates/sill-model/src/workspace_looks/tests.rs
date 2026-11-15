@@ -24,10 +24,7 @@ fn every_workspace_is_published_with_its_look_output_and_activity() {
             WorkspaceGroup {
                 key: GroupKey(1),
                 outputs: vec![OutputName("DP-1".to_owned())],
-                workspaces: vec![
-                    ws(7, "stable-a", false),
-                    ws(8, "", true),
-                ],
+                workspaces: vec![ws(7, "stable-a", false), ws(8, "", true)],
             },
             WorkspaceGroup {
                 key: GroupKey(2),

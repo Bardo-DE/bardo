@@ -53,13 +53,21 @@ pub fn assert_inks_read_in_each_scheme<S: Surface>(
 ) {
     for theme in [Theme::Light, Theme::Dark] {
         let mut run = start(appearance(theme));
-        assert_eq!(run.weak_inks(inks), Vec::<String>::new(), "starting in {theme:?}");
+        assert_eq!(
+            run.weak_inks(inks),
+            Vec::<String>::new(),
+            "starting in {theme:?}"
+        );
     }
     for (from, to) in [(Theme::Light, Theme::Dark), (Theme::Dark, Theme::Light)] {
         let mut run = start(appearance(from));
         run.set_appearance(appearance(to));
         run.harness.advance(Duration::from_secs(1));
-        assert_eq!(run.weak_inks(inks), Vec::<String>::new(), "{from:?} to {to:?}");
+        assert_eq!(
+            run.weak_inks(inks),
+            Vec::<String>::new(),
+            "{from:?} to {to:?}"
+        );
     }
 }
 

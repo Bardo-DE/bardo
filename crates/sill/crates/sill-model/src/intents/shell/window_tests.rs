@@ -14,8 +14,8 @@ use super::{
 use crate::ids::{GroupKey, OutputName, WorkspaceKey};
 use crate::units::{Urgency, Visibility};
 use crate::windows::{
-    Sizing, Toplevel, Toplevels, WindowModel, WlCommand, Workspace,
-    WorkspaceCaps, WorkspaceGroup, Workspaces,
+    Sizing, Toplevel, Toplevels, WindowModel, WlCommand, Workspace, WorkspaceCaps, WorkspaceGroup,
+    Workspaces,
 };
 
 fn invocation(action: &str, args: &[(&str, Value)]) -> Invocation {

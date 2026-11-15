@@ -102,12 +102,10 @@ impl<P: Clone> Reveal<Opening<P>> {
     /// closes the panel.
     pub fn after_focus(&self, focus: KeyboardFocus) -> Reveal<Opening<P>> {
         match (self, focus) {
-            (Reveal::Revealed(opening), KeyboardFocus::Gained) => {
-                Reveal::Revealed(Opening {
-                    focus: PanelFocus::Held,
-                    ..opening.clone()
-                })
-            }
+            (Reveal::Revealed(opening), KeyboardFocus::Gained) => Reveal::Revealed(Opening {
+                focus: PanelFocus::Held,
+                ..opening.clone()
+            }),
             (Reveal::Revealed(opening), KeyboardFocus::Lost)
                 if opening.focus == PanelFocus::Held =>
             {

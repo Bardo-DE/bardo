@@ -5,7 +5,6 @@
 //! palmrest-only run within 1 px; without the window they would not.
 
 use std::os::fd::OwnedFd;
-use std::path::PathBuf;
 use std::task::Context;
 use std::time::Duration;
 
@@ -21,6 +20,7 @@ use crate::input::palmrest::route::route;
 use crate::input::palmrest::{Palmrest, read_all};
 use crate::input::pointer::PointerPos;
 use crate::root::HostRoot;
+use crate::scratch::Dir;
 use crate::scroll::source::{AxisFrame, AxisSource, AxisValue};
 use crate::scroll::suppress::Suppress;
 use crate::scroll::surface::SurfaceScroll;
@@ -53,16 +53,14 @@ fn document() -> SurfaceDocument {
 
 /// A fake palmrest: a listening socket in a private temp directory.
 struct Daemon {
-    dir: PathBuf,
+    dir: Dir,
     listener: OwnedFd,
 }
 
 impl Daemon {
-    fn start(name: &str) -> Daemon {
-        let dir = std::env::temp_dir().join(format!("shell-host-{name}-{}", std::process::id()));
-        let path = dir.join("events.sock");
-        std::fs::create_dir_all(path.parent().expect("parent")).expect("mkdir");
-        let _ = std::fs::remove_file(&path);
+    fn start() -> Daemon {
+        let dir = Dir::new();
+        let path = dir.path().join("events.sock");
         let listener = socket_with(
             AddressFamily::UNIX,
             SocketType::SEQPACKET,
@@ -73,12 +71,6 @@ impl Daemon {
         bind(&listener, &SocketAddrUnix::new(&path).expect("addr")).expect("bind");
         listen(&listener, 4).expect("listen");
         Daemon { dir, listener }
-    }
-}
-
-impl Drop for Daemon {
-    fn drop(&mut self) {
-        let _ = std::fs::remove_dir_all(&self.dir);
     }
 }
 
@@ -179,9 +171,9 @@ impl Host {
 
 /// A flick of 12 frames of 20 px (finger toward the user: content moves down, natural),
 /// then the lift; the page's offset after every frame until it settles.
-fn run(echo: Echo, name: &str) -> Vec<f64> {
-    let daemon = Daemon::start(name);
-    let mut client = Palmrest::trusting(daemon.dir.join("events.sock"), None);
+fn run(echo: Echo) -> Vec<f64> {
+    let daemon = Daemon::start();
+    let mut client = Palmrest::trusting(daemon.dir.path().join("events.sock"), None);
     let reader = client.connect().expect("the fake daemon is there");
     let peer = accept(&daemon.listener).expect("accept");
     let mut doc = document();
@@ -239,8 +231,8 @@ fn run(echo: Echo, name: &str) -> Vec<f64> {
 
 #[test]
 fn item_13_the_echo_through_the_compositor_is_dropped() {
-    let alone = run(Echo::None, "alone");
-    let both = run(Echo::Suppressed, "both");
+    let alone = run(Echo::None);
+    let both = run(Echo::Suppressed);
     assert!(
         alone.first().is_some_and(|x| *x < 3000.0),
         "natural: content follows the finger"
@@ -249,7 +241,7 @@ fn item_13_the_echo_through_the_compositor_is_dropped() {
     for (i, (a, b)) in alone.iter().zip(&both).enumerate() {
         assert!((a - b).abs() <= 1.0, "frame {i}: {a} vs {b}");
     }
-    let unfiltered = run(Echo::Unfiltered, "unfiltered");
+    let unfiltered = run(Echo::Unfiltered);
     let last = |v: &[f64]| *v.last().expect("frames");
     assert!(
         (last(&unfiltered) - last(&alone)).abs() > 100.0,

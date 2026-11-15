@@ -22,7 +22,8 @@ use prov::{
 };
 use sill_launcher::{LauncherMode, WindowKey};
 use sill_model::companion::{
-    Companion, CompanionCommand, CompanionParams, FocusInput, SummonOut, SummonParams, TapParams,
+    AskInput, Companion, CompanionCommand, CompanionParams, FocusInput, SummonOut, SummonParams,
+    TapParams,
 };
 use sill_model::launch::LaunchCommand;
 use sill_model::units::Ms;
@@ -34,7 +35,7 @@ use sill_services::{CompanionLinks, CompanionService};
 use sill_testkit::PrivateBus;
 use tokio::sync::{mpsc, watch};
 use zbus::Connection;
-use zbus::zvariant::{OwnedObjectPath, OwnedValue};
+use zbus::zvariant::{ObjectPath, OwnedObjectPath, OwnedValue};
 
 /// How long a wait for an event may take before the test fails instead of hanging: a failure
 /// bound far above any real delivery, not a delay anything depends on.
@@ -116,6 +117,40 @@ pub async fn connect(address: &str) -> Connection {
         .build()
         .await
         .unwrap_or_else(|e| panic!("connecting to the private bus: {e}"))
+}
+
+/// `interface` served at `path` on `connection`, once the object server answers.
+pub async fn serve<'p, I, P>(connection: &Connection, path: P, interface: I)
+where
+    I: zbus::object_server::Interface,
+    P: TryInto<ObjectPath<'p>>,
+    P::Error: Into<zbus::Error>,
+{
+    connection
+        .object_server()
+        .at(path, interface)
+        .await
+        .unwrap_or_else(|e| panic!("{e}"));
+    zbus_ready::serving(connection)
+        .await
+        .expect("the object server answers");
+}
+
+/// An ask of `prompt` on the desktop, keeping no context.
+pub fn ask_input(prompt: &str) -> AskInput {
+    AskInput {
+        prompt: prompt.to_owned(),
+        keep: ContextKeep {
+            query: Keep::Dropped,
+            results: Keep::Dropped,
+            selection: Keep::Dropped,
+            window: Keep::Dropped,
+        },
+        window: None,
+        app: None,
+        space: SpaceId::desktop(),
+        via: docket_core::TurnVia::Typed,
+    }
 }
 
 pub async fn desk() -> Option<Desk> {

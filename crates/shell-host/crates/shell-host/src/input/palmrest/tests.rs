@@ -1,12 +1,13 @@
 //! The palmrest client against a fake daemon: a listening socket at a scratch path.
 
 use super::*;
+use crate::scratch::Dir;
 use palmrest_protocol::{ActiveTouch, Phase};
 use rustix::net::{accept, bind, listen};
 
 /// A fake daemon: a listening `SOCK_SEQPACKET` socket at a temp path.
-fn daemon() -> (tempdir::Dir, OwnedFd) {
-    let dir = tempdir::Dir::new();
+fn daemon() -> (Dir, OwnedFd) {
+    let dir = Dir::new();
     let path = dir.path().join("events.sock");
     std::fs::create_dir_all(path.parent().expect("parent")).expect("mkdir");
     let fd = socket_with(
@@ -21,34 +22,6 @@ fn daemon() -> (tempdir::Dir, OwnedFd) {
     (dir, fd)
 }
 
-/// A private temp directory, removed on drop (no dependency for it).
-mod tempdir {
-    use std::path::{Path, PathBuf};
-
-    pub(crate) struct Dir(PathBuf);
-
-    impl Dir {
-        pub(crate) fn new() -> Dir {
-            static NEXT: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
-            let n = NEXT.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-            let path = std::env::temp_dir()
-                .join(format!("shell-host-palmrest-{}-{n}", std::process::id()));
-            std::fs::create_dir_all(&path).expect("temp dir");
-            Dir(path)
-        }
-
-        pub(crate) fn path(&self) -> &Path {
-            &self.0
-        }
-    }
-
-    impl Drop for Dir {
-        fn drop(&mut self) {
-            let _ = std::fs::remove_dir_all(&self.0);
-        }
-    }
-}
-
 fn received(fd: &OwnedFd) -> String {
     let mut buf = [0u8; 256];
     let (len, _) = recv(fd, &mut buf[..], RecvFlags::empty()).expect("recv");
@@ -57,7 +30,7 @@ fn received(fd: &OwnedFd) -> String {
 
 #[test]
 fn no_daemon_is_a_no_op() {
-    let dir = tempdir::Dir::new();
+    let dir = Dir::new();
     let mut client = Palmrest::trusting(dir.path().join("events.sock"), None);
     assert!(client.retry_due());
     assert!(client.connect().is_none());
@@ -165,7 +138,7 @@ fn the_lock_is_sent_on_change_and_again_after_a_reconnect() {
 
 #[test]
 fn a_daemon_that_starts_late_is_found_on_the_timer_without_a_pointer_enter() {
-    let dir = tempdir::Dir::new();
+    let dir = Dir::new();
     let mut client = Palmrest::trusting(dir.path().join("events.sock"), None);
     client.session_lock(LockState::Locked);
     assert!(client.connect().is_none(), "no daemon yet");
@@ -206,7 +179,7 @@ fn a_daemon_that_starts_late_is_found_on_the_timer_without_a_pointer_enter() {
 
 #[test]
 fn a_lock_while_the_daemon_is_away_makes_an_attempt_due_and_an_unlock_does_not() {
-    let dir = tempdir::Dir::new();
+    let dir = Dir::new();
     let mut client = Palmrest::trusting(dir.path().join("events.sock"), None);
     assert!(client.connect().is_none());
     assert!(!client.retry_due());
@@ -330,8 +303,8 @@ fn the_persons_settings_are_told_on_connect_and_again_when_the_file_changes() {
         "the file is told after the lock and the pointer"
     );
 
+    // `settings_changed` sends before it returns, so what it sent is already queued on the socket.
     client.settings_changed();
-    std::thread::sleep(Duration::from_millis(20));
     let mut buf = [0u8; 256];
     assert!(
         recv(&peer, &mut buf[..], RecvFlags::DONTWAIT).is_err(),

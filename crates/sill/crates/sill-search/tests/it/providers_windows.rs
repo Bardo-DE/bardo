@@ -6,7 +6,9 @@ use std::path::PathBuf;
 use sill_launcher::{AppId, Cancel, Provider, Query, VecSink, WindowKey};
 use sill_model::apps::{App, AppIcon, AppIndex, AppsEvent, DbusActivation, Listing, Terminal};
 use sill_model::ids::{GroupKey, OutputName, WorkspaceKey};
-use sill_model::windows::{Sizing, Toplevel, ToplevelEvent, Toplevels, WindowModel, Workspace, WorkspaceGroup, Workspaces};
+use sill_model::windows::{
+    Sizing, Toplevel, ToplevelEvent, Toplevels, WindowModel, Workspace, WorkspaceGroup, Workspaces,
+};
 use sill_search::providers::WindowsProvider;
 
 fn app(id: &str, name: &str) -> App {

@@ -69,7 +69,9 @@ mod tests {
     use sill_model::desktop::open_mission_control;
     use sill_model::ids::{GroupKey, OutputName, WorkspaceKey};
     use sill_model::units::{Urgency, Visibility};
-    use sill_model::windows::{Step, WlCommand, Workspace, WorkspaceCaps, WorkspaceGroup, Workspaces};
+    use sill_model::windows::{
+        Step, WlCommand, Workspace, WorkspaceCaps, WorkspaceGroup, Workspaces,
+    };
 
     use super::{Ask, Carried, Plan, asked, plan};
 

@@ -3,9 +3,7 @@
 //! with no quote in them and cut short; the listing is labelled untrusted by the service.
 
 use crate::units::Urgency;
-use crate::windows::{
-    Sizing, Toplevel, WindowModel, Workspace, WorkspaceGroup, Workspaces,
-};
+use crate::windows::{Sizing, Toplevel, WindowModel, Workspace, WorkspaceGroup, Workspaces};
 
 /// The most characters the answer carries (the manifest's `max`).
 pub const LISTING_MAX: usize = 12_000;

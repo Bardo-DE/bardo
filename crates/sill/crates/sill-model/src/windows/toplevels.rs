@@ -122,10 +122,7 @@ mod tests {
 
     fn of(keys: &[u64]) -> Toplevels {
         Toplevels {
-            windows: keys
-                .iter()
-                .map(|&k| window(k, false))
-                .collect(),
+            windows: keys.iter().map(|&k| window(k, false)).collect(),
         }
     }
 

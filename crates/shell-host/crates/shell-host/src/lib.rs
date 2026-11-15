@@ -66,6 +66,8 @@ mod role;
 mod root;
 mod route;
 mod scale;
+#[cfg(test)]
+mod scratch;
 mod scroll;
 mod state;
 mod stats;

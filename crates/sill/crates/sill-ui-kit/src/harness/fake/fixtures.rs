@@ -18,7 +18,9 @@ use sill_model::power_profile::{PowerProfiles, Profile, ProfileDegraded};
 use sill_model::units::{Percent, Presence, Seconds, Urgency, Visibility};
 use sill_model::volume::{Mute, Volume};
 use sill_model::wifi::{AccessPoint, Association, Radio, Security, Ssid, Wifi};
-use sill_model::windows::{Sizing, Toplevel, Toplevels, Workspace, WorkspaceCaps, WorkspaceGroup, Workspaces};
+use sill_model::windows::{
+    Sizing, Toplevel, Toplevels, Workspace, WorkspaceCaps, WorkspaceGroup, Workspaces,
+};
 
 /// A 1920 x 1080 output named `DP-1`.
 pub fn output() -> OutputInfo {
@@ -76,11 +78,7 @@ pub fn workspaces_on(output: &str) -> Workspaces {
         groups: vec![WorkspaceGroup {
             key: GroupKey(1),
             outputs: vec![OutputName(output.to_owned())],
-            workspaces: vec![
-                workspace(1, false),
-                workspace(2, true),
-                workspace(3, false),
-            ],
+            workspaces: vec![workspace(1, false), workspace(2, true), workspace(3, false)],
         }],
     }
 }
@@ -104,10 +102,7 @@ pub fn toplevels_on(output: &str) -> Toplevels {
         outputs: vec![OutputName(output.to_owned())],
     };
     Toplevels {
-        windows: vec![
-            window(10, "~/sill", true),
-            window(11, "cargo test", false),
-        ],
+        windows: vec![window(10, "~/sill", true), window(11, "cargo test", false)],
     }
 }
 
@@ -221,7 +216,7 @@ pub fn power_profiles() -> PowerProfiles {
 pub fn media() -> Media {
     use ds::base::time::stamp::Stamp;
     use sill_model::now_playing::{Abilities, MediaPlayer, Playback, PlayerId, Timeline, Track};
-        Media {
+    Media {
         players: vec![MediaPlayer {
             id: PlayerId("org.mpris.MediaPlayer2.fake".to_owned()),
             identity: "Fake Player".to_owned(),

@@ -162,7 +162,10 @@ mod tests {
     };
     use sill_model::apps::{App, AppIcon, AppIndex, AppsEvent, DbusActivation, Listing, Terminal};
     use sill_model::ids::{GroupKey, OutputName, WorkspaceKey};
-    use sill_model::windows::{Sizing, Toplevel, ToplevelEvent, Toplevels, WindowModel, Workspace, WorkspaceGroup, Workspaces, toplevels::step};
+    use sill_model::windows::{
+        Sizing, Toplevel, ToplevelEvent, Toplevels, WindowModel, Workspace, WorkspaceGroup,
+        Workspaces, toplevels::step,
+    };
     use std::path::PathBuf;
 
     fn window(key: u64, title: &str, app_id: &str, workspaces: Vec<WorkspaceKey>) -> Toplevel {

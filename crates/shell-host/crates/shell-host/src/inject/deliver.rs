@@ -163,10 +163,8 @@ mod tests {
         let frame = image::RgbaImage::from_fn(240, 160, |x, y| {
             image::Rgba([(x % 256) as u8, (y % 256) as u8, 64, 255])
         });
-        let dir = std::env::temp_dir().join(format!("shell-host-capture-{}", std::process::id()));
-        std::fs::create_dir_all(&dir).expect("temp dir");
-        let path = dir.join("capture.png");
-        let _ = std::fs::remove_file(&path);
+        let scratch = crate::scratch::Dir::new();
+        let path = scratch.path().join("capture.png");
 
         let written = write_capture(&frame, path.clone()).expect("capture written");
 
@@ -183,7 +181,6 @@ mod tests {
         );
         let read = image::open(&path).expect("a PNG").to_rgba8();
         assert_eq!(read, frame, "the file holds the rendered pixels");
-        std::fs::remove_dir_all(&dir).ok();
     }
 
     const BUTTON_CASES: &[(PointerButton, MouseEventButton, MouseEventButtons)] = &[

@@ -220,35 +220,16 @@ fn a_window_is_described_by_its_flags_and_output() {
     };
     let out = |name: &str| vec![OutputName(name.to_owned())];
     let cases = [
-        (
-            "minimised",
-            1,
-            (
-                false,
-                true,
-                Sizing::Floating,
-                out("DP-1"),
-            ),
-        ),
+        ("minimised", 1, (false, true, Sizing::Floating, out("DP-1"))),
         (
             "maximised",
             2,
-            (
-                false,
-                false,
-                Sizing::Maximized,
-                out("DP-2"),
-            ),
+            (false, false, Sizing::Maximized, out("DP-2")),
         ),
         (
             "full screen over maximised",
             3,
-            (
-                true,
-                false,
-                Sizing::Fullscreen,
-                out("DP-1"),
-            ),
+            (true, false, Sizing::Fullscreen, out("DP-1")),
         ),
     ];
     for (name, key, want) in cases {
@@ -293,14 +274,7 @@ fn workspaces_are_grouped_and_in_position_order() {
         .iter()
         .map(|w| (w.name.as_str(), w.active))
         .collect();
-    assert_eq!(
-        names,
-        [
-            ("Main", true),
-            ("Code", false),
-            ("Mail", false)
-        ]
-    );
+    assert_eq!(names, [("Main", true), ("Code", false), ("Mail", false)]);
     assert_eq!(group.workspaces[1].stable_id, "code");
     assert!(
         group.workspaces[0]

@@ -32,116 +32,107 @@ fn pending(steps: Pending) -> crate::ime::PendingIme {
     }
 }
 
-/// A `done` with nothing buffered (no preedit_string, commit_string or delete_surrounding_text
-/// since the last `done`) only clears the shown preedit and leaves the pending state empty.
-#[test]
-fn done_with_nothing_pending_only_clears_the_preedit() {
-    let (events, rest) = on_done(pending(Pending::default()));
-    assert_eq!(events, vec![clear()]);
-    assert_eq!(rest, crate::ime::PendingIme::default());
+fn preedit(text: &str, cursor: Option<(usize, usize)>) -> Option<Preedit> {
+    Some(Preedit {
+        text: text.to_owned(),
+        cursor,
+    })
 }
 
-/// `preedit_string("ni", 0, 2)` then `done`: one `Preedit` event, cursor at the given range.
-#[test]
-fn a_single_preedit_commits_its_cursor_range() {
-    let (events, rest) = on_done(pending(Pending {
-        preedit: Some(Preedit {
-            text: "ni".to_owned(),
-            cursor: Some((0, 2)),
-        }),
-        ..Pending::default()
-    }));
-    assert_eq!(
-        events,
-        vec![BlitzImeEvent::Preedit("ni".to_owned(), Some((0, 2)))]
-    );
-    assert_eq!(rest, crate::ime::PendingIme::default());
+fn deleted(before: usize, after: usize) -> BlitzImeEvent {
+    BlitzImeEvent::DeleteSurrounding {
+        before_bytes: before,
+        after_bytes: after,
+    }
 }
 
-/// `preedit_string(_, -1, -1)` hides the cursor (protocol rule: both -1 means hidden).
+/// Each row is a buffered sequence and the events its `done` applies; every `done` leaves the
+/// buffer empty. The protocol's fixed order is clear the old preedit, delete, commit, new preedit,
+/// whatever order the wire events arrived in; a lone new preedit replaces the clear.
 #[test]
-fn a_preedit_with_both_cursors_at_minus_one_hides_the_cursor() {
-    let (events, _) = on_done(pending(Pending {
-        preedit: Some(Preedit {
-            text: "n".to_owned(),
-            cursor: None,
-        }),
-        ..Pending::default()
-    }));
-    assert_eq!(events, vec![BlitzImeEvent::Preedit("n".to_owned(), None)]);
-}
-
-/// `commit_string("你")` then `done`: one `Commit` event.
-#[test]
-fn a_single_commit_produces_one_event() {
-    let (events, rest) = on_done(pending(Pending {
-        commit: Some("你"),
-        ..Pending::default()
-    }));
-    assert_eq!(
-        events,
-        vec![clear(), BlitzImeEvent::Commit("你".to_owned())]
-    );
-    assert_eq!(rest, crate::ime::PendingIme::default());
-}
-
-/// `commit_string("")` is a real event (it clears any shown preedit without inserting text),
-/// distinct from no `commit_string` at all.
-#[test]
-fn an_empty_commit_string_is_still_a_commit_event() {
-    let (events, _) = on_done(pending(Pending {
-        commit: Some(""),
-        ..Pending::default()
-    }));
-    assert_eq!(events, vec![clear(), BlitzImeEvent::Commit(String::new())]);
-}
-
-/// `delete_surrounding_text(1, 0)` then `done`: one `DeleteSurrounding` event.
-#[test]
-fn a_single_delete_produces_one_event() {
-    let (events, rest) = on_done(pending(Pending {
-        delete: Some((1, 0)),
-        ..Pending::default()
-    }));
-    assert_eq!(
-        events,
-        vec![
-            clear(),
-            BlitzImeEvent::DeleteSurrounding {
-                before_bytes: 1,
-                after_bytes: 0,
-            }
-        ]
-    );
-    assert_eq!(rest, crate::ime::PendingIme::default());
-}
-
-/// A full compose-then-commit cycle: `delete_surrounding_text`, `commit_string` and
-/// `preedit_string` all buffered before one `done` apply in the protocol's fixed order —
-/// clear the old preedit, delete, commit, new preedit — regardless of the order the wire events themselves arrived.
-#[test]
-fn a_full_cycle_applies_delete_then_commit_then_preedit() {
-    let (events, rest) = on_done(pending(Pending {
-        preedit: Some(Preedit {
-            text: "ni".to_owned(),
-            cursor: Some((0, 2)),
-        }),
-        commit: Some("你"),
-        delete: Some((1, 0)),
-    }));
-    assert_eq!(
-        events,
-        vec![
-            clear(),
-            BlitzImeEvent::DeleteSurrounding {
-                before_bytes: 1,
-                after_bytes: 0,
+fn a_done_applies_what_was_buffered_in_the_protocols_order() {
+    let cases: Vec<(&str, Pending, Vec<BlitzImeEvent>)> = vec![
+        (
+            "nothing pending only clears the preedit",
+            Pending::default(),
+            vec![clear()],
+        ),
+        (
+            "a single preedit commits its cursor range",
+            Pending {
+                preedit: preedit("ni", Some((0, 2))),
+                ..Pending::default()
             },
-            BlitzImeEvent::Commit("你".to_owned()),
-            BlitzImeEvent::Preedit("ni".to_owned(), Some((0, 2))),
-        ]
-    );
-    assert_eq!(rest, crate::ime::PendingIme::default());
+            vec![BlitzImeEvent::Preedit("ni".to_owned(), Some((0, 2)))],
+        ),
+        (
+            "both cursors at -1 hide the cursor",
+            Pending {
+                preedit: preedit("n", None),
+                ..Pending::default()
+            },
+            vec![BlitzImeEvent::Preedit("n".to_owned(), None)],
+        ),
+        (
+            "a single commit is one event",
+            Pending {
+                commit: Some("你"),
+                ..Pending::default()
+            },
+            vec![clear(), BlitzImeEvent::Commit("你".to_owned())],
+        ),
+        (
+            "an empty commit string is still a commit event",
+            Pending {
+                commit: Some(""),
+                ..Pending::default()
+            },
+            vec![clear(), BlitzImeEvent::Commit(String::new())],
+        ),
+        (
+            "a single delete is one event",
+            Pending {
+                delete: Some((1, 0)),
+                ..Pending::default()
+            },
+            vec![clear(), deleted(1, 0)],
+        ),
+        (
+            "a full cycle applies delete, then commit, then preedit",
+            Pending {
+                preedit: preedit("ni", Some((0, 2))),
+                commit: Some("你"),
+                delete: Some((1, 0)),
+            },
+            vec![
+                clear(),
+                deleted(1, 0),
+                BlitzImeEvent::Commit("你".to_owned()),
+                BlitzImeEvent::Preedit("ni".to_owned(), Some((0, 2))),
+            ],
+        ),
+        // Bopomofo's `s u 3 c l 3` then Return, as fcitx5 sends it: the preedit 你好 is replaced
+        // by nothing and 你好 is committed in one `done`. Committing with the composition still
+        // shown doubled it (你好你好).
+        (
+            "a commit of the composed text clears the composition first",
+            Pending {
+                preedit: preedit("", Some((0, 0))),
+                commit: Some("你好"),
+                ..Pending::default()
+            },
+            vec![
+                clear(),
+                BlitzImeEvent::Commit("你好".to_owned()),
+                BlitzImeEvent::Preedit(String::new(), Some((0, 0))),
+            ],
+        ),
+    ];
+    for (name, buffered, want) in cases {
+        let (events, rest) = on_done(pending(buffered));
+        assert_eq!(events, want, "{name}");
+        assert_eq!(rest, crate::ime::PendingIme::default(), "{name}");
+    }
 }
 
 /// Two `done` cycles in a row: the second sees only what was buffered since the first (the
@@ -160,27 +151,4 @@ fn a_second_done_only_sees_what_was_buffered_since_the_first() {
     // Nothing new buffered before the next `done`: only a clear, not a repeat of "a".
     let (second_events, _) = on_done(after_first);
     assert_eq!(second_events, vec![clear()]);
-}
-
-/// Bopomofo's `s u 3 c l 3` then Return, as fcitx5 sends it: the preedit 你好 is replaced by
-/// nothing and 你好 is committed in one `done`. Committing with the composition still shown
-/// doubled it (你好你好).
-#[test]
-fn a_commit_of_the_composed_text_clears_the_composition_first() {
-    let (events, _) = on_done(pending(Pending {
-        preedit: Some(Preedit {
-            text: String::new(),
-            cursor: Some((0, 0)),
-        }),
-        commit: Some("你好"),
-        ..Pending::default()
-    }));
-    assert_eq!(
-        events,
-        vec![
-            clear(),
-            BlitzImeEvent::Commit("你好".to_owned()),
-            BlitzImeEvent::Preedit(String::new(), Some((0, 0))),
-        ]
-    );
 }
