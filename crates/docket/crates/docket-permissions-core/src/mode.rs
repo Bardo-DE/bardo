@@ -47,22 +47,24 @@ impl Mode {
     }
 }
 
-/// Changes it can undo, within what the person asked.
+/// What a row of a mode does: it goes ahead (`Runs`) or it asks (`Asks`). Used for changes it can
+/// undo within what the person asked, for mail and messages that leave this computer, and for
+/// things that cannot be brought back.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
-pub enum InsideRow {
+pub enum AskOrRun {
     /// It goes ahead.
     Runs,
     /// It asks.
     Asks,
 }
 
-impl InsideRow {
+impl AskOrRun {
     /// The word the settings and the policy files use.
     pub fn word(self) -> &'static str {
         match self {
-            InsideRow::Runs => "runs",
-            InsideRow::Asks => "asks",
+            AskOrRun::Runs => "runs",
+            AskOrRun::Asks => "asks",
         }
     }
 }
@@ -83,46 +85,6 @@ impl OtherRow {
         match self {
             OtherRow::Check => "check",
             OtherRow::Asks => "asks",
-        }
-    }
-}
-
-/// Mail and messages that leave this computer.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum SendRow {
-    /// It asks.
-    Asks,
-    /// It goes ahead.
-    Runs,
-}
-
-impl SendRow {
-    /// The word the settings and the policy files use.
-    pub fn word(self) -> &'static str {
-        match self {
-            SendRow::Asks => "asks",
-            SendRow::Runs => "runs",
-        }
-    }
-}
-
-/// Things that cannot be brought back.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum DeleteRow {
-    /// It asks.
-    Asks,
-    /// It goes ahead.
-    Runs,
-}
-
-impl DeleteRow {
-    /// The word the settings and the policy files use.
-    pub fn word(self) -> &'static str {
-        match self {
-            DeleteRow::Asks => "asks",
-            DeleteRow::Runs => "runs",
         }
     }
 }
@@ -165,7 +127,7 @@ pub struct ModeRows {
 impl ModeRows {
     /// The rows Auto starts with.
     pub const AUTO: ModeRows = ModeRows {
-        inside: InsideRow::Runs,
+        inside: AskOrRun::Runs,
         other: OtherRow::Check,
         send: SendRow::Asks,
         delete: DeleteRow::Asks,
@@ -174,7 +136,7 @@ impl ModeRows {
 
     /// The rows Manual starts with.
     pub const MANUAL: ModeRows = ModeRows {
-        inside: InsideRow::Asks,
+        inside: AskOrRun::Asks,
         other: OtherRow::Asks,
         send: SendRow::Asks,
         delete: DeleteRow::Asks,

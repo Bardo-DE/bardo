@@ -244,7 +244,7 @@ fn every_schema_key_is_read_by_the_daemon() {
 
 #[test]
 fn each_key_lands_in_the_typed_value_the_design_names() {
-    use docket_permissions_core::{DeleteRow, InsideRow, Mode, OtherRow, ScreenRow, SendRow};
+    use docket_permissions_core::{AskOrRun, Mode, OtherRow, ScreenRow};
     let read_one = |p: &str, v: toml::Value| read(&doc(p, v), AgentSettings::default()).value;
     let int = toml::Value::Integer;
     let word = |w: &str| toml::Value::String(w.to_owned());
@@ -262,13 +262,13 @@ fn each_key_lands_in_the_typed_value_the_design_names() {
     };
     assert_eq!(
         rows_of("auto", "inside", "asks").auto.inside,
-        InsideRow::Asks
+        AskOrRun::Asks
     );
     assert_eq!(rows_of("auto", "other", "asks").auto.other, OtherRow::Asks);
-    assert_eq!(rows_of("auto", "send", "runs").auto.send, SendRow::Runs);
+    assert_eq!(rows_of("auto", "send", "runs").auto.send, AskOrRun::Runs);
     assert_eq!(
         rows_of("auto", "delete", "runs").auto.delete,
-        DeleteRow::Runs
+        AskOrRun::Runs
     );
     assert_eq!(
         rows_of("auto", "screen", "each").auto.screen,
@@ -276,16 +276,16 @@ fn each_key_lands_in_the_typed_value_the_design_names() {
     );
     assert_eq!(
         rows_of("manual", "inside", "runs").manual.inside,
-        InsideRow::Runs
+        AskOrRun::Runs
     );
     assert_eq!(
         rows_of("manual", "other", "check").manual.other,
         OtherRow::Check
     );
-    assert_eq!(rows_of("manual", "send", "runs").manual.send, SendRow::Runs);
+    assert_eq!(rows_of("manual", "send", "runs").manual.send, AskOrRun::Runs);
     assert_eq!(
         rows_of("manual", "delete", "runs").manual.delete,
-        DeleteRow::Runs
+        AskOrRun::Runs
     );
     assert_eq!(
         rows_of("manual", "screen", "once").manual.screen,

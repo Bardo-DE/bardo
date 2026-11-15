@@ -8,12 +8,9 @@ use cua_action::{RunMode, WindowTrust};
 use docket_core::*;
 use docket_fake::ScriptedConfirmer;
 use docket_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
-use docket_permissions_core::{Floor, FloorFile, InsideRow, Level, LockedRow, Mode, Strictness};
+use docket_permissions_core::{Floor, FloorFile, AskOrRun, Level, LockedRow, Mode, Strictness};
 use docket_vocab::{CallRequest, CallerRole, Origin};
-use docket_wire::{
-    CallerId, GrantAnswer, GrantAsk, IntentsReply, IntentsRequest, SessionModeAsk, SessionOpen,
-    SessionOpened, WireRefusal,
-};
+use docket_wire::{CallerId, GrantAnswer, GrantAsk, IntentsReply, IntentsRequest, SessionModeAsk, SessionOpen, SessionOpened, WireRefusal};
 use prov::{AgentRef, ConfirmReceipt, Effect, InputProof, Label, RunId, SessionId, UnixSeconds};
 
 fn yes() -> ConfirmAnswer {
@@ -386,7 +383,7 @@ async fn the_start_mode_and_the_rows_of_the_settings_rule_a_conversation() {
         start_mode: Mode::Manual,
         ..AgentConfig::default()
     };
-    config.rows.manual.inside = InsideRow::Runs;
+    config.rows.manual.inside = AskOrRun::Runs;
     router.apply_settings(config);
     perform_in(&router, &front.session, archive("t2"))
         .await

@@ -8,7 +8,7 @@
 //! error there, never a silent skip.
 
 use crate::limit::{Limit, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope};
-use crate::mode::{DeleteRow, InsideRow, Mode, ModeRows, OtherRow, ScreenRow, SendRow};
+use crate::mode::{AskOrRun, Mode, ModeRows, OtherRow, ScreenRow};
 use crate::review::Strictness;
 use docket_vocab::ActionRef;
 use porter_core::AppName;
@@ -142,10 +142,10 @@ impl Floor {
     pub fn clamp_rows(&self, rows: ModeRows) -> ModeRows {
         self.rows.iter().fold(rows, |mut rows, locked| {
             match locked {
-                LockedRow::Inside => rows.inside = InsideRow::Asks,
+                LockedRow::Inside => rows.inside = AskOrRun::Asks,
                 LockedRow::Other => rows.other = OtherRow::Asks,
-                LockedRow::Send => rows.send = SendRow::Asks,
-                LockedRow::Delete => rows.delete = DeleteRow::Asks,
+                LockedRow::Send => rows.send = AskOrRun::Asks,
+                LockedRow::Delete => rows.delete = AskOrRun::Asks,
                 LockedRow::Screen => rows.screen = ScreenRow::Each,
             }
             rows

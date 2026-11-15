@@ -253,12 +253,12 @@ fn the_floor_clamps_strictness_and_locks_entries() {
     // The strictness the floor allows holds a conversation in Auto; the locked rows ask.
     assert_eq!(floor.clamp_mode(Mode::Auto), Mode::Auto);
     let rows = floor.clamp_rows(ModeRows {
-        send: SendRow::Runs,
+        send: AskOrRun::Runs,
         screen: ScreenRow::Once,
         ..ModeRows::AUTO
     });
-    assert_eq!((rows.send, rows.screen), (SendRow::Asks, ScreenRow::Each));
-    assert_eq!(rows.inside, InsideRow::Runs);
+    assert_eq!((rows.send, rows.screen), (AskOrRun::Asks, ScreenRow::Each));
+    assert_eq!(rows.inside, AskOrRun::Runs);
     let manual_floor = Floor::from_file(FloorFile {
         strictness: Some(Strictness::AskMore),
         ..FloorFile::default()

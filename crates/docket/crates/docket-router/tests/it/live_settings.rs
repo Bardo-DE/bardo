@@ -2,7 +2,7 @@
 
 use crate::support::*;
 use docket_core::*;
-use docket_permissions_core::InsideRow;
+use docket_permissions_core::AskOrRun;
 
 #[tokio::test]
 async fn a_settings_change_applies_to_the_next_call_without_a_restart() {
@@ -13,7 +13,7 @@ async fn a_settings_change_applies_to_the_next_call_without_a_restart() {
     // The person sets Auto's "inside" row to Asks while the router is serving: the next change
     // asks, where an archive inside the person's request ran.
     let mut asking = AgentConfig::default();
-    asking.rows.auto.inside = InsideRow::Asks;
+    asking.rows.auto.inside = AskOrRun::Asks;
     router.apply_settings(asking);
     let archive = |thread: &str| call("mail.thread.archive", &[thread], vec![]);
     let refused = perform(&router, archive("t1")).await.expect_err("asked");

@@ -3,7 +3,7 @@
 
 use docket_core::AgentConfig;
 use docket_fake::fake_router;
-use docket_permissions_core::{InsideRow, Mode};
+use docket_permissions_core::{AskOrRun, Mode};
 use docket_settings::{AgentSettings, Locator};
 use intentd::{SettingsWatch, WatchState, apply, apply_next};
 use std::path::Path;
@@ -46,7 +46,7 @@ async fn a_change_in_the_file_applies_to_the_router_without_a_restart() {
         assert_eq!(loaded.fallbacks, vec![]);
     }
     assert_eq!(router.agent_config().start_mode, Mode::Manual);
-    assert_eq!(router.agent_config().rows.auto.inside, InsideRow::Asks);
+    assert_eq!(router.agent_config().rows.auto.inside, AskOrRun::Asks);
     assert_eq!(
         router.agent_config().budget.spend,
         Some(model_provider::Money::usd(rust_decimal::Decimal::new(7, 6)))

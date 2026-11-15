@@ -2,7 +2,7 @@
 //! the steps of a screen run.
 
 use crate::support::*;
-use docket_permissions_core::{AskReason, DeleteRow, InsideRow, Mode, ModeRows, OtherRow, PolicyId, ScreenRow, SendRow, SessionSaw};
+use docket_permissions_core::{AskReason, AskOrRun, Mode, ModeRows, OtherRow, PolicyId, ScreenRow, SessionSaw};
 use porter_core::AppName;
 use prov::Effect;
 
@@ -258,15 +258,15 @@ fn each_row_value_decides_its_cell_in_either_mode() {
     use Effect::{Destructive, Outbound, Read, UndoableWrite};
     let auto = ModeRows::AUTO;
     let sends = ModeRows {
-        send: SendRow::Runs,
+        send: AskOrRun::Runs,
         ..auto
     };
     let deletes = ModeRows {
-        delete: DeleteRow::Runs,
+        delete: AskOrRun::Runs,
         ..auto
     };
     let inside_asks = ModeRows {
-        inside: InsideRow::Asks,
+        inside: AskOrRun::Asks,
         ..auto
     };
     let other_asks = ModeRows {
