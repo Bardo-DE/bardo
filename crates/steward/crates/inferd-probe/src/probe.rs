@@ -8,7 +8,7 @@
 
 use porter_capability::ModelId;
 use porter_capability::{
-    Capability, EmbedCap, EmbedPrompts, LlmCap, LlmFeature, LlmWire, Modality, PrefixText,
+    Capability, EmbedCap, EmbedPrompts, LlmCap, LlmFeature, LlmWire, Modality,
 };
 use porter_capability::{Claim, Offer, Provenance, Subject};
 use porter_http::http::Method;
@@ -160,8 +160,8 @@ fn ollama_model(id: ModelId, show: Option<&Value>) -> Vec<Claim> {
                 max_input: context,
                 max_batch: Count(1),
                 prompts: Box::new(EmbedPrompts {
-                    query: PrefixText(String::new()),
-                    document: PrefixText(String::new()),
+                    query: String::new(),
+                    document: String::new(),
                 }),
             }),
         ));

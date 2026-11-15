@@ -11082,7 +11082,6 @@ dependencies = [
  "porter-http-relay",
  "porter-ids",
  "serde_json",
- "test-kit",
  "thiserror 2.0.21",
  "tokio",
  "zbus",
@@ -11125,7 +11124,6 @@ dependencies = [
  "porter-ids",
  "porter-match",
  "porter-sheet",
- "porter-tailscale",
  "porter-wire",
  "thiserror 2.0.21",
 ]
@@ -11175,7 +11173,6 @@ dependencies = [
  "porter-service-grants",
  "porter-sheet",
  "porter-wire",
- "test-kit",
  "tokio",
 ]
 
@@ -11191,7 +11188,6 @@ dependencies = [
  "serde",
  "serde_json",
  "subtle",
- "test-kit",
  "thiserror 2.0.21",
  "zeroize",
 ]
@@ -11218,7 +11214,6 @@ dependencies = [
  "proptest",
  "serde",
  "serde_json",
- "test-kit",
  "thiserror 2.0.21",
  "tokio",
  "zbus",
@@ -11427,7 +11422,6 @@ dependencies = [
  "porter-http",
  "porter-ids",
  "porter-wire",
- "test-kit",
  "tokio",
 ]
 
@@ -11441,7 +11435,6 @@ dependencies = [
  "porter-ids",
  "reqwest 0.12.28",
  "rustls",
- "test-kit",
  "tokio",
 ]
 
@@ -11542,7 +11535,6 @@ dependencies = [
  "porter-match",
  "porter-sheet",
  "serde",
- "test-kit",
  "thiserror 2.0.21",
  "toml 1.1.6+spec-1.1.0",
 ]
@@ -11738,7 +11730,6 @@ dependencies = [
  "proptest",
  "serde",
  "serde_json",
- "test-kit",
  "thiserror 2.0.21",
 ]
 
@@ -11864,7 +11855,6 @@ dependencies = [
  "porter-match",
  "serde",
  "serde_json",
- "test-kit",
  "thiserror 2.0.21",
 ]
 

@@ -1,6 +1,6 @@
 //! The AI accounts as inferd uses them: accountd keeps the keys, the accounts and the permits
 //! (`org.quire.Accounts1.Broker`), and inferd, the one daemon that sends a key to an AI company,
-//! asks it through `porter-client`'s [`AiAccounts`]. [`AccountdBroker`] is both seams the rest of
+//! asks it through `porter-client-dbus`'s [`AiAccounts`]. [`AccountdBroker`] is both seams the rest of
 //! the daemon asks through: [`Accountd`] (which accounts an app holds a permit on, and the key
 //! behind a permit) and [`Reports`] (a probed runtime becoming an account).
 //!
@@ -14,8 +14,8 @@ use crate::probe::Runtime;
 use crate::probed::Standing;
 use crate::report::{ReportFault, Reports};
 use porter_capability::Claim;
-use porter_client::{AiAccounts, AiAccountsError, LinkError};
-use porter_client_dbus::Bus;
+use porter_client::{AiAccountsError, LinkError};
+use porter_client_dbus::AiAccounts;
 use porter_core::consent::Usage;
 use porter_core::{AccountId, AccountState, AiAccountRow, AppId, DataClass, GrantId};
 use porter_core::{ProviderId, SecretText};
@@ -28,12 +28,12 @@ use tokio::sync::Notify;
 /// accountd's AI accounts, asked over the bus.
 #[derive(Debug, Clone)]
 pub struct AccountdBroker {
-    accounts: AiAccounts<Bus>,
+    accounts: AiAccounts,
 }
 
 impl AccountdBroker {
     /// The accounts of accountd, asked through `accounts`.
-    pub fn new(accounts: AiAccounts<Bus>) -> Self {
+    pub fn new(accounts: AiAccounts) -> Self {
         Self { accounts }
     }
 }
@@ -152,7 +152,7 @@ const RETRY: Duration = Duration::from_secs(2);
 /// Keeps `list` current and wakes `news` each time accountd says an AI account, a permit or a
 /// switch changed (so a listener reads `Places` again). It subscribes before it looks, asks
 /// again when accountd comes back after it went, and ends with the runtime.
-pub fn follow(accounts: AiAccounts<Bus>, list: AccountList, news: Arc<Notify>) {
+pub fn follow(accounts: AiAccounts, list: AccountList, news: Arc<Notify>) {
     tokio::spawn(async move {
         loop {
             // Subscribed before the first look, so a change between the two is not missed.

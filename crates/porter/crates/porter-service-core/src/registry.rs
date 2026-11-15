@@ -184,11 +184,10 @@ impl Registry {
     /// # Errors
     /// The refusal that says why not.
     pub fn llm_usable(&self, account: &Account) -> Result<(), Refusal> {
-        let off = self.toggles.iter().any(|t| {
-            t.account == account.id
-                && t.kind == CapabilityKind::Llm
-                && t.toggle == porter_capability::false
-        });
+        let off = self
+            .toggles
+            .iter()
+            .any(|t| t.account == account.id && t.kind == CapabilityKind::Llm && t.toggle == false);
         match (off, account.state) {
             (true, _) => Err(Refusal::Denied),
             (false, porter_core::AccountState::NeedsReauth) => Err(Refusal::NeedsReauth),

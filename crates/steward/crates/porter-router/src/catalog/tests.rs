@@ -42,7 +42,10 @@ fn a_user_file_replaces_the_system_file_and_a_bad_file_is_skipped_and_named() {
     });
     assert_eq!(catalog.entries.len(), 1);
     assert_eq!(
-        catalog.entries[0].capabilities.chat_caps().map(|caps| caps.context.0),
+        catalog.entries[0]
+            .capabilities
+            .chat_caps()
+            .map(|caps| caps.context.0),
         Some(4096)
     );
     assert_eq!(catalog.skipped.len(), 1);
