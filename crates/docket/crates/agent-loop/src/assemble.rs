@@ -132,16 +132,6 @@ pub fn mask_history(history: &[StepLine], keep_full: Count) -> Vec<StepLine> {
         .collect()
 }
 
-/// Whether the current task's section fits its budget.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum TaskFit {
-    /// It does.
-    Fits,
-    /// It does not, even with everything old dropped: the loop splits the task.
-    Overflows,
-}
-
 /// The items after the first `covered` of them: what a summary does not stand for.
 fn live<T>(items: &[T], covered: Count) -> &[T] {
     items.get(covered.0 as usize..).unwrap_or_default()
@@ -155,13 +145,10 @@ pub(crate) fn task_cost(view: &PlannerView) -> u32 {
         + view.summary.as_ref().map_or(0, |s| cost(s).0)
 }
 
-/// Whether the task section of `view` is within the budget.
-pub fn task_fit(budget: &AssemblerBudget, view: &PlannerView) -> TaskFit {
-    if task_cost(view) <= budget.task.0 {
-        TaskFit::Fits
-    } else {
-        TaskFit::Overflows
-    }
+/// Whether the task section of `view` is within the budget. When it is not, even with everything
+/// old dropped, the loop splits the task.
+pub fn task_fits(budget: &AssemblerBudget, view: &PlannerView) -> bool {
+    task_cost(view) <= budget.task.0
 }
 
 /// The view with `covers` left out and `summary` in its place, before the last resort of dropping
@@ -224,7 +211,7 @@ pub fn assemble(budget: &AssemblerBudget, sources: &Sources) -> PlannerView {
     let covers = sources.summary.as_ref().map_or(Covers::NONE, |s| s.covers);
     let mut view = view_of(budget, sources, covers, sources.summary.clone());
     let keep = budget.full_steps.0 as usize;
-    while task_fit(budget, &view) == TaskFit::Overflows && view.history.len() > keep {
+    while !task_fits(budget, &view) && view.history.len() > keep {
         view.history.remove(0);
     }
     view

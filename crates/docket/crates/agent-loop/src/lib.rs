@@ -30,7 +30,7 @@ mod side;
 mod step;
 mod tier;
 
-pub use assemble::{Sources, TaskFit, assemble, mask_history, task_fit};
+pub use assemble::{Sources, assemble, mask_history, task_fits};
 pub use compact::{SUMMARY_RESERVE, SummaryInput, compaction_due, summarised, summary_input};
 pub use completion::{Attention, CompletionNote, attention_of, completion_line};
 pub use front::{FrontEvent, front_step};

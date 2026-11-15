@@ -117,7 +117,7 @@ fn everything_inside_the_budget_passes_through_unchanged() {
     assert_eq!(view.primer, s.primer);
     assert_eq!(view.profile, s.profile);
     assert_eq!(view.taint, Integrity::Trusted);
-    assert_eq!(task_fit(&budget(), &view), TaskFit::Fits);
+    assert!(task_fits(&budget(), &view));
 }
 
 #[test]
@@ -210,9 +210,8 @@ fn the_oldest_masked_steps_go_first_when_the_task_is_over_budget_and_the_turns_n
         3,
         "the newest three stay in full even over budget"
     );
-    assert_eq!(
-        task_fit(&tiny, &view),
-        TaskFit::Overflows,
+    assert!(
+        !task_fits(&tiny, &view),
         "the loop splits the task"
     );
 }
@@ -411,7 +410,7 @@ fn a_long_task_compacts_once_and_the_summary_stands_in_for_what_it_covers() {
     );
     assert_eq!(view.history.last().map(|h| h.call), Some(CallId(40)));
     assert_eq!(s.history.len(), 40, "the sources keep every step");
-    assert_eq!(task_fit(&b, &view), TaskFit::Fits);
+    assert!(task_fits(&b, &view));
     assert_eq!(compaction_due(&b, &s), None, "once is enough");
 }
 

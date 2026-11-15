@@ -12,7 +12,7 @@
 //!
 //! A start refused this way is not a refusal the planner must reason about: the call is not
 //! made, the history says the task's own run is still going (`Held::Running`), and the turn rests
-//! until that run reports. The report of a run the task started wakes it (`RunEnd::Ours`): the
+//! until that run reports. The report of a run the task started wakes it (`note_message` answers `true`): the
 //! planner is asked again, whatever the run came to.
 //!
 //! A start that was done rests the turn the same way, at once (`loop_end`): the history keeps it
@@ -34,15 +34,6 @@ const RUN_START: &str = "cua.run.start";
 /// How many runs a task started in this process that have not reported back.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct LiveRuns(u32);
-
-/// Whose run a landed message ended.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RunEnd {
-    /// A run this task started and counted: its report wakes the task.
-    Ours,
-    /// Not a run's last word, or a run this task did not start (or lost count of in a restart).
-    Others,
-}
 
 /// Whether `action` starts a run in an app that has one run at a time.
 fn starts_screen_run(action: &ActionRef) -> bool {
@@ -80,15 +71,11 @@ impl TaskRuntime {
 
     /// Counts a message that just landed: a run's report ends one live run, and says whether it
     /// was one this task held.
-    pub(crate) fn note_message(&mut self, line: &InboundLine) -> RunEnd {
+    pub(crate) fn note_message(&mut self, line: &InboundLine) -> bool {
         if !ends_run(line) {
-            return RunEnd::Others;
+            return false;
         }
-        let run = if self.live_runs == LiveRuns::default() {
-            RunEnd::Others
-        } else {
-            RunEnd::Ours
-        };
+        let run = self.live_runs != LiveRuns::default();
         self.live_runs = LiveRuns(self.live_runs.0.saturating_sub(1));
         run
     }
@@ -180,22 +167,22 @@ mod tests {
             (
                 "progress",
                 report(ReportStatus::Progress, cua()),
-                RunEnd::Others,
+                false,
             ),
             (
                 "another sender",
                 report(ReportStatus::Done, AgentRef::Companion),
-                RunEnd::Others,
+                false,
             ),
             (
                 "its run failed",
                 report(ReportStatus::Failed, cua()),
-                RunEnd::Ours,
+                true,
             ),
             (
                 "none left",
                 report(ReportStatus::Done, cua()),
-                RunEnd::Others,
+                false,
             ),
         ];
         for (name, message, want) in table {
@@ -205,7 +192,7 @@ mod tests {
         let mut other = task(vec![], vec![]);
         assert_eq!(
             other.note_message(&report(ReportStatus::Done, cua())),
-            RunEnd::Others
+            false
         );
     }
 

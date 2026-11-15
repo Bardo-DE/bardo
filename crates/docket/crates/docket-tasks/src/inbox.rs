@@ -6,7 +6,6 @@
 //! that task's taint (the router joined it at delivery).
 
 use crate::fault::ServeFault;
-use crate::one_run::RunEnd;
 use crate::runtime::Companion;
 use crate::seams::Surface;
 use agent_loop::{Attention, CompletionNote, LoopInput, LoopPhase, SideInput, attention_of};
@@ -182,7 +181,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
 
     /// A subagent's report: its roster line moves, and the task gets a typed note (and, for a run
     /// it started itself, a planner turn).
-    fn reported(&mut self, task: &TaskId, line: &InboundLine, status: ReportStatus, run: RunEnd) {
+    fn reported(&mut self, task: &TaskId, line: &InboundLine, status: ReportStatus, ours_run: bool) {
         let from = line.from.agent.clone();
         let (steps, values) = counts(line);
         let ours = self.runtimes.values().any(|rt| rt.agent == from);
@@ -207,9 +206,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         }
         // The run this task started reports to the task that decides what comes next; any other
         // report is a note, and a failure asks the person.
-        let attention = match run {
-            RunEnd::Ours => Attention::Starter,
-            RunEnd::Others => attention_of(status),
+        let attention = if ours_run {
+            Attention::Starter
+        } else {
+            attention_of(status)
         };
         let note = CompletionNote {
             agent: from,
@@ -219,9 +219,9 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
             why,
             attention,
         };
-        match (run, self.running.contains(task)) {
+        match (ours_run, self.running.contains(task)) {
             // Mid-turn, the report waits for the loop to come to rest instead of being lost.
-            (RunEnd::Ours, true) => {
+            (true, true) => {
                 if let Some(rt) = self.runtimes.get_mut(task) {
                     rt.wake_after(note);
                 }
