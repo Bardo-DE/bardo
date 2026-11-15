@@ -189,7 +189,7 @@ install_part() {
   while read -r _ source _; do
     [ -f "$source" ] || {
       case "$source" in
-        */release/*) die "$source is not there: build it first, as yourself (just build, or ./install.sh --only $part)" 2 ;;
+        */release/*) die "$source is not there: build it first, as yourself (cargo xtask install --build, or ./install.sh --only $part)" 2 ;;
         *) die "$source is not there: pass --tree if this is not the bardo tree packaging folder" 2 ;;
       esac
     }

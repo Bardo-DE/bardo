@@ -71,7 +71,6 @@ build   git               cmd:git
 build   curl              cmd:curl
 build   tar               cmd:tar
 build   zstd              cmd:zstd
-build   just              cmd:just
 build   xz                cmd:xz
 build   python3           cmd:python3
 build   pc-wayland-client pc:wayland-client
@@ -140,7 +139,7 @@ packages_fedora() {
     pkg-config) echo pkgconf-pkg-config ;;
     libclang) echo clang-devel llvm-devel ;;
     perl) echo perl-core ;;
-    git | tar | zstd | xz | python3 | just) echo "$1" ;;
+    git | tar | zstd | xz | python3) echo "$1" ;;
     pc-wayland-client | pc-wayland-server) echo wayland-devel ;;
     pc-wayland-protocols) echo wayland-protocols-devel ;;
     pc-xkbcommon) echo libxkbcommon-devel ;;
@@ -205,7 +204,7 @@ packages_debian() {
     pkg-config) echo pkg-config ;;
     libclang) echo libclang-dev ;;
     perl) echo perl ;;
-    git | tar | zstd | python3 | just) echo "$1" ;;
+    git | tar | zstd | python3) echo "$1" ;;
     xz) echo xz-utils ;;
     pc-wayland-client | pc-wayland-server) echo libwayland-dev ;;
     pc-wayland-protocols) echo wayland-protocols ;;
@@ -271,7 +270,7 @@ packages_arch() {
     pkg-config) echo pkgconf ;;
     libclang) echo clang ;;
     perl) echo perl ;;
-    git | tar | zstd | xz | python3 | just) echo "$1" ;;
+    git | tar | zstd | xz | python3) echo "$1" ;;
     pc-wayland-client | pc-wayland-server) echo wayland ;;
     pc-wayland-protocols) echo wayland-protocols ;;
     pc-xkbcommon) echo libxkbcommon ;;

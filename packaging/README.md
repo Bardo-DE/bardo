@@ -6,7 +6,7 @@ cargo workspace with one target directory; there are no other repositories to ch
 
 | Path | What |
 |---|---|
-| `justfile`, `install/plain.sh` | `just`: builds every part as you and installs it with one sudo, a line per part (see Installing) |
+| `install/plain.sh` | `cargo xtask install`: builds every part as you and installs it with one sudo, a line per part (see Installing) |
 | `install.sh` | installs the desktop: builds what is selected in one cargo run, then runs each component's own installer (`crates/<name>/...`) in order (callers, porter, steward, ferry, stoker, almanac, docket, cua, detent, casement, sill, transom, turnstile, keycap, files, palmrest, session; callers, turnstile, keycap and palmrest are this folder's `install/system.sh`) and the colour emoji font; `--check` lists what the machine lacks with the exact dnf, apt or pacman line; see below and `docs/distros.md` |
 | `docs/distros.md` | Ubuntu 24.04+, Fedora and Arch: what is checked, the install lines, picking the session at login, the Ubuntu AppArmor note |
 | `docs/release-notes.md` | the notes for the release being prepared, in plain words (what a person sees change); the text for the release's notes |
@@ -33,16 +33,17 @@ cargo workspace with one target directory; there are no other repositories to ch
 
 ## Installing
 
-Clone the bardo tree and run `just` in this folder (rustup is needed; `just check` says what else this machine lacks):
+Clone the bardo tree and run `cargo xtask install` (rustup is needed; `cargo xtask install --check` says what else this machine lacks). `cargo xtask` runs from anywhere in the tree:
 
 ```
-git clone https://github.com/Bardo-DE/bardo.git
-cd bardo/packaging
-just              # build everything as you in one cargo run, then install it (sudo asks once)
-just only sill detent
-just build        # build only
-just check        # what this machine lacks
+git clone https://github.com/Bardo-DE/bardo.git && cd bardo && cargo xtask install
+cargo xtask install sill detent   # only these parts
+cargo xtask install --build       # build only, as you
+cargo xtask install --check       # what this machine lacks
+cargo xtask install --parts       # every part, in install order
 ```
+
+The first line builds everything as you in one cargo run, then installs it (sudo asks once). PREFIX (default `/usr/local`) comes from the environment.
 
 One line per part; the whole output is in `~/.local/state/desktop-install.log`, and a failure prints
 its last lines. The build is one `cargo build --release --locked -p ...` for every program of the parts you named,

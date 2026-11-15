@@ -11,19 +11,16 @@ you pick.
 
 ## Installing
 
-Clone the bardo repository, then build and install from its `packaging/` folder. One tree is one cargo
+Clone the bardo repository, then build and install from it. One tree is one cargo
 workspace: every program of the desktop is built in one `cargo build --release` run into one target directory
 (`target/` at the root), as you, and then placed with one `sudo` at the start:
 
 ```
-git clone https://github.com/Bardo-DE/bardo.git
-cd bardo/packaging
-just check        # what this machine lacks, with the line that installs it (same as ./install.sh --check)
-just              # build everything as you, then install it (sudo asks once)
+git clone https://github.com/Bardo-DE/bardo.git && cd bardo && cargo xtask install
+cargo xtask install --check   # what this machine lacks, with the line that installs it (same as ./install.sh --check)
 ```
 
-Ubuntu, Fedora and Arch use the same commands. You need rustup and `just` (`dnf install just` or `pacman -S just`;
-where your archive lacks it, `cargo install just`, or run `install/plain.sh install`, which is what `just` runs). Log out and back in to "sill (casement)" afterwards.
+Ubuntu, Fedora and Arch use the same commands. You need rustup, which gives you cargo; `cargo xtask` runs from anywhere in the tree. `cargo xtask install` builds everything as you, then installs it (sudo asks once). Log out and back in to "sill (casement)" afterwards.
 
 ## What the installer checks
 

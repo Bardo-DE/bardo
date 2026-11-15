@@ -12,7 +12,7 @@
 # shell as fixed roles (it accepts units only from root-held places, never ~/.config).
 # And, in the same place, xdg-desktop-portal.service.d/10-quire.conf: a drop-in for the portal frontend's own unit that unsets the
 # loader variables, so the portal backend (transom) can prove the frontend is the real one (NEW-PI-1).
-# Not installed here: the casement, sill and transom (the portal backend) programs themselves (just install, then just only transom, and
+# Not installed here: the casement, sill and transom (the portal backend) programs themselves (cargo xtask install, then cargo xtask install transom, and
 # packages), other sessions (left untouched), and
 # anything under $HOME. install/uninstall.sh removes exactly the files listed below.
 set -euo pipefail
