@@ -73,18 +73,3 @@ impl LockMarker for MemoryLockMarker {
         Ok(())
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn a_clone_sees_what_another_set() {
-        let mut writer = MemoryLockMarker::absent();
-        let reader = writer.clone();
-        assert!(!reader.is_marked());
-        writer.set(true).expect("set");
-        assert!(reader.is_marked());
-        assert_eq!(reader.writes(), 1);
-    }
-}

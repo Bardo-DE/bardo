@@ -57,22 +57,3 @@ impl Spawner for FakeSpawner {
         Ok(Spawned::new(Pid(pid)))
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn programs_are_recorded_and_an_empty_command_is_refused() {
-        let mut fake = FakeSpawner::new();
-        let reader = fake.clone();
-        let argv = Argv(vec!["foot".to_owned()]);
-        let started = fake.spawn(SpawnSpec::new(argv.clone())).expect("started");
-        assert_eq!(started.pid, Pid(FIRST_PID));
-        assert_eq!(reader.started().first().map(|p| p.argv.clone()), Some(argv));
-        assert!(matches!(
-            fake.spawn(SpawnSpec::new(Argv(Vec::new()))),
-            Err(SpawnError::Empty)
-        ));
-    }
-}

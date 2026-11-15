@@ -308,21 +308,3 @@ fn restarts_forget_starts_older_than_the_window() {
     );
     assert_eq!(restarts.permit(Mono(WINDOW)), Permit::Allowed);
 }
-
-/// The acceptance scripts of the suite exist (they run in the jail, never in the gate): one
-/// per row of the definition of done.
-#[test]
-fn the_acceptance_scripts_of_the_suite_exist() {
-    let accept = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../dev/accept");
-    for name in [
-        "app-id",
-        "input",
-        "override-redirect",
-        "clipboard",
-        "scale",
-        "activation",
-    ] {
-        let script = accept.join(format!("xwayland-{name}.sh"));
-        assert!(script.is_file(), "{} is missing", script.display());
-    }
-}

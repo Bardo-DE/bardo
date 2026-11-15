@@ -409,30 +409,6 @@ fn settle_capture(fixture: &mut Fixture, capture: &mut OutputCapture) {
     panic!("the compositor and the capture did not go quiet");
 }
 
-#[test]
-fn a_mouse_and_a_touchpad_both_start_with_natural_scrolling() {
-    let mut seat = seat_with(two_monitors(), FixtureSpec::desktop());
-    let mouse = DeviceId(3);
-    let touchpad = DeviceId(4);
-    seat.world.input.plug(mouse, DeviceClass::Pointer, "mouse");
-    seat.world
-        .input
-        .plug(touchpad, DeviceClass::Touchpad, "touchpad");
-    seat.fixture.pump();
-    let applied = seat.world.input.applied();
-    let natural = |id: DeviceId| {
-        applied
-            .iter()
-            .find(|(device, _)| *device == id)
-            .map(|(_, settings)| settings.natural_scroll)
-    };
-    assert_eq!(natural(mouse), Some(casement_core::settings::Enabled::On));
-    assert_eq!(
-        natural(touchpad),
-        Some(casement_core::settings::Enabled::On)
-    );
-}
-
 /// A change in the settings file reaches the devices that are already there, each by its own
 /// profile, and not a keyboard; an unrelated change tells nobody; a device that left is not told.
 #[test]

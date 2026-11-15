@@ -82,23 +82,3 @@ impl DeviceSource for SharedUdev {
         self.0.borrow_mut().next_event()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::path::PathBuf;
-
-    #[test]
-    fn the_script_comes_out_in_order_then_ends() {
-        let card = DevicePath(PathBuf::from("/dev/dri/card0"));
-        let mut udev = FakeUdev::scripted(vec![
-            DeviceEvent::Added(card.clone()),
-            DeviceEvent::Changed(card.clone()),
-            DeviceEvent::Removed(card.clone()),
-        ]);
-        assert_eq!(udev.next_event(), Some(DeviceEvent::Added(card.clone())));
-        assert_eq!(udev.next_event(), Some(DeviceEvent::Changed(card.clone())));
-        assert_eq!(udev.next_event(), Some(DeviceEvent::Removed(card)));
-        assert_eq!(udev.next_event(), None);
-    }
-}

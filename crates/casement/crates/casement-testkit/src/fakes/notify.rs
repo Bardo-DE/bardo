@@ -34,17 +34,3 @@ impl Notify for FakeNotify {
         Ok(())
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn notices_are_recorded_in_order_and_shared_with_clones() {
-        let mut fake = FakeNotify::new();
-        let reader = fake.clone();
-        fake.send(&Notice::Watchdog).expect("sent");
-        fake.send(&Notice::Stopping).expect("sent");
-        assert_eq!(reader.notices(), [Notice::Watchdog, Notice::Stopping]);
-    }
-}

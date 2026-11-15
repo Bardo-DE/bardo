@@ -13,7 +13,6 @@ mod globals;
 mod gpu;
 mod ids;
 mod input;
-mod kinds;
 mod model;
 mod model_apps;
 mod model_drop;

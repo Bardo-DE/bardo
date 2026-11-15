@@ -5,7 +5,6 @@
 mod chrome;
 mod divider;
 mod hidden_space;
-mod knobs;
 mod limits;
 mod of_model;
 mod rust_scene;

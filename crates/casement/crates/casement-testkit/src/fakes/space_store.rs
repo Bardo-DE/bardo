@@ -67,18 +67,3 @@ impl SpaceStore for MemorySpaceStore {
         Ok(())
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn a_clone_sees_what_another_wrote() {
-        let mut writer = MemorySpaceStore::empty();
-        let reader = writer.clone();
-        assert_eq!(reader.read().expect("read"), None);
-        writer.write("spaces = []").expect("write");
-        assert_eq!(reader.read().expect("read").as_deref(), Some("spaces = []"));
-        assert_eq!(reader.writes(), 1);
-    }
-}

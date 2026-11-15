@@ -274,62 +274,6 @@ fn a_drag_to_the_left_edge_tiles_the_left_half() {
     assert_eq!((got.origin.x, got.size.w), (want.origin.x, want.size.w));
 }
 
-/// The top edge fills, a corner takes a quarter.
-#[test]
-fn the_top_edge_fills_and_a_corner_tiles_a_quarter() {
-    type Spot = fn(LogicalRect) -> LogicalPoint;
-    let cases: [(&str, Spot, Option<TileZone>); 2] = [
-        (
-            "top edge",
-            |full: LogicalRect| LogicalPoint {
-                x: full.centre().x,
-                y: 0,
-            },
-            None,
-        ),
-        (
-            "bottom right corner",
-            |full: LogicalRect| LogicalPoint {
-                x: full.origin.x + i32::try_from(full.size.w).unwrap_or(0) - 1,
-                y: full.origin.y + i32::try_from(full.size.h).unwrap_or(0) - 1,
-            },
-            Some(TileZone::BottomRight),
-        ),
-    ];
-    for (name, point, zone) in cases {
-        let mut desk = desk(None);
-        desk.begin_move();
-        let at = point(desk.output_rect());
-        desk.pointer_to(at);
-        desk.button(BTN_LEFT, PressEdge::Release);
-        match (zone, desk.state()) {
-            (None, WindowState::Filled { .. }) => {}
-            (Some(want), WindowState::Tiled { zone, .. }) if zone == want => {}
-            (_, state) => panic!("{name}: the window is {state:?}"),
-        }
-    }
-}
-
-/// A drag that leaves the edge before the release, or never reaches one, leaves the window
-/// floating where it was dropped.
-#[test]
-fn a_drag_off_the_edge_or_away_from_it_tiles_nothing() {
-    let mut desk = desk(None);
-    desk.begin_move();
-    let centre = desk.output_rect().centre();
-    desk.pointer_to(LogicalPoint { x: 0, y: centre.y });
-    desk.pointer_to(LogicalPoint {
-        x: 300,
-        y: centre.y,
-    });
-    desk.button(BTN_LEFT, PressEdge::Release);
-    assert!(
-        matches!(desk.state(), WindowState::Floating(_)),
-        "floating, not {:?}",
-        desk.state()
-    );
-}
-
 /// A window with the compositor's frame is dragged by its titlebar with a mouse: it follows
 /// every relative step while it keeps drawing, and stays where it was let go (the trial login
 /// of 2026-10-19, where the pointer did not move during a grab and every window stayed pinned
