@@ -163,7 +163,7 @@ pub fn SearchField<T: Clone + PartialEq + 'static>(
     };
     let fresh = Suggesting {
         shown: true,
-        cursor: initial(highlight, &live),
+        cursor: initial(top_hit, &live),
     };
     let mounted = common.mounted;
     let keys_live = live.clone();

@@ -4,7 +4,7 @@
 //! a spin button: Up and Down step, Home and End go to the ends. The field beside it commits a
 //! typed number on Return or when the caret leaves, and the arrow keys in it step too.
 //!
-//! Markup: `span.ds-stepper[data-size][data-readout]` holding the `TextField` (with `Field`) and
+//! Markup: `span.ds-stepper[data-size]` holding the `TextField` (with `Field`) and
 //! `span.ds-stepper-pair[role=spinbutton]` of `span.ds-stepper-up` and `span.ds-stepper-down`;
 //! a half that cannot go further is `aria-disabled`, the half held down `data-pressed`.
 
@@ -155,7 +155,6 @@ pub fn Stepper(
             id: common.id.clone(),
             class,
             "data-size": size.slug(),
-            "data-readout": readout.slug(),
             "data-availability": availability.slug(),
             "aria-busy": availability.aria_busy(),
             onmounted: move |event| common.mounted(event),

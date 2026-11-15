@@ -308,13 +308,13 @@ fn released<T: Clone + 'static>(
         }
         match picks.get(index) {
             Some(Choice {
-                act: Act::Pick(value, after),
+                act: Act::Pick(value, keep_open),
                 availability: Availability::Enabled,
                 ..
             }) => pick.call(Picked {
                 value: value.clone(),
                 depth: 0,
-                after: *after,
+                keep_open: *keep_open,
             }),
             Some(Choice {
                 act: Act::Open(_),
