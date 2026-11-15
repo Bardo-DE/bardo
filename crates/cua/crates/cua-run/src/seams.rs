@@ -126,24 +126,25 @@ pub trait MessageLink: Send + Sync {
 
 /// Everything a run is carried out against, as types: the real set in cua-system (`SystemSeams`), the
 /// fakes in `cua-fake` (`FakeSeams`). Closed sets of implementations are generic parameters
-/// bundled here, never `dyn`.
+/// bundled here, never `dyn`. Every seam outlives the tasks a run is driven from, so each is
+/// `'static`.
 pub trait Seams: Send + Sync + 'static {
     /// What is on the desktop, and leasing it.
-    type Desktop: Desktop + LeaseControl;
+    type Desktop: Desktop + LeaseControl + 'static;
     /// The agent's hands.
-    type Seat: AgentSeat;
+    type Seat: AgentSeat + 'static;
     /// Masked capture.
-    type Capture: WindowCapture;
+    type Capture: WindowCapture<Session: 'static> + 'static;
     /// Accessibility snapshots.
-    type A11y: A11ySource;
+    type A11y: A11ySource + 'static;
     /// The model.
-    type Model: CuaModel;
+    type Model: CuaModel + 'static;
     /// The router's gate.
-    type Gate: GateLink;
+    type Gate: GateLink<Check: 'static> + 'static;
     /// The event log and the message path.
-    type Events: RecordSink + MessageLink;
+    type Events: RecordSink + MessageLink + 'static;
     /// The clock.
-    type Time: Clock;
+    type Time: Clock + 'static;
 }
 
 /// The values of a [`Seams`] bundle.

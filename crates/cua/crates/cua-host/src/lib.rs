@@ -9,13 +9,13 @@
 //! Nothing here opens a connection or starts a backend: this crate links no wayland, EIS,
 //! accessibility or bus crate, and no file watcher. What is here:
 //!
-//! - the supervisor, its drive loop ([`Drivable`]) and its event stream ([`SupervisorEvent`]);
+//! - the supervisor, its drive loop and its event stream ([`SupervisorEvent`]);
 //! - the safety tables the supervisor applies to every start and every call ([`guard`],
 //!   [`CuadConfig`]);
 //! - the links over docket's and almanac's transports: the router's gate ([`IntentsGate`]), the
 //!   message path and the record sink ([`DaemonLinks`], [`record_of`]);
 //! - the person's settings, read from text ([`read`], [`Locator`] over the caller's
-//!   [`ReadText`]) and followed through a [`SettingsFeed`] the caller supplies.
+//!   [`ReadText`]) and applied with `Supervisor::adopt` as the caller's watch reports each change.
 //!
 //! `cuad` is the daemon over this crate: the system seams, the D-Bus service and the file watch.
 //!
@@ -56,7 +56,6 @@ mod supervisor;
 
 pub use clock::SystemClock;
 pub use config::{A11yChoice, BackendChoice, ConfigError, CuadConfig};
-pub use drive::Drivable;
 pub use events::{RunView, SupervisorEvent};
 pub use gate::{IntentsCheck, IntentsGate};
 pub use guard::guard;
@@ -64,6 +63,6 @@ pub use links::{DaemonLinks, RecordContext, RecordError, record_of};
 pub use rules::{RULES_FILE, RulesError, SHIPPED_RULES, parse_rules, shipped_rules};
 pub use settings::{
     AppAllow, AppRule, Apps, CuaSettings, Fallback, Loaded, Locator, ReadFailure, ReadText, SCHEMA,
-    SETTINGS_FILE, SettingsFeed, Why, is_browser, read,
+    SETTINGS_FILE, Why, is_browser, read,
 };
 pub use supervisor::{Supervisor, mint_run_id};

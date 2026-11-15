@@ -1,10 +1,10 @@
 //! The supervisor: every live run, the lease book, and the control calls on them.
 
 use crate::config::CuadConfig;
-use crate::drive::{Drivable, LiveRun, Shared, drive};
+use crate::drive::{LiveRun, Shared, drive};
 use crate::events::{RunView, SupervisorEvent};
 use crate::guard::guard;
-use crate::settings::{Apps, CuaSettings, Loaded, SettingsFeed};
+use crate::settings::{Apps, CuaSettings, Loaded};
 use cua_bus::{
     BudgetBody, ControlRefusal, CuaCaller, CuaMember, CuaTask, ModeSupport, QuestionId, TaskTarget,
 };
@@ -157,14 +157,12 @@ impl<S: Seams> Supervisor<S> {
         }
     }
 
-    /// Waits for the next change of the settings file and applies it; `None` when the watch ended.
-    pub async fn follow(&self, watch: &mut impl SettingsFeed) -> Option<Loaded> {
-        let loaded = watch.changed().await?;
+    /// Reports what the settings file's read fell back on and applies its values.
+    pub fn adopt(&self, loaded: &Loaded) {
         for line in loaded.lines("cuad") {
             eprintln!("{line}");
         }
         self.apply_settings(&loaded.value);
-        Some(loaded)
     }
 
     /// The desktop.
@@ -233,7 +231,7 @@ impl<S: Seams> Supervisor<S> {
     }
 }
 
-impl<S: Drivable> Supervisor<S> {
+impl<S: Seams> Supervisor<S> {
     /// Whether a model can serve a new run. A model a run is working with is plainly there, so
     /// only an idle one is asked.
     async fn model_reach(&self) -> ModelReach {
@@ -426,7 +424,7 @@ impl<S: Drivable> Supervisor<S> {
 
 /// The desktop's events, for every run: each machine keeps what is its own (its lease, its
 /// window) and the kill chord is everyone's.
-async fn pump<S: Drivable>(shared: Arc<Shared<S>>) {
+async fn pump<S: Seams>(shared: Arc<Shared<S>>) {
     loop {
         let event = shared.desktop.next_event().await;
         let state = shared.state();

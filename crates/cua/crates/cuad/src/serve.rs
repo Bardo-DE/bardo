@@ -7,8 +7,8 @@ use crate::reach::ReachObject;
 use crate::relay::relay;
 use crate::start::{answer_open_apps, starts};
 use cua_dbus::{CUA_BUS, CUA_PATH};
-use cua_host::Drivable;
 use cua_host::Supervisor;
+use cua_run::Seams;
 use docket_core::{
     ContextScope, ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy,
 };
@@ -94,7 +94,7 @@ enum Answering {
 /// the system's `/proc`, never a bus name it owns; the provider answers intentd's unit alone.
 /// Returns once the names are ours; the connection keeps serving until the returned guard is
 /// dropped.
-pub async fn serve_on<S: Drivable>(
+pub async fn serve_on<S: Seams>(
     connection: &zbus::Connection,
     supervisor: Arc<Supervisor<S>>,
     table: CallerTable,
@@ -106,7 +106,7 @@ pub async fn serve_on<S: Drivable>(
 /// [`serve_on`] with callers named by `who`, the provider answering the process `who` names as
 /// intentd: the daemon's way in, where `who` reads the system's `/proc` (or a test build's
 /// fixture tree, which the provider must read too, or intentd is a stranger to it).
-pub async fn serve_on_as<S: Drivable>(
+pub async fn serve_on_as<S: Seams>(
     connection: &zbus::Connection,
     supervisor: Arc<Supervisor<S>>,
     who: Identity,
@@ -117,7 +117,7 @@ pub async fn serve_on_as<S: Drivable>(
 
 /// [`serve_on`] with callers named by `who` (a test's fixture proc root and introductions), which
 /// also says who the provider takes for intentd.
-pub async fn serve_on_with<S: Drivable>(
+pub async fn serve_on_with<S: Seams>(
     connection: &zbus::Connection,
     supervisor: Arc<Supervisor<S>>,
     who: Arc<Identity>,
@@ -125,7 +125,7 @@ pub async fn serve_on_with<S: Drivable>(
     serve_as(connection, supervisor, who.clone(), Answering::Told(who)).await
 }
 
-async fn serve_as<S: Drivable>(
+async fn serve_as<S: Seams>(
     connection: &zbus::Connection,
     supervisor: Arc<Supervisor<S>>,
     who: Arc<Identity>,
@@ -189,7 +189,7 @@ async fn serve_as<S: Drivable>(
 
 /// Serves cuad on the session bus until the bus goes away, naming callers by `table` (the
 /// caller reads `cuad-callers.toml`, with [`crate::read_callers`], from its own environment).
-pub async fn serve<S: Drivable>(
+pub async fn serve<S: Seams>(
     supervisor: Supervisor<S>,
     table: CallerTable,
 ) -> Result<(), ServeError> {

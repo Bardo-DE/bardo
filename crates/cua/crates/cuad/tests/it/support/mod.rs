@@ -70,7 +70,7 @@ pub async fn ended(events: &mut Receiver<SupervisorEvent>, run: &RunId) -> RunEn
 }
 
 /// Waits until `run` is in a phase `wanted` says yes to, polling its view.
-pub async fn until<S: cuad::Drivable>(
+pub async fn until<S: cua_run::Seams>(
     supervisor: &Supervisor<S>,
     run: &RunId,
     wanted: impl Fn(&cua_run::RunPhase) -> bool,

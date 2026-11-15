@@ -3,7 +3,7 @@
 //! the inode by rename), a 30 ms debounce, then the whole file is read again through the lenient
 //! reader.
 
-use cua_host::{CuaSettings, Loaded, Locator, ReadFailure, ReadText, SETTINGS_FILE, SettingsFeed};
+use cua_host::{CuaSettings, Loaded, Locator, ReadFailure, ReadText, SETTINGS_FILE};
 use porter_daemon::Watch;
 use std::path::Path;
 use std::time::Duration;
@@ -62,12 +62,6 @@ async fn settle(
         if out.send(locator.read(&FsText, &base)).is_err() {
             return;
         }
-    }
-}
-
-impl SettingsFeed for SettingsWatch {
-    async fn changed(&mut self) -> Option<Loaded> {
-        SettingsWatch::changed(self).await
     }
 }
 

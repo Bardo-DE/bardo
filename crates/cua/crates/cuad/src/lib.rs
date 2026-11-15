@@ -38,9 +38,9 @@ pub use callers::{
 };
 pub use cua_host::{
     A11yChoice, AppAllow, AppRule, Apps, BackendChoice, ConfigError, CuaSettings, CuadConfig,
-    DaemonLinks, Drivable, Fallback, IntentsCheck, IntentsGate, Loaded, Locator, RecordContext,
-    RecordError, RunView, SCHEMA, SETTINGS_FILE, SettingsFeed, Supervisor, SupervisorEvent,
-    SystemClock, Why, guard, is_browser, mint_run_id, read, record_of,
+    DaemonLinks, Fallback, IntentsCheck, IntentsGate, Loaded, Locator, RecordContext, RecordError,
+    RunView, SCHEMA, SETTINGS_FILE, Supervisor, SupervisorEvent, SystemClock, Why, guard,
+    is_browser, mint_run_id, read, record_of,
 };
 pub use daemon::{Fatal, run};
 pub use keymap::desktop_keymap;

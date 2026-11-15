@@ -13,9 +13,8 @@ use cua_bus::{
 };
 use cua_dbus::{CUA_PATH, CuaError, run_path};
 use cua_desktop::{Desktop, RunMode, WindowTitle};
-use cua_host::Drivable;
 use cua_host::Supervisor;
-use cua_run::mode_support;
+use cua_run::{Seams, mode_support};
 use docket_dbus::callers::Callers;
 use prov::{Label, Labelled, RunId};
 use serde::Serialize;
@@ -42,13 +41,13 @@ fn object_path(run: &RunId) -> OwnedObjectPath {
 }
 
 /// `org.quire.Cua1.Manager`.
-pub(crate) struct ManagerObject<S: Drivable, K: Callers> {
+pub(crate) struct ManagerObject<S: Seams, K: Callers> {
     pub supervisor: Arc<Supervisor<S>>,
     pub who: Arc<K>,
 }
 
 #[zbus::interface(name = "org.quire.Cua1.Manager")]
-impl<S: Drivable, K: Callers> ManagerObject<S, K> {
+impl<S: Seams, K: Callers> ManagerObject<S, K> {
     #[zbus(out_args("run"))]
     async fn start(
         &self,
@@ -137,13 +136,13 @@ impl<S: Drivable, K: Callers> ManagerObject<S, K> {
 }
 
 /// `org.quire.Cua1.Run`.
-pub(crate) struct RunObject<S: Drivable, K: Callers> {
+pub(crate) struct RunObject<S: Seams, K: Callers> {
     pub supervisor: Arc<Supervisor<S>>,
     pub id: RunId,
     pub who: Arc<K>,
 }
 
-impl<S: Drivable, K: Callers> RunObject<S, K> {
+impl<S: Seams, K: Callers> RunObject<S, K> {
     async fn control(&self, member: CuaMember, header: &Header<'_>) -> Result<(), CuaError> {
         let caller = caller_of(&self.who, header).await;
         Ok(self.supervisor.control(caller, &self.id, member).await?)
@@ -157,7 +156,7 @@ impl<S: Drivable, K: Callers> RunObject<S, K> {
 }
 
 #[zbus::interface(name = "org.quire.Cua1.Run")]
-impl<S: Drivable, K: Callers> RunObject<S, K> {
+impl<S: Seams, K: Callers> RunObject<S, K> {
     async fn cancel(&self, #[zbus(header)] header: Header<'_>) -> Result<(), CuaError> {
         self.control(CuaMember::Cancel, &header).await
     }

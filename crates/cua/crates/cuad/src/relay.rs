@@ -4,10 +4,9 @@ use crate::bus::{MANAGER_PATH, RunObject, enveloped};
 use crate::callers::shell_owner;
 use cua_bus::AskBody;
 use cua_dbus::run_path;
-use cua_host::Drivable;
 use cua_host::Supervisor;
 use cua_host::SupervisorEvent;
-use cua_run::CuaSignal;
+use cua_run::{CuaSignal, Seams};
 use docket_dbus::callers::Identity;
 use prov::RunId;
 use std::collections::BTreeSet;
@@ -57,7 +56,7 @@ async fn emit_to_shell<B>(
 }
 
 /// Says one supervisor event on the bus.
-async fn say<S: Drivable>(
+async fn say<S: Seams>(
     connection: &zbus::Connection,
     supervisor: &Arc<Supervisor<S>>,
     who: &Arc<Identity>,
@@ -176,7 +175,7 @@ fn note_exported(exported: &mut BTreeSet<RunId>, event: &SupervisorEvent) {
 
 /// Relays the supervisor's events to the bus until the connection or the supervisor goes. A relay
 /// that fell behind and missed events reconciles the run objects against the supervisor's runs.
-pub(crate) async fn relay<S: Drivable>(
+pub(crate) async fn relay<S: Seams>(
     connection: zbus::Connection,
     supervisor: Arc<Supervisor<S>>,
     who: Arc<Identity>,

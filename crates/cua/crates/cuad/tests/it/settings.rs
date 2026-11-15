@@ -56,7 +56,8 @@ async fn a_change_in_the_file_applies_to_the_next_start_without_a_restart() {
         ),
     );
     while sup.apps().rule_for(&app).is_none() {
-        let loaded = sup.follow(&mut watch).await.expect("the watch is live");
+        let loaded = watch.changed().await.expect("the watch is live");
+        sup.adopt(&loaded);
         assert_eq!(loaded.fallbacks, vec![]);
     }
     let started = sup.start(CuaCaller::Companion, task()).await;
@@ -70,7 +71,8 @@ async fn a_change_in_the_file_applies_to_the_next_start_without_a_restart() {
     // Off again, in the file: the next start is refused, the daemon never restarted.
     write_atomically(home.path(), "[cua]\nenabled = \"off\"\n");
     while sup.settings().enabled == Switch::On {
-        sup.follow(&mut watch).await.expect("the watch is live");
+        let loaded = watch.changed().await.expect("the watch is live");
+        sup.adopt(&loaded);
     }
     assert_eq!(
         sup.start(CuaCaller::Companion, task()).await,
@@ -98,7 +100,8 @@ async fn a_bad_value_in_the_file_leaves_the_running_value_and_is_reported() {
     };
     let mut watch = SettingsWatch::start(Locator::from_env(&env), base);
     write_atomically(home.path(), "[cua.budget]\nspend_microusd = -1\n");
-    let loaded = sup.follow(&mut watch).await.expect("the watch is live");
+    let loaded = watch.changed().await.expect("the watch is live");
+    sup.adopt(&loaded);
     assert_eq!(loaded.fallbacks.len(), 1);
     assert_eq!(loaded.fallbacks[0].key, "cua.budget.spend_microusd");
     assert_eq!(

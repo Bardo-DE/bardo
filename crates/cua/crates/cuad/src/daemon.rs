@@ -128,11 +128,7 @@ pub async fn run(
     if let WatchState::Blind { reason } = watched.state() {
         eprintln!("cuad: settings are read once, not watched: {reason}");
     }
-    let first = watched.current();
-    for line in first.lines("cuad") {
-        eprintln!("{line}");
-    }
-    supervisor.apply_settings(&first.value);
+    supervisor.adopt(&watched.current());
     let following = supervisor.clone();
     let announcing = connection.clone();
     tokio::spawn(async move { follow_settings(&announcing, &following, &mut watched).await });

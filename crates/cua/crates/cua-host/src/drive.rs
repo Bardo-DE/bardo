@@ -19,25 +19,6 @@ use std::time::Duration;
 use tokio::sync::{OwnedMutexGuard, broadcast, mpsc};
 use tokio::task::JoinHandle;
 
-/// What a seam bundle needs to be driven from spawned tasks: every seam outlives the task.
-pub trait Drivable: Seams {}
-
-impl<S> Drivable for S
-where
-    S: Seams,
-    S::Desktop: 'static,
-    S::Seat: 'static,
-    S::Capture: 'static,
-    S::A11y: 'static,
-    S::Model: 'static,
-    S::Gate: 'static,
-    S::Events: 'static,
-    S::Time: 'static,
-    <S::Capture as maskcap::WindowCapture>::Session: 'static,
-    <S::Gate as cua_run::GateLink>::Check: 'static,
-{
-}
-
 /// A run the supervisor keeps: how to reach its task, and what the bus shows of it.
 pub(crate) struct LiveRun {
     pub control: mpsc::UnboundedSender<RunInput>,
@@ -263,7 +244,7 @@ impl<S: Seams> Drop for Cleanup<S> {
 
 /// Runs one run to its end: the machine's effects one at a time, each raced against the
 /// controls, the desktop's events and the clock; then the bookkeeping of its end.
-pub(crate) async fn drive<S: Drivable>(
+pub(crate) async fn drive<S: Seams>(
     shared: Arc<Shared<S>>,
     run: Run,
     initial: Vec<RunEffect>,

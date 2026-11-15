@@ -9,8 +9,8 @@ use cua_bus::{
 use cua_desktop::WindowTrust;
 use cua_desktop::{Desktop, RunMode, ToplevelInfo, ToplevelState};
 use cua_host::Supervisor;
-use cua_host::{Apps, Drivable};
-use cua_run::{DefaultMode, choose_mode};
+use cua_host::Apps;
+use cua_run::{DefaultMode, Seams, choose_mode};
 use porter_core::AppName;
 use prov::Address;
 use std::collections::BTreeSet;
@@ -80,7 +80,7 @@ fn choose_app(windows: &[ToplevelInfo], allows: &Apps) -> TaskRefusal {
 /// alone when one of its windows is open, or the window the person is in when it names neither;
 /// the mode with `auto` resolved by the setting and the backend, the settings' budget, and a
 /// report back to the requester.
-pub(crate) async fn task_for<S: Drivable>(
+pub(crate) async fn task_for<S: Seams>(
     supervisor: &Supervisor<S>,
     request: &StartRequest,
 ) -> Result<CuaTask, TaskRefusal> {
@@ -154,7 +154,7 @@ pub(crate) async fn task_for<S: Drivable>(
 }
 
 /// Turns the starts the provider hands over into runs, answering each with its id.
-pub(crate) async fn starts<S: Drivable>(
+pub(crate) async fn starts<S: Seams>(
     supervisor: Arc<Supervisor<S>>,
     mut queue: mpsc::UnboundedReceiver<StartRequest>,
 ) {
@@ -180,7 +180,7 @@ pub(crate) async fn starts<S: Drivable>(
 }
 
 /// Answers the provider's questions about which apps are open; with no window list, none are.
-pub(crate) async fn answer_open_apps<S: Drivable>(
+pub(crate) async fn answer_open_apps<S: Seams>(
     supervisor: Arc<Supervisor<S>>,
     mut queue: mpsc::UnboundedReceiver<OpenAppsAsk>,
 ) {

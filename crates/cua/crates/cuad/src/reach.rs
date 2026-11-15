@@ -9,8 +9,9 @@
 //! because cua does not take docket's newer pin yet; it moves to docket-dbus's `ReachServer` at
 //! the next docket pin.
 
-use cua_host::{Drivable, SettingsFeed, Supervisor};
-use cua_run::Switch;
+use crate::watch::SettingsWatch;
+use cua_host::Supervisor;
+use cua_run::{Seams, Switch};
 use docket_dbus::PROVIDER_PATH;
 use std::sync::Arc;
 use zbus::object_server::SignalEmitter;
@@ -28,12 +29,12 @@ pub fn reach_json(enabled: Switch) -> String {
 }
 
 /// `org.quire.IntentReach1`, answering from the setting in force now.
-pub(crate) struct ReachObject<S: Drivable> {
+pub(crate) struct ReachObject<S: Seams> {
     pub supervisor: Arc<Supervisor<S>>,
 }
 
 #[zbus::interface(name = "org.quire.IntentReach1")]
-impl<S: Drivable> ReachObject<S> {
+impl<S: Seams> ReachObject<S> {
     fn reach(&self) -> String {
         reach_json(self.supervisor.settings().enabled)
     }
@@ -44,16 +45,17 @@ impl<S: Drivable> ReachObject<S> {
 
 /// Applies each change of the settings file to `supervisor`, and says `ReachChanged` on
 /// `connection` when `cua.enabled` is what changed. Returns when the watch ends.
-pub async fn follow_settings<S: Drivable>(
+pub async fn follow_settings<S: Seams>(
     connection: &zbus::Connection,
     supervisor: &Supervisor<S>,
-    watch: &mut impl SettingsFeed,
+    watch: &mut SettingsWatch,
 ) {
     loop {
         let before = supervisor.settings().enabled;
-        if supervisor.follow(watch).await.is_none() {
+        let Some(loaded) = watch.changed().await else {
             return;
-        }
+        };
+        supervisor.adopt(&loaded);
         if supervisor.settings().enabled != before {
             let _ = connection
                 .emit_signal(
