@@ -2,7 +2,6 @@
 #![allow(clippy::unwrap_used, clippy::expect_used)] // tests may unwrap
 
 mod cloud;
-mod fakes;
 mod info;
 mod list;
 mod prefs;
