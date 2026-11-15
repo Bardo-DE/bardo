@@ -22,7 +22,7 @@ fn a_switch_sets_the_word_at_once_and_waits_for_the_answer() {
         }]
     );
     let up = state_of(state.clone());
-    assert_eq!(up.pane.accounts[0].services[0].on, false);
+    assert!(!up.pane.accounts[0].services[0].on);
     assert_eq!(up.pending, Some(storage.clone()));
     // a second change waits for the first
     let (_, again) = apply(

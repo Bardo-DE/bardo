@@ -68,12 +68,11 @@ impl<T> Tracking<T> {
 impl<T: PartialEq> Tracking<T> {
     /// Whether `value` is selected.
     fn selects(&self, value: &T) -> bool {
-        let selected = match self {
+        match self {
             Tracking::SelectOne(one) => one == value,
             Tracking::SelectAny(any) => any.contains(value),
             Tracking::Momentary => false,
-        };
-        if selected { true } else { false }
+        }
     }
 }
 

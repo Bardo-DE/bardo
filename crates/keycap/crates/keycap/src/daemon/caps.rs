@@ -23,7 +23,7 @@ pub(crate) fn remaps_caps(profile: &Profile) -> bool {
 }
 
 /// What keycap knows of the Caps Lock lock and what the user asked of it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub(crate) struct CapsFix {
     /// Whether the desktop has set the LEDs of the virtual keyboard: from then on its word is
     /// the one kept, and a grab read no longer counts. Until then the lock is nothing yet, or
@@ -34,16 +34,6 @@ pub(crate) struct CapsFix {
     /// The lock the user asked for through what keycap wrote: on after a Caps Lock press that
     /// turned it on, off again after one that turned it off. Off until then.
     want: bool,
-}
-
-impl Default for CapsFix {
-    fn default() -> Self {
-        Self {
-            desktop_reported: false,
-            lock: false,
-            want: false,
-        }
-    }
 }
 
 impl CapsFix {

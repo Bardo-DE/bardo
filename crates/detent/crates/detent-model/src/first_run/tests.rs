@@ -3,7 +3,7 @@ use super::*;
 #[test]
 fn ai_stays_on_this_computer_until_the_person_says_otherwise() {
     let state = FirstRun::default();
-    assert_eq!(state.local_only, true);
+    assert!(state.local_only);
     let (state, effects) = first_run_step(state, FirstRunInput::Finish);
     assert_eq!(effects, [FirstRunEffect::Save { local_only: true }]);
     assert_eq!(state.stage, Stage::Saving);

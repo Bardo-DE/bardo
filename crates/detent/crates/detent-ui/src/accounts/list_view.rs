@@ -146,7 +146,7 @@ fn account_item(
 ) -> ListItem<String> {
     let key = account.key.clone();
     let state = RowState {
-        selection: if selected == Some(&key) { true } else { false },
+        selection: selected == Some(&key),
         ..RowState::default()
     };
     let content = rsx! {

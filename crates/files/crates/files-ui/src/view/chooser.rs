@@ -61,11 +61,7 @@ fn ChooserSheet(browse: Browse) -> Element {
     let items: Vec<ListItem<AppPick>> = lines
         .into_iter()
         .map(|line| {
-            let selection = if here.as_ref() == Some(&line.pick) {
-                true
-            } else {
-                false
-            };
+            let selection = here.as_ref() == Some(&line.pick);
             let (key, label) = (line.pick.clone(), line.title.clone());
             ListItem::row(
                 key,

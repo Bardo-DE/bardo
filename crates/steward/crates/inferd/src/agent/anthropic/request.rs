@@ -74,7 +74,7 @@ fn block(block: &Value) -> Result<MessagePart, Unmapped> {
             Ok(MessagePart::ToolCall(ToolCallPart {
                 id: ToolCallId(text_of(block, "id").unwrap_or_default().to_owned()),
                 name,
-                args: JsonText::new(&input.to_string())
+                args: JsonText::new(input.to_string())
                     .map_err(|_| Unmapped::of("a tool_use whose input is not JSON"))?,
             }))
         }
@@ -158,7 +158,7 @@ fn tools(value: Option<&Value>) -> Result<Vec<ToolDecl>, Unmapped> {
                     .map_err(|_| Unmapped::of("a tool whose name is not a tool name"))?,
                 description: text_of(tool, "description").unwrap_or_default().to_owned(),
                 params: SchemaText(
-                    JsonText::new(&schema.to_string())
+                    JsonText::new(schema.to_string())
                         .map_err(|_| Unmapped::of("a tool whose schema is not JSON"))?,
                 ),
             })

@@ -35,11 +35,7 @@ fn Settings() -> Element {
     let items: Vec<ListItem<&'static str>> = PANES
         .into_iter()
         .map(|pane| {
-            let selection = if cursor() == Some(pane) {
-                true
-            } else {
-                false
-            };
+            let selection = cursor() == Some(pane);
             ListItem::row(
                 pane,
                 pane,

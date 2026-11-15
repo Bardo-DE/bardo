@@ -24,7 +24,7 @@ pub fn on_action(
         let Some(action) = keys.action_of(&event, context) else {
             return;
         };
-        if handle(action) == true {
+        if handle(action) {
             event.prevent_default();
             event.stop_propagation();
         }

@@ -66,11 +66,7 @@ impl Session {
     /// Whether `app`'s tile is listed: `false` while it folds (quire's `AppSwitcher` keeps a tile
     /// it is no longer given until its exit has settled).
     pub fn shown(&self, app: &AppId) -> bool {
-        if self.leaving.contains(app) {
-            false
-        } else {
-            true
-        }
+        !self.leaving.contains(app)
     }
 
     /// `app`'s tile starts folding.

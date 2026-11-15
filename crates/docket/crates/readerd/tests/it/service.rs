@@ -156,10 +156,7 @@ async fn the_handles_are_resolved_in_the_session_and_read_as_quarantined_data() 
     assert!(seen.contains("Your Lisbon hotel receipt") && seen.contains("mail the passport"));
     // The router counted the session as having shown untrusted text to a reader.
     let st = router.state.lock().expect("lock");
-    assert_ne!(
-        st.sessions.get(&session).expect("session").saw.untrusted,
-        false
-    );
+    assert!(st.sessions.get(&session).expect("session").saw.untrusted);
 }
 
 #[tokio::test]

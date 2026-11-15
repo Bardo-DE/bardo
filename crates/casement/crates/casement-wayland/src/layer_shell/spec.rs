@@ -141,16 +141,15 @@ mod tests {
         let s = spec(WireAnchor::TOP, NO_MARGIN);
         assert_eq!(s.namespace, "bar");
         assert_eq!(s.role, ShellRoleTag::Unassigned);
-        assert_eq!(s.from_shell, false);
-        assert_eq!(
+        assert!(!s.from_shell);
+        assert!(
             spec_of(
                 &output_key(),
                 &LayerSurfaceCachedState::default(),
                 "bar",
                 true
             )
-            .from_shell,
-            true
+            .from_shell
         );
     }
 }

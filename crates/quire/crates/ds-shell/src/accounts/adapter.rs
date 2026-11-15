@@ -166,11 +166,7 @@ pub(crate) fn PickRows<K: Clone + PartialEq + Hash + 'static>(
     let items = rows
         .into_iter()
         .map(|row| {
-            let selection = if cursor.as_ref() == Some(&row.key) {
-                true
-            } else {
-                false
-            };
+            let selection = cursor.as_ref() == Some(&row.key);
             let key = row.key.clone();
             let title = row.title.clone();
             ListItem::row(

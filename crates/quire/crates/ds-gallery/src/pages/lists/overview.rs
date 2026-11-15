@@ -82,11 +82,7 @@ impl ThreadId {
 
     /// Every other thread is unread, so both exit weights can be watched.
     fn emphasis(self) -> bool {
-        if self.0.is_multiple_of(2) {
-            true
-        } else {
-            false
-        }
+        self.0.is_multiple_of(2)
     }
 }
 

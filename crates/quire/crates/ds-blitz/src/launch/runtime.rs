@@ -23,10 +23,10 @@ use tokio::runtime::{EnterGuard, Handle, Runtime};
 
 /// A runtime of two worker threads, owned by whoever holds it.
 pub(super) fn build() -> std::io::Result<Runtime> {
-    Ok(tokio::runtime::Builder::new_multi_thread()
+    tokio::runtime::Builder::new_multi_thread()
         .worker_threads(2)
         .enable_all()
-        .build()?)
+        .build()
 }
 
 /// What this thread has of its runtime: one Tokio entry, held for as long as any

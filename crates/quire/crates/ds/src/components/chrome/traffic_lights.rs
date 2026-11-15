@@ -63,10 +63,7 @@ pub(crate) fn TrafficLightGroup(timing: FrameTiming, pose: bool) -> Element {
         true => Mark::Restore,
         false => Mark::Zoom,
     };
-    let expanded = match menu() {
-        Some(_) => true,
-        None => false,
-    };
+    let expanded = menu().is_some();
     rsx! {
         div { class: "ds-lights", role: "group", "aria-label": "Window",
             Light { mark: Mark::Close, label: "Close",

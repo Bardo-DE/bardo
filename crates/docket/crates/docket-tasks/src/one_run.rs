@@ -178,10 +178,7 @@ mod tests {
         }
         // A task that started nothing (or lost count in a restart) is not woken by a report.
         let mut other = task(vec![], vec![]);
-        assert_eq!(
-            other.note_message(&report(ReportStatus::Done, cua())),
-            false
-        );
+        assert!(!other.note_message(&report(ReportStatus::Done, cua())));
     }
 
     #[test]

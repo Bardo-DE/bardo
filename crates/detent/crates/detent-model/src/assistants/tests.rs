@@ -117,7 +117,7 @@ fn a_computer_of_the_persons_switches_and_writes() {
             to: false,
         },
     );
-    assert_eq!(next.places.own[0].allowed, false);
+    assert!(!next.places.own[0].allowed);
     assert_eq!(written(&effects), Some(&next.places));
 }
 

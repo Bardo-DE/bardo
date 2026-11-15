@@ -113,11 +113,7 @@ pub(crate) fn render_lines<T>(items: &[MenuItem<T>], drawn: Drawn, alive: &Alive
                         check: None,
                         highlight: Some(index) == drawn.selected,
                         availability: *availability,
-                        branch: Branch::Parent(if drawn.open == Some(index) {
-                            true
-                        } else {
-                            false
-                        }),
+                        branch: Branch::Parent(drawn.open == Some(index)),
                         columns,
                     },
                     index,

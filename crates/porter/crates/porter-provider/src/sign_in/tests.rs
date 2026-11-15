@@ -145,13 +145,13 @@ fn a_login_hint_is_one_address_or_a_fault() {
 fn a_sign_in_starts_without_a_hint_and_with_a_first_consent() {
     let start = SignInStart::new(SignInMode::Add);
     assert_eq!(start.login_hint, None);
-    assert_eq!(start.signed_in_before, false);
+    assert!(!start.signed_in_before);
     let hint = LoginHint::parse("ada@gmail.com").expect("an address");
     let again = start
         .with_login_hint(hint.clone())
         .with_signed_in_before(true);
     assert_eq!(again.login_hint, Some(hint));
-    assert_eq!(again.signed_in_before, true);
+    assert!(again.signed_in_before);
 }
 
 #[test]

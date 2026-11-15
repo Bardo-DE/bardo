@@ -187,7 +187,7 @@ impl Registry {
         let off = self
             .toggles
             .iter()
-            .any(|t| t.account == account.id && t.kind == CapabilityKind::Llm && t.toggle == false);
+            .any(|t| t.account == account.id && t.kind == CapabilityKind::Llm && !t.toggle);
         match (off, account.state) {
             (true, _) => Err(Refusal::Denied),
             (false, porter_core::AccountState::NeedsReauth) => Err(Refusal::NeedsReauth),

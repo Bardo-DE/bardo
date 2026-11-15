@@ -35,7 +35,7 @@ pub(super) fn CloudBadge(badge: Badge) -> Element {
     let Some(mark) = drawn.mark() else {
         return rsx! {};
     };
-    let shown = if badge == Badge::Clear { false } else { true };
+    let shown = badge != Badge::Clear;
     rsx! {
         Fade { shown,
             span { role: "img", "aria-label": mark.name,

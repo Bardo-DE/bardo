@@ -117,7 +117,7 @@ pub fn Loadable(
     let (arriving, pulse) = use_cross_fade(Some(cue)).wear("ds-loadable-layer");
     // The loading layer's own life, only so a custom placeholder can leave by a fade.
     let Presented { presence, .. } = use_presence(
-        if kind == Kind::Loading { true } else { false },
+        kind == Kind::Loading,
         PresenceSpec {
             enter: Anim::Fade,
             exit: Exit::Fade,

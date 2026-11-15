@@ -47,7 +47,7 @@ pub fn pump_queue<S>(
     let dispatched = queue
         .dispatch_pending(state)
         .map_err(|error| ClientError::Dispatch(error.to_string()))?;
-    Ok(if dispatched > 0 { true } else { false })
+    Ok(dispatched > 0)
 }
 
 /// Which notification to ask for.

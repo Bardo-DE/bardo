@@ -55,8 +55,8 @@ pub fn Card<P: WidgetProvider>(provider: P) -> Element {
 /// `kind`'s card: the only match on the kind.
 pub fn card(kind: CenterWidget) -> Element {
     match kind {
-        CenterWidget::Calendar => rsx! { Card { provider: CalendarProvider::default() } },
-        CenterWidget::UpNext => rsx! { Card { provider: UpNextProvider::default() } },
+        CenterWidget::Calendar => rsx! { Card { provider: CalendarProvider } },
+        CenterWidget::UpNext => rsx! { Card { provider: UpNextProvider } },
     }
 }
 

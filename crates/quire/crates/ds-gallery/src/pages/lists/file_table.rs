@@ -132,14 +132,7 @@ pub fn FileTableGallery() -> Element {
     let outline = Callback::new(move |row: usize| {
         let entry = &TREE[listed[row]];
         match entry.folder {
-            true => OutlineRow::branch(
-                entry.depth,
-                if open.read().contains(&listed[row]) {
-                    true
-                } else {
-                    false
-                },
-            ),
+            true => OutlineRow::branch(entry.depth, open.read().contains(&listed[row])),
             false => OutlineRow::leaf(entry.depth),
         }
     });

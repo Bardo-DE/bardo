@@ -459,7 +459,7 @@ fn the_manager_follows_what_goes_away() {
     settle(&mut fixture, &mut watch);
     assert!(watch.windows()[0].gone);
     assert!(!watch.windows()[1].gone);
-    assert_eq!(watch.apps()[0].gone, false, "the app still runs");
+    assert!(!watch.apps()[0].gone, "the app still runs");
 
     ask(&mut fixture, &mut watch, |w| w.create_space());
     assert_eq!(live_spaces(&watch), 2);
@@ -482,9 +482,8 @@ fn the_manager_follows_what_goes_away() {
     fixture.disconnect(public);
     settle(&mut fixture, &mut watch);
     assert!(watch.windows()[1].gone);
-    assert_eq!(
+    assert!(
         watch.apps()[0].gone,
-        true,
         "a stopped manager still hears that what it has ended"
     );
 }

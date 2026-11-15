@@ -174,13 +174,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         self.episodes.retain(|e| e.id != line.id);
         self.episodes.insert(0, line);
         self.episodes.truncate(REMEMBERED * 2);
-        let read = self
-            .runtimes
-            .get(task)
-            .map_or(false, |rt| match rt.taint() {
-                prov::Integrity::Trusted => false,
-                prov::Integrity::Untrusted => true,
-            });
+        let read = self.runtimes.get(task).is_some_and(|rt| match rt.taint() {
+            prov::Integrity::Trusted => false,
+            prov::Integrity::Untrusted => true,
+        });
         self.idle_apply(IdleInput::EpisodeClosed(EpisodeJob {
             episode: episode.id.clone(),
             read,

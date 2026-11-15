@@ -222,7 +222,7 @@ proptest! {
     ) {
         let f = AskFacts {
             effect,
-            undo: if irreversible { false } else { true },
+            undo: !irreversible,
             reach: if ask_always { AgentReach::AskAlways } else { AgentReach::Offered },
             why: &why,
             untrusted: &untrusted,

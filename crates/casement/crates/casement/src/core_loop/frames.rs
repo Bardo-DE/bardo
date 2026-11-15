@@ -75,7 +75,7 @@ pub(super) fn rounds(state: &State) -> BTreeMap<WindowId, ClientRound> {
                 margin_of(&entry.root),
                 style.look.radius,
             )?;
-            let cast = round.casement_shadow.then(|| FrameStyle {
+            let cast = round.casement_shadow.then_some(FrameStyle {
                 look: FrameLook {
                     radius: round.radius,
                     ..style.look

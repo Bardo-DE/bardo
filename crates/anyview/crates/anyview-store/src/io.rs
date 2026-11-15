@@ -41,7 +41,6 @@ pub(crate) fn read_json<T: DeserializeOwned>(path: &Path) -> Result<Option<T>, S
 
 // `ReadError` is `non_exhaustive`: a failure this crate cannot name yet is a refused read, so
 // the file is left as it is.
-#[allow(clippy::wildcard_enum_match_arm)]
 fn read_failed<T>(path: &Path, error: ds_helpers::ReadError) -> Result<Option<T>, StoreError> {
     match error {
         ds_helpers::ReadError::NotFound { .. } => Ok(None),
@@ -55,7 +54,9 @@ fn read_failed<T>(path: &Path, error: ds_helpers::ReadError) -> Result<Option<T>
             reason: error.to_string(),
         }),
         ds_helpers::ReadError::Io { source, .. } => Err(io_error(StoreOp::Read, path, &source)),
-        other => Err(io_error(StoreOp::Read, path, &io::Error::other(other))),
+        other @ ds_helpers::ReadError::NotText { .. } => {
+            Err(io_error(StoreOp::Read, path, &io::Error::other(other)))
+        }
     }
 }
 

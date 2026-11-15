@@ -90,7 +90,7 @@ fn the_last_lit_output_stays_lit() {
     powers.set_mode(two, false).expect("off");
     settle(&mut fixture, &mut powers);
     assert!(!power_of(&fixture, "HEADLESS-1"));
-    assert_eq!(power_of(&fixture, "HEADLESS-2"), true, "refused");
+    assert!(power_of(&fixture, "HEADLESS-2"), "refused");
     assert!(fixture.advance(Duration::from_millis(100)).frames > 0);
 }
 
@@ -180,7 +180,7 @@ fn a_control_made_while_asked_is_inert_until_the_person_allows() {
 
     powers.set_mode(control, false).expect("off");
     settle(&mut fixture, &mut powers);
-    assert_eq!(power_of(&fixture, "HEADLESS-1"), true, "nothing changed");
+    assert!(power_of(&fixture, "HEADLESS-1"), "nothing changed");
     assert_eq!(powers.state(control), Some(ControlState::Silent));
 
     shell.answer(&mut fixture, shell.only_ask(), Answer::Allow);
@@ -229,7 +229,7 @@ fn a_power_taken_back_fails_the_control_and_lights_its_output() {
     }]);
     settle(&mut fixture, &mut powers);
     assert_eq!(powers.state(control), Some(ControlState::Failed));
-    assert_eq!(power_of(&fixture, "HEADLESS-1"), true, "lit again");
+    assert!(power_of(&fixture, "HEADLESS-1"), "lit again");
     powers.set_mode(control, false).expect("off");
     settle(&mut fixture, &mut powers);
     assert!(power_of(&fixture, "HEADLESS-1"));

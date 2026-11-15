@@ -124,7 +124,7 @@ fn round_trip_and_bad_values_are_off() {
     let text = "[[assistant.own_computers]]\nname = \"lab\"\nallowed = \"ask\"\n\
                 [[assistant.cloud_accounts]]\nname = \"a\"\n";
     let loaded = read_places(text);
-    assert_eq!(loaded.places.own[0].allowed, false);
+    assert!(!loaded.places.own[0].allowed);
     assert_eq!(loaded.places.cloud[0].allowed, CloudAllowed::Off);
     assert_eq!(loaded.fallbacks.len(), 2);
 }
@@ -136,7 +136,7 @@ fn migration_never_widens() {
         KnownPlace::Cloud(name("acme"), "Acme".to_owned()),
     ]);
     let migrated = Places::migrated("[ai]\nlocal_only = \"off\"\n", &known);
-    assert_eq!(migrated.own[0].allowed, false);
+    assert!(!migrated.own[0].allowed);
     assert_eq!(migrated.cloud[0].allowed, CloudAllowed::Off);
     let set = Places {
         cloud: vec![cloud("acme", CloudAllowed::On)],
@@ -144,7 +144,7 @@ fn migration_never_widens() {
     };
     let merged = set.merged(&known);
     assert_eq!(merged.cloud[0].allowed, CloudAllowed::On);
-    assert_eq!(merged.own[0].allowed, false);
+    assert!(!merged.own[0].allowed);
 }
 
 #[test]

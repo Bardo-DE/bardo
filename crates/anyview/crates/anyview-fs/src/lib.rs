@@ -93,14 +93,13 @@ pub fn read_whole(path: &Path, cap: ByteLen) -> Result<Vec<u8>> {
 
 // `ReadError` is `non_exhaustive`: what falls to the wildcard is a failure this crate cannot
 // name yet, so it stays an error with its own message.
-#[allow(clippy::wildcard_enum_match_arm)]
 fn io_error(error: ds_helpers::ReadError) -> Error {
     match error {
         ds_helpers::ReadError::NotFound { .. } => Error::from(ErrorKind::NotFound),
         ds_helpers::ReadError::NotRegular { .. } => Error::from(ErrorKind::InvalidInput),
         ds_helpers::ReadError::TooBig { .. } => Error::from(ErrorKind::FileTooLarge),
         ds_helpers::ReadError::Io { source, .. } => source,
-        other => Error::other(other),
+        other @ ds_helpers::ReadError::NotText { .. } => Error::other(other),
     }
 }
 

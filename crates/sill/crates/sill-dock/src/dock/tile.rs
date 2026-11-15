@@ -67,17 +67,9 @@ pub fn Tile(item: DockItem, left: Cpx, size: Cpx, badge: Option<Badge>) -> Eleme
     let top = px(rows.baseline) - side;
     // How far the plate's top is below the tile's: the label stands above it.
     let rise = (side - f64::from(plate_side(Px(side as f32)).0)) / 2.0;
-    let running = if item.app != TileApp::NotRunning && dock.indicators == OnOff::On {
-        true
-    } else {
-        false
-    };
+    let running = item.app != TileApp::NotRunning && dock.indicators == OnOff::On;
     let label = try_use_context::<Signal<LabelShown>>().map_or(LabelShown(None), |shown| shown());
-    let shown = if label.0 == Some(item.tile) {
-        true
-    } else {
-        false
-    };
+    let shown = label.0 == Some(item.tile);
     rsx! {
         div {
             class: "sill-dock-tile",

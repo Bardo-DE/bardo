@@ -93,10 +93,7 @@ fn a_display_with_no_mode_is_left_dark() {
         vec![],
         (0, 0),
     )))]);
-    assert_eq!(
-        run.model.outputs().0[&key("HEADLESS-1")].config.power,
-        false
-    );
+    assert!(!run.model.outputs().0[&key("HEADLESS-1")].config.power);
 }
 
 #[test]

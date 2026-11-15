@@ -86,11 +86,7 @@ fn scrub(slot: &ScrubSlot, onscrub: EventHandler<ScrubEvent>) -> Element {
 
 /// The capsule's level: a level-look slider whose speaker is slashed at zero.
 fn level(slot: &LevelSlot, onlevel: EventHandler<Fraction>) -> Element {
-    let muting = if slot.value == Fraction(0) {
-        true
-    } else {
-        false
-    };
+    let muting = slot.value == Fraction(0);
     rsx! {
         span { class: "ds-capsule-level",
             Slider {

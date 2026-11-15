@@ -144,10 +144,7 @@ fn a_change_updates_the_output_and_reports_it() {
     backend.set(&target, OutputChange::Mode(mode));
     assert_eq!(to(&backend).mode.size.w, 1280);
     backend.set(&target, OutputChange::Power(false));
-    assert_eq!(
-        backend.outputs().get(&target).expect("plugged").power,
-        false
-    );
+    assert!(!backend.outputs().get(&target).expect("plugged").power);
 }
 
 #[test]

@@ -162,7 +162,7 @@ fn tools(value: Option<&Value>) -> Result<Vec<ToolDecl>, Unmapped> {
                     .unwrap_or_default()
                     .to_owned(),
                 params: SchemaText(
-                    JsonText::new(&schema.to_string())
+                    JsonText::new(schema.to_string())
                         .map_err(|_| Unmapped::of("a tool whose schema is not JSON"))?,
                 ),
             })

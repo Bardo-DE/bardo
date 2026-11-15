@@ -56,9 +56,7 @@ pub(super) fn sidebar_rows(
     cursor: Option<PlaceKey>,
     hears: Hears,
 ) -> Vec<SidebarSection<PlaceKey>> {
-    let selection_of = move |key: PlaceKey| {
-        if cursor == Some(key) { true } else { false }
-    };
+    let selection_of = move |key: PlaceKey| cursor == Some(key);
     let items = groups(places)
         .into_iter()
         .flat_map(|group| {

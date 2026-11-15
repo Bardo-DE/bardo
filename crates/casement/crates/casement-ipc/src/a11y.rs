@@ -183,7 +183,7 @@ mod tests {
             worker.check(asked.clone()).expect("queued");
             let verdict = answers.recv().expect("an answer");
             assert_eq!(verdict.window, WindowId(4), "{case}");
-            let want = comes.then(|| A11yRoot {
+            let want = comes.then_some(A11yRoot {
                 bus_name: asked.bus_name,
                 object_path: asked.object_path,
             });

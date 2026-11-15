@@ -25,11 +25,7 @@ pub(crate) fn pointer_at(event: &PointerEvent) -> Point {
 
 /// Whether `menu` is the bar's open one: its item's `shown`. Read where the item is drawn.
 pub(crate) fn shown_of(menu: BarMenu) -> bool {
-    if use_context::<MenuBar>().is_open(menu) {
-        true
-    } else {
-        false
-    }
+    use_context::<MenuBar>().is_open(menu)
 }
 
 /// Whether `event` is a middle-button press or release, which is no part of a menu's tracking
