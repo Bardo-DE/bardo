@@ -1,8 +1,6 @@
 //! The run itself: its state, and the three functions that drive it.
 
-use crate::config::{
-    CuaConfig, SETTLE, SettleLimits, Switch, TREE_MAX_NODES, WAIT_MAX, WAIT_TOTAL,
-};
+use crate::config::{CuaConfig, SETTLE, SettleLimits, TREE_MAX_NODES, WAIT_MAX, WAIT_TOTAL};
 use crate::machine::effect::RunEffect;
 use crate::machine::input::RunInput;
 use crate::machine::phase::{ActionQueue, RunPhase};
@@ -35,7 +33,7 @@ pub struct RunEnv {
     #[serde(default = "default_wait_total")]
     pub wait_total: Ms,
     /// Whether physical input pauses a run on a shared seat.
-    pub autopause: Switch,
+    pub autopause: bool,
     /// How many tree nodes a snapshot keeps.
     pub tree_max_nodes: NodeBudget,
     /// The screen rules: the phrases, window classes, commit words and sensitive titles this run
@@ -71,9 +69,10 @@ impl RunEnv {
             wait_total: WAIT_TOTAL,
             autopause: config.autopause,
             // Reading the controls turned off is a run with no room for any of them.
-            tree_max_nodes: match config.accessibility {
-                Switch::On => TREE_MAX_NODES,
-                Switch::Off => NodeBudget(0),
+            tree_max_nodes: if config.accessibility {
+                TREE_MAX_NODES
+            } else {
+                NodeBudget(0)
             },
             rules,
             grant_level: strictest_grant(),

@@ -3,16 +3,15 @@
 //! No ids, no developer words.
 
 use cua_bus::ControlRefusal;
-use cua_run::Switch;
 
 /// Why a start was refused, in words. `enabled` is the setting now: `Disabled` means the whole
 /// feature is off when it is, and that the app is not on the person's list when it is on.
-pub(crate) fn words_of(why: ControlRefusal, enabled: Switch) -> &'static str {
+pub(crate) fn words_of(why: ControlRefusal, enabled: bool) -> &'static str {
     match (why, enabled) {
-        (ControlRefusal::Disabled, Switch::Off) => {
+        (ControlRefusal::Disabled, false) => {
             "On-screen control is off. You can turn it on in Settings."
         }
-        (ControlRefusal::Disabled, Switch::On) => {
+        (ControlRefusal::Disabled, true) => {
             "That app isn't allowed for on-screen control. You can allow it in Settings."
         }
         (ControlRefusal::NotPermitted, _) => "On-screen control wasn't allowed to start.",
@@ -37,7 +36,7 @@ mod tests {
 
     #[test]
     fn every_refusal_has_a_plain_sentence_and_disabled_says_which_setting() {
-        for enabled in [Switch::Off, Switch::On] {
+        for enabled in [false, true] {
             for why in ControlRefusal::ALL {
                 let words = words_of(why, enabled);
                 assert!(words.ends_with('.'), "{why:?}: {words}");
@@ -46,10 +45,10 @@ mod tests {
                 }
             }
         }
-        assert!(words_of(ControlRefusal::Disabled, Switch::Off).contains("turn it on in Settings"));
-        assert!(words_of(ControlRefusal::Disabled, Switch::On).contains("allow it in Settings"));
+        assert!(words_of(ControlRefusal::Disabled, false).contains("turn it on in Settings"));
+        assert!(words_of(ControlRefusal::Disabled, true).contains("allow it in Settings"));
         assert_eq!(
-            words_of(ControlRefusal::ModelUnavailable, Switch::On),
+            words_of(ControlRefusal::ModelUnavailable, true),
             "The on-screen model isn't available. You can choose one in Settings."
         );
     }

@@ -1,7 +1,7 @@
 # cua's settings schema in the design/22 format (section 9.2). Installed to
 # $XDG_DATA_DIRS/quire/settings/cua.settings.toml; `cuad --write-schema <dir>` writes it for a local
 # install. The values live in $XDG_CONFIG_HOME/cua/settings.toml, for example `[cua]` then
-# `enabled = "on"`; cuad reads them live (crates/cuad/src/settings). Every row is hands-off
+# `enabled = true`; cuad reads them live (crates/cuad/src/settings). Every row is hands-off
 # for an agent (no `agent = "settable"`): cua.* is never agent-settable, so the companion can never
 # switch computer use on for itself. The rows design/22 section 5 puts on the Intelligence page are
 # Computer use's four; the spending cap is Advanced. Not here, because nothing reads them yet:
@@ -15,24 +15,17 @@ version = 1
 
 [[key]]
 path = "cua.enabled"
-default = "off"
+default = false
 label = "Let the assistant use my apps for me"
 help = "Lets the assistant look at an app and click and type in it, only in the apps you list. Off by default."
 section = "Computer use"
 exposure = "basic"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["off", "on"]
+kind = "toggle"
 
 [key.page]
 kind = "intelligence"
-
-[key.labels]
-off = "Off"
-on = "On"
 
 [[key]]
 path = "cua.apps"
@@ -92,45 +85,31 @@ agent_workspace = "Agent workspace"
 
 [[key]]
 path = "cua.autopause"
-default = "on"
+default = true
 label = "Pause when I touch the window"
 help = "Pauses the assistant when you use the mouse or keyboard on a shared screen."
 section = "Computer use"
 exposure = "basic"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["on", "off"]
+kind = "toggle"
 
 [key.page]
 kind = "intelligence"
 
-[key.labels]
-on = "On"
-off = "Off"
-
 [[key]]
 path = "cua.accessibility"
-default = "on"
+default = true
 label = "Read app controls"
 help = "Lets the assistant read the buttons and fields of the window it is using."
 section = "Computer use"
 exposure = "basic"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["on", "off"]
+kind = "toggle"
 
 [key.page]
 kind = "intelligence"
-
-[key.labels]
-on = "On"
-off = "Off"
 
 [[key]]
 path = "cua.budget.spend_microusd"

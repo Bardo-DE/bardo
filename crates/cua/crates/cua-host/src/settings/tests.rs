@@ -2,7 +2,7 @@
 
 use super::keys::{APPS_KEY, Rule, table};
 use super::*;
-use cua_run::{DefaultMode, Switch};
+use cua_run::DefaultMode;
 use porter_core::AppName;
 use std::collections::BTreeSet;
 
@@ -23,13 +23,16 @@ fn path(row: &toml::Table) -> &str {
     row["path"].as_str().expect("path")
 }
 
+/// A kind with no parameters, such as a toggle, has no `v` table.
+static NO_PARAMS: std::sync::LazyLock<toml::Table> = std::sync::LazyLock::new(toml::Table::new);
+
 fn kind_of(row: &toml::Table) -> (&str, &toml::Table) {
     let kind = row["kind"].as_table().expect("kind");
     (
         kind["kind"].as_str().expect("kind name"),
         kind.get("v")
             .and_then(toml::Value::as_table)
-            .expect("kind v"),
+            .unwrap_or(&NO_PARAMS),
     )
 }
 
@@ -95,6 +98,10 @@ fn the_schema_has_the_shape_the_settings_app_loads() {
                 let default = row["default"].as_integer().expect("a number default");
                 assert!((min..=max).contains(&default), "{p}");
             }
+            ("toggle", _) => {
+                assert!(row["default"].is_bool(), "{p}");
+                assert!(row.get("labels").is_none(), "{p}");
+            }
             ("segmented", v) => {
                 let words = words(v);
                 assert!((2..=5).contains(&words.len()), "{p}");
@@ -154,6 +161,7 @@ fn the_schema_rows_and_the_key_table_are_the_same_keys_with_the_same_ranges() {
                 assert_eq!(v["min"].as_integer(), Some(*range.start()), "{}", key.path);
                 assert_eq!(v["max"].as_integer(), Some(*range.end()), "{}", key.path);
             }
+            Rule::Toggle { .. } => assert_eq!(kind_of(row).0, "toggle", "{}", key.path),
             Rule::Word { words: w, .. } => assert_eq!(&words(v), w, "{}", key.path),
         }
     }
@@ -204,6 +212,7 @@ fn a_file_of_every_schema_default_changes_nothing() {
 /// A valid value for the scalar row that is not its default.
 fn other_than_default(row: &toml::Table) -> toml::Value {
     match kind_of(row) {
+        ("toggle", _) => toml::Value::Boolean(!row["default"].as_bool().unwrap()),
         (_, v) if v.contains_key("min") => {
             let default = row["default"].as_integer().unwrap();
             let (min, max) = (
@@ -247,16 +256,13 @@ fn each_key_lands_in_the_typed_value_the_design_names() {
     let one = |p: &str, v: toml::Value| read(&doc(p, v), &base()).value.config;
     let int = toml::Value::Integer;
     let word = |w: &str| toml::Value::String(w.to_owned());
-    assert_eq!(one("cua.enabled", word("on")).enabled, Switch::On);
+    assert!(one("cua.enabled", toml::Value::Boolean(true)).enabled);
     assert_eq!(
         one("cua.default_mode", word("agent_workspace")).default_mode,
         DefaultMode::AgentWorkspace
     );
-    assert_eq!(one("cua.autopause", word("off")).autopause, Switch::Off);
-    assert_eq!(
-        one("cua.accessibility", word("off")).accessibility,
-        Switch::Off
-    );
+    assert!(!one("cua.autopause", toml::Value::Boolean(false)).autopause);
+    assert!(!one("cua.accessibility", toml::Value::Boolean(false)).accessibility);
     assert_eq!(
         one("cua.budget.spend_microusd", int(2_500_000))
             .budget
@@ -270,6 +276,7 @@ fn a_bad_value_falls_back_for_that_key_alone() {
     for row in rows().iter().filter(|r| path(r) != APPS_KEY) {
         let p = path(row);
         let bad: Vec<toml::Value> = match kind_of(row) {
+            ("toggle", _) => vec![toml::Value::String("on".into()), toml::Value::Integer(1)],
             (_, v) if v.contains_key("min") => vec![
                 toml::Value::Integer(v["min"].as_integer().unwrap() - 1),
                 toml::Value::Integer(v["max"].as_integer().unwrap() + 1),
@@ -290,7 +297,7 @@ fn a_bad_value_falls_back_for_that_key_alone() {
                 "cua.budget.spend_microusd"
             };
             let good = if other == "cua.enabled" {
-                toml::Value::String("on".into())
+                toml::Value::Boolean(true)
             } else {
                 toml::Value::Integer(700)
             };
@@ -298,7 +305,7 @@ fn a_bad_value_falls_back_for_that_key_alone() {
             let loaded = read(&text, &base());
             let mut want = base();
             if other == "cua.enabled" {
-                want.config.enabled = Switch::On;
+                want.config.enabled = true;
             } else {
                 want.config.budget.spend =
                     model_provider::Money::usd(rust_decimal::Decimal::new(700, 6));
@@ -330,7 +337,7 @@ fn a_fallback_is_the_base_value_not_the_default() {
 
 #[test]
 fn a_file_that_is_not_toml_keeps_every_base_value_and_says_so() {
-    let loaded = read("[cua\nenabled = \"on\"", &base());
+    let loaded = read("[cua\nenabled = true", &base());
     assert_eq!(loaded.value, base());
     assert!(matches!(loaded.fallbacks[0].why, Why::NotToml(_)));
 }
@@ -338,10 +345,10 @@ fn a_file_that_is_not_toml_keeps_every_base_value_and_says_so() {
 #[test]
 fn unknown_keys_are_reported_and_the_retired_screens_keys_are_among_them() {
     let loaded = read(
-        "version = 1\n[cua.screens]\nkeep = \"on\"\n[cua]\nenabled = \"on\"\n",
+        "version = 1\n[cua.screens]\nkeep = true\n[cua]\nenabled = true\n",
         &base(),
     );
-    assert_eq!(loaded.value.config.enabled, Switch::On);
+    assert!(loaded.value.config.enabled);
     assert_eq!(loaded.unknown, ["cua.screens.keep"]);
     assert_eq!(
         loaded.lines("cuad"),
@@ -408,7 +415,7 @@ allow = "session"
 #[test]
 fn no_apps_key_leaves_the_base_list_and_a_non_list_falls_back() {
     assert_eq!(
-        read("[cua]\nenabled = \"on\"\n", &base()).value.apps,
+        read("[cua]\nenabled = true\n", &base()).value.apps,
         Apps::Listed(vec![])
     );
     let loaded = read("[cua]\napps = \"all\"\n", &base());

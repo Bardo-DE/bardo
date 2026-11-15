@@ -80,7 +80,7 @@ mod window_class;
 pub use attempts::{Limits, Mark, Tried, Verb, digest, digest_within, stall_words, steps_words};
 pub use briefing::{hints as briefing_hints, task_line};
 pub use chord_scope::{acts_on_desktop, standard_actions_of};
-pub use config::{CuaConfig, Days, DefaultMode, SettleLimits, Switch};
+pub use config::{CuaConfig, Days, DefaultMode, SettleLimits};
 pub use effect_class::classify_effect;
 pub use exec::{Collected, Deadline, Exec, Outlet, Progress, Seam, Step, StepNote, deadline_of};
 pub use lease_book::{LeaseBook, LeaseHeld, Slot, SlotState};

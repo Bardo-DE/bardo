@@ -9,18 +9,6 @@ use cua_bus::RunBudget;
 use cua_desktop::Ms;
 use serde::{Deserialize, Serialize};
 
-/// An on/off setting; the field that holds it says which setting it is. Its slugs, `off` and
-/// `on`, are the stored values of `cua.enabled`, `cua.autopause`, `cua.accessibility` and
-/// `cua.screens.keep`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Switch {
-    /// Off.
-    Off,
-    /// On.
-    On,
-}
-
 /// `cua.default_mode`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -68,19 +56,19 @@ pub const TREE_MAX_NODES: NodeBudget = NodeBudget(400);
 pub struct CuaConfig {
     /// `cua.enabled`: off until the person turns it on, and then still needs the per-app
     /// consent. Off, `Cua1.Start` answers `Disabled` and the `org.quire.Cua` action is hidden.
-    pub enabled: Switch,
+    pub enabled: bool,
     /// `cua.default_mode`.
     pub default_mode: DefaultMode,
     /// `cua.budget.*`.
     pub budget: RunBudget,
     /// `cua.autopause`: whether physical input pauses a run on a shared seat.
-    pub autopause: Switch,
+    pub autopause: bool,
     /// `cua.accessibility` (on): whether a run reads the controls (buttons, fields) of the
     /// window it is using, as the app describes them. Only that window's; with it off a run
     /// goes from pixels.
-    pub accessibility: Switch,
+    pub accessibility: bool,
     /// `cua.screens.keep`: whether thumbnails of steps are kept in the Space's encrypted store.
-    pub keep_screens: Switch,
+    pub keep_screens: bool,
     /// `cua.screens.keep_days` (7).
     pub keep_days: Days,
 }
@@ -88,12 +76,12 @@ pub struct CuaConfig {
 impl Default for CuaConfig {
     fn default() -> Self {
         CuaConfig {
-            enabled: Switch::Off,
+            enabled: false,
             default_mode: DefaultMode::Auto,
             budget: RunBudget::PROPOSED,
-            autopause: Switch::On,
-            accessibility: Switch::On,
-            keep_screens: Switch::Off,
+            autopause: true,
+            accessibility: true,
+            keep_screens: false,
             keep_days: Days(7),
         }
     }

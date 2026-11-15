@@ -11,7 +11,7 @@
 
 use crate::watch::SettingsWatch;
 use cua_host::Supervisor;
-use cua_run::{Seams, Switch};
+use cua_run::Seams;
 use docket_dbus::PROVIDER_PATH;
 use std::sync::Arc;
 use zbus::object_server::SignalEmitter;
@@ -20,11 +20,8 @@ use zbus::object_server::SignalEmitter;
 const ACTION: &str = "cua.run.start";
 
 /// `{ "cua.run.start": "offered" | "hidden" }` for the setting.
-pub fn reach_json(enabled: Switch) -> String {
-    let word = match enabled {
-        Switch::On => "offered",
-        Switch::Off => "hidden",
-    };
+pub fn reach_json(enabled: bool) -> String {
+    let word = if enabled { "offered" } else { "hidden" };
     serde_json::json!({ ACTION: word }).to_string()
 }
 
@@ -79,19 +76,13 @@ mod tests {
         let said = |enabled| -> serde_json::Value {
             serde_json::from_str(&reach_json(enabled)).expect("json")
         };
-        assert_eq!(
-            said(Switch::On),
-            serde_json::json!({"cua.run.start": "offered"})
-        );
-        assert_eq!(
-            said(Switch::Off),
-            serde_json::json!({"cua.run.start": "hidden"})
-        );
+        assert_eq!(said(true), serde_json::json!({"cua.run.start": "offered"}));
+        assert_eq!(said(false), serde_json::json!({"cua.run.start": "hidden"}));
     }
 
     #[test]
     fn the_action_is_the_one_the_manifest_declares() {
-        let manifest = crate::manifest_for(Switch::On).expect("manifest");
+        let manifest = crate::manifest_for(true).expect("manifest");
         let names: Vec<&str> = manifest
             .manifest()
             .actions

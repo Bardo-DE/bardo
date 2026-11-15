@@ -11,7 +11,7 @@ use cua_bus::{
 use cua_desktop::Desktop;
 use cua_run::{
     Clock, CuaConfig, CuaModel, GateLink, LeaseBook, ModelReach, ModelSight, NO_SIGHT_NOTE, Parts,
-    Run, RunEnv, RunInput, RunPhase, Seams, Switch, mode_support,
+    Run, RunEnv, RunInput, RunPhase, Seams, mode_support,
 };
 use prov::{Integrity, Labelled, ModelRole, RunId, Source};
 use std::sync::Arc;
@@ -245,7 +245,7 @@ impl<S: Seams> Supervisor<S> {
     /// is on and every model that could serve is known not to read images, and nothing
     /// otherwise. A model a run is working with is plainly in use, so only an idle one is asked.
     pub async fn sight_note(&self) -> Option<&'static str> {
-        if self.settings().enabled != Switch::On {
+        if !self.settings().enabled {
             return None;
         }
         let sight = match self.shared.model.try_lock() {

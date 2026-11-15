@@ -6,7 +6,6 @@ use cua_bus::{ControlRefusal, CuaCaller};
 use cua_desktop::BackendKind;
 use cua_fake::FakePdp;
 use cua_fake::scene::{click, finish, reply, task};
-use cua_run::Switch;
 use cuad::{Apps, CuaSettings, Locator, SettingsWatch, WatchState};
 use std::path::Path;
 
@@ -51,7 +50,7 @@ async fn a_change_in_the_file_applies_to_the_next_start_without_a_restart() {
     write_atomically(
         home.path(),
         &format!(
-            "[cua]\nenabled = \"on\"\n[[cua.apps]]\napp = \"{}\"\nallow = \"ask\"\n",
+            "[cua]\nenabled = true\n[[cua.apps]]\napp = \"{}\"\nallow = \"ask\"\n",
             app.as_str()
         ),
     );
@@ -69,8 +68,8 @@ async fn a_change_in_the_file_applies_to_the_next_start_without_a_restart() {
     );
 
     // Off again, in the file: the next start is refused, the daemon never restarted.
-    write_atomically(home.path(), "[cua]\nenabled = \"off\"\n");
-    while sup.settings().enabled == Switch::On {
+    write_atomically(home.path(), "[cua]\nenabled = false\n");
+    while sup.settings().enabled {
         let loaded = watch.changed().await.expect("the watch is live");
         sup.adopt(&loaded);
     }

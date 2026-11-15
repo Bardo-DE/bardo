@@ -2,7 +2,6 @@
 
 use super::tests::base;
 use super::*;
-use cua_run::Switch;
 use std::path::{Path, PathBuf};
 
 /// The files a test shows the locator: a path with its text, or `None` for a file that is there
@@ -44,7 +43,7 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
         ),
         at(
             "/etc",
-            Some("[cua.budget]\nspend_microusd = 1900\n[cua]\nenabled = \"on\"\n".to_owned()),
+            Some("[cua.budget]\nspend_microusd = 1900\n[cua]\nenabled = true\n".to_owned()),
         ),
     ]);
     let locator = locator_for("/home", "/etc");
@@ -55,7 +54,7 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
         model_provider::Money::usd(rust_decimal::Decimal::new(900, 6))
     );
     // The first file wins whole: the later directory's other keys are not merged in.
-    assert_eq!(value.config.enabled, Switch::Off);
+    assert!(!value.config.enabled);
     let none = Locator::from_env(&|_: &str| None::<String>);
     assert_eq!(none.read(&files, &base()), Loaded::of(base()));
     // A settings file that is there and cannot be read is reported, and the next directory

@@ -380,7 +380,7 @@ section 9.2). cua's covers the `cua.*` keys of section 3.29 that cuad reads, and
 4. **cuad follows the file live** (`settings/watch.rs`: a `notify` watch on `$XDG_CONFIG_HOME/cua`, 30 ms
    debounce, the whole file read again, `Supervisor::follow` applies it). `Supervisor::settings()` is read
    afresh by every guard, by `RunEnv::new` at each `Start`, and by the task builder (mode, budget). **A run
-   already going keeps the `RunEnv` and budget it started with**; `cua.enabled = "off"` refuses the next
+   already going keeps the `RunEnv` and budget it started with**; `cua.enabled = false` refuses the next
    `Start` (`Disabled`) and does not stop a run in flight (the kill chord and `StopAll` do).
 5. **`cua.apps`.** The daemon starts with `Apps::Listed(empty)`: until the file lists an app, none is on and
    `Supervisor::start` answers `Disabled` for it ("off by default and on per app"). A supervisor built in

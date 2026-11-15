@@ -169,7 +169,7 @@ machine state, input and effect, every record and body.
 ## 5. A run in one picture
 
 ```
-Cua1.Manager.Start (router or planner only; Disabled while cua.enabled = off)
+Cua1.Manager.Start (router or planner only; Disabled while cua.enabled is false)
   -> Run::start: mode_support(caps, mode)        Unsupported  -> Finished(Blocked(ModeUnsupported))
   Granting     Gate.Grant(app, space, level)     Refused/Never -> Finished(Blocked(ConsentDenied))
   Leasing      LeaseControl::lease (one run per window; a Shell window is never leasable)

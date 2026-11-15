@@ -22,6 +22,8 @@ pub enum Why {
         /// The largest the key takes.
         max: i64,
     },
+    /// The value is not `true` or `false`.
+    NotABool,
     /// The value is not one of the key's words.
     NotAWord {
         /// The words the key takes.
@@ -46,6 +48,7 @@ impl fmt::Display for Why {
             Why::NotToml(why) => write!(f, "not TOML: {why}"),
             Why::NotANumber => write!(f, "not a whole number"),
             Why::OutOfRange { min, max } => write!(f, "outside {min}..={max}"),
+            Why::NotABool => write!(f, "not true or false"),
             Why::NotAWord { words } => write!(f, "not one of {}", words.join(", ")),
             Why::NotAList => write!(f, "not a list of {{ app, allow }} tables"),
             Why::NotAnApp => write!(f, "no desktop-entry id in `app`"),
@@ -226,6 +229,13 @@ pub fn read(text: &str, base: &CuaSettings) -> Loaded {
                     min: *range.start(),
                     max: *range.end(),
                 }),
+            },
+            Rule::Toggle { set } => match found.as_bool() {
+                Some(on) => {
+                    set(&mut value, on);
+                    None
+                }
+                None => Some(Why::NotABool),
             },
             Rule::Word { words, set } => match found.as_str() {
                 Some(word) if set(&mut value, word) => None,

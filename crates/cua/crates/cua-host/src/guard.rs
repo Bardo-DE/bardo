@@ -1,15 +1,14 @@
 //! The checks every control call passes before it reaches a run.
 
 use cua_bus::{ControlRefusal, CuaCaller, CuaMember, permits};
-use cua_run::Switch;
 
 /// `Ok` when `caller` may call `member` now: it is on the allow-list for the member
 /// (`NotPermitted` otherwise), and computer use is on for `Start` (`Disabled` otherwise). The
 /// caller check comes first, so a stranger learns nothing about the setting.
-pub fn guard(caller: CuaCaller, member: CuaMember, enabled: Switch) -> Result<(), ControlRefusal> {
+pub fn guard(caller: CuaCaller, member: CuaMember, enabled: bool) -> Result<(), ControlRefusal> {
     if !permits(caller, member) {
         Err(ControlRefusal::NotPermitted)
-    } else if member == CuaMember::Start && enabled == Switch::Off {
+    } else if member == CuaMember::Start && !enabled {
         Err(ControlRefusal::Disabled)
     } else {
         Ok(())
@@ -26,7 +25,7 @@ mod tests {
             name: &'static str,
             caller: CuaCaller,
             member: CuaMember,
-            enabled: Switch,
+            enabled: bool,
             want: Result<(), ControlRefusal>,
         }
         let rows = [
@@ -34,56 +33,56 @@ mod tests {
                 name: "router starts",
                 caller: CuaCaller::Router,
                 member: CuaMember::Start,
-                enabled: Switch::On,
+                enabled: true,
                 want: Ok(()),
             },
             Row {
                 name: "planner starts",
                 caller: CuaCaller::Companion,
                 member: CuaMember::Start,
-                enabled: Switch::On,
+                enabled: true,
                 want: Ok(()),
             },
             Row {
                 name: "shell may not start",
                 caller: CuaCaller::Shell,
                 member: CuaMember::Start,
-                enabled: Switch::On,
+                enabled: true,
                 want: Err(ControlRefusal::NotPermitted),
             },
             Row {
                 name: "a stranger may not start",
                 caller: CuaCaller::Other,
                 member: CuaMember::Start,
-                enabled: Switch::On,
+                enabled: true,
                 want: Err(ControlRefusal::NotPermitted),
             },
             Row {
                 name: "off refuses the router",
                 caller: CuaCaller::Router,
                 member: CuaMember::Start,
-                enabled: Switch::Off,
+                enabled: false,
                 want: Err(ControlRefusal::Disabled),
             },
             Row {
                 name: "off tells a stranger nothing",
                 caller: CuaCaller::Other,
                 member: CuaMember::Start,
-                enabled: Switch::Off,
+                enabled: false,
                 want: Err(ControlRefusal::NotPermitted),
             },
             Row {
                 name: "stop-all works while off",
                 caller: CuaCaller::Shell,
                 member: CuaMember::StopAll,
-                enabled: Switch::Off,
+                enabled: false,
                 want: Ok(()),
             },
             Row {
                 name: "only the shell answers",
                 caller: CuaCaller::Companion,
                 member: CuaMember::Answer,
-                enabled: Switch::On,
+                enabled: true,
                 want: Err(ControlRefusal::NotPermitted),
             },
         ];

@@ -17,6 +17,8 @@ pub(crate) enum Rule {
         range: RangeInclusive<i64>,
         set: fn(&mut CuaSettings, i64),
     },
+    /// A switch, stored as TOML `true` or `false`.
+    Toggle { set: fn(&mut CuaSettings, bool) },
     /// One of `words`: `set` reads the word through serde and says whether the field took it.
     Word {
         words: &'static [&'static str],
@@ -41,6 +43,13 @@ fn num(path: &'static str, range: RangeInclusive<i64>, set: fn(&mut CuaSettings,
     }
 }
 
+fn toggle(path: &'static str, set: fn(&mut CuaSettings, bool)) -> Key {
+    Key {
+        path,
+        rule: Rule::Toggle { set },
+    }
+}
+
 fn word(
     path: &'static str,
     words: &'static [&'static str],
@@ -60,20 +69,14 @@ fn read_word<T: DeserializeOwned>(word: &str) -> Option<T> {
 /// Every scalar key, in the order the schema lists them.
 pub(crate) fn table() -> Vec<Key> {
     vec![
-        word("cua.enabled", &["off", "on"], |s, w| {
-            read_word(w).map(|v| s.config.enabled = v).is_some()
-        }),
+        toggle("cua.enabled", |s, v| s.config.enabled = v),
         word(
             "cua.default_mode",
             &["auto", "in_place", "agent_workspace"],
             |s, w| read_word(w).map(|v| s.config.default_mode = v).is_some(),
         ),
-        word("cua.autopause", &["on", "off"], |s, w| {
-            read_word(w).map(|v| s.config.autopause = v).is_some()
-        }),
-        word("cua.accessibility", &["on", "off"], |s, w| {
-            read_word(w).map(|v| s.config.accessibility = v).is_some()
-        }),
+        toggle("cua.autopause", |s, v| s.config.autopause = v),
+        toggle("cua.accessibility", |s, v| s.config.accessibility = v),
         num("cua.budget.spend_microusd", 0..=1_000_000_000, |s, v| {
             // Millionths of a US dollar in the file; 0 is a cap of nothing (local models only).
             s.config.budget.spend = Money::usd(Decimal::new(v, 6));
