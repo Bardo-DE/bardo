@@ -8,7 +8,7 @@ use crate::geometry::LogicalRect;
 use crate::ids::LayerKey;
 
 /// What is left for windows on a 1920x1080 output at (100, 50) after the asks, one per key.
-fn usable(asks: &[(&'static str, u32, LayerOwner)]) -> LogicalRect {
+fn usable(asks: &[(&'static str, u32, bool)]) -> LogicalRect {
     let book =
         asks.iter()
             .enumerate()
@@ -24,7 +24,7 @@ fn a_client_zone_is_capped_and_the_shells_is_not() {
     // name, asks (edges, zone, whose), what is left for windows
     type Case = (
         &'static str,
-        Vec<(&'static str, u32, LayerOwner)>,
+        Vec<(&'static str, u32, bool)>,
         LogicalRect,
     );
     let cases: Vec<Case> = vec![
