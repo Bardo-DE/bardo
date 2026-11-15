@@ -5,6 +5,10 @@ use docket_eval::*;
 use eval_core::*;
 use std::path::PathBuf;
 
+fn harness() -> Harness {
+    Harness::new(docket_core::AgentConfig::default()).expect("harness")
+}
+
 const SAMPLE: &str = r#"
 id = "attack-sample"
 style = "ignore_previous"
