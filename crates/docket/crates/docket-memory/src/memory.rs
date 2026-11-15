@@ -2,7 +2,7 @@
 
 use almanac_client::{ClientError, Memory, Transport};
 use almanac_core::{HistoryFate, MemoryFate, MemoryReply, MemoryRequest, Removal};
-use docket_core::{LinkFault, MemoryLink, SpaceMemories};
+use docket_core::{LinkFault, MemoryLink};
 use prov::SpaceId;
 
 /// Memory, as the router asks it (`Caller::Router`).
@@ -32,9 +32,9 @@ impl<T: Transport> MemoryLink for AlmanacMemory<T> {
         }
     }
 
-    async fn erase_space(&self, space: &SpaceId) -> SpaceMemories {
-        match self
-            .ask(MemoryRequest::RemoveSpace(
+    async fn erase_space(&self, space: &SpaceId) -> bool {
+        matches!(
+            self.ask(MemoryRequest::RemoveSpace(
                 space.clone(),
                 // The person chose to delete the memories; the history is a separate choice,
                 // made in the removal sheet, and is kept here.
@@ -43,10 +43,8 @@ impl<T: Transport> MemoryLink for AlmanacMemory<T> {
                     history: HistoryFate::Keep,
                 },
             ))
-            .await
-        {
-            Ok(MemoryReply::Relocated(_)) => SpaceMemories::Deleted,
-            Ok(_) | Err(_) => SpaceMemories::Kept,
-        }
+            .await,
+            Ok(MemoryReply::Relocated(_))
+        )
     }
 }

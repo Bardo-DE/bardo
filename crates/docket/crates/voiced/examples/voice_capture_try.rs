@@ -28,7 +28,7 @@ async fn list(device: &PipeWireDevice) -> ExitCode {
             "{:>4}  {:<8}  {:<22}  {}",
             node.id.0,
             format!("{:?}", node.kind),
-            node.media_class.0,
+            node.media_class,
             node.name
         );
     }

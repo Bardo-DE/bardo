@@ -78,5 +78,5 @@ pub use settings_watch::{DEBOUNCE, SettingsWatch, WatchState, apply, apply_next}
 pub use sheet::SheetConfirmer;
 pub use shipped::{ShippedEntries, ShippedFault};
 pub use signals::{Cadence, Changed, Marks, changes, emit, marks_of, pump, rescan, rescan_with};
-pub use space_watch::{RemovedMemories, SpaceKeeper};
+pub use space_watch::{SpaceKeeper};
 pub use system::{DaemonLog, SystemSeams};

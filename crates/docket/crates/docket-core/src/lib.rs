@@ -73,7 +73,7 @@ pub use derived::{Corrected, Derived, PolicyWriter};
 pub use external::{ExternalAgent, SheetSurface};
 pub use handover::{HandOver, HandRefusal, HandReply, Handed};
 pub use index::{Hit, IndexBatch, IndexEntry, IndexState, SearchAsk, SearchScope, SuggestAsk};
-pub use memory_link::{EventSink, LinkFault, MemoryLink, SpaceMemories};
+pub use memory_link::{EventSink, LinkFault, MemoryLink};
 pub use message::{
     Delivery, DraftPart, InboundLine, InboundPart, InboxAsk, MessageDraft, SendRefusal,
 };

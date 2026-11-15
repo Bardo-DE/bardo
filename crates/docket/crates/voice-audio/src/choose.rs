@@ -34,7 +34,7 @@ pub struct Chosen<'a> {
 }
 
 fn physical(node: &AudioNode) -> bool {
-    node.kind == NodeKind::Source && node.media_class.0 == "Audio/Source"
+    node.kind == NodeKind::Source && node.media_class == "Audio/Source"
 }
 
 /// The source to capture: the configured `input` if that physical node exists, else PipeWire's

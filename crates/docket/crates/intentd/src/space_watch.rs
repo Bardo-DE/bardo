@@ -19,20 +19,13 @@ use prov::SpaceId;
 use std::sync::Arc;
 use std::time::Duration;
 
-/// What the keeper does with the memories of a removed Space. Memory moves them to the apps
-/// that wrote them on its own; only the person's choice to delete them makes the keeper ask.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RemovedMemories {
-    /// Memory's own handling stands.
-    LeaveToMemory,
-    /// Ask memory to delete them with the Space.
-    Delete,
-}
-
 /// Follows accountd's Spaces for one router.
 pub struct SpaceKeeper<S: Seams> {
     router: Arc<Router<S>>,
-    memories: RemovedMemories,
+    /// Whether to ask memory to delete the memories of a removed Space with it (memory moves them
+    /// to the apps that wrote them on its own; only the person's choice to delete them makes the
+    /// keeper ask).
+    delete_memories: bool,
     /// How long to wait before subscribing again after accountd is lost.
     retry: Duration,
 }
@@ -47,10 +40,10 @@ impl<S: Seams> std::fmt::Debug for SpaceKeeper<S> {
 
 impl<S: Seams<Grants = FileGrants>> SpaceKeeper<S> {
     /// A keeper for `router`'s consent file.
-    pub fn new(router: Arc<Router<S>>, memories: RemovedMemories, retry: Duration) -> Self {
+    pub fn new(router: Arc<Router<S>>, delete_memories: bool, retry: Duration) -> Self {
         Self {
             router,
-            memories,
+            delete_memories,
             retry,
         }
     }
@@ -81,11 +74,8 @@ impl<S: Seams<Grants = FileGrants>> SpaceKeeper<S> {
     async fn removed(&self, space: DesktopSpace) {
         let id = SpaceId::linked(&space);
         self.said(self.router.seams.grants().end_space(&id));
-        match self.memories {
-            RemovedMemories::Delete => {
-                self.router.seams.memory().erase_space(&id).await;
-            }
-            RemovedMemories::LeaveToMemory => {}
+        if self.delete_memories {
+            self.router.seams.memory().erase_space(&id).await;
         }
     }
 

@@ -24,7 +24,7 @@ use crate::serve::{ServeFault, closed, serve_on_gated};
 use crate::settings_watch::{SettingsWatch, WatchState, apply, apply_next};
 use crate::sheet::SheetConfirmer;
 use crate::signals::{Cadence, pump};
-use crate::space_watch::{RemovedMemories, SpaceKeeper};
+use crate::space_watch::{SpaceKeeper};
 use crate::system::{DaemonLog, SystemSeams};
 use bulkhead::AbsPath;
 use docket_checkpoint_git::GitStore;
@@ -425,7 +425,7 @@ pub async fn start(
         live,
     )));
     tasks.push(tokio::spawn(
-        SpaceKeeper::new(router.clone(), RemovedMemories::LeaveToMemory, SPACES_RETRY)
+        SpaceKeeper::new(router.clone(), false, SPACES_RETRY)
             .run(session.clone()),
     ));
     tasks.push(tokio::spawn(prune_checkpoints(router.clone())));
