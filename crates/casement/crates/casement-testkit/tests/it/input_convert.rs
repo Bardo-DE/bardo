@@ -11,7 +11,7 @@ use casement_backend::input::{
 use casement_core::DeviceId;
 use casement_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, SubPoint, SubPx};
 use casement_core::input::{
-    AxisFrame, AxisSource, ButtonCode, DeviceClass, GestureEnd, GestureStep, InputKind, KeyCode,
+    AxisFrame, AxisSource, ButtonCode, DeviceClass, GestureStep, InputKind, KeyCode,
     Origin, PinchDelta, SwipeDelta, SwitchStep, TouchStep,
 };
 use casement_core::settings::CasementSettings;
@@ -184,10 +184,10 @@ fn rows() -> Vec<(VirtualInputEvent, InputKind)> {
             InputEvent::GestureSwipeEnd {
                 event: VirtualGestureEnd {
                     stamp: stamp(),
-                    end: GestureEnd::Cancelled,
+                    end: true,
                 },
             },
-            InputKind::Swipe(GestureStep::End(GestureEnd::Cancelled)),
+            InputKind::Swipe(GestureStep::End(true)),
         ),
         (
             InputEvent::GesturePinchUpdate {
@@ -211,10 +211,10 @@ fn rows() -> Vec<(VirtualInputEvent, InputKind)> {
             InputEvent::GestureHoldEnd {
                 event: VirtualGestureEnd {
                     stamp: stamp(),
-                    end: GestureEnd::Lifted,
+                    end: false,
                 },
             },
-            InputKind::Hold(GestureStep::End(GestureEnd::Lifted)),
+            InputKind::Hold(GestureStep::End(false)),
         ),
         (
             InputEvent::TouchDown {

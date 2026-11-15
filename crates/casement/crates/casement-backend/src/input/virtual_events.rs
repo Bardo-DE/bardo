@@ -5,7 +5,7 @@ use super::convert::SwipeUnaccelerated;
 use super::virtual_input::{VirtualDevice, VirtualInput};
 use casement_core::geometry::{LogicalPoint, SubPoint, SubPx};
 use casement_core::input::{
-    AxisFrame, AxisSource as CoreSource, ButtonCode, GestureEnd, KeyCode, PinchDelta, SwipeDelta,
+    AxisFrame, AxisSource as CoreSource, ButtonCode, KeyCode, PinchDelta, SwipeDelta,
     SwitchStep, TouchStep,
 };
 use casement_core::time::Mono;
@@ -253,14 +253,14 @@ impl GestureHoldBeginEvent<VirtualInput> for VirtualGestureBegin {}
 pub struct VirtualGestureEnd {
     /// Device and instant.
     pub stamp: EventStamp,
-    /// How it ended.
-    pub end: GestureEnd,
+    /// Whether it was cancelled (otherwise the fingers lifted).
+    pub end: bool,
 }
 event_impl!(VirtualGestureEnd);
 
 impl GestureEndEvent<VirtualInput> for VirtualGestureEnd {
     fn cancelled(&self) -> bool {
-        self.end == GestureEnd::Cancelled
+        self.end
     }
 }
 

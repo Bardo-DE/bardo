@@ -18,7 +18,7 @@ pub use binding::{
 };
 pub use chord::Chord;
 pub use event::{
-    AxisFrame, AxisSource, GestureEnd, GestureStep, InputEvent, InputKind, PinchDelta, SwipeDelta,
+    AxisFrame, AxisSource, GestureStep, InputEvent, InputKind, PinchDelta, SwipeDelta,
     SwitchStep, TouchStep,
 };
 pub use key::{ButtonCode, KeyCode, Keysym};

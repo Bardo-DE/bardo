@@ -9,7 +9,7 @@
 //!
 //! Pure data and functions: the model feeds each swipe step and acts on what comes back.
 
-use super::{GestureEnd, GestureStep};
+use super::GestureStep;
 use crate::geometry::SubPoint;
 use crate::settings::{Enabled, GestureSettings};
 
@@ -116,10 +116,10 @@ pub fn route(
         (Route::Driving { axis, carry }, GestureStep::Update(delta)) => {
             drive(axis, carry, delta, *settings)
         }
-        (Route::Driving { axis, .. }, GestureStep::End(GestureEnd::Lifted)) => {
+        (Route::Driving { axis, .. }, GestureStep::End(false)) => {
             (Route::Idle, Fate::Take(vec![Drive::Ended(axis)]))
         }
-        (Route::Driving { axis, .. }, GestureStep::End(GestureEnd::Cancelled)) => {
+        (Route::Driving { axis, .. }, GestureStep::End(true)) => {
             (Route::Idle, Fate::Take(vec![Drive::Cancelled(axis)]))
         }
     }

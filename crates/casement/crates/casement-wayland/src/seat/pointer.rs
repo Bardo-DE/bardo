@@ -9,7 +9,7 @@ use super::{GestureDelivery, PointerDelivery, SurfaceAt};
 use crate::convert::serial_to;
 use crate::states::WaylandFault;
 use casement_core::InputSerial;
-use casement_core::input::{AxisFrame, GestureEnd, GestureStep, PinchDelta};
+use casement_core::input::{AxisFrame, GestureStep, PinchDelta};
 use casement_core::time::Mono;
 use smithay::backend::input::InputTime;
 use smithay::input::pointer::{
@@ -234,10 +234,6 @@ where
     Ok(())
 }
 
-fn cancelled(end: GestureEnd) -> bool {
-    matches!(end, GestureEnd::Cancelled)
-}
-
 fn fingers_of(fingers: u8) -> u32 {
     u32::from(fingers)
 }
@@ -276,7 +272,7 @@ where
             &GestureSwipeEndEvent {
                 serial,
                 time,
-                cancelled: cancelled(end),
+                cancelled: end,
             },
         ),
         GestureDelivery::Pinch(GestureStep::Begin { fingers }) => pointer.gesture_pinch_begin(
@@ -295,7 +291,7 @@ where
             &GesturePinchEndEvent {
                 serial,
                 time,
-                cancelled: cancelled(end),
+                cancelled: end,
             },
         ),
         GestureDelivery::Hold(GestureStep::Begin { fingers }) => pointer.gesture_hold_begin(
@@ -312,7 +308,7 @@ where
             &GestureHoldEndEvent {
                 serial,
                 time,
-                cancelled: cancelled(end),
+                cancelled: end,
             },
         ),
     }

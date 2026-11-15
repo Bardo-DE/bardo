@@ -7,7 +7,7 @@ use casement_backend::{DeviceName, DeviceSpec, VirtualInput};
 use casement_core::DeviceId;
 use casement_core::geometry::{LogicalPoint, SubPoint, SubPx};
 use casement_core::input::{
-    AxisFrame, AxisSource as Source, ButtonCode, DeviceClass, GestureEnd, GestureStep, InputKind,
+    AxisFrame, AxisSource as Source, ButtonCode, DeviceClass, GestureStep, InputKind,
     KeyCode, Origin, PinchDelta, SwipeDelta, SwitchStep, TouchStep,
 };
 use casement_core::settings::XkbNames;
@@ -355,7 +355,7 @@ fn gestures_carry_fingers_deltas_scale_and_how_they_ended() {
     );
     input.push(
         id,
-        InputKind::Swipe(GestureStep::End(GestureEnd::Lifted)),
+        InputKind::Swipe(GestureStep::End(false)),
         at(3),
     );
     let pinch = PinchDelta {
@@ -369,7 +369,7 @@ fn gestures_carry_fingers_deltas_scale_and_how_they_ended() {
     input.push(id, InputKind::Pinch(GestureStep::Update(pinch)), at(4));
     input.push(
         id,
-        InputKind::Pinch(GestureStep::End(GestureEnd::Cancelled)),
+        InputKind::Pinch(GestureStep::End(true)),
         at(5),
     );
     input.push(

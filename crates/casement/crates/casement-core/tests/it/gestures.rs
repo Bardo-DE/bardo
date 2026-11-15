@@ -6,9 +6,9 @@ use crate::support;
 use casement_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use casement_core::geometry::{SubPoint, SubPx};
 use casement_core::input::gesture_route::{Axis, Drive, Fate, Route, route};
-use casement_core::input::lift::{Intent, Lift, LiftEnd, LiftIn, LiftOut};
+use casement_core::input::lift::{Lift, LiftEnd, LiftIn, LiftOut};
 use casement_core::input::{
-    BUS_VIRTUAL, DesktopCommand, DeviceClass, GestureEnd, GestureStep, InputEvent, InputKind,
+    BUS_VIRTUAL, DesktopCommand, DeviceClass, GestureStep, InputEvent, InputKind,
     KernelIds, Maker, Origin, SwipeDelta,
 };
 use casement_core::overview::Overview;
@@ -26,7 +26,7 @@ fn by(dx: i32, dy: i32) -> GestureStep<SubPoint> {
     })
 }
 
-const LIFT: GestureStep<SubPoint> = GestureStep::End(GestureEnd::Lifted);
+const LIFT: GestureStep<SubPoint> = GestureStep::End(false);
 
 fn begin(fingers: u8) -> GestureStep<SubPoint> {
     GestureStep::Begin { fingers }
@@ -147,7 +147,7 @@ fn an_axis_nobody_wants_at_that_count_is_swallowed_to_its_end() {
 fn a_cancelled_swipe_is_cancelled() {
     let s = GestureSettings::defaults();
     let steps = routed(
-        vec![begin(4), by(30, 0), GestureStep::End(GestureEnd::Cancelled)],
+        vec![begin(4), by(30, 0), GestureStep::End(true)],
         &s,
     );
     assert_eq!(
@@ -157,8 +157,8 @@ fn a_cancelled_swipe_is_cancelled() {
 }
 
 /// The vertical machine over `(ms, dy)` moves, then a lift at `lift_at`.
-fn lifted(intent: Intent, moves: &[(u64, i32)], lift_at: u64) -> (Vec<LiftOut>, LiftEnd) {
-    let (lift, _) = Lift::Idle.step(LiftIn::Began(intent), Stamp(0));
+fn lifted(opening: bool, moves: &[(u64, i32)], lift_at: u64) -> (Vec<LiftOut>, LiftEnd) {
+    let (lift, _) = Lift::Idle.step(LiftIn::Began(opening), Stamp(0));
     let (lift, outs) = moves
         .iter()
         .fold((lift, Vec::new()), |(lift, mut outs), (at, dy)| {
@@ -180,49 +180,49 @@ fn the_lift_commits_by_distance_and_speed() {
     let cases = [
         (
             "past half, slow, opens",
-            Intent::Open,
+            true,
             vec![(200, -120), (400, -120)],
             1000,
             LiftEnd::Open,
         ),
         (
             "under half, slow, stays",
-            Intent::Open,
+            true,
             vec![(200, -60), (400, -60)],
             1000,
             LiftEnd::Stay,
         ),
         (
             "under half, flicked, opens",
-            Intent::Open,
+            true,
             vec![(10, -30), (20, -30), (30, -30)],
             40,
             LiftEnd::Open,
         ),
         (
             "past half, flicked back, stays",
-            Intent::Open,
+            true,
             vec![(500, -300), (550, 20), (600, 30)],
             620,
             LiftEnd::Stay,
         ),
         (
             "downward never opens",
-            Intent::Open,
+            true,
             vec![(100, 200)],
             1000,
             LiftEnd::Stay,
         ),
         (
             "past half down closes",
-            Intent::Close,
+            false,
             vec![(200, 120), (400, 120)],
             1000,
             LiftEnd::Close,
         ),
         (
             "a little down stays open",
-            Intent::Close,
+            false,
             vec![(300, 40)],
             1000,
             LiftEnd::Stay,
@@ -236,7 +236,7 @@ fn the_lift_commits_by_distance_and_speed() {
 
 #[test]
 fn the_lift_reports_how_open_it_is_and_never_past_the_ends() {
-    let (outs, _) = lifted(Intent::Open, &[(10, -100), (20, -900)], 500);
+    let (outs, _) = lifted(true, &[(10, -100), (20, -900)], 500);
     let progress: Vec<i32> = outs
         .into_iter()
         .filter_map(|out| match out {
@@ -245,7 +245,7 @@ fn the_lift_reports_how_open_it_is_and_never_past_the_ends() {
         })
         .collect();
     assert_eq!(progress, vec![250, 1000]);
-    let (outs, _) = lifted(Intent::Close, &[(10, 100)], 500);
+    let (outs, _) = lifted(false, &[(10, 100)], 500);
     assert_eq!(outs, vec![LiftOut::Progress(PageMilli(750))]);
 }
 
@@ -544,7 +544,7 @@ fn a_swipe_that_never_moved_the_windows_changes_nothing() {
     let model = three_spaces(GestureSettings::defaults());
     let (model, _) = swiped(model, vec![(T0, begin(4)), (T0 + 10, by(0, 12))]);
     assert_eq!(model.overview_progress(), Some(PageMilli(0)));
-    let (model, effects) = swipe(model, T0 + 50, GestureStep::End(GestureEnd::Cancelled));
+    let (model, effects) = swipe(model, T0 + 50, GestureStep::End(true));
     assert_eq!(model.overview(), Overview::Closed);
     assert!(!effects.contains(&Effect::Relayout(Cause::Overview)));
 }

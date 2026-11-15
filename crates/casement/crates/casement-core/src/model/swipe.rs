@@ -20,7 +20,7 @@ use crate::effect::Effect;
 use crate::geometry::{LogicalRect, SubPx};
 use crate::ids::OutputKey;
 use crate::input::gesture_route::{Axis, Drive, Fate, Route, route};
-use crate::input::lift::{Intent, Lift, LiftEnd, LiftIn, LiftOut};
+use crate::input::lift::{Lift, LiftEnd, LiftIn, LiftOut};
 use crate::input::{InputEvent, InputKind, Origin};
 use crate::lock::LockState;
 use crate::overview::Overview;
@@ -275,8 +275,8 @@ impl Model {
     /// it is up, and do nothing while it flies.
     fn lift_began(self) -> Moved {
         let intent = match self.overview {
-            Overview::Closed => Some(Intent::Open),
-            Overview::Entering | Overview::Open => Some(Intent::Close),
+            Overview::Closed => Some(true),
+            Overview::Entering | Overview::Open => Some(false),
             Overview::Leaving => None,
         };
         match (intent, self.outputs.0.is_empty()) {

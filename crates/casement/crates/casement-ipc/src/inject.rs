@@ -94,7 +94,7 @@ mod tests {
     use super::*;
     use crate::error::IpcError;
     use casement_core::geometry::SubPx;
-    use casement_core::input::{AxisSource, GestureEnd};
+    use casement_core::input::{AxisSource};
 
     #[test]
     fn every_fake_input_line_parses() {
@@ -158,11 +158,11 @@ mod tests {
         );
         assert_eq!(
             parse_inject("swipe end").expect("swipe"),
-            InjectLine::Swipe(GestureStep::End(GestureEnd::Lifted))
+            InjectLine::Swipe(GestureStep::End(false))
         );
         assert_eq!(
             parse_inject("hold cancel").expect("hold"),
-            InjectLine::Hold(GestureStep::End(GestureEnd::Cancelled))
+            InjectLine::Hold(GestureStep::End(true))
         );
         assert_eq!(
             parse_inject("touch up 2").expect("touch"),
@@ -390,7 +390,7 @@ mod tests {
         }
         assert_eq!(
             parse_inject("swipe cancel").expect("swipe"),
-            InjectLine::Swipe(GestureStep::End(GestureEnd::Cancelled))
+            InjectLine::Swipe(GestureStep::End(true))
         );
         assert_eq!(
             parse_inject("hold begin 2").expect("hold"),

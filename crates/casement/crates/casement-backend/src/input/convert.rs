@@ -5,7 +5,7 @@
 
 use casement_core::geometry::{LogicalPoint, LogicalRect, SubPoint, SubPx};
 use casement_core::input::{
-    AxisFrame, AxisSource as CoreSource, ButtonCode, GestureEnd, GestureStep, InputKind, KeyCode,
+    AxisFrame, AxisSource as CoreSource, ButtonCode, GestureStep, InputKind, KeyCode,
     PinchDelta, SwipeDelta, SwitchStep, TouchStep,
 };
 use casement_protocols::vocab::PressEdge;
@@ -185,11 +185,8 @@ fn begin<D>(fingers: u32, kind: fn(GestureStep<D>) -> InputKind) -> InputKind {
     })
 }
 
-fn ended<B: InputBackend, E: GestureEndEvent<B>>(event: &E) -> GestureEnd {
-    match event.cancelled() {
-        true => GestureEnd::Cancelled,
-        false => GestureEnd::Lifted,
-    }
+fn ended<B: InputBackend, E: GestureEndEvent<B>>(event: &E) -> bool {
+    event.cancelled()
 }
 
 /// One scroll frame. A continuous source (fingers, a trackpoint) that reports a zero amount has

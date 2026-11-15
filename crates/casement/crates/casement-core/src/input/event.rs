@@ -97,8 +97,8 @@ pub enum GestureStep<D> {
     },
     /// It moved.
     Update(D),
-    /// It ended.
-    End(GestureEnd),
+    /// It ended: `true` when it was cancelled, `false` when the fingers lifted.
+    End(bool),
 }
 
 impl<D> GestureStep<D> {
@@ -132,15 +132,6 @@ impl From<SubPoint> for SwipeDelta {
             unaccelerated: delta,
         }
     }
-}
-
-/// How a gesture ended.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum GestureEnd {
-    /// The fingers lifted.
-    Lifted,
-    /// It was cancelled.
-    Cancelled,
 }
 
 /// One pinch update.

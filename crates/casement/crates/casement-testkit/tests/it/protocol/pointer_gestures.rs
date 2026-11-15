@@ -3,7 +3,7 @@
 use casement_core::geometry::{LogicalPoint, PhysicalSize};
 use casement_core::geometry::{SubPoint, SubPx};
 use casement_core::input::DeviceClass;
-use casement_core::input::{GestureEnd, GestureStep};
+use casement_core::input::{GestureStep};
 use casement_core::policy::ConnectionRole;
 use casement_testclient::seat::gestures::Gestures;
 use casement_testclient::seat::pointer::Pointer;
@@ -88,7 +88,7 @@ fn a_swipe_the_system_does_not_take_reaches_the_client() {
     );
     fixture
         .input()
-        .swipe(pad, GestureStep::End(GestureEnd::Lifted));
+        .swipe(pad, GestureStep::End(false));
     let client = fixture.client(id);
     for event in ["begin", "update", "end"] {
         assert_eq!(
@@ -136,7 +136,7 @@ fn a_swipe_the_desktop_takes_never_reaches_the_client() {
     );
     fixture
         .input()
-        .swipe(pad, GestureStep::End(GestureEnd::Lifted));
+        .swipe(pad, GestureStep::End(false));
     let client = fixture.client(id);
     for event in ["begin", "update", "end"] {
         assert_eq!(

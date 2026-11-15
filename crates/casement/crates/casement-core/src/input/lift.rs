@@ -2,7 +2,7 @@
 //! closes) when the distance or the speed says so (03 section 4.2: the same shape as the Space
 //! swipe, committing at half the distance).
 //!
-//! `travelled` is how far the fingers went toward the intent (up to open, down to close), clamped
+//! `travelled` is how far the fingers went toward the opening (up to open, down to close), clamped
 //! to `0..=FULL_PX`; a full travel is 400 logical pixels, the Space swipe's page, so the numbers
 //! match: commit past half unless a reverse flick of 1.5 per second, or under half on a forward
 //! flick of the same speed (`ds_behaviour::space_swipe::commit`). The speed is the slope between
@@ -17,15 +17,6 @@ pub const FULL_PX: i32 = 400;
 /// How far back from the lift a position still says how fast the fingers were going.
 const WINDOW_MS: u64 = 80;
 
-/// What the swipe is for.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Intent {
-    /// Mission Control is closed and the fingers go up to open it.
-    Open,
-    /// Mission Control is up and the fingers go down to close it.
-    Close,
-}
-
 /// The vertical swipe.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub enum Lift {
@@ -35,8 +26,8 @@ pub enum Lift {
     /// The fingers are down.
     Tracking {
         /// What they are for.
-        intent: Intent,
-        /// Thousandths of the full travel made toward the intent, `0..=1000`.
+        opening: bool,
+        /// Thousandths of the full travel made toward the opening, `0..=1000`.
         travelled: i32,
         /// Recent `(time, travelled)` pairs, for the speed at lift.
         samples: Vec<(Stamp, i32)>,
@@ -47,7 +38,7 @@ pub enum Lift {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LiftIn {
     /// The fingers locked vertical.
-    Began(Intent),
+    Began(bool),
     /// The fingers moved `dy` logical pixels, positive downward.
     Moved {
         /// The move.
@@ -83,42 +74,42 @@ impl Lift {
     /// The swipe after `input` at `at`, and what it wants done.
     ///
     /// ```
-    /// use casement_core::input::lift::{Intent, Lift, LiftIn, LiftOut, LiftEnd};
+    /// use casement_core::input::lift::{Lift, LiftIn, LiftOut, LiftEnd};
     /// use ds_core::time::stamp::Stamp;
     ///
-    /// let (lift, _) = Lift::Idle.step(LiftIn::Began(Intent::Open), Stamp(0));
+    /// let (lift, _) = Lift::Idle.step(LiftIn::Began(true), Stamp(0));
     /// let (lift, _) = lift.step(LiftIn::Moved { dy: -300 }, Stamp(100));
     /// let (_, out) = lift.step(LiftIn::Ended, Stamp(500));
     /// assert!(out.contains(&LiftOut::Done(LiftEnd::Open)));
     /// ```
     pub fn step(self, input: LiftIn, at: Stamp) -> (Lift, Vec<LiftOut>) {
         match (self, input) {
-            (_, LiftIn::Began(intent)) => (
+            (_, LiftIn::Began(opening)) => (
                 Lift::Tracking {
-                    intent,
+                    opening,
                     travelled: 0,
                     samples: Vec::new(),
                 },
-                vec![LiftOut::Progress(openness(intent, 0))],
+                vec![LiftOut::Progress(openness(opening, 0))],
             ),
             (
                 Lift::Tracking {
-                    intent,
+                    opening,
                     travelled,
                     samples,
                 },
                 LiftIn::Moved { dy },
-            ) => follow(intent, travelled, samples, dy, at),
+            ) => follow(opening, travelled, samples, dy, at),
             (
                 Lift::Tracking {
-                    intent,
+                    opening,
                     travelled,
                     samples,
                 },
                 LiftIn::Ended,
             ) => {
                 let speed = lift_speed(&samples, at);
-                let verdict = verdict(intent, travelled, speed);
+                let verdict = verdict(opening, travelled, speed);
                 (Lift::Idle, vec![LiftOut::Done(verdict)])
             }
             (Lift::Tracking { .. }, LiftIn::Cancelled) => {
@@ -131,16 +122,13 @@ impl Lift {
 
 /// The fingers moved `dy` pixels downward.
 fn follow(
-    intent: Intent,
+    opening: bool,
     travelled: i32,
     samples: Vec<(Stamp, i32)>,
     dy: i32,
     at: Stamp,
 ) -> (Lift, Vec<LiftOut>) {
-    let toward = match intent {
-        Intent::Open => dy.saturating_neg(),
-        Intent::Close => dy,
-    };
+    let toward = if opening { dy.saturating_neg() } else { dy };
     let moved = i64::from(toward) * 1000 / i64::from(FULL_PX);
     let travelled = i32::try_from((i64::from(travelled) + moved).clamp(0, 1000)).unwrap_or(0);
     let samples = samples
@@ -150,23 +138,24 @@ fn follow(
         .collect();
     (
         Lift::Tracking {
-            intent,
+            opening,
             travelled,
             samples,
         },
-        vec![LiftOut::Progress(openness(intent, travelled))],
+        vec![LiftOut::Progress(openness(opening, travelled))],
     )
 }
 
-/// How open Mission Control is after `travelled` thousandths toward `intent`.
-fn openness(intent: Intent, travelled: i32) -> PageMilli {
-    match intent {
-        Intent::Open => PageMilli(travelled),
-        Intent::Close => PageMilli(1000 - travelled),
+/// How open Mission Control is after `travelled` thousandths of the way it is being moved.
+fn openness(opening: bool, travelled: i32) -> PageMilli {
+    if opening {
+        PageMilli(travelled)
+    } else {
+        PageMilli(1000 - travelled)
     }
 }
 
-/// The speed toward the intent at `at`, in thousandths of the full travel per second.
+/// The speed toward the opening at `at`, in thousandths of the full travel per second.
 fn lift_speed(samples: &[(Stamp, i32)], at: Stamp) -> PagesPerSecMilli {
     let recent: Vec<&(Stamp, i32)> = samples
         .iter()
@@ -186,11 +175,11 @@ fn lift_speed(samples: &[(Stamp, i32)], at: Stamp) -> PagesPerSecMilli {
     }
 }
 
-/// How a lift after `travelled` thousandths toward `intent` at `speed` ends.
-fn verdict(intent: Intent, travelled: i32, speed: PagesPerSecMilli) -> LiftEnd {
-    match (commit(PageMilli(travelled), speed), intent) {
+/// How a lift after `travelled` thousandths of the way it was made for, at `speed`, ends.
+fn verdict(opening: bool, travelled: i32, speed: PagesPerSecMilli) -> LiftEnd {
+    match (commit(PageMilli(travelled), speed), opening) {
         (0, _) => LiftEnd::Stay,
-        (_, Intent::Open) => LiftEnd::Open,
-        (_, Intent::Close) => LiftEnd::Close,
+        (_, true) => LiftEnd::Open,
+        (_, false) => LiftEnd::Close,
     }
 }

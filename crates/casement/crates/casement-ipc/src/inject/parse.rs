@@ -5,7 +5,7 @@ use super::{DeviceVerb, InjectLine, InjectOrigin};
 use crate::error::IpcError;
 use casement_core::geometry::{LogicalPoint, SubPoint, SubPx};
 use casement_core::input::{
-    AxisFrame, AxisSource, ButtonCode, DeviceClass, GestureEnd, GestureStep, Keysym, PinchDelta,
+    AxisFrame, AxisSource, ButtonCode, DeviceClass, GestureStep, Keysym, PinchDelta,
     TouchStep,
 };
 use casement_protocols::vocab::PressEdge;
@@ -209,8 +209,8 @@ fn gesture<D>(words: &[&str], update: impl Fn(&[&str]) -> Option<D>) -> Option<G
         ["begin", fingers] => Some(GestureStep::Begin {
             fingers: int(fingers).filter(|n| *n > 0)?,
         }),
-        ["end"] => Some(GestureStep::End(GestureEnd::Lifted)),
-        ["cancel"] => Some(GestureStep::End(GestureEnd::Cancelled)),
+        ["end"] => Some(GestureStep::End(false)),
+        ["cancel"] => Some(GestureStep::End(true)),
         ["update", tail @ ..] => update(tail).map(GestureStep::Update),
         tail => update(tail).map(GestureStep::Update),
     }
