@@ -46,7 +46,7 @@ pub use limits::{
     ASK_TTL, ASKS_PER_MINUTE, HELD_REQUESTS, MAX_FILE_BYTES, MAX_GRANTS, OPEN_ASKS, RATE_WINDOW,
     REASK_AFTER, SHELL_WAIT,
 };
-pub use rows::{PrivacyRow, Source};
+pub use rows::{PrivacyRow};
 pub use standing::{AskSubject, ClientStanding, ServiceRole};
 pub use step::PowerOutcome;
 pub use subject::{Engine, ProgramPath, SandboxAppId, Subject};

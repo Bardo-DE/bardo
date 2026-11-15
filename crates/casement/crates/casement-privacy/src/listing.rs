@@ -3,7 +3,7 @@
 //! and says in plain words what it could not read.
 
 use super::store::PrivacyStore;
-use casement_core::privilege::{Book, Floor, PrivacyRow, Source, Subject, Verdict};
+use casement_core::privilege::{Book, Floor, PrivacyRow, Subject, Verdict};
 use casement_core::settings::CasementSettings;
 use casement_core::space::SpaceSeed;
 use casement_core::time::Mono;
@@ -51,7 +51,7 @@ impl Listing {
                         "  {}: {} ({})",
                         subject_words(&row.subject),
                         answer_words(row.verdict),
-                        source_words(row.source)
+                        source_words(row.administrator)
                     );
                 }
                 text
@@ -75,10 +75,11 @@ fn answer_words(verdict: Verdict) -> &'static str {
     }
 }
 
-fn source_words(source: Source) -> &'static str {
-    match source {
-        Source::Person => "you chose this",
-        Source::Administrator => "set by your administrator",
+fn source_words(administrator: bool) -> &'static str {
+    if administrator {
+        "set by your administrator"
+    } else {
+        "you chose this"
     }
 }
 

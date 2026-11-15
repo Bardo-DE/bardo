@@ -88,14 +88,14 @@ impl PrivacyLink {
 mod tests {
     use super::*;
     use casement_core::policy::Power;
-    use casement_core::privilege::{ProgramPath, Source, Subject, UnixSeconds, Verdict};
+    use casement_core::privilege::{ProgramPath, Subject, UnixSeconds, Verdict};
 
     fn row() -> PrivacyRow {
         PrivacyRow {
             power: Power::Screen,
             subject: Subject::Program(ProgramPath::parse("/usr/bin/grim").expect("a path")),
             verdict: Verdict::Allow,
-            source: Source::Person,
+            administrator: false,
             at: Some(UnixSeconds(1)),
         }
     }

@@ -9,7 +9,7 @@ use crate::test_served::{Loop, Served, WHOLE_TEST, outcome, service};
 use calloop::channel::Channel;
 use casement_core::policy::Power;
 use casement_core::privilege::{
-    Edit, PrivacyRow, ProgramPath, Source, Subject, UnixSeconds, Verdict,
+    Edit, PrivacyRow, ProgramPath, Subject, UnixSeconds, Verdict,
 };
 use ds_settings::live::LiveSchema;
 use ds_settings::schema::{KeyKind, KeySpec};
@@ -24,16 +24,13 @@ fn program(path: &str) -> Subject {
     Subject::Program(ProgramPath::parse(path).expect("a path"))
 }
 
-fn row(path: &str, power: Power, verdict: Verdict, source: Source) -> PrivacyRow {
+fn row(path: &str, power: Power, verdict: Verdict, administrator: bool) -> PrivacyRow {
     PrivacyRow {
         power,
         subject: program(path),
         verdict,
-        source,
-        at: match source {
-            Source::Person => Some(UnixSeconds(3)),
-            Source::Administrator => None,
-        },
+        administrator,
+        at: (!administrator).then_some(UnixSeconds(3)),
     }
 }
 
@@ -46,13 +43,13 @@ fn served() -> (Served, Channel<Edit>) {
             "/usr/bin/grim",
             Power::Screen,
             Verdict::Allow,
-            Source::Person,
+            false,
         ),
         row(
             "/usr/bin/evil",
             Power::Screen,
             Verdict::Deny,
-            Source::Administrator,
+            true,
         ),
     ]);
     (Served::start(WHOLE_TEST, Loop::Reads, Some(link)), channel)

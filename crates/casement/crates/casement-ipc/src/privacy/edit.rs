@@ -2,7 +2,7 @@
 //! program's power on or off, or asked to be asked again. The change is the model's own
 //! [`Edit`]; this module only shows Settings its own change before the model answers.
 
-use casement_core::privilege::{Edit, PrivacyRow, Source};
+use casement_core::privilege::{Edit, PrivacyRow};
 
 /// The list `rows` becomes when `edit` is made: the person's row for the program and power
 /// changes its answer, or goes; a program that had no answer for the power gets one (its
@@ -11,7 +11,7 @@ use casement_core::privilege::{Edit, PrivacyRow, Source};
 pub(super) fn applied(edit: &Edit, rows: &[PrivacyRow]) -> Vec<PrivacyRow> {
     let (subject, power) = edit.target();
     let ours = |row: &PrivacyRow| {
-        row.source == Source::Person && row.power == power && row.subject == *subject
+        !row.administrator && row.power == power && row.subject == *subject
     };
     let first = (!rows.iter().any(ours))
         .then(|| edit.verdict())
@@ -20,7 +20,7 @@ pub(super) fn applied(edit: &Edit, rows: &[PrivacyRow]) -> Vec<PrivacyRow> {
             power,
             subject: subject.clone(),
             verdict,
-            source: Source::Person,
+            administrator: false,
             at: None,
         });
     rows.iter()
@@ -46,12 +46,12 @@ mod tests {
         Subject::Program(ProgramPath::parse(path).expect("a path"))
     }
 
-    fn row(path: &str, power: Power, verdict: Verdict, source: Source) -> PrivacyRow {
+    fn row(path: &str, power: Power, verdict: Verdict, administrator: bool) -> PrivacyRow {
         PrivacyRow {
             power,
             subject: subject(path),
             verdict,
-            source,
+            administrator,
             at: Some(UnixSeconds(5)),
         }
     }
@@ -62,7 +62,7 @@ mod tests {
             "/usr/bin/grim",
             Power::Screen,
             Verdict::Allow,
-            Source::Person,
+            false,
         )];
         let allow = Edit::Allow(subject("/usr/bin/grim"), Power::Keys);
         let after = applied(&allow, &rows);
@@ -70,7 +70,7 @@ mod tests {
         assert_eq!(after[0], rows[0]);
         assert_eq!(after[1].power, Power::Keys);
         assert_eq!(after[1].verdict, Verdict::Allow);
-        assert_eq!(after[1].source, Source::Person);
+        assert!(!after[1].administrator);
         // Asking again about a power nobody answered has nothing to forget.
         let forget = Edit::Forget(subject("/usr/bin/grim"), Power::Keys);
         assert_eq!(applied(&forget, &rows), rows);
@@ -83,14 +83,14 @@ mod tests {
                 "/usr/bin/grim",
                 Power::Screen,
                 Verdict::Allow,
-                Source::Person,
+                false,
             ),
-            row("/usr/bin/grim", Power::Keys, Verdict::Allow, Source::Person),
+            row("/usr/bin/grim", Power::Keys, Verdict::Allow, false),
             row(
                 "/usr/bin/grim",
                 Power::Screen,
                 Verdict::Deny,
-                Source::Administrator,
+                true,
             ),
         ];
         let deny = Edit::Deny(subject("/usr/bin/grim"), Power::Screen);

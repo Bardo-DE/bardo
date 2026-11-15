@@ -10,7 +10,7 @@
 
 use super::write::{Why, Write};
 use casement_core::policy::Power;
-use casement_core::privilege::{Engine, MAX_GRANTS, PrivacyRow, Source, Subject, Verdict};
+use casement_core::privilege::{Engine, MAX_GRANTS, PrivacyRow, Subject, Verdict};
 use casement_protocols::vocab::{SubjectKind, WireCode};
 use ds_settings::schema::{
     ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
@@ -76,11 +76,8 @@ fn fnv1a(bytes: impl IntoIterator<Item = u8>) -> u64 {
 
 /// The short stable name of a row inside its power: twelve hex digits of the hash of who set it
 /// and which program it is about.
-fn short(source: Source, subject: &Subject) -> String {
-    let who = match source {
-        Source::Person => 0_u8,
-        Source::Administrator => 1,
-    };
+fn short(administrator: bool, subject: &Subject) -> String {
+    let who = u8::from(administrator);
     let kind = match subject.kind() {
         SubjectKind::Program => 0_u8,
         _ => 1,
@@ -227,9 +224,9 @@ fn nobody(power: Power) -> Listed {
 /// The programs that get a switch for every power: those the person answered first, then the
 /// administrator's, at most [`FILLED_PROGRAMS`].
 fn filled(rows: &[PrivacyRow]) -> BTreeSet<&Subject> {
-    [Source::Person, Source::Administrator]
+    [false, true]
         .into_iter()
-        .flat_map(|source| rows.iter().filter(move |row| row.source == source))
+        .flat_map(|administrator| rows.iter().filter(move |row| row.administrator == administrator))
         .map(|row| &row.subject)
         .fold(BTreeSet::new(), |mut chosen, subject| {
             if chosen.len() < FILLED_PROGRAMS {
@@ -259,21 +256,20 @@ pub fn listed(rows: &[PrivacyRow]) -> Vec<Listed> {
             let base = format!(
                 "privacy.{}.{}",
                 slug(power),
-                short(row.source, &row.subject)
+                short(row.administrator, &row.subject)
             );
             if !seen.insert(base.clone()) {
                 continue;
             }
-            match row.source {
-                Source::Person => {
-                    out.push(switch(&base, row));
-                    out.push(forget(&base, row));
-                }
-                Source::Administrator => out.push(read_out(&base, row)),
+            if row.administrator {
+                out.push(read_out(&base, row));
+            } else {
+                out.push(switch(&base, row));
+                out.push(forget(&base, row));
             }
         }
         for subject in programs.difference(&answered).copied() {
-            let base = format!("privacy.{}.{}", slug(power), short(Source::Person, subject));
+            let base = format!("privacy.{}.{}", slug(power), short(false, subject));
             if seen.insert(base.clone()) {
                 out.push(unanswered(&base, power, subject));
             }
@@ -320,16 +316,13 @@ mod tests {
         Subject::Program(ProgramPath::parse(path).expect("a path"))
     }
 
-    fn row(subject: Subject, power: Power, verdict: Verdict, source: Source) -> PrivacyRow {
+    fn row(subject: Subject, power: Power, verdict: Verdict, administrator: bool) -> PrivacyRow {
         PrivacyRow {
             power,
             subject,
             verdict,
-            source,
-            at: match source {
-                Source::Person => Some(UnixSeconds(1)),
-                Source::Administrator => None,
-            },
+            administrator,
+            at: (!administrator).then_some(UnixSeconds(1)),
         }
     }
 
@@ -350,7 +343,7 @@ mod tests {
             program("/usr/bin/grim"),
             Power::Screen,
             Verdict::Allow,
-            Source::Person,
+            false,
         )];
         let keys = listed(&rows);
         assert!(keys.len() > rows.len());
@@ -379,7 +372,7 @@ mod tests {
             grim.clone(),
             Power::Screen,
             Verdict::Allow,
-            Source::Person,
+            false,
         )];
         let keys = listed(&rows);
         for &power in <Power as WireCode>::ALL {
@@ -417,11 +410,11 @@ mod tests {
             grim.clone(),
             Power::Screen,
             Verdict::Allow,
-            Source::Person,
+            false,
         )];
         let before = listed(&base);
         let mut after_rows = base.to_vec();
-        after_rows.push(row(grim, Power::Keys, Verdict::Deny, Source::Person));
+        after_rows.push(row(grim, Power::Keys, Verdict::Deny, false));
         let after = listed(&after_rows);
         let path_in = |keys: &[Listed]| {
             keys.iter()
@@ -450,7 +443,7 @@ mod tests {
                     program(&format!("/opt/admin/p{n:04}")),
                     Power::Screen,
                     Verdict::Deny,
-                    Source::Administrator,
+                    true,
                 )
             })
             .collect();
@@ -460,7 +453,7 @@ mod tests {
             theirs.clone(),
             Power::Windows,
             Verdict::Allow,
-            Source::Person,
+            false,
         ));
         let keys = listed(&rows);
         let asking = standing_of(&keys, Power::Keys);
@@ -479,12 +472,12 @@ mod tests {
     fn a_persons_row_is_a_switch_with_ask_again_and_an_administrators_is_a_read_out() {
         let grim = program("/usr/bin/grim");
         let rows = [
-            row(grim.clone(), Power::Screen, Verdict::Allow, Source::Person),
+            row(grim.clone(), Power::Screen, Verdict::Allow, false),
             row(
                 program("/usr/bin/foo"),
                 Power::Screen,
                 Verdict::Deny,
-                Source::Administrator,
+                true,
             ),
         ];
         let keys = listed(&rows);
@@ -510,12 +503,12 @@ mod tests {
     fn the_names_are_stable_distinct_and_never_repeat_in_a_schema() {
         let grim = program("/usr/bin/grim");
         let same_both_ways = [
-            row(grim.clone(), Power::Screen, Verdict::Allow, Source::Person),
+            row(grim.clone(), Power::Screen, Verdict::Allow, false),
             row(
                 grim.clone(),
                 Power::Screen,
                 Verdict::Deny,
-                Source::Administrator,
+                true,
             ),
             row(
                 Subject::Sandboxed {
@@ -524,7 +517,7 @@ mod tests {
                 },
                 Power::Clipboard,
                 Verdict::Allow,
-                Source::Person,
+                false,
             ),
         ];
         let keys = listed(&same_both_ways);
@@ -533,12 +526,12 @@ mod tests {
         // The hash is FNV-1a: the same on every run, so a name always means the same program.
         assert_eq!(fnv1a([]), 0xcbf2_9ce4_8422_2325);
         assert_eq!(fnv1a(*b"a"), 0xaf63_dc4c_8601_ec8c);
-        assert_eq!(short(Source::Person, &grim), short(Source::Person, &grim));
+        assert_eq!(short(false, &grim), short(false, &grim));
         assert_ne!(
-            short(Source::Person, &grim),
-            short(Source::Administrator, &grim)
+            short(false, &grim),
+            short(true, &grim)
         );
-        assert_eq!(short(Source::Person, &grim).len(), 12);
+        assert_eq!(short(false, &grim).len(), 12);
     }
 
     #[test]
@@ -548,9 +541,9 @@ mod tests {
             grim.clone(),
             Power::Screen,
             Verdict::Allow,
-            Source::Person,
+            false,
         )];
-        let denied = [row(grim, Power::Screen, Verdict::Deny, Source::Person)];
+        let denied = [row(grim, Power::Screen, Verdict::Deny, false)];
         let moved = changes(&allowed, &denied);
         assert_eq!(moved.len(), 1);
         assert_eq!(moved[0].1, toml::Value::String(OFF.to_owned()));
