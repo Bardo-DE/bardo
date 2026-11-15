@@ -7,7 +7,7 @@
 //! wall time as they would on a screen.
 
 use crate::adapter::{
-    Button, Compositor, Fixed, FixedPoint, Flow, Position, WlcsClient, WlcsEvent,
+    Button, Compositor, Fixed, FixedPoint, Position, WlcsClient, WlcsEvent,
     WlcsSurface, WlcsTouchId,
 };
 use casement::relax::AckPolicy;
@@ -19,6 +19,7 @@ use casement_core::window::WindowState;
 use casement_core::{DeviceId, WindowId};
 use casement_testkit::{ClientId, Fixture, FixtureSpec, TestOrigin};
 use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::ops::ControlFlow;
 use std::sync::mpsc::{Receiver, Sender, TryRecvError};
 use std::time::{Duration, Instant};
 
@@ -82,7 +83,7 @@ impl Host {
                     Ok(request) => {
                         let flow = self.apply(request.event);
                         let _ = request.done.send(());
-                        if flow == Flow::Stop {
+                        if flow.is_break() {
                             return;
                         }
                     }
@@ -155,9 +156,9 @@ impl Host {
 }
 
 impl Compositor for Host {
-    fn apply(&mut self, event: WlcsEvent) -> Flow {
+    fn apply(&mut self, event: WlcsEvent) -> ControlFlow<()> {
         match event {
-            WlcsEvent::Exit => return Flow::Stop,
+            WlcsEvent::Exit => return ControlFlow::Break(()),
             WlcsEvent::NewClient { reply } => {
                 let (id, fd) = self.fixture.adopt_socket(ConnectionRole::Public);
                 let client = WlcsClient(std::os::fd::AsRawFd::as_raw_fd(&fd));
@@ -217,7 +218,7 @@ impl Compositor for Host {
             }),
             WlcsEvent::TouchUp { id } => self.touch_step(TouchStep::Up { slot: slot(id) }),
         }
-        Flow::Continue
+        ControlFlow::Continue(())
     }
 }
 

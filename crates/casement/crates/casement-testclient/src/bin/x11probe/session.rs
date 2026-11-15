@@ -5,6 +5,7 @@
 use crate::command::{Command, Kind, MapAsk, parse};
 use std::collections::BTreeMap;
 use std::io::BufRead;
+use std::ops::ControlFlow;
 use std::sync::mpsc::{self, Receiver, TryRecvError};
 use std::time::Duration;
 use x11rb::COPY_DEPTH_FROM_PARENT;
@@ -150,7 +151,7 @@ impl Session {
                 Ok(line) if line.trim().is_empty() => busy = true,
                 Ok(line) => {
                     busy = true;
-                    if self.command(&line)? == Flow::Stop {
+                    if self.command(&line)?.is_break() {
                         return Ok(());
                     }
                 }
@@ -169,18 +170,18 @@ impl Session {
     }
 
     /// Runs one line; every line, good or bad, counts one `done`.
-    fn command(&mut self, line: &str) -> Result<Flow, ProbeError> {
+    fn command(&mut self, line: &str) -> Result<ControlFlow<()>, ProbeError> {
         let flow = match parse(line) {
-            Ok(Command::Quit) => Flow::Stop,
+            Ok(Command::Quit) => ControlFlow::Break(()),
             Ok(command) => {
                 if let Err(why) = self.run_command(command) {
                     note(&format!("error {why}"));
                 }
-                Flow::Go
+                ControlFlow::Continue(())
             }
             Err(why) => {
                 note(&format!("error {why}"));
-                Flow::Go
+                ControlFlow::Continue(())
             }
         };
         self.conn.flush()?;
@@ -489,9 +490,3 @@ impl Session {
     }
 }
 
-/// Whether the loop goes on.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Flow {
-    Go,
-    Stop,
-}

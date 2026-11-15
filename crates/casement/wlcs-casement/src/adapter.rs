@@ -5,6 +5,7 @@
 //! implementation of the seam converts at its own edge.
 
 use casement_protocols::vocab::PressEdge;
+use std::ops::ControlFlow;
 use std::os::fd::OwnedFd;
 use std::sync::mpsc::Sender;
 
@@ -113,26 +114,17 @@ pub enum WlcsEvent {
     },
 }
 
-/// Whether the compositor thread carries on.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Flow {
-    /// Keep serving.
-    Continue,
-    /// [`WlcsEvent::Exit`] arrived.
-    Stop,
-}
-
 /// The seam between wlcs and a compositor: one call per [`WlcsEvent`]. The implementation is
 /// [`host::Host`](crate::host::Host), casement's own `Fixture` (the real `State` on the headless
 /// backend).
 pub trait Compositor {
-    /// Applies one request.
-    fn apply(&mut self, event: WlcsEvent) -> Flow;
+    /// Applies one request; `Break` once [`WlcsEvent::Exit`] arrived, `Continue` to keep serving.
+    fn apply(&mut self, event: WlcsEvent) -> ControlFlow<()>;
 }
 
 impl WlcsEvent {
     /// This event applied to `compositor`.
-    pub fn apply_to(self, compositor: &mut impl Compositor) -> Flow {
+    pub fn apply_to(self, compositor: &mut impl Compositor) -> ControlFlow<()> {
         compositor.apply(self)
     }
 }
@@ -167,14 +159,14 @@ mod tests {
 
     struct Recorder(Vec<&'static str>);
     impl Compositor for Recorder {
-        fn apply(&mut self, event: WlcsEvent) -> Flow {
+        fn apply(&mut self, event: WlcsEvent) -> ControlFlow<()> {
             match event {
-                WlcsEvent::Exit => Flow::Stop,
+                WlcsEvent::Exit => ControlFlow::Break(()),
                 WlcsEvent::PointerTo(_) => {
                     self.0.push("to");
-                    Flow::Continue
+                    ControlFlow::Continue(())
                 }
-                _ => Flow::Continue,
+                _ => ControlFlow::Continue(()),
             }
         }
     }
@@ -186,8 +178,11 @@ mod tests {
             x: Fixed(0),
             y: Fixed(0),
         };
-        assert_eq!(WlcsEvent::PointerTo(at).apply_to(&mut rec), Flow::Continue);
-        assert_eq!(WlcsEvent::Exit.apply_to(&mut rec), Flow::Stop);
+        assert_eq!(
+            WlcsEvent::PointerTo(at).apply_to(&mut rec),
+            ControlFlow::Continue(())
+        );
+        assert_eq!(WlcsEvent::Exit.apply_to(&mut rec), ControlFlow::Break(()));
         assert_eq!(rec.0, ["to"]);
     }
 }

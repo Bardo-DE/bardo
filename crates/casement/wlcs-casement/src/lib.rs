@@ -13,4 +13,4 @@ mod descriptor;
 mod ffi;
 pub mod host;
 
-pub use adapter::{Compositor, Flow, WlcsEvent};
+pub use adapter::{Compositor, WlcsEvent};
