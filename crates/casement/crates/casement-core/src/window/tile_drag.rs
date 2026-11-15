@@ -217,22 +217,14 @@ fn under_pointer(at: LogicalPoint, home: LogicalRect, knobs: TileKnobs) -> Optio
     ][row][column]
 }
 
-/// One side of an axis.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Side {
-    /// Left or top.
-    Near,
-    /// Right or bottom.
-    Far,
-}
-
-/// The corner at `across` and `down`.
-fn corner(across: Side, down: Side) -> TileTarget {
+/// The corner at `across` and `down`: each `false` on the near side of its axis (left, top) and
+/// `true` on the far side (right, bottom).
+fn corner(across: bool, down: bool) -> TileTarget {
     match (across, down) {
-        (Side::Near, Side::Near) => TileTarget::Zone(TileZone::TopLeft),
-        (Side::Far, Side::Near) => TileTarget::Zone(TileZone::TopRight),
-        (Side::Near, Side::Far) => TileTarget::Zone(TileZone::BottomLeft),
-        (Side::Far, Side::Far) => TileTarget::Zone(TileZone::BottomRight),
+        (false, false) => TileTarget::Zone(TileZone::TopLeft),
+        (true, false) => TileTarget::Zone(TileZone::TopRight),
+        (false, true) => TileTarget::Zone(TileZone::BottomLeft),
+        (true, true) => TileTarget::Zone(TileZone::BottomRight),
     }
 }
 
@@ -245,14 +237,14 @@ fn at_end(
     len: u32,
     beyond: impl Fn(i64) -> LogicalPoint,
     scene: &TileScene<'_>,
-) -> Option<Side> {
+) -> Option<bool> {
     let (p, from, len) = (i64::from(p), i64::from(from), i64::from(len));
     let band = i64::from(EDGE_BAND);
     let near = p - from < band && scene.open(beyond(from - 1));
     let far = from + len - 1 - p < band && scene.open(beyond(from + len));
     match (near, far) {
-        (true, _) => Some(Side::Near),
-        (_, true) => Some(Side::Far),
+        (true, _) => Some(false),
+        (_, true) => Some(true),
         (false, false) => None,
     }
 }
@@ -264,14 +256,14 @@ fn in_reach(
     len: u32,
     beyond: impl Fn(i64) -> LogicalPoint,
     scene: &TileScene<'_>,
-) -> Option<Side> {
+) -> Option<bool> {
     let reach = i64::from(CORNER_REACH.min(len / 4));
     let (p, from, len) = (i64::from(p), i64::from(from), i64::from(len));
     let near = p - from < reach && scene.open(beyond(from - 1));
     let far = from + len - 1 - p < reach && scene.open(beyond(from + len));
     match (near, far) {
-        (true, _) => Some(Side::Near),
-        (_, true) => Some(Side::Far),
+        (true, _) => Some(false),
+        (_, true) => Some(true),
         (false, false) => None,
     }
 }
@@ -297,8 +289,8 @@ fn at_edge(at: LogicalPoint, scene: &TileScene<'_>, knobs: TileKnobs) -> Option<
             let down = in_reach(at.y, home.origin.y, home.size.h, past_y, scene);
             Some(down.map_or(
                 match across {
-                    Side::Near => TileTarget::Zone(TileZone::Left),
-                    Side::Far => TileTarget::Zone(TileZone::Right),
+                    false => TileTarget::Zone(TileZone::Left),
+                    true => TileTarget::Zone(TileZone::Right),
                 },
                 |down| corner(across, down),
             ))
@@ -307,8 +299,8 @@ fn at_edge(at: LogicalPoint, scene: &TileScene<'_>, knobs: TileKnobs) -> Option<
             let across = in_reach(at.x, home.origin.x, home.size.w, past_x, scene);
             match (across, down) {
                 (Some(across), down) => Some(corner(across, down)),
-                (None, Side::Near) => Some(top_of(knobs)),
-                (None, Side::Far) => None,
+                (None, false) => Some(top_of(knobs)),
+                (None, true) => None,
             }
         }
         (None, None) => None,
