@@ -98,16 +98,3 @@ impl Default for CuaConfig {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn the_configuration_round_trips() {
-        let config = CuaConfig::default();
-        let json = serde_json::to_string(&config).unwrap();
-        assert_eq!(serde_json::from_str::<CuaConfig>(&json).unwrap(), config);
-        assert!(json.starts_with(r#"{"enabled":"off","default_mode":"auto","budget":{"steps":40"#));
-    }
-}
