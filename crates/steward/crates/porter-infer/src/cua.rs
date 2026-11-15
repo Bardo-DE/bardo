@@ -9,6 +9,10 @@ use porter_capability::CuaEnv;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
+pub use cua_parse::DropReason;
+pub use cua_session::{MaskedRegions, StepIndex, TreeText};
+pub use vision_prep::MediaType;
+
 /// Opens a computer-use run: the goal and the planner's hints. Later `CuaStep` requests on the
 /// same session continue it; the session is pinned to one model so its history stays valid.
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -51,11 +55,6 @@ impl fmt::Debug for CuaBegin {
     }
 }
 
-/// The count of a run's steps so far (`0` for the first).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct StepIndex(pub u32);
-
 /// One step: what the window shows now and what happened to the last actions.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CuaStepRequest {
@@ -72,7 +71,7 @@ pub struct CuaStepRequest {
     /// How many regions were blacked out of the frame.
     pub masked: MaskedRegions,
     /// The window's accessibility text, when there is one.
-    pub tree: TreeText,
+    pub tree: Option<TreeText>,
     /// What was said to the run since the last step, oldest first (a message that arrived
     /// while it was acting); empty when nothing was.
     pub notes: Vec<StepNote>,
@@ -82,7 +81,12 @@ impl CuaStepRequest {
     /// Step `step`: what the window shows (`frame`, in `window`) and its accessibility text. No
     /// pointer position, no earlier results, no masked regions and no notes until the `with_*`
     /// methods say so.
-    pub fn new(step: StepIndex, window: WindowGeometry, frame: FrameImage, tree: TreeText) -> Self {
+    pub fn new(
+        step: StepIndex,
+        window: WindowGeometry,
+        frame: FrameImage,
+        tree: Option<TreeText>,
+    ) -> Self {
         Self {
             step,
             window,
@@ -147,26 +151,6 @@ pub enum NoteFrom {
     Agent,
 }
 
-/// The accessibility tree as text for the model. Untrusted screen text: cua-run renders it,
-/// inferd only forwards it, and its `Debug` shows the length only.
-#[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-pub enum TreeText {
-    /// There is none.
-    Absent,
-    /// The rendered tree.
-    Present(String),
-}
-
-impl fmt::Debug for TreeText {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            TreeText::Absent => f.write_str("TreeText::Absent"),
-            TreeText::Present(text) => write!(f, "TreeText::Present(<{} bytes>)", text.len()),
-        }
-    }
-}
-
 /// The leased window as the model must see it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct WindowGeometry {
@@ -199,17 +183,7 @@ pub enum FrameLayout {
         stride: u32,
     },
     /// An encoded image.
-    Encoded(MediaKind),
-}
-
-/// An encoded image format.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum MediaKind {
-    /// PNG.
-    Png,
-    /// JPEG.
-    Jpeg,
+    Encoded(MediaType),
 }
 
 /// What became of one action of the previous step.
@@ -229,11 +203,6 @@ pub enum PrevResult {
     /// The person did it themselves.
     UserActed,
 }
-
-/// How many regions of the frame were masked out (secret fields, other windows).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct MaskedRegions(pub u16);
 
 /// The model's answer to one step.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -286,27 +255,6 @@ pub struct DroppedAction {
     pub verb: String,
     /// Why it was dropped.
     pub reason: DropReason,
-}
-
-/// Why a proposed action was dropped.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum DropReason {
-    /// The verb is not on the allow-list.
-    UnsupportedVerb,
-    /// An argument is missing.
-    MissingArgument,
-    /// An argument is there but unusable: empty or control-character text, a key name that is
-    /// no key, a direction that is no direction.
-    BadArgument,
-    /// A number did not parse or is out of range.
-    BadNumber,
-    /// An argument is too long.
-    TooLong,
-    /// More actions than a step may carry.
-    OverBatchLimit,
-    /// A point fell outside the frame; it is never clamped.
-    OutOfFrame,
 }
 
 /// A vendor's hint about a step. It can add a confirmation or a block; it cannot remove one.

@@ -219,9 +219,9 @@ pub(super) fn cua_step() -> InferRequest {
         },
         porter_infer::FrameImage {
             source: porter_infer::ImageSource::Attached(porter_infer::AttachIndex(0)),
-            layout: porter_infer::FrameLayout::Encoded(porter_infer::MediaKind::Png),
+            layout: porter_infer::FrameLayout::Encoded(porter_infer::MediaType::Png),
         },
-        porter_infer::TreeText::Absent,
+        None,
     ))
 }
 

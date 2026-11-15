@@ -471,9 +471,9 @@ async fn a_computer_use_step_before_a_begin_is_refused_and_after_one_it_runs() {
             },
             porter_infer::FrameImage {
                 source: ImageSource::Attached(AttachIndex(0)),
-                layout: porter_infer::FrameLayout::Encoded(porter_infer::MediaKind::Png),
+                layout: porter_infer::FrameLayout::Encoded(porter_infer::MediaType::Png),
             },
-            porter_infer::TreeText::Absent,
+            None,
         )))
     };
     rig.client.send(&step(0), &[memfd(b"frame 0")]).await;

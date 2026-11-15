@@ -7,14 +7,17 @@ use model_provider::{
     EngineExtras, ImageCount, ImageLimits, Knob, Limits, Milli, Reasoning, SafetySignal, Sampling,
     Tokens, ToolCall, ToolParallelism, TurnEnd, TurnRequest,
 };
+use serde::{Deserialize, Serialize};
 use vision_prep::{Encoding, ResizeRule};
 
 /// The index of a step within one run, from 0.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+#[serde(transparent)]
 pub struct StepIndex(pub u32);
 
 /// How many regions of the window were masked out of the frame.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(transparent)]
 pub struct MaskedRegions(pub u16);
 
 /// How many past frames the prompt keeps.
@@ -147,7 +150,8 @@ impl core::fmt::Debug for CuaTaskText {
 
 /// What the window's own accessibility tree says, as text (window contents, never a secret field
 /// the runner already masked). It is what the person sees, so `Debug` prints a length.
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(transparent)]
 pub struct TreeText(pub String);
 
 impl core::fmt::Debug for TreeText {

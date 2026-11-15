@@ -9,7 +9,7 @@ use model_provider::{
 };
 use porter_capability::CuaEnv;
 use porter_infer::{
-    AttachIndex, FrameImage, FrameLayout, InferEvent, InferRefusal, MediaKind, StepIndex, TreeText,
+    AttachIndex, FrameImage, FrameLayout, InferEvent, InferRefusal, MediaType, StepIndex,
     WindowGeometry,
 };
 use porter_router::testkit::models;
@@ -38,9 +38,9 @@ fn request(step: u32) -> CuaStepRequest {
         },
         FrameImage {
             source: porter_infer::ImageSource::Attached(AttachIndex(0)),
-            layout: FrameLayout::Encoded(MediaKind::Png),
+            layout: FrameLayout::Encoded(MediaType::Png),
         },
-        TreeText::Absent,
+        None,
     )
 }
 

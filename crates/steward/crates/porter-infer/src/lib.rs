@@ -66,7 +66,7 @@ pub use control::{
 };
 pub use cua::{
     CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, DropReason, DroppedAction, FrameImage,
-    FrameLayout, MaskedRegions, MediaKind, NoteFrom, PrevResult, SafetyHint, StepIndex, StepNote,
+    FrameLayout, MaskedRegions, MediaType, NoteFrom, PrevResult, SafetyHint, StepIndex, StepNote,
     TreeText, WindowGeometry,
 };
 pub use error::{InferRefusal, ModelError};

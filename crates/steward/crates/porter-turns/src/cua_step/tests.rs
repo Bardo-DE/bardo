@@ -9,7 +9,8 @@ use model_provider::{
 };
 use model_provider::{Part, Role, TurnRequest};
 use porter_capability::CuaEnv;
-use porter_infer::{AttachIndex, ImageSource, StepIndex as Index};
+use cua_session::TreeText;
+use porter_infer::{AttachIndex, ImageSource, MediaType, StepIndex};
 use porter_router::testkit::models;
 use std::io::Write;
 use std::os::fd::OwnedFd;
@@ -34,7 +35,7 @@ fn begin() -> CuaBegin {
 
 fn request(layout: FrameLayout) -> CuaStepRequest {
     CuaStepRequest::new(
-        Index(3),
+        StepIndex(3),
         porter_infer::WindowGeometry {
             logical: Size::new(Coord(200), Coord(100)),
             scale: Scale120(120),
@@ -43,7 +44,7 @@ fn request(layout: FrameLayout) -> CuaStepRequest {
             source: ImageSource::Attached(AttachIndex(0)),
             layout,
         },
-        TreeText::Present("Button: OK".into()),
+        Some(TreeText("Button: OK".into())),
     )
     .with_prev(vec![PrevResult::Done, PrevResult::Refused("no".into())])
     .with_notes(vec![StepNote {
@@ -53,7 +54,7 @@ fn request(layout: FrameLayout) -> CuaStepRequest {
 }
 
 fn png_request() -> CuaStepRequest {
-    request(FrameLayout::Encoded(MediaKind::Png))
+    request(FrameLayout::Encoded(MediaType::Png))
 }
 
 fn tool_call(arguments: &str) -> ToolCall {
@@ -409,7 +410,7 @@ fn the_observation_carries_the_window_contents_and_the_notes_with_who_said_them(
         from: NoteFrom::Agent,
         text: "a dialog opened".into(),
     }];
-    helper.tree = TreeText::Absent;
+    helper.tree = None;
     let seen = observation(&helper);
     assert_eq!(seen.tree, None);
     assert_eq!(

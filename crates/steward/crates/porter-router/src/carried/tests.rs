@@ -6,9 +6,9 @@ use porter_core::DataClass;
 use porter_core::consent::Usage;
 use porter_infer::{
     AttachIndex, Base64Bytes, ChatMessage, ChatRequest, CuaBegin, CuaStepRequest, FrameImage,
-    FrameLayout, ImagePart, ImageSource, LangPick, MediaKind, Role, ServedBy, SpeakReply,
+    FrameLayout, ImagePart, ImageSource, LangPick, MediaType, Role, ServedBy, SpeakReply,
     SpeakRequest, StepIndex, ToolCallId, ToolResultPart, ToolStatus, TranscribeBegin,
-    TranscribeMode, TranscribeReply, TreeText, WindowGeometry,
+    TranscribeMode, TranscribeReply, WindowGeometry,
 };
 
 fn served() -> ServedBy {
@@ -59,9 +59,9 @@ fn step() -> InferRequest {
         },
         FrameImage {
             source: ImageSource::Attached(AttachIndex(0)),
-            layout: FrameLayout::Encoded(MediaKind::Png),
+            layout: FrameLayout::Encoded(MediaType::Png),
         },
-        TreeText::Absent,
+        None,
     ))
 }
 

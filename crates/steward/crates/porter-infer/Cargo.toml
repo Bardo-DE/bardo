@@ -14,6 +14,9 @@ porter-match = {path = "../../../porter/crates/porter-match"}
 porter-capability = {path = "../../../porter/crates/porter-capability"}
 porter-ids = {path = "../../../porter/crates/porter-ids"}
 cua-action = {path = "../../../stoker/crates/cua-action"}
+cua-parse = {path = "../../../stoker/crates/cua-parse"}
+cua-session = {path = "../../../stoker/crates/cua-session"}
+vision-prep = {path = "../../../stoker/crates/vision-prep"}
 model-provider = {path = "../../../stoker/crates/model-provider"}
 model-catalog = {path = "../../../stoker/crates/model-catalog"}
 rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}

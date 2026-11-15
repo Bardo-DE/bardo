@@ -261,8 +261,8 @@ fn step_request() -> porter_infer::CuaStepRequest {
         },
         porter_infer::FrameImage {
             source: ImageSource::Attached(AttachIndex(0)),
-            layout: porter_infer::FrameLayout::Encoded(porter_infer::MediaKind::Png),
+            layout: porter_infer::FrameLayout::Encoded(porter_infer::MediaType::Png),
         },
-        porter_infer::TreeText::Absent,
+        None,
     )
 }

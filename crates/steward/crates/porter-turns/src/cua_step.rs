@@ -19,21 +19,20 @@ use crate::bridge::{self, BridgeError, Frames};
 use crate::tee::{Echo, Tee};
 use cua_action::{AnswerShape, CuaDialect};
 use cua_session::{
-    CuaProfile, CuaSession, CuaTaskText, FrameBudget, MaskedRegions, ObservationIn, RepairBudget,
-    StepIndex, StepLines, StepOutcome, TurnSettings,
+    CuaProfile, CuaSession, CuaTaskText, FrameBudget, ObservationIn, RepairBudget, StepLines,
+    StepNote as NoteLine, StepOutcome, TurnSettings,
 };
-use cua_session::{StepNote as NoteLine, TreeText as WindowText};
 use cua_vendors::StepResult;
 use model_provider::{
     Batching, CuaSupport, ImageInput, Limits, Provider, Reasoning, Tokens, ToolCallId,
     ToolParallelism,
 };
 use porter_infer::{
-    CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, DropReason, DroppedAction, FrameLayout,
-    InferEvent, MediaKind, ModelError, NoteFrom, PrevResult, StepNote, TreeText,
+    CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, DroppedAction, FrameLayout, InferEvent,
+    ModelError, NoteFrom, PrevResult, StepNote,
 };
 use porter_router::local::LocalModel;
-use vision_prep::{Encoding, FrameMap, MediaType, RawFrame, prepare};
+use vision_prep::{Encoding, FrameMap, RawFrame, prepare};
 
 /// A step that gave no actions: why the app is told. A reply that never parsed is a step the model
 /// took, which the session (changed in place) already lists; any other failure leaves it as it was.
@@ -149,15 +148,15 @@ fn note_line(note: &StepNote) -> NoteLine {
 /// any.
 fn observation(request: &CuaStepRequest) -> ObservationIn {
     let seen = ObservationIn::new(
-        StepIndex(request.step.0),
+        request.step,
         request.cursor,
         prev_results(&request.prev),
-        MaskedRegions(request.masked.0),
+        request.masked,
     )
     .with_notes(request.notes.iter().map(note_line).collect());
     match &request.tree {
-        TreeText::Present(tree) => seen.with_tree(WindowText(tree.clone())),
-        TreeText::Absent => seen,
+        Some(tree) => seen.with_tree(tree.clone()),
+        None => seen,
     }
 }
 
@@ -169,13 +168,7 @@ fn frame_image(
 ) -> Result<ImageInput, BridgeError> {
     let bytes = frames.resolve(&request.frame.source)?;
     match request.frame.layout {
-        FrameLayout::Encoded(kind) => {
-            let media = match kind {
-                MediaKind::Png => MediaType::Png,
-                MediaKind::Jpeg => MediaType::Jpeg,
-            };
-            Ok(bridge::image_input(media, bytes))
-        }
+        FrameLayout::Encoded(media) => Ok(bridge::image_input(media, bytes)),
         FrameLayout::Raw {
             format,
             size,
@@ -190,18 +183,6 @@ fn frame_image(
             let prepared = prepare(raw, map, Encoding::Png).map_err(|_| BridgeError::Attachment)?;
             Ok(bridge::image_input(prepared.media, prepared.bytes))
         }
-    }
-}
-
-fn dropped_reason(reason: cua_parse::DropReason) -> DropReason {
-    match reason {
-        cua_parse::DropReason::UnsupportedVerb => DropReason::UnsupportedVerb,
-        cua_parse::DropReason::MissingArgument => DropReason::MissingArgument,
-        cua_parse::DropReason::BadArgument => DropReason::BadArgument,
-        cua_parse::DropReason::BadNumber => DropReason::BadNumber,
-        cua_parse::DropReason::TooLong => DropReason::TooLong,
-        cua_parse::DropReason::OverBatchLimit => DropReason::OverBatchLimit,
-        cua_parse::DropReason::OutOfFrame => DropReason::OutOfFrame,
     }
 }
 
@@ -260,7 +241,7 @@ pub async fn step<P: Provider>(
                         .iter()
                         .map(|d| DroppedAction {
                             verb: d.verb.as_str().to_owned(),
-                            reason: dropped_reason(d.reason),
+                            reason: d.reason,
                         })
                         .collect(),
                 );

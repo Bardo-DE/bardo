@@ -14,6 +14,7 @@ vision-prep = {path = "../vision-prep"}
 model-provider = {path = "../model-provider"}
 cua-parse = {path = "../cua-parse"}
 cua-vendors = {path = "../cua-vendors"}
+serde = {version = "1", features = ["derive"]}
 serde_json = {version = "1"}
 
 [dev-dependencies]

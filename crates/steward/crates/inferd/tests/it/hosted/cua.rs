@@ -7,7 +7,7 @@ use cua_action::{
 };
 use porter_infer::{
     AttachIndex, CuaBegin, CuaStepRequest, FrameImage, FrameLayout, ImageSource, StepIndex,
-    TreeText, WindowGeometry,
+    WindowGeometry,
 };
 use std::io::Write;
 use std::os::fd::OwnedFd;
@@ -36,7 +36,7 @@ fn step_request(step: u32) -> CuaStepRequest {
                 stride: 800,
             },
         },
-        TreeText::Absent,
+        None,
     )
 }
 

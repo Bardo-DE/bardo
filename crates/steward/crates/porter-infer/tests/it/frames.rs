@@ -53,7 +53,7 @@ fn step_request() -> CuaStepRequest {
                 stride: 7680,
             },
         },
-        TreeText::Present("button \"Save\" [12]".into()),
+        Some(TreeText("button \"Save\" [12]".into())),
     )
     .with_cursor(window_point(5, 6))
     .with_prev(vec![
@@ -207,7 +207,7 @@ fn debug_never_shows_what_the_person_said_or_saw() {
             "{:?}",
             CuaBegin::new("pay the plumber".into(), CuaEnv::Desktop)
         ),
-        format!("{:?}", TreeText::Present("password: hunter2".into())),
+        format!("{:?}", TreeText("password: hunter2".into())),
         format!(
             "{:?}",
             SpeakRequest::new(
