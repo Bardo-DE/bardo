@@ -532,7 +532,7 @@ mod tests {
             serde_json::from_str::<OpenOptions>(&json).expect("back"),
             options
         );
-        // An older client's options read as no places at all, which is not an empty set.
+        // Options that name no places read as no places at all, which is not an empty set.
         let old = serde_json::from_str::<OpenOptions>(&plain).expect("old");
         assert_eq!(old.places, None);
         assert_ne!(

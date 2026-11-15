@@ -132,10 +132,6 @@
 # [ai.length]
 # conversation = "automatic"
 # reply = 16384
-#
-# The old shape, still read: a [policy] table (local_only, floors) and [[tiers.rows]] (kind, tier,
-# model = { account, model }). The rows above win over it where both say something. It goes when
-# FINDINGS "inferd.toml: the old [policy] and [tiers] tables" says.
 
 # An embedding model's vector length, limits and prefixes are the catalog entry's `embed` table
 # (stoker catalog file of the model), not this file: memoryd asks for nomic-embed-text v1.5
@@ -143,7 +139,7 @@
 
 # Who may call is not this file's to say: inferd reads its callers only from the system's table,
 # /etc/porter/inferd-callers.toml (dist/inferd-callers.toml), which a person cannot write. A
-# [callers] table here is ignored, with one line at start.
+# [callers] table here is not read.
 
 # Structured-output limits (settings ai.structured.*; each row's range is in dist/inferd.settings.toml).
 # A value out of range is logged and replaced by the default, for that field only. Read at start.

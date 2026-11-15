@@ -13,10 +13,8 @@ use serde::{Deserialize, Serialize};
 pub enum Mode {
     /// It does what you allowed and asks before sending or deleting.
     #[default]
-    #[serde(alias = "default", alias = "trust_more")]
     Auto,
     /// It asks before every change, for when you are watching.
-    #[serde(alias = "ask_more")]
     Manual,
 }
 

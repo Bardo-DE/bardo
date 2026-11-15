@@ -110,11 +110,6 @@ fn every_table_of_the_file_reads() {
 vllm_python = "/opt/vllm/bin/python"
 llama_server = "/usr/bin/llama-server"
 hf_cache = "/data/hub"
-
-[callers]
-cua = ["cuad.service"]
-[callers.apps]
-"org.quire.Memory" = ["memoryd.service"]
 "#,
     )
     .expect("config");
@@ -124,10 +119,6 @@ cua = ["cuad.service"]
     );
     assert_eq!(config.engines.speech_host, None);
     assert_eq!(config.engines.speech_host_libs, None);
-    assert!(
-        config.ignored_callers.is_some(),
-        "an old [callers] table still reads, and is left unread"
-    );
 }
 
 #[test]
@@ -138,9 +129,6 @@ fn a_file_that_does_not_read_says_why() {
             "{text:?}"
         );
     }
-    // A `callers` of any shape is left unread, so it never stops the file.
-    let any = InferdConfig::from_toml("callers = 3").expect("reads");
-    assert!(any.ignored_callers.is_some());
 }
 
 #[test]

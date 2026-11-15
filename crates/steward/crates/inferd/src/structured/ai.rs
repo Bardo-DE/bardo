@@ -19,8 +19,7 @@ pub struct AiConfig {
     /// `ai.floor.<class>`: `on_device`, `local_network` or `anywhere`, by class slug.
     #[serde(default)]
     pub floor: std::collections::BTreeMap<String, String>,
-    /// `ai.model.<slot>.<tier>`: `""`, `auto` or `<account>/<model>`, by slot slug (or an old
-    /// kind slug), then tier.
+    /// `ai.model.<slot>.<tier>`: `""`, `auto` or `<account>/<model>`, by slot slug, then tier.
     #[serde(default)]
     pub model: std::collections::BTreeMap<String, std::collections::BTreeMap<String, String>>,
     /// `ai.spend.*`.

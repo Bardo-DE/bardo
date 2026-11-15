@@ -13,8 +13,8 @@ use std::fmt;
 use docket_manifest::ArgSink;
 
 /// How much the reviewers are told to be careful. The router's own asking is the preset's
-/// ([`crate::Mode`]); this is what a reviewer is handed, and what old eval cases and settings
-/// files call it.
+/// ([`crate::Mode`]); this is what a reviewer is handed, and what the eval cases and the floor
+/// file call it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Strictness {

@@ -269,14 +269,8 @@ fn read_config(path: &Path) -> Result<InferdConfig, StartError> {
 }
 
 /// The system's caller table: a missing file is no callers, an unreadable or refused one is an
-/// error. A `[callers]` table in the configuration file is said once to be ignored.
-fn read_callers(path: &Path, config: &InferdConfig) -> Result<CallerTable, StartError> {
-    if config.ignored_callers.is_some() {
-        eprintln!(
-            "inferd: [callers] in the configuration file ignored: callers come from {} only",
-            path.display()
-        );
-    }
+/// error.
+fn read_callers(path: &Path) -> Result<CallerTable, StartError> {
     match std::fs::read_to_string(path) {
         Ok(text) => {
             CallerTable::from_toml_text(&text).map_err(|source| StartError::CallersRefused {
@@ -368,7 +362,7 @@ impl Daemon {
         } = config;
         let file = ConfigFile::new(config_file);
         let config = read_config(file.path())?;
-        let callers = read_callers(&callers_file, &config)?;
+        let callers = read_callers(&callers_file)?;
         let catalog = read_catalog(&dirs.catalog);
         for skipped in &catalog.skipped {
             eprintln!("inferd: catalog: {}: {}", skipped.what, skipped.why);

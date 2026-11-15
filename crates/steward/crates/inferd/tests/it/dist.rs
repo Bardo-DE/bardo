@@ -217,14 +217,15 @@ fn the_agent_launcher_is_listed_by_the_machine_that_runs_it_never_by_default() {
     assert_eq!(launcher.role, inferd::peers::Role::AgentLauncher);
 }
 
-/// Who is calling is the system's table's to say: the sample configuration names no caller, and
-/// a `[callers]` table in a person's file is read as nothing more than present.
+/// Who is calling is the system's table's to say: the sample configuration names no caller.
 #[test]
 fn the_sample_configuration_gives_no_callers() {
-    let config = InferdConfig::from_toml(&dist("inferd.toml")).expect("the sample reads");
-    assert_eq!(config.ignored_callers, None);
-    let old = InferdConfig::from_toml("[callers]\ncua = [\"mine.service\"]\n").expect("reads");
-    assert!(old.ignored_callers.is_some());
+    let shipped = dist("inferd.toml");
+    InferdConfig::from_toml(&shipped).expect("the sample reads");
+    assert!(
+        !shipped.lines().any(|line| line.starts_with("[callers")),
+        "no callers table"
+    );
 }
 
 fn schema() -> Schema {
