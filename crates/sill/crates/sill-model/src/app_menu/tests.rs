@@ -11,7 +11,7 @@ use super::{
     rows_of, step, titles,
 };
 use crate::ids::OutputName;
-use crate::tray::{Check, Chord, MenuCommand, TrayMenuEntry, TrayMenuIcon, TrayMenuKind};
+use crate::tray::{Chord, MenuCommand, TrayMenuEntry, TrayMenuIcon, TrayMenuKind};
 use crate::units::Visibility;
 use crate::windows::{Sizing, Toplevel, Toplevels, WlCommand};
 

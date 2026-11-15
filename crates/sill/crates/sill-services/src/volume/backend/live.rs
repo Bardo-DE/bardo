@@ -330,7 +330,7 @@ mod tests {
     use std::sync::mpsc;
     use std::time::{Duration, Instant};
 
-    use super::{PaVolume, Waited, channel_volumes, percent_of, wait_out};
+    use super::{Waited, wait_out};
     use sill_model::units::Percent;
     use sill_model::volume::VolumeCommand;
 

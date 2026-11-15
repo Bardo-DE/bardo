@@ -5,7 +5,6 @@ use chordkit::keyboard_types::Modifiers as ChordModifiers;
 use chordkit::{Chord, Key as ChordKey, Platform};
 use dioxus::prelude::{Key, Modifiers};
 use ds_core::command::{chord_of, modifiers_of};
-use ds_core::word::Word;
 
 /// What one recording ended with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

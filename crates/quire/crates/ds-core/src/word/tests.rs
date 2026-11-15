@@ -1,5 +1,4 @@
 use super::Word;
-use crate::testing::word_matches_serde;
 use serde::Serialize;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Word)]
@@ -10,14 +9,6 @@ enum Access {
     #[word(slug = "off-limits", label = "Nobody")]
     #[serde(rename = "off-limits")]
     Locked,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Word)]
-#[serde(rename_all = "snake_case")]
-#[word(case = snake)]
-enum Stored {
-    SameAsLight,
-    Custom,
 }
 
 #[test]

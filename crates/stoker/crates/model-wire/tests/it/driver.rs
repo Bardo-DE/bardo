@@ -451,7 +451,7 @@ impl model_http::Transport for Probe {
         sink: &mut K,
     ) -> impl Future<Output = Result<HttpStatus, HttpError>> + Send {
         *self.deadline.lock().unwrap() = sink.deadline();
-        sink.head(&head(200, BodyKind::EventStream));
+        let _ = sink.head(&head(200, BodyKind::EventStream));
         let last = self.chunks.last().cloned().unwrap_or_default();
         let all = self
             .chunks
@@ -608,8 +608,8 @@ impl model_http::Transport for Hang {
         _ex: &model_http::Exchange,
         sink: &mut K,
     ) -> Result<HttpStatus, HttpError> {
-        sink.head(&head(200, BodyKind::EventStream));
-        sink.chunk(sse(&["usage:7,0"]).as_bytes());
+        let _ = sink.head(&head(200, BodyKind::EventStream));
+        let _ = sink.chunk(sse(&["usage:7,0"]).as_bytes());
         std::future::pending::<()>().await;
         Ok(HttpStatus(200))
     }

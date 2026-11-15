@@ -7,7 +7,6 @@ use dioxus::core::queue_effect;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Px;
 use ds_core::vocab::shown_word;
-use ds_core::word::Word;
 use ds_motion::detail::touch::Touch;
 use ds_motion::spring_spec::{SpringResponse, SpringSpec};
 use ds_motion::timeline::spring::PxPerUnit;

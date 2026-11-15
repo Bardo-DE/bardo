@@ -132,7 +132,7 @@ fn the_transcript_sink_gathers_the_safety_signals_in_order() {
         TurnEvent::TextDelta("hi".into()),
         TurnEvent::Safety(SafetySignal::Blocked("no".into())),
     ] {
-        sink.event(event);
+        let _ = sink.event(event);
     }
     let transcript = sink.finish(end(StopReason::ToolUse));
     assert_eq!(

@@ -107,9 +107,9 @@ mod tests {
             }
         };
         let mut tee = Tee::new(echo, &mut forward);
-        tee.event(TurnEvent::ThoughtDelta("hm ".into()));
-        tee.event(TurnEvent::TextDelta("say".into()));
-        tee.event(TurnEvent::TextDelta("ing".into()));
+        let _ = tee.event(TurnEvent::ThoughtDelta("hm ".into()));
+        let _ = tee.event(TurnEvent::TextDelta("say".into()));
+        let _ = tee.event(TurnEvent::TextDelta("ing".into()));
         let flow = tee.flow();
         let transcript = tee.finish(end());
         (seen, flow, transcript)

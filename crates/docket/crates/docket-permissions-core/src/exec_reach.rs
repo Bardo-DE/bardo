@@ -9,7 +9,7 @@
 //! script or an interpreter does with a socket, which is why an open network makes every command
 //! reach it.
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::collections::BTreeMap;
 
 /// The programs that reach the network, by the basename of the word that names them: the shipped

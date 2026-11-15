@@ -351,7 +351,7 @@ impl<C: ChatCodec, K: TurnSink> BodySink for ChatSink<'_, C, K> {
         self.mode = match mode {
             Mode::Head(_) if is_failure(head) => {
                 let mut collect = Collect::default();
-                collect.head(head);
+                let _ = collect.head(head);
                 Mode::Failing(collect)
             }
             Mode::Head(decoder) => Mode::Reading {

@@ -8,10 +8,10 @@ use crate::GlobalList;
 use wayland_client::protocol::wl_seat::WlSeat;
 use wayland_client::{Dispatch, QueueHandle};
 use wayland_protocols_misc::zwp_input_method_v2::client::{
-    zwp_input_method_keyboard_grab_v2::{self, ZwpInputMethodKeyboardGrabV2},
+    zwp_input_method_keyboard_grab_v2,
     zwp_input_method_manager_v2::ZwpInputMethodManagerV2,
     zwp_input_method_v2::{self, ZwpInputMethodV2},
-    zwp_input_popup_surface_v2::{self, ZwpInputPopupSurfaceV2},
+    zwp_input_popup_surface_v2,
 };
 
 /// The user data of the method object.

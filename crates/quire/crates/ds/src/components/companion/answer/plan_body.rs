@@ -10,7 +10,6 @@ use crate::components::companion::plan::model::{
 use crate::components::content::icon_view::IconView;
 use dioxus::prelude::*;
 use ds_core::vocab::EffectMark;
-use ds_core::word::Word;
 use ds_style::icon::render::IconSize;
 
 /// The id of the button that runs a draft plan.

@@ -5,7 +5,6 @@ use model_provider::{
     Charges, Count, Dims, EmbedEnd, EmbedFault, EmbedTurn, Embedder, Knob, ModelInfo, Provider,
     ProviderError, TurnEnd, TurnRequest, TurnSink, TurnUsage,
 };
-use std::ops::ControlFlow;
 
 use crate::collect::Collect;
 use crate::errors::codec_error;

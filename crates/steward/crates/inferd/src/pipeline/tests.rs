@@ -210,7 +210,7 @@ impl Transcriber for FakeEars {
             .expect("lock")
             .push((stage.picked.chosen.model.as_str().to_owned(), frames));
         let text = "turn the lights off";
-        sink.event(InferEvent::Heard(porter_infer::HeardDelta::Final {
+        let _ = sink.event(InferEvent::Heard(porter_infer::HeardDelta::Final {
             text: text.into(),
             from: 0,
             to: 320,

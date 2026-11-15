@@ -1,7 +1,6 @@
 use keycap_core::{ConfigLayer, Hold, Profile, RuleAction, Stroke, Trigger, resolve};
 
 use super::*;
-use keycap_devtest::Scratch;
 
 fn map(s: &str) -> RuleAction {
     RuleAction::Map(
@@ -33,7 +32,6 @@ mod trusted_files {
     use super::super::trusted::LAYER_FILE_CAP;
     use super::super::vendor::vendor_through;
     use super::*;
-    use keycap_devtest::Scratch;
 
     const CAPS_RULE: &str =
         "[profile.default]\nrules = [{ when = \"capslock\", then = \"ctrl+space\" }]\n";

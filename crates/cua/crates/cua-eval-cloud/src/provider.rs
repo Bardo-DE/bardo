@@ -143,14 +143,14 @@ impl<T: Transport> Provider for InferdProvider<T> {
             match event {
                 InferEvent::TextDelta(text) => {
                     seen.text = true;
-                    sink.event(TurnEvent::TextDelta(text));
+                    let _ = sink.event(TurnEvent::TextDelta(text));
                 }
                 InferEvent::ThoughtDelta(text) => {
-                    sink.event(TurnEvent::ThoughtDelta(text));
+                    let _ = sink.event(TurnEvent::ThoughtDelta(text));
                 }
                 InferEvent::ToolCall(part) => {
                     seen.calls = true;
-                    sink.event(TurnEvent::ToolCallDone(call_of(&part)?));
+                    let _ = sink.event(TurnEvent::ToolCallDone(call_of(&part)?));
                 }
                 InferEvent::Finished(reply) => return self.finish(reply, seen, sink),
                 _ => {}
@@ -169,11 +169,11 @@ impl<T> InferdProvider<T> {
         match reply {
             InferReply::Chat(chat) => {
                 if !seen.text && !chat.text.is_empty() {
-                    sink.event(TurnEvent::TextDelta(chat.text.clone()));
+                    let _ = sink.event(TurnEvent::TextDelta(chat.text.clone()));
                 }
                 if !seen.calls {
                     for part in &chat.tool_calls {
-                        sink.event(TurnEvent::ToolCallDone(call_of(part)?));
+                        let _ = sink.event(TurnEvent::ToolCallDone(call_of(part)?));
                     }
                 }
                 self.watch.answered(

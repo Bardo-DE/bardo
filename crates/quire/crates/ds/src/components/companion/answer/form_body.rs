@@ -7,7 +7,6 @@ use crate::components::fields::text_field::TextField;
 use crate::components::fields::text_field_model::{FieldKind, FieldRows};
 use dioxus::prelude::*;
 use ds_core::vocab::Check;
-use ds_core::word::Word;
 
 /// The text a field holds, for an input that types.
 fn typed(value: &FormValue) -> String {
