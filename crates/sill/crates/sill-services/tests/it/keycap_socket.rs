@@ -24,7 +24,7 @@ use sill_model::keycap::{Attention, KeycapCommand, KeycapState, notice_text};
 use sill_model::notifications::{
     BannerLife, LiveBanner, NotesState, Notification, NotificationId, NotificationsCommand, UnixMs,
 };
-use sill_model::windows::{Activity, Sizing, Toplevel, Toplevels, WindowModel, WindowState};
+use sill_model::windows::{Sizing, Toplevel, Toplevels, WindowModel};
 use sill_services::Control;
 use sill_services::env::Env;
 use sill_services::keycap::{KeycapLinks, KeycapService};
@@ -88,8 +88,8 @@ fn focused(app_id: Option<&str>) -> WindowModel {
             key: WindowKey(1),
             app_id: app_id.to_owned(),
             title: String::new(),
-            activity: Activity::Active,
-            window: WindowState::Normal,
+            active: true,
+            minimized: false,
             sizing: Sizing::Floating,
             workspaces: Vec::new(),
             outputs: Vec::new(),

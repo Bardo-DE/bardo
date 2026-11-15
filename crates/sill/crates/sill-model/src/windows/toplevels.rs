@@ -3,7 +3,6 @@
 use serde::{Deserialize, Serialize};
 use sill_launcher::WindowKey;
 
-use super::Activity;
 use crate::ids::{OutputName, WorkspaceKey};
 
 /// Every toplevel, most recently activated first (the dock's cycle order, the switcher's
@@ -20,10 +19,10 @@ impl Toplevels {
         self.active()?.outputs.first().cloned()
     }
 
-    /// The window that has focus: the first with `Activity::Active`. `None` while nothing is
+    /// The window that has focus: the first that is active. `None` while nothing is
     /// focused; callers that act on focus (keys, profiles, the companion) use this.
     pub fn active(&self) -> Option<&Toplevel> {
-        self.windows.iter().find(|w| w.activity == Activity::Active)
+        self.windows.iter().find(|w| w.active)
     }
 
     /// The window a person would call frontmost on `output` (any output for `None`): the
@@ -34,7 +33,7 @@ impl Toplevels {
         self.windows
             .iter()
             .filter(there)
-            .find(|w| w.activity == Activity::Active)
+            .find(|w| w.active)
             .or_else(|| self.windows.iter().find(there))
     }
 }
@@ -49,20 +48,11 @@ pub struct Toplevel {
     /// The Wayland app id (or X11 `WM_CLASS` through XWayland); `match_app` maps it to an entry.
     pub app_id: String,
     pub title: String,
-    pub activity: Activity,
-    pub window: WindowState,
+    pub active: bool,
+    pub minimized: bool,
     pub sizing: Sizing,
     pub workspaces: Vec<WorkspaceKey>,
     pub outputs: Vec<OutputName>,
-}
-
-/// Minimized or not.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum WindowState {
-    #[default]
-    Normal,
-    Minimized,
 }
 
 /// How the toplevel fills its output.
@@ -94,8 +84,7 @@ pub fn step(toplevels: Toplevels, event: ToplevelEvent) -> Toplevels {
         ToplevelEvent::Opened(window) | ToplevelEvent::Changed(window) => {
             let at = windows.iter().position(|w| w.key == window.key);
             let was = at.map(|i| windows.remove(i));
-            let becomes_active = window.activity == Activity::Active
-                && was.as_ref().is_none_or(|w| w.activity != Activity::Active);
+            let becomes_active = window.active && was.as_ref().is_none_or(|w| !w.active);
             match (at, becomes_active) {
                 (_, true) => windows.insert(0, window),
                 (Some(i), false) => windows.insert(i, window),
@@ -109,19 +98,18 @@ pub fn step(toplevels: Toplevels, event: ToplevelEvent) -> Toplevels {
 
 #[cfg(test)]
 mod tests {
-    use super::{Sizing, Toplevel, ToplevelEvent, Toplevels, WindowState, step};
+    use super::{Sizing, Toplevel, ToplevelEvent, Toplevels, step};
     use crate::ids::OutputName;
-    use crate::windows::Activity;
     use sill_launcher::WindowKey;
 
-    fn window(key: u64, activity: Activity) -> Toplevel {
+    fn window(key: u64, active: bool) -> Toplevel {
         Toplevel {
             identifier: String::new(),
             key: WindowKey(key),
             app_id: format!("app{key}"),
             title: format!("window {key}"),
-            activity,
-            window: WindowState::Normal,
+            active,
+            minimized: false,
             sizing: Sizing::Floating,
             workspaces: Vec::new(),
             outputs: Vec::new(),
@@ -136,7 +124,7 @@ mod tests {
         Toplevels {
             windows: keys
                 .iter()
-                .map(|&k| window(k, Activity::Inactive))
+                .map(|&k| window(k, false))
                 .collect(),
         }
     }
@@ -147,19 +135,19 @@ mod tests {
             (
                 "an inactive open goes last",
                 of(&[1, 2]),
-                ToplevelEvent::Opened(window(3, Activity::Inactive)),
+                ToplevelEvent::Opened(window(3, false)),
                 vec![1, 2, 3],
             ),
             (
                 "an active open goes first",
                 of(&[1, 2]),
-                ToplevelEvent::Opened(window(3, Activity::Active)),
+                ToplevelEvent::Opened(window(3, true)),
                 vec![3, 1, 2],
             ),
             (
                 "activation moves to the front",
                 of(&[1, 2, 3]),
-                ToplevelEvent::Changed(window(3, Activity::Active)),
+                ToplevelEvent::Changed(window(3, true)),
                 vec![3, 1, 2],
             ),
             (
@@ -167,22 +155,22 @@ mod tests {
                 of(&[1, 2, 3]),
                 ToplevelEvent::Changed(Toplevel {
                     title: "renamed".to_owned(),
-                    ..window(2, Activity::Inactive)
+                    ..window(2, false)
                 }),
                 vec![1, 2, 3],
             ),
             (
                 "deactivation keeps the place",
                 Toplevels {
-                    windows: vec![window(1, Activity::Active), window(2, Activity::Inactive)],
+                    windows: vec![window(1, true), window(2, false)],
                 },
-                ToplevelEvent::Changed(window(1, Activity::Inactive)),
+                ToplevelEvent::Changed(window(1, false)),
                 vec![1, 2],
             ),
             (
                 "a change for an unknown key is an open",
                 of(&[1]),
-                ToplevelEvent::Changed(window(9, Activity::Inactive)),
+                ToplevelEvent::Changed(window(9, false)),
                 vec![1, 9],
             ),
             (
@@ -206,27 +194,27 @@ mod tests {
     #[test]
     fn a_still_active_window_changing_title_does_not_jump() {
         let before = Toplevels {
-            windows: vec![window(2, Activity::Inactive), window(1, Activity::Active)],
+            windows: vec![window(2, false), window(1, true)],
         };
         let after = step(
             before,
             ToplevelEvent::Changed(Toplevel {
                 title: "new".to_owned(),
-                ..window(1, Activity::Active)
+                ..window(1, true)
             }),
         );
         assert_eq!(order(&after), vec![2, 1]);
         assert_eq!(after.windows[1].title, "new");
     }
 
-    fn named_window(key: u64, activity: Activity, outputs: &[&str]) -> Toplevel {
+    fn named_window(key: u64, active: bool, outputs: &[&str]) -> Toplevel {
         Toplevel {
             identifier: String::new(),
             key: sill_launcher::WindowKey(key),
             app_id: "foot".to_owned(),
             title: String::new(),
-            activity,
-            window: Default::default(),
+            active,
+            minimized: false,
             sizing: Default::default(),
             workspaces: Vec::new(),
             outputs: outputs
@@ -239,9 +227,9 @@ mod tests {
     #[test]
     fn the_front_window_prefers_active_then_most_recent_on_the_output() {
         let windows = vec![
-            named_window(1, Activity::Inactive, &["DP-1"]),
-            named_window(2, Activity::Inactive, &["DP-2"]),
-            named_window(3, Activity::Active, &["DP-2"]),
+            named_window(1, false, &["DP-1"]),
+            named_window(2, false, &["DP-2"]),
+            named_window(3, true, &["DP-2"]),
         ];
         let on = |o: &str| Some(OutputName(o.to_owned()));
         let cases = [
@@ -273,14 +261,14 @@ mod tests {
             (
                 "the active window's first output",
                 vec![
-                    named_window(1, Activity::Inactive, &["eDP-1"]),
-                    named_window(2, Activity::Active, &["HDMI-A-2", "eDP-1"]),
+                    named_window(1, false, &["eDP-1"]),
+                    named_window(2, true, &["HDMI-A-2", "eDP-1"]),
                 ],
                 Some("HDMI-A-2"),
             ),
             (
                 "an active window on no output",
-                vec![named_window(1, Activity::Active, &[])],
+                vec![named_window(1, true, &[])],
                 None,
             ),
         ];

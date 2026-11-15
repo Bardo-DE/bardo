@@ -7,7 +7,7 @@ use crate::dock::pick::{DockPick, LoginChange};
 use ds::prelude::*;
 use sill_launcher::{AppId, WindowKey};
 use sill_model::apps::{App, AppIcon, DbusActivation, DesktopActionEntry, Listing, Terminal};
-use sill_model::windows::{Activity, Sizing, Toplevel, Toplevels, WindowState};
+use sill_model::windows::{Sizing, Toplevel, Toplevels};
 use std::path::PathBuf;
 
 const TERM: &str = "foot";
@@ -41,14 +41,14 @@ fn term() -> App {
     }
 }
 
-fn window(key: u64, app_id: &str, activity: Activity, state: WindowState) -> Toplevel {
+fn window(key: u64, app_id: &str, active: bool, minimized: bool) -> Toplevel {
     Toplevel {
         identifier: String::new(),
         key: WindowKey(key),
         app_id: app_id.to_owned(),
         title: format!("shell {key}"),
-        activity,
-        window: state,
+        active,
+        minimized,
         sizing: Sizing::Floating,
         workspaces: Vec::new(),
         outputs: Vec::new(),
@@ -58,9 +58,9 @@ fn window(key: u64, app_id: &str, activity: Activity, state: WindowState) -> Top
 fn toplevels() -> Toplevels {
     Toplevels {
         windows: vec![
-            window(2, TERM, Activity::Active, WindowState::Normal),
-            window(9, "firefox", Activity::Inactive, WindowState::Normal),
-            window(1, TERM, Activity::Inactive, WindowState::Minimized),
+            window(2, TERM, true, false),
+            window(9, "firefox", false, false),
+            window(1, TERM, false, true),
         ],
     }
 }

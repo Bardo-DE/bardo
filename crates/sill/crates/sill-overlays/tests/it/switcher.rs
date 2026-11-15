@@ -13,7 +13,7 @@ use ds_behaviour::switcher::SwitcherParams;
 use ds_harness::{Harness, Input, Viewport};
 use sill_launcher::{AppId, WindowKey};
 use sill_model::ids::{OutputName, WorkspaceKey};
-use sill_model::windows::{Activity, Sizing, Toplevel, Toplevels, WindowState, WlCommand};
+use sill_model::windows::{Sizing, Toplevel, Toplevels, WlCommand};
 use sill_overlays::Switcher;
 use sill_settings::ShellFile;
 use sill_ui_kit::harness::{SurfaceHarness, fake};
@@ -39,8 +39,8 @@ fn windows(apps: &[(&str, u64)]) -> Toplevels {
         key: WindowKey(*key),
         app_id: (*app_id).to_owned(),
         title: format!("{app_id} {key}"),
-        activity: Activity::Inactive,
-        window: WindowState::Normal,
+        active: false,
+        minimized: false,
         sizing: Sizing::Floating,
         workspaces: vec![WorkspaceKey(2)],
         outputs: vec![OutputName("DP-1".to_owned())],

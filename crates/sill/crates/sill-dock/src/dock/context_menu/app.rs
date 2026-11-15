@@ -1,7 +1,7 @@
 //! An app tile's rows (design/10 §10.3.7).
 
 use sill_model::apps::App;
-use sill_model::windows::{Activity, Toplevels, WindowState};
+use sill_model::windows::Toplevels;
 
 use super::{Checked, DockMenuRow, OptionHeld, menu_windows, sections};
 use crate::dock::items::{DockItem, ItemKind};
@@ -18,8 +18,8 @@ pub fn rows(
     let running = !windows.is_empty();
     let window_rows = windows.iter().map(|w| DockMenuRow::Window {
         title: w.title.clone(),
-        active: checked(w.activity == Activity::Active),
-        minimized: w.window == WindowState::Minimized,
+        active: checked(w.active),
+        minimized: w.minimized,
     });
     let actions =
         app.into_iter()

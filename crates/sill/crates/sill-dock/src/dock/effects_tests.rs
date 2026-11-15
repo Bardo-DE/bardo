@@ -11,7 +11,7 @@ use sill_model::apps::{
     App, AppIcon, AppIndex, DbusActivation, DesktopActionEntry, Listing, Terminal,
 };
 use sill_model::pins::{DockPins, PinAt, PinEvent};
-use sill_model::windows::{Activity, Sizing, Toplevel, Toplevels, WindowState, WlCommand};
+use sill_model::windows::{Sizing, Toplevel, Toplevels, WlCommand};
 use std::path::PathBuf;
 
 /// A file manager: it opens folders and says it is one.
@@ -74,13 +74,13 @@ struct World {
 }
 
 fn world() -> World {
-    let window = |key: u64, app: &str, activity| Toplevel {
+    let window = |key: u64, app: &str, active| Toplevel {
         identifier: String::new(),
         key: WindowKey(key),
         app_id: app.to_owned(),
         title: String::new(),
-        activity,
-        window: WindowState::Normal,
+        active,
+        minimized: false,
         sizing: Sizing::Floating,
         workspaces: Vec::new(),
         outputs: Vec::new(),
@@ -98,9 +98,9 @@ fn world() -> World {
         ],
         toplevels: Toplevels {
             windows: vec![
-                window(7, "term", Activity::Active),
-                window(8, "firefox", Activity::Inactive),
-                window(6, "term", Activity::Inactive),
+                window(7, "term", true),
+                window(8, "firefox", false),
+                window(6, "term", false),
             ],
         },
         index: AppIndex::new(vec![

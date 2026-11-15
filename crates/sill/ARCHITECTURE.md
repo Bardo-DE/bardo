@@ -790,7 +790,7 @@ app-served menus, window-menu entries, sliders and a search row's own data are n
 
 ### Find the front window, the main group or a window's app
 
-Never write `find(|w| w.activity == Activity::Active)` or match an app id to an entry for a window; ask
+Never write `find(|w| w.active)` or match an app id to an entry for a window; ask
 `sill_model::windows`:
 
 - `Toplevels::active()` is the window with focus, `None` when nothing has it. Anything that

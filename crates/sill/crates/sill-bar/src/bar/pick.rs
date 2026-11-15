@@ -91,7 +91,7 @@ mod tests {
     use sill_model::app_menu::{AppMenuCommand, MenuApp, OwnItem};
     use sill_model::ids::OutputName;
     use sill_model::tray::{TrayCommand, TrayItemId};
-    use sill_model::windows::{Activity, Sizing, Toplevel, Toplevels, WindowState, WlCommand};
+    use sill_model::windows::{Sizing, Toplevel, Toplevels, WlCommand};
 
     fn window(key: u64, app: &str) -> Toplevel {
         Toplevel {
@@ -99,8 +99,8 @@ mod tests {
             key: WindowKey(key),
             app_id: app.to_owned(),
             title: String::new(),
-            activity: Activity::Inactive,
-            window: WindowState::Normal,
+            active: false,
+            minimized: false,
             sizing: Sizing::Floating,
             workspaces: Vec::new(),
             outputs: vec![OutputName("DP-1".to_owned())],

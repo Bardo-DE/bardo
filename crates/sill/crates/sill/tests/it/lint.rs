@@ -24,7 +24,7 @@ use sill_model::polkit_agent::{
 use sill_model::screenshots::{Shot, ShotId, ShotPreview, Shots};
 use sill_model::session::Session;
 use sill_model::wallpaper::{WallpaperImage, Wallpapers};
-use sill_model::windows::{Activity, Sizing, Toplevel, WindowState};
+use sill_model::windows::{Sizing, Toplevel};
 use sill_notify_ui::{Banners, NotificationCenter, ScreenshotThumb};
 use sill_overlays::{
     AccountsSheet, CaptureSheet, ColorSampler, ConfirmSheet, DisplayTrialSheet, EmptyTrashSheet,
@@ -452,8 +452,8 @@ fn switcher_states() -> Vec<(&'static str, String)> {
         key: WindowKey(key),
         app_id: app.to_owned(),
         title: format!("{app} {key}"),
-        activity: Activity::Inactive,
-        window: WindowState::Normal,
+        active: false,
+        minimized: false,
         sizing: Sizing::Floating,
         workspaces: vec![WorkspaceKey(2)],
         outputs: vec![OutputName("DP-1".to_owned())],

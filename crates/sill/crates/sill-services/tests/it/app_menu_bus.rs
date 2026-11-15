@@ -24,9 +24,7 @@ use sill_model::app_menu::{
     AppMenuCommand, AppMenus, Follower, MenuApp, MenuName, ServedMenu, titles,
 };
 use sill_model::ids::OutputName;
-use sill_model::windows::{
-    Activity, Sizing, Subjects, Toplevel, Toplevels, WindowModel, WindowState, WlCommand,
-};
+use sill_model::windows::{Sizing, Subjects, Toplevel, Toplevels, WindowModel, WlCommand};
 use sill_services::app_menu::{
     Activated, AppMenuDeps, AppMenuService, MenuAgent, MenuFault, MenuLinks,
 };
@@ -400,8 +398,8 @@ fn window(key: u64, app_id: &str) -> Toplevel {
         key: WindowKey(key),
         app_id: app_id.to_owned(),
         title: format!("{app_id} {key}"),
-        activity: Activity::Inactive,
-        window: WindowState::Normal,
+        active: false,
+        minimized: false,
         sizing: Sizing::Floating,
         workspaces: Vec::new(),
         outputs: vec![OutputName("DP-1".to_owned())],

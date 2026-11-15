@@ -284,7 +284,7 @@ mod tests {
         TrayMenuKind, TrayStatus,
     };
     use sill_model::units::Visibility;
-    use sill_model::windows::{Activity, Sizing, Toplevel, Toplevels, WindowState};
+    use sill_model::windows::{Sizing, Toplevel, Toplevels};
     use sill_settings::ControlCenterModule;
 
     fn window(key: u64, app: &str, output: &str) -> Toplevel {
@@ -293,8 +293,8 @@ mod tests {
             key: WindowKey(key),
             app_id: app.to_owned(),
             title: format!("{app} {key}"),
-            activity: Activity::Inactive,
-            window: WindowState::Normal,
+            active: false,
+            minimized: false,
             sizing: Sizing::Floating,
             workspaces: Vec::new(),
             outputs: vec![OutputName(output.to_owned())],

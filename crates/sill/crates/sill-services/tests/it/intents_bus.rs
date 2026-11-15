@@ -24,9 +24,7 @@ use sill_model::intents::terminal::{Breaker, ControlReach};
 use sill_model::intents::{Intents, IntentsCommand, IntentsLink};
 use sill_model::screenshots::{Shot, ShotId, ShotPreview, Shots};
 use sill_model::serve::ClaimError;
-use sill_model::windows::{
-    Activity, Sizing, Toplevel, Toplevels, WindowModel, WindowState, WlCommand,
-};
+use sill_model::windows::{Sizing, Toplevel, Toplevels, WindowModel, WlCommand};
 use sill_services::control::Control;
 use sill_services::env::{BusRoute, Buses, Env, NameClaims};
 use sill_services::seat::seat;
@@ -793,12 +791,8 @@ fn compositor() -> (
         key: WindowKey(key),
         app_id: app.to_owned(),
         title: title.to_owned(),
-        activity: if key == 1 {
-            Activity::Active
-        } else {
-            Activity::Inactive
-        },
-        window: WindowState::Normal,
+        active: key == 1,
+        minimized: false,
         sizing: Sizing::Floating,
         workspaces: vec![WorkspaceKey(10)],
         outputs: vec![OutputName("DP-1".to_owned())],

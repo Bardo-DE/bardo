@@ -10,7 +10,7 @@ use super::{
 };
 use super::{ShellFocus, ShellKeys, under_shell};
 use crate::apps::{App, AppIcon, AppIndex, AppsEvent, DbusActivation, Listing, Terminal, step};
-use crate::windows::{Activity, Sizing, Toplevel, Toplevels, WindowState};
+use crate::windows::{Sizing, Toplevel, Toplevels};
 
 fn name(s: &str) -> ProfileName {
     ProfileName::parse(s).unwrap_or_else(|e| panic!("{s}: {e}"))
@@ -41,14 +41,14 @@ fn app(id: &str, categories: &[&str], declared: Option<&str>) -> App {
     }
 }
 
-fn toplevel(key: u64, app_id: &str, activity: Activity) -> Toplevel {
+fn toplevel(key: u64, app_id: &str, active: bool) -> Toplevel {
     Toplevel {
         identifier: String::new(),
         key: WindowKey(key),
         app_id: app_id.to_owned(),
         title: String::new(),
-        activity,
-        window: WindowState::Normal,
+        active,
+        minimized: false,
         sizing: Sizing::Floating,
         workspaces: Vec::new(),
         outputs: Vec::new(),
@@ -82,7 +82,7 @@ fn overrides() -> UserOverrides {
 /// What one source says for the window of the app with `id`, or for an app the index lacks.
 fn alone(source: &dyn ProfileSource, id: &str) -> Option<ProfileName> {
     let index = index();
-    let window = toplevel(1, id, Activity::Active);
+    let window = toplevel(1, id, true);
     source.profile_for(&FocusedWindow {
         toplevel: &window,
         app: index.get(&AppId(id.to_owned())),
@@ -157,7 +157,7 @@ fn an_own_profile_matches_a_part_of_the_app_id_in_any_case() {
         ("ghostty-nightly", Some("ghostty")),
         ("foot", None),
     ] {
-        let window = toplevel(1, id, Activity::Active);
+        let window = toplevel(1, id, true);
         let focus = FocusedWindow {
             toplevel: &window,
             app: None,
@@ -190,7 +190,7 @@ fn override_beats_declared_beats_category() {
         ("no source: the default", "ghost", "default"),
     ];
     for (case, id, want) in cases {
-        let window = toplevel(1, id, Activity::Active);
+        let window = toplevel(1, id, true);
         let focus = FocusedWindow {
             toplevel: &window,
             app: index.get(&AppId(id.to_owned())),
@@ -205,7 +205,7 @@ fn source_order_is_the_precedence() {
     let standard = CategoryTable::standard();
     let reversed: [&dyn ProfileSource; 3] = [&standard, &DeclaredProfile, &overrides];
     let index = index();
-    let window = toplevel(1, "foot", Activity::Active);
+    let window = toplevel(1, "foot", true);
     let focus = FocusedWindow {
         toplevel: &window,
         app: index.get(&AppId("foot".to_owned())),
@@ -230,20 +230,20 @@ fn focused_is_the_active_toplevel_and_its_entry() {
         ("no windows", toplevels(vec![]), None),
         (
             "none active",
-            toplevels(vec![toplevel(1, "foot", Activity::Inactive)]),
+            toplevels(vec![toplevel(1, "foot", false)]),
             None,
         ),
         (
             "the active one among others",
             toplevels(vec![
-                toplevel(1, "game", Activity::Inactive),
-                toplevel(2, "foot", Activity::Active),
+                toplevel(1, "game", false),
+                toplevel(2, "foot", true),
             ]),
             Some(("foot", Some("foot"))),
         ),
         (
             "an app the index lacks",
-            toplevels(vec![toplevel(3, "org.example.Ghost", Activity::Active)]),
+            toplevels(vec![toplevel(3, "org.example.Ghost", true)]),
             Some(("org.example.Ghost", None)),
         ),
     ];
@@ -258,7 +258,7 @@ fn focused_is_the_active_toplevel_and_its_entry() {
 fn a_terminal_window_chooses_terminal_end_to_end() {
     let index = index();
     let toplevels = Toplevels {
-        windows: vec![toplevel(1, "foot", Activity::Active)],
+        windows: vec![toplevel(1, "foot", true)],
     };
     let standard = CategoryTable::standard();
     let sources: [&dyn ProfileSource; 2] = [&DeclaredProfile, &standard];
@@ -280,27 +280,27 @@ fn the_wanted_profile_follows_the_active_window() {
         (
             "a terminal",
             &none,
-            on(vec![toplevel(1, "foot", Activity::Active)]),
+            on(vec![toplevel(1, "foot", true)]),
             "terminal",
         ),
         (
             "an app declaring its own",
             &none,
-            on(vec![toplevel(2, "game", Activity::Active)]),
+            on(vec![toplevel(2, "game", true)]),
             "gaming",
         ),
         (
             "an app with nothing to say",
             &none,
-            on(vec![toplevel(3, "plain", Activity::Active)]),
+            on(vec![toplevel(3, "plain", true)]),
             "default",
         ),
         (
             "only the active window counts",
             &none,
             on(vec![
-                toplevel(1, "foot", Activity::Inactive),
-                toplevel(3, "plain", Activity::Active),
+                toplevel(1, "foot", false),
+                toplevel(3, "plain", true),
             ]),
             "default",
         ),
@@ -313,7 +313,7 @@ fn the_wanted_profile_follows_the_active_window() {
         );
     }
     let mine = overrides();
-    let terminal = on(vec![toplevel(1, "foot", Activity::Active)]);
+    let terminal = on(vec![toplevel(1, "foot", true)]);
     assert_eq!(
         wanted(&mine, &own, &standard, &terminal, &index),
         name("mine"),
@@ -323,7 +323,7 @@ fn the_wanted_profile_follows_the_active_window() {
         AppId("com.mitchellh.ghostty".to_owned()),
         name("mine"),
     )]));
-    let ghostty = on(vec![toplevel(1, "com.mitchellh.ghostty", Activity::Active)]);
+    let ghostty = on(vec![toplevel(1, "com.mitchellh.ghostty", true)]);
     assert_eq!(
         wanted(&own_choice, &own, &standard, &ghostty, &index),
         name("mine"),
@@ -340,7 +340,7 @@ fn the_shell_holding_the_keyboard_is_keymap_aware_over_any_window() {
     let own = OwnProfiles::standard();
     let none = UserOverrides::default();
     let under = |app: &str| {
-        let windows = vec![toplevel(1, app, Activity::Active)];
+        let windows = vec![toplevel(1, app, true)];
         wanted(&none, &own, &standard, &Toplevels { windows }, &index)
     };
     let launcher = 10;

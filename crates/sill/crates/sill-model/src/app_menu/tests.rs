@@ -13,7 +13,7 @@ use super::{
 use crate::ids::OutputName;
 use crate::tray::{Check, Chord, MenuCommand, TrayMenuEntry, TrayMenuIcon, TrayMenuKind};
 use crate::units::Visibility;
-use crate::windows::{Activity, Sizing, Toplevel, Toplevels, WindowState, WlCommand};
+use crate::windows::{Sizing, Toplevel, Toplevels, WlCommand};
 
 fn node(id: i32, label: &str, children: Vec<Node>) -> Node {
     Node {
@@ -192,14 +192,14 @@ fn the_published_menus_follow_what_was_heard() {
     assert_eq!(gone, AppMenus::default());
 }
 
-fn window(key: u64, app_id: &str, state: WindowState) -> Toplevel {
+fn window(key: u64, app_id: &str, minimized: bool) -> Toplevel {
     Toplevel {
         identifier: String::new(),
         key: WindowKey(key),
         app_id: app_id.to_owned(),
         title: format!("{app_id} {key}"),
-        activity: Activity::Inactive,
-        window: state,
+        active: false,
+        minimized,
         sizing: Sizing::Floating,
         workspaces: Vec::new(),
         outputs: vec![OutputName("DP-1".to_owned())],
@@ -210,10 +210,10 @@ fn window(key: u64, app_id: &str, state: WindowState) -> Toplevel {
 fn the_shells_own_rows_become_compositor_commands() {
     let toplevels = Toplevels {
         windows: vec![
-            window(1, "foot", WindowState::Normal),
-            window(2, "foot", WindowState::Minimized),
-            window(3, "files", WindowState::Normal),
-            window(4, "files", WindowState::Minimized),
+            window(1, "foot", false),
+            window(2, "foot", true),
+            window(3, "files", false),
+            window(4, "files", true),
         ],
     };
     let cases: Vec<(OwnItem, Vec<WlCommand>)> = vec![

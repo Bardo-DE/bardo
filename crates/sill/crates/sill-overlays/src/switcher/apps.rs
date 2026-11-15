@@ -8,7 +8,7 @@
 use sill_launcher::{AppId, WindowKey};
 
 use sill_model::apps::AppIndex;
-use sill_model::windows::{Toplevel, Toplevels, WindowState, WlCommand, app_of};
+use sill_model::windows::{Toplevel, Toplevels, WlCommand, app_of};
 
 /// Whether an app has a window on screen.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
@@ -55,9 +55,10 @@ pub fn switcher_apps(toplevels: &Toplevels, index: &AppIndex) -> Vec<SwitcherApp
 }
 
 fn shown_of(window: &Toplevel) -> AppShown {
-    match window.window {
-        WindowState::Normal => AppShown::Visible,
-        WindowState::Minimized => AppShown::AllMinimized,
+    if window.minimized {
+        AppShown::AllMinimized
+    } else {
+        AppShown::Visible
     }
 }
 
@@ -101,16 +102,16 @@ mod tests {
 
     use super::{AppShown, SwitcherApp, activate, hide, quit, switcher_apps};
     use sill_model::apps::AppIndex;
-    use sill_model::windows::{Activity, Sizing, Toplevel, Toplevels, WindowState, WlCommand};
+    use sill_model::windows::{Sizing, Toplevel, Toplevels, WlCommand};
 
-    fn window(key: u64, app_id: &str, window: WindowState) -> Toplevel {
+    fn window(key: u64, app_id: &str, minimized: bool) -> Toplevel {
         Toplevel {
             identifier: String::new(),
             key: WindowKey(key),
             app_id: app_id.to_owned(),
             title: format!("{app_id} {key}"),
-            activity: Activity::Inactive,
-            window,
+            active: false,
+            minimized,
             sizing: Sizing::Floating,
             workspaces: Vec::new(),
             outputs: Vec::new(),
@@ -129,12 +130,12 @@ mod tests {
     fn windows_group_into_apps_in_mru_order() {
         let toplevels = Toplevels {
             windows: vec![
-                window(1, "foot", WindowState::Normal),
-                window(2, "firefox", WindowState::Normal),
-                window(3, "foot", WindowState::Normal),
-                window(4, "mail", WindowState::Minimized),
-                window(5, "", WindowState::Normal),
-                window(6, "firefox", WindowState::Minimized),
+                window(1, "foot", false),
+                window(2, "firefox", false),
+                window(3, "foot", false),
+                window(4, "mail", true),
+                window(5, "", false),
+                window(6, "firefox", true),
             ],
         };
         assert_eq!(

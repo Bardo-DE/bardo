@@ -2,7 +2,7 @@
 
 use ds::prelude::*;
 use sill_launcher::{AppId, WindowKey};
-use sill_model::windows::{Toplevel, WindowState};
+use sill_model::windows::Toplevel;
 use sill_settings::OnOff;
 
 use super::{Checked, DockMenuRow};
@@ -29,7 +29,7 @@ pub fn menu_entries(
         keys: windows.iter().map(|w| w.key).collect(),
         minimized: windows
             .iter()
-            .filter(|w| w.window == WindowState::Minimized)
+            .filter(|w| w.minimized)
             .map(|w| w.key)
             .collect(),
     };

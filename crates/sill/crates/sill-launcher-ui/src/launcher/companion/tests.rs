@@ -4,7 +4,7 @@ use prov::{RunId, SpaceId, TaskId};
 use sill_launcher::{ProviderKind, WindowKey};
 use sill_model::apps::AppIndex;
 use sill_model::companion::{LauncherOrigin, Summon};
-use sill_model::windows::{Activity, Sizing, Toplevel, Toplevels, WindowState};
+use sill_model::windows::{Sizing, Toplevel, Toplevels};
 
 use super::*;
 use crate::launcher::keys::Filter;
@@ -210,8 +210,8 @@ fn toplevels() -> Toplevels {
             key: WindowKey(4),
             app_id: "org.quire.Mail".to_owned(),
             title: "Inbox".to_owned(),
-            activity: Activity::Active,
-            window: WindowState::Normal,
+            active: true,
+            minimized: false,
             sizing: Sizing::Floating,
             workspaces: Vec::new(),
             outputs: Vec::new(),

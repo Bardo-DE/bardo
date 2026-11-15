@@ -24,7 +24,7 @@ use sill_model::displays::randr::Enablement;
 use sill_model::displays::scale::DisplayScale;
 use sill_model::ids::{OutputName, WorkspaceKey};
 use sill_model::keyboard::focused;
-use sill_model::windows::{Activity, Sizing, Toplevels, WindowState, WlCommand};
+use sill_model::windows::{Sizing, Toplevels, WlCommand};
 use sill_services::desktop_wl::{
     Refusal, backend_of, desktop_of, desktop_view, heads_of, offer_of_protocols, project_toplevels,
     project_workspaces, space_id, wire_of,
@@ -215,7 +215,7 @@ fn a_window_is_described_by_its_flags_and_output() {
         all.windows
             .iter()
             .find(|w| w.key == WindowKey(key))
-            .map(|w| (w.activity, w.window, w.sizing, w.outputs.clone()))
+            .map(|w| (w.active, w.minimized, w.sizing, w.outputs.clone()))
             .unwrap_or_else(|| panic!("window {key}"))
     };
     let out = |name: &str| vec![OutputName(name.to_owned())];
@@ -224,8 +224,8 @@ fn a_window_is_described_by_its_flags_and_output() {
             "minimised",
             1,
             (
-                Activity::Inactive,
-                WindowState::Minimized,
+                false,
+                true,
                 Sizing::Floating,
                 out("DP-1"),
             ),
@@ -234,8 +234,8 @@ fn a_window_is_described_by_its_flags_and_output() {
             "maximised",
             2,
             (
-                Activity::Inactive,
-                WindowState::Normal,
+                false,
+                false,
                 Sizing::Maximized,
                 out("DP-2"),
             ),
@@ -244,8 +244,8 @@ fn a_window_is_described_by_its_flags_and_output() {
             "full screen over maximised",
             3,
             (
-                Activity::Active,
-                WindowState::Normal,
+                true,
+                false,
                 Sizing::Fullscreen,
                 out("DP-1"),
             ),
@@ -288,17 +288,17 @@ fn workspaces_are_grouped_and_in_position_order() {
     assert_eq!(workspaces.groups.len(), 1);
     let group = &workspaces.groups[0];
     assert_eq!(group.outputs, [OutputName("DP-1".to_owned())]);
-    let names: Vec<(&str, Activity)> = group
+    let names: Vec<(&str, bool)> = group
         .workspaces
         .iter()
-        .map(|w| (w.name.as_str(), w.activity))
+        .map(|w| (w.name.as_str(), w.active))
         .collect();
     assert_eq!(
         names,
         [
-            ("Main", Activity::Active),
-            ("Code", Activity::Inactive),
-            ("Mail", Activity::Inactive)
+            ("Main", true),
+            ("Code", false),
+            ("Mail", false)
         ]
     );
     assert_eq!(group.workspaces[1].stable_id, "code");

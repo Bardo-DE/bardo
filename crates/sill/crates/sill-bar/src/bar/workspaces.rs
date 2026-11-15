@@ -9,7 +9,7 @@ use dioxus::prelude::*;
 use ds::base::press::{PointerButton, Press};
 use shell_host::OutputInfo;
 use sill_model::ids::OutputName;
-use sill_model::windows::{Activity, WlCommand, Workspace};
+use sill_model::windows::{WlCommand, Workspace};
 use sill_services::WindowsService;
 use sill_shell_kit::bar::pointer::BarPointer;
 use sill_shell_kit::prelude::*;
@@ -45,7 +45,7 @@ pub fn WorkspaceIndicator(output: OutputInfo) -> Element {
                 WorkspacePill {
                     key: "{workspace.key.0}",
                     label: label(&workspace, index),
-                    current: workspace.activity == Activity::Active,
+                    current: workspace.active,
                     pointer: BarPointer {
                         down: Some(EventHandler::new(move |event: PointerEvent| {
                             let x = pointer_at(&event).x;

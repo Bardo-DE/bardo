@@ -1,19 +1,19 @@
 use super::*;
 use crate::ids::{GroupKey, OutputName, WorkspaceKey};
 use crate::units::{Urgency, Visibility};
-use crate::windows::{Activity, Pinning, Workspace, WorkspaceCaps, WorkspaceGroup, Workspaces};
+use crate::windows::{Workspace, WorkspaceCaps, WorkspaceGroup, Workspaces};
 
-fn ws(key: u64, stable: &str, activity: Activity) -> Workspace {
+fn ws(key: u64, stable: &str, active: bool) -> Workspace {
     Workspace {
         key: WorkspaceKey(key),
         name: format!("w{key}"),
         stable_id: stable.to_owned(),
-        activity,
+        active,
         urgency: Urgency::Calm,
         visibility: Visibility::Shown,
         coordinates: Vec::new(),
         capabilities: WorkspaceCaps::default(),
-        pinning: Pinning::Unpinned,
+        pinned: false,
     }
 }
 
@@ -25,14 +25,14 @@ fn every_workspace_is_published_with_its_look_output_and_activity() {
                 key: GroupKey(1),
                 outputs: vec![OutputName("DP-1".to_owned())],
                 workspaces: vec![
-                    ws(7, "stable-a", Activity::Inactive),
-                    ws(8, "", Activity::Active),
+                    ws(7, "stable-a", false),
+                    ws(8, "", true),
                 ],
             },
             WorkspaceGroup {
                 key: GroupKey(2),
                 outputs: Vec::new(),
-                workspaces: vec![ws(9, "", Activity::Active)],
+                workspaces: vec![ws(9, "", true)],
             },
         ],
     };

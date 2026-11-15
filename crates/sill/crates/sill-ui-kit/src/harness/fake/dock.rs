@@ -11,7 +11,7 @@ use sill_model::badges::{Badge, Badges};
 use sill_model::ids::{OutputName, WorkspaceKey};
 use sill_model::pins::DockPins;
 use sill_model::units::{Permille, Visibility};
-use sill_model::windows::{Activity, Sizing, Toplevel, Toplevels, WindowState};
+use sill_model::windows::{Sizing, Toplevel, Toplevels};
 
 /// App ids the fixtures use.
 pub const TERM: &str = "foot";
@@ -81,22 +81,22 @@ pub fn pins() -> DockPins {
 
 /// Terminal (pinned) active with two windows, Firefox (not pinned) with one, on `output`.
 pub fn toplevels_on(output: &str) -> Toplevels {
-    let window = |key: u64, app: &str, activity| Toplevel {
+    let window = |key: u64, app: &str, active| Toplevel {
         identifier: String::new(),
         key: WindowKey(key),
         app_id: app.to_owned(),
         title: format!("{app} {key}"),
-        activity,
-        window: WindowState::Normal,
+        active,
+        minimized: false,
         sizing: Sizing::Floating,
         workspaces: vec![WorkspaceKey(2)],
         outputs: vec![OutputName(output.to_owned())],
     };
     Toplevels {
         windows: vec![
-            window(10, TERM, Activity::Active),
-            window(12, FIREFOX, Activity::Inactive),
-            window(11, TERM, Activity::Inactive),
+            window(10, TERM, true),
+            window(12, FIREFOX, false),
+            window(11, TERM, false),
         ],
     }
 }

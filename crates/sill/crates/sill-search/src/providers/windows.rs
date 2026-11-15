@@ -162,10 +162,7 @@ mod tests {
     };
     use sill_model::apps::{App, AppIcon, AppIndex, AppsEvent, DbusActivation, Listing, Terminal};
     use sill_model::ids::{GroupKey, OutputName, WorkspaceKey};
-    use sill_model::windows::{
-        Activity, Sizing, Toplevel, ToplevelEvent, Toplevels, WindowModel, WindowState, Workspace,
-        WorkspaceGroup, Workspaces, toplevels::step,
-    };
+    use sill_model::windows::{Sizing, Toplevel, ToplevelEvent, Toplevels, WindowModel, Workspace, WorkspaceGroup, Workspaces, toplevels::step};
     use std::path::PathBuf;
 
     fn window(key: u64, title: &str, app_id: &str, workspaces: Vec<WorkspaceKey>) -> Toplevel {
@@ -174,8 +171,8 @@ mod tests {
             key: WindowKey(key),
             app_id: app_id.to_owned(),
             title: title.to_owned(),
-            activity: Activity::Inactive,
-            window: WindowState::Normal,
+            active: false,
+            minimized: false,
             sizing: Sizing::Floating,
             workspaces,
             outputs: Vec::new(),
@@ -218,12 +215,12 @@ mod tests {
             key,
             name: name.to_owned(),
             stable_id: String::new(),
-            activity: sill_model::windows::Activity::Inactive,
+            active: false,
             urgency: sill_model::units::Urgency::Calm,
             visibility: sill_model::units::Visibility::Shown,
             coordinates: Vec::new(),
             capabilities: Default::default(),
-            pinning: Default::default(),
+            pinned: false,
         }
     }
 

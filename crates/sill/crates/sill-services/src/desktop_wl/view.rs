@@ -11,7 +11,7 @@ use desktop_client::{DesktopState, ToplevelKey};
 use sill_model::desktop::{
     ActiveView, AppView, DesktopView, SpacePlaceView, SpaceView, WindowView,
 };
-use sill_model::windows::{Activity, Sizing, Toplevel, Toplevels, WindowState};
+use sill_model::windows::{Sizing, Toplevel, Toplevels};
 
 use super::ids::space_id;
 use super::workspaces::{group_of, ordered};
@@ -54,7 +54,7 @@ fn window(toplevel: &Toplevel) -> WindowView {
             .first()
             .map(|o| o.0.clone())
             .unwrap_or_default(),
-        emphasis: emphasis(toplevel.activity),
+        emphasis: emphasis(toplevel.active),
         placement: placement(toplevel.sizing),
         role: WindowRole::Document,
         modality: Modality::None,
@@ -67,19 +67,20 @@ fn window(toplevel: &Toplevel) -> WindowView {
 
 /// The casement vocabulary's one word for minimised, full screen, filled or floating.
 fn window_state(toplevel: &Toplevel) -> WindowStateKind {
-    match (toplevel.window, toplevel.sizing) {
-        (WindowState::Minimized, _) => WindowStateKind::Minimised,
-        (WindowState::Normal, Sizing::Fullscreen) => WindowStateKind::FullScreen,
-        (WindowState::Normal, Sizing::Maximized) => WindowStateKind::Filled,
-        (WindowState::Normal, Sizing::Floating) => WindowStateKind::Floating,
+    match (toplevel.minimized, toplevel.sizing) {
+        (true, _) => WindowStateKind::Minimised,
+        (false, Sizing::Fullscreen) => WindowStateKind::FullScreen,
+        (false, Sizing::Maximized) => WindowStateKind::Filled,
+        (false, Sizing::Floating) => WindowStateKind::Floating,
     }
 }
 
 /// Only the key window is ever `Key`: the standard protocols know no main window.
-fn emphasis(activity: Activity) -> Emphasis {
-    match activity {
-        Activity::Active => Emphasis::Key,
-        Activity::Inactive => Emphasis::Inactive,
+fn emphasis(active: bool) -> Emphasis {
+    if active {
+        Emphasis::Key
+    } else {
+        Emphasis::Inactive
     }
 }
 

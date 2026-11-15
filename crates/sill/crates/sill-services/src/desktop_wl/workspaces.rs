@@ -7,7 +7,7 @@ use desktop_client::workspace::{
 use sill_model::ids::GroupKey;
 use sill_model::units::{Urgency, Visibility};
 use sill_model::windows::workspaces::{Workspace, WorkspaceGroup, Workspaces};
-use sill_model::windows::{Activity, Pinning, WorkspaceCap, WorkspaceCaps};
+use sill_model::windows::{WorkspaceCap, WorkspaceCaps};
 
 use super::ids::{group_key, output_name, workspace_key};
 
@@ -63,12 +63,7 @@ fn workspace(wire: &WireWorkspace) -> Workspace {
         key: workspace_key(wire.key),
         name: wire.name.clone(),
         stable_id: wire.id.clone().unwrap_or_default(),
-        activity: flag(
-            wire,
-            WorkspaceFlag::Active,
-            Activity::Active,
-            Activity::Inactive,
-        ),
+        active: wire.flags.contains(&WorkspaceFlag::Active),
         urgency: flag(wire, WorkspaceFlag::Urgent, Urgency::Urgent, Urgency::Calm),
         visibility: flag(
             wire,
@@ -78,7 +73,7 @@ fn workspace(wire: &WireWorkspace) -> Workspace {
         ),
         coordinates: wire.coordinates.clone(),
         capabilities: capabilities(wire),
-        pinning: Pinning::Unpinned,
+        pinned: false,
     }
 }
 

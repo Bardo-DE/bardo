@@ -69,9 +69,7 @@ mod tests {
     use sill_model::desktop::open_mission_control;
     use sill_model::ids::{GroupKey, OutputName, WorkspaceKey};
     use sill_model::units::{Urgency, Visibility};
-    use sill_model::windows::{
-        Activity, Pinning, Step, WlCommand, Workspace, WorkspaceCaps, WorkspaceGroup, Workspaces,
-    };
+    use sill_model::windows::{Step, WlCommand, Workspace, WorkspaceCaps, WorkspaceGroup, Workspaces};
 
     use super::{Ask, Carried, Plan, asked, plan};
 
@@ -80,16 +78,12 @@ mod tests {
             key: WorkspaceKey(k),
             name: k.to_string(),
             stable_id: String::new(),
-            activity: if k == active {
-                Activity::Active
-            } else {
-                Activity::Inactive
-            },
+            active: k == active,
             urgency: Urgency::Calm,
             visibility: Visibility::Shown,
             coordinates: Vec::new(),
             capabilities: WorkspaceCaps::default(),
-            pinning: Pinning::Unpinned,
+            pinned: false,
         };
         Workspaces {
             groups: vec![WorkspaceGroup {

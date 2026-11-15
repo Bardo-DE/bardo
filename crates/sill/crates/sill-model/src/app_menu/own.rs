@@ -7,7 +7,7 @@ use prov::Effect;
 use sill_launcher::WindowKey;
 
 use super::{ServedMenu, Titles, titles};
-use crate::windows::{Toplevels, WindowState, WlCommand};
+use crate::windows::{Toplevels, WlCommand};
 
 /// One thing the shell does for an app's windows.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -97,15 +97,15 @@ pub fn commands(item: OwnItem, app_id: &str, toplevels: &Toplevels) -> Vec<WlCom
         OwnItem::Raise(key) => vec![WlCommand::Activate(key)],
         OwnItem::Minimise(key) => vec![WlCommand::Minimize(key)],
         OwnItem::Hide => windows
-            .filter(|w| w.app_id == app_id && w.window == WindowState::Normal)
+            .filter(|w| w.app_id == app_id && !w.minimized)
             .map(|w| WlCommand::Minimize(w.key))
             .collect(),
         OwnItem::HideOthers => windows
-            .filter(|w| w.app_id != app_id && w.window == WindowState::Normal)
+            .filter(|w| w.app_id != app_id && !w.minimized)
             .map(|w| WlCommand::Minimize(w.key))
             .collect(),
         OwnItem::ShowAll => windows
-            .filter(|w| w.window == WindowState::Minimized)
+            .filter(|w| w.minimized)
             .map(|w| WlCommand::Unminimize(w.key))
             .collect(),
         OwnItem::Quit => windows

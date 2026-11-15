@@ -18,10 +18,7 @@ use sill_model::power_profile::{PowerProfiles, Profile, ProfileDegraded};
 use sill_model::units::{Percent, Presence, Seconds, Urgency, Visibility};
 use sill_model::volume::{Mute, Volume};
 use sill_model::wifi::{AccessPoint, Association, Radio, Security, Ssid, Wifi};
-use sill_model::windows::{
-    Activity, Pinning, Sizing, Toplevel, Toplevels, WindowState, Workspace, WorkspaceCaps,
-    WorkspaceGroup, Workspaces,
-};
+use sill_model::windows::{Sizing, Toplevel, Toplevels, Workspace, WorkspaceCaps, WorkspaceGroup, Workspaces};
 
 /// A 1920 x 1080 output named `DP-1`.
 pub fn output() -> OutputInfo {
@@ -64,25 +61,25 @@ pub fn workspaces() -> Workspaces {
 
 /// Three workspaces on `output`, the second active.
 pub fn workspaces_on(output: &str) -> Workspaces {
-    let workspace = |key: u64, activity| Workspace {
+    let workspace = |key: u64, active| Workspace {
         key: WorkspaceKey(key),
         name: String::new(),
         stable_id: String::new(),
-        activity,
+        active,
         urgency: Urgency::Calm,
         visibility: Visibility::Shown,
         coordinates: vec![u32::try_from(key).unwrap_or(u32::MAX)],
         capabilities: WorkspaceCaps::default(),
-        pinning: Pinning::Unpinned,
+        pinned: false,
     };
     Workspaces {
         groups: vec![WorkspaceGroup {
             key: GroupKey(1),
             outputs: vec![OutputName(output.to_owned())],
             workspaces: vec![
-                workspace(1, Activity::Inactive),
-                workspace(2, Activity::Active),
-                workspace(3, Activity::Inactive),
+                workspace(1, false),
+                workspace(2, true),
+                workspace(3, false),
             ],
         }],
     }
@@ -95,21 +92,21 @@ pub fn toplevels() -> Toplevels {
 
 /// Two terminal windows on `output`.
 pub fn toplevels_on(output: &str) -> Toplevels {
-    let window = |key: u64, title: &str, activity| Toplevel {
+    let window = |key: u64, title: &str, active| Toplevel {
         identifier: String::new(),
         key: WindowKey(key),
         app_id: "foot".to_owned(),
         title: title.to_owned(),
-        activity,
-        window: WindowState::Normal,
+        active,
+        minimized: false,
         sizing: Sizing::Floating,
         workspaces: vec![WorkspaceKey(2)],
         outputs: vec![OutputName(output.to_owned())],
     };
     Toplevels {
         windows: vec![
-            window(10, "~/sill", Activity::Active),
-            window(11, "cargo test", Activity::Inactive),
+            window(10, "~/sill", true),
+            window(11, "cargo test", false),
         ],
     }
 }

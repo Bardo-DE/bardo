@@ -3,7 +3,7 @@
 use ds_core::word::Word;
 use serde::{Deserialize, Serialize};
 
-use super::{Activity, Pinning, WorkspaceCaps};
+use super::WorkspaceCaps;
 use crate::ids::{GroupKey, OutputName, WorkspaceKey};
 use crate::units::Urgency;
 use crate::units::Visibility;
@@ -31,21 +31,19 @@ pub struct Workspace {
     /// The protocol's stable id when it has one (ext-workspace `id`): the `by_id` key of
     /// `spaces.json` (21-SPACES §10). Empty when the compositor gives none.
     pub stable_id: String,
-    pub activity: Activity,
+    pub active: bool,
     pub urgency: Urgency,
     pub visibility: Visibility,
     /// The protocol's coordinates in its group (one component, the row position). The
     /// group's `workspaces` are already in this order; a surface needs the numbers only to
     /// place a workspace in a grid. Empty when the compositor gives none.
-    #[serde(default)]
     pub coordinates: Vec<u32>,
     /// The requests the compositor accepts for this workspace; a command outside it is dropped
     /// by the thread.
-    #[serde(default)]
     pub capabilities: WorkspaceCaps,
-    /// The pinned state; `Unpinned` where the compositor has no such state.
-    #[serde(default)]
-    pub pinning: Pinning,
+    /// Whether the workspace is pinned (it stays when it empties); false where the compositor
+    /// has no such state.
+    pub pinned: bool,
 }
 
 /// One change to publish.
@@ -83,11 +81,7 @@ fn activate_in(group: WorkspaceGroup, key: WorkspaceKey) -> WorkspaceGroup {
             .workspaces
             .into_iter()
             .map(|w| Workspace {
-                activity: if w.key == key {
-                    Activity::Active
-                } else {
-                    Activity::Inactive
-                },
+                active: w.key == key,
                 ..w
             })
             .collect(),
@@ -140,9 +134,7 @@ impl Workspaces {
 impl WorkspaceGroup {
     /// The position of the active workspace in this group.
     pub fn active_index(&self) -> Option<usize> {
-        self.workspaces
-            .iter()
-            .position(|w| w.activity == Activity::Active)
+        self.workspaces.iter().position(|w| w.active)
     }
 
     /// The active workspace of this group.
@@ -157,22 +149,21 @@ mod tests {
     use crate::ids::{GroupKey, OutputName, WorkspaceKey};
     use crate::units::Urgency;
     use crate::units::Visibility;
-    use crate::windows::{Activity, Pinning};
     use crate::windows::{WorkspaceCap, WorkspaceCaps};
 
-    fn ws(key: u64, activity: Activity) -> Workspace {
+    fn ws(key: u64, active: bool) -> Workspace {
         Workspace {
             key: WorkspaceKey(key),
             name: key.to_string(),
             stable_id: String::new(),
-            activity,
+            active,
             urgency: Urgency::Calm,
             visibility: Visibility::Shown,
             coordinates: vec![u32::try_from(key).unwrap_or(u32::MAX)],
             capabilities: [WorkspaceCap::Activate, WorkspaceCap::Pin]
                 .into_iter()
                 .collect::<WorkspaceCaps>(),
-            pinning: Pinning::Unpinned,
+            pinned: false,
         }
     }
 
@@ -183,14 +174,7 @@ mod tests {
             workspaces: keys
                 .iter()
                 .map(|&k| {
-                    ws(
-                        k,
-                        if k == active {
-                            Activity::Active
-                        } else {
-                            Activity::Inactive
-                        },
-                    )
+                    ws(k, k == active)
                 })
                 .collect(),
         };
@@ -248,7 +232,7 @@ mod tests {
                         w.key,
                         w.coordinates.clone(),
                         w.capabilities.clone(),
-                        w.pinning,
+                        w.pinned,
                     )
                 })
                 .collect()
@@ -258,16 +242,6 @@ mod tests {
             after, before,
             "the activation itself must have changed something"
         );
-    }
-
-    #[test]
-    fn a_workspace_without_the_amended_fields_still_decodes() {
-        // The shape published before these fields were added.
-        let old = r#"{"key":4,"name":"4","stable_id":"","activity":"active","urgency":"calm","visibility":"shown"}"#;
-        let decoded: Workspace = serde_json::from_str(old).unwrap_or_else(|e| panic!("{e}"));
-        assert_eq!(decoded.coordinates, Vec::<u32>::new());
-        assert_eq!(decoded.capabilities, WorkspaceCaps::default());
-        assert_eq!(decoded.pinning, Pinning::Unpinned);
     }
 
     #[test]
@@ -298,7 +272,7 @@ mod tests {
     fn the_main_group_is_the_first_with_an_active_workspace_else_the_first() {
         let mut idle = two_outputs(1, 3);
         for w in &mut idle.groups[0].workspaces {
-            w.activity = Activity::Inactive;
+            w.active = false;
         }
         let main = |all: &Workspaces| all.main_group().map(|g| g.key.0);
         assert_eq!(main(&two_outputs(1, 3)), Some(1));
@@ -307,8 +281,8 @@ mod tests {
             Some(2),
             "the first group with an active workspace"
         );
-        idle.groups[1].workspaces[0].activity = Activity::Inactive;
-        idle.groups[1].workspaces[1].activity = Activity::Inactive;
+        idle.groups[1].workspaces[0].active = false;
+        idle.groups[1].workspaces[1].active = false;
         assert_eq!(main(&idle), Some(1), "no active workspace: the first group");
         assert_eq!(main(&Workspaces::default()), None);
     }

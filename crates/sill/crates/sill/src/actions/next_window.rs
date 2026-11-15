@@ -36,18 +36,18 @@ fn next(all: &Toplevels) -> Option<WlCommand> {
 mod tests {
     use sill_launcher::WindowKey;
     use sill_model::ids::WorkspaceKey;
-    use sill_model::windows::{Activity, Sizing, Toplevel, Toplevels, WindowState, WlCommand};
+    use sill_model::windows::{Sizing, Toplevel, Toplevels, WlCommand};
 
     use super::next;
 
-    fn window(key: u64, app: &str, activity: Activity, workspace: u64) -> Toplevel {
+    fn window(key: u64, app: &str, active: bool, workspace: u64) -> Toplevel {
         Toplevel {
             identifier: String::new(),
             key: WindowKey(key),
             app_id: app.to_owned(),
             title: String::new(),
-            activity,
-            window: WindowState::Normal,
+            active,
+            minimized: false,
             sizing: Sizing::Floating,
             workspaces: vec![WorkspaceKey(workspace)],
             outputs: Vec::new(),
@@ -61,19 +61,19 @@ mod tests {
     #[test]
     fn the_least_recent_window_of_the_front_app_comes_forward() {
         let all = list(vec![
-            window(1, "foot", Activity::Active, 1),
-            window(2, "firefox", Activity::Inactive, 1),
-            window(3, "foot", Activity::Inactive, 1),
-            window(4, "foot", Activity::Inactive, 2),
+            window(1, "foot", true, 1),
+            window(2, "firefox", false, 1),
+            window(3, "foot", false, 1),
+            window(4, "foot", false, 2),
         ]);
         assert_eq!(next(&all), Some(WlCommand::Activate(WindowKey(3))));
     }
 
     #[test]
     fn one_window_or_none_active_does_nothing() {
-        let one = list(vec![window(1, "foot", Activity::Active, 1)]);
+        let one = list(vec![window(1, "foot", true, 1)]);
         assert_eq!(next(&one), None);
-        let none = list(vec![window(1, "foot", Activity::Inactive, 1)]);
+        let none = list(vec![window(1, "foot", false, 1)]);
         assert_eq!(next(&none), None);
     }
 }

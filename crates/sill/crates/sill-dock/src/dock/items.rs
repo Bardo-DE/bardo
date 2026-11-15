@@ -9,7 +9,7 @@
 use sill_launcher::AppId;
 use sill_model::apps::AppIndex;
 use sill_model::pins::DockPins;
-use sill_model::windows::{Activity, AppMatch, Toplevel, Toplevels, WindowState, app_of};
+use sill_model::windows::{AppMatch, Toplevel, Toplevels, app_of};
 use sill_settings::OnOff;
 
 use crate::dock::machine::{TileApp, TileId};
@@ -135,12 +135,12 @@ fn tile_app(windows: &[&Toplevel]) -> TileApp {
     if windows.is_empty() {
         return TileApp::NotRunning;
     }
-    if windows.iter().any(|w| w.activity == Activity::Active) {
+    if windows.iter().any(|w| w.active) {
         return TileApp::Active {
             windows: u32::try_from(windows.len()).unwrap_or(u32::MAX),
         };
     }
-    if windows.iter().all(|w| w.window == WindowState::Minimized) {
+    if windows.iter().all(|w| w.minimized) {
         return TileApp::AllMinimized;
     }
     TileApp::Inactive
@@ -162,7 +162,7 @@ mod tests {
     use sill_model::apps::{App, AppIcon, AppIndex, DbusActivation, Listing, Terminal};
     use sill_model::ids::OutputName;
     use sill_model::pins::DockPins;
-    use sill_model::windows::{Activity, Sizing, Toplevel, Toplevels, WindowState};
+    use sill_model::windows::{Sizing, Toplevel, Toplevels};
     use sill_settings::OnOff;
     use std::path::PathBuf;
 
@@ -195,14 +195,14 @@ mod tests {
         AppIndex::new(vec![app("org.gnome.Nautilus"), app("foot"), app("firefox")])
     }
 
-    fn window(key: u64, app_id: &str, activity: Activity, state: WindowState) -> Toplevel {
+    fn window(key: u64, app_id: &str, active: bool, minimized: bool) -> Toplevel {
         Toplevel {
             identifier: String::new(),
             key: WindowKey(key),
             app_id: app_id.to_owned(),
             title: format!("{app_id} {key}"),
-            activity,
-            window: state,
+            active,
+            minimized,
             sizing: Sizing::Floating,
             workspaces: Vec::new(),
             outputs: vec![OutputName("DP-1".to_owned())],
@@ -233,16 +233,14 @@ mod tests {
 
     #[test]
     fn pins_then_running_grouped_by_match_app_then_trash() {
-        use Activity::{Active, Inactive};
-        use WindowState::{Minimized, Normal};
         // MRU order: the active terminal first; firefox opened first (key 1).
         let toplevels = Toplevels {
             windows: vec![
-                window(5, "foot", Active, Normal),
-                window(1, "firefox", Inactive, Normal),
-                window(3, "org.example.Unknown", Inactive, Normal),
-                window(4, "foot", Inactive, Normal),
-                window(2, "Firefox", Inactive, Minimized),
+                window(5, "foot", true, false),
+                window(1, "firefox", false, false),
+                window(3, "org.example.Unknown", false, false),
+                window(4, "foot", false, false),
+                window(2, "Firefox", false, true),
             ],
         };
         let items = dock_items(
@@ -269,8 +267,8 @@ mod tests {
             windows: vec![window(
                 1,
                 "firefox",
-                Activity::Inactive,
-                WindowState::Minimized,
+                false,
+                true,
             )],
         };
         let items = dock_items(&pins(&[]), &toplevels, &index(), OnOff::Off);
@@ -283,7 +281,7 @@ mod tests {
 
     #[test]
     fn a_tile_keeps_its_id_when_another_tile_appears_before_it() {
-        let term = window(9, "foot", Activity::Inactive, WindowState::Normal);
+        let term = window(9, "foot", false, false);
         let before = dock_items(
             &pins(&[]),
             &Toplevels {
@@ -297,7 +295,7 @@ mod tests {
             &Toplevels {
                 windows: vec![
                     term,
-                    window(1, "firefox", Activity::Inactive, WindowState::Normal),
+                    window(1, "firefox", false, false),
                 ],
             },
             &index(),

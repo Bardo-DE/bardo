@@ -4,9 +4,8 @@ use desktop_client::DesktopState;
 use desktop_client::toplevel::{Toplevel as WireToplevel, ToplevelFlag, ToplevelFlags};
 use sill_launcher::WindowKey;
 use sill_model::ids::WorkspaceKey;
-use sill_model::windows::Activity;
 use sill_model::windows::toplevels::{
-    Sizing, Toplevel, ToplevelEvent, Toplevels, WindowState, step,
+    Sizing, Toplevel, ToplevelEvent, Toplevels, step,
 };
 
 use super::ids::{output_name, window_key, workspace_key};
@@ -40,27 +39,11 @@ fn window(toplevel: &WireToplevel, state: &DesktopState) -> Toplevel {
         key: window_key(toplevel.key),
         app_id: toplevel.app_id.clone(),
         title: toplevel.title.clone(),
-        activity: activity(&toplevel.flags),
-        window: window_state(&toplevel.flags),
+        active: toplevel.flags.contains(ToplevelFlag::Activated),
+        minimized: toplevel.flags.contains(ToplevelFlag::Minimized),
         sizing: sizing(&toplevel.flags),
         workspaces: shown_on(toplevel, state),
         outputs: toplevel.outputs.iter().map(output_name).collect(),
-    }
-}
-
-fn activity(flags: &ToplevelFlags) -> Activity {
-    if flags.contains(ToplevelFlag::Activated) {
-        Activity::Active
-    } else {
-        Activity::Inactive
-    }
-}
-
-fn window_state(flags: &ToplevelFlags) -> WindowState {
-    if flags.contains(ToplevelFlag::Minimized) {
-        WindowState::Minimized
-    } else {
-        WindowState::Normal
     }
 }
 

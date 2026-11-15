@@ -6,10 +6,7 @@ use std::path::PathBuf;
 use sill_launcher::{AppId, Cancel, Provider, Query, VecSink, WindowKey};
 use sill_model::apps::{App, AppIcon, AppIndex, AppsEvent, DbusActivation, Listing, Terminal};
 use sill_model::ids::{GroupKey, OutputName, WorkspaceKey};
-use sill_model::windows::{
-    Activity, Sizing, Toplevel, ToplevelEvent, Toplevels, WindowModel, WindowState, Workspace,
-    WorkspaceGroup, Workspaces,
-};
+use sill_model::windows::{Sizing, Toplevel, ToplevelEvent, Toplevels, WindowModel, Workspace, WorkspaceGroup, Workspaces};
 use sill_search::providers::WindowsProvider;
 
 fn app(id: &str, name: &str) -> App {
@@ -43,8 +40,8 @@ fn window(key: u64, title: &str, app_id: &str, workspace: Option<u64>) -> Toplev
         key: WindowKey(key),
         app_id: app_id.to_owned(),
         title: title.to_owned(),
-        activity: Activity::Inactive,
-        window: WindowState::Normal,
+        active: false,
+        minimized: false,
         sizing: Sizing::Floating,
         workspaces: workspace.into_iter().map(WorkspaceKey).collect(),
         outputs: Vec::new(),
@@ -56,12 +53,12 @@ fn workspace(key: u64, name: &str) -> Workspace {
         key: WorkspaceKey(key),
         name: name.to_owned(),
         stable_id: String::new(),
-        activity: Activity::Inactive,
+        active: false,
         urgency: sill_model::units::Urgency::Calm,
         visibility: sill_model::units::Visibility::Shown,
         coordinates: Vec::new(),
         capabilities: Default::default(),
-        pinning: Default::default(),
+        pinned: false,
     }
 }
 

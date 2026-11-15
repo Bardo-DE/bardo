@@ -4,7 +4,7 @@
 
 use crate::units::Urgency;
 use crate::windows::{
-    Activity, Sizing, Toplevel, WindowModel, WindowState, Workspace, WorkspaceGroup, Workspaces,
+    Sizing, Toplevel, WindowModel, Workspace, WorkspaceGroup, Workspaces,
 };
 
 /// The most characters the answer carries (the manifest's `max`).
@@ -39,10 +39,10 @@ pub fn workspaces_text(workspaces: &Workspaces) -> String {
 }
 
 fn window_line(window: &Toplevel, workspaces: &Workspaces) -> String {
-    let state = match (window.window, window.activity) {
-        (WindowState::Minimized, _) => "minimised",
-        (WindowState::Normal, Activity::Active) => "active",
-        (WindowState::Normal, Activity::Inactive) => "normal",
+    let state = match (window.minimized, window.active) {
+        (true, _) => "minimised",
+        (false, true) => "active",
+        (false, false) => "normal",
     };
     let size = match window.sizing {
         Sizing::Floating => "floating",
@@ -81,7 +81,7 @@ fn workspace_line(workspace: &Workspace, index: usize) -> String {
         "index={index} id={} name=\"{}\" active={} urgent={}",
         workspace.key.0,
         one_line(&workspace.name),
-        yes_no(workspace.activity == Activity::Active),
+        yes_no(workspace.active),
         yes_no(workspace.urgency == Urgency::Urgent),
     )
 }

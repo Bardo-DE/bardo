@@ -4,7 +4,7 @@
 use sill_ipc::response::Response;
 use sill_launcher::WindowKey;
 use sill_model::ids::WorkspaceKey;
-use sill_model::windows::{Toplevel, WindowState, WlCommand};
+use sill_model::windows::{Toplevel, WlCommand};
 
 use crate::ipc::dispatch::{Reach, sent};
 
@@ -48,7 +48,7 @@ pub fn plan(
         .filter(|key| {
             windows
                 .iter()
-                .any(|w| w.key == *key && w.window == WindowState::Minimized)
+                .any(|w| w.key == *key && w.minimized)
         })
         .collect();
     if !restore.is_empty() {
@@ -58,7 +58,7 @@ pub fn plan(
     let minimize: Vec<WindowKey> = windows
         .iter()
         .filter(|w| {
-            w.window == WindowState::Normal && w.workspaces.iter().any(|ws| active.contains(ws))
+            !w.minimized && w.workspaces.iter().any(|ws| active.contains(ws))
         })
         .map(|w| w.key)
         .collect();
@@ -70,19 +70,19 @@ pub fn plan(
 mod tests {
     use sill_launcher::WindowKey;
     use sill_model::ids::WorkspaceKey;
-    use sill_model::windows::{Activity, Sizing, WindowState};
+    use sill_model::windows::Sizing;
     use sill_model::windows::{Toplevel, WlCommand};
 
     use super::{Stash, plan};
 
-    fn window(key: u64, workspace: u64, state: WindowState) -> Toplevel {
+    fn window(key: u64, workspace: u64, minimized: bool) -> Toplevel {
         Toplevel {
             identifier: String::new(),
             key: WindowKey(key),
             app_id: format!("app{key}"),
             title: String::new(),
-            activity: Activity::Inactive,
-            window: state,
+            active: false,
+            minimized,
             sizing: Sizing::Floating,
             workspaces: vec![WorkspaceKey(workspace)],
             outputs: Vec::new(),
@@ -93,10 +93,10 @@ mod tests {
     fn show_desktop_minimises_the_workspace_then_brings_it_back() {
         let active = [WorkspaceKey(1)];
         let windows = vec![
-            window(1, 1, WindowState::Normal),
-            window(2, 1, WindowState::Minimized),
-            window(3, 2, WindowState::Normal),
-            window(4, 1, WindowState::Normal),
+            window(1, 1, false),
+            window(2, 1, true),
+            window(3, 2, false),
+            window(4, 1, false),
         ];
         let (commands, stash) = plan(&windows, &active, &Stash::default());
         assert_eq!(
@@ -111,7 +111,7 @@ mod tests {
             .into_iter()
             .map(|mut w| {
                 if stash.0.contains(&w.key) {
-                    w.window = WindowState::Minimized;
+                    w.minimized = true;
                 }
                 w
             })

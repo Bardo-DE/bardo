@@ -62,16 +62,16 @@ mod tests {
     use crate::dock::machine::ActivateMode;
     use sill_launcher::WindowKey;
     use sill_model::ids::WorkspaceKey;
-    use sill_model::windows::{Activity, Sizing, Toplevel, Toplevels, WindowState, WlCommand};
+    use sill_model::windows::{Sizing, Toplevel, Toplevels, WlCommand};
 
-    fn window(key: u64, app: &str, activity: Activity, workspace: u64) -> Toplevel {
+    fn window(key: u64, app: &str, active: bool, workspace: u64) -> Toplevel {
         Toplevel {
             identifier: String::new(),
             key: WindowKey(key),
             app_id: app.to_owned(),
             title: String::new(),
-            activity,
-            window: WindowState::Normal,
+            active,
+            minimized: false,
             sizing: Sizing::Floating,
             workspaces: vec![WorkspaceKey(workspace)],
             outputs: Vec::new(),
@@ -80,15 +80,14 @@ mod tests {
 
     #[test]
     fn each_mode_asks_for_its_windows() {
-        use Activity::{Active, Inactive};
         use WlCommand::{Activate, Minimize};
         let all = Toplevels {
             windows: vec![
-                window(1, "files", Active, 1),
-                window(2, "term", Inactive, 1),
-                window(3, "term", Inactive, 2),
-                window(4, "term", Inactive, 1),
-                window(5, "files", Inactive, 1),
+                window(1, "files", true, 1),
+                window(2, "term", false, 1),
+                window(3, "term", false, 2),
+                window(4, "term", false, 1),
+                window(5, "files", false, 1),
             ],
         };
         let term: Vec<&Toplevel> = all.windows.iter().filter(|w| w.app_id == "term").collect();
