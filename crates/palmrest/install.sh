@@ -26,6 +26,7 @@ set -euo pipefail
 
 UNIT=palmrest.service
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TREE="$(cd "$HERE/../.." && pwd)"   # the bardo tree
 DESTDIR="${DESTDIR:-}"
 PREFIX=""
 BUILD=yes
@@ -119,12 +120,12 @@ put_file() {
   fi
 }
 
-BIN="${PALMREST_BIN:-$HERE/target/release/palmrest}"
+BIN="${PALMREST_BIN:-${CARGO_TARGET_DIR:-$TREE/target}/release/palmrest}"
 if [[ "$BUILD" == yes ]]; then
   if [[ "$DRY_RUN" == yes ]]; then
-    say "  would run: cargo build --release --locked (in $HERE)"
+    say "  would run: cargo build --release --locked -p palmrest (in $TREE)"
   else
-    (cd "$HERE" && cargo build --release --locked)
+    (cd "$TREE" && cargo build --release --locked -p palmrest)
   fi
 fi
 

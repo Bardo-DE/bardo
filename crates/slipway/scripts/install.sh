@@ -138,6 +138,7 @@ fi
 sysconfdir=${sysconfdir%/}
 
 here=$(cd "$(dirname "$0")/.." && pwd)
+tree=$(cd "$here/../.." && pwd)
 dist=$here/dist
 changed=0
 
@@ -211,7 +212,7 @@ if [ -n "$bin_dir" ]; then
 else
     # A relative CARGO_TARGET_DIR means the folder the script was started from, which the build below
     # (run from /) would not see; make it absolute once, for the build and for the lookup.
-    target_dir=${CARGO_TARGET_DIR:-$here/target}
+    target_dir=${CARGO_TARGET_DIR:-$tree/target}
     case $target_dir in
         /*) ;;
         *) target_dir=$(pwd)/$target_dir ;;
@@ -233,7 +234,7 @@ else
         # source folder's .cargo/config.toml (and rustup its toolchain file) from the folder it runs in,
         # so the build runs from / with the manifest named, the pinned toolchain passed on, and the one
         # setting an install wants from a config file given again. No RUSTFLAGS.
-        toolchain=$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "$here/rust-toolchain.toml" 2>/dev/null)
+        toolchain=$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "$tree/rust-toolchain.toml" 2>/dev/null)
         (
             cd / &&
                 CARGO_TARGET_DIR=$target_dir &&
@@ -245,7 +246,7 @@ else
                     RUSTUP_TOOLCHAIN=$toolchain
                     export RUSTUP_TOOLCHAIN
                 fi &&
-                cargo build --release --locked --manifest-path "$here/Cargo.toml" \
+                cargo build --release --locked --manifest-path "$tree/Cargo.toml" \
                     --config net.git-fetch-with-cli=true -p slipway-root
         )
     fi

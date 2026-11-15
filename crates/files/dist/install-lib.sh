@@ -7,6 +7,7 @@
 
 DIST="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$DIST/.." && pwd)"
+TREE="$(cd "$ROOT/../.." && pwd)"   # the bardo tree
 APPDIST="$ROOT/crates/files/dist"
 
 # FILES_PREFIX is where the files will live on the computer (the paths the service files name);
@@ -27,7 +28,7 @@ INTENTS_DEST="$ROOTED/share/quire/intents/org.quire.Files.toml"
 # The schema the Settings app reads to draw Files' page, written by the binary itself.
 SCHEMA_DEST="$ROOTED/share/quire/settings/files.settings.toml"
 # The binary to install: a release build unless FILES_BIN says otherwise.
-BUILT="${FILES_BIN:-${CARGO_TARGET_DIR:-$ROOT/target}/release/files}"
+BUILT="${FILES_BIN:-${CARGO_TARGET_DIR:-$TREE/target}/release/files}"
 # What the person asked to escalate with, if anything (SUDO=doas ./install.sh), read before SUDO is
 # reset below.
 ASKED_SUDO="${SUDO:-}"

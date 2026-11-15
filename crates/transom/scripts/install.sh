@@ -56,6 +56,7 @@ prefix=${prefix%/}
 destdir=${destdir%/}
 
 root=$(cd "$(dirname "$0")/.." && pwd)
+tree=$(cd "$root/../.." && pwd)
 dist=$root/dist
 changed=0
 
@@ -99,9 +100,9 @@ if [ -n "$bin_dir" ]; then
     built=$bin_dir
 else
     if [ "$build" = yes ]; then
-        (cd "$root" && cargo build --release --locked -p transom)
+        (cd "$tree" && cargo build --release --locked -p transom)
     fi
-    built=${CARGO_TARGET_DIR:-$root/target}/release
+    built=${CARGO_TARGET_DIR:-$tree/target}/release
 fi
 if [ ! -x "$built/transom" ]; then
     echo "install.sh: $built/transom is not there; build first or point --bin-dir at it" >&2

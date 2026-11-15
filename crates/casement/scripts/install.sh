@@ -17,10 +17,11 @@
 #
 # A place you cannot write is written through $SUDO (when set; empty means no helper), else sudo,
 # doas or pkexec, whichever is installed; with none of them the commands are printed to run as root.
-# Without clang and mold on PATH the build links with cc instead (see portable_link).
+# The build runs at the root of the bardo tree (cargo build --release -p casement -p casementctl) into its target directory.
 set -euo pipefail
 
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+TREE=$(cd "$ROOT/../.." && pwd)
 UNIT="$ROOT/dist/casement.service"
 BINS=(casement casementctl)
 
@@ -98,26 +99,7 @@ put() {
 
 # ---- the build ----------------------------------------------------------------------------
 
-# portable_link: the repo's .cargo/config.toml may ask for clang and mold; a machine without them
-# links with cc and the same rustflags minus the mold argument. Nothing when the file does not.
-portable_link() {
-  local config="$ROOT/.cargo/config.toml" words=() flags=() i
-  command -v clang >/dev/null 2>&1 && command -v mold >/dev/null 2>&1 && return 0
-  [ -f "$config" ] && grep -q 'fuse-ld=mold' "$config" || return 0
-  mapfile -t words < <(grep -m1 '^rustflags' "$config" | grep -o '"[^"]*"' | tr -d '"')
-  for ((i = 0; i < ${#words[@]}; i++)); do
-    if [ "${words[i]}" = -C ] && [ "${words[i + 1]:-}" = link-arg=-fuse-ld=mold ]; then
-      i=$((i + 1))
-    else
-      flags+=("${words[i]}")
-    fi
-  done
-  export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=cc
-  [ -n "${RUSTFLAGS+x}" ] || export RUSTFLAGS="${flags[*]}"
-  note "clang or mold is not installed: linking with cc (RUSTFLAGS=\"$RUSTFLAGS\")"
-}
-
-target="${CARGO_TARGET_DIR:-$ROOT/target}/release"
+target="${CARGO_TARGET_DIR:-$TREE/target}/release"
 
 step "1/5 build"
 if [ "$build" = no ]; then
@@ -126,11 +108,10 @@ elif [ "$dry" = yes ]; then
   note "would run: cargo build --release$([ "$locked" = no ] || echo ' --locked') -p casement -p casementctl"
 else
   command -v cargo >/dev/null 2>&1 || die "cargo is not installed (install Rust from rustup.rs)"
-  portable_link
-  flags=(--release --manifest-path "$ROOT/Cargo.toml" -p casement -p casementctl)
+  flags=(--release -p casement -p casementctl)
   [ "$locked" = no ] || flags+=(--locked)
   note "\$ cargo build ${flags[*]}"
-  cargo build "${flags[@]}"
+  (cd "$TREE" && cargo build "${flags[@]}")
 fi
 
 step "2/5 the programs ($destdir$prefix/bin)"

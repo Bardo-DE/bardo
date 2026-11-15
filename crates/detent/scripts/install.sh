@@ -13,12 +13,13 @@
 #                $PREFIX/share/dbus-1/services. Any other prefix (the default /usr)
 #                keeps $PREFIX/lib/systemd/user and $PREFIX/share/dbus-1/services.
 #   DESTDIR      a staging root the whole tree is put under (default none)
-#   DETENT_BIN   the binary to install (default target/release/detent beside this repository)
+#   DETENT_BIN   the binary to install (default: release/detent in the tree's target directory, $CARGO_TARGET_DIR if set)
 set -euo pipefail
 repo=$(cd "$(dirname "$0")/.." && pwd)
+tree=$(cd "$repo/../.." && pwd)
 prefix=${PREFIX:-/usr}
 dest=${DESTDIR:-}
-bin=${DETENT_BIN:-$repo/target/release/detent}
+bin=${DETENT_BIN:-${CARGO_TARGET_DIR:-$tree/target}/release/detent}
 # `$prefix` as the replacement text of a `sed s|..|..|`: a `\`, a `|` or a `&` in it would otherwise
 # be read as sed syntax and write a corrupt unit or service file.
 sedprefix=$(printf '%s' "$prefix" | sed -e 's/[\\|&]/\\&/g')

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install-dev.sh: install the agent stack for ONE user, from sibling checkouts, with no root.
+# install-dev.sh: install the agent stack for ONE user, from the bardo tree, with no root.
 #
 #   dist/install-dev.sh                       build (release, --locked) and install under ~/.local
 #   dist/install-dev.sh --prefix DIR          binaries in DIR/bin (default: $PREFIX, else ~/.local)
@@ -7,9 +7,9 @@
 #   dist/install-dev.sh --dry-run             print every action; write nothing, build nothing
 #   dist/install-dev.sh --uninstall           remove exactly what the last install put down
 #
-# The checkouts are the siblings of this one: ../porter (accountd), ../steward (inferd), ../almanac
-# (memoryd), ../stoker (the model catalog inferd reads) and this checkout (intentd, companiond, readerd,
-# actions-mcp, quire-do, docket-eval). voiced (a skeleton), syncd and cuad are not installed.
+# The programs are crates of the tree this is in: porter (accountd), steward (inferd), almanac
+# (memoryd), stoker (the model catalog inferd reads) and docket (intentd, companiond, readerd,
+# actions-mcp, quire-do, docket-eval), all built by one cargo run at the tree root. voiced (a skeleton), syncd and cuad are not installed.
 #
 # What goes where (XDG_CONFIG_HOME and XDG_DATA_HOME are honoured):
 #   $PREFIX/bin/                              the binaries
@@ -42,12 +42,13 @@ set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOCKET="$(cd "$HERE/.." && pwd)"
-SIBLINGS="${INSTALL_DEV_SIBLINGS:-$(cd "$DOCKET/.." && pwd)}"
-PORTER="$SIBLINGS/porter"
-STEWARD="$SIBLINGS/steward"
-ALMANAC="$SIBLINGS/almanac"
-STOKER="$SIBLINGS/stoker"
-CUA="$SIBLINGS/cua"
+TREE="$(cd "$DOCKET/../.." && pwd)"   # the bardo tree
+CRATES="$TREE/crates"
+PORTER="$CRATES/porter"
+STEWARD="$CRATES/steward"
+ALMANAC="$CRATES/almanac"
+STOKER="$CRATES/stoker"
+CUA="$CRATES/cua"
 
 PREFIX="${PREFIX:-$HOME/.local}"
 DRY=0
@@ -96,7 +97,6 @@ BINARIES=(
   "inferd steward inferd"
   "accountd porter accountd"
 )
-repo_dir() { case "$1" in docket) echo "$DOCKET" ;; almanac) echo "$ALMANAC" ;; porter) echo "$PORTER" ;; steward) echo "$STEWARD" ;; esac; }
 
 # The installed set: "kind source dest" per line. Kinds: bin (copied, mode 755), unit and dbus
 # (copied with the Exec rewritten), data (copied, mode 644), config (copied only if absent).
@@ -170,7 +170,7 @@ build_plan() {
 
 bin_source() { # name repo -> the file to install
   if [ -n "${INSTALL_DEV_BIN_DIR:-}" ]; then echo "$INSTALL_DEV_BIN_DIR/$1"
-  else echo "${CARGO_TARGET_DIR:-$(repo_dir "$2")/target}/release/$1"; fi
+  else echo "${CARGO_TARGET_DIR:-$TREE/target}/release/$1"; fi
 }
 
 # ---- the manifest: path -> "kind sha", kept sorted ----
@@ -268,9 +268,9 @@ drop_stale_sandbox() {
 }
 
 # The pinned toolchain may not be installed (rustup 1.28 and later does not fetch it by itself).
-ensure_toolchain() { # REPO_DIR
+ensure_toolchain() {
   local toolchain
-  toolchain="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "$1/rust-toolchain.toml" 2>/dev/null)" || true
+  toolchain="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "$TREE/rust-toolchain.toml" 2>/dev/null)" || true
   if [ -z "$toolchain" ] || ! command -v rustup >/dev/null 2>&1; then return 0; fi
   if rustup run "$toolchain" true >/dev/null 2>&1; then return 0; fi
   if [ "$DRY" = 1 ]; then act "would install the Rust version $toolchain with rustup (needs the internet)"; return 0; fi
@@ -278,22 +278,21 @@ ensure_toolchain() { # REPO_DIR
   rustup toolchain install "$toolchain" --profile minimal
 }
 
-# Linked by this system's own linker: a repo's .cargo/config.toml links with clang and mold, which
-# is how the code is worked on, not something an install may need. Cargo reads that file (and rustup
-# the toolchain file) from the directory it runs in, so the build runs from / with the manifest
-# named and the repo's pinned toolchain passed on.
-release_build() { # REPO_DIR cargo-args...
-  local dir="$1" toolchain
-  shift
-  ensure_toolchain "$dir"
-  toolchain="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "$dir/rust-toolchain.toml" 2>/dev/null)" || true
+# Linked by this system's own linker, whatever a working tree's .cargo/config.toml asks for. Cargo reads that file (and
+# rustup the toolchain file) from the directory it runs in, so the build runs from / with the tree's manifest
+# named and the tree's pinned toolchain passed on. One run builds every program, into $CARGO_TARGET_DIR or <tree>/target.
+release_build() { # cargo-args...
+  local toolchain
+  ensure_toolchain
+  toolchain="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "$TREE/rust-toolchain.toml" 2>/dev/null)" || true
   (
     cd / &&
       if [ -n "$toolchain" ] && command -v rustup >/dev/null 2>&1; then
         RUSTUP_TOOLCHAIN="$toolchain"
         export RUSTUP_TOOLCHAIN
       fi &&
-      cargo build --release --locked --manifest-path "$dir/Cargo.toml" "$@"
+      CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-$TREE/target}" cargo build --release --locked --manifest-path "$TREE/Cargo.toml" \
+        --config net.git-fetch-with-cli=true "$@"
   )
 }
 
@@ -301,20 +300,19 @@ build_all() {
   [ -z "${INSTALL_DEV_BIN_DIR:-}" ] || { say "using prebuilt binaries from $INSTALL_DEV_BIN_DIR"; return 0; }
   [ "$DRY" = 1 ] || command -v git >/dev/null 2>&1 || { echo "Building needs git (some libraries are downloaded with it). Install it with your system's package manager, then run this again." >&2; exit 1; }
   [ "$DRY" = 1 ] || say "The first build downloads code, so it needs the internet, and it takes a while."
-  local repo
-  for repo in docket almanac porter steward; do
-    local packages=() entry name r pkg
-    for entry in "${BINARIES[@]}"; do
-      read -r name r pkg <<<"$entry"
-      [ "$r" != "$repo" ] || packages+=(-p "$pkg")
-    done
-    if [ "$DRY" = 1 ]; then
-      act "cargo build --release --locked --manifest-path $(repo_dir "$repo")/Cargo.toml ${packages[*]} (run from /, linked by this system's own linker)"
-      ensure_toolchain "$(repo_dir "$repo")"
-    else
-      release_build "$(repo_dir "$repo")" "${packages[@]}"
-    fi
+  local packages=() entry name r pkg seen=" "
+  for entry in "${BINARIES[@]}"; do
+    read -r name r pkg <<<"$entry"
+    case "$seen" in *" $pkg "*) continue ;; esac
+    seen="$seen$pkg "
+    packages+=(-p "$pkg")
   done
+  if [ "$DRY" = 1 ]; then
+    act "cargo build --release --locked --manifest-path $TREE/Cargo.toml ${packages[*]} (run from /, linked by this system's own linker)"
+    ensure_toolchain
+  else
+    release_build "${packages[@]}"
+  fi
 }
 
 # Fails before anything is written when a source is missing.

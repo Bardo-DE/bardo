@@ -76,6 +76,7 @@ runtime_checks() {
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
+TREE="$(cd "$ROOT/../.." && pwd)"
 
 PREFIX=""
 DESTDIR=""
@@ -299,7 +300,7 @@ check_build_tools() {
 }
 
 # ---- build ----
-bin_source() { echo "${BIN_FROM:-${CARGO_TARGET_DIR:-$ROOT/target}/release}/$1"; }
+bin_source() { echo "${BIN_FROM:-${CARGO_TARGET_DIR:-$TREE/target}/release}/$1"; }
 cargo_packages() { # -p NAME for each package of BINARIES, once
   local entry rest pkg seen=" "
   for entry in "${BINARIES[@]}"; do
@@ -324,9 +325,9 @@ build_all() {
   [ "$BUILD" = 1 ] || return 0
   mapfile -t args < <(cargo_packages)
   [ "${#args[@]}" -gt 0 ] || return 0
-  toolchain="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "$ROOT/rust-toolchain.toml" 2>/dev/null)" || true
+  toolchain="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "$TREE/rust-toolchain.toml" 2>/dev/null)" || true
   if [ "$DRY" = 1 ]; then
-    act "cargo build --release --locked --manifest-path $ROOT/Cargo.toml ${CARGO_EXTRA[*]:-} ${args[*]} (run from /, linked by this system's own linker)"
+    act "cargo build --release --locked --manifest-path $TREE/Cargo.toml ${CARGO_EXTRA[*]:-} ${args[*]} (run from /, linked by this system's own linker)"
     ensure_toolchain "$toolchain"
     return 0
   fi
@@ -344,7 +345,7 @@ build_all() {
         RUSTUP_TOOLCHAIN="$toolchain"
         export RUSTUP_TOOLCHAIN
       fi &&
-      cargo build --release --locked --manifest-path "$ROOT/Cargo.toml" ${CARGO_EXTRA[@]+"${CARGO_EXTRA[@]}"} "${args[@]}"
+      cargo build --release --locked --manifest-path "$TREE/Cargo.toml" ${CARGO_EXTRA[@]+"${CARGO_EXTRA[@]}"} "${args[@]}"
   )
 }
 preflight() {

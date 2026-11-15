@@ -7,6 +7,7 @@
 
 DIST="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$DIST/.." && pwd)"
+TREE="$(cd "$ROOT/../.." && pwd)"   # the bardo tree
 
 # Where it goes is settled by set_dests once the flags are read (--prefix, --destdir). PREFIX is the
 # install prefix; DESTDIR a staging root put in front of every system path (empty: the real system).
@@ -128,40 +129,13 @@ put() {
 # skills: the skill files' paths relative to dist/skills, one per line (evals are not installed).
 skills() { (cd "$DIST/skills" && find . -type f -not -path '*/evals/*' | sed 's|^\./||' | sort); }
 
-# sibling_checkouts: the sibling repos the workspace names by path (`../quire`, ...), one per line.
-sibling_checkouts() {
-  grep -rhoE --include=Cargo.toml '"\.\./[A-Za-z0-9_-]+/' "$ROOT/Cargo.toml" "$ROOT/crates" 2>/dev/null |
-    tr -d '"' | cut -d/ -f2 | sort -u
-}
-
-# behind_siblings: "name N" for each sibling checkout that is N commits behind its upstream.
-behind_siblings() {
-  local name behind
-  while IFS= read -r name; do
-    behind="$(git -C "$ROOT/../$name" rev-list --count 'HEAD..@{u}' 2>/dev/null)" || continue
-    [ "${behind:-0}" -eq 0 ] || echo "$name $behind"
-  done < <(sibling_checkouts)
-}
-
-# check_lock: the build uses --locked, so Cargo.lock must already fit the sibling checkouts. When it
-# does not, say which siblings are behind (cargo's own message does not) and stop.
+# check_lock: the build uses --locked, so the tree's Cargo.lock must already fit its manifests. Say so and stop when it does not.
 check_lock() {
-  if cargo_outside metadata --locked --format-version 1 --manifest-path "$ROOT/Cargo.toml" >/dev/null 2>&1; then
-    note "Cargo.lock fits the sibling checkouts"
+  if cargo_outside metadata --locked --format-version 1 --manifest-path "$TREE/Cargo.toml" >/dev/null 2>&1; then
+    note "Cargo.lock fits the workspace"
     return 0
   fi
-  echo "cargo metadata --locked fails: Cargo.lock does not fit the sibling checkouts next to $ROOT" >&2
-  local behind
-  behind="$(behind_siblings)"
-  if [ -n "$behind" ]; then
-    echo "these siblings are behind their upstream (last fetched state):" >&2
-    while read -r name count; do
-      echo "  $name: $count commits behind; git -C $ROOT/../$name pull --ff-only" >&2
-    done <<<"$behind"
-  else
-    echo "no sibling is behind its fetched upstream: git fetch them, or sill and a sibling are mid-change (try again later)" >&2
-  fi
-  echo "then run this again; the exact cargo error: cargo metadata --locked --manifest-path $ROOT/Cargo.toml" >&2
+  echo "cargo metadata --locked fails: Cargo.lock does not fit the workspace; the exact cargo error: cargo metadata --locked --manifest-path $TREE/Cargo.toml" >&2
   return 1
 }
 
@@ -223,19 +197,18 @@ ddcutil_rule_present() {
 }
 
 # cargo_outside SUBCOMMAND ARGS...: run cargo from / with the tree named by --manifest-path in ARGS, so the
-# build links with this system's own linker. The tree's .cargo/config.toml asks for clang and mold, which is
-# how sill is worked on, not something an install may ask the person to have; cargo reads that file (and
+# build links with this system's own linker, whatever a working tree's .cargo/config.toml asks for; cargo reads that file (and
 # rustup the toolchain file) from the directory it runs in, never from the manifest's. So the pinned
 # toolchain is passed on through RUSTUP_TOOLCHAIN, and the one setting an install wants from that file
 # (the system git client) is given again. The target directory stays explicit. No RUSTFLAGS.
 cargo_outside() {
   local sub=$1 toolchain
   shift
-  toolchain="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "$ROOT/rust-toolchain.toml" 2>/dev/null | head -n 1)"
+  toolchain="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "$TREE/rust-toolchain.toml" 2>/dev/null | head -n 1)"
   (
     cd / || exit 1
     if [ -n "$toolchain" ] && command -v rustup >/dev/null; then export RUSTUP_TOOLCHAIN="$toolchain"; fi
-    export CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-$ROOT/target}"
+    export CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-$TREE/target}"
     cargo "$sub" --config net.git-fetch-with-cli=true "$@"
   )
 }

@@ -28,6 +28,7 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TREE="$(cd "$HERE/../.." && pwd)"   # the bardo tree
 # shellcheck source=scripts/lib.sh
 source "$HERE/scripts/lib.sh"
 
@@ -59,7 +60,7 @@ fi
 case "$DESKTOP" in plasma|none) ;; *) say "install.sh: --desktop must be plasma or none"; exit 2 ;; esac
 set_layout
 
-BIN="${KEYCAP_BIN:-$HERE/target/release/keycap}"
+BIN="${KEYCAP_BIN:-${CARGO_TARGET_DIR:-$TREE/target}/release/keycap}"
 say "keycap install ($([[ $DRY_RUN == yes ]] && echo 'dry run: nothing is changed' || echo 'for real')); desktop: $DESKTOP; prefix: $PREFIX${DESTDIR:+; staging into $DESTDIR}"
 
 # render_unit OUT: the shipped unit with ExecStart naming the installed binary (never the
@@ -76,9 +77,9 @@ say "1. build"
 if [[ "$BUILD" == no ]]; then
   say "  skipped (--no-build): using $BIN"
 elif [[ "$DRY_RUN" == yes ]]; then
-  say "  would run: cargo build --release (in $HERE)"
+  say "  would run: cargo build --release --locked -p keycap (in $TREE)"
 else
-  (cd "$HERE" && cargo build --release --locked)
+  (cd "$TREE" && cargo build --release --locked -p keycap)
 fi
 
 say "2. files"

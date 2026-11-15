@@ -69,6 +69,7 @@ prefix=${prefix%/}
 destdir=${destdir%/}
 
 root=$(cd "$(dirname "$0")/.." && pwd)
+tree=$(cd "$root/../.." && pwd)
 dist=$root/dist
 changed=0
 
@@ -136,7 +137,7 @@ if [ -n "$bin_dir" ]; then
 else
     # A relative CARGO_TARGET_DIR means the directory the script was started from, which the
     # build below (run from /) would not see; make it absolute once, for the build and the lookup.
-    target_dir=${CARGO_TARGET_DIR:-$root/target}
+    target_dir=${CARGO_TARGET_DIR:-$tree/target}
     case $target_dir in
         /*) ;;
         *) target_dir=$(pwd)/$target_dir ;;
@@ -159,7 +160,7 @@ else
         # person to have. Cargo reads that file (and rustup the toolchain file) from the
         # directory it runs in, so the build runs from / with the manifest named, the pinned
         # toolchain passed on, and the one setting an install wants from that file given again.
-        toolchain=$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "$root/rust-toolchain.toml" 2>/dev/null)
+        toolchain=$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "$tree/rust-toolchain.toml" 2>/dev/null)
         (
             cd / &&
                 CARGO_TARGET_DIR=$target_dir &&
@@ -171,7 +172,7 @@ else
                     RUSTUP_TOOLCHAIN=$toolchain
                     export RUSTUP_TOOLCHAIN
                 fi &&
-                cargo build --release --manifest-path "$root/Cargo.toml" \
+                cargo build --release --manifest-path "$tree/Cargo.toml" \
                     --config net.git-fetch-with-cli=true -p accountd
         )
     fi

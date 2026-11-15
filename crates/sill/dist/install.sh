@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install sill from this checkout: build `sill` in release, then put the binary, the PAM service,
+# Install sill from the bardo tree: build `sill` in release, then put the binary, the PAM service,
 # the intents manifest (`org.quire.Shell`, for intentd and `quire-do`), the companion skills
 # (dist/skills) and the settings schema where a login reads them, and copy the keycap layer for
 # the sill session to ~/.config/keycap/keycap.toml when that file is missing (never over yours).
@@ -42,16 +42,16 @@ if [ -e "$HOME/.cargo/bin/sill" ] && [ -z "$DESTDIR" ]; then
 fi
 need_root_helper
 
-step "2/8 the lock file against the sibling checkouts"
+step "2/8 the lock file against the workspace"
 if [ "$NO_BUILD" = 1 ]; then note "skipped: --no-build"; else check_lock; fi
 
-step "3/8 build sill (release, from $ROOT)"
+step "3/8 build sill (release, from $TREE)"
 if [ "$NO_BUILD" = 1 ]; then
   note "skipped: --no-build"
 else
-  run cargo_outside build --release --locked --manifest-path "$ROOT/Cargo.toml" -p sill
+  run cargo_outside build --release --locked --manifest-path "$TREE/Cargo.toml" -p sill
 fi
-BUILT="${CARGO_TARGET_DIR:-$ROOT/target}/release/sill"
+BUILT="${CARGO_TARGET_DIR:-$TREE/target}/release/sill"
 [ "$DRY" = 1 ] || [ -x "$BUILT" ] || { echo "no binary at $BUILT" >&2; exit 1; }
 
 step "4/8 the binary"

@@ -32,21 +32,21 @@ if [ -e "$HOME/.cargo/bin/files" ]; then
 fi
 need_sudo
 
-step "2/4 build files (release, from $ROOT)"
+step "2/4 build files (release, from $TREE)"
 if [ "${FLAG_no_build:-0}" = 1 ] || [ -n "${FILES_BIN:-}" ]; then
   note "no build: using $BUILT"
 else
   # With this system's own linker, never the tree's clang/mold: run from / and name the manifest.
-  TOOLCHAIN="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "$ROOT/rust-toolchain.toml" 2>/dev/null | head -n 1)"
-  note "cargo build runs from / with --manifest-path $ROOT/Cargo.toml${TOOLCHAIN:+ (toolchain $TOOLCHAIN)}"
+  TOOLCHAIN="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "$TREE/rust-toolchain.toml" 2>/dev/null | head -n 1)"
+  note "cargo build runs from / with --manifest-path $TREE/Cargo.toml${TOOLCHAIN:+ (toolchain $TOOLCHAIN)}"
   if [ "$DRY" = 1 ]; then
-    run cargo build --release --locked --manifest-path "$ROOT/Cargo.toml" -p files --bin files
+    run cargo build --release --locked --manifest-path "$TREE/Cargo.toml" -p files --bin files
   else
     (
       cd /
       [ -z "$TOOLCHAIN" ] || ! command -v rustup >/dev/null || export RUSTUP_TOOLCHAIN="$TOOLCHAIN"
-      export CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-$ROOT/target}"
-      run cargo build --release --locked --manifest-path "$ROOT/Cargo.toml" -p files --bin files
+      export CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-$TREE/target}"
+      run cargo build --release --locked --manifest-path "$TREE/Cargo.toml" -p files --bin files
     )
   fi
 fi
