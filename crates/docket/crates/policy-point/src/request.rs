@@ -2,8 +2,7 @@
 //! context that Cedar's rules read. Every context field has a slug form in the schema.
 
 use docket_core::BudgetKind;
-use docket_permissions_core::{Impact, Saw, SessionSaw, SinkIntegrity};
-use docket_session::Taint;
+use docket_permissions_core::{Impact, SessionSaw, SinkIntegrity};
 use docket_vocab::Origin;
 use porter_core::consent::Usage;
 use porter_core::{AppName, DataClass, Isolation};
@@ -220,7 +219,7 @@ pub struct PolicyContext {
     /// Whether the session is tainted for this call: it read untrusted content and the call
     /// changes something. Reading stays clean, or one mail read would put a question on every
     /// read after.
-    pub taint: Taint,
+    pub taint: bool,
     /// Whether the person allowed the screen run this step belongs to.
     pub run: RunFact,
     /// The mode of the conversation the call belongs to.
@@ -246,6 +245,6 @@ impl PolicyContext {
     /// Whether the session has seen both private data and untrusted input: two legs of the Rule
     /// of Two.
     pub fn two_legs(&self) -> bool {
-        self.saw.private == Saw::Seen && self.saw.untrusted == Saw::Seen
+        self.saw.private && self.saw.untrusted
     }
 }

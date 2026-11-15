@@ -4,7 +4,7 @@
 use action_review::*;
 use docket_core::*;
 use docket_manifest::Lasting;
-use docket_permissions_core::{ArgLabels, Saw, SessionSaw, Strictness};
+use docket_permissions_core::{ArgLabels, SessionSaw, Strictness};
 use docket_vocab::{Caller, LabelText, Millis, TurnId};
 use porter_capability::{Billing, Locality, ModelId};
 use porter_core::AccountId;
@@ -191,8 +191,8 @@ pub fn request() -> ReviewRequest {
             per_arg: BTreeMap::new(),
             planner: Integrity::Trusted,
             saw: SessionSaw {
-                private: Saw::NotSeen,
-                untrusted: Saw::NotSeen,
+                private: false,
+                untrusted: false,
             },
         },
         task_policy: None,

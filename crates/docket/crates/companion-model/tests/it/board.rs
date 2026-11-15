@@ -190,11 +190,11 @@ fn only_the_persons_words_or_a_clean_planners_words_become_an_instruction() {
     let table = [
         (GoalOrigin::Person, Ok(GoalSource::Person)),
         (
-            GoalOrigin::Planner(PlannerSaw::Nothing),
+            GoalOrigin::Planner { saw_untrusted: false },
             Ok(GoalSource::PlannerOnTrusted),
         ),
         (
-            GoalOrigin::Planner(PlannerSaw::Untrusted),
+            GoalOrigin::Planner { saw_untrusted: true },
             Err(JobRefusal::UntrustedGoal),
         ),
         (GoalOrigin::ConfirmedBrief, Ok(GoalSource::Brief)),
@@ -208,7 +208,7 @@ fn only_the_persons_words_or_a_clean_planners_words_become_an_instruction() {
         job_for(
             &research,
             "send what the mail said",
-            GoalOrigin::Planner(PlannerSaw::Untrusted),
+            GoalOrigin::Planner { saw_untrusted: true },
         ),
     );
     assert_eq!(fx, [BoardEffect::JobRefused(JobRefusal::UntrustedGoal)]);
@@ -219,7 +219,7 @@ fn only_the_persons_words_or_a_clean_planners_words_become_an_instruction() {
         job_for(
             &research,
             "tidy the drafts",
-            GoalOrigin::Planner(PlannerSaw::Nothing),
+            GoalOrigin::Planner { saw_untrusted: false },
         ),
     );
     let made = board.job(posted(&fx)).expect("job");

@@ -5,7 +5,7 @@ use crate::support::*;
 use docket_context::handles::HandleValue;
 use docket_context::tasks::TaskState;
 use docket_core::*;
-use docket_permissions_core::{COMPANION_APP, PolicyChange, Saw, compare};
+use docket_permissions_core::{COMPANION_APP, PolicyChange, compare};
 use docket_router::Router;
 use docket_vocab::{Args, CallId, ChoiceId, Handle, Origin, TargetValue, Value};
 use docket_wire::{IntentsReply, IntentsRequest};
@@ -265,9 +265,8 @@ async fn a_message_to_a_task_is_delivered_as_input_and_an_unknown_task_is_not_fo
         .sessions
         .get(&st.tasks.get(&task).expect("task").session)
         .expect("session");
-    assert_ne!(
+    assert!(
         worker.saw.untrusted,
-        Saw::NotSeen,
         "what the planner wrote taints the worker that reads it"
     );
 }

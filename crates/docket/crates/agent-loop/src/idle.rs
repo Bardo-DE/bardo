@@ -7,7 +7,6 @@
 
 use almanac_core::EpisodeId;
 use docket_core::IdleRules;
-use docket_session::Taint;
 use prov::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
@@ -23,17 +22,17 @@ pub enum NarrativeVia {
 
 impl NarrativeVia {
     /// Where a task's narrative runs: in readerd when the task read untrusted content.
-    pub fn of(taint: Taint) -> Self {
+    pub fn of(taint: bool) -> Self {
         match taint {
-            Taint::Tainted => Self::Reader,
-            Taint::Clean => Self::Companion,
+            true => Self::Reader,
+            false => Self::Companion,
         }
     }
 
-    fn taint(self) -> Taint {
+    fn taint(self) -> bool {
         match self {
-            Self::Reader => Taint::Tainted,
-            Self::Companion => Taint::Clean,
+            Self::Reader => true,
+            Self::Companion => false,
         }
     }
 }
@@ -44,7 +43,7 @@ pub struct EpisodeJob {
     /// The episode.
     pub episode: EpisodeId,
     /// Whether its task read untrusted content (`Tainted`).
-    pub read: Taint,
+    pub read: bool,
 }
 
 /// A narrative being written.

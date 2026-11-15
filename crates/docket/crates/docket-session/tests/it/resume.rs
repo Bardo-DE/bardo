@@ -10,7 +10,7 @@ fn plan(entries: &[SessionEntry]) -> ResumePlan {
 fn a_whole_session_restores_what_was_stored() {
     let p = plan(&canonical());
     assert_eq!(p.standing, Standing::Closed(EndCause::Closed));
-    assert_eq!(p.taint, Taint::Tainted);
+    assert!(p.taint);
     assert_eq!(p.policy, Some(policy()));
     assert_eq!(p.turns.len(), 2);
     assert_eq!(p.history.len(), 2);
@@ -132,14 +132,14 @@ fn an_untrusted_handle_with_no_taint_before_it_is_a_fault_and_tainted() {
         untrusted_handle(1),
         taint(),
     ]);
-    assert_eq!(p.taint, Taint::Tainted);
+    assert!(p.taint);
     assert_eq!(p.faults, vec![ResumeFault::MissingTaint { at: Seq(1) }]);
 }
 
 #[test]
 fn a_trusted_handle_needs_no_taint() {
     let p = plan(&[SessionEntry::Opened(opening()), trusted_handle(1)]);
-    assert_eq!(p.taint, Taint::Clean);
+    assert!(!p.taint);
     assert!(p.faults.is_empty());
 }
 
@@ -149,7 +149,7 @@ fn a_gap_blocks_and_taints() {
     r[3].seq = Seq(5);
     let p = resume_plan(&r).expect("plan");
     assert_eq!(p.standing, Standing::Blocked(Blocker::Gap));
-    assert_eq!(p.taint, Taint::Tainted);
+    assert!(p.taint);
     assert_eq!(
         p.faults,
         vec![ResumeFault::Gap {
@@ -200,7 +200,7 @@ fn a_summary_is_a_note_on_top_of_a_whole_history() {
         SessionEntry::Turn(turn(2, "go on")),
         call(2, "mail.thread.archive"),
         step(2, "mail.thread.archive"),
-        compacted(1, 1, Taint::Clean),
+        compacted(1, 1, false),
     ]);
     assert_eq!(
         (p.turns.len(), p.history.len()),
@@ -220,22 +220,22 @@ fn a_summary_never_lowers_taint_and_a_tainted_one_taints() {
     let table = [
         (
             vec![],
-            Taint::Clean,
-            Taint::Clean,
+            false,
+            false,
             prov::Integrity::Trusted,
             0,
         ),
         (
             vec![taint()],
-            Taint::Clean,
-            Taint::Tainted,
+            false,
+            true,
             prov::Integrity::Untrusted,
             0,
         ),
         (
             vec![],
-            Taint::Tainted,
-            Taint::Tainted,
+            true,
+            true,
             prov::Integrity::Untrusted,
             1,
         ),
@@ -255,7 +255,7 @@ fn a_summary_never_lowers_taint_and_a_tainted_one_taints() {
 fn a_summary_that_covers_more_than_was_logged_or_less_than_before_is_ignored() {
     let over = plan(&[
         SessionEntry::Opened(opening()),
-        compacted(1, 0, Taint::Clean),
+        compacted(1, 0, false),
     ]);
     assert_eq!(over.summary, None);
     assert_eq!(over.faults, vec![ResumeFault::BadCompaction { at: Seq(1) }]);
@@ -263,8 +263,8 @@ fn a_summary_that_covers_more_than_was_logged_or_less_than_before_is_ignored() {
         SessionEntry::Opened(opening()),
         SessionEntry::Turn(turn(1, "a")),
         SessionEntry::Turn(turn(2, "b")),
-        compacted(2, 0, Taint::Clean),
-        compacted(1, 0, Taint::Clean),
+        compacted(2, 0, false),
+        compacted(1, 0, false),
     ]);
     assert_eq!(shrinks.summary.expect("kept").covers.turns.0, 2);
     assert_eq!(

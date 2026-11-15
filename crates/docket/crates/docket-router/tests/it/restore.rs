@@ -8,9 +8,8 @@ use docket_core::*;
 use docket_fake::{
     FixedClock, MailContact, MailThread, ScriptedReviewer, ScriptedWriter, fake_router_on,
 };
-use docket_permissions_core::{Saw, TaskPolicy};
+use docket_permissions_core::{TaskPolicy};
 use docket_router::{RestoreFault, Router};
-use docket_session::Taint;
 use docket_session::fake::{LogMood, MemoryLog};
 use docket_session::{
     BackendKind, HandleLabel, Opening, PageSize, Read, SessionEntry, SessionLog, Standing,
@@ -130,7 +129,7 @@ fn state_of(router: &World, session: &SessionId) -> SessionRecordView {
 
 struct SessionRecordView {
     state: SessionState,
-    saw_untrusted: Saw,
+    saw_untrusted: bool,
     history: Vec<StepLine>,
     policy: Option<TaskPolicy>,
     turns: Vec<UserTurn>,
@@ -180,8 +179,8 @@ async fn an_append_failure_at_the_taint_write_means_the_reveal_never_happens() {
         after.state, before.state,
         "the session stays at its prior taint"
     );
-    assert_eq!(after.state, SessionState::Open(Taint::Clean));
-    assert_eq!(after.saw_untrusted, Saw::NotSeen);
+    assert_eq!(after.state, SessionState::Open(false));
+    assert!(!after.saw_untrusted);
     assert_eq!(
         after.history.last().map(|s| s.end.clone()),
         Some(StepEnd::Interrupted),
@@ -230,11 +229,8 @@ async fn a_reveal_whose_entry_cannot_be_kept_is_withheld_from_the_reply() {
         .restore_session(&opened.session)
         .await
         .expect("restored");
-    assert_eq!(
-        restored.taint,
-        Taint::Tainted,
-        "the taint was on the record before the value could be revealed"
-    );
+    assert!(restored.taint,
+        "the taint was on the record before the value could be revealed");
 }
 
 #[tokio::test]
@@ -381,10 +377,10 @@ async fn a_blocked_log_restores_tainted_and_display_only() {
         .await
         .expect("restored");
     assert!(matches!(restored.standing, Standing::Blocked(_)));
-    assert_eq!(restored.taint, Taint::Tainted);
+    assert!(restored.taint);
     let view = state_of(&again, &opened.session);
     assert!(matches!(view.state, SessionState::Closed(_)));
-    assert_eq!(view.saw_untrusted, Saw::Seen);
+    assert!(view.saw_untrusted);
     let refused = ask(
         &again,
         &companion(),
@@ -435,7 +431,7 @@ async fn a_session_reads_on_after_a_restart_under_the_same_policy() {
     let view = state_of(&again, &opened.session);
     assert_eq!(
         view.state,
-        SessionState::Open(Taint::Tainted),
+        SessionState::Open(true),
         "taint is never lowered"
     );
     assert_eq!(
@@ -496,11 +492,8 @@ async fn untrusted_handles_with_no_taint_before_them_restore_tainted_and_are_rep
         .expect("handle");
     let router = world(&log, None);
     let restored = router.restore_session(&id).await.expect("restored");
-    assert_eq!(
-        restored.taint,
-        Taint::Tainted,
-        "it cannot launder itself clean"
-    );
+    assert!(restored.taint,
+        "it cannot launder itself clean");
     assert_eq!(
         router.restore_session(&id).await.expect_err("not twice"),
         RestoreFault::Live
@@ -557,11 +550,8 @@ async fn taint_survives_a_crash(ops: &[Op], cut: u32) {
     let again = world(&log, None);
     let session = session.expect("a session");
     match again.restore_session(&session).await {
-        Ok(restored) if revealed => assert_eq!(
-            restored.taint,
-            Taint::Tainted,
-            "ops {ops:?} cut at {cut}: an untrusted value was revealed and the restore is clean"
-        ),
+        Ok(restored) if revealed => assert!(restored.taint,
+            "ops {ops:?} cut at {cut}: an untrusted value was revealed and the restore is clean"),
         Ok(_) => {}
         Err(RestoreFault::Unknown(_)) => assert!(
             !revealed,

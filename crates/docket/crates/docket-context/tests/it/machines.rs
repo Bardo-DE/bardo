@@ -7,7 +7,6 @@ use docket_context::session::{
 };
 use docket_core::*;
 use docket_permissions_core::BreakerTrip;
-use docket_session::Taint;
 use docket_vocab::{ActionRef, LabelText, Seconds, UndoId, UndoToken};
 use prov::{Actor, AgentRole, RunId, SessionId, UnixSeconds};
 
@@ -26,24 +25,24 @@ fn session_machine_table() {
     )> = vec![
         (
             "an untrusted reveal taints",
-            S::Open(Taint::Clean),
+            S::Open(false),
             V::UntrustedReveal,
-            S::Open(Taint::Tainted),
+            S::Open(true),
             vec![],
         ),
         (
             "taint never goes back",
-            S::Open(Taint::Tainted),
+            S::Open(true),
             V::UserTurn,
-            S::Open(Taint::Tainted),
+            S::Open(true),
             vec![],
         ),
         (
             "a trip pauses and signals",
-            S::Open(Taint::Tainted),
+            S::Open(true),
             V::BreakerTrip(trip),
             S::Paused {
-                taint: Taint::Tainted,
+                taint: true,
                 trip,
             },
             vec![E::EmitBreakerTripped(trip)],
@@ -51,42 +50,42 @@ fn session_machine_table() {
         (
             "a user turn resumes and resets",
             S::Paused {
-                taint: Taint::Clean,
+                taint: false,
                 trip,
             },
             V::UserTurn,
-            S::Open(Taint::Clean),
+            S::Open(false),
             vec![E::ResetBreaker],
         ),
         (
             "a perform while paused is refused",
             S::Paused {
-                taint: Taint::Clean,
+                taint: false,
                 trip,
             },
             V::Perform,
             S::Paused {
-                taint: Taint::Clean,
+                taint: false,
                 trip,
             },
             vec![E::Refuse(CallRefusal::Paused(trip))],
         ),
         (
             "a perform while open changes nothing",
-            S::Open(Taint::Clean),
+            S::Open(false),
             V::Perform,
-            S::Open(Taint::Clean),
+            S::Open(false),
             vec![],
         ),
         (
             "a second trip while paused keeps the first",
             S::Paused {
-                taint: Taint::Clean,
+                taint: false,
                 trip,
             },
             V::BreakerTrip(BreakerTrip::Probing),
             S::Paused {
-                taint: Taint::Clean,
+                taint: false,
                 trip,
             },
             vec![],
@@ -94,19 +93,19 @@ fn session_machine_table() {
         (
             "a reveal while paused still taints",
             S::Paused {
-                taint: Taint::Clean,
+                taint: false,
                 trip,
             },
             V::UntrustedReveal,
             S::Paused {
-                taint: Taint::Tainted,
+                taint: true,
                 trip,
             },
             vec![],
         ),
         (
             "close closes",
-            S::Open(Taint::Clean),
+            S::Open(false),
             V::Close,
             S::Closed(CloseCause::Closed),
             vec![],
@@ -114,7 +113,7 @@ fn session_machine_table() {
         (
             "a halted Space closes a paused session",
             S::Paused {
-                taint: Taint::Clean,
+                taint: false,
                 trip,
             },
             V::SpaceHalted,
@@ -123,7 +122,7 @@ fn session_machine_table() {
         ),
         (
             "the wall closes",
-            S::Open(Taint::Clean),
+            S::Open(false),
             V::WallExhausted,
             S::Closed(CloseCause::WallExhausted),
             vec![],

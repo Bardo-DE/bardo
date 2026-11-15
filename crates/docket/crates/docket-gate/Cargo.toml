@@ -17,7 +17,6 @@ docket-context = {path = "../docket-context"}
 docket-core = {path = "../docket-core"}
 docket-manifest = {path = "../docket-manifest"}
 docket-permissions-core = {path = "../docket-permissions-core"}
-docket-session = {path = "../docket-session"}
 docket-vocab = {path = "../docket-vocab"}
 docket-wire = {path = "../docket-wire"}
 genai-names = {path = "../../../stoker/crates/genai-names"}

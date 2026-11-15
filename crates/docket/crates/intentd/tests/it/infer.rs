@@ -254,7 +254,7 @@ async fn embeddings_open_an_embedding_session_for_the_indexs_length() {
 fn review_request() -> action_review::ReviewRequest {
     use docket_core::*;
     use docket_manifest::Lasting;
-    use docket_permissions_core::{ArgLabels, Saw, SessionSaw, Strictness};
+    use docket_permissions_core::{ArgLabels, SessionSaw, Strictness};
     use docket_vocab::{LabelText, TurnId};
     use std::collections::BTreeMap;
     action_review::ReviewRequest {
@@ -282,8 +282,8 @@ fn review_request() -> action_review::ReviewRequest {
             per_arg: BTreeMap::new(),
             planner: prov::Integrity::Trusted,
             saw: SessionSaw {
-                private: Saw::NotSeen,
-                untrusted: Saw::NotSeen,
+                private: false,
+                untrusted: false,
             },
         },
         task_policy: None,

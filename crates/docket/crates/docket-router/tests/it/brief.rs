@@ -7,9 +7,7 @@ use companion_model::helper::JobRefusal;
 use docket_core::*;
 use docket_fake::{FakeSeams, ScriptedConfirmer, host_companion};
 use docket_gate::companion_names::{BRIEF_CONFIRM, HELPER_POST_JOB};
-use docket_permissions_core::{
-    ActionGrantKey, ActionMatch, COMPANION_APP, GrantCaller, GrantTarget, Saw,
-};
+use docket_permissions_core::{ActionGrantKey, ActionMatch, COMPANION_APP, GrantCaller, GrantTarget};
 use docket_router::{GrantStore, Router};
 use docket_vocab::{ActionRef, CallRequest, Handle, Origin, TargetValue, Value};
 use docket_wire::{IntentsReply, IntentsRequest};
@@ -100,7 +98,7 @@ async fn session_in(router: &Arc<Router<FakeSeams>>) -> SessionId {
     give_policy(router, &opened.session, policy);
     let mut st = router.state.lock().expect("lock");
     let record = st.sessions.get_mut(&opened.session).expect("session");
-    record.saw.untrusted = Saw::Seen;
+    record.saw.untrusted = true;
     record.seen.push(Label::untrusted(
         Source::Web,
         DataClass::AppOwn,

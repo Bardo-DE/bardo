@@ -7,7 +7,7 @@
 //! queue through one `Writer` per session, which owns the position, the durable taint and the
 //! rule that an untrusted handle never reaches the log before a taint entry.
 
-use docket_session::{LogFault, Seq, SessionEntry, SessionLog, Taint, TaintCause, TaintNote};
+use docket_session::{LogFault, Seq, SessionEntry, SessionLog, TaintCause, TaintNote};
 use docket_vocab::CallId;
 use prov::{Integrity, SessionId};
 use std::sync::Arc;
@@ -24,22 +24,13 @@ pub enum Wal {
         /// In order, oldest first.
         pending: Vec<SessionEntry>,
         /// The taint already queued or appended: a `Taint` entry is due only above it.
-        taint: Taint,
+        taint: bool,
     },
-}
-
-/// What is queued that must not be lost to a reply: a taint, or a handle of untrusted text.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Reveals {
-    /// Nothing queued is a reveal.
-    Nothing,
-    /// A taint entry or an untrusted handle is waiting to be made durable.
-    Untrusted,
 }
 
 impl Wal {
     /// A recorded session with nothing queued, at `taint`.
-    pub fn on(taint: Taint) -> Self {
+    pub fn on(taint: bool) -> Self {
         Wal::On {
             pending: Vec::new(),
             taint,
@@ -50,7 +41,7 @@ impl Wal {
     pub fn note(&mut self, entry: SessionEntry) {
         if let Wal::On { pending, taint } = self {
             if matches!(entry, SessionEntry::Taint(_)) {
-                *taint = Taint::Tainted;
+                *taint = true;
             }
             pending.push(entry);
         }
@@ -61,7 +52,7 @@ impl Wal {
         if matches!(
             self,
             Wal::On {
-                taint: Taint::Clean,
+                taint: false,
                 ..
             }
         ) {
@@ -72,7 +63,7 @@ impl Wal {
     /// Marks the record tainted without queueing (a writer already appended the entry).
     pub fn tainted(&mut self) {
         if let Wal::On { taint, .. } = self {
-            *taint = Taint::Tainted;
+            *taint = true;
         }
     }
 
@@ -104,20 +95,16 @@ impl Wal {
         matches!(self, Wal::On { pending, .. } if !pending.is_empty())
     }
 
-    /// Whether what is queued is a reveal.
-    pub fn reveals(&self) -> Reveals {
-        let untrusted = match self {
+    /// Whether what is queued holds a reveal that must not be lost to a reply: a taint entry or
+    /// a handle of untrusted text waiting to be made durable.
+    pub fn reveals(&self) -> bool {
+        match self {
             Wal::On { pending, .. } => pending.iter().any(|e| match e {
                 SessionEntry::Taint(_) => true,
                 SessionEntry::Handle(h) => h.label.integrity == Integrity::Untrusted,
                 _ => false,
             }),
             Wal::Off => false,
-        };
-        if untrusted {
-            Reveals::Untrusted
-        } else {
-            Reveals::Nothing
         }
     }
 
@@ -133,7 +120,7 @@ pub struct Writer {
     /// The position the next entry takes.
     pub(crate) next: Seq,
     /// The taint the log holds.
-    pub taint: Taint,
+    pub taint: bool,
     /// The position the store holds when it is not the writer's: another writer, or an append
     /// that landed unseen. Nothing more is written until the session is restored from the log.
     diverged: Option<Seq>,
@@ -146,11 +133,11 @@ pub type Lane = Arc<futures_util::lock::Mutex<Writer>>;
 impl Writer {
     /// The writer of a session whose log is empty.
     pub fn fresh() -> Self {
-        Self::at(Seq(0), Taint::Clean)
+        Self::at(Seq(0), false)
     }
 
     /// The writer of a log that holds `next` entries and the taint `taint`.
-    pub fn at(next: Seq, taint: Taint) -> Self {
+    pub fn at(next: Seq, taint: bool) -> Self {
         Self {
             next,
             taint,
@@ -167,7 +154,7 @@ impl Writer {
     ) -> Result<(), LogFault> {
         let untrusted =
             matches!(&entry, SessionEntry::Handle(h) if h.label.integrity == Integrity::Untrusted);
-        if untrusted && self.taint == Taint::Clean {
+        if untrusted && !self.taint {
             let note = TaintNote {
                 cause: TaintCause::UntrustedReveal,
                 at_call: None,
@@ -192,7 +179,7 @@ impl Writer {
             Ok(_) => {
                 self.next = self.next.next();
                 if matches!(entry, SessionEntry::Taint(_)) {
-                    self.taint = Taint::Tainted;
+                    self.taint = true;
                 }
                 Ok(())
             }

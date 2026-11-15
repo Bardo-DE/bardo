@@ -13,7 +13,6 @@ porter-ids = {path = "../../../porter/crates/porter-ids"}
 docket-core = {path = "../docket-core"}
 docket-manifest = {path = "../docket-manifest"}
 docket-permissions-core = {path = "../docket-permissions-core"}
-docket-session = {path = "../docket-session"}
 docket-vocab = {path = "../docket-vocab"}
 prov = {path = "../../../prov/prov"}
 porter-core = {path = "../../../porter/crates/porter-core"}

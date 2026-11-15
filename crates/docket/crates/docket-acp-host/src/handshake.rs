@@ -21,7 +21,7 @@ use agent_client_protocol::schema::v1::{
 use agent_client_protocol::{SentRequest, UntypedMessage};
 use bulkhead::AbsPath;
 use companion_model::helper::{SignInHow, SignInWay, TerminalLogin};
-use docket_session::{BackendFault, Choice, Choices, Taint};
+use docket_session::{BackendFault, Choice, Choices};
 use std::path::PathBuf;
 
 /// What we offer the agent: file reads and writes through us, a terminal when `terminal` says the
@@ -40,7 +40,7 @@ impl<X: Seams> AcpBackend<X> {
         &mut self,
         session: prov::SessionId,
         cwd: AbsPath,
-        taint: Taint,
+        taint: bool,
     ) -> Result<(), BackendFault> {
         // The agent's writable folder is confined like a terminal's: no link on the way, not the
         // home folder, no place of secrets. The sandbox is given the real directory.
@@ -109,11 +109,11 @@ impl<X: Seams> AcpBackend<X> {
             cwd: cwd.clone(),
             real_cwd,
             session: session.clone(),
-            tainted_by: (taint == Taint::Tainted).then_some(TaintSource::Resumed),
+            tainted_by: (taint).then_some(TaintSource::Resumed),
             reported: Reported::default(),
             edge,
         });
-        if taint == Taint::Tainted {
+        if taint {
             // A resumed session read something the host cannot see.
             self.performer.note_unseen(&session);
         }

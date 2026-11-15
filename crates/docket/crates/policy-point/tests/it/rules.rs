@@ -3,14 +3,14 @@
 
 use crate::support::*;
 use docket_manifest::ArgSink;
-use docket_permissions_core::{AskReason, Ruling, Saw, SessionSaw, SinkIntegrity};
+use docket_permissions_core::{AskReason, Ruling, SessionSaw, SinkIntegrity};
 use prov::{Effect, Integrity};
 
 #[test]
 fn rule_of_two_requires_confirm_in_every_preset() {
     let seen = SessionSaw {
-        private: Saw::Seen,
-        untrusted: Saw::Seen,
+        private: true,
+        untrusted: true,
     };
     for (name, set) in [("auto", pdp()), ("manual", manual())] {
         let got = set.decide(&with(Effect::Outbound, |r| r.context.saw = seen));
@@ -24,9 +24,9 @@ fn rule_of_two_requires_confirm_in_every_preset() {
 #[test]
 fn rule_of_two_off_when_only_two_legs() {
     let rows = [
-        ("no private", Saw::NotSeen, Saw::Seen),
-        ("no untrusted", Saw::Seen, Saw::NotSeen),
-        ("neither", Saw::NotSeen, Saw::NotSeen),
+        ("no private", false, true),
+        ("no untrusted", true, false),
+        ("neither", false, false),
     ];
     for (name, private, untrusted) in rows {
         // Outbound always asks; with fewer than three legs it asks for the effect alone, never
@@ -45,8 +45,8 @@ fn rule_of_two_off_when_only_two_legs() {
 #[test]
 fn rule_of_two_does_not_apply_to_other_effects() {
     let seen = SessionSaw {
-        private: Saw::Seen,
-        untrusted: Saw::Seen,
+        private: true,
+        untrusted: true,
     };
     let got = pdp().decide(&with(Effect::UndoableWrite, |r| r.context.saw = seen));
     assert_eq!(cell(&got), Cell::Final, "{got:?}");
@@ -104,8 +104,8 @@ fn an_untrusted_sink_does_not_ask_an_undoable_write() {
 fn the_forbid_rules_are_named_in_the_reasons() {
     let got = pdp().decide(&with(Effect::Outbound, |r| {
         r.context.saw = SessionSaw {
-            private: Saw::Seen,
-            untrusted: Saw::Seen,
+            private: true,
+            untrusted: true,
         };
         untrust_recipient(r);
     }));

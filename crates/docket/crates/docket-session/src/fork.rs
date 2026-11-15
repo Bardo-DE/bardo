@@ -5,7 +5,7 @@
 //! `Closed` is not copied, so reopening a closed session is a fork.
 
 use crate::codec::{Logged, Read};
-use crate::entry::{ForkPoint, Seq, SessionEntry, Taint, TaintCause, TaintNote};
+use crate::entry::{ForkPoint, Seq, SessionEntry, TaintCause, TaintNote};
 use crate::plan::{PlanRefusal, Standing};
 use crate::resume::resume_plan;
 use prov::{SessionId, TaskId};
@@ -68,7 +68,7 @@ pub fn fork(
         at,
     });
     let mut child = vec![SessionEntry::Opened(opening)];
-    if plan.taint == Taint::Tainted {
+    if plan.taint {
         child.push(SessionEntry::Taint(TaintNote {
             cause: TaintCause::Inherited,
             at_call: None,

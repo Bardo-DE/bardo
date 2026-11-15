@@ -74,7 +74,4 @@ pub use standing_match::{ArgFacts, CallFacts, find_standing_for};
 pub use standing_offer::{
     AlwaysOffer, AskFacts, Withheld, blocker, holds_standing, may_offer, scope_for,
 };
-pub use task_policy::{
-    ActionMatch, ArgLabels, Coverage, Saw, SessionSaw, SinkIntegrity, TaskPolicy, TaskPolicyState,
-    TrustedPattern, Widening, compare, covers, covers_reach, intersection,
-};
+pub use task_policy::{ActionMatch, ArgLabels, Coverage, SessionSaw, SinkIntegrity, TaskPolicy, TaskPolicyState, TrustedPattern, Widening, compare, covers, covers_reach, intersection};

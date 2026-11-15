@@ -4,8 +4,7 @@
 
 use action_review::RepeatState;
 use docket_core::{Budget, Cost, KillSwitch, Ledger, charge, halted};
-use docket_permissions_core::{Limited, Saw};
-use docket_session::Taint;
+use docket_permissions_core::{Limited};
 use policy_point::{BudgetFact, HaltFact, LimitFact, RepeatFact};
 use prov::{Effect, SpaceId, SpaceScope, UnixSeconds};
 
@@ -70,9 +69,6 @@ pub fn repeat_fact(repeat: RepeatState) -> RepeatFact {
 }
 
 /// A session that read untrusted content is tainted for any call that changes something.
-pub fn taint_fact(untrusted: Saw, effect: Effect) -> Taint {
-    match (untrusted, effect) {
-        (Saw::Seen, effect) if effect > Effect::Read => Taint::Tainted,
-        _ => Taint::Clean,
-    }
+pub fn taint_fact(untrusted: bool, effect: Effect) -> bool {
+    untrusted && effect > Effect::Read
 }

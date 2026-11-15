@@ -5,10 +5,7 @@ use agent_loop::{Sources, assemble};
 use docket_core::{
     AgentConfig, Covers, StepEnd, StepLine, StepShown, Summary, SummaryText, TurnVia, UserTurn,
 };
-use docket_session::{
-    BackendKind, Compacted, CompactedBy, Logged, Opening, Read, Seq, SessionEntry, Taint,
-    TaintCause, TaintNote, resume_plan,
-};
+use docket_session::{BackendKind, Compacted, CompactedBy, Logged, Opening, Read, Seq, SessionEntry, TaintCause, TaintNote, resume_plan};
 use docket_tasks::nowhere;
 use docket_vocab::{ActionRef, CallId, Caller, LabelText, TurnId};
 use porter_capability::Tier;
@@ -108,11 +105,11 @@ fn a_restore_after_compaction_shows_the_planner_the_same_view_and_keeps_the_tain
     };
     let text = SummaryText::parse("archived the first thirty items", &[]).expect("summary");
     for (written, integrity) in [
-        (Taint::Clean, Integrity::Trusted),
-        (Taint::Tainted, Integrity::Untrusted),
+        (false, Integrity::Trusted),
+        (true, Integrity::Untrusted),
     ] {
         let mut entries = vec![SessionEntry::Opened(opening())];
-        if written == Taint::Tainted {
+        if written {
             entries.push(SessionEntry::Taint(TaintNote {
                 cause: TaintCause::UntrustedReveal,
                 at_call: None,

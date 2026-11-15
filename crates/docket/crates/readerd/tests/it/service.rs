@@ -7,7 +7,6 @@ use docket_client::{InProcess, Intents};
 use docket_context::handles::HandleValue;
 use docket_core::*;
 use docket_fake::fake_router;
-use docket_permissions_core::Saw;
 use docket_router::Router;
 use docket_vocab::{CallerRole, ChoiceId, Handle, Value};
 use docket_wire::{CallerId, IntentsReply, IntentsRequest, SessionOpen};
@@ -159,7 +158,7 @@ async fn the_handles_are_resolved_in_the_session_and_read_as_quarantined_data() 
     let st = router.state.lock().expect("lock");
     assert_ne!(
         st.sessions.get(&session).expect("session").saw.untrusted,
-        Saw::NotSeen
+        false
     );
 }
 

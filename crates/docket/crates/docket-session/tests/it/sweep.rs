@@ -9,7 +9,7 @@ use std::collections::BTreeSet;
 #[test]
 fn every_prefix_of_a_canonical_log_resumes_safely() {
     let log = canonical();
-    let mut before = Taint::Clean;
+    let mut before = false;
     for cut in 1..=log.len() {
         let kept = &log[..cut];
         let p = resume_plan(&rows(kept)).expect("a prefix with its opening has a plan");
@@ -54,7 +54,7 @@ fn a_crash_before_the_write_ahead_taint_cannot_clear_it() {
     // the plan is Tainted and says why.
     let broken = [SessionEntry::Opened(opening()), untrusted_handle(1)];
     let p = resume_plan(&rows(&broken)).expect("plan");
-    assert_eq!(p.taint, Taint::Tainted);
+    assert!(p.taint);
     assert_eq!(p.faults, vec![ResumeFault::MissingTaint { at: Seq(1) }]);
 }
 
@@ -112,7 +112,7 @@ proptest! {
     fn taint_is_monotone_over_any_log(ops in prop::collection::vec(op(), 0..40)) {
         let mut log = vec![SessionEntry::Opened(opening())];
         log.extend(ops.iter().enumerate().map(|(i, o)| entry_of(*o, i as u64 + 1)));
-        let mut before = Taint::Clean;
+        let mut before = false;
         let mut seen_taint = false;
         for cut in 1..=log.len() {
             let p = resume_plan(&rows(&log[..cut])).expect("plan");
@@ -123,7 +123,7 @@ proptest! {
             let untrusted = log[..cut].iter().any(|e| matches!(e,
                 SessionEntry::Handle(h) if h.label.integrity == prov::Integrity::Untrusted));
             if seen_taint || untrusted {
-                prop_assert_eq!(p.taint, Taint::Tainted);
+                prop_assert!(p.taint);
             }
         }
     }

@@ -180,7 +180,7 @@ pub fn canonical() -> Vec<SessionEntry> {
 }
 
 /// A summary of the oldest `turns` turns and `steps` steps, written by the balanced tier.
-pub fn compacted(turns: u32, steps: u32, taint: Taint) -> SessionEntry {
+pub fn compacted(turns: u32, steps: u32, taint: bool) -> SessionEntry {
     SessionEntry::Compacted(Compacted {
         covers: docket_core::Covers {
             turns: Count(turns),

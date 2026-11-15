@@ -19,10 +19,7 @@ use docket_gate::gate::{GateInputs, Pending, gate};
 use docket_gate::prepared::grant_state;
 use docket_gate_wire::{CuaAsk, GateAnswer};
 use docket_manifest::{AgentReach, Lasting};
-use docket_permissions_core::{
-    ActionGrantKey, AskReason, GrantCaller, GrantTarget, Impact, Level, LimitCall, Saw, SessionSaw,
-    SinkIntegrity,
-};
+use docket_permissions_core::{ActionGrantKey, AskReason, GrantCaller, GrantTarget, Impact, Level, LimitCall, SessionSaw, SinkIntegrity};
 use docket_vocab::{Clock, Depth, LabelText, Origin};
 use docket_wire::{GrantAnswer, GrantAsk, IntentsReply};
 use policy_point::{
@@ -331,11 +328,11 @@ impl<S: Seams> Router<S> {
             };
             // A step always reads the screen; the policy decides what that means for a run the
             // person allowed (core `tainted-always-asks`).
-            let taint = taint_fact(Saw::Seen, ask.effect);
+            let taint = taint_fact(true, ask.effect);
             let screen = screen.integrity;
             let saw = SessionSaw {
-                private: Saw::NotSeen,
-                untrusted: Saw::Seen,
+                private: false,
+                untrusted: true,
             };
             let cost = Cost {
                 effect: ask.effect,

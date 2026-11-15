@@ -18,10 +18,7 @@ use companion_model::HandTo;
 use docket_core::{
     ExternalAgent, Ledger, Reveal, SheetSurface, StepEnd, StepLine, StepShown, UserTurn,
 };
-use docket_permissions_core::Saw;
-use docket_session::{
-    ResumeFault, ResumePlan, SessionEntry, Standing, Taint, TaintCause, TaintNote,
-};
+use docket_session::{ResumeFault, ResumePlan, SessionEntry, Standing, TaintCause, TaintNote};
 use docket_wire::TaskLedger;
 use porter_core::AppName;
 use porter_ids::Count;
@@ -42,7 +39,7 @@ pub struct Rebuilt {
     pub reserve: u64,
     /// The taint the log itself holds: below the session's when a repair is still to be
     /// appended.
-    pub durable: Taint,
+    pub durable: bool,
 }
 
 /// Whether the plan found untrusted handles with no taint entry before them.
@@ -73,7 +70,7 @@ fn interrupted_line(open: &docket_session::CallOpen) -> StepLine {
 }
 
 /// Where the session stands, and what its task is doing.
-fn state_of(standing: &Standing, taint: Taint) -> (SessionState, TaskState) {
+fn state_of(standing: &Standing, taint: bool) -> (SessionState, TaskState) {
     match standing {
         Standing::Open => (SessionState::Open(taint), TaskState::Working),
         Standing::Paused(trip) => (
@@ -215,16 +212,10 @@ pub fn rebuild(id: &SessionId, plan: &ResumePlan, now: UnixSeconds) -> Rebuilt {
     record.policy = plan.policy.clone();
     record.history = plan.history.iter().chain(&cut_off).cloned().collect();
     record.seen = labels_of(plan);
-    record.saw.untrusted = match taint {
-        Taint::Tainted => Saw::Seen,
-        Taint::Clean => Saw::NotSeen,
-    };
+    record.saw.untrusted = taint;
     // The log does not say whether private text was shown; a session that did anything is
     // taken to have seen some.
-    record.saw.private = match record.history.is_empty() && plan.handles.is_empty() {
-        true => Saw::NotSeen,
-        false => Saw::Seen,
-    };
+    record.saw.private = !(record.history.is_empty() && plan.handles.is_empty());
     let mut handles = HandleTable::new();
     plan.handles
         .iter()
@@ -278,10 +269,7 @@ pub fn rebuild(id: &SessionId, plan: &ResumePlan, now: UnixSeconds) -> Rebuilt {
             results: Vec::new(),
         },
     };
-    let durable = match needs_repair(plan) {
-        true => Taint::Clean,
-        false => plan.taint,
-    };
+    let durable = !needs_repair(plan) && plan.taint;
     Rebuilt {
         record,
         task,
@@ -319,7 +307,7 @@ mod tests {
             seat: None,
             hand: None,
             standing,
-            taint: Taint::Clean,
+            taint: false,
             policy: None,
             turns: vec![],
             history: vec![],
@@ -389,7 +377,7 @@ mod tests {
         assert_eq!(
             rebuilt.record.state,
             SessionState::Paused {
-                taint: Taint::Clean,
+                taint: false,
                 trip
             }
         );
@@ -409,13 +397,13 @@ mod tests {
             SessionState::Closed(CloseCause::SpaceHalted)
         );
         let mut p = plan(Standing::Blocked(docket_session::Blocker::Gap));
-        p.taint = Taint::Tainted;
+        p.taint = true;
         let blocked = rebuild(&id(), &p, UnixSeconds(1));
         assert_eq!(
             blocked.record.state,
             SessionState::Closed(CloseCause::Closed)
         );
-        assert_eq!(blocked.record.saw.untrusted, Saw::Seen);
+        assert!(blocked.record.saw.untrusted);
         for rebuilt in [closed, blocked] {
             assert_eq!(rebuilt.record.wal, Wal::Off);
         }
@@ -450,16 +438,13 @@ mod tests {
     #[test]
     fn untrusted_handles_with_no_taint_are_repaired_on_the_record() {
         let mut p = plan(Standing::Open);
-        p.taint = Taint::Tainted;
+        p.taint = true;
         p.faults = vec![ResumeFault::MissingTaint {
             at: docket_session::Seq(1),
         }];
         let rebuilt = rebuild(&id(), &p, UnixSeconds(1));
-        assert_eq!(
-            rebuilt.durable,
-            Taint::Clean,
-            "the repair is still to be written"
-        );
+        assert!(!rebuilt.durable,
+            "the repair is still to be written");
         let Wal::On { pending, .. } = &rebuilt.record.wal else {
             panic!("on the record")
         };

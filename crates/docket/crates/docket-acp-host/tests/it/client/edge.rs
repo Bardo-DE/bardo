@@ -8,7 +8,7 @@ use super::rig::{Rig, Setup, abs, always, ended_with, no, once, program, run_tur
 use docket_acp_host::{ToolsEdge, ToolsOffer};
 use docket_core::AuditRecord;
 use docket_fake::{MailContact, MailThread};
-use docket_permissions_core::{GrantCaller, Saw};
+use docket_permissions_core::{GrantCaller};
 use docket_session::{SessionHost, TurnEnd};
 use prov::{Actor, SessionId};
 use serde_json::{Value, json};
@@ -156,7 +156,7 @@ async fn a_read_is_a_router_call_in_the_agents_session_as_that_program() {
     let saw = rig.router.state.lock().expect("lock").sessions[&rig.session]
         .saw
         .untrusted;
-    assert_eq!(saw, Saw::Seen, "the router took the taint");
+    assert!(saw, "the router took the taint");
 }
 
 #[tokio::test]

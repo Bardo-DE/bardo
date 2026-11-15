@@ -8,7 +8,7 @@
 use crate::desk::{PostFromPlanner, Proposal, RoutineAsk, RoutineFor};
 use crate::runtime::Companion;
 use crate::seams::Surface;
-use companion_model::helper::{Ceiling, GoalOrigin, JobId, PlannerSaw};
+use companion_model::helper::{Ceiling, GoalOrigin, JobId};
 use companion_wire::HelperReply;
 use docket_client::Transport as IntentsTransport;
 use docket_core::{ActionCard, AppRefusal, CallRefusal, FailText, Outcome, from_checked_brief};
@@ -172,7 +172,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
             };
             let origin = match from_checked_brief(&outcome) {
                 true => GoalOrigin::ConfirmedBrief,
-                false => GoalOrigin::Planner(PlannerSaw::Nothing),
+                false => GoalOrigin::Planner { saw_untrusted: false },
             };
             desk.post_from_planner(PostFromPlanner {
                 helper,

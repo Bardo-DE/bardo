@@ -16,9 +16,7 @@
 //!    be read blocks new turns and taints.
 
 use crate::codec::{Logged, Read};
-use crate::entry::{
-    BreakerNote, CallOpen, Compacted, EndCause, HandleLabel, Opening, Seq, SessionEntry, Taint,
-};
+use crate::entry::{BreakerNote, CallOpen, Compacted, EndCause, HandleLabel, Opening, Seq, SessionEntry};
 use crate::plan::{
     Blocker, Interrupted, PlanRefusal, ResumeFault, ResumePlan, ResumedBudget, Standing,
 };
@@ -36,7 +34,7 @@ struct Fold {
     opening: Opening,
     seat: Option<HelperSeat>,
     hand: Option<HandNote>,
-    taint: Taint,
+    taint: bool,
     policy: Option<TaskPolicy>,
     turns: Vec<UserTurn>,
     history: Vec<StepLine>,
@@ -59,7 +57,7 @@ impl Fold {
             opening,
             seat: None,
             hand: None,
-            taint: Taint::Clean,
+            taint: false,
             policy: None,
             turns: Vec::new(),
             history: Vec::new(),
@@ -79,7 +77,7 @@ impl Fold {
 
     /// Something that may hide a taint: the session is Tainted from here on.
     fn block(&mut self, why: Blocker, fault: ResumeFault) {
-        self.taint = Taint::Tainted;
+        self.taint = true;
         self.blocker.get_or_insert(why);
         self.faults.push(fault);
     }
@@ -106,13 +104,13 @@ impl Fold {
             }
             SessionEntry::Handle(label) => {
                 let untrusted = label.label.integrity == Integrity::Untrusted;
-                if untrusted && self.taint == Taint::Clean {
+                if untrusted && !self.taint {
                     self.faults.push(ResumeFault::MissingTaint { at });
-                    self.taint = Taint::Tainted;
+                    self.taint = true;
                 }
                 self.handles.insert(label.handle, label);
             }
-            SessionEntry::Taint(_) => self.taint = Taint::Tainted,
+            SessionEntry::Taint(_) => self.taint = true,
             SessionEntry::Breaker(BreakerNote::Tripped(trip)) => self.tripped = Some(trip),
             SessionEntry::Breaker(BreakerNote::Reset) => self.tripped = None,
             SessionEntry::Budget(ledger) => {
@@ -138,10 +136,10 @@ impl Fold {
     /// last one. Its taint joins the session's, and a summary never reads as more trusted than
     /// the session was.
     fn compact(&mut self, at: Seq, note: Compacted) {
-        if note.taint == Taint::Tainted && self.taint == Taint::Clean {
+        if note.taint && !self.taint {
             self.faults.push(ResumeFault::MissingTaint { at });
         }
-        self.taint = self.taint.join(note.taint);
+        self.taint |= note.taint;
         let held = (self.turns.len(), self.history.len());
         let covers = note.covers;
         let before = self.summary.as_ref().map_or((0, 0), |s| {
@@ -152,9 +150,10 @@ impl Fold {
             self.faults.push(ResumeFault::BadCompaction { at });
             return;
         }
-        let integrity = match self.taint {
-            Taint::Clean => Integrity::Trusted,
-            Taint::Tainted => Integrity::Untrusted,
+        let integrity = if self.taint {
+            Integrity::Untrusted
+        } else {
+            Integrity::Trusted
         };
         self.summary = Some(Summary {
             covers,

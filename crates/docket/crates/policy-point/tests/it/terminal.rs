@@ -5,7 +5,7 @@
 
 use crate::support::*;
 use docket_manifest::{AgentReach, Lasting};
-use docket_permissions_core::{AskReason, Saw, SessionSaw};
+use docket_permissions_core::{AskReason, SessionSaw};
 use docket_vocab::Origin;
 use policy_point::{GrantState, PolicyRequest, TerminalGrant};
 use prov::{ActorKind, Effect, Integrity};
@@ -112,8 +112,8 @@ fn terminal_grid() {
             |r| {
                 granted(r);
                 r.context.saw = SessionSaw {
-                    private: Saw::Seen,
-                    untrusted: Saw::Seen,
+                    private: true,
+                    untrusted: true,
                 };
             },
             Ask,

@@ -2,10 +2,7 @@
 //! the steps of a screen run.
 
 use crate::support::*;
-use docket_permissions_core::{
-    AskReason, DeleteRow, InsideRow, Mode, ModeRows, OtherRow, PolicyId, Saw, ScreenRow, SendRow,
-    SessionSaw,
-};
+use docket_permissions_core::{AskReason, DeleteRow, InsideRow, Mode, ModeRows, OtherRow, PolicyId, ScreenRow, SendRow, SessionSaw};
 use porter_core::AppName;
 use prov::Effect;
 
@@ -156,7 +153,7 @@ fn a_step_of_an_allowed_screen_run_runs_unless_it_sends_or_deletes() {
             r.context.grant = policy_point::GrantState::None;
             outside(r);
             untrust_planner(r);
-            r.context.taint = docket_session::Taint::Tainted;
+            r.context.taint = true;
             if allowed {
                 allowed_run(r);
             }
@@ -228,7 +225,7 @@ fn screen_step(r: &mut policy_point::PolicyRequest) {
     r.context.grant = policy_point::GrantState::None;
     outside(r);
     untrust_planner(r);
-    r.context.taint = docket_session::Taint::Tainted;
+    r.context.taint = true;
     allowed_run(r);
 }
 
@@ -238,13 +235,13 @@ fn untrusted_path(r: &mut policy_point::PolicyRequest) {
 
 fn both_legs(r: &mut policy_point::PolicyRequest) {
     r.context.saw = SessionSaw {
-        private: Saw::Seen,
-        untrusted: Saw::Seen,
+        private: true,
+        untrusted: true,
     };
 }
 
 fn tainted(r: &mut policy_point::PolicyRequest) {
-    r.context.taint = docket_session::Taint::Tainted;
+    r.context.taint = true;
 }
 
 fn never(r: &mut policy_point::PolicyRequest) {

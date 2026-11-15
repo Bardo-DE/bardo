@@ -23,7 +23,6 @@ use prov::{
 };
 use std::collections::{BTreeMap, BTreeSet};
 
-use docket_permissions_core::Saw;
 
 /// How many parents the chain is followed through: a cycle can never spin.
 const MAX_HOPS: usize = 8;
@@ -152,7 +151,7 @@ impl SessionRecord {
         now: UnixSeconds,
     ) -> Self {
         Self {
-            state: SessionState::Open(docket_session::Taint::Clean),
+            state: SessionState::Open(false),
             handles: HandleTable::new(),
             task,
             mode: Mode::Auto,
@@ -163,8 +162,8 @@ impl SessionRecord {
             ledger: Ledger::new(now),
             breaker: Breaker::new(),
             saw: SessionSaw {
-                private: Saw::NotSeen,
-                untrusted: Saw::NotSeen,
+                private: false,
+                untrusted: false,
             },
             turns: Vec::new(),
             briefs: Vec::new(),

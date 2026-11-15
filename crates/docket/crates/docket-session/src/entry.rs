@@ -23,23 +23,6 @@ use porter_core::AppName;
 use prov::{AgentRef, Effect, Label, SessionId, Source, SpaceId, TaskId};
 use serde::{Deserialize, Serialize};
 
-/// Whether the session read anything untrusted. `Clean < Tainted`; taint never goes down.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Taint {
-    /// Nothing untrusted was revealed.
-    Clean,
-    /// Something was, and it stays so.
-    Tainted,
-}
-
-impl Taint {
-    /// The higher of two: the only way taint combines.
-    pub fn join(self, other: Taint) -> Taint {
-        self.max(other)
-    }
-}
-
 /// What runs the session's turns.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
@@ -221,7 +204,7 @@ pub struct Compacted {
     pub text: SummaryText,
     /// The taint of what it covers. `Tainted` when the session was tainted when it was written,
     /// and it stays so.
-    pub taint: Taint,
+    pub taint: bool,
     /// Who wrote it.
     pub by: CompactedBy,
 }

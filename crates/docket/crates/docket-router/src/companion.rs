@@ -9,7 +9,7 @@
 
 use crate::router::Router;
 use crate::seams::Seams;
-use companion_model::helper::{GoalOrigin, JobRefusal, PlannerSaw};
+use companion_model::helper::{GoalOrigin, JobRefusal};
 use docket_context::handles::HandleValue;
 use docket_context::labels::{app_label, model_label};
 use docket_context::spoken::whole_in;
@@ -21,7 +21,7 @@ use docket_core::{
 use docket_gate::companion_names::{
     HELPER_POST_JOB, HELPER_PROPOSE, LIMIT_ADD, ROUTINE_PROPOSE, task_entity, task_of,
 };
-use docket_permissions_core::{COMPANION_APP, Saw};
+use docket_permissions_core::{COMPANION_APP};
 use docket_vocab::{CallerRole, ChoiceId, Clock, LabelText, ParamName, TargetValue, Value};
 use docket_wire::{CallerId, IntentsReply, SessionOpen, SessionOpened, TaskStart, WireRefusal};
 use porter_core::{AppId, AppName, Isolation};
@@ -133,7 +133,7 @@ impl<S: Seams> Router<S> {
             .locked()
             .sessions
             .get(session)
-            .is_some_and(|record| record.saw.untrusted == Saw::NotSeen)
+            .is_some_and(|record| !record.saw.untrusted)
             && inv
                 .args
                 .get(&ParamName::parse(param).map_err(|_| AppRefusal::Unsupported)?)
@@ -177,7 +177,7 @@ impl<S: Seams> Router<S> {
             return Ok(GoalOrigin::ConfirmedBrief);
         }
         self.clean_words(inv, session, "goal", JobRefusal::UntrustedGoal)
-            .map(|_| GoalOrigin::Planner(PlannerSaw::Nothing))
+            .map(|_| GoalOrigin::Planner { saw_untrusted: false })
     }
 
     fn helper_post_job(&self, inv: &Invocation) -> Result<Outcome, AppRefusal> {

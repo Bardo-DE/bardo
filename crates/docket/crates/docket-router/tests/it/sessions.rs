@@ -4,7 +4,7 @@
 use crate::support::*;
 use docket_core::*;
 use docket_fake::{ScriptedConfirmer, ScriptedReader, ScriptedWriter};
-use docket_permissions_core::{ActionMatch, PolicyChange, Saw, TaskPolicy, compare};
+use docket_permissions_core::{ActionMatch, PolicyChange, TaskPolicy, compare};
 use docket_vocab::{CallerRole, CharCount, ChoiceId, Handle, Origin, TurnId, Value};
 use docket_wire::{
     Displayed, IntentsReply, IntentsRequest, ReadAsk, Resolved, SessionOpen, WidenAnswer, WidenAsk,
@@ -384,11 +384,8 @@ async fn only_the_reader_may_resolve_a_handle_and_the_screen_may_display_it() {
         IntentsReply::Text("secret words".into())
     );
     let st = router.state.lock().expect("lock");
-    assert_eq!(
-        st.sessions[&s.session].saw.untrusted,
-        Saw::Seen,
-        "the reader has now seen it"
-    );
+    assert!(st.sessions[&s.session].saw.untrusted,
+        "the reader has now seen it");
 }
 
 #[tokio::test]

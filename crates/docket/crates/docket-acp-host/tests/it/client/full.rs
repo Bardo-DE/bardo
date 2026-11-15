@@ -332,7 +332,7 @@ async fn a_yes_to_a_permission_request_covers_the_one_matching_write_and_no_more
 async fn a_resume_starts_a_new_agent_session_and_keeps_the_taint() {
     use docket_acp_host::fake::FakeSpawn;
     use docket_acp_host::{AcpBackend, Parts};
-    use docket_session::{ResumePlan, Resumed, SessionBackend, Standing, Taint};
+    use docket_session::{ResumePlan, Resumed, SessionBackend, Standing};
     let (rig, _files) = started(Setup {
         turns: vec![vec![Act::Stop("end_turn")]],
         ..Setup::default()
@@ -354,7 +354,7 @@ async fn a_resume_starts_a_new_agent_session_and_keeps_the_taint() {
         seat: None,
         hand: None,
         standing: Standing::Open,
-        taint: Taint::Tainted,
+        taint: true,
         policy: None,
         turns: Vec::new(),
         history: Vec::new(),

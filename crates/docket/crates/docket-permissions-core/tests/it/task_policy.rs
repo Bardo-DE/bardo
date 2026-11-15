@@ -232,8 +232,8 @@ pub(crate) fn labels(per_arg: Vec<(&str, Integrity)>) -> ArgLabels {
             .collect::<BTreeMap<_, _>>(),
         planner: Integrity::Trusted,
         saw: SessionSaw {
-            private: Saw::NotSeen,
-            untrusted: Saw::NotSeen,
+            private: false,
+            untrusted: false,
         },
     }
 }

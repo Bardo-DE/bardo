@@ -13,9 +13,9 @@
 
 use crate::router::Router;
 use crate::seams::Seams;
-use docket_context::wal::{Lane, Reveals, Writer};
+use docket_context::wal::{Lane, Writer};
 use docket_core::CallRefusal;
-use docket_session::{LogFault, SessionEntry, Taint, TaintCause, TaintNote};
+use docket_session::{LogFault, SessionEntry, TaintCause, TaintNote};
 use docket_vocab::CallId;
 use docket_wire::{IntentsReply, WireRefusal};
 use prov::SessionId;
@@ -26,8 +26,8 @@ use std::sync::Arc;
 pub(crate) enum Flush {
     /// Everything queued is on the record.
     Durable,
-    /// Some entries could not be appended and wait; `Reveals` says whether one is a reveal.
-    Kept(Reveals),
+    /// Some entries could not be appended and wait; the flag says whether one is a reveal.
+    Kept(bool),
 }
 
 impl<S: Seams> Router<S> {
@@ -81,7 +81,7 @@ impl<S: Seams> Router<S> {
                 self.locked()
                     .sessions
                     .get(id)
-                    .map_or(Reveals::Nothing, |r| r.wal.reveals()),
+                    .is_some_and(|r| r.wal.reveals()),
             ),
         }
     }
@@ -98,7 +98,7 @@ impl<S: Seams> Router<S> {
             return Ok(());
         };
         let mut writer = lane.lock().await;
-        if writer.taint == Taint::Tainted {
+        if writer.taint {
             return Ok(());
         }
         let note = SessionEntry::Taint(TaintNote {
@@ -132,17 +132,16 @@ impl<S: Seams> Router<S> {
                 })
                 .collect()
         };
-        let mut kept = Reveals::Nothing;
+        let mut kept = false;
         for id in due {
-            if self.flush(&id).await == Flush::Kept(Reveals::Untrusted) {
-                kept = Reveals::Untrusted;
+            if self.flush(&id).await == Flush::Kept(true) {
+                kept = true;
             }
         }
-        match (kept, carries_text(&reply)) {
-            (Reveals::Untrusted, true) => {
-                IntentsReply::Refused(WireRefusal::Call(CallRefusal::NotRecorded))
-            }
-            _ => reply,
+        if kept && carries_text(&reply) {
+            IntentsReply::Refused(WireRefusal::Call(CallRefusal::NotRecorded))
+        } else {
+            reply
         }
     }
 }

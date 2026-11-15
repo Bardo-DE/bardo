@@ -11,7 +11,7 @@ fn a_fork_inherits_taint_and_the_breaker_and_resets_budgets() {
     // Cut after the trip and before the turn that would clear it.
     let child = fork(&session("s-1"), &parent_rows(), Seq(8), task("t-2")).expect("fork");
     let plan = resume_plan(&rows(&child)).expect("plan");
-    assert_eq!(plan.taint, Taint::Tainted);
+    assert!(plan.taint);
     assert_eq!(plan.standing, Standing::Paused(BreakerTrip::Consecutive));
     assert_eq!(plan.budget.checkpoint, None);
     assert_eq!(plan.budget.calls_since.0, 2);
@@ -47,7 +47,7 @@ fn a_fork_of_a_closed_session_is_open_and_has_no_budget_entry() {
 fn a_clean_parent_gives_a_clean_child() {
     let child = fork(&session("s-1"), &parent_rows(), Seq(2), task("t-2")).expect("fork");
     let plan = resume_plan(&rows(&child)).expect("plan");
-    assert_eq!(plan.taint, Taint::Clean);
+    assert!(!plan.taint);
     assert_eq!(child.len(), 3);
 }
 
@@ -56,7 +56,7 @@ fn a_fork_of_a_tainted_by_fault_parent_writes_the_taint_down() {
     let broken = rows(&[SessionEntry::Opened(opening()), untrusted_handle(1)]);
     let child = fork(&session("s-1"), &broken, Seq(1), task("t-2")).expect("fork");
     let plan = resume_plan(&rows(&child)).expect("plan");
-    assert_eq!(plan.taint, Taint::Tainted);
+    assert!(plan.taint);
     assert!(
         plan.faults.is_empty(),
         "the child's log is in write-ahead order"
@@ -127,7 +127,7 @@ fn a_fork_carries_the_summary_and_the_whole_history_it_covers() {
         SessionEntry::Turn(turn(1, "archive the newsletters")),
         call(1, "mail.thread.search"),
         step(1, "mail.thread.search"),
-        compacted(1, 1, Taint::Clean),
+        compacted(1, 1, false),
     ]);
     let child = fork(&session("s-1"), &parent, Seq(4), task("t-2")).expect("fork");
     let (p, c) = (

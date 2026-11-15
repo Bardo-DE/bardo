@@ -131,16 +131,6 @@ pub struct SinkIntegrity {
     pub path: Integrity,
 }
 
-/// Whether a session has seen something.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Saw {
-    /// It has.
-    Seen,
-    /// It has not.
-    NotSeen,
-}
-
 /// What a session has seen: computed by the router, never reported by a model. It only grows,
 /// and resets when the task ends. *Private* means the router delivered, plainly or as a handle
 /// the reader resolved, a value with `Private` or `Secret` confidentiality. *Untrusted* means a
@@ -148,9 +138,9 @@ pub enum Saw {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct SessionSaw {
     /// Private or secret data.
-    pub private: Saw,
+    pub private: bool,
     /// Untrusted content.
-    pub untrusted: Saw,
+    pub untrusted: bool,
 }
 
 /// What the router knows about the arguments of one call.

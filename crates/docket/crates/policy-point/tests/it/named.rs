@@ -4,8 +4,7 @@
 use crate::support::*;
 use docket_core::*;
 use docket_manifest::{AgentReach, Lasting};
-use docket_permissions_core::{AskReason, PolicyId, Ruling, Saw, SessionSaw};
-use docket_session::Taint;
+use docket_permissions_core::{AskReason, PolicyId, Ruling, SessionSaw};
 use docket_vocab::Origin;
 use policy_point::*;
 use porter_ids::Count;
@@ -244,8 +243,8 @@ fn other_operations_are_one_query() {
 fn nothing_loosens_what_a_hijacked_reviewer_or_wide_policy_would() {
     // Whatever the task policy and preset, the hard rules never reach AllowJudged or Final.
     let seen = SessionSaw {
-        private: Saw::Seen,
-        untrusted: Saw::Seen,
+        private: true,
+        untrusted: true,
     };
     for (name, set) in [("auto", pdp()), ("manual", manual())] {
         for effect in [Effect::Outbound, Effect::Destructive] {
@@ -322,21 +321,21 @@ fn a_tainted_always_grant_asks_with_the_taint_reason_and_only_for_a_change() {
             "tainted change",
             Effect::UndoableWrite,
             GrantState::Always,
-            Taint::Tainted,
+            true,
             Cell::Ask,
         ),
         (
             "tainted but only a read",
             Effect::Read,
             GrantState::Always,
-            Taint::Tainted,
+            true,
             Cell::Final,
         ),
         (
             "clean change",
             Effect::UndoableWrite,
             GrantState::Always,
-            Taint::Clean,
+            false,
             Cell::Final,
         ),
     ];
@@ -353,7 +352,7 @@ fn a_tainted_always_grant_asks_with_the_taint_reason_and_only_for_a_change() {
     let user = pdp().decide(&with(Effect::UndoableWrite, |r| {
         r.principal.kind = ActorKind::User;
         r.context.origin = Origin::Launcher;
-        r.context.taint = Taint::Tainted;
+        r.context.taint = true;
     }));
     assert_eq!(cell(&user), Cell::Final, "the person's own act: {user:?}");
 }
@@ -362,7 +361,7 @@ fn a_tainted_always_grant_asks_with_the_taint_reason_and_only_for_a_change() {
 fn a_first_use_still_says_first_use_when_the_session_is_tainted() {
     let got = pdp().decide(&with(Effect::UndoableWrite, |r| {
         r.context.grant = GrantState::None;
-        r.context.taint = Taint::Tainted;
+        r.context.taint = true;
     }));
     assert_eq!(asks(&got), [AskReason::FirstUse], "{got:?}");
 }

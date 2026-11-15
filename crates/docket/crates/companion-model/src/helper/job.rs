@@ -92,24 +92,18 @@ pub enum GoalSource {
     Brief,
 }
 
-/// What a planner that gives a job had seen, as the router computed it (never as it said).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum PlannerSaw {
-    /// Nothing untrusted reached it.
-    Nothing,
-    /// Untrusted content reached it or its reader.
-    Untrusted,
-}
-
 /// Who is giving a job, as far as its goal's trust goes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum GoalOrigin {
     /// The person, through the shell.
     Person,
-    /// A planner, having seen this.
-    Planner(PlannerSaw),
+    /// A planner, which had seen untrusted content or not, as the router computed it (never as
+    /// it said).
+    Planner {
+        /// Whether untrusted content reached it or its reader.
+        saw_untrusted: bool,
+    },
     /// A planner, giving words that lie inside a brief the person confirmed.
     ConfirmedBrief,
 }

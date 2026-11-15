@@ -9,7 +9,6 @@ use docket_core::*;
 use docket_fake::fake_router;
 use docket_permissions_core::{BreakerTrip, Mode};
 use docket_router::Router;
-use docket_session::Taint;
 use docket_vocab::{ActionRef, CallerRole, LabelText, Origin, UndoToken};
 use docket_wire::{
     CallerId, IntentsReply, IntentsRequest, SessionModeAsk, SessionOpen, SessionOpened,
@@ -142,11 +141,11 @@ async fn a_session_the_breaker_pauses_is_said_once_and_again_after_it_is_resumed
         let record = st.sessions.get_mut(&front.session).expect("session");
         record.state = if on {
             SessionState::Paused {
-                taint: Taint::Clean,
+                taint: false,
                 trip: BreakerTrip::Consecutive,
             }
         } else {
-            SessionState::Open(Taint::Clean)
+            SessionState::Open(false)
         };
     };
     pause(true);

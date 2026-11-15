@@ -58,8 +58,8 @@ fn context_json(c: &PolicyContext) -> Value {
         "terminal": slug(&c.terminal),
         "coverage": slug(&c.coverage),
         "task_ceiling": slug(&c.task_ceiling),
-        "saw_private": slug(&c.saw.private),
-        "saw_untrusted": slug(&c.saw.untrusted),
+        "saw_private": if c.saw.private { "seen" } else { "not_seen" },
+        "saw_untrusted": if c.saw.untrusted { "seen" } else { "not_seen" },
         "sinks": {
             "recipient": slug(&c.sinks.recipient),
             "destination": slug(&c.sinks.destination),
@@ -71,7 +71,7 @@ fn context_json(c: &PolicyContext) -> Value {
         "budget": budget_slug(&c.budget),
         "repeat": slug(&c.repeat),
         "limit": slug(&c.limit),
-        "taint": slug(&c.taint),
+        "taint": if c.taint { "tainted" } else { "clean" },
         "run": slug(&c.run),
         "mode": c.mode.word(),
         "rows": {

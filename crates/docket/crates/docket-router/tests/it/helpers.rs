@@ -6,7 +6,7 @@ use companion_model::helper::HelperSeat;
 use docket_core::*;
 use docket_fake::ScriptedWriter;
 use docket_gate::companion_names::{HELPER_POST_JOB, HELPER_PROPOSE, ROUTINE_PROPOSE};
-use docket_permissions_core::{ActionMatch, COMPANION_APP, DenyCode, Saw, TaskPolicy};
+use docket_permissions_core::{ActionMatch, COMPANION_APP, DenyCode, TaskPolicy};
 use docket_vocab::{
     ActionRef, CallId, CallRequest, Caller, CallerRole, Origin, TargetValue, TurnId, Value,
 };
@@ -475,7 +475,7 @@ async fn a_job_for_a_helper_is_allowed_only_when_a_planner_that_read_nothing_unt
         .get_mut(&front.session)
         .expect("session")
         .saw
-        .untrusted = Saw::Seen;
+        .untrusted = true;
     assert!(matches!(
         router.companion_perform(post(planners())),
         Err(AppRefusal::Failed(_))

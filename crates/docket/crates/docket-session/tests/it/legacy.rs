@@ -98,7 +98,7 @@ fn an_old_log_resumes_and_counts_what_it_skipped() {
     assert_eq!(plan.turns.len(), 1);
     assert_eq!(plan.skills.len(), 1);
     assert_eq!(plan.legacy_skipped.0, 2);
-    assert_eq!(plan.taint, Taint::Clean);
+    assert!(!plan.taint);
     assert!(plan.faults.is_empty());
 }
 

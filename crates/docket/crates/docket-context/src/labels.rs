@@ -8,7 +8,7 @@ use crate::spoken::whole_in;
 use crate::state::SessionRecord;
 use docket_core::ArgFault;
 use docket_manifest::{ActionDecl, ArgSink};
-use docket_permissions_core::{ArgLabels, Saw, SessionSaw, SinkIntegrity};
+use docket_permissions_core::{ArgLabels, SessionSaw, SinkIntegrity};
 use docket_vocab::{Args, ParamName, TargetValue, Value};
 use porter_core::AppName;
 use prov::{ClientName, Confidentiality, Integrity, Label, Labelled, ModelRole, Source};
@@ -263,8 +263,8 @@ pub fn arg_labels(args: &Args, session: &SessionRecord) -> ArgLabels {
 /// A planner that has seen untrusted content is untrusted.
 pub fn planner_integrity(saw: &SessionSaw) -> Integrity {
     match saw.untrusted {
-        Saw::Seen => Integrity::Untrusted,
-        Saw::NotSeen => Integrity::Trusted,
+        true => Integrity::Untrusted,
+        false => Integrity::Trusted,
     }
 }
 
@@ -279,11 +279,11 @@ pub fn args_confidentiality(args: &Args) -> Confidentiality {
 /// reveal taints it for good.
 pub fn absorb(session: &mut SessionRecord, label: &Label) {
     if label.integrity == Integrity::Untrusted {
-        session.saw.untrusted = Saw::Seen;
+        session.saw.untrusted = true;
         session.apply(SessionEvent::UntrustedReveal);
     }
     if private(&label.confidentiality) {
-        session.saw.private = Saw::Seen;
+        session.saw.private = true;
     }
     if !session.seen.contains(label) {
         session.seen.push(label.clone());

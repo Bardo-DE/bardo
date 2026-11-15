@@ -51,7 +51,7 @@ pub struct Restored {
     /// Where the session stands: taking turns, paused, or closed for display.
     pub standing: Standing,
     /// The taint it holds, never lower than the log's.
-    pub taint: docket_session::Taint,
+    pub taint: bool,
     /// How many calls a crash cut off: told to the planner, not run again.
     pub interrupted: Count,
 }

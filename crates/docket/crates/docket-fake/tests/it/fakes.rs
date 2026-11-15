@@ -6,10 +6,7 @@ use docket_core::*;
 use docket_fake::*;
 use docket_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
 use docket_manifest::{Lasting, TitleTrust, ValidManifest};
-use docket_permissions_core::{
-    ArgLabels, GrantCaller, Recipient, ReviewError, Saw, SessionSaw, Stage, StandingGrant,
-    StandingScope, Strictness,
-};
+use docket_permissions_core::{ArgLabels, GrantCaller, Recipient, ReviewError, SessionSaw, Stage, StandingGrant, StandingScope, Strictness};
 use docket_provider::IntentProvider;
 use docket_router::GrantStore;
 use docket_vocab::{
@@ -212,8 +209,8 @@ fn review_request() -> action_review::ReviewRequest {
             per_arg: Default::default(),
             planner: Integrity::Trusted,
             saw: SessionSaw {
-                private: Saw::NotSeen,
-                untrusted: Saw::NotSeen,
+                private: false,
+                untrusted: false,
             },
         },
         task_policy: None,

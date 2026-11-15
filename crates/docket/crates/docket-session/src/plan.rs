@@ -3,7 +3,7 @@
 //! stored, step lines, handle labels. It never holds a value to re-read.
 
 use crate::codec::Unreadable;
-use crate::entry::{CallOpen, EndCause, HandleLabel, Opening, Seq, Taint};
+use crate::entry::{CallOpen, EndCause, HandleLabel, Opening, Seq};
 use companion_model::HandNote;
 use companion_model::helper::HelperSeat;
 use docket_core::{Ledger, SkillId, SkillVersion, StepLine, Summary, UserTurn};
@@ -116,7 +116,7 @@ pub struct ResumePlan {
     /// Where it stands.
     pub standing: Standing,
     /// Never lower than any taint in the log, and Tainted when the log is not whole.
-    pub taint: Taint,
+    pub taint: bool,
     /// The task policy as last stored; the policy writer is not called.
     pub policy: Option<TaskPolicy>,
     /// The person's words, in order.

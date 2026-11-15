@@ -1,7 +1,7 @@
 //! The rules of the board that do not need its state: which goals may be instructions.
 
 use super::card::HelperName;
-use super::job::{GoalOrigin, GoalSource, PlannerSaw};
+use super::job::{GoalOrigin, GoalSource};
 use serde::{Deserialize, Serialize};
 
 /// Why a job was not made. Each has a plain sentence; none names how the board works.
@@ -37,8 +37,8 @@ impl JobRefusal {
 pub fn admit_goal(origin: GoalOrigin) -> Result<GoalSource, JobRefusal> {
     match origin {
         GoalOrigin::Person => Ok(GoalSource::Person),
-        GoalOrigin::Planner(PlannerSaw::Nothing) => Ok(GoalSource::PlannerOnTrusted),
-        GoalOrigin::Planner(PlannerSaw::Untrusted) => Err(JobRefusal::UntrustedGoal),
+        GoalOrigin::Planner { saw_untrusted: false } => Ok(GoalSource::PlannerOnTrusted),
+        GoalOrigin::Planner { saw_untrusted: true } => Err(JobRefusal::UntrustedGoal),
         GoalOrigin::ConfirmedBrief => Ok(GoalSource::Brief),
     }
 }

@@ -13,9 +13,7 @@ use docket_memory::AlmanacSessionLog;
 use docket_permissions_core::{
     ActionGrantKey, ActionMatch, GrantCaller, GrantTarget, TaskPolicy, TaskPolicyState,
 };
-use docket_session::{
-    BackendKind, LogFault, Opening, PageSize, Read, Seq, SessionEntry, SessionLog, Taint,
-};
+use docket_session::{BackendKind, LogFault, Opening, PageSize, Read, Seq, SessionEntry, SessionLog};
 use docket_vocab::{ActionRef, CallRequest, CallerRole, LabelText, Origin, TargetValue, TurnId};
 use docket_wire::{CallerId, IntentsReply, IntentsRequest, SessionOpen};
 use porter_core::AppName;
@@ -423,7 +421,7 @@ async fn a_session_is_restored_from_almanac_after_the_router_is_dropped() {
         assert_eq!(record.policy, policy_before, "the policy as stored");
         assert_eq!(
             record.state,
-            docket_context::session::SessionState::Open(Taint::Tainted),
+            docket_context::session::SessionState::Open(true),
             "the taint of the first read survived the restart"
         );
         let handles = record.handles.forgotten();

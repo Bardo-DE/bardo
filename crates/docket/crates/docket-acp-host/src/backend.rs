@@ -41,10 +41,7 @@ use companion_model::helper::SignInWay;
 use docket_core::UserTurn;
 use docket_permissions_core::PermissionKind;
 use docket_permissions_core::ProgramName;
-use docket_session::{
-    BackendEvent, BackendFault, BackendKind, Choices, ResumePlan, Resumed, SessionBackend,
-    StartSession, Taint, TurnEnd,
-};
+use docket_session::{BackendEvent, BackendFault, BackendKind, Choices, ResumePlan, Resumed, SessionBackend, StartSession, TurnEnd};
 use docket_store::Waits;
 use docket_vocab::CallId;
 use prov::Effect;
@@ -347,7 +344,7 @@ impl<X: Seams> SessionBackend for AcpBackend<X> {
             .as_ref()
             .and_then(|w| AbsPath::parse(w.as_str()).ok())
             .ok_or(BackendFault::Unavailable)?;
-        self.open(open.session, cwd, Taint::Clean).await
+        self.open(open.session, cwd, false).await
     }
 
     async fn resume(&mut self, plan: &ResumePlan) -> Result<Resumed, BackendFault> {

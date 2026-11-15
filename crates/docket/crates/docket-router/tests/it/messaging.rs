@@ -3,7 +3,6 @@
 use crate::support::*;
 use docket_context::tasks::TaskState;
 use docket_core::*;
-use docket_permissions_core::Saw;
 use docket_vocab::{CallRequest, CallerRole, Handle, Origin, TargetValue, Value};
 use docket_wire::{IntentsReply, IntentsRequest, SessionOpened, WireRefusal};
 use prov::{
@@ -114,7 +113,7 @@ async fn a_cross_space_request_is_delivered_with_the_senders_label_and_grants_no
     {
         let st = router.state.lock().expect("lock");
         let receiver = &st.sessions[&front.session];
-        assert_eq!(receiver.saw.untrusted, Saw::Seen);
+        assert!(receiver.saw.untrusted);
         assert_eq!(receiver.policy, None, "a message grants no policy");
         assert_eq!(receiver.inbox.len(), 1);
     }

@@ -6,7 +6,7 @@ use docket_context::handles::HandleValue;
 use docket_core::*;
 use docket_fake::FakeSeams;
 use docket_manifest::{ArgSink, Cardinality, ManifestError, TitleTrust};
-use docket_permissions_core::{ActionGrantKey, AskReason, GrantCaller, GrantTarget, Saw};
+use docket_permissions_core::{ActionGrantKey, AskReason, GrantCaller, GrantTarget};
 use docket_router::{GrantStore, Router};
 use docket_vocab::{ActionRef, CallRequest, ChoiceId, Handle, Origin, TargetValue, Value};
 use porter_core::consent::{Decision, Grant, GrantScope, Usage};
@@ -141,11 +141,8 @@ async fn what_a_relation_takes_from_somebody_elses_words_is_untrusted_whatever_t
     assert_eq!(label.integrity, Integrity::Untrusted);
     assert!(label.sources.contains(&prov::Source::Mail), "{label:?}");
     let st = router.state.lock().expect("lock");
-    assert_eq!(
-        st.sessions[&session].saw.untrusted,
-        Saw::Seen,
-        "the planner is now one that has been shown untrusted things"
-    );
+    assert!(st.sessions[&session].saw.untrusted,
+        "the planner is now one that has been shown untrusted things");
 }
 
 #[tokio::test]

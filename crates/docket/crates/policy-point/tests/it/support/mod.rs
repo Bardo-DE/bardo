@@ -2,10 +2,7 @@
 #![allow(dead_code)]
 
 use docket_manifest::{AgentReach, Lasting};
-use docket_permissions_core::{
-    AskReason, Impact, Mode, ModeRows, Ruling, Saw, SessionSaw, SinkIntegrity,
-};
-use docket_session::Taint;
+use docket_permissions_core::{AskReason, Impact, Mode, ModeRows, Ruling, SessionSaw, SinkIntegrity};
 use docket_vocab::Origin;
 use policy_point::*;
 use porter_core::consent::Usage;
@@ -15,8 +12,8 @@ use prov::{ActionName, ActorKind, Confidentiality, Effect, Integrity, SpaceId};
 use std::collections::BTreeSet;
 
 pub const CLEAN: SessionSaw = SessionSaw {
-    private: Saw::NotSeen,
-    untrusted: Saw::NotSeen,
+    private: false,
+    untrusted: false,
 };
 
 /// A call that is trusted, inside the task policy, under Auto: the starting point
@@ -64,7 +61,7 @@ pub fn base(effect: Effect) -> PolicyRequest {
             budget: BudgetFact::Within,
             repeat: RepeatFact::Fresh,
             limit: LimitFact::Free,
-            taint: Taint::Clean,
+            taint: false,
             run: RunFact::NotAsked,
             mode: Mode::Auto,
             rows: ModeRows::AUTO,

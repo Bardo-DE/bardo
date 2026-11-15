@@ -111,7 +111,7 @@ fn an_unknown_version_in_the_log_blocks_the_resume() {
     let page = block_on(log.page(&s, None, PageSize(porter_ids::Count(10)))).expect("page");
     let plan = resume_plan(&page.rows).expect("plan");
     assert_eq!(plan.standing, Standing::Blocked(Blocker::Unreadable));
-    assert_eq!(plan.taint, Taint::Tainted);
+    assert!(plan.taint);
 }
 
 #[test]
@@ -202,7 +202,7 @@ fn a_watch_opening_round_trips_with_its_rewind_and_an_ordinary_one_is_unchanged(
 
 #[test]
 fn a_summary_entry_round_trips_under_its_own_tag() {
-    let entry = compacted(2, 3, Taint::Tainted);
+    let entry = compacted(2, 3, true);
     let enc = encode(Seq(7), &entry).expect("encode");
     assert_eq!(enc.kind, "companion.session.compacted");
     assert_eq!(

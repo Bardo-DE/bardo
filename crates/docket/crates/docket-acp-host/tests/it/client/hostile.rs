@@ -9,10 +9,7 @@ use super::rig::{
     tool, write,
 };
 use docket_core::AuditRecord;
-use docket_permissions_core::{
-    AlwaysOffer, FILES_READ, GrantCaller, Saw, StandingGrant, StandingScope, TERMINAL_RUN,
-    Withheld, acp_agent_action,
-};
+use docket_permissions_core::{AlwaysOffer, FILES_READ, GrantCaller, StandingGrant, StandingScope, TERMINAL_RUN, Withheld, acp_agent_action};
 use docket_session::{BackendEvent, CallEvent, TurnEnd};
 use serde_json::json;
 
@@ -251,7 +248,7 @@ async fn tool_results_the_agent_claims_are_recorded_and_trusted_for_nothing() {
     let saw = rig.router.state.lock().expect("lock").sessions[&rig.session]
         .saw
         .untrusted;
-    assert_eq!(saw, Saw::Seen, "the router took the taint too");
+    assert!(saw, "the router took the taint too");
     // The claimed output is nowhere in what the host sees.
     assert!(!format!("{events:?}").contains("approved the deploy"));
 }

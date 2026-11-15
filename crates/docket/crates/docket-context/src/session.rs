@@ -4,7 +4,6 @@
 
 use docket_core::CallRefusal;
 use docket_permissions_core::BreakerTrip;
-use docket_session::Taint;
 use prov::SessionId;
 
 /// Why a session closed.
@@ -22,11 +21,11 @@ pub enum CloseCause {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum SessionState {
     /// Taking calls.
-    Open(Taint),
+    Open(bool),
     /// The breaker tripped: only a new user turn resumes it.
     Paused {
         /// What it read before.
-        taint: Taint,
+        taint: bool,
         /// Why it paused.
         trip: BreakerTrip,
     },
@@ -77,10 +76,10 @@ pub fn session_step(
         (_, V::Close) => (S::Closed(CloseCause::Closed), vec![]),
         (_, V::SpaceHalted) => (S::Closed(CloseCause::SpaceHalted), vec![]),
         (_, V::WallExhausted) => (S::Closed(CloseCause::WallExhausted), vec![]),
-        (S::Open(_), V::UntrustedReveal) => (S::Open(Taint::Tainted), vec![]),
+        (S::Open(_), V::UntrustedReveal) => (S::Open(true), vec![]),
         (S::Paused { trip, .. }, V::UntrustedReveal) => (
             S::Paused {
-                taint: Taint::Tainted,
+                taint: true,
                 trip,
             },
             vec![],
