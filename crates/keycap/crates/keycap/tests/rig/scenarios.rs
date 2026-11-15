@@ -6,55 +6,12 @@ use crate::support::{
 };
 
 #[test]
-fn command_c_in_default_is_control_c() {
-    Rig::new().expect(vec![
-        (press(0, "leftmeta"), "+leftctrl SYN"),
-        (press(0, "c"), "+c SYN"),
-        (release(0, "c"), "-c SYN"),
-        (release(0, "leftmeta"), "-leftctrl SYN"),
-    ]);
-}
-
-#[test]
-fn command_c_in_terminal_is_control_shift_c_and_keeps_control() {
-    let mut rig = Rig::new();
-    rig.expect(vec![
-        (focus("terminal"), ""),
-        (press(0, "leftmeta"), "+leftctrl SYN"),
-        (press(0, "c"), "+leftshift +c SYN"),
-        (release(0, "c"), "-c -leftshift SYN"),
-        (release(0, "leftmeta"), "-leftctrl SYN"),
-    ]);
-    assert!(rig.down().is_empty());
-}
-
-#[test]
-fn command_left_lifts_control_for_home_and_release_restores_it() {
-    Rig::new().expect(vec![
-        (press(0, "leftmeta"), "+leftctrl SYN"),
-        (press(0, "left"), "-leftctrl +home SYN"),
-        (release(0, "left"), "-home +leftctrl SYN"),
-        (release(0, "leftmeta"), "-leftctrl SYN"),
-    ]);
-}
-
-#[test]
 fn command_left_released_command_first_never_brings_control_back() {
     Rig::new().expect(vec![
         (press(0, "leftmeta"), "+leftctrl SYN"),
         (press(0, "left"), "-leftctrl +home SYN"),
         (release(0, "leftmeta"), ""),
         (release(0, "left"), "-home SYN"),
-    ]);
-}
-
-#[test]
-fn option_left_lifts_alt_for_control_left() {
-    Rig::new().expect(vec![
-        (press(0, "leftalt"), "+leftalt SYN"),
-        (press(0, "left"), "+f24 -f24 -leftalt +leftctrl +left SYN"),
-        (release(0, "left"), "-left -leftctrl +leftalt SYN"),
-        (release(0, "leftalt"), "+f24 -f24 -leftalt SYN"),
     ]);
 }
 
@@ -95,34 +52,6 @@ fn command_left_while_the_switcher_is_open_gives_alt_back_after() {
         (press(0, "left"), "-leftalt +home SYN"),
         (release(0, "left"), "-home +leftalt SYN"),
         (release(0, "leftmeta"), "+f24 -f24 -leftalt SYN"),
-    ]);
-}
-
-#[test]
-fn command_backspace_taps_the_sequence_and_writes_nothing_on_release() {
-    Rig::new().expect(vec![
-        (press(0, "leftmeta"), "+leftctrl SYN"),
-        (
-            press(0, "backspace"),
-            "-leftctrl +leftshift +home -home -leftshift +delete -delete +leftctrl SYN",
-        ),
-        (release(0, "backspace"), ""),
-        (release(0, "leftmeta"), "-leftctrl SYN"),
-    ]);
-}
-
-#[test]
-fn control_a_in_default_is_home_and_in_terminal_control_a() {
-    Rig::new().expect(vec![
-        (press(0, "leftctrl"), "+leftmeta SYN"),
-        (press(0, "a"), "+f24 -f24 -leftmeta +home SYN"),
-        (release(0, "a"), "-home +leftmeta SYN"),
-        (release(0, "leftctrl"), "+f24 -f24 -leftmeta SYN"),
-        (focus("terminal"), ""),
-        (press(0, "leftctrl"), "+leftctrl SYN"),
-        (press(0, "a"), "+a SYN"),
-        (release(0, "a"), "-a SYN"),
-        (release(0, "leftctrl"), "-leftctrl SYN"),
     ]);
 }
 
@@ -397,59 +326,141 @@ fn a_lift_after_another_key_was_written_needs_no_neutral_tap() {
     ]);
 }
 
+/// One modifier held, one key tapped over it: `(profile, modifier, key, [modifier press, key
+/// press, key release, modifier release])`, as the wire sees each step.
 #[test]
-fn command_left_gets_no_neutral_tap_because_a_control_tap_is_harmless() {
-    let mut rig = Rig::new();
-    rig.expect(vec![
-        (press(0, "leftmeta"), "+leftctrl SYN"),
-        (press(0, "left"), "-leftctrl +home SYN"),
-        (release(0, "left"), "-home +leftctrl SYN"),
-        (release(0, "leftmeta"), "-leftctrl SYN"),
-    ]);
-}
-
-#[test]
-fn command_grave_cycles_the_windows_of_one_app_and_holds_alt_until_command_is_released() {
-    Rig::new().expect(vec![
-        (press(0, "leftmeta"), "+leftctrl SYN"),
-        (press(0, "grave"), "-leftctrl +leftalt +grave SYN"),
-        (release(0, "grave"), "-grave SYN"),
-        (release(0, "leftmeta"), "-leftalt SYN"),
-    ]);
-}
-
-#[test]
-fn control_space_is_control_space_for_the_input_method_not_super_space() {
-    Rig::new().expect(vec![
-        (press(0, "leftctrl"), "+leftmeta SYN"),
+fn one_modifier_and_one_key_in_each_profile() {
+    type Case = (&'static str, &'static str, &'static str, [&'static str; 4]);
+    const CASES: &[Case] = &[
+        // Command+C copies; in a terminal it is Ctrl+Shift+C, and Ctrl stays down under it.
         (
-            press(0, "space"),
-            "+f24 -f24 -leftmeta +leftctrl +space SYN",
+            "default",
+            "leftmeta",
+            "c",
+            ["+leftctrl SYN", "+c SYN", "-c SYN", "-leftctrl SYN"],
         ),
-        (release(0, "space"), "-space -leftctrl +leftmeta SYN"),
-        (release(0, "leftctrl"), "+f24 -f24 -leftmeta SYN"),
-    ]);
-}
-
-#[test]
-fn command_space_stays_super_space_for_the_desktop_launcher() {
-    Rig::new().expect(vec![
-        (press(0, "leftmeta"), "+leftctrl SYN"),
-        (press(0, "space"), "-leftctrl +leftmeta +space SYN"),
-        (release(0, "space"), "-space -leftmeta +leftctrl SYN"),
-        (release(0, "leftmeta"), "-leftctrl SYN"),
-    ]);
-}
-
-#[test]
-fn command_backspace_in_a_file_manager_trashes_instead_of_selecting_to_the_first_item() {
-    let mut rig = Rig::new();
-    rig.expect(vec![
-        (focus("filemanager"), ""),
-        (press(0, "leftmeta"), "+leftctrl SYN"),
-        (press(0, "backspace"), "-leftctrl +delete SYN"),
-        (release(0, "backspace"), "-delete +leftctrl SYN"),
-        (release(0, "leftmeta"), "-leftctrl SYN"),
-    ]);
-    assert!(rig.down().is_empty());
+        (
+            "terminal",
+            "leftmeta",
+            "c",
+            [
+                "+leftctrl SYN",
+                "+leftshift +c SYN",
+                "-c -leftshift SYN",
+                "-leftctrl SYN",
+            ],
+        ),
+        // Command+Left lifts Control for Home and gives it back on release.
+        (
+            "default",
+            "leftmeta",
+            "left",
+            [
+                "+leftctrl SYN",
+                "-leftctrl +home SYN",
+                "-home +leftctrl SYN",
+                "-leftctrl SYN",
+            ],
+        ),
+        // Option+Left lifts Alt for Control+Left, with a neutral tap when Alt goes.
+        (
+            "default",
+            "leftalt",
+            "left",
+            [
+                "+leftalt SYN",
+                "+f24 -f24 -leftalt +leftctrl +left SYN",
+                "-left -leftctrl +leftalt SYN",
+                "+f24 -f24 -leftalt SYN",
+            ],
+        ),
+        (
+            "default",
+            "leftmeta",
+            "backspace",
+            [
+                "+leftctrl SYN",
+                "-leftctrl +leftshift +home -home -leftshift +delete -delete +leftctrl SYN",
+                "",
+                "-leftctrl SYN",
+            ],
+        ),
+        (
+            "filemanager",
+            "leftmeta",
+            "backspace",
+            [
+                "+leftctrl SYN",
+                "-leftctrl +delete SYN",
+                "-delete +leftctrl SYN",
+                "-leftctrl SYN",
+            ],
+        ),
+        // Command+` cycles one app's windows and holds Alt until Command is released.
+        (
+            "default",
+            "leftmeta",
+            "grave",
+            [
+                "+leftctrl SYN",
+                "-leftctrl +leftalt +grave SYN",
+                "-grave SYN",
+                "-leftalt SYN",
+            ],
+        ),
+        // Control+A is Home outside a terminal and Control+A inside one.
+        (
+            "default",
+            "leftctrl",
+            "a",
+            [
+                "+leftmeta SYN",
+                "+f24 -f24 -leftmeta +home SYN",
+                "-home +leftmeta SYN",
+                "+f24 -f24 -leftmeta SYN",
+            ],
+        ),
+        (
+            "terminal",
+            "leftctrl",
+            "a",
+            ["+leftctrl SYN", "+a SYN", "-a SYN", "-leftctrl SYN"],
+        ),
+        // Control+Space reaches the input method; Command+Space stays Super+Space.
+        (
+            "default",
+            "leftctrl",
+            "space",
+            [
+                "+leftmeta SYN",
+                "+f24 -f24 -leftmeta +leftctrl +space SYN",
+                "-space -leftctrl +leftmeta SYN",
+                "+f24 -f24 -leftmeta SYN",
+            ],
+        ),
+        (
+            "default",
+            "leftmeta",
+            "space",
+            [
+                "+leftctrl SYN",
+                "-leftctrl +leftmeta +space SYN",
+                "-space -leftmeta +leftctrl SYN",
+                "-leftctrl SYN",
+            ],
+        ),
+    ];
+    for &(profile, modifier, key, [modifier_press, key_press, key_release, modifier_release]) in
+        CASES
+    {
+        let mut rig = Rig::new();
+        rig.expect(vec![
+            (focus(profile), ""),
+            (press(0, modifier), modifier_press),
+            (press(0, key), key_press),
+            (release(0, key), key_release),
+            (release(0, modifier), modifier_release),
+        ]);
+        assert!(rig.down().is_empty(), "{profile}: {modifier}+{key}");
+    }
 }

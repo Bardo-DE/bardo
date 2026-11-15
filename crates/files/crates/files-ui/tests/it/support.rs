@@ -56,7 +56,7 @@ impl Opener for RecordingOpener {
 pub struct FakeApps;
 
 /// Where the fake Viewer's icon is; nothing reads it, the window only names it in its markup.
-pub const VIEWER_ICON: &str = "/icons/viewer.png";
+const VIEWER_ICON: &str = "/icons/viewer.png";
 
 fn app(id: &str, name: &str, is_default: bool) -> AppChoiceView {
     AppChoiceView {

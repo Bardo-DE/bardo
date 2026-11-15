@@ -54,12 +54,6 @@ fn names_sort_naturally_and_ignoring_case() {
 }
 
 #[test]
-fn name_sort_does_not_put_folders_first() {
-    let entries = [folder("c"), file("a"), folder("b")];
-    assert_eq!(order(&entries, Sort::default()), vec!["a", "b", "c"]);
-}
-
-#[test]
 fn names_that_differ_only_in_case_or_zeros_have_a_fixed_order() {
     let (a, b) = (file("a"), file("A"));
     assert_eq!(compare(&a, &b, Sort::default()), Ordering::Greater);
@@ -68,44 +62,58 @@ fn names_that_differ_only_in_case_or_zeros_have_a_fixed_order() {
 }
 
 #[test]
-fn kind_sort_puts_folders_first_then_groups_by_type() {
-    let entries = [
+fn each_key_sorts_by_its_own_rule() {
+    use SortOrder::{Ascending, Descending};
+    let at = |s| UNIX_EPOCH + Duration::from_secs(s);
+    let kinds = vec![
         mime(file("z.txt"), "text/plain"),
         mime(file("a.png"), "image/png"),
         folder("m"),
         mime(file("b.txt"), "text/plain"),
     ];
-    assert_eq!(
-        order(&entries, sort(SortKey::Kind, SortOrder::Ascending)),
-        vec!["m", "a.png", "b.txt", "z.txt"]
-    );
-    assert_eq!(
-        order(&entries, sort(SortKey::Kind, SortOrder::Descending)),
-        vec!["z.txt", "b.txt", "a.png", "m"]
-    );
-}
-
-#[test]
-fn size_sort_counts_folders_as_nothing() {
-    let entries = [sized("big", 900), folder("dir"), sized("small", 5)];
-    assert_eq!(
-        order(&entries, sort(SortKey::Size, SortOrder::Ascending)),
-        vec!["dir", "small", "big"]
-    );
-}
-
-#[test]
-fn modified_sort_puts_unknown_dates_first_then_oldest_to_newest() {
-    let at = |s| UNIX_EPOCH + Duration::from_secs(s);
-    let entries = [
+    let sizes = vec![sized("big", 900), folder("dir"), sized("small", 5)];
+    let dates = vec![
         file("new").modified_at(at(9)),
         file("unknown"),
         file("old").modified_at(at(1)),
     ];
-    assert_eq!(
-        order(&entries, sort(SortKey::Modified, SortOrder::Ascending)),
-        vec!["unknown", "old", "new"]
-    );
+    // (what the key is about, entries, key, order, names in order)
+    let table = [
+        (
+            "kind: folders first, then by type",
+            &kinds,
+            SortKey::Kind,
+            Ascending,
+            vec!["m", "a.png", "b.txt", "z.txt"],
+        ),
+        (
+            "kind reversed",
+            &kinds,
+            SortKey::Kind,
+            Descending,
+            vec!["z.txt", "b.txt", "a.png", "m"],
+        ),
+        (
+            "size: folders count as nothing",
+            &sizes,
+            SortKey::Size,
+            Ascending,
+            vec!["dir", "small", "big"],
+        ),
+        (
+            "modified: unknown dates first, then oldest to newest",
+            &dates,
+            SortKey::Modified,
+            Ascending,
+            vec!["unknown", "old", "new"],
+        ),
+    ];
+    for (what, entries, key, direction, want) in table {
+        assert_eq!(order(entries, sort(key, direction)), want, "{what}");
+    }
+    // name sort does not put folders first
+    let mixed = [folder("c"), file("a"), folder("b")];
+    assert_eq!(order(&mixed, Sort::default()), vec!["a", "b", "c"]);
 }
 
 #[test]

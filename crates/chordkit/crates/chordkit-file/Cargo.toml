@@ -13,5 +13,8 @@ thiserror = {version = "2"}
 [target.'cfg(unix)'.dependencies]
 libc = {version = "0.2"}
 
+[dev-dependencies]
+tempfile = {version = "3"}
+
 [lints.rust]
 unsafe_code = "forbid"

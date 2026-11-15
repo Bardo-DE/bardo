@@ -111,7 +111,7 @@ fn the_folders_name_is_the_toolbars_title() {
 }
 
 #[test]
-fn a_click_selects_a_row_and_select_all_selects_every_row() {
+fn clicks_and_keys_select_rows() {
     let mut rig = open();
     rig.click_row(1);
     assert!(rig.selected(1), "row 1 is not selected");
@@ -122,11 +122,8 @@ fn a_click_selects_a_row_and_select_all_selects_every_row() {
     rig.command(ShortcutKey::Char('a'));
     rig.harness.advance(Duration::from_millis(50));
     assert!((0..4).all(|n| rig.selected(n)), "not every row is selected");
-}
 
-#[test]
-fn typing_a_letter_jumps_to_the_name_that_starts_with_it() {
-    let mut rig = open();
+    // Typing a letter jumps to the name that starts with it.
     rig.click_row(0);
     rig.harness.send(Input::key(ShortcutKey::Char('z')));
     rig.harness.advance(Duration::from_millis(50));
@@ -135,7 +132,7 @@ fn typing_a_letter_jumps_to_the_name_that_starts_with_it() {
 }
 
 #[test]
-fn command_down_opens_the_selected_folder_and_command_bracket_goes_back() {
+fn command_down_opens_the_folder_and_back_and_up_return() {
     let mut rig = open();
     rig.click_row(1);
     rig.command(ShortcutKey::Down);
@@ -148,15 +145,11 @@ fn command_down_opens_the_selected_folder_and_command_bracket_goes_back() {
 
     rig.command(ShortcutKey::Char('['));
     rig.shows("zebra.png");
-}
 
-#[test]
-fn the_back_button_returns_and_command_up_goes_to_the_enclosing_folder() {
-    let mut rig = open();
+    // The Back button returns too, and command-up goes to the enclosing folder.
     rig.click_row(1);
     rig.command(ShortcutKey::Down);
     rig.shows("inner.txt");
-
     let back = rig
         .harness
         .centre(".ds-toolbar-leading .ds-button")
@@ -229,15 +222,6 @@ fn a_folder_that_is_gone_says_so_and_offers_to_try_again() {
     assert!(harness.html().contains("Retry"));
 }
 
-#[test]
-fn an_empty_folder_says_so() {
-    let dir = tempfile::tempdir().unwrap();
-    let config = tempfile::tempdir().unwrap();
-    let opener = Arc::new(RecordingOpener::default());
-    let mut harness = harness(launch(dir.path(), config.path(), &opener));
-    settle_until(&mut harness, |h| h.html().contains("This folder is empty."));
-}
-
 /// The first and the second button of an alert, in the markup's order.
 const FIRST_BUTTON: &str = ".ds-alert-slot:nth-child(1) > .ds-button";
 
@@ -250,7 +234,7 @@ fn press_at(harness: &mut Harness, selector: &str) {
 }
 
 #[test]
-fn moving_to_the_trash_leaves_the_folder_and_the_toast_undoes_it() {
+fn moving_to_the_trash_leaves_the_folder_and_undo_brings_it_back() {
     let mut rig = open();
     let notes = rig.dir.path().join("notes.txt");
     rig.click_row(0);
@@ -270,12 +254,8 @@ fn moving_to_the_trash_leaves_the_folder_and_the_toast_undoes_it() {
     press_at(&mut rig.harness, ".ds-toast-action");
     settle_until(&mut rig.harness, |_| notes.exists());
     assert_eq!(std::fs::read_to_string(&notes).unwrap(), "hello");
-}
 
-#[test]
-fn undo_from_the_keyboard_takes_back_the_last_change() {
-    let mut rig = open();
-    let notes = rig.dir.path().join("notes.txt");
+    // Undo from the keyboard takes back the last change too.
     rig.click_row(0);
     rig.chord(&[ShortcutKey::Super], ShortcutKey::Backspace);
     settle_until(&mut rig.harness, |_| !notes.exists());
@@ -382,11 +362,23 @@ fn a_right_click_on_a_row_selects_it_and_offers_what_can_be_done() {
 }
 
 #[test]
-fn an_empty_trash_says_so() {
+fn an_empty_folder_and_an_empty_trash_say_so() {
     let config = tempfile::tempdir().unwrap();
     let opener = Arc::new(RecordingOpener::default());
+    let folder = tempfile::tempdir().unwrap();
     let trash = Arc::new(FakeTrash::new(config.path().join("trash")));
-    let launch = launch_with(files_core::Location::Trash, config.path(), &opener, trash);
-    let mut harness = harness(launch);
-    settle_until(&mut harness, |h| h.html().contains("Trash is empty"));
+    let table = [
+        (
+            launch(folder.path(), config.path(), &opener),
+            "This folder is empty.",
+        ),
+        (
+            launch_with(files_core::Location::Trash, config.path(), &opener, trash),
+            "Trash is empty",
+        ),
+    ];
+    for (launch, says) in table {
+        let mut harness = harness(launch);
+        settle_until(&mut harness, |h| h.html().contains(says));
+    }
 }

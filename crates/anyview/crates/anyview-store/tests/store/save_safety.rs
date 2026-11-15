@@ -57,9 +57,8 @@ fn a_failing_folder_sync_after_the_rename_is_still_a_saved_file() {
 }
 
 #[test]
-fn a_save_keeps_special_mode_bits_and_user_attributes() {
+fn a_save_keeps_user_attributes() {
     let s = scratch("before");
-    fs::set_permissions(&s.file, fs::Permissions::from_mode(0o2750)).unwrap();
     let marked = rustix::fs::setxattr(
         &s.file,
         "user.anyview.test",
@@ -68,8 +67,6 @@ fn a_save_keeps_special_mode_bits_and_user_attributes() {
     );
     save(&s, "after", 1).unwrap();
 
-    let mode = fs::metadata(&s.file).unwrap().permissions().mode() & 0o7777;
-    assert_eq!(mode, 0o2750, "set-group-id and the permission bits");
     if marked.is_ok() {
         let mut value = [0_u8; 16];
         let length = rustix::fs::getxattr(&s.file, "user.anyview.test", &mut value[..]).unwrap();
@@ -149,33 +146,6 @@ fn a_change_made_between_the_backup_and_the_rename_is_kept_not_lost() {
     assert_eq!(
         fs::read_to_string(&s.file).unwrap(),
         "theirs, a different length"
-    );
-}
-
-#[test]
-fn a_save_that_fails_before_touching_the_file_keeps_no_copy_of_it() {
-    let s = scratch("before");
-    let backed = s
-        .versions
-        .back_up(Pending::new(&s.file, b"after".to_vec()), SavedAt(1))
-        .unwrap();
-    let folder = s.file.parent().unwrap();
-    fs::set_permissions(folder, fs::Permissions::from_mode(0o555)).unwrap();
-    let failed = backed.write_in_place();
-    fs::set_permissions(folder, fs::Permissions::from_mode(0o755)).unwrap();
-    assert!(failed.is_err());
-    assert_eq!(s.versions.list(&s.file).unwrap(), []);
-    let root = s
-        .file
-        .parent()
-        .unwrap()
-        .parent()
-        .unwrap()
-        .join("state/anyview/versions");
-    assert_eq!(
-        names(&root),
-        Vec::<String>::new(),
-        "and its folder went too"
     );
 }
 

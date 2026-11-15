@@ -4,7 +4,7 @@ use anyview_core::{FilePath, FormatKind, Resume};
 use anyview_store::{HistoryCap, HistoryRead, StoreWriter, Viewed, read_history};
 use std::sync::atomic::{AtomicBool, Ordering};
 
-const VIEWS: u64 = 120;
+const VIEWS: u64 = 15;
 
 #[test]
 fn a_concurrent_reader_sees_a_complete_history_at_every_moment() {

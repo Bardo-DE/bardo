@@ -89,6 +89,12 @@ fn selection_follows_clicks_and_keys() {
             vec!["b", "c", "d"],
             Some("d"),
         ),
+        // select all keeps the anchor for a later extend
+        (
+            vec![click("b", Plain), Input::SelectAll, click("d", Extend)],
+            vec!["b", "c", "d"],
+            Some("d"),
+        ),
     ];
     for (inputs, chosen, cursor) in table {
         let (browser, effects) = run(five(), inputs.clone());
@@ -100,19 +106,6 @@ fn selection_follows_clicks_and_keys() {
             "{inputs:?}"
         );
     }
-}
-
-#[test]
-fn selecting_all_keeps_the_anchor_for_a_later_extend() {
-    let (browser, _) = run(
-        five(),
-        vec![
-            click("b", Modifier::None),
-            Input::SelectAll,
-            click("d", Modifier::Extend),
-        ],
-    );
-    assert_eq!(selected(&browser), vec!["b", "c", "d"]);
 }
 
 #[test]

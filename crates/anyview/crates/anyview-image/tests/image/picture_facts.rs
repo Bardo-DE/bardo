@@ -59,60 +59,58 @@ fn a_located_jpeg_lists_picture_camera_and_location_rows() {
 }
 
 #[test]
-fn a_located_png_lists_what_its_exif_chunk_and_header_say() {
-    let file = bytes("located.png");
-    let facts = picture_facts(&file, &sniffed(&file, "located.png"));
-    let got = rows(&facts);
-    assert_eq!(
-        got.first(),
-        Some(&(
+fn other_containers_list_what_their_exif_and_header_say() {
+    // file, what the viewer can decode (so a colour row exists), rows that must be listed
+    let cases: [(&str, bool, &[(FactGroup, FactLabel, &str)]); 2] = [
+        (
+            "located.png",
+            true,
+            &[
+                (FactGroup::Camera, FactLabel::Camera, "TestCam Located One"),
+                (FactGroup::Picture, FactLabel::Resolution, "300 dpi"),
+                (
+                    FactGroup::Location,
+                    FactLabel::Coordinates,
+                    "37.7749° N, 122.4194° W",
+                ),
+            ],
+        ),
+        (
+            // The viewer cannot decode a HEIC, yet its EXIF is listed.
+            "located.heic",
+            false,
+            &[
+                (FactGroup::Camera, FactLabel::Camera, "TestCam Located One"),
+                (FactGroup::Camera, FactLabel::Flash, "Auto, fired"),
+                (
+                    FactGroup::Location,
+                    FactLabel::Coordinates,
+                    "37.7749° N, 122.4194° W",
+                ),
+            ],
+        ),
+    ];
+    for (name, decodes, listed) in cases {
+        let file = bytes(name);
+        let got = rows(&picture_facts(&file, &sniffed(&file, name)));
+        let colour = (
             FactGroup::Picture,
             FactLabel::Colour,
-            "RGB, 8-bit".to_owned()
-        ))
-    );
-    assert!(got.contains(&(
-        FactGroup::Camera,
-        FactLabel::Camera,
-        "TestCam Located One".to_owned()
-    )));
-    assert!(got.contains(&(
-        FactGroup::Picture,
-        FactLabel::Resolution,
-        "300 dpi".to_owned()
-    )));
-    assert!(got.contains(&(
-        FactGroup::Location,
-        FactLabel::Coordinates,
-        "37.7749° N, 122.4194° W".to_owned()
-    )));
-}
-
-#[test]
-fn a_heic_lists_its_exif_though_the_viewer_cannot_decode_it() {
-    let file = bytes("located.heic");
-    let facts = picture_facts(&file, &sniffed(&file, "located.heic"));
-    let got = rows(&facts);
-    assert!(
-        got.iter().all(|(_, label, _)| *label != FactLabel::Colour),
-        "nothing decoded, so no colour"
-    );
-    assert!(got.contains(&(
-        FactGroup::Camera,
-        FactLabel::Camera,
-        "TestCam Located One".to_owned()
-    )));
-    assert!(got.contains(&(
-        FactGroup::Camera,
-        FactLabel::Flash,
-        "Auto, fired".to_owned()
-    )));
-    assert!(got.contains(&(
-        FactGroup::Location,
-        FactLabel::Coordinates,
-        "37.7749° N, 122.4194° W".to_owned()
-    )));
-    assert!(!format!("{got:?}").contains("SN-"));
+            "RGB, 8-bit".to_owned(),
+        );
+        if decodes {
+            assert_eq!(got.first(), Some(&colour), "{name}");
+        } else {
+            assert!(
+                got.iter().all(|(_, label, _)| *label != FactLabel::Colour),
+                "{name}: nothing decoded, so no colour"
+            );
+        }
+        for row in expected(listed) {
+            assert!(got.contains(&row), "{name}: {row:?}");
+        }
+        assert!(!format!("{got:?}").contains("SN-"), "{name}");
+    }
 }
 
 #[test]

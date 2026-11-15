@@ -89,6 +89,7 @@ const MODES: &[(&str, u32)] = &[
     ("private file", 0o600),
     ("group readable", 0o640),
     ("executable", 0o755),
+    ("set-group-id", 0o2750),
 ];
 
 #[test]
@@ -98,7 +99,7 @@ fn a_save_keeps_the_originals_mode_and_leaves_no_temporary_file() {
         fs::set_permissions(&s.file, fs::Permissions::from_mode(*mode)).unwrap();
         save(&s, "after", 1);
 
-        let got = fs::metadata(&s.file).unwrap().permissions().mode() & 0o777;
+        let got = fs::metadata(&s.file).unwrap().permissions().mode() & 0o7777;
         assert_eq!(got, *mode, "{name}");
         let names: Vec<_> = fs::read_dir(s.file.parent().unwrap())
             .unwrap()
@@ -125,6 +126,12 @@ fn a_failed_write_leaves_the_original_untouched_and_no_temporary_file() {
     assert_eq!(fs::read_dir(folder).unwrap().count(), 1);
     // The file is as it was, so the copy kept of it is redundant and went with the failure.
     assert_eq!(s.versions.list(&s.file).unwrap().len(), 0);
+    let root = folder.parent().unwrap().join("state/anyview/versions");
+    assert_eq!(
+        fs::read_dir(&root).unwrap().count(),
+        0,
+        "and its folder went too"
+    );
     // A retry is a new backup, and now succeeds.
     save(&s, "after", 6);
     assert_eq!(read(&s.file), "after");
@@ -141,11 +148,14 @@ fn backing_up_a_missing_file_fails_and_keeps_nothing() {
 }
 
 #[test]
-fn versions_list_newest_first_with_each_originals_content() {
+fn versions_list_newest_first_and_only_for_their_own_file() {
     let s = scratch("v0");
     save(&s, "v1", 300);
     save(&s, "v2", 100 + DAY);
     save(&s, "v3", 200 + DAY);
+    let other = s.file.with_file_name("other.txt");
+    fs::write(&other, "o").unwrap();
+    assert_eq!(s.versions.list(&other).unwrap(), [], "other files list none");
 
     let times: Vec<u64> = s
         .versions
@@ -156,15 +166,6 @@ fn versions_list_newest_first_with_each_originals_content() {
         .collect();
     assert_eq!(times, [200 + DAY, 100 + DAY, 300]);
     assert_eq!(read(&s.file), "v3");
-}
-
-#[test]
-fn versions_of_other_files_are_not_listed() {
-    let s = scratch("a");
-    let other = s.file.with_file_name("other.txt");
-    fs::write(&other, "o").unwrap();
-    save(&s, "a2", 1);
-    assert_eq!(s.versions.list(&other).unwrap(), []);
 }
 
 #[test]

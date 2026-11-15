@@ -121,3 +121,120 @@ pub fn extension_words(change: &ExtensionChange) -> ExtensionWords {
         },
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use files_core::{FileName, FolderPath};
+
+    use super::*;
+
+    fn summary(kind: OpKind, count: usize, first: &str) -> Summary {
+        let first = (count > 0).then(|| FileName::new(first).unwrap());
+        Summary::new(kind, count, first)
+    }
+
+    #[test]
+    fn a_move_to_the_trash_is_announced_as_finder_does() {
+        use OpKind::Trash;
+        assert_eq!(
+            announce_words(&summary(Trash, 1, "report.pdf")),
+            "Moved \u{201c}report.pdf\u{201d} to the Trash"
+        );
+        assert_eq!(
+            announce_words(&summary(Trash, 3, "report.pdf")),
+            "Moved 3 items to the Trash"
+        );
+    }
+
+    #[test]
+    fn work_in_progress_says_what_it_is() {
+        use OpKind::{Copy, Erase, Trash};
+        let table = [
+            (summary(Copy, 1, "a.txt"), "Copying \u{201c}a.txt\u{201d}"),
+            (summary(Copy, 12, "a.txt"), "Copying 12 items"),
+            (summary(Trash, 2, "a"), "Moving 2 items to the Trash"),
+            (summary(Erase, 0, ""), "Erasing"),
+        ];
+        for (given, want) in table {
+            assert_eq!(busy_words(&given), want);
+        }
+    }
+
+    #[test]
+    fn a_taken_name_is_asked_in_finders_words() {
+            let here = FolderPath::new("/d").unwrap();
+        let ask = |kind| Conflict::new(FileName::new("a.txt").unwrap(), here.clone(), kind, 0);
+        let (title, message) = conflict_words(&ask(Bring::Move));
+        assert_eq!(
+            title,
+            "An item named \u{201c}a.txt\u{201d} already exists in this location."
+        );
+        assert_eq!(
+            message,
+            "Do you want to replace it with the one you're moving?"
+        );
+        let (_, copying) = conflict_words(&ask(Bring::Copy));
+        assert_eq!(
+            copying,
+            "Do you want to replace it with the one you're copying?"
+        );
+    }
+
+    #[test]
+    fn erasing_asks_about_what_it_erases() {
+        assert_eq!(
+            erase_words(None),
+            "Are you sure you want to permanently erase the items in the Trash?"
+        );
+        assert_eq!(
+            erase_words(Some((1, "a.txt".to_owned()))),
+            "Are you sure you want to permanently erase \u{201c}a.txt\u{201d}?"
+        );
+        assert_eq!(
+            erase_words(Some((4, "a.txt".to_owned()))),
+            "Are you sure you want to permanently erase these 4 items?"
+        );
+    }
+
+    #[test]
+    fn a_changed_extension_is_asked_about_in_finders_words() {
+        let name = |text: &str| FileName::new(text).unwrap();
+        let change = |from: &str, to: &str| {
+            let folder = FolderPath::new("/home/p").unwrap();
+            ExtensionChange::new(folder, name(from), name(to), name(from))
+        };
+        // (label, from, to, the question, the button that goes ahead, the button that keeps)
+        let table = [
+            (
+                "changed",
+                "a.txt",
+                "a.md",
+                "Are you sure you want to change the extension from \u{201c}.txt\u{201d} to \u{201c}.md\u{201d}?",
+                "Use .md",
+                "Keep .txt",
+            ),
+            (
+                "added",
+                "a",
+                "a.md",
+                "Are you sure you want to add the extension \u{201c}.md\u{201d} to the end of the name?",
+                "Add .md",
+                "Don't Add",
+            ),
+            (
+                "removed",
+                "a.txt",
+                "a",
+                "Are you sure you want to remove the extension \u{201c}.txt\u{201d}?",
+                "Remove",
+                "Keep .txt",
+            ),
+        ];
+        for (label, from, to, title, go_ahead, keep) in table {
+            let words = extension_words(&change(from, to));
+            assert_eq!(words.title, title, "{label}");
+            assert_eq!(words.go_ahead, go_ahead, "{label}");
+            assert_eq!(words.keep, keep, "{label}");
+        }
+    }
+}

@@ -61,3 +61,74 @@ fn written(unit: usize, shown: f64) -> String {
         format!("{shown:.1} {name}")
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use files_core::{ByteSize, Entry, EntryKind, FileName, LinkTo, Special};
+
+    use super::*;
+
+    fn entry(name: &str, kind: EntryKind) -> Entry {
+        Entry::new(FileName::new(name).unwrap(), kind)
+    }
+
+    #[test]
+    fn sizes_are_said_as_finder_says_them() {
+        const CASES: &[(&str, u64, &str)] = &[
+            ("empty", 0, "Zero bytes"),
+            ("one byte", 1, "1 byte"),
+            ("a few bytes", 512, "512 bytes"),
+            ("the most bytes", 999, "999 bytes"),
+            ("a thousand is a kilobyte", 1_000, "1 KB"),
+            ("kilobytes are whole", 4_096, "4 KB"),
+            ("kilobytes round", 1_499, "1 KB"),
+            ("kilobytes round up", 1_500, "2 KB"),
+            ("the most kilobytes", 999_499, "999 KB"),
+            ("rounds into megabytes", 999_999, "1 MB"),
+            ("a whole megabyte drops its decimal", 1_000_000, "1 MB"),
+            ("megabytes keep one decimal", 1_500_000, "1.5 MB"),
+            ("megabytes round to a tenth", 123_456_789, "123.5 MB"),
+            ("gigabytes", 12_340_000_000, "12.3 GB"),
+            ("terabytes", 2_000_000_000_000, "2 TB"),
+            ("the biggest", u64::MAX, "18446.7 PB"),
+        ];
+        for &(name, bytes, want) in CASES {
+            assert_eq!(size_words(ByteSize(bytes)), want, "{name}");
+        }
+    }
+
+    #[test]
+    fn only_files_have_a_size_to_show() {
+        let cases = [
+            (
+                "a file",
+                entry("a.txt", EntryKind::File(ByteSize(2_000))),
+                "2 KB",
+            ),
+            ("a folder", entry("d", EntryKind::Folder), NONE),
+            (
+                "a link to a file",
+                entry("l", EntryKind::Link(LinkTo::File(ByteSize(5)))),
+                "5 bytes",
+            ),
+            (
+                "a link to a folder",
+                entry("l", EntryKind::Link(LinkTo::Folder)),
+                NONE,
+            ),
+            (
+                "a broken link",
+                entry("l", EntryKind::Link(LinkTo::Broken)),
+                NONE,
+            ),
+            (
+                "a pipe",
+                entry("p", EntryKind::Special(Special::Fifo)),
+                NONE,
+            ),
+        ];
+        for (name, entry, want) in cases {
+            assert_eq!(entry_size_words(&entry), want, "{name}");
+        }
+    }
+}

@@ -51,3 +51,78 @@ pub fn force_eject_words(name: &VolumeName, programs: &[ProgramName]) -> (String
     };
     (title, message)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_disk_that_would_not_eject_or_open_says_so_as_finder_does() {
+        let name = VolumeName::new("STICK");
+        let busy_by = |names: &[&str]| {
+            VolumeTrouble::NotEjected(EjectFailure::InUse(
+                names.iter().map(|n| ProgramName::new(*n)).collect(),
+            ))
+        };
+        let cases = [
+            (
+                "busy, programs unknown",
+                busy_by(&[]),
+                "The disk \u{201c}STICK\u{201d} wasn\u{2019}t ejected because one or more programs may be using it.",
+            ),
+            (
+                "busy, programs known",
+                busy_by(&["vlc", "Files"]),
+                "The disk \u{201c}STICK\u{201d} wasn\u{2019}t ejected because one or more programs may be using it: vlc, Files.",
+            ),
+            (
+                "not allowed to eject",
+                VolumeTrouble::NotEjected(EjectFailure::NotAllowed),
+                "The disk \u{201c}STICK\u{201d} wasn\u{2019}t ejected because you don\u{2019}t have permission.",
+            ),
+            (
+                "ejected badly",
+                VolumeTrouble::NotEjected(EjectFailure::Other),
+                "The disk \u{201c}STICK\u{201d} wasn\u{2019}t ejected.",
+            ),
+            (
+                "not opened",
+                VolumeTrouble::NotOpened(MountFailure::Other),
+                "The disk \u{201c}STICK\u{201d} couldn\u{2019}t be opened.",
+            ),
+        ];
+        for (label, trouble, want) in cases {
+            assert_eq!(volume_trouble_words(&name, &trouble), want, "{label}");
+        }
+    }
+
+    #[test]
+    fn the_force_eject_question_names_the_disk_and_the_programs_using_it() {
+        let name = VolumeName::new("STICK");
+        let programs = |names: &[&str]| -> Vec<ProgramName> {
+            names.iter().map(|n| ProgramName::new(*n)).collect()
+        };
+        let title = "The disk \u{201c}STICK\u{201d} wasn\u{2019}t ejected because one or more programs may be using it.";
+        let cases = [
+            (
+                "programs found",
+                programs(&["vlc", "bash"]),
+                "Programs using it: vlc, bash.",
+            ),
+            ("one program", programs(&["vlc"]), "Programs using it: vlc."),
+            (
+                "none found",
+                programs(&[]),
+                "To eject the disk immediately, click Force Eject.",
+            ),
+        ];
+        for (label, found, message) in cases {
+            let (got_title, got_message) = force_eject_words(&name, &found);
+            assert_eq!(
+                (got_title.as_str(), got_message.as_str()),
+                (title, message),
+                "{label}"
+            );
+        }
+    }
+}
