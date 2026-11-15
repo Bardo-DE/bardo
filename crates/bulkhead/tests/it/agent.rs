@@ -2,7 +2,7 @@
 
 use bulkhead::AbsPath;
 use bulkhead::{
-    Access, AgentNet, AgentRun, Argv, Bind, ByteLimit, EndpointBind, EnvVar, INSIDE_FORWARDER,
+    Access, AgentNet, AgentRun, Argv, Bind, EndpointBind, EnvVar, INSIDE_FORWARDER,
     INSIDE_SOCKET, Network, NetworkMode, Profile, RESOLVER_FILES, RunSpec, agent_bwrap_args,
     bwrap_args,
 };
@@ -220,7 +220,7 @@ fn a_command_with_the_host_network_resolves_names_too() {
             abs("/work/project"),
             Vec::new(),
             network,
-            ByteLimit(1024),
+            1024,
         )
     };
     let host = bwrap_args(&spec(Network::Host), &Profile::bare());
@@ -265,7 +265,7 @@ fn the_terminal_and_the_agent_sandbox_begin_with_the_same_confinement() {
         abs("/work/project"),
         Vec::new(),
         Network::Off,
-        ByteLimit(1024),
+        1024,
     );
     let terminal = bwrap_args(&spec, &Profile::bare());
     let agent = agent_bwrap_args(&run(AgentNet::None, Vec::new()), &Profile::bare());
@@ -367,7 +367,7 @@ fn the_seccomp_profile_hands_bubblewrap_descriptor_three() {
 fn the_root_is_an_allow_list_with_covered_secrets_and_an_escape_hatch() {
     let profile = Profile::bare()
         .covering_secrets_where(|p| p == "/etc/shadow" || p == "/etc/ssh")
-        .with_opt(bulkhead::OptDir::ReadOnly)
+        .with_opt(true)
         .with_extra_ro(abs("/nix"));
     let args = agent_bwrap_args(&run(AgentNet::None, Vec::new()), &profile);
     for seq in [

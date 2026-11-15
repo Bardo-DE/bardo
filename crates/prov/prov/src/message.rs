@@ -15,7 +15,7 @@
 //! sender is still only a suggestion. The label travels so the receiver's taint is honest: it
 //! is the join of the receiver's own label and the message's.
 //!
-//! A message may cross Spaces ([`Address::crossing`]) but never grants a memory read in the
+//! A message may cross Spaces ([`Address::crosses`]) but never grants a memory read in the
 //! other Space: its `from` and `to` each keep their Space, and memory authorisation looks at
 //! the caller's invocation, not at who wrote to it.
 
@@ -163,8 +163,8 @@ impl Message {
     }
 
     /// Whether the message crosses Spaces.
-    pub fn crossing(&self) -> crate::agent::Crossing {
-        self.from.crossing(&self.to)
+    pub fn crosses(&self) -> bool {
+        self.from.crosses(&self.to)
     }
 
     /// The first fault, if the message is malformed. Pure; the router checks before it

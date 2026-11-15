@@ -61,16 +61,6 @@ pub struct Address {
     pub space: SpaceId,
 }
 
-/// Whether a message stays in one Space.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Crossing {
-    /// Both ends are in the same Space.
-    Within,
-    /// The ends are in different Spaces. The message still grants no memory read in either.
-    Across,
-}
-
 impl Address {
     /// `agent` in `space`.
     pub fn new(agent: AgentRef, space: SpaceId) -> Self {
@@ -78,11 +68,7 @@ impl Address {
     }
 
     /// Whether a message from `self` to `to` crosses Spaces.
-    pub fn crossing(&self, to: &Address) -> Crossing {
-        if self.space == to.space {
-            Crossing::Within
-        } else {
-            Crossing::Across
-        }
+    pub fn crosses(&self, to: &Address) -> bool {
+        self.space != to.space
     }
 }

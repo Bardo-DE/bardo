@@ -7,7 +7,7 @@
 
 use crate::env::sandbox_env;
 use crate::output::{Shown, shown};
-use crate::sandbox::{Argv, ByteLimit, ExitReport, Job, Network, RunSpec, Sandbox, StartFault};
+use crate::sandbox::{Argv, ExitReport, Job, Network, RunSpec, Sandbox, StartFault};
 use crate::{AbsPath, SandboxState};
 use std::collections::BTreeMap;
 
@@ -89,7 +89,7 @@ pub struct Snapshot {
 #[derive(Debug)]
 struct Term<J> {
     job: J,
-    limit: ByteLimit,
+    limit: usize,
 }
 
 /// The terminals of one connection.
@@ -124,9 +124,9 @@ pub struct Shell<S: Sandbox> {
     next: u64,
 }
 
-fn limit_of(asked: Option<u64>) -> ByteLimit {
+fn limit_of(asked: Option<u64>) -> usize {
     let asked = asked.map_or(DEFAULT_KEEP, |n| usize::try_from(n).unwrap_or(MAX_KEEP));
-    ByteLimit(asked.clamp(1, MAX_KEEP))
+    asked.clamp(1, MAX_KEEP)
 }
 
 impl<S: Sandbox> Shell<S> {

@@ -1,7 +1,7 @@
 //! The terminal table over the fake sandbox: what reaches the sandbox, what is refused, and that
 //! kill and release always work.
 
-use bulkhead::fake::{FakeSandbox, Fate, Script};
+use bulkhead::fake::{FakeSandbox, Script};
 use bulkhead::{AbsPath, CannotSandbox};
 use bulkhead::{Argv, ExitReport, Launch, MAX_TERMINALS, Network, Shell, ShellFault, StartFault};
 
@@ -79,17 +79,17 @@ fn kill_keeps_the_terminal_and_release_frees_it_and_both_kill_the_job() {
     let mut shell = Shell::new(sandbox);
     let first = shell.create(&launch(&["sleep", "9"])).expect("created");
     let second = shell.create(&launch(&["sleep", "9"])).expect("created");
-    assert_eq!(seen.fates(), [Fate::Running, Fate::Running]);
+    assert_eq!(seen.killed(), [false, false]);
     assert_eq!(shell.output(first).expect("output").exit, None);
 
     shell.kill(first).expect("kill");
-    assert_eq!(seen.fates()[0], Fate::Killed);
+    assert!(seen.killed()[0]);
     let snap = shell.output(first).expect("still valid after kill");
     assert_eq!(snap.shown.text, "a");
     assert_eq!(snap.exit, Some(ExitReport::Signal("KILL".to_owned())));
 
     shell.release(second).expect("release");
-    assert_eq!(seen.fates()[1], Fate::Killed);
+    assert!(seen.killed()[1]);
     assert_eq!(shell.output(second), Err(ShellFault::NoSuchTerminal));
     assert_eq!(shell.release(second), Err(ShellFault::NoSuchTerminal));
 }
@@ -100,7 +100,7 @@ fn dropping_the_shell_kills_what_it_started() {
     let mut shell = Shell::new(sandbox);
     shell.create(&launch(&["sleep", "9"])).expect("created");
     drop(shell);
-    assert_eq!(seen.fates(), [Fate::Killed]);
+    assert_eq!(seen.killed(), [true]);
 }
 
 #[test]

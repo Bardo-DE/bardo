@@ -1,6 +1,6 @@
 //! Output is bounded and redacted; the environment is rebuilt from an allowlist.
 
-use bulkhead::{ByteLimit, Captured, Tail, redact, sandbox_env, shown};
+use bulkhead::{Captured, Tail, redact, sandbox_env, shown};
 
 fn names(env: &[bulkhead::EnvVar]) -> Vec<&str> {
     env.iter().map(|v| v.name.as_str()).collect()
@@ -75,7 +75,7 @@ fn secrets_are_masked_and_ordinary_text_is_not() {
 
 #[test]
 fn the_tail_keeps_the_last_bytes_and_says_it_cut() {
-    let mut tail = Tail::new(ByteLimit(10));
+    let mut tail = Tail::new(10);
     tail.push(b"abcde");
     assert!(!tail.captured().cut);
     tail.push(b"fghijklmno");
@@ -91,10 +91,10 @@ fn shown_cuts_at_a_character_boundary_and_replaces_invalid_utf8() {
         bytes: "ééééé".as_bytes().to_vec(),
         cut: false,
     };
-    let got = shown(&multi, ByteLimit(5));
+    let got = shown(&multi, 5);
     assert_eq!(got.text, "éé", "step multi-byte cut: text");
     assert!(got.cut, "step multi-byte cut: cut marker");
-    let whole = shown(&multi, ByteLimit(100));
+    let whole = shown(&multi, 100);
     assert_eq!(whole.text, "ééééé", "step whole: text");
     assert!(!whole.cut, "step whole: cut marker");
     let invalid = Captured {
@@ -102,7 +102,7 @@ fn shown_cuts_at_a_character_boundary_and_replaces_invalid_utf8() {
         cut: false,
     };
     assert_eq!(
-        shown(&invalid, ByteLimit(100)).text,
+        shown(&invalid, 100).text,
         "a\u{fffd}b",
         "step invalid utf-8"
     );

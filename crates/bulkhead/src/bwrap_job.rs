@@ -7,7 +7,7 @@
 //! nothing and `kill` does not rely on the death signal at all.
 
 use crate::output::Tail;
-use crate::sandbox::{ByteLimit, Captured, ExitReport, Job, KILLED, StartFault};
+use crate::sandbox::{Captured, ExitReport, Job, KILLED, StartFault};
 use std::io::Read;
 use std::process::{Child, Command, ExitStatus, Stdio};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
@@ -62,7 +62,7 @@ impl BwrapJob {
     /// Starts `command` with stdout and stderr on one pipe and `stdin` as given.
     pub(crate) fn spawn(
         mut command: Command,
-        keep: ByteLimit,
+        keep: usize,
         stdin: Stdio,
     ) -> Result<Self, StartFault> {
         let (mut reader, writer) = std::io::pipe().map_err(|_| StartFault::Spawn)?;

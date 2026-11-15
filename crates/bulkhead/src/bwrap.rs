@@ -15,8 +15,8 @@ use crate::agent::{AgentRun, agent_bwrap_args};
 use crate::apparmor::{RESTRICT_USERNS, refusal_at};
 use crate::bwrap_job::BwrapJob;
 use crate::confinement::confinement;
-use crate::fds::{InheritedFds, inherited_fds};
-use crate::harden::{Hardening, Seccomp};
+use crate::fds::inherited_fds;
+use crate::harden::Hardening;
 use crate::launch::{Enforcement, Env, Feed, Launcher, UserSession};
 use crate::profile::Profile;
 use crate::sandbox::{RunSpec, Sandbox, StartFault};
@@ -54,10 +54,10 @@ pub struct BwrapSandbox {
 }
 
 /// Fails closed where a descriptor would leak into the sandbox, unless the person allowed it.
-fn no_leaks(fds: InheritedFds) -> Result<(), StartFault> {
-    match fds {
-        InheritedFds::Allow => Ok(()),
-        InheritedFds::Refuse => match inherited_fds() {
+fn no_leaks(allowed: bool) -> Result<(), StartFault> {
+    match allowed {
+        true => Ok(()),
+        false => match inherited_fds() {
             Ok(found) if found.is_empty() => Ok(()),
             _ => Err(StartFault::InheritedFds),
         },
@@ -122,7 +122,7 @@ impl BwrapSandbox {
         if let SandboxState::Cannot(why) = self.check(&run.cwd) {
             return Err(StartFault::Cannot(why));
         }
-        no_leaks(self.hardening.fds)?;
+        no_leaks(self.hardening.inherited_fds)?;
         let feed = match (&self.filter, filter) {
             (None, _) => Feed::NoFilter,
             (Some(_), Some(file)) => Feed::FromFile(file.clone()),
@@ -160,8 +160,8 @@ impl BwrapSandbox {
             return Err(refusal_at(Path::new(RESTRICT_USERNS)));
         }
         let filter = match hardening.seccomp {
-            Seccomp::Off => None,
-            Seccomp::Default => {
+            false => None,
+            true => {
                 let bytes = default_filter().map_err(|_| CannotSandbox::SeccompUnavailable)?;
                 if !bwrap_runs(&program, &["--seccomp", "0"], Some(&bytes)) {
                     return Err(CannotSandbox::SeccompUnavailable);
@@ -244,7 +244,7 @@ impl Sandbox for BwrapSandbox {
         if let SandboxState::Cannot(why) = self.check(&spec.cwd) {
             return Err(StartFault::Cannot(why));
         }
-        no_leaks(self.hardening.fds)?;
+        no_leaks(self.hardening.inherited_fds)?;
         let args = bwrap_args(spec, &self.profile());
         let (feed, stdin) = match &self.filter {
             None => (Feed::NoFilter, Stdio::null()),

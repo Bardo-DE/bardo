@@ -25,16 +25,6 @@ pub enum PathFault {
     NotUtf8,
 }
 
-/// Whether one path covers another.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Cover {
-    /// The other path is this one or lies below it.
-    Covers,
-    /// It lies elsewhere.
-    Misses,
-}
-
 impl AbsPath {
     /// `text` as an absolute path, `.` and doubled slashes folded away.
     pub fn parse(text: &str) -> Result<Self, PathFault> {
@@ -66,13 +56,12 @@ impl AbsPath {
     }
 
     /// Whether `other` is this path or lies below it, by whole components.
-    pub fn covers(&self, other: &AbsPath) -> Cover {
-        let under = self.is_root()
+    pub fn covers(&self, other: &AbsPath) -> bool {
+        self.is_root()
             || other
                 .0
                 .strip_prefix(&self.0)
-                .is_some_and(|rest| rest.is_empty() || rest.starts_with('/'));
-        if under { Cover::Covers } else { Cover::Misses }
+                .is_some_and(|rest| rest.is_empty() || rest.starts_with('/'))
     }
 
     /// The directory above, none for `/`.
@@ -91,7 +80,7 @@ impl AbsPath {
     pub fn common(&self, other: &AbsPath) -> AbsPath {
         let mut here = Some(self.clone());
         while let Some(path) = here {
-            if path.covers(other) == Cover::Covers {
+            if path.covers(other) {
                 return path;
             }
             here = path.parent();

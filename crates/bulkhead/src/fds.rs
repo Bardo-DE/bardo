@@ -9,21 +9,8 @@
 //! The requirement for callers: every descriptor above 2 must be close-on-exec by the time a
 //! sandbox starts. Rust's std, tokio and zbus already do this.
 
-use serde::{Deserialize, Serialize};
-
 /// `O_CLOEXEC` in the octal `flags:` line of `/proc/self/fdinfo/N`.
 const O_CLOEXEC: u32 = 0o2_000_000;
-
-/// What to do when a descriptor above 2 would be inherited.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum InheritedFds {
-    /// Refuse to start (`StartFault::InheritedFds`).
-    #[default]
-    Refuse,
-    /// Start anyway, chosen by the person.
-    Allow,
-}
 
 /// The `flags:` value of an fdinfo file's text.
 fn flags(fdinfo: &str) -> Option<u32> {

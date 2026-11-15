@@ -3,23 +3,16 @@
 //! arguments.
 
 use crate::AbsPath;
-use crate::harden::{Bytes, OptDir};
+use crate::harden::Bytes;
 use crate::root::Root;
 
 /// What the shared confinement adds to the command line.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Profile {
     tmpfs: Option<Bytes>,
-    seccomp: FilterFd,
+    /// Whether the command line tells bubblewrap to read a seccomp filter from `FILTER_FD`.
+    seccomp: bool,
     root: Root,
-}
-
-/// Whether the command line tells bubblewrap to read a seccomp filter from `FILTER_FD`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-enum FilterFd {
-    #[default]
-    Absent,
-    Present,
 }
 
 /// The descriptor number bubblewrap reads the filter from. The launcher (`sh`) opens it.
@@ -40,7 +33,7 @@ impl Profile {
 
     /// `/opt` visible or not.
     #[must_use]
-    pub fn with_opt(mut self, opt: OptDir) -> Self {
+    pub fn with_opt(mut self, opt: bool) -> Self {
         self.root = self.root.with_opt(opt);
         self
     }
@@ -81,15 +74,15 @@ impl Profile {
     /// provide it (`BwrapSandbox` does); with this set and no filter, bubblewrap refuses to run.
     #[must_use]
     pub fn with_seccomp(mut self) -> Self {
-        self.seccomp = FilterFd::Present;
+        self.seccomp = true;
         self
     }
 
     /// The `--seccomp` words, when the filter is on.
     pub(crate) fn seccomp(&self) -> Vec<String> {
         match self.seccomp {
-            FilterFd::Present => vec!["--seccomp".to_owned(), FILTER_FD.to_owned()],
-            FilterFd::Absent => Vec::new(),
+            true => vec!["--seccomp".to_owned(), FILTER_FD.to_owned()],
+            false => Vec::new(),
         }
     }
 

@@ -3,7 +3,7 @@
 //! character boundary from the start, as a byte limit on output is usually meant).
 
 use crate::redact::redact;
-use crate::sandbox::{ByteLimit, Captured};
+use crate::sandbox::Captured;
 
 /// A buffer that keeps the last `cap` bytes pushed to it.
 #[derive(Debug, Clone)]
@@ -15,9 +15,9 @@ pub struct Tail {
 
 impl Tail {
     /// An empty buffer that keeps `cap` bytes.
-    pub fn new(cap: ByteLimit) -> Self {
+    pub fn new(cap: usize) -> Self {
         Self {
-            cap: cap.0.max(1),
+            cap: cap.max(1),
             bytes: Vec::new(),
             cut: false,
         }
@@ -59,9 +59,9 @@ pub struct Shown {
 }
 
 /// `captured` as text within `limit` bytes.
-pub fn shown(captured: &Captured, limit: ByteLimit) -> Shown {
+pub fn shown(captured: &Captured, limit: usize) -> Shown {
     let text = redact(&String::from_utf8_lossy(&captured.bytes));
-    let mut start = text.len().saturating_sub(limit.0);
+    let mut start = text.len().saturating_sub(limit);
     while !text.is_char_boundary(start) {
         start += 1;
     }

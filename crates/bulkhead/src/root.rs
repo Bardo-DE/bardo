@@ -10,7 +10,6 @@
 //! network credentials); those are covered by an empty file or directory when the host has them.
 
 use crate::AbsPath;
-use crate::harden::OptDir;
 
 /// Host directories (or links) bound read-only at the same path when they exist.
 const SYSTEM_DIRS: &[&str] = &["/bin", "/sbin", "/lib", "/lib32", "/lib64"];
@@ -48,13 +47,13 @@ const SENSITIVE: &[(&str, Kind)] = &[
 /// The root of one sandbox.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct Root {
-    opt: OptDir,
+    opt: bool,
     extra_ro: Vec<AbsPath>,
     covered: Vec<(&'static str, Kind)>,
 }
 
 impl Root {
-    pub(crate) fn with_opt(mut self, opt: OptDir) -> Self {
+    pub(crate) fn with_opt(mut self, opt: bool) -> Self {
         self.opt = opt;
         self
     }
@@ -81,7 +80,7 @@ impl Root {
         let fixed = ["/usr", "/etc"]
             .into_iter()
             .chain(SYSTEM_DIRS.iter().copied());
-        let opt = (self.opt == OptDir::ReadOnly).then_some("/opt");
+        let opt = self.opt.then_some("/opt");
         fixed
             .chain(opt)
             .filter_map(|p| AbsPath::parse(p).ok())
@@ -102,7 +101,7 @@ impl Root {
                 Kind::Dir => args.extend(["--tmpfs", path].map(str::to_owned)),
             }
         }
-        if self.opt == OptDir::ReadOnly {
+        if self.opt {
             args.extend(["--ro-bind-try", "/opt", "/opt"].map(str::to_owned));
         }
         for path in &self.extra_ro {

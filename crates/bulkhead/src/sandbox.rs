@@ -63,7 +63,7 @@ impl RunSpec {
         cwd: AbsPath,
         env: Vec<EnvVar>,
         network: Network,
-        keep: ByteLimit,
+        keep: usize,
     ) -> Self {
         Self {
             argv,
@@ -74,10 +74,6 @@ impl RunSpec {
         }
     }
 }
-
-/// How many bytes of output a job keeps (the tail).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub struct ByteLimit(pub usize);
 
 /// Everything a sandbox needs to run one command.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -90,8 +86,8 @@ pub struct RunSpec {
     pub env: Vec<EnvVar>,
     /// The network.
     pub network: Network,
-    /// How much output to keep.
-    pub keep: ByteLimit,
+    /// How many bytes of output to keep (the tail).
+    pub keep: usize,
 }
 
 /// What a job has written so far (stdout and stderr in the order they arrived).

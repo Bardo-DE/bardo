@@ -4,19 +4,10 @@
 
 use crate::bwrap_job::locked;
 use crate::output::Tail;
-use crate::sandbox::{ByteLimit, Captured, ExitReport, Job, KILLED, RunSpec, Sandbox, StartFault};
+use crate::sandbox::{Captured, ExitReport, Job, KILLED, RunSpec, Sandbox, StartFault};
 use crate::{AbsPath, CannotSandbox, SandboxState};
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
-
-/// Whether a scripted job ends by itself.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Lifetime {
-    /// It has already exited when started.
-    Finishes,
-    /// It runs until killed.
-    UntilKilled,
-}
 
 /// What the next job does.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -25,8 +16,8 @@ pub struct Script {
     pub output: Vec<u8>,
     /// How it ends.
     pub exit: ExitReport,
-    /// Whether it ends by itself.
-    pub lifetime: Lifetime,
+    /// Whether it has already exited when started (`false`: it runs until killed).
+    pub finishes: bool,
 }
 
 impl Script {
@@ -35,7 +26,7 @@ impl Script {
         Self {
             output: output.as_bytes().to_vec(),
             exit: ExitReport::Code(code),
-            lifetime: Lifetime::Finishes,
+            finishes: true,
         }
     }
 
@@ -44,18 +35,9 @@ impl Script {
         Self {
             output: output.as_bytes().to_vec(),
             exit: ExitReport::Signal(KILLED.to_owned()),
-            lifetime: Lifetime::UntilKilled,
+            finishes: false,
         }
     }
-}
-
-/// What happened to a started job.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Fate {
-    /// Still going.
-    Running,
-    /// Killed (by `kill`, or by being dropped).
-    Killed,
 }
 
 /// What the fake has seen.
@@ -63,8 +45,9 @@ pub enum Fate {
 pub struct Log {
     /// Every command it was asked to run, in order.
     pub started: Vec<RunSpec>,
-    /// What became of each, by index into `started`.
-    pub fates: Vec<Fate>,
+    /// Whether each was killed (by `kill`, or by being dropped), by index into `started`; a job
+    /// not killed is still going.
+    pub killed: Vec<bool>,
 }
 
 /// A shared view of the fake's log.
@@ -77,9 +60,9 @@ impl Seen {
         locked(&self.0).started.clone()
     }
 
-    /// What became of each job.
-    pub fn fates(&self) -> Vec<Fate> {
-        locked(&self.0).fates.clone()
+    /// Whether each job was killed.
+    pub fn killed(&self) -> Vec<bool> {
+        locked(&self.0).killed.clone()
     }
 }
 
@@ -127,8 +110,8 @@ impl FakeJob {
     fn mark_killed(&mut self) {
         if !self.killed {
             self.killed = true;
-            if let Some(fate) = locked(&self.seen.0).fates.get_mut(self.index) {
-                *fate = Fate::Killed;
+            if let Some(killed) = locked(&self.seen.0).killed.get_mut(self.index) {
+                *killed = true;
             }
         }
     }
@@ -140,10 +123,10 @@ impl Job for FakeJob {
     }
 
     fn exit(&mut self) -> Option<ExitReport> {
-        match (self.script.lifetime, self.killed) {
-            (Lifetime::Finishes, _) => Some(self.script.exit.clone()),
-            (Lifetime::UntilKilled, true) => Some(ExitReport::Signal(KILLED.to_owned())),
-            (Lifetime::UntilKilled, false) => None,
+        match (self.script.finishes, self.killed) {
+            (true, _) => Some(self.script.exit.clone()),
+            (false, true) => Some(ExitReport::Signal(KILLED.to_owned())),
+            (false, false) => None,
         }
     }
 
@@ -182,12 +165,12 @@ impl Sandbox for FakeSandbox {
         let script = locked(&self.scripts)
             .pop_front()
             .unwrap_or_else(|| Script::done("", 0));
-        let mut tail = Tail::new(ByteLimit(spec.keep.0));
+        let mut tail = Tail::new(spec.keep);
         tail.push(&script.output);
         let index = {
             let mut log = locked(&self.seen.0);
             log.started.push(spec.clone());
-            log.fates.push(Fate::Running);
+            log.killed.push(false);
             log.started.len() - 1
         };
         Ok(FakeJob {

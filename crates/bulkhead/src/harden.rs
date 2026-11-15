@@ -6,7 +6,6 @@
 //! default is the strict choice, and a sandbox that cannot apply it refuses to start.
 
 use crate::AbsPath;
-use crate::fds::InheritedFds;
 use serde::{Deserialize, Serialize};
 
 /// A size in bytes.
@@ -101,42 +100,34 @@ impl LimitPolicy {
     }
 }
 
-/// Whether the default seccomp filter is installed.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Seccomp {
-    /// The default filter (`seccomp`): no nested user namespaces, `ptrace`, `bpf`, key rings,
-    /// mounts, `io_uring` and similar. A sandbox that cannot install it is not created.
-    #[default]
-    Default,
-    /// No filter, chosen by the person.
-    Off,
-}
-
-/// Whether `/opt` is visible.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum OptDir {
-    /// Not there.
-    #[default]
-    Hidden,
-    /// Visible, read-only.
-    ReadOnly,
-}
-
 /// Everything a caller chooses about hardening.
-#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Hardening {
     /// Resource limits.
     pub limits: LimitPolicy,
-    /// The syscall filter.
-    pub seccomp: Seccomp,
+    /// Whether the default syscall filter is installed (no nested user namespaces, `ptrace`,
+    /// `bpf`, key rings, mounts, `io_uring` and similar). A sandbox that cannot install it is
+    /// not created. Off only when the person chose so.
+    pub seccomp: bool,
     /// Whether `/opt` is visible (read-only).
-    pub opt: OptDir,
+    pub opt: bool,
     /// Extra host paths made visible read-only at the same path: the escape hatch for a
     /// toolchain that lives outside `/usr` (`/nix`, a version manager under a home directory).
     pub extra_ro: Vec<AbsPath>,
-    /// What to do about descriptors that would be inherited.
-    pub fds: InheritedFds,
+    /// Whether the sandbox starts although a descriptor above 2 would be inherited, chosen by
+    /// the person; otherwise it refuses to start (`StartFault::InheritedFds`).
+    pub inherited_fds: bool,
+}
+
+impl Default for Hardening {
+    fn default() -> Self {
+        Self {
+            limits: LimitPolicy::default(),
+            seccomp: true,
+            opt: false,
+            extra_ro: Vec::new(),
+            inherited_fds: false,
+        }
+    }
 }

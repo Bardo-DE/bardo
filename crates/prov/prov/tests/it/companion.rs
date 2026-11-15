@@ -155,15 +155,12 @@ fn a_message_round_trips_and_carries_its_label() {
 #[test]
 fn a_message_may_cross_spaces_and_keeps_both_ends() {
     let mut m = message(MessageKind::Note, vec![text("fyi")]);
-    assert_eq!(m.crossing(), Crossing::Within);
+    assert!(!m.crosses());
     m.to = at(AgentRef::Companion, "home");
-    assert_eq!(m.crossing(), Crossing::Across);
+    assert!(m.crosses());
     assert_eq!(m.from.space, space("work"));
     assert_eq!(m.to.space, space("home"));
-    assert_eq!(
-        at(AgentRef::User, "a").crossing(&at(AgentRef::User, "a")),
-        Crossing::Within
-    );
+    assert!(!at(AgentRef::User, "a").crosses(&at(AgentRef::User, "a")));
 }
 
 #[test]

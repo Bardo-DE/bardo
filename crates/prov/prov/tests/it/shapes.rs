@@ -64,7 +64,7 @@ fn every_actor() -> Vec<Actor> {
         },
         Actor::Acp {
             program: AgentProgram::parse("claude-code").expect("program"),
-            label: Some(AgentLabel("Claude Code".into())),
+            label: Some("Claude Code".to_owned()),
         },
         Actor::Cli,
         Actor::App {
@@ -205,7 +205,7 @@ fn an_acp_actor_pins_its_json_and_is_its_own_kind() {
     assert_eq!(actor.kind(), ActorKind::Acp);
     let labelled = Actor::Acp {
         program: AgentProgram::parse("claude-code").expect("program"),
-        label: Some(AgentLabel("Claude Code".into())),
+        label: Some("Claude Code".to_owned()),
     };
     assert_eq!(
         round_trip(&labelled),
