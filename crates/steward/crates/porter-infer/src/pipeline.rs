@@ -26,23 +26,9 @@ use crate::slot::Slot;
 use porter_capability::{Locality, Tier};
 use porter_core::DataClass;
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap, BTreeSet};
 
-/// One kind of thing a model takes in or gives out (stoker's `Modality`, mirrored).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Modality {
-    /// Text.
-    Text,
-    /// Images.
-    Image,
-    /// Audio.
-    Audio,
-    /// An embedding vector (output only).
-    Vector,
-    /// Computer-use actions (output only).
-    Actions,
-}
+pub use model_catalog::{Modality, ProviderId};
+use std::collections::{BTreeMap, BTreeSet};
 
 /// What the request wants back.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -93,11 +79,6 @@ impl DescribeImages {
             .find(|one| one.slug() == slug)
     }
 }
-
-/// A provider the person granted to inferd (`openrouter`, `anthropic`, ...): a provider file's id.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct ProviderId(pub String);
 
 /// The person's pick per slot, for one tier. A slot without an entry is an empty row.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]

@@ -116,8 +116,6 @@ pub fn slots_of(card: &ModelCard) -> Vec<Slot> {
             }
             Capability::ComputerUse(_) => vec![Slot::ComputerUse, Slot::ImageIn],
             Capability::Embeddings(_) => vec![Slot::Embeddings],
-            Capability::ImageGen(_) => vec![Slot::ImageGen],
-            Capability::Rerank(_) => vec![Slot::Rerank],
             Capability::Speech(speech) => [
                 (SpeechMode::Stt, Slot::VoiceIn),
                 (SpeechMode::Tts, Slot::VoiceOut),

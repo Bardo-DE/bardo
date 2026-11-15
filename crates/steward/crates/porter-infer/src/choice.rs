@@ -575,7 +575,6 @@ mod tests {
                 ],
             ),
             (Slot::VoiceIn, vec!["speech"]),
-            (Slot::Rerank, vec![]),
         ];
         for (kind, expected) in cases {
             let rows = picker_rows(kind, &cards, &TierMap::default());
@@ -651,20 +650,7 @@ mod tests {
     }
 
     #[test]
-    fn setting_keys_name_kind_and_tier() {
-        assert_eq!(
-            Slot::VoiceIn.setting_key(Tier::Fast),
-            "ai.model.voice_in.fast"
-        );
-        assert_eq!(
-            Slot::ComputerUse.setting_key(Tier::Balanced),
-            "ai.model.computer_use.balanced"
-        );
-    }
-
-    #[test]
     fn the_best_slot_keeps_its_key_and_shows_another_label() {
-        assert_eq!(Slot::Text.setting_key(Tier::Best), "ai.model.text.best");
         let labels: Vec<_> = [Tier::Fast, Tier::Balanced, Tier::Best]
             .into_iter()
             .map(tier_label)

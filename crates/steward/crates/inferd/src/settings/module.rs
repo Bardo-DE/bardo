@@ -410,8 +410,6 @@ fn slot_label(slot: Slot) -> &'static str {
         Slot::ImageIn => "Reading images",
         Slot::ComputerUse => "Computer use",
         Slot::Embeddings => "Embeddings",
-        Slot::ImageGen => "Image generation",
-        Slot::Rerank => "Reranking",
     }
 }
 

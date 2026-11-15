@@ -3,7 +3,8 @@
 //! A model is listed in every slot its capabilities satisfy, so one entry may be in several. The
 //! rules are pure functions of the catalogue; nothing is read from a model's name.
 //!
-//! Later slots: `image_gen` (text in, image out) and `rerank` stay out until an entry needs them.
+//! Later slots: `image_gen` (text in, image out) and `rerank` stay out until an entry needs them
+//! (the settings and the picker list exactly these).
 
 use serde::{Deserialize, Serialize};
 
@@ -41,6 +42,33 @@ pub struct Signature {
 }
 
 impl Slot {
+    /// Every slot, in the order a picker lists them.
+    pub const ALL: [Slot; 6] = [
+        Slot::Text,
+        Slot::VoiceIn,
+        Slot::VoiceOut,
+        Slot::ImageIn,
+        Slot::ComputerUse,
+        Slot::Embeddings,
+    ];
+
+    /// The slot's stable slug: its serde form and its settings-key segment.
+    pub fn slug(self) -> &'static str {
+        match self {
+            Slot::Text => "text",
+            Slot::VoiceIn => "voice_in",
+            Slot::VoiceOut => "voice_out",
+            Slot::ImageIn => "image_in",
+            Slot::ComputerUse => "computer_use",
+            Slot::Embeddings => "embeddings",
+        }
+    }
+
+    /// The slot a slug names.
+    pub fn from_slug(slug: &str) -> Option<Slot> {
+        Slot::ALL.into_iter().find(|slot| slot.slug() == slug)
+    }
+
     /// The slot's capability signature. Only `Text` needs tools: capabilities.md section 2 writes it
     /// "text in -> text out (+ tools)", because the agent loop is built on tool calls; a text model
     /// without them is not offered there. The other slots are one conversion each.

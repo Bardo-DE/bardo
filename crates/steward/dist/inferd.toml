@@ -84,8 +84,7 @@
 #
 # The user's model for a slot and tier: "" (the catalogue's choice), "auto" (inferd picks among
 # what is allowed) or "<account>/<model>". Slots: text, voice_in, voice_out, image_in,
-# computer_use, embeddings, image_gen, rerank (the old kinds llm, speech_in and speech_out still
-# read, as text, voice_in and voice_out); tiers: fast, balanced, best.
+# computer_use, embeddings; tiers: fast, balanced, best.
 # [ai.model.text]
 # balanced = "local/holo-3.1-4b"
 # fast = "auto"

@@ -456,7 +456,7 @@ impl Engines {
         let hosted = offered.models.iter().map(|(model, spend)| Listed {
             permission: model.permit(),
             spend: *spend,
-            provider: Some(porter_infer::ProviderId(model.reach.provider.0.clone())),
+            provider: Some(model.reach.provider.clone()),
             ..Listed::new(
                 model.card.clone(),
                 Readiness::Ready,
@@ -979,7 +979,7 @@ impl Engines {
 /// How a hosted model is reached, as the footer says it ("via OpenRouter").
 fn reached_of(reach: &model_catalog::Reach) -> Why {
     Why::Reached {
-        provider: porter_infer::ProviderId(reach.provider.0.clone()),
+        provider: reach.provider.clone(),
         door: if reach.is_via_gateway() {
             porter_infer::Door::Gateway
         } else {

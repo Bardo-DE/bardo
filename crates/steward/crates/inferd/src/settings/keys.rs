@@ -26,7 +26,7 @@ pub const CLASSES: [DataClass; 13] = [
 ];
 
 /// Every slot, one `ai.model.<slot>.<tier>` row each per tier.
-pub const SLOTS: [Slot; 8] = Slot::ALL;
+pub const SLOTS: [Slot; 6] = Slot::ALL;
 
 /// Every tier.
 pub const TIERS: [Tier; 3] = [Tier::Fast, Tier::Balanced, Tier::Best];
@@ -46,7 +46,7 @@ pub fn from_slug<T: DeserializeOwned>(text: &str) -> Option<T> {
 
 /// `ai.model.<slot>.<tier>`.
 pub fn model_path(slot: Slot, tier: Tier) -> String {
-    slot.setting_key(tier)
+    format!("ai.model.{}.{}", slot.slug(), slug_of(&tier))
 }
 
 /// The slot and tier an `ai.model.<slot>.<tier>` path names.
@@ -132,9 +132,7 @@ mod tests {
                 | Slot::VoiceOut
                 | Slot::ImageIn
                 | Slot::ComputerUse
-                | Slot::Embeddings
-                | Slot::ImageGen
-                | Slot::Rerank => {}
+                | Slot::Embeddings => {}
             }
         }
     }

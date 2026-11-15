@@ -72,22 +72,6 @@ pub fn company_of(family: &str) -> String {
     }
 }
 
-/// The catalogue's slot for porter's: the two have the same names, but the catalogue has no
-/// `image_gen` or `rerank` yet, so those list no hosted model.
-pub fn catalog_slot(slot: porter_infer::Slot) -> Option<model_catalog::Slot> {
-    use model_catalog::Slot as C;
-    use porter_infer::Slot as P;
-    match slot {
-        P::Text => Some(C::Text),
-        P::VoiceIn => Some(C::VoiceIn),
-        P::VoiceOut => Some(C::VoiceOut),
-        P::ImageIn => Some(C::ImageIn),
-        P::ComputerUse => Some(C::ComputerUse),
-        P::Embeddings => Some(C::Embeddings),
-        P::ImageGen | P::Rerank => None,
-    }
-}
-
 /// The name a person reads for a model: the catalogue's label without a trailing tier note such
 /// as "(contributor)".
 fn plain_name(label: &str) -> &str {
@@ -103,11 +87,8 @@ fn plain_name(label: &str) -> &str {
 pub fn choices(
     entries: &[ModelEntry],
     accounts: &[AccountVerdict],
-    slot: porter_infer::Slot,
+    slot: model_catalog::Slot,
 ) -> Vec<Choice> {
-    let Some(slot) = catalog_slot(slot) else {
-        return Vec::new();
-    };
     let known = known_providers(entries);
     let held: Vec<_> = accounts
         .iter()

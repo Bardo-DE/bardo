@@ -120,8 +120,6 @@ fn each_slot_lists_the_hosted_models_that_fit_it() {
         Slot::VoiceOut,
         Slot::ComputerUse,
         Slot::Embeddings,
-        Slot::ImageGen,
-        Slot::Rerank,
     ] {
         assert_eq!(count(none), 0, "{none:?}");
     }
