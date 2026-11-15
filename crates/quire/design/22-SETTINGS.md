@@ -111,7 +111,7 @@ hand-written. Where a note's default disagrees with the table, the table (the co
 | `appearance.transparency` | choice {system, reduced} | `system` |  | Appearance | Settings |  |
 | `appearance.look` | provided (look) | `standard` |  | Appearance | Settings | may set |
 | `appearance.file_icons` | provided (file_icons) | `standard` |  | Appearance | Settings | may set |
-| `appearance.custom_styles` | switch | on |  | Appearance | Settings | may set |
+| `appearance.custom_styles` | toggle | `true` |  | Appearance | Settings | may set |
 
 <!-- keys:end appearance -->
 
