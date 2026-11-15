@@ -19,16 +19,10 @@
 
 use std::ops::Range;
 
-/// Where a run of text lies: in the file's own bytes, or in what was typed since.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Origin {
-    Original,
-    Added,
-}
-
 #[derive(Debug, Clone, Copy)]
 struct Piece {
-    origin: Origin,
+    /// Whether the run lies in what was typed since, not in the file's own bytes.
+    added: bool,
     start: usize,
     len: usize,
     /// How many `\n` the piece holds.
@@ -93,7 +87,7 @@ impl Buffer {
             Vec::new()
         } else {
             vec![Piece {
-                origin: Origin::Original,
+                added: false,
                 start: 0,
                 len,
                 breaks,
@@ -361,7 +355,7 @@ impl Buffer {
             self.pieces.insert(
                 first,
                 Piece {
-                    origin: Origin::Added,
+                    added: true,
                     start,
                     len: added.len(),
                     breaks,
@@ -448,9 +442,10 @@ impl Buffer {
 
     fn piece_bytes(&self, piece: &Piece, within: Range<usize>) -> &[u8] {
         let (from, to) = (piece.start + within.start, piece.start + within.end);
-        let source = match piece.origin {
-            Origin::Added => &self.added,
-            Origin::Original => &self.original,
+        let source = if piece.added {
+            &self.added
+        } else {
+            &self.original
         };
         source.get(from..to).unwrap_or_default()
     }

@@ -2,13 +2,12 @@
 //! sysfs (`<sys>/<eventN>/device/inputN::capslock/brightness`). While keycap holds the keyboard
 //! the lamp follows the desktop's Caps Lock state, so it is what the letters will do.
 
-use crate::daemon::leds::Lamp;
 use std::fs;
 use std::path::Path;
 
 /// Whether the Caps Lock lamp of the keyboard at `device_path` (`/dev/input/eventN`) is lit;
 /// `None` when the keyboard has no lamp or its state cannot be read.
-pub(super) fn lamp_of(sys_input: &Path, device_path: &str) -> Option<Lamp> {
+pub(super) fn lamp_of(sys_input: &Path, device_path: &str) -> Option<bool> {
     let node = Path::new(device_path).file_name()?;
     let device = sys_input.join(node).join("device");
     let lamp_dir = fs::read_dir(device)
@@ -16,10 +15,7 @@ pub(super) fn lamp_of(sys_input: &Path, device_path: &str) -> Option<Lamp> {
         .filter_map(Result::ok)
         .find(|entry| entry.file_name().to_string_lossy().ends_with("::capslock"))?;
     let brightness = fs::read_to_string(lamp_dir.path().join("brightness")).ok()?;
-    match brightness.trim().parse::<u32>().ok()? {
-        0 => Some(Lamp::Off),
-        _ => Some(Lamp::On),
-    }
+    Some(brightness.trim().parse::<u32>().ok()? != 0)
 }
 
 #[cfg(test)]
@@ -40,8 +36,8 @@ mod tests {
         lamp_file(scratch.path(), "event16", "input20::capslock", "1\n");
         lamp_file(scratch.path(), "event17", "input21::capslock", "0\n");
         let lamp = |path| lamp_of(scratch.path(), path);
-        assert_eq!(lamp("/dev/input/event16"), Some(Lamp::On));
-        assert_eq!(lamp("/dev/input/event17"), Some(Lamp::Off));
+        assert_eq!(lamp("/dev/input/event16"), Some(true));
+        assert_eq!(lamp("/dev/input/event17"), Some(false));
         assert_eq!(lamp("/dev/input/event99"), None, "no such keyboard");
     }
 

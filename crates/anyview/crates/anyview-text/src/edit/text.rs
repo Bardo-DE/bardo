@@ -11,23 +11,9 @@ pub const EDIT_BYTES: u64 = 8 * 1024 * 1024;
 
 const UTF8_MARK: [u8; 3] = [0xEF, 0xBB, 0xBF];
 
-/// Whether the file began with a UTF-8 byte-order mark, which saving puts back.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Bom {
-    /// It had none.
-    Absent,
-    /// It began with the three bytes of the mark.
-    Present,
-}
-
-impl Bom {
-    /// The bytes the file begins with for this.
-    pub(crate) fn mark(self) -> &'static [u8] {
-        match self {
-            Bom::Absent => &[],
-            Bom::Present => &UTF8_MARK,
-        }
-    }
+/// The bytes a file begins with: the UTF-8 byte-order mark when `bom`, which saving puts back.
+pub(crate) fn bom_mark(bom: bool) -> &'static [u8] {
+    if bom { &UTF8_MARK } else { &[] }
 }
 
 /// Why a file is not edited.
@@ -50,7 +36,8 @@ pub enum EditRefusal {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct EditText {
     bytes: Vec<u8>,
-    bom: Bom,
+    /// Whether the file began with a UTF-8 byte-order mark.
+    bom: bool,
 }
 
 impl EditText {
@@ -79,18 +66,16 @@ impl EditText {
         if detected.codec != TextCodec::Unicode(TextEncoding::Utf8) {
             return Err(EditRefusal::NotUtf8);
         }
-        let bom = if detected.mark == 0 {
-            Bom::Absent
-        } else {
+        let bom = detected.mark != 0;
+        if bom {
             bytes = bytes.split_off(usize::from(detected.mark));
-            Bom::Present
-        };
+        }
         // The detector looked at the bytes before a mark too, but not past it.
         std::str::from_utf8(&bytes).map_err(|_| EditRefusal::NotUtf8)?;
         Ok(EditText { bytes, bom })
     }
 
-    pub(crate) fn into_parts(self) -> (Vec<u8>, Bom) {
+    pub(crate) fn into_parts(self) -> (Vec<u8>, bool) {
         (self.bytes, self.bom)
     }
 }

@@ -7,7 +7,7 @@ use crate::support;
 
 use anyview_core::FilePath;
 use anyview_platform::linux::{FileManagerReveal, PortalPrinter};
-use anyview_platform::{JobTitle, PlatformError, PrintOutcome, Printer, Reveal};
+use anyview_platform::{PlatformError, PrintOutcome, Printer, Reveal};
 use support::PrivateBus;
 
 #[tokio::test]
@@ -16,7 +16,7 @@ async fn printing_without_a_portal_asks_the_caller_to_open_the_pdf_instead() {
         return;
     };
     let outcome = PortalPrinter::new(bus.env())
-        .print(b"%PDF-1.7", &JobTitle("Report".to_owned()))
+        .print(b"%PDF-1.7", "Report")
         .await
         .unwrap();
     assert_eq!(outcome, PrintOutcome::NoDialog);
@@ -27,7 +27,7 @@ async fn printing_without_a_bus_asks_the_caller_to_open_the_pdf_instead() {
     let scratch = tempfile::tempdir().unwrap();
     let env = anyview_platform::Env::isolated(scratch.path());
     let outcome = PortalPrinter::new(env)
-        .print(b"%PDF-1.7", &JobTitle("Report".to_owned()))
+        .print(b"%PDF-1.7", "Report")
         .await
         .unwrap();
     assert_eq!(outcome, PrintOutcome::NoDialog);

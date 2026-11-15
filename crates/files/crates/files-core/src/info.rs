@@ -4,10 +4,6 @@ use std::time::SystemTime;
 
 use crate::{ByteSize, EntryKind, FileName, FolderPath, ItemRef, LinkTo};
 
-/// How many items a folder holds (hidden ones left out, as the list does).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
-pub struct ItemCount(pub u32);
-
 /// The facts about one item, as the filesystem gave them.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Info {
@@ -21,8 +17,9 @@ pub struct Info {
     pub created: Option<SystemTime>,
     /// When its contents last changed; `None` when the filesystem does not say.
     pub modified: Option<SystemTime>,
-    /// For a folder: how many items it holds; `None` for anything else, or when it can't be read.
-    pub items: Option<ItemCount>,
+    /// For a folder: how many items it holds (hidden ones left out, as the list does); `None` for
+    /// anything else, or when it can't be read.
+    pub items: Option<u32>,
 }
 
 impl Info {
@@ -55,7 +52,7 @@ impl Info {
     }
 
     /// The same facts for a folder holding `count` items.
-    pub fn holding(self, count: ItemCount) -> Info {
+    pub fn holding(self, count: u32) -> Info {
         Info {
             items: Some(count),
             ..self

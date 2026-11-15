@@ -1,6 +1,6 @@
 //! The lifecycle's transitions: `(Life, Event) -> (Life, effects)`, with the backoff and the cuts.
 
-use super::model::{Cuts, Effect, Event, Life, Why};
+use super::model::{Effect, Event, Life, Why, spent};
 use crate::daemon::discover::Backoff;
 use crate::time::Mono;
 use std::iter::once;
@@ -9,7 +9,7 @@ pub(super) fn step(life: Life, event: Event) -> (Life, Vec<Effect>) {
     match (life, event) {
         (Life::Ready { .. }, Event::Written) => (
             Life::Ready {
-                cuts: Cuts::default(),
+                cuts: 0,
             },
             vec![],
         ),
@@ -29,9 +29,9 @@ pub(super) fn step(life: Life, event: Event) -> (Life, Vec<Effect>) {
 
 /// A write failed: the devices are dropped, and rebuilt unless the service has cut palmrest off
 /// too often.
-fn lose(cuts: Cuts, why: &Why) -> (Life, Vec<Effect>) {
+fn lose(cuts: u8, why: &Why) -> (Life, Vec<Effect>) {
     let cuts = why.tally(cuts);
-    if cuts.spent() {
+    if spent(cuts) {
         (
             Life::Dead,
             vec![Effect::DropEmitter, give_up(why), Effect::Lost],
@@ -43,7 +43,7 @@ fn lose(cuts: Cuts, why: &Why) -> (Life, Vec<Effect>) {
 
 /// The wait after a loss. A rebuilt device is not tried before the first backoff delay, so a
 /// device that is created but cannot be written is rebuilt once a second at most.
-fn begin_wait(cuts: Cuts, now: Mono) -> (Life, Vec<Effect>) {
+fn begin_wait(cuts: u8, now: Mono) -> (Life, Vec<Effect>) {
     let (delay, backoff) = Backoff::UINPUT.step();
     let waiting = Life::Waiting {
         retry_at: now.after(delay),
@@ -59,9 +59,9 @@ fn begin_wait(cuts: Cuts, now: Mono) -> (Life, Vec<Effect>) {
 }
 
 /// A rebuild failed: wait and try again, unless the service has cut palmrest off too often.
-fn fail_build(why: &Why, at: Mono, backoff: Backoff, cuts: Cuts) -> (Life, Vec<Effect>) {
+fn fail_build(why: &Why, at: Mono, backoff: Backoff, cuts: u8) -> (Life, Vec<Effect>) {
     let cuts = why.tally(cuts);
-    if cuts.spent() {
+    if spent(cuts) {
         return (Life::Dead, vec![give_up(why)]);
     }
     let (delay, backoff) = backoff.step();

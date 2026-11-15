@@ -53,17 +53,11 @@ pub(crate) fn format_name(format: ArchiveFormat) -> &'static str {
 }
 
 /// What a listing is of, in words: `ZIP archive`, `Tar archive (gzip)`, `gzip file`.
-pub(crate) fn kind_name(format: ArchiveFormat, holds: crate::entry::Holds) -> String {
-    use crate::entry::Holds;
-    match (container(format), holds) {
-        (Container::Compressed(_), Holds::Entries) => {
-            format!("Tar archive ({})", format_name(format))
-        }
-        (Container::Compressed(_), Holds::OneFile) => format!("{} file", format_name(format)),
-        (
-            Container::Zip | Container::Tar | Container::SevenZip,
-            Holds::Entries | Holds::OneFile,
-        ) => {
+pub(crate) fn kind_name(format: ArchiveFormat, one_file: bool) -> String {
+    match (container(format), one_file) {
+        (Container::Compressed(_), false) => format!("Tar archive ({})", format_name(format)),
+        (Container::Compressed(_), true) => format!("{} file", format_name(format)),
+        (Container::Zip | Container::Tar | Container::SevenZip, _) => {
             format!("{} archive", format_name(format))
         }
     }

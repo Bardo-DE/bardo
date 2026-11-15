@@ -12,7 +12,7 @@ use crate::original::Original;
 use crate::place::save_temp_beside;
 use crate::sweep::sweep_leftovers;
 use crate::sys;
-use crate::versions::{Kept, Origin, SavedAt, VersionId, Versions};
+use crate::versions::{Kept, VersionId, Versions};
 use std::fs;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -76,43 +76,27 @@ pub struct BackedUp {
     kept: Kept,
     original: Original,
     versions: Versions,
-    at: SavedAt,
-}
-
-/// Whether the new directory entry is known to be on disk. The bytes are saved either way.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Durability {
-    /// The file and its folder were synced.
-    Confirmed,
-    /// The file is saved, but syncing its folder failed, which some network and FUSE mounts do:
-    /// a power cut right now could bring the old name back.
-    Unconfirmed,
-}
-
-/// Whether a failed write has changed the person's file yet.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Touch {
-    Untouched,
-    Touched,
+    at: u64,
 }
 
 struct Failed {
     error: StoreError,
-    touch: Touch,
+    /// Whether the failed write has changed the person's file yet.
+    touched: bool,
 }
 
 impl Failed {
     fn untouched(error: StoreError) -> Failed {
         Failed {
             error,
-            touch: Touch::Untouched,
+            touched: false,
         }
     }
 
     fn touched(error: StoreError) -> Failed {
         Failed {
             error,
-            touch: Touch::Touched,
+            touched: true,
         }
     }
 }
@@ -124,7 +108,7 @@ impl BackedUp {
         kept: Kept,
         original: Original,
         versions: Versions,
-        at: SavedAt,
+        at: u64,
     ) -> BackedUp {
         BackedUp {
             target: pending.target,
@@ -150,54 +134,51 @@ impl BackedUp {
     /// in this process; if the file changed since it was backed up, its present content is kept
     /// first. A save that fails before it touched the file drops the version it kept: the file
     /// is that version. Once the file is renamed, a failing sync of its folder is reported in
-    /// [`Written::durability`], not as an error.
+    /// [`Written::synced`], not as an error.
     pub fn write_in_place(self) -> Result<Written, StoreError> {
         let _turn = SaveTurn::wait_for(&self.target);
         let dir = self.target.parent().unwrap_or_else(|| Path::new("."));
         sweep_leftovers(dir);
         let mut redundant = Vec::new();
-        if self.kept.origin == Origin::Fresh {
+        if self.kept.fresh {
             redundant.push(self.kept.id.clone());
         }
-        let written = self.keep_what_changed(&mut redundant).and_then(|links| {
-            let result = match links {
-                Links::Several => self.write_through().map(|()| Durability::Confirmed),
-                Links::One => self.replace(),
+        let written = self.keep_what_changed(&mut redundant).and_then(|several_links| {
+            let result = if several_links {
+                self.write_through().map(|()| true)
+            } else {
+                self.replace()
             };
             match result {
-                Ok(durability) => Ok(durability),
+                Ok(synced) => Ok(synced),
                 Err(failed) => Err(self.after(failed, &redundant)),
             }
         });
-        written.map(|durability| Written {
+        written.map(|synced| Written {
             target: self.target.clone(),
             kept: self.kept.id.clone(),
-            durability,
+            synced,
         })
     }
 
     /// Keeps the file as it is now when someone else changed it since the backup, and says how
-    /// many names it has.
-    fn keep_what_changed(&self, redundant: &mut Vec<VersionId>) -> Result<Links, StoreError> {
+    /// whether it has several names.
+    fn keep_what_changed(&self, redundant: &mut Vec<VersionId>) -> Result<bool, StoreError> {
         let meta =
             fs::metadata(&self.target).map_err(|e| io_error(StoreOp::Stat, &self.target, &e))?;
         let now = Original::of(&meta);
         if !self.original.is_unchanged_in(&now) {
             let kept = self.versions.keep_current(&self.target, self.at)?;
-            if kept.origin == Origin::Fresh {
+            if kept.fresh {
                 redundant.push(kept.id);
             }
         }
-        Ok(if now.links > 1 {
-            Links::Several
-        } else {
-            Links::One
-        })
+        Ok(now.links > 1)
     }
 
     /// What a failure leaves behind: nothing, when the file is as it was.
     fn after(&self, failed: Failed, redundant: &[VersionId]) -> StoreError {
-        if failed.touch == Touch::Untouched {
+        if !failed.touched {
             for id in redundant {
                 self.versions.forget(id);
             }
@@ -206,7 +187,7 @@ impl BackedUp {
     }
 
     /// The temporary file, renamed over the target.
-    fn replace(&self) -> Result<Durability, Failed> {
+    fn replace(&self) -> Result<bool, Failed> {
         let dir = self.target.parent().unwrap_or_else(|| Path::new("."));
         let temp = save_temp_beside(&self.target);
         let renamed = self.write_temp(&temp).and_then(|()| {
@@ -217,10 +198,7 @@ impl BackedUp {
             let _gone = fs::remove_file(&temp);
             return Err(Failed::untouched(error));
         }
-        Ok(match fs::File::open(dir).and_then(|d| d.sync_all()) {
-            Ok(()) => Durability::Confirmed,
-            Err(_) => Durability::Unconfirmed,
-        })
+        Ok(fs::File::open(dir).and_then(|d| d.sync_all()).is_ok())
     }
 
     fn write_temp(&self, temp: &Path) -> Result<(), StoreError> {
@@ -260,13 +238,6 @@ impl BackedUp {
     }
 }
 
-/// How many names the file being saved has.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Links {
-    One,
-    Several,
-}
-
 /// A file that now holds the saved bytes, and the version that holds what it was.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Written {
@@ -274,6 +245,8 @@ pub struct Written {
     pub target: PathBuf,
     /// Its previous content, restorable through [`Versions::restore`](crate::Versions::restore).
     pub kept: VersionId,
-    /// Whether the folder was synced after the rename.
-    pub durability: Durability,
+    /// Whether the folder was synced after the rename. When not, the file is saved all the same,
+    /// but syncing its folder failed, which some network and FUSE mounts do: a power cut right
+    /// now could bring the old name back.
+    pub synced: bool,
 }

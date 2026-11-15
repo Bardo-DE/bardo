@@ -15,17 +15,14 @@ pub enum PrintOutcome {
     NoDialog,
 }
 
-/// The title a print job shows in the queue.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct JobTitle(pub String);
-
 /// Print a PDF.
 pub trait Printer {
-    /// Show the print dialog and, if the person accepts it, print `pdf`.
+    /// Show the print dialog and, if the person accepts it, print `pdf`; `title` is what the job
+    /// shows in the queue.
     fn print(
         &self,
         pdf: &[u8],
-        title: &JobTitle,
+        title: &str,
     ) -> impl Future<Output = Result<PrintOutcome, PlatformError>> + Send;
 
     /// Whether this implementation has the service behind it. An implementation that answers

@@ -47,14 +47,14 @@ pub use export::{
     AudioTarget, ExportChoice, ExportExtension, ExportJob, HtmlDoc, MediaExport, MediaExportKind,
     MetadataCarry, NoExport, NoExportKind, Orientation, PaperSize, PdfExport, PdfExportKind,
     PdfPages, PixelSource, PrintLayout, RasterExport, RasterExportKind, RasterTarget, Resize,
-    StreamPick, Subtitles, TextExport, TextExportKind, TextFlavour, TextSource,
+    StreamPick, TextExport, TextExportKind, TextFlavour, TextSource,
 };
 pub use facts::{
     Coordinate, Fact, FactGroup, FactLabel, FactTime, FactValue, FactZone, Facts, FileDetails,
-    LocalZone, Tier, kind_name, kind_name_of,
+    LocalZone, kind_name, kind_name_of,
 };
-pub use find::{CaseMatch, FindOption, FindOptions, WordMatch};
-pub use form::{FormWidget, WidgetAccess, WidgetKind};
+pub use find::FindOptions;
+pub use form::{FormWidget, WidgetKind};
 pub use helper::Helper;
 pub use kind::{
     ArchiveFormat, BookFormat, Delimiter, FontFormat, FormatDetail, FormatKind, MediaContainer,
@@ -65,15 +65,15 @@ pub use markup::{
     FieldFill, Mark, MarkColor, MarkRef, MarkShape, MarkTool, MarkupSave, NOTE_SIZE, PagePoint,
     PageRect,
 };
-pub use media::{MediaChapter, MediaTags, MediaTrack, StreamKind, TrackPlay, VideoPresence};
+pub use media::{MediaChapter, MediaTags, MediaTrack, StreamKind, VideoPresence};
 pub use panel::PanelKept;
-pub use peek::{Deadline, Peek, PeekBudget, StageSupport};
+pub use peek::{Deadline, Peek, PeekBudget};
 pub use percent::percent_decode;
-pub use profile::{actions_for, edits_for, mime_for, stage_support};
-pub use resume::{Resume, TrackChoice, TrackId};
+pub use profile::{actions_for, edits_for, mime_for, has_stage};
+pub use resume::{Resume, TrackChoice};
 pub use sequence::{
-    Heading, Neighbours, NonEmpty, ResultsId, Sequence, SequenceMove, SequenceOrigin,
-    SequencePosition, moved, neighbours, without_current,
+    Heading, Neighbours, NonEmpty, Sequence, SequenceMove, SequenceOrigin, SequencePosition, moved,
+    neighbours, without_current,
 };
 pub use sniff::{
     FileHead, OleStreams, SniffStep, Sniffed, ZipEntries, ZipProbe, image_data_url, is_ole, sniff,
@@ -84,7 +84,7 @@ pub use source::{
 };
 pub use tree_path::{OpenNodes, TreePath};
 pub use units::{
-    Axis, Bitrate, ChapterIndex, DocPoint, DocUnit, Dpi, LineIndex, MediaLength, MediaTime,
+    Axis, Bitrate, DocPoint, DocUnit, Dpi, LineIndex, MediaLength, MediaTime,
     PageCount, PageIndex, PageRange, PageSelection, Percent, Permille, PixelArea, PixelLen,
     PixelSize, Quality, QuarterTurn, SectionCount, SectionIndex, Speed, TimeRange, Volume, Zoom,
 };

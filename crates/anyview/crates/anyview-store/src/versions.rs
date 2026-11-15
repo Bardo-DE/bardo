@@ -41,11 +41,6 @@ pub(crate) const SECONDS_PER_DAY: u64 = 24 * 60 * 60;
 /// The most the kept versions take together before [`Versions::prune`] drops the oldest.
 pub const DEFAULT_CAP: ByteLen = ByteLen(2 * 1024 * 1024 * 1024);
 
-/// Seconds since the Unix epoch, when a version was kept.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct SavedAt(pub u64);
-
 /// How long a kept version stays before [`Versions::prune`] may delete it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct KeepPeriod {
@@ -98,8 +93,8 @@ pub struct Version {
     pub id: VersionId,
     /// The file it was kept from, as its real path.
     pub path: PathBuf,
-    /// When it was kept.
-    pub saved_at: SavedAt,
+    /// When it was kept, in seconds since the Unix epoch.
+    pub saved_at: u64,
     /// Its size in bytes.
     pub size: ByteLen,
 }
@@ -108,24 +103,17 @@ pub struct Version {
 #[derive(Serialize, Deserialize)]
 pub(crate) struct Sidecar {
     pub(crate) path: String,
-    pub(crate) saved_at: SavedAt,
+    pub(crate) saved_at: u64,
     pub(crate) size: u64,
-}
-
-/// Whether a version was made for the save that asked, or was already there.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Origin {
-    /// Made just now: a save that fails before it touches the file has no use for it.
-    Fresh,
-    /// The file's latest version already held these bytes, so none was made.
-    Reused,
 }
 
 /// A version a save relies on.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Kept {
     pub(crate) id: VersionId,
-    pub(crate) origin: Origin,
+    /// Made just now for the save that asked (a save that fails before it touches the file has
+    /// no use for it), not reused: the file's latest version held these bytes already.
+    pub(crate) fresh: bool,
 }
 
 /// The versions store at one root. Blocking; call it from a worker.
@@ -162,7 +150,7 @@ impl Versions {
     /// nothing to keep of a new one. A file that is read-only is refused (`Permissions`,
     /// `PermissionDenied`): a person unlocks it first, as in any editor. When the file's latest
     /// version already holds the same bytes, that one is the version and no copy is made.
-    pub fn back_up(&self, pending: Pending, at: SavedAt) -> Result<BackedUp, StoreError> {
+    pub fn back_up(&self, pending: Pending, at: u64) -> Result<BackedUp, StoreError> {
         let target = &pending.target;
         let real = fs::canonicalize(target).map_err(|e| io_error(StoreOp::Stat, target, &e))?;
         let meta = fs::metadata(&real).map_err(|e| io_error(StoreOp::Stat, &real, &e))?;
@@ -206,7 +194,7 @@ impl Versions {
 
     /// Puts a kept version back as the file's content. That is a save in place like any other:
     /// the file as it is now is kept first (at `at`), so a restore can itself be undone.
-    pub fn restore(&self, id: &VersionId, at: SavedAt) -> Result<Written, StoreError> {
+    pub fn restore(&self, id: &VersionId, at: u64) -> Result<Written, StoreError> {
         let sidecar: Sidecar = io::read_json(&id.sidecar_path(&self.root))?
             .ok_or_else(|| StoreError::NoSuchVersion { id: id.to_string() })?;
         let data = id.data_path(&self.root);
@@ -217,24 +205,24 @@ impl Versions {
     }
 
     /// The latest version of `real` when it holds these very bytes, else a fresh one.
-    fn keep_as_is(&self, real: &Path, at: SavedAt) -> Result<Kept, StoreError> {
+    fn keep_as_is(&self, real: &Path, at: u64) -> Result<Kept, StoreError> {
         if let Some(latest) = self.versions_of(real)?.into_iter().next()
             && same_bytes(&latest.id.data_path(&self.root), real)
         {
             return Ok(Kept {
                 id: latest.id,
-                origin: Origin::Reused,
+                fresh: false,
             });
         }
         self.keep(real, at).map(|id| Kept {
             id,
-            origin: Origin::Fresh,
+            fresh: true,
         })
     }
 
     /// [`keep_as_is`](Self::keep_as_is) for the file as it is now, when someone changed it
     /// after the backup.
-    pub(crate) fn keep_current(&self, real: &Path, at: SavedAt) -> Result<Kept, StoreError> {
+    pub(crate) fn keep_current(&self, real: &Path, at: u64) -> Result<Kept, StoreError> {
         self.keep_as_is(real, at)
     }
 
@@ -247,7 +235,7 @@ impl Versions {
     }
 
     /// Copies `real` into a fresh version slot and writes its sidecar.
-    fn keep(&self, real: &Path, at: SavedAt) -> Result<VersionId, StoreError> {
+    fn keep(&self, real: &Path, at: u64) -> Result<VersionId, StoreError> {
         let key = key_of(real)?;
         let folder = self.root.join(&key);
         io::create_private_dir(&self.root)?;
@@ -276,12 +264,12 @@ impl Versions {
         &self,
         key: &str,
         data: &Path,
-        at: SavedAt,
+        at: u64,
     ) -> Result<VersionId, StoreError> {
         for n in 0_u32..10_000 {
             let id = VersionId {
                 key: key.to_owned(),
-                stem: format!("{:012}-{n:04}", at.0),
+                stem: format!("{:012}-{n:04}", at),
             };
             match fs::hard_link(data, id.data_path(&self.root)) {
                 Ok(()) => return Ok(id),
@@ -302,13 +290,13 @@ impl Versions {
         &self,
         real: &Path,
         key: &str,
-        at: SavedAt,
+        at: u64,
     ) -> Result<(VersionId, u64), StoreError> {
         let mut source = fs::File::open(real).map_err(|e| io_error(StoreOp::Read, real, &e))?;
         for n in 0_u32.. {
             let id = VersionId {
                 key: key.to_owned(),
-                stem: format!("{:012}-{n:04}", at.0),
+                stem: format!("{:012}-{n:04}", at),
             };
             let data = id.data_path(&self.root);
             let mut slot =

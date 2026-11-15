@@ -18,27 +18,6 @@ pub const MAX_USER_RULES: usize = 256;
 /// Where the rules that are left out can still be set.
 const MACHINE_FILE: &str = "/etc/keycap/keycap.toml";
 
-/// Whether the user layer may hold rules that type several keys, or none.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum Sequences {
-    /// A rule writes one stroke; a list of strokes, or an empty list, is left out.
-    #[default]
-    Refuse,
-    /// Lists are kept. Only the machine file can say this.
-    Allow,
-}
-
-impl Sequences {
-    /// The choice called `name` in `[user_layer] sequences`.
-    pub fn named(name: &str) -> Option<Sequences> {
-        match name {
-            "refuse" => Some(Sequences::Refuse),
-            "allow" => Some(Sequences::Allow),
-            _ => None,
-        }
-    }
-}
-
 /// Why a rule of the user layer is left out.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Reason {
@@ -69,10 +48,10 @@ fn is_typing(trigger: &Trigger) -> bool {
 }
 
 /// Why `action` on `trigger` may not stay in the user layer, if it may not.
-fn objection(trigger: &Trigger, action: &RuleAction, sequences: Sequences) -> Option<Reason> {
+fn objection(trigger: &Trigger, action: &RuleAction, sequences: bool) -> Option<Reason> {
     match (action, sequences) {
         _ if is_typing(trigger) => Some(Reason::KeyAlone),
-        (RuleAction::Sequence(_) | RuleAction::Swallow, Sequences::Refuse) => {
+        (RuleAction::Sequence(_) | RuleAction::Swallow, false) => {
             Some(Reason::StrokeList)
         }
         _ => None,
@@ -93,9 +72,9 @@ fn chord_text(trigger: &Trigger) -> String {
 impl ConfigLayer {
     /// This layer, read as the seat owner's settings: a layer with more than
     /// [`MAX_USER_RULES`] rules is refused whole; otherwise each rule that
-    /// [`Sequences`] or the modifier requirement forbids is dropped with a warning that names
+    /// the `sequences` setting or the modifier requirement forbids is dropped with a warning that names
     /// its chord. The machine file's layer is never passed through this.
-    pub fn confined(self, sequences: Sequences) -> Result<(ConfigLayer, Vec<Warning>), Oversize> {
+    pub fn confined(self, sequences: bool) -> Result<(ConfigLayer, Vec<Warning>), Oversize> {
         let found: usize = self.profiles.values().map(|p| p.rules.len()).sum();
         if found > MAX_USER_RULES {
             return Err(Oversize::UserRules { found });
@@ -129,7 +108,7 @@ impl ConfigLayer {
 type Rules = std::collections::BTreeMap<Trigger, RuleAction>;
 
 /// The rules that may stay, and the triggers of those that may not, with why.
-fn keep_allowed(rules: Rules, sequences: Sequences) -> (Rules, Vec<(Trigger, Reason)>) {
+fn keep_allowed(rules: Rules, sequences: bool) -> (Rules, Vec<(Trigger, Reason)>) {
     let mut kept = Rules::new();
     let mut dropped = Vec::new();
     for (trigger, action) in rules {

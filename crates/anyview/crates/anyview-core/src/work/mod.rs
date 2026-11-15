@@ -14,5 +14,5 @@ mod tests;
 
 pub use backend::Backend;
 pub use interrupt::Interrupt;
-pub use stop::{Stop, StopState};
+pub use stop::Stop;
 pub use ticket::{Ticket, Ticketed};

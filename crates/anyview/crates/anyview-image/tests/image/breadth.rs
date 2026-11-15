@@ -8,7 +8,7 @@ use anyview_core::{
     ByteLen, FilePath, FileStamp, Input, MediaTime, ModTime, Peek, PixelLen, PixelSize, Source,
 };
 use anyview_fs::OnDisk;
-use anyview_image::{Decoded, FrameCount, Plays, RasterPeek, Rgba8, decode_bytes};
+use anyview_image::{Decoded, Plays, RasterPeek, Rgba8, decode_bytes};
 use image::codecs::gif::{GifEncoder, Repeat};
 use image::{Delay, DynamicImage, Frame, ImageFormat, Rgb, Rgb32FImage, RgbaImage};
 use std::io::Cursor;
@@ -265,6 +265,6 @@ fn a_peek_of_each_new_format_is_its_first_picture_and_an_animation_peeks_one_fra
         let peeked = RasterPeek::peek(&src, &sniffed(&bytes, name), &budget(10_000)).unwrap();
         assert_eq!(peeked.source_size, whole, "{name}");
         assert_eq!(peeked.picture.size(), whole, "{name}: one still frame");
-        assert_eq!(peeked.frames, FrameCount(frames), "{name}");
+        assert_eq!(peeked.frames, frames, "{name}");
     }
 }

@@ -5,7 +5,7 @@
 use super::wire::Wire;
 use crate::error::PlatformError;
 use crate::thumbnail::ThumbPixels;
-use anyview_core::work::{Stop, StopState};
+use anyview_core::work::Stop;
 use anyview_core::{FilePath, PixelArea, PixelLen, PixelSize};
 use anyview_plugin::Installed;
 use anyview_plugin_protocol::{
@@ -149,7 +149,7 @@ impl PluginRunner {
         let message = HostMessage::Export(request.clone());
         let mut session = self.open(plugin, Capability::Export, &message, 0)?;
         session.stream(
-            |now| stop.stopped_at(now) == StopState::Stopped,
+            |now| stop.stopped_at(now),
             &HostMessage::Cancel,
             |id, frame| match frame.message {
                 PluginMessage::Progress(progress) => {

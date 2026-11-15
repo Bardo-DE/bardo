@@ -2,7 +2,7 @@
 //! owner, extended attributes and hard links, a read-only file, a failing folder sync, an outside
 //! change in the middle of a save, and saves that race.
 
-use anyview_store::{Durability, Pending, SavedAt, StoreError, StoreOp, Versions, is_read_only};
+use anyview_store::{Pending, StoreError, StoreOp, Versions, is_read_only};
 use std::fs;
 use std::os::unix::fs::{MetadataExt, PermissionsExt};
 use std::path::PathBuf;
@@ -29,7 +29,7 @@ fn scratch(original: &str) -> Scratch {
 
 fn save(s: &Scratch, bytes: &str, at: u64) -> Result<anyview_store::Written, StoreError> {
     s.versions
-        .back_up(Pending::new(&s.file, bytes.into()), SavedAt(at))?
+        .back_up(Pending::new(&s.file, bytes.into()), at)?
         .write_in_place()
 }
 
@@ -52,7 +52,7 @@ fn a_failing_folder_sync_after_the_rename_is_still_a_saved_file() {
     fs::set_permissions(folder, fs::Permissions::from_mode(0o755)).unwrap();
 
     let written = result.unwrap();
-    assert_eq!(written.durability, Durability::Unconfirmed);
+    assert!(!written.synced);
     assert_eq!(fs::read_to_string(&s.file).unwrap(), "after");
 }
 
@@ -128,7 +128,7 @@ fn a_change_made_between_the_backup_and_the_rename_is_kept_not_lost() {
     let s = scratch("before");
     let backed = s
         .versions
-        .back_up(Pending::new(&s.file, b"mine".to_vec()), SavedAt(10))
+        .back_up(Pending::new(&s.file, b"mine".to_vec()), 10)
         .unwrap();
     // Someone else writes the file after the backup.
     fs::write(&s.file, "theirs, a different length").unwrap();
@@ -142,7 +142,7 @@ fn a_change_made_between_the_backup_and_the_rename_is_kept_not_lost() {
     );
     // Restoring the newest brings back the outside change.
     let newest = s.versions.list(&s.file).unwrap().remove(0);
-    s.versions.restore(&newest.id, SavedAt(11)).unwrap();
+    s.versions.restore(&newest.id, 11).unwrap();
     assert_eq!(
         fs::read_to_string(&s.file).unwrap(),
         "theirs, a different length"

@@ -17,7 +17,7 @@ const COLUMN: Px = Px(120.0);
 /// The peeked rows of a delimited table, under its header (or "Column 1", "Column 2"… when the
 /// first row did not look like one).
 pub(super) fn table(peeked: &TablePeeked) -> Element {
-    let width = usize::try_from(peeked.columns.0)
+    let width = usize::try_from(peeked.columns)
         .unwrap_or(MAX_COLUMNS)
         .min(MAX_COLUMNS);
     let titles: Vec<String> = (0..width)

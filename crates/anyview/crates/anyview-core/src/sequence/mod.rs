@@ -8,6 +8,6 @@ mod step;
 #[cfg(test)]
 mod tests;
 
-pub use model::{ResultsId, Sequence, SequenceOrigin, SequencePosition};
+pub use model::{Sequence, SequenceOrigin, SequencePosition};
 pub use non_empty::NonEmpty;
 pub use step::{Heading, Neighbours, SequenceMove, moved, neighbours, without_current};

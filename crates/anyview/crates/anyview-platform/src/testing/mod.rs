@@ -33,7 +33,7 @@ pub use reveal::FakeReveal;
 pub use settings::FakeSettings;
 pub use share::FakeShare;
 pub use spawn::RecordingSpawn;
-pub use stacking::{FakeStacking, StackingSupport};
+pub use stacking::FakeStacking;
 pub use thumbnails::FakeThumbnails;
 
 use std::sync::{Mutex, MutexGuard, PoisonError};

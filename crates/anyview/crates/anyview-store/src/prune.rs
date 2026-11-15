@@ -3,7 +3,7 @@
 
 use crate::error::{StoreError, StoreOp};
 use crate::io::{self, io_error};
-use crate::versions::{KeepPeriod, SECONDS_PER_DAY, SavedAt, Sidecar, Version, Versions};
+use crate::versions::{KeepPeriod, SECONDS_PER_DAY, Sidecar, Version, Versions};
 use std::collections::HashMap;
 use std::fs;
 use std::io::ErrorKind;
@@ -37,14 +37,14 @@ impl Versions {
     ///   file's newest.
     ///
     /// A sidecar that cannot be read is left alone for a person to look at.
-    pub fn prune(&self, keep: KeepPeriod, now: SavedAt) -> Result<usize, StoreError> {
+    pub fn prune(&self, keep: KeepPeriod, now: u64) -> Result<usize, StoreError> {
         let mut folders = self.survey(now)?;
         let newest = folders
             .iter()
             .flat_map(|folder| &folder.versions)
-            .map(|version| version.saved_at.0)
+            .map(|version| version.saved_at)
             .max();
-        if newest.is_some_and(|newest| now.0 > newest.saturating_add(CLOCK_SLACK)) {
+        if newest.is_some_and(|newest| now > newest.saturating_add(CLOCK_SLACK)) {
             return Ok(0);
         }
         let mut removed = 0;
@@ -54,7 +54,7 @@ impl Versions {
             }
             let (old, young): (Vec<_>, Vec<_>) = std::mem::take(&mut folder.versions)
                 .into_iter()
-                .partition(|version| version.saved_at.0.saturating_add(keep.seconds()) < now.0);
+                .partition(|version| version.saved_at.saturating_add(keep.seconds()) < now);
             for version in &old {
                 self.delete(version)?;
             }
@@ -115,7 +115,7 @@ impl Versions {
     }
 
     /// Every folder of the store: its readable versions and its old leftovers.
-    fn survey(&self, now: SavedAt) -> Result<Vec<Folder>, StoreError> {
+    fn survey(&self, now: u64) -> Result<Vec<Folder>, StoreError> {
         let entries = match fs::read_dir(&self.root) {
             Ok(entries) => entries,
             Err(error) if error.kind() == ErrorKind::NotFound => return Ok(Vec::new()),
@@ -150,7 +150,7 @@ impl Versions {
 }
 
 /// The half-made files in `folder` that are at least a day old.
-fn leftovers_in(folder: &Path, now: SavedAt) -> Result<Vec<PathBuf>, StoreError> {
+fn leftovers_in(folder: &Path, now: u64) -> Result<Vec<PathBuf>, StoreError> {
     let entries = fs::read_dir(folder).map_err(|e| io_error(StoreOp::List, folder, &e))?;
     let mut found = Vec::new();
     for entry in entries {
@@ -188,11 +188,11 @@ fn is_damaged(json: &Path) -> bool {
     )
 }
 
-fn is_old(path: &Path, now: SavedAt) -> bool {
+fn is_old(path: &Path, now: u64) -> bool {
     let modified = fs::metadata(path)
         .and_then(|meta| meta.modified())
         .ok()
         .and_then(|time| time.duration_since(UNIX_EPOCH).ok())
         .map(|since| since.as_secs());
-    modified.is_some_and(|modified| modified.saturating_add(LEFTOVER_AGE) < now.0)
+    modified.is_some_and(|modified| modified.saturating_add(LEFTOVER_AGE) < now)
 }

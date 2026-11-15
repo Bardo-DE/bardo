@@ -169,7 +169,7 @@ pub fn mark_page(html: &str, needle: &Needle, current: Option<usize>) -> String 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use anyview_core::{CaseMatch, FindOptions};
+    use anyview_core::FindOptions;
 
     fn needle(text: &str) -> Needle {
         Needle::new(text).unwrap()
@@ -256,7 +256,7 @@ mod tests {
 
     #[test]
     fn marking_follows_the_options_of_the_needle() {
-        let exact = needle("Cat").with_options(FindOptions::default().with_case(CaseMatch::Exact));
+        let exact = needle("Cat").with_options(FindOptions::default().with_match_case(true));
         assert_eq!(
             mark_page("<p>cat Cat</p>", &exact, None),
             "<p>cat <mark>Cat</mark></p>"

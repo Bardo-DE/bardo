@@ -2,7 +2,7 @@
 
 use anyview_core::{FilePath, FormatKind};
 use anyview_store::{
-    History, HistoryEntry, HistoryRead, ResumeLabel, StoreError, StoreOp, Viewed, read_history,
+    History, HistoryEntry, HistoryRead, ResumeLabel, StoreError, StoreOp, read_history,
 };
 use std::fs;
 
@@ -11,7 +11,7 @@ fn sample() -> History {
         entries: vec![HistoryEntry {
             path: FilePath::new("/books/a.pdf").unwrap(),
             kind: FormatKind::Pdf,
-            viewed: Viewed(42),
+            viewed: 42,
             label: ResumeLabel::Page { number: 143 },
         }],
     }

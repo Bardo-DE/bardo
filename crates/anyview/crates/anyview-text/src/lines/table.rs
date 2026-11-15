@@ -128,13 +128,6 @@ impl RawLine {
     }
 }
 
-/// Whether the scan is still passing lines it was told to skip.
-#[derive(Clone, Copy, PartialEq, Eq)]
-enum Phase {
-    Skipping,
-    Taking,
-}
-
 /// From `span.0`, skips `lines.0` lines and returns the next `lines.1`, each with its line break
 /// and cut to [`MAX_LINE_BYTES`] of text. `span.1` is where the bytes end.
 fn scan(
@@ -148,11 +141,8 @@ fn scan(
     let unit = codec.unit();
     let mut done: Vec<RawLine> = Vec::new();
     let mut current = RawLine::default();
-    let mut phase = if skip == 0 {
-        Phase::Taking
-    } else {
-        Phase::Skipping
-    };
+    // Whether the scan has passed the lines it was told to skip.
+    let mut taking = skip == 0;
     let mut seen: u32 = 0;
     let mut at = offset;
     while at < end {
@@ -160,32 +150,27 @@ fn scan(
         if chunk.is_empty() {
             break;
         }
-        let mut from = match phase {
-            Phase::Taking => Some(0),
-            Phase::Skipping => None,
-        };
+        let mut from = taking.then_some(0);
         for i in (0..chunk.len()).step_by(unit) {
             if !codec.line_feed_at(&chunk, i) {
                 continue;
             }
             seen += 1;
             let after = (i + unit).min(chunk.len());
-            match phase {
-                Phase::Skipping if seen == skip => {
-                    phase = Phase::Taking;
+            if !taking {
+                if seen == skip {
+                    taking = true;
                     from = Some(after);
                 }
-                Phase::Taking => {
-                    current.push_text(&chunk[from.unwrap_or(0)..i]);
-                    current.bytes.extend_from_slice(&chunk[i..after]);
-                    done.push(std::mem::take(&mut current));
-                    if done.len() as u64 == u64::from(wanted) {
-                        // a usize fits a u64
-                        return Ok(done);
-                    }
-                    from = Some(after);
+            } else {
+                current.push_text(&chunk[from.unwrap_or(0)..i]);
+                current.bytes.extend_from_slice(&chunk[i..after]);
+                done.push(std::mem::take(&mut current));
+                if done.len() as u64 == u64::from(wanted) {
+                    // a usize fits a u64
+                    return Ok(done);
                 }
-                Phase::Skipping => {}
+                from = Some(after);
             }
         }
         if let Some(from) = from {

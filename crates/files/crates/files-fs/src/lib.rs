@@ -34,7 +34,7 @@ pub use cloud::{CloudError, CloudGuard, Clouds, News, NoClouds};
 pub use error::{ListError, PrefsError, WatchError};
 #[cfg(any(test, feature = "testing"))]
 pub use fake::{FakeLister, FakeWatcher};
-pub use list::{DiskLister, Lister, Listing, Skipped};
+pub use list::{DiskLister, Lister, Listing};
 #[cfg(any(test, feature = "testing"))]
 pub use prefs::FakePrefs;
 pub use prefs::{KEPT, NoPrefs, PrefBook, PrefsStore, TomlPrefs};

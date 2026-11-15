@@ -4,13 +4,6 @@ use crate::units::{
     DocPoint, LineIndex, MediaTime, PageIndex, Permille, SectionIndex, Volume, Zoom,
 };
 
-/// A track of audio or subtitles in a recording, by its number in the container.
-#[derive(
-    Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, serde::Serialize, serde::Deserialize,
-)]
-#[serde(transparent)]
-pub struct TrackId(pub u32);
-
 /// Which track plays.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
@@ -19,8 +12,8 @@ pub enum TrackChoice {
     Auto,
     /// No track.
     Off,
-    /// This track.
-    Track(TrackId),
+    /// The track of audio or subtitles with this number in the container.
+    Track(u32),
 }
 
 /// Where a person left a file. Stored per file, so it is adjacently tagged.
@@ -102,7 +95,7 @@ mod tests {
                 Resume::Media {
                     at: MediaTime::from_secs(90),
                     volume: Volume::clamped(Percent(80)),
-                    audio: TrackChoice::Track(TrackId(2)),
+                    audio: TrackChoice::Track(2),
                     subtitles: TrackChoice::Off,
                 },
                 r#"{"kind":"media","v":{"at":90000000,"volume":80,"audio":{"kind":"track","v":2},"subtitles":{"kind":"off"}}}"#,
@@ -155,7 +148,7 @@ mod tests {
         const CASES: &[(TrackChoice, &str)] = &[
             (TrackChoice::Auto, r#"{"kind":"auto"}"#),
             (TrackChoice::Off, r#"{"kind":"off"}"#),
-            (TrackChoice::Track(TrackId(7)), r#"{"kind":"track","v":7}"#),
+            (TrackChoice::Track(7), r#"{"kind":"track","v":7}"#),
         ];
         for (choice, json) in CASES {
             assert_eq!(&serde_json::to_string(choice).unwrap(), json);

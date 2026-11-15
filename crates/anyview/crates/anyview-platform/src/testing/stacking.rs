@@ -1,47 +1,32 @@
 use super::locked;
-use crate::stacking::{Stacking, StackingOutcome, WindowStacking};
-use ds_core::word::Word;
+use crate::stacking::WindowStacking;
 use std::sync::{Arc, Mutex};
-
-/// Whether the fake's desktop can keep a window above.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-pub enum StackingSupport {
-    /// It can.
-    Supported,
-    /// It cannot.
-    Unsupported,
-}
 
 /// A [`WindowStacking`] that records the requests and answers by its support.
 #[derive(Debug, Clone)]
 pub struct FakeStacking {
-    support: StackingSupport,
-    requested: Arc<Mutex<Vec<Stacking>>>,
+    supported: bool,
+    requested: Arc<Mutex<Vec<bool>>>,
 }
 
 impl FakeStacking {
-    /// A desktop with `support`.
-    pub fn with(support: StackingSupport) -> Self {
+    /// A desktop that can keep a window above when `supported`.
+    pub fn with(supported: bool) -> Self {
         FakeStacking {
-            support,
+            supported,
             requested: Arc::default(),
         }
     }
 
-    /// Every request, oldest first.
-    pub fn requested(&self) -> Vec<Stacking> {
+    /// Every request (`keep_above`), oldest first.
+    pub fn requested(&self) -> Vec<bool> {
         locked(&self.requested).clone()
     }
 }
 
 impl WindowStacking for FakeStacking {
-    fn request(&self, stacking: Stacking) -> StackingOutcome {
-        locked(&self.requested).push(stacking);
-        match (stacking, self.support) {
-            (Stacking::Normal, _) | (Stacking::KeepAbove, StackingSupport::Supported) => {
-                StackingOutcome::Applied
-            }
-            (Stacking::KeepAbove, StackingSupport::Unsupported) => StackingOutcome::Unsupported,
-        }
+    fn request(&self, keep_above: bool) -> bool {
+        locked(&self.requested).push(keep_above);
+        !keep_above || self.supported
     }
 }

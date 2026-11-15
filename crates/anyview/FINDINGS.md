@@ -1165,7 +1165,7 @@ on. It is a reference, not a log: how each was found lives in git history.
 - **Save and store limits that stand.** A save keeps the mode, owner (where the process may chown), extended
   attributes and ACLs, and writes a file with other hard links in place so the links stay one file; that write is
   not atomic (the original is kept first). A directory fsync that fails after the rename is
-  `Durability::Unconfirmed`, logged by the host. Version listing skips a damaged sidecar silently. The store is
+  an unsynced `Written` (`synced: false`), logged by the host. Version listing skips a damaged sidecar silently. The store is
   capped at `DEFAULT_CAP` (2 GiB), pruned oldest first and never a file's newest version; no version is
   pruned by age when the clock is over a year past the newest one. A kept version is not made again when it is
   identical to the file's latest. A save refused for a read-only file is `Io { op: Permissions, kind:

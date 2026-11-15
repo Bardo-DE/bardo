@@ -41,31 +41,20 @@ role = "focus_feed"
 /// The role of the Plasma focus feed.
 const FOCUS_FEED: RoleName = RoleName::from_static("focus_feed");
 
-/// Who is trusted to steer, chosen by the unit's environment.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub(crate) enum Steering {
-    /// Only the shell's unit.
-    #[default]
-    ShellUnit,
-    /// Every program of the seat's user, as before the shell was told apart. For tests whose
-    /// client is not in a unit; only the unit's environment sets it.
-    SeatUser,
+/// Whether `KEYCAP_STEERING` asks to trust every program of the seat's user, as before the
+/// shell was told apart (for tests whose client is not in a unit): only the exact word
+/// `seat-user` does; otherwise only the shell's unit steers.
+pub(crate) fn seat_user_asked(v: Option<&str>) -> bool {
+    v == Some("seat-user")
 }
 
-impl Steering {
-    /// The choice `KEYCAP_STEERING` names: only `seat-user` changes the default.
-    pub(crate) fn from_env_value(v: Option<&str>) -> Self {
-        match v {
-            Some("seat-user") => Steering::SeatUser,
-            _ => Steering::ShellUnit,
-        }
-    }
-
-    pub(crate) fn vouch(self) -> Box<dyn Vouch> {
-        match self {
-            Steering::ShellUnit => Box::new(steering_check()),
-            Steering::SeatUser => Box::new(SeatUser),
-        }
+/// Who is believed to steer: every program of the seat's user when `seat_user`, else only the
+/// shell's unit.
+pub(crate) fn vouch(seat_user: bool) -> Box<dyn Vouch> {
+    if seat_user {
+        Box::new(SeatUser)
+    } else {
+        Box::new(steering_check())
     }
 }
 
@@ -177,14 +166,14 @@ mod tests {
 
     #[test]
     fn only_the_exact_word_asks_for_the_seat_user() {
-        const CASES: &[(Option<&str>, Steering)] = &[
-            (None, Steering::ShellUnit),
-            (Some(""), Steering::ShellUnit),
-            (Some("1"), Steering::ShellUnit),
-            (Some("seat-user"), Steering::SeatUser),
+        const CASES: &[(Option<&str>, bool)] = &[
+            (None, false),
+            (Some(""), false),
+            (Some("1"), false),
+            (Some("seat-user"), true),
         ];
         for &(value, want) in CASES {
-            assert_eq!(Steering::from_env_value(value), want, "{value:?}");
+            assert_eq!(seat_user_asked(value), want, "{value:?}");
         }
     }
 }

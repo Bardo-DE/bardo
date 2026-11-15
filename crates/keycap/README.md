@@ -128,7 +128,7 @@ session on the same machine keeps the Plasma rules. sill ships that layer in its
 `dist/keycap/keycap.toml` and its installer copies it to `~/.config/keycap/keycap.toml` when you
 have none. keycap cuts that layer down when it arrives: a rule on a key with no modifier held (Caps Lock alone, say), and
 a rule that types several keys or none, belong in the machine files (the one in `/usr/lib/keycap` or the one in `/etc/keycap`); so do more than 256 rules. The machine file can
-let the second kind through for the user layer with `[user_layer]` / `sequences = "allow"`. `replay` takes one file, so to see both layers at once, copy the rules of the user file
+let the second kind through for the user layer with `[user_layer]` / `sequences = true`. `replay` takes one file, so to see both layers at once, copy the rules of the user file
 after those of the machine file in a scratch file (later rules win). To check without touching a
 keyboard:
 

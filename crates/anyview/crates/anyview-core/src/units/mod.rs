@@ -12,7 +12,7 @@ mod zoom;
 
 pub use content_space::{DocPoint, DocUnit, LineIndex};
 pub use dpi::Dpi;
-pub use media::{Bitrate, ChapterIndex, MediaLength, MediaTime, Speed, TimeRange, Volume};
+pub use media::{Bitrate, MediaLength, MediaTime, Speed, TimeRange, Volume};
 pub use orientation::{Axis, QuarterTurn};
 pub use page::{PageCount, PageIndex, PageRange, PageSelection};
 pub use pixels::{PixelArea, PixelLen, PixelSize};

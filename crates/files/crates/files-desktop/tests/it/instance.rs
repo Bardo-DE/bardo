@@ -3,9 +3,7 @@
 use files_core::Location;
 use files_desktop::file_manager::INTERFACE;
 use files_desktop::instance::APP_NAME;
-use files_desktop::{
-    Claim, FileManagerName, InstanceError, Show, ShowRequest, StartupId, claim, forward,
-};
+use files_desktop::{Claim, InstanceError, Show, ShowRequest, StartupId, claim, forward};
 use zbus::fdo::DBusProxy;
 use zbus::names::BusName;
 
@@ -45,7 +43,7 @@ async fn the_second_claim_finds_the_first_running_and_forwards_to_it() {
     let Claim::First(served) = claim(&first, first_sink).await.unwrap() else {
         panic!("the first claim must be the app");
     };
-    assert_eq!(served.file_manager(), FileManagerName::Ours);
+    assert!(served.owns_file_manager());
 
     let (second_sink, mut second_heard) = sink();
     let second = bus.connect().await;
@@ -75,7 +73,7 @@ async fn another_file_manager_keeps_its_name_and_the_app_still_runs() {
     let Claim::First(served) = claim(&app, sink).await.unwrap() else {
         panic!("the app must run");
     };
-    assert_eq!(served.file_manager(), FileManagerName::Taken);
+    assert!(!served.owns_file_manager());
 
     let owner = DBusProxy::new(&app)
         .await

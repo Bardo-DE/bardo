@@ -17,7 +17,7 @@ mod visible;
 mod tests;
 
 pub use edit::{TreeEditError, TreeSession};
-pub use rows::{ChildCount, NodeKind, RowLabel, TreeRow};
+pub use rows::{NodeKind, RowLabel, TreeRow};
 pub use visible::{Openness, VisibleRow};
 
 use crate::bytes::read_range;

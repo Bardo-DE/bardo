@@ -85,7 +85,7 @@ for the Plasma feed `keycap-focus.service`, under `user@<active uid>.service`), 
 that user, `Observer` anyone else. Only `Steering`'s `Focus` and `UserConfig` are honoured, and `Resume` also from `Plain` (any other request
 from the others ends their connection); every client receives `Status`. The user layer the shell sends is
 cut down on arrival: no rule on a key with no modifier held, no list or empty `then`, at most 256 rules. The
-machine file lifts the list ban with `[user_layer] sequences = "allow"`. The keymap messages are open to every client (they
+machine file lifts the list ban with `[user_layer] sequences = true`. The keymap messages are open to every client (they
 only read, or inform), and a client that never sends `KeymapCall::Watch` is never sent a `Keymap`. Registrations are kept per connection, at most 16 apps
 each, and dropped when the connection closes. A connection that has sent only keymap messages is
 an observer for the seat (it is not the owner being present, so its leaving resets nothing) and

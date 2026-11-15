@@ -56,7 +56,7 @@ mod tabs;
 mod typeselect;
 mod volumes;
 
-pub use app::{AppPick, Chooser};
+pub use app::AppPick;
 pub use arrange::arrange;
 pub use browser::Browser;
 pub use cloud::{

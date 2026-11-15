@@ -5,7 +5,6 @@ use std::fmt;
 
 use keycap_protocol::ProfileName;
 
-use super::confine::Sequences;
 use crate::profile::{ModMap, RuleAction, Trigger};
 use crate::role::OutMod;
 
@@ -40,19 +39,19 @@ pub struct ConfigLayer {
     pub(super) profiles: BTreeMap<ProfileName, ProfileLayer>,
     pub(super) devices: Vec<super::devices::DeviceEntry>,
     /// `[user_layer] sequences`: only the machine-wide files' values are ever consulted.
-    pub(super) sequences: Option<Sequences>,
+    pub(super) sequences: Option<bool>,
 }
 
 impl ConfigLayer {
     /// What this layer, taken as the system file, lets the seat owner's settings do about
-    /// rules that type several keys or none. Unset means [`Sequences::Refuse`].
-    pub fn sequences(&self) -> Sequences {
+    /// rules that type several keys or none. Unset means `false`.
+    pub fn sequences(&self) -> bool {
         self.sequences.unwrap_or_default()
     }
 
     /// Like [`ConfigLayer::sequences`] for this layer taken as the machine file laid over the
     /// vendor file `vendor`: this layer's choice if it has one, else the vendor's.
-    pub fn sequences_over(&self, vendor: &ConfigLayer) -> Sequences {
+    pub fn sequences_over(&self, vendor: &ConfigLayer) -> bool {
         self.sequences.or(vendor.sequences).unwrap_or_default()
     }
 }

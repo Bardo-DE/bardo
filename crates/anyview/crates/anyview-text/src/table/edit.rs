@@ -176,7 +176,7 @@ impl TableEdits {
             before,
             after,
         };
-        self.apply(&step, Way::Forward);
+        self.apply(&step, false);
         self.log.push(step);
     }
 
@@ -266,7 +266,8 @@ impl TableEdits {
         self.layout.len()
     }
 
-    fn apply(&mut self, step: &Step, way: Way) {
+    /// Applies `step`, or takes it back when `backward`.
+    fn apply(&mut self, step: &Step, backward: bool) {
         match step {
             Step::Cell {
                 row,
@@ -274,10 +275,7 @@ impl TableEdits {
                 before,
                 after,
             } => {
-                let value = match way {
-                    Way::Forward => after,
-                    Way::Backward => before,
-                };
+                let value = if backward { before } else { after };
                 match value {
                     Some(text) => {
                         self.cells.insert((*row, *column), text.clone());
@@ -288,30 +286,28 @@ impl TableEdits {
                 }
             }
             Step::Layout { before, after } => {
-                self.layout = match way {
-                    Way::Forward => after.clone(),
-                    Way::Backward => before.clone(),
-                };
+                let layout = if backward { before } else { after };
+                self.layout = layout.clone();
             }
         }
     }
 
     /// Take back the last edit. Whether there was one.
-    pub fn undo(&mut self) -> Undid {
+    pub fn undo(&mut self) -> bool {
         let Some(step) = self.log.undo().cloned() else {
-            return Undid::Nothing;
+            return false;
         };
-        self.apply(&step, Way::Backward);
-        Undid::Something
+        self.apply(&step, true);
+        true
     }
 
     /// Do the edit taken back again. Whether there was one.
-    pub fn redo(&mut self) -> Undid {
+    pub fn redo(&mut self) -> bool {
         let Some(step) = self.log.redo().cloned() else {
-            return Undid::Nothing;
+            return false;
         };
-        self.apply(&step, Way::Forward);
-        Undid::Something
+        self.apply(&step, false);
+        true
     }
 
     /// How many edits can be taken back.
@@ -394,18 +390,3 @@ impl TableEdits {
     }
 }
 
-/// Which way a step is applied.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Way {
-    Forward,
-    Backward,
-}
-
-/// Whether an undo or a redo had an edit to take back or do again.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Undid {
-    /// There was one, and it is done.
-    Something,
-    /// There was none.
-    Nothing,
-}

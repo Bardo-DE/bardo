@@ -59,7 +59,7 @@ pub use encoding::{Coverage, DETECT_BYTES, Detected, LegacyEncoding, TextCodec, 
 pub use error::TextError;
 pub use export::{plan_export, plan_print, printable_html};
 pub use find::{ByteOffset, FindHit, MAX_HITS, Needle};
-pub use lines::{LINE_CUT, LineCount, MAX_LINE_BYTES, TextLines};
+pub use lines::{LINE_CUT, MAX_LINE_BYTES, TextLines};
 pub use markdown::{
     Anchor, DiskFiles, Heading, HeadingLevel, LocalFiles, NoFiles, PageHit, PageHits, RenderEnv,
     Rendered, mark_page, page_hits, render,
@@ -69,9 +69,9 @@ pub use peek::{
     TablePeek, TablePeeked, TableSource, Tally, TreePeek, TreePeeked,
 };
 pub use table::{
-    CharWidth, ColumnCount, HeaderMode, RowCount, RowIndex, RowRef, SHEET_ROWS, Separator, Sheet,
-    TABLE_BYTES, Table, TableEdits, Undid, WORKBOOK_BYTES, WORKBOOK_CELLS, Workbook,
+    HeaderMode, RowIndex, RowRef, SHEET_ROWS, Separator, Sheet, TABLE_BYTES, Table, TableEdits,
+    WORKBOOK_BYTES, WORKBOOK_CELLS, Workbook,
 };
 pub use tree::{
-    ChildCount, NodeKind, Openness, RowLabel, Tree, TreeEditError, TreeRow, TreeSession, VisibleRow,
+    NodeKind, Openness, RowLabel, Tree, TreeEditError, TreeRow, TreeSession, VisibleRow,
 };

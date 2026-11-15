@@ -20,10 +20,6 @@ use table::LineTable;
 /// running on, the way an editor shows a line it does not lay out in full.
 pub const LINE_CUT: char = '\u{2026}';
 
-/// How many lines a text has.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
-pub struct LineCount(pub u32);
-
 /// A text file indexed for windowing: its encoding, its line count, and the means to read any run
 /// of lines. Opening streams the file once; asking for lines afterwards reads only those lines
 /// and, at worst, the 63 before them.
@@ -64,8 +60,8 @@ impl<B: ReadAt> TextLines<B> {
     }
 
     /// The number of lines. An empty file has none, and a final line break does not start one.
-    pub fn line_count(&self) -> LineCount {
-        LineCount(self.table.lines())
+    pub fn line_count(&self) -> u32 {
+        self.table.lines()
     }
 
     /// The lines in `range`, without their line breaks (`\n` or `\r\n`). A range past the end is

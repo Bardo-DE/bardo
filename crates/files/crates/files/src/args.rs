@@ -20,32 +20,24 @@ pub enum Start {
     Trash,
 }
 
-/// Who started this launch.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Started {
-    /// The person (or a program acting for them) ran `files`.
-    ByPerson,
-    /// The session bus started it to answer a call.
-    ByBus,
-}
-
 /// What the command line asked for.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Args {
     /// Where to start.
     pub start: Start,
-    /// Who started it.
-    pub started: Started,
+    /// Whether the session bus started it to answer a call (`--dbus-activated`), not the person
+    /// (or a program acting for them).
+    pub dbus_activated: bool,
 }
 
 impl Args {
     /// Reads the arguments after the program's name; the error is a sentence for the person.
     pub fn parse(args: impl IntoIterator<Item = OsString>) -> Result<Args, String> {
         let mut folders = Vec::new();
-        let mut started = Started::ByPerson;
+        let mut dbus_activated = false;
         for arg in args {
             if arg == "--dbus-activated" {
-                started = Started::ByBus;
+                dbus_activated = true;
                 continue;
             }
             if arg.to_string_lossy().starts_with('-') && arg != "-" {
@@ -61,7 +53,10 @@ impl Args {
             Some(first) => Start::Given(path_of(&first)),
             None => Start::Home,
         };
-        Ok(Args { start, started })
+        Ok(Args {
+            start,
+            dbus_activated,
+        })
     }
 }
 
@@ -136,7 +131,7 @@ mod tests {
     fn given(path: &str) -> Result<Args, String> {
         Ok(Args {
             start: Start::Given(PathBuf::from(path)),
-            started: Started::ByPerson,
+            dbus_activated: false,
         })
     }
 
@@ -148,7 +143,7 @@ mod tests {
                 parse(&[]),
                 Ok(Args {
                     start: Start::Home,
-                    started: Started::ByPerson,
+                    dbus_activated: false,
                 }),
             ),
             (
@@ -156,7 +151,7 @@ mod tests {
                 parse(&["--dbus-activated"]),
                 Ok(Args {
                     start: Start::Home,
-                    started: Started::ByBus,
+                    dbus_activated: true,
                 }),
             ),
             ("a path", parse(&["/tmp"]), given("/tmp")),
@@ -183,7 +178,7 @@ mod tests {
                 parse(&["trash:///"]),
                 Ok(Args {
                     start: Start::Trash,
-                    started: Started::ByPerson,
+                    dbus_activated: false,
                 }),
             ),
             (
@@ -191,7 +186,7 @@ mod tests {
                 parse(&["trash:///", "/tmp"]),
                 Ok(Args {
                     start: Start::Trash,
-                    started: Started::ByPerson,
+                    dbus_activated: false,
                 }),
             ),
         ];

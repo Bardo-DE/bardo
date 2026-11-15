@@ -54,7 +54,7 @@ mod rotate;
 mod scale;
 
 pub use decode::{
-    Animation, ColourInfo, ColourModel, Decoded, Frame, FrameCount, Plays, colour_of,
+    Animation, ColourInfo, ColourModel, Decoded, Frame, Plays, colour_of,
     declared_size, decode, decode_bytes, file_bytes, natural_size,
 };
 #[cfg(feature = "encode")]

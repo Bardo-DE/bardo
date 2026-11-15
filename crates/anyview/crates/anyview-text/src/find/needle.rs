@@ -1,6 +1,6 @@
 //! The phrase searched for and one place it was found.
 
-use anyview_core::{CaseMatch, FindOptions, LineIndex, WordMatch};
+use anyview_core::{FindOptions, LineIndex};
 
 /// A byte position inside one line of text.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -72,22 +72,20 @@ impl Needle {
     /// not. A phrase must end between two characters: lower-casing one character can give
     /// several, and a phrase that stops inside them is not a match.
     fn matched(&self, rest: &str) -> Option<usize> {
-        let mut want = match self.options.case {
-            CaseMatch::Ignore => self.lower.iter(),
-            CaseMatch::Exact => self.exact.iter(),
+        let mut want = if self.options.match_case {
+            self.exact.iter()
+        } else {
+            self.lower.iter()
         };
         let mut used = 0;
         for c in rest.chars() {
-            match self.options.case {
-                CaseMatch::Ignore => {
-                    for lower in c.to_lowercase() {
-                        if want.next() != Some(&lower) {
-                            return None;
-                        }
-                    }
+            if self.options.match_case {
+                if want.next() != Some(&c) {
+                    return None;
                 }
-                CaseMatch::Exact => {
-                    if want.next() != Some(&c) {
+            } else {
+                for lower in c.to_lowercase() {
+                    if want.next() != Some(&lower) {
                         return None;
                     }
                 }
@@ -104,16 +102,14 @@ impl Needle {
     /// wanted, and then a hit that starts or ends in a word must not run into the word beside it.
     /// A hit that starts or ends in punctuation (`fn(`, `.rs`) has no word to run into there.
     fn stands_alone(&self, text: &str, from: usize, to: usize) -> bool {
-        match self.options.words {
-            WordMatch::Part => true,
-            WordMatch::Whole => {
-                let hit = text.get(from..to).unwrap_or_default();
-                let before = text.get(..from).and_then(|head| head.chars().next_back());
-                let after = text.get(to..).and_then(|tail| tail.chars().next());
-                !(hit.chars().next().is_some_and(in_word) && before.is_some_and(in_word))
-                    && !(hit.chars().next_back().is_some_and(in_word) && after.is_some_and(in_word))
-            }
+        if !self.options.whole_words {
+            return true;
         }
+        let hit = text.get(from..to).unwrap_or_default();
+        let before = text.get(..from).and_then(|head| head.chars().next_back());
+        let after = text.get(to..).and_then(|tail| tail.chars().next());
+        !(hit.chars().next().is_some_and(in_word) && before.is_some_and(in_word))
+            && !(hit.chars().next_back().is_some_and(in_word) && after.is_some_and(in_word))
     }
 }
 

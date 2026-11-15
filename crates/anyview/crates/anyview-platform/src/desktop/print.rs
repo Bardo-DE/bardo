@@ -7,7 +7,7 @@
 use super::portal::{DESKTOP, DESKTOP_PATH, Response, UNPARENTED, answers, unreached};
 use crate::env::Env;
 use crate::error::PlatformError;
-use crate::printer::{JobTitle, PrintOutcome, Printer};
+use crate::printer::{PrintOutcome, Printer};
 use std::collections::HashMap;
 use std::io::{Seek, SeekFrom, Write};
 use std::os::fd::OwnedFd;
@@ -38,7 +38,7 @@ enum Stage {
 }
 
 impl Printer for PortalPrinter {
-    async fn print(&self, pdf: &[u8], title: &JobTitle) -> Result<PrintOutcome, PlatformError> {
+    async fn print(&self, pdf: &[u8], title: &str) -> Result<PrintOutcome, PlatformError> {
         let builder = match self.env.session_builder() {
             Ok(builder) => builder,
             Err(error) => return Ok(no_dialog("find the session bus", &error)),
@@ -47,13 +47,13 @@ impl Printer for PortalPrinter {
             Ok(connection) => connection,
             Err(error) => return Ok(no_dialog("connect to the session bus", &error)),
         };
-        let token = match prepare(&connection, &title.0).await {
+        let token = match prepare(&connection, title).await {
             Ok(Some(token)) => token,
             Ok(None) => return Ok(PrintOutcome::Cancelled),
             Err(Stage::Before) => return Ok(PrintOutcome::NoDialog),
             Err(Stage::After(error)) => return Err(error),
         };
-        submit(&connection, &title.0, pdf, token).await
+        submit(&connection, title, pdf, token).await
     }
 }
 

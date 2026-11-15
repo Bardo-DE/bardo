@@ -25,14 +25,11 @@ fn rows_keep_their_order_and_are_found_by_label() {
 #[test]
 fn a_row_that_names_no_section_goes_where_its_label_does() {
     let row = Fact::new(FactLabel::Pages, FactValue::text("3 pages"));
-    assert_eq!((row.group, row.tier), (FactGroup::Document, Tier::Headline));
+    assert_eq!((row.group, row.headline), (FactGroup::Document, true));
     let row = Fact::new(FactLabel::Camera, FactValue::text("Canon"));
-    assert_eq!((row.group, row.tier), (FactGroup::Camera, Tier::Detail));
-    let moved = row.in_group(FactGroup::Video).at_tier(Tier::Headline);
-    assert_eq!(
-        (moved.group, moved.tier),
-        (FactGroup::Video, Tier::Headline)
-    );
+    assert_eq!((row.group, row.headline), (FactGroup::Camera, false));
+    let moved = row.in_group(FactGroup::Video).with_headline(true);
+    assert_eq!((moved.group, moved.headline), (FactGroup::Video, true));
 }
 
 #[test]

@@ -107,7 +107,6 @@ mod tests {
     use super::*;
     use crate::history::HistoryEntry;
     use crate::label::ResumeLabel;
-    use crate::viewed::Viewed;
     use anyview_core::{ByteLen, FormatKind, LineIndex, ModTime};
 
     fn stamp(len: u64, modified: i64) -> FileStamp {
@@ -136,7 +135,7 @@ mod tests {
                 .map(|p| HistoryEntry {
                     path: path(p),
                     kind: FormatKind::PlainText,
-                    viewed: Viewed(1),
+                    viewed: 1,
                     label: ResumeLabel::Unlabelled,
                 })
                 .collect(),

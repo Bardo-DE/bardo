@@ -7,13 +7,6 @@ use crate::sensor::magic_mouse::report::Buttons;
 use crate::time::Mono;
 use std::time::Duration;
 
-/// Whether a physical click is holding gestures off (P4).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Hold {
-    Open,
-    Held,
-}
-
 /// The guard between reports.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum ClickGuard {
@@ -37,12 +30,12 @@ impl ClickGuard {
         }
     }
 
-    /// Whether gestures are held off at `now`.
-    pub fn hold(self, now: Mono) -> Hold {
+    /// Whether a physical click holds gestures off at `now` (P4).
+    pub fn held(self, now: Mono) -> bool {
         match self {
-            Self::Pressed => Hold::Held,
-            Self::Until(t) if now < t => Hold::Held,
-            _ => Hold::Open,
+            Self::Pressed => true,
+            Self::Until(t) => now < t,
+            Self::Idle => false,
         }
     }
 }
@@ -54,21 +47,21 @@ mod tests {
     #[test]
     fn guard_sequence() {
         let g = Duration::from_millis(200);
-        let steps: &[(u64, Buttons, bool, Hold)] = &[
-            (0, Buttons::NONE, false, Hold::Open),
-            (10, Buttons::LEFT, true, Hold::Held),
-            (20, Buttons::LEFT, false, Hold::Held),
-            (30, Buttons::NONE, false, Hold::Held),
-            (229, Buttons::NONE, false, Hold::Held),
-            (230, Buttons::NONE, false, Hold::Open),
-            (240, Buttons::RIGHT, true, Hold::Held),
+        let steps: &[(u64, Buttons, bool, bool)] = &[
+            (0, Buttons::NONE, false, false),
+            (10, Buttons::LEFT, true, true),
+            (20, Buttons::LEFT, false, true),
+            (30, Buttons::NONE, false, true),
+            (229, Buttons::NONE, false, true),
+            (230, Buttons::NONE, false, false),
+            (240, Buttons::RIGHT, true, true),
         ];
         let mut s = ClickGuard::Idle;
-        for &(ms, b, press, hold) in steps {
+        for &(ms, b, press, held) in steps {
             let now = Mono::from_millis(ms);
             let (n, p) = s.step(b, now, g);
             s = n;
-            assert_eq!((p, s.hold(now)), (press, hold), "at {ms} ms");
+            assert_eq!((p, s.held(now)), (press, held), "at {ms} ms");
         }
     }
 }

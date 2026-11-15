@@ -43,7 +43,7 @@ mod stream;
 mod tar;
 mod zip_archive;
 
-pub use entry::{Entry, EntryCount, EntryKind, EntryLimit, Holds, Listing};
+pub use entry::{Entry, EntryCount, EntryKind, EntryLimit, Listing};
 pub use error::ArchiveError;
 pub use extract::{ExtractLimits, extract, extract_until};
 pub use list::{list, list_until};

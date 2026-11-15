@@ -5,8 +5,7 @@ use super::family::Family;
 use super::{
     BookFormat, Delimiter, FormatKind, MediaContainer, Mime, OfficeFormat, RasterFormat, TreeFormat,
 };
-use crate::peek::StageSupport;
-use crate::profile::stage_support;
+use crate::profile::has_stage;
 use ds_core::word::Word;
 
 /// The media types a file of `kind` is sniffed as, in no order and with repeats allowed. Every
@@ -46,7 +45,7 @@ fn mimes_of(kind: FormatKind) -> Vec<&'static str> {
     }
 }
 
-/// The media types of every kind the viewer has a stage for (`StageSupport::Stage`), sorted and
+/// The media types of every kind the viewer has a stage for (`has_stage`), sorted and
 /// without repeats: what a desktop entry claims the viewer opens. A kind the viewer only peeks
 /// at is left out, since claiming it would make the viewer the answer to a file it cannot show.
 #[must_use]
@@ -58,7 +57,7 @@ fn opened_texts() -> Vec<&'static str> {
     let mut texts: Vec<&'static str> = FormatKind::ALL
         .iter()
         .copied()
-        .filter(|kind| stage_support(*kind) == StageSupport::Stage)
+        .filter(|kind| has_stage(*kind))
         .flat_map(mimes_of)
         .collect();
     texts.sort_unstable();
@@ -228,12 +227,7 @@ mod tests {
         use crate::kind::kind_of_mime;
         for mime in opened_mimes() {
             let kind = kind_of_mime(&mime);
-            assert_eq!(
-                stage_support(kind),
-                StageSupport::Stage,
-                "{}",
-                mime.as_str()
-            );
+            assert!(has_stage(kind), "{}", mime.as_str());
         }
     }
 }

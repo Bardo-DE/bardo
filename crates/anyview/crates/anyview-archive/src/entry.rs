@@ -2,6 +2,7 @@
 
 use anyview_core::{ArchiveFormat, ByteLen};
 use ds_core::word::Word;
+use std::ops::ControlFlow;
 
 /// What an entry is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
@@ -53,22 +54,14 @@ impl EntryCount {
     }
 }
 
-/// What an archive file holds.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Holds {
-    /// Several entries.
-    Entries,
-    /// One file, compressed on its own (a `.gz` that is not a tarball).
-    OneFile,
-}
-
 /// The start of an archive's index.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Listing {
     /// What the file was sniffed as.
     pub format: ArchiveFormat,
-    /// Whether it is an archive of entries or one compressed file.
-    pub holds: Holds,
+    /// Whether it is one file compressed on its own (a `.gz` that is not a tarball), not an
+    /// archive of entries.
+    pub one_file: bool,
     /// The first entries, in the archive's own order, at most as many as were asked for.
     pub entries: Vec<Entry>,
     /// How many entries there are.
@@ -104,10 +97,10 @@ impl Tally {
         }
     }
 
-    /// Takes one more entry; `false` once the count limit is reached and reading should stop.
-    pub(crate) fn push(&mut self, entry: Entry) -> TallyStep {
+    /// Takes one more entry; `Break` once the count limit is reached and reading should stop.
+    pub(crate) fn push(&mut self, entry: Entry) -> ControlFlow<()> {
         if self.count >= COUNT_LIMIT {
-            return TallyStep::Full;
+            return ControlFlow::Break(());
         }
         self.count += 1;
         self.unpacked = self
@@ -116,38 +109,25 @@ impl Tally {
         if self.entries.len() < self.limit {
             self.entries.push(entry);
         }
-        TallyStep::More
+        ControlFlow::Continue(())
     }
 
     pub(crate) fn is_empty(&self) -> bool {
         self.count == 0
     }
 
-    pub(crate) fn finish(self, format: ArchiveFormat, holds: Holds, seen: Seen) -> Listing {
-        let count = match seen {
-            Seen::All if self.count < COUNT_LIMIT => EntryCount::Exact(self.count),
-            Seen::All | Seen::Start => EntryCount::AtLeast(self.count),
+    pub(crate) fn finish(self, format: ArchiveFormat, complete: bool) -> Listing {
+        let count = if complete && self.count < COUNT_LIMIT {
+            EntryCount::Exact(self.count)
+        } else {
+            EntryCount::AtLeast(self.count)
         };
         Listing {
             format,
-            holds,
+            one_file: false,
             entries: self.entries,
             count,
             unpacked: ByteLen(self.unpacked),
         }
     }
-}
-
-/// Whether a [`Tally`] wants more.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum TallyStep {
-    More,
-    Full,
-}
-
-/// How much of the index a reader got through.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Seen {
-    All,
-    Start,
 }

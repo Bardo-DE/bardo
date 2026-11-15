@@ -1,7 +1,7 @@
 //! Open With: the selection goes to the app picked, and the sheet of every app.
 
 use files_core::{Entry, EntryKind, FolderPath, Special};
-use files_model::{AppPick, Chooser, Effect, Input, Modifier, OpenTarget};
+use files_model::{AppPick, Effect, Input, Modifier, OpenTarget};
 
 use crate::common::*;
 
@@ -68,23 +68,19 @@ fn open_with_hands_the_selection_to_the_app_picked() {
 #[test]
 fn the_sheet_of_apps_opens_for_a_selection_and_closes_with_a_pick() {
     let (browser, _) = run(loaded(entries()), vec![click("a.txt"), Input::ChooseApp]);
-    assert_eq!(browser.chooser(), Chooser::Open);
+    assert!(browser.chooser_open());
 
     let (closed, effects) = browser.clone().step(Input::CloseChooseApp, at(0));
-    assert_eq!(closed.chooser(), Chooser::Closed);
+    assert!(!closed.chooser_open());
     assert!(effects.is_empty());
 
     let (picked, effects) = browser.clone().step(Input::OpenWith(pick()), at(0));
-    assert_eq!(picked.chooser(), Chooser::Closed);
+    assert!(!picked.chooser_open());
     assert_eq!(effects.len(), 1);
 
     let (none, _) = loaded(entries()).step(Input::ChooseApp, at(0));
-    assert_eq!(none.chooser(), Chooser::Closed, "nothing to open");
+    assert!(!none.chooser_open(), "nothing to open");
 
     let (away, _) = browser.step(Input::Go(dir("/tmp")), at(0));
-    assert_eq!(
-        away.chooser(),
-        Chooser::Closed,
-        "going elsewhere puts it away"
-    );
+    assert!(!away.chooser_open(), "going elsewhere puts it away");
 }

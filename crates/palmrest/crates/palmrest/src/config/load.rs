@@ -66,13 +66,19 @@ pub fn load(dir: Option<&Path>) -> Loaded {
                 Err(e) => (
                     Config::default(),
                     String::new(),
-                    vec![whole_file(p, e.to_string())],
+                    vec![whole_file(
+                        p,
+                        format!("gestures.toml is not valid TOML: {e}"),
+                    )],
                 ),
             },
             Err(e) => (
                 Config::default(),
                 String::new(),
-                vec![whole_file(p, e.to_string())],
+                vec![whole_file(
+                        p,
+                        format!("gestures.toml is not valid TOML: {e}"),
+                    )],
             ),
         },
     };

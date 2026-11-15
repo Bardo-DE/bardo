@@ -25,17 +25,13 @@ pub trait Lister: Send + Sync {
     fn info(&self, item: &ItemRef) -> Result<Info, ListError>;
 }
 
-/// How many entries a listing left out because they could not be read or named.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub struct Skipped(pub usize);
-
 /// A folder's entries and how many were left out.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Listing {
     /// What was read.
     pub entries: Vec<Entry>,
-    /// What was left out.
-    pub skipped: Skipped,
+    /// How many entries were left out because they could not be read or named.
+    pub skipped: usize,
 }
 
 /// The real disk.
@@ -60,7 +56,7 @@ impl DiskLister {
         }
         Ok(Listing {
             entries,
-            skipped: Skipped(skipped),
+            skipped,
         })
     }
 }

@@ -4,7 +4,7 @@
 //! wrote (`wrote`) only for what reached the wire.
 
 use super::caps::{CapsFix, remaps_caps};
-use super::leds::{Lamp, Led, LedEvent};
+use super::leds::{Led, LedEvent};
 use crate::{OutEvent, Profiles, RemapInput, RemapOut, Remapper};
 
 /// The remapper and what keycap knows of the Caps Lock lock.
@@ -21,7 +21,7 @@ impl Machine {
     }
 
     /// The machine after a keyboard was grabbed with its Caps Lock lamp `lamp`.
-    pub(crate) fn grabbed(self, lamp: Lamp) -> Self {
+    pub(crate) fn grabbed(self, lamp: bool) -> Self {
         Self {
             caps: self.caps.grabbed(lamp),
             ..self

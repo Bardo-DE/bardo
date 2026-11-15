@@ -1,10 +1,9 @@
-//! Table tests for the per-kind profile: `actions_for`, `edits_for` and `stage_support`.
+//! Table tests for the per-kind profile: `actions_for`, `edits_for` and `has_stage`.
 
-use super::{actions_for, edits_for, mime_for, stage_support};
+use super::{actions_for, edits_for, has_stage, mime_for};
 use crate::action::{FileAction, Reach, reach};
 use crate::edit::EditKind;
 use crate::kind::FormatKind;
-use crate::peek::StageSupport;
 use ds_core::word::Word;
 
 const COMMON: &[FileAction] = &[
@@ -23,14 +22,14 @@ struct Row {
     kind: FormatKind,
     extras: &'static [FileAction],
     edits: &'static [EditKind],
-    stage: StageSupport,
+    stage: bool,
 }
 
 const fn row(
     kind: FormatKind,
     extras: &'static [FileAction],
     edits: &'static [EditKind],
-    stage: StageSupport,
+    stage: bool,
 ) -> Row {
     Row {
         kind,
@@ -58,7 +57,7 @@ const CASES: &[Row] = &[
             EditKind::MovePage,
             EditKind::Markup,
         ],
-        StageSupport::Stage,
+        true,
     ),
     row(
         FormatKind::Raster,
@@ -74,13 +73,13 @@ const CASES: &[Row] = &[
             FileAction::FlipVertical,
         ],
         &[EditKind::Rotate, EditKind::Flip, EditKind::Adjust],
-        StageSupport::Stage,
+        true,
     ),
     row(
         FormatKind::Vector,
         &[FileAction::Print, FileAction::Export],
         &[],
-        StageSupport::Stage,
+        true,
     ),
     row(
         FormatKind::Video,
@@ -92,7 +91,7 @@ const CASES: &[Row] = &[
             FileAction::PlayInMiniWindow,
         ],
         &[EditKind::Trim],
-        StageSupport::Stage,
+        true,
     ),
     row(
         FormatKind::Audio,
@@ -105,43 +104,43 @@ const CASES: &[Row] = &[
             FileAction::PlayInBackground,
         ],
         &[EditKind::Trim],
-        StageSupport::Stage,
+        true,
     ),
     row(
         FormatKind::Markdown,
         &[FileAction::Print, FileAction::Export, FileAction::ConvertTo],
         &[],
-        StageSupport::Stage,
+        true,
     ),
     row(
         FormatKind::Code,
         &[FileAction::Print, FileAction::Export, FileAction::ConvertTo],
         &[],
-        StageSupport::Stage,
+        true,
     ),
     row(
         FormatKind::PlainText,
         &[FileAction::Print, FileAction::Export, FileAction::ConvertTo],
         &[],
-        StageSupport::Stage,
+        true,
     ),
     row(
         FormatKind::Table,
         &[FileAction::SaveCopy, FileAction::RevertTo],
         &[],
-        StageSupport::Stage,
+        true,
     ),
     row(
         FormatKind::Tree,
         &[FileAction::SaveCopy, FileAction::RevertTo],
         &[],
-        StageSupport::Stage,
+        true,
     ),
-    row(FormatKind::Font, &[], &[], StageSupport::PeekOnly),
-    row(FormatKind::Archive, &[], &[], StageSupport::PeekOnly),
-    row(FormatKind::Book, &[], &[], StageSupport::Stage),
-    row(FormatKind::Office, &[], &[], StageSupport::PeekOnly),
-    row(FormatKind::Other, &[], &[], StageSupport::PeekOnly),
+    row(FormatKind::Font, &[], &[], false),
+    row(FormatKind::Archive, &[], &[], false),
+    row(FormatKind::Book, &[], &[], true),
+    row(FormatKind::Office, &[], &[], false),
+    row(FormatKind::Other, &[], &[], false),
 ];
 
 const FOLDER_ACTIONS: &[FileAction] = &[
@@ -167,7 +166,7 @@ fn each_kind_offers_the_common_actions_then_its_own() {
         );
         assert_eq!(edits_for(case.kind), case.edits, "{:?} edits", case.kind);
         assert_eq!(
-            stage_support(case.kind),
+            has_stage(case.kind),
             case.stage,
             "{:?} stage",
             case.kind
@@ -179,7 +178,7 @@ fn each_kind_offers_the_common_actions_then_its_own() {
 fn a_folder_has_no_open_with_and_no_stage() {
     assert_eq!(actions_for(FormatKind::Folder), FOLDER_ACTIONS);
     assert_eq!(edits_for(FormatKind::Folder), &[] as &[EditKind]);
-    assert_eq!(stage_support(FormatKind::Folder), StageSupport::PeekOnly);
+    assert!(!has_stage(FormatKind::Folder));
 }
 
 #[test]

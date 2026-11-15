@@ -202,32 +202,20 @@ fn setup() -> UinputSetup {
 }
 
 /// Whether `--check-uinput` may open the node: only when the permit variable is exactly `1`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum ProbePermit {
-    Granted,
-    Refused,
-}
-
-impl ProbePermit {
-    /// The permit the variable's value gives.
-    pub(crate) fn from_env_value(v: Option<&str>) -> Self {
-        match v {
-            Some("1") => Self::Granted,
-            _ => Self::Refused,
-        }
-    }
+pub(crate) fn probe_permitted(v: Option<&str>) -> bool {
+    v == Some("1")
 }
 
 /// Opens and closes the uinput node without creating anything: can this user make devices?
-pub(crate) fn probe(permit: ProbePermit, node: &Path) -> Result<(), OutputError> {
-    match permit {
-        ProbePermit::Refused => Err(OutputError::Unavailable(format!(
+pub(crate) fn probe(permitted: bool, node: &Path) -> Result<(), OutputError> {
+    if !permitted {
+        return Err(OutputError::Unavailable(format!(
             "set {PROBE_PERMIT}=1 to let --check-uinput open {UINPUT}"
-        ))),
-        ProbePermit::Granted => open(node)
-            .map(drop)
-            .map_err(|e| OutputError::Unavailable(format!("{}: {e}", node.display()))),
+        )));
     }
+    open(node)
+        .map(drop)
+        .map_err(|e| OutputError::Unavailable(format!("{}: {e}", node.display())))
 }
 
 /// What a recording twin saw: the capabilities it was made with, its batches and whether it
@@ -334,28 +322,28 @@ mod tests {
 
     #[test]
     fn probe_permit_table() {
-        const CASES: &[(Option<&str>, ProbePermit)] = &[
-            (None, ProbePermit::Refused),
-            (Some(""), ProbePermit::Refused),
-            (Some("yes"), ProbePermit::Refused),
-            (Some("0"), ProbePermit::Refused),
-            (Some("1"), ProbePermit::Granted),
+        const CASES: &[(Option<&str>, bool)] = &[
+            (None, false),
+            (Some(""), false),
+            (Some("yes"), false),
+            (Some("0"), false),
+            (Some("1"), true),
         ];
         for &(value, want) in CASES {
-            assert_eq!(ProbePermit::from_env_value(value), want, "{value:?}");
+            assert_eq!(probe_permitted(value), want, "{value:?}");
         }
     }
 
     #[test]
     fn refused_probe_never_touches_the_node() {
         // A path that cannot exist: the error must be the refusal, not an open failure.
-        let err = probe(ProbePermit::Refused, Path::new("/nonexistent/uinput")).unwrap_err();
+        let err = probe(false, Path::new("/nonexistent/uinput")).unwrap_err();
         assert!(err.to_string().contains(PROBE_PERMIT), "{err}");
     }
 
     #[test]
     fn granted_probe_reports_a_missing_node() {
-        let err = probe(ProbePermit::Granted, Path::new("/nonexistent/uinput")).unwrap_err();
+        let err = probe(true, Path::new("/nonexistent/uinput")).unwrap_err();
         assert!(err.to_string().contains("/nonexistent/uinput"), "{err}");
     }
 

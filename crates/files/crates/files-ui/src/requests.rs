@@ -19,18 +19,14 @@ use tokio::sync::oneshot;
 
 use crate::error::ReadError;
 
-/// An activation token: what lets the window raise itself when it was not asked by a click on
-/// the window.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct RaiseToken(pub String);
-
 /// One thing another program asked for, as the input the browser takes.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Request {
     /// What the browser is to do (go to a folder, reveal entries in one).
     pub input: Input,
-    /// Raise the window with this token; `None` raises it without one.
-    pub raise: Option<RaiseToken>,
+    /// Raise the window with this activation token (what lets it raise itself when it was not
+    /// asked by a click on the window); `None` raises it without one.
+    pub raise: Option<String>,
 }
 
 /// What another program may ask the window to tell it.

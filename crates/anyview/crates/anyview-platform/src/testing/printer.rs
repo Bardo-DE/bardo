@@ -1,13 +1,13 @@
 use super::locked;
 use crate::error::PlatformError;
-use crate::printer::{JobTitle, PrintOutcome, Printer};
+use crate::printer::{PrintOutcome, Printer};
 use std::sync::{Arc, Mutex};
 
 /// A [`Printer`] that answers every job with one outcome and records the jobs.
 #[derive(Debug, Clone)]
 pub struct FakePrinter {
     outcome: PrintOutcome,
-    jobs: Arc<Mutex<Vec<(JobTitle, usize)>>>,
+    jobs: Arc<Mutex<Vec<(String, usize)>>>,
     pdfs: Arc<Mutex<Vec<Vec<u8>>>>,
 }
 
@@ -22,7 +22,7 @@ impl FakePrinter {
     }
 
     /// Each job's title and the length of its PDF, oldest first.
-    pub fn jobs(&self) -> Vec<(JobTitle, usize)> {
+    pub fn jobs(&self) -> Vec<(String, usize)> {
         locked(&self.jobs).clone()
     }
 
@@ -33,8 +33,8 @@ impl FakePrinter {
 }
 
 impl Printer for FakePrinter {
-    async fn print(&self, pdf: &[u8], title: &JobTitle) -> Result<PrintOutcome, PlatformError> {
-        locked(&self.jobs).push((title.clone(), pdf.len()));
+    async fn print(&self, pdf: &[u8], title: &str) -> Result<PrintOutcome, PlatformError> {
+        locked(&self.jobs).push((title.to_owned(), pdf.len()));
         locked(&self.pdfs).push(pdf.to_vec());
         Ok(self.outcome)
     }

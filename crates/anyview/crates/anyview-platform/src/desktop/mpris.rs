@@ -4,9 +4,7 @@
 use super::art;
 use crate::env::Env;
 use crate::error::PlatformError;
-use crate::media::{
-    Ability, MediaControl, MediaSession, MediaState, PlaybackStatus, SeekDirection,
-};
+use crate::media::{MediaControl, MediaSession, MediaState, PlaybackStatus, SeekDirection};
 use anyview_core::{FilePath, MediaTime, Percent, Volume};
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -154,7 +152,7 @@ fn metadata_of(state: &MediaState, art_url: Option<&str>) -> HashMap<String, Own
             map.insert(key.to_owned(), value);
         }
     };
-    let track = format!("{TRACK_PATH}/{}", state.track.0);
+    let track = format!("{TRACK_PATH}/{}", state.track);
     let track = ObjectPath::try_from(track.as_str())
         .unwrap_or_else(|_| ObjectPath::from_static_str_unchecked(NO_TRACK));
     put("mpris:trackid", Value::from(track));
@@ -253,11 +251,11 @@ impl Player {
     }
 
     fn skip_allowed(&self) -> bool {
-        self.state.skip == Ability::Can
+        self.state.skip
     }
 
     fn seek_allowed(&self) -> bool {
-        self.state.seek == Ability::Can
+        self.state.seek
     }
 }
 
@@ -308,7 +306,7 @@ impl Player {
 
     /// Move to `position` microseconds, if `track` is what is playing.
     fn set_position(&self, track: ObjectPath<'_>, position: i64) {
-        let current = format!("{TRACK_PATH}/{}", self.state.track.0);
+        let current = format!("{TRACK_PATH}/{}", self.state.track);
         if self.seek_allowed()
             && track.as_str() == current
             && let Ok(position) = u64::try_from(position)

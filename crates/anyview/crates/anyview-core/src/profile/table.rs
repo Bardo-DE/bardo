@@ -1,10 +1,9 @@
 //! What each kind of file offers: its actions, its edits and whether the viewer has a stage for it.
-//! The one match on `FormatKind`; `actions_for`, `edits_for` and `stage_support` read from it.
+//! The one match on `FormatKind`; `actions_for`, `edits_for` and `has_stage` read from it.
 
 use crate::action::FileAction;
 use crate::edit::EditKind;
 use crate::kind::{FormatKind, Mime};
-use crate::peek::StageSupport;
 
 /// Everything that varies by kind of file.
 #[derive(Debug, Clone, Copy)]
@@ -12,7 +11,7 @@ struct KindProfile {
     mime: &'static str,
     actions: &'static [FileAction],
     edits: &'static [EditKind],
-    stage: StageSupport,
+    stage: bool,
 }
 
 use FileAction::{
@@ -163,7 +162,7 @@ const fn profile(
     mime: &'static str,
     actions: &'static [FileAction],
     edits: &'static [EditKind],
-    stage: StageSupport,
+    stage: bool,
 ) -> KindProfile {
     KindProfile {
         mime,
@@ -174,28 +173,27 @@ const fn profile(
 }
 
 fn profile_of(kind: FormatKind) -> KindProfile {
-    use StageSupport::{PeekOnly, Stage};
     match kind {
-        FormatKind::Pdf => profile("application/pdf", PDF, PDF_EDITS, Stage),
-        FormatKind::Raster => profile("image/png", IMAGE, IMAGE_EDITS, Stage),
-        FormatKind::Vector => profile("image/svg+xml", VECTOR, NO_EDITS, Stage),
-        FormatKind::Video => profile("video/mp4", VIDEO, MEDIA_EDITS, Stage),
-        FormatKind::Audio => profile("audio/mpeg", AUDIO, MEDIA_EDITS, Stage),
-        FormatKind::Markdown => profile("text/markdown", TEXT, NO_EDITS, Stage),
-        FormatKind::Code | FormatKind::PlainText => profile("text/plain", TEXT, NO_EDITS, Stage),
-        FormatKind::Table => profile("text/csv", DATA, NO_EDITS, Stage),
-        FormatKind::Tree => profile("application/json", DATA, NO_EDITS, Stage),
-        FormatKind::Font => profile("font/ttf", PLAIN, NO_EDITS, PeekOnly),
-        FormatKind::Archive => profile("application/zip", PLAIN, NO_EDITS, PeekOnly),
-        FormatKind::Book => profile("application/epub+zip", PLAIN, NO_EDITS, Stage),
+        FormatKind::Pdf => profile("application/pdf", PDF, PDF_EDITS, true),
+        FormatKind::Raster => profile("image/png", IMAGE, IMAGE_EDITS, true),
+        FormatKind::Vector => profile("image/svg+xml", VECTOR, NO_EDITS, true),
+        FormatKind::Video => profile("video/mp4", VIDEO, MEDIA_EDITS, true),
+        FormatKind::Audio => profile("audio/mpeg", AUDIO, MEDIA_EDITS, true),
+        FormatKind::Markdown => profile("text/markdown", TEXT, NO_EDITS, true),
+        FormatKind::Code | FormatKind::PlainText => profile("text/plain", TEXT, NO_EDITS, true),
+        FormatKind::Table => profile("text/csv", DATA, NO_EDITS, true),
+        FormatKind::Tree => profile("application/json", DATA, NO_EDITS, true),
+        FormatKind::Font => profile("font/ttf", PLAIN, NO_EDITS, false),
+        FormatKind::Archive => profile("application/zip", PLAIN, NO_EDITS, false),
+        FormatKind::Book => profile("application/epub+zip", PLAIN, NO_EDITS, true),
         FormatKind::Office => profile(
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             PLAIN,
             NO_EDITS,
-            PeekOnly,
+            false,
         ),
-        FormatKind::Folder => profile("inode/directory", FOLDER, NO_EDITS, PeekOnly),
-        FormatKind::Other => profile("application/octet-stream", PLAIN, NO_EDITS, PeekOnly),
+        FormatKind::Folder => profile("inode/directory", FOLDER, NO_EDITS, false),
+        FormatKind::Other => profile("application/octet-stream", PLAIN, NO_EDITS, false),
     }
 }
 
@@ -218,9 +216,9 @@ pub fn edits_for(kind: FormatKind) -> &'static [EditKind] {
     profile_of(kind).edits
 }
 
-/// Whether the viewer has a full stage for `kind` or shows only the light tier. Every kind is
-/// answered: a kind without a stage says `PeekOnly` and offers facts.
+/// Whether the viewer has a full stage for `kind` (else it shows only the light tier). Every kind
+/// is answered: a kind without a stage offers facts.
 #[must_use]
-pub fn stage_support(kind: FormatKind) -> StageSupport {
+pub fn has_stage(kind: FormatKind) -> bool {
     profile_of(kind).stage
 }

@@ -24,7 +24,7 @@ wants lists in your file too sets this in the machine file:
 
 ```toml
 [user_layer]
-sequences = "allow"
+sequences = true
 ```
 
 ## Which file, when you use more than one desktop

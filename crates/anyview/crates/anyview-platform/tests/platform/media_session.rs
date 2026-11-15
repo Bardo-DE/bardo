@@ -8,8 +8,7 @@ use crate::support;
 use anyview_core::{FilePath, MediaLength, MediaTime, Percent, Volume};
 use anyview_platform::linux::{MPRIS_NAME, MprisSession};
 use anyview_platform::{
-    Ability, Artwork, MediaControl, MediaSession, MediaState, PlaybackStatus, SeekDirection,
-    TrackSerial,
+    Artwork, MediaControl, MediaSession, MediaState, PlaybackStatus, SeekDirection,
 };
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -54,7 +53,7 @@ async fn press(client: &zbus::Connection, method: &str) {
 fn playing() -> MediaState {
     MediaState {
         status: PlaybackStatus::Playing,
-        track: TrackSerial(3),
+        track: 3,
         file: Some(FilePath::new("/music/a b.flac").unwrap()),
         title: Some("Song".to_owned()),
         artist: Some("Band".to_owned()),
@@ -63,8 +62,8 @@ fn playing() -> MediaState {
         length: Some(MediaLength(MediaTime::from_secs(180))),
         position: MediaTime::from_secs(12),
         volume: Volume::clamped(Percent(80)),
-        seek: Ability::Can,
-        skip: Ability::Can,
+        seek: true,
+        skip: true,
     }
 }
 

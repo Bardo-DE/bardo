@@ -30,7 +30,7 @@ fn the_root_summarises_the_document_and_children_open_one_level() {
     let root = tree.row(&TreePath::root()).unwrap();
     assert_eq!(root.label, RowLabel::Root);
     assert_eq!(root.preview, "{6 keys}");
-    assert_eq!(root.children, ChildCount(6));
+    assert_eq!(root.children, 6);
     let expected: Vec<(String, String)> = [
         ("name", "\"anyview\""),
         ("version", "1.5"),
@@ -155,7 +155,7 @@ fn scalar_roots_and_empty_containers_parse() {
     for (name, text, preview, children) in CASES {
         let row = json(text).row(&TreePath::root()).unwrap();
         assert_eq!(row.preview, *preview, "{name}");
-        assert_eq!(row.children, ChildCount(*children), "{name}");
+        assert_eq!(row.children, *children, "{name}");
     }
 }
 
@@ -226,7 +226,7 @@ fn a_file_longer_than_the_limit_shows_its_start_and_a_deep_node_opens_when_asked
         assert_eq!(got, coverage, "{name}: coverage");
         let root = tree.row(&TreePath::root()).unwrap();
         if count > 0 {
-            assert_eq!(root.children, ChildCount(count), "{name}: items");
+            assert_eq!(root.children, count, "{name}: items");
         } else {
             assert!(root.children.0 > 100, "{name}: the start is counted");
             assert!(root.children.0 < 2000, "{name}: the rest is not");
@@ -274,7 +274,7 @@ fn json_lines_past_the_limit_count_only_whole_lines() {
         let (tree, got) = Tree::read(&input, TreeFormat::JsonLines, ByteLen(*limit)).unwrap();
         assert_eq!(got, *coverage, "{name}: coverage");
         let root = tree.row(&TreePath::root()).unwrap();
-        assert_eq!(root.children, ChildCount(*count), "{name}: lines");
+        assert_eq!(root.children, *count, "{name}: lines");
     }
 }
 

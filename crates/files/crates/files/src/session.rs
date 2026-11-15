@@ -10,7 +10,6 @@ use files_desktop::{
 use files_ui::{Requests, channel};
 use tokio::runtime::Handle;
 
-use crate::args::Started;
 use crate::bridge::request_of;
 use crate::launcher::NoBus;
 use crate::port::Port;
@@ -44,7 +43,7 @@ pub fn launch_token() -> Option<ActivationToken> {
 /// Becomes the running Files, or hands `place` to the one that is. When the bus cannot be used
 /// the launch is a plain window with no services, and says so on stderr.
 pub async fn join(
-    started: Started,
+    dbus_activated: bool,
     place: Location,
     token: Option<ActivationToken>,
     runtime: Handle,
@@ -82,7 +81,7 @@ pub async fn join(
                 _served: Some(served),
             })
         }
-        Ok(Claim::Running) => match hand_over(&connection, started, place, token).await {
+        Ok(Claim::Running) => match hand_over(&connection, dbus_activated, place, token).await {
             Ok(()) => Role::Handed,
             Err(said) => {
                 eprintln!("files: {said}");
@@ -101,18 +100,16 @@ pub async fn join(
 /// carries no request of its own: the call that started it follows.
 async fn hand_over(
     connection: &files_desktop::Bus,
-    started: Started,
+    dbus_activated: bool,
     place: Location,
     token: Option<ActivationToken>,
 ) -> Result<(), InstanceError> {
-    match started {
-        Started::ByBus => Ok(()),
-        Started::ByPerson => {
-            let show = Show {
-                request: ShowRequest::Folders(vec![place]),
-                startup: token.and_then(|token| StartupId::new(token.as_str())),
-            };
-            forward(connection, &show).await
-        }
+    if dbus_activated {
+        return Ok(());
     }
+    let show = Show {
+        request: ShowRequest::Folders(vec![place]),
+        startup: token.and_then(|token| StartupId::new(token.as_str())),
+    };
+    forward(connection, &show).await
 }

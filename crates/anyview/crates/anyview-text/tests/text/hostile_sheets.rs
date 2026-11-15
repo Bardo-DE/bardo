@@ -37,7 +37,7 @@ fn two_cells_a_million_rows_and_sixteen_thousand_columns_apart_do_not_become_a_g
             workbook_of_xml(dir.path(), "sparse.xlsx", &["Sheet"], &[sheet_of(cells)]);
         let book = Workbook::open(src.on_disk()).unwrap();
         let table = &book.sheets()[0].table;
-        let held = table.row_count().0 as usize * table.columns().0 as usize;
+        let held = table.row_count() as usize * table.columns() as usize;
         assert!(held <= WORKBOOK_CELLS, "{name}: a grid of {held} cells");
         assert_eq!(table.cell(RowIndex(0), 0), "x", "{name}");
         let peeked = TablePeek::peek(&src.on_disk(), &sniffed, &budget(1_000_000)).unwrap();
@@ -62,7 +62,7 @@ fn a_sheet_of_millions_of_cells_is_read_only_as_far_as_the_caps_reach() {
     assert!(peeked.rows.len() <= 40);
     let book = Workbook::open_start(src.on_disk()).unwrap();
     assert_eq!(book.sheets().len(), 1);
-    assert!(book.sheets()[0].table.row_count().0 as usize <= SHEET_ROWS);
+    assert!(book.sheets()[0].table.row_count() as usize <= SHEET_ROWS);
 }
 
 #[test]
@@ -76,8 +76,8 @@ fn a_sheet_with_more_rows_than_the_cap_keeps_the_start_and_says_so() {
     let table = &book.sheets()[0].table;
     assert_eq!(table.coverage(), Coverage::Prefix);
     // The header guess may take the first row, and the cap counts it.
-    assert!(table.row_count().0 as usize >= SHEET_ROWS - 1);
-    assert!(table.row_count().0 as usize <= SHEET_ROWS);
+    assert!(table.row_count() as usize >= SHEET_ROWS - 1);
+    assert!(table.row_count() as usize <= SHEET_ROWS);
 }
 
 #[test]

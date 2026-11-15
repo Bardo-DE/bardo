@@ -2,7 +2,6 @@
 
 use files_core::Location;
 
-use crate::app::Chooser;
 use crate::browser::Browser;
 use crate::effect::{Effect, OpenTarget};
 use crate::goto::GoTo;
@@ -43,7 +42,7 @@ impl Browser {
             home: self.home,
             behaviour: self.behaviour,
             goto: GoTo::Closed,
-            chooser: Chooser::Closed,
+            chooser: false,
             volumes: self.volumes,
             clouds: self.clouds,
             cloud: Default::default(),

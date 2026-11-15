@@ -4,7 +4,7 @@
 use crate::support::viewed_file;
 
 use anyview_core::{FormatKind, LineIndex, Resume};
-use anyview_store::{HistoryCap, HistoryRead, StoreWriter, Viewed, read_history};
+use anyview_store::{HistoryCap, HistoryRead, StoreWriter, read_history};
 use std::fs;
 
 const FILES_EACH: u64 = 20;
@@ -39,7 +39,7 @@ fn writers_on_different_files_keep_each_others_entries() {
                 let writer = writer(root); // its own instance, as in its own process
                 for (k, (path, stamp)) in (0_u64..).zip(mine) {
                     let at = at_line(u32::try_from(k + 1).unwrap());
-                    let seen = Viewed(who * 1000 + k);
+                    let seen = who * 1000 + k;
                     // In the history first: another writer's prune keeps what the history names.
                     writer
                         .record_view(path, FormatKind::PlainText, seen, &at)
@@ -74,16 +74,16 @@ fn the_last_writer_of_one_file_wins_and_only_that_entry() {
     let (first, second) = (writer(&root), writer(&root));
 
     first
-        .record_view(&shared, FormatKind::PlainText, Viewed(1), &at_line(10))
+        .record_view(&shared, FormatKind::PlainText, 1, &at_line(10))
         .unwrap();
     first
         .save_resume(&shared, shared_stamp, &at_line(10))
         .unwrap();
     second
-        .record_view(&other, FormatKind::PlainText, Viewed(2), &at_line(5))
+        .record_view(&other, FormatKind::PlainText, 2, &at_line(5))
         .unwrap();
     second
-        .record_view(&shared, FormatKind::PlainText, Viewed(3), &at_line(30))
+        .record_view(&shared, FormatKind::PlainText, 3, &at_line(30))
         .unwrap();
     second
         .save_resume(&shared, shared_stamp, &at_line(30))
@@ -91,7 +91,7 @@ fn the_last_writer_of_one_file_wins_and_only_that_entry() {
 
     let read = read_history(&root);
     let seen: Vec<_> = read.entries().iter().map(|e| (&e.path, e.viewed)).collect();
-    assert_eq!(seen, [(&shared, Viewed(3)), (&other, Viewed(2))]);
+    assert_eq!(seen, [(&shared, 3), (&other, 2)]);
     assert_eq!(
         first.load_resume(&shared, shared_stamp).unwrap(),
         Some(at_line(30))
@@ -105,7 +105,7 @@ fn temporary_files_left_by_a_crashed_write_do_not_hurt_the_store() {
     let (path, stamp) = viewed_file(scratch.path(), "book.txt", "x");
     let store = writer(&root);
     store
-        .record_view(&path, FormatKind::PlainText, Viewed(1), &at_line(2))
+        .record_view(&path, FormatKind::PlainText, 1, &at_line(2))
         .unwrap();
     store.save_resume(&path, stamp, &at_line(2)).unwrap();
 
@@ -121,7 +121,7 @@ fn temporary_files_left_by_a_crashed_write_do_not_hurt_the_store() {
     assert!(matches!(read_history(&root), HistoryRead::Loaded(_)));
     assert_eq!(store.load_resume(&path, stamp).unwrap(), Some(at_line(2)));
     store
-        .record_view(&path, FormatKind::PlainText, Viewed(2), &at_line(9))
+        .record_view(&path, FormatKind::PlainText, 2, &at_line(9))
         .unwrap();
     store.save_resume(&path, stamp, &at_line(9)).unwrap();
     assert_eq!(store.load_resume(&path, stamp).unwrap(), Some(at_line(9)));

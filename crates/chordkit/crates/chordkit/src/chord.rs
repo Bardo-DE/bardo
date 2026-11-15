@@ -84,30 +84,22 @@ impl Chord {
     }
 }
 
-/// Whether a default chord includes the platform's primary modifier.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum PrimaryUse {
-    /// The chord adds the primary modifier (Command on a Mac, Ctrl elsewhere).
-    Held,
-    /// The chord is exactly its physical modifiers.
-    Unused,
-}
-
 /// A chord as defaults and overrides write it: portable, possibly using `Primary`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct DefaultChord {
-    primary: PrimaryUse,
+    primary: bool,
     base: Chord,
 }
 
 impl DefaultChord {
-    /// A default chord: `base` plus, when `primary` is `Held`, the platform's primary modifier.
-    pub fn new(primary: PrimaryUse, base: Chord) -> DefaultChord {
+    /// A default chord: `base` plus, when `primary`, the platform's primary modifier (Command on
+    /// a Mac, Ctrl elsewhere); otherwise it is exactly its physical modifiers.
+    pub fn new(primary: bool, base: Chord) -> DefaultChord {
         DefaultChord { primary, base }
     }
 
     /// Whether the primary modifier is part of it.
-    pub fn primary(self) -> PrimaryUse {
+    pub fn primary(self) -> bool {
         self.primary
     }
 
@@ -120,28 +112,26 @@ impl DefaultChord {
     /// a chord that already uses Shift cannot add it, so it takes Alt as well (Primary+Shift+Z
     /// is Ctrl+Shift+Alt+Z); `None` when it uses Alt too, which leaves no stand-in.
     pub fn resolve(self, platform: Platform, context: Context) -> Option<Chord> {
-        match self.primary {
-            PrimaryUse::Unused => Some(self.base),
-            PrimaryUse::Held => {
-                let primary = platform.primary(context);
-                let base = self.base.modifiers();
-                let shift_clash = context == Context::Terminal
-                    && primary.contains(Modifiers::SHIFT)
-                    && base.contains(Modifiers::SHIFT);
-                let modifiers = match (shift_clash, base.contains(Modifiers::ALT)) {
-                    (false, _) => base.union(primary),
-                    (true, false) => base.union(primary).union(Modifiers::ALT),
-                    (true, true) => return None,
-                };
-                Some(Chord::new(modifiers, self.base.key()))
-            }
+        if !self.primary {
+            return Some(self.base);
         }
+        let primary = platform.primary(context);
+        let base = self.base.modifiers();
+        let shift_clash = context == Context::Terminal
+            && primary.contains(Modifiers::SHIFT)
+            && base.contains(Modifiers::SHIFT);
+        let modifiers = match (shift_clash, base.contains(Modifiers::ALT)) {
+            (false, _) => base.union(primary),
+            (true, false) => base.union(primary).union(Modifiers::ALT),
+            (true, true) => return None,
+        };
+        Some(Chord::new(modifiers, self.base.key()))
     }
 }
 
 impl From<Chord> for DefaultChord {
     fn from(chord: Chord) -> DefaultChord {
-        DefaultChord::new(PrimaryUse::Unused, chord)
+        DefaultChord::new(false, chord)
     }
 }
 
@@ -177,11 +167,11 @@ mod tests {
     #[test]
     fn primary_resolves_per_platform_and_terminal_stands_in_for_shift_clashes() {
         let undo = DefaultChord::new(
-            PrimaryUse::Held,
+            true,
             Chord::new(Modifiers::empty(), Key::Char('z')),
         );
         let redo = DefaultChord::new(
-            PrimaryUse::Held,
+            true,
             Chord::new(mods(&[Modifiers::SHIFT]), Key::Char('z')),
         );
         let windows = Platform::Windows;
@@ -207,7 +197,7 @@ mod tests {
             ))
         );
         let paste_plain = DefaultChord::new(
-            PrimaryUse::Held,
+            true,
             Chord::new(mods(&[Modifiers::SHIFT, Modifiers::ALT]), Key::Char('v')),
         );
         assert_eq!(paste_plain.resolve(windows, Context::Terminal), None);

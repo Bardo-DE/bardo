@@ -2,7 +2,7 @@
 
 use std::time::SystemTime;
 
-use files_core::{ByteSize, Entry, Info, ItemCount};
+use files_core::{ByteSize, Entry, Info};
 use files_model::ListFailure;
 
 use super::{kind_words, size_words};
@@ -34,8 +34,8 @@ pub fn exact_size_words(size: ByteSize) -> String {
 }
 
 /// `count` as `Zero items`, `1 item`, `12 items`.
-pub fn items_words(count: ItemCount) -> String {
-    match count.0 {
+pub fn items_words(count: u32) -> String {
+    match count {
         0 => "Zero items".to_owned(),
         1 => "1 item".to_owned(),
         n => format!("{n} items"),
@@ -130,7 +130,7 @@ mod tests {
         }
         let counts = [(0, "Zero items"), (1, "1 item"), (2, "2 items")];
         for (count, want) in counts {
-            assert_eq!(items_words(ItemCount(count)), want);
+            assert_eq!(items_words(count), want);
         }
     }
 
@@ -158,7 +158,7 @@ mod tests {
         let folder = Info::new(item("Projects"), EntryKind::Folder)
             .created_at(made)
             .modified_at(made)
-            .holding(ItemCount(3));
+            .holding(3);
         assert_eq!(
             labels(&folder),
             ["Kind", "Contents", "Where", "Created", "Modified"]

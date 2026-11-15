@@ -17,19 +17,6 @@ pub struct Record {
     pub down: Vec<Logical>,
 }
 
-/// Why a written Alt or Super is the only thing the wire has seen since it went down.
-///
-/// Compositors read a modifier released with no key between as a tap: Alt toggles the menu bar,
-/// Super opens the launcher. A release of a `Restored` key, or a lift of either, is a tap nobody
-/// meant, and `Held` writes a neutral key tap first to cancel it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum Bare {
-    /// The person pressed it; releasing it with nothing between is the tap they meant.
-    Pressed,
-    /// A lift ended and put it back; releasing it with nothing between is no one's tap.
-    Restored,
-}
-
 /// Every physical key currently held, with what its press wrote, and the keys lifted off the
 /// wire.
 ///
@@ -40,12 +27,14 @@ pub(super) enum Bare {
 /// stream exactly while some record holds it and no owner has lifted it.
 ///
 /// `bare` lists the written Alt and Super keys that are down with no other key pressed since,
-/// each a subset of `down()`.
+/// each a subset of `down()`. The value is whether a lift put the key back: releasing it with
+/// nothing between is then no one's tap, and `Held` writes a neutral key tap first to cancel the
+/// compositor's reading of it as one. A key the person pressed is released as the tap they meant.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Held {
     pub(super) records: BTreeMap<At, Record>,
     pub(super) lifts: BTreeMap<At, Vec<Logical>>,
-    pub(super) bare: BTreeMap<Logical, Bare>,
+    pub(super) bare: BTreeMap<Logical, bool>,
 }
 
 impl Held {

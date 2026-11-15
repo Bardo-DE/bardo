@@ -4,15 +4,6 @@
 use crate::exif::Ratio;
 use anyview_core::{FormatDetail, RasterFormat, Sniffed};
 
-/// What a density is counted per.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub(crate) enum Unit {
-    /// Dots an inch.
-    Inch,
-    /// Dots a centimetre.
-    Centimetre,
-}
-
 /// Dots an inch across and down.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Resolution {
@@ -23,18 +14,23 @@ pub struct Resolution {
 }
 
 impl Resolution {
-    /// A density of `horizontal` and `vertical` dots per `unit`; `None` when either is zero.
-    pub(crate) fn per_unit(horizontal: Ratio, vertical: Ratio, unit: Unit) -> Option<Self> {
+    /// A density of `horizontal` and `vertical` dots per centimetre when `per_centimetre`, else per inch; `None` when either is zero.
+    pub(crate) fn per_unit(
+        horizontal: Ratio,
+        vertical: Ratio,
+        per_centimetre: bool,
+    ) -> Option<Self> {
         let dpi = |ratio: Ratio| {
-            let (numerator, denominator) = match unit {
-                Unit::Inch => (
-                    u64::from(ratio.numerator) * 100,
-                    u64::from(ratio.denominator) * 100,
-                ),
-                Unit::Centimetre => (
+            let (numerator, denominator) = if per_centimetre {
+                (
                     u64::from(ratio.numerator) * 254,
                     u64::from(ratio.denominator) * 100,
-                ),
+                )
+            } else {
+                (
+                    u64::from(ratio.numerator) * 100,
+                    u64::from(ratio.denominator) * 100,
+                )
             };
             let dots = u32::try_from((numerator + denominator / 2) / denominator).ok()?;
             (dots > 0).then_some(dots)
@@ -135,12 +131,16 @@ fn density(block: &[u8]) -> Option<Resolution> {
         numerator: u32::from(u16::from_be_bytes([high, low])),
         denominator: 1,
     };
-    let unit = match units {
-        1 => Unit::Inch,
-        2 => Unit::Centimetre,
+    let per_centimetre = match units {
+        1 => false,
+        2 => true,
         _ => return None,
     };
-    Resolution::per_unit(whole(x_high, x_low), whole(y_high, y_low), unit)
+    Resolution::per_unit(
+        whole(x_high, x_low),
+        whole(y_high, y_low),
+        per_centimetre,
+    )
 }
 
 #[cfg(test)]
@@ -153,13 +153,13 @@ mod tests {
             numerator: n,
             denominator: 1,
         };
-        let got = Resolution::per_unit(whole(300), whole(300), Unit::Inch).unwrap();
+        let got = Resolution::per_unit(whole(300), whole(300), false).unwrap();
         assert_eq!(got.text(), "300 dpi");
-        let got = Resolution::per_unit(whole(118), whole(118), Unit::Centimetre).unwrap();
+        let got = Resolution::per_unit(whole(118), whole(118), true).unwrap();
         assert_eq!(got.text(), "300 dpi");
-        let got = Resolution::per_unit(whole(300), whole(72), Unit::Inch).unwrap();
+        let got = Resolution::per_unit(whole(300), whole(72), false).unwrap();
         assert_eq!(got.text(), "300 × 72 dpi");
-        assert_eq!(Resolution::per_unit(whole(0), whole(72), Unit::Inch), None);
+        assert_eq!(Resolution::per_unit(whole(0), whole(72), false), None);
     }
 
     #[test]

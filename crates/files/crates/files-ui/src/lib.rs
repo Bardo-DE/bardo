@@ -54,6 +54,6 @@ pub use error::{OpenFailure, ReadError, VolumeError};
 pub use launch::{AppearanceSource, Launch};
 pub use places::{Heading, PlaceKey, PlaceKind, Places, Sidebar};
 pub use preferences::Preferences;
-pub use requests::{Answer, Query, RaiseToken, Reading, Request, RequestSender, Requests, channel};
+pub use requests::{Answer, Query, Reading, Request, RequestSender, Requests, channel};
 pub use run::{APP_ID, run};
 pub use view::{App, STYLE};

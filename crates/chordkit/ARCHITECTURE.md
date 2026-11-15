@@ -30,7 +30,7 @@ Layers, lowest first; a module imports from its own layer or a lower one.
 | Layer | Modules | Holds |
 |---|---|---|
 | L0 vocabulary | `modifier`, `key`, `standard_action`, `reach`, `action` | `CHORD_MODIFIERS` (over keyboard-types' `Modifiers`), `Key` (keyboard-types' key narrowed to one character), `StandardAction`, `SpaceNumber`, `Reach`, `Action`, `AppAction`, `AppId` |
-| L1 chords | `chord`, `chord_text`, `platform`, `detect` | `Chord`, `DefaultChord`, `PrimaryUse`, parse and display, `Platform`, `Desktop`, `Context`, `detect` |
+| L1 chords | `chord`, `chord_text`, `platform`, `detect` | `Chord`, `DefaultChord`, parse and display, `Platform`, `Desktop`, `Context`, `detect` |
 | L2 data | `convention/`, `reserved` | per-platform default chords, per-platform reserved chords |
 | L3 input | `key_input` | `KeyInput`, `KeyInput::from_logical`, `normalise`, `normalise_in` |
 | L4 keymap | `keymap/` (`layers`, `effective`, `resolved`, `register`, `registration`, `conflict`), `overrides`, `source`, `keyfile` | `Keymap`, `Registration`, `Conflict`, `Overrides`, `KeymapSource`, `SystemBinding` |

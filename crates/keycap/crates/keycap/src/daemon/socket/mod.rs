@@ -16,4 +16,4 @@ mod tests;
 pub(crate) use handle::{SocketHandle, ToSocket};
 pub(crate) use latchkey::guard::{SEAT_FILE, SeatFile};
 pub(crate) use server::{bind, socket_path, spawn};
-pub(crate) use shell::Steering;
+pub(crate) use shell::{seat_user_asked, vouch};

@@ -2,7 +2,7 @@
 //!
 //! The first launch also offers `org.freedesktop.FileManager1`, unless another file manager already
 //! owns that name: the name is asked for without queueing and without replacing, so a person's
-//! chosen file manager is never taken over. [`Served::file_manager`] says which it was, so the
+//! chosen file manager is never taken over. [`Served::owns_file_manager`] says which it was, so the
 //! window can offer to become the default.
 
 pub use zbus::Connection as Bus;
@@ -16,26 +16,18 @@ use crate::file_manager::{self, Show, Sink};
 /// The name the app owns while it runs.
 pub const APP_NAME: &str = "org.quire.Files";
 
-/// Whether this app owns the file manager name.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum FileManagerName {
-    /// Programs that ask the desktop for "the file manager" reach this app.
-    Ours,
-    /// Another file manager has it; this app does not take it.
-    Taken,
-}
-
 /// The running app: holds the connection, and with it the names.
 #[derive(Debug, Clone)]
 pub struct Served {
-    file_manager: FileManagerName,
+    owns_file_manager: bool,
     _connection: Connection,
 }
 
 impl Served {
-    /// Whether the file manager name is ours.
-    pub fn file_manager(&self) -> FileManagerName {
-        self.file_manager
+    /// Whether the file manager name is ours: programs that ask the desktop for "the file
+    /// manager" reach this app. False when another file manager has it; this app does not take it.
+    pub fn owns_file_manager(&self) -> bool {
+        self.owns_file_manager
     }
 }
 
@@ -58,19 +50,13 @@ pub async fn claim(connection: &Connection, sink: Sink) -> Result<Claim, Instanc
     // The object goes up before the names, so a call right after the name appears is answered.
     file_manager::serve(connection, sink).await?;
     zbus_ready::serving(connection).await?;
-    match ask_for(connection, APP_NAME).await? {
-        NameAnswer::Got => {}
-        NameAnswer::Taken => {
-            file_manager::unserve(connection).await;
-            return Ok(Claim::Running);
-        }
+    if !ask_for(connection, APP_NAME).await? {
+        file_manager::unserve(connection).await;
+        return Ok(Claim::Running);
     }
-    let file_manager = match ask_for(connection, file_manager::INTERFACE).await? {
-        NameAnswer::Got => FileManagerName::Ours,
-        NameAnswer::Taken => FileManagerName::Taken,
-    };
+    let owns_file_manager = ask_for(connection, file_manager::INTERFACE).await?;
     Ok(Claim::First(Served {
-        file_manager,
+        owns_file_manager,
         _connection: connection.clone(),
     }))
 }
@@ -96,20 +82,15 @@ pub async fn forward(connection: &Connection, show: &Show) -> Result<(), Instanc
     Ok(())
 }
 
-enum NameAnswer {
-    Got,
-    Taken,
-}
-
-/// Asks for `name` without queueing and without replacing its owner.
-async fn ask_for(connection: &Connection, name: &'static str) -> Result<NameAnswer, zbus::Error> {
+/// Asks for `name` without queueing and without replacing its owner: whether it is ours now.
+async fn ask_for(connection: &Connection, name: &'static str) -> Result<bool, zbus::Error> {
     match connection
         .request_name_with_flags(name, RequestNameFlags::DoNotQueue.into())
         .await
     {
-        Ok(RequestNameReply::PrimaryOwner | RequestNameReply::AlreadyOwner) => Ok(NameAnswer::Got),
-        Ok(RequestNameReply::Exists | RequestNameReply::InQueue) => Ok(NameAnswer::Taken),
-        Err(zbus::Error::NameTaken) => Ok(NameAnswer::Taken),
+        Ok(RequestNameReply::PrimaryOwner | RequestNameReply::AlreadyOwner) => Ok(true),
+        Ok(RequestNameReply::Exists | RequestNameReply::InQueue) => Ok(false),
+        Err(zbus::Error::NameTaken) => Ok(false),
         Err(error) => Err(error),
     }
 }

@@ -4,7 +4,7 @@
 //! (`LatchkeyInstance::under`): nothing here reads `XDG_RUNTIME_DIR`, so the person's runtime
 //! directory is never touched.
 
-use anyview_core::{FilePath, LineIndex, NonEmpty, ResultsId, Resume, Sequence, SequenceOrigin};
+use anyview_core::{FilePath, LineIndex, NonEmpty, Resume, Sequence, SequenceOrigin};
 use anyview_platform::portable::LatchkeyInstance;
 use anyview_platform::{Claim, Handoff, Instance, Primary, Request};
 #[cfg(unix)]
@@ -61,7 +61,7 @@ async fn a_handoff_keeps_its_results_and_its_place() {
     let sequence = Sequence::starting_at(
         entries,
         &path("/a/2.pdf"),
-        SequenceOrigin::Results(ResultsId(9)),
+        SequenceOrigin::Results(9),
     )
     .unwrap();
     let handed = Handoff {

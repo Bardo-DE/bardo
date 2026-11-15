@@ -15,7 +15,6 @@ use crate::reader::{HISTORY_FILE, HistoryRead, read_history};
 use crate::record::{
     PanelRecord, Prune, ResumeRecord, applicable, prune_decision, resume_file_name,
 };
-use crate::viewed::Viewed;
 use anyview_core::{FilePath, FileStamp, FormatKind, PanelKept, Resume};
 use std::path::PathBuf;
 
@@ -65,7 +64,7 @@ impl StoreWriter {
         &self,
         path: &FilePath,
         kind: FormatKind,
-        viewed: Viewed,
+        viewed: u64,
         resume: &Resume,
     ) -> Result<ViewRecorded, StoreError> {
         resume_file_name(path)?; // refuses a path JSON cannot hold, before anything is written
@@ -75,7 +74,7 @@ impl StoreWriter {
             HistoryRead::Loaded(history) => (history, None, None),
             HistoryRead::Absent => (History::default(), None, None),
             HistoryRead::Unavailable(error @ StoreError::Corrupt { .. }) => {
-                let kept = io::move_aside(&history_file, viewed.0)?;
+                let kept = io::move_aside(&history_file, viewed)?;
                 log::warn!(
                     "the history was damaged ({error}); kept it at {} and started a new one",
                     kept.display()

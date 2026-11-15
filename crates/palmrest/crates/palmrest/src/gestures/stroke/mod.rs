@@ -15,7 +15,7 @@ mod rule;
 #[cfg(test)]
 mod tests;
 
-use super::{Hold, Sample};
+use super::Sample;
 use crate::sensor::lattice;
 use crate::sensor::units::Mm;
 use crate::time::Mono;
@@ -122,9 +122,9 @@ impl Recogniser {
         contacts: &[Sample],
         now: Mono,
         p: &Params,
-        hold: Hold,
+        held: bool,
     ) -> (Self, Vec<Event>) {
-        let (lock, signals) = self.lock.step(contacts, now, p, hold);
+        let (lock, signals) = self.lock.step(contacts, now, p, held);
         let (life, events) = self.life.apply(signals);
         (Self { lock, life }, events)
     }

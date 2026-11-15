@@ -144,10 +144,6 @@ impl Default for Speed {
     }
 }
 
-/// A chapter of a recording, counted from the first, which is 0.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct ChapterIndex(pub u32);
-
 /// A stretch of a recording: from `start` to `end`, or to the end of the recording when `end` is
 /// `None`. The constructor refuses an end that is not after the start.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]

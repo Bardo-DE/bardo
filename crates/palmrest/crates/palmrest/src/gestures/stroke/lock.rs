@@ -10,7 +10,7 @@
 use super::follow::Follow;
 use super::rule::{Params, intent_of};
 use super::{Intent, Motion};
-use crate::gestures::{Hold, Sample};
+use crate::gestures::Sample;
 use crate::time::Mono;
 use palmrest_protocol::Axis;
 
@@ -84,10 +84,10 @@ impl Lock {
         contacts: &[Sample],
         now: Mono,
         p: &Params,
-        hold: Hold,
+        held: bool,
     ) -> (Self, Vec<Signal>) {
         match contacts.len() {
-            1 | 2 if self.follow.is(contacts) => self.follow_on(contacts, now, p, hold),
+            1 | 2 if self.follow.is(contacts) => self.follow_on(contacts, now, p, held),
             n @ (1 | 2) => (
                 Self {
                     follow: Follow::land(contacts),
@@ -105,11 +105,11 @@ impl Lock {
         contacts: &[Sample],
         now: Mono,
         p: &Params,
-        hold: Hold,
+        held: bool,
     ) -> (Self, Vec<Signal>) {
         let (follow, delta) = self.follow.delta(contacts);
         let s = Self { follow, ..self };
-        if delta == (0, 0) || hold == Hold::Held {
+        if delta == (0, 0) || held {
             (s, vec![])
         } else {
             s.motion(delta, now, p)

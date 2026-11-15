@@ -2,7 +2,6 @@
 //! shows. Plain data, so the player's back end, the viewer's stage and the desktop's now-playing
 //! entry all say the same things the same way.
 
-use crate::resume::TrackId;
 use crate::units::MediaTime;
 use ds_core::word::Word;
 
@@ -17,20 +16,11 @@ pub enum StreamKind {
     Subtitles,
 }
 
-/// Whether a track is the one playing now.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-pub enum TrackPlay {
-    /// Decoded and presented.
-    Playing,
-    /// Available, not playing.
-    Idle,
-}
-
 /// One track of a recording.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct MediaTrack {
     /// The track's number within its kind; the first of each kind is 1.
-    pub id: TrackId,
+    pub id: u32,
     /// Which family of stream it is.
     pub kind: StreamKind,
     /// The title tag, when the file has one.
@@ -39,8 +29,8 @@ pub struct MediaTrack {
     pub language: Option<String>,
     /// The codec's name, such as `h264` or `flac`.
     pub codec: Option<String>,
-    /// Whether it is playing.
-    pub play: TrackPlay,
+    /// Whether it is the track playing now: decoded and presented.
+    pub playing: bool,
 }
 
 impl MediaTrack {
@@ -92,12 +82,12 @@ mod tests {
 
     fn track(title: Option<&str>, language: Option<&str>) -> MediaTrack {
         MediaTrack {
-            id: TrackId(2),
+            id: 2,
             kind: StreamKind::Audio,
             title: title.map(str::to_owned),
             language: language.map(str::to_owned),
             codec: None,
-            play: TrackPlay::Idle,
+            playing: false,
         }
     }
 

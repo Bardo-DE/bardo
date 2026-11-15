@@ -184,7 +184,7 @@ pub(crate) fn use_browse(launch: &Launch) -> Browse {
                         browse.send(request.input);
                         let window = browse.window.read();
                         if let Some(window) = &*window {
-                            window.focus_with_token(request.raise.map(|token| token.0));
+                            window.focus_with_token(request.raise);
                         }
                     }
                     Asked::Quietly(input) => browse.send(input),

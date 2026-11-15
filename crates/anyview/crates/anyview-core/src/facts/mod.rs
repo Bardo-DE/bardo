@@ -1,5 +1,5 @@
 //! Facts: the rows a pane lists about a file (dimensions, pages, duration…), each in a section
-//! and at a tier, and the one-line summary the headline rows make.
+//! and headline or detail, and the one-line summary the headline rows make.
 
 mod file;
 mod group;
@@ -11,14 +11,14 @@ mod value;
 mod when;
 
 pub use file::FileDetails;
-pub use group::{FactGroup, Tier};
+pub use group::FactGroup;
 pub use kind_name::{kind_name, kind_name_of};
 pub use label::FactLabel;
 pub use place::Coordinate;
 pub use value::FactValue;
 pub use when::{FactTime, FactZone, LocalZone};
 
-/// One row: a label and its value, in a section, at a tier.
+/// One row: a label and its value, in a section, headline or detail.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Fact {
     /// The section the row is listed in.
@@ -27,19 +27,19 @@ pub struct Fact {
     pub label: FactLabel,
     /// What is true of it.
     pub value: FactValue,
-    /// Whether the summary line carries it.
-    pub tier: Tier,
+    /// Whether the summary line carries it (a headline row), else only the panel does.
+    pub headline: bool,
 }
 
 impl Fact {
-    /// The row `label` with `value`, in the label's own section and tier.
+    /// The row `label` with `value`, in the label's own section and weight.
     #[must_use]
     pub fn new(label: FactLabel, value: FactValue) -> Self {
         Fact {
             group: label.group(),
             label,
             value,
-            tier: label.tier(),
+            headline: label.headline(),
         }
     }
 
@@ -49,10 +49,10 @@ impl Fact {
         Fact { group, ..self }
     }
 
-    /// This row, at `tier` instead.
+    /// This row, a headline row or not, as `headline` says instead.
     #[must_use]
-    pub fn at_tier(self, tier: Tier) -> Self {
-        Fact { tier, ..self }
+    pub fn with_headline(self, headline: bool) -> Self {
+        Fact { headline, ..self }
     }
 }
 
@@ -67,7 +67,7 @@ impl Facts {
         Facts(Vec::new())
     }
 
-    /// These rows plus one more at the end, in the label's own section and tier.
+    /// These rows plus one more at the end, in the label's own section and weight.
     #[must_use]
     pub fn with(self, label: FactLabel, value: FactValue) -> Self {
         self.with_fact(Fact::new(label, value))

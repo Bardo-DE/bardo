@@ -6,7 +6,7 @@ use thiserror::Error;
 
 use keyboard_types::{Modifiers, NamedKey};
 
-use crate::chord::{Chord, DefaultChord, PrimaryUse};
+use crate::chord::{Chord, DefaultChord};
 use crate::key::Key;
 use crate::modifier::{key_of_modifier, modifier_of_key};
 use crate::platform::{Desktop, Platform};
@@ -169,17 +169,17 @@ fn parse_default(text: &str) -> Result<DefaultChord, ChordError> {
     }
     let (glyphs, rest) = take_glyphs(text);
     let mut modifiers = glyphs;
-    let mut primary = PrimaryUse::Unused;
+    let mut primary = false;
     let (head, last) = split_last(rest);
     for token in head.split('+').map(str::trim).filter(|t| !t.is_empty()) {
         match word(token) {
-            Some(Word::Primary) => primary = PrimaryUse::Held,
+            Some(Word::Primary) => primary = true,
             Some(Word::Physical(modifier)) => modifiers = modifiers.union(modifier),
             None => return Err(ChordError::NotAModifier(token.to_owned())),
         }
     }
     let last = last.trim();
-    let alone = modifiers.is_empty() && primary == PrimaryUse::Unused;
+    let alone = modifiers.is_empty() && !primary;
     let key = if last.is_empty() {
         tap_of(glyphs, rest, alone)?
     } else {
@@ -220,9 +220,10 @@ impl FromStr for Chord {
 
     fn from_str(text: &str) -> Result<Self, Self::Err> {
         let parsed = parse_default(text)?;
-        match parsed.primary() {
-            PrimaryUse::Held => Err(ChordError::PrimaryNotAllowed),
-            PrimaryUse::Unused => Ok(parsed.base()),
+        if parsed.primary() {
+            Err(ChordError::PrimaryNotAllowed)
+        } else {
+            Ok(parsed.base())
         }
     }
 }
@@ -385,10 +386,7 @@ impl DefaultChord {
             order: CTRL_FIRST,
             os_key: "Super",
         };
-        let prefix: &[&str] = match self.primary() {
-            PrimaryUse::Held => &["Primary"],
-            PrimaryUse::Unused => &[],
-        };
+        let prefix: &[&str] = if self.primary() { &["Primary"] } else { &[] };
         render(prefix, self.base().modifiers(), self.base().key(), &neutral)
     }
 }

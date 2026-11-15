@@ -26,10 +26,10 @@ pub(super) fn of(peeked: &ImagePeek) -> Facts {
             FactLabel::Dimensions,
             FactValue::dimensions(peeked.source_size),
         );
-    if peeked.frames.0 > 1 {
+    if peeked.frames > 1 {
         facts = facts.with(
             FactLabel::Frames,
-            FactValue::text(peeked.frames.0.to_string()),
+            FactValue::text(peeked.frames.to_string()),
         );
     }
     facts = text(FactLabel::Colour, peeked.colour.map(|c| c.text()), facts);

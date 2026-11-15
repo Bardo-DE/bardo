@@ -13,7 +13,7 @@ use dioxus::prelude::{
 use ds::base::command::types_text;
 use ds::prelude::{Keys, use_keys};
 use files_core::ViewMode;
-use files_model::{Browser, Chooser, GoTo, InfoView, Input};
+use files_model::{Browser, GoTo, InfoView, Input};
 
 use crate::state::Browse;
 
@@ -229,7 +229,7 @@ fn type_ahead(browse: Browse, event: &KeyboardEvent) -> bool {
 fn sheet_up(state: &Browser) -> bool {
     !matches!(state.info(), InfoView::Closed)
         || !matches!(state.go_to(), GoTo::Closed)
-        || state.chooser() == Chooser::Open
+        || state.chooser_open()
 }
 
 /// Escape puts away what is up over the folder: a sheet of Go to Folder or of apps, Get Info,
@@ -239,7 +239,7 @@ fn escape(browse: Browse) -> bool {
         let state = browse.state.read();
         if !matches!(state.go_to(), GoTo::Closed) {
             Some(Input::GoToCancel)
-        } else if state.chooser() == Chooser::Open {
+        } else if state.chooser_open() {
             Some(Input::CloseChooseApp)
         } else {
             match (state.info(), state.quick_look()) {

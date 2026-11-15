@@ -8,7 +8,7 @@ use crate::daemon::inbox::{ClientId, Inbox, Message, Request, mailbox};
 use crate::daemon::route::Routed;
 use keycap_devtest::Scratch;
 use crate::daemon::socket::client::{connect, recv};
-use crate::daemon::socket::{SeatFile, Steering, bind, socket_path, spawn};
+use crate::daemon::socket::{SeatFile, bind, socket_path, spawn, vouch};
 use crate::daemon::uinput::RecordingEmitter;
 use crate::{DeviceId, Edge, Key, Layout, Mono, Physical, RemapInput};
 use keycap_protocol::{ProfileName, ToClient};
@@ -40,7 +40,7 @@ impl Rig {
             listener,
             inbox.clone(),
             SeatFile(dir.path().join("seat0")),
-            Steering::SeatUser.vouch(),
+            vouch(true),
             initial,
             keycap_client::FileText::Missing,
         )

@@ -27,7 +27,7 @@ mod time;
 pub use backoff::Backoff;
 pub use config::{
     ConfigLayer, ConfigSource, DEFAULTS_TOML, LayoutOverrides, MAX_INHERIT_STEPS, MAX_PROFILES,
-    MAX_RULES_PER_PROFILE, MAX_USER_RULES, Oversize, Sequences, builtin, layout_overrides, resolve,
+    MAX_RULES_PER_PROFILE, MAX_USER_RULES, Oversize, builtin, layout_overrides, resolve,
     within_limits,
 };
 pub use escape::Escape;

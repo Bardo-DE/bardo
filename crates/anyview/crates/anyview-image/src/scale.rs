@@ -66,8 +66,8 @@ pub(crate) fn resize_target(size: PixelSize, resize: Resize) -> PixelSize {
 
 /// `picture` resampled to `size`. Colour is filtered in premultiplied form, so the hidden colour of
 /// transparent pixels does not bleed into their neighbours. Downscales use a box-like filter fast
-/// enough for a peek; an export resize uses [`Resampling::Sharp`].
-pub(crate) fn resampled(picture: &Rgba8, size: PixelSize, filter: Resampling) -> Rgba8 {
+/// enough for a peek; an export resize is `sharp`.
+pub(crate) fn resampled(picture: &Rgba8, size: PixelSize, sharp: bool) -> Rgba8 {
     if size == picture.size() {
         return picture.clone();
     }
@@ -75,20 +75,12 @@ pub(crate) fn resampled(picture: &Rgba8, size: PixelSize, filter: Resampling) ->
         return picture.clone();
     };
     let (width, height) = (size.width.0, size.height.0);
-    let out = match filter {
-        Resampling::Fast => imageops::thumbnail(&image, width, height),
-        Resampling::Sharp => imageops::resize(&image, width, height, FilterType::Lanczos3),
+    let out = if sharp {
+        imageops::resize(&image, width, height, FilterType::Lanczos3)
+    } else {
+        imageops::thumbnail(&image, width, height)
     };
     PremultipliedRgba8::from_image(out).unpremultiplied()
-}
-
-/// How much work a resample may spend.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Resampling {
-    /// A box filter, for a thumbnail.
-    Fast,
-    /// Lanczos, for an export.
-    Sharp,
 }
 
 /// `picture` resized the way an export asked.
@@ -97,7 +89,7 @@ pub fn resized(picture: &Rgba8, resize: Resize) -> Rgba8 {
     resampled(
         picture,
         resize_target(picture.size(), resize),
-        Resampling::Sharp,
+        true,
     )
 }
 
@@ -208,7 +200,7 @@ mod tests {
         // Left pixel opaque white, right pixel transparent black: the average is half-transparent
         // white, not grey.
         let picture = Rgba8::new(size(2, 1), vec![255, 255, 255, 255, 0, 0, 0, 0]).unwrap();
-        let one = resampled(&picture, size(1, 1), Resampling::Fast);
+        let one = resampled(&picture, size(1, 1), false);
         let [r, g, b, a] = <[u8; 4]>::try_from(one.bytes()).unwrap();
         assert!(
             r >= 250 && g >= 250 && b >= 250,

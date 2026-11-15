@@ -10,44 +10,44 @@ enum Act {
 }
 
 /// (name, has a deadline this far after the base instant, action, asked at this far after the
-/// base instant, expected state)
-const CASES: &[(&str, Option<u64>, Act, u64, StopState)] = &[
-    ("fresh stop runs", None, Act::Nothing, 0, StopState::Running),
+/// base instant, expected: stopped)
+const CASES: &[(&str, Option<u64>, Act, u64, bool)] = &[
+    ("fresh stop runs", None, Act::Nothing, 0, false),
     (
         "no deadline never lapses",
         None,
         Act::Nothing,
         1_000_000,
-        StopState::Running,
+        false,
     ),
-    ("request stops", None, Act::Request, 0, StopState::Stopped),
+    ("request stops", None, Act::Request, 0, true),
     (
         "before the deadline runs",
         Some(100),
         Act::Nothing,
         99,
-        StopState::Running,
+        false,
     ),
     (
         "at the deadline stops",
         Some(100),
         Act::Nothing,
         100,
-        StopState::Stopped,
+        true,
     ),
     (
         "past the deadline stops",
         Some(100),
         Act::Nothing,
         101,
-        StopState::Stopped,
+        true,
     ),
     (
         "request before the deadline stops",
         Some(100),
         Act::Request,
         1,
-        StopState::Stopped,
+        true,
     ),
 ];
 
@@ -72,8 +72,8 @@ fn stopped_at_follows_the_flag_and_the_deadline() {
 fn stopped_ignores_the_deadline() {
     let base = Instant::now();
     let stop = Stop::with_deadline(base);
-    assert_eq!(stop.stopped(), StopState::Running);
-    assert_eq!(stop.stopped_at(base), StopState::Stopped);
+    assert!(!stop.stopped());
+    assert!(stop.stopped_at(base));
     assert_eq!(stop.deadline(), Some(base));
 }
 
@@ -89,7 +89,7 @@ fn the_flag_is_the_one_every_clone_shares() {
     // Raising the flag from outside is a request too.
     let other = Stop::new();
     other.flag().store(true, Ordering::Release);
-    assert_eq!(other.stopped(), StopState::Stopped);
+    assert!(other.stopped());
 }
 
 #[test]

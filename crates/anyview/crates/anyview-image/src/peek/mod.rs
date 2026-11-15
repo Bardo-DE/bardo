@@ -3,11 +3,11 @@
 
 mod facts;
 
-use crate::decode::{ColourInfo, FrameCount, Looked, file_bytes, look};
+use crate::decode::{ColourInfo, Looked, file_bytes, look};
 use crate::error::ImageError;
 use crate::exif::ExifFacts;
 use crate::pixels::Rgba8;
-use crate::scale::{Resampling, fit_area, peek_area, resampled};
+use crate::scale::{fit_area, peek_area, resampled};
 use anyview_core::{
     Facts, FormatDetail, FormatKind, Input, Peek, PeekBudget, PixelSize, RasterFormat, Sniffed,
 };
@@ -30,7 +30,7 @@ pub struct ImagePeek {
     /// The size of the whole image, upright, before it was reduced.
     pub source_size: PixelSize,
     /// How many pictures the file holds; more than one is an animation.
-    pub frames: FrameCount,
+    pub frames: u32,
     /// How the file stores its colour, when the format says.
     pub colour: Option<ColourInfo>,
     /// What the EXIF block says, or nothing.
@@ -99,7 +99,7 @@ fn peek_image(
 
 fn reduced(looked: Looked, sniffed: &Sniffed, area: anyview_core::PixelArea) -> ImagePeek {
     let fitted = fit_area(looked.picture.size(), area);
-    let picture = resampled(&looked.picture, fitted, Resampling::Fast);
+    let picture = resampled(&looked.picture, fitted, false);
     // The codec was chosen from this same detail, so anything but a raster format is the SVG one.
     let format = if let FormatDetail::Raster(format) = sniffed.detail() {
         PeekedFormat::Raster(*format)

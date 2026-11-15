@@ -1,12 +1,12 @@
 //! The lifecycle as pure steps: states and events in, the next state and effects out.
 
-use super::super::model::{Cuts, Effect, Event, Life, Why};
+use super::super::model::{Effect, Event, Life, Why};
 use super::super::step::step;
 use crate::daemon::discover::Backoff;
 use crate::time::Mono;
 use std::time::Duration;
 
-const ZERO: Cuts = Cuts(0);
+const ZERO: u8 = 0;
 
 fn cut() -> Why {
     Why::Cut("the service closed the connection".into())
@@ -16,7 +16,7 @@ fn other() -> Why {
     Why::Other("no acl yet".into())
 }
 
-fn waiting(retry_at: Mono, backoff: Backoff, cuts: Cuts) -> Life {
+fn waiting(retry_at: Mono, backoff: Backoff, cuts: u8) -> Life {
     Life::Waiting {
         retry_at,
         backoff,
@@ -54,9 +54,9 @@ fn a_retry_is_not_tried_before_its_time() {
 
 #[test]
 fn a_build_that_works_keeps_the_cuts_until_a_frame_goes_through() {
-    let life = waiting(Mono(0), Backoff::UINPUT, Cuts(2));
+    let life = waiting(Mono(0), Backoff::UINPUT, 2);
     let (ready, _) = step(life, Event::Created);
-    assert_eq!(ready, Life::Ready { cuts: Cuts(2) });
+    assert_eq!(ready, Life::Ready { cuts: 2 });
     let (ready, effects) = step(ready, Event::Written);
     assert_eq!((ready, effects), (Life::Ready { cuts: ZERO }, vec![]));
 }
@@ -87,19 +87,19 @@ fn only_cuts_count_towards_giving_up() {
     let mut life = Life::Ready { cuts: ZERO };
     for n in 1..=3u8 {
         let (next, effects) = step(life, Event::WriteFailed(cut()));
-        assert_eq!(next, Life::Lost { cuts: Cuts(n) });
+        assert_eq!(next, Life::Lost { cuts: n });
         assert!(doings(&effects).contains(&&Effect::Lost));
-        life = Life::Ready { cuts: Cuts(n) };
+        life = Life::Ready { cuts: n };
     }
     let (next, effects) = step(life, Event::WriteFailed(cut()));
     assert_eq!(next, Life::Dead);
     assert!(says(&effects, "virtual input stopped"));
     assert_eq!(doings(&effects), [&Effect::DropEmitter, &Effect::Lost]);
 
-    let (next, _) = step(Life::Ready { cuts: Cuts(3) }, Event::WriteFailed(other()));
+    let (next, _) = step(Life::Ready { cuts: 3 }, Event::WriteFailed(other()));
     assert_eq!(
         next,
-        Life::Lost { cuts: Cuts(3) },
+        Life::Lost { cuts: 3 },
         "other failures never give up"
     );
 }
@@ -107,7 +107,7 @@ fn only_cuts_count_towards_giving_up() {
 #[test]
 fn a_build_cut_for_the_fourth_time_gives_up_without_a_loss() {
     let (life, effects) = step(
-        waiting(Mono(0), Backoff::UINPUT, Cuts(3)),
+        waiting(Mono(0), Backoff::UINPUT, 3),
         Event::CreateFailed {
             why: cut(),
             at: Mono(1),
@@ -122,8 +122,8 @@ fn a_build_cut_for_the_fourth_time_gives_up_without_a_loss() {
 fn a_loss_starts_the_wait_at_the_next_poll() {
     let now = Mono::from_millis(50);
     let (delay, backoff) = Backoff::UINPUT.step();
-    let (life, effects) = step(Life::Lost { cuts: Cuts(1) }, Event::Due(now));
-    assert_eq!(life, waiting(now.after(delay), backoff, Cuts(1)));
+    let (life, effects) = step(Life::Lost { cuts: 1 }, Event::Due(now));
+    assert_eq!(life, waiting(now.after(delay), backoff, 1));
     assert!(says(&effects, "lost; rebuilding in 1s"));
     assert!(doings(&effects).is_empty(), "not built before the delay");
     assert_eq!(delay, Duration::from_secs(1));
@@ -133,9 +133,9 @@ fn a_loss_starts_the_wait_at_the_next_poll() {
 fn a_change_of_shape_restarts_from_any_state_and_builds_at_once() {
     let now = Mono::from_millis(7);
     let states = [
-        Life::Ready { cuts: Cuts(2) },
+        Life::Ready { cuts: 2 },
         Life::Lost { cuts: ZERO },
-        waiting(Mono::from_millis(9_999), Backoff::UINPUT, Cuts(3)),
+        waiting(Mono::from_millis(9_999), Backoff::UINPUT, 3),
         Life::Dead,
     ];
     for life in states {

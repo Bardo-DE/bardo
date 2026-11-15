@@ -217,10 +217,6 @@ fn resolution(exif: &exif::Exif) -> Option<Resolution> {
     Resolution::per_unit(
         per_unit(Tag::XResolution)?,
         per_unit(Tag::YResolution)?,
-        if centimetres {
-            crate::resolution::Unit::Centimetre
-        } else {
-            crate::resolution::Unit::Inch
-        },
+        centimetres,
     )
 }

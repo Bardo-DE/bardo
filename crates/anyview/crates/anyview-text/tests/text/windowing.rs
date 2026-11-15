@@ -5,7 +5,7 @@ use crate::support;
 use anyview_core::{
     ByteLen, Deadline, FilePath, FileStamp, LineIndex, ModTime, Source, SyntaxName,
 };
-use anyview_text::{CodeLines, FileBytes, Highlighter, LineCount, TextLines, TokenClass};
+use anyview_text::{CodeLines, FileBytes, Highlighter, TextLines, TokenClass};
 use support::fixture;
 
 fn open(name: &str) -> TextLines<FileBytes> {
@@ -16,7 +16,7 @@ fn open(name: &str) -> TextLines<FileBytes> {
 #[test]
 fn a_fixture_file_is_windowed_by_line() {
     let text = open("notes.txt");
-    assert_eq!(text.line_count(), LineCount(60));
+    assert_eq!(text.line_count(), 60);
     let lines = text.lines(LineIndex(57)..LineIndex(99)).unwrap();
     assert_eq!(
         lines,
@@ -63,7 +63,7 @@ fn a_large_log_in_a_scratch_directory_is_counted_and_windowed() {
     };
     let src = Source::new(FilePath::new(&path).unwrap(), stamp);
     let text = TextLines::open(FileBytes::open(&src).unwrap()).unwrap();
-    assert_eq!(text.line_count(), LineCount(200_000));
+    assert_eq!(text.line_count(), 200_000);
     let window = text.lines(LineIndex(123_456)..LineIndex(123_458)).unwrap();
     assert_eq!(
         window,

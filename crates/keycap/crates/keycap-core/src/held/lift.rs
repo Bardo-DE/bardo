@@ -1,6 +1,6 @@
 //! Lifts: keys a record holds that an owner has taken off the wire for a while.
 
-use super::model::{At, Bare, Held};
+use super::model::{At, Held};
 use crate::event::{Logical, OutEvent};
 
 impl Held {
@@ -29,7 +29,7 @@ impl Held {
         let mut events = Vec::new();
         for key in keys {
             if self.is_down(key) {
-                events.push(self.write_press(key, Bare::Restored));
+                events.push(self.write_press(key, true));
             }
         }
         (self, events)
@@ -55,7 +55,7 @@ impl Held {
     /// Press `key` unless it is down, and end every lift of it: a deliberate press wins over a
     /// lift, so the lifted and the written views cannot disagree.
     pub(super) fn raise(&mut self, key: Logical) -> Option<OutEvent> {
-        let event = (!self.is_down(key)).then(|| self.write_press(key, Bare::Pressed));
+        let event = (!self.is_down(key)).then(|| self.write_press(key, false));
         self.lifts
             .values_mut()
             .for_each(|keys| keys.retain(|&k| k != key));

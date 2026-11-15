@@ -102,7 +102,7 @@ watches the keymap, registers actions and may `Resume`; any other request drops 
 not a boundary: a same-user program can move itself into a control group of that name. The boundary is the
 reduced user layer: no rule on a key with no modifier held (Shift counts as one), no `then` that is a list
 or empty, at most 256 rules (the layer is refused whole), unless the root-owned `/etc/keycap/keycap.toml` (or the vendor file, see "Vendor layer") says
-`[user_layer] sequences = "allow"` (that lifts the list ban only; the machine file itself is unrestricted).
+`[user_layer] sequences = true` (that lifts the list ban only; the machine file itself is unrestricted).
 A `Focus` naming a profile nobody defined writes as `default` and is logged once, as before: that is the
 refusal for (d), because a defined profile is the only thing a name can select.
 - *Owner decision: `Resume` is allowed from `Plain`* (the active user's own processes, not `Observer`): it

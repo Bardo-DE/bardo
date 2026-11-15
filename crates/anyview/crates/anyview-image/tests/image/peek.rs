@@ -3,7 +3,7 @@
 use crate::support;
 
 use anyview_core::{FactLabel, FormatKind, Peek, PixelLen, PixelSize};
-use anyview_image::{FrameCount, ImageError, RasterPeek, VectorPeek};
+use anyview_image::{ImageError, RasterPeek, VectorPeek};
 use support::{budget, fixture};
 
 fn size(width: u32, height: u32) -> PixelSize {
@@ -33,7 +33,7 @@ fn a_png_is_reduced_to_the_pixel_budget_with_its_proportions() {
     let peeked = RasterPeek::peek(&src, &sniffed, &budget(100)).unwrap();
     assert_eq!(peeked.picture.size(), size(12, 8));
     assert_eq!(peeked.source_size, size(48, 32));
-    assert_eq!(peeked.frames, FrameCount(1));
+    assert_eq!(peeked.frames, 1);
     assert_eq!(
         rows::<RasterPeek>(&peeked),
         expected(&[
@@ -84,7 +84,7 @@ fn an_exif_photo_peeks_upright_with_its_camera_facts() {
 fn an_animation_peeks_as_its_first_frame_and_a_frame_count() {
     let (src, sniffed) = fixture("spin.gif");
     let peeked = RasterPeek::peek(&src, &sniffed, &budget(1_000_000)).unwrap();
-    assert_eq!(peeked.frames, FrameCount(3));
+    assert_eq!(peeked.frames, 3);
     assert_eq!(
         &peeked.picture.bytes()[..4],
         [255, 0, 0, 255],

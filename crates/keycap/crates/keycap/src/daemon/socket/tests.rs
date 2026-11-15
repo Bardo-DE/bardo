@@ -59,7 +59,7 @@ impl Harness {
     }
 
     fn with_keymap(active_uid: Option<u32>, keymap: FileText) -> Self {
-        Self::start(active_uid, keymap, Steering::SeatUser.vouch())
+        Self::start(active_uid, keymap, vouch(true))
     }
 
     /// A harness in which no client is the shell: the steering table has no rows and the

@@ -4,7 +4,7 @@
 
 use crate::error::PlatformError;
 use crate::picker::{FileKinds, PickOutcome, Picker};
-use crate::printer::{JobTitle, PrintOutcome, Printer};
+use crate::printer::{PrintOutcome, Printer};
 use crate::settings::{OpenSettings, Opening};
 use crate::share::{Share, ShareTarget};
 use anyview_core::FilePath;
@@ -33,7 +33,7 @@ impl Printer for NoPrinter {
         false
     }
 
-    async fn print(&self, _pdf: &[u8], _title: &JobTitle) -> Result<PrintOutcome, PlatformError> {
+    async fn print(&self, _pdf: &[u8], _title: &str) -> Result<PrintOutcome, PlatformError> {
         Ok(PrintOutcome::NoDialog)
     }
 }
@@ -60,9 +60,9 @@ mod tests {
     #[tokio::test]
     async fn each_absent_ability_says_so_and_does_nothing() {
         assert!(NoShare.targets().is_empty());
-        let title = JobTitle("a".to_owned());
+        let title = "a";
         assert_eq!(
-            NoPrinter.print(b"%PDF", &title).await.unwrap(),
+            NoPrinter.print(b"%PDF", title).await.unwrap(),
             PrintOutcome::NoDialog
         );
         assert_eq!(

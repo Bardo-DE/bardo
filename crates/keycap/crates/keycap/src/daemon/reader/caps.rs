@@ -4,7 +4,7 @@
 
 use super::Reader;
 use crate::daemon::events::encode;
-use crate::daemon::leds::{Lamp, Led, LedEvent};
+use crate::daemon::leds::{Led, LedEvent};
 use crate::daemon::uinput::Emitter;
 use crate::{DeviceId, OutEvent};
 
@@ -20,7 +20,7 @@ impl<E: Emitter> Reader<E> {
     }
 
     /// The decision of `arm_caps`, given what it read.
-    pub(super) fn caps_grabbed(&mut self, lamp: Lamp) {
+    pub(super) fn caps_grabbed(&mut self, lamp: bool) {
         self.machine = std::mem::take(&mut self.machine).grabbed(lamp);
     }
 

@@ -37,10 +37,6 @@ pub enum RowLabel {
     Index(u32),
 }
 
-/// How many children a node has.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
-pub struct ChildCount(pub u32);
-
 /// One row of the tree view: enough to draw it without holding the node.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TreeRow {
@@ -52,7 +48,7 @@ pub struct TreeRow {
     /// for a container.
     pub preview: String,
     /// How many rows it opens to; zero for a scalar.
-    pub children: ChildCount,
+    pub children: u32,
 }
 
 /// `{3 keys}`, `{1 key}` or `{}`.
@@ -97,18 +93,14 @@ fn unreadable_preview(text: &str) -> String {
 /// characters, or a number as it was written; `len` is how many children a container has.
 pub(super) fn row(label: RowLabel, shape: Shape, text: &str, len: u32) -> TreeRow {
     let (kind, preview, children) = match shape {
-        Shape::Object => (NodeKind::Object, object_preview(len), ChildCount(len)),
-        Shape::Array => (NodeKind::Array, array_preview(len), ChildCount(len)),
-        Shape::String => (NodeKind::String, string_preview(text), ChildCount(0)),
-        Shape::Number => (NodeKind::Number, text.to_owned(), ChildCount(0)),
-        Shape::True => (NodeKind::True, "true".to_owned(), ChildCount(0)),
-        Shape::False => (NodeKind::False, "false".to_owned(), ChildCount(0)),
-        Shape::Null => (NodeKind::Null, "null".to_owned(), ChildCount(0)),
-        Shape::Unreadable => (
-            NodeKind::Unreadable,
-            unreadable_preview(text),
-            ChildCount(0),
-        ),
+        Shape::Object => (NodeKind::Object, object_preview(len), len),
+        Shape::Array => (NodeKind::Array, array_preview(len), len),
+        Shape::String => (NodeKind::String, string_preview(text), 0),
+        Shape::Number => (NodeKind::Number, text.to_owned(), 0),
+        Shape::True => (NodeKind::True, "true".to_owned(), 0),
+        Shape::False => (NodeKind::False, "false".to_owned(), 0),
+        Shape::Null => (NodeKind::Null, "null".to_owned(), 0),
+        Shape::Unreadable => (NodeKind::Unreadable, unreadable_preview(text), 0),
     };
     TreeRow {
         label,
@@ -234,7 +226,7 @@ mod tests {
             let got = row(RowLabel::Root, shape, text, len);
             assert_eq!(got.kind, kind, "{name} kind");
             assert_eq!(got.preview, preview, "{name} preview");
-            assert_eq!(got.children, ChildCount(children), "{name} children");
+            assert_eq!(got.children, children, "{name} children");
         }
     }
 }

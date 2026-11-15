@@ -7,7 +7,6 @@ use files_core::{
     Location, Summary, Volume,
 };
 
-use crate::app::Chooser;
 use crate::arrange::arrange;
 use crate::effect::Effect;
 use crate::goto::GoTo;
@@ -60,7 +59,7 @@ pub struct Browser {
     /// The Go to Folder sheet.
     pub(crate) goto: GoTo,
     /// The sheet of every installed app.
-    pub(crate) chooser: Chooser,
+    pub(crate) chooser: bool,
     /// The disks the sidebar lists, as the caller last told.
     pub(crate) volumes: Vec<Volume>,
     /// The cloud drives the sidebar lists, as the caller last told.
@@ -98,7 +97,7 @@ impl Browser {
             details: None,
             home: None,
             goto: GoTo::Closed,
-            chooser: Chooser::Closed,
+            chooser: false,
             volumes: Vec::new(),
             clouds: Vec::new(),
             cloud: HashMap::new(),

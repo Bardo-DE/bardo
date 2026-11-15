@@ -13,7 +13,7 @@ mod resolve;
 #[cfg(test)]
 mod tests;
 
-pub use confine::{MAX_USER_RULES, Sequences};
+pub use confine::MAX_USER_RULES;
 pub use defaults::{DEFAULTS_TOML, builtin};
 pub use devices::{LayoutOverrides, layout_overrides};
 pub use layer::{ConfigLayer, ConfigSource};

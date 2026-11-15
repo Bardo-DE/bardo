@@ -4,7 +4,7 @@ use super::head::{PEEK_LINES, expect_kind};
 use super::tally::Tally;
 use crate::encoding::TextCodec;
 use crate::error::TextError;
-use crate::table::{ColumnCount, HeaderMode, RowIndex, Table, Workbook};
+use crate::table::{HeaderMode, RowIndex, Table, Workbook};
 use anyview_core::{
     Delimiter, Fact, FactGroup, FactLabel, FactValue, Facts, FormatDetail, FormatKind, Input,
     OfficeFormat, Peek, PeekBudget, Sniffed,
@@ -21,7 +21,7 @@ pub struct TablePeeked {
     /// How many data rows the table has, as far as the budget let the peek see.
     pub total_rows: Tally,
     /// The widest row's cell count among the rows seen.
-    pub columns: ColumnCount,
+    pub columns: u32,
     /// Where the rows came from.
     pub source: TableSource,
 }
@@ -94,7 +94,7 @@ impl Peek for TablePeek {
             .with(FactLabel::Rows, FactValue::text(peeked.total_rows.text()))
             .with(
                 FactLabel::Columns,
-                FactValue::text(peeked.columns.0.to_string()),
+                FactValue::text(peeked.columns.to_string()),
             );
         match &peeked.source {
             // The encoding belongs with the rows it was read for: one section, headed Table.
@@ -122,7 +122,7 @@ fn delimited(
         budget.bytes,
         &budget.deadline_from_now(),
     )?;
-    let total = Tally::of(table.row_count().0 as usize, table.coverage()); // a u32 fits a usize
+    let total = Tally::of(table.row_count() as usize, table.coverage()); // a u32 fits a usize
     of_table(
         &table,
         total,
@@ -147,7 +147,7 @@ fn sheet(src: &Input, format: OfficeFormat, budget: &PeekBudget) -> Result<Table
         .ok_or_else(|| TextError::Workbook {
             reason: "the workbook has no sheets".to_owned(),
         })?;
-    let total = Tally::of(first.table.row_count().0 as usize, first.table.coverage()); // a u32 fits a usize
+    let total = Tally::of(first.table.row_count() as usize, first.table.coverage()); // a u32 fits a usize
     of_table(
         &first.table,
         total,

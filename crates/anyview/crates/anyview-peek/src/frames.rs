@@ -11,9 +11,7 @@ use anyview_core::{
     FileHead, FileName, FormatDetail, Input, PeekBudget, PixelLen, RasterFormat, Resize, SniffStep,
     Sniffed, sniff,
 };
-use anyview_image::{
-    Decoded, ExifFacts, FrameCount, ImagePeek, PeekedFormat, Rgba8, decode_bytes, resized,
-};
+use anyview_image::{Decoded, ExifFacts, ImagePeek, PeekedFormat, Rgba8, decode_bytes, resized};
 use std::fmt::Debug;
 
 /// Where the host finds a small picture of a file it did not decode.
@@ -62,7 +60,7 @@ pub(crate) fn still_peek(picture: Rgba8, budget: &PeekBudget) -> ImagePeek {
     ImagePeek {
         picture: reduced(picture, budget),
         source_size,
-        frames: FrameCount(1),
+        frames: 1,
         colour: None,
         exif: ExifFacts::none(),
         format: PeekedFormat::Raster(RasterFormat::Png),
@@ -88,7 +86,7 @@ pub(crate) fn cover_picture(bytes: &[u8], name: &str, budget: &PeekBudget) -> Op
     Some(ImagePeek {
         picture,
         source_size,
-        frames: FrameCount(1),
+        frames: 1,
         colour: None,
         exif: ExifFacts::none(),
         format: PeekedFormat::Raster(*format),

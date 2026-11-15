@@ -2,7 +2,7 @@
 
 use std::fs;
 
-use files_core::{ByteSize, EntryKind, FileName, FolderPath, Info, ItemCount, ItemRef};
+use files_core::{ByteSize, EntryKind, FileName, FolderPath, Info, ItemRef};
 use files_fs::{DiskLister, FakeLister, ListError, Lister};
 use tempfile::TempDir;
 
@@ -35,7 +35,7 @@ fn a_folder_counts_what_a_person_sees() {
     }
     let info = DiskLister.info(&item(&dir, "inner")).unwrap();
     assert_eq!(info.kind, EntryKind::Folder);
-    assert_eq!(info.items, Some(ItemCount(2)));
+    assert_eq!(info.items, Some(2));
 }
 
 #[test]
@@ -69,7 +69,7 @@ fn the_fake_describes_what_it_was_given() {
         ]),
     );
     let got: Info = fake.info(&inner).unwrap();
-    assert_eq!(got.items, Some(ItemCount(1)));
+    assert_eq!(got.items, Some(1));
     let file = ItemRef::new(inner.folder.clone(), FileName::new("f").unwrap());
     assert_eq!(fake.info(&file).unwrap().size(), Some(ByteSize(9)));
 }

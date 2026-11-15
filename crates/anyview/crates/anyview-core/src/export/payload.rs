@@ -101,16 +101,6 @@ pub enum MetadataCarry {
     Drop,
 }
 
-/// Whether subtitles are drawn into an exported frame.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum Subtitles {
-    /// Draw the shown subtitles into the picture.
-    Burn,
-    /// Leave the picture clean.
-    #[default]
-    Omit,
-}
-
 /// Which streams of a recording a transcode keeps.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
 pub enum StreamPick {

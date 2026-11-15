@@ -1,6 +1,6 @@
 //! What a row of facts is about, and where each kind of row is listed by default.
 
-use super::{FactGroup, Tier};
+use super::FactGroup;
 use ds_core::word::Word;
 
 /// What a row of facts is about. Closed, so every pane words and orders the same facts the same
@@ -205,7 +205,7 @@ impl FactLabel {
 
     /// Whether a row with this label is part of a file's summary line when its producer does not
     /// say.
-    pub fn tier(self) -> Tier {
+    pub fn headline(self) -> bool {
         match self {
             FactLabel::Kind
             | FactLabel::Size
@@ -221,7 +221,7 @@ impl FactLabel {
             | FactLabel::Columns
             | FactLabel::Entries
             | FactLabel::Items
-            | FactLabel::PageSize => Tier::Headline,
+            | FactLabel::PageSize => true,
             FactLabel::Modified
             | FactLabel::Created
             | FactLabel::Where
@@ -268,7 +268,7 @@ impl FactLabel {
             | FactLabel::Language
             | FactLabel::Album
             | FactLabel::TrackNumber
-            | FactLabel::Needs => Tier::Detail,
+            | FactLabel::Needs => false,
         }
     }
 }

@@ -10,7 +10,6 @@ use super::{Located, Tree};
 use crate::edit::{EditStamp, EditText, Log};
 use crate::encoding::{Coverage, TextCodec};
 use crate::error::TextError;
-use crate::table::Undid;
 use anyview_core::{Deadline, TextEncoding, TreeFormat, TreePath};
 use std::ops::Range;
 use std::sync::Arc;
@@ -351,34 +350,28 @@ impl TreeSession {
     }
 
     /// Take back the last edit.
-    pub fn undo(&mut self) -> Undid {
+    pub fn undo(&mut self) -> bool {
         let Some(step) = self.log.undo().cloned() else {
-            return Undid::Nothing;
+            return false;
         };
         self.reverse(&step)
     }
 
     /// Do the edit taken back again.
-    pub fn redo(&mut self) -> Undid {
+    pub fn redo(&mut self) -> bool {
         let Some(step) = self.log.redo().cloned() else {
-            return Undid::Nothing;
+            return false;
         };
-        match self.apply(&step) {
-            Ok(()) => Undid::Something,
-            Err(_) => Undid::Nothing,
-        }
+        self.apply(&step).is_ok()
     }
 
-    fn reverse(&mut self, step: &Splice) -> Undid {
+    fn reverse(&mut self, step: &Splice) -> bool {
         let back = Splice {
             at: step.at,
             removed: step.added.clone(),
             added: step.removed.clone(),
         };
-        match self.apply(&back) {
-            Ok(()) => Undid::Something,
-            Err(_) => Undid::Nothing,
-        }
+        self.apply(&back).is_ok()
     }
 
     /// How many edits can be taken back.

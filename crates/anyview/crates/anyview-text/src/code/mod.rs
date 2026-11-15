@@ -191,7 +191,7 @@ impl<B: ReadAt> CodeLines<B> {
         range: Range<LineIndex>,
         interrupt: &dyn Interrupt,
     ) -> Result<Vec<TokenLine>, TextError> {
-        let end = range.end.0.min(self.text.line_count().0);
+        let end = range.end.0.min(self.text.line_count());
         let start = range.start.0.min(end);
         if self.saved.is_empty() {
             return self.unstyled(start..end);

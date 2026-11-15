@@ -1,7 +1,7 @@
 //! The peek of an archive: its first entries and how many there are.
 
 use crate::container::kind_name;
-use crate::entry::{EntryLimit, Holds, Listing};
+use crate::entry::{EntryLimit, Listing};
 use crate::error::ArchiveError;
 use crate::list::list_until;
 use anyview_core::{
@@ -49,18 +49,19 @@ impl Peek for ArchivePeek {
 
     fn facts(peeked: &ArchivePeeked) -> Facts {
         let listing = &peeked.listing;
-        let kind = kind_name(listing.format, listing.holds);
+        let kind = kind_name(listing.format, listing.one_file);
         let facts = Facts::empty().with(FactLabel::Kind, FactValue::text(kind));
-        match listing.holds {
-            Holds::Entries => facts.with(
+        if listing.one_file {
+            facts
+        } else {
+            facts.with(
                 FactLabel::Entries,
                 FactValue::text(format!(
                     "{}, {} unpacked",
                     listing.count.text(),
                     FactValue::size(listing.unpacked).as_str()
                 )),
-            ),
-            Holds::OneFile => facts,
+            )
         }
     }
 }

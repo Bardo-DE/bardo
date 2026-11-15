@@ -22,7 +22,7 @@ use indexed::{Indexed, RecordIndex, WINDOW_ROWS};
 use std::ops::Range;
 use std::sync::Arc;
 
-pub use edit::{RowRef, TableEdits, Undid};
+pub use edit::{RowRef, TableEdits};
 pub use separator::Separator;
 pub use workbook::{SHEET_ROWS, Sheet, WORKBOOK_BYTES, WORKBOOK_CELLS, Workbook};
 
@@ -36,10 +36,6 @@ const WIDTH_SAMPLE_ROWS: u32 = 200;
 /// The bytes at the start of a file that the separator is chosen from.
 const SNIFF_BYTES: usize = 32 * 1024;
 
-/// A column's width in characters, as far as a sample of its cells says.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct CharWidth(pub u16);
-
 /// The narrowest and widest a column is sized to.
 const WIDTH_RANGE: (u16, u16) = (4, 60);
 
@@ -52,17 +48,9 @@ fn cell_width(c: char) -> usize {
     if wide { 2 } else { 1 }
 }
 
-/// How many rows a table has, not counting the header.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
-pub struct RowCount(pub u32);
-
 /// A row's position among the data rows, zero-based.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
 pub struct RowIndex(pub u32);
-
-/// How many columns a table has: the widest row's cell count.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
-pub struct ColumnCount(pub u32);
 
 /// Whether a table's first row is its header.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
@@ -86,7 +74,8 @@ pub struct Table {
     coverage: Coverage,
     header: Option<Vec<String>>,
     rows: Rows,
-    columns: ColumnCount,
+    /// How many columns the table has: the widest row's cell count.
+    columns: u32,
 }
 
 /// Where a table's rows are.
@@ -145,7 +134,7 @@ impl Table {
             coverage,
             header,
             rows: Rows::Held(records),
-            columns: ColumnCount(u32::try_from(columns).unwrap_or(u32::MAX)),
+            columns: u32::try_from(columns).unwrap_or(u32::MAX),
         }
     }
 
@@ -208,7 +197,7 @@ impl Table {
             coverage,
             interrupt,
         )?;
-        let columns = ColumnCount(index.widest);
+        let columns = index.widest;
         let indexed = Indexed::new(source, detected.codec, separator.byte(), index);
         let (header, indexed) = with_header(indexed, mode)?;
         let table = Table {
@@ -234,12 +223,12 @@ impl Table {
     /// How wide each column wants to be, in characters: the longest cell among the header and a
     /// sample of the first rows, held between 4 and 60 characters. A wide character (CJK, full-width)
     /// counts for two.
-    pub fn column_widths(&self) -> Vec<CharWidth> {
+    pub fn column_widths(&self) -> Vec<u16> {
         let (least, most) = WIDTH_RANGE;
         let sample = self
             .rows(RowIndex(0)..RowIndex(WIDTH_SAMPLE_ROWS))
             .unwrap_or_default();
-        (0..self.columns.0 as usize) // a u32 fits a usize
+        (0..self.columns as usize) // a u32 fits a usize
             .map(|column| {
                 let chars = |cell: &String| cell.chars().map(cell_width).sum::<usize>();
                 let widest = self
@@ -250,7 +239,7 @@ impl Table {
                     .map(chars)
                     .max()
                     .unwrap_or(0);
-                CharWidth(u16::try_from(widest).unwrap_or(most).clamp(least, most))
+                u16::try_from(widest).unwrap_or(most).clamp(least, most)
             })
             .collect()
     }
@@ -273,15 +262,15 @@ impl Table {
     }
 
     /// The number of data rows.
-    pub fn row_count(&self) -> RowCount {
+    pub fn row_count(&self) -> u32 {
         match &self.rows {
-            Rows::Held(rows) => RowCount(u32::try_from(rows.len()).unwrap_or(u32::MAX)),
-            Rows::Indexed(indexed) => RowCount(indexed.total()),
+            Rows::Held(rows) => u32::try_from(rows.len()).unwrap_or(u32::MAX),
+            Rows::Indexed(indexed) => indexed.total(),
         }
     }
 
     /// The width of the widest row, header included.
-    pub fn columns(&self) -> ColumnCount {
+    pub fn columns(&self) -> u32 {
         self.columns
     }
 
@@ -316,7 +305,7 @@ impl Table {
     /// costs one window; a caller that wants to keep something of every row (a sort's key) keeps
     /// only that.
     pub fn column(&self, column: usize) -> impl Iterator<Item = String> + '_ {
-        let total = self.row_count().0;
+        let total = self.row_count();
         (0..total)
             .step_by(WINDOW_ROWS as usize) // a u32 fits a usize
             .flat_map(move |from| {

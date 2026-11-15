@@ -1,7 +1,6 @@
 //! `keycap status` and `keycap resume`: the daemon's socket from the command line. Status reads
 //! the `Hello` every client gets; resume sends the one request that ends the escape-chord pause.
 
-use crate::daemon::leds::Lamp;
 use keycap_client::{ClientError, Connection};
 use keycap_protocol::{Grab, Keyboard, Status, Steer, ToDaemon};
 use std::path::Path;
@@ -36,7 +35,7 @@ fn connect(runtime_dir: &Path) -> Result<Connection, String> {
 
 /// A status as the lines `keycap status` prints; `caps` is the Caps Lock lamp of a keyboard,
 /// when it has one, and goes on a line of its own under it.
-pub(super) fn render(status: &Status, caps: impl Fn(&Keyboard) -> Option<Lamp>) -> String {
+pub(super) fn render(status: &Status, caps: impl Fn(&Keyboard) -> Option<bool>) -> String {
     let mode = if status.paused {
         "paused by the escape chord; run `keycap resume` to grab again"
     } else {
@@ -78,12 +77,13 @@ fn printable(text: &str) -> String {
         .collect()
 }
 
-fn caps_line(lamp: Lamp) -> String {
-    match lamp {
-        Lamp::Off => "    Caps Lock: off".to_owned(),
-        Lamp::On => "    Caps Lock: ON (letters come out in capitals; press Shift+Caps Lock, or \
+fn caps_line(lamp: bool) -> String {
+    if lamp {
+        "    Caps Lock: ON (letters come out in capitals; press Shift+Caps Lock, or \
                      Caps Lock if your config does not remap it, to turn it off)"
-            .to_owned(),
+            .to_owned()
+    } else {
+        "    Caps Lock: off".to_owned()
     }
 }
 
@@ -171,7 +171,7 @@ mod tests {
                 keyboard("Other", Grab::Active),
             ],
         };
-        let lamp = |k: &Keyboard| (k.info.name == "K5").then_some(Lamp::On);
+        let lamp = |k: &Keyboard| (k.info.name == "K5").then_some(true);
         let text = render(&status, lamp);
         let lines: Vec<&str> = text.lines().collect();
         assert_eq!(lines.len(), 4, "{text}");
@@ -181,7 +181,7 @@ mod tests {
             lines[3].starts_with("  Other"),
             "a keyboard without a lamp gets no line"
         );
-        let off = render(&status, |_| Some(Lamp::Off));
+        let off = render(&status, |_| Some(false));
         assert_eq!(off.matches("    Caps Lock: off").count(), 2);
     }
 

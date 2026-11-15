@@ -164,7 +164,7 @@ pub(super) fn understand(line: &str) -> Result<(), FrameError> {
 mod tests {
     use super::*;
     use crate::instance::Handoff;
-    use anyview_core::{NonEmpty, ResultsId, Resume, Sequence, SequenceOrigin};
+    use anyview_core::{NonEmpty, Resume, Sequence, SequenceOrigin};
 
     fn file(text: &str) -> FilePath {
         FilePath::new(text).unwrap()
@@ -176,7 +176,7 @@ mod tests {
         let b = file("/pics/b b.png");
         let entries = NonEmpty::from_vec(vec![a.clone(), b.clone()]).unwrap();
         let sequence =
-            Sequence::starting_at(entries, &b, SequenceOrigin::Results(ResultsId(7))).unwrap();
+            Sequence::starting_at(entries, &b, SequenceOrigin::Results(7)).unwrap();
         let cases = [
             Request::Open(Vec::new()),
             Request::Open(vec![a.clone(), b.clone()]),

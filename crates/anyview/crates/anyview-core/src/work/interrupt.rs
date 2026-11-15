@@ -1,6 +1,6 @@
 //! The one question a long loop asks to know whether to end early.
 
-use super::{Stop, StopState};
+use super::Stop;
 use crate::peek::Deadline;
 use std::time::Instant;
 
@@ -31,8 +31,8 @@ impl Interrupt for Deadline {
 impl Interrupt for Stop {
     fn interrupted(&self) -> bool {
         match self.deadline() {
-            Some(_) => self.stopped_at(Instant::now()) == StopState::Stopped,
-            None => self.stopped() == StopState::Stopped,
+            Some(_) => self.stopped_at(Instant::now()),
+            None => self.stopped(),
         }
     }
 }

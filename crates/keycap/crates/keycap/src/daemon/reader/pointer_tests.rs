@@ -7,7 +7,7 @@ use crate::DeviceId;
 use crate::Edge;
 use crate::daemon::events::{EV_ABS, EV_KEY, InputEvent};
 use crate::daemon::inbox::Request;
-use crate::daemon::leds::{Lamp, Led, LedEvent};
+use crate::daemon::leds::{Led, LedEvent};
 use crate::daemon::pointer::{Masks, PointerCaps};
 use crate::daemon::route::Routed;
 use crate::daemon::uinput::Emitter;
@@ -116,13 +116,13 @@ fn the_lamps_the_desktop_set_are_remembered_for_the_next_grab() {
     assert_eq!(rig.reader.lamps.events(), [], "nothing set yet");
     rig.reader.emitter.queued_leds = vec![LedEvent {
         led: Led::Caps,
-        lamp: Lamp::On,
+        lamp: true,
     }];
     rig.reader.forward_leds();
     assert_eq!(rig.reader.lamps.events(), [ev(0x11, 1, 1)], "Caps Lock on");
     rig.reader.emitter.queued_leds = vec![LedEvent {
         led: Led::Caps,
-        lamp: Lamp::Off,
+        lamp: false,
     }];
     rig.reader.forward_leds();
     assert_eq!(

@@ -1,6 +1,6 @@
 //! 7z: the header at the end names every entry; reading it unpacks nothing.
 
-use crate::entry::{Entry, EntryKind, EntryLimit, Holds, Listing, Seen, Tally, TallyStep};
+use crate::entry::{Entry, EntryKind, EntryLimit, Listing, Tally};
 use crate::error::ArchiveError;
 use crate::extract::ExtractLimits;
 use crate::limit::{Limited, pull};
@@ -27,13 +27,13 @@ pub(crate) fn list(
         Err(error) => return Err(error_of(&error)),
     };
     let mut tally = Tally::new(limit);
-    let mut seen = Seen::All;
+    let mut complete = true;
     for entry in &archive.archive().files {
         if interrupt.interrupted() {
             if tally.is_empty() {
                 return Err(ArchiveError::Interrupted);
             }
-            seen = Seen::Start;
+            complete = false;
             break;
         }
         let kind = kind_of(entry.is_directory());
@@ -42,12 +42,12 @@ pub(crate) fn list(
             kind,
             size: Some(ByteLen(entry.size())),
         };
-        if tally.push(item) == TallyStep::Full {
-            seen = Seen::Start;
+        if tally.push(item).is_break() {
+            complete = false;
             break;
         }
     }
-    Ok(tally.finish(FORMAT, Holds::Entries, seen))
+    Ok(tally.finish(FORMAT, complete))
 }
 
 /// The 7z `src`, open, once its header has been checked against the file and

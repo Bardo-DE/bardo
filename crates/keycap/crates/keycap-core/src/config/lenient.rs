@@ -3,7 +3,6 @@
 use keycap_protocol::{ProfileName, Warning};
 use toml::{Table, Value};
 
-use super::confine::Sequences;
 use crate::profile::{Hold, Stroke, Trigger};
 use crate::role::OutMod;
 
@@ -84,11 +83,13 @@ impl Setting for Hold {
     }
 }
 
-impl Setting for Sequences {
+impl Setting for bool {
     fn read(v: &Value, key: &str, warn: &mut Vec<Warning>) -> Option<Self> {
-        text(v, key, warn, |s| {
-            Sequences::named(s).ok_or_else(|| format!("{s:?} is not a choice (refuse, allow)"))
-        })
+        let read = v.as_bool();
+        if read.is_none() {
+            warn.push(warning(key, "is not true or false"));
+        }
+        read
     }
 }
 

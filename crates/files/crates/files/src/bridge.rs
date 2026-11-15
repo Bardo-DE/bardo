@@ -7,7 +7,7 @@
 use files_core::{FileName, FolderPath};
 use files_desktop::{Reveal, Show, ShowRequest};
 use files_model::Input;
-use files_ui::{RaiseToken, Request};
+use files_ui::Request;
 
 /// The request a bus call is; `None` when it names nothing the window can show.
 pub fn request_of(show: Show) -> Option<Request> {
@@ -16,7 +16,7 @@ pub fn request_of(show: Show) -> Option<Request> {
         ShowRequest::Items(files) => reveal_input(files)?,
         ShowRequest::Properties(files) => properties_input(files)?,
     };
-    let raise = show.startup.map(|id| RaiseToken(id.as_str().to_owned()));
+    let raise = show.startup.map(|id| id.as_str().to_owned());
     Some(Request { input, raise })
 }
 
@@ -70,7 +70,7 @@ mod tests {
 
     #[test]
     fn a_bus_call_becomes_the_input_the_browser_takes() {
-        let raise = Some(RaiseToken("tok".to_owned()));
+        let raise = Some("tok".to_owned());
         let names = |list: &[&str]| list.iter().map(|n| FileName::new(n).unwrap()).collect();
         let cases = [
             (

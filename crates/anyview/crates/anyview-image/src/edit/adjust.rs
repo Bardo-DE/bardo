@@ -13,7 +13,7 @@ use crate::encode::{encode_bmp, encode_with_metadata};
 use crate::error::ImageError;
 use crate::orientation::ExifOrientation;
 use crate::pixels::Rgba8;
-use crate::scale::{Resampling, resampled};
+use crate::scale::resampled;
 use anyview_core::{
     Adjust, Axis, Edit, MetadataCarry, Percent, PixelLen, PixelRect, PixelSize, Quality,
     QuarterTurn, RasterTarget, Sniffed,
@@ -96,7 +96,7 @@ pub(crate) fn adjusted_pixels(picture: &Rgba8, adjust: Adjust) -> Rgba8 {
     .applied(&cut);
     match adjust.size {
         Some(size) if size != placed.size() => {
-            resampled(&placed, at_least_one(size), Resampling::Sharp)
+            resampled(&placed, at_least_one(size), true)
         }
         Some(_) | None => placed,
     }

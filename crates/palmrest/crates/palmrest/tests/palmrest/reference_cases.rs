@@ -8,7 +8,7 @@ use palmrest::config::{Config, Count};
 use palmrest::feel::shell;
 use palmrest::gestures::stroke::{Moment, Threshold};
 use palmrest::gestures::{
-    FingerDirection, Hold, Intent, Params, Recogniser, Sample, StrokeEvent, SwipeFire,
+    FingerDirection, Intent, Params, Recogniser, Sample, StrokeEvent, SwipeFire,
 };
 use palmrest_protocol::{Axis, HostAction, Phase, Workspace};
 use std::time::Duration;
@@ -34,7 +34,7 @@ fn recognise(frames: &[(u64, Vec<Sample>)]) -> (Recogniser, Vec<(Mono, StrokeEve
         (Recogniser::default(), vec![]),
         |(rec, all), (ms, fingers)| {
             let now = Mono::from_millis(*ms);
-            let (rec, events) = rec.step(fingers, now, &PARAMS, Hold::Open);
+            let (rec, events) = rec.step(fingers, now, &PARAMS, false);
             let all = all.into_iter().chain(events.into_iter().map(|e| (now, e)));
             (rec, all.collect())
         },

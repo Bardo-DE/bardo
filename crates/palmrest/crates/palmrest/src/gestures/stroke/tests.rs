@@ -29,7 +29,7 @@ fn run(rec: Recogniser, frames: &[(u64, Vec<Sample>)]) -> (Recogniser, Vec<Event
     frames
         .iter()
         .fold((rec, vec![]), |(rec, events), (ms, contacts)| {
-            let (rec, more) = rec.step(contacts, Mono::from_millis(*ms), &PARAMS, Hold::Open);
+            let (rec, more) = rec.step(contacts, Mono::from_millis(*ms), &PARAMS, false);
             (rec, events.into_iter().chain(more).collect())
         })
 }
@@ -166,11 +166,11 @@ fn zero_delta_does_not_refresh_motion_time() {
 
 #[test]
 fn a_held_click_accumulates_nothing() {
-    let (rec, _) = Recogniser::default().step(&one(0, 0), Mono(0), &PARAMS, Hold::Open);
-    let (rec, events) = rec.step(&one(0, 100), Mono::from_millis(8), &PARAMS, Hold::Held);
+    let (rec, _) = Recogniser::default().step(&one(0, 0), Mono(0), &PARAMS, false);
+    let (rec, events) = rec.step(&one(0, 100), Mono::from_millis(8), &PARAMS, true);
     assert!(events.is_empty());
     assert_eq!(rec.intent(), None);
-    let (_, events) = rec.step(&one(0, 110), Mono::from_millis(16), &PARAMS, Hold::Open);
+    let (_, events) = rec.step(&one(0, 110), Mono::from_millis(16), &PARAMS, false);
     assert!(events.is_empty(), "only the motion after the hold counts");
 }
 
@@ -236,6 +236,6 @@ fn a_disconnect_cancels_and_forgets() {
     let (rec, events) = rec.disconnect();
     assert_eq!(phases(&events), [Phase::Cancelled]);
     assert_eq!(rec.intent(), None);
-    let (_, after) = rec.step(&[], Mono::from_millis(200), &PARAMS, Hold::Open);
+    let (_, after) = rec.step(&[], Mono::from_millis(200), &PARAMS, false);
     assert!(after.is_empty(), "nothing is open to close");
 }

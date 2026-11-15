@@ -9,7 +9,7 @@ pub mod sections;
 pub mod units;
 pub mod watch;
 
-pub use file::{Config, ParseError, parse, parse_table, to_toml};
+pub use file::{Config, parse, parse_table, to_toml};
 pub use layer::layered;
 pub use lenient::Warning;
 pub use load::{Loaded, config_dir, first_directory, load};

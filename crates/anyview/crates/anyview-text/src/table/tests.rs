@@ -29,8 +29,8 @@ fn a_detected_header_is_set_apart_from_the_rows() {
         table.header(),
         Some(&["name".to_owned(), "age".to_owned()][..])
     );
-    assert_eq!(table.row_count(), RowCount(2));
-    assert_eq!(table.columns(), ColumnCount(2));
+    assert_eq!(table.row_count(), 2);
+    assert_eq!(table.columns(), 2);
     assert_eq!(cells(&table, 0, 2), text(&[["Ann", "30"], ["Bob", "25"]]));
 }
 
@@ -39,13 +39,13 @@ fn the_header_mode_overrides_the_guess() {
     const TEXT: &str = "Ann,30\nBob,25\n";
     let detected = parse(TEXT, HeaderMode::Detect);
     assert_eq!(detected.header(), None, "numbers in the first row: data");
-    assert_eq!(detected.row_count(), RowCount(2));
+    assert_eq!(detected.row_count(), 2);
     let forced = parse(TEXT, HeaderMode::Present);
     assert_eq!(forced.header().map(<[String]>::len), Some(2));
-    assert_eq!(forced.row_count(), RowCount(1));
+    assert_eq!(forced.row_count(), 1);
     let none = parse("name,age\nAnn,30\n", HeaderMode::Absent);
     assert_eq!(none.header(), None);
-    assert_eq!(none.row_count(), RowCount(2));
+    assert_eq!(none.row_count(), 2);
 }
 
 #[test]
@@ -70,7 +70,7 @@ fn tab_separated_tables_use_tabs_and_ignore_commas() {
 #[test]
 fn ragged_rows_keep_their_cells_and_the_width_is_the_widest() {
     let table = parse("a,b,c\n1\n1,2,3,4\n", HeaderMode::Absent);
-    assert_eq!(table.columns(), ColumnCount(4));
+    assert_eq!(table.columns(), 4);
     assert_eq!(cells(&table, 1, 2), text(&[["1"]]));
     assert_eq!(table.cell(RowIndex(1), 0), "1");
     assert_eq!(table.cell(RowIndex(1), 3), "", "a short row reads empty");
@@ -100,8 +100,8 @@ fn row_windows_are_cut_to_the_rows_that_exist() {
 #[test]
 fn an_empty_file_is_an_empty_table() {
     let table = parse("", HeaderMode::Detect);
-    assert_eq!(table.row_count(), RowCount(0));
-    assert_eq!(table.columns(), ColumnCount(0));
+    assert_eq!(table.row_count(), 0);
+    assert_eq!(table.columns(), 0);
     assert_eq!(table.header(), None);
     assert!(
         Table::parse("", Delimiter::Comma, HeaderMode::Present)
@@ -199,7 +199,7 @@ fn a_row_far_into_an_indexed_file_is_read_alone() {
         HeaderMode::Detect,
     )
     .unwrap();
-    assert_eq!(table.row_count(), RowCount(300));
+    assert_eq!(table.row_count(), 300);
     assert_eq!(table.cell(RowIndex(250), 0), "250");
     assert_eq!(table.cell(RowIndex(255), 1), "line one\nline, two");
     assert_eq!(table.cell(RowIndex(300), 0), "", "past the end reads empty");
@@ -231,7 +231,7 @@ fn a_file_longer_than_the_cap_indexes_its_whole_records_and_says_so() {
             &Deadline::NEVER,
         )
         .unwrap();
-        assert_eq!(table.row_count(), RowCount(*rows), "{name}: rows");
+        assert_eq!(table.row_count(), *rows, "{name}: rows");
         assert_eq!(table.coverage(), *coverage, "{name}: coverage");
     }
 }
@@ -252,7 +252,7 @@ fn a_table_whose_read_is_interrupted_is_not_returned_half_indexed() {
 /// The bytes of `file` after `change` was made to its edits (the first row is the header).
 fn rewritten(bytes: &[u8], change: impl FnOnce(&Table, &mut TableEdits)) -> Vec<u8> {
     let table = Table::read(file(bytes), Delimiter::Comma, HeaderMode::Present).unwrap();
-    let mut edits = TableEdits::new(table.row_count().0, table.columns().0);
+    let mut edits = TableEdits::new(table.row_count(), table.columns());
     change(&table, &mut edits);
     table.write_edited(&edits).unwrap()
 }
@@ -392,7 +392,7 @@ fn the_rows_of_an_edited_table_keep_their_names_as_rows_come_and_go() {
         HeaderMode::Present,
     )
     .unwrap();
-    let mut edits = TableEdits::new(table.row_count().0, table.columns().0);
+    let mut edits = TableEdits::new(table.row_count(), table.columns());
     assert!(!edits.is_modified() && !edits.is_reshaped());
     assert_eq!(edits.rows(), 4);
     edits.delete(&[1]);

@@ -110,13 +110,9 @@ pub enum Decoded {
         /// The first frame, whole canvas.
         picture: Rgba8,
         /// How many frames the file holds.
-        frames: FrameCount,
+        frames: u32,
     },
 }
-
-/// How many pictures a file holds.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct FrameCount(pub u32);
 
 /// The picture or animation in the file `src` points at, whose type `sniffed` established.
 /// Blocking: reads and decodes the whole file.
@@ -141,7 +137,7 @@ pub fn decode_bytes(bytes: &[u8], sniffed: &Sniffed) -> Result<Decoded, ImageErr
                     Collected::All(frames) => animated(frames, plays_of(bytes, format)),
                     Collected::TooMany { first, count } => Ok(Decoded::HeldStill {
                         picture: first.pixels,
-                        frames: FrameCount(count),
+                        frames: count,
                     }),
                 }
             }

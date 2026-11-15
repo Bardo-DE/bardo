@@ -3,7 +3,7 @@
 use crate::support;
 
 use anyview_archive::{
-    ArchiveError, ArchivePeek, EntryCount, EntryKind, EntryLimit, ExtractLimits, Holds, extract,
+    ArchiveError, ArchivePeek, EntryCount, EntryKind, EntryLimit, ExtractLimits, extract,
     extract_until, list, list_until, zip_entries,
 };
 use anyview_core::work::{Interrupt, Stop};
@@ -57,7 +57,7 @@ fn every_container_lists_its_entries_with_kinds_and_sizes() {
         seen_sorted.sort_by_key(|row| row.0.to_owned());
         want.sort_by_key(|row| row.0.to_owned());
         assert_eq!(seen_sorted, want, "{name}");
-        assert_eq!(listing.holds, Holds::Entries, "{name}");
+        assert!(!listing.one_file, "{name}");
         assert_eq!(
             listing.count,
             EntryCount::Exact(want.len() as u32),
@@ -98,7 +98,7 @@ fn a_compressed_file_that_is_not_a_tar_is_one_file_named_without_its_extension()
     ] {
         let path = write(dir.path(), &format!("notes.txt.{name}"), &bytes);
         let listing = list(&path, format, ALL, BIG).unwrap_or_else(|e| panic!("{name}: {e}"));
-        assert_eq!(listing.holds, Holds::OneFile, "{name}");
+        assert!(listing.one_file, "{name}");
         assert_eq!(listing.entries.len(), 1, "{name}");
         assert_eq!(listing.entries[0].path, "notes.txt", "{name}");
         assert_eq!(

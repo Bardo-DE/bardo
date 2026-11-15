@@ -12,7 +12,6 @@
 //! desktop may not have opened a freshly created virtual keyboard yet, and events written before
 //! that are lost; a key typed proves it has. Pure; the reads and the writes belong to the reader.
 
-use super::leds::Lamp;
 use crate::{Edge, Key, Layout, Logical, OutEvent, Physical, Profile, RemapInput, Trigger, role};
 
 /// Whether a rule of `profile` takes the Caps Lock key pressed alone, so pressing it no longer
@@ -31,18 +30,18 @@ pub(crate) struct CapsFix {
     /// the lamp of a keyboard read as it was grabbed.
     desktop_reported: bool,
     /// The lock as last reported, or as keycap's own writes are about to make it.
-    lock: Lamp,
+    lock: bool,
     /// The lock the user asked for through what keycap wrote: on after a Caps Lock press that
     /// turned it on, off again after one that turned it off. Off until then.
-    want: Lamp,
+    want: bool,
 }
 
 impl Default for CapsFix {
     fn default() -> Self {
         Self {
             desktop_reported: false,
-            lock: Lamp::Off,
-            want: Lamp::Off,
+            lock: false,
+            want: false,
         }
     }
 }
@@ -50,7 +49,7 @@ impl Default for CapsFix {
 impl CapsFix {
     /// The state after a keyboard was grabbed with its Caps Lock lamp `lamp`. Only until the
     /// desktop reports its LEDs: after that its word is the one kept.
-    pub(crate) fn grabbed(self, lamp: Lamp) -> CapsFix {
+    pub(crate) fn grabbed(self, lamp: bool) -> CapsFix {
         if self.desktop_reported {
             self
         } else {
@@ -59,7 +58,7 @@ impl CapsFix {
     }
 
     /// The state after the desktop set the Caps Lock LED of the virtual keyboard to `lamp`.
-    pub(crate) fn reported(self, lamp: Lamp) -> CapsFix {
+    pub(crate) fn reported(self, lamp: bool) -> CapsFix {
         CapsFix {
             desktop_reported: true,
             lock: lamp,
@@ -75,7 +74,7 @@ impl CapsFix {
             .iter()
             .filter(|e| matches!(e, OutEvent::Key { key, edge: Edge::Press } if Some(*key) == caps))
             .fold(self, |state, _| {
-                let lock = flipped(state.lock);
+                let lock = !state.lock;
                 CapsFix {
                     lock,
                     want: lock,
@@ -87,7 +86,7 @@ impl CapsFix {
     /// Whether the lock is on although the user did not ask for it and the Caps Lock key cannot
     /// turn it off (`remapped`). The tap is written before the next typed key.
     pub(crate) fn stray(self, remapped: bool) -> bool {
-        self.lock == Lamp::On && self.want == Lamp::Off && remapped
+        self.lock && !self.want && remapped
     }
 
     /// The state before `input` goes to the remapper, `remapped` being whether the Caps Lock
@@ -119,20 +118,13 @@ impl CapsFix {
         match (self.stray(remapped), typed) {
             (true, true) => (
                 CapsFix {
-                    lock: Lamp::Off,
+                    lock: false,
                     ..self
                 },
                 caps_tap(),
             ),
             _ => (self, Vec::new()),
         }
-    }
-}
-
-const fn flipped(lamp: Lamp) -> Lamp {
-    match lamp {
-        Lamp::Off => Lamp::On,
-        Lamp::On => Lamp::Off,
     }
 }
 

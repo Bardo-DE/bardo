@@ -3,7 +3,7 @@
 
 use super::buffer::{Buffer, Kind, Revision};
 use super::motion;
-use super::text::{Bom, EditText};
+use super::text::{EditText, bom_mark};
 use crate::find::{FindHit, MAX_HITS, Needle};
 use anyview_core::LineIndex;
 use std::ops::Range;
@@ -79,7 +79,8 @@ pub enum Motion {
 #[derive(Debug)]
 pub struct Session {
     buffer: Buffer,
-    bom: Bom,
+    /// Whether the file began with a UTF-8 byte-order mark.
+    bom: bool,
     selection: Selection,
     preedit: Option<Preedit>,
     /// The column (in graphemes) vertical motion aims for, kept across a run of Up and Down.
@@ -94,7 +95,7 @@ impl Session {
     }
 
     /// A session over `buffer`, the caret at the start.
-    pub(crate) fn over(buffer: Buffer, bom: Bom) -> Self {
+    pub(crate) fn over(buffer: Buffer, bom: bool) -> Self {
         Session {
             buffer,
             bom,
@@ -111,7 +112,7 @@ impl Session {
 
     /// The text as the file holds it: its byte-order mark, if it had one, then the text.
     pub fn file_bytes(&self) -> Vec<u8> {
-        let mut out = self.bom.mark().to_vec();
+        let mut out = bom_mark(self.bom).to_vec();
         out.extend(self.buffer.to_bytes());
         out
     }

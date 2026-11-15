@@ -117,7 +117,7 @@ fn a_user_rule_needs_a_modifier_and_writes_one_stroke_unless_the_system_file_say
         ),
     ];
     for &(case, rule, refused, allowed) in cases {
-        for (sequences, want) in [(Sequences::Refuse, refused), (Sequences::Allow, allowed)] {
+        for (sequences, want) in [(false, refused), (true, allowed)] {
             let (layer, warnings) = default_rules(rule).confined(sequences).unwrap();
             assert_eq!(rules_of(&layer), want, "{case} with {sequences:?}");
             assert_eq!(warnings.len(), KEEP - want, "{case} with {sequences:?}");
@@ -131,7 +131,7 @@ fn a_dropped_rule_is_reported_under_its_profile_with_its_chord_in_plain_words() 
         "[profile.default]\nrules = [{ when = \"enter\", then = \"a\" }]\n\
          [profile.terminal]\nrules = [{ when = \"command+shift+k\", then = [] }]\n",
     );
-    let (_, warnings) = layer.confined(Sequences::Refuse).unwrap();
+    let (_, warnings) = layer.confined(false).unwrap();
     assert_eq!(
         keys(&warnings),
         ["profile.default.rules", "profile.terminal.rules"]
@@ -180,12 +180,12 @@ fn distinct_rules(count: usize) -> String {
 #[test]
 fn a_user_layer_of_at_most_256_rules_is_taken_and_one_of_257_is_refused_whole() {
     let at_limit = default_rules(&distinct_rules(MAX_USER_RULES));
-    let (kept, warnings) = at_limit.confined(Sequences::Refuse).unwrap();
+    let (kept, warnings) = at_limit.confined(false).unwrap();
     assert_eq!((rules_of(&kept), warnings), (MAX_USER_RULES, vec![]));
 
     let over = default_rules(&distinct_rules(MAX_USER_RULES + 1));
     assert_eq!(
-        over.confined(Sequences::Allow).unwrap_err(),
+        over.confined(true).unwrap_err(),
         Oversize::UserRules {
             found: MAX_USER_RULES + 1
         },
@@ -201,30 +201,30 @@ fn a_user_layer_of_at_most_256_rules_is_taken_and_one_of_257_is_refused_whole() 
 
 #[test]
 fn only_the_system_file_chooses_whether_lists_are_allowed() {
-    let cases: &[(&str, &str, Sequences, &[&str])] = &[
-        ("absent", "", Sequences::Refuse, &[]),
+    let cases: &[(&str, &str, bool, &[&str])] = &[
+        ("absent", "", false, &[]),
         (
             "allow",
-            "[user_layer]\nsequences = \"allow\"\n",
-            Sequences::Allow,
+            "[user_layer]\nsequences = true\n",
+            true,
             &[],
         ),
         (
             "refuse",
-            "[user_layer]\nsequences = \"refuse\"\n",
-            Sequences::Refuse,
+            "[user_layer]\nsequences = false\n",
+            false,
             &[],
         ),
         (
             "not a choice",
             "[user_layer]\nsequences = \"yes\"\n",
-            Sequences::Refuse,
+            false,
             &["user_layer.sequences"],
         ),
         (
             "not a table",
             "user_layer = 3\n",
-            Sequences::Refuse,
+            false,
             &["user_layer"],
         ),
     ];
@@ -237,23 +237,23 @@ fn only_the_system_file_chooses_whether_lists_are_allowed() {
 
 #[test]
 fn the_machine_files_choice_wins_and_the_vendors_stands_when_it_has_none() {
-    let allow = "[user_layer]\nsequences = \"allow\"\n";
-    let refuse = "[user_layer]\nsequences = \"refuse\"\n";
-    let cases: &[(&str, &str, &str, Sequences)] = &[
-        ("neither says", "", "", Sequences::Refuse),
-        ("only the vendor allows", "", allow, Sequences::Allow),
-        ("the machine allows", allow, "", Sequences::Allow),
+    let allow = "[user_layer]\nsequences = true\n";
+    let refuse = "[user_layer]\nsequences = false\n";
+    let cases: &[(&str, &str, &str, bool)] = &[
+        ("neither says", "", "", false),
+        ("only the vendor allows", "", allow, true),
+        ("the machine allows", allow, "", true),
         (
             "the machine refuses over the vendor",
             refuse,
             allow,
-            Sequences::Refuse,
+            false,
         ),
         (
             "the machine allows over the vendor",
             allow,
             refuse,
-            Sequences::Allow,
+            true,
         ),
     ];
     for &(case, machine, vendor, want) in cases {

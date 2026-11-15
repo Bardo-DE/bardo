@@ -6,7 +6,7 @@ use std::os::unix::fs::{PermissionsExt, symlink};
 use std::os::unix::net::UnixListener;
 
 use files_core::{ByteSize, EntryKind, FileName, FolderPath, LinkTo, Special};
-use files_fs::{DiskLister, ListError, Lister, Skipped};
+use files_fs::{DiskLister, ListError, Lister};
 use tempfile::TempDir;
 
 fn folder(dir: &TempDir) -> FolderPath {
@@ -30,7 +30,7 @@ fn lists_every_kind() {
     let _socket = UnixListener::bind(p.join("sock")).unwrap();
 
     let listing = DiskLister.list_counted(&folder(&dir)).unwrap();
-    assert_eq!(listing.skipped, Skipped(0));
+    assert_eq!(listing.skipped, 0);
     let got: BTreeMap<_, _> = listing
         .entries
         .iter()

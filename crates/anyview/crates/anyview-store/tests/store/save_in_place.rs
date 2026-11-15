@@ -1,6 +1,6 @@
 //! The save pipeline and the versions store through the public API, in scratch directories.
 
-use anyview_store::{DEFAULT_KEEP, KeepPeriod, Pending, SavedAt, StoreError, Versions};
+use anyview_store::{DEFAULT_KEEP, KeepPeriod, Pending, StoreError, Versions};
 use std::fs;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
@@ -30,7 +30,7 @@ fn scratch(original: &str) -> Scratch {
 fn save(scratch: &Scratch, bytes: &str, at: u64) {
     scratch
         .versions
-        .back_up(Pending::new(&scratch.file, bytes.into()), SavedAt(at))
+        .back_up(Pending::new(&scratch.file, bytes.into()), at)
         .unwrap()
         .write_in_place()
         .unwrap();
@@ -47,7 +47,7 @@ fn a_save_can_take_its_content_from_a_file_and_leaves_that_file_alone() {
     fs::write(&produced, "after, from a file").unwrap();
     let written = s
         .versions
-        .back_up(Pending::from_file(&s.file, &produced), SavedAt(100))
+        .back_up(Pending::from_file(&s.file, &produced), 100)
         .unwrap()
         .write_in_place()
         .unwrap();
@@ -66,7 +66,7 @@ fn a_save_replaces_the_file_and_keeps_the_original() {
     let s = scratch("before");
     let backed = s
         .versions
-        .back_up(Pending::new(&s.file, b"after".to_vec()), SavedAt(100))
+        .back_up(Pending::new(&s.file, b"after".to_vec()), 100)
         .unwrap();
     assert_eq!(
         read(&s.file),
@@ -79,7 +79,7 @@ fn a_save_replaces_the_file_and_keeps_the_original() {
     let versions = s.versions.list(&s.file).unwrap();
     assert_eq!(versions.len(), 1);
     assert_eq!(versions[0].id, written.kept);
-    assert_eq!(versions[0].saved_at, SavedAt(100));
+    assert_eq!(versions[0].saved_at, 100);
     assert_eq!(versions[0].size.0, "before".len() as u64);
     assert_eq!(versions[0].path, fs::canonicalize(&s.file).unwrap());
 }
@@ -114,7 +114,7 @@ fn a_failed_write_leaves_the_original_untouched_and_no_temporary_file() {
     let s = scratch("before");
     let backed = s
         .versions
-        .back_up(Pending::new(&s.file, b"after".to_vec()), SavedAt(5))
+        .back_up(Pending::new(&s.file, b"after".to_vec()), 5)
         .unwrap();
     let folder = s.file.parent().unwrap();
     fs::set_permissions(folder, fs::Permissions::from_mode(0o555)).unwrap();
@@ -142,7 +142,7 @@ fn a_failed_write_leaves_the_original_untouched_and_no_temporary_file() {
 fn backing_up_a_missing_file_fails_and_keeps_nothing() {
     let s = scratch("x");
     let gone = s.file.with_file_name("gone.txt");
-    let result = s.versions.back_up(Pending::new(&gone, vec![]), SavedAt(1));
+    let result = s.versions.back_up(Pending::new(&gone, vec![]), 1);
     assert!(matches!(result, Err(StoreError::Io { .. })), "{result:?}");
     assert_eq!(s.versions.list(&gone).unwrap(), []);
 }
@@ -162,7 +162,7 @@ fn versions_list_newest_first_and_only_for_their_own_file() {
         .list(&s.file)
         .unwrap()
         .iter()
-        .map(|v| v.saved_at.0)
+        .map(|v| v.saved_at)
         .collect();
     assert_eq!(times, [200 + DAY, 100 + DAY, 300]);
     assert_eq!(read(&s.file), "v3");
@@ -178,9 +178,9 @@ fn two_saves_in_the_same_second_do_not_collide() {
     assert_eq!(versions.len(), 2);
     assert_ne!(versions[0].id, versions[1].id);
     // The later save kept v1, the earlier kept v0, and the later one lists first.
-    s.versions.restore(&versions[1].id, SavedAt(60)).unwrap();
+    s.versions.restore(&versions[1].id, 60).unwrap();
     assert_eq!(read(&s.file), "v0");
-    s.versions.restore(&versions[0].id, SavedAt(61)).unwrap();
+    s.versions.restore(&versions[0].id, 61).unwrap();
     assert_eq!(read(&s.file), "v1");
 }
 
@@ -190,15 +190,15 @@ fn restore_keeps_the_current_file_first_so_it_can_be_undone() {
     save(&s, "v1", 10);
     let oldest = s.versions.list(&s.file).unwrap()[0].id.clone();
 
-    let written = s.versions.restore(&oldest, SavedAt(20)).unwrap();
+    let written = s.versions.restore(&oldest, 20).unwrap();
     assert_eq!(read(&s.file), "v0");
     let versions = s.versions.list(&s.file).unwrap();
     assert_eq!(versions.len(), 2);
     assert_eq!(versions[0].id, written.kept);
-    assert_eq!(versions[0].saved_at, SavedAt(20));
+    assert_eq!(versions[0].saved_at, 20);
 
     // Undoing the restore brings back what the file held before it.
-    s.versions.restore(&versions[0].id, SavedAt(30)).unwrap();
+    s.versions.restore(&versions[0].id, 30).unwrap();
     assert_eq!(read(&s.file), "v1");
 }
 
@@ -208,9 +208,9 @@ fn restoring_an_unknown_version_is_an_error() {
     save(&s, "v1", 10);
     let id = s.versions.list(&s.file).unwrap()[0].id.clone();
     s.versions
-        .prune(KeepPeriod::days(0), SavedAt(1_000))
+        .prune(KeepPeriod::days(0), 1_000)
         .unwrap();
-    let result = s.versions.restore(&id, SavedAt(1_001));
+    let result = s.versions.restore(&id, 1_001);
     assert!(
         matches!(result, Err(StoreError::NoSuchVersion { .. })),
         "{result:?}"
@@ -254,14 +254,14 @@ fn prune_removes_only_versions_older_than_the_keep_period() {
             save(&s, &format!("d{day}"), day * DAY);
         }
         let before = s.versions.list(&s.file).unwrap().len();
-        let removed = s.versions.prune(*keep, SavedAt(*now)).unwrap();
+        let removed = s.versions.prune(*keep, *now).unwrap();
         let left = s.versions.list(&s.file).unwrap();
 
         assert_eq!(before, 4, "{name}");
         assert_eq!(left.len(), *remaining, "{name}");
         assert_eq!(removed, before - remaining, "{name}");
         assert!(
-            left.iter().all(|v| v.saved_at.0 + keep.seconds() >= *now),
+            left.iter().all(|v| v.saved_at + keep.seconds() >= *now),
             "{name}: an old version survived"
         );
     }
@@ -280,7 +280,7 @@ fn prune_deletes_the_bytes_and_empties_the_folder() {
         .join("state/anyview/versions");
     assert_eq!(
         s.versions
-            .prune(KeepPeriod::days(1), SavedAt(10 * DAY))
+            .prune(KeepPeriod::days(1), 10 * DAY)
             .unwrap(),
         1
     );
@@ -291,5 +291,5 @@ fn prune_deletes_the_bytes_and_empties_the_folder() {
 fn pruning_a_store_that_does_not_exist_removes_nothing() {
     let dir = tempfile::tempdir().unwrap();
     let versions = Versions::new(dir.path().join("never"));
-    assert_eq!(versions.prune(DEFAULT_KEEP, SavedAt(1)).unwrap(), 0);
+    assert_eq!(versions.prune(DEFAULT_KEEP, 1).unwrap(), 0);
 }

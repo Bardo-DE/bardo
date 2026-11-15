@@ -18,20 +18,6 @@ pub enum PlaybackStatus {
     Stopped,
 }
 
-/// Whether the desktop may ask for something.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-pub enum Ability {
-    /// It may.
-    Can,
-    /// It may not; the desktop greys the control.
-    Cannot,
-}
-
-/// A number that changes when a different recording starts, so a client tells a new track from
-/// a position jump.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub struct TrackSerial(pub u32);
-
 /// The picture of the recording playing, the cover of an album: the desktop shows it beside the
 /// title.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -45,8 +31,9 @@ pub struct Artwork {
 pub struct MediaState {
     /// Playing, paused or stopped.
     pub status: PlaybackStatus,
-    /// Which recording this is.
-    pub track: TrackSerial,
+    /// A number that changes when a different recording starts, so a client tells a new track from
+    /// a position jump.
+    pub track: u32,
     /// The file playing, when it is one.
     pub file: Option<FilePath>,
     /// The title tag, or the file name when the file has none.
@@ -63,10 +50,10 @@ pub struct MediaState {
     pub position: MediaTime,
     /// The output level.
     pub volume: Volume,
-    /// Whether the desktop may seek.
-    pub seek: Ability,
-    /// Whether the desktop may skip to the next or previous file.
-    pub skip: Ability,
+    /// Whether the desktop may seek; when not, it greys the control.
+    pub seek: bool,
+    /// Whether the desktop may skip to the next or previous file; when not, it greys the control.
+    pub skip: bool,
 }
 
 impl MediaState {
@@ -74,7 +61,7 @@ impl MediaState {
     pub fn stopped() -> MediaState {
         MediaState {
             status: PlaybackStatus::Stopped,
-            track: TrackSerial::default(),
+            track: 0,
             file: None,
             title: None,
             artist: None,
@@ -83,8 +70,8 @@ impl MediaState {
             length: None,
             position: MediaTime::default(),
             volume: Volume::clamped(anyview_core::Percent(100)),
-            seek: Ability::Cannot,
-            skip: Ability::Cannot,
+            seek: false,
+            skip: false,
         }
     }
 }

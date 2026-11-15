@@ -33,15 +33,6 @@ impl WidgetKind {
     }
 }
 
-/// Whether the person may change a widget.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum WidgetAccess {
-    /// It takes a value.
-    Editable,
-    /// The document keeps it as it is.
-    ReadOnly,
-}
-
 /// One place on a page where a field is drawn.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct FormWidget {
@@ -49,8 +40,8 @@ pub struct FormWidget {
     pub name: String,
     /// What it is.
     pub kind: WidgetKind,
-    /// Whether it can be changed.
-    pub access: WidgetAccess,
+    /// The document keeps it as it is: the person cannot change it.
+    pub read_only: bool,
     /// The page it is on.
     pub page: PageIndex,
     /// Where it is on the page.
@@ -71,6 +62,6 @@ impl FormWidget {
     /// Whether the person may type or click in it.
     #[must_use]
     pub fn takes_input(&self) -> bool {
-        self.access == WidgetAccess::Editable
+        !self.read_only
     }
 }

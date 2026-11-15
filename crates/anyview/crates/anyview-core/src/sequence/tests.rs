@@ -111,7 +111,7 @@ fn a_new_sequence_points_at_the_first_and_remembers_its_origin() {
     let seq = Sequence::new(entries, SequenceOrigin::Folder(folder.clone()));
     assert_eq!(seq.at().index(), 0);
     assert_eq!(seq.origin(), &SequenceOrigin::Folder(folder));
-    assert_ne!(seq.origin(), &SequenceOrigin::Results(ResultsId(1)));
+    assert_ne!(seq.origin(), &SequenceOrigin::Results(1));
 }
 
 #[test]

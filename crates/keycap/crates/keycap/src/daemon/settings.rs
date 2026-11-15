@@ -215,11 +215,11 @@ mod tests {
         const LIST: &str = "[profile.default]\nrules = [\n\
             { when = \"control+option+j\", then = [\"a\", \"b\"] },\n]\n";
         let allow = layer(
-            "[user_layer]\nsequences = \"allow\"\n",
+            "[user_layer]\nsequences = true\n",
             ConfigSource::Vendor,
         );
         let refuse = layer(
-            "[user_layer]\nsequences = \"refuse\"\n",
+            "[user_layer]\nsequences = false\n",
             ConfigSource::System,
         );
         let vendor_only = Layers::builtin_only().with_vendor(allow);
@@ -270,7 +270,7 @@ mod tests {
         let refusing = Layers::builtin_only();
         assert_eq!(in_force(&refusing), (2, false, false, true), "the default");
         let allowing = refusing.with_system(layer(
-            "[user_layer]\nsequences = \"allow\"\n",
+            "[user_layer]\nsequences = true\n",
             ConfigSource::System,
         ));
         assert_eq!(

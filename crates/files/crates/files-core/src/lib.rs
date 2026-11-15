@@ -47,7 +47,7 @@ pub use ds_helpers::mime::{FileName, MimeError, MimeType, NameError};
 pub use entry::{Entry, EntryKind, LinkTo, Special};
 pub use error::{ItemError, PathError};
 pub use failure::OpFailure;
-pub use info::{Info, ItemCount};
+pub use info::Info;
 pub use item::ItemRef;
 pub use keep_both::{Split, keep_both};
 pub use location::{FolderPath, Location};

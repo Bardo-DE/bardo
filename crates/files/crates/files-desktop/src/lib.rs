@@ -53,7 +53,7 @@ pub mod uri;
 pub use disks::{Changes, DiskUsers, Disks, NoUsers, ProcUsers};
 pub use error::{DiskError, IntentError, Refusal};
 pub use file_manager::{Reveal, Show, ShowKind, ShowRequest, Sink, StartupId};
-pub use instance::{Bus, Claim, FileManagerName, InstanceError, Served, claim, forward, session};
+pub use instance::{Bus, Claim, InstanceError, Served, claim, forward, session};
 pub use intents::{Ask, Reply, Undoing, Window};
 pub use launch::{
     Activate, AppChoice, AppEntry, AppIcons, AppOffer, BusActivate, Catalog, DesktopLauncher,

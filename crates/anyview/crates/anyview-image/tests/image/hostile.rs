@@ -6,7 +6,7 @@
 use crate::support;
 
 use anyview_core::{Peek, PixelLen, PixelSize};
-use anyview_image::{Decoded, FrameCount, ImageError, RasterPeek, decode_bytes};
+use anyview_image::{Decoded, ImageError, RasterPeek, decode_bytes};
 use std::time::{Duration, Instant};
 use support::{budget, bytes, fixture, sniffed};
 
@@ -136,7 +136,7 @@ fn thousands_of_frames_are_neither_decoded_to_be_counted_nor_kept() {
     let Decoded::HeldStill { picture, frames } = opened else {
         panic!("three gigabytes of frames are held as a still");
     };
-    assert_eq!((picture.size(), frames), (size(512, 512), FrameCount(3000)));
+    assert_eq!((picture.size(), frames), (size(512, 512), 3000));
     assert!(started.elapsed() < REFUSAL, "took {:?}", started.elapsed());
 
     let dir = tempfile::tempdir().unwrap();
@@ -145,7 +145,7 @@ fn thousands_of_frames_are_neither_decoded_to_be_counted_nor_kept() {
     let source = support::source_of(&path, file.len());
     let started = Instant::now();
     let peeked = RasterPeek::peek(&source, &sniffed, &budget(1 << 20)).unwrap();
-    assert_eq!(peeked.frames, FrameCount(3000));
+    assert_eq!(peeked.frames, 3000);
     assert_eq!(peeked.source_size, size(512, 512));
     assert!(started.elapsed() < REFUSAL, "took {:?}", started.elapsed());
 }

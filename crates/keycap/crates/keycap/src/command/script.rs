@@ -14,7 +14,7 @@
 //!
 //! `#` starts a comment; blank lines are skipped.
 
-use crate::daemon::leds::{Lamp, Led, LedEvent};
+use crate::daemon::leds::{Led, LedEvent};
 use crate::{DeviceId, Edge, Key, Layout, Mono, Physical, RemapInput};
 use keycap_protocol::{NameError, ProfileName};
 
@@ -170,10 +170,10 @@ fn led_of(word: &str) -> Result<Led, Problem> {
     }
 }
 
-fn lamp_of(word: &str) -> Result<Lamp, Problem> {
+fn lamp_of(word: &str) -> Result<bool, Problem> {
     match word {
-        "on" => Ok(Lamp::On),
-        "off" => Ok(Lamp::Off),
+        "on" => Ok(true),
+        "off" => Ok(false),
         other => Err(Problem::Lamp(other.to_owned())),
     }
 }
@@ -244,12 +244,12 @@ mod tests {
             (
                 "caps lock lit by the desktop",
                 "90 led caps on",
-                Ok(Some(led(Led::Caps, Lamp::On))),
+                Ok(Some(led(Led::Caps, true))),
             ),
             (
                 "num lock off",
                 "95 led num off",
-                Ok(Some(led(Led::Num, Lamp::Off))),
+                Ok(Some(led(Led::Num, false))),
             ),
             (
                 "an unknown LED",

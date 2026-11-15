@@ -1,7 +1,7 @@
 //! A reader running while the writer replaces the history sees a whole history every time.
 
 use anyview_core::{FilePath, FormatKind, Resume};
-use anyview_store::{HistoryCap, HistoryRead, StoreWriter, Viewed, read_history};
+use anyview_store::{HistoryCap, HistoryRead, StoreWriter, read_history};
 use std::sync::atomic::{AtomicBool, Ordering};
 
 const VIEWS: u64 = 15;
@@ -24,7 +24,7 @@ fn a_concurrent_reader_sees_a_complete_history_at_every_moment() {
                         // Entry k was viewed at time k and every view adds one file, so a whole
                         // history of n entries reads n, n-1, ..., 1. A half-written or mixed
                         // file would not.
-                        let times: Vec<u64> = history.entries.iter().map(|e| e.viewed.0).collect();
+                        let times: Vec<u64> = history.entries.iter().map(|e| e.viewed).collect();
                         let n = times.len() as u64;
                         let expected: Vec<u64> = (1..=n).rev().collect();
                         assert_eq!(times, expected, "a torn history was read");
@@ -40,7 +40,7 @@ fn a_concurrent_reader_sees_a_complete_history_at_every_moment() {
         for k in 1..=VIEWS {
             let path = FilePath::new(format!("/files/{k:04}/{}.txt", "x".repeat(200))).unwrap();
             writer
-                .record_view(&path, FormatKind::PlainText, Viewed(k), &Resume::Nothing)
+                .record_view(&path, FormatKind::PlainText, k, &Resume::Nothing)
                 .unwrap();
         }
         done.store(true, Ordering::SeqCst);

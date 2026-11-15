@@ -1,7 +1,7 @@
 //! Zip, jar and apk: the central directory lists every entry without unpacking any.
 
 use crate::entry::{
-    COUNT_LIMIT, Entry, EntryKind, EntryLimit, Holds, Listing, Seen, Tally, TallyStep,
+    COUNT_LIMIT, Entry, EntryKind, EntryLimit, Listing, Tally,
 };
 use crate::error::ArchiveError;
 use crate::limit::{Limited, pull};
@@ -30,13 +30,13 @@ pub(crate) fn list(
         Err(error) => return Err(ArchiveError::malformed(format, error)),
     };
     let mut tally = Tally::new(limit);
-    let mut seen = Seen::All;
+    let mut complete = true;
     for index in 0..archive.len() {
         if interrupt.interrupted() {
             if tally.is_empty() {
                 return Err(ArchiveError::Interrupted);
             }
-            seen = Seen::Start;
+            complete = false;
             break;
         }
         let entry = match archive.by_index_raw(index) {
@@ -49,17 +49,17 @@ pub(crate) fn list(
                 size: Some(ByteLen(file.size())),
             },
             Err(_) if hit.happened() => {
-                seen = Seen::Start;
+                complete = false;
                 break;
             }
             Err(error) => return Err(ArchiveError::malformed(format, error)),
         };
-        if tally.push(entry) == TallyStep::Full {
-            seen = Seen::Start;
+        if tally.push(entry).is_break() {
+            complete = false;
             break;
         }
     }
-    Ok(tally.finish(format, Holds::Entries, seen))
+    Ok(tally.finish(format, complete))
 }
 
 fn kind_of(is_dir: bool, mode: Option<u32>) -> EntryKind {

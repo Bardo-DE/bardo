@@ -216,7 +216,7 @@ fn a_range_past_the_end_is_cut() {
     let (h, mut c) = code("a\nb\n", "rust");
     assert_eq!(highlight(&h, &mut c, 1, 50).len(), 1);
     assert_eq!(highlight(&h, &mut c, 5, 9).len(), 0);
-    assert_eq!(c.text().line_count().0, 2);
+    assert_eq!(c.text().line_count(), 2);
 }
 
 #[test]

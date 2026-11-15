@@ -67,17 +67,14 @@ pub use env::{BusRoute, Dirs, Env};
 pub use error::{IoOp, PlatformError};
 pub use instance::{Claim, Handoff, Instance, Primary, Request};
 pub use link::OpenLink;
-pub use media::{
-    Ability, Artwork, MediaControl, MediaSession, MediaState, PlaybackStatus, SeekDirection,
-    TrackSerial,
-};
+pub use media::{Artwork, MediaControl, MediaSession, MediaState, PlaybackStatus, SeekDirection};
 pub use picker::{FileKinds, PickOutcome, Picker};
 pub use plugin::{Discovery, PluginFacts, PluginRunner, Rejected, Timeouts, discover, discover_in};
-pub use printer::{JobTitle, PrintOutcome, Printer};
+pub use printer::{PrintOutcome, Printer};
 pub use reveal::Reveal;
 pub use settings::{OpenSettings, Opening};
 pub use share::{Share, ShareTarget};
 pub use spawn::{Argv, ProcessSpawn, RefuseSpawn, Spawn};
-pub use stacking::{Stacking, StackingOutcome, WindowStacking};
+pub use stacking::WindowStacking;
 pub use thumbnail::{ThumbPixels, ThumbSize, ThumbnailCache};
 pub use uri::file_uri;

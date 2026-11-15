@@ -6,7 +6,7 @@ use anyview_core::{
     FilePath, FormatKind, LineIndex, PageIndex, PanelKept, Permille, Resume, Zoom,
 };
 use anyview_store::{
-    HistoryCap, HistoryRead, ResumeLabel, StoreError, StoreWriter, Viewed, read_history,
+    HistoryCap, HistoryRead, ResumeLabel, StoreError, StoreWriter, read_history,
 };
 use std::fs;
 use support::{replace_file, stamp_of, viewed_file};
@@ -34,7 +34,7 @@ fn a_recorded_view_is_read_back_with_its_label() {
 
     let before = read_history(&root);
     let recorded = writer
-        .record_view(&path, FormatKind::Pdf, Viewed(1000), &AT_PAGE_143)
+        .record_view(&path, FormatKind::Pdf, 1000, &AT_PAGE_143)
         .unwrap();
     let after = read_history(&root);
 
@@ -47,7 +47,7 @@ fn a_recorded_view_is_read_back_with_its_label() {
     };
     assert_eq!(entry.path, path);
     assert_eq!(entry.kind, FormatKind::Pdf);
-    assert_eq!(entry.viewed, Viewed(1000));
+    assert_eq!(entry.viewed, 1000);
     assert_eq!(entry.label, ResumeLabel::Page { number: 143 });
 
     // The history lists every file the person opened: nobody else reads it or the folder.
@@ -72,7 +72,7 @@ fn viewing_again_replaces_the_entry_and_the_cap_drops_the_oldest() {
             .record_view(
                 file,
                 FormatKind::PlainText,
-                Viewed(i as u64),
+                i as u64,
                 &Resume::Nothing,
             )
             .unwrap();
@@ -80,7 +80,7 @@ fn viewing_again_replaces_the_entry_and_the_cap_drops_the_oldest() {
     let names = |read: &HistoryRead| -> Vec<(FilePath, u64)> {
         read.entries()
             .iter()
-            .map(|e| (e.path.clone(), e.viewed.0))
+            .map(|e| (e.path.clone(), e.viewed))
             .collect()
     };
     assert_eq!(
@@ -92,7 +92,7 @@ fn viewing_again_replaces_the_entry_and_the_cap_drops_the_oldest() {
         .record_view(
             &files[1],
             FormatKind::PlainText,
-            Viewed(9),
+            9,
             &Resume::Text { line: LineIndex(6) },
         )
         .unwrap();
@@ -219,7 +219,7 @@ fn recording_a_view_prunes_memory_of_gone_replaced_and_forgotten_files() {
     // "forgotten" is the oldest, so the cap of 3 pushes it out of the history below.
     for (i, (path, stamp)) in files.iter().enumerate().rev() {
         writer
-            .record_view(path, FormatKind::PlainText, Viewed(10 - i as u64), &resume)
+            .record_view(path, FormatKind::PlainText, 10 - i as u64, &resume)
             .unwrap();
         writer.save_resume(path, *stamp, &resume).unwrap();
     }
@@ -235,7 +235,7 @@ fn recording_a_view_prunes_memory_of_gone_replaced_and_forgotten_files() {
     fs::remove_file(gone.as_path()).unwrap();
     replace_file(replaced, "new content");
     writer
-        .record_view(kept, FormatKind::PlainText, Viewed(99), &resume)
+        .record_view(kept, FormatKind::PlainText, 99, &resume)
         .unwrap();
 
     assert_eq!(
@@ -261,7 +261,7 @@ fn a_damaged_history_is_replaced_and_reported_not_a_panic() {
         Some(StoreError::Corrupt { .. })
     ));
     let recorded = writer
-        .record_view(&path, FormatKind::PlainText, Viewed(1), &Resume::Nothing)
+        .record_view(&path, FormatKind::PlainText, 1, &Resume::Nothing)
         .unwrap();
 
     assert!(matches!(
@@ -287,7 +287,7 @@ fn a_history_that_cannot_be_read_is_never_replaced() {
 
     assert!(
         writer
-            .record_view(&path, FormatKind::PlainText, Viewed(1), &Resume::Nothing)
+            .record_view(&path, FormatKind::PlainText, 1, &Resume::Nothing)
             .is_err()
     );
     assert!(root.join("history.json").is_dir(), "left as it was");
@@ -314,7 +314,7 @@ fn a_damaged_view_memory_file_is_an_error_on_load_and_deleted_by_pruning() {
         Err(StoreError::Corrupt { .. })
     ));
     writer
-        .record_view(&path, FormatKind::PlainText, Viewed(1), &resume)
+        .record_view(&path, FormatKind::PlainText, 1, &resume)
         .unwrap();
     assert!(!record.exists(), "the damaged record is deleted");
     assert_eq!(writer.load_resume(&path, stamp).unwrap(), None);
@@ -330,7 +330,7 @@ fn a_path_that_is_not_utf8_is_refused_and_writes_nothing() {
     bytes.extend_from_slice(b"/caf\xe9.txt");
     let path = FilePath::new(std::ffi::OsStr::from_bytes(&bytes)).unwrap();
 
-    let result = writer.record_view(&path, FormatKind::PlainText, Viewed(1), &Resume::Nothing);
+    let result = writer.record_view(&path, FormatKind::PlainText, 1, &Resume::Nothing);
     assert!(
         matches!(result, Err(StoreError::PathNotUtf8 { .. })),
         "{result:?}"

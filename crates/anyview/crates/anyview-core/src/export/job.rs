@@ -1,9 +1,7 @@
 //! `ExportJob`: the shared encoders every format's export turns into.
 
 use super::layout::PrintLayout;
-use super::payload::{
-    HtmlDoc, MetadataCarry, PdfPages, PixelSource, StreamPick, Subtitles, TextSource,
-};
+use super::payload::{HtmlDoc, MetadataCarry, PdfPages, PixelSource, StreamPick, TextSource};
 use super::target::{AudioTarget, RasterTarget};
 use crate::source::FilePath;
 use crate::units::TimeRange;
@@ -42,8 +40,8 @@ pub enum ExportJob {
     MpvScreenshot {
         /// The encoding.
         target: RasterTarget,
-        /// Whether subtitles are drawn in.
-        subtitles: Subtitles,
+        /// Whether the shown subtitles are drawn into the picture.
+        subtitles: bool,
     },
     /// Cut, copy or re-encode a recording's streams into a new file.
     Transcode {

@@ -4,7 +4,7 @@
 use super::ceiling::Ceiling;
 use super::codec::{Codec, codec_for};
 use super::colour::ColourInfo;
-use super::{FrameCount, frame_count, highrange, jxl, layered, raw, stills, svg};
+use super::{frame_count, highrange, jxl, layered, raw, stills, svg};
 use crate::error::ImageError;
 use crate::exif::ExifFacts;
 use crate::pixels::Rgba8;
@@ -19,7 +19,7 @@ pub(crate) struct Looked {
     /// The size of the whole picture, upright, which the facts report.
     pub source_size: PixelSize,
     /// How many pictures the file holds.
-    pub frames: FrameCount,
+    pub frames: u32,
     /// How the file stores its colour, when the format says.
     pub colour: Option<ColourInfo>,
     /// The EXIF facts, or none.
@@ -35,53 +35,28 @@ pub(crate) fn look(bytes: &[u8], sniffed: &Sniffed, area: PixelArea) -> Result<L
             Some(frames) => look_at_frames(frames, bytes, format),
             None => {
                 let (picture, colour) = stills::still(bytes, format, ceiling)?;
-                Ok(raster(
-                    picture,
-                    FrameCount(1),
-                    Some(colour),
-                    ExifFacts::read(bytes),
-                ))
+                Ok(raster(picture, 1, Some(colour), ExifFacts::read(bytes)))
             }
         },
         Codec::HighRange(format) => {
             let (picture, colour) = highrange::decode(bytes, format, ceiling)?;
-            Ok(raster(
-                picture,
-                FrameCount(1),
-                Some(colour),
-                ExifFacts::none(),
-            ))
+            Ok(raster(picture, 1, Some(colour), ExifFacts::none()))
         }
         Codec::Psd => {
             let (picture, colour) = layered::psd(bytes, ceiling)?;
-            Ok(raster(
-                picture,
-                FrameCount(1),
-                Some(colour),
-                ExifFacts::none(),
-            ))
+            Ok(raster(picture, 1, Some(colour), ExifFacts::none()))
         }
         Codec::Icns => {
             let (picture, colour) = layered::icns(bytes)?;
-            Ok(raster(
-                picture,
-                FrameCount(1),
-                Some(colour),
-                ExifFacts::none(),
-            ))
+            Ok(raster(picture, 1, Some(colour), ExifFacts::none()))
         }
         Codec::Jxl => {
             let (picture, colour) = jxl::decode(bytes, ceiling)?;
-            Ok(raster(
-                picture,
-                FrameCount(1),
-                Some(colour),
-                ExifFacts::none(),
-            ))
+            Ok(raster(picture, 1, Some(colour), ExifFacts::none()))
         }
         Codec::RawPreview => {
             let picture = raw::decode(bytes, ceiling)?;
-            Ok(raster(picture, FrameCount(1), None, ExifFacts::read(bytes)))
+            Ok(raster(picture, 1, None, ExifFacts::read(bytes)))
         }
         Codec::Svg => {
             let document = svg::Svg::parse(bytes)?;
@@ -90,7 +65,7 @@ pub(crate) fn look(bytes: &[u8], sniffed: &Sniffed, area: PixelArea) -> Result<L
             Ok(Looked {
                 picture,
                 source_size: intrinsic,
-                frames: FrameCount(1),
+                frames: 1,
                 colour: None,
                 exif: ExifFacts::none(),
             })
@@ -98,12 +73,7 @@ pub(crate) fn look(bytes: &[u8], sniffed: &Sniffed, area: PixelArea) -> Result<L
     }
 }
 
-fn raster(
-    picture: Rgba8,
-    frames: FrameCount,
-    colour: Option<ColourInfo>,
-    exif: ExifFacts,
-) -> Looked {
+fn raster(picture: Rgba8, frames: u32, colour: Option<ColourInfo>, exif: ExifFacts) -> Looked {
     Looked {
         source_size: picture.size(),
         picture,
@@ -132,10 +102,5 @@ fn look_at_frames(
     })?;
     let count = frame_count::of(bytes, format).map_or(1, |count| count.max(1));
     let colour = ColourInfo::of_channels(4, 8);
-    Ok(raster(
-        first,
-        FrameCount(count),
-        Some(colour),
-        ExifFacts::read(bytes),
-    ))
+    Ok(raster(first, count, Some(colour), ExifFacts::read(bytes)))
 }

@@ -1,7 +1,6 @@
 //! The recently-viewed history: types and the pure step that adds a view to it.
 
 use crate::label::ResumeLabel;
-use crate::viewed::Viewed;
 use anyview_core::{FilePath, FormatKind};
 use std::num::NonZeroUsize;
 
@@ -40,7 +39,7 @@ pub struct HistoryEntry {
     /// What it was when viewed.
     pub kind: FormatKind,
     /// When it was last viewed.
-    pub viewed: Viewed,
+    pub viewed: u64,
     /// Where it was left, for a row's subtitle.
     pub label: ResumeLabel,
 }
@@ -79,7 +78,7 @@ mod tests {
         HistoryEntry {
             path: FilePath::new(path).unwrap(),
             kind: FormatKind::Pdf,
-            viewed: Viewed(viewed),
+            viewed,
             label: ResumeLabel::Page { number: page },
         }
     }

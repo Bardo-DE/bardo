@@ -6,7 +6,7 @@ use crate::support;
 use anyview_core::{Delimiter, FormatDetail, FormatKind, Peek};
 use anyview_fs::OnDisk;
 use anyview_text::{
-    CharWidth, Coverage, HeaderMode, Separator, Table, TablePeek, TableSource, Tally, Workbook,
+    Coverage, HeaderMode, Separator, Table, TablePeek, TableSource, Tally, Workbook,
 };
 use support::{budget, rows, workbook, written};
 
@@ -20,7 +20,7 @@ fn a_big_file_is_indexed_and_its_rows_are_read_where_they_are_asked_for() {
     }
     let (src, _) = written(dir.path(), "big.csv", text.as_bytes());
     let table = Table::read(src.on_disk(), Delimiter::Comma, HeaderMode::Detect).unwrap();
-    assert_eq!(table.row_count().0 as usize, ROWS);
+    assert_eq!(table.row_count() as usize, ROWS);
     assert_eq!(table.coverage(), Coverage::Whole);
     assert_eq!(table.header().map(<[String]>::len), Some(2));
     assert_eq!(
@@ -39,7 +39,7 @@ fn quotes_with_newlines_and_a_latin1_encoding_read_as_written() {
     bytes.extend_from_slice(b"Ren\xE9,\"two\nlines, and a \"\"quote\"\"\"\n");
     let (src, _) = written(dir.path(), "q.csv", &bytes);
     let table = Table::read(src.on_disk(), Delimiter::Comma, HeaderMode::Detect).unwrap();
-    assert_eq!(table.row_count().0, 1);
+    assert_eq!(table.row_count(), 1);
     assert_eq!(
         table.cell(anyview_text::RowIndex(0), 0),
         "René",
@@ -57,7 +57,7 @@ fn a_semicolon_file_named_csv_is_split_by_its_semicolons() {
     let (src, _) = written(dir.path(), "eu.csv", b"a;b\n1,5;2\n3,5;4\n");
     let table = Table::read(src.on_disk(), Delimiter::Comma, HeaderMode::Detect).unwrap();
     assert_eq!(table.separator(), Separator::Semicolon);
-    assert_eq!(table.columns().0, 2);
+    assert_eq!(table.columns(), 2);
     assert_eq!(table.cell(anyview_text::RowIndex(0), 0), "1,5");
 }
 
@@ -71,7 +71,7 @@ fn column_widths_follow_the_longest_sampled_cell_counting_wide_characters_twice_
     .unwrap();
     assert_eq!(
         table.column_widths(),
-        vec![CharWidth(4), CharWidth(14), CharWidth(60)]
+        vec![4, 14, 60]
     );
 }
 
@@ -99,7 +99,7 @@ fn a_workbook_lists_its_sheets_in_order_with_numbers_and_text() {
     assert_eq!(people.header().unwrap(), ["name", "age"]);
     assert_eq!(people.cell(anyview_text::RowIndex(0), 1), "30");
     assert_eq!(people.cell(anyview_text::RowIndex(1), 1), "25.5");
-    assert_eq!(book.sheets()[1].table.row_count().0, 0);
+    assert_eq!(book.sheets()[1].table.row_count(), 0);
 }
 
 #[test]

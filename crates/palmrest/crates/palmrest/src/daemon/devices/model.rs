@@ -21,23 +21,15 @@ impl Shape {
     }
 }
 
-/// Times the service cut palmrest off since a frame last went through.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub(super) struct Cuts(pub(super) u8);
+/// Rebuilds tried after a cut before the devices are given up: a service restarting or a daemon
+/// reloaded answers within a few seconds, and one that does not is not coming back.
+const RECONNECT_TRIES: u8 = 3;
 
-impl Cuts {
-    /// Rebuilds tried after a cut before the devices are given up: a service restarting or
-    /// a daemon reloaded answers within a few seconds, and one that does not is not coming back.
-    const RECONNECT_TRIES: u8 = 3;
-
-    pub(super) fn one_more(self) -> Self {
-        Self(self.0.saturating_add(1))
-    }
-
-    /// The first cut is the loss itself; each rebuild that fails or is cut again is another.
-    pub(super) fn spent(self) -> bool {
-        self.0 > Self::RECONNECT_TRIES
-    }
+/// Whether `cuts`, the times the service cut palmrest off since a frame last went through, are
+/// too many. The first cut is the loss itself; each rebuild that fails or is cut again is
+/// another.
+pub(super) fn spent(cuts: u8) -> bool {
+    cuts > RECONNECT_TRIES
 }
 
 /// Where the devices are. Whether an emitter exists is the shell's to keep: it holds one exactly
@@ -45,17 +37,17 @@ impl Cuts {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Life {
     Ready {
-        cuts: Cuts,
+        cuts: u8,
     },
     /// A write failed (the device was destroyed, the module reloaded): the next `Due` starts the
     /// wait for a rebuilt one.
     Lost {
-        cuts: Cuts,
+        cuts: u8,
     },
     Waiting {
         retry_at: Mono,
         backoff: Backoff,
-        cuts: Cuts,
+        cuts: u8,
     },
     /// The service kept cutting palmrest off: frames are dropped until the shape changes.
     Dead,
@@ -67,7 +59,7 @@ impl Life {
         Self::Waiting {
             retry_at,
             backoff: Backoff::UINPUT,
-            cuts: Cuts::default(),
+            cuts: 0,
         }
     }
 }
@@ -95,9 +87,9 @@ impl Why {
     }
 
     /// `cuts` after this failure: only a cut counts.
-    pub(super) fn tally(&self, cuts: Cuts) -> Cuts {
+    pub(super) fn tally(&self, cuts: u8) -> u8 {
         match self {
-            Self::Cut(_) => cuts.one_more(),
+            Self::Cut(_) => cuts.saturating_add(1),
             Self::Other(_) => cuts,
         }
     }

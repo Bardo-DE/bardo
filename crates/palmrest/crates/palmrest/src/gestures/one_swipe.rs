@@ -6,7 +6,7 @@
 
 use super::stroke::Intent;
 use super::swipe::FingerDirection;
-use super::{Hold, Sample};
+use super::Sample;
 use crate::config::{Fraction, Ms, Um};
 use crate::sensor::lattice::units;
 use crate::time::Mono;
@@ -49,12 +49,12 @@ impl OneSwipe {
         contacts: &[Sample],
         intent: Option<Intent>,
         now: Mono,
-        hold: Hold,
+        held: bool,
     ) -> (Self, Option<FingerDirection>) {
         match (self, contacts) {
             (Self::Tracking(s), []) => (Self::Idle, judge(&s, now)),
             (_, []) => (Self::Idle, None),
-            (_, _) if hold == Hold::Held => (Self::Void, None),
+            (_, _) if held => (Self::Void, None),
             (Self::Void, _) => (Self::Void, None),
             (Self::Idle, [c]) => (
                 Self::Tracking(Stroke {
@@ -135,7 +135,7 @@ mod tests {
                 &at(dx * i as i32, dy * i as i32),
                 lock,
                 Mono::from_millis(i * 10),
-                Hold::Open,
+                false,
             );
             assert_eq!(fired, None);
             s = next;
@@ -144,7 +144,7 @@ mod tests {
             &[],
             Some(Intent::Scroll(Axis::X)),
             Mono::from_millis((n - 1) * 10 + settle),
-            Hold::Open,
+            false,
         )
         .1
     }
@@ -189,26 +189,26 @@ mod tests {
             &at(0, 0),
             Some(Intent::Scroll(Axis::X)),
             Mono(0),
-            Hold::Open,
+            false,
         );
         let (s, _) = s.step(
             &two,
             Some(Intent::Scroll(Axis::X)),
             Mono::from_millis(10),
-            Hold::Open,
+            false,
         );
         let (s, _) = s.step(
             &at(400, 0),
             Some(Intent::Scroll(Axis::X)),
             Mono::from_millis(20),
-            Hold::Open,
+            false,
         );
         assert_eq!(
             s.step(
                 &[],
                 Some(Intent::Scroll(Axis::X)),
                 Mono::from_millis(30),
-                Hold::Open
+                false
             )
             .1,
             None

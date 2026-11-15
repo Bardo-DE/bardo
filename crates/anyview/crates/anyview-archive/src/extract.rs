@@ -1,7 +1,7 @@
 //! Extracting one entry of an archive into memory, so it can be opened as a file of its own.
 
 use crate::container::{Container, container};
-use crate::entry::{EntryKind, Seen};
+use crate::entry::EntryKind;
 use crate::error::ArchiveError;
 use crate::limit::pull;
 use crate::{sevenz, stream, zip_archive};
@@ -86,7 +86,7 @@ pub fn extract_until(
             let mut archive = Archive::new(Cursor::new(&unpacked.bytes[..]));
             match tar_entry(&mut archive, format, entry, limits.entry, interrupt) {
                 Ok(bytes) => Ok(bytes),
-                Err(ArchiveError::NoSuchEntry { .. }) if unpacked.seen == Seen::Start => {
+                Err(ArchiveError::NoSuchEntry { .. }) if !unpacked.complete => {
                     Err(ArchiveError::TooLarge {
                         allowed: limits.scanned,
                     })
@@ -110,7 +110,7 @@ fn single_file(
         (Some(name), ArchiveError::Malformed { .. } | ArchiveError::NoSuchEntry { .. })
             if name == entry =>
         {
-            if unpacked.seen == Seen::All && unpacked.bytes.len() as u64 <= limits.entry.0 {
+            if unpacked.complete && unpacked.bytes.len() as u64 <= limits.entry.0 {
                 Ok(unpacked.bytes)
             } else {
                 Err(ArchiveError::TooLarge {

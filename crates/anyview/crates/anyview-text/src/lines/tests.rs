@@ -38,7 +38,7 @@ fn text_is_split_at_line_feeds_and_a_final_one_ends_the_last_line() {
 #[test]
 fn a_window_returns_exactly_the_requested_lines_at_every_anchor_boundary() {
     let text = TextLines::open(Vec::<u8>::from(numbered(300))).unwrap();
-    assert_eq!(text.line_count(), LineCount(300));
+    assert_eq!(text.line_count(), 300);
     // name, from, to
     const CASES: &[(&str, u32, u32)] = &[
         ("first line", 0, 1),
@@ -82,7 +82,7 @@ fn line_counts_follow_final_line_breaks() {
     ];
     for (name, bytes, count) in CASES {
         let text = TextLines::open(Vec::<u8>::from(*bytes)).unwrap();
-        assert_eq!(text.line_count(), LineCount(*count), "{name}");
+        assert_eq!(text.line_count(), *count, "{name}");
     }
 }
 
@@ -114,7 +114,7 @@ fn each_encoding_windows_to_the_same_lines() {
     ];
     for (name, bytes) in cases {
         let text = TextLines::open(bytes).unwrap();
-        assert_eq!(text.line_count(), LineCount(200), "{name} count");
+        assert_eq!(text.line_count(), 200, "{name} count");
         assert_eq!(window(&text, 60, 70), names(60, 70), "{name} window");
         assert_eq!(window(&text, 199, 200), names(199, 200), "{name} last");
     }
@@ -162,7 +162,7 @@ fn a_line_past_the_cap_is_cut_with_a_mark_and_the_lines_after_it_stay_put() {
     for (name, file, want) in cases {
         let text = TextLines::open(file.into_bytes()).unwrap();
         let count = u32::try_from(want.len()).unwrap();
-        assert_eq!(text.line_count(), LineCount(count), "{name} count");
+        assert_eq!(text.line_count(), count, "{name} count");
         assert_eq!(window(&text, 0, count), want, "{name} whole window");
         let last = count - 1;
         assert_eq!(
@@ -212,7 +212,7 @@ fn a_window_deep_in_a_huge_file_reads_a_small_part_of_it() {
         read: AtomicU64::new(0),
     };
     let text = TextLines::open(source).unwrap();
-    assert_eq!(text.line_count(), LineCount(1_000_000));
+    assert_eq!(text.line_count(), 1_000_000);
     assert!(
         text.bytes.read.load(Ordering::Relaxed) >= file_len,
         "opening streams the file once"
@@ -237,7 +237,7 @@ fn a_file_on_disk_windows_the_same_as_the_same_bytes_in_memory() {
     };
     let src = Source::new(FilePath::new(&path).unwrap(), stamp);
     let on_disk = TextLines::open(FileBytes::open(&src).unwrap()).unwrap();
-    assert_eq!(on_disk.line_count(), LineCount(500));
+    assert_eq!(on_disk.line_count(), 500);
     assert_eq!(window(&on_disk, 250, 260), names(250, 260));
 }
 

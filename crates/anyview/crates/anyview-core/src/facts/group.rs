@@ -38,14 +38,3 @@ pub enum FactGroup {
     /// What every file has, kind, size, dates and where it is. Always the last section.
     General,
 }
-
-/// How much weight a row carries: a headline row is part of the one-line summary of a file, a
-/// detail row is only listed in the full panel.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum Tier {
-    /// In the summary line (`JPEG image · 4032 × 3024 · 3.2 MB`) and in the panel.
-    Headline,
-    /// Only in the panel.
-    #[default]
-    Detail,
-}

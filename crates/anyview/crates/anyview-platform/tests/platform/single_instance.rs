@@ -4,7 +4,7 @@
 
 use crate::support;
 
-use anyview_core::{FilePath, LineIndex, NonEmpty, ResultsId, Resume, Sequence, SequenceOrigin};
+use anyview_core::{FilePath, LineIndex, NonEmpty, Resume, Sequence, SequenceOrigin};
 use anyview_platform::linux::{BUS_NAME, DbusInstance, forward_over};
 use anyview_platform::{Claim, Handoff, Instance, Request};
 use support::PrivateBus;
@@ -82,7 +82,7 @@ fn handed(place: Resume) -> Handoff {
     let results = Sequence::starting_at(
         NonEmpty::from_vec(vec![a, b.clone()]).unwrap(),
         &b,
-        SequenceOrigin::Results(ResultsId(12)),
+        SequenceOrigin::Results(12),
     )
     .unwrap();
     Handoff {

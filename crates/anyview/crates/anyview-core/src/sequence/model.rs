@@ -17,17 +17,13 @@ impl SequencePosition {
     }
 }
 
-/// Which search produced a sequence of results.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct ResultsId(pub u64);
-
 /// Where a sequence came from, which says what its neighbours mean.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum SequenceOrigin {
     /// The files of one folder.
     Folder(FilePath),
-    /// The results of one search.
-    Results(ResultsId),
+    /// The results of the search with this id.
+    Results(u64),
     /// Files the person selected.
     Selection,
     /// Paths printed in the output of a terminal command, kept in the order they were printed

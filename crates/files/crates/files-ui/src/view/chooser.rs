@@ -7,7 +7,7 @@ use ds::components::controls::button_model::Answers;
 use ds::prelude::{
     Button, Column, ColumnAlign, Form, Icon, IconSize, List, ListItem, Row, RowLeading, Sheet,
 };
-use files_model::{AppPick, Chooser, Input};
+use files_model::{AppPick, Input};
 
 use crate::menu::{AppLine, app_names};
 use crate::state::Browse;
@@ -17,11 +17,12 @@ use super::icon::app_icon;
 /// The sheet of apps, while it is up.
 #[component]
 pub(super) fn AppChooser(browse: Browse) -> Element {
-    match browse.state.read().chooser() {
-        Chooser::Open => rsx! {
+    if browse.state.read().chooser_open() {
+        rsx! {
             ChooserSheet { browse }
-        },
-        Chooser::Closed => rsx! {},
+        }
+    } else {
+        rsx! {}
     }
 }
 

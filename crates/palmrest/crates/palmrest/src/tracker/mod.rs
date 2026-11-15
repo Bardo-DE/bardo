@@ -17,7 +17,7 @@ pub use out::{Out, Source, action_outs, tap_outs};
 use crate::action::Gesture;
 use crate::config::{Config, Count, Fraction, Ms};
 use crate::gestures::{
-    Bands, ClickGuard, Contacts, Hold, Intent, MotionWindow, OneSwipe, Params, Recogniser, Sample,
+    Bands, ClickGuard, Contacts, Intent, MotionWindow, OneSwipe, Params, Recogniser, Sample,
     SwipeFire, TapG,
 };
 use crate::outputs::pad::{Pad, PadFrame};
@@ -167,7 +167,7 @@ impl Tracker {
         let (contacts, seen) = self
             .contacts
             .step(&r.contacts, now, &Bands::resolve(&self.surface));
-        let hold = click.hold(now);
+        let held = click.held(now);
         let samples = seen.samples;
         let edge = touch_edge(self.touching, active(&samples));
         let s = Self {
@@ -187,9 +187,9 @@ impl Tracker {
             (s, vec![])
         };
         outs.extend(cancelled);
-        let (s, recognised) = s.recognise(&samples, now, &params, hold);
+        let (s, recognised) = s.recognise(&samples, now, &params, held);
         outs.extend(recognised);
-        let (s, gestured) = s.gestures(&samples, now, hold);
+        let (s, gestured) = s.gestures(&samples, now, held);
         outs.extend(gestured);
         outs.extend(edge_out(edge, false));
         (s, outs)
@@ -206,17 +206,17 @@ impl Tracker {
         samples: &[Sample],
         now: Mono,
         params: &Params,
-        hold: Hold,
+        held: bool,
     ) -> (Self, Vec<Out>) {
-        let (stroke, events) = self.stroke.step(samples, now, params, hold);
+        let (stroke, events) = self.stroke.step(samples, now, params, held);
         Self { stroke, ..self }.apply(&events, now)
     }
 
     /// G4 and the double-taps, after the recogniser has seen the report.
-    fn gestures(self, samples: &[Sample], now: Mono, hold: Hold) -> (Self, Vec<Out>) {
+    fn gestures(self, samples: &[Sample], now: Mono, held: bool) -> (Self, Vec<Out>) {
         let map = &self.cfg.gestures.gesture_action_map;
-        let (one, g4) = self.one.step(samples, self.stroke.intent(), now, hold);
-        let (tap, kind) = self.tap.step(samples, now, hold);
+        let (one, g4) = self.one.step(samples, self.stroke.intent(), now, held);
+        let (tap, kind) = self.tap.step(samples, now, held);
         let outs = g4
             .into_iter()
             .flat_map(|dir| {

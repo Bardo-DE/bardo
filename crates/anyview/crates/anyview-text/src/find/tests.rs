@@ -1,5 +1,5 @@
 use super::*;
-use anyview_core::{CaseMatch, FindOptions, WordMatch};
+use anyview_core::FindOptions;
 
 fn hit(line: u32, from: u32, to: u32) -> FindHit {
     FindHit {
@@ -10,9 +10,9 @@ fn hit(line: u32, from: u32, to: u32) -> FindHit {
 }
 
 const LOOSE: FindOptions = FindOptions::DEFAULT;
-const EXACT: FindOptions = FindOptions::DEFAULT.with_case(CaseMatch::Exact);
-const WHOLE: FindOptions = FindOptions::DEFAULT.with_words(WordMatch::Whole);
-const BOTH: FindOptions = EXACT.with_words(WordMatch::Whole);
+const EXACT: FindOptions = FindOptions::DEFAULT.with_match_case(true);
+const WHOLE: FindOptions = FindOptions::DEFAULT.with_whole_words(true);
+const BOTH: FindOptions = EXACT.with_whole_words(true);
 
 #[test]
 fn a_phrase_is_found_in_a_line_under_each_option_and_never_overlaps() {

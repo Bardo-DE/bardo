@@ -2,9 +2,9 @@
 //! below it reads `std::env`.
 
 use super::discover::{DEV_INPUT, SYS_INPUT, UDEV_DATA, VirtualAllowance};
-use super::socket::{SEAT_FILE, Steering};
+use super::socket::{SEAT_FILE, seat_user_asked};
 use super::source::DEFAULT_SERVICE_SOCKET;
-use super::uinput::{PROBE_PERMIT, ProbePermit};
+use super::uinput::{PROBE_PERMIT, probe_permitted};
 use std::path::PathBuf;
 use std::time::Duration;
 
@@ -49,9 +49,9 @@ pub(crate) struct Env {
     pub device_service: PathBuf,
     /// `$KEYCAP_STEERING`: who may steer. Only the unit's environment sets it; it exists for
     /// tests whose client is not in the shell's unit.
-    pub steering: Steering,
+    pub seat_user: bool,
     /// Whether `--check-uinput` may open the uinput node.
-    pub probe: ProbePermit,
+    pub probe: bool,
     /// `$WATCHDOG_USEC` as a duration: how often systemd expects a ping at the latest.
     pub watchdog: Option<Duration>,
 }
@@ -75,8 +75,8 @@ impl Env {
                 lookup("KEYCAP_GRAB_VIRTUAL").as_deref(),
             ),
             device_service: dir("KEYCAP_DEVICE_SERVICE", DEFAULT_SERVICE_SOCKET),
-            steering: Steering::from_env_value(lookup("KEYCAP_STEERING").as_deref()),
-            probe: ProbePermit::from_env_value(lookup(PROBE_PERMIT).as_deref()),
+            seat_user: seat_user_asked(lookup("KEYCAP_STEERING").as_deref()),
+            probe: probe_permitted(lookup(PROBE_PERMIT).as_deref()),
             watchdog: non_empty("WATCHDOG_USEC")
                 .and_then(|s| s.parse::<u64>().ok())
                 .filter(|&us| us > 0)
@@ -128,8 +128,8 @@ mod tests {
             VirtualAllowance::Named("test keyboard".to_owned())
         );
         assert_eq!(env.device_service, PathBuf::from("/tmp/input.sock"));
-        assert_eq!(env.steering, Steering::SeatUser);
-        assert_eq!(env.probe, ProbePermit::Granted);
+        assert!(env.seat_user);
+        assert!(env.probe);
         assert_eq!(env.watchdog, Some(Duration::from_secs(1)));
     }
 
@@ -149,8 +149,8 @@ mod tests {
             env.device_service,
             PathBuf::from("/run/turnstile/input.sock")
         );
-        assert_eq!(env.steering, Steering::ShellUnit);
-        assert_eq!(env.probe, ProbePermit::Refused);
+        assert!(!env.seat_user);
+        assert!(!env.probe);
         assert_eq!(env.watchdog, None);
     }
 

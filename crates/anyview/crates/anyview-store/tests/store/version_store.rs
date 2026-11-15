@@ -1,7 +1,7 @@
 //! The versions store as a place on disk: damage, junk, size, privacy and what a rename does.
 
 use anyview_core::ByteLen;
-use anyview_store::{DEFAULT_KEEP, KeepPeriod, Pending, SavedAt, Versions};
+use anyview_store::{DEFAULT_KEEP, KeepPeriod, Pending, Versions};
 use std::fs;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
@@ -46,7 +46,7 @@ fn save(s: &Scratch, bytes: &str, at: u64) {
 
 fn save_file(versions: &Versions, file: &Path, bytes: &str, at: u64) {
     versions
-        .back_up(Pending::new(file, bytes.into()), SavedAt(at))
+        .back_up(Pending::new(file, bytes.into()), at)
         .unwrap()
         .write_in_place()
         .unwrap();
@@ -86,7 +86,7 @@ fn one_corrupt_sidecar_does_not_hide_the_other_versions() {
     let listed = s.versions.list(&s.file).unwrap();
     assert_eq!(listed.len(), 2);
     // Pruning leaves the damaged one for a person to look at.
-    s.versions.prune(DEFAULT_KEEP, SavedAt(300)).unwrap();
+    s.versions.prune(DEFAULT_KEEP, 300).unwrap();
     assert!(sidecars[1].exists());
 }
 
@@ -120,7 +120,7 @@ fn prune_removes_what_a_crash_left_half_made() {
         age(path, 3 * DAY);
     }
 
-    let removed = s.versions.prune(DEFAULT_KEEP, SavedAt(now())).unwrap();
+    let removed = s.versions.prune(DEFAULT_KEEP, now()).unwrap();
     assert_eq!(removed, 0, "no version was old");
     assert!(!orphan.exists());
     assert!(!tmp.exists());
@@ -138,11 +138,11 @@ fn a_clock_far_ahead_of_every_version_deletes_nothing() {
     let s = scratch("v0");
     save(&s, "v1", 1_000);
     save(&s, "v2", 1_000 + DAY);
-    let jump = SavedAt(1_000 + 20 * 365 * DAY);
+    let jump = 1_000 + 20 * 365 * DAY;
     assert_eq!(s.versions.prune(KeepPeriod::days(1), jump).unwrap(), 0);
     assert_eq!(s.versions.list(&s.file).unwrap().len(), 2);
     // A clock a little ahead is believed.
-    let later = SavedAt(1_000 + 40 * DAY);
+    let later = 1_000 + 40 * DAY;
     assert_eq!(s.versions.prune(DEFAULT_KEEP, later).unwrap(), 2);
 }
 
@@ -162,13 +162,13 @@ fn past_the_size_cap_the_oldest_go_first_and_each_files_newest_stays() {
     save_file(&versions, &b, &big, 15);
     save_file(&versions, &b, "b1", 25);
 
-    versions.prune(KeepPeriod::days(365), SavedAt(40)).unwrap();
+    versions.prune(KeepPeriod::days(365), 40).unwrap();
     let kept = |file: &Path| -> Vec<u64> {
         versions
             .list(file)
             .unwrap()
             .iter()
-            .map(|v| v.saved_at.0)
+            .map(|v| v.saved_at)
             .collect()
     };
     // Versions kept: a at 10 (2 bytes), 20 (100), 30 (101); b at 15 (2), 25 (100): 305 bytes. The
@@ -177,7 +177,7 @@ fn past_the_size_cap_the_oldest_go_first_and_each_files_newest_stays() {
     assert_eq!(kept(&b), [25, 15]);
 
     let tiny = Versions::under_state(&dir.path().join("state")).with_cap(ByteLen(0));
-    tiny.prune(KeepPeriod::days(365), SavedAt(40)).unwrap();
+    tiny.prune(KeepPeriod::days(365), 40).unwrap();
     assert_eq!(kept(&a), [30], "a file's newest version is never dropped");
     assert_eq!(kept(&b), [25], "a file's newest version is never dropped");
 }
@@ -209,6 +209,6 @@ fn a_renamed_files_versions_follow_it() {
     let moved = s.versions.list(&to).unwrap();
     assert_eq!(moved.len(), 2);
     assert!(moved.iter().all(|v| v.path == to));
-    s.versions.restore(&moved[1].id, SavedAt(9)).unwrap();
+    s.versions.restore(&moved[1].id, 9).unwrap();
     assert_eq!(fs::read_to_string(&to).unwrap(), "v0");
 }

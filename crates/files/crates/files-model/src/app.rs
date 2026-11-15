@@ -23,19 +23,9 @@ impl AppPick {
     }
 }
 
-/// Whether the sheet that lists every installed app is up (Open With, Other).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum Chooser {
-    /// Not up.
-    #[default]
-    Closed,
-    /// Up.
-    Open,
-}
-
 impl Browser {
     /// Whether the sheet of every installed app is up.
-    pub fn chooser(&self) -> Chooser {
+    pub fn chooser_open(&self) -> bool {
         self.chooser
     }
 
@@ -43,7 +33,7 @@ impl Browser {
     /// nothing is left out. The sheet of apps, if up, goes away.
     pub(crate) fn open_with(self, app: AppPick) -> Stepped {
         let browser = Browser {
-            chooser: Chooser::Closed,
+            chooser: false,
             ..self
         };
         let targets: Vec<OpenTarget> = browser
@@ -61,11 +51,7 @@ impl Browser {
 
     /// Put up the sheet of every installed app, when something is selected in a folder.
     pub(crate) fn choose_app(self) -> Stepped {
-        let chooser = if self.selected_targets().is_empty() {
-            Chooser::Closed
-        } else {
-            Chooser::Open
-        };
+        let chooser = !self.selected_targets().is_empty();
         (Browser { chooser, ..self }, Vec::new())
     }
 
@@ -73,7 +59,7 @@ impl Browser {
     pub(crate) fn close_chooser(self) -> Stepped {
         (
             Browser {
-                chooser: Chooser::Closed,
+                chooser: false,
                 ..self
             },
             Vec::new(),

@@ -22,24 +22,18 @@ pub(crate) enum Led {
     Scroll,
 }
 
-/// Whether a LED is lit.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Lamp {
-    Off,
-    On,
-}
-
 /// A LED set to a state.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct LedEvent {
     pub led: Led,
-    pub lamp: Lamp,
+    /// Whether the LED is lit.
+    pub lamp: bool,
 }
 
 /// The lamps the desktop last set on the virtual keyboard, so a keyboard grabbed later can be
 /// brought in line. A LED the desktop never set is absent.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-pub(crate) struct LedState(BTreeMap<Led, Lamp>);
+pub(crate) struct LedState(BTreeMap<Led, bool>);
 
 impl LedState {
     /// The state after the desktop made `changes`, in order.
@@ -69,12 +63,8 @@ impl LedsLit {
     }
 
     /// Whether `led` is lit.
-    pub(crate) const fn lamp(self, led: Led) -> Lamp {
-        if self.0 >> led.code() & 1 == 1 {
-            Lamp::On
-        } else {
-            Lamp::Off
-        }
+    pub(crate) const fn lamp(self, led: Led) -> bool {
+        self.0 >> led.code() & 1 == 1
     }
 }
 
@@ -105,7 +95,7 @@ pub(crate) fn decode(e: InputEvent) -> Option<LedEvent> {
     }
     Led::from_code(e.code).map(|led| LedEvent {
         led,
-        lamp: if e.value == 0 { Lamp::Off } else { Lamp::On },
+        lamp: e.value != 0,
     })
 }
 
@@ -114,10 +104,7 @@ pub(crate) fn encode(e: LedEvent) -> InputEvent {
     InputEvent {
         kind: EV_LED,
         code: e.led.code(),
-        value: match e.lamp {
-            Lamp::Off => 0,
-            Lamp::On => 1,
-        },
+        value: i32::from(e.lamp),
     }
 }
 
@@ -130,7 +117,7 @@ mod tests {
         InputEvent { kind, code, value }
     }
 
-    const fn led(led: Led, lamp: Lamp) -> Option<LedEvent> {
+    const fn led(led: Led, lamp: bool) -> Option<LedEvent> {
         Some(LedEvent { led, lamp })
     }
 
@@ -140,23 +127,23 @@ mod tests {
             (
                 "caps lock on",
                 ev(EV_LED, 0x01, 1),
-                led(Led::Caps, Lamp::On),
+                led(Led::Caps, true),
             ),
             (
                 "caps lock off",
                 ev(EV_LED, 0x01, 0),
-                led(Led::Caps, Lamp::Off),
+                led(Led::Caps, false),
             ),
-            ("num lock on", ev(EV_LED, 0x00, 1), led(Led::Num, Lamp::On)),
+            ("num lock on", ev(EV_LED, 0x00, 1), led(Led::Num, true)),
             (
                 "scroll lock on",
                 ev(EV_LED, 0x02, 1),
-                led(Led::Scroll, Lamp::On),
+                led(Led::Scroll, true),
             ),
             (
                 "any non-zero value lights it",
                 ev(EV_LED, 0x01, 7),
-                led(Led::Caps, Lamp::On),
+                led(Led::Caps, true),
             ),
             ("LED_MISC is not registered", ev(EV_LED, 0x03, 1), None),
             ("LED_MAIL is not registered", ev(EV_LED, 0x09, 1), None),
@@ -171,7 +158,7 @@ mod tests {
     #[test]
     fn encode_writes_the_led_event_and_decode_reads_it_back() {
         for led in [Led::Num, Led::Caps, Led::Scroll] {
-            for lamp in [Lamp::Off, Lamp::On] {
+            for lamp in [false, true] {
                 let event = LedEvent { led, lamp };
                 let wire = encode(event);
                 assert_eq!(wire.kind, EV_LED);
@@ -181,7 +168,7 @@ mod tests {
         assert_eq!(
             encode(LedEvent {
                 led: Led::Caps,
-                lamp: Lamp::On
+                lamp: true
             }),
             ev(EV_LED, 1, 1)
         );
@@ -190,13 +177,13 @@ mod tests {
     #[test]
     fn leds_lit_reads_the_kernels_bitmap() {
         // (bytes, num, caps, scroll)
-        const CASES: &[([u8; 2], Lamp, Lamp, Lamp)] = &[
-            ([0, 0], Lamp::Off, Lamp::Off, Lamp::Off),
-            ([1, 0], Lamp::On, Lamp::Off, Lamp::Off),
-            ([2, 0], Lamp::Off, Lamp::On, Lamp::Off),
-            ([4, 0], Lamp::Off, Lamp::Off, Lamp::On),
-            ([7, 0xff], Lamp::On, Lamp::On, Lamp::On),
-            ([0, 2], Lamp::Off, Lamp::Off, Lamp::Off),
+        const CASES: &[([u8; 2], bool, bool, bool)] = &[
+            ([0, 0], false, false, false),
+            ([1, 0], true, false, false),
+            ([2, 0], false, true, false),
+            ([4, 0], false, false, true),
+            ([7, 0xff], true, true, true),
+            ([0, 2], false, false, false),
         ];
         for &(bytes, num, caps, scroll) in CASES {
             let lit = LedsLit::from_bytes(bytes);
@@ -215,23 +202,23 @@ mod tests {
     #[test]
     fn led_state_remembers_the_last_lamp_of_each_led() {
         let set = |led, lamp| LedEvent { led, lamp };
-        type Case = (&'static str, &'static [(Led, Lamp)], &'static [InputEvent]);
+        type Case = (&'static str, &'static [(Led, bool)], &'static [InputEvent]);
         const CASES: &[Case] = &[
             ("nothing set, nothing to write", &[], &[]),
-            ("caps on", &[(Led::Caps, Lamp::On)], &[ev(EV_LED, 1, 1)]),
+            ("caps on", &[(Led::Caps, true)], &[ev(EV_LED, 1, 1)]),
             (
                 "the last change of a LED wins",
-                &[(Led::Caps, Lamp::On), (Led::Caps, Lamp::Off)],
+                &[(Led::Caps, true), (Led::Caps, false)],
                 &[ev(EV_LED, 1, 0)],
             ),
             (
                 "an off lamp is still written: the keyboard may have it lit",
-                &[(Led::Num, Lamp::Off)],
+                &[(Led::Num, false)],
                 &[ev(EV_LED, 0, 0)],
             ),
             (
                 "LEDs come out in LED order, not change order",
-                &[(Led::Scroll, Lamp::On), (Led::Num, Lamp::On)],
+                &[(Led::Scroll, true), (Led::Num, true)],
                 &[ev(EV_LED, 0, 1), ev(EV_LED, 2, 1)],
             ),
         ];
@@ -247,11 +234,11 @@ mod tests {
         let state = LedState::default()
             .observe(&[LedEvent {
                 led: Led::Caps,
-                lamp: Lamp::On,
+                lamp: true,
             }])
             .observe(&[LedEvent {
                 led: Led::Num,
-                lamp: Lamp::On,
+                lamp: true,
             }]);
         assert_eq!(state.events(), [ev(EV_LED, 0, 1), ev(EV_LED, 1, 1)]);
     }

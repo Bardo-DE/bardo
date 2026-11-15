@@ -5,7 +5,7 @@
 //! own results is refused by name.
 
 use crate::instance::Handoff;
-use anyview_core::{CoreError, FilePath, NonEmpty, ResultsId, Resume, Sequence, SequenceOrigin};
+use anyview_core::{CoreError, FilePath, NonEmpty, Resume, Sequence, SequenceOrigin};
 
 /// Why a wire is not a handoff.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -34,7 +34,7 @@ pub(crate) fn encode(handoff: &Handoff) -> Wire {
     let (results, entries) = match &handoff.sequence {
         Some(sequence) => (
             match sequence.origin() {
-                SequenceOrigin::Results(id) => id.0,
+                SequenceOrigin::Results(id) => *id,
                 SequenceOrigin::Folder(_) | SequenceOrigin::Selection | SequenceOrigin::Output => 0,
             },
             sequence.entries().iter().map(text).collect(),
@@ -64,7 +64,7 @@ pub(crate) fn decode(wire: &Wire) -> Result<Handoff, HandoffError> {
         Some(entries) => Some(Sequence::starting_at(
             entries,
             &file,
-            SequenceOrigin::Results(ResultsId(wire.results)),
+            SequenceOrigin::Results(wire.results),
         )?),
     };
     Ok(Handoff {
@@ -85,7 +85,7 @@ mod tests {
 
     fn results(at: &str, all: &[&str]) -> Sequence {
         let entries = NonEmpty::from_vec(all.iter().map(|text| file(text)).collect()).unwrap();
-        Sequence::starting_at(entries, &file(at), SequenceOrigin::Results(ResultsId(7))).unwrap()
+        Sequence::starting_at(entries, &file(at), SequenceOrigin::Results(7)).unwrap()
     }
 
     #[test]

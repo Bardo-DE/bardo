@@ -3,7 +3,6 @@
 use super::lenient::{Warning, section};
 use super::sections::{GestureSettings, ScrollSettings};
 use serde::Serialize;
-use thiserror::Error;
 
 /// Every setting the daemon reads.
 #[derive(Debug, Clone, PartialEq, Default, Serialize)]
@@ -12,20 +11,13 @@ pub struct Config {
     pub gestures: GestureSettings,
 }
 
-/// The file is not TOML at all; nothing in it can be trusted.
-#[derive(Debug, Clone, PartialEq, Eq, Error)]
-#[error("gestures.toml is not valid TOML: {0}")]
-pub struct ParseError(pub String);
-
 crate::serde_settings!(super::units::Count);
 
-/// Parses the file's text. Unknown keys are ignored (the Settings app owns preserving them, and
+/// Parses the file's text; an error means it is not TOML at all, and nothing in it can be trusted. Unknown keys are ignored (the Settings app owns preserving them, and
 /// a file written before a key was removed still loads); bad values fall back per key and are
 /// listed in the warnings.
-pub fn parse(text: &str) -> Result<(Config, Vec<Warning>), ParseError> {
-    let root: toml::Table = text
-        .parse()
-        .map_err(|e: toml::de::Error| ParseError(e.to_string()))?;
+pub fn parse(text: &str) -> Result<(Config, Vec<Warning>), toml::de::Error> {
+    let root: toml::Table = text.parse()?;
     Ok(parse_table(&root))
 }
 
@@ -54,11 +46,15 @@ mod tests {
 
     #[test]
     fn an_empty_file_and_the_printed_defaults_are_all_defaults() {
-        assert_eq!(parse(""), Ok((Config::default(), vec![])), "empty file");
+        assert_eq!(
+            parse("").unwrap(),
+            (Config::default(), vec![]),
+            "empty file"
+        );
         let text = to_toml(&Config::default());
         assert_eq!(
-            parse(&text),
-            Ok((Config::default(), vec![])),
+            parse(&text).unwrap(),
+            (Config::default(), vec![]),
             "defaults round trip through toml: {text}"
         );
     }

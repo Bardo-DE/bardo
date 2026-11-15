@@ -7,7 +7,7 @@
 //! lock threshold.
 
 use super::stroke::{LOCK_THRESHOLD_X, LOCK_THRESHOLD_Y};
-use super::{Hold, Sample};
+use super::Sample;
 use crate::config::{Ms, Um};
 use crate::sensor::lattice::Ellipse;
 use crate::time::Mono;
@@ -57,27 +57,27 @@ pub enum TapG {
 
 impl TapG {
     /// Consumes one report's contacts; returns a double-tap when one completes.
-    pub fn step(self, contacts: &[Sample], now: Mono, hold: Hold) -> (Self, Option<TapKind>) {
+    pub fn step(self, contacts: &[Sample], now: Mono, held: bool) -> (Self, Option<TapKind>) {
         match (self, contacts.is_empty()) {
             (Self::Down { first, td }, true) => lift(first, td, now),
             (Self::Down { first, td }, false) => (
                 Self::Down {
                     first,
-                    td: td.update(contacts, now, hold),
+                    td: td.update(contacts, now, held),
                 },
                 None,
             ),
             (Self::Gap(g), false) => (
                 Self::Down {
                     first: live(g, now),
-                    td: Touchdown::land(contacts, now, hold),
+                    td: Touchdown::land(contacts, now, held),
                 },
                 None,
             ),
             (Self::Idle, false) => (
                 Self::Down {
                     first: None,
-                    td: Touchdown::land(contacts, now, hold),
+                    td: Touchdown::land(contacts, now, held),
                 },
                 None,
             ),
@@ -116,7 +116,7 @@ fn lift(first: Option<Gap>, td: Touchdown, now: Mono) -> (TapG, Option<TapKind>)
 }
 
 impl Touchdown {
-    fn land(contacts: &[Sample], now: Mono, hold: Hold) -> Self {
+    fn land(contacts: &[Sample], now: Mono, held: bool) -> Self {
         Self {
             since: now,
             peak: contacts.len(),
@@ -124,11 +124,11 @@ impl Touchdown {
             shrunk: false,
             origins: contacts.to_vec(),
             centroid: centroid(contacts),
-            valid: hold != Hold::Held,
+            valid: !held,
         }
     }
 
-    fn update(mut self, contacts: &[Sample], now: Mono, hold: Hold) -> Self {
+    fn update(mut self, contacts: &[Sample], now: Mono, held: bool) -> Self {
         let n = contacts.len();
         let regrew = self.shrunk && n > self.count;
         if n < self.count {
@@ -156,7 +156,7 @@ impl Touchdown {
             max_move.reached(c.at.delta_from(o))
         });
         let late = now.since(self.since) > MAX.duration();
-        if moved || late || regrew || hold == Hold::Held || self.peak > 2 {
+        if moved || late || regrew || held || self.peak > 2 {
             self.valid = false;
         }
         self
@@ -197,7 +197,7 @@ mod tests {
         frames
             .iter()
             .map(|(ms, c)| {
-                let (n, k) = t.clone().step(c, Mono::from_millis(*ms), Hold::Open);
+                let (n, k) = t.clone().step(c, Mono::from_millis(*ms), false);
                 t = n;
                 k
             })
@@ -238,7 +238,7 @@ mod tests {
         let got: Vec<_> = frames
             .iter()
             .scan(TapG::Idle, |t, (ms, c)| {
-                let (n, k) = t.clone().step(c, Mono::from_millis(*ms), Hold::Open);
+                let (n, k) = t.clone().step(c, Mono::from_millis(*ms), false);
                 *t = n;
                 Some(k)
             })

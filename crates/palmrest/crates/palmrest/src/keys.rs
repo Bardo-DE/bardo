@@ -5,7 +5,6 @@
 
 use serde::{Deserialize, Serialize};
 use std::fmt;
-use thiserror::Error;
 
 /// A modifier held while the key is pressed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -106,11 +105,6 @@ pub struct KeyCombo {
     pub key: Key,
 }
 
-/// A combo string that names an unknown key or modifier.
-#[derive(Debug, Clone, PartialEq, Eq, Error)]
-#[error("{0:?} is not a key combination like \"alt+left\"")]
-pub struct ComboError(pub String);
-
 impl KeyCombo {
     /// Alt+Left: Back in every browser and file manager.
     pub fn alt(key: Key) -> Self {
@@ -136,11 +130,12 @@ impl KeyCombo {
 }
 
 impl TryFrom<String> for KeyCombo {
-    type Error = ComboError;
+    /// Why a combo string is refused: it names an unknown key or modifier.
+    type Error = String;
     fn try_from(s: String) -> Result<Self, Self::Error> {
         let lower = s.trim().to_ascii_lowercase();
         let parts: Vec<&str> = lower.split('+').map(str::trim).collect();
-        let err = || ComboError(s.clone());
+        let err = || format!("{s:?} is not a key combination like \"alt+left\"");
         let (key, mods) = parts.split_last().ok_or_else(err)?;
         let mods = mods
             .iter()

@@ -172,23 +172,23 @@ no other public path. A module names only modules above it in this list.
 | --- | --- |
 | `error` | `CoreError`, the crate's one error |
 | `units` | page, section (`SectionIndex`, `SectionCount`: the chapter or comic page of a book), media (time, length, volume, speed, chapter, time range, bitrate), ratio, zoom, turn, content-space and pixel newtypes; all integer |
-| `media` | what a player says of a recording: `StreamKind`, `MediaTrack`, `TrackPlay`, `MediaChapter`, `VideoPresence`, `MediaTags` |
+| `media` | what a player says of a recording: `StreamKind`, `MediaTrack`, `MediaChapter`, `VideoPresence`, `MediaTags` |
 | `source` | `FilePath`, `FileName`, `FileStamp`, `Source` (a file's serialisable identity), `ReadAt` (bytes read by offset: a byte slice, a `Vec`, an `Arc`, an open `File`, or anything a host implements it for) and `ReadAtStream` (a `Read + Seek` over one), and `Input` (what a peek reads: name, stamp, shared bytes and, when they are a file of their own, the path; made from `&FilePath`, `&Source` or a name and a `Vec<u8>`) |
 | `kind` | `FormatKind`, `Mime`, `FormatDetail`, `SyntaxName`, `kind_of_mime` and the format families |
 | `sniff` | `sniff`, `sniff_zip`, `sniff_ole`, `Sniffed` and the head, entries and OLE directory names (`OleStreams`) they read; a head that is not UTF-8 but is printable bytes is plain text under a text extension (a legacy encoding) |
 | `sequence` | `NonEmpty`, `Sequence`, `moved`, `neighbours` |
 | `markup` | what a person writes on the pages of a document and the file keeps as standard annotations: `PageRect` and `PagePoint` (thousandths of the displayed page, from the top left), `Mark` (a page, a `MarkColor`, a `MarkShape`: highlight, underline, strike-through, note, rectangle, oval, line, arrow, text box; and `existing`, the `MarkRef` of the annotation the file already held that it stands for; `bounds`, `is_at`, `moved`), `MarkTool`, `FieldFill` and `MarkupSave` (the fields filled, the marks to write, made or changed, and the held marks removed, which the host writes) |
-| `form` | `FormWidget` (one place a field is drawn: its name, `WidgetKind`, `WidgetAccess`, page, `PageRect`, value, the state that means on, the options), in the order the document lists them, which is the order Tab walks |
+| `form` | `FormWidget` (one place a field is drawn: its name, `WidgetKind`, `read_only`, page, `PageRect`, value, the state that means on, the options), in the order the document lists them, which is the order Tab walks |
 | `edit` | `Edit`, `EditKind`, and `Adjust` (a picture's whole adjustment as one value: cut to a `PixelRect`, `mirrored`, `QuarterTurn`, resized; `turned`, `flipped` and `cropped` fold each new step into it, so a series of edits is one `Edit::Adjust`) |
-| `find` | `FindOptions` (how a find matches: `CaseMatch` and `WordMatch`, with `DEFAULT` and `with_*`; the one set text and PDF search both read) and `FindOption` (`MatchCase`, `WholeWords`: one toggle of it, with its label) |
+| `find` | `FindOptions` (how a find matches: the bools `match_case` and `whole_words`, with `DEFAULT` and `with_*`; the one set text and PDF search both read) |
 | `action` | `FileAction`, `Reach`, `reach`, `shortcut`, `own_keys`, `file_action_of` |
 | `export` | the per-format export enums, `AudioTarget`, `ExportChoice`, `ExportJob` (its `Transcode` is a cut, a track or a conversion of a recording) and its payloads |
 | `resume` | `Resume`, `TrackChoice` |
-| `facts` | `Fact`, `Facts`, `FactLabel` (and where each label is listed by default: `group`, `tier`), `FactGroup` (the sections of the Info panel, in display order, `General` last), `Tier` (headline rows make the summary line, `Facts::summary`), `FactValue` and its constructors (size with exact bytes, date, coordinate, altitude, version), `FactTime`, `LocalZone` (the person's time zone, read from the system by `jiff`; every shown time is converted to it and never names a zone), `Coordinate`, `kind_name` (Finder's "JPEG image"), and `FileDetails` with `Facts::general` (the General section: kind, size, created, modified, where, where from, permissions); `label`, `group`, `value`, `when`, `place`, `summary`, `kind_name` and `file` are private |
-| `peek` | `Peek`, `PeekBudget` (`deadline_from_now`), `Deadline` (the budget's time as an instant a long loop asks about; cooperative; an `Interrupt`), `StageSupport` |
-| `work` | `Backend`, `Stop`, `StopState`, `Interrupt` (the one question a loop asks to end early: a peek's `Deadline` and a viewer job's `Stop` both answer it; reading the clock is its implementations', not the loop's), `Ticket`, `Ticketed`: the contract with the threads. The one public module: reached as `anyview_core::work::X` |
+| `facts` | `Fact`, `Facts`, `FactLabel` (and where each label is listed by default: `group`, `headline`), `FactGroup` (the sections of the Info panel, in display order, `General` last), the `headline` flag of a row (headline rows make the summary line, `Facts::summary`), `FactValue` and its constructors (size with exact bytes, date, coordinate, altitude, version), `FactTime`, `LocalZone` (the person's time zone, read from the system by `jiff`; every shown time is converted to it and never names a zone), `Coordinate`, `kind_name` (Finder's "JPEG image"), and `FileDetails` with `Facts::general` (the General section: kind, size, created, modified, where, where from, permissions); `label`, `group`, `value`, `when`, `place`, `summary`, `kind_name` and `file` are private |
+| `peek` | `Peek`, `PeekBudget` (`deadline_from_now`), `Deadline` (the budget's time as an instant a long loop asks about; cooperative; an `Interrupt`) |
+| `work` | `Backend`, `Stop` (`stopped`, `stopped_at`: plain bools), `Interrupt` (the one question a loop asks to end early: a peek's `Deadline` and a viewer job's `Stop` both answer it; reading the clock is its implementations', not the loop's), `Ticket`, `Ticketed`: the contract with the threads. The one public module: reached as `anyview_core::work::X` |
 | `APP_NAME` | the name a person sees ("Viewer"): the welcome title, the helper sheet, the now-playing identity. Identifiers (binary, app id, bus names) keep `anyview` |
-| `profile` | the one match on `FormatKind`: `actions_for`, `edits_for`, `mime_for`, `stage_support` |
+| `profile` | the one match on `FormatKind`: `actions_for`, `edits_for`, `mime_for`, `has_stage` |
 
 ## 2a. Modules inside `anyview-store`
 
@@ -199,7 +199,7 @@ named below.
 | Module | Holds |
 | --- | --- |
 | `error` | `StoreError`, `StoreOp` |
-| `viewed` | `Viewed`, seconds since the epoch, handed in by the caller |
+| `viewed` | `Clock` and `system_clock`; a view time is seconds since the epoch, handed in by the caller |
 | `label` | `ResumeLabel` and `resume_label`, the row subtitle derived from a `Resume` |
 | `history` | `HistoryCap`, `HistoryEntry`, `History` and the pure `history_after_view` |
 | `record` | the per-file record, its hashed file name, `applicable` and `prune_decision` (private) |
@@ -207,8 +207,8 @@ named below.
 | `reader` | `read_history`, `HistoryRead`: the API the launcher links |
 | `writer` | `StoreWriter`: `record_view`, `save_resume`, `load_resume`; any number of writers, in any number of processes, may share one root: each write holds `guard::StoreLock` (an advisory `flock` on `<root>/.lock`), reads what is on disk, merges in only its own entry and replaces the file atomically, so the last writer wins per file, never per store; readers take no lock |
 | `guard` | `SaveTurn` (one save of a file at a time in this process) and `StoreLock` (one writer of a store at a time across processes); both private |
-| `save` | the save pipeline: `Pending` (bytes in memory, or `Pending::from_file`: a file read as it is written, for a cut recording), `BackedUp` (consumed by `write_in_place`), `Written`, `Durability` |
-| `versions` | `Versions` (back up, list, restore), `Version`, `VersionId`, `KeepPeriod`, `SavedAt`; kept versions are private (`0700` folders, `0600` files), a version identical to the file's latest is not made again, a sidecar that cannot be read is skipped by `list` |
+| `save` | the save pipeline: `Pending` (bytes in memory, or `Pending::from_file`: a file read as it is written, for a cut recording), `BackedUp` (consumed by `write_in_place`), `Written` |
+| `versions` | `Versions` (back up, list, restore), `Version`, `VersionId`, `KeepPeriod`; kept versions are private (`0700` folders, `0600` files), a version identical to the file's latest is not made again, a sidecar that cannot be read is skipped by `list` |
 | `prune`, `rekey` | `Versions::prune` (by age, the half-made files of a crash, then the size cap `DEFAULT_CAP`, a file's newest version never; nothing by age when the clock is over a year past the newest version) and `Versions::rekey` (a renamed file's versions follow it) |
 | `place` | `free_beside`, `is_free`, `rename_noreplace` (`renameat2` with `RENAME_NOREPLACE`, a link and unlink where the file system has none), `link_new`, `copy_new`, `partial_beside`, `is_taken`: Rename, Duplicate and every export claim names here, never by looking first |
 | `details` | `file_details`: a file's size, dates, folder, permissions and the address it was downloaded from (the `user.xdg.origin.url` attribute), as `FileDetails`; best effort, a field the file system lacks is absent |
@@ -218,7 +218,7 @@ A save writes a temporary file beside the original (its mode, owner, xattrs and 
 process and a counter), syncs it and renames it over; a file with other hard links is written in place
 after the backup so the links stay one file; a read-only file is refused. If the file changed since the
 backup, what it holds then is kept before it is replaced. A save that fails before it touched the file
-drops the copy it kept. A folder sync that fails after the rename is `Durability::Unconfirmed`, not an
+drops the copy it kept. A folder sync that fails after the rename is an unsynced `Written`, not an
 error.
 
 On disk, under a root the caller names: `history.json` (the `History`, newest first, capped) and
@@ -291,7 +291,7 @@ and `decode_bytes` are the one way pixels come out, and `encode` the one way the
 | `exif` | `ExifFacts`, `Exposure`, `Ratio`, `SignedRatio`, `Flash`, `Location`: read with `kamadak-exif` (camera, lens, settings, bias, flash, software, copyright, density, and the GPS block; the body and lens serial numbers are never read); `ExifFacts::camera_facts` are the rows a preview may list; `ExifFacts` holds no place, and `Location::of_file` (read by `picture_facts` alone) is the place, which only the viewer's own Info panel lists; `format` words them; `patch` writes the orientation entry (private) |
 | `picture_facts`, `resolution` | `picture_facts`: the colour, density, camera and location rows of the viewer's Info panel; `Resolution`: dots an inch from EXIF, a PNG `pHYs` chunk or a JPEG's JFIF block |
 | `scale` | `resized` (the export's `Resize`); peek-budget fitting (private) |
-| `decode` | `decode`, `decode_bytes`, `declared_size` (the upright size from the header and EXIF alone), `Decoded` (a still, an `Animation` with its `Plays`, or a `HeldStill` when the frames pass the 256 MiB cap), `Frame`, `FrameCount`, `ColourInfo`; `codec` is the one match on `RasterFormat`; `ceiling` (the peak memory a decode may hold, checked from the header before any pixel is decoded), `stills`, `plays` (loop counts from the container), `frame_count` (frame counts from the container, without decoding), `highrange` (EXR and HDR, tone mapped with extended Reinhard then sRGB), `layered` (Photoshop composite, largest icon of an ICNS), `jxl`, `svg`, `svg_limits` (a drawing's filter work and nested pictures, checked from its tree before it is drawn) and `look` are private |
+| `decode` | `decode`, `decode_bytes`, `declared_size` (the upright size from the header and EXIF alone), `Decoded` (a still, an `Animation` with its `Plays`, or a `HeldStill` when the frames pass the 256 MiB cap), `Frame`, `ColourInfo`; `codec` is the one match on `RasterFormat`; `ceiling` (the peak memory a decode may hold, checked from the header before any pixel is decoded), `stills`, `plays` (loop counts from the container), `frame_count` (frame counts from the container, without decoding), `highrange` (EXR and HDR, tone mapped with extended Reinhard then sRGB), `layered` (Photoshop composite, largest icon of an ICNS), `jxl`, `svg`, `svg_limits` (a drawing's filter work and nested pictures, checked from its tree before it is drawn) and `look` are private |
 | `decode::natural` | `natural_size`: the upright size a picture shows at, read from the first 256 KiB of the file (a header and its EXIF orientation, or an SVG's root tag); nothing is decoded and the claim is not checked against a decode's ceiling |
 | `peek` | `RasterPeek` and `VectorPeek` (the two `Peek` implementations), `ImagePeek`, `PeekedFormat` |
 | `encode` | `encode`, `encode_bmp`, `encode_with_metadata`; `codecs`, `avif` and `metadata` (EXIF and ICC splicing with `img-parts`) are private |
@@ -324,11 +324,11 @@ one file.
 | `error` | `TextError` |
 | `bytes` | `ByteSource` (read a range), `FileBytes`, `HeldBytes` |
 | `encoding` | `TextCodec`, `LegacyEncoding`, `detect` (byte-order mark, UTF-8 validity, else the encoding `chardetng` guesses from the first `DETECT_BYTES`, Windows-1252 when nothing else fits), `Coverage`, `Detected` |
-| `lines` | `TextLines`, `LineCount`: a sparse line index (every 64th line) so any window of lines is read and decoded without the rest; a line past `MAX_LINE_BYTES` (1 MiB) comes back cut there and ending in `LINE_CUT` (an ellipsis) |
-| `find` | `Needle` (a phrase, never empty; it ignores case and finds parts of words until `with_options` gives it a `FindOptions`: `CaseMatch::Exact` compares characters as they are, `WordMatch::Whole` rejects a hit that runs into a letter, digit or underscore beside it, but only on a side where the hit itself ends in a word character), `FindHit` (a line and the bytes of it a phrase covers), `ByteOffset`, `MAX_HITS`; `TextLines::find` reads the file once, in batches |
+| `lines` | `TextLines`: a sparse line index (every 64th line) so any window of lines is read and decoded without the rest; a line past `MAX_LINE_BYTES` (1 MiB) comes back cut there and ending in `LINE_CUT` (an ellipsis) |
+| `find` | `Needle` (a phrase, never empty; it ignores case and finds parts of words until `with_options` gives it a `FindOptions`: `match_case` compares characters as they are, `whole_words` rejects a hit that runs into a letter, digit or underscore beside it, but only on a side where the hit itself ends in a word character), `FindHit` (a line and the bytes of it a phrase covers), `ByteOffset`, `MAX_HITS`; `TextLines::find` reads the file once, in batches |
 | `code` | `Highlighter`, `SyntaxId`, `CodeLines` (windowed highlighting with saved parser states), `TokenClass`, `TokenSpan`, `TokenLine`, `tokens_html`; `class` is the one table from syntect scopes to classes, `state` and `html` are private |
 | `markdown` | `render`, `Rendered`, `RenderEnv`, `LocalFiles`, `NoFiles`, `DiskFiles`, `Heading`, `HeadingLevel`, `Anchor`; `events` (the safety pass), `images`, `links` and `outline` are private |
-| `table` | `Table`, `HeaderMode`, `RowCount`, `RowIndex`, `ColumnCount`, `Separator` (comma, tab, semicolon or pipe, chosen by the rows), `CharWidth` and the read cap (`TABLE_BYTES`); `Workbook` and `Sheet` (calamine: XLSX, ODS, XLS, one `Table` per sheet, held in memory and capped by `SHEET_ROWS` and `WORKBOOK_CELLS`; XLSX and XLSB are streamed cell by cell, so a sheet that claims a grid it does not hold costs the cells it has; `open_start` reads the first sheet's start for a peek). A delimited file is not held: `Table::read` makes one pass that follows the quotes (a record is not a line, a quoted cell may hold line breaks) and keeps the offset of every 64th record, the record count and the widest row, as `lines` does for lines; `rows`, `cell` and `column` then parse a window of 64 records from its offset, and the last four windows are kept. `column` yields one column's cells window by window, so a sort keeps only its keys. `header` (the guess) and `indexed` (the record index and the windows) are private |
+| `table` | `Table`, `HeaderMode`, `RowIndex`, `Separator` (comma, tab, semicolon or pipe, chosen by the rows) and the read cap (`TABLE_BYTES`); `Workbook` and `Sheet` (calamine: XLSX, ODS, XLS, one `Table` per sheet, held in memory and capped by `SHEET_ROWS` and `WORKBOOK_CELLS`; XLSX and XLSB are streamed cell by cell, so a sheet that claims a grid it does not hold costs the cells it has; `open_start` reads the first sheet's start for a peek). A delimited file is not held: `Table::read` makes one pass that follows the quotes (a record is not a line, a quoted cell may hold line breaks) and keeps the offset of every 64th record, the record count and the widest row, as `lines` does for lines; `rows`, `cell` and `column` then parse a window of 64 records from its offset, and the last four windows are kept. `column` yields one column's cells window by window, so a sort keeps only its keys. `header` (the guess) and `indexed` (the record index and the windows) are private |
 | `tree` | `Tree` (`read`, `children`, and `visible` / `visible_count`, the document flattened under an `OpenNodes` set and cut to a window), `TreeRow`, `VisibleRow`, `Openness`, `RowLabel`, `NodeKind`, `ChildCount`; `TreePath` and `OpenNodes` live in `anyview-core`. A tree is never parsed whole: one streaming scan checks the document is well formed (`grammar`) and indexes the children of its top level (`level`: the offset of every 64th child, sooner when children are large, as `lines` does), a container is indexed when it is first shown or opened, and a node's rows are read from the file when asked for, so a document of any size costs its index and the rows on screen and a number reads as written. A file longer than the limit given to `read` shows its start (`Coverage::Prefix`), and a peek of a JSON document over its budget lists the top-level keys that fit. `cursor` (bytes read in chunks) and `rows` are private |
 | `edit` | the editor's model: `Buffer` (a piece table over the file's bytes with undo and redo: a run of typing, of Backspaces or of Deletes is one step, cut where the kind of character changes and at a line break, and a paste, a cut or a replaced selection is a step of its own; `Revision` stamps the text so "unsaved" is a comparison with the saved one), `Session` (a buffer with a caret or selection, the IME's preedit, and the commands a key, a click or the clipboard means; `Motion`, `Selection`, `Preedit`; `find` reads the edited text), `EditText` (a file read whole for editing, or the `EditRefusal` that stops it: not UTF-8, over `EDIT_BYTES` (8 MiB), unreadable); `motion` (grapheme and word boundaries, `unicode-segmentation`) is private. Line endings and a UTF-8 byte-order mark stay in the text as the file had them, so `Session::file_bytes` writes back what was read plus the edits. The data views edit without a buffer: `TableEdits` (in `table`) holds a table's changed cells, added rows and rows taken away as a sparse overlay of the file's rows, and `Table::write_edited` copies the file's own bytes around them (a changed cell is written quoted as it was, an added row in the file's line ending, so a diff shows only what changed); `TreeSession` (in `tree`) holds a JSON document as its bytes and edits it by splicing the spans the tree keeps (a value, a key, a node with its comma), so the indentation stays the file's; both keep their history in `edit`'s `Log`, whose `EditStamp` makes "unsaved" a comparison |
 | `peek` | `PlainPeek`, `CodePeek`, `MarkdownPeek`, `TablePeek`, `TreePeek` and their `*Peeked` types, `Tally`, `PEEK_LINES` |
@@ -420,15 +420,15 @@ run on the caller's worker.
 | `uri` | `file_uri`: the escaped `file://` URI the thumbnail spec hashes and the file manager takes |
 | `instance` | `Instance`, `Request` (`Open`, `Peek`, `Play`, `Handoff`), `Handoff`, `Claim`, `Primary` (std channel: `next` blocks, `next_within(Duration)` gives up; an async program reads it on a thread of its own, as `program::relay` does) |
 | `handoff` (private) | a `Handoff` as the fields both wires carry (`Wire`): encoded and parsed once, for the bus and the socket |
-| `media` | `MediaSession`, `MediaState`, `MediaControl`, `PlaybackStatus`, `Ability`, `SeekDirection`, `TrackSerial` |
+| `media` | `MediaSession`, `MediaState`, `MediaControl`, `PlaybackStatus`, `SeekDirection` |
 | `thumbnail` | `ThumbnailCache`, `ThumbSize`, `ThumbPixels` |
-| `printer` | `Printer`, `PrintOutcome` (`Printed`, `Cancelled`, `NoDialog`), `JobTitle` |
+| `printer` | `Printer`, `PrintOutcome` (`Printed`, `Cancelled`, `NoDialog`) |
 | `share` | `Share`, `ShareTarget` |
 | `reveal` | `Reveal` |
 | `picker` | `Picker`, `PickOutcome` (`Chosen`, `Cancelled`, `NoDialog`): the desktop's file dialog |
 | `link` | `OpenLink`: a web or mail address handed to the desktop's handler |
 | `plugin` | `discover` and `discover_in` (the same with a folder in place of the person's data directory) (`Discovery`, `Rejected`), `PluginRunner` (`probe`, `thumbnail`, `decode`, `export`, and the routing seam `peek_facts`), `Timeouts` (bayonet's), `PluginFacts`; the `Wire` that tells bayonet the viewer's messages is private |
-| `stacking` | `WindowStacking`, `Stacking`, `StackingOutcome` |
+| `stacking` | `WindowStacking` |
 | `portable` | built everywhere, no desktop service: `LatchkeyInstance` (`new`, `under(dir)` for tests; the `frame` module is its line of JSON), `SystemOpen`, `SystemReveal`, `FreedesktopThumbnails`, `NoStacking`, and the absent abilities `NoApps`, `NoShare`, `NoPrinter`, `NoPicker` |
 | `desktop` (feature `quire-desktop`, Linux; quire design/36's module name), public as `linux` | one implementation per trait: `DbusInstance` (and `forward_over`, the call a launcher makes on its own bus connection; it also serves docket's `IntentProvider1`, `intents`, section 2n), `MprisSession`, `DesktopApps`, `PortalPrinter`, `PortalPicker` (the FileChooser portal), `MailShare`, `FileManagerReveal`; `FreedesktopThumbnails`, `NoStacking` and `XdgOpen` (an alias of `SystemOpen`) re-exported from `portable` under their old names; `portal` (private) is what every portal call shares: the request path, the `Response` code and the answer stream |
 | `testing` (feature `testing`) | `FakeInstance`, `FakeMediaSession` (and `FakeMediaHandle`, its clonable test end, for when the session is given away), `FakeApps`, `FakeThumbnails`, `FakePrinter`, `FakePicker`, `FakeLinks`, `FakeShare`, `FakeReveal`, `FakeStacking`, `RecordingSpawn`; clones share their record. `PrivateBus` (a `dbus-daemon` with a configuration of its own) and `MprisClient` (the control center's end of the player) are the bus tests' rigs, and exist only with `quire-desktop` |
@@ -441,10 +441,10 @@ generic over it rather than holding a `dyn`):
 | `Instance` | `claim(&Request) -> Result<Claim>`: own `org.quire.Anyview1` (`Claim::Primary`, whose `Primary::next` yields what later launches forwarded) or forward the request to the owner (`Claim::Forwarded`) |
 | `MediaSession` | `publish(&MediaState) -> Result<()>`; `next_control() -> Option<MediaControl>` |
 | `ThumbnailCache` | `lookup(&FilePath, &FileStamp, ThumbSize) -> Result<Option<ThumbPixels>>`; `store(.., &ThumbPixels) -> Result<()>` |
-| `Printer` | `print(&[u8], &JobTitle) -> Result<PrintOutcome>` |
+| `Printer` | `print(&[u8], &str) -> Result<PrintOutcome>` |
 | `Share` | `targets() -> Vec<ShareTarget>`; `share(&FilePath, ShareTarget) -> Result<()>` |
 | `Reveal` | `reveal(&FilePath) -> Result<()>` |
-| `WindowStacking` | `request(Stacking) -> StackingOutcome` |
+| `WindowStacking` | `request(keep_above: bool) -> bool` |
 
 On the bus: `org.quire.Anyview1` at `/org/quire/Anyview1` has `Open(as)`, `Peek(s)`, `Play(s)` and
 `Handoff(s file, s resume, t results, as entries)` over absolute paths (a relative one is an
@@ -458,7 +458,7 @@ calls it with `forward_over(&connection, &Request::Handoff(..))` on its own conn
 wire is written once, here. `dist/org.quire.Anyview1.service` is the activation file that starts
 `anyview` when a call arrives while none runs. The player is
 `org.mpris.MediaPlayer2.anyview` at `/org/mpris/MediaPlayer2`; its track id is
-`/org/quire/Anyview1/Track/<TrackSerial>`. Thumbnails live at
+`/org/quire/Anyview1/Track/<track serial>`. Thumbnails live at
 `<cache>/thumbnails/{normal,large,x-large}/<md5 of the file URI>.png` with `Thumb::URI`,
 `Thumb::MTime` and `Thumb::Size` text chunks. The tests of the bus implementations run against a
 `dbus-daemon` the test starts with its own configuration (no service directories) and skip with a
@@ -700,7 +700,7 @@ its count is a lower bound (`EntryCount::AtLeast`).
 | --- | --- |
 | `error` | `ArchiveError` |
 | `container` | `container`, the one match on `ArchiveFormat`: `Container` (`Zip`, `Tar`, `Compressed(Codec)`, `SevenZip`) and `Codec`; `format_name` and `kind_name`, the words for a format (private) |
-| `entry` | `Entry`, `EntryKind`, `EntryCount`, `EntryLimit`, `Holds`, `Listing`; `Tally`, which keeps the first entries and counts the rest (private) |
+| `entry` | `Entry`, `EntryKind`, `EntryCount`, `EntryLimit`, `Listing`; `Tally`, which keeps the first entries and counts the rest (private) |
 | `limit` | `Limited` (a reader that stops at the budget and says so) (private) |
 | `list` | `list`: the one entry point, and the compressed-stream case (a tar inside, or one file) |
 | `extract` | `extract`, `ExtractLimits`: one entry's bytes, bounded by the entry and by how much of a stream is unpacked |
@@ -1222,7 +1222,7 @@ The single place a concept lives. Extend it; never write a second one.
 | What a file is (kind, MIME, detail) | `anyview_core::FormatKind`, `Mime`, `FormatDetail` |
 | Sniffing, magic bytes first, extension as the fallback | `anyview_core::sniff`, `sniff_zip` |
 | Which extensions and MIME types a format family has | `Family` in `kind/family.rs`, one file per family |
-| Which actions, edits and stage a kind has | `anyview_core::actions_for`, `edits_for`, `stage_support` (`profile`) |
+| Which actions, edits and stage a kind has | `anyview_core::actions_for`, `edits_for`, `has_stage` (`profile`) |
 | Where an action may appear, and its keys | `anyview_core::reach`, `shortcut` (`action/spec.rs`) |
 | Page, time, volume, zoom, turn, dpi, pixel units | `anyview_core` units (`units`) |
 | The list the arrow keys walk | `anyview_core::Sequence`, `moved`, `neighbours` |
@@ -1234,7 +1234,7 @@ The single place a concept lives. Extend it; never write a second one.
 | The "Page 143" a history row shows | `anyview_store::resume_label` |
 | What each format exports, and the sheet's contract | `anyview_core::ExportChoice` and the per-format enums (`export`) |
 | The shared encoders an export becomes | `anyview_core::ExportJob` |
-| Rows of facts a pane lists | `anyview_core::Facts`; a row's section is its `FactGroup` and its weight its `Tier` |
+| Rows of facts a pane lists | `anyview_core::Facts`; a row's section is its `FactGroup` and its weight its `headline` flag |
 | What every file has (kind, size, dates, where, where from, permissions) | `anyview_core::Facts::general`, read by `anyview_store::file_details`; the window adds it last to every document's rows |
 | Where a photo was taken | `anyview_image::Location::of_file` and `Location::facts`, in the viewer's Info panel only (`ExifFacts`, and so the peek, never holds it); no preview, list or thumbnail lists it, and serial numbers are never read |
 | The light tier of a format | `anyview_core::Peek` |
@@ -1282,7 +1282,7 @@ The single place a concept lives. Extend it; never write a second one.
 | A tile's pixels, and the page as laid out | `anyview_pdf::PdfBackend::run` (`PdfJob::Tiles`), `PageLayout` |
 | Page space to displayed space (crop box, `/Rotate`) | `anyview_pdf::displayed` (`geometry.rs`) |
 | Searching a PDF, and the hit a find shows | `anyview_pdf::search_document`, `Hits`, `Hit::snippet` |
-| Whether a find ignores case and finds parts of words, and the toggles that change it | `anyview_core::FindOptions`, `FindOption`; `Viewer::find_options` |
+| Whether a find ignores case and finds parts of words, and the toggles that change it | `anyview_core::FindOptions`; `Viewer::find_options` |
 | A PDF's outline and the links on a page | `anyview_pdf::outline`, `page_links` |
 | Rotating, deleting and moving PDF pages | `anyview_pdf::apply`, `PageOp` |
 | What a PDF export is made of | `anyview_pdf::plan_export` |
@@ -1369,7 +1369,7 @@ The single place a concept lives. Extend it; never write a second one.
 | The sound card, and a fake one a test drains by hand | `anyview_media::SoundOutput` (`CardOutput`, `SilentOutput`) |
 | The player's instructions and news, as data | `anyview_media::MediaCommand`, `MediaEvent` |
 | What a player says of a recording (tracks, chapters, tags, whether a picture shows) | `anyview_core::MediaTrack`, `MediaChapter`, `MediaTags`, `VideoPresence` (`media`) |
-| Speed, chapter, trim range, bitrate | `anyview_core::Speed`, `ChapterIndex`, `TimeRange`, `Bitrate` (`units`) |
+| Speed, chapter, trim range, bitrate | `anyview_core::Speed`, `TimeRange`, `Bitrate` (`units`) |
 | A recording's facts and tags | `media::MediaPlugins::reading` in the binary: the FFmpeg plugin's rows, else `anyview-peek`'s |
 | A recording in the launcher's pane | `anyview_peek::VideoPeek`, `AudioPeek` (pure-Rust parsers, `media/`), drawn by `anyview-peek`'s pane |
 | A video's frame in the launcher's pane | `anyview_peek::StillSource`, `Peeking::with_stills` (the host's thumbnail cache; `frames.rs`) |
@@ -1455,7 +1455,7 @@ pub trait StageView: 'static {
 The window holds a `LoadedDoc` (an `Arc<dyn DocView>` made by `LoadedDoc::of::<S>`), so drawing needs no
 match on the family. `visit(kind, FamilyVisitor)` in `families/registry.rs` is the one exhaustive match over
 `FormatKind` for the full tier: every kind maps to a view, and the kinds the full tier does not show yet
-map to `PeekOnlyStageView` (facts, a real view). `anyview_core::stage_support` says the same in
+map to `PeekOnlyStageView` (facts, a real view). `anyview_core::has_stage` says the same in
 the core's table, and a test holds the two equal. `Workers` (`io/workers.rs`) is the one seam to the
 binary's pool: `fn submit(&self, work: Work)`.
 
@@ -1796,7 +1796,7 @@ reads), and the host's small pictures (`tests/ui/support/mod.rs`), so a first fr
 out and a result for a file left behind is released late. The media window is driven the same way (`tests/ui/media_window.rs`) with a scripted player (`tests/ui/support/player.rs`:
 a `MediaHost` that records what the window sends and says what the test makes it say, and uploads a gradient
 for the picture). The registry has a test that every `FormatKind` is mapped
-and agrees with `stage_support`. `ANYVIEW_SHOTS=<dir>` makes the window tests save a PNG of what they drew.
+and agrees with `has_stage`. `ANYVIEW_SHOTS=<dir>` makes the window tests save a PNG of what they drew.
 
 ## 7d. Appearance
 
@@ -1823,7 +1823,7 @@ The viewer publishes no selector table yet: its parts are `viewer-` classes, and
 `dist/org.quire.Anyview.desktop` is the desktop entry (`Exec=anyview %U`, and no `DBusActivatable` line: neither
 bus name serves `org.freedesktop.Application`). Its `X-Quire-BusNames` (`org.quire.Anyview1;org.quire.Anyview;`) and
 `X-Quire-IntentsApp` (`org.quire.Anyview`) are the identity sill reads through ds-helpers' `AppIdentity`. Its `MimeType` line is
-`anyview_core::opened_mimes()`: the media types of the kinds with `StageSupport::Stage`, the one kind-to-MIME
+`anyview_core::opened_mimes()`: the media types of the kinds for which `has_stage` is true, the one kind-to-MIME
 map; `crates/anyview-core/tests/anyview-core/dist.rs` fails if the line drifts. `%U` hands the viewer `file://` URIs, which
 `cli/parse.rs` decodes (another scheme or host is `CliError::NotLocal`). `dist/install.sh` and
 `dist/uninstall.sh` (sharing `dist/lib.sh`; install records a receipt, uninstall removes only what it names) take `--dry-run` and `--prefix`, honour `DESTDIR`, and install the

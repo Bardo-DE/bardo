@@ -2,7 +2,7 @@
 
 use std::fs;
 
-use files_core::{EntryKind, Info, ItemCount, ItemRef, LinkTo};
+use files_core::{EntryKind, Info, ItemRef, LinkTo};
 
 use crate::error::ListError;
 use crate::list::kind_of;
@@ -29,11 +29,11 @@ pub(crate) fn describe(item: &ItemRef) -> Result<Info, ListError> {
 
 /// How many entries of the folder at `path` a person sees (names starting with a dot are left
 /// out); `None` when it can't be read.
-fn count_in(path: &std::path::Path) -> Option<ItemCount> {
+fn count_in(path: &std::path::Path) -> Option<u32> {
     let shown = fs::read_dir(path)
         .ok()?
         .filter_map(Result::ok)
         .filter(|child| !child.file_name().to_string_lossy().starts_with('.'))
         .count();
-    Some(ItemCount(u32::try_from(shown).unwrap_or(u32::MAX)))
+    Some(u32::try_from(shown).unwrap_or(u32::MAX))
 }

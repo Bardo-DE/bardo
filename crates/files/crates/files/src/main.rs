@@ -76,7 +76,7 @@ fn main() -> ExitCode {
         }
     };
     let role = runtime.block_on(join(
-        args.started,
+        args.dbus_activated,
         start.clone(),
         launch_token(),
         runtime.handle().clone(),
