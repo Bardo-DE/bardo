@@ -1,6 +1,6 @@
 //! What a test that needs the real player does when this machine lacks what it needs (an mpv, its C
 //! plugin, a graphics adapter, a private bus). Included by the integration binaries that play, with
-//! `#[path = "../../../../dev/skip.rs"] mod skip;` beside `test_guard`.
+//! `#[path = "../../../../dev/skip.rs"] mod skip;`.
 #![allow(dead_code)]
 
 use std::path::PathBuf;
