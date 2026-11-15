@@ -311,16 +311,10 @@ impl Inference {
 /// The fake, kept alive while the test runs.
 pub struct Fake {
     pub log: Log,
-    state: Arc<Mutex<State>>,
     _connection: zbus::Connection,
 }
 
 impl Fake {
-    /// The next change is refused with the refusal named `name` (`NotAnswering`...).
-    pub fn refuse_next(&self, name: &'static str) {
-        self.state.lock().expect("state").refuse = Some(name);
-    }
-
     /// What was changed, in order.
     pub fn changes(&self) -> Vec<String> {
         self.log.lock().expect("log").clone()
@@ -368,7 +362,6 @@ pub async fn serve_with(
         .expect("inferd's name");
     Fake {
         log,
-        state,
         _connection: connection,
     }
 }

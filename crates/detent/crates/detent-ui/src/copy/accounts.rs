@@ -158,35 +158,8 @@ pub(crate) fn removal(question: &RemovalQuestion, remove_name: &str) -> RemovalW
 #[cfg(test)]
 mod tests {
     use super::*;
-    use detent_model::external::ProviderGroup;
-    use detent_model::{AccountKey, AccountProvider, AccountSpend, ModuleId, ModuleRow, Place};
+    use detent_model::{ModuleId, ModuleRow};
     use ds_settings::schema::KeyPath;
-
-    fn account(status: AccountStatus, provider: Option<&str>) -> Account {
-        Account {
-            key: AccountKey("work".to_owned()),
-            module: ModuleId::Accountd,
-            label: "Work mail".to_owned(),
-            status,
-            place: Place::Elsewhere,
-            expires: None,
-            sign_in: None,
-            provider: provider.map(|name| AccountProvider {
-                id: "google".to_owned(),
-                name: name.to_owned(),
-            }),
-            group: ProviderGroup::Internet,
-            services: Vec::new(),
-            sync: Vec::new(),
-            show_in_files: None,
-            permissions: Vec::new(),
-            reauth: None,
-            sign_out: None,
-            remove: None,
-            used_by: Vec::new(),
-            spend: AccountSpend::default(),
-        }
-    }
 
     fn permission(
         label: &str,

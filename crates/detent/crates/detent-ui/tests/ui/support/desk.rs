@@ -34,11 +34,6 @@ impl Fake {
         *self.0.rows.lock().expect("rows") = rows;
     }
 
-    /// The folder the chooser gives the person's choice.
-    pub fn will_choose(&self, folder: &str) {
-        *self.0.folder.lock().expect("folder") = Some(folder.to_owned());
-    }
-
     /// Every download asked for.
     pub fn installs(&self) -> Vec<(String, InstallScope)> {
         self.0.installs.lock().expect("installs").clone()

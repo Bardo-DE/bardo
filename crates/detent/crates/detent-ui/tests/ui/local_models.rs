@@ -49,7 +49,7 @@ struct World {
     fake: Fake,
     module: Inferd,
     harness: Harness,
-    rt: tokio::runtime::Runtime,
+    _rt: tokio::runtime::Runtime,
     _bus: PrivateBus,
 }
 
@@ -75,7 +75,7 @@ fn world(name: &str, rows: Vec<RunningModel>) -> World {
         fake,
         module,
         harness,
-        rt,
+        _rt: rt,
         _bus: bus,
     }
 }

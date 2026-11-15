@@ -95,29 +95,6 @@ fn the_list_stays_beside_the_detail_of_the_account_chosen_in_it() {
     );
 }
 
-fn grouped() -> Vec<Held> {
-    vec![
-        Held::new("claude", "Claude Code", "ok", &["agent"])
-            .in_group("agent")
-            .signing_in("agent"),
-        Held::new("work", "Work mail", "ok", &["mail"]).in_group("internet"),
-        Held::runtime("ollama", "Ollama", "ok").in_group("intelligence"),
-    ]
-}
-
-/// The headings of the list, top to bottom.
-fn headings(w: &World) -> Vec<String> {
-    let page = w.harness.html();
-    let html = &page[page.find("class=\"accounts-list\"").expect("the list")..];
-    ["Internet Accounts", "Intelligence", "Assistants"]
-        .into_iter()
-        .map(|name| (html.find(&format!(">{name}<")), name))
-        .filter_map(|(at, name)| at.map(|at| (at, name.to_owned())))
-        .collect::<std::collections::BTreeMap<_, _>>()
-        .into_values()
-        .collect()
-}
-
 #[test]
 fn resting_the_pointer_on_an_app_names_the_services_it_uses() {
     let mut w = world("accounts-app-card");

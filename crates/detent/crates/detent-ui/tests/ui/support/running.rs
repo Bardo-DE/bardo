@@ -99,18 +99,13 @@ impl Inference {
 /// The fake, kept alive while the test runs.
 pub struct Fake {
     state: Arc<State>,
-    connection: zbus::Connection,
+    _connection: zbus::Connection,
 }
 
 impl Fake {
     /// Every Start and Stop that arrived, as `start <model>` and `stop <model>`.
     pub fn calls(&self) -> Vec<String> {
         self.state.calls.lock().expect("calls").clone()
-    }
-
-    /// The next Start or Stop is refused with `words`.
-    pub fn refuse_next(&self, words: &str) {
-        *self.state.refuse.lock().expect("refuse") = Some(words.to_owned());
     }
 
     /// A Start waits, once `starting`, until `finish`.
@@ -124,25 +119,6 @@ impl Fake {
         self.state.release.notify_one();
     }
 
-    /// The model's engine fails on its own, with `reason`; inferd says so.
-    pub async fn fails(&self, model: &str, reason: &str) {
-        {
-            let mut rows = self.state.rows.lock().expect("rows");
-            if let Some(row) = rows.iter_mut().find(|row| row.model == model) {
-                row.state = RunState::Failed;
-                row.reason = Some(reason.to_owned());
-            }
-        }
-        let served = self
-            .connection
-            .object_server()
-            .interface::<_, Inference>(INFERENCE_PATH)
-            .await
-            .expect("inferd is served");
-        Inference::running_changed(served.signal_emitter())
-            .await
-            .expect("the signal goes out");
-    }
 }
 
 /// Serves inferd running `rows`. The model picker's module is not on the bus: a world hosts it in
@@ -165,5 +141,8 @@ pub async fn serve(bus: &PrivateBus, rows: Vec<RunningModel>) -> Fake {
         .request_name(INFERENCE_BUS)
         .await
         .expect("inferd's name");
-    Fake { state, connection }
+    Fake {
+        state,
+        _connection: connection,
+    }
 }

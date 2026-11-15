@@ -10,7 +10,7 @@ use crate::support::drive::click;
 use crate::support::syncd::{Standing, Syncd};
 use detent_callers::{RoleCheck, RoleName, introduce_service, private_peers, roles};
 use detent_client::Vouch;
-use detent_model::{Absence, ModuleId, PageSlug};
+use detent_model::{ModuleId, PageSlug};
 use detent_system::modules::FakeModules;
 use detent_ui::Opening;
 use ds::prelude::Scheme;
@@ -122,12 +122,12 @@ struct World {
     /// What the sync service's `Status` answers; set a dataset's standing to change it.
     sync1: Syncd,
     harness: Harness,
-    rt: tokio::runtime::Runtime,
+    _rt: tokio::runtime::Runtime,
     _bus: PrivateBus,
     /// The modules, hosted in memory.
     modules: FakeModules,
     /// The sync service's own object on the bus, while it is there: it is no live module.
-    sync_bus: Option<zbus::Connection>,
+    _sync_bus: Option<zbus::Connection>,
 }
 
 fn world(name: &str) -> World {
@@ -200,10 +200,10 @@ fn start_syncing(
         syncd,
         sync1,
         harness,
-        rt,
+        _rt: rt,
         _bus: bus,
         modules,
-        sync_bus,
+        _sync_bus: sync_bus,
     }
 }
 
@@ -217,15 +217,6 @@ impl World {
         );
     }
 
-    /// The module goes away, as when its service stops (and syncd's own object leaves the bus).
-    fn stop(&mut self, module: ModuleId) {
-        self.modules.away(&module.daemon(), Absence::NotRunning);
-        if let (ModuleId::Syncd, Some(connection)) = (module, self.sync_bus.take()) {
-            self.rt
-                .block_on(connection.release_name(module.bus()))
-                .expect("the name is released");
-        }
-    }
 }
 
 /// Rests the pointer on the permit's row, so the strip shows under it, and presses Revoke.

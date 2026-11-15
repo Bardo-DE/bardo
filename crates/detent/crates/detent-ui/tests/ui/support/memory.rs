@@ -20,8 +20,6 @@ struct State {
     /// What each `ConfirmSettings` was given, in order: `key=value` pairs joined by a comma.
     confirms: Vec<String>,
     reads: usize,
-    /// How many times the confinement was read.
-    confinement_reads: usize,
     /// The name of the refusal the next confirmation answers with.
     refuse: Option<&'static str>,
 }
@@ -70,7 +68,6 @@ impl Control {
 impl Control {
     #[zbus(property)]
     async fn confinement(&self) -> String {
-        self.state.lock().expect("state").confinement_reads += 1;
         self.confinement.to_owned()
     }
 
@@ -115,19 +112,9 @@ pub struct Fake {
 }
 
 impl Fake {
-    /// The next confirmation is refused with the refusal named `name` (`NotAllowed`, `Invalid`).
-    pub fn refuse_next(&self, name: &'static str) {
-        self.state.lock().expect("state").refuse = Some(name);
-    }
-
     /// What was confirmed, in order, one entry per call: `key=value` pairs joined by a comma.
     pub fn confirms(&self) -> Vec<String> {
         self.state.lock().expect("state").confirms.clone()
-    }
-
-    /// How many times the confinement was read.
-    pub fn confinement_reads(&self) -> usize {
-        self.state.lock().expect("state").confinement_reads
     }
 
     /// How many times the waiting settings were read.

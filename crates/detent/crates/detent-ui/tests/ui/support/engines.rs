@@ -5,7 +5,7 @@
 use super::bus::PrivateBus;
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use steward_dbus::inference::{
     EngineState, INFERENCE_BUS, INFERENCE_PATH, LocalEngine, local_engine_to_dbus,
@@ -24,8 +24,6 @@ const SYSTEMD_PATH: &str = "/org/freedesktop/systemd1";
 struct State {
     /// Whether llama.cpp's program is there.
     found: AtomicBool,
-    /// How many times `LocalEngines` was asked.
-    asked: AtomicUsize,
     /// Each `RestartUnit`, as `RestartUnit <unit> <mode>`.
     calls: Mutex<Vec<String>>,
 }
@@ -50,7 +48,6 @@ struct Inference(Arc<State>);
 #[zbus::interface(name = "org.quire.Inference1")]
 impl Inference {
     async fn local_engines(&self) -> Vec<(String, Details)> {
-        self.0.asked.fetch_add(1, Ordering::SeqCst);
         vec![
             row(
                 "llama_cpp",
@@ -109,11 +106,6 @@ impl Fake {
     /// Every restart asked for, in order.
     pub fn restarts(&self) -> Vec<String> {
         self.state.calls.lock().expect("calls").clone()
-    }
-
-    /// How many times the engines were asked for.
-    pub fn looks(&self) -> usize {
-        self.state.asked.load(Ordering::SeqCst)
     }
 }
 
