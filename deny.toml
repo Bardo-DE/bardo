@@ -32,6 +32,10 @@ allow = [
     # per-crate exception; slipway and the others allowed it globally).
     "CDLA-Permissive-2.0",
 ]
+# SQLCipher's sources: SQLite's public-domain blessing and libtomcrypt's WTFPL, for this crate only.
+exceptions = [
+    { crate = "sqlcipher-src", allow = ["blessing", "WTFPL"] },
+]
 confidence-threshold = 0.9
 
 [advisories]
