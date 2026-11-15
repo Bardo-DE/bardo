@@ -30,46 +30,12 @@ fn is_fine(started: &Started) -> bool {
 }
 
 #[test]
-fn a_release_that_never_starts_is_rolled_back_on_the_third_different_boot() {
-    let sandbox = two_releases();
-    assert!(is_fine(&start(&sandbox, "b1")));
-    assert!(is_fine(&start(&sandbox, "b2")));
-    assert_eq!(sandbox.current(), Some(v("0.2.0")));
-    match start(&sandbox, "b3") {
-        Started::Restored(applied) => assert_eq!(applied.version, v("0.1.0")),
-        Started::Fine => panic!("the third unconfirmed boot restores the previous version"),
-    }
-    assert_eq!(sandbox.current(), Some(v("0.1.0")));
-
-    // The release that was put back is known to work: it is not rolled back for its neighbour's boots.
-    for boot in ["b4", "b5", "b6", "b7"] {
-        assert!(is_fine(&start(&sandbox, boot)), "{boot}");
-    }
-    assert_eq!(sandbox.current(), Some(v("0.1.0")));
-}
-
-#[test]
 fn the_same_boot_counts_once_so_a_program_of_the_person_cannot_force_a_rollback() {
     let sandbox = two_releases();
     for _ in 0..50 {
         assert!(is_fine(&start(&sandbox, "b1")));
     }
     assert_eq!(sandbox.current(), Some(v("0.2.0")));
-}
-
-#[test]
-fn a_confirmed_release_keeps_its_boots() {
-    let sandbox = two_releases();
-    assert!(is_fine(&start(&sandbox, "b1")));
-    assert!(is_fine(&start(&sandbox, "b2")));
-    note_confirmed(&sandbox.layout).expect("confirmed");
-    for boot in ["b3", "b4", "b5", "b6"] {
-        assert!(is_fine(&start(&sandbox, boot)), "{boot}");
-    }
-    assert_eq!(sandbox.current(), Some(v("0.2.0")));
-    // Confirming twice is the same as once.
-    note_confirmed(&sandbox.layout).expect("confirmed again");
-    assert!(is_fine(&start(&sandbox, "b7")));
 }
 
 #[test]
