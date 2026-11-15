@@ -2,10 +2,9 @@
 //! breaker, the limits and the taint. Each is computed here from the router's state and reaches
 //! the policy only as a context value; the refusal they bring about is Cedar's ruling.
 
-use action_review::RepeatState;
 use docket_core::{Budget, Cost, KillSwitch, Ledger, charge, halted};
 use docket_permissions_core::{Limited};
-use policy_point::{BudgetFact, HaltFact, LimitFact, RepeatFact};
+use policy_point::{BudgetFact, HaltFact, LimitFact};
 use prov::{Effect, SpaceId, SpaceScope, UnixSeconds};
 
 /// What the stateful parts of the router say about one call, before Cedar rules.
@@ -57,14 +56,6 @@ pub fn run_facts(
         scope: scope_of(space, kill),
         budget: budget_fact(ledger, budget, cost, now),
         limit: limit_fact(limited),
-    }
-}
-
-/// The breaker's view of a call as a fact.
-pub fn repeat_fact(repeat: RepeatState) -> RepeatFact {
-    match repeat {
-        RepeatState::Fresh => RepeatFact::Fresh,
-        RepeatState::Repeated => RepeatFact::Repeated,
     }
 }
 

@@ -6,7 +6,6 @@ use crate::deadline::within;
 use crate::router::Router;
 use crate::seams::{GrantStore, Seams};
 use crate::watch::Watch;
-use action_review::RepeatState;
 use docket_context::labels::absorb;
 use docket_core::EventSink;
 use docket_core::{
@@ -14,7 +13,7 @@ use docket_core::{
     ConfirmDetail, ConfirmEnd, ConfirmId, ConfirmOffer, ConfirmRequest, Confirmer, Cost, Gesture,
     TaintNote,
 };
-use docket_gate::facts::{budget_fact, repeat_fact, run_facts, taint_fact};
+use docket_gate::facts::{budget_fact, run_facts, taint_fact};
 use docket_gate::gate::{GateInputs, Pending, gate};
 use docket_gate::prepared::grant_state;
 use docket_gate_wire::{CuaAsk, GateAnswer};
@@ -387,7 +386,7 @@ impl<S: Seams> Router<S> {
                 },
                 halt: run.halt,
                 budget: run.budget,
-                repeat: repeat_fact(RepeatState::Fresh),
+                repeat: false,
                 limit: run.limit,
                 taint,
                 run: allowed,

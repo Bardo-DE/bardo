@@ -93,16 +93,6 @@ impl Default for Breaker {
     }
 }
 
-/// Whether a call exactly repeats one that was denied.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum RepeatState {
-    /// New.
-    Fresh,
-    /// The same goal with the same arguments was denied earlier: refused without review.
-    Repeated,
-}
-
 /// Whether some goal was denied with at least `probing` different arguments.
 fn probing(breaker: &Breaker, probing: Count) -> bool {
     let goals: BTreeSet<&GoalKey> = breaker.denials().map(|m| &m.goal).collect();
@@ -152,10 +142,9 @@ pub fn note(
 }
 
 /// Whether `goal` with `args` was already denied in this session.
-pub fn repeated(breaker: &Breaker, goal: &GoalKey, args: ArgDigest) -> RepeatState {
-    if breaker.denials().any(|m| &m.goal == goal && m.args == args) {
-        RepeatState::Repeated
-    } else {
-        RepeatState::Fresh
-    }
+///
+/// A call that exactly repeats a denied one (the same goal with the same arguments) is refused
+/// without review.
+pub fn repeated(breaker: &Breaker, goal: &GoalKey, args: ArgDigest) -> bool {
+    breaker.denials().any(|m| &m.goal == goal && m.args == args)
 }

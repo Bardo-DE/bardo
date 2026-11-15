@@ -137,16 +137,6 @@ pub enum BudgetFact {
     Over(BudgetKind),
 }
 
-/// Whether the exact call was denied before.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum RepeatFact {
-    /// New.
-    Fresh,
-    /// Denied earlier, with the same arguments.
-    Repeated,
-}
-
 /// The strongest limit that covers the call: the person's, the assistant's or the
 /// administrator's floor.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -212,8 +202,8 @@ pub struct PolicyContext {
     pub halt: HaltFact,
     /// Whether the call fits the budgets.
     pub budget: BudgetFact,
-    /// Whether the exact call was denied before.
-    pub repeat: RepeatFact,
+    /// Whether the exact call was denied before, with the same arguments.
+    pub repeat: bool,
     /// What the limits say.
     pub limit: LimitFact,
     /// Whether the session is tainted for this call: it read untrusted content and the call

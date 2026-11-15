@@ -69,7 +69,7 @@ fn context_json(c: &PolicyContext) -> Value {
         "impact": slug(&c.impact),
         "halt": slug(&c.halt),
         "budget": budget_slug(&c.budget),
-        "repeat": slug(&c.repeat),
+        "repeat": if c.repeat { "repeated" } else { "fresh" },
         "limit": slug(&c.limit),
         "taint": if c.taint { "tainted" } else { "clean" },
         "run": slug(&c.run),

@@ -4,7 +4,7 @@
 
 use crate::router::Router;
 use crate::seams::{GrantStore, Seams};
-use action_review::{GoalKey, RepeatState, ReviewRequest, repeated};
+use action_review::{GoalKey, ReviewRequest, repeated};
 use docket_context::labels::{
     arg_labels, args_confidentiality, label_args, planner_integrity, resolve_target, sink_integrity,
 };
@@ -19,7 +19,7 @@ use docket_core::{BudgetKind, CallRefusal, Cost};
 use docket_gate::argcheck::{check_call, no_handle_names, target_name};
 use docket_gate::consent::{consent_for, within_reach};
 use docket_gate::coverage::coverage;
-use docket_gate::facts::{RunFacts, budget_fact, repeat_fact, run_facts, taint_fact};
+use docket_gate::facts::{RunFacts, budget_fact, run_facts, taint_fact};
 use docket_gate::gate::{GateInputs, Pending, gate};
 use docket_gate::may_make::may_make;
 use docket_gate::prepared::{
@@ -85,7 +85,7 @@ struct Facts<'a> {
     impact: Impact,
     relation: SpaceRelation,
     run: &'a RunFacts,
-    repeat: RepeatState,
+    repeat: bool,
     taint: bool,
     mode: Mode,
     rows: ModeRows,
@@ -141,7 +141,7 @@ impl<S: Seams> Router<S> {
                 impact: f.impact,
                 halt: f.run.halt,
                 budget: f.run.budget,
-                repeat: repeat_fact(f.repeat),
+                repeat: f.repeat,
                 limit: f.run.limit,
                 taint: f.taint,
                 run: policy_point::RunFact::NotAsked,

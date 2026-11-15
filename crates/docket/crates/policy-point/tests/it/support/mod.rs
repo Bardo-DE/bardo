@@ -59,7 +59,7 @@ pub fn base(effect: Effect) -> PolicyRequest {
             impact: Impact::High,
             halt: HaltFact::Running,
             budget: BudgetFact::Within,
-            repeat: RepeatFact::Fresh,
+            repeat: false,
             limit: LimitFact::Free,
             taint: false,
             run: RunFact::NotAsked,

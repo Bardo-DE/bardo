@@ -282,7 +282,7 @@ fn a_fact_that_refuses_denies_by_its_rule_whatever_else_is_granted() {
         ),
         (
             "an exact repeat",
-            with(Effect::Read, |r| r.context.repeat = RepeatFact::Repeated),
+            with(Effect::Read, |r| r.context.repeat = true),
             "repeated",
         ),
         (

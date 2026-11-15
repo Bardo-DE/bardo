@@ -114,18 +114,21 @@ fn the_same_arguments_three_times_is_a_repeat_not_probing() {
         denied("mail.message.send", 7),
     ]);
     assert!(trips.iter().all(Option::is_none), "{trips:?}");
-    assert_eq!(
-        repeated(&breaker, &goal("mail.message.send"), ArgDigest(7)),
-        RepeatState::Repeated
-    );
-    assert_eq!(
-        repeated(&breaker, &goal("mail.message.send"), ArgDigest(8)),
-        RepeatState::Fresh
-    );
-    assert_eq!(
-        repeated(&breaker, &goal("mail.thread.read"), ArgDigest(7)),
-        RepeatState::Fresh
-    );
+    assert!(repeated(
+        &breaker,
+        &goal("mail.message.send"),
+        ArgDigest(7)
+    ));
+    assert!(!repeated(
+        &breaker,
+        &goal("mail.message.send"),
+        ArgDigest(8)
+    ));
+    assert!(!repeated(
+        &breaker,
+        &goal("mail.thread.read"),
+        ArgDigest(7)
+    ));
 }
 
 #[test]

@@ -16,7 +16,7 @@ mod request;
 mod verdict;
 
 pub use breaker::{
-    ArgDigest, Breaker, DecisionMark, DenialMark, DeniedBy, GoalKey, RepeatState, note, repeated,
+    ArgDigest, Breaker, DecisionMark, DenialMark, DeniedBy, GoalKey, note, repeated,
 };
 pub use cascade::{
     Gate, ModelChoice, ModelFamily, Reviewer, ReviewerSet, escalate, plan, tighten,
