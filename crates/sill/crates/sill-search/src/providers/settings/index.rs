@@ -255,7 +255,7 @@ version = 1
 
 [[key]]
 path = "dock.magnification"
-default = "on"
+default = true
 label = "Magnification"
 help = "Icons grow as the pointer nears them."
 section = "Magnification"
@@ -263,9 +263,6 @@ exposure = "basic"
 
 [key.kind]
 kind = "toggle"
-
-[key.kind.v]
-variants = ["on", "off"]
 
 [key.page]
 kind = "dock"

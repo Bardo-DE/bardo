@@ -403,7 +403,7 @@ label = "Thread"
 plural = "Threads"
 icon = "mail"
 class = "mail"
-index = "indexed"
+index = true
 titles = { kind = "third_party", v = { kind = "mail" } }
 props = []
 
@@ -413,7 +413,7 @@ label = "Contact"
 plural = "Contacts"
 icon = "person"
 class = "contacts"
-index = "not_indexed"
+index = false
 titles = { kind = "app_authored" }
 props = []
 
@@ -423,7 +423,7 @@ label = "Open"
 on = { kind = "one", v = "mail.thread" }
 effect = "read"
 classes = []
-undo = "not_undoable"
+undo = false
 reach = "hidden"
 latency = "quick"
 result = { kind = "nothing" }

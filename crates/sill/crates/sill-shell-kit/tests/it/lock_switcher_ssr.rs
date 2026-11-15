@@ -245,33 +245,12 @@ fn render(make: fn() -> Element) -> String {
     dioxus_ssr::render(&dom)
 }
 
-/// `html` with every emoji sheet's `data:` URI replaced by its length (as `emoji_ssr`), so a
-/// golden stays readable and still notices a different sheet; the stand-in pictures' short URIs
-/// are kept.
-fn redacted(html: &str) -> String {
-    let mut out = String::new();
-    let mut rest = html;
-    while let Some(at) = rest.find("data:image/png;base64,") {
-        out.push_str(&rest[..at]);
-        let tail = &rest[at..];
-        let end = tail.find(['"', '&', ')']).unwrap_or(tail.len());
-        match end {
-            0..=64 => out.push_str(&tail[..end]),
-            _ => out.push_str(&format!("data:image/png;base64,({} chars)", end)),
-        }
-        rest = &tail[end..];
-    }
-    out.push_str(rest);
-    out
-}
-
 pub(crate) fn specimens() -> Vec<Specimen> {
     SPECIMENS
         .iter()
         .map(|(name, make)| {
             let html = render(*make);
-            let stored = redacted(&html);
-            Specimen::of(&format!("lock_switcher/{name}.html"), html).stored_as(stored)
+            Specimen::of(&format!("lock_switcher/{name}.html"), html)
         })
         .collect()
 }

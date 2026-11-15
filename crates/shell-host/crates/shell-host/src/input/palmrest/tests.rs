@@ -49,25 +49,25 @@ fn a_fake_daemon_hears_pointer_over_and_its_events_are_read() {
     let peer = accept(&listener).expect("accept");
     assert_eq!(
         received(&peer),
-        r#"{"kind":"session_lock","v":{"state":"unlocked"}}"#,
+        r#"{"kind":"session_lock","v":{"locked":false}}"#,
         "the lock state is told first on connect"
     );
     assert_eq!(
         received(&peer),
-        r#"{"kind":"pointer_over","v":{"over":"ours"}}"#,
+        r#"{"kind":"pointer_over","v":{"over":true}}"#,
         "then the pointer"
     );
     client.pointer_over(true);
     client.pointer_over(false);
     assert_eq!(
         received(&peer),
-        r#"{"kind":"pointer_over","v":{"over":"not_ours"}}"#,
+        r#"{"kind":"pointer_over","v":{"over":false}}"#,
         "only changes"
     );
 
     let hello = r#"{"kind":"hello","v":{"version":3,"device":{"name":"m","path":"/dev/hidraw0","vendor":76,"product":617}}}"#;
     let scroll = r#"{"kind":"scroll","v":{"gesture":1,"phase":"began","dx_px":0.0,"dy_px":0.0,"fingers":1,"axis":"y","t_ns":5}}"#;
-    let touches = r#"{"kind":"touches","v":{"active":"down"}}"#;
+    let touches = r#"{"kind":"touches","v":{"active":true}}"#;
     for datagram in [hello, touches, "not json", scroll] {
         send(&peer, datagram.as_bytes(), SendFlags::empty()).expect("send");
     }
@@ -100,7 +100,7 @@ fn the_lock_is_sent_on_change_and_again_after_a_reconnect() {
     client.session_lock(true);
     let _reader = client.connect().expect("connects");
     let peer = accept(&listener).expect("accept");
-    let locked = r#"{"kind":"session_lock","v":{"state":"locked"}}"#;
+    let locked = r#"{"kind":"session_lock","v":{"locked":true}}"#;
     assert_eq!(
         received(&peer),
         locked,
@@ -108,14 +108,14 @@ fn the_lock_is_sent_on_change_and_again_after_a_reconnect() {
     );
     assert_eq!(
         received(&peer),
-        r#"{"kind":"pointer_over","v":{"over":"not_ours"}}"#
+        r#"{"kind":"pointer_over","v":{"over":false}}"#
     );
 
     client.session_lock(true);
     client.session_lock(false);
     assert_eq!(
         received(&peer),
-        r#"{"kind":"session_lock","v":{"state":"unlocked"}}"#,
+        r#"{"kind":"session_lock","v":{"locked":false}}"#,
         "only changes are sent"
     );
 
@@ -166,7 +166,7 @@ fn a_daemon_that_starts_late_is_found_on_the_timer_without_a_pointer_enter() {
     let peer = accept(&listener).expect("accept");
     assert_eq!(
         received(&peer),
-        r#"{"kind":"session_lock","v":{"state":"locked"}}"#,
+        r#"{"kind":"session_lock","v":{"locked":true}}"#,
         "the lock is the first thing the restarted daemon hears"
     );
     assert_eq!(client.retry_in(), None, "connected: nothing to wait for");
@@ -221,7 +221,7 @@ fn a_flood_is_read_a_bounded_batch_at_a_time() {
     let mut client = Palmrest::trusting(dir.path().join("events.sock"), None);
     let reader = client.connect().expect("connects");
     let peer = accept(&listener).expect("accept");
-    let touches = r#"{"kind":"touches","v":{"active":"down"}}"#;
+    let touches = r#"{"kind":"touches","v":{"active":true}}"#;
     for _ in 0..10 {
         send(&peer, touches.as_bytes(), SendFlags::empty()).expect("send");
     }
@@ -325,7 +325,7 @@ fn a_hello_of_another_version_stops_the_read() {
     let reader = client.connect().expect("connects");
     let peer = accept(&listener).expect("accept");
     let hello = r#"{"kind":"hello","v":{"version":2,"device":{"name":"m","path":"p","vendor":0,"product":0}}}"#;
-    let touches = r#"{"kind":"touches","v":{"active":"down"}}"#;
+    let touches = r#"{"kind":"touches","v":{"active":true}}"#;
     for datagram in [hello, touches] {
         send(&peer, datagram.as_bytes(), SendFlags::empty()).expect("send");
     }

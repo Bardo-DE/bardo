@@ -20,9 +20,9 @@ const HELD_LINE: &str = ".sill-confirm-held-why";
 const NEVER_OFFERED: &str = r#"{"never":"offered"}"#;
 const NEVER_WITHHELD: &str = r#"{"never":"withheld"}"#;
 const HELD_UNDOABLE: &str = r#"{"never":"offered","held":{"id":"sg-00000000000000a1",
-    "level":"always_ask","why":"You said: “don't touch Work”","undo":"offered"}}"#;
+    "level":"always_ask","why":"You said: “don't touch Work”","undo":true}}"#;
 const HELD_LOCKED: &str = r#"{"never":"withheld","held":{"id":"sg-00000000000000a2",
-    "level":"always_ask","why":"Your administrator requires asking first.","undo":"withheld"}}"#;
+    "level":"always_ask","why":"Your administrator requires asking first.","undo":false}}"#;
 
 const WHY_SAID: &str = "You said: \u{201c}don't touch Work\u{201d}";
 

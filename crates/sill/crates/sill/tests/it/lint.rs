@@ -697,21 +697,21 @@ fn accounts_sheet_states() -> Vec<(&'static str, String)> {
         (
             "sign_in",
             r#"{"kind":"sign_in","v":{"provider":"nextcloud","fields":[
-            {"kind":"address","entry":"plain","presence":"required","prefill":null},
-            {"kind":"password","entry":"secret","presence":"required","prefill":null}],
+            {"kind":"address","entry":"plain","required":true,"prefill":null},
+            {"kind":"password","entry":"secret","required":true,"prefill":null}],
             "problem":{"field":"password","problem":"refused"}}}"#,
         ),
         (
             "sign_in_manual",
             r#"{"kind":"sign_in","v":{"provider":"generic-imap","fields":[
-            {"kind":"protocol","entry":"plain","presence":"required","prefill":"imap"},
-            {"kind":"server","entry":"plain","presence":"required","prefill":"imap.example.org"},
-            {"kind":"security","entry":"plain","presence":"required","prefill":"tls"},
-            {"kind":"port","entry":"plain","presence":"optional","prefill":"993"},
-            {"kind":"outgoing_server","entry":"plain","presence":"required","prefill":"smtp.example.org"},
-            {"kind":"outgoing_security","entry":"plain","presence":"required","prefill":"starttls"},
-            {"kind":"outgoing_port","entry":"plain","presence":"optional","prefill":"465"},
-            {"kind":"username","entry":"plain","presence":"optional","prefill":null}],
+            {"kind":"protocol","entry":"plain","required":true,"prefill":"imap"},
+            {"kind":"server","entry":"plain","required":true,"prefill":"imap.example.org"},
+            {"kind":"security","entry":"plain","required":true,"prefill":"tls"},
+            {"kind":"port","entry":"plain","required":false,"prefill":"993"},
+            {"kind":"outgoing_server","entry":"plain","required":true,"prefill":"smtp.example.org"},
+            {"kind":"outgoing_security","entry":"plain","required":true,"prefill":"starttls"},
+            {"kind":"outgoing_port","entry":"plain","required":false,"prefill":"465"},
+            {"kind":"username","entry":"plain","required":false,"prefill":null}],
             "problem":null}}"#,
         ),
         (

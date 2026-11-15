@@ -90,8 +90,7 @@ pub(crate) fn specimens() -> Vec<Specimen> {
         .iter()
         .map(|(name, make)| {
             let html = render(*make);
-            let stored = redacted(&html);
-            Specimen::of(&format!("user_picture/{name}.html"), html).stored_as(stored)
+            Specimen::of(&format!("user_picture/{name}.html"), html)
         })
         .collect()
 }

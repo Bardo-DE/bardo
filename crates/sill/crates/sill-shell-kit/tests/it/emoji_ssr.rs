@@ -96,8 +96,7 @@ pub(crate) fn specimens() -> Vec<Specimen> {
         .into_iter()
         .map(|(name, props)| {
             let html = render(props);
-            let stored = redacted(&html);
-            Specimen::of(&format!("emoji/{name}.html"), html).stored_as(stored)
+            Specimen::of(&format!("emoji/{name}.html"), html)
         })
         .collect()
 }

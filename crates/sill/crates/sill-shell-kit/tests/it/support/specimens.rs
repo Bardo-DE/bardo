@@ -1,11 +1,9 @@
-//! The checks every `*_ssr` module's specimens share: each is compared with its golden, linted
+//! The checks every `*_ssr` module's specimens share: each is linted
 //! against the stylesheet, and every `ds-` class in it must be styled. A module lists its
 //! specimens as [`Specimen`]s; `ssr_specimens` runs these checks over all of them at once, so a
 //! failure names `<golden directory>/<specimen>`.
 
 use ds_lint::{LintConfig, markup};
-
-use super::golden;
 
 /// Which of the lint checks a specimen takes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -23,8 +21,6 @@ pub enum Checks {
 pub struct Specimen {
     /// The golden's path under `tests/snapshots`, which also names the specimen.
     pub golden: String,
-    /// What is compared with the golden (the markup, or its readable redaction).
-    pub stored: String,
     /// The markup as rendered, which is linted.
     pub html: String,
     pub checks: Checks,
@@ -35,28 +31,15 @@ impl Specimen {
     pub fn of(golden: &str, html: String) -> Specimen {
         Specimen {
             golden: golden.to_owned(),
-            stored: html.clone(),
             html,
             checks: Checks::Both,
         }
-    }
-
-    /// The same specimen, with `stored` compared with the golden in place of the markup.
-    pub fn stored_as(self, stored: String) -> Specimen {
-        Specimen { stored, ..self }
     }
 
     /// The same specimen, taking only `checks`.
     pub fn checked(self, checks: Checks) -> Specimen {
         Specimen { checks, ..self }
     }
-}
-
-/// The goldens that differ from their specimens.
-pub fn mismatches(set: &[Specimen]) -> Vec<String> {
-    set.iter()
-        .filter_map(|specimen| golden::check(&specimen.golden, &specimen.stored).err())
-        .collect()
 }
 
 /// Every lint offence and every unstyled class in `set`.

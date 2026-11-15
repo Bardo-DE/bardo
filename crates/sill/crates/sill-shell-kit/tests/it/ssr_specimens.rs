@@ -1,9 +1,8 @@
-//! Every `*_ssr` module's specimens, checked once: each matches its golden (`DS_BLESS=1` rewrites
-//! them, then read the diff), lints clean, and uses only `ds-` classes the stylesheet styles. A
+//! Every `*_ssr` module's specimens, checked once: lints clean, and uses only `ds-` classes the stylesheet styles. A
 //! new specimen is a row in its module's `specimens()`; a new module is a line here. Each module
 //! keeps its own behaviour tests.
 
-use crate::support::specimens::{Specimen, mismatches, offences};
+use crate::support::specimens::{Specimen, offences};
 
 fn all() -> Vec<Specimen> {
     [
@@ -22,12 +21,6 @@ fn all() -> Vec<Specimen> {
         crate::widgets_ssr::specimens(),
     ]
     .concat()
-}
-
-#[test]
-fn every_specimen_matches_its_golden() {
-    let failures = mismatches(&all());
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
 #[test]

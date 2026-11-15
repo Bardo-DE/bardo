@@ -338,7 +338,7 @@ label = "Archive"
 on = { kind = "nothing" }
 effect = "undoable_write"
 classes = ["app_own"]
-undo = "token"
+undo = true
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -353,7 +353,7 @@ label = "Erase"
 on = { kind = "nothing" }
 effect = "destructive"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }

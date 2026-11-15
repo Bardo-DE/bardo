@@ -32,22 +32,22 @@ const PROVIDERS: &str = r#"{"kind":"providers","v":[
   {"id":"google","label":"Google","mark":"google"},
   {"id":"generic-imap","label":"Other mail account","mark":"mail"}]}"#;
 const FORM: &str = r#"{"kind":"sign_in","v":{"provider":"nextcloud","row":{"id":"nextcloud","label":"Nextcloud","mark":"nextcloud"},"fields":[
-  {"kind":"address","entry":"plain","presence":"required","prefill":null},
-  {"kind":"password","entry":"secret","presence":"required","prefill":null}],"problem":null}}"#;
+  {"kind":"address","entry":"plain","required":true,"prefill":null},
+  {"kind":"password","entry":"secret","required":true,"prefill":null}],"problem":null}}"#;
 /// The hand-typed server form of a mail account: the protocol is a pop-up, then the server.
 const MANUAL: &str = r#"{"kind":"sign_in","v":{"provider":"generic-imap","fields":[
-  {"kind":"address","entry":"plain","presence":"required","prefill":null},
-  {"kind":"protocol","entry":"plain","presence":"required","prefill":"imap"},
-  {"kind":"server","entry":"plain","presence":"required","prefill":null},
-  {"kind":"security","entry":"plain","presence":"required","prefill":"tls"},
-  {"kind":"port","entry":"plain","presence":"optional","prefill":"993"},
-  {"kind":"outgoing_server","entry":"plain","presence":"required","prefill":null},
-  {"kind":"outgoing_security","entry":"plain","presence":"required","prefill":"tls"},
-  {"kind":"outgoing_port","entry":"plain","presence":"optional","prefill":"465"},
-  {"kind":"username","entry":"plain","presence":"optional","prefill":null}],"problem":null}}"#;
+  {"kind":"address","entry":"plain","required":true,"prefill":null},
+  {"kind":"protocol","entry":"plain","required":true,"prefill":"imap"},
+  {"kind":"server","entry":"plain","required":true,"prefill":null},
+  {"kind":"security","entry":"plain","required":true,"prefill":"tls"},
+  {"kind":"port","entry":"plain","required":false,"prefill":"993"},
+  {"kind":"outgoing_server","entry":"plain","required":true,"prefill":null},
+  {"kind":"outgoing_security","entry":"plain","required":true,"prefill":"tls"},
+  {"kind":"outgoing_port","entry":"plain","required":false,"prefill":"465"},
+  {"kind":"username","entry":"plain","required":false,"prefill":null}],"problem":null}}"#;
 const REFUSED: &str = r#"{"kind":"sign_in","v":{"provider":"nextcloud","row":{"id":"nextcloud","label":"Nextcloud","mark":"nextcloud"},"fields":[
-  {"kind":"address","entry":"plain","presence":"required","prefill":null},
-  {"kind":"password","entry":"secret","presence":"required","prefill":null}],
+  {"kind":"address","entry":"plain","required":true,"prefill":null},
+  {"kind":"password","entry":"secret","required":true,"prefill":null}],
   "problem":{"field":"password","problem":"refused"}}}"#;
 const BROWSER: &str = r#"{"kind":"browser_wait","v":{"provider":"google","url":"https://accounts.example.org/auth?c=1"}}"#;
 const CODE: &str = r#"{"kind":"show_code","v":{"provider":"microsoft","user_code":"ABCD-EFGH","url":"https://example.org/device"}}"#;
@@ -56,8 +56,8 @@ const FAILED: &str = r#"{"kind":"failed","v":{"provider":"nextcloud","row":{"id"
 const DONE: &str = r#"{"kind":"done"}"#;
 const REVIEW: &str = r#"{"kind":"review","v":{"provider":"nextcloud","allow":{"name":"org.quire.Mail","isolation":"flatpak"}
   ,"review":{"label":"ada@example.org","endpoints":[],"services":[
-  {"kind":"mail","state":{"kind":"offered","v":"on"},"limit":null},
-  {"kind":"calendar","state":{"kind":"offered","v":"on"},"limit":null},
+  {"kind":"mail","state":{"kind":"offered","v":true},"limit":null},
+  {"kind":"calendar","state":{"kind":"offered","v":true},"limit":null},
   {"kind":"photos","state":{"kind":"absent","v":"provider_offers_none"},"limit":null}]}}}"#;
 const CONSENT: &str = r#"{"kind":"consent","v":{"app":{"name":"org.quire.Photos","isolation":"flatpak"},
   "kind":"storage","class":"app_own","usage":"interactive","accounts":[
@@ -427,7 +427,7 @@ fn protocol_held(run: &Run) -> Option<&'static str> {
         .map(|sheet| format!("{:?}", sheet.draft))?;
     ["imap", "pop3", "jmap"].into_iter().find(|slug| {
         draft.contains(&format!(
-            "kind: Protocol, entry: Plain, presence: Required, value: Plain(\"{slug}\")"
+            "kind: Protocol, entry: Plain, required: true, value: Plain(\"{slug}\")"
         ))
     })
 }
