@@ -1,6 +1,6 @@
 //! Standing grants: scope matching, the held list and its text.
 
-use bulkhead::{AbsPath, Cover, PathFault};
+use bulkhead::{AbsPath, PathFault};
 use docket_permissions_core::*;
 use docket_vocab::ActionRef;
 
@@ -29,10 +29,6 @@ pub(crate) fn paths(items: &[&str]) -> CallFacts {
     }
 }
 
-fn is(cover: bool) -> Cover {
-    if cover { Cover::Covers } else { Cover::Misses }
-}
-
 #[test]
 fn path_prefixes_match_whole_components() {
     let table = [
@@ -50,7 +46,7 @@ fn path_prefixes_match_whole_components() {
     for (under, call, expect) in table {
         assert_eq!(
             files(under).covers(&paths(call)),
-            is(expect),
+            expect,
             "{under} over {call:?}"
         );
     }
@@ -69,7 +65,7 @@ fn a_scope_names_one_action() {
         action: act("files.file.delete"),
         args: ArgFacts::Paths(vec![path("/a/b/c")]),
     };
-    assert_eq!(files("/a/b").covers(&other), Cover::Misses);
+    assert!(!files("/a/b").covers(&other));
 }
 
 pub(crate) fn terminal(prefix: &str, cwd: &str) -> StandingScope {
@@ -130,7 +126,7 @@ fn a_command_prefix_and_cwd_both_have_to_match() {
     for (prefix, cwd, line, at, expect) in table {
         assert_eq!(
             terminal(prefix, cwd).covers(&command(line, at)),
-            is(expect),
+            expect,
             "{prefix} in {cwd} over {line:?} in {at}"
         );
     }
@@ -187,7 +183,7 @@ fn recipients_and_domains_match_whole() {
     for (grant, call, expect) in table {
         assert_eq!(
             outbound(grant.clone()).covers(&sends(call.clone())),
-            is(expect),
+            expect,
             "{grant:?} over {call:?}"
         );
     }
@@ -200,7 +196,7 @@ fn an_opaque_or_unscoped_call_is_never_covered() {
             action: act("files.file.move"),
             args,
         };
-        assert_eq!(files("/a").covers(&call), Cover::Misses);
+        assert!(!files("/a").covers(&call));
     }
 }
 
@@ -210,9 +206,9 @@ fn a_grant_covers_for_its_caller_only() {
     let agent = GrantCaller::AcpAgent(ProgramName::parse("claude-code").expect("program"));
     let grant = StandingGrant::new(editor.clone(), files("/a/b"), prov::UnixSeconds(1));
     let call = paths(&["/a/b/c"]);
-    assert_eq!(grant.covers(&editor, &call), Cover::Covers);
-    assert_eq!(grant.covers(&agent, &call), Cover::Misses);
-    assert_eq!(grant.covers(&GrantCaller::Companion, &call), Cover::Misses);
+    assert!(grant.covers(&editor, &call));
+    assert!(!grant.covers(&agent, &call));
+    assert!(!grant.covers(&GrantCaller::Companion, &call));
     assert_ne!(
         grant.id,
         StandingGrant::new(agent, files("/a/b"), prov::UnixSeconds(1)).id

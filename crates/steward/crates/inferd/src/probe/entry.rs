@@ -61,8 +61,8 @@ fn embed_table(cap: &EmbedCap) -> String {
         cap.dims.0,
         cap.max_batch.0.max(1),
         cap.max_input.0,
-        quoted(&cap.prompts.query.0),
-        quoted(&cap.prompts.document.0),
+        quoted(&cap.prompts.query),
+        quoted(&cap.prompts.document),
     )
 }
 

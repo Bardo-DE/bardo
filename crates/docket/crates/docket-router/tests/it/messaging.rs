@@ -5,9 +5,7 @@ use docket_context::tasks::TaskState;
 use docket_core::*;
 use docket_vocab::{CallRequest, CallerRole, Handle, Origin, TargetValue, Value};
 use docket_wire::{IntentsReply, IntentsRequest, SessionOpened, WireRefusal};
-use prov::{
-    Address, AgentRef, Crossing, Integrity, MessageKind, MessageText, ReportStatus, TaskId,
-};
+use prov::{Address, AgentRef, Integrity, MessageKind, MessageText, ReportStatus, TaskId};
 
 fn worker_in(t: &str) -> AgentRef {
     AgentRef::Worker {
@@ -93,7 +91,7 @@ async fn a_cross_space_request_is_delivered_with_the_senders_label_and_grants_no
     let IntentsReply::Delivered(delivery) = reply else {
         panic!("{reply:?}")
     };
-    assert_eq!(delivery.crossing, Crossing::Across);
+    assert!(delivery.crosses);
     let records = router.seams.sink.records();
     let AuditRecord::Message(stamped) = records.last().expect("a record") else {
         panic!("{records:?}")
@@ -119,7 +117,7 @@ async fn a_cross_space_request_is_delivered_with_the_senders_label_and_grants_no
     }
     let lines = inbox(&router, AgentRef::Companion).await;
     assert_eq!(lines.len(), 1);
-    assert_eq!(lines[0].crossing, Crossing::Across);
+    assert!(lines[0].crosses);
     assert!(
         matches!(&lines[0].parts[0], InboundPart::Text(Reveal::Handle(_))),
         "{lines:?}"
@@ -229,7 +227,7 @@ async fn a_message_the_person_sends_is_trusted_and_a_model_s_words_are_not() {
     )
     .await;
     assert!(
-        matches!(reply, IntentsReply::Delivered(ref d) if d.crossing == Crossing::Within),
+        matches!(reply, IntentsReply::Delivered(ref d) if !d.crosses),
         "{reply:?}"
     );
     // The companion's own typed words are a model's: untrusted.

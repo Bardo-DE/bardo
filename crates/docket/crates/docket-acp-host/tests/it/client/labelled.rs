@@ -6,7 +6,7 @@ use super::agent::{Act, call};
 use super::calls::read;
 use super::rig::{Setup, run_turn, started};
 use docket_core::{AuditRecord, Rewind};
-use prov::{Actor, AgentLabel};
+use prov::Actor;
 
 fn actors(rig: &super::rig::Rig<super::rig::Fakes>) -> Vec<Actor> {
     rig.audit()
@@ -18,7 +18,7 @@ fn actors(rig: &super::rig::Rig<super::rig::Fakes>) -> Vec<Actor> {
         .collect()
 }
 
-async fn acted(label: Option<AgentLabel>) -> Vec<Actor> {
+async fn acted(label: Option<String>) -> Vec<Actor> {
     let (mut rig, _files) = started(Setup {
         turns: vec![vec![
             call("r", "fs/read_text_file", read("/work/app/README.md")),
@@ -34,7 +34,7 @@ async fn acted(label: Option<AgentLabel>) -> Vec<Actor> {
 
 #[tokio::test]
 async fn the_hosts_label_is_on_the_audited_actor() {
-    let label = AgentLabel("Claude Code".to_owned());
+    let label = "Claude Code".to_owned();
     let seen = acted(Some(label.clone())).await;
     assert!(!seen.is_empty());
     for actor in seen {
@@ -54,7 +54,7 @@ async fn no_label_configured_is_none_whatever_the_agent_calls_itself() {
 
 #[tokio::test]
 async fn the_agents_title_does_not_change_the_label() {
-    let label = AgentLabel("Mine".to_owned());
+    let label = "Mine".to_owned();
     for actor in acted(Some(label.clone())).await {
         assert!(matches!(actor, Actor::Acp { label: Some(l), .. } if l == label));
     }

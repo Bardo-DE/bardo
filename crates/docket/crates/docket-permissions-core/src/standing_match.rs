@@ -5,7 +5,7 @@
 use crate::agent_app::is_agent_action;
 use crate::grant::GrantCaller;
 use crate::standing::{Recipient, ScopeKind, StandingGrant, StandingScope};
-use bulkhead::{AbsPath, Cover};
+use bulkhead::AbsPath;
 use docket_vocab::ActionRef;
 use prov::Effect;
 use serde::{Deserialize, Serialize};
@@ -43,9 +43,9 @@ pub struct CallFacts {
 impl StandingScope {
     /// Whether this scope covers the call: the same action, and every argument inside the scope.
     /// A call with no path, command or recipient is never covered by a scope that names one.
-    pub fn covers(&self, call: &CallFacts) -> Cover {
+    pub fn covers(&self, call: &CallFacts) -> bool {
         if self.action() != &call.action {
-            return Cover::Misses;
+            return false;
         }
         match (self, &call.args) {
             (StandingScope::Files { under, .. }, ArgFacts::Paths(paths)) => {
@@ -57,31 +57,31 @@ impl StandingScope {
             (StandingScope::Outbound { to, .. }, ArgFacts::Recipients(who)) => {
                 all_cover(who.iter().map(|r| to.covers(r)))
             }
-            (StandingScope::Reads { action }, _) if !is_agent_action(action) => Cover::Covers,
-            _ => Cover::Misses,
+            (StandingScope::Reads { action }, _) => !is_agent_action(action),
+            _ => false,
         }
     }
 }
 
-/// `Covers` when there is at least one item and every item covers.
-fn all_cover(items: impl IntoIterator<Item = Cover>) -> Cover {
-    let mut any = Cover::Misses;
+/// True when there is at least one item and every item covers.
+fn all_cover(items: impl IntoIterator<Item = bool>) -> bool {
+    let mut any = false;
     for item in items {
-        if item == Cover::Misses {
-            return Cover::Misses;
+        if !item {
+            return false;
         }
-        any = Cover::Covers;
+        any = true;
     }
     any
 }
 
 impl StandingGrant {
     /// Whether this grant covers the call made by `caller`. A grant belongs to one caller only.
-    pub fn covers(&self, caller: &GrantCaller, call: &CallFacts) -> Cover {
+    pub fn covers(&self, caller: &GrantCaller, call: &CallFacts) -> bool {
         if &self.caller == caller {
             self.scope.covers(call)
         } else {
-            Cover::Misses
+            false
         }
     }
 }
@@ -96,6 +96,6 @@ pub fn find_standing_for<'a>(
 ) -> Option<&'a StandingGrant> {
     grants.iter().find(|g| {
         let fits = effect == Effect::Read || g.scope.kind() != ScopeKind::Reads;
-        fits && g.covers(caller, call) == Cover::Covers
+        fits && g.covers(caller, call)
     })
 }

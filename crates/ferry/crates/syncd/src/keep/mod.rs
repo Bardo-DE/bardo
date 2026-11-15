@@ -32,7 +32,7 @@ use crate::datasets::drive::{DriveSet, Kept};
 use crate::paths::{AccountDir, Paths};
 use crate::removal;
 use crate::service::Hub;
-use porter_capability::{CapabilityKind, Toggle};
+use porter_capability::CapabilityKind;
 use porter_client::{
     Accounts, AccountsError, AccountsLink, ConsentOffer, Grants, GrantsError, GrantsLink,
     ListedAccount, Porter,
@@ -219,7 +219,7 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
         if let Some(class) = first {
             // A switch that is refused leaves the account added with its switches off, as the
             // person can turn them on in the rows.
-            if let Err(why) = self.set_sync(&account, class, Toggle::On).await {
+            if let Err(why) = self.set_sync(&account, class, true).await {
                 eprintln!("syncd: could not switch sync on for a new account: {why}");
             }
         }
@@ -231,7 +231,7 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
         &self,
         account: &AccountId,
         class: SyncClass,
-        toggle: Toggle,
+        on: bool,
     ) -> Result<(), SwitchError> {
         let snapshot = self
             .snapshot()
@@ -240,26 +240,23 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
         let row = snapshot
             .account(account)
             .ok_or(SwitchError::UnknownAccount)?;
-        match toggle {
-            Toggle::On => {
-                if !sync_offers(row).contains(&class) {
-                    return Err(SwitchError::NothingToKeep);
-                }
-                if sync_allowed(&snapshot.grants, account, class) {
-                    return Ok(());
-                }
-                let offer = ConsentOffer {
-                    need: need_for(row, class),
-                    class: class.class(),
-                    usage: Usage::Background,
-                    account: Some(account.clone()),
-                };
-                self.ask(&offer).await
+        if on {
+            if !sync_offers(row).contains(&class) {
+                return Err(SwitchError::NothingToKeep);
             }
-            _ => {
-                self.revoke(&snapshot.grants, &keys_of(account, class))
-                    .await
+            if sync_allowed(&snapshot.grants, account, class) {
+                return Ok(());
             }
+            let offer = ConsentOffer {
+                need: need_for(row, class),
+                class: class.class(),
+                usage: Usage::Background,
+                account: Some(account.clone()),
+            };
+            self.ask(&offer).await
+        } else {
+            self.revoke(&snapshot.grants, &keys_of(account, class))
+                .await
         }
     }
 
@@ -278,11 +275,7 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
     /// drive yet, asks the person for it in a sign-in of its own (the browser asks that alone),
     /// then asks for syncd's grant of it; a refusal there is [`SwitchError::NotGiven`] and nothing
     /// is recorded. Off takes the grant back; the listing's journal and the access given stay.
-    pub async fn show_in_files(
-        &self,
-        account: &AccountId,
-        toggle: Toggle,
-    ) -> Result<(), SwitchError> {
+    pub async fn show_in_files(&self, account: &AccountId, on: bool) -> Result<(), SwitchError> {
         let snapshot = self
             .snapshot()
             .await
@@ -290,47 +283,42 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
         let row = snapshot
             .account(account)
             .ok_or(SwitchError::UnknownAccount)?;
-        match toggle {
-            Toggle::On => {
-                if !self.offers_files(row).await {
-                    return Err(SwitchError::NothingToKeep);
-                }
-                if drive_allowed(&snapshot.grants, account) {
-                    return Ok(());
-                }
-                if !claims_whole_drive(row) {
-                    self.grants
-                        .extend_access(
-                            account,
-                            &[CapabilityKind::Storage],
-                            &ParentWindow::Unparented,
-                        )
-                        .await
-                        .map_err(|why| {
-                            eprintln!("syncd: the whole drive was not given: {why:?}");
-                            SwitchError::NotGiven
-                        })?;
-                }
-                let offer = ConsentOffer {
-                    need: crate::datasets::storage::drive_need(),
-                    class: porter_core::DataClass::Files,
-                    usage: Usage::Background,
-                    account: Some(account.clone()),
-                };
-                self.ask(&offer).await
+        if on {
+            if !self.offers_files(row).await {
+                return Err(SwitchError::NothingToKeep);
             }
-            _ => self.revoke(&snapshot.grants, &[drive_key(account)]).await,
+            if drive_allowed(&snapshot.grants, account) {
+                return Ok(());
+            }
+            if !claims_whole_drive(row) {
+                self.grants
+                    .extend_access(
+                        account,
+                        &[CapabilityKind::Storage],
+                        &ParentWindow::Unparented,
+                    )
+                    .await
+                    .map_err(|why| {
+                        eprintln!("syncd: the whole drive was not given: {why:?}");
+                        SwitchError::NotGiven
+                    })?;
+            }
+            let offer = ConsentOffer {
+                need: crate::datasets::storage::drive_need(),
+                class: porter_core::DataClass::Files,
+                usage: Usage::Background,
+                account: Some(account.clone()),
+            };
+            self.ask(&offer).await
+        } else {
+            self.revoke(&snapshot.grants, &[drive_key(account)]).await
         }
     }
 
     /// "Keep Everything Downloaded" on or off for the drive of `account`, which must be shown in
     /// Files. It is kept in syncd's settings, so the drive keeps everything again after a restart
     /// (and after Show in Files is turned off and on again); the drive shown now follows at once.
-    pub async fn keep_everything(
-        &self,
-        account: &AccountId,
-        toggle: Toggle,
-    ) -> Result<(), SwitchError> {
+    pub async fn keep_everything(&self, account: &AccountId, on: bool) -> Result<(), SwitchError> {
         let snapshot = self
             .snapshot()
             .await
@@ -342,12 +330,10 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
             return Err(SwitchError::NothingToKeep);
         }
         let dir = drive_dir(account).ok_or(SwitchError::UnknownAccount)?;
-        self.drives
-            .set_keep_all(dir.as_str(), toggle == Toggle::On)
-            .map_err(|why| {
-                eprintln!("syncd: whether to keep everything downloaded could not be saved: {why}");
-                SwitchError::Unsaved
-            })
+        self.drives.set_keep_all(dir.as_str(), on).map_err(|why| {
+            eprintln!("syncd: whether to keep everything downloaded could not be saved: {why}");
+            SwitchError::Unsaved
+        })
     }
 
     /// Whether the drive of `account` is kept downloaded whole.

@@ -333,7 +333,7 @@ mod tests {
         p.opening.backend = BackendKind::Acp(
             docket_permissions_core::ProgramName::parse("claude-code").expect("program"),
         );
-        p.opening.label = Some(prov::AgentLabel("Claude Code".to_owned()));
+        p.opening.label = Some("Claude Code".to_owned());
         p.opening.rewind = Rewind::Agent;
         let record = rebuild(&id(), &p, UnixSeconds(1)).record;
         let external = record.external.expect("external");

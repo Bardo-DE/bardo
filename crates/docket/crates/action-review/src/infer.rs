@@ -19,11 +19,12 @@ use porter_core::DataClass;
 use porter_core::consent::Usage;
 use porter_ids::{Permille, Tokens};
 use porter_infer::{
-    ChatControl, ChatMessage, ChatReply, ChatRequest, ChatSink, Flow, InferEvent, Knob,
-    MessagePart, Model, ModelError, Reasoning, ReplyShape, Role, Sampling, StopReason, ToolChoice,
+    ChatControl, ChatMessage, ChatReply, ChatRequest, ChatSink, InferEvent, Knob, MessagePart,
+    Model, ModelError, Reasoning, ReplyShape, Role, Sampling, StopReason, ToolChoice,
     ToolParallelism, TurnError,
 };
 use serde_json::json;
+use std::ops::ControlFlow;
 
 /// Reviews with three models, one per stage.
 #[derive(Debug)]
@@ -53,13 +54,13 @@ enum Heard {
 struct Watch(Heard);
 
 impl ChatSink for Watch {
-    fn event(&mut self, event: InferEvent) -> Flow {
+    fn event(&mut self, event: InferEvent) -> ControlFlow<()> {
         self.0 = match (event, self.0) {
             (InferEvent::TextDelta(text), _) if !text.is_empty() => Heard::Text,
             (InferEvent::ThoughtDelta(_), Heard::Nothing) => Heard::OnlyThought,
             (_, heard) => heard,
         };
-        Flow::Continue
+        ControlFlow::Continue(())
     }
 }
 

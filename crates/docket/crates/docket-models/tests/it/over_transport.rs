@@ -17,6 +17,7 @@ use porter_infer::{
 };
 use prov::{SpaceId, TaskId, UnixSeconds};
 use serde_json::json;
+use std::ops::ControlFlow;
 
 fn chat() -> ChatRequest {
     ChatRequest::new(
@@ -46,8 +47,8 @@ fn model(script: Vec<Say>) -> TransportModel<ScriptedInfer> {
 
 struct Quiet;
 impl porter_infer::ChatSink for Quiet {
-    fn event(&mut self, _event: porter_infer::InferEvent) -> porter_infer::Flow {
-        porter_infer::Flow::Continue
+    fn event(&mut self, _event: porter_infer::InferEvent) -> ControlFlow<()> {
+        ControlFlow::Continue(())
     }
 }
 

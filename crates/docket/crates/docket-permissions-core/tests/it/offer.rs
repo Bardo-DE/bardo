@@ -1,7 +1,6 @@
 //! The never-grantable rule and the offer: which scope a standing grant would name, and why not.
 
 use crate::standing::{act, addr, command, files, outbound, path, paths, sends, terminal};
-use bulkhead::Cover;
 use docket_manifest::{AgentReach, ArgSink};
 use docket_permissions_core::*;
 use docket_vocab::ActionRef;
@@ -254,9 +253,9 @@ proptest! {
     ) {
         let under = path(&base);
         let sibling = path(&format!("{base}{tail}"));
-        prop_assert_eq!(under.covers(&sibling), Cover::Misses);
+        prop_assert!(!under.covers(&sibling));
         let child = path(&format!("{base}/{tail}"));
-        prop_assert_eq!(under.covers(&child), Cover::Covers);
+        prop_assert!(under.covers(&child));
     }
 }
 
@@ -367,13 +366,13 @@ fn a_read_scope_covers_its_action_only_and_never_the_pseudo_app() {
     let scope = StandingScope::Reads {
         action: search.action.clone(),
     };
-    assert_eq!(scope.covers(&search), Cover::Covers);
+    assert!(scope.covers(&search));
     for other in [
         "mail.message.forward",
         "mail.message.send",
         "mail.thread.read",
     ] {
-        assert_eq!(scope.covers(&mail_read(other)), Cover::Misses, "{other}");
+        assert!(!scope.covers(&mail_read(other)), "{other}");
     }
     let pseudo = CallFacts {
         action: acp_agent_action(FILES_READ).expect("action"),
@@ -382,10 +381,10 @@ fn a_read_scope_covers_its_action_only_and_never_the_pseudo_app() {
     let on_pseudo = StandingScope::Reads {
         action: pseudo.action.clone(),
     };
-    assert_eq!(on_pseudo.covers(&pseudo), Cover::Misses);
+    assert!(!on_pseudo.covers(&pseudo));
     let grant = StandingGrant::new(agent(), scope, prov::UnixSeconds(1));
     let other = GrantCaller::AcpAgent(ProgramName::parse("gemini-cli").expect("program"));
-    assert_eq!(grant.covers(&other, &search), Cover::Misses);
+    assert!(!grant.covers(&other, &search));
 }
 
 #[test]

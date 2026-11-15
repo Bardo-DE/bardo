@@ -4,8 +4,8 @@
 
 use docket_core::{DraftPart, InboundLine, InboundPart, MessageDraft, Reveal, SendRefusal};
 use prov::{
-    Actor, Address, Label, Message, MessageId, MessageText, Part, ReportStatus, SenderCheck,
-    ThreadId, UnixSeconds,
+    Actor, Address, Label, Message, MessageId, MessageText, Part, ReportStatus, ThreadId,
+    UnixSeconds,
 };
 use std::collections::BTreeMap;
 
@@ -13,9 +13,10 @@ use std::collections::BTreeMap;
 /// by the party the transport says. The person may send; only agents report.
 pub fn check_stamped(message: &Message, actor: &Actor) -> Result<(), SendRefusal> {
     message.check().map_err(SendRefusal::Malformed)?;
-    match message.sender_matches(actor) {
-        SenderCheck::Matches => Ok(()),
-        SenderCheck::Mismatch => Err(SendRefusal::SenderMismatch),
+    if message.sender_matches(actor) {
+        Ok(())
+    } else {
+        Err(SendRefusal::SenderMismatch)
     }
 }
 
@@ -92,7 +93,7 @@ pub fn inbound_line(
         thread: message.thread.clone(),
         to: message.to.clone(),
         from: message.from.clone(),
-        crossing: message.crossing(),
+        crosses: message.crosses(),
         kind: message.kind,
         parts,
     }

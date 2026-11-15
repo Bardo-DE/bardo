@@ -98,7 +98,7 @@ impl LayerShellPart {
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct LayerNamespace(pub String);
 
-/// A layer surface of `owner`'s was created on `output` (the handler picks one when the client
+/// A layer surface of the shell's or an app's was created on `output` (the handler picks one when the client
 /// named none) and given the key `layer`; it enters the model on its first commit.
 pub fn on_new_layer(
     part: &mut LayerShellPart,
@@ -117,7 +117,7 @@ pub fn on_new_layer(
         LayerRecord {
             output,
             namespace,
-            from_shell: owner,
+            from_shell,
             known: None,
             has_buffer: false,
         },

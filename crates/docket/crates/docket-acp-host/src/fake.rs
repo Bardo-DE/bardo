@@ -4,7 +4,7 @@
 use super::files::{FileFault, Files};
 use super::spawn::{AgentChild, LaunchPlan, SessionMeta, SignIn, Spawn, SpawnFault, Spawned};
 use agent_client_protocol::{Agent, Client, ConnectTo, Error, Lines};
-use bulkhead::{AbsPath, Cover};
+use bulkhead::AbsPath;
 use futures_channel::mpsc::{UnboundedReceiver, UnboundedSender, unbounded};
 use futures_util::{SinkExt, StreamExt};
 use std::collections::{BTreeMap, VecDeque};
@@ -237,7 +237,7 @@ impl Files for FakeFiles {
     fn real(&self, path: &AbsPath) -> Result<AbsPath, FileFault> {
         let disk = locked(&self.0);
         for (at, to) in &disk.links {
-            if at.covers(path) == Cover::Covers {
+            if at.covers(path) {
                 let rest = &path.as_str()[at.as_str().len()..];
                 let joined = format!("{}{rest}", to.as_str());
                 return AbsPath::parse(&joined).map_err(|_| FileFault::Refused);

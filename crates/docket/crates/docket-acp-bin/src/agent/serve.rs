@@ -219,7 +219,7 @@ impl Service {
         let label = entry
             .label
             .as_ref()
-            .map_or_else(|| program.as_str().to_owned(), |label| label.0.clone());
+            .map_or_else(|| program.as_str().to_owned(), |label| label.clone());
         let cwd = folder(program, live.places()).map_err(|why| HandRefusal::Failed {
             message: why.to_string(),
         })?;

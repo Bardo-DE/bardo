@@ -329,7 +329,7 @@ impl<X: Seams> AcpBackend<X> {
             Some(path) => AbsPath::parse(&path.to_string_lossy()).ok(),
             None => Some(scope.clone()),
         };
-        let Some(cwd) = cwd.filter(|c| scope.covers(c) == bulkhead::Cover::Covers) else {
+        let Some(cwd) = cwd.filter(|c| scope.covers(c)) else {
             return self.denied(fault::invalid(
                 "the working directory is outside the session",
             ));

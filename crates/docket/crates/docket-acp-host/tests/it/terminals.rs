@@ -5,7 +5,7 @@ use acp_core::command_deadline::CommandDeadline;
 use agent_client_protocol::schema::v1::Error;
 use bulkhead::AbsPath;
 use bulkhead::CannotSandbox;
-use bulkhead::fake::{FakeSandbox, Fate, Script, Seen};
+use bulkhead::fake::{FakeSandbox, Script, Seen};
 use docket_acp_host::Terminals;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
@@ -176,7 +176,7 @@ async fn create_output_wait_kill_release_through_the_sandbox() {
     )
     .await
     .expect("release");
-    assert_eq!(b.seen.fates(), [Fate::Running, Fate::Killed]);
+    assert_eq!(b.seen.killed(), [false, true]);
     assert!(
         b.on(
             "terminal/output",
@@ -302,6 +302,6 @@ async fn a_command_past_its_deadline_is_killed_and_its_terminal_stays_readable()
         .await
         .expect("wait");
     assert_eq!(waited["signal"], "KILL");
-    assert_eq!(b.seen.fates(), [Fate::Killed]);
+    assert_eq!(b.seen.killed(), [true]);
     assert_eq!(b.output(&id).await["output"], "tick\n");
 }

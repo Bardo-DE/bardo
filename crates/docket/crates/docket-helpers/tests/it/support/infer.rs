@@ -144,8 +144,8 @@ fn reply(text: String, calls: Vec<(String, Json)>) -> InferEvent {
         .enumerate()
         .map(|(i, (name, args))| ToolCallPart {
             id: ToolCallId(format!("c{i}")),
-            name: ToolName::parse(&name).expect("tool name"),
-            args: JsonText::parse(&args.to_string()).expect("json"),
+            name: ToolName::new(&name).expect("tool name"),
+            args: JsonText::new(&args.to_string()).expect("json"),
         })
         .collect();
     let stop = if tool_calls.is_empty() {

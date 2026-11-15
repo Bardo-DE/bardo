@@ -227,7 +227,7 @@ fn labelled(label: &str) -> String {
 fn label_of(text: &str) -> Option<String> {
     let file = AgentsFile::parse(text).expect("file");
     let entry = file.by_program(&"plain".parse_program()).expect("entry");
-    entry.label.as_ref().map(|l| l.0.clone())
+    entry.label.clone()
 }
 
 #[test]

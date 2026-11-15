@@ -141,7 +141,7 @@ fn an_opening_written_before_started_from_reads_back_with_none() {
 #[test]
 fn an_opening_written_before_the_label_reads_back_with_none_and_a_label_round_trips() {
     let with = Opening {
-        label: Some(prov::AgentLabel("Claude Code".to_owned())),
+        label: Some("Claude Code".to_owned()),
         ..opening()
     };
     let text = serde_json::to_string(&with).expect("json");

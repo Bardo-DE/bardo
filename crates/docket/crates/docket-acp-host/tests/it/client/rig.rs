@@ -139,7 +139,7 @@ pub struct Setup {
     /// The tool edge the host offers the agent, when a test has one.
     pub tools: Option<ToolsOffer>,
     /// What the person calls the agent in `agents.toml`; the host says it when it opens.
-    pub label: Option<prov::AgentLabel>,
+    pub label: Option<String>,
     /// Who keeps the agent's file history (`checkpoints` in `agents.toml`); the host says it when
     /// it opens.
     pub rewind: docket_core::Rewind,

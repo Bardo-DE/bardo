@@ -16,7 +16,7 @@ use porter_core::DataClass;
 /// The longest label, in characters.
 const LABEL_MAX: usize = 64;
 
-fn label(program: &str, text: Option<String>) -> Result<Option<prov::AgentLabel>, ConfigFault> {
+fn label(program: &str, text: Option<String>) -> Result<Option<String>, ConfigFault> {
     let Some(text) = text else { return Ok(None) };
     let trimmed = text.trim();
     if trimmed.is_empty() {
@@ -31,7 +31,7 @@ fn label(program: &str, text: Option<String>) -> Result<Option<prov::AgentLabel>
             "a label holds no control character or newline",
         ));
     }
-    Ok(Some(prov::AgentLabel(trimmed.to_owned())))
+    Ok(Some(trimmed.to_owned()))
 }
 
 fn bad(program: &str, why: &'static str) -> ConfigFault {
@@ -67,9 +67,10 @@ fn resume_of(
 
 fn abs(program: &str, text: &str) -> Result<AbsPath, ConfigFault> {
     let path = AbsPath::parse(text).map_err(|_| bad(program, "a path must be absolute"))?;
-    match path.is_root() {
-        bulkhead::RootState::Root => Err(bad(program, "a path must not be /")),
-        bulkhead::RootState::Below => Ok(path),
+    if path.is_root() {
+        Err(bad(program, "a path must not be /"))
+    } else {
+        Ok(path)
     }
 }
 

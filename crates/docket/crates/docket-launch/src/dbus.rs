@@ -162,7 +162,7 @@ impl Accounts for DbusAccounts {
         self.launcher
             .request_agent_key(program, class, Some(session))
             .await
-            .map(|candidate| candidate.permit)
+            .map(|candidate| candidate.grant)
             .map_err(|e| fault(&e))
     }
 

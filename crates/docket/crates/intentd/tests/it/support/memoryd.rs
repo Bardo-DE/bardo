@@ -10,7 +10,7 @@ use almanac_core::{EventBody, EventRef, MemoryReply, MemoryRequest, Record, Repl
 use almanac_dbus::{Call, MemoryError, decode_request, encode_reply};
 use almanac_dbus_serve::{Serve, serve_on};
 use porter_ids::Count;
-use prov::{Integrity, Label, SenderCheck};
+use prov::{Integrity, Label};
 use std::future::Future;
 use std::os::fd::OwnedFd;
 use std::sync::{Arc, Mutex};
@@ -48,7 +48,7 @@ pub fn record_fault(record: &Record) -> Option<String> {
             .err()
             .map(|f| format!("message: {f:?}"))
             .or_else(|| {
-                (m.sender_matches(&record.actor) == SenderCheck::Mismatch)
+                (!m.sender_matches(&record.actor))
                     .then(|| "message: sender is not the recording actor".to_owned())
             }),
         EventBody::Episode(e) => (e.skeleton.label.integrity != Integrity::Trusted)

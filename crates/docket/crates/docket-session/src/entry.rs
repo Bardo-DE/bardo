@@ -88,7 +88,7 @@ pub struct Opening {
     /// launched it said; none for any other session, and for every log written before this field.
     /// Never the agent's own claim.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub label: Option<prov::AgentLabel>,
+    pub label: Option<String>,
     /// Who keeps the history of the external agent's file changes (`checkpoints` in
     /// `agents.toml`), which the host that launched it said. `Docket` for every other session,
     /// for a watch session (its `BackendKind` carries it) and for every log written before this

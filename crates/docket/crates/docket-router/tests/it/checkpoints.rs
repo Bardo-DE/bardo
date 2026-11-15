@@ -605,10 +605,7 @@ async fn a_watched_agent_gets_a_point_at_each_mark_and_its_files_can_be_restored
     let before = listed(&router, &session).await;
     assert_eq!((before.rows.len(), before.turn), (0, TurnState::Idle));
     // The label the opener gave is shown in the list; other sessions have none.
-    assert_eq!(
-        before.label,
-        Some(prov::AgentLabel("claude in pane 2".into()))
-    );
+    assert_eq!(before.label, Some("claude in pane 2".into()));
 
     let turn = marked(&router, &terminal(), &session).await;
     let list = listed(&router, &session).await;
@@ -814,7 +811,7 @@ async fn helper_app_session(
     let external = ExternalAgent {
         program: program("claude-code"),
         sheets: SheetSurface::Desktop,
-        label: Some(prov::AgentLabel("Claude Code".into())),
+        label: Some("Claude Code".into()),
         rewind: Rewind::Agent,
         helper,
     };
@@ -901,7 +898,7 @@ async fn a_terminal_that_names_its_agent_is_listed_for_the_companion_and_handed_
         IntentsReply::Watched(vec![WatchedLine {
             session: session.clone(),
             agent: claude(),
-            label: Some(prov::AgentLabel("claude in pane 2".into())),
+            label: Some("claude in pane 2".into()),
             folder: Some(Workspace::parse(WORK).expect("workspace")),
         }])
     );

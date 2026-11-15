@@ -8,7 +8,6 @@
 
 use crate::grant::GrantCaller;
 use crate::standing::StandingGrantId;
-use bulkhead::Cover;
 use docket_vocab::{ActionRef, plain_text};
 use porter_core::AppName;
 use prov::{ActionName, Effect, SpaceId, SpaceScope, UnixSeconds};
@@ -129,7 +128,7 @@ pub struct LimitCall<'a> {
 
 impl LimitKey {
     /// Whether the key covers `call`.
-    pub fn covers(&self, call: &LimitCall<'_>) -> Cover {
+    pub fn covers(&self, call: &LimitCall<'_>) -> bool {
         let who = match &self.caller {
             LimitCaller::AnyAgent => true,
             LimitCaller::Only(caller) => caller == call.caller,
@@ -145,11 +144,7 @@ impl LimitKey {
             SpaceScope::Any => true,
             SpaceScope::Only(space) => space == call.space,
         };
-        if who && what && place && call.effect >= self.from {
-            Cover::Covers
-        } else {
-            Cover::Misses
-        }
+        who && what && place && call.effect >= self.from
     }
 }
 
@@ -293,7 +288,7 @@ pub fn limited(held: &[Limit], locked: &[Limit], call: &LimitCall<'_>) -> Limite
     // `max_by_key` keeps the last of equal keys, so the locked entries go last.
     held.iter()
         .chain(locked)
-        .filter(|l| l.key.covers(call) == Cover::Covers)
+        .filter(|l| l.key.covers(call))
         .max_by_key(|l| l.key.level)
         .map_or(Limited::Free, |l| match l.key.level {
             LimitLevel::AlwaysAsk => Limited::Ask(l.note()),

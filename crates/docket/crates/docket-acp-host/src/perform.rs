@@ -245,7 +245,7 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
         let within = inner
             .scopes
             .values()
-            .find(|s| s.real_cwd.covers(&note.path) == bulkhead::Cover::Covers)
+            .find(|s| s.real_cwd.covers(&note.path))
             .map(|s| s.real_cwd.clone())
             .ok_or(UndoFault::Gone)?;
         let done = match &note.before {

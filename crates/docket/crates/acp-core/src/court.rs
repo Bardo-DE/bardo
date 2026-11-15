@@ -54,7 +54,7 @@ pub struct OpenAgent {
     pub space: SpaceId,
     /// What the person calls the agent (`agents.toml`), which only the host says: never the
     /// agent's own title from `initialize`.
-    pub label: Option<prov::AgentLabel>,
+    pub label: Option<String>,
     /// Who keeps the history of the agent's file changes (`checkpoints` in `agents.toml`), which
     /// only the host says: never the agent.
     pub rewind: Rewind,

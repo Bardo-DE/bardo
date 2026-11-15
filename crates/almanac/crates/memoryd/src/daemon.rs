@@ -405,7 +405,7 @@ impl<B: Backend, P: Peers> Daemon<B, P> {
 
     /// The registry's changes, until the stream ends: each removal is settled. The list is
     /// read after subscribing, so a removal in between is caught by [`Daemon::reconcile`].
-    pub async fn follow_spaces(&self, spaces: porter_client::Spaces<porter_client_dbus::Bus>) {
+    pub async fn follow_spaces(&self, spaces: porter_client_dbus::Spaces) {
         let Ok(mut changes) = spaces.watch().await else {
             return;
         };

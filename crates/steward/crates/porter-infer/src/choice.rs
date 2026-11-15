@@ -545,7 +545,7 @@ mod tests {
     fn picker_rows_filter_then_order_by_closeness_then_readiness() {
         use Readiness::*;
         let cloud = |region: Option<&str>| Locality::Cloud {
-            region: region.map(|r| porter_capability::Region(r.to_owned())),
+            region: region.map(str::to_owned),
         };
         let cards = [
             card("far-ready", Slot::Text, cloud(Some("eu-west-1")), Ready),

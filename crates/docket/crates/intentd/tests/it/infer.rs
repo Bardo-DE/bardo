@@ -14,13 +14,14 @@ use porter_core::DataClass;
 use porter_core::consent::Usage;
 use porter_ids::Dims;
 use porter_infer::{
-    ChatControl, ChatMessage, ChatRequest, ChatSink, EmbedRequest, EmbedRole, Flow, InferEvent,
+    ChatControl, ChatMessage, ChatRequest, ChatSink, EmbedRequest, EmbedRole, InferEvent,
     InferRefusal, InferReply, Knob, MessagePart, Model, ModelCard, ModelError, ReplyShape,
     RequestKind, Role, StopReason, ToolChoice, ToolDecl, ToolParallelism, TurnError,
 };
 use porter_match::Need;
 use porter_match::{DimsNeed, EmbedNeed};
 use std::collections::BTreeSet;
+use std::ops::ControlFlow;
 
 fn card() -> ModelCard {
     ModelCard {
@@ -60,9 +61,9 @@ fn chat(shape: ReplyShape, tools: Vec<ToolDecl>) -> ChatRequest {
 struct Collect(Vec<InferEvent>);
 
 impl ChatSink for Collect {
-    fn event(&mut self, event: InferEvent) -> Flow {
+    fn event(&mut self, event: InferEvent) -> ControlFlow<()> {
         self.0.push(event);
-        Flow::Continue
+        ControlFlow::Continue(())
     }
 }
 
@@ -112,9 +113,9 @@ async fn a_chat_opens_one_session_of_the_requests_class_and_tier_and_returns_its
 #[tokio::test]
 async fn the_features_a_chat_needs_follow_its_shape_and_its_tools() {
     let tool = ToolDecl {
-        name: porter_infer::ToolName::parse("archive").expect("tool"),
+        name: porter_infer::ToolName::new("archive").expect("tool"),
         description: "Archive".into(),
-        params: porter_infer::JsonSchemaText(porter_infer::JsonText::parse("{}").expect("schema")),
+        params: porter_infer::SchemaText(porter_infer::JsonText::new("{}").expect("schema")),
     };
     let rows = [
         (

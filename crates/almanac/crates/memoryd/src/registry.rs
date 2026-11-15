@@ -2,8 +2,7 @@
 
 use almanac_core::SpaceId;
 use almanac_service::{Listing, RegistryError};
-use porter_client::Spaces;
-use porter_client_dbus::Bus;
+use porter_client_dbus::Spaces;
 use std::collections::BTreeSet;
 use std::time::Duration;
 
@@ -14,7 +13,7 @@ pub const REGISTRY_WAIT: Duration = Duration::from_secs(3);
 #[derive(Debug)]
 pub enum SpaceRegistry {
     /// porter's registry, over the bus.
-    Porter(Spaces<Bus>),
+    Porter(Spaces),
     /// A fixed list (a test's, or a host with its own).
     Listed(BTreeSet<SpaceId>),
     /// No registry: nothing is listed, and an app opens no desktop-wide Space.

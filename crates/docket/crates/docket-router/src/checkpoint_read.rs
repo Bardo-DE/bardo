@@ -12,13 +12,13 @@ use docket_core::{
 use docket_session::{Claimant, may_restore, note_rows};
 use docket_vocab::{CallerRole, Workspace};
 use docket_wire::{CallerId, IntentsReply, WireRefusal};
-use prov::{AgentLabel, SessionId};
+use prov::SessionId;
 
 /// What a surface may know of one session's restore points.
 struct View {
     cwd: Option<Workspace>,
     notes: Vec<CheckpointNote>,
-    label: Option<AgentLabel>,
+    label: Option<String>,
 }
 
 /// Whether the log names point `id` as one that was saved (a turn's, or a restore's safety).

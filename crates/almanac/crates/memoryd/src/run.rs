@@ -17,7 +17,6 @@ use almanac_settings::{ConsolidateWhen, MemorySettings};
 use porter_callers::{
     CallerFileError, CallerTable, ProcRoot, choose_proc_root, load_callers, proc_notice,
 };
-use porter_client::Porter;
 use porter_client_dbus::Bus;
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
@@ -140,7 +139,7 @@ async fn run(
     };
     let connection = builder.build().await?;
     let inferd = inferd_link(&connection);
-    let spaces = Porter::over(Bus::over(connection.clone())).spaces();
+    let spaces = Bus::over(connection.clone()).spaces();
     let registry = SpaceRegistry::Porter(spaces.clone());
     let backend = SystemBackend::with(
         dirs.clone(),

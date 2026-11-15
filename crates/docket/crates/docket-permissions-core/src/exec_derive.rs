@@ -18,7 +18,7 @@
 //!
 //! What it misses is why the network rule (`exec_reach`) is unconditional.
 
-use bulkhead::{AbsPath, Cover};
+use bulkhead::AbsPath;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 
@@ -124,11 +124,7 @@ impl Served {
     }
 
     fn names_a_served_path(&self, cwd: &AbsPath, value: &str) -> bool {
-        resolve(cwd, value).is_some_and(|path| {
-            self.paths
-                .iter()
-                .any(|served| served.covers(&path) == Cover::Covers)
-        })
+        resolve(cwd, value).is_some_and(|path| self.paths.iter().any(|served| served.covers(&path)))
     }
 
     fn holds_a_served_token(&self, value: &str) -> bool {

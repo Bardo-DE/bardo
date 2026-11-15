@@ -9,7 +9,7 @@
 //! read or changed.
 
 use super::workdir::{Workdir, WorkdirFault};
-use bulkhead::{AbsPath, Cover};
+use bulkhead::AbsPath;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Component, Path, PathBuf};
@@ -172,7 +172,7 @@ fn still_inside(file: &File, within: &AbsPath) -> Result<(), FileFault> {
     let target = std::fs::read_link(format!("/proc/self/fd/{}", file.as_raw_fd()))
         .map_err(|_| FileFault::Moved)?;
     let target = abs(&target).map_err(|_| FileFault::Moved)?;
-    if within.covers(&target) == Cover::Covers {
+    if within.covers(&target) {
         Ok(())
     } else {
         Err(FileFault::Moved)

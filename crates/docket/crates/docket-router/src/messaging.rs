@@ -129,7 +129,7 @@ impl<S: Seams> Router<S> {
         IntentsReply::Delivered(Delivery {
             message: message.id.clone(),
             thread: message.thread.clone(),
-            crossing: message.crossing(),
+            crosses: message.crosses(),
         })
     }
 
@@ -146,7 +146,7 @@ impl<S: Seams> Router<S> {
         IntentsReply::Delivered(Delivery {
             message: message.id.clone(),
             thread: message.thread.clone(),
-            crossing: message.crossing(),
+            crosses: message.crosses(),
         })
     }
 

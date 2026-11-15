@@ -251,7 +251,7 @@ pub struct Entry {
     pub tools: bool,
     /// What the person calls it, shown in the audit and the journal. Written here and nowhere
     /// else: never taken from what the agent says of itself.
-    pub label: Option<prov::AgentLabel>,
+    pub label: Option<String>,
     /// Whether the person named the `claude-code` preset, which confines what the program brings
     /// of its own (its account's connectors, skills and plugins, its own permission prompt for
     /// the desktop's tools). Docket sends the settings in the `session/new` it writes and sets

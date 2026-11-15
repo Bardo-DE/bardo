@@ -20,7 +20,7 @@ use docket_core::{
 use docket_vocab::{Handle, Value};
 use porter_infer::{ChatMessage, MessagePart, Role};
 use prov::EntityKind;
-use prov::{AgentRef, Crossing, Integrity, MessageKind, ReportStatus};
+use prov::{AgentRef, Integrity, MessageKind, ReportStatus};
 use std::fmt::Write;
 
 /// What the model is told about itself and its tools. Fixed text.
@@ -213,9 +213,10 @@ fn inbound_line(line: &InboundLine) -> String {
             InboundPart::Undo(u) => format!("undo {}", json(u)),
         })
         .collect();
-    let across = match line.crossing {
-        Crossing::Across => " from another Space",
-        Crossing::Within => "",
+    let across = if line.crosses {
+        " from another Space"
+    } else {
+        ""
     };
     format!(
         "- {} from {} in {}{across} [{}]: {}",
@@ -551,7 +552,7 @@ mod tests {
                 },
                 space: SpaceId::desktop(),
             },
-            crossing: Crossing::Within,
+            crosses: false,
             kind: MessageKind::Report { status },
             parts: vec![InboundPart::Text(Reveal::Plain(text.to_owned()))],
         };

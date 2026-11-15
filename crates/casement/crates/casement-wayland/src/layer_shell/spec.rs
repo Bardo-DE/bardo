@@ -63,7 +63,7 @@ pub fn keyboard_of(keyboard: WireKeyboard) -> KeyboardInteractivity {
     }
 }
 
-/// The spec a surface's committed state describes, on `output`, for a surface of `owner`.
+/// The spec a surface's committed state describes, on `output`, for a surface of the shell or an app, per `from_shell`.
 pub fn spec_of(
     output: &OutputKey,
     cached: &LayerSurfaceCachedState,
@@ -83,7 +83,7 @@ pub fn spec_of(
         keyboard: keyboard_of(cached.keyboard_interactivity),
         namespace: namespace.to_owned(),
         role: ShellRoleTag::Unassigned,
-        from_shell: owner,
+        from_shell,
     }
 }
 

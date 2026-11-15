@@ -32,7 +32,6 @@ use ds_settings::schema::{
 };
 use ferry_drive::CacheLimit;
 use porter_callers::{CallerRole, Callers};
-use porter_capability::Toggle;
 use porter_client::{AccountsLink, GrantsLink};
 use porter_core::AccountId;
 use porter_core::{Account, Family};
@@ -376,12 +375,11 @@ fn failed(why: impl ToString) -> LiveError {
     LiveError::Failed(why.to_string())
 }
 
-fn toggle_of(value: &toml::Value) -> Option<Toggle> {
+fn toggle_of(value: &toml::Value) -> Option<bool> {
     match value {
-        toml::Value::String(s) if s == "on" => Some(Toggle::On),
-        toml::Value::String(s) if s == "off" => Some(Toggle::Off),
-        toml::Value::Boolean(true) => Some(Toggle::On),
-        toml::Value::Boolean(false) => Some(Toggle::Off),
+        toml::Value::String(s) if s == "on" => Some(true),
+        toml::Value::String(s) if s == "off" => Some(false),
+        toml::Value::Boolean(on) => Some(*on),
         _ => None,
     }
 }
@@ -682,7 +680,7 @@ impl<T: GrantsLink + AccountsLink, C: Callers> LiveModule for SyncSettings<T, C>
                 // The app folder's switch, hidden once the drive is shown in Files, is not
                 // turned on again.
                 if class == SyncClass::Files
-                    && toggle == Toggle::On
+                    && toggle
                     && drive_allowed(&snapshot.grants, &id)
                     && !sync_allowed(&snapshot.grants, &id, class)
                 {
@@ -718,7 +716,7 @@ impl<T: GrantsLink + AccountsLink, C: Callers> LiveModule for SyncSettings<T, C>
                             failed("That could not be saved.")
                         }
                     })?;
-                let word = if toggle == Toggle::On { "on" } else { "off" };
+                let word = if toggle { "on" } else { "off" };
                 announce(&self.served, &Key::KeepAll(id), word).await;
             }
             Key::Remove(id) => {
@@ -771,7 +769,7 @@ impl<T: GrantsLink + AccountsLink, C> SyncSettings<T, C> {
         &self,
         snapshot: &Snapshot,
         id: AccountId,
-        toggle: Toggle,
+        toggle: bool,
     ) -> Result<(), LiveError> {
         let forget = |not_on: &Mutex<BTreeSet<AccountId>>, id: &AccountId| {
             not_on
@@ -780,7 +778,7 @@ impl<T: GrantsLink + AccountsLink, C> SyncSettings<T, C> {
                 .remove(id);
         };
         forget(&self.not_on, &id);
-        if toggle != Toggle::On {
+        if !toggle {
             self.keep.show_in_files(&id, toggle).await.map_err(|why| {
                 eprintln!("syncd: a Settings change was refused: {why}");
                 failed("That could not be done.")
@@ -801,7 +799,7 @@ impl<T: GrantsLink + AccountsLink, C> SyncSettings<T, C> {
             Arc::clone(&self.not_on),
         );
         tokio::spawn(async move {
-            let word = match keep.show_in_files(&id, Toggle::On).await {
+            let word = match keep.show_in_files(&id, true).await {
                 Ok(()) => "on",
                 Err(why) => {
                     eprintln!("syncd: Show in Files was not turned on: {why}");

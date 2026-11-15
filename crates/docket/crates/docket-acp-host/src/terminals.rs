@@ -20,10 +20,8 @@ use agent_client_protocol::schema::v1::{
     TerminalId, TerminalOutputRequest, TerminalOutputResponse, WaitForTerminalExitRequest,
     WaitForTerminalExitResponse,
 };
-use bulkhead::{AbsPath, Cover};
-use bulkhead::{
-    Argv, Cut, ExitReport, Launch, Network, Sandbox, Shell, ShellFault, StartFault, TermId,
-};
+use bulkhead::AbsPath;
+use bulkhead::{Argv, ExitReport, Launch, Network, Sandbox, Shell, ShellFault, StartFault, TermId};
 use docket_permissions_core::SandboxState;
 use std::collections::BTreeMap;
 use std::time::{Duration, Instant};
@@ -164,7 +162,7 @@ impl<S: Sandbox> Terminals<S> {
                 .map_err(|_| fault::invalid("the working directory must be absolute"))?,
             None => scope.clone(),
         };
-        if scope.covers(&cwd) != Cover::Covers {
+        if !scope.covers(&cwd) {
             return Err(fault::invalid(
                 "the working directory is outside the session",
             ));
@@ -225,7 +223,7 @@ impl<S: Sandbox> Terminals<S> {
         self.reap();
         let id = self.term(&asked.session_id.0, &asked.terminal_id)?;
         let snap = self.shell.output(id).map_err(|f| shell_error(&f))?;
-        let cut = snap.shown.cut == Cut::Head;
+        let cut = snap.shown.cut;
         Ok(TerminalOutputResponse::new(snap.shown.text, cut)
             .exit_status(snap.exit.map(exit_status)))
     }

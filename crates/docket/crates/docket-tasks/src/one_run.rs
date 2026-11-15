@@ -91,7 +91,7 @@ mod tests {
     use super::*;
     use docket_core::{InboundLine, StepShown};
     use docket_vocab::CallId;
-    use prov::{ActionName, Address, Crossing, Effect, MessageId, SpaceId, TaskId, ThreadId};
+    use prov::{ActionName, Address, Effect, MessageId, SpaceId, TaskId, ThreadId};
 
     fn action(app: &str, name: &str) -> ActionRef {
         ActionRef {
@@ -129,7 +129,7 @@ mod tests {
             thread: ThreadId::parse("m-1").expect("thread"),
             to: Address::new(AgentRef::Companion, SpaceId::desktop()),
             from: Address::new(from, SpaceId::desktop()),
-            crossing: Crossing::Within,
+            crosses: false,
             kind: MessageKind::Report { status },
             parts: Vec::new(),
         }

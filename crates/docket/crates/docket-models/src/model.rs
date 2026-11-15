@@ -7,13 +7,14 @@ use inferd_client::Transport;
 use porter_capability::{LlmFeature, Modality};
 use porter_ids::Tokens;
 use porter_infer::{
-    ChatReply, ChatRequest, ChatSink, ClientFrame, EmbedReply, EmbedRequest, Flow, InferEvent,
+    ChatReply, ChatRequest, ChatSink, ClientFrame, EmbedReply, EmbedRequest, InferEvent,
     InferReply, InferRequest, InferSession, Knob, MessagePart, Model, ModelCard, ModelError,
     ReplyShape, TaskRequest, TurnError,
 };
 use porter_match::Need;
 use porter_match::{EmbedNeed, LlmNeed};
 use std::collections::BTreeSet;
+use std::ops::ControlFlow;
 
 /// A chat model reached through a inferd-client session (inferd over D-Bus, the latchkey socket
 /// or `InProcess`: the transport is the caller's choice).
@@ -35,8 +36,8 @@ impl<T: Transport> TransportModel<T> {
 pub struct Discard;
 
 impl ChatSink for Discard {
-    fn event(&mut self, _event: InferEvent) -> Flow {
-        Flow::Continue
+    fn event(&mut self, _event: InferEvent) -> ControlFlow<()> {
+        ControlFlow::Continue(())
     }
 }
 
@@ -94,7 +95,7 @@ pub async fn turn<S: InferSession>(
         match session.next().await {
             Ok(InferEvent::Finished(reply)) => return Ok(reply),
             Ok(event) => {
-                if sink.event(event) == Flow::Stop && !stopped {
+                if sink.event(event).is_break() && !stopped {
                     stopped = true;
                     let _ = session.send(ClientFrame::Cancel).await;
                 }

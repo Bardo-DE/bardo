@@ -6,9 +6,9 @@ use docket_router::{assemble, check_stamped, inbound_line, intake_label, report_
 use docket_vocab::Handle;
 use porter_core::{AppName, DataClass};
 use prov::{
-    Actor, Address, AgentRef, AgentRole, Confidentiality, Crossing, Integrity, Label, Labelled,
-    Message, MessageId, MessageKind, MessageText, Part, ReportStatus, SessionId, Source, SpaceId,
-    TaskId, ThreadId, UnixSeconds,
+    Actor, Address, AgentRef, AgentRole, Confidentiality, Integrity, Label, Labelled, Message,
+    MessageId, MessageKind, MessageText, Part, ReportStatus, SessionId, Source, SpaceId, TaskId,
+    ThreadId, UnixSeconds,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -121,7 +121,7 @@ fn a_draft_is_stamped_with_a_thread_and_its_handles_resolved() {
     .expect("assembled");
     assert_eq!(stamped.thread.as_str(), "m-7");
     assert_eq!(stamped.parts.len(), 2);
-    assert_eq!(stamped.crossing(), Crossing::Across);
+    assert!(stamped.crosses());
     assert_eq!(stamped.label, mail("work"));
     let unknown = assemble(
         draft,
@@ -154,7 +154,7 @@ fn a_message_from_an_untrusted_sender_lands_as_a_handle() {
             Source::Mail,
         )
     });
-    assert_eq!(line.crossing, Crossing::Across);
+    assert!(line.crosses);
     assert!(
         matches!(&line.parts[0], InboundPart::Text(Reveal::Handle(_))),
         "{line:?}"
@@ -174,7 +174,7 @@ fn a_message_from_an_untrusted_sender_lands_as_a_handle() {
             "skip the newsletters".into()
         ))]
     );
-    assert_eq!(line.crossing, Crossing::Within);
+    assert!(!line.crosses);
     assert_eq!(report_status(&untrusted), Some(ReportStatus::Done));
     assert_eq!(report_status(&own), None);
 }

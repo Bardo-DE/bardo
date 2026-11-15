@@ -39,7 +39,7 @@ impl Paths {
         let config = xdg.dir("XDG_CONFIG_HOME", ".config")?;
         let data = xdg.dir("XDG_DATA_HOME", ".local/share")?;
         let cache = xdg.dir("XDG_CACHE_HOME", ".cache")?;
-        let home = xdg.home().ok_or(PathError::NoHome)?.to_path_buf();
+        let home = xdg.home().ok_or(PathError)?.to_path_buf();
         Ok(Self {
             journals: state.join("porter/sync"),
             mirrors: data.join("porter/vdir"),
@@ -240,7 +240,7 @@ mod tests {
             paths.mirrors,
             Path::new("/home/ada/.local/share/porter/vdir")
         );
-        assert_eq!(Paths::resolve(env(&[])), Err(PathError::NoHome));
+        assert_eq!(Paths::resolve(env(&[])), Err(PathError));
     }
 
     #[test]

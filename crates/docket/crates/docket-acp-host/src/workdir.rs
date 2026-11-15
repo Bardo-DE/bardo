@@ -7,7 +7,7 @@
 //! `resolve` walks the file system; `from_resolved` is the pure half, given the real paths.
 
 use acp_core::confine::is_secret;
-use bulkhead::{AbsPath, Cover};
+use bulkhead::AbsPath;
 use std::path::{Path, PathBuf};
 
 /// Why a directory is not a [`Workdir`].
@@ -54,11 +54,11 @@ impl Workdir {
         real: AbsPath,
         home: Option<&AbsPath>,
     ) -> Result<Self, WorkdirFault> {
-        if real_scope.covers(&real) != Cover::Covers {
+        if !real_scope.covers(&real) {
             return Err(WorkdirFault::Outside);
         }
         // Home itself, or a folder above it, would make home (and its dot-directories) writable.
-        if home.is_some_and(|h| real.covers(h) == Cover::Covers) {
+        if home.is_some_and(|h| real.covers(h)) {
             return Err(WorkdirFault::Home);
         }
         if is_secret(&real) {
@@ -75,7 +75,7 @@ impl Workdir {
         asked: &AbsPath,
         home: Option<&Path>,
     ) -> Result<Self, WorkdirFault> {
-        if scope.covers(asked) != Cover::Covers {
+        if !scope.covers(asked) {
             return Err(WorkdirFault::Outside);
         }
         let real_scope =

@@ -113,13 +113,13 @@ impl ScreenRow {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct ModeRows {
     /// Changes it can undo, within what the person asked.
-    pub inside: InsideRow,
+    pub inside: AskOrRun,
     /// Other changes it can undo.
     pub other: OtherRow,
     /// Sending.
-    pub send: SendRow,
+    pub send: AskOrRun,
     /// Deleting.
-    pub delete: DeleteRow,
+    pub delete: AskOrRun,
     /// Using another app's window.
     pub screen: ScreenRow,
 }
@@ -129,8 +129,8 @@ impl ModeRows {
     pub const AUTO: ModeRows = ModeRows {
         inside: AskOrRun::Runs,
         other: OtherRow::Check,
-        send: SendRow::Asks,
-        delete: DeleteRow::Asks,
+        send: AskOrRun::Asks,
+        delete: AskOrRun::Asks,
         screen: ScreenRow::Once,
     };
 
@@ -138,8 +138,8 @@ impl ModeRows {
     pub const MANUAL: ModeRows = ModeRows {
         inside: AskOrRun::Asks,
         other: OtherRow::Asks,
-        send: SendRow::Asks,
-        delete: DeleteRow::Asks,
+        send: AskOrRun::Asks,
+        delete: AskOrRun::Asks,
         screen: ScreenRow::Each,
     };
 }

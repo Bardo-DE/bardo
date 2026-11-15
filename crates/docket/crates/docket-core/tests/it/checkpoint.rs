@@ -84,7 +84,7 @@ fn every_checkpoint_type_round_trips_in_its_pinned_shape() {
             days: Days(14),
         },
         turn: TurnState::Running,
-        label: Some(prov::AgentLabel("claude in pane 2".into())),
+        label: Some("claude in pane 2".into()),
     };
     let text = round(&list);
     assert!(text.contains(r#""turn":"running""#));

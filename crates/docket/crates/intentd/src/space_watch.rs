@@ -12,8 +12,8 @@ use docket_permissions_core::{Ended, KnownSpaces};
 use docket_router::{Router, Seams};
 use docket_store::GrantFileError;
 use docket_vocab::Clock;
-use porter_client::{Porter, Spaces, SpacesError};
-use porter_client_dbus::Bus;
+use porter_client::SpacesError;
+use porter_client_dbus::{Bus, Spaces};
 use porter_core::{DesktopSpace, SpaceChange};
 use prov::SpaceId;
 use std::sync::Arc;
@@ -64,7 +64,7 @@ impl<S: Seams<Grants = FileGrants>> SpaceKeeper<S> {
     }
 
     /// Drops what the registry no longer holds.
-    async fn sweep(&self, spaces: &Spaces<Bus>) -> Result<(), SpacesError> {
+    async fn sweep(&self, spaces: &Spaces) -> Result<(), SpacesError> {
         let known = KnownSpaces::of(spaces.list().await?.into_iter().map(|r| r.id));
         self.said(self.router.seams.grants().reconcile_with(&known));
         Ok(())
@@ -81,7 +81,7 @@ impl<S: Seams<Grants = FileGrants>> SpaceKeeper<S> {
 
     /// Subscribes, settles what is already out of date, then follows the changes until the
     /// stream or accountd ends.
-    async fn follow(&self, spaces: &Spaces<Bus>) -> Result<(), SpacesError> {
+    async fn follow(&self, spaces: &Spaces) -> Result<(), SpacesError> {
         let mut changes = spaces.watch().await?;
         self.sweep(spaces).await?;
         while let Some(change) = changes.next().await {
@@ -98,7 +98,7 @@ impl<S: Seams<Grants = FileGrants>> SpaceKeeper<S> {
     /// goes away.
     pub async fn run(self, bus: BusConnection) {
         loop {
-            let spaces = Porter::over(Bus::over(bus.clone())).spaces();
+            let spaces = Bus::over(bus.clone()).spaces();
             if let Err(why) = self.follow(&spaces).await {
                 eprintln!("intentd: the Spaces are not followed for now: {why}");
             }

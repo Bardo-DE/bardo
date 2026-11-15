@@ -3,9 +3,9 @@
 
 use crate::acp_agent::{CLAUDE, read, world};
 use docket_core::*;
-use prov::{Actor, AgentLabel};
+use prov::Actor;
 
-async fn actors_of_a_read(label: Option<AgentLabel>) -> Vec<Actor> {
+async fn actors_of_a_read(label: Option<String>) -> Vec<Actor> {
     let w = world();
     let session = w.open_labelled(CLAUDE, SheetSurface::Desktop, label).await;
     w.call(&session, read("/home/u/proj/a.rs"))
@@ -22,7 +22,7 @@ async fn actors_of_a_read(label: Option<AgentLabel>) -> Vec<Actor> {
 
 #[tokio::test]
 async fn the_audited_actor_carries_the_label_the_host_gave() {
-    let label = AgentLabel("Claude Code".to_owned());
+    let label = "Claude Code".to_owned();
     let program = prov::AgentProgram::parse(CLAUDE).expect("program");
     assert_eq!(
         actors_of_a_read(Some(label.clone())).await,

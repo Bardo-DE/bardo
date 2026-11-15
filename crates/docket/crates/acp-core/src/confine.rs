@@ -7,7 +7,7 @@
 //! A write to a place that can later run code outside the sandbox (`.git`, an editor or agent
 //! configuration) is `Sensitive`: it asks every time and is never offered "always".
 
-use bulkhead::{AbsPath, Cover};
+use bulkhead::AbsPath;
 
 /// Directory names that hold secrets wherever they sit.
 const SECRET_DIRS: &[&str] = &[
@@ -120,7 +120,7 @@ fn care(path: &AbsPath) -> Care {
 /// path's links and passes the result to [`confine`].
 pub fn named(scope: &AbsPath, requested: &str) -> Result<AbsPath, Refusal> {
     let path = AbsPath::parse(requested).map_err(|_| Refusal::BadPath)?;
-    if scope.covers(&path) != Cover::Covers {
+    if !scope.covers(&path) {
         return Err(Refusal::Outside);
     }
     Ok(path)
@@ -129,7 +129,7 @@ pub fn named(scope: &AbsPath, requested: &str) -> Result<AbsPath, Refusal> {
 /// The whole rule, given the links resolved: `real_scope` is the scope after links, `real` the
 /// path after links.
 pub fn confine(real_scope: &AbsPath, path: AbsPath, real: AbsPath) -> Result<Confined, Refusal> {
-    if real_scope.covers(&real) != Cover::Covers {
+    if !real_scope.covers(&real) {
         return Err(Refusal::Link);
     }
     if is_secret(&path) || is_secret(&real) {

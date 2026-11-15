@@ -9,7 +9,7 @@ use docket_manifest::{
 };
 use docket_vocab::ActionRef;
 use porter_core::AppName;
-use porter_infer::{JsonSchemaText, JsonText, ToolDecl, ToolName};
+use porter_infer::{JsonText, SchemaText, ToolDecl, ToolName};
 use serde_json::{Value as Json, json};
 
 /// The longest tool name a model is given.
@@ -79,7 +79,7 @@ impl CatalogueTool {
         Some(ToolDecl {
             name: self.name.clone(),
             description: format!("{} ({:?})", self.decl.label.as_str(), self.decl.effect),
-            params: JsonSchemaText(JsonText::parse(&text).ok()?),
+            params: SchemaText(JsonText::new(&text).ok()?),
         })
     }
 }
@@ -257,5 +257,5 @@ fn unique_name(tools: &[CatalogueTool], app: &AppName, decl: &ActionDecl) -> Opt
     } else {
         format!("a{}", tools.len())
     };
-    ToolName::parse(&name).ok()
+    ToolName::new(&name).ok()
 }

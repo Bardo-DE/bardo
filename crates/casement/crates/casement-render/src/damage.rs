@@ -87,7 +87,7 @@ pub fn routed<'a, R: Compositor>(
     let shaders = renderer.runs_shaders();
     elements
         .iter()
-        .map(|element| Routed { element, effects })
+        .map(|element| Routed { element, shaders })
         .collect()
 }
 
@@ -103,7 +103,7 @@ impl<R: Compositor> std::fmt::Debug for Routed<'_, R> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Routed")
             .field("element", self.element.id())
-            .field("effects", &self.effects)
+            .field("shaders", &self.shaders)
             .finish()
     }
 }

@@ -6,7 +6,7 @@
 
 use docket_permissions_core::ProgramName;
 use docket_vocab::Workspace;
-use prov::{AgentLabel, SessionId};
+use prov::SessionId;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -202,7 +202,7 @@ pub struct WatchedLine {
     pub agent: WatchedAgent,
     /// What the person calls the agent there, as its opener said (display text).
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub label: Option<AgentLabel>,
+    pub label: Option<String>,
     /// The folder the agent works in.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub folder: Option<Workspace>,

@@ -13,8 +13,8 @@
 use crate::context::Reveal;
 use docket_vocab::Handle;
 use prov::{
-    Address, AgentRef, Crossing, EntityId, Fault, MessageId, MessageKind, MessageText, OutcomeRef,
-    ThreadId, UndoHandle,
+    Address, AgentRef, EntityId, Fault, MessageId, MessageKind, MessageText, OutcomeRef, ThreadId,
+    UndoHandle,
 };
 use serde::{Deserialize, Serialize};
 
@@ -59,7 +59,7 @@ pub struct Delivery {
     /// Its thread.
     pub thread: ThreadId,
     /// Whether it crossed Spaces.
-    pub crossing: Crossing,
+    pub crosses: bool,
 }
 
 /// Why a message was not delivered.
@@ -105,7 +105,7 @@ pub struct InboundLine {
     /// Who sent it, in which Space.
     pub from: Address,
     /// Whether it crossed Spaces: it shows on the roster either way.
-    pub crossing: Crossing,
+    pub crosses: bool,
     /// What it is.
     pub kind: MessageKind,
     /// What it says.

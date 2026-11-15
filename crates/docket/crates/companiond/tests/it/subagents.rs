@@ -9,8 +9,8 @@ use companion_wire::{AnswerBody, AnswerPhase, NeedsYou};
 use docket_core::*;
 use docket_wire::SessionOpen;
 use prov::{
-    Address, AgentRef, Crossing, Integrity, MessageKind, MessageText, ReportStatus, RunId,
-    SessionId, Source, UnixSeconds,
+    Address, AgentRef, Integrity, MessageKind, MessageText, ReportStatus, RunId, SessionId, Source,
+    UnixSeconds,
 };
 use serde_json::json;
 
@@ -195,7 +195,7 @@ async fn the_persons_own_turn_to_a_subagent_is_a_trusted_event_the_roster_quotes
         )
         .await
         .expect("sent");
-    assert_eq!(sent.crossing, Crossing::Within);
+    assert!(!sent.crosses);
     w.companion.arrived().await.expect("arrived");
 
     // Their words are verbatim, from the person, trusted.
@@ -345,7 +345,7 @@ async fn a_message_across_spaces_carries_its_labels_shows_presence_only_and_gran
         )
         .await
         .expect("delivered");
-    assert_eq!(delivery.crossing, Crossing::Across);
+    assert!(delivery.crosses);
     let stamped = w.messages().pop().expect("the message");
     assert_eq!(stamped.label.integrity, Integrity::Untrusted);
     assert!(stamped.label.sources.contains(&Source::Mail));

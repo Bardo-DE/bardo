@@ -129,7 +129,7 @@ pub struct SessionRecord {
     pub kind: SessionKind,
     /// What the person calls the agent a watch session watches, as its opener said (display
     /// text); none for every other session.
-    pub label: Option<prov::AgentLabel>,
+    pub label: Option<String>,
     /// The helper whose job the session is for: its reach cuts the session's policy, and the
     /// things the job owns are written by no other session while it lives. Said by the companion
     /// when it opened the session.

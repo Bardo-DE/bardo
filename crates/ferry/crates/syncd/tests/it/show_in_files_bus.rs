@@ -23,7 +23,7 @@ use ferry_sync::ItemPath;
 use porter_callers::CallerRole;
 use porter_capability::KindToggle;
 use porter_capability::{CapabilityKind, StorageScope};
-use porter_capability::{Claim, Offer, Provenance, Subject, Toggle};
+use porter_capability::{Claim, Offer, Provenance, Subject};
 use porter_core::AccountId;
 use porter_core::{
     Account, AccountLabel, AccountState, AuthKind, Credential, EndpointUrl, Family, LoginName,
@@ -235,7 +235,7 @@ async fn build(
 fn agreeing() -> ScriptedSheets {
     ScriptedSheets::default().conversing([vec![SheetInput::Confirm(vec![KindToggle {
         kind: CapabilityKind::Storage,
-        toggle: Toggle::On,
+        toggle: true,
     }])]])
 }
 

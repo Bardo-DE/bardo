@@ -111,7 +111,7 @@ impl World {
         &self,
         name: &str,
         sheets: SheetSurface,
-        label: Option<prov::AgentLabel>,
+        label: Option<String>,
     ) -> SessionId {
         let reply = ask(
             &self.router,

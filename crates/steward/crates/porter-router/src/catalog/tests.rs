@@ -21,7 +21,7 @@ fn an_embedding_entry_makes_a_claim_from_its_embed_table() {
     assert_eq!(cap.dims, Dims(4));
     assert_eq!(cap.max_input, Tokens(512));
     assert_eq!(cap.max_batch, Count(2));
-    assert_eq!(cap.prompts.query, PrefixText("search_query: ".into()));
+    assert_eq!(cap.prompts.query, "search_query: ");
     assert_eq!(cap.modalities, BTreeSet::from([Modality::Text]));
 }
 

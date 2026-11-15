@@ -27,20 +27,18 @@ use docket_core::Rewind;
 use docket_session::{BackendKind, Opening, SessionEntry};
 use docket_vocab::{CallRequest, CallerRole, Clock, TurnId, Workspace};
 use docket_wire::{CallerId, IntentsReply, IntentsRequest, WireRefusal};
-use prov::{Actor, AgentLabel, AgentRef, SessionId, SpaceId, TaskId};
+use prov::{Actor, AgentRef, SessionId, SpaceId, TaskId};
 
 /// The longest label kept, in characters.
 const LABEL_MAX: usize = 80;
 
 /// The label as display text: no control characters, cut short.
-fn label_text(label: &str) -> AgentLabel {
-    AgentLabel(
-        label
-            .chars()
-            .filter(|c| !c.is_control())
-            .take(LABEL_MAX)
-            .collect(),
-    )
+fn label_text(label: &str) -> String {
+    label
+        .chars()
+        .filter(|c| !c.is_control())
+        .take(LABEL_MAX)
+        .collect()
 }
 
 /// Whether `call` is the restore of a session's files, the one action a watch session allows.

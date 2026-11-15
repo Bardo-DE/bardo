@@ -9,7 +9,7 @@ use docket_vocab::ActionRef;
 use prov::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
-use bulkhead::{AbsPath, Cover, RootState};
+use bulkhead::AbsPath;
 
 /// A host name, lower case: `example.org`. Matched whole, never as a suffix, so `example.org`
 /// does not cover `evilexample.org`.
@@ -102,12 +102,11 @@ impl Recipient {
 
     /// Whether this grant recipient covers a recipient a call names. An address grant covers
     /// that address alone; a domain grant covers addresses at the domain, and a URL's host.
-    pub fn covers(&self, call: &Recipient) -> Cover {
-        let same = match self {
+    pub fn covers(&self, call: &Recipient) -> bool {
+        match self {
             Recipient::Address(_) => self == call,
             Recipient::Domain(d) => call.host().as_ref() == Some(d),
-        };
-        if same { Cover::Covers } else { Cover::Misses }
+        }
     }
 }
 
@@ -158,14 +157,10 @@ impl CommandPrefix {
 
     /// Whether `command` starts with these words and is otherwise plain: a command with an
     /// operator, expansion or newline anywhere is never covered, whatever it starts with.
-    pub fn covers(&self, command: &str) -> Cover {
+    pub fn covers(&self, command: &str) -> bool {
         let words: Vec<&str> = command.split_whitespace().collect();
         let starts = words.len() >= self.0.len() && self.0.iter().zip(&words).all(|(a, b)| a == b);
-        if starts && plain(command) {
-            Cover::Covers
-        } else {
-            Cover::Misses
-        }
+        starts && plain(command)
     }
 }
 
@@ -256,12 +251,11 @@ impl StandingScope {
 
     /// Whether the scope is narrow enough to hold: a directory scope is never `/`.
     pub fn is_narrow(&self) -> bool {
-        let rooted = match self {
-            StandingScope::Files { under, .. } => under.is_root(),
-            StandingScope::Terminal { cwd, .. } => cwd.is_root(),
-            StandingScope::Outbound { .. } | StandingScope::Reads { .. } => RootState::Below,
-        };
-        rooted == RootState::Below
+        match self {
+            StandingScope::Files { under, .. } => !under.is_root(),
+            StandingScope::Terminal { cwd, .. } => !cwd.is_root(),
+            StandingScope::Outbound { .. } | StandingScope::Reads { .. } => true,
+        }
     }
 }
 

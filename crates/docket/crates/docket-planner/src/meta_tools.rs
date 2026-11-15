@@ -6,19 +6,19 @@ use crate::show::MOST_SHOWN;
 use crate::want::want_schema;
 use docket_core::ActionCard;
 use porter_infer::{
-    ChatControl, JsonSchemaText, JsonText, Knob, Reasoning, ToolChoice, ToolDecl, ToolName,
+    ChatControl, JsonText, Knob, Reasoning, SchemaText, ToolChoice, ToolDecl, ToolName,
     ToolParallelism,
 };
 use serde_json::{Value as Json, json};
 
-fn schema_text(schema: &Json) -> Option<JsonSchemaText> {
+fn schema_text(schema: &Json) -> Option<SchemaText> {
     let text = serde_json::to_string(schema).ok()?;
-    Some(JsonSchemaText(JsonText::parse(&text).ok()?))
+    Some(SchemaText(JsonText::new(&text).ok()?))
 }
 
 fn meta_tool(name: &str, description: &str, params: &Json) -> Option<ToolDecl> {
     Some(ToolDecl {
-        name: ToolName::parse(name).ok()?,
+        name: ToolName::new(name).ok()?,
         description: description.to_owned(),
         params: schema_text(params)?,
     })

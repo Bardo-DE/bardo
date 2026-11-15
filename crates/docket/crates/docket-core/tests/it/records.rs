@@ -155,7 +155,7 @@ fn messages_use_the_one_prov_model() {
     round(&Delivery {
         message: prov::MessageId::parse("m-1").expect("m"),
         thread: prov::ThreadId::parse("m-1").expect("t"),
-        crossing: prov::Crossing::Across,
+        crosses: true,
     });
     round(&InboxAsk {
         agent: AgentRef::Companion,
