@@ -50,7 +50,7 @@ entry=$(cd "$(dirname "$entry")" && pwd -P)/$(basename "$entry")
 # The world: short paths, because a bus socket path is limited.
 world=$(mktemp -d /tmp/cw.XXXXXX)
 chmod 700 "$world"
-mkdir -p "$world"/{logs,data/stoker/catalog,config/quire,config/porter,cache,run,proc/units,none}
+mkdir -p "$world"/{logs,data/stoker/catalog,config/quire,config/inferd,config/porter,cache,run,proc/units,none}
 chmod 700 "$world/run"
 cp "$catalog"/*.toml "$world/data/stoker/catalog/"
 # accountd's non-secret records (the registry and the provider file) are copied in; the key file is not.
@@ -62,7 +62,7 @@ app = "org.quire.Inference"
 unit = "inferd.service"
 role = "ai_broker"
 TOML
-cat > "$world/config/quire/inferd.toml" <<TOML
+cat > "$world/config/inferd/inferd.toml" <<TOML
 [ai]
 local_only = "off"
 

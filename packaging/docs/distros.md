@@ -137,8 +137,8 @@ reads that list when it starts, so after installing, press **Start using it** in
 (asking first, since a conversation that is open stops).
 
 vLLM is not looked for. If you run it, install it into a Python environment of your own (for example
-`uv venv ~/vllm && uv pip install --python ~/vllm vllm`) and name that Python in `~/.config/quire/inferd.toml`
-(or `$XDG_CONFIG_HOME/quire/inferd.toml`):
+`uv venv ~/vllm && uv pip install --python ~/vllm vllm`) and name that Python in `~/.config/inferd/inferd.toml`
+(or `$XDG_CONFIG_HOME/inferd/inferd.toml`):
 
 ```
 [engines]
