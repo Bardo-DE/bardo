@@ -12,17 +12,6 @@ pub const BODY_MAX_BYTES: usize = 8 * 1024;
 /// The most a catalogue line may hold.
 pub const DESCRIPTION_MAX_CHARS: usize = 160;
 
-/// Whether a skill is always preselected: an enum, not a flag.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Always {
-    /// Only when the context matches.
-    #[default]
-    No,
-    /// Every turn (only for a tiny desktop-basics skill).
-    Yes,
-}
-
 #[derive(Debug, Default, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct WhenToml {
@@ -31,7 +20,7 @@ struct WhenToml {
     #[serde(default)]
     kinds: Vec<String>,
     #[serde(default)]
-    always: Always,
+    always: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -54,8 +43,9 @@ pub struct When {
     pub focused_app: Vec<AppName>,
     /// Entity kinds in the context that select it.
     pub kinds: Vec<EntityKind>,
-    /// Whether it is selected every turn.
-    pub always: Always,
+    /// Whether it is selected every turn (only for a tiny desktop-basics skill), not only when
+    /// the context matches.
+    pub always: bool,
 }
 
 /// Who put the skill there, which sets its label.

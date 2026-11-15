@@ -16,7 +16,7 @@ const ARCHIVE_USE: &str = "org.quire.Mail:mail.thread.archive";
 fn skill(id: &str, uses: &str, body: &str) -> Skill {
     let toml = format!(
         "vocab = 1\nid = \"{id}\"\nowner = \"org.quire.Companion\"\nversion = \"1.0\"\n\
-         uses = [\"{uses}\"]\n[when]\nalways = \"yes\"\n"
+         uses = [\"{uses}\"]\n[when]\nalways = true\n"
     );
     let md = format!("---\nname: {id}\ndescription: about {id}\n---\n{body}\n");
     parse(id, &toml, &md, Origin::Shipped).expect("a valid skill")
@@ -88,7 +88,7 @@ async fn skills_come_from_a_directory_the_app_names_and_a_bad_one_is_reported() 
     std::fs::write(
         good.join("skill.toml"),
         "vocab = 1\nid = \"digests\"\nowner = \"org.quire.Companion\"\nversion = \"1.0\"\n\
-         uses = [\"org.quire.Mail:mail.thread.archive\"]\n[when]\nalways = \"yes\"\n",
+         uses = [\"org.quire.Mail:mail.thread.archive\"]\n[when]\nalways = true\n",
     )
     .expect("toml");
     std::fs::write(

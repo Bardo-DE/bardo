@@ -29,7 +29,7 @@ fn installed() -> Vec<Skill> {
         skill(
             "basics",
             LOAD_USE,
-            "[when]\nalways = \"yes\"\n",
+            "[when]\nalways = true\n",
             "BASICS-BODY",
         ),
         skill(
@@ -50,7 +50,7 @@ fn installed() -> Vec<Skill> {
         skill(
             "ghost",
             "org.quire.Mail:mail.no.such",
-            "[when]\nalways = \"yes\"\n",
+            "[when]\nalways = true\n",
             "GHOST-BODY",
         ),
     ]

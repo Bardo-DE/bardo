@@ -24,6 +24,6 @@ pub use library::{
     Situation, preselect, reach, uses_first,
 };
 pub use skill::{
-    Always, BODY_MAX_BYTES, DESCRIPTION_MAX_CHARS, Doc, Facts, Origin, Skill, When, assemble,
+    BODY_MAX_BYTES, DESCRIPTION_MAX_CHARS, Doc, Facts, Origin, Skill, When, assemble,
     parse, parse_doc, parse_facts,
 };

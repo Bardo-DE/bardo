@@ -9,4 +9,4 @@ uses = [
 ]
 
 [when]
-always = "yes"
+always = true

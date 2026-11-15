@@ -4,7 +4,7 @@
 use docket_core::SkillId;
 use docket_manifest::{AgentReach, ValidManifest};
 use docket_skills::{
-    Always, BODY_BUDGET_BYTES, Found, LOAD_MAX, Library, LoadRefusal, Loaded, Origin, Reach, Roots,
+    BODY_BUDGET_BYTES, Found, LOAD_MAX, Library, LoadRefusal, Loaded, Origin, Reach, Roots,
     Situation, SkillFault, discover, load_dir, parse, parse_doc, parse_facts, preselect, reach,
     uses_first,
 };
@@ -62,8 +62,8 @@ fn skill_toml_table() {
             Err("bad kind"),
         ),
         (format!("{ok}[when]\nalways = \"maybe\"\n"), Err("toml")),
-        (format!("{ok}[when]\nalways = true\n"), Err("toml")),
-        (format!("{ok}[when]\nalways = \"yes\"\n"), Ok(())),
+        (format!("{ok}[when]\nalways = true\n"), Ok(())),
+        (format!("{ok}[when]\nalways = \"yes\"\n"), Err("toml")),
         (ok.replace("owner", "own"), Err("toml")),
     ];
     for (text, want) in cases {
@@ -353,7 +353,7 @@ fn kind(text: &str) -> EntityKind {
 #[test]
 fn preselection_follows_when_and_stops_at_two() {
     let app = |s: &str| AppName::parse(s).expect("app");
-    let always = skill("basics", "[when]\nalways = \"yes\"\n");
+    let always = skill("basics", "[when]\nalways = true\n");
     let by_app = skill("by-app", "[when]\nfocused_app = [\"org.quire.Mail\"]\n");
     let by_kind = skill("by-kind", "[when]\nkinds = [\"mail.thread\"]\n");
     let other = skill("other", "[when]\nfocused_app = [\"org.quire.Files\"]\n");
@@ -391,7 +391,7 @@ fn preselection_follows_when_and_stops_at_two() {
     .map(|s| s.id.to_string())
     .collect();
     assert_eq!(got, ["by-app", "by-kind"]);
-    assert_eq!(always.when.always, Always::Yes);
+    assert!(always.when.always);
 }
 
 #[test]
@@ -473,7 +473,7 @@ fn preselection_stops_when_the_next_body_would_not_fit() {
         focused: Some(app),
         kinds: BTreeSet::new(),
     };
-    let first = sized("a-first", "[when]\nalways = \"yes\"\n", 5000);
+    let first = sized("a-first", "[when]\nalways = true\n", 5000);
     let second = sized(
         "b-second",
         "[when]\nfocused_app = [\"org.quire.Shell\"]\n",

@@ -1,7 +1,7 @@
 //! Checking skills against the registered manifests, and choosing which to show a session.
 
 use crate::fault::Unresolved;
-use crate::skill::{Always, Skill};
+use crate::skill::Skill;
 use docket_core::{SkillCard, SkillId};
 use docket_manifest::{AgentReach, ValidManifest};
 use docket_vocab::ActionRef;
@@ -121,7 +121,7 @@ fn matches(skill: &Skill, at: &Situation) -> bool {
         .as_ref()
         .is_some_and(|f| skill.when.focused_app.contains(f));
     let kind = skill.when.kinds.iter().any(|k| at.kinds.contains(k));
-    skill.when.always == Always::Yes || app || kind
+    skill.when.always || app || kind
 }
 
 /// The skills to expand at the start of a turn: those whose `when` matches (`always`, the focused
@@ -130,7 +130,7 @@ fn matches(skill: &Skill, at: &Situation) -> bool {
 /// the loaded skills).
 pub fn preselect<'a>(offered: &[&'a Skill], at: &Situation, room: usize) -> Vec<&'a Skill> {
     let mut hits: Vec<&Skill> = offered.iter().copied().filter(|s| matches(s, at)).collect();
-    hits.sort_by_key(|s| (s.when.always != Always::Yes, s.id.clone()));
+    hits.sort_by_key(|s| (!s.when.always, s.id.clone()));
     let mut left = room;
     let mut chosen = Vec::new();
     for skill in hits.into_iter().take(PRESELECT_MAX) {

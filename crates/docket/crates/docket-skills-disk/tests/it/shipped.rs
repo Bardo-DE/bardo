@@ -1,7 +1,7 @@
 //! The skills this repository ships validate against the manifests it ships.
 
 use docket_manifest::ValidManifest;
-use docket_skills::{Always, Library, Origin, Roots, discover, load_dir};
+use docket_skills::{Library, Origin, Roots, discover, load_dir};
 use docket_skills_disk::DiskFolder;
 use std::path::PathBuf;
 
@@ -24,7 +24,7 @@ fn desktop_basics_validates_is_always_and_fits_a_kilobyte() {
     let skill =
         load_dir(&DiskFolder, &dist().join("desktop-basics"), Origin::Shipped).expect("validates");
     assert_eq!(skill.id.as_str(), "desktop-basics");
-    assert_eq!(skill.when.always, Always::Yes);
+    assert!(skill.when.always);
     assert!(skill.body.len() <= 1024, "{} bytes", skill.body.len());
     let md = std::fs::read_to_string(dist().join("desktop-basics/SKILL.md")).expect("md");
     assert!(md.len() <= 1024, "the whole file is {} bytes", md.len());
