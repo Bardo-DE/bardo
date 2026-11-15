@@ -7,7 +7,7 @@
 use action_review::Reviewer;
 use docket_checkpoint::CheckpointStore;
 use docket_core::{
-    AppRefusal, Confirmer, ContextScope, ContextSnapshot, Invocation, Outcome, PolicyWriter,
+    AppRefusal, Confirmer, ContextSnapshot, Invocation, Outcome, PolicyWriter,
     Preview, Reader, SuggestAsk, UndoFault,
 };
 use docket_core::{EventSink, LinkFault, MemoryLink};
@@ -102,11 +102,8 @@ pub trait AppLink: Send + Sync {
     /// is: typing in the launcher never starts an app. An action may start one.
     fn running(&self, app: &AppName) -> impl Future<Output = bool> + Send;
     /// `Context`.
-    fn context(
-        &self,
-        app: &AppName,
-        scope: ContextScope,
-    ) -> impl Future<Output = Result<ContextSnapshot, LinkFault>> + Send;
+    fn context(&self, app: &AppName)
+    -> impl Future<Output = Result<ContextSnapshot, LinkFault>> + Send;
     /// `Preview`.
     fn preview(
         &self,

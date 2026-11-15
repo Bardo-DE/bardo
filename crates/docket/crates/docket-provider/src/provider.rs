@@ -1,7 +1,7 @@
 //! What an app implements.
 
 use docket_core::{
-    AppRefusal, ContextScope, ContextSnapshot, Hit, Invocation, Outcome, Preview, SuggestAsk,
+    AppRefusal, ContextSnapshot, Hit, Invocation, Outcome, Preview, SuggestAsk,
     UndoFault,
 };
 use docket_manifest::ValidManifest;
@@ -70,8 +70,8 @@ pub trait IntentProvider: Send + Sync {
 
 /// Reports what the person is looking at. `docket-ds` implements it over ds's context model.
 pub trait ContextSource: Send + Sync {
-    /// The context of the scope, taken now.
-    fn snapshot(&self, scope: ContextScope) -> ContextSnapshot;
+    /// The context of the active window, taken now.
+    fn snapshot(&self) -> ContextSnapshot;
 }
 
 /// Takes a summon. `docket-ds` implements it over ds's companion port.

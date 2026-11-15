@@ -160,14 +160,6 @@ pub enum WindowPrivacy {
     Private,
 }
 
-/// What a context call covers.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum ContextScope {
-    /// The window the person is in.
-    ActiveWindow,
-}
-
 /// Whether the person kept a chip of context with their prompt.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]

@@ -175,7 +175,7 @@ where
 /// # #[tokio::main(flavor = "current_thread")]
 /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// # use docket_provider::ContextSource;
-/// # use docket_core::{AgentConfig, ConfirmRequest, ContextScope, ContextSnapshot};
+/// # use docket_core::{AgentConfig, ConfirmRequest, ContextSnapshot};
 /// # use docket_core::{Here, Selection, TextTarget, Visible, WindowPrivacy};
 /// # use docket_fake::{FakeFiles, FixedClock, ScriptedReviewer, WordsModel, files_manifest};
 /// # use porter_core::AppName;
@@ -190,7 +190,7 @@ where
 /// # }
 /// # struct Nowhere(AppName);
 /// # impl ContextSource for Nowhere {
-/// #     fn snapshot(&self, _: ContextScope) -> ContextSnapshot {
+/// #     fn snapshot(&self) -> ContextSnapshot {
 /// #         ContextSnapshot {
 /// #             app: self.0.clone(),
 /// #             window: Labelled { value: String::new(), label: Label::trusted_user() },

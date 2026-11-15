@@ -4,7 +4,7 @@
 #![allow(dead_code)]
 
 use docket_core::{
-    AppRefusal, ConfirmAnswer, ConfirmEnd, ConfirmRequest, ContextScope, ContextSnapshot, Here,
+    AppRefusal, ConfirmAnswer, ConfirmEnd, ConfirmRequest, ContextSnapshot, Here,
     Hit, Invocation, Outcome, Preview, Selection, SuggestAsk, TextTarget, UndoFault, Visible,
     WindowPrivacy,
 };
@@ -112,7 +112,7 @@ impl IntentProvider for SharedMail {
 pub struct Blank(pub porter_core::AppName);
 
 impl ContextSource for Blank {
-    fn snapshot(&self, _: ContextScope) -> ContextSnapshot {
+    fn snapshot(&self) -> ContextSnapshot {
         ContextSnapshot {
             app: self.0.clone(),
             window: prov::Labelled {

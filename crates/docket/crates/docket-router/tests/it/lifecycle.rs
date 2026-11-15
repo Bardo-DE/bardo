@@ -110,11 +110,7 @@ impl AppLink for ChainLink {
     async fn running(&self, _: &porter_core::AppName) -> bool {
         true
     }
-    async fn context(
-        &self,
-        _: &porter_core::AppName,
-        _: ContextScope,
-    ) -> Result<ContextSnapshot, LinkFault> {
+    async fn context(&self, _: &porter_core::AppName) -> Result<ContextSnapshot, LinkFault> {
         Err(LinkFault::Unavailable)
     }
     async fn preview(

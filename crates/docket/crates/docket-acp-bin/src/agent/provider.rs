@@ -6,7 +6,7 @@
 use bulkhead::Sandbox;
 use docket_acp_host::{Files, Performer};
 use docket_core::{
-    AppRefusal, ContextScope, ContextSnapshot, Here, Hit, Invocation, Outcome, Preview, Selection,
+    AppRefusal, ContextSnapshot, Here, Hit, Invocation, Outcome, Preview, Selection,
     SuggestAsk, TextTarget, UndoFault, Visible, WindowPrivacy,
 };
 use docket_manifest::ValidManifest;
@@ -75,7 +75,7 @@ impl<F: Files + 'static, S: Sandbox + 'static> IntentProvider for PerformerProvi
 pub struct Quiet(pub AppName);
 
 impl ContextSource for Quiet {
-    fn snapshot(&self, _scope: ContextScope) -> ContextSnapshot {
+    fn snapshot(&self) -> ContextSnapshot {
         ContextSnapshot {
             app: self.0.clone(),
             window: Labelled {

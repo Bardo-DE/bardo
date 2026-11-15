@@ -8,7 +8,7 @@ pub mod host;
 pub mod infer;
 
 use docket_core::{
-    ConfirmId, ConfirmRequest, ContextScope, ContextSnapshot, Here, Selection, TextTarget, Visible,
+    ConfirmId, ConfirmRequest, ContextSnapshot, Here, Selection, TextTarget, Visible,
     WindowPrivacy,
 };
 use docket_host::ConfirmSheet;
@@ -51,7 +51,7 @@ impl ConfirmSheet for TestSheet {
 pub struct Nowhere;
 
 impl ContextSource for Nowhere {
-    fn snapshot(&self, _scope: ContextScope) -> ContextSnapshot {
+    fn snapshot(&self) -> ContextSnapshot {
         ContextSnapshot {
             app: porter_core::AppName::parse("org.quire.Mail").expect("app"),
             window: Labelled {

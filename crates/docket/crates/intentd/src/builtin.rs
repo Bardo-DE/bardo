@@ -11,7 +11,7 @@ use crate::link::DbusLink;
 use almanac_client::Transport as MemoryTransport;
 use docket_core::LinkFault;
 use docket_core::{
-    AppRefusal, ContextScope, ContextSnapshot, Invocation, Outcome, Preview, SuggestAsk, UndoFault,
+    AppRefusal, ContextSnapshot, Invocation, Outcome, Preview, SuggestAsk, UndoFault,
 };
 use docket_manifest::{Latency, ValidManifest};
 use docket_manifest::{ManifestFileError, parse};
@@ -178,16 +178,12 @@ impl<T: MemoryTransport> AppLink for HostedLink<T> {
         self.builtins.serves(app) || self.apps.running(app).await
     }
 
-    async fn context(
-        &self,
-        app: &AppName,
-        scope: ContextScope,
-    ) -> Result<ContextSnapshot, LinkFault> {
+    async fn context(&self, app: &AppName) -> Result<ContextSnapshot, LinkFault> {
         if self.builtins.serves(app) {
             // None has a window: there is nothing on screen to report.
             Err(LinkFault::Unavailable)
         } else {
-            self.apps.context(app, scope).await
+            self.apps.context(app).await
         }
     }
 

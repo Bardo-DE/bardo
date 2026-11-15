@@ -23,7 +23,7 @@ pub trait IntentProvider {
     fn undo(&self, token: &str, actor: &str) -> zbus::Result<String>;
 
     /// What the person is looking at (`ContextSnapshot` JSON), answered by ds without app code.
-    fn context(&self, scope: &str) -> zbus::Result<String>;
+    fn context(&self) -> zbus::Result<String>;
 
     /// The companion was summoned (`SummonOrigin` JSON; answers `SummonAnswer`).
     fn summon(&self, serial: u64, origin: &str) -> zbus::Result<String>;
@@ -75,8 +75,7 @@ impl IntentProviderSkeleton {
         Err(crate::introspect::frozen())
     }
 
-    fn context(&self, scope: String) -> fdo::Result<String> {
-        let _ = (scope,);
+    fn context(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 

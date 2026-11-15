@@ -13,7 +13,7 @@ use docket_checkpoint::MemoryStore;
 use docket_core::LinkFault;
 use docket_core::PolicyWriter;
 use docket_core::{
-    AppRefusal, ContextScope, ContextSnapshot, Invocation, Outcome, Preview, SuggestAsk, UndoFault,
+    AppRefusal, ContextSnapshot, Invocation, Outcome, Preview, SuggestAsk, UndoFault,
 };
 use docket_manifest::Latency;
 use docket_provider::IntentProvider;
@@ -286,11 +286,7 @@ impl AppLink for FakeLink {
         !matches!(how, Some(Answering::Stopped | Answering::Absent))
     }
 
-    async fn context(
-        &self,
-        app: &AppName,
-        _scope: ContextScope,
-    ) -> Result<ContextSnapshot, LinkFault> {
+    async fn context(&self, app: &AppName) -> Result<ContextSnapshot, LinkFault> {
         // The fakes have no windows of their own (ds answers context in a real app): a test
         // sets one with `show_window`.
         self.window

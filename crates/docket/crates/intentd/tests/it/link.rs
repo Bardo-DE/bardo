@@ -122,7 +122,7 @@ async fn every_member_reaches_the_app_and_comes_back_typed() {
 
     // Context, preview and suggestions.
     let context = link
-        .context(&mail(), ContextScope::ActiveWindow)
+        .context(&mail())
         .await
         .expect("a snapshot");
     assert_eq!(context.app, mail());
@@ -160,7 +160,7 @@ async fn an_app_that_is_away_is_unavailable_and_never_a_panic() {
         Err(UndoFault::AppUnavailable)
     );
     assert_eq!(
-        link.context(&gone, ContextScope::ActiveWindow).await,
+        link.context(&gone).await,
         Err(LinkFault::Unavailable)
     );
     assert_eq!(
@@ -286,7 +286,7 @@ async fn a_provider_answers_nobody_but_intentd() {
     for member in [
         proxy.search("x", 1).await,
         proxy.preview("{}").await,
-        proxy.context("\"active_window\"").await,
+        proxy.context().await,
     ] {
         assert!(member.is_err(), "{member:?}");
     }

@@ -10,7 +10,7 @@ use docket_context::labels::{absorb, fold_labels};
 use docket_context::session::SessionState;
 use docket_core::LinkFault;
 use docket_core::{
-    CallRefusal, ContextScope, ContextSnapshot, ReadFault, Reader, Reveal, Selection, conforms,
+    CallRefusal, ContextSnapshot, ReadFault, Reader, Reveal, Selection, conforms,
 };
 use docket_vocab::{Handle, Value};
 use docket_wire::{Displayed, IntentsReply, ReadAsk, Resolved, WireRefusal};
@@ -203,12 +203,7 @@ impl<S: Seams> Router<S> {
                 &app,
             )));
         }
-        let snapshot = match self
-            .seams
-            .link()
-            .context(&app, ContextScope::ActiveWindow)
-            .await
-        {
+        let snapshot = match self.seams.link().context(&app).await {
             Ok(snapshot) => snapshot,
             Err(fault) => return refuse(WireRefusal::Call(link_refusal(fault, &app))),
         };

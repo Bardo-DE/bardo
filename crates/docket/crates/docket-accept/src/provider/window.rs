@@ -3,7 +3,7 @@
 use super::Focus;
 use crate::provider::threads;
 use docket_core::{
-    ContextScope, ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy,
+    ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy,
 };
 use docket_provider::{ContextSource, SummonTarget};
 use docket_vocab::EntityRef;
@@ -63,7 +63,7 @@ impl QuietWindow {
 }
 
 impl ContextSource for QuietWindow {
-    fn snapshot(&self, _scope: ContextScope) -> ContextSnapshot {
+    fn snapshot(&self) -> ContextSnapshot {
         ContextSnapshot {
             app: self.app.clone(),
             window: Labelled {

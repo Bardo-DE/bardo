@@ -110,13 +110,9 @@ where
         render(&self.provider.undo(parse(&token)?, parse(&actor)?).await)
     }
 
-    async fn context(
-        &self,
-        scope: String,
-        #[zbus(header)] header: Header<'_>,
-    ) -> fdo::Result<String> {
+    async fn context(&self, #[zbus(header)] header: Header<'_>) -> fdo::Result<String> {
         from_intentd(self.callers.as_ref(), &header).await?;
-        render(&self.context.snapshot(parse(&scope)?))
+        render(&self.context.snapshot())
     }
 
     async fn summon(&self, serial: u64, origin: String) -> fdo::Result<String> {
@@ -236,7 +232,7 @@ pub(crate) async fn until_closed(connection: &BusConnection) {
 mod tests {
     use super::*;
     use docket_core::{
-        AppRefusal, ContextScope, ContextSnapshot, Hit, Invocation, Outcome, Preview, SuggestAsk,
+        AppRefusal, ContextSnapshot, Hit, Invocation, Outcome, Preview, SuggestAsk,
         UndoFault,
     };
     use docket_vocab::{EntityRef, UndoToken};
@@ -280,7 +276,7 @@ mod tests {
 
     struct Blank;
     impl ContextSource for Blank {
-        fn snapshot(&self, _: ContextScope) -> ContextSnapshot {
+        fn snapshot(&self) -> ContextSnapshot {
             unreachable!("introspection only")
         }
     }

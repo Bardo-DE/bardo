@@ -3,7 +3,7 @@
 
 use docket_core::LinkFault;
 use docket_core::{
-    AppRefusal, ContextScope, ContextSnapshot, Invocation, Outcome, Preview, SuggestAsk, UndoFault,
+    AppRefusal, ContextSnapshot, Invocation, Outcome, Preview, SuggestAsk, UndoFault,
 };
 use docket_manifest::Latency;
 use docket_provider::{ContextSource, IntentProvider};
@@ -95,15 +95,11 @@ impl<P: IntentProvider, C: ContextSource> AppLink for ProviderLink<P, C> {
         self.is_ours(app)
     }
 
-    async fn context(
-        &self,
-        app: &AppName,
-        scope: ContextScope,
-    ) -> Result<ContextSnapshot, LinkFault> {
+    async fn context(&self, app: &AppName) -> Result<ContextSnapshot, LinkFault> {
         if !self.is_ours(app) {
             return Err(LinkFault::Unavailable);
         }
-        Ok(self.context.snapshot(scope))
+        Ok(self.context.snapshot())
     }
 
     async fn preview(&self, app: &AppName, id: &EntityId) -> Result<Preview, LinkFault> {

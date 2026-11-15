@@ -3,7 +3,7 @@
 
 use docket_core::LinkFault;
 use docket_core::{
-    AppRefusal, ContextScope, ContextSnapshot, FailText, Invocation, Outcome, Preview, SuggestAsk,
+    AppRefusal, ContextSnapshot, FailText, Invocation, Outcome, Preview, SuggestAsk,
     UndoFault,
 };
 use docket_dbus::{BusConnection, Details, IntentProviderProxy};
@@ -274,15 +274,10 @@ impl AppLink for DbusLink {
         }
     }
 
-    async fn context(
-        &self,
-        app: &AppName,
-        scope: ContextScope,
-    ) -> Result<ContextSnapshot, LinkFault> {
-        let scope = json(&scope)?;
+    async fn context(&self, app: &AppName) -> Result<ContextSnapshot, LinkFault> {
         let text = self
             .ask(app, Wake::IfRunning, READ, |p| async move {
-                p.context(&scope).await
+                p.context().await
             })
             .await?;
         read(&text)
