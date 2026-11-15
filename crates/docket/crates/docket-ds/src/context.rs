@@ -2,9 +2,7 @@
 //! window title and privacy come from the app. The adapter assembles a `ContextSnapshot` with
 //! each text labelled by the kind's declared title trust.
 
-use docket_core::{
-    ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy,
-};
+use docket_core::{ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy};
 use docket_manifest::TitleTrust;
 use docket_provider::ContextSource;
 use ds_intents::ContextModel;

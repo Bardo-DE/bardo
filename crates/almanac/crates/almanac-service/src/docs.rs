@@ -28,7 +28,7 @@ pub(crate) fn record_fault(record: &almanac_core::Record) -> Option<String> {
             .err()
             .map(|f: MessageFault| format!("message: {f:?}"))
             .or_else(|| {
-                !m.sender_matches(&record.actor)
+                (!m.sender_matches(&record.actor))
                     .then(|| "message: sender is not the recording actor".to_owned())
             }),
         EventBody::Episode(e) => (e.skeleton.label.integrity != Integrity::Trusted)

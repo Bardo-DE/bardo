@@ -148,10 +148,7 @@ mod tests {
         let rebuilt = agent_loop::rebuild(&events);
         assert_eq!(rebuilt.tasks.len(), 1);
         // The opening has no time of its own: it takes its first turn's.
-        assert_eq!(
-            events.iter().map(|e| e.at.0).collect::<Vec<_>>(),
-            [50, 50]
-        );
+        assert_eq!(events.iter().map(|e| e.at.0).collect::<Vec<_>>(), [50, 50]);
     }
 
     #[test]

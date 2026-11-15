@@ -304,8 +304,7 @@ impl WindowFacts for Bare {
 #[test]
 fn an_unbuilt_context_source_reports_the_app_alone() {
     use docket_provider::ContextSource;
-    let snap = DsContextSource::new(app(), ds_intents::ContextModel::default(), Bare)
-        .snapshot();
+    let snap = DsContextSource::new(app(), ds_intents::ContextModel::default(), Bare).snapshot();
     assert_eq!(snap.app, app());
     assert_eq!(snap.privacy, WindowPrivacy::Private);
     assert_eq!(chips_of(&snap).len(), 1);
