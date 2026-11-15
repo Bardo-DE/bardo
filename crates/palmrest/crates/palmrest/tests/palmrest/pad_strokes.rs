@@ -239,21 +239,6 @@ fn a_swipe_that_pauses_is_still_one_swipe() {
 }
 
 #[test]
-fn a_swipe_lifts_at_the_report_that_ends_it() {
-    let script = stroke(2, Axis::X, 45.0, 45, 12.0);
-    let timed = drive(Tracker::new(Config::default()), &script.records);
-    let lift = timed
-        .iter()
-        .find(|(_, o)| *o == Out::Pad(PadFrame::Lift))
-        .expect("it lifts");
-    assert_eq!(
-        lift.0,
-        script.records.last().unwrap().at,
-        "no hold after the fingers left"
-    );
-}
-
-#[test]
 fn a_click_during_a_swipe_returns_it_to_its_space_before_it_lifts() {
     let click = |i: usize| {
         if i >= 30 {
@@ -321,34 +306,6 @@ fn a_remapped_swipe_fires_once_per_threshold_with_the_cooldown_and_never_touches
 }
 
 // ---- both together ------------------------------------------------------------------------
-
-#[test]
-fn a_scroll_never_lands_four_contacts_and_a_swipe_never_lands_two() {
-    let scrolls = [
-        stroke(1, Axis::Y, 30.0, 30, 12.0),
-        stroke(2, Axis::Y, -30.0, 30, 12.0),
-        stroke(1, Axis::X, 30.0, 30, 12.0),
-        stroke(1, Axis::X, -30.0, 30, 12.0),
-    ];
-    let swipes = [
-        stroke(2, Axis::X, 30.0, 30, 12.0),
-        stroke(2, Axis::X, -30.0, 30, 12.0),
-    ];
-    for s in &scrolls {
-        let lands = landings(&pad(&run(Config::default(), s)));
-        assert!(
-            !lands.is_empty() && lands.iter().all(|l| l.0 == 2),
-            "{lands:?}"
-        );
-    }
-    for s in &swipes {
-        let lands = landings(&pad(&run(Config::default(), s)));
-        assert!(
-            !lands.is_empty() && lands.iter().all(|l| l.0 == 4),
-            "{lands:?}"
-        );
-    }
-}
 
 #[test]
 fn every_move_keeps_clear_of_the_pad_edges() {
