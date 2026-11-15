@@ -17,11 +17,6 @@ use casement_testkit::{
     ASKED_PROGRAM, ClientId, Fixture, FixtureSpec, FrameCount, ShotTarget, TestOrigin,
 };
 
-/// One small output, so a frame is a few hundred kilobytes.
-pub(crate) fn small() -> FixtureSpec {
-    FixtureSpec::desktop().with_outputs(&["HEADLESS-1:640x480@60000:120:0,0"])
-}
-
 pub(crate) fn name(text: &str) -> OutputName {
     OutputName::parse(text).expect("a name")
 }
@@ -67,7 +62,7 @@ pub(crate) fn opened(spec: FixtureSpec, output: &str) -> (Fixture, ClientId, Out
 #[test]
 fn a_capture_equals_the_scanout_frame() {
     let (mut fixture, _client, mut capture) =
-        opened_with(small(), "HEADLESS-1", CursorMode::Painted);
+        opened_with(FixtureSpec::small(), "HEADLESS-1", CursorMode::Painted);
     let session = capture.session().expect("a session");
     assert_eq!(session.size, Some(Size::new(640, 480)));
     capture.request(BufferAsk::Announced).expect("a frame");
@@ -91,7 +86,7 @@ fn a_capture_equals_the_scanout_frame() {
 /// The session announces the buffer constraints; a buffer that does not match is `failed`.
 #[test]
 fn a_mismatched_buffer_fails_the_frame() {
-    let (mut fixture, _client, mut capture) = opened(small(), "HEADLESS-1");
+    let (mut fixture, _client, mut capture) = opened(FixtureSpec::small(), "HEADLESS-1");
     capture
         .request(BufferAsk::Sized(Size::new(320, 240)))
         .expect("a request");
@@ -149,7 +144,7 @@ fn agree_outside(a: &[u8], b: &[u8], width: usize, skip: (usize, usize, usize, u
 
 /// The scanout frame and the capture a session made of it, the pointer at (300, 200).
 fn scanout_and_capture(cursor: CursorMode) -> (Vec<u8>, Vec<u8>) {
-    let mut fixture = Fixture::start(small()).expect("fixture");
+    let mut fixture = Fixture::start(FixtureSpec::small()).expect("fixture");
     let _pointer = pointer_at(&mut fixture, (300, 200));
     let client = fixture.connect(ConnectionRole::Public);
     fixture.frames(&name("HEADLESS-1"), FrameCount(2));
@@ -187,7 +182,7 @@ fn the_cursor_is_in_a_capture_only_when_asked_for() {
 /// what.
 #[test]
 fn a_second_frame_waits_for_a_change_and_reports_it() {
-    let mut fixture = Fixture::start(small()).expect("fixture");
+    let mut fixture = Fixture::start(FixtureSpec::small()).expect("fixture");
     let pointer = pointer_at(&mut fixture, (500, 400));
     let client = fixture.connect(ConnectionRole::Public);
     fixture.frames(&name("HEADLESS-1"), FrameCount(2));
@@ -252,7 +247,7 @@ fn settle_all(fixture: &mut Fixture, captures: &mut [&mut OutputCapture]) {
 /// session or the connection, and the last equals the scanout.
 #[test]
 fn a_session_serves_frame_after_frame_into_one_buffer() {
-    let mut fixture = Fixture::start(small()).expect("fixture");
+    let mut fixture = Fixture::start(FixtureSpec::small()).expect("fixture");
     let pointer = pointer_at(&mut fixture, (500, 400));
     let client = fixture.connect(ConnectionRole::Public);
     fixture.frames(&name("HEADLESS-1"), FrameCount(2));
@@ -294,7 +289,7 @@ fn a_session_serves_frame_after_frame_into_one_buffer() {
 /// second working.
 #[test]
 fn a_waiting_frame_does_not_hold_up_a_second_session() {
-    let mut fixture = Fixture::start(small()).expect("fixture");
+    let mut fixture = Fixture::start(FixtureSpec::small()).expect("fixture");
     let pointer = pointer_at(&mut fixture, (500, 400));
     let client = fixture.connect(ConnectionRole::Public);
     fixture.frames(&name("HEADLESS-1"), FrameCount(2));
@@ -441,7 +436,7 @@ fn a_cursor_session_speaks_physical_pixels() {
 /// when they change.
 #[test]
 fn the_cursor_image_is_a_capture_of_its_own() {
-    let (mut fixture, mut capture, _pointer) = cursor_watch(small(), "HEADLESS-1", (300, 200));
+    let (mut fixture, mut capture, _pointer) = cursor_watch(FixtureSpec::small(), "HEADLESS-1", (300, 200));
     capture.request(BufferAsk::Announced).expect("a frame");
     settle(&mut fixture, &mut capture);
     let image = capture
@@ -472,7 +467,7 @@ fn the_cursor_image_is_a_capture_of_its_own() {
 /// presented frames and a session on `HEADLESS-1` opened and settled (a session may be made and
 /// told its constraints before anyone has answered).
 fn asked_opened() -> (Fixture, ScriptedShell, OutputCapture) {
-    let mut fixture = Fixture::start(small()).expect("fixture");
+    let mut fixture = Fixture::start(FixtureSpec::small()).expect("fixture");
     let shell = ScriptedShell::start(&mut fixture);
     let client = fixture.connect_via_ask();
     fixture.frames(&name("HEADLESS-1"), FrameCount(2));
@@ -522,7 +517,7 @@ fn a_frame_waits_for_the_answer_and_is_made_on_allow() {
 /// program is.
 #[test]
 fn a_handed_out_portal_connection_captures_the_screen_without_a_question() {
-    let mut fixture = Fixture::start(small()).expect("fixture");
+    let mut fixture = Fixture::start(FixtureSpec::small()).expect("fixture");
     let shell = ScriptedShell::start(&mut fixture);
     let client = fixture
         .connect_through_handout(&callers::portal(), ConnectionRole::Portal)
@@ -585,7 +580,7 @@ fn a_power_taken_back_stops_a_session_in_use() {
 /// A fixture with the scripted shell, a pointer at (300, 200), a client that is a program asked
 /// about its powers, and a cursor session on `HEADLESS-1` opened and settled.
 fn asked_cursor() -> (Fixture, ScriptedShell, OutputCapture) {
-    let mut fixture = Fixture::start(small()).expect("fixture");
+    let mut fixture = Fixture::start(FixtureSpec::small()).expect("fixture");
     let shell = ScriptedShell::start(&mut fixture);
     let _pointer = pointer_at(&mut fixture, (300, 200));
     let client = fixture.connect_via_ask();

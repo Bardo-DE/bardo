@@ -4,7 +4,7 @@
 //! (the pictures of Spaces that are not shown, the new-Space tile, a drag to another output)
 //! is in `quire_shell_drop.rs`, which builds on this file's desk.
 
-use crate::protocol::image_capture::{settle as settle_capture, small};
+use crate::protocol::image_capture::settle as settle_capture;
 use crate::protocol::xdg_shell::{map_toplevel, pointer, windows};
 use casement_core::geometry::{LogicalPoint, PhysicalSize};
 use casement_core::input::ButtonCode;
@@ -43,7 +43,7 @@ pub(super) struct Desk {
 }
 
 pub(super) fn desk() -> Desk {
-    let mut fixture = Fixture::start(small()).expect("fixture");
+    let mut fixture = Fixture::start(FixtureSpec::small()).expect("fixture");
     let app = fixture.connect(ConnectionRole::Public);
     let base = WmBase::bind(fixture.client(app), 7);
     let tops = vec![

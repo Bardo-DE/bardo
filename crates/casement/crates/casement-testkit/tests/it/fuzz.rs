@@ -1,11 +1,10 @@
 //! Typed fuzzing (P0-T-client, 11 §3.5): the box at the merge tier (each test is a fixed seed,
 //! a bounded number of sequences, so the box is a count and not a clock: B8 keeps clocks out
 //! of tests) and a bigger one at the phase tier; every sequence keeps the five oracles
-//! (`casement_testkit::fuzz`). A failing sequence is shrunk and persisted under
-//! `tests/proptest-regressions/`, and replays first from then on.
+//! (`casement_testkit::fuzz`). A failing sequence is shrunk and persisted in
+//! `tests/it/fuzz.proptest-regressions`, and replays first from then on.
 
-// Its own binary: the most expensive tests, tiered by `GATE_TIER`, with a `file!()`-keyed
-// persistence directory.
+// The most expensive tests, tiered by `GATE_TIER`.
 use casement_core::policy::ConnectionRole;
 use casement_testkit::fuzz::{FuzzOp, FuzzRequest, ObjectRef, run_ops, strategy};
 use casement_testkit::{Fixture, FixtureSpec};
@@ -33,9 +32,8 @@ fn cases() -> u32 {
 fn run_seed(seed: u8) {
     let config = Config {
         cases: cases(),
-        source_file: Some(file!()),
-        failure_persistence: Some(Box::new(FileFailurePersistence::WithSource(
-            "proptest-regressions",
+        failure_persistence: Some(Box::new(FileFailurePersistence::Direct(
+            "tests/it/fuzz.proptest-regressions",
         ))),
         ..Config::default()
     };

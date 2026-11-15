@@ -66,6 +66,12 @@ impl FixtureSpec {
         }
     }
 
+    /// [`FixtureSpec::desktop`] on one small 640x480 output, so a frame is a few hundred
+    /// kilobytes: for tests that assert nothing about pixel positions on a full-size screen.
+    pub fn small() -> FixtureSpec {
+        FixtureSpec::desktop().with_outputs(&["HEADLESS-1:640x480@60000:120:0,0"])
+    }
+
     /// The same, keeping the privacy book and reading the floor in `files`.
     pub fn with_privacy(self, files: PrivacyFiles) -> FixtureSpec {
         FixtureSpec {

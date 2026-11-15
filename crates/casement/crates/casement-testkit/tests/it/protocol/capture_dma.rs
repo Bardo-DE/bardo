@@ -6,11 +6,11 @@
 //! Drawing a frame into a client's dma-buf is the renderer's (`casement_render::pass::
 //! write_dmabuf`, a real-run check); these tests read the offer from the client's side.
 
-use crate::protocol::image_capture::{name, opened, small};
+use crate::protocol::image_capture::{name, opened};
 use casement_core::policy::ConnectionRole;
 use casement_testclient::Pumped;
 use casement_testclient::capture::{CopyArea, CursorMode, ScreenCopy};
-use casement_testkit::{Fixture, FrameCount};
+use casement_testkit::{Fixture, FixtureSpec, FrameCount};
 
 /// ARGB8888 and XRGB8888 as fourcc codes ('AR24', 'XR24').
 const ARGB: u32 = 0x3432_5241;
@@ -42,7 +42,7 @@ fn settle_copy(fixture: &mut Fixture, copy: &mut ScreenCopy) {
 /// device (226:128), once the jail has a node to type it by.
 #[test]
 fn a_session_offers_dma_buf_where_the_renderer_draws_into_it() {
-    let (_fixture, _client, capture) = opened(small().with_dmabuf(true), "HEADLESS-1");
+    let (_fixture, _client, capture) = opened(FixtureSpec::small().with_dmabuf(true), "HEADLESS-1");
     let formats = capture.dmabuf_formats();
     match fabricated_gpus() {
         0 => {
@@ -72,7 +72,7 @@ fn a_session_offers_dma_buf_where_the_renderer_draws_into_it() {
 /// Without a dma-buf global nothing can be allocated, so only shared memory is offered.
 #[test]
 fn a_session_without_a_dma_buf_global_offers_shared_memory_only() {
-    let (_fixture, _client, capture) = opened(small(), "HEADLESS-1");
+    let (_fixture, _client, capture) = opened(FixtureSpec::small(), "HEADLESS-1");
     assert!(capture.dmabuf_formats().is_empty());
     assert_eq!(capture.dmabuf_device(), None);
     assert!(!capture.session().expect("a session").formats.is_empty());
@@ -81,7 +81,7 @@ fn a_session_without_a_dma_buf_global_offers_shared_memory_only() {
 /// `zwlr_screencopy_frame_v1.linux_dmabuf` names the same formats at the frame's size.
 #[test]
 fn a_wlr_frame_announces_linux_dmabuf() {
-    let mut fixture = Fixture::start(small().with_dmabuf(true)).expect("fixture");
+    let mut fixture = Fixture::start(FixtureSpec::small().with_dmabuf(true)).expect("fixture");
     let client = fixture.connect(ConnectionRole::Public);
     fixture.frames(&name("HEADLESS-1"), FrameCount(2));
     let mut copy = ScreenCopy::start(fixture.client(client).globals()).expect("the manager");
@@ -108,7 +108,7 @@ fn a_wlr_frame_announces_linux_dmabuf() {
 /// Without a dma-buf global a `zwlr_screencopy` frame offers shared memory alone.
 #[test]
 fn a_wlr_frame_without_a_dma_buf_global_announces_none() {
-    let mut fixture = Fixture::start(small()).expect("fixture");
+    let mut fixture = Fixture::start(FixtureSpec::small()).expect("fixture");
     let client = fixture.connect(ConnectionRole::Public);
     fixture.frames(&name("HEADLESS-1"), FrameCount(2));
     let mut copy = ScreenCopy::start(fixture.client(client).globals()).expect("the manager");
