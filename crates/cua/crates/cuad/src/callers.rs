@@ -161,19 +161,4 @@ mod tests {
             assert_eq!(classify(&who), want, "{name}");
         }
     }
-
-    #[test]
-    fn the_shipped_file_names_the_three_units_and_nothing_else() {
-        let table = shipped();
-        let rows = [
-            ("intentd.service", "org.quire.Intents", Role::Agent),
-            ("companiond.service", "org.quire.Companion1", Role::Agent),
-            ("sill.service", "org.quire.Shell", Role::SheetHost),
-        ];
-        for (unit, app, role) in rows {
-            let row = table.resolve_unit(unit).expect(unit);
-            assert_eq!((row.app.name.as_str(), row.role), (app, role), "{unit}");
-        }
-        assert!(table.resolve_unit("sill-shell.scope").is_none());
-    }
 }

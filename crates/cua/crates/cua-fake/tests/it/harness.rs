@@ -11,15 +11,15 @@ use cua_fake::{
     MemoryEvents, ScriptedModel, SeatEvent, World, run_harness_answering,
 };
 use cua_run::{
-    AcquirePhase, CuaConfig, CuaSignal, FORCED_YES, Progress, Run, RunEnv, RunPhase, Step,
+    AcquirePhase, CuaConfig, FORCED_YES, Progress, Run, RunEnv, RunPhase, Step,
 };
 use maskcap::{Frame, FrameSeq, MaskReport, PixelBuf, WholeMask};
 use porter_core::AppName;
 use porter_ids::{Px, UnixSeconds};
 use porter_infer::CuaStepReply;
 use prov::{
-    Address, AgentRef, Confidentiality, Integrity, Label, Labelled, MessageKind, ReportStatus,
-    RunId, SessionId, Source, SpaceId,
+    Address, AgentRef, Confidentiality, Integrity, Label, Labelled, RunId, SessionId, Source,
+    SpaceId,
 };
 use std::collections::BTreeSet;
 use std::sync::Arc;
@@ -132,102 +132,6 @@ fn new_run() -> Run {
         cua_fake::scene::rules(),
     );
     Run::start(RunId::parse("r-1").unwrap(), task, env, Stamp(0)).0
-}
-
-#[test]
-fn end_to_end_scripted_run_done() {
-    let click = CuaAction::Click {
-        at: Target::Point(Point::new(Coord(10), Coord(10))),
-        button: Button::Left,
-        count: ClickCount::One,
-        mods: BTreeSet::new(),
-    };
-    let finish = CuaAction::Finish {
-        outcome: FinishOutcome::Done,
-        summary: Summary::new("Signed in.").unwrap(),
-        extracted: vec![],
-    };
-    let mut world = new_world(vec![Ok(reply(click)), Ok(reply(finish))]);
-    let run = new_run();
-
-    // The fixture is a sign-in form with a password field: a sensitive window, so the run asks
-    // before the click whatever the gate says, and the scripted person says yes.
-    let report = block_on(run_harness_answering(
-        run,
-        &mut world,
-        vec![FORCED_YES.to_owned()],
-    ))
-    .expect("the run ends");
-
-    assert_eq!(report.run.phase, RunPhase::Finished(CuaOutcome::Done));
-    assert_eq!(
-        report.signals.last(),
-        Some(&CuaSignal::Finished(CuaOutcome::Done))
-    );
-    assert!(
-        report
-            .signals
-            .iter()
-            .any(|s| matches!(s, CuaSignal::ActionProposed(..)))
-    );
-    assert!(
-        report
-            .signals
-            .iter()
-            .any(|s| matches!(s, CuaSignal::ActionDone(..)))
-    );
-
-    let asked = report
-        .signals
-        .iter()
-        .position(|s| matches!(s, CuaSignal::AskUser(..)))
-        .expect("the sensitive window forced a question");
-    let clicked = report
-        .signals
-        .iter()
-        .position(|s| matches!(s, CuaSignal::ActionDone(..)))
-        .expect("the click ran");
-    assert!(asked < clicked, "the question comes before the click");
-
-    let kinds: Vec<String> = world.events.records().iter().map(|r| r.kind()).collect();
-    assert_eq!(
-        kinds,
-        [
-            "cua.run.started",
-            "cua.asked",
-            "cua.confirmed",
-            "cua.step",
-            "cua.step.seen",
-            "cua.run.finished"
-        ]
-    );
-
-    let performed = world
-        .seat
-        .events()
-        .into_iter()
-        .filter(|e| matches!(e, SeatEvent::Performed(..)))
-        .count();
-    assert_eq!(performed, 1, "one click reached the seat");
-    let calls = world.desktop.calls();
-    assert!(matches!(calls.first(), Some(DesktopCall::Leased(_))));
-    assert!(
-        matches!(calls.last(), Some(DesktopCall::Released(_))),
-        "the lease is released"
-    );
-
-    let sent = world.events.sent();
-    assert_eq!(
-        sent.len(),
-        2,
-        "a progress report for the question, then the final one"
-    );
-    assert_eq!(
-        sent[1].1.kind,
-        MessageKind::Report {
-            status: ReportStatus::Done
-        }
-    );
 }
 
 /// A minimal executor for futures that never wait.

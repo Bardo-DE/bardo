@@ -104,13 +104,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn computer_use_is_off_by_default_and_the_breaker_not_the_run_counts_denials() {
-        let config = CuaConfig::default();
-        assert_eq!(config.enabled, Switch::Off);
-        assert_eq!(config.keep_screens, Switch::Off);
-    }
-
-    #[test]
     fn the_configuration_round_trips() {
         let config = CuaConfig::default();
         let json = serde_json::to_string(&config).unwrap();

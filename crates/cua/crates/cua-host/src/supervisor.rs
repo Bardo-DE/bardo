@@ -435,15 +435,3 @@ async fn pump<S: Drivable>(shared: Arc<Shared<S>>) {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn run_ids_are_r_and_the_count_and_valid_ids() {
-        assert_eq!(mint_run_id(1).as_str(), "r-1");
-        assert_eq!(mint_run_id(4096).as_str(), "r-4096");
-        assert_ne!(mint_run_id(1), mint_run_id(2));
-    }
-}

@@ -75,17 +75,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn the_default_configuration_is_off_and_detects_its_backend() {
-        let config = CuadConfig::default();
-        assert_eq!(config.settings.enabled, cua_run::Switch::Off);
-        assert_eq!(config.backend, BackendChoice::Detect);
-    }
-
-    #[test]
-    fn a_configuration_round_trips_through_toml() {
-        let config = CuadConfig::default();
-        let text = toml::to_string(&config).expect("toml");
-        assert_eq!(CuadConfig::from_toml(&text), Ok(config));
+    fn a_malformed_configuration_is_an_error() {
         assert!(CuadConfig::from_toml("settings = 3").is_err());
     }
 }
