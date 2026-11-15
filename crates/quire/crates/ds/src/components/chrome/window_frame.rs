@@ -20,7 +20,7 @@ use crate::window::vocab::Zoom;
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
 use ds_core::geometry::units::{Point, Px};
-use ds_core::vocab::Shown;
+use ds_core::vocab::activity_word;
 use ds_core::word::Word;
 
 /// Where a titlebar's title sits when the bar also carries a leading or trailing control.
@@ -49,9 +49,9 @@ pub enum WindowFrame {
         title: String,
         /// What goes with the title: subtitle, proxy icon, the edited dot.
         parts: TitleParts,
-        /// Whether the lights are shown ([`Shown::Visible`]: close, minimize and zoom at the
-        /// titlebar's start; [`Shown::Hidden`]: a window whose controls live elsewhere).
-        lights: Shown,
+        /// Whether the lights are shown ([`true`]: close, minimize and zoom at the
+        /// titlebar's start; [`false`]: a window whose controls live elsewhere).
+        lights: bool,
         /// The move threshold and the tiling menu's delays, from the settings.
         timing: FrameTiming,
         /// What sits after the lights and before the title (a sidebar button). A press on it
@@ -65,7 +65,7 @@ pub enum WindowFrame {
 
 impl WindowFrame {
     /// A titlebar with the settings' default timing.
-    pub fn titlebar(title: impl Into<String>, lights: Shown) -> Self {
+    pub fn titlebar(title: impl Into<String>, lights: bool) -> Self {
         WindowFrame::Titlebar {
             title: title.into(),
             parts: TitleParts::default(),
@@ -172,7 +172,7 @@ pub fn framed(frame: WindowFrame, children: Element) -> Element {
 }
 
 /// The titlebar alone: what `Ds { window }` draws at the top of a window, and what a gallery
-/// draws to pose it (`pose: Shown::Visible` shows the tiling menu as it mounts). A primary press
+/// draws to pose it (`pose: true` shows the tiling menu as it mounts). A primary press
 /// on its empty area that travels past `timing.move_threshold` starts the move, once; a
 /// double-click zooms. Neither happens on a light, nor while the window is maximized or
 /// fullscreen. `data-first-mouse` lets the first click of an inactive window through
@@ -186,9 +186,9 @@ pub fn framed(frame: WindowFrame, children: Element) -> Element {
 pub fn WindowTitlebar(
     title: String,
     #[props(default)] parts: TitleParts,
-    #[props(default = Shown::Visible)] lights: Shown,
+    #[props(default = true)] lights: bool,
     #[props(default)] timing: FrameTiming,
-    #[props(default)] pose: Shown,
+    #[props(default)] pose: bool,
     #[props(default)] leading: Option<Element>,
     #[props(default)] trailing: Option<Element>,
     #[props(default)] title_room: TitleRoom,
@@ -206,7 +206,7 @@ pub fn WindowTitlebar(
             class: common.class("ds-titlebar"),
             "aria-label": common.aria_label.clone(),
             "data-window": state.slug(),
-            "data-activity": state.activity().slug(),
+            "data-activity": activity_word(state.activity()),
             "data-title-room": match title_room {
                 TitleRoom::Centred => None,
                 TitleRoom::Beside => Some(title_room.slug()),
@@ -236,7 +236,7 @@ pub fn WindowTitlebar(
                 }
             },
             ..data,
-            if lights == Shown::Visible {
+            if lights {
                 TrafficLightGroup { timing, pose }
             }
             if let Some(leading) = leading {

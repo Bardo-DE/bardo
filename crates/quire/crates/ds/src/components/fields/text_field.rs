@@ -29,7 +29,7 @@ use crate::focus::targets::Told;
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use ds_core::press::Press;
-use ds_core::vocab::{Availability, FocusStyle};
+use ds_core::vocab::Availability;
 use ds_core::word::Word;
 use ds_motion::detail::{once::use_shake, touch::Touch, use_detail::use_detail};
 use ds_style::icon::Icon;
@@ -275,7 +275,7 @@ pub fn TextField(
             "data-variant": bezel.slug(),
             "data-size": size.slug(),
             "data-availability": availability.slug(),
-            "data-focus": holds().then_some(FocusStyle::Ring.slug()),
+            "data-focus": holds().then_some("ring"),
             "data-validity": validity.attr(),
             "aria-disabled": availability.aria_disabled(),
             "aria-busy": availability.aria_busy(),

@@ -27,11 +27,11 @@ fn fade() -> Duration {
 #[allow(non_snake_case)]
 fn Stage() -> Element {
     let mut log = use_signal(Vec::<String>::new);
-    let mut shown = use_signal(|| Shown::Visible);
+    let mut shown = use_signal(|| true);
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
             div { class: "stage", style: "position:relative; width:640px; height:400px",
-                button { class: "toggle", onclick: move |_| shown.set(shown().flipped()), "toggle" }
+                button { class: "toggle", onclick: move |_| shown.set(!shown()), "toggle" }
                 Capsule::<u8> {
                     label: "Controls",
                     slots: essentials(vec![
@@ -155,7 +155,7 @@ fn Media() -> Element {
                             availability: Availability::Enabled,
                         }),
                     ]),
-                    shown: Shown::Visible,
+                    shown: true,
                     onpick: move |value| log.with_mut(|log| log.push(format!("pick {value}"))),
                     onscrub: move |event| log.with_mut(|log| log.push(format!("{event:?}"))),
                     onlevel: move |value: Fraction| log.with_mut(|log| log.push(format!("level {}", value.0))),
@@ -244,7 +244,7 @@ fn Thinning<const W: u32>() -> Element {
                         .droppable(2),
                         CapsuleSlot::button(2, "Export", Icon::Upload).droppable(3),
                     ],
-                    shown: Shown::Visible,
+                    shown: true,
                     onpick: |_| {},
                 }
             }

@@ -33,7 +33,7 @@ pub fn SheetWithinSection() -> Element {
                             Sheet {
                                 label: "Rules",
                                 onclose: move |()| open.set(false),
-                                shown: Some(if open() { Shown::Visible } else { Shown::Hidden }),
+                                shown: Some(open()),
                                 attach: Attach::Within(anchor),
                                 div { class: "g-panel",
                                     h3 { "Rules" }

@@ -6,7 +6,7 @@ use crate::components::chrome::split_view::model::{Folded, PaneFocus};
 use dioxus::core::queue_effect;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Px;
-use ds_core::vocab::Shown;
+use ds_core::vocab::shown_word;
 use ds_core::word::Word;
 use ds_motion::detail::touch::Touch;
 use ds_motion::spring_spec::{SpringResponse, SpringSpec};
@@ -33,17 +33,14 @@ pub(crate) fn PaneBox(
     index: usize,
     width: Px,
     least: Px,
-    shown: Shown,
+    shown: bool,
     folded: Folded,
     mover: Mover,
     focus: PaneFocus,
     on_hold: EventHandler<()>,
     body: Element,
 ) -> Element {
-    let target = match shown {
-        Shown::Visible => width.0,
-        Shown::Hidden => 0.0,
-    };
+    let target = if shown { width.0 } else { 0.0 };
     let motion = use_spring_motion(target, PxPerUnit(1.0));
     let mut seen = use_hook(|| CopyValue::new(target));
     if *seen.peek() != target {
@@ -58,20 +55,20 @@ pub(crate) fn PaneBox(
     }
     let drawn = motion.frame().position().max(0.0);
     let peeks = folded == Folded::Peeks;
-    let away = peeks && shown == Shown::Hidden && drawn < FOLDED_AWAY;
+    let away = peeks && !shown && drawn < FOLDED_AWAY;
     // Never held wider than it is drawn, so a folding pane's spring is not stopped at its least.
     let held = least.0.min(drawn);
     rsx! {
         div {
             class: "ds-split-pane",
             "data-index": "{index}",
-            "data-shown": shown.slug(),
+            "data-shown": shown_word(shown),
             "data-focus": focus.attribute(),
             onpointerdown: move |_| on_hold.call(()),
             onkeydown: move |_| on_hold.call(()),
             "data-folded": peeks.then(|| folded.slug()),
             "data-away": if away { Some("true") } else { None },
-            "aria-hidden": if shown == Shown::Hidden && !peeks { Some("true") } else { None },
+            "aria-hidden": if !shown && !peeks { Some("true") } else { None },
             style: "--pane-w:{drawn}px;--pane-open:{width.0}px;--pane-least:{held}px",
             div { class: "ds-split-pane-body", {body} }
         }

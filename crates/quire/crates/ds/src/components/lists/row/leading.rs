@@ -7,7 +7,6 @@ use crate::components::content::icon_view::IconView;
 use crate::components::forms::icon_tile::{TileFace, tile};
 use crate::components::lists::row::shape::RowShape;
 use dioxus::prelude::*;
-use ds_core::vocab::Selection;
 use ds_style::icon::Icon;
 use ds_style::icon::render::{Glyph, IconSize};
 
@@ -19,9 +18,9 @@ pub enum RowLeading {
     None,
     /// A glyph in the secondary ink.
     Icon(Icon),
-    /// A glyph on a disc: the paper disc, or the accent disc while `Selected` (the network or
+    /// A glyph on a disc: the paper disc, or the accent disc while `true` (the network or
     /// device in use).
-    Disc(Icon, Selection),
+    Disc(Icon, bool),
     /// Any icon source: an app's icon file (drawn as it is, with no plate under it), a symbolic
     /// icon (in the text colour) or a glyph.
     Source(IconSource),
@@ -96,8 +95,8 @@ pub(crate) fn draw(leading: &RowLeading, shape: &RowShape) -> Element {
     };
     let hidden = matches!(leading, RowLeading::Element(_)).then_some("true");
     let disc = match leading {
-        RowLeading::Disc(_, Selection::Selected) => Some("on"),
-        RowLeading::Disc(_, Selection::Unselected) => Some("off"),
+        RowLeading::Disc(_, true) => Some("on"),
+        RowLeading::Disc(_, false) => Some("off"),
         _ => None,
     };
     rsx! {

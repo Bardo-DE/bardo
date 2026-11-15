@@ -10,7 +10,6 @@
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Px;
-use ds_core::vocab::Shown;
 use ds_core::word::Word;
 use ds_motion::anim::Anim;
 use ds_motion::presence::{
@@ -46,7 +45,7 @@ fn size_style(shape: SkeletonShape, width: Option<Px>, height: Option<Px>) -> Op
     }
 }
 
-/// A placeholder shape. `shown` is the caller's (`Visible` by default): hidden, it fades out over
+/// A placeholder shape. `shown` is the caller's (`true` by default): hidden, it fades out over
 /// `--t-quick` and `on_hidden` runs once it has settled, so the caller can drop it. `common` puts
 /// the consumer's `id`, `data-*` and classes on it; it is decorative (`aria-hidden`) unless
 /// `aria_label` names it.
@@ -55,7 +54,7 @@ pub fn Skeleton(
     #[props(default)] shape: SkeletonShape,
     #[props(default)] width: Option<Px>,
     #[props(default)] height: Option<Px>,
-    #[props(default = Shown::Visible)] shown: Shown,
+    #[props(default = true)] shown: bool,
     #[props(default)] on_hidden: Option<EventHandler<()>>,
     #[props(default)] common: Common,
 ) -> Element {

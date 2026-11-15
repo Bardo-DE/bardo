@@ -4,7 +4,6 @@
 use dioxus::core::NoOpMutations;
 use dioxus::prelude::*;
 use ds::prelude::*;
-use ds_core::vocab::Shown;
 
 static ICON: GlobalSignal<Icon> = Signal::global(|| Icon::Trash);
 static EFFECT: GlobalSignal<SymbolEffect> = Signal::global(|| SymbolEffect::NONE);
@@ -154,9 +153,8 @@ fn a_while_effect_plays_while_active_and_holds_once_it_stops() {
 
 #[test]
 fn appear_and_disappear_stand_hidden_then_play_on_the_change() {
-    use Shown::{Hidden, Visible};
     let appear = |shown| SymbolEffect::Transition(TransitionEffect::Appear, shown);
-    let got = renders(Icon::Inbox, appear(Hidden), &[appear(Visible)]);
+    let got = renders(Icon::Inbox, appear(false), &[appear(true)]);
     assert!(
         got[0].contains("data-visibility=\"hidden\"") && !got[0].contains("a-appear"),
         "{}",
@@ -170,8 +168,8 @@ fn appear_and_disappear_stand_hidden_then_play_on_the_change() {
     let disappear = |shown| SymbolEffect::Transition(TransitionEffect::Disappear, shown);
     let got = renders(
         Icon::Inbox,
-        disappear(Visible),
-        &[disappear(Hidden), disappear(Visible)],
+        disappear(true),
+        &[disappear(false), disappear(true)],
     );
     assert!(
         !got[0].contains("a-disappear") && !got[0].contains("data-visibility"),
@@ -184,7 +182,7 @@ fn appear_and_disappear_stand_hidden_then_play_on_the_change() {
 
 #[test]
 fn replace_is_the_glyph_morph_and_draw_on_writes_its_dash_on_the_svg() {
-    let replace = SymbolEffect::Transition(TransitionEffect::Replace, Shown::Visible);
+    let replace = SymbolEffect::Transition(TransitionEffect::Replace, true);
     let got = renders(Icon::Volume, replace, &[]);
     assert!(
         got[0].contains("ds-morph-glyph") && got[0].contains("data-symbol=\"replace\""),
@@ -192,13 +190,13 @@ fn replace_is_the_glyph_morph_and_draw_on_writes_its_dash_on_the_svg() {
         got[0]
     );
     let draw = |shown| SymbolEffect::Transition(TransitionEffect::DrawOn, shown);
-    let got = renders(Icon::Trash, draw(Shown::Visible), &[]);
+    let got = renders(Icon::Trash, draw(true), &[]);
     assert!(
         got[0].contains("data-symbol=\"draw-on\"") && !got[0].contains("dasharray"),
         "{}",
         got[0]
     );
-    let got = renders(Icon::Trash, draw(Shown::Hidden), &[]);
+    let got = renders(Icon::Trash, draw(false), &[]);
     assert!(
         got[0].contains("opacity=\"0\""),
         "nothing is drawn: {}",

@@ -5,6 +5,7 @@
 //! pop-up button's open state is the caller's; a sheet's Return presses its default button.
 
 use dioxus::prelude::*;
+use ds::base::vocab::shown_word;
 use ds::components::controls::button_model::Answers;
 use ds::components::fields::text_field_model::Invalid;
 use ds::components::menus::pop_up_button::PopUpButton;
@@ -306,7 +307,7 @@ fn a_list_cursor_is_a_key_the_caller_holds_and_follows_the_key_through_a_reorder
 /// A pop-up the caller opens and closes, logging what the person asked.
 #[allow(non_snake_case)]
 fn Driven() -> Element {
-    let mut open = use_signal(|| Shown::Hidden);
+    let mut open = use_signal(|| false);
     let mut asked = use_signal(Vec::<String>::new);
     let mut value = use_signal(|| 1u8);
     rsx! {
@@ -316,9 +317,9 @@ fn Driven() -> Element {
                 value: Some(value()),
                 onpick: move |next| value.set(next),
                 open: Some(open()),
-                on_open_change: move |to: Shown| asked.with_mut(|all| all.push(to.slug().to_owned())),
+                on_open_change: move |to: bool| asked.with_mut(|all| all.push(shown_word(to).to_owned())),
             }
-            Button { label: "Open", onclick: move |_| open.set(Shown::Visible), common: Common { id: Some("open".into()), ..Common::default() } }
+            Button { label: "Open", onclick: move |_| open.set(true), common: Common { id: Some("open".into()), ..Common::default() } }
             p { class: "asked", {asked().join(",")} }
             p { class: "value", "{value()}" }
         }

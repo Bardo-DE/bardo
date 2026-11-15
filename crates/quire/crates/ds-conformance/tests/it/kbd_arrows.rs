@@ -1,6 +1,6 @@
 //! A Small key cap's Left and Right arrows are arrows, not dashes.
 //! The arrows the font subset now draws are real arrows but only ~4 px
-//! of ink, still close to a dash. `data-glyph="arrow"` (`ShortcutKey::glyph_kind`) draws Up, Down, Left
+//! of ink, still close to a dash. `data-glyph="arrow"` (`ShortcutKey::is_arrow`) draws Up, Down, Left
 //! and Right at `--fs-control` with a tighter line-height, so the ink is at least 7 px wide
 //! while the cap's own box (padding and border drive its height, not the glyph) stays the
 //! height every other Small cap already has.

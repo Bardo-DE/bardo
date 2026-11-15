@@ -22,7 +22,6 @@ use ds::motion::detail::operation::Operation;
 use ds::motion::detail::operation::PendingToken;
 use ds::motion::detail::stamp::EventStamp;
 use ds::prelude::*;
-use ds_core::vocab::Muting;
 use ds_style::tokens::control_size::ControlSize;
 
 /// An operation that has just started: a spinner's first frame is drawn before its timer runs, so
@@ -240,7 +239,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "button",
         state: "shown",
-        make: || rsx! { Button { label: "More", icon: Icon::ChevronDown, shown: Shown::Visible, onclick: |_| {} } },
+        make: || rsx! { Button { label: "More", icon: Icon::ChevronDown, shown: true, onclick: |_| {} } },
     },
     // Toggle.
     Case {
@@ -390,7 +389,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "slider",
         state: "level-volume",
-        make: || rsx! { Slider { label: "Volume", value: Fraction(400), look: SliderLook::Level, glyph: LevelGlyph::Volume(Muting::Audible), onchange: |_| {} } },
+        make: || rsx! { Slider { label: "Volume", value: Fraction(400), look: SliderLook::Level, glyph: LevelGlyph::Volume(false), onchange: |_| {} } },
     },
     Case {
         component: "slider",
@@ -538,7 +537,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "level_indicator",
         state: "continuous-volume",
-        make: || rsx! { LevelIndicator { label: "Volume", value: Fraction(600), glyph: LevelGlyph::Volume(Muting::Audible) } },
+        make: || rsx! { LevelIndicator { label: "Volume", value: Fraction(600), glyph: LevelGlyph::Volume(false) } },
     },
     Case {
         component: "level_indicator",
@@ -548,7 +547,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "level_indicator",
         state: "discrete-volume",
-        make: || rsx! { LevelIndicator { label: "Volume", value: Fraction(600), style: LevelStyle::Discrete, glyph: LevelGlyph::Volume(Muting::Audible) } },
+        make: || rsx! { LevelIndicator { label: "Volume", value: Fraction(600), style: LevelStyle::Discrete, glyph: LevelGlyph::Volume(false) } },
     },
     Case {
         component: "level_indicator",

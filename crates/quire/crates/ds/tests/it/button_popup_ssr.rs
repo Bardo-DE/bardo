@@ -18,7 +18,7 @@ fn render(app: fn() -> Element) -> String {
 fn page(popup: Option<HasPopup>) -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
-            Button { label: "Sort", popup, shown: Shown::Hidden, onclick: |_| {} }
+            Button { label: "Sort", popup, shown: false, onclick: |_| {} }
         }
     }
 }

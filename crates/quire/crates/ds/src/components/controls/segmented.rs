@@ -26,7 +26,7 @@ use crate::focus::press_focus::on_click;
 use crate::root::common::Common;
 use crate::stack::roving::{Rove, Roving, Wrap};
 use dioxus::prelude::*;
-use ds_core::vocab::{Availability, Check, Selection, Shortcut};
+use ds_core::vocab::{Availability, Check, Shortcut, selected_word};
 use ds_core::word::Word;
 use ds_motion::detail::touch::Touch;
 use ds_motion::{
@@ -67,17 +67,13 @@ impl<T> Tracking<T> {
 
 impl<T: PartialEq> Tracking<T> {
     /// Whether `value` is selected.
-    fn selects(&self, value: &T) -> Selection {
+    fn selects(&self, value: &T) -> bool {
         let selected = match self {
             Tracking::SelectOne(one) => one == value,
             Tracking::SelectAny(any) => any.contains(value),
             Tracking::Momentary => false,
         };
-        if selected {
-            Selection::Selected
-        } else {
-            Selection::Unselected
-        }
+        if selected { true } else { false }
     }
 }
 
@@ -216,7 +212,7 @@ pub fn SegmentedControl<T: Clone + PartialEq + 'static>(
 #[component]
 fn Segment<T: Clone + PartialEq + 'static>(
     choice: Choice<T>,
-    selected: Selection,
+    selected: bool,
     thumb: Option<ThumbOver>,
     enabled: Availability,
     group: Availability,
@@ -227,14 +223,11 @@ fn Segment<T: Clone + PartialEq + 'static>(
     let image_only = choice.label.plain_text().is_empty();
     let tip = use_tip(choice.name.clone().filter(|_| image_only).map(TipText::new));
     let live = enabled == Availability::Enabled && group == Availability::Enabled;
-    let checked = match selected {
-        Selection::Selected => Check::On,
-        Selection::Unselected => Check::Off,
-    };
+    let checked = if selected { Check::On } else { Check::Off };
     let under = match (thumb, selected) {
         (Some(over), _) => over.slug(),
-        (None, Selection::Selected) => ThumbOver::Under.slug(),
-        (None, Selection::Unselected) => ThumbOver::Clear.slug(),
+        (None, true) => ThumbOver::Under.slug(),
+        (None, false) => ThumbOver::Clear.slug(),
     };
     rsx! {
         button {
@@ -246,8 +239,8 @@ fn Segment<T: Clone + PartialEq + 'static>(
             // A `SelectOne` control is one stop in the tab order, its selected segment; the arrows
             // move within it.
             tabindex: match (thumb, selected) {
-                (Some(_), Selection::Unselected) => Some("-1"),
-                (Some(_), Selection::Selected) | (None, _) => None,
+                (Some(_), false) => Some("-1"),
+                (Some(_), true) | (None, _) => None,
             },
             // An image-only segment says nothing in words, so its name is read from here.
             "aria-label": choice.name.clone(),
@@ -264,7 +257,7 @@ fn Segment<T: Clone + PartialEq + 'static>(
                 let tip = tip.clone();
                 move |event| tip.mounted(&event)
             },
-            "data-selected": selected.slug(),
+            "data-selected": selected_word(selected),
             "data-thumb": under,
             "data-availability": enabled.slug(),
             "data-pressed": if live { pressing.attr() } else { None },
@@ -311,7 +304,6 @@ mod tests {
     use super::{Tracking, rove_to};
     use crate::stack::roving::{Edge, Rove, Step};
     use ds_core::vocab::Availability::{Disabled as D, Enabled as E};
-    use ds_core::vocab::Selection;
 
     #[test]
     fn the_arrows_skip_a_disabled_segment_and_stop_at_the_ends() {
@@ -333,11 +325,11 @@ mod tests {
     fn each_tracking_selects_as_it_says() {
         // (tracking, value, selected)
         let cases = [
-            (Tracking::SelectOne(1), 1, Selection::Selected),
-            (Tracking::SelectOne(1), 2, Selection::Unselected),
-            (Tracking::SelectAny(vec![1, 3]), 3, Selection::Selected),
-            (Tracking::SelectAny(vec![1, 3]), 2, Selection::Unselected),
-            (Tracking::Momentary, 1, Selection::Unselected),
+            (Tracking::SelectOne(1), 1, true),
+            (Tracking::SelectOne(1), 2, false),
+            (Tracking::SelectAny(vec![1, 3]), 3, true),
+            (Tracking::SelectAny(vec![1, 3]), 2, false),
+            (Tracking::Momentary, 1, false),
         ];
         for (tracking, value, want) in cases {
             assert_eq!(tracking.selects(&value), want, "{tracking:?} {value}");

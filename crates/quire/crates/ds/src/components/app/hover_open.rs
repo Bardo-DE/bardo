@@ -4,7 +4,6 @@
 //! component is dropped with the component's scope.
 
 use dioxus::prelude::*;
-use ds_core::vocab::Shown;
 use ds_motion::hover_intent::{HoverEvent, HoverIntent, HoverProfile, IntentPhase};
 use ds_motion::machine::{MachineRef, use_machine};
 use ds_style::tokens::delay::TipDelay;
@@ -54,10 +53,10 @@ impl HoverOpen {
     }
 
     /// Whether it is open: open, or closing (which still shows).
-    pub fn shown(self) -> Shown {
+    pub fn shown(self) -> bool {
         match self.machine.state().read().phase() {
-            IntentPhase::Open { .. } | IntentPhase::Closing { .. } => Shown::Visible,
-            IntentPhase::Idle | IntentPhase::Pending { .. } => Shown::Hidden,
+            IntentPhase::Open { .. } | IntentPhase::Closing { .. } => true,
+            IntentPhase::Idle | IntentPhase::Pending { .. } => false,
         }
     }
 

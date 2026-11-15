@@ -8,7 +8,6 @@ use crate::components::lists::section_header::{HeaderAction, SectionHeader};
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use ds_core::time::clock;
-use ds_core::vocab::Shown;
 use ds_style::space::list::Epoch;
 
 /// How the app draws one of its Today items.
@@ -36,7 +35,7 @@ pub fn TodaySection<P, R, I, K>(
     on_pick: EventHandler<I>,
     #[props(default)] selected: Option<I>,
     #[props(default)] extra: Option<Element>,
-    #[props(default)] extra_shown: Shown,
+    #[props(default)] extra_shown: bool,
     #[props(default = "Today".to_owned())] label: String,
 ) -> Element
 where
@@ -66,7 +65,7 @@ where
         .collect();
     let live = !tabs.is_empty();
     let parked = !today.today().read().parked_in(space).is_empty();
-    let any = live || parked || extra_shown == Shown::Visible;
+    let any = live || parked || extra_shown;
     let actions = if live {
         vec![HeaderAction::new(
             "Clear",

@@ -86,7 +86,7 @@ use dioxus::prelude::*;
 use ds_core::geometry::units::Px;
 use ds_core::press::Press;
 use ds_core::selection::{Pick, RowSelection};
-use ds_core::vocab::{RowState, Selection};
+use ds_core::vocab::RowState;
 use ds_style::tokens::row_scale::ROW_SCALE;
 use std::rc::Rc;
 
@@ -105,7 +105,7 @@ fn row_content<C>(
     columns: &[TableColumn<C>],
     drawn: &[Element],
     row: usize,
-    selection: Selection,
+    selection: bool,
     reach: Reach,
 ) -> Element {
     rsx! {
@@ -244,15 +244,9 @@ pub fn VirtualTable<C: Clone + PartialEq + 'static>(
         ondrop,
     }));
     let kept = held_columns(pinned, columns.len());
-    let selected = |row: usize| {
-        let on = match &selection {
-            Some(chosen) => chosen.contains(row),
-            None => cursor == Some(row),
-        };
-        match on {
-            true => Selection::Selected,
-            false => Selection::Unselected,
-        }
+    let selected = |row: usize| match &selection {
+        Some(chosen) => chosen.contains(row),
+        None => cursor == Some(row),
     };
     let steps: Vec<Option<OutlineRow>> = (start..end)
         .map(|row| outline.map(|outline| outline.call(row)))
@@ -298,7 +292,7 @@ pub fn VirtualTable<C: Clone + PartialEq + 'static>(
             TableKey::Disclose { to, reach } => {
                 let branch = resting.and_then(|at| outline.map(|outline| (at, outline.call(at))));
                 if let (Some((row, step)), Some(ontoggle)) = (branch, ontoggle)
-                    && step.kind == OutlineKind::Branch(to.flipped())
+                    && step.kind == OutlineKind::Branch(!to)
                 {
                     event.prevent_default();
                     ontoggle.call(OutlineToggle {
@@ -372,7 +366,7 @@ pub fn VirtualTable<C: Clone + PartialEq + 'static>(
                                     "aria-level": step.map(|step| step.level()),
                                     "aria-expanded": step.and_then(OutlineRow::expanded),
                                     "data-row": row.to_string(),
-                                    "data-selected": (selected(row) == Selection::Selected).then_some("yes"),
+                                    "data-selected": selected(row).then_some("yes"),
                                     "data-stripe": look.striped(row).then_some("odd"),
                                     style: "height:{height}px",
                                     onpointerdown: move |event: PointerEvent| {

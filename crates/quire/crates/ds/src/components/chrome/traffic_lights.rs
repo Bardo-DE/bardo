@@ -17,7 +17,7 @@ use crate::window::timing::FrameTiming;
 use crate::window::vocab::{Maximized, WindowTile, Zoom};
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
-use ds_core::vocab::{Availability, Shown};
+use ds_core::vocab::{Availability, aria_word};
 use ds_core::word::Word;
 use ds_motion::machine::use_machine;
 use ds_style::icon::Icon;
@@ -28,12 +28,15 @@ type TileMenu = Option<[bool; 4]>;
 
 /// The three lights, and the tiling menu the green one opens.
 #[component]
-pub(crate) fn TrafficLightGroup(timing: FrameTiming, pose: Shown) -> Element {
+pub(crate) fn TrafficLightGroup(timing: FrameTiming, pose: bool) -> Element {
     let host = use_window_host();
     let state = use_window_state();
-    let mut menu = use_signal(|| match pose {
-        Shown::Visible => Some(support(host.as_ref())),
-        Shown::Hidden => None,
+    let mut menu = use_signal(|| {
+        if pose {
+            Some(support(host.as_ref()))
+        } else {
+            None
+        }
     });
     let mut anchor = use_signal(|| None::<MountedRef>);
     let opener = Opener {
@@ -61,8 +64,8 @@ pub(crate) fn TrafficLightGroup(timing: FrameTiming, pose: Shown) -> Element {
         Maximized::Off => Mark::Zoom,
     };
     let expanded = match menu() {
-        Some(_) => Shown::Visible,
-        None => Shown::Hidden,
+        Some(_) => true,
+        None => false,
     };
     rsx! {
         div { class: "ds-lights", role: "group", "aria-label": "Window",
@@ -79,7 +82,7 @@ pub(crate) fn TrafficLightGroup(timing: FrameTiming, pose: Shown) -> Element {
                 "data-first-mouse": "",
                 "aria-label": zoom_mark.label(),
                 "aria-haspopup": "menu",
-                "aria-expanded": expanded.aria(),
+                "aria-expanded": aria_word(expanded),
                 onmounted: move |event: MountedEvent| anchor.set(Some(MountedRef(event.data()))),
                 onpointerdown: move |event: PointerEvent| {
                     event.stop_propagation();

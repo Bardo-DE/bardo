@@ -11,7 +11,6 @@ use crate::components::menus::item::view::{
 use dioxus::prelude::*;
 use ds_core::geometry::units::Point;
 use ds_core::press::Press;
-use ds_core::vocab::{Selection, Shown};
 
 /// What a panel draws around its choices: the highlight, the choice whose submenu is open,
 /// and what a click, a pointer move and a mount on choice `i` report.
@@ -91,7 +90,7 @@ pub(crate) fn render_lines<T>(items: &[MenuItem<T>], drawn: Drawn, alive: &Alive
                         key: key.as_ref().map(|shortcut| drawn.keymap.text_of(shortcut)),
                         hint: hint.as_deref(),
                         check: *check,
-                        highlight: Selection::of(&Some(index), &drawn.selected),
+                        highlight: Some(index) == drawn.selected,
                         availability: *availability,
                         branch: Branch::Leaf,
                         columns,
@@ -112,12 +111,12 @@ pub(crate) fn render_lines<T>(items: &[MenuItem<T>], drawn: Drawn, alive: &Alive
                         key: None,
                         hint: None,
                         check: None,
-                        highlight: Selection::of(&Some(index), &drawn.selected),
+                        highlight: Some(index) == drawn.selected,
                         availability: *availability,
                         branch: Branch::Parent(if drawn.open == Some(index) {
-                            Shown::Visible
+                            true
                         } else {
-                            Shown::Hidden
+                            false
                         }),
                         columns,
                     },
@@ -157,7 +156,7 @@ fn swatch_row<T>(row: &SwatchRow<T>, first: usize, drawn: Drawn, alive: &Alive) 
             name: &dot.name,
             colour: dot.colour,
             check: dot.check,
-            highlight: Selection::of(&Some(at), &drawn.selected),
+            highlight: Some(at) == drawn.selected,
             availability: row.availability,
         };
         (at, view, events(drawn, at, alive))

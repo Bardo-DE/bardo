@@ -17,7 +17,7 @@ use crate::components::controls::press::{ActivationKeys, PressListeners};
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use ds_core::press::{PointerButton, Press};
-use ds_core::vocab::{DropState, Shown};
+use ds_core::vocab::{DropState, aria_word, selected_word};
 use ds_core::word::Word;
 use ds_motion::anim::Anim;
 use ds_motion::presence::{
@@ -43,7 +43,7 @@ const ADD_LABEL: &str = "Add Space";
 pub fn SpacesBar(
     label: String,
     spaces: Vec<SpaceTile>,
-    shown: Shown,
+    shown: bool,
     on_pick: EventHandler<BarSpaceKey>,
     #[props(default)] on_add: Option<EventHandler<()>>,
     #[props(default = ADD_LABEL.to_owned())] add_label: String,
@@ -160,10 +160,10 @@ fn Tile(tile: SpaceTile, expansion: BarExpansion, on_pick: EventHandler<BarSpace
         button {
             r#type: "button",
             class: "ds-spaces-bar-space",
-            "data-selected": current.slug(),
+            "data-selected": selected_word(current),
             "data-drop": drop.drop_attr(),
             "data-drag": drop.drag_attr(),
-            "aria-current": current.aria_current(),
+            "aria-current": aria_word(current),
             onmounted: move |event| probe.on_mounted(event),
             onclick: move |event| listen.click(&event),
             onkeydown: move |event| listen.key_down(&event, ActivationKeys::ReturnAndSpace),

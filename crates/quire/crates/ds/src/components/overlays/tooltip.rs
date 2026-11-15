@@ -27,7 +27,7 @@ use crate::root::common::Common;
 use crate::stack::hover_hub::{HoverKey, use_hover_hub};
 use dioxus::prelude::*;
 use ds_core::time::{FRAME_SLACK, clock::sleep};
-use ds_core::vocab::{Shortcut, Shown};
+use ds_core::vocab::Shortcut;
 use ds_core::word::Word;
 use ds_motion::hover_intent::HoverProfile;
 
@@ -66,7 +66,7 @@ impl HintSide {
 pub fn Tooltip(
     text: String,
     #[props(default)] shortcut: Option<Shortcut>,
-    #[props(default)] shown: Option<Shown>,
+    #[props(default)] shown: Option<bool>,
     #[props(default)] hover_key: Option<HoverKey>,
     #[props(default)] common: Common,
     #[props(default)] children: Element,
@@ -94,7 +94,7 @@ pub fn Tooltip(
 #[component]
 pub fn Hint(
     text: String,
-    #[props(default)] shown: Option<Shown>,
+    #[props(default)] shown: Option<bool>,
     #[props(default)] hover_key: Option<HoverKey>,
     profile: HoverProfile,
     #[props(default)] side: HintSide,
@@ -109,8 +109,8 @@ pub fn Hint(
     let hub = use_hover_hub();
     let element = use_signal(|| None::<MountedRef>);
     let mine = match shown {
-        Some(Shown::Visible) => true,
-        Some(Shown::Hidden) => false,
+        Some(true) => true,
+        Some(false) => false,
         None => hub
             .open()
             .or(hub.leaving())

@@ -6,7 +6,6 @@ use crate::components::content::title_tip::use_tip;
 use crate::components::controls::chip_dot::ChipDot;
 use crate::components::controls::press::{ActivationKeys, PressListeners};
 use dioxus::prelude::*;
-use ds_core::colour::contrast::Verdict;
 use ds_core::press::Press;
 use ds_core::vocab::Check;
 use ds_core::word::Word;
@@ -28,7 +27,7 @@ pub enum ChipVariant {
     /// A search operator in the command menu.
     Token,
     /// A contrast check's pass or fail.
-    Status(Verdict),
+    Status(bool),
 }
 
 impl ChipVariant {
@@ -55,8 +54,8 @@ impl ChipVariant {
     /// `data-status`, on a Status chip only.
     fn status(&self) -> Option<&'static str> {
         match self {
-            ChipVariant::Status(Verdict::Pass) => Some("ok"),
-            ChipVariant::Status(Verdict::Fail) => Some("bad"),
+            ChipVariant::Status(true) => Some("ok"),
+            ChipVariant::Status(false) => Some("bad"),
             _ => None,
         }
     }

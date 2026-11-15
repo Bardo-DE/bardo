@@ -36,7 +36,7 @@ fn hooks(log: Signal<Vec<String>>, part: &'static str) -> PartHooks {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Strip {
     /// A one-button strip, shown by `shown` (`None`: on hover).
-    Carried(Option<Shown>),
+    Carried(Option<bool>),
     /// No strip: the time is not under it.
     Absent,
 }
@@ -58,7 +58,7 @@ fn Page(strip: Strip) -> Element {
         Ds { appearance: Appearance::default(), material: Material::Window,
             ul { class: "list", style: "width:600px; padding:20px; margin:0",
                 ThreadRow {
-                    state: RowState { selection: Selection::Unselected, emphasis: Emphasis::Strong, ..RowState::default() },
+                    state: RowState { selection: false, emphasis: true, ..RowState::default() },
                     name: "Dana Okafor",
                     via: None,
                     subject: "Re: UIDL stability",
@@ -94,7 +94,7 @@ fn Bare() -> Element {
 
 #[allow(non_snake_case)]
 fn Revealed() -> Element {
-    rsx! { Page { strip: Strip::Carried(Some(Shown::Visible)) } }
+    rsx! { Page { strip: Strip::Carried(Some(true)) } }
 }
 
 fn log(harness: &Harness) -> String {

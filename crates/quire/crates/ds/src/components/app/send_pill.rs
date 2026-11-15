@@ -18,8 +18,7 @@ use crate::components::controls::progress::view::ProgressIndicator;
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use ds_core::time::FRAME_SLACK;
-use ds_core::vocab::{Fraction, Shown};
-use ds_core::word::Word;
+use ds_core::vocab::{Fraction, shown_word};
 use ds_motion::detail::operation::Operation;
 use ds_style::tokens::control_size::ControlSize;
 use ds_style::tokens::delay::DelayToken;
@@ -86,8 +85,8 @@ pub fn SendPill(
         leaving.send_from_render(HoldForIn::Start);
     }
     let shown = match (*entering.state().read(), *leaving.state().read()) {
-        (HoldFor::Held(_), _) | (_, HoldFor::Done) => Shown::Hidden,
-        (HoldFor::Rest | HoldFor::Done, HoldFor::Rest | HoldFor::Held(_)) => Shown::Visible,
+        (HoldFor::Held(_), _) | (_, HoldFor::Done) => false,
+        (HoldFor::Rest | HoldFor::Done, HoldFor::Rest | HoldFor::Held(_)) => true,
     };
     let class = common.class("ds-send-pill");
     let data = common.data_attributes();
@@ -96,7 +95,7 @@ pub fn SendPill(
         div {
             id: common.id.clone(),
             class,
-            "data-shown": shown.slug(),
+            "data-shown": shown_word(shown),
             "data-mood": mood.attr(),
             role: "status",
             "aria-busy": busy,

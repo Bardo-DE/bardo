@@ -27,7 +27,7 @@ fn Trailed() -> Element {
         Ds {
             appearance: Appearance::default(),
             material: Material::Window,
-            window: WindowFrame::titlebar("Inbox", Shown::Visible).with_trailing(trailing),
+            window: WindowFrame::titlebar("Inbox", true).with_trailing(trailing),
             p { class: "log", {log().join(",")} }
             p { class: "picked", "{picked}" }
         }

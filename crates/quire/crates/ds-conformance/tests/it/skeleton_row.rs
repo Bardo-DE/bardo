@@ -14,7 +14,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-static SHOWN: GlobalSignal<Shown> = Signal::global(|| Shown::Visible);
+static SHOWN: GlobalSignal<bool> = Signal::global(|| true);
 static HIDDEN: GlobalSignal<u32> = Signal::global(|| 0);
 
 fn ms(n: u64) -> Duration {
@@ -98,7 +98,7 @@ fn it_draws_an_avatar_and_a_wide_and_a_short_bar_at_a_rows_height() {
 #[test]
 fn hidden_it_fades_and_on_hidden_runs_once_after_it_settles() {
     let mut harness = harness();
-    harness.within(|| *SHOWN.write() = Shown::Hidden);
+    harness.within(|| *SHOWN.write() = false);
     harness.advance(ms(1));
     assert_eq!(
         harness

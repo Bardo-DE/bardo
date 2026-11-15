@@ -39,7 +39,7 @@ fn rows(from: u8, count: u8, here: u8, pick: EventHandler<u8>) -> Vec<ListItem<u
                     Row {
                         title: TextLine::from(format!("Place {key}")),
                         state: RowState {
-                            selection: Selection::of(&here, &key),
+                            selection: here == key,
                             ..RowState::default()
                         },
                         onclick: move |_| pick.call(key),

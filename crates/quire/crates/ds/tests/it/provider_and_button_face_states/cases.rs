@@ -31,7 +31,7 @@ pub struct Case {
 pub const CASES: &[Case] = &[
     Case {
         golden: "lists/pin_tile/one-local.html",
-        make: || rsx! { PinTile { face: local(), selection: Selection::Selected, unread: 2, onclick: |_| {} } },
+        make: || rsx! { PinTile { face: local(), selection: true, unread: 2, onclick: |_| {} } },
     },
     Case {
         golden: "lists/provider_mark/local-row.html",
@@ -67,7 +67,7 @@ pub const CASES: &[Case] = &[
     },
     Case {
         golden: "controls/button/quiet-caret.html",
-        make: || rsx! { Button { bezel: Bezel::Inline, label: "poh@acme.example", trailing: Icon::ChevronDown, shown: Shown::Hidden, onclick: |_| {} } },
+        make: || rsx! { Button { bezel: Bezel::Inline, label: "poh@acme.example", trailing: Icon::ChevronDown, shown: false, onclick: |_| {} } },
     },
     Case {
         golden: "controls/button/mini-trailing-glyph.html",

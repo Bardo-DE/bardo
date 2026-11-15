@@ -61,7 +61,7 @@ fn rows(
                 Row {
                     title: TextLine::from(name),
                     leading: RowLeading::Icon(icon),
-                    state: RowState { selection: Selection::of(&here, &name), ..RowState::default() },
+                    state: RowState { selection: here == name, ..RowState::default() },
                 }
             },
         )
@@ -89,9 +89,9 @@ fn Page() -> Element {
     } else {
         Scheme::Light
     };
-    let mut pinned = use_signal(|| Shown::Visible);
+    let mut pinned = use_signal(|| true);
     let mut menu = use_signal(|| None::<Anchor>);
-    let mut sheet = use_signal(|| Shown::Hidden);
+    let mut sheet = use_signal(|| false);
     let card = use_rect();
     let foot = rsx! {
         Button { bezel: Bezel::Inline, label: "Home", onclick: |_| {} }
@@ -101,7 +101,7 @@ fn Page() -> Element {
                     key: "{index}",
                     name: "Space",
                     frame: FrameVars::of(&SpaceLook { dots: PRESETS[index].dots.to_vec(), ..look() }, scheme),
-                    selection: Selection::of(&index, &0),
+                    selection: index == 0,
                     shortcut: Shortcut(vec![]),
                     onclick: |()| {},
                 }
@@ -110,11 +110,11 @@ fn Page() -> Element {
         Button {
             bezel: Bezel::Toolbar, image: ImagePosition::Only, size: ControlSize::Small,
             icon: Icon::PanelLeft, label: "Hide sidebar",
-            onclick: move |_| pinned.set(Shown::Hidden),
+            onclick: move |_| pinned.set(false),
         }
     };
     let side = rsx! {
-        EdgePeek { label: "Sidebar", pinned: pinned(), onpin: move |()| pinned.set(Shown::Visible),
+        EdgePeek { label: "Sidebar", pinned: pinned(), onpin: move |()| pinned.set(true),
             Sidebar::<&'static str> {
                 label: "Mail",
                 fill: SidebarFill::Clear,
@@ -146,7 +146,7 @@ fn Page() -> Element {
                             room: ToolbarRoom::Fixed(Px(700.0)),
                             onpick: move |pick: Picked<&'static str>| match pick.value {
                                 "group" => menu.set(pick.anchor),
-                                _ => sheet.set(Shown::Visible),
+                                _ => sheet.set(true),
                             },
                         }
                     }
@@ -168,13 +168,13 @@ fn Page() -> Element {
             if let Some(anchor) = card.anchor() {
                 Sheet {
                     label: "Rules",
-                    onclose: move |()| sheet.set(Shown::Hidden),
+                    onclose: move |()| sheet.set(false),
                     shown: Some(sheet()),
                     attach: Attach::Within(anchor),
                     div { style: "padding:var(--s-16);display:flex;flex-direction:column;gap:var(--s-8)",
                         h3 { "Rules" }
                         p { "A sheet hangs from the card, not the window." }
-                        Button { answers: Answers::Return, label: "Done", onclick: move |_| sheet.set(Shown::Hidden) }
+                        Button { answers: Answers::Return, label: "Done", onclick: move |_| sheet.set(false) }
                     }
                 }
             }

@@ -51,7 +51,6 @@ use ds_blitz::seam::{LinkInbox, frame_links, read_link};
 use ds_blitz::seam::{Provided, Wiring};
 use ds_blitz::{FrameHandler, FrameImageClick, FrameLinkHover, FrameLinkMenu};
 use ds_core::time::clock::now;
-use ds_core::vocab::{Activity, InputModality};
 use peniko::Color;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -77,7 +76,7 @@ pub(crate) const RE_RENDERED: &str = "components re-rendered";
 /// A headless document and what drives it.
 pub(crate) struct Headless {
     pub(crate) doc: DioxusDocument,
-    modality: Signal<InputModality>,
+    modality: Signal<bool>,
     scale: Signal<Scale>,
     wakeup: Arc<Wakeup>,
     viewport: Viewport,
@@ -182,9 +181,9 @@ impl Headless {
         // The app's own first, so a quire context of the same type (none today) would win.
         setup.install(&mut vdom);
         let signals = vdom.in_runtime(|| HostSignals {
-            modality: Signal::new_in_scope(InputModality::default(), ScopeId::ROOT),
+            modality: Signal::new_in_scope(false, ScopeId::ROOT),
             scale: Signal::new_in_scope(Scale::from_percent(viewport.scale_percent), ScopeId::ROOT),
-            activity: Signal::new_in_scope(Activity::Active, ScopeId::ROOT),
+            activity: Signal::new_in_scope(true, ScopeId::ROOT),
         });
         vdom.provide_root_context(signals);
         let window = FakeWindow::new(viewport, spec);
@@ -287,7 +286,7 @@ impl Headless {
     }
 
     /// Record the kind of input that arrived last, so `Ds` stamps `data-modality`.
-    pub(crate) fn set_modality(&self, next: InputModality) {
+    pub(crate) fn set_modality(&self, next: bool) {
         let mut modality = self.modality;
         self.doc.vdom.in_runtime(|| {
             if *modality.peek() != next {

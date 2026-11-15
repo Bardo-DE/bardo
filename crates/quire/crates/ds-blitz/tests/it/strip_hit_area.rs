@@ -50,7 +50,7 @@ fn actions(width: Width) -> Vec<StripAction> {
 
 /// One row with its strip, logging what a click reaches.
 #[component]
-fn Page(shown: Option<Shown>, width: Width) -> Element {
+fn Page(shown: Option<bool>, width: Width) -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let list = match width {
         Width::Wide => "width:600px; padding:20px; margin:0",
@@ -62,7 +62,7 @@ fn Page(shown: Option<Shown>, width: Width) -> Element {
             style { {ROW} }
             ul { class: "list", style: list,
                 ThreadRow {
-                    state: RowState { selection: Selection::Unselected, emphasis: Emphasis::Strong, ..RowState::default() },
+                    state: RowState { selection: false, emphasis: true, ..RowState::default() },
                     name: "Dana Okafor",
                     via: None,
                     subject: "Re: UIDL stability",
@@ -87,12 +87,12 @@ fn Page(shown: Option<Shown>, width: Width) -> Element {
 
 #[allow(non_snake_case)]
 fn Hidden() -> Element {
-    rsx! { Page { shown: Some(Shown::Hidden), width: Width::Wide } }
+    rsx! { Page { shown: Some(false), width: Width::Wide } }
 }
 
 #[allow(non_snake_case)]
 fn Visible() -> Element {
-    rsx! { Page { shown: Some(Shown::Visible), width: Width::Wide } }
+    rsx! { Page { shown: Some(true), width: Width::Wide } }
 }
 
 #[allow(non_snake_case)]
@@ -102,12 +102,12 @@ fn OnHover() -> Element {
 
 #[allow(non_snake_case)]
 fn NarrowHidden() -> Element {
-    rsx! { Page { shown: Some(Shown::Hidden), width: Width::Narrow } }
+    rsx! { Page { shown: Some(false), width: Width::Narrow } }
 }
 
 #[allow(non_snake_case)]
 fn NarrowVisible() -> Element {
-    rsx! { Page { shown: Some(Shown::Visible), width: Width::Narrow } }
+    rsx! { Page { shown: Some(true), width: Width::Narrow } }
 }
 
 fn rect(harness: &Harness, selector: &str) -> Rect {

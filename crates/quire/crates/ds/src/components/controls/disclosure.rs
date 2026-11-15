@@ -7,7 +7,7 @@ use crate::root::common::Common;
 use dioxus::core::current_scope_id;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Px;
-use ds_core::vocab::{Availability, Shown};
+use ds_core::vocab::{Availability, aria_word, shown_word};
 use ds_core::word::Word;
 use ds_motion::use_collapse::use_collapse;
 use ds_style::icon::Icon;
@@ -17,11 +17,11 @@ use ds_style::tokens::control_size::ControlSize;
 use std::rc::Rc;
 
 /// The triangle, turned as `shown` says. A part: `Disclosure` and `Row` draw the same one.
-pub(crate) fn indicator(shown: Shown) -> Element {
+pub(crate) fn indicator(shown: bool) -> Element {
     rsx! {
         span {
             class: "ds-disclosure-indicator",
-            "data-shown": shown.slug(),
+            "data-shown": shown_word(shown),
             "aria-hidden": "true",
             Glyph { icon: Icon::ChevronRight, size: IconSize::Tiny }
         }
@@ -33,7 +33,7 @@ pub(crate) fn indicator(shown: Shown) -> Element {
 /// so the content's own height is what it opens to.
 #[component]
 pub(crate) fn Collapsing(
-    shown: Shown,
+    shown: bool,
     #[props(default)] id: Option<String>,
     children: Element,
 ) -> Element {
@@ -57,9 +57,9 @@ pub(crate) fn Collapsing(
             class: "ds-disclosure-body",
             id,
             role: "region",
-            "data-shown": shown.slug(),
+            "data-shown": shown_word(shown),
             "data-closed": closed,
-            "aria-hidden": if shown == Shown::Hidden { Some("true") } else { None },
+            "aria-hidden": if !shown { Some("true") } else { None },
             style: collapse.style(measured()),
             div {
                 class: "ds-disclosure-content",
@@ -83,8 +83,8 @@ pub(crate) fn Collapsing(
 /// does. A `Busy` disclosure takes no press.
 #[component]
 pub fn Disclosure(
-    shown: Shown,
-    on_toggle: EventHandler<Shown>,
+    shown: bool,
+    on_toggle: EventHandler<bool>,
     #[props(default)] label: Option<String>,
     #[props(default)] size: ControlSize,
     #[props(default)] availability: Availability,
@@ -107,12 +107,12 @@ pub fn Disclosure(
             class: common.class("ds-disclosure"),
             id: common.id.clone(),
             "data-size": size.slug(),
-            "data-shown": shown.slug(),
+            "data-shown": shown_word(shown),
             ..data,
             button {
                 r#type: "button",
                 class: "ds-disclosure-trigger",
-                "aria-expanded": shown.aria(),
+                "aria-expanded": aria_word(shown),
                 "aria-controls": "{controls}",
                 "aria-label": name,
                 "aria-disabled": availability.aria_disabled(),
@@ -120,7 +120,7 @@ pub fn Disclosure(
                 onmounted: move |event| common.mounted(event),
                 onclick: move |_| {
                     if live {
-                        on_toggle.call(shown.flipped());
+                        on_toggle.call(!shown);
                     }
                 },
                 {indicator(shown)}

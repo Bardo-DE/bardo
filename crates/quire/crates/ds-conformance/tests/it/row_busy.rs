@@ -61,8 +61,8 @@ static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 fn Rows() -> Element {
     let (net, device, output) = (NET(), DEVICE(), OUTPUT());
     let disc = match net.joined() {
-        Check::On => Selection::Selected,
-        Check::Off | Check::Mixed => Selection::Unselected,
+        Check::On => true,
+        Check::Off | Check::Mixed => false,
     };
     let battery = match device.joined() {
         Check::On => Accessory::Battery(BatteryState {
@@ -84,7 +84,7 @@ fn Rows() -> Element {
                 }
                 div { id: "device",
                     Row {
-                        leading: RowLeading::Disc(Icon::Headphones, Selection::Unselected), title: "Headphones", size: RowSize::Settings,
+                        leading: RowLeading::Disc(Icon::Headphones, false), title: "Headphones", size: RowSize::Settings,
                         accessory: battery,
                         state: RowState { availability: device.availability(), ..RowState::default() },
                     }

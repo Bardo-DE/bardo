@@ -13,7 +13,6 @@ use crate::root::common::Common;
 use dioxus::prelude::*;
 use ds_core::geometry::placement::{Align, Placement, Side};
 use ds_core::geometry::units::Px;
-use ds_core::vocab::Shown;
 use ds_style::scope::use_scope;
 use ds_style::space::dot_paint::DotPaint;
 use ds_style::space::look::SpaceLook;
@@ -41,7 +40,7 @@ pub fn PresetSwatches(
     #[props(default)] common: Common,
 ) -> Element {
     let scheme = use_scope().scheme;
-    let mut shown = use_signal(|| Shown::Hidden);
+    let mut shown = use_signal(|| false);
     let mut custom = use_signal(|| None::<MountedRef>);
     let picked = use_signal(|| None::<(DotIndex, DotIndex)>);
     let commit = move || {
@@ -99,16 +98,16 @@ pub fn PresetSwatches(
                 role: "radio",
                 "aria-checked": if preset.is_none() { "true" } else { "false" },
                 "aria-haspopup": "dialog",
-                "aria-expanded": if shown() == Shown::Visible { "true" } else { "false" },
+                "aria-expanded": if shown() { "true" } else { "false" },
                 "aria-label": CUSTOM,
                 title: CUSTOM,
                 "data-stops": if preset.is_none() { Some(own.count()) } else { None },
                 style: if preset.is_none() { Some(own.style_attr()) } else { None },
                 onmounted: move |event| custom.set(Some(MountedRef(event.data()))),
-                onclick: move |_| shown.set(shown().flipped()),
+                onclick: move |_| shown.set(!shown()),
             }
         }
-        if shown() == Shown::Visible && let Some(anchor) = custom() {
+        if shown() && let Some(anchor) = custom() {
             Popover {
                 anchor: Anchor::Mounted(anchor),
                 placement: Placement::new(Side::Bottom, Align::Center),
@@ -116,7 +115,7 @@ pub fn PresetSwatches(
                 arrow: Arrow::Arrow,
                 common: Common { aria_label: Some(CUSTOM.to_owned()), ..Common::default() },
                 onclose: move |()| {
-                    shown.set(Shown::Hidden);
+                    shown.set(false);
                     commit();
                 },
                 div { class: "ds-space-editor ds-custom-colour",

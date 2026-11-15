@@ -15,7 +15,7 @@ use crate::focus::soon::focus_soon;
 use crate::root::common::Common;
 use crate::stack::roving::{Rove, Roving, Wrap};
 use dioxus::prelude::*;
-use ds_core::vocab::{Availability, Check, Selection};
+use ds_core::vocab::{Availability, Check};
 use ds_core::word::Word;
 use ds_style::tokens::control_size::ControlSize;
 use std::rc::Rc;
@@ -49,9 +49,10 @@ fn rove_to<T: Clone + PartialEq>(choices: &[Choice<T>], at: &T, rove: Rove) -> O
 
 /// Whether `value` is the checked one.
 fn checked<T: PartialEq>(choice: &Choice<T>, value: &T) -> Check {
-    match Selection::of(&choice.value, value) {
-        Selection::Selected => Check::On,
-        Selection::Unselected => Check::Off,
+    if choice.value == value {
+        Check::On
+    } else {
+        Check::Off
     }
 }
 

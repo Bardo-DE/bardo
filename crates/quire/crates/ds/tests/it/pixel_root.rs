@@ -8,7 +8,6 @@ use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
 use ds::prelude::*;
-use ds_core::vocab::{Activity, InputModality};
 use ds_style::icon::render::Glyph;
 
 #[derive(Props, Clone, PartialEq)]
@@ -21,9 +20,9 @@ struct Setup {
 fn Root(setup: Setup) -> Element {
     if let Some(scale) = setup.host {
         use_context_provider(|| HostSignals {
-            modality: Signal::new(InputModality::default()),
+            modality: Signal::new(false),
             scale: Signal::new(scale),
-            activity: Signal::new(Activity::Active),
+            activity: Signal::new(true),
         });
     }
     rsx! {

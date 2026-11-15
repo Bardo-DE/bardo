@@ -20,7 +20,6 @@ use dioxus::prelude::*;
 use ds::components::app::space_editor::DotIndex;
 use ds::components::app::space_editor::rows::EditorFrame;
 use ds::prelude::*;
-use ds_core::colour::contrast::Verdict;
 use ds_style::space::palette::readout::readout;
 use ds_style::space::palette::{Capping, Dot, derive, swatch};
 use ds_style::space::presets::PRESETS;
@@ -125,19 +124,19 @@ const CASES: &[Case] = &[
     // SpaceDot.
     Case {
         state: "space-dot-current",
-        make: || rsx! { SpaceDot { name: "Work", frame: ds_style::space::frame_vars::FrameVars::of(&preset_look(0, Grain(35)), Scheme::Light), selection: Selection::Selected, shortcut: Shortcut(vec![ShortcutKey::Ctrl, ShortcutKey::Char('1')]), onclick: |_| {} } },
+        make: || rsx! { SpaceDot { name: "Work", frame: ds_style::space::frame_vars::FrameVars::of(&preset_look(0, Grain(35)), Scheme::Light), selection: true, shortcut: Shortcut(vec![ShortcutKey::Ctrl, ShortcutKey::Char('1')]), onclick: |_| {} } },
     },
     Case {
         state: "space-dot-elsewhere",
-        make: || rsx! { SpaceDot { name: "Home", frame: ds_style::space::frame_vars::FrameVars::of(&preset_look(1, Grain(55)), Scheme::Dark), selection: Selection::Unselected, shortcut: Shortcut(vec![ShortcutKey::Ctrl, ShortcutKey::Char('2')]), onclick: |_| {} } },
+        make: || rsx! { SpaceDot { name: "Home", frame: ds_style::space::frame_vars::FrameVars::of(&preset_look(1, Grain(55)), Scheme::Dark), selection: false, shortcut: Shortcut(vec![ShortcutKey::Ctrl, ShortcutKey::Char('2')]), onclick: |_| {} } },
     },
     Case {
         state: "space-dot-foot-current",
-        make: || rsx! { SpaceDot { name: "Work", face: DotFace::Foot, frame: ds_style::space::frame_vars::FrameVars::of(&preset_look(0, Grain(35)), Scheme::Light), selection: Selection::Selected, shortcut: Shortcut(vec![ShortcutKey::Ctrl, ShortcutKey::Char('1')]), onclick: |_| {} } },
+        make: || rsx! { SpaceDot { name: "Work", face: DotFace::Foot, frame: ds_style::space::frame_vars::FrameVars::of(&preset_look(0, Grain(35)), Scheme::Light), selection: true, shortcut: Shortcut(vec![ShortcutKey::Ctrl, ShortcutKey::Char('1')]), onclick: |_| {} } },
     },
     Case {
         state: "space-dot-foot-elsewhere",
-        make: || rsx! { SpaceDot { name: "Home", face: DotFace::Foot, frame: ds_style::space::frame_vars::FrameVars::of(&preset_look(1, Grain(55)), Scheme::Dark), selection: Selection::Unselected, shortcut: Shortcut(vec![ShortcutKey::Ctrl, ShortcutKey::Char('2')]), onclick: |_| {} } },
+        make: || rsx! { SpaceDot { name: "Home", face: DotFace::Foot, frame: ds_style::space::frame_vars::FrameVars::of(&preset_look(1, Grain(55)), Scheme::Dark), selection: false, shortcut: Shortcut(vec![ShortcutKey::Ctrl, ShortcutKey::Char('2')]), onclick: |_| {} } },
     },
 ];
 

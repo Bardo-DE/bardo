@@ -7,7 +7,7 @@ use crate::components::controls::button::Button;
 use crate::components::controls::button_model::{Bezel, ImagePosition};
 use dioxus::prelude::*;
 use ds_core::geometry::units::{Point, Px};
-use ds_core::vocab::{Selection, Shortcut, Shown};
+use ds_core::vocab::Shortcut;
 use ds_style::icon::Icon;
 use ds_style::scope::use_scope;
 use ds_style::space::frame_vars::FrameVars;
@@ -22,7 +22,7 @@ use ds_style::space::look::SpaceLook;
 /// colours are its frame's, not the picker's. A right click on a dot is that Space's menu; a click switches, unless a part of a
 /// Space's menu is open. `+` names a new Space over `new_payload`, added once it is named.
 ///
-/// `new_space: Shown::Hidden` leaves the `+` out, for a foot whose one menu holds New Space
+/// `new_space: false` leaves the `+` out, for a foot whose one menu holds New Space
 /// (Dia's chevron, a `PullDownButton` in `trailing`). That menu's item asks for the Space itself:
 /// `handle.begin_new(payload, at)`.
 #[component]
@@ -30,7 +30,7 @@ pub fn SpacesFoot<P, R>(
     handle: SpacesHandle<P, R>,
     new_payload: Callback<(), P>,
     #[props(default)] chord: SwitchChord,
-    #[props(default = Shown::Visible)] new_space: Shown,
+    #[props(default = true)] new_space: bool,
     #[props(default)] new_shortcut: Option<Shortcut>,
     #[props(default)] leading: Option<Element>,
     #[props(default)] trailing: Option<Element>,
@@ -73,7 +73,7 @@ where
                                 name,
                                 face: DotFace::Foot,
                                 frame: FrameVars::of(&SpaceLook::default(), scheme),
-                                selection: Selection::of(&id, &current),
+                                selection: id == current,
                                 shortcut: chord.shortcut(index),
                                 onclick: move |()| {
                                     handle.switch(id);
@@ -83,7 +83,7 @@ where
                     }
                 }
             }
-            if new_space == Shown::Visible {
+            if new_space {
                 Button {
                     bezel: Bezel::Toolbar,
                     image: ImagePosition::Only,

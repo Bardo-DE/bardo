@@ -83,7 +83,7 @@ fn framed(maximized: Maximized) -> Element {
         Ds {
             appearance: Appearance::default(),
             material: Material::Window,
-            window: WindowFrame::titlebar("Inbox", Shown::Visible),
+            window: WindowFrame::titlebar("Inbox", true),
             p { class: "log", {log().join(",")} }
         }
     }

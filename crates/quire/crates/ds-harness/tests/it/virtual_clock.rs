@@ -61,7 +61,7 @@ fn SceneContent() -> Element {
         if hub.open().is_some() {
             HoverCard { kind: HoverKind::Sender, p { "dana@example.com" } }
         }
-        SidePanel { label: "Notification Center", shown: Shown::Visible, width: Px(384.0),
+        SidePanel { label: "Notification Center", shown: true, width: Px(384.0),
             p { "Nothing new." }
         }
     }
@@ -227,7 +227,7 @@ fn the_same_scenario_gives_the_same_frames_idle_or_under_load() {
 fn Center() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Popover, extent: RootExtent::Viewport,
-            SidePanel { label: "Notification Center", shown: Shown::Visible, width: Px(384.0),
+            SidePanel { label: "Notification Center", shown: true, width: Px(384.0),
                 p { "Nothing new." }
             }
         }

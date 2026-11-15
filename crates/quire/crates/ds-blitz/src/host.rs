@@ -70,7 +70,6 @@ use dioxus_native::winit::keyboard::{Key as WinitKey, NamedKey};
 use dioxus_native::winit::window::Theme;
 use dioxus_native::{use_window, use_window_event};
 use dioxus_native_dom::NodeHandle;
-use ds::base::vocab::{Activity, InputModality};
 use ds::file_drop::board::FileDropBoard;
 use ds::host::resized::WindowResized;
 use ds::prelude::*;
@@ -129,9 +128,9 @@ fn Rooted(root: SharedRoot) -> Element {
 pub(crate) fn Host(props: HostProps) -> Element {
     let window = use_window();
     let signals = use_context_provider(|| HostSignals {
-        modality: Signal::new(InputModality::default()),
+        modality: Signal::new(false),
         scale: Signal::new(scale_of(window.scale_factor())),
-        activity: Signal::new(Activity::Active),
+        activity: Signal::new(true),
     });
     let fallback = props.setup.focus_fallback;
     let keeper = use_hook(|| match fallback {
@@ -263,7 +262,7 @@ pub(crate) fn Host(props: HostProps) -> Element {
         }
         if let WindowEvent::Focused(focused) = event {
             let mut current = signals.activity;
-            let next = activity_of(*focused);
+            let next = *focused;
             if *current.peek() != next {
                 current.set(next);
             }
@@ -380,26 +379,19 @@ fn scale_of(factor: f64) -> Scale {
     Scale((factor * f64::from(Scale::DENOMINATOR)).round().max(1.0) as u32)
 }
 
-/// The activity of a window that just gained or lost the keyboard focus.
-fn activity_of(focused: bool) -> Activity {
-    match focused {
-        true => Activity::Active,
-        false => Activity::Inactive,
-    }
-}
-
-/// The modality a window event implies, if it implies one.
-fn modality_after(event: &WindowEvent) -> Option<InputModality> {
+/// The modality a window event implies, if it implies one: `true` for the keyboard, `false` for
+/// the pointer.
+fn modality_after(event: &WindowEvent) -> Option<bool> {
     match event {
         WindowEvent::KeyboardInput { event, .. }
             if event.state == ElementState::Pressed && !is_modifier(&event.logical_key) =>
         {
-            Some(InputModality::Keyboard)
+            Some(true)
         }
         WindowEvent::PointerButton {
             state: ElementState::Pressed,
             ..
-        } => Some(InputModality::Pointer),
+        } => Some(false),
         _ => None,
     }
 }

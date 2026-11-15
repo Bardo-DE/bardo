@@ -42,8 +42,8 @@ fn place(path: &str) -> Common {
 fn Page() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut note = move |entry: String| log.with_mut(|log| log.push(entry));
-    let mut projects = use_signal(|| Shown::Visible);
-    let mut archive = use_signal(|| Shown::Hidden);
+    let mut projects = use_signal(|| true);
+    let mut archive = use_signal(|| false);
     let more = move |path: &'static str| {
         Accessory::Slot(rsx! {
             Button {
@@ -63,7 +63,7 @@ fn Page() -> Element {
                     title: "Projects",
                     leading: RowLeading::Icon(Icon::Folder),
                     outline: Outline::Branch(projects()),
-                    on_toggle: move |to: Shown| {
+                    on_toggle: move |to: bool| {
                         note(format!("toggle:projects:{to:?}"));
                         projects.set(to);
                     },
@@ -77,7 +77,7 @@ fn Page() -> Element {
                     title: "Archive",
                     leading: RowLeading::Icon(Icon::Archive),
                     outline: Outline::Branch(archive()),
-                    on_toggle: move |to: Shown| {
+                    on_toggle: move |to: bool| {
                         note(format!("toggle:archive:{to:?}"));
                         archive.set(to);
                     },
@@ -277,8 +277,8 @@ fn Rename(start: Start) -> Element {
                     title: name(),
                     content: editing,
                     leading: RowLeading::Icon(Icon::Folder),
-                    outline: Outline::Branch(Shown::Visible),
-                    on_toggle: move |to: Shown| note(format!("toggle:{to:?}")),
+                    outline: Outline::Branch(true),
+                    on_toggle: move |to: bool| note(format!("toggle:{to:?}")),
                     accessory: Accessory::Badge(3),
                     common: place("projects"),
                     onclick: move |_| note("select".to_string()),

@@ -24,7 +24,7 @@ use ds_core::geometry::scroll::ScrollSpan;
 use ds_core::geometry::units::Px;
 use ds_core::press::PointerButton;
 use ds_core::selection::{Pick, PickHow, RowSelection};
-use ds_core::vocab::{RowState, Selection};
+use ds_core::vocab::RowState;
 
 /// Whether the keys are in a column.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -130,10 +130,7 @@ fn reach(handler: Option<EventHandler<ColumnPick>>, column: usize, pick: Pick) {
 
 /// One row: the name cell, and a chevron when something is under it.
 fn line<K>(row: &BrowserRow<K>, selected: bool, width: Px) -> Element {
-    let selection = match selected {
-        true => Selection::Selected,
-        false => Selection::Unselected,
-    };
+    let selection = selected;
     let accessory = match row.kind {
         BrowserRowKind::Branch => Accessory::Chevron,
         BrowserRowKind::Leaf => Accessory::None,

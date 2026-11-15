@@ -42,13 +42,13 @@ fn Bar(name: String, held: Option<BarExpansion>, over: DropState, add_over: Drop
             ..Appearance::default()
         }
     };
-    let mut shown = use_signal(|| Shown::Visible);
+    let mut shown = use_signal(|| true);
     let mut picked = use_signal(|| 1usize);
     let mut count = use_signal(|| 3usize);
     let tiles: Vec<SpaceTile> = (1..=count())
         .map(|at| {
             SpaceTile::new(BarSpaceKey(at.to_string()), format!("Desktop {at}"))
-                .current(Selection::of(&at, &picked()))
+                .current(at == picked())
                 .backdrop(ImageSource(wallpaper::calm_uri(Scheme::Light).to_owned()))
                 .in_drag(if at == 3 { over } else { DropState::Idle })
         })
@@ -61,7 +61,7 @@ fn Bar(name: String, held: Option<BarExpansion>, over: DropState, add_over: Drop
                         div { class: "g-stage-pad",
                             Button {
                                 label: "Show / hide",
-                                onclick: move |_| shown.set(match shown() { Shown::Visible => Shown::Hidden, Shown::Hidden => Shown::Visible }),
+                                onclick: move |_| shown.set(!shown()),
                             }
                         }
                     }

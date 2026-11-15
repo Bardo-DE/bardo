@@ -1,7 +1,6 @@
 //! The overlay registry and the host that renders it at the end of `.ds`.
 
 use dioxus::prelude::*;
-use ds_core::vocab::Shown;
 use ds_core::word::Word;
 use ds_style::tokens::layer::ZLayer;
 
@@ -41,11 +40,8 @@ impl Overlays {
 
     /// Whether anything is shown on `layer` (a sheet or a peek on [`ZLayer::Peek`]). Reads the
     /// registry, so the caller re-renders when it changes.
-    pub fn shown_on(&self, layer: ZLayer) -> Shown {
-        match self.entries.read().iter().any(|(_, at, _)| *at == layer) {
-            true => Shown::Visible,
-            false => Shown::Hidden,
-        }
+    pub fn shown_on(&self, layer: ZLayer) -> bool {
+        self.entries.read().iter().any(|(_, at, _)| *at == layer)
     }
 
     /// Stop showing `id`.

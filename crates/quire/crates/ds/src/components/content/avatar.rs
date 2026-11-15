@@ -7,7 +7,6 @@
 
 use crate::components::content::muted::muted;
 use dioxus::prelude::*;
-use ds_core::vocab::Muting;
 use ds_core::word::Word;
 use ds_style::tokens::hex::{Colour, Hex};
 
@@ -151,7 +150,7 @@ impl AvatarTone {
     /// and the person hash are hexes computed here (O-7, still open: the ground itself is
     /// per-address or per-account, so it cannot be a fixed token). The letter on a coloured
     /// disc is `--on-hue` (`S:116`, `S:1238`; O-3, resolved).
-    fn style(self, muting: Muting) -> String {
+    fn style(self, muting: bool) -> String {
         let (ground, letter) = match self {
             AvatarTone::Ink => ("var(--ink)".to_string(), "var(--paper)"),
             AvatarTone::Stack => ("var(--ink-soft)".to_string(), "var(--paper)"),
@@ -165,16 +164,13 @@ impl AvatarTone {
 /// `colour` at the strength `muting` gives: an account that is not the one in view keeps its
 /// hue at .55 of its chroma, so it is still that account but states nothing about the list (S's
 /// `saturate(.55)`, as an unpressed `AccountTile` shows it).
-pub fn muting_colour(muting: Muting, colour: Colour) -> Colour {
-    match muting {
-        Muting::Audible => colour,
-        Muting::Muted => muted(colour),
-    }
+pub fn muting_colour(muting: bool, colour: Colour) -> Colour {
+    if muting { muted(colour) } else { colour }
 }
 
 /// `data-muting`, written only when muted so an unmuted avatar's markup is as it was.
-fn muting_attr(muting: Muting) -> Option<&'static str> {
-    (muting != Muting::Audible).then(|| muting.slug())
+fn muting_attr(muting: bool) -> Option<&'static str> {
+    muting.then_some("muted")
 }
 
 /// An avatar's description, drawn.
@@ -190,14 +186,14 @@ pub fn face(face: AvatarFace) -> Element {
 }
 
 /// A coloured disc with one letter. `muting` mutes an account's or person's colour
-/// ([`Muting`]); it defaults to the colour as given.
+/// (`true` mutes); it defaults to the colour as given.
 #[component]
 pub fn Avatar(
     initial: char,
     size: AvatarSize,
     tone: AvatarTone,
     #[props(default)] shape: AvatarShape,
-    #[props(default)] muting: Muting,
+    #[props(default)] muting: bool,
 ) -> Element {
     let px = size.px();
     rsx! {

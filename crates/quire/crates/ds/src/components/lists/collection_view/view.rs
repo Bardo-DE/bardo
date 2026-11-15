@@ -66,7 +66,7 @@ use dioxus::prelude::*;
 use ds_core::geometry::units::Px;
 use ds_core::selection::{Pick, PickHow, RowSelection};
 use ds_core::time::clock::now;
-use ds_core::vocab::Selection;
+use ds_core::vocab::aria_word;
 use ds_core::word::Word;
 use ds_motion::presence::Exit;
 use ds_motion::roster::RowPitch;
@@ -185,15 +185,9 @@ pub fn CollectionView<K: Clone + Eq + Hash + 'static>(
         leave: ondropleave,
         drop: ondrop,
     };
-    let selected = |at: usize| {
-        let on = match &selection {
-            Some(chosen) => chosen.contains(at),
-            None => cursor == Some(at),
-        };
-        match on {
-            true => Selection::Selected,
-            false => Selection::Unselected,
-        }
+    let selected = |at: usize| match &selection {
+        Some(chosen) => chosen.contains(at),
+        None => cursor == Some(at),
     };
     let tiles: Vec<Tile> = drawn
         .into_iter()
@@ -295,7 +289,7 @@ pub fn CollectionView<K: Clone + Eq + Hash + 'static>(
                             class: "ds-cv-item",
                             role: "option",
                             "aria-label": tile.label,
-                            "aria-selected": tile.selection.aria(),
+                            "aria-selected": aria_word(tile.selection),
                             "aria-posinset": tile.place.map(|at| (at + 1).to_string()),
                             "aria-setsize": tile.place.map(|_| len.to_string()),
                             "aria-hidden": tile.leaving,
@@ -354,7 +348,7 @@ struct Tile {
     node: String,
     place: Option<usize>,
     label: Option<String>,
-    selection: Selection,
+    selection: bool,
     presence: &'static str,
     exit: Option<&'static str>,
     leaving: Option<&'static str>,
@@ -372,7 +366,7 @@ impl Tile {
     fn of<K>(
         drawn: Shown,
         items: &[CollectionItem<K>],
-        selected: &impl Fn(usize) -> Selection,
+        selected: &impl Fn(usize) -> bool,
         reach: Reach,
         menu: Option<EventHandler<(usize, MouseEvent)>>,
         drops: Drops,
@@ -390,7 +384,7 @@ impl Tile {
         let item = place.map(|at| &items[at]);
         let editing = item.is_some_and(|item| item.edit.is_some());
         let state = item.map(|item| item.drop).unwrap_or_default();
-        let selection = place.map_or(Selection::Unselected, selected);
+        let selection = place.is_some_and(selected);
         Tile {
             node,
             place,

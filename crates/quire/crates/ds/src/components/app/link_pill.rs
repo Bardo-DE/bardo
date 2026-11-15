@@ -9,7 +9,6 @@ use crate::components::app::hold_for::{Begin, HoldFor, HoldForIn, use_hold_for};
 use crate::components::app::hover_open::use_hover_open;
 use crate::root::common::Common;
 use dioxus::prelude::*;
-use ds_core::vocab::Shown;
 use ds_motion::anim::Anim;
 use ds_motion::entrance::use_entrance;
 use ds_motion::hover_intent::HoverProfile;
@@ -69,11 +68,11 @@ pub fn LinkPill(
         ) => (
             "honest",
             rsx! {
-                if expanded == Shown::Visible {
+                if expanded {
                     span { class: "ds-link-pill-dim", "{scheme_sub}" }
                 }
                 b { "{registered}" }
-                if expanded == Shown::Visible {
+                if expanded {
                     span { class: "ds-link-pill-dim", "data-part": "path", "{path}" }
                 }
             },
@@ -85,7 +84,7 @@ pub fn LinkPill(
                 span {
                     "Goes to "
                     b { "{registered}" }
-                    if expanded == Shown::Visible {
+                    if expanded {
                         ", not {shown}"
                     }
                 }
@@ -101,7 +100,7 @@ pub fn LinkPill(
             role: "status",
             "data-truth": truth,
             "data-presence": presence,
-            "data-expanded": (expanded == Shown::Visible).then_some("true"),
+            "data-expanded": expanded.then_some("true"),
             "aria-label": common.aria_label.clone(),
             title: "Copy link",
             onmounted: move |event| common.mounted(event),

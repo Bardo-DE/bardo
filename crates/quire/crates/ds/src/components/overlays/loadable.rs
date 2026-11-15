@@ -29,7 +29,6 @@ use crate::components::controls::progress::model::{Progress, ProgressStyle};
 use crate::components::controls::progress::view::ProgressIndicator;
 use crate::root::common::Common;
 use dioxus::prelude::*;
-use ds_core::vocab::Shown;
 use ds_core::word::Word;
 use ds_motion::anim::Anim;
 use ds_motion::detail::{
@@ -118,11 +117,7 @@ pub fn Loadable(
     let (arriving, pulse) = use_cross_fade(Some(cue)).wear("ds-loadable-layer");
     // The loading layer's own life, only so a custom placeholder can leave by a fade.
     let Presented { presence, .. } = use_presence(
-        if kind == Kind::Loading {
-            Shown::Visible
-        } else {
-            Shown::Hidden
-        },
+        if kind == Kind::Loading { true } else { false },
         PresenceSpec {
             enter: Anim::Fade,
             exit: Exit::Fade,

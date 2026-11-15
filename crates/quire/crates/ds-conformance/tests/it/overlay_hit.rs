@@ -236,7 +236,7 @@ fn MailRow(i: usize, log: Signal<Vec<String>>) -> Element {
     rsx! {
         div { class: "mrow m{i}",
             ThreadRow {
-                state: RowState { selection: Selection::Unselected, emphasis: Emphasis::Strong, ..RowState::default() },
+                state: RowState { selection: false, emphasis: true, ..RowState::default() },
                 name: "Sender {i}",
                 via: None,
                 subject: "Subject {i}",

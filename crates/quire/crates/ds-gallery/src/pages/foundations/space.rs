@@ -33,7 +33,7 @@ pub fn SpacePage() -> Element {
                         key: "{index}",
                         name: candidate.label(),
                         frame: FrameVars::of(&candidate.look(), scheme),
-                        selection: if candidate == preset { Selection::Selected } else { Selection::Unselected },
+                        selection: candidate == preset,
                         shortcut: Shortcut(vec![ShortcutKey::Ctrl, ShortcutKey::Char(char::from(b'1' + candidate.0))]),
                         onclick: move |_| axes.with_mut(|axes| *axes = axes.clone().with_preset(candidate)),
                     }
@@ -46,7 +46,7 @@ pub fn SpacePage() -> Element {
                         face: DotFace::Foot,
                         name: candidate.label(),
                         frame: FrameVars::of(&candidate.look(), scheme),
-                        selection: if candidate == preset { Selection::Selected } else { Selection::Unselected },
+                        selection: candidate == preset,
                         shortcut: Shortcut(vec![ShortcutKey::Ctrl, ShortcutKey::Char(char::from(b'1' + candidate.0))]),
                         onclick: move |_| axes.with_mut(|axes| *axes = axes.clone().with_preset(candidate)),
                     }
@@ -80,7 +80,7 @@ pub fn SpacePage() -> Element {
             div { class: "g-row",
                 for check in checks {
                     Chip {
-                        variant: ChipVariant::Status(check.verdict()),
+                        variant: ChipVariant::Status(check.clears()),
                         text: format!("{}: {:.2} (needs {})", check.label, check.measured, check.need),
                     }
                 }

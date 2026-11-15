@@ -5,9 +5,7 @@ use crate::focus::click::kept_click;
 use crate::host::measure::client_rect;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Rect;
-use ds_core::vocab::Selection;
-use ds_core::vocab::Shown;
-use ds_core::word::Word;
+use ds_core::vocab::{aria_word, shown_word};
 use ds_style::icon::Icon;
 use ds_style::icon::render::{Glyph, IconSize};
 use std::rc::Rc;
@@ -28,7 +26,7 @@ pub struct StripAction {
     /// What the Fly preview says: "Archive → out of Inbox".
     pub fly: String,
     /// Destination preview: `Current` while hovered, `Elsewhere` on leave.
-    pub onhover: Option<EventHandler<Selection>>,
+    pub onhover: Option<EventHandler<bool>>,
     /// Pressed; the button's rect anchors the snooze and label menus.
     pub onclick: EventHandler<Rect>,
 }
@@ -48,9 +46,9 @@ pub enum Titles {
 /// A row's action strip. It shows while its row is hovered, the buttons fading in, and each one's
 /// Fly label appears as the pointer rests on its button.
 ///
-/// `shown` hands the reveal to the caller: `Some(Shown::Visible)` shows the strip on a row the
+/// `shown` hands the reveal to the caller: `Some(true)` shows the strip on a row the
 /// keyboard selected or one holding the focus (Blitz never matches `:focus-within`, spike S12),
-/// `Some(Shown::Hidden)` keeps it down even under the pointer; `None` is the hover reveal.
+/// `Some(false)` keeps it down even under the pointer; `None` is the hover reveal.
 /// `expanded` names the buttons that open a menu and whether theirs is open (`aria-haspopup`,
 /// `aria-expanded`). A click on a strip button never reaches the row: it does not open it.
 ///
@@ -63,13 +61,13 @@ pub enum Titles {
 #[component]
 pub fn HoverStrip(
     actions: Vec<StripAction>,
-    #[props(default)] shown: Option<Shown>,
+    #[props(default)] shown: Option<bool>,
     #[props(default)] titles: Titles,
-    #[props(default)] expanded: Vec<(ActionId, Shown)>,
+    #[props(default)] expanded: Vec<(ActionId, bool)>,
     #[props(default)] on_press: Option<EventHandler<ActionId>>,
 ) -> Element {
     rsx! {
-        div { class: "ds-strip", "data-shown": shown.map(Shown::slug),
+        div { class: "ds-strip", "data-shown": shown.map(shown_word),
             for action in actions {
                 StripButton {
                     key: "{action.id.0}",
@@ -91,7 +89,7 @@ pub fn HoverStrip(
 fn StripButton(
     action: StripAction,
     titles: Titles,
-    expanded: Option<Shown>,
+    expanded: Option<bool>,
     on_press: Option<EventHandler<ActionId>>,
 ) -> Element {
     let mut element = use_signal(|| None::<Rc<MountedData>>);
@@ -119,16 +117,16 @@ fn StripButton(
             "aria-label": "{label}",
             title,
             "aria-haspopup": expanded.map(|_| "menu"),
-            "aria-expanded": expanded.map(Shown::aria),
+            "aria-expanded": expanded.map(aria_word),
             onmounted: move |event| element.set(Some(event.data())),
             onpointerenter: move |_| {
                 if let Some(onhover) = onhover {
-                    onhover.call(Selection::Selected);
+                    onhover.call(true);
                 }
             },
             onpointerleave: move |_| {
                 if let Some(onhover) = onhover {
-                    onhover.call(Selection::Unselected);
+                    onhover.call(false);
                 }
             },
             onclick: move |event| {
@@ -137,7 +135,7 @@ fn StripButton(
                 // Any click clears the destination preview (design/06-INTERACTIONS.md
                 // section 14).
                 if let Some(onhover) = onhover {
-                    onhover.call(Selection::Unselected);
+                    onhover.call(false);
                 }
                 // The press acts now; the placement follows only if a rect arrives.
                 if let Some(on_press) = on_press {

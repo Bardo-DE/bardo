@@ -16,7 +16,6 @@ use super::vocab::LevelGlyph;
 use dioxus::core::current_scope_id;
 use dioxus::prelude::*;
 use ds_core::vocab::Fraction;
-use ds_core::vocab::Muting;
 use ds_core::word::Word;
 use ds_style::icon::posed::Thousandths;
 use ds_style::icon::render::IconSize;
@@ -100,11 +99,11 @@ pub(crate) fn showing(part: Part, glyph: LevelGlyph, value: Fraction) -> bool {
             Part::Body | Part::Core | Part::Rays | Part::KeyBody | Part::KeyCore | Part::KeyRays,
             _,
         ) => true,
-        (Part::Slash, LevelGlyph::Volume(muting)) => muting == Muting::Muted,
-        (Part::Wave1 | Part::Wave2 | Part::Wave3, LevelGlyph::Volume(Muting::Muted)) => false,
-        (Part::Wave1, LevelGlyph::Volume(Muting::Audible)) => waves(value) >= 1,
-        (Part::Wave2, LevelGlyph::Volume(Muting::Audible)) => waves(value) >= 2,
-        (Part::Wave3, LevelGlyph::Volume(Muting::Audible)) => waves(value) >= 3,
+        (Part::Slash, LevelGlyph::Volume(muting)) => muting,
+        (Part::Wave1 | Part::Wave2 | Part::Wave3, LevelGlyph::Volume(true)) => false,
+        (Part::Wave1, LevelGlyph::Volume(false)) => waves(value) >= 1,
+        (Part::Wave2, LevelGlyph::Volume(false)) => waves(value) >= 2,
+        (Part::Wave3, LevelGlyph::Volume(false)) => waves(value) >= 3,
         (
             Part::Slash | Part::Wave1 | Part::Wave2 | Part::Wave3,
             LevelGlyph::Brightness | LevelGlyph::KeyboardBrightness,
@@ -115,7 +114,7 @@ pub(crate) fn showing(part: Part, glyph: LevelGlyph, value: Fraction) -> bool {
 /// How much of the slash's gap is cut out of `part`: all of it from a muted speaker's body.
 fn cut(part: Part, glyph: LevelGlyph) -> Thousandths {
     match (part, glyph) {
-        (Part::Body, LevelGlyph::Volume(Muting::Muted)) => Thousandths(1000),
+        (Part::Body, LevelGlyph::Volume(true)) => Thousandths(1000),
         _ => Thousandths::default(),
     }
 }
@@ -175,12 +174,11 @@ mod tests {
     use super::{Part, Shape, showing, waves};
     use crate::components::content::level_glyph::vocab::LevelGlyph;
     use ds_core::vocab::Fraction;
-    use ds_core::vocab::Muting;
 
     #[test]
     fn the_waves_follow_the_level_and_mute_brings_the_slash() {
-        let heard = LevelGlyph::Volume(Muting::Audible);
-        let muted = LevelGlyph::Volume(Muting::Muted);
+        let heard = LevelGlyph::Volume(false);
+        let muted = LevelGlyph::Volume(true);
         assert_eq!(
             [0, 1, 333, 334, 667, 1000].map(|v| waves(Fraction(v))),
             [0, 1, 1, 2, 3, 3]

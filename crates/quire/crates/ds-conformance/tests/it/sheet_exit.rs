@@ -37,7 +37,7 @@ fn fading(motion: Motion) -> Harness {
 /// A power menu the page shows and hides from a context signal, logging `on_hidden`.
 #[allow(non_snake_case)]
 fn Page() -> Element {
-    let shown = use_context_provider(|| Signal::new(Shown::Visible));
+    let shown = use_context_provider(|| Signal::new(true));
     let mut log = use_signal(Vec::<&'static str>::new);
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Sheet, extent: RootExtent::Viewport,
@@ -54,10 +54,10 @@ fn Page() -> Element {
     }
 }
 
-fn set(harness: &mut Harness, to: Shown) {
+fn set(harness: &mut Harness, to: bool) {
     harness.within(|| {
         dioxus::core::Runtime::current()
-            .in_scope(ScopeId::APP, || consume_context::<Signal<Shown>>().set(to))
+            .in_scope(ScopeId::APP, || consume_context::<Signal<bool>>().set(to))
     });
 }
 
@@ -79,7 +79,7 @@ fn page() -> Harness {
 fn a_hidden_sheet_leaves_then_reports_at_its_settle() {
     let mut harness = page();
     let asked = harness.now();
-    set(&mut harness, Shown::Hidden);
+    set(&mut harness, false);
     harness.advance(Duration::from_millis(20));
     assert_eq!(
         harness.attr(".ds-sheet", "data-presence").as_deref(),
@@ -104,9 +104,9 @@ fn a_hidden_sheet_leaves_then_reports_at_its_settle() {
 #[test]
 fn shown_again_while_leaving_it_is_present_and_never_reports() {
     let mut harness = page();
-    set(&mut harness, Shown::Hidden);
+    set(&mut harness, false);
     harness.advance(Duration::from_millis(100));
-    set(&mut harness, Shown::Visible);
+    set(&mut harness, true);
     harness.advance(Duration::from_millis(20));
     assert_eq!(
         harness.attr(".ds-sheet", "data-presence").as_deref(),
@@ -120,7 +120,7 @@ fn shown_again_while_leaving_it_is_present_and_never_reports() {
         Some("present")
     );
     // Hidden again, it reports once, at its own settle.
-    set(&mut harness, Shown::Hidden);
+    set(&mut harness, false);
     settle_until(&mut harness, |h| {
         h.text_of(".log").as_deref() == Some("hidden")
     });

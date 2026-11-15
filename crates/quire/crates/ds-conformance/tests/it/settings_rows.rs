@@ -134,7 +134,7 @@ fn side_app(props: SideProps) -> Element {
             title,
             rsx! {
                 Row { title: TextLine::from(title), leading,
-                    state: RowState { selection: Selection::of(&here(), &key), ..RowState::default() },
+                    state: RowState { selection: here() == key, ..RowState::default() },
                     onclick: move |_| here.set(key) }
             },
         )
@@ -236,7 +236,7 @@ fn More() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
             RowMore {
-                shown: Some(Shown::Visible),
+                shown: Some(true),
                 on_press: move |()| log.write().push_str("press;"),
                 onclick: move |_| log.write().push_str("rect;"),
             }

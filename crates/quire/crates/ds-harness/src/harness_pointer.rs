@@ -11,7 +11,6 @@ use blitz_traits::events::{BlitzKeyEvent, KeyState, MouseEventButton, UiEvent};
 use ds::prelude::*;
 use ds_core::press::PointerButton;
 use ds_core::time::clock::now;
-use ds_core::vocab::InputModality;
 use keyboard_types::{Location, Modifiers};
 
 impl Harness {
@@ -38,7 +37,7 @@ impl Harness {
 
     /// Press and release one key as [`Harness::key`] does, delivering each event as `delivery`.
     pub(crate) fn press_key(&mut self, input: KeyInput, delivery: Delivery) {
-        self.doc.set_modality(InputModality::Keyboard);
+        self.doc.set_modality(true);
         let (key, code) = keyboard(input.key);
         // The window's scrolling acts on a scroll key before the document hears it, and the
         // document hears it too.
@@ -71,7 +70,7 @@ impl Harness {
     /// Deliver one key event as given: no scroll step, no paired release, just what the window
     /// would hand the document for it.
     pub(crate) fn raw_key(&mut self, input: RawKeyInput) {
-        self.doc.set_modality(InputModality::Keyboard);
+        self.doc.set_modality(true);
         let state = match input.phase {
             RawKeyPhase::Down | RawKeyPhase::Repeat => KeyState::Pressed,
             RawKeyPhase::Up => KeyState::Released,
@@ -107,7 +106,7 @@ impl Harness {
     }
 
     fn button_down(&mut self, at: Point, button: PointerButton, mods: Modifiers) {
-        self.doc.set_modality(InputModality::Pointer);
+        self.doc.set_modality(false);
         self.held = self.held.with(button);
         let (which, _) = blitz_button(button);
         self.deliver(UiEvent::PointerDown(pointer(

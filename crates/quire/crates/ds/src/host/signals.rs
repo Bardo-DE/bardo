@@ -3,7 +3,6 @@
 
 use dioxus::prelude::*;
 use ds_core::geometry::scale::Scale;
-use ds_core::vocab::{Activity, InputModality};
 
 /// The host's live values, provided as root context by whatever sees the raw input and the window
 /// (`launch`, the harness, a shell's surface root). `Ds` stamps them on `.ds` and sizes the pixel
@@ -11,10 +10,11 @@ use ds_core::vocab::{Activity, InputModality};
 /// moved to another output, focus lost.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct HostSignals {
-    /// How the person last drove the window.
-    pub modality: Signal<InputModality>,
+    /// Whether the person last drove the window with the keyboard (focus rings show); `false`
+    /// after a pointer.
+    pub modality: Signal<bool>,
     /// The device scale of the output the window is on.
     pub scale: Signal<Scale>,
     /// Whether the window is the one the person is working in.
-    pub activity: Signal<Activity>,
+    pub activity: Signal<bool>,
 }

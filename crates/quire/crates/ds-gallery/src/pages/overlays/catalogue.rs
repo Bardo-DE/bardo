@@ -59,15 +59,15 @@ pub fn OverlaysCataloguePage() -> Element {
                         Button { size: ControlSize::Mini, label: "Archive", onclick: |_| {} }
                     }
                 }
-                Specimen { name: "Tooltip, shown".to_string(), code: Some("shown: Some(Shown::Visible)".to_string()),
+                Specimen { name: "Tooltip, shown".to_string(), code: Some("shown: Some(true)".to_string()),
                     div { class: "g-stage-pad",
-                        Tooltip { text: "Snooze", shortcut: Some(Shortcut(vec![ShortcutKey::Super, ShortcutKey::Char('h')])), shown: Some(Shown::Visible),
+                        Tooltip { text: "Snooze", shortcut: Some(Shortcut(vec![ShortcutKey::Super, ShortcutKey::Char('h')])), shown: Some(true),
                             Button { size: ControlSize::Mini, label: "Snooze", onclick: |_| {} }
                         }
                     }
                 }
-                Specimen { name: "Tooltip, hidden".to_string(), code: Some("shown: Some(Shown::Hidden)".to_string()),
-                    Tooltip { text: "Hidden", shown: Some(Shown::Hidden),
+                Specimen { name: "Tooltip, hidden".to_string(), code: Some("shown: Some(false)".to_string()),
+                    Tooltip { text: "Hidden", shown: Some(false),
                         Button { size: ControlSize::Mini, label: "Kept down", onclick: |_| {} }
                     }
                 }
@@ -174,16 +174,16 @@ pub fn OverlaysCataloguePage() -> Element {
 /// remote-content bar does, and the text under it moves with it at once.
 #[component]
 fn BannerShownCase() -> Element {
-    let mut shown = use_signal(|| Shown::Visible);
+    let mut shown = use_signal(|| true);
     rsx! {
         Section { title: "InlineBanner, shown and hidden", note: "InlineBanner {{ shown }}: static, as Mail's remote-content bar is. Visible (the default) draws it in the flow; Hidden draws nothing, and what is under it takes its place at once. There is no motion either way.",
             div { class: "g-row",
                 Button {
                     label: "Show / hide",
-                    onclick: move |_| shown.set(match shown() { Shown::Visible => Shown::Hidden, Shown::Hidden => Shown::Visible }),
+                    onclick: move |_| shown.set(!shown()),
                 }
             }
-            Specimen { name: "shown".to_string(), code: Some("shown: Shown".to_string()),
+            Specimen { name: "shown".to_string(), code: Some("shown: bool".to_string()),
                 div { style: "width:440px",
                     InlineBanner {
                         severity: Severity::Info,
@@ -321,7 +321,7 @@ fn SheetCase(attach: Attach, width: SheetWidth, name: &'static str) -> Element {
                     Sheet {
                         label: "Sheet",
                         onclose: move |()| open.set(false),
-                        shown: Some(if open() { Shown::Visible } else { Shown::Hidden }),
+                        shown: Some(open()),
                         attach,
                         width,
                         div { class: "g-panel",
@@ -339,7 +339,7 @@ fn SheetCase(attach: Attach, width: SheetWidth, name: &'static str) -> Element {
 /// A side panel with a header, and the button that shows and hides it.
 #[component]
 fn SideCase() -> Element {
-    let mut shown = use_signal(|| Shown::Visible);
+    let mut shown = use_signal(|| true);
     let appearance = appearance(Theme::Light);
     rsx! {
         Specimen { name: "SidePanel with a header".to_string(), code: Some("shown, header".to_string()),
@@ -350,7 +350,7 @@ fn SideCase() -> Element {
                             Button {
 
                                 label: "Show / hide",
-                                onclick: move |_| shown.set(match shown() { Shown::Visible => Shown::Hidden, Shown::Hidden => Shown::Visible }),
+                                onclick: move |_| shown.set(!shown()),
                             }
                         }
                     }
@@ -401,14 +401,14 @@ fn ToastCase() -> Element {
 /// The skeleton's three shapes, and a composed placeholder row, shown and cross-faded away.
 #[component]
 fn SkeletonCase() -> Element {
-    let mut shown = use_signal(|| Shown::Visible);
+    let mut shown = use_signal(|| true);
     rsx! {
         Section { title: "Skeleton", note: "Skeleton {{ shape, width, height, shown }}: a static grey placeholder (no shimmer) that fades in over --t-quick and, when its content arrives, fades out. Line, Block and Circle; here composed into a row of an avatar and two lines.",
             div { class: "g-row",
                 Button {
 
                     label: "Load / unload",
-                    onclick: move |_| shown.set(match shown() { Shown::Visible => Shown::Hidden, Shown::Hidden => Shown::Visible }),
+                    onclick: move |_| shown.set(!shown()),
                 }
             }
             div { class: "g-row g-row-top",

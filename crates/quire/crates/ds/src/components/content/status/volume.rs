@@ -6,7 +6,6 @@ use crate::components::content::level_glyph::glyph::{LevelGlyphView, waves};
 use crate::components::content::level_glyph::vocab::LevelGlyph;
 use dioxus::prelude::*;
 use ds_core::vocab::Fraction;
-use ds_core::vocab::Muting;
 use ds_motion::detail::{detailed::Detailed, moment::Moment};
 use ds_style::icon::render::IconSize;
 
@@ -70,10 +69,8 @@ impl VolumeState {
     /// The level glyph this state draws, and the level its waves follow.
     pub(crate) fn glyph(self) -> (LevelGlyph, Fraction) {
         match self {
-            VolumeState::Heard(waves) => (LevelGlyph::Volume(Muting::Audible), waves.level()),
-            VolumeState::Muted | VolumeState::NoDevice => {
-                (LevelGlyph::Volume(Muting::Muted), Fraction(0))
-            }
+            VolumeState::Heard(waves) => (LevelGlyph::Volume(false), waves.level()),
+            VolumeState::Muted | VolumeState::NoDevice => (LevelGlyph::Volume(true), Fraction(0)),
         }
     }
 }

@@ -6,7 +6,6 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
-use ds::base::vocab::Muting;
 use ds::components::content::level_glyph::vocab::LevelGlyph;
 use ds::components::controls::slider_model::SliderLook;
 use ds::prelude::*;
@@ -44,7 +43,7 @@ fn Level() -> Element {
                 Slider {
                     label: "Volume",
                     value: VALUE(),
-                    glyph: LevelGlyph::Volume(Muting::Audible),
+                    glyph: LevelGlyph::Volume(false),
                     onchange: move |next| *VALUE.write() = next, look: SliderLook::Level }
             }
         }

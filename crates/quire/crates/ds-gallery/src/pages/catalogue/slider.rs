@@ -6,7 +6,6 @@ use ds::components::content::level_glyph::vocab::LevelGlyph;
 use ds::components::controls::slider_model::SliderLook;
 use ds::prelude::*;
 use ds::style::tokens::control_size::ControlSize;
-use ds_core::vocab::Muting;
 
 /// The Slider section.
 #[component]
@@ -44,9 +43,9 @@ pub fn SliderSection() -> Element {
             div { class: "g-grid2",
                 Specimen { name: SliderLook::Level.slug().to_owned(),
                     div { style: "width:260px; display:flex; flex-direction:column; gap:12px",
-                        Slider { label: "Volume", value: volume(), look: SliderLook::Level, glyph: LevelGlyph::Volume(Muting::Audible), onchange: move |next| volume.set(next) }
+                        Slider { label: "Volume", value: volume(), look: SliderLook::Level, glyph: LevelGlyph::Volume(false), onchange: move |next| volume.set(next) }
                         Slider { label: "Brightness", value: brightness(), look: SliderLook::Level, glyph: LevelGlyph::Brightness, onchange: move |next| brightness.set(next) }
-                        Slider { label: "Muted", value: Fraction(400), look: SliderLook::Level, glyph: LevelGlyph::Volume(Muting::Muted), onchange: |_| {} }
+                        Slider { label: "Muted", value: Fraction(400), look: SliderLook::Level, glyph: LevelGlyph::Volume(true), onchange: |_| {} }
                         Slider { label: "Disabled", value: Fraction(0), look: SliderLook::Level, glyph: LevelGlyph::Brightness, availability: Availability::Disabled }
                     }
                 }

@@ -61,7 +61,7 @@ pub fn CapsuleSection() -> Element {
                                 CapsuleSlot::Readout(format!("{}%", zoom())),
                                 CapsuleSlot::button(1, "Zoom in", Icon::Plus),
                             ]),
-                            shown: Shown::Visible,
+                            shown: true,
                             onpick: move |value| zoom.set(if value == 0 { zoom().saturating_sub(25) } else { zoom() + 25 }),
                         }
                     }
@@ -71,7 +71,7 @@ pub fn CapsuleSection() -> Element {
                         Capsule::<u8> {
                             label: "Playback",
                             slots: slots.clone(),
-                            shown: Shown::Visible,
+                            shown: true,
                             onpick: move |_| playing.set(if playing() == Check::On { Check::Off } else { Check::On }),
                             onscrub: move |event| match event {
                                 ScrubEvent::Start(at) | ScrubEvent::Move(at) | ScrubEvent::End(at) | ScrubEvent::Seek(at) => position.set(at),
@@ -86,7 +86,7 @@ pub fn CapsuleSection() -> Element {
                         Capsule::<u8> {
                             label: "Playback",
                             slots,
-                            shown: Shown::Visible,
+                            shown: true,
                             onpick: move |_| playing.set(if playing() == Check::On { Check::Off } else { Check::On }),
                             onscrub: move |event| match event {
                                 ScrubEvent::Start(at) | ScrubEvent::Move(at) | ScrubEvent::End(at) | ScrubEvent::Seek(at) => position.set(at),

@@ -55,7 +55,7 @@ fn sidebar_items(
                     title: TextLine::from(category.label()),
                     leading: RowLeading::Icon(category.icon()),
                     state: RowState {
-                        selection: if here == category { Selection::Selected } else { Selection::Unselected },
+                        selection: here == category,
                         ..RowState::default()
                     },
                     onclick: move |_| onselect.call(category),
@@ -94,7 +94,7 @@ pub fn SettingsWindowPage() -> Element {
     let mut category = use_signal(|| Category::Appearance);
     let mut history = use_signal(|| vec![Category::Appearance]);
     let mut at = use_signal(|| 0usize);
-    let mut sidebar = use_signal(|| Shown::Visible);
+    let mut sidebar = use_signal(|| true);
     let mut query = use_signal(String::new);
     let go = EventHandler::new(move |next: Category| {
         let kept = history.peek()[..=*at.peek()].to_vec();
@@ -156,7 +156,7 @@ pub fn SettingsWindowPage() -> Element {
                                 title: Some(TextLine::from(category().label())),
                                 room: ToolbarRoom::Fixed(Px(680.0)),
                                 onpick: move |pick: Picked<&'static str>| match pick.value {
-                                    "sidebar" => sidebar.set(sidebar().flipped()),
+                                    "sidebar" => sidebar.set(!sidebar()),
                                     "back" => steps.call(at().saturating_sub(1)),
                                     _ => steps.call(at() + 1),
                                 },

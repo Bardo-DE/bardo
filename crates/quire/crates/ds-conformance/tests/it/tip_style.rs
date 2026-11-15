@@ -40,7 +40,7 @@ fn Page() -> Element {
             SpaceDot {
                 name: "Space 1",
                 frame: FrameVars::of(&SpaceLook::default(), Scheme::Light),
-                selection: Selection::Unselected,
+                selection: false,
                 shortcut: cmd('1'),
                 onclick: |_| {},
             }
@@ -53,13 +53,13 @@ fn Page() -> Element {
                 tracking: Tracking::SelectOne(1),
                 onchange: |_| {},
             }
-            RowMore { shown: Some(Shown::Visible), shortcut: Some(cmd('m')), onclick: |_| {} }
+            RowMore { shown: Some(true), shortcut: Some(cmd('m')), onclick: |_| {} }
             Chip {
                 variant: ChipVariant::Person(MarkProvider::Imap.avatar(AvatarSize::Size28)),
                 text: "Ada".to_owned(),
                 onremove: |_| {},
             }
-            Row { title: "Folder", outline: Outline::Branch(Shown::Hidden), on_toggle: |_| {} }
+            Row { title: "Folder", outline: Outline::Branch(false), on_toggle: |_| {} }
             ThreadRow {
                 name: "Ada".to_owned(),
                 subject: "Hello",

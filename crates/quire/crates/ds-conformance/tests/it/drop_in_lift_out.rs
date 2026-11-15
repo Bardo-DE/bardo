@@ -27,7 +27,7 @@ fn ms(n: u64) -> Duration {
 /// The bar the page hangs: it reports `hidden` in its log once its leave has settled.
 #[component]
 fn Bar() -> Element {
-    let shown = use_context::<Signal<Shown>>();
+    let shown = use_context::<Signal<bool>>();
     let mut log = use_signal(Vec::<&'static str>::new);
     let Presented { presence, alias } = use_presence(
         shown(),
@@ -49,7 +49,7 @@ fn Bar() -> Element {
 
 #[allow(non_snake_case)]
 fn Page() -> Element {
-    use_context_provider(|| Signal::new(Shown::Visible));
+    use_context_provider(|| Signal::new(true));
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport, Bar {} }
     }
@@ -57,16 +57,16 @@ fn Page() -> Element {
 
 #[allow(non_snake_case)]
 fn ReducedPage() -> Element {
-    use_context_provider(|| Signal::new(Shown::Visible));
+    use_context_provider(|| Signal::new(true));
     rsx! {
         Ds { appearance: Appearance { motion: Motion::Reduced, ..Appearance::default() }, material: Material::Window, extent: RootExtent::Viewport, Bar {} }
     }
 }
 
-fn set(harness: &mut Harness, to: Shown) {
+fn set(harness: &mut Harness, to: bool) {
     harness.within(|| {
         dioxus::core::Runtime::current()
-            .in_scope(ScopeId::APP, || consume_context::<Signal<Shown>>().set(to))
+            .in_scope(ScopeId::APP, || consume_context::<Signal<bool>>().set(to))
     });
 }
 
@@ -94,7 +94,7 @@ fn the_bar_leaves_upward_and_reports_exactly_at_its_settle() {
     let mut harness = harness(Page);
     harness.advance(settle(Anim::DropIn, MotionLevel::Standard) + ms(60));
     let asked = harness.now();
-    set(&mut harness, Shown::Hidden);
+    set(&mut harness, false);
     harness.advance(ms(20));
     assert_eq!(phase(&harness).as_deref(), Some("leaving"));
     let exit = settle(Anim::LiftOut, MotionLevel::Standard);

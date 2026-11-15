@@ -14,7 +14,7 @@ use crate::host::measure::{Anchor, MountedRef, use_rect};
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use ds_core::press::Press;
-use ds_core::vocab::{Availability, Shown};
+use ds_core::vocab::Availability;
 use ds_core::word::Word;
 use ds_style::icon::Icon;
 use ds_style::tokens::control_size::ControlSize;
@@ -50,16 +50,16 @@ pub fn PullDownButton<T: Clone + PartialEq + 'static>(
     #[props(default)] title: Option<String>,
     #[props(default = Bezel::Toolbar)] bezel: Bezel,
     #[props(default)] size: ControlSize,
-    #[props(default)] start: Shown,
-    #[props(default)] open: Option<Shown>,
-    #[props(default)] on_open_change: Option<EventHandler<Shown>>,
+    #[props(default)] start: bool,
+    #[props(default)] open: Option<bool>,
+    #[props(default)] on_open_change: Option<EventHandler<bool>>,
     #[props(default)] anchor: Option<Anchor>,
     #[props(default)] availability: Availability,
     #[props(default)] common: Common,
 ) -> Element {
     let mut own = use_signal(move || start);
     let shown = open.unwrap_or(own());
-    let mut set_open = move |to: Shown| {
+    let mut set_open = move |to: bool| {
         if open.is_none() {
             own.set(to);
         }
@@ -87,7 +87,7 @@ pub fn PullDownButton<T: Clone + PartialEq + 'static>(
     let onkey = move |event: KeyboardEvent| match event.key() {
         Key::ArrowDown | Key::ArrowUp if live => {
             event.prevent_default();
-            set_open(Shown::Visible);
+            set_open(true);
         }
         _ => {}
     };
@@ -113,7 +113,7 @@ pub fn PullDownButton<T: Clone + PartialEq + 'static>(
                 shown: Some(shown),
                 onclick: move |_: Press| {
                     if live {
-                        set_open(shown.flipped());
+                        set_open(!shown);
                     }
                 },
                 common: Common {
@@ -126,17 +126,17 @@ pub fn PullDownButton<T: Clone + PartialEq + 'static>(
                 },
             }
         }
-        if shown == Shown::Visible && let Some(anchor) = anchor {
+        if shown && let Some(anchor) = anchor {
             Menu::<T> {
                 placement: MenuPlacement::Popup,
                 anchor,
                 measured: button.rect(),
                 items,
                 onpick: move |picked: T| {
-                    set_open(Shown::Hidden);
+                    set_open(false);
                     onpick.call(picked);
                 },
-                onclose: move |()| set_open(Shown::Hidden),
+                onclose: move |()| set_open(false),
             }
         }
     }

@@ -81,11 +81,11 @@ impl ThreadId {
     }
 
     /// Every other thread is unread, so both exit weights can be watched.
-    fn emphasis(self) -> Emphasis {
+    fn emphasis(self) -> bool {
         if self.0.is_multiple_of(2) {
-            Emphasis::Strong
+            true
         } else {
-            Emphasis::Plain
+            false
         }
     }
 }
@@ -162,7 +162,7 @@ fn LiveList() -> Element {
                 rsx! {
                     ThreadLine {
                         id,
-                        selection: if selected() == Some(id) { Selection::Selected } else { Selection::Unselected },
+                        selection: selected() == Some(id),
                         star: if starred().contains(&id) { Check::On } else { Check::Off },
                         onselect: move |id| selected.set(Some(id)),
                         onstar: move |(id, state)| {
@@ -208,7 +208,7 @@ fn LiveList() -> Element {
 #[component]
 fn ThreadLine(
     id: ThreadId,
-    selection: Selection,
+    selection: bool,
     star: Check,
     onselect: EventHandler<ThreadId>,
     onstar: EventHandler<(ThreadId, Check)>,
@@ -234,7 +234,7 @@ fn ThreadLine(
             strip: rsx! { HoverStrip { actions: strip_actions() } },
             more: rsx! {
                 RowMore {
-                    shown: (selection == Selection::Selected).then_some(Shown::Visible),
+                    shown: selection.then_some(true),
                     onclick: |_| {},
                 }
             },
@@ -275,8 +275,8 @@ fn Tiles() -> Element {
     rsx! {
         Section { title: "Tiles, strip and drag ghost",
             div { class: "g-row",
-                PinTile { face: PinFace::All, selection: Selection::Selected, unread: 7, onclick: |_| {} }
-                PinTile { face: PinFace::Account { initial: 'F', colour, provider: MarkProvider::Fastmail, address: None }, selection: Selection::Selected, unread: 0, onclick: |_| {} }
+                PinTile { face: PinFace::All, selection: true, unread: 7, onclick: |_| {} }
+                PinTile { face: PinFace::Account { initial: 'F', colour, provider: MarkProvider::Fastmail, address: None }, selection: true, unread: 0, onclick: |_| {} }
                 PinTile { face: PinFace::Account { initial: 'F', colour, provider: MarkProvider::Fastmail, address: None }, unread: 4, onclick: |_| {} }
             }
             p { class: "g-note", "The hover strip shows on row hover in the list above. The drag ghost is fixed to the window: it follows the pointer while a row is dragged; here it is pinned near the top right." }

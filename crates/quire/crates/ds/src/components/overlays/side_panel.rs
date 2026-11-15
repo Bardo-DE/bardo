@@ -18,7 +18,7 @@ use crate::root::common::Common;
 use crate::root::surface::ClassedScope;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Px;
-use ds_core::vocab::Shown;
+use ds_core::vocab::shown_word;
 use ds_core::word::Word;
 use ds_motion::anim::Anim;
 use ds_motion::presence::{
@@ -35,7 +35,7 @@ use ds_style::appearance::material::Material;
 #[component]
 pub fn SidePanel(
     label: String,
-    shown: Shown,
+    shown: bool,
     #[props(default)] on_hidden: EventHandler<()>,
     #[props(default)] onclose: Option<EventHandler<()>>,
     #[props(default = Px(384.0))] width: Px,
@@ -60,7 +60,7 @@ pub fn SidePanel(
         ClassedScope { material, class: "ds-side-panel-scope",
             div {
                 class: "ds-side-panel-stage",
-                "data-shown": presence.shown().slug(),
+                "data-shown": shown_word(presence.shown()),
                 div {
                     id: common.id.clone(),
                     class,

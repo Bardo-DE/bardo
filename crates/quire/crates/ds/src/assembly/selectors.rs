@@ -342,7 +342,7 @@ pub const AXES: &[Axis] = &[
     },
     Axis {
         attribute: "data-selected",
-        meaning: "`Selection`",
+        meaning: "selected or unselected",
     },
     Axis {
         attribute: "data-busy",
@@ -366,11 +366,11 @@ pub const AXES: &[Axis] = &[
     },
     Axis {
         attribute: "data-focus",
-        meaning: "`FocusStyle`: ring, highlight",
+        meaning: "how focus is drawn: ring, highlight",
     },
     Axis {
         attribute: "data-activity",
-        meaning: "`Activity`, on `.ds`: written as `inactive` while the window is not the one focused, absent while it is",
+        meaning: "whether the window is the one focused, on `.ds`: written as `inactive` while the window is not the one focused, absent while it is",
     },
     Axis {
         attribute: "aria-*",

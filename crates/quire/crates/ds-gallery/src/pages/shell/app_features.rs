@@ -88,8 +88,8 @@ fn PinnedTiles() -> Element {
     rsx! {
         Section { title: "Pinned tiles", note: "PinTile: All, an account selected and not (its colour muted), a count, a problem mark in the top-left corner (the warning glyph with its reason as a tooltip, whose press is its own, or a Mini spinner while the account works), the drop line before a tile a drag would take the place of, the dragged tile dimmed, and the Add tile. Below, the live PinTiles: press to select, drag a tile onto another to reorder.",
             div { class: "ds-pin-tiles", style: "width:260px",
-                PinTile { face: PinFace::All, selection: Selection::Selected, unread: 7, onclick: |_| {} }
-                PinTile { face: account('P', MarkProvider::Google), selection: Selection::Selected, unread: 3, onclick: |_| {} }
+                PinTile { face: PinFace::All, selection: true, unread: 7, onclick: |_| {} }
+                PinTile { face: account('P', MarkProvider::Google), selection: true, unread: 3, onclick: |_| {} }
                 PinTile { face: account('W', MarkProvider::Microsoft), unread: 0, onclick: |_| {} }
                 PinTile { face: account('G', MarkProvider::Fastmail), drop: DropState::Target, unread: 1, onclick: |_| {} }
                 PinTile { face: account('L', MarkProvider::Local), drop: DropState::Source, onclick: |_| {} }
@@ -157,18 +157,15 @@ fn Today() -> Element {
 /// A stage with a pinned sidebar or an edge that peeks it: rest the pointer on the left edge.
 #[component]
 fn Edge() -> Element {
-    let mut pinned = use_signal(|| Shown::Hidden);
-    let columns = match pinned() {
-        Shown::Visible => "226px 1fr",
-        Shown::Hidden => "0px 1fr",
-    };
+    let mut pinned = use_signal(|| false);
+    let columns = if pinned() { "226px 1fr" } else { "0px 1fr" };
     rsx! {
         Section { title: "Edge-peek sidebar", note: "Hidden, the 10 px strip at the left edge waits; after a short rest the sidebar slides in from the left by a spring, floating over the content, and slides out when the pointer leaves it. A click on the strip pins it into its column.",
             div { class: "g-row",
                 Button {
                     size: ControlSize::Mini,
-                    label: match pinned() { Shown::Visible => "Hide the sidebar", Shown::Hidden => "Pin the sidebar" },
-                    onclick: move |_| pinned.set(pinned().flipped()),
+                    label: if pinned() { "Hide the sidebar" } else { "Pin the sidebar" },
+                    onclick: move |_| pinned.set(!pinned()),
                 }
             }
             div { class: "g-stage", "data-wide": "true",
@@ -176,7 +173,7 @@ fn Edge() -> Element {
                     EdgePeek {
                         label: "Sidebar",
                         pinned: pinned(),
-                        onpin: move |()| pinned.set(Shown::Visible),
+                        onpin: move |()| pinned.set(true),
                         div { class: "g-side-body",
                             p { class: "g-name", "Inbox" }
                             p { class: "g-name", "Starred" }

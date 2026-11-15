@@ -3,7 +3,6 @@
 
 use dioxus::prelude::*;
 use ds_core::geometry::units::Px;
-use ds_core::vocab::Shown;
 use ds_core::word::Word;
 
 /// Whether dragging a pane below its least folds it away.
@@ -185,7 +184,7 @@ pub struct SplitPane {
     /// What it holds.
     pub body: Element,
     /// Open, or folded away.
-    pub shown: Shown,
+    pub shown: bool,
     /// What it does with its body while folded away.
     pub folded: Folded,
 }
@@ -196,13 +195,13 @@ impl SplitPane {
         SplitPane {
             spec,
             body,
-            shown: Shown::Visible,
+            shown: true,
             folded: Folded::Clips,
         }
     }
 
     /// The same pane, `shown`.
-    pub fn shown(self, shown: Shown) -> Self {
+    pub fn shown(self, shown: bool) -> Self {
         SplitPane { shown, ..self }
     }
 

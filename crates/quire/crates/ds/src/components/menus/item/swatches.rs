@@ -10,7 +10,7 @@ use crate::components::menus::item::view::RowEvents;
 use crate::host::event_point::client_point;
 use dioxus::prelude::*;
 use ds_core::press::PointerButton;
-use ds_core::vocab::{Availability, Check, FocusStyle, Selection};
+use ds_core::vocab::{Availability, Check};
 use ds_core::word::Word;
 use ds_style::icon::Icon;
 use ds_style::icon::render::{Glyph, IconSize};
@@ -25,7 +25,7 @@ pub(crate) struct DotView<'a> {
     /// Whether the tag is on the files.
     pub check: Option<Check>,
     /// Whether this is the highlighted dot.
-    pub highlight: Selection,
+    pub highlight: bool,
     /// Whether it can be picked.
     pub availability: Availability,
 }
@@ -65,14 +65,14 @@ fn dot(view: DotView<'_>, events: RowEvents) -> Element {
         Some(Check::Mixed) => Some(Icon::Minus),
         Some(Check::Off) | None => None,
     };
-    let highlighted = (view.highlight == Selection::Selected).then_some("true");
+    let highlighted = view.highlight.then_some("true");
     let tip = TipText::new(view.name.to_owned());
     rsx! {
         div {
             class: "ds-menu-dot",
             role,
             "data-selected": highlighted,
-            "data-focus": FocusStyle::Highlight.slug(),
+            "data-focus": "highlight",
             "aria-label": view.name.to_owned(),
             "aria-checked": view.check.map(Check::aria),
             "aria-disabled": view.availability.aria_disabled(),

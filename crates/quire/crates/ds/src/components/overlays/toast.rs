@@ -20,7 +20,6 @@ use crate::components::overlays::swipe_glue::use_swipe_glue;
 use crate::stack::host::use_overlays;
 use crate::stack::toast_hub::{ToastAction, ToastHub, ToastState, use_toast_hub};
 use dioxus::prelude::*;
-use ds_core::vocab::Shown;
 use ds_core::word::Word;
 use ds_motion::anim::Anim;
 use ds_motion::presence::{
@@ -48,9 +47,9 @@ pub fn ToastHost() -> Element {
     let shown = match hub.state() {
         ToastState::Shown { text, action, .. } => {
             last.set((text, action));
-            Shown::Visible
+            true
         }
-        ToastState::Hidden => Shown::Hidden,
+        ToastState::Hidden => false,
     };
     let Presented { presence, alias } = use_presence(
         shown,
@@ -69,9 +68,10 @@ pub fn ToastHost() -> Element {
         return rsx! {};
     };
     let (text, action) = last.peek().clone();
-    let place = match overlays.shown_on(ZLayer::Peek) {
-        Shown::Visible => "top",
-        Shown::Hidden => "bottom",
+    let place = if overlays.shown_on(ZLayer::Peek) {
+        "top"
+    } else {
+        "bottom"
     };
     rsx! {
         div { class: "ds-overlay", "data-layer": "toast",

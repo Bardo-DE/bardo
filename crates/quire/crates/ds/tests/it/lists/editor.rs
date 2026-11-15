@@ -141,9 +141,10 @@ fn the_contrast_pills_are_the_readout() {
         let want: Vec<(String, String, String)> = readout(&look, scheme)
             .iter()
             .map(|check| {
-                let (status, sign) = match check.verdict() {
-                    Verdict::Pass => ("ok", "≥"),
-                    Verdict::Fail => ("bad", "&lt;"),
+                let (status, sign) = if check.clears() {
+                    ("ok", "≥")
+                } else {
+                    ("bad", "&lt;")
                 };
                 (
                     format!("{:.2}", check.measured),

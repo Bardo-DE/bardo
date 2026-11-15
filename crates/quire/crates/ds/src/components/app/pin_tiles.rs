@@ -11,7 +11,7 @@ use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
 use ds_core::geometry::units::{Point, Px};
 use ds_core::press::{PointerButton, Press};
-use ds_core::vocab::{DropState, Selection};
+use ds_core::vocab::DropState;
 use ds_motion::drag::{DRAG_THRESHOLD, DragPhase, use_drag};
 use std::rc::Rc;
 
@@ -152,7 +152,7 @@ pub fn PinTiles<K: Clone + PartialEq + 'static>(
             mark,
             status,
         } = item;
-        let selection = Selection::of(&Some(key.clone()), &selected);
+        let selection = Some(key.clone()) == selected;
         let state = drop_state(&phase, &key, index);
         let picked = key.clone();
         let held = key.clone();

@@ -11,7 +11,7 @@ use crate::components::overlays::tooltip::Tooltip;
 use crate::host::event_point::client_point;
 use dioxus::prelude::*;
 use ds_core::geometry::units::{Point, Px};
-use ds_core::vocab::Selection;
+use ds_core::vocab::aria_word;
 
 /// One emoji: what picking it yields, the characters drawn, and its name.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -73,7 +73,7 @@ pub(crate) fn draw_cells<T>(
                 key: "{index}",
                 class: "ds-emoji-cell",
                 role: "gridcell",
-                "aria-selected": Selection::of(&Some(index), &selected).aria(),
+                "aria-selected": aria_word(Some(index) == selected),
                 "aria-label": "{cell.name}",
                 onmousemove: move |event| events.point.call((index, client_point(&event))),
                 onclick: move |_| events.pick.call(index),

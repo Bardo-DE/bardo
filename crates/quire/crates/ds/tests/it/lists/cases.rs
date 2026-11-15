@@ -74,27 +74,27 @@ pub const CASES: &[Case] = &[
     Case {
         component: "pin_tile",
         state: "all-pressed",
-        make: || rsx! { PinTile { face: PinFace::All, selection: Selection::Selected, unread: 4, onclick: |_| {} } },
+        make: || rsx! { PinTile { face: PinFace::All, selection: true, unread: 4, onclick: |_| {} } },
     },
     Case {
         component: "pin_tile",
         state: "one-pressed",
-        make: || rsx! { PinTile { face: PinFace::Account { initial: 'P', colour: VIOLET, provider: MarkProvider::Google, address: Some("poh@acme.example".to_string()) }, selection: Selection::Selected, unread: 2, onclick: |_| {} } },
+        make: || rsx! { PinTile { face: PinFace::Account { initial: 'P', colour: VIOLET, provider: MarkProvider::Google, address: Some("poh@acme.example".to_string()) }, selection: true, unread: 2, onclick: |_| {} } },
     },
     Case {
         component: "pin_tile",
         state: "one-unpressed",
-        make: || rsx! { PinTile { face: PinFace::Account { initial: 'P', colour: VIOLET, provider: MarkProvider::Fastmail, address: None }, selection: Selection::Unselected, unread: 2, onclick: |_| {} } },
+        make: || rsx! { PinTile { face: PinFace::Account { initial: 'P', colour: VIOLET, provider: MarkProvider::Fastmail, address: None }, selection: false, unread: 2, onclick: |_| {} } },
     },
     Case {
         component: "pin_tile",
         state: "glyph-pressed",
-        make: || rsx! { PinTile { face: PinFace::Glyph { icon: Icon::Terminal, label: "Terminal".to_string() }, selection: Selection::Selected, onclick: |_| {} } },
+        make: || rsx! { PinTile { face: PinFace::Glyph { icon: Icon::Terminal, label: "Terminal".to_string() }, selection: true, onclick: |_| {} } },
     },
     Case {
         component: "pin_tile",
         state: "glyph-unpressed",
-        make: || rsx! { PinTile { face: PinFace::Glyph { icon: Icon::Terminal, label: "Terminal".to_string() }, selection: Selection::Unselected, onclick: |_| {} } },
+        make: || rsx! { PinTile { face: PinFace::Glyph { icon: Icon::Terminal, label: "Terminal".to_string() }, selection: false, onclick: |_| {} } },
     },
     Case {
         component: "pin_tile",
@@ -115,12 +115,12 @@ pub const CASES: &[Case] = &[
     Case {
         component: "edge_peek",
         state: "pinned",
-        make: || rsx! { EdgePeek { label: "Sidebar", pinned: Shown::Visible, onpin: |_| {}, "Inbox" } },
+        make: || rsx! { EdgePeek { label: "Sidebar", pinned: true, onpin: |_| {}, "Inbox" } },
     },
     Case {
         component: "edge_peek",
         state: "hidden",
-        make: || rsx! { EdgePeek { label: "Sidebar", pinned: Shown::Hidden, onpin: |_| {}, "Inbox" } },
+        make: || rsx! { EdgePeek { label: "Sidebar", pinned: false, onpin: |_| {}, "Inbox" } },
     },
     // A Today tab's row: what it has left, and about to expire.
     Case {

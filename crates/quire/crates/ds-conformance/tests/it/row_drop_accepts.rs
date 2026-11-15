@@ -36,7 +36,7 @@ fn Page() -> Element {
             div { style: "width:200px; padding:20px",
                 for (label , icon , drop) in PLACES {
                     Row {
-                        state: RowState { selection: Selection::Unselected, drop, ..RowState::default() },
+                        state: RowState { selection: false, drop, ..RowState::default() },
                         key: "{label}",
                         title: label,
                         leading: RowLeading::Icon(icon),

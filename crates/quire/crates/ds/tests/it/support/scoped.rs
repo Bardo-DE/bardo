@@ -3,8 +3,6 @@
 
 use dioxus::prelude::*;
 use ds::prelude::*;
-use ds_core::vocab::Activity;
-use ds_core::vocab::InputModality;
 use ds_style::appearance::blur::BlurState;
 use ds_style::appearance::resolve::Resolved;
 use ds_style::appearance::system::Contrast;
@@ -25,8 +23,8 @@ pub fn scope() -> Scope {
         scheme: Scheme::Light,
         material: Material::Window,
         blur: BlurState::default(),
-        modality: InputModality::Pointer,
-        activity: Activity::Active,
+        modality: false,
+        activity: true,
     }
 }
 

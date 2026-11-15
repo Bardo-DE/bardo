@@ -6,7 +6,6 @@ use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
 use ds::prelude::*;
-use ds_core::vocab::{Activity, InputModality};
 use ds_lint::{LintConfig, Rule, markup};
 use ds_style::appearance::blur::BlurState;
 use ds_style::appearance::system::ReducedMotion;
@@ -21,8 +20,8 @@ struct Setup {
     material: Material,
     blur: BlurState,
     stylesheet: Inject,
-    modality: Option<InputModality>,
-    activity: Option<Activity>,
+    modality: Option<bool>,
+    activity: Option<bool>,
     surface: Option<(Material, Option<Scheme>)>,
 }
 
@@ -48,7 +47,7 @@ fn Root(setup: Setup) -> Element {
         use_context_provider(|| HostSignals {
             modality: Signal::new(setup.modality.unwrap_or_default()),
             scale: Signal::new(Scale::ONE),
-            activity: Signal::new(setup.activity.unwrap_or(Activity::Active)),
+            activity: Signal::new(setup.activity.unwrap_or(true)),
         });
     }
     rsx! {
@@ -178,8 +177,8 @@ fn the_root_stamps_exactly_its_attributes() {
                     theme: Theme::Dark,
                     ..SpaceLook::default()
                 },
-                modality: Some(InputModality::Keyboard),
-                activity: Some(Activity::Inactive),
+                modality: Some(true),
+                activity: Some(false),
                 ..Setup::default()
             },
             theme: "dark",

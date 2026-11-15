@@ -27,7 +27,7 @@ fn page(theme: Theme, anchor: Option<Anchor>) -> Element {
                     onpick: |_| {},
                     kind: PopUpKind::PullDown,
                     title: "Actions".to_string(),
-                    start: Shown::Visible,
+                    start: true,
                     anchor,
                 }
             }

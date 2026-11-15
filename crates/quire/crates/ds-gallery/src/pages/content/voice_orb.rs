@@ -9,7 +9,7 @@ use ds::components::content::voice_orb::view::{ORB_PERIOD, VoiceOrb};
 use ds::prelude::*;
 use ds::style::tokens::control_size::ControlSize;
 use ds::style::tokens::hex::Hex;
-use ds_core::vocab::Activity;
+use ds_core::vocab::activity_word;
 use std::time::Duration;
 
 /// The sizes of the ladder: under 30 (no mask), 30 to 50, 50 to 100 and 100 and over.
@@ -26,20 +26,17 @@ const WARM: OrbColours = OrbColours {
 /// The page.
 #[component]
 pub fn VoiceOrbPage() -> Element {
-    let mut activity = use_signal(|| Activity::Active);
-    let next = match activity() {
-        Activity::Active => Activity::Inactive,
-        Activity::Inactive => Activity::Active,
-    };
+    let mut activity = use_signal(|| true);
+    let next = !activity();
     rsx! {
         Section { title: "Variants", note: "The three demo orbs. While active the glows turn once per period (20 s, 15 s for the custom one); at rest they hold where they stand and nothing runs. Reduced motion holds them still. Blitz paints the blur and the contrast on both renderers; the dot grid is a plain layer at reduced opacity, where a browser overlay-blends it.",
             div { class: "g-row",
                 Button {
                     size: ControlSize::Mini,
-                    label: format!("Set {}", next.slug()),
+                    label: format!("Set {}", activity_word(next)),
                     onclick: move |_| activity.set(next),
                 }
-                span { class: "g-code", "activity: {activity().slug()}" }
+                span { class: "g-code", "activity: {activity_word(activity())}" }
             }
             div { class: "g-row g-row-top",
                 Specimen { name: "Default", code: "192 px, 20 s".to_owned(),

@@ -123,7 +123,7 @@ fn places() -> Vec<ListItem<u8>> {
                     title: TextLine::from(title),
                     leading: RowLeading::Icon(Icon::Inbox),
                     state: RowState {
-                        selection: if here { Selection::Selected } else { Selection::Unselected },
+                        selection: here,
                         ..RowState::default()
                     },
                 }
@@ -145,7 +145,7 @@ fn titles(count: u8) -> Vec<DocumentTab> {
         .collect()
 }
 
-fn pane(shown: Shown) -> Vec<SplitPane> {
+fn pane(shown: bool) -> Vec<SplitPane> {
     vec![SplitPane::new(PaneSpec::SIDEBAR, rsx! { p { "Side" } }).shown(shown)]
 }
 
@@ -198,17 +198,17 @@ pub const CASES: &[Case] = &[
     Case {
         component: "capsule",
         state: "shown",
-        make: || rsx! { Capsule::<u8> { label: "Controls", slots: essentials(capsule_slots()), shown: Shown::Visible, onpick: |_| {} } },
+        make: || rsx! { Capsule::<u8> { label: "Controls", slots: essentials(capsule_slots()), shown: true, onpick: |_| {} } },
     },
     Case {
         component: "capsule",
         state: "media",
-        make: || rsx! { Capsule::<u8> { label: "Playback", slots: essentials(media_slots()), shown: Shown::Visible, onpick: |_| {} } },
+        make: || rsx! { Capsule::<u8> { label: "Playback", slots: essentials(media_slots()), shown: true, onpick: |_| {} } },
     },
     Case {
         component: "capsule",
         state: "hidden",
-        make: || rsx! { Capsule::<u8> { label: "Controls", slots: essentials(capsule_slots()), shown: Shown::Hidden, onpick: |_| {} } },
+        make: || rsx! { Capsule::<u8> { label: "Controls", slots: essentials(capsule_slots()), shown: false, onpick: |_| {} } },
     },
     Case {
         component: "toolbar",
@@ -263,17 +263,17 @@ pub const CASES: &[Case] = &[
     Case {
         component: "split_view",
         state: "open",
-        make: || rsx! { SplitView { label: "Example", panes: pane(Shown::Visible), p { "Content" } } },
+        make: || rsx! { SplitView { label: "Example", panes: pane(true), p { "Content" } } },
     },
     Case {
         component: "split_view",
         state: "folded",
-        make: || rsx! { SplitView { label: "Example", panes: pane(Shown::Hidden), p { "Content" } } },
+        make: || rsx! { SplitView { label: "Example", panes: pane(false), p { "Content" } } },
     },
     Case {
         component: "split_view",
         state: "folded-peeking",
-        make: || rsx! { SplitView { label: "Example", panes: vec![SplitPane::new(PaneSpec::SIDEBAR, rsx! { p { "Side" } }).shown(Shown::Hidden).peeking()], p { "Content" } } },
+        make: || rsx! { SplitView { label: "Example", panes: vec![SplitPane::new(PaneSpec::SIDEBAR, rsx! { p { "Side" } }).shown(false).peeking()], p { "Content" } } },
     },
     Case {
         component: "sidebar",
@@ -388,6 +388,6 @@ pub const CASES: &[Case] = &[
     Case {
         component: "titlebar",
         state: "parts",
-        make: || rsx! { WindowTitlebar { title: "Report", parts: TitleParts { subtitle: Some("Edited today".to_owned()), proxy: Some(Icon::File), document: DocumentState::Edited }, lights: Shown::Hidden } },
+        make: || rsx! { WindowTitlebar { title: "Report", parts: TitleParts { subtitle: Some("Edited today".to_owned()), proxy: Some(Icon::File), document: DocumentState::Edited }, lights: false } },
     },
 ];

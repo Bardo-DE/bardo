@@ -13,7 +13,6 @@
 use super::skeleton::SkeletonShape;
 use crate::root::common::Common;
 use dioxus::prelude::*;
-use ds_core::vocab::Shown;
 use ds_core::word::Word;
 use ds_motion::anim::Anim;
 use ds_motion::presence::{
@@ -32,12 +31,12 @@ pub enum SkeletonLines {
     Two,
 }
 
-/// A placeholder row: an avatar circle and `lines` bars. `shown` is the caller's (`Visible` by
+/// A placeholder row: an avatar circle and `lines` bars. `shown` is the caller's (`true` by
 /// default): hidden, it fades out over `--t-quick` and `on_hidden` runs once it has settled.
 #[component]
 pub fn SkeletonRow(
     #[props(default)] lines: SkeletonLines,
-    #[props(default = Shown::Visible)] shown: Shown,
+    #[props(default = true)] shown: bool,
     #[props(default)] on_hidden: Option<EventHandler<()>>,
     #[props(default)] common: Common,
 ) -> Element {

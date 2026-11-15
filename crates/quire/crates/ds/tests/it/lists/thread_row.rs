@@ -29,7 +29,7 @@ fn row_with(strip: Option<Element>) -> Element {
 }
 
 /// A row with the quiet `more` button, its menu open or not, and a tag beside it.
-fn row_more(expanded: Shown) -> Element {
+fn row_more(expanded: bool) -> Element {
     row_slots(None, Some(rsx! { RowMore { expanded, onclick: |_| {} } }))
 }
 
@@ -37,7 +37,7 @@ fn row_more(expanded: Shown) -> Element {
 fn row_slots(strip: Option<Element>, more: Option<Element>) -> Element {
     rsx! {
         ThreadRow {
-            state: RowState { selection: Selection::Selected, emphasis: Emphasis::Plain, ..RowState::default() },
+            state: RowState { selection: true, emphasis: false, ..RowState::default() },
             name: "Dana Okafor",
             via: None,
             subject: marked_subject(),
@@ -58,15 +58,15 @@ fn row_slots(strip: Option<Element>, more: Option<Element>) -> Element {
 }
 
 /// The strip revealed by the caller, each button titled, the label menu open.
-fn caller_strip(shown: Shown) -> Element {
+fn caller_strip(shown: bool) -> Element {
     rsx! {
         HoverStrip {
             actions: strip_actions(),
             shown,
             titles: Titles::FromLabel,
             expanded: vec![
-                (ActionId("snooze".to_string()), Shown::Hidden),
-                (ActionId("label".to_string()), Shown::Visible),
+                (ActionId("snooze".to_string()), false),
+                (ActionId("label".to_string()), true),
             ],
         }
     }
@@ -81,17 +81,17 @@ pub const THREAD_ROW_CASES: &[Case] = &[
     Case {
         component: "thread_row",
         state: "strip-shown-by-caller",
-        make: || row_with(Some(caller_strip(Shown::Visible))),
+        make: || row_with(Some(caller_strip(true))),
     },
     Case {
         component: "thread_row",
         state: "more-collapsed",
-        make: || row_more(Shown::Hidden),
+        make: || row_more(false),
     },
     Case {
         component: "thread_row",
         state: "more-expanded",
-        make: || row_more(Shown::Visible),
+        make: || row_more(true),
     },
     Case {
         component: "row_more",
@@ -101,16 +101,16 @@ pub const THREAD_ROW_CASES: &[Case] = &[
     Case {
         component: "row_more",
         state: "labelled-shown",
-        make: || rsx! { RowMore { label: "Actions for this thread", shown: Shown::Visible, onclick: |_| {} } },
+        make: || rsx! { RowMore { label: "Actions for this thread", shown: true, onclick: |_| {} } },
     },
     Case {
         component: "hover_strip",
         state: "shown-visible",
-        make: || caller_strip(Shown::Visible),
+        make: || caller_strip(true),
     },
     Case {
         component: "hover_strip",
         state: "shown-hidden",
-        make: || caller_strip(Shown::Hidden),
+        make: || caller_strip(false),
     },
 ];

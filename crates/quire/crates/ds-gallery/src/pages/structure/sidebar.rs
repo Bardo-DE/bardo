@@ -23,7 +23,7 @@ fn places(here: &'static str, onselect: EventHandler<&'static str>) -> Vec<ListI
                     leading,
                     accessory: if badge > 0 { Accessory::Badge(badge) } else { Accessory::None },
                     state: RowState {
-                        selection: if here == key { Selection::Selected } else { Selection::Unselected },
+                        selection: here == key,
                         ..RowState::default()
                     },
                     onclick: move |_| onselect.call(key),

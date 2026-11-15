@@ -3,6 +3,7 @@
 //! double-click returns it to its preferred width.
 
 use dioxus::prelude::*;
+use ds::base::vocab::shown_word;
 use ds::components::chrome::split_view::model::{PaneSize, PaneSpec, SplitPane};
 use ds::components::chrome::split_view::view::SplitView;
 use ds::prelude::*;
@@ -17,7 +18,7 @@ const VIEW: Viewport = Viewport {
 
 #[allow(non_snake_case)]
 fn Page() -> Element {
-    let mut shown = use_signal(|| Shown::Visible);
+    let mut shown = use_signal(|| true);
     let mut saved = use_signal(Vec::<PaneSize>::new);
     let mut saves = use_signal(|| 0usize);
     rsx! {
@@ -34,7 +35,7 @@ fn Page() -> Element {
                     p { "Content" }
                 }
             }
-            p { class: "shown", "{Word::slug(shown())}" }
+            p { class: "shown", "{shown_word(shown())}" }
             p { class: "saves", "{saves()}" }
             p { class: "saved", "{saved():?}" }
         }

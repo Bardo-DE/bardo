@@ -10,7 +10,7 @@
 use crate::components::controls::disclosure::indicator;
 use crate::focus::click::kept_click;
 use dioxus::prelude::*;
-use ds_core::vocab::Shown;
+use ds_core::vocab::aria_word;
 
 /// How far each level of the outline is indented, in logical pixels (the triangle's width, so a
 /// child's triangle sits under its parent's name).
@@ -21,8 +21,8 @@ const INDENT: u32 = 16;
 pub enum OutlineKind {
     /// No children: no triangle.
     Leaf,
-    /// A branch, its children listed after it (`Visible`) or not (`Hidden`).
-    Branch(Shown),
+    /// A branch, its children listed after it (`true`) or not (`false`).
+    Branch(bool),
 }
 
 /// Where a row stands in the outline.
@@ -44,7 +44,7 @@ impl OutlineRow {
     }
 
     /// A branch `depth` levels in, `shown` open or closed.
-    pub fn branch(depth: u16, shown: Shown) -> Self {
+    pub fn branch(depth: u16, shown: bool) -> Self {
         OutlineRow {
             depth,
             kind: OutlineKind::Branch(shown),
@@ -60,7 +60,7 @@ impl OutlineRow {
     pub(crate) fn expanded(self) -> Option<&'static str> {
         match self.kind {
             OutlineKind::Leaf => None,
-            OutlineKind::Branch(shown) => Some(shown.aria()),
+            OutlineKind::Branch(shown) => Some(aria_word(shown)),
         }
     }
 }
@@ -79,17 +79,18 @@ pub enum ToggleReach {
 pub struct OutlineToggle {
     /// The branch's row.
     pub row: usize,
-    /// The state asked for: `Visible` opens it, `Hidden` closes it.
-    pub shown: Shown,
+    /// The state asked for: `true` opens it, `false` closes it.
+    pub shown: bool,
     /// How far it reaches.
     pub reach: ToggleReach,
 }
 
 /// The reach of a press or key with `modifiers` held: Option widens it to the whole subtree.
 pub(crate) fn reach_of(modifiers: Modifiers) -> ToggleReach {
-    match modifiers.contains(Modifiers::ALT) {
-        true => ToggleReach::Subtree,
-        false => ToggleReach::Row,
+    if modifiers.contains(Modifiers::ALT) {
+        ToggleReach::Subtree
+    } else {
+        ToggleReach::Row
     }
 }
 
@@ -120,16 +121,13 @@ pub(crate) fn outline_cell(
 /// The triangle of a branch row. A press asks `ontoggle` for the other state, and for the whole
 /// subtree with Option held. It never reaches the row.
 #[component]
-fn Twisty(row: usize, shown: Shown, ontoggle: Option<EventHandler<OutlineToggle>>) -> Element {
-    let label = match shown {
-        Shown::Hidden => "Expand",
-        Shown::Visible => "Collapse",
-    };
+fn Twisty(row: usize, shown: bool, ontoggle: Option<EventHandler<OutlineToggle>>) -> Element {
+    let label = if shown { "Collapse" } else { "Expand" };
     let toggle = move |reach: ToggleReach| {
         if let Some(ontoggle) = ontoggle {
             ontoggle.call(OutlineToggle {
                 row,
-                shown: shown.flipped(),
+                shown: !shown,
                 reach,
             });
         }
@@ -139,7 +137,7 @@ fn Twisty(row: usize, shown: Shown, ontoggle: Option<EventHandler<OutlineToggle>
             class: "ds-vtable-twisty",
             role: "button",
             "aria-label": label,
-            "aria-expanded": shown.aria(),
+            "aria-expanded": aria_word(shown),
             onclick: move |event| {
                 event.stop_propagation();
                 toggle(reach_of(event.modifiers()));
@@ -155,7 +153,6 @@ fn Twisty(row: usize, shown: Shown, ontoggle: Option<EventHandler<OutlineToggle>
 mod tests {
     use super::{OutlineRow, ToggleReach, reach_of};
     use dioxus::prelude::Modifiers;
-    use ds_core::vocab::Shown;
 
     #[test]
     fn option_widens_a_toggle_to_the_subtree_and_nothing_else_does() {
@@ -172,12 +169,12 @@ mod tests {
 
     #[test]
     fn a_row_says_its_level_from_one_and_expanded_only_when_it_is_a_branch() {
-        let deep = OutlineRow::branch(2, Shown::Visible);
+        let deep = OutlineRow::branch(2, true);
         assert_eq!(
             (deep.level().as_str(), deep.expanded()),
             ("3", Some("true"))
         );
-        let closed = OutlineRow::branch(0, Shown::Hidden);
+        let closed = OutlineRow::branch(0, false);
         assert_eq!(
             (closed.level().as_str(), closed.expanded()),
             ("1", Some("false"))

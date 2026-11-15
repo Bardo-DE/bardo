@@ -60,7 +60,7 @@ use crate::components::overlays::sheet_width::SheetWidth;
 use crate::focus::soon::focus_soon;
 use crate::root::common::Common;
 use dioxus::prelude::*;
-use ds_core::vocab::{Availability, Shown};
+use ds_core::vocab::Availability;
 use ds_core::word::Word;
 use ds_motion::anim::Anim;
 use ds_motion::machine::use_machine;
@@ -121,7 +121,7 @@ pub fn Alert(
     #[props(default)] arm_after: Option<Duration>,
     #[props(default)] announce: bool,
     #[props(default)] flow: Flow,
-    #[props(default)] shown: Option<Shown>,
+    #[props(default)] shown: Option<bool>,
     #[props(default)] on_hidden: Option<EventHandler<()>>,
     #[props(default)] common: Common,
     children: Element,
@@ -165,13 +165,13 @@ pub fn Alert(
 #[component]
 fn InlineAlert(
     words: Words,
-    shown: Option<Shown>,
+    shown: Option<bool>,
     on_hidden: Option<EventHandler<()>>,
     common: Common,
     children: Element,
 ) -> Element {
     let Presented { presence, alias } = use_presence(
-        shown.unwrap_or(Shown::Visible),
+        shown.unwrap_or(true),
         PresenceSpec {
             enter: Anim::SheetIn,
             exit: Exit::SheetOut,

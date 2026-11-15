@@ -18,7 +18,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-static SELECTION: GlobalSignal<Selection> = Signal::global(|| Selection::Unselected);
+static SELECTION: GlobalSignal<bool> = Signal::global(|| false);
 
 #[allow(non_snake_case)]
 fn Page() -> Element {
@@ -36,7 +36,7 @@ fn Page() -> Element {
     }
 }
 
-fn select(harness: &mut Harness, selection: Selection) {
+fn select(harness: &mut Harness, selection: bool) {
     harness.within(|| *SELECTION.write() = selection);
     harness.advance(Duration::from_secs(2));
 }
@@ -74,11 +74,11 @@ fn a_selection_repaints_the_leading_glyph_in_the_rows_new_ink() {
     let plain = ink_against_ground(&mut harness);
     assert!(plain < -60, "dark ink on the plain row: {plain}");
 
-    select(&mut harness, Selection::Selected);
+    select(&mut harness, true);
     let selected = ink_against_ground(&mut harness);
     assert!(selected > 60, "light ink on the accent row: {selected}");
 
-    select(&mut harness, Selection::Unselected);
+    select(&mut harness, false);
     let again = ink_against_ground(&mut harness);
     assert!(again < -60, "dark ink on the plain row again: {again}");
 }

@@ -7,7 +7,6 @@ use ds::components::content::level_glyph::vocab::LevelGlyph;
 use ds::components::controls::level_indicator::{Bands, LevelIndicator, LevelStyle};
 use ds::prelude::*;
 use ds::style::tokens::control_size::ControlSize;
-use ds_core::vocab::Muting;
 
 /// The LevelIndicator section.
 #[component]
@@ -24,13 +23,13 @@ pub fn LevelIndicatorSection() -> Element {
                     for size in [ControlSize::Small, ControlSize::Regular] {
                         Specimen { name: format!("volume 60, {}", size.slug()),
                             div { style: "width:220px",
-                                LevelIndicator { label: "Volume", value: Fraction(600), style, size, glyph: LevelGlyph::Volume(Muting::Audible) }
+                                LevelIndicator { label: "Volume", value: Fraction(600), style, size, glyph: LevelGlyph::Volume(false) }
                             }
                         }
                     }
                     Specimen { name: "muted".to_owned(),
                         div { style: "width:220px",
-                            LevelIndicator { label: "Volume", value: Fraction(600), style, glyph: LevelGlyph::Volume(Muting::Muted) }
+                            LevelIndicator { label: "Volume", value: Fraction(600), style, glyph: LevelGlyph::Volume(true) }
                         }
                     }
                     Specimen { name: "brightness 30".to_owned(),

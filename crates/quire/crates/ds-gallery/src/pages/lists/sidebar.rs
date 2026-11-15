@@ -55,7 +55,7 @@ pub fn Sidebar() -> Element {
 #[component]
 fn Places() -> Element {
     let mut here = use_signal(|| "Inbox");
-    let mut open = use_signal(|| Shown::Visible);
+    let mut open = use_signal(|| true);
     let mut today = use_signal(|| vec!["Dana Okafor", "Priya Raman"]);
     let person = |name: &str| AvatarFace {
         initial: name.chars().next().unwrap_or('?'),
@@ -69,7 +69,7 @@ fn Places() -> Element {
             SectionHeader { title: "Favourites", collapse: Some((open(), EventHandler::new(move |to| open.set(to)))) }
         },
     )];
-    if open() == Shown::Visible {
+    if open() {
         items.extend(PLACES.into_iter().map(|(icon, label, unread)| {
             ListItem::row(
                 label,
@@ -79,7 +79,7 @@ fn Places() -> Element {
                         title: label,
                         leading: RowLeading::Icon(icon),
                         accessory: count(unread),
-                        state: RowState { selection: Selection::of(&here(), &label), ..RowState::default() },
+                        state: RowState { selection: here() == label, ..RowState::default() },
                         onclick: move |_| here.set(label),
                     }
                 },
@@ -205,8 +205,8 @@ fn FolderTree() -> Element {
     let mut over = use_signal(|| Some("Archive"));
     let mut said = use_signal(|| "nothing yet".to_string());
     let mut current = use_signal(|| "INBOX/Projects/Quire");
-    let mut projects = use_signal(|| Shown::Visible);
-    let mut archive = use_signal(|| Shown::Hidden);
+    let mut projects = use_signal(|| true);
+    let mut archive = use_signal(|| false);
     let more = move |path: &'static str| {
         Accessory::Slot(rsx! {
             Button {
@@ -227,7 +227,7 @@ fn FolderTree() -> Element {
                 leading: RowLeading::Icon(Icon::Folder),
                 outline: Outline::Leaf,
                 accessory: more(path),
-                state: RowState { selection: Selection::of(&current(), &path), drop: drop_on(over(), path), ..RowState::default() },
+                state: RowState { selection: current() == path, drop: drop_on(over(), path), ..RowState::default() },
                 common: place(path),
                 onclick: move |_| current.set(path),
                 onpointerenter: move |_| over.set(Some(path)),
@@ -239,8 +239,8 @@ fn FolderTree() -> Element {
     let branch = move |path: &'static str,
                        label: &'static str,
                        icon: Icon,
-                       shown: Shown,
-                       toggle: EventHandler<Shown>,
+                       shown: bool,
+                       toggle: EventHandler<bool>,
                        unread: u32,
                        children: Element| {
         rsx! {
@@ -250,7 +250,7 @@ fn FolderTree() -> Element {
                 outline: Outline::Branch(shown),
                 on_toggle: toggle,
                 accessory: if unread > 0 { Accessory::Badge(unread) } else { more(path) },
-                state: RowState { selection: Selection::of(&current(), &path), drop: drop_on(over(), path), ..RowState::default() },
+                state: RowState { selection: current() == path, drop: drop_on(over(), path), ..RowState::default() },
                 common: place(path),
                 onclick: move |_| current.set(path),
                 onpointerenter: move |_| over.set(Some(path)),

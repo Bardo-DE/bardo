@@ -78,7 +78,7 @@ pub fn SpacesPage() -> Element {
                                 title: TextLine::from(note),
                                 leading: RowLeading::Icon(Icon::File),
                                 state: RowState {
-                                    selection: if open() == note { Selection::Selected } else { Selection::Unselected },
+                                    selection: open() == note,
                                     ..RowState::default()
                                 },
                                 onclick: move |_| {

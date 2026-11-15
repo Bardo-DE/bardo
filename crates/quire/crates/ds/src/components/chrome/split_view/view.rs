@@ -33,7 +33,7 @@ use crate::host::measure::use_rect;
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Px;
-use ds_core::vocab::Shown;
+use ds_core::vocab::shown_word;
 use ds_core::word::Word;
 
 /// How far an arrow key moves a divider, in pixels.
@@ -60,8 +60,8 @@ impl Splits {
     /// Pane `at`'s size as drawn: its own while open, none while folded.
     fn shown_size(self, panes: &[SplitPane], at: usize) -> Px {
         match panes.get(at).map(|pane| pane.shown) {
-            Some(Shown::Visible) => self.size_of(panes, at),
-            Some(Shown::Hidden) | None => Px(0.0),
+            Some(true) => self.size_of(panes, at),
+            Some(false) | None => Px(0.0),
         }
     }
 
@@ -81,7 +81,7 @@ fn apply(
     panes: &[SplitPane],
     at: usize,
     raw: Px,
-    on_shown: EventHandler<(usize, Shown)>,
+    on_shown: EventHandler<(usize, bool)>,
 ) {
     let Some(pane) = panes.get(at) else { return };
     match pane.spec.dragged(raw, splits.extent) {
@@ -93,13 +93,13 @@ fn apply(
                 *slot = Some(pane.spec.preferred.like(size, splits.extent));
             }
             sizes.set(next);
-            if pane.shown == Shown::Hidden {
-                on_shown.call((at, Shown::Visible));
+            if !pane.shown {
+                on_shown.call((at, true));
             }
         }
         DividerDrag::Collapse => {
-            if pane.shown == Shown::Visible {
-                on_shown.call((at, Shown::Hidden));
+            if pane.shown {
+                on_shown.call((at, false));
             }
         }
     }
@@ -134,11 +134,11 @@ fn divider(
     splits: Splits,
     panes: &[SplitPane],
     at: usize,
-    on_shown: EventHandler<(usize, Shown)>,
+    on_shown: EventHandler<(usize, bool)>,
     on_resized: EventHandler<Vec<PaneSize>>,
 ) -> Element {
     let mut grab = splits.grab;
-    let shown = panes.get(at).map_or(Shown::Hidden, |pane| pane.shown);
+    let shown = panes.get(at).is_some_and(|pane| pane.shown);
     let shown_size = splits.shown_size(panes, at);
     let (double, keys) = (panes.to_vec(), panes.to_vec());
     let (shrink, grow) = arrows(splits.axis);
@@ -153,7 +153,7 @@ fn divider(
             tabindex: "0",
             "aria-orientation": orientation,
             "aria-valuenow": "{shown_size.0}",
-            "data-shown": shown.slug(),
+            "data-shown": shown_word(shown),
             onpointerdown: move |event: PointerEvent| {
                 event.stop_propagation();
                 grab.set(Some((at, EdgeGrab::new(splits.along(&event), shown_size))));
@@ -203,7 +203,7 @@ pub fn SplitView(
     /// A press or a key in a pane that did not hold the focus.
     #[props(default)]
     on_focus_pane: EventHandler<PaneAt>,
-    #[props(default)] on_shown: EventHandler<(usize, Shown)>,
+    #[props(default)] on_shown: EventHandler<(usize, bool)>,
     /// Every pane's size once a divider drag has ended (pointer released, or left the view), a
     /// key has moved a divider, or a double-click has reset one: once per gesture, never per
     /// frame, so an app saves the split once. Apart from `on_shown`, which is about whether a

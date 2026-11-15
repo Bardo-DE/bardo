@@ -5,7 +5,7 @@
 //! when it is asked for.
 
 use dioxus::prelude::*;
-use ds::base::geometry::placement::{Align, Flip, Side};
+use ds::base::geometry::placement::{Align, Side};
 use ds::base::vocab::Dismiss;
 use ds::components::overlays::popover::Arrow;
 use ds::host::measure::Anchor;
@@ -38,7 +38,7 @@ fn Page() -> Element {
             if open() {
                 Popover {
                     anchor: Anchor::Point(Point { x: Px(200.0), y: Px(100.0) }),
-                    placement: Placement { side: Side::Bottom, align: Align::Center, flip: Flip::Allowed },
+                    placement: Placement { side: Side::Bottom, align: Align::Center, flip: true },
                     gap: Px(4.0),
                     arrow: ARROW.with(Cell::get),
                     dismiss: DISMISS.with(Cell::get),

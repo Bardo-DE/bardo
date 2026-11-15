@@ -36,9 +36,9 @@ fn Settings() -> Element {
         .into_iter()
         .map(|pane| {
             let selection = if cursor() == Some(pane) {
-                Selection::Selected
+                true
             } else {
-                Selection::Unselected
+                false
             };
             ListItem::row(
                 pane,

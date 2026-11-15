@@ -14,7 +14,7 @@ use crate::root::common::Common;
 use dioxus::prelude::*;
 use ds_core::press::Press;
 use ds_core::time::clock::{now, sleep};
-use ds_core::vocab::{RowState, Selection};
+use ds_core::vocab::RowState;
 use ds_style::icon::Icon;
 use ds_style::tokens::control_size::SidebarSize;
 use std::time::{Duration, Instant};
@@ -149,7 +149,7 @@ pub fn TodayTabs<K: Clone + PartialEq + std::hash::Hash + 'static>(
                 ..
             } = tab;
             let state = RowState {
-                selection: Selection::of(&Some(key.clone()), &selected),
+                selection: Some(key.clone()) == selected,
                 ..RowState::default()
             };
             let (picked, closed) = (key.clone(), key.clone());

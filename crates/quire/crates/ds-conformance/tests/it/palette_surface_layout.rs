@@ -229,7 +229,7 @@ fn a_key_the_caller_takes_does_not_move_the_focus() {
 /// typing into its field on `f`.
 #[component]
 fn KeptPage() -> Element {
-    let mut shown = use_signal(|| Shown::Hidden);
+    let mut shown = use_signal(|| false);
     let mut query = use_signal(String::new);
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Sheet,
@@ -237,10 +237,7 @@ fn KeptPage() -> Element {
                 class: "toggle",
                 style: "position:absolute; left:640px; top:420px; width:60px; height:40px",
                 onclick: move |_| {
-                    let next = match shown() {
-                        Shown::Visible => Shown::Hidden,
-                        Shown::Hidden => Shown::Visible,
-                    };
+                    let next = !shown();
                     shown.set(next);
                 },
                 "Toggle"
@@ -255,7 +252,7 @@ fn KeptPage() -> Element {
                     empty: "Nothing".to_string(),
                     oninput: move |text: String| query.set(text),
                     onpick: move |_| {},
-                    onclose: move |_| shown.set(Shown::Hidden),
+                    onclose: move |_| shown.set(false),
                     host: CommandPaletteHost::Surface,
                     id: "card".to_string(),
                     shown: shown(),

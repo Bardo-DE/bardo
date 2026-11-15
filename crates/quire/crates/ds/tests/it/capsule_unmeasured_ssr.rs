@@ -15,7 +15,7 @@ fn Unmeasured() -> Element {
             Capsule::<u8> {
                 label: "Playback",
                 slots: vec![CapsuleSlot::button(1, "Play", Icon::Play).essential()],
-                shown: Shown::Visible,
+                shown: true,
                 onpick: |_| {},
             }
         }

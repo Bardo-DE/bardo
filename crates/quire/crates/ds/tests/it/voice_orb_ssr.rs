@@ -12,7 +12,6 @@ use ds::assembly::ds::Inject;
 use ds::components::content::voice_orb::model::{OrbColour, OrbColours};
 use ds::components::content::voice_orb::view::VoiceOrb;
 use ds::prelude::*;
-use ds_core::vocab::Activity;
 use ds_lint::LintConfig;
 use ds_style::tokens::hex::Hex;
 use std::time::Duration;
@@ -30,11 +29,11 @@ fn idle() -> Element {
 }
 
 fn active() -> Element {
-    root(rsx! { VoiceOrb { activity: Activity::Active } })
+    root(rsx! { VoiceOrb { activity: true } })
 }
 
 fn small() -> Element {
-    root(rsx! { VoiceOrb { size: Px(96.0), activity: Activity::Active } })
+    root(rsx! { VoiceOrb { size: Px(96.0), activity: true } })
 }
 
 fn tiny() -> Element {
@@ -49,7 +48,7 @@ fn custom() -> Element {
         c3: OrbColour::Custom(Hex([0xE3, 0xC0, 0x5B])),
     };
     root(rsx! {
-        VoiceOrb { size: Px(128.0), colours, period: Duration::from_secs(15), activity: Activity::Active }
+        VoiceOrb { size: Px(128.0), colours, period: Duration::from_secs(15), activity: true }
     })
 }
 

@@ -8,7 +8,6 @@ use crate::components::controls::chip_dot::ChipDot;
 use crate::components::controls::slider::Slider;
 use crate::components::lists::section_header::SectionHeader;
 use dioxus::prelude::*;
-use ds_core::colour::contrast::Verdict;
 use ds_core::vocab::{Check, Fraction};
 use ds_style::appearance::theme::Scheme;
 use ds_style::icon::Icon;
@@ -152,10 +151,11 @@ pub(super) fn CheckRows(look: SpaceLook, scheme: Scheme) -> Element {
                     span { "{check.label}" }
                     span { class: "ds-check-value", "{check.measured:.2}" }
                     Chip {
-                        variant: ChipVariant::Status(check.verdict()),
-                        text: match check.verdict() {
-                            Verdict::Pass => format!("≥ {}", check.need),
-                            Verdict::Fail => format!("< {}", check.need),
+                        variant: ChipVariant::Status(check.clears()),
+                        text: if check.clears() {
+                            format!("≥ {}", check.need)
+                        } else {
+                            format!("< {}", check.need)
                         },
                     }
                 }

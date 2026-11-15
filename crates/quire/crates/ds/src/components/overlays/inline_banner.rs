@@ -6,7 +6,7 @@
 //!
 //! It is static, as Mail's remote-content bar is: it appears and disappears in place with no
 //! motion (design/30 section 2.9, design/00 rule 10: a concession is dull). `shown` is only a
-//! render switch: `Hidden` draws nothing, and what follows takes its place at once. It needs no
+//! render switch: `false` draws nothing, and what follows takes its place at once. It needs no
 //! `Ds` root of its own.
 //!
 //! Markup: `div.ds-inline-banner[data-severity]` of `span.ds-inline-banner-icon`,
@@ -21,7 +21,7 @@ use crate::components::controls::button::Button;
 use crate::components::controls::button_model::{Bezel, ImagePosition};
 use crate::root::common::Common;
 use dioxus::prelude::*;
-use ds_core::vocab::{Severity, Shown};
+use ds_core::vocab::Severity;
 use ds_core::word::Word;
 use ds_style::icon::Icon;
 use ds_style::tokens::control_size::ControlSize;
@@ -48,7 +48,7 @@ fn role_of(severity: Severity) -> &'static str {
 /// overrides the severity's glyph; `actions` is the caller's buttons (a `Button` at
 /// `ControlSize::Small` reads best) and `onclose` adds the close button. `common` puts the
 /// consumer's `id`, `data-*` and classes on the root and `aria_label` names it. `shown` (default
-/// `Visible`) is whether it is drawn at all; there is no motion either way.
+/// `true`) is whether it is drawn at all; there is no motion either way.
 #[component]
 pub fn InlineBanner(
     #[props(default)] severity: Severity,
@@ -57,10 +57,10 @@ pub fn InlineBanner(
     #[props(default)] icon: Option<Icon>,
     #[props(default)] actions: Option<Element>,
     #[props(default)] onclose: Option<EventHandler<()>>,
-    #[props(default = Shown::Visible)] shown: Shown,
+    #[props(default = true)] shown: bool,
     #[props(default)] common: Common,
 ) -> Element {
-    if shown == Shown::Hidden {
+    if !shown {
         return rsx! {};
     }
     let class = common.class("ds-inline-banner");

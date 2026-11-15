@@ -26,11 +26,11 @@ thread_local! {
 
 #[allow(non_snake_case)]
 fn Page() -> Element {
-    let mut pinned = use_signal(|| Shown::Hidden);
+    let mut pinned = use_signal(|| false);
     let pane = SplitPane::new(
         PaneSpec::SIDEBAR,
         rsx! {
-            EdgePeek { label: "Sidebar", pinned: pinned(), onpin: move |()| pinned.set(Shown::Visible),
+            EdgePeek { label: "Sidebar", pinned: pinned(), onpin: move |()| pinned.set(true),
                 span { class: "side-words", "Places" }
             }
         },

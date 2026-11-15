@@ -26,7 +26,6 @@ use crate::host::measure::{Anchor, MountedRef};
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Point;
-use ds_core::vocab::Shown;
 use ds_style::tokens::control_size::ControlSize;
 use std::rc::Rc;
 
@@ -164,7 +163,7 @@ pub fn SearchField<T: Clone + PartialEq + 'static>(
         told: on_highlight,
     };
     let fresh = Suggesting {
-        shown: Shown::Visible,
+        shown: true,
         cursor: initial(highlight, &live),
     };
     let mounted = common.mounted;
@@ -250,7 +249,7 @@ pub fn SearchField<T: Clone + PartialEq + 'static>(
     let on_active = move |to: Option<usize>| {
         if let Some(to) = to {
             moves.to(Suggesting {
-                shown: Shown::Visible,
+                shown: true,
                 cursor: Some(to),
             });
         }

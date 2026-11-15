@@ -21,7 +21,7 @@ pub fn ButtonSection() -> Element {
                         Button { bezel, size, label: "With icon", icon: Icon::Archive, onclick: |_| {} }
                         Button { bezel, size, label: "Disabled", availability: Availability::Disabled, onclick: |_| {} }
                         Button { bezel, size, label: "Busy", availability: Availability::Busy, onclick: |_| {} }
-                        Button { bezel, size, label: "Open", icon: Icon::ChevronDown, shown: Shown::Visible, onclick: |_| {} }
+                        Button { bezel, size, label: "Open", icon: Icon::ChevronDown, shown: true, onclick: |_| {} }
                     }
                 }
             }

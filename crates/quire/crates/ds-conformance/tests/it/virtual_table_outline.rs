@@ -6,7 +6,6 @@
 
 use dioxus::prelude::*;
 use ds::base::press::PointerButton;
-use ds::base::vocab::Shown;
 use ds::components::content::icon_source::IconSource;
 use ds::components::controls::scroller::handle::use_scroller;
 use ds::components::lists::name_cell::NameCell;
@@ -40,8 +39,8 @@ fn Page() -> Element {
         _ => rsx! { "Picture" },
     });
     let outline = Callback::new(|row: usize| match row {
-        0 => OutlineRow::branch(0, Shown::Hidden),
-        1 => OutlineRow::branch(1, Shown::Visible),
+        0 => OutlineRow::branch(0, false),
+        1 => OutlineRow::branch(1, true),
         _ => OutlineRow::leaf(2),
     });
     rsx! {

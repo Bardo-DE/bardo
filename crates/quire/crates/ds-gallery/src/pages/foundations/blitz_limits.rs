@@ -13,7 +13,6 @@ use ds::style::appearance::blur::BlurState;
 use ds::style::icon::render::Glyph;
 use ds_core::text::clip::clip_chars;
 use ds_core::time::clock::sleep;
-use ds_core::vocab::InputModality;
 use std::time::Duration;
 
 /// Each spike finding: its id, what Blitz does, and what quire does about it.
@@ -248,9 +247,10 @@ fn Live() -> Element {
             }
         });
     });
-    let modality = match use_scope().modality {
-        InputModality::Pointer => "pointer: no focus rings",
-        InputModality::Keyboard => "keyboard: focus rings show",
+    let modality = if use_scope().modality {
+        "keyboard: focus rings show"
+    } else {
+        "pointer: no focus rings"
     };
     let rect = probe.rect().map_or_else(
         || "not measured yet".to_string(),

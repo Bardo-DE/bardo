@@ -13,7 +13,6 @@ use ds::prelude::*;
 use ds::root::chrome::FrameTint;
 use ds::style::tokens::control_size::ControlSize;
 use ds::style::tokens::label_hue::LabelHue;
-use ds_core::colour::contrast::Verdict;
 use ds_core::vocab::RowState;
 
 /// What the matrix can show.
@@ -86,7 +85,7 @@ fn Cell(subject: Subject) -> Element {
             Chip { variant: ChipVariant::Accent, text: "Accent" }
             Chip { variant: ChipVariant::Neutral, text: "Neutral" }
             Chip { variant: ChipVariant::Label(LabelHue::Green), text: "green" }
-            Chip { variant: ChipVariant::Status(Verdict::Fail), text: "2.1 : 1" }
+            Chip { variant: ChipVariant::Status(false), text: "2.1 : 1" }
         },
         Subject::Switches => rsx! {
             Toggle { label: "On", value: Check::On, onchange: |_| {} }
@@ -101,7 +100,7 @@ fn Cell(subject: Subject) -> Element {
                     "Re: UIDL stability",
                     rsx! {
                         ThreadRow {
-                            state: RowState { selection: Selection::Selected, emphasis: Emphasis::Strong, ..RowState::default() },
+                            state: RowState { selection: true, emphasis: true, ..RowState::default() },
                             name: "Dana Okafor",
                             via: None,
                             subject: "Re: UIDL stability",
@@ -123,10 +122,10 @@ fn Cell(subject: Subject) -> Element {
                 cursor: Some(0),
                 items: vec![
                     ListItem::row(0, "Inbox", rsx! {
-                        Row { title: "Inbox", leading: RowLeading::Icon(Icon::Inbox), accessory: Accessory::Badge(12), state: RowState { selection: Selection::Selected, ..RowState::default() } }
+                        Row { title: "Inbox", leading: RowLeading::Icon(Icon::Inbox), accessory: Accessory::Badge(12), state: RowState { selection: true, ..RowState::default() } }
                     }),
                     ListItem::row(1, "Starred", rsx! {
-                        Row { title: "Starred", leading: RowLeading::Icon(Icon::Star), state: RowState { selection: Selection::Unselected, ..RowState::default() } }
+                        Row { title: "Starred", leading: RowLeading::Icon(Icon::Star), state: RowState { selection: false, ..RowState::default() } }
                     }),
                 ],
             }

@@ -619,7 +619,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "tooltip",
         state: "shown",
-        make: || rsx! { Tooltip { text: "Terminal", shown: Some(Shown::Visible), span { "tile" } } },
+        make: || rsx! { Tooltip { text: "Terminal", shown: Some(true), span { "tile" } } },
         wait: NOW,
     },
     // Keyed by the caller's own hooks: nothing wrapped, the tip up while the hub holds its key.
@@ -632,7 +632,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "tooltip",
         state: "hidden",
-        make: || rsx! { Tooltip { text: "Terminal", shown: Some(Shown::Hidden), span { "tile" } } },
+        make: || rsx! { Tooltip { text: "Terminal", shown: Some(false), span { "tile" } } },
         wait: NOW,
     },
     // Toast: hidden (every root), up with an undo, up without one.
@@ -689,13 +689,13 @@ pub const CASES: &[Case] = &[
     Case {
         component: "sheet",
         state: "shown",
-        make: || rsx! { Sheet { label: "Power", onclose: |_| {}, shown: Shown::Visible, on_hidden: |_| {}, p { "Shut down?" } } },
+        make: || rsx! { Sheet { label: "Power", onclose: |_| {}, shown: true, on_hidden: |_| {}, p { "Shut down?" } } },
         wait: NOW,
     },
     Case {
         component: "sheet",
         state: "mounted-hidden",
-        make: || rsx! { Sheet { label: "Power", onclose: |_| {}, shown: Shown::Hidden, on_hidden: |_| {}, p { "Shut down?" } } },
+        make: || rsx! { Sheet { label: "Power", onclose: |_| {}, shown: false, on_hidden: |_| {}, p { "Shut down?" } } },
         wait: NOW,
     },
     Case {
@@ -871,13 +871,13 @@ pub const CASES: &[Case] = &[
     Case {
         component: "skeleton",
         state: "hidden",
-        make: || rsx! { Skeleton { shown: Shown::Hidden } },
+        make: || rsx! { Skeleton { shown: false } },
         wait: NOW,
     },
     Case {
         component: "inline_banner",
         state: "hidden",
-        make: || rsx! { InlineBanner { text: "Remote images are blocked.", shown: Shown::Hidden } },
+        make: || rsx! { InlineBanner { text: "Remote images are blocked.", shown: false } },
         wait: NOW,
     },
     // SkeletonRow: two lines, one line, and hidden.
@@ -896,7 +896,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "skeleton_row",
         state: "hidden",
-        make: || rsx! { SkeletonRow { shown: Shown::Hidden } },
+        make: || rsx! { SkeletonRow { shown: false } },
         wait: NOW,
     },
     // Loadable: each phase (loading draws no spinner while the operation is idle).
@@ -928,19 +928,19 @@ pub const CASES: &[Case] = &[
     Case {
         component: "side_panel",
         state: "shown",
-        make: || rsx! { SidePanel { label: "Notification Center", shown: Shown::Visible, p { "Nothing new." } } },
+        make: || rsx! { SidePanel { label: "Notification Center", shown: true, p { "Nothing new." } } },
         wait: NOW,
     },
     Case {
         component: "side_panel",
         state: "header",
-        make: || rsx! { SidePanel { label: "Notification Center", shown: Shown::Visible, header: Some(rsx! { strong { "Today" } }), p { "Nothing new." } } },
+        make: || rsx! { SidePanel { label: "Notification Center", shown: true, header: Some(rsx! { strong { "Today" } }), p { "Nothing new." } } },
         wait: NOW,
     },
     Case {
         component: "side_panel",
         state: "hidden",
-        make: || rsx! { SidePanel { label: "Notification Center", shown: Shown::Hidden, p { "Nothing new." } } },
+        make: || rsx! { SidePanel { label: "Notification Center", shown: false, p { "Nothing new." } } },
         wait: NOW,
     },
     // SpacesBar: collapsed, a row of names with the current one marked and one that could take a
@@ -948,26 +948,26 @@ pub const CASES: &[Case] = &[
     Case {
         component: "spaces_bar",
         state: "collapsed",
-        make: || rsx! { SpacesBar { label: "Spaces", spaces: bar_spaces(), shown: Shown::Visible, on_pick: |_| {} } },
+        make: || rsx! { SpacesBar { label: "Spaces", spaces: bar_spaces(), shown: true, on_pick: |_| {} } },
         wait: NOW,
     },
     Case {
         component: "spaces_bar",
         state: "expanded",
-        make: || rsx! { SpacesBar { label: "Spaces", spaces: bar_thumbnails(), shown: Shown::Visible, expansion: Some(BarExpansion::Expanded), on_pick: |_| {} } },
+        make: || rsx! { SpacesBar { label: "Spaces", spaces: bar_thumbnails(), shown: true, expansion: Some(BarExpansion::Expanded), on_pick: |_| {} } },
         wait: NOW,
     },
     // The plus lit by a drag, and the Spaces over their backdrops (one with a picture on it).
     Case {
         component: "spaces_bar",
         state: "plus-lit",
-        make: || rsx! { SpacesBar { label: "Spaces", spaces: bar_backdrops(), shown: Shown::Visible, expansion: Some(BarExpansion::Expanded), add_drop: DropState::Target, on_add: |_| {}, on_pick: |_| {} } },
+        make: || rsx! { SpacesBar { label: "Spaces", spaces: bar_backdrops(), shown: true, expansion: Some(BarExpansion::Expanded), add_drop: DropState::Target, on_add: |_| {}, on_pick: |_| {} } },
         wait: NOW,
     },
     Case {
         component: "spaces_bar",
         state: "backdrops",
-        make: || rsx! { SpacesBar { label: "Spaces", spaces: bar_backdrops(), shown: Shown::Visible, expansion: Some(BarExpansion::Expanded), on_pick: |_| {} } },
+        make: || rsx! { SpacesBar { label: "Spaces", spaces: bar_backdrops(), shown: true, expansion: Some(BarExpansion::Expanded), on_pick: |_| {} } },
         wait: NOW,
     },
 ];
@@ -976,7 +976,7 @@ pub const CASES: &[Case] = &[
 fn bar_spaces() -> Vec<SpaceTile> {
     vec![
         SpaceTile::new(BarSpaceKey("1".to_owned()), "Desktop 1"),
-        SpaceTile::new(BarSpaceKey("2".to_owned()), "Desktop 2").current(Selection::Selected),
+        SpaceTile::new(BarSpaceKey("2".to_owned()), "Desktop 2").current(true),
         SpaceTile::new(BarSpaceKey("3".to_owned()), "Desktop 3").in_drag(DropState::Accepts),
     ]
 }
@@ -985,7 +985,7 @@ fn bar_spaces() -> Vec<SpaceTile> {
 fn bar_thumbnails() -> Vec<SpaceTile> {
     vec![
         SpaceTile::new(BarSpaceKey("1".to_owned()), "Desktop 1")
-            .current(Selection::Selected)
+            .current(true)
             .thumbnail(ImageSource("data:image/png;base64,AAAA".to_owned())),
         SpaceTile::new(BarSpaceKey("2".to_owned()), "Desktop 2").in_drag(DropState::Target),
     ]
@@ -996,7 +996,7 @@ fn bar_backdrops() -> Vec<SpaceTile> {
     let wall = ImageSource("data:image/png;base64,BBBB".to_owned());
     vec![
         SpaceTile::new(BarSpaceKey("1".to_owned()), "Desktop 1")
-            .current(Selection::Selected)
+            .current(true)
             .backdrop(wall.clone())
             .thumbnail(ImageSource("data:image/png;base64,AAAA".to_owned())),
         SpaceTile::new(BarSpaceKey("2".to_owned()), "Desktop 2").backdrop(wall),

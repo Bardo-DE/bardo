@@ -26,7 +26,7 @@ use ds::components::menus::item::item::MenuItem;
 use ds::components::menus::pop_up_button::PopUpButton;
 use ds::prelude::ListItem;
 use ds::prelude::{List, Row, RowLeading};
-use ds_core::vocab::{Availability, Selection};
+use ds_core::vocab::Availability;
 use ds_motion::detail::stamp::EventStamp;
 use ds_style::icon::render::{IconPx, IconSize};
 use ds_style::icon::url::IconUrl;
@@ -167,9 +167,9 @@ pub(crate) fn PickRows<K: Clone + PartialEq + Hash + 'static>(
         .into_iter()
         .map(|row| {
             let selection = if cursor.as_ref() == Some(&row.key) {
-                Selection::Selected
+                true
             } else {
-                Selection::Unselected
+                false
             };
             let key = row.key.clone();
             let title = row.title.clone();

@@ -15,7 +15,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-static SHOWN: GlobalSignal<Shown> = Signal::global(|| Shown::Hidden);
+static SHOWN: GlobalSignal<bool> = Signal::global(|| false);
 
 fn stage(motion: Motion) -> Element {
     rsx! {
@@ -57,7 +57,7 @@ fn height(harness: &Harness) -> f32 {
         .unwrap_or(80.0)
 }
 
-fn set(harness: &mut Harness, shown: Shown) {
+fn set(harness: &mut Harness, shown: bool) {
     harness.within(|| *SHOWN.write() = shown);
 }
 
@@ -65,10 +65,10 @@ fn set(harness: &mut Harness, shown: Shown) {
 fn it_stands_closed_on_mount_and_opens_over_one_move() {
     let mut harness = virtual_harness(Standard);
     harness.advance(Duration::from_millis(50));
-    set(&mut harness, Shown::Hidden);
+    set(&mut harness, false);
     harness.advance(Duration::from_millis(20));
     assert_eq!(height(&harness), 0.0, "closed: {}", style(&harness));
-    set(&mut harness, Shown::Visible);
+    set(&mut harness, true);
     harness.advance(Duration::from_millis(60));
     let early = height(&harness);
     assert!(early > 0.0 && early < 40.0, "opening: {}", style(&harness));
@@ -81,11 +81,11 @@ fn it_stands_closed_on_mount_and_opens_over_one_move() {
 fn a_toggle_mid_move_reverses_from_where_it_is() {
     let mut harness = virtual_harness(Standard);
     harness.advance(Duration::from_millis(50));
-    set(&mut harness, Shown::Visible);
+    set(&mut harness, true);
     harness.advance(Duration::from_millis(120));
     let middle = height(&harness);
     assert!(middle > 0.0 && middle < 80.0, "{middle}");
-    set(&mut harness, Shown::Hidden);
+    set(&mut harness, false);
     harness.advance(Duration::from_millis(16));
     let after = height(&harness);
     assert!(
@@ -100,10 +100,10 @@ fn a_toggle_mid_move_reverses_from_where_it_is() {
 fn under_reduced_it_is_instant() {
     let mut harness = virtual_harness(Reduced);
     harness.advance(Duration::from_millis(50));
-    set(&mut harness, Shown::Visible);
+    set(&mut harness, true);
     harness.advance(Duration::from_millis(20));
     assert_eq!(style(&harness), "");
-    set(&mut harness, Shown::Hidden);
+    set(&mut harness, false);
     harness.advance(Duration::from_millis(20));
     assert_eq!(height(&harness), 0.0);
 }

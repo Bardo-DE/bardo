@@ -27,7 +27,7 @@ use crate::focus::soon::focus_soon;
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use ds_core::press::Press;
-use ds_core::vocab::{Availability, Check, HasPopup, Shortcut, Shown};
+use ds_core::vocab::{Availability, Check, HasPopup, Shortcut, aria_word};
 use ds_core::word::Word;
 use ds_motion::detail::{morph::MorphStyle, morph_glyph::MorphGlyph};
 use ds_motion::symbol::effect::{EffectActivity, LoopEffect, SymbolEffect};
@@ -94,7 +94,7 @@ pub fn Button(
     #[props(default)] swap: IconSwap,
     #[props(default)] icon: Option<IconSource>,
     #[props(default)] value: Option<Check>,
-    #[props(default)] shown: Option<Shown>,
+    #[props(default)] shown: Option<bool>,
     #[props(default)] popup: Option<HasPopup>,
     #[props(default)] availability: Availability,
     #[props(default)] busy: BusyLook,
@@ -154,7 +154,7 @@ pub fn Button(
             "data-tip": tip.marker(&name),
             "aria-pressed": value.map(Check::aria),
             "aria-haspopup": popup.map(|popup| popup.slug()),
-            "aria-expanded": shown.map(Shown::aria),
+            "aria-expanded": shown.map(aria_word),
             "aria-disabled": availability.aria_disabled(),
             "aria-busy": availability.aria_busy(),
             disabled: disabled(availability),

@@ -21,7 +21,7 @@ pub fn TitlebarSection() -> Element {
             {bar("Quarterly report", TitleParts { subtitle: Some("Edited today".to_owned()), ..TitleParts::default() })}
             {bar("Quarterly report.pdf", TitleParts { proxy: Some(Icon::File), document: DocumentState::Edited, ..TitleParts::default() })}
             div { class: "g-titlebar",
-                WindowTitlebar { title: "No lights", lights: Shown::Hidden }
+                WindowTitlebar { title: "No lights", lights: false }
             }
             div { class: "g-titlebar",
                 WindowTitlebar {

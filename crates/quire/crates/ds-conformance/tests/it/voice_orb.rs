@@ -3,7 +3,6 @@
 //! stays still under Reduced motion, and an idle orb wakes the document for nothing.
 
 use dioxus::prelude::*;
-use ds::base::vocab::Activity;
 use ds::components::content::voice_orb::view::VoiceOrb;
 use ds::prelude::*;
 use ds_harness::harness::assert_settles_to_zero_frames;
@@ -16,7 +15,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-static ACTIVITY: GlobalSignal<Activity> = Signal::global(|| Activity::Inactive);
+static ACTIVITY: GlobalSignal<bool> = Signal::global(|| false);
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
 /// A 192 px orb (a 20 s turn) on the window ground, its activity and motion set from outside.
@@ -37,7 +36,7 @@ fn virtual_harness() -> Harness {
 }
 
 /// Set the orb's activity from outside, as its owner would.
-fn set(harness: &mut Harness, activity: Activity) {
+fn set(harness: &mut Harness, activity: bool) {
     harness.within(|| *ACTIVITY.write() = activity);
 }
 
@@ -63,7 +62,7 @@ fn near(got: f32, want: f32) -> bool {
 #[test]
 fn an_active_orb_turns_a_quarter_in_a_quarter_of_its_period() {
     let mut harness = virtual_harness();
-    set(&mut harness, Activity::Active);
+    set(&mut harness, true);
     let before = degrees(&harness);
     harness.advance(Duration::from_secs(5));
     let after = degrees(&harness);
@@ -85,9 +84,9 @@ fn an_inactive_orb_stays_put_and_wakes_nothing() {
 #[test]
 fn an_orb_that_goes_inactive_holds_where_it_stands_and_stops_its_timer() {
     let mut harness = virtual_harness();
-    set(&mut harness, Activity::Active);
+    set(&mut harness, true);
     harness.advance(Duration::from_secs(5));
-    set(&mut harness, Activity::Inactive);
+    set(&mut harness, false);
     harness.advance(Duration::from_millis(100));
     let held = degrees(&harness);
     let woke = harness.wakes();
@@ -100,11 +99,11 @@ fn an_orb_that_goes_inactive_holds_where_it_stands_and_stops_its_timer() {
 #[test]
 fn an_orb_that_wakes_again_carries_on_from_where_it_held() {
     let mut harness = virtual_harness();
-    set(&mut harness, Activity::Active);
+    set(&mut harness, true);
     harness.advance(Duration::from_secs(5));
-    set(&mut harness, Activity::Inactive);
+    set(&mut harness, false);
     harness.advance(Duration::from_secs(3));
-    set(&mut harness, Activity::Active);
+    set(&mut harness, true);
     harness.advance(Duration::from_secs(5));
     // A quarter turn, a rest, another quarter turn.
     assert!(near(degrees(&harness), 180.0), "{}", degrees(&harness));
@@ -114,7 +113,7 @@ fn an_orb_that_wakes_again_carries_on_from_where_it_held() {
 fn a_reduced_orb_does_not_turn() {
     let mut harness = virtual_harness();
     harness.within(|| *MOTION.write() = Motion::Reduced);
-    set(&mut harness, Activity::Active);
+    set(&mut harness, true);
     harness.advance(Duration::from_secs(5));
     assert!(near(degrees(&harness), 0.0), "{}", degrees(&harness));
 }
@@ -129,7 +128,7 @@ fn orb_pixels(harness: &mut Harness) -> (image::RgbaImage, u32, u32) {
 #[test]
 fn the_orb_paints_a_round_field_of_colour() {
     let mut harness = virtual_harness();
-    set(&mut harness, Activity::Active);
+    set(&mut harness, true);
     let (frame, x0, y0) = orb_pixels(&mut harness);
     let alpha = |dx: u32, dy: u32| frame.get_pixel(x0 + dx, y0 + dy)[3];
     // The four corners of its square are outside the circle: nothing is painted there.
@@ -156,7 +155,7 @@ fn the_orb_paints_a_round_field_of_colour() {
 #[test]
 fn the_glows_change_what_is_painted_as_the_orb_turns() {
     let mut harness = virtual_harness();
-    set(&mut harness, Activity::Active);
+    set(&mut harness, true);
     let (first, x0, y0) = orb_pixels(&mut harness);
     harness.advance(Duration::from_secs(5));
     let (later, _, _) = orb_pixels(&mut harness);

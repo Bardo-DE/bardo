@@ -16,7 +16,7 @@ use ds::components::content::provider_mark::{MarkProvider, MarkStyle};
 use ds::components::controls::disclosure::Disclosure;
 use ds::components::fields::field_row::{FieldRow, RowLayout};
 use ds::components::forms::{form::Form, form_section::FormSection};
-use ds_core::vocab::{Availability, Shown};
+use ds_core::vocab::Availability;
 use ds_core::word::Word;
 
 /// The sign-in form for `provider`, whose round `mark` leads the header. `on_input` hears the role of the field and what it now
@@ -35,14 +35,14 @@ pub fn SignInForm(
     on_cancel: EventHandler<()>,
     #[props(default)] title: StepTitle,
 ) -> Element {
-    let mut opened = use_signal(|| Shown::Hidden);
+    let mut opened = use_signal(|| false);
     let ready = form_ready(&fields, problem);
     let grouped = fields.iter().any(|field| {
         field.choices.is_some() || field.part.is_some() || field.fold == FieldFold::Advanced
     });
     let advanced = runs(&fields, FieldFold::Advanced);
     let advanced_shown = if marks_advanced(&fields, problem) {
-        Shown::Visible
+        true
     } else {
         opened()
     };
@@ -68,7 +68,7 @@ pub fn SignInForm(
                         if !advanced.is_empty() {
                             Disclosure {
                                 shown: advanced_shown,
-                                on_toggle: move |next: Shown| opened.set(next),
+                                on_toggle: move |next: bool| opened.set(next),
                                 label: ADVANCED_WORDS.to_owned(),
                                 div { class: "ds-acc-advanced",
                                     {sections(advanced, FieldFold::Advanced, problem, on_input)}

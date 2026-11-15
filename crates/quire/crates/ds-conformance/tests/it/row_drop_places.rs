@@ -41,7 +41,7 @@ fn Page() -> Element {
             div { class: "side", style: "width:200px; padding:20px",
                 for (id , label , icon) in PLACES {
                     Row {
-                        state: RowState { selection: Selection::Unselected, drop: if over() == Some(id) { DropState::Target } else { DropState::Idle }, ..RowState::default() },
+                        state: RowState { selection: false, drop: if over() == Some(id) { DropState::Target } else { DropState::Idle }, ..RowState::default() },
                         key: "{id}",
                         title: label,
                         leading: RowLeading::Icon(icon),

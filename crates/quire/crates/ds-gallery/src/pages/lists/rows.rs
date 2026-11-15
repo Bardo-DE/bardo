@@ -52,7 +52,7 @@ fn Rename() -> Element {
                             Row {
                                 title: "Receipts",
                                 leading: RowLeading::Icon(Icon::Folder),
-                                state: RowState { selection: Selection::Selected, ..RowState::default() },
+                                state: RowState { selection: true, ..RowState::default() },
                                 edit: rsx! {
                                     TextField { bezel: FieldBezel::Plain, label: "Rename folder", value: name(), oninput: move |next| name.set(next) }
                                 },
@@ -138,8 +138,8 @@ fn Leadings() -> Element {
                             label: "Compact",
                             items: vec![
                                 row("Glyph", RowSize::Compact, RowLeading::Icon(Icon::Wifi)),
-                                row("Disc off", RowSize::Compact, RowLeading::Disc(Icon::Wifi, Selection::Unselected)),
-                                row("Disc on", RowSize::Compact, RowLeading::Disc(Icon::Wifi, Selection::Selected)),
+                                row("Disc off", RowSize::Compact, RowLeading::Disc(Icon::Wifi, false)),
+                                row("Disc on", RowSize::Compact, RowLeading::Disc(Icon::Wifi, true)),
                                 row("Avatar", RowSize::Compact, RowLeading::Avatar(person)),
                                 row("Letter", RowSize::Compact, RowLeading::Text("Q".to_string())),
                             ],
@@ -157,8 +157,8 @@ fn Leadings() -> Element {
                             label: "Settings",
                             items: vec![
                                 row("Glyph", RowSize::Settings, RowLeading::Icon(Icon::Wifi)),
-                                row("Disc off", RowSize::Settings, RowLeading::Disc(Icon::Wifi, Selection::Unselected)),
-                                row("Disc on", RowSize::Settings, RowLeading::Disc(Icon::Wifi, Selection::Selected)),
+                                row("Disc off", RowSize::Settings, RowLeading::Disc(Icon::Wifi, false)),
+                                row("Disc on", RowSize::Settings, RowLeading::Disc(Icon::Wifi, true)),
                                 row("Avatar", RowSize::Settings, RowLeading::Avatar(person)),
                                 row("Letter", RowSize::Settings, RowLeading::Text("Q".to_string())),
                             ],
@@ -176,11 +176,7 @@ fn States() -> Element {
     let mut at = use_signal(|| "Selected");
     let row = move |title: &'static str, state: RowState| {
         let state = RowState {
-            selection: if at() == title {
-                Selection::Selected
-            } else {
-                state.selection
-            },
+            selection: if at() == title { true } else { state.selection },
             ..state
         };
         item(
@@ -202,7 +198,7 @@ fn States() -> Element {
                     onselect: move |key: &'static str| at.set(key),
                     items: vec![
                         row("Selected", RowState::default()),
-                        row("Unread", with(|s| RowState { emphasis: Emphasis::Strong, ..s })),
+                        row("Unread", with(|s| RowState { emphasis: true, ..s })),
                         row("Disabled", with(|s| RowState { availability: Availability::Disabled, ..s })),
                         row("Busy", with(|s| RowState { availability: Availability::Busy, ..s })),
                         row("Drop target", with(|s| RowState { drop: DropState::Target, ..s })),
@@ -247,7 +243,7 @@ fn Shapes() -> Element {
                     cursor: Some("File"),
                     items: vec![
                         item("File", rsx! {
-                            Row { title: "Quarterly report.pdf", leading: RowLeading::Icon(Icon::Folder), shape: file, state: RowState { selection: Selection::Selected, ..RowState::default() }, size: RowSize::Settings, chord: RowChord::on_selected(keys), accessory: Accessory::Text("PDF".to_string()) }
+                            Row { title: "Quarterly report.pdf", leading: RowLeading::Icon(Icon::Folder), shape: file, state: RowState { selection: true, ..RowState::default() }, size: RowSize::Settings, chord: RowChord::on_selected(keys), accessory: Accessory::Text("PDF".to_string()) }
                         }),
                         item("Clip", rsx! {
                             Row { title: "Copied text", shape: clip, size: RowSize::Settings }

@@ -73,7 +73,7 @@ fn FormRow() -> Element {
                     onpick: |_| {},
                     kind: PopUpKind::PopUp,
                     value: Some(0u8),
-                    start: Shown::Visible,
+                    start: true,
                     anchor: Some(Anchor::Point(Point { x: Px(120.0), y: Px(80.0) })),
                 }
             }

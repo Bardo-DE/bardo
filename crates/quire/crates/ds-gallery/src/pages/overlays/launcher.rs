@@ -106,7 +106,7 @@ pub fn EmbeddedPalette() -> Element {
                 }
             }
             div { class: "g-row g-row-top",
-                Specimen { name: "Warm: kept mounted, shown by the button", code: "shown: Some(Shown::Visible | Shown::Hidden)".to_string(),
+                Specimen { name: "Warm: kept mounted, shown by the button", code: "shown: Some(true | false)".to_string(),
                     WarmPalette {}
                 }
             }
@@ -120,8 +120,8 @@ pub fn EmbeddedPalette() -> Element {
 fn WarmPalette() -> Element {
     let showcase = use_context::<Signal<Axes>>().peek().showcase;
     let mut shown = use_signal(|| match showcase {
-        Showcase::Posed => Shown::Visible,
-        Showcase::Live => Shown::Hidden,
+        Showcase::Posed => true,
+        Showcase::Live => false,
     });
     let mut query = use_signal(String::new);
     let typed = query().to_lowercase();
@@ -133,15 +133,12 @@ fn WarmPalette() -> Element {
     } else {
         vec![PaletteGroup::list("Applications", apps(&typed))]
     };
-    let flipped = match shown() {
-        Shown::Visible => Shown::Hidden,
-        Shown::Hidden => Shown::Visible,
-    };
+    let flipped = !shown();
     rsx! {
         div { class: "g-col",
             Button {
                 label: "Launcher",
-                value: Some(if shown() == Shown::Visible { Check::On } else { Check::Off }),
+                value: Some(if shown() { Check::On } else { Check::Off }),
                 onclick: move |_| shown.set(flipped),
             }
             div { class: "g-launcher",
@@ -154,8 +151,8 @@ fn WarmPalette() -> Element {
                         groups,
                         empty: "Nothing matches.",
                         oninput: move |text: String| query.set(text),
-                        onpick: move |_| shown.set(Shown::Hidden),
-                        onclose: move |_| shown.set(Shown::Hidden),
+                        onpick: move |_| shown.set(false),
+                        onclose: move |_| shown.set(false),
                         host: CommandPaletteHost::Surface,
                         id: "gallery-warm-launcher",
                         shown: shown(),

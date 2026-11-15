@@ -8,7 +8,7 @@
 use crate::keys::use_keys;
 use crate::root::common::Common;
 use dioxus::prelude::*;
-use ds_core::vocab::{GlyphKind, Shortcut};
+use ds_core::vocab::Shortcut;
 use ds_core::word::Word;
 use ds_style::tokens::control_size::ControlSize;
 
@@ -55,7 +55,7 @@ pub fn KeyEquivalent(
                     for cap in caps {
                         kbd {
                             class: "ds-key-equivalent-key",
-                            "data-glyph": cap.kind.map(GlyphKind::slug),
+                            "data-glyph": cap.arrow.then_some("arrow"),
                             "{cap.text}"
                         }
                     }

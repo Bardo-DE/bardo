@@ -25,11 +25,11 @@ fn ms(n: u64) -> Duration {
 
 #[allow(non_snake_case)]
 fn Edge() -> Element {
-    let mut pinned = use_signal(|| Shown::Hidden);
+    let mut pinned = use_signal(|| false);
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
             div { style: "position:relative;width:400px;height:300px",
-                EdgePeek { label: "Sidebar", pinned: pinned(), onpin: move |()| pinned.set(Shown::Visible), "Inbox" }
+                EdgePeek { label: "Sidebar", pinned: pinned(), onpin: move |()| pinned.set(true), "Inbox" }
             }
         }
     }

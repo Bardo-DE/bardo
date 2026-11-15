@@ -18,10 +18,10 @@ use crate::stack::layer_stack::{Dismissal, LayerId, LayerStack};
 use dioxus::core::{current_scope_id, queue_effect};
 use dioxus::prelude::*;
 use ds_core::geometry::{
-    placement::{Flip, Placed, Placement, Side, opposite, place, room_on_side},
+    placement::{Placed, Placement, Side, opposite, place, room_on_side},
     units::{Point, Px, Rect, Size},
 };
-use ds_core::vocab::{Dismiss, Shown};
+use ds_core::vocab::Dismiss;
 use ds_core::word::Word;
 use ds_motion::anim::Anim;
 use ds_motion::presence::{
@@ -260,16 +260,15 @@ impl Float {
             .size;
         let room = |side: Side| room_on_side(anchor, bounds, side, gap);
         let wanted = room(want.side);
-        let side = match want.flip {
-            Flip::Allowed if size.height.0 + 0.5 >= wanted.0 => {
-                let other = opposite(want.side);
-                if room(other).0 > wanted.0 {
-                    other
-                } else {
-                    want.side
-                }
+        let side = if want.flip && size.height.0 + 0.5 >= wanted.0 {
+            let other = opposite(want.side);
+            if room(other).0 > wanted.0 {
+                other
+            } else {
+                want.side
             }
-            Flip::Allowed | Flip::Never => want.side,
+        } else {
+            want.side
         };
         let room = Px(room(side).0.max(floor.0));
         let content = Size {
@@ -474,7 +473,7 @@ pub fn Popover(
     let probe = float.surface();
     // Escape and an outside click fade the popover out, then close it (`Exit::Fade`,
     // `--t-quick`).
-    let mut shown = use_signal(|| Shown::Visible);
+    let mut shown = use_signal(|| true);
     let Presented { presence, alias } = use_presence(
         shown(),
         PresenceSpec {
@@ -484,8 +483,8 @@ pub fn Popover(
         Some(onclose),
     );
     let close = EventHandler::new(move |()| {
-        if *shown.peek() == Shown::Visible {
-            shown.set(Shown::Hidden);
+        if *shown.peek() {
+            shown.set(false);
         }
     });
     let pointer = match (arrow, placed, anchor_rect, probe.rect()) {

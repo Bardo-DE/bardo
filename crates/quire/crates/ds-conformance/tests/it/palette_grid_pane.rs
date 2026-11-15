@@ -139,9 +139,10 @@ fn MorePalette() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut note = move |line: String| log.with_mut(|log| log.push(line));
     let mut more = use_signal(|| false);
-    let apps: Vec<PaletteRow<u8>> = match more() {
-        false => vec![item(1, "Files"), item(2, "Firefox")],
-        true => vec![item(1, "Files"), item(2, "Firefox"), item(3, "Terminal")],
+    let apps: Vec<PaletteRow<u8>> = if more() {
+        vec![item(1, "Files"), item(2, "Firefox"), item(3, "Terminal")]
+    } else {
+        vec![item(1, "Files"), item(2, "Firefox")]
     };
     let label = if more() { "Show Less" } else { "Show More" };
     let groups = vec![
@@ -526,11 +527,11 @@ fn a_grid_on_its_own_moves_with_the_arrows_and_stops_at_its_edges() {
 
 #[allow(non_snake_case)]
 fn LeavingPane() -> Element {
-    let mut shown = use_signal(|| Shown::Visible);
+    let mut shown = use_signal(|| true);
     let mut gone = use_signal(|| false);
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Sheet,
-            button { class: "hide", onclick: move |_| shown.set(Shown::Hidden), "Hide" }
+            button { class: "hide", onclick: move |_| shown.set(false), "Hide" }
             if !gone() {
                 PreviewPane {
                     content: PaneContent::Web { host: "duckduckgo.com".to_string(), url: "https://duckduckgo.com".to_string() },

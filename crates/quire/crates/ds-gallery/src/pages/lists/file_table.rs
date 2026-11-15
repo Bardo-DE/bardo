@@ -17,7 +17,6 @@ use ds::components::lists::virtual_table::{
 };
 use ds::file_drop::drag::DropOperation;
 use ds::prelude::*;
-use ds_core::vocab::Shown;
 
 /// One entry of the tree, in the order Finder lists it: `depth` folders deep, a folder or not.
 struct Entry {
@@ -93,9 +92,10 @@ fn toggled(open: Vec<usize>, shown: &[usize], toggle: OutlineToggle) -> Vec<usiz
         .into_iter()
         .filter(|held| !reached.contains(held))
         .collect();
-    match toggle.shown {
-        Shown::Visible => kept.into_iter().chain(reached).collect(),
-        Shown::Hidden => kept,
+    if toggle.shown {
+        kept.into_iter().chain(reached).collect()
+    } else {
+        kept
     }
 }
 
@@ -135,9 +135,9 @@ pub fn FileTableGallery() -> Element {
             true => OutlineRow::branch(
                 entry.depth,
                 if open.read().contains(&listed[row]) {
-                    Shown::Visible
+                    true
                 } else {
-                    Shown::Hidden
+                    false
                 },
             ),
             false => OutlineRow::leaf(entry.depth),
@@ -158,9 +158,12 @@ pub fn FileTableGallery() -> Element {
         }
     });
     let kinds = shown.clone();
-    let drop_kind = Callback::new(move |row: usize| match TREE[kinds[row]].folder {
-        true => RowDropKind::Container,
-        false => RowDropKind::Item,
+    let drop_kind = Callback::new(move |row: usize| {
+        if TREE[kinds[row]].folder {
+            RowDropKind::Container
+        } else {
+            RowDropKind::Item
+        }
     });
     let widths = shown.clone();
     let cell_width = Callback::new(move |(row, column): (usize, usize)| {

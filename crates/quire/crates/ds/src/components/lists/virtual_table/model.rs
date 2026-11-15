@@ -8,7 +8,6 @@ use chordkit::Platform;
 use dioxus::prelude::{Key, Modifiers};
 use ds_core::command::holds_primary;
 use ds_core::selection::PickHow;
-use ds_core::vocab::Shown;
 
 /// What a key asks of a virtual table.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -24,7 +23,7 @@ pub(crate) enum TableKey {
     Open,
     /// Right or Left in an outline: the cursor's branch opens or closes (`to`), and with Option
     /// held the whole subtree does.
-    Disclose { to: Shown, reach: ToggleReach },
+    Disclose { to: bool, reach: ToggleReach },
 }
 
 /// Whether `modifiers` hold a modifier that makes a key a command and not a movement.
@@ -39,8 +38,8 @@ fn chorded(modifiers: Modifiers) -> bool {
 /// Left, which open and close an outline's branch (Option widens them to the subtree).
 pub(crate) fn table_key(key: &Key, modifiers: Modifiers, platform: Platform) -> Option<TableKey> {
     let to = match key {
-        Key::ArrowRight => Some(Shown::Visible),
-        Key::ArrowLeft => Some(Shown::Hidden),
+        Key::ArrowRight => Some(true),
+        Key::ArrowLeft => Some(false),
         _ => None,
     };
     let plain_or_option = !modifiers
@@ -90,17 +89,19 @@ pub(crate) fn held_columns(asked: usize, total: usize) -> usize {
 /// How an arrow, Home, End, Page Up or Page Down reaches its row: with Shift it extends the
 /// selection from its anchor, otherwise it replaces the selection.
 pub(crate) fn key_how(modifiers: Modifiers) -> PickHow {
-    match modifiers.contains(Modifiers::SHIFT) {
-        true => PickHow::Extend,
-        false => PickHow::Replace,
+    if modifiers.contains(Modifiers::SHIFT) {
+        PickHow::Extend
+    } else {
+        PickHow::Replace
     }
 }
 
 /// How many whole rows of `pitch` the viewport `height` shows, at least one.
 pub(crate) fn page_rows(height: f32, pitch: f32) -> usize {
-    match pitch > 0.0 && height.is_finite() {
-        true => ((height / pitch).floor() as usize).max(1),
-        false => 1,
+    if pitch > 0.0 && height.is_finite() {
+        ((height / pitch).floor() as usize).max(1)
+    } else {
+        1
     }
 }
 
@@ -111,7 +112,6 @@ mod tests {
     use chordkit::Platform;
     use dioxus::prelude::{Key, Modifiers};
     use ds_core::selection::PickHow;
-    use ds_core::vocab::Shown;
 
     #[test]
     fn the_cursor_moves_by_a_row_an_end_or_a_page_and_stops_at_the_ends() {
@@ -158,14 +158,14 @@ mod tests {
             (
                 Key::ArrowRight,
                 Some(TableKey::Disclose {
-                    to: Shown::Visible,
+                    to: true,
                     reach: ToggleReach::Row,
                 }),
             ),
             (
                 Key::ArrowLeft,
                 Some(TableKey::Disclose {
-                    to: Shown::Hidden,
+                    to: false,
                     reach: ToggleReach::Row,
                 }),
             ),
@@ -185,7 +185,7 @@ mod tests {
         let step_down = Some(TableKey::Move(Rove::Step(Step::Down)));
         let right = Key::ArrowRight;
         let option_right = Some(TableKey::Disclose {
-            to: Shown::Visible,
+            to: true,
             reach: ToggleReach::Subtree,
         });
         // (key, modifiers, wanted)

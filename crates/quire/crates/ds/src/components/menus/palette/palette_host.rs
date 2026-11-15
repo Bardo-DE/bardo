@@ -5,7 +5,7 @@
 use super::palette_close::PaletteClose;
 use crate::components::overlays::popover::Float;
 use dioxus::prelude::*;
-use ds_core::vocab::Shown;
+use ds_core::vocab::shown_word;
 use ds_core::word::Word;
 use ds_style::tokens::shape::Corner;
 
@@ -34,7 +34,7 @@ pub(crate) fn hosted(
     host: CommandPaletteHost,
     float: Float,
     card: Element,
-    shown: Shown,
+    shown: bool,
     onclose: EventHandler<PaletteClose>,
 ) -> Element {
     match host {
@@ -44,7 +44,7 @@ pub(crate) fn hosted(
                 rsx! {
                     div {
                         class: "ds-palette-wrap",
-                        "data-shown": shown.slug(),
+                        "data-shown": shown_word(shown),
                         onpointerdown: move |_| {
                             if float.is_top() {
                                 onclose.call(PaletteClose::Outside);

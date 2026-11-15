@@ -7,8 +7,7 @@ use crate::focus::click::kept_click;
 use crate::host::measure::client_rect;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Rect;
-use ds_core::vocab::{Shortcut, Shown};
-use ds_core::word::Word;
+use ds_core::vocab::{Shortcut, aria_word, shown_word};
 use ds_style::icon::Icon;
 use ds_style::icon::render::{Glyph, IconSize};
 use std::rc::Rc;
@@ -23,9 +22,9 @@ const TIP: &str = "More";
 ///
 /// It sits in the row's flow (never over the time or the text) and shows as `HoverStrip` does:
 /// hidden but still laid out, so the row never reflows, until the row is hovered, the button
-/// holds the keyboard focus (Tab reaches it), `shown` says `Visible` (the caller's say for a
+/// holds the keyboard focus (Tab reaches it), `shown` says `true` (the caller's say for a
 /// keyboard selection, since Blitz never matches `:focus-within`, spike S12) or `expanded` is
-/// `Visible`. `shown: Some(Shown::Hidden)` keeps it down under the pointer.
+/// `true`. `shown: Some(false)` keeps it down under the pointer.
 ///
 /// Controlled: `expanded` is whether the menu it opens is up, owned by the caller (written as
 /// `aria-expanded`, and keeping the button visible). `onclick` receives the button's own rect
@@ -39,8 +38,8 @@ pub fn RowMore(
     #[props(into, default = LABEL.to_string())] label: String,
     #[props(into, default = TIP.to_string())] tip: String,
     #[props(default)] shortcut: Option<Shortcut>,
-    #[props(default)] expanded: Shown,
-    #[props(default)] shown: Option<Shown>,
+    #[props(default)] expanded: bool,
+    #[props(default)] shown: Option<bool>,
     #[props(default)] on_press: EventHandler<()>,
     onclick: EventHandler<Rect>,
 ) -> Element {
@@ -50,7 +49,7 @@ pub fn RowMore(
         button {
             r#type: "button",
             class: "ds-row-more",
-            "data-shown": shown.map(Shown::slug),
+            "data-shown": shown.map(shown_word),
             title: tip.native(),
             "aria-label": "{label}",
             onpointerdown: {
@@ -66,7 +65,7 @@ pub fn RowMore(
                 move |_| tip.out()
             },
             "aria-haspopup": "menu",
-            "aria-expanded": expanded.aria(),
+            "aria-expanded": aria_word(expanded),
             onmounted: {
                 let tip = tip.clone();
                 move |event| {

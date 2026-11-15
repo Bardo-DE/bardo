@@ -17,7 +17,7 @@ use dioxus::prelude::*;
 use ds_core::command::types_text;
 use ds_core::press::Press;
 use ds_core::time::clock::now;
-use ds_core::vocab::{Availability, Check, Shown};
+use ds_core::vocab::{Availability, Check};
 use ds_core::word::Word;
 use ds_style::icon::Icon;
 use ds_style::tokens::control_size::ControlSize;
@@ -93,7 +93,7 @@ fn chosen_choice<T: PartialEq>(items: &[MenuItem<T>], value: Option<&T>) -> Opti
 /// laid the button out; `anchor` names another place instead (a point or a rect), and then the menu
 /// needs no element at all. A document with no renderer (a unit test over a `VirtualDom` and
 /// `dioxus-ssr`) never reports one, so it opens a pop-up with
-/// `start: Shown::Visible, anchor: Some(Anchor::Point(..))`, or by clicking the button once
+/// `start: true, anchor: Some(Anchor::Point(..))`, or by clicking the button once
 /// `anchor` is set.
 #[component]
 pub fn PopUpButton<T: Clone + PartialEq + 'static>(
@@ -103,16 +103,16 @@ pub fn PopUpButton<T: Clone + PartialEq + 'static>(
     #[props(default)] value: Option<T>,
     #[props(default)] title: Option<String>,
     #[props(default)] size: ControlSize,
-    #[props(default)] start: Shown,
-    #[props(default)] open: Option<Shown>,
-    #[props(default)] on_open_change: Option<EventHandler<Shown>>,
+    #[props(default)] start: bool,
+    #[props(default)] open: Option<bool>,
+    #[props(default)] on_open_change: Option<EventHandler<bool>>,
     #[props(default)] anchor: Option<Anchor>,
     #[props(default)] availability: Availability,
     #[props(default)] common: Common,
 ) -> Element {
     let mut own = use_signal(move || start);
     let shown = open.unwrap_or(own());
-    let mut set_open = move |to: Shown| {
+    let mut set_open = move |to: bool| {
         if open.is_none() {
             own.set(to);
         }
@@ -174,16 +174,16 @@ pub fn PopUpButton<T: Clone + PartialEq + 'static>(
     let onkey = move |event: KeyboardEvent| match event.key() {
         Key::ArrowDown | Key::ArrowUp if live => {
             event.prevent_default();
-            set_open(Shown::Visible);
+            set_open(true);
         }
         // Escape heard by the button itself, before the open menu has taken the keyboard (it
         // does so a frame or two after it mounts): the menu's own Escape is on its panel, which
         // is not under this span, so the button closes the menu it opened. The button already
         // has the keyboard, which is where a closed menu leaves it.
-        Key::Escape if shown == Shown::Visible => {
+        Key::Escape if shown => {
             event.stop_propagation();
             event.prevent_default();
-            set_open(Shown::Hidden);
+            set_open(false);
         }
         Key::Character(text)
             if live
@@ -240,7 +240,7 @@ pub fn PopUpButton<T: Clone + PartialEq + 'static>(
                 shown: Some(shown),
                 onclick: move |_: Press| {
                     if live {
-                        set_open(shown.flipped());
+                        set_open(!shown);
                     }
                 },
                 common: Common {
@@ -257,7 +257,7 @@ pub fn PopUpButton<T: Clone + PartialEq + 'static>(
                 span { class: "ds-popup-sizer", "aria-hidden": "true", "{widest}" }
             }
         }
-        if shown == Shown::Visible && let Some(anchor) = anchor {
+        if shown && let Some(anchor) = anchor {
             Menu::<T> {
                 placement: MenuPlacement::Popup,
                 anchor,
@@ -265,10 +265,10 @@ pub fn PopUpButton<T: Clone + PartialEq + 'static>(
                 start,
                 items: listed,
                 onpick: move |picked: T| {
-                    set_open(Shown::Hidden);
+                    set_open(false);
                     onpick.call(picked);
                 },
-                onclose: move |()| set_open(Shown::Hidden),
+                onclose: move |()| set_open(false),
             }
         }
     }

@@ -1,13 +1,13 @@
 //! The level glyph's vocabulary: which glyph a level carries and where it takes its state from.
 //! Every choice is a named variant (no `bool`).
 use crate::components::content::status::volume::VolumeState;
-use ds_core::vocab::{Fraction, Muting};
+use ds_core::vocab::Fraction;
 
 /// The glyph a level carries, which follows the level.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum LevelGlyph {
     /// A speaker: no wave at 0, then one, two and three waves by thirds; muted, a slash.
-    Volume(Muting),
+    Volume(bool),
     /// A sun whose rays grow with the brightness.
     Brightness,
     /// A keyboard under a rising sun whose rays grow with the keyboard's backlight (design/26

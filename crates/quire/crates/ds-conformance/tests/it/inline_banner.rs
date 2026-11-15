@@ -99,7 +99,7 @@ fn a_severity_colours_the_mark_and_a_danger_banner_is_an_alert() {
     );
 }
 
-static SHOWN: GlobalSignal<Shown> = Signal::global(|| Shown::Visible);
+static SHOWN: GlobalSignal<bool> = Signal::global(|| true);
 
 /// A banner over a paragraph with no `Ds` root: it needs none.
 #[allow(non_snake_case)]
@@ -121,7 +121,7 @@ fn shown_is_a_plain_switch_the_content_follows_at_once_with_no_motion() {
     assert_eq!(harness.count(".ds-inline-banner-frame"), 0);
     let open = harness.rect(".body").expect("the message").origin.y.0;
 
-    harness.within(|| *SHOWN.write() = Shown::Hidden);
+    harness.within(|| *SHOWN.write() = false);
     harness.advance(ms(20));
     assert_eq!(harness.count(".ds-inline-banner"), 0, "gone in one frame");
     let closed = harness.rect(".body").expect("the message").origin.y.0;
@@ -130,7 +130,7 @@ fn shown_is_a_plain_switch_the_content_follows_at_once_with_no_motion() {
         "the message moved up at once: {closed} {open}"
     );
 
-    harness.within(|| *SHOWN.write() = Shown::Visible);
+    harness.within(|| *SHOWN.write() = true);
     harness.advance(ms(20));
     assert_eq!(harness.count(".ds-inline-banner"), 1, "back in one frame");
     let back = harness.rect(".body").expect("the message").origin.y.0;

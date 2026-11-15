@@ -15,7 +15,7 @@ use crate::host::event_point::client_point;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Point;
 use ds_core::press::{PointerButton, Press};
-use ds_core::vocab::{Availability, Check, FocusStyle, Selection, Shown};
+use ds_core::vocab::{Availability, Check, aria_word};
 use ds_core::word::Word;
 use ds_style::icon::Icon;
 use ds_style::icon::render::{Glyph, IconSize};
@@ -35,7 +35,7 @@ pub(crate) enum Branch {
     /// It picks a value.
     Leaf,
     /// It opens a submenu, open or not.
-    Parent(Shown),
+    Parent(bool),
 }
 
 /// One item as a menu draws it.
@@ -55,7 +55,7 @@ pub(crate) struct ItemView<'a> {
     /// The state mark.
     pub check: Option<Check>,
     /// Whether this is the highlighted item.
-    pub highlight: Selection,
+    pub highlight: bool,
     /// Whether it can be picked.
     pub availability: Availability,
     /// Whether it opens a submenu.
@@ -95,13 +95,13 @@ pub(crate) fn item(view: ItemView<'_>, events: RowEvents) -> Element {
     let (moved, clicked, released, mounted) = (alive.clone(), alive.clone(), alive.clone(), alive);
     let (popup, expanded) = match view.branch {
         Branch::Leaf => (None, None),
-        Branch::Parent(open) => (Some("true"), Some(open.aria())),
+        Branch::Parent(open) => (Some("true"), Some(aria_word(open))),
     };
     let role = match view.check {
         Some(_) => "menuitemcheckbox",
         None => "menuitem",
     };
-    let highlighted = (view.highlight == Selection::Selected).then_some("true");
+    let highlighted = view.highlight.then_some("true");
     let live = view.availability == Availability::Enabled;
     let state = view.columns.state.then(|| state_mark(view.check));
     // Without the state column the title (or image) leads the row and takes the row's own inset.
@@ -129,7 +129,7 @@ pub(crate) fn item(view: ItemView<'_>, events: RowEvents) -> Element {
             class: "ds-menu-item",
             role,
             "data-selected": highlighted,
-            "data-focus": FocusStyle::Highlight.slug(),
+            "data-focus": "highlight",
             "data-state-column": leading,
             "data-lines": lines,
             "aria-label": Some(view.title.to_owned()).filter(|title| !title.is_empty()),

@@ -3,7 +3,7 @@
 //! shows it only on the highlighted row, so the list reads as its data (a file's time) and the
 //! hint follows the selection; `Always` keeps it on every row.
 
-use ds_core::vocab::{Selection, Shortcut};
+use ds_core::vocab::Shortcut;
 
 /// When a row's chord shows.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
@@ -43,10 +43,10 @@ impl RowChord {
 }
 
 /// The chord a row draws in `selection`: `None` when it has none or it waits for the selection.
-pub(crate) fn shown_chord(chord: &RowChord, selection: Selection) -> Option<&Shortcut> {
+pub(crate) fn shown_chord(chord: &RowChord, selection: bool) -> Option<&Shortcut> {
     let visible = match (chord.shown, selection) {
-        (ChordShown::Always, _) | (ChordShown::Selected, Selection::Selected) => true,
-        (ChordShown::Selected, Selection::Unselected) => false,
+        (ChordShown::Always, _) | (ChordShown::Selected, true) => true,
+        (ChordShown::Selected, false) => false,
     };
     (visible && !chord.shortcut.0.is_empty()).then_some(&chord.shortcut)
 }
@@ -54,7 +54,7 @@ pub(crate) fn shown_chord(chord: &RowChord, selection: Selection) -> Option<&Sho
 #[cfg(test)]
 mod tests {
     use super::{RowChord, shown_chord};
-    use ds_core::vocab::{Selection, Shortcut, ShortcutKey};
+    use ds_core::vocab::{Shortcut, ShortcutKey};
 
     #[test]
     fn a_chord_shows_by_its_rule() {
@@ -63,37 +63,32 @@ mod tests {
             (
                 "selected rule, selected",
                 RowChord::on_selected(keys.clone()),
-                Selection::Selected,
+                true,
                 true,
             ),
             (
                 "selected rule, unselected",
                 RowChord::on_selected(keys.clone()),
-                Selection::Unselected,
+                false,
                 false,
             ),
             (
                 "always, unselected",
                 RowChord::always(keys.clone()),
-                Selection::Unselected,
+                false,
                 true,
             ),
             (
                 "always, selected",
                 RowChord::always(keys.clone()),
-                Selection::Selected,
+                true,
                 true,
             ),
-            (
-                "empty, selected",
-                RowChord::default(),
-                Selection::Selected,
-                false,
-            ),
+            ("empty, selected", RowChord::default(), true, false),
             (
                 "empty always",
                 RowChord::always(Shortcut::default()),
-                Selection::Unselected,
+                false,
                 false,
             ),
         ];

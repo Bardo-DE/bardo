@@ -1,7 +1,7 @@
 //! What the Spaces bar is given: the Spaces it lists and how much of it shows.
 
 use crate::components::content::image_source::ImageSource;
-use ds_core::vocab::{DropState, Selection};
+use ds_core::vocab::DropState;
 use ds_core::word::Word;
 
 /// Which Space a press names: the host's own id for it, quoted back unchanged. The bar never
@@ -17,7 +17,7 @@ pub struct SpaceTile {
     /// Its name, shown in the collapsed bar and under its thumbnail.
     pub name: String,
     /// Whether it is the Space on show (`aria-current`).
-    pub current: Selection,
+    pub current: bool,
     /// What the Space looks like, shown in the expanded bar. Without one the thumbnail is a
     /// quiet blank card.
     pub thumbnail: Option<ImageSource>,
@@ -35,7 +35,7 @@ impl SpaceTile {
         SpaceTile {
             key,
             name: name.into(),
-            current: Selection::Unselected,
+            current: false,
             thumbnail: None,
             backdrop: None,
             drop: DropState::Idle,
@@ -43,7 +43,7 @@ impl SpaceTile {
     }
 
     /// The same Space, marked as the one on show or not.
-    pub fn current(self, current: Selection) -> Self {
+    pub fn current(self, current: bool) -> Self {
         SpaceTile { current, ..self }
     }
 
@@ -103,7 +103,7 @@ pub(crate) enum PointerOver {
 mod tests {
     use super::{BarExpansion, BarSpaceKey, PointerOver, SpaceTile};
     use crate::components::content::image_source::ImageSource;
-    use ds_core::vocab::{DropState, Selection};
+    use ds_core::vocab::DropState;
 
     #[test]
     fn the_bar_is_expanded_exactly_while_the_pointer_is_over_it() {
@@ -120,12 +120,12 @@ mod tests {
     #[test]
     fn a_new_tile_is_not_current_and_has_nothing_dragged_over_it() {
         let tile = SpaceTile::new(BarSpaceKey("a".to_owned()), "Desktop 1");
-        assert_eq!(tile.current, Selection::Unselected);
+        assert!(!tile.current);
         assert_eq!(tile.drop, DropState::Idle);
         assert_eq!(tile.thumbnail, None);
         assert_eq!(tile.backdrop, None);
-        let marked = tile.current(Selection::Selected).in_drag(DropState::Target);
-        assert_eq!(marked.current, Selection::Selected);
+        let marked = tile.current(true).in_drag(DropState::Target);
+        assert!(marked.current);
         assert_eq!(marked.drop, DropState::Target);
     }
 

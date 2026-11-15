@@ -22,10 +22,7 @@ fn is_heading(key: u32) -> bool {
 
 /// A heading's height, and a message row's.
 fn height_of(key: u32) -> Px {
-    match is_heading(key) {
-        true => Px(28.0),
-        false => Px(32.0),
-    }
+    if is_heading(key) { Px(28.0) } else { Px(32.0) }
 }
 
 /// The virtual list and its controls.
@@ -39,10 +36,7 @@ pub fn VirtualGallery() -> Element {
             return rsx! { SectionHeader { title: format!("Group {}", key / GROUP + 1) } };
         }
         let state = RowState {
-            selection: match Some(key) == cursor() {
-                true => Selection::Selected,
-                false => Selection::Unselected,
-            },
+            selection: Some(key) == cursor(),
             ..RowState::default()
         };
         rsx! {

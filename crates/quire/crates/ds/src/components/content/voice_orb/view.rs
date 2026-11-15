@@ -4,8 +4,7 @@ use super::io::use_turn;
 use super::model::{OrbColour, OrbColours, OrbMask, OrbMetrics, Turn};
 use dioxus::prelude::*;
 use ds_core::geometry::units::Px;
-use ds_core::vocab::Activity;
-use ds_core::word::Word;
+use ds_core::vocab::activity_word;
 use ds_style::tokens::colour::ColourToken;
 use ds_style::tokens::orb as vars;
 use std::time::Duration;
@@ -17,9 +16,9 @@ pub const ORB_PERIOD: Duration = Duration::from_secs(20);
 pub const ORB_SIZE: Px = Px(192.0);
 
 /// A round field of drifting colour: three glows behind a fine dot grid, turning slowly while
-/// the orb is `Active` and standing still when it is not.
+/// the orb is `true` and standing still when it is not.
 ///
-/// The turn is driven from Rust (a frame timer that runs only while `activity` is `Active`, and
+/// The turn is driven from Rust (a frame timer that runs only while `activity` is `true`, and
 /// not under Reduced motion), because Blitz cannot animate a registered custom property. On
 /// Blitz the dots are a plain layer at reduced opacity under the mask, where a browser
 /// overlay-blends and backdrop-blurs them; `filter: blur() contrast()` paints on both renderers
@@ -30,7 +29,7 @@ pub fn VoiceOrb(
     #[props(default = ORB_SIZE)] size: Px,
     #[props(default)] colours: OrbColours,
     #[props(default = ORB_PERIOD)] period: Duration,
-    #[props(default)] activity: Activity,
+    #[props(default)] activity: bool,
     #[props(default)] aria_label: Option<String>,
 ) -> Element {
     let turn = use_turn(activity, period);
@@ -46,7 +45,7 @@ pub fn VoiceOrb(
     rsx! {
         div {
             class: "ds-voice-orb",
-            "data-activity": activity.slug(),
+            "data-activity": activity_word(activity),
             "data-mask": mask,
             role,
             "aria-label": aria_label,

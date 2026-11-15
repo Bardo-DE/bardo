@@ -10,5 +10,5 @@ use ds::prelude::*;
 pub const STRIP_PRESS_CASES: &[Case] = &[Case {
     component: "hover_strip",
     state: "on-press",
-    make: || rsx! { HoverStrip { actions: strip_actions(), shown: Shown::Visible, on_press: |_: ActionId| {} } },
+    make: || rsx! { HoverStrip { actions: strip_actions(), shown: true, on_press: |_: ActionId| {} } },
 }];

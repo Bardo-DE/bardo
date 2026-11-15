@@ -7,25 +7,22 @@ use crate::components::controls::disclosure::indicator;
 use crate::components::controls::press::{ActivationKeys, activates};
 use crate::focus::click::kept_click;
 use dioxus::prelude::*;
-use ds_core::vocab::Shown;
+use ds_core::vocab::aria_word;
 
 /// The name and tip of the triangle for a row that is `shown`: what a press will do.
-fn name(shown: Shown) -> &'static str {
-    match shown {
-        Shown::Hidden => "Expand",
-        Shown::Visible => "Collapse",
-    }
+fn name(shown: bool) -> &'static str {
+    if shown { "Collapse" } else { "Expand" }
 }
 
 /// The triangle of a branch row; a press asks `on_toggle` for the other state. It never reaches
 /// the row.
 #[component]
-pub(crate) fn RowDisclosure(shown: Shown, on_toggle: Option<EventHandler<Shown>>) -> Element {
+pub(crate) fn RowDisclosure(shown: bool, on_toggle: Option<EventHandler<bool>>) -> Element {
     let label = name(shown);
     let tip = use_tip(Some(TipText::new(label)));
     let toggle = move || {
         if let Some(on_toggle) = on_toggle {
-            on_toggle.call(shown.flipped());
+            on_toggle.call(!shown);
         }
     };
     rsx! {
@@ -36,7 +33,7 @@ pub(crate) fn RowDisclosure(shown: Shown, on_toggle: Option<EventHandler<Shown>>
             tabindex: "0",
             title: tip.native(),
             "aria-label": label,
-            "aria-expanded": shown.aria(),
+            "aria-expanded": aria_word(shown),
             onclick: move |event| {
                 event.stop_propagation();
                 event.prevent_default();

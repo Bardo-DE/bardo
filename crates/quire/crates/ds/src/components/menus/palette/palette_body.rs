@@ -12,7 +12,7 @@ use crate::components::menus::palette::palette_stops::{Body, ShownGroup};
 use crate::host::event_point::pointer_point;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Point;
-use ds_core::vocab::{RowState, Selection};
+use ds_core::vocab::RowState;
 
 /// What the drawn stops report, by stop number.
 #[derive(Clone)]
@@ -76,7 +76,7 @@ fn draw_group<T>(
                         events.alive.clone(),
                     );
                     let state = RowState {
-                        selection: Selection::of(&Some(at), &local),
+                        selection: Some(at) == local,
                         availability: row.availability,
                         ..RowState::default()
                     };
@@ -147,7 +147,7 @@ fn draw_group<T>(
             (body, grid.cells.len())
         }
     };
-    let action_selection = Selection::of(&Some(first + size), &Some(current));
+    let action_selection = Some(first + size) == Some(current);
     // An untitled group with no action has no header band to draw.
     let header = (!shown.group.title.is_empty() || shown.group.action.is_some()).then(|| {
         rsx! {

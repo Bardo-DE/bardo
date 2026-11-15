@@ -15,7 +15,7 @@ fn app() -> Element {
     rsx! {
         List::<&'static str> {
             label: "Threads",
-            items: keys().into_iter().map(|key| listed_thread(key, Emphasis::Strong)).collect::<Vec<_>>(),
+            items: keys().into_iter().map(|key| listed_thread(key, true)).collect::<Vec<_>>(),
         }
     }
 }

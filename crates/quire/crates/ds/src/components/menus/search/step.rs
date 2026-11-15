@@ -6,13 +6,13 @@
 
 use crate::components::menus::search::model::{EscapeOrder, Manner, Panel};
 use crate::stack::roving::{Step, Wrap, moved_live};
-use ds_core::vocab::{Availability, Shown};
+use ds_core::vocab::Availability;
 
 /// Whether the suggestions are showing, and which choice the cursor is on.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct Suggesting {
     /// Whether the panel is wanted: it also needs choices to show.
-    pub shown: Shown,
+    pub shown: bool,
     /// The highlighted choice, numbered as a menu numbers its choices; none until a key or the
     /// pointer asks for one, so Enter submits the text.
     pub cursor: Option<usize>,
@@ -53,7 +53,7 @@ impl Suggesting {
     /// The panel is closed and nothing is highlighted.
     pub(crate) fn closed() -> Self {
         Suggesting {
-            shown: Shown::Hidden,
+            shown: false,
             cursor: None,
         }
     }
@@ -61,7 +61,7 @@ impl Suggesting {
     /// Whether the panel is up, given how many choices there are: when the field owns the panel
     /// it also needs to be wanted; a host that shows it wants it always.
     pub(crate) fn is_open(self, choices: usize, panel: Panel) -> bool {
-        let wanted = panel == Panel::Shown || self.shown == Shown::Visible;
+        let wanted = panel == Panel::Shown || self.shown;
         wanted && choices > 0
     }
 }
@@ -119,7 +119,7 @@ pub(crate) fn press(
             match to {
                 Some(cursor) => (
                     Suggesting {
-                        shown: Shown::Visible,
+                        shown: true,
                         cursor: Some(cursor),
                     },
                     Act::Swallow,
@@ -141,17 +141,17 @@ pub(crate) fn press(
 mod tests {
     use super::{Act, SuggestKey, Suggesting, Text, press};
     use crate::components::menus::search::model::{EscapeOrder, Manner, Panel};
+    use ds_core::vocab::Availability;
     use ds_core::vocab::Availability::{Disabled as D, Enabled as E};
-    use ds_core::vocab::{Availability, Shown};
 
     const OPEN: Suggesting = Suggesting {
-        shown: Shown::Visible,
+        shown: true,
         cursor: None,
     };
 
     fn at(cursor: usize) -> Suggesting {
         Suggesting {
-            shown: Shown::Visible,
+            shown: true,
             cursor: Some(cursor),
         }
     }
@@ -178,7 +178,7 @@ mod tests {
             ("no choices: the arrows are the caret's", OPEN, Down, &[], Text::Filled, (OPEN, Act::Pass)),
             ("enter picks the highlighted choice", at(1), Enter, &[E, E], Text::Filled, (hidden, Act::Pick(1))),
             ("enter with nothing highlighted submits", OPEN, Enter, &[E, E], Text::Filled, (hidden, Act::Submit)),
-            ("enter on a closed panel submits", Suggesting { shown: Shown::Hidden, cursor: Some(0) }, Enter, &[E], Text::Filled, (hidden, Act::Submit)),
+            ("enter on a closed panel submits", Suggesting { shown: false, cursor: Some(0) }, Enter, &[E], Text::Filled, (hidden, Act::Submit)),
             ("enter on a disabled choice submits", at(0), Enter, &[D], Text::Filled, (hidden, Act::Submit)),
             ("escape closes the panel first", at(1), Escape, &[E, E], Text::Filled, (hidden, Act::Swallow)),
             ("escape then clears the text", hidden, Escape, &[E, E], Text::Filled, (hidden, Act::Clear)),

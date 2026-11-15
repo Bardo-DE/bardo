@@ -50,7 +50,7 @@ fn google() -> Leading {
 pub const CASES: &[Case] = &[
     Case {
         golden: "controls/button/leading-mark.html",
-        make: || rsx! { Button { bezel: Bezel::Inline, label: "poh@acme.example", leading: google(), trailing: Icon::ChevronDown, shown: Shown::Hidden, onclick: |_| {} } },
+        make: || rsx! { Button { bezel: Bezel::Inline, label: "poh@acme.example", leading: google(), trailing: Icon::ChevronDown, shown: false, onclick: |_| {} } },
     },
     Case {
         golden: "controls/button/leading-glyph.html",

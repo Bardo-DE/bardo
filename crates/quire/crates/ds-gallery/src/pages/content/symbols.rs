@@ -6,7 +6,6 @@ use crate::pages::Section;
 use crate::pages::details::overview::{Cell, mini};
 use dioxus::prelude::*;
 use ds::prelude::*;
-use ds_core::vocab::Shown;
 use ds_core::word::Word;
 
 /// The icons a whole-icon effect plays on.
@@ -120,12 +119,12 @@ fn TransitionSection() -> Element {
 
 #[component]
 fn ShownCell(effect: TransitionEffect) -> Element {
-    let mut shown = use_signal(|| Shown::Visible);
+    let mut shown = use_signal(|| true);
     rsx! {
         Cell { name: effect.label(), code: "SymbolEffect::Transition({effect:?}, shown)",
             controls: rsx! {
-                {mini("Show", move |_| shown.set(Shown::Visible))}
-                {mini("Hide", move |_| shown.set(Shown::Hidden))}
+                {mini("Show", move |_| shown.set(true))}
+                {mini("Hide", move |_| shown.set(false))}
             },
             {row(move |_| SymbolEffect::Transition(effect, shown()))}
         }
@@ -142,7 +141,7 @@ fn ReplaceCell() -> Element {
                 {mini("Swap", move |_| flipped.set(!flipped()))}
             },
             div { class: "g-detail",
-                Symbol { icon, size: IconSize::Bar, effect: SymbolEffect::Transition(TransitionEffect::Replace, Shown::Visible) }
+                Symbol { icon, size: IconSize::Bar, effect: SymbolEffect::Transition(TransitionEffect::Replace, true) }
             }
         }
     }

@@ -14,7 +14,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-static SHOWN: GlobalSignal<Shown> = Signal::global(|| Shown::Visible);
+static SHOWN: GlobalSignal<bool> = Signal::global(|| true);
 thread_local! {
     static GONE: std::cell::Cell<u32> = const { std::cell::Cell::new(0) };
 }
@@ -49,7 +49,7 @@ fn harness(app: fn() -> Element) -> Harness {
     harness
 }
 
-fn set(harness: &mut Harness, shown: Shown) {
+fn set(harness: &mut Harness, shown: bool) {
     harness.within(|| *SHOWN.write() = shown);
 }
 
@@ -61,7 +61,7 @@ fn hidden_it_fades_the_content_out_and_then_unmounts_it() {
         harness.attr(".ds-fade", "data-presence").as_deref(),
         Some("present")
     );
-    set(&mut harness, Shown::Hidden);
+    set(&mut harness, false);
     harness.advance(ms(40));
     assert_eq!(harness.count("#badge"), 1, "still there while it fades");
     assert_eq!(
@@ -80,9 +80,9 @@ fn hidden_it_fades_the_content_out_and_then_unmounts_it() {
 #[test]
 fn shown_again_mid_fade_it_stays() {
     let mut harness = harness(Standard);
-    set(&mut harness, Shown::Hidden);
+    set(&mut harness, false);
     harness.advance(ms(40));
-    set(&mut harness, Shown::Visible);
+    set(&mut harness, true);
     harness.advance(ms(400));
     assert_eq!(harness.count("#badge"), 1);
     assert_eq!(GONE.get(), 0);
@@ -91,7 +91,7 @@ fn shown_again_mid_fade_it_stays() {
 #[test]
 fn under_reduced_motion_it_leaves_on_the_reduced_settle() {
     let mut harness = harness(Reduced);
-    set(&mut harness, Shown::Hidden);
+    set(&mut harness, false);
     harness.advance(ms(250));
     assert_eq!(harness.count("#badge"), 0);
     assert_eq!(GONE.get(), 1);

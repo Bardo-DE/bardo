@@ -2,7 +2,6 @@
 //! `WindowTile`) and what the host reports back (`WindowState`, `TileError`). Closed
 //! sets, so a host that is not ds-blitz (shell-host's `SurfaceHandle`) maps each one exhaustively.
 
-use ds_core::vocab::Activity;
 use ds_core::word::Word;
 
 /// The edge or corner an interactive resize grabs (the xdg-shell `resize_edge` set, winit's
@@ -134,10 +133,7 @@ impl WindowState {
     }
 
     /// Whether the window is the one the person works in, as the shared vocabulary says it.
-    pub(crate) fn activity(self) -> Activity {
-        match self.activated {
-            Activation::Active => Activity::Active,
-            Activation::Inactive => Activity::Inactive,
-        }
+    pub(crate) fn activity(self) -> bool {
+        self.activated == Activation::Active
     }
 }

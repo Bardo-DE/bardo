@@ -1,5 +1,5 @@
-//! Fade: a wrapper that lets its content go away gently. While `shown` is `Visible` the content is
-//! drawn as it is; when `shown` turns `Hidden` it fades out over `--t-quick` (the popover's exit)
+//! Fade: a wrapper that lets its content go away gently. While `shown` is `true` the content is
+//! drawn as it is; when `shown` turns `false` it fades out over `--t-quick` (the popover's exit)
 //! and is then unmounted, and `on_hidden` runs once it has settled. Finder's download badge is the
 //! use: the ring or pie stays mounted through the fade when a download completes, where an `if`
 //! would drop it at once. Under Reduced motion it leaves on the reduced settle, as every presence does.
@@ -12,7 +12,6 @@
 
 use crate::root::common::Common;
 use dioxus::prelude::*;
-use ds_core::vocab::Shown;
 use ds_motion::anim::Anim;
 use ds_motion::presence::{
     Exit, Presence,
@@ -20,11 +19,11 @@ use ds_motion::presence::{
     use_presence::{Presented, use_presence},
 };
 
-/// `children`, drawn while `shown` (`Visible` by default) and for one fade after it turns
-/// `Hidden`. `on_hidden` runs once the fade has settled and the content is gone.
+/// `children`, drawn while `shown` (`true` by default) and for one fade after it turns
+/// `false`. `on_hidden` runs once the fade has settled and the content is gone.
 #[component]
 pub fn Fade(
-    #[props(default = Shown::Visible)] shown: Shown,
+    #[props(default = true)] shown: bool,
     #[props(default)] on_hidden: Option<EventHandler<()>>,
     #[props(default)] children: Element,
     #[props(default)] common: Common,

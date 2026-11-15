@@ -92,8 +92,8 @@ fn Launcher() -> Element {
     let detail = use_detail(pane, TOUCH());
     let operation = use_operation(detail.cue());
     let shown = match pane {
-        Pane::Hidden => Shown::Hidden,
-        Pane::Showing(_) | Pane::Pending | Pane::Failed => Shown::Visible,
+        Pane::Hidden => false,
+        Pane::Showing(_) | Pane::Pending | Pane::Failed => true,
     };
     rsx! {
         Ds { appearance: Appearance { motion: MOTION(), ..Appearance::default() }, material: Material::Sheet,

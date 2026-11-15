@@ -71,7 +71,7 @@ fn an_animation_removed_midway_leaves_nothing() {
     assert!(h.hits(at(50.0, 50.0), ".box"), "hit where it rests");
 }
 
-static SHOWN: GlobalSignal<Shown> = Signal::global(|| Shown::Visible);
+static SHOWN: GlobalSignal<bool> = Signal::global(|| true);
 
 #[allow(non_snake_case)]
 fn Center() -> Element {
@@ -147,10 +147,10 @@ fn a_hide_taken_back_midway_leaves_the_panel_at_rest() {
         HarnessConfig::new(PANEL_VIEW).with_clock(Clock::Virtual),
     );
     settle_until(&mut h, |h| presence(h).as_deref() == Some("present"));
-    h.within(|| *SHOWN.write() = Shown::Hidden);
+    h.within(|| *SHOWN.write() = false);
     h.advance(standard(Anim::PanelOut) / 2);
     assert_eq!(presence(&h).as_deref(), Some("leaving"));
-    h.within(|| *SHOWN.write() = Shown::Visible);
+    h.within(|| *SHOWN.write() = true);
     h.advance(ms(1));
     assert_eq!(
         presence(&h).as_deref(),

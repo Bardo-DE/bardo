@@ -25,8 +25,8 @@ use crate::root::common::Common;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Px;
 use ds_core::press::Press;
-use ds_core::vocab::Availability;
-use ds_core::vocab::{Emphasis, FocusStyle, RowState, Shown};
+use ds_core::vocab::RowState;
+use ds_core::vocab::{Availability, aria_word, emphasis_word};
 use ds_core::word::Word;
 
 /// Whether a row is part of an outline, and whether it opens one.
@@ -39,7 +39,7 @@ pub enum Outline {
     /// siblings'.
     Leaf,
     /// A row that opens the `children` under it.
-    Branch(Shown),
+    Branch(bool),
 }
 
 /// A hook a row calls when its element mounts, held apart from the scope that made it: a parent
@@ -92,7 +92,7 @@ fn title_words(title: &TextLine, marks: &[usize]) -> Element {
 /// One row. `onclick` hears a press on the row (a toggle's own press is the toggle's).
 ///
 /// `state` is the row's [`RowState`]: `selection` (`aria-selected`), `emphasis` (an unread row
-/// is `Strong`), `availability` (`Busy` swaps the accessory for the small spinner and takes no
+/// is `true`), `availability` (`Busy` swaps the accessory for the small spinner and takes no
 /// press) and `drop` (its part in a drag). `marks` are the title's matched characters, by index.
 /// `content` replaces the title and detail with the caller's own (a mail row's name, subject and
 /// tags). `edit` is the same place held by a field the person types in (a folder renamed where it
@@ -135,7 +135,7 @@ pub fn Row(
     #[props(default)] outline: Outline,
     #[props(default)] motion: RowMotion,
     #[props(default)] onmounted: Option<RowMounted>,
-    #[props(default)] on_toggle: Option<EventHandler<Shown>>,
+    #[props(default)] on_toggle: Option<EventHandler<bool>>,
     #[props(default)] onclick: Option<EventHandler<Press>>,
     #[props(default)] onpointerenter: Option<EventHandler<PointerEvent>>,
     #[props(default)] onpointerleave: Option<EventHandler<PointerEvent>>,
@@ -186,7 +186,7 @@ pub fn Row(
     let keys = shown_chord(&chord, selection).cloned().filter(|_| !asking);
     let answer = confirm.as_ref().map(confirm::buttons);
     let expanded = match outline {
-        Outline::Branch(shown) => Some(shown.aria()),
+        Outline::Branch(shown) => Some(aria_word(shown)),
         Outline::None | Outline::Leaf => None,
     };
     let triangle = match outline {
@@ -218,7 +218,7 @@ pub fn Row(
             id: common.id.clone(),
             role: "option",
             "aria-label": spoken,
-            "aria-selected": selection.aria(),
+            "aria-selected": aria_word(selection),
             "aria-checked": accessory.checked(),
             "aria-expanded": expanded,
             "aria-disabled": availability.aria_disabled(),
@@ -226,8 +226,8 @@ pub fn Row(
             "data-density": density,
             style: line_style,
             "data-leading": leading::row_slug(&leading, &shape),
-            "data-emphasis": emphasis_slug(emphasis),
-            "data-focus": FocusStyle::Highlight.slug(),
+            "data-emphasis": emphasis_word(emphasis),
+            "data-focus": "highlight",
             "data-drop": drop.drop_attr(),
             "data-drag": drop.drag_attr(),
             "data-shape": shape_view::slug(&shape),
@@ -283,9 +283,4 @@ pub fn Row(
         },
         Outline::None | Outline::Leaf => row,
     }
-}
-
-/// The `data-emphasis` word.
-fn emphasis_slug(emphasis: Emphasis) -> &'static str {
-    emphasis.slug()
 }

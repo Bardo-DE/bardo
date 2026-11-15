@@ -7,7 +7,6 @@
 //! the settle timer, starts over from an empty query and the first choice, and takes the keyboard.
 
 use dioxus::prelude::*;
-use ds_core::vocab::Shown;
 use ds_core::word::Word;
 use ds_motion::anim::Anim;
 use ds_motion::presence::Presence;
@@ -25,13 +24,11 @@ pub(crate) enum Change {
 }
 
 /// The change from `last` (`None` before the first render) to `now`.
-pub(crate) fn change(last: Option<Shown>, now: Shown) -> Change {
+pub(crate) fn change(last: Option<bool>, now: bool) -> Change {
     match (last, now) {
-        (Some(Shown::Hidden), Shown::Visible) => Change::Show,
-        (None | Some(Shown::Visible), Shown::Hidden) => Change::Hide,
-        (None | Some(Shown::Visible), Shown::Visible) | (Some(Shown::Hidden), Shown::Hidden) => {
-            Change::Stay
-        }
+        (Some(false), true) => Change::Show,
+        (None | Some(true), false) => Change::Hide,
+        (None | Some(true), true) | (Some(false), false) => Change::Stay,
     }
 }
 
@@ -56,7 +53,7 @@ impl Alias {
 #[derive(Clone, Copy)]
 pub(crate) struct Showing {
     /// Whether the card is shown now.
-    pub shown: Shown,
+    pub shown: bool,
     /// What this render's `shown` changed.
     pub change: Change,
     /// Whether the card has been shown since it mounted: a palette mounted hidden does not
@@ -69,15 +66,15 @@ pub(crate) struct Showing {
 }
 
 /// The showing hook: `shown` is the caller's (`None`, always shown), `anim` the entrance.
-pub(crate) fn use_showing(shown: Option<Shown>, anim: Anim) -> Showing {
-    let now = shown.unwrap_or(Shown::Visible);
+pub(crate) fn use_showing(shown: Option<bool>, anim: Anim) -> Showing {
+    let now = shown.unwrap_or(true);
     let timer = use_motion_timer(anim);
-    let mut last = use_hook(|| CopyValue::new(None::<Shown>));
+    let mut last = use_hook(|| CopyValue::new(None::<bool>));
     let mut seen = use_hook(|| {
-        if now == Shown::Visible {
+        if now {
             timer.start(EventHandler::new(|()| {}));
         }
-        CopyValue::new(now == Shown::Visible)
+        CopyValue::new(now)
     });
     let change = change(*last.peek(), now);
     last.set(Some(now));
@@ -121,18 +118,17 @@ impl Showing {
 #[cfg(test)]
 mod tests {
     use super::{Change, change};
-    use ds_core::vocab::Shown;
 
     #[test]
     fn only_a_hidden_palette_shown_again_replays() {
         #[rustfmt::skip]
         let cases = [
-            (None, Shown::Visible, Change::Stay),
-            (None, Shown::Hidden, Change::Hide),
-            (Some(Shown::Visible), Shown::Visible, Change::Stay),
-            (Some(Shown::Visible), Shown::Hidden, Change::Hide),
-            (Some(Shown::Hidden), Shown::Hidden, Change::Stay),
-            (Some(Shown::Hidden), Shown::Visible, Change::Show),
+            (None, true, Change::Stay),
+            (None, false, Change::Hide),
+            (Some(true), true, Change::Stay),
+            (Some(true), false, Change::Hide),
+            (Some(false), false, Change::Stay),
+            (Some(false), true, Change::Show),
         ];
         for (last, now, want) in cases {
             assert_eq!(change(last, now), want, "{last:?} -> {now:?}");

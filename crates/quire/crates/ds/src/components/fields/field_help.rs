@@ -18,7 +18,6 @@ use dioxus::prelude::*;
 use ds_core::geometry::placement::{Align, Placement, Side};
 use ds_core::geometry::units::Px;
 use ds_core::press::Press;
-use ds_core::vocab::Shown;
 use ds_core::word::Word;
 use ds_style::icon::Icon;
 use ds_style::tokens::control_size::ControlSize;
@@ -55,16 +54,16 @@ pub(crate) fn help_id(row_id: Option<&str>, label: &str) -> String {
 /// The ⓘ button of a row labelled `label`, and the popover of `help` it opens.
 #[component]
 pub(crate) fn HelpButton(label: TextLine, help: TextLine) -> Element {
-    let mut shown = use_signal(|| Shown::Hidden);
+    let mut shown = use_signal(|| false);
     let mut element = use_signal(|| None::<MountedRef>);
     let name = format!("About {}", label.plain_text());
     rsx! {
         span {
             class: "ds-field-row-about",
             onkeydown: move |event| {
-                if event.key() == Key::Escape && shown() == Shown::Visible {
+                if event.key() == Key::Escape && shown() {
                     event.stop_propagation();
-                    shown.set(Shown::Hidden);
+                    shown.set(false);
                 }
             },
             Button {
@@ -75,7 +74,7 @@ pub(crate) fn HelpButton(label: TextLine, help: TextLine) -> Element {
                 size: ControlSize::Small,
                 title: Some("About".to_owned()),
                 shown: Some(shown()),
-                onclick: move |_: Press| shown.set(shown().flipped()),
+                onclick: move |_: Press| shown.set(!shown()),
                 common: Common {
                     mounted: Some(EventHandler::new(move |event: MountedEvent| {
                         element.set(Some(MountedRef(event.data())));
@@ -84,13 +83,13 @@ pub(crate) fn HelpButton(label: TextLine, help: TextLine) -> Element {
                 },
             }
         }
-        if shown() == Shown::Visible && let Some(anchor) = element() {
+        if shown() && let Some(anchor) = element() {
             Popover {
                 anchor: Anchor::Mounted(anchor),
                 placement: Placement::new(Side::Bottom, Align::Center),
                 gap: Px(4.0),
                 arrow: Arrow::Arrow,
-                onclose: move |()| shown.set(Shown::Hidden),
+                onclose: move |()| shown.set(false),
                 div { class: "ds-field-help-card",
                     span { class: "ds-field-help-title", {text(&label)} }
                     span { class: "ds-field-help-text", {text(&help)} }

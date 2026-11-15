@@ -28,7 +28,7 @@ fn quoted_head() -> TextLine {
 
 #[component]
 pub fn LabelRunsAndMarks() -> Element {
-    let mut open = use_signal(|| Shown::Hidden);
+    let mut open = use_signal(|| false);
     rsx! {
         Section { title: "Button: a leading mark", note: "leading: Leading::Mark(element) puts a quire mark before the label: the From dropdown shows the account's provider inside its value. Leading::Glyph(icon) takes a glyph.",
             div { class: "g-row g-row-top",
@@ -60,7 +60,7 @@ pub fn LabelRunsAndMarks() -> Element {
                 Specimen { name: "runs",
                     div { class: "g-row",
                         Button { bezel: Bezel::Inline, label: quoted_head(), trailing: Icon::ChevronDown, shown: open(),
-                            onclick: move |_| open.set(match open() { Shown::Visible => Shown::Hidden, Shown::Hidden => Shown::Visible }) }
+                            onclick: move |_| open.set(!open()) }
                         Button { size: ControlSize::Mini, label: quoted_head(), onclick: |_| {} }
                     }
                 }

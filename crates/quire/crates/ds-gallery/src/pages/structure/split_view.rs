@@ -16,7 +16,7 @@ use ds_core::vocab::RowState;
 /// The SplitView section.
 #[component]
 pub fn SplitViewSection() -> Element {
-    let mut sidebar = use_signal(|| Shown::Visible);
+    let mut sidebar = use_signal(|| true);
     let mut saves = use_signal(|| 0usize);
     rsx! {
         Section { title: "SplitView", note: "NSSplitView: drag the divider (a 6 px zone with the hairline in it) to size the sidebar between 180 and 320; past half its least it folds away and a drag back opens it; double-click the divider to return to 240. The button folds it on a spring. The divider takes the arrow keys. The count below goes up once per finished drag or key adjustment, not per frame.",
@@ -25,8 +25,8 @@ pub fn SplitViewSection() -> Element {
                 Button {
                     label: "Sidebar",
                     size: ControlSize::Small,
-                    value: Some(if sidebar() == Shown::Visible { Check::On } else { Check::Off }),
-                    onclick: move |_: Press| sidebar.set(sidebar().flipped()),
+                    value: Some(if sidebar() { Check::On } else { Check::Off }),
+                    onclick: move |_: Press| sidebar.set(!sidebar()),
                 }
             }
             div { class: "g-stage g-split-stage",
@@ -46,33 +46,37 @@ pub fn SplitViewSection() -> Element {
 
 /// The sidebar a peeking pane holds.
 fn places(here: &'static str, onselect: EventHandler<&'static str>) -> Vec<ListItem<&'static str>> {
-    [("inbox", "Inbox", Icon::Inbox), ("sent", "Sent", Icon::Send), ("trash", "Trash", Icon::Trash)]
-        .into_iter()
-        .map(|(key, title, icon)| {
-            ListItem::row(
-                key,
-                title,
-                rsx! {
-                    Row {
-                        title: TextLine::from(title),
-                        leading: RowLeading::Icon(icon),
-                        state: RowState { selection: Selection::of(&here, &key), ..RowState::default() },
-                        onclick: move |_| onselect.call(key),
-                    }
-                },
-            )
-        })
-        .collect()
+    [
+        ("inbox", "Inbox", Icon::Inbox),
+        ("sent", "Sent", Icon::Send),
+        ("trash", "Trash", Icon::Trash),
+    ]
+    .into_iter()
+    .map(|(key, title, icon)| {
+        ListItem::row(
+            key,
+            title,
+            rsx! {
+                Row {
+                    title: TextLine::from(title),
+                    leading: RowLeading::Icon(icon),
+                    state: RowState { selection: here == key, ..RowState::default() },
+                    onclick: move |_| onselect.call(key),
+                }
+            },
+        )
+    })
+    .collect()
 }
 
 /// A pane that hosts an `EdgePeek`.
 #[component]
 pub fn SplitViewPeekSection() -> Element {
-    let mut pinned = use_signal(|| Shown::Hidden);
+    let mut pinned = use_signal(|| false);
     let mut here = use_signal(|| "inbox");
     let onselect = EventHandler::new(move |key: &'static str| here.set(key));
     let body = rsx! {
-        EdgePeek { label: "Sidebar", pinned: pinned(), onpin: move |()| pinned.set(Shown::Visible),
+        EdgePeek { label: "Sidebar", pinned: pinned(), onpin: move |()| pinned.set(true),
             Sidebar::<&'static str> {
                 label: "Mail",
                 cursor: Some(here()),
@@ -87,8 +91,8 @@ pub fn SplitViewPeekSection() -> Element {
                 Button {
                     label: "Sidebar",
                     size: ControlSize::Small,
-                    value: Some(if pinned() == Shown::Visible { Check::On } else { Check::Off }),
-                    onclick: move |_: Press| pinned.set(pinned().flipped()),
+                    value: Some(if pinned() { Check::On } else { Check::Off }),
+                    onclick: move |_: Press| pinned.set(!pinned()),
                 }
             }
             div { class: "g-stage g-split-stage",

@@ -33,7 +33,7 @@ use crate::components::menus::palette::palette_stops::{
     Run, Travel, grid_spans, run_of, shown_groups, stops, travel,
 };
 use crate::root::pointer_trail::{Movement, movement_of, use_pointer_trail};
-use ds_core::vocab::Dismiss;
+use ds_core::vocab::{Dismiss, shown_word};
 use ds_core::word::Word;
 use ds_motion::anim::Anim;
 
@@ -55,7 +55,6 @@ use dioxus::core::queue_effect;
 use dioxus::prelude::*;
 use ds_core::geometry::units::{Point, Px, Rect};
 use ds_core::vocab::Availability;
-use ds_core::vocab::Shown;
 use ds_style::tokens::{layer::ZLayer, shape::Corner};
 
 /// The launcher's preview pane width (design/13 section 13.3.9, proposed): what `aside_width`
@@ -92,8 +91,8 @@ pub const ASIDE_WIDTH: Px = Px(360.0);
 /// container, so the host widens the surface (sill's launcher panel) and the results column
 /// narrows by it otherwise. Use it for a [`PreviewPane`](crate::components::lists::preview::pane::PreviewPane).
 ///
-/// `shown` keeps the palette mounted while hidden: `Some(Shown::Hidden)` lays out nothing and
-/// leaves the layer stack, and each change to `Some(Shown::Visible)` replays the entrance,
+/// `shown` keeps the palette mounted while hidden: `Some(false)` lays out nothing and
+/// leaves the layer stack, and each change to `Some(true)` replays the entrance,
 /// empties the query (through `oninput`), goes back to the first stop and gives the field the
 /// keyboard. `None` is always shown.
 ///
@@ -142,7 +141,7 @@ pub fn CommandPalette<T: Clone + PartialEq + 'static>(
     #[props(default)] on_select_rect: Option<EventHandler<Rect>>,
     #[props(default)] onkey: Option<EventHandler<KeyboardEvent>>,
     #[props(default)] claim: Option<Callback<FieldKey, Claim>>,
-    #[props(default)] shown: Option<Shown>,
+    #[props(default)] shown: Option<bool>,
     #[props(default)] corner: Option<Corner>,
     #[props(default)] aside: Option<Element>,
     #[props(default)] trailing: Option<Element>,
@@ -287,9 +286,10 @@ pub fn CommandPalette<T: Clone + PartialEq + 'static>(
             &motion,
         )
     };
-    let field = match showing.seen {
-        true => FieldFocus::Controlled(request),
-        false => FieldFocus::Manual,
+    let field = if showing.seen {
+        FieldFocus::Controlled(request)
+    } else {
+        FieldFocus::Manual
     };
     let side = aside.map(|pane| {
         rsx! {
@@ -333,7 +333,7 @@ pub fn CommandPalette<T: Clone + PartialEq + 'static>(
             "aria-label": "{label}",
             "data-host": host.slug(),
             "data-presence": showing.presence().slug(),
-            "data-shown": showing.shown.slug(),
+            "data-shown": shown_word(showing.shown),
             "data-pulse": showing.alias(),
             "data-corner": corner.and_then(Corner::attribute),
             "data-aside": widened,

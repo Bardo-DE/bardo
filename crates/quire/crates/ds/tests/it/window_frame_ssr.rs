@@ -38,7 +38,7 @@ impl HostWindow for Still {
     }
 }
 
-fn window(lights: Shown) -> Element {
+fn window(lights: bool) -> Element {
     rsx! {
         Ds {
             appearance: Appearance::default(),
@@ -54,15 +54,11 @@ fn window(lights: Shown) -> Element {
 type Case = (&'static str, fn() -> Element);
 
 const CASES: &[Case] = &[
-    ("controls/window_frame/lights.html", || {
-        window(Shown::Visible)
-    }),
-    ("controls/window_frame/no-lights.html", || {
-        window(Shown::Hidden)
-    }),
+    ("controls/window_frame/lights.html", || window(true)),
+    ("controls/window_frame/no-lights.html", || window(false)),
     ("controls/window_frame/maximized.html", || {
         use_window_host_provider(|| Rc::new(Still(Maximized::On)));
-        window(Shown::Visible)
+        window(true)
     }),
 ];
 

@@ -12,7 +12,7 @@ macro_rules! row {
     ($snippet:expr) => {
         rsx! {
             ThreadRow {
-                state: RowState { selection: Selection::Unselected, emphasis: Emphasis::Plain, ..RowState::default() },
+                state: RowState { selection: false, emphasis: false, ..RowState::default() },
                 name: "Dana",
                 via: None,
                 subject: "Re: UIDL",
@@ -41,7 +41,7 @@ fn forms() -> Element {
         {row!(held.map(TextLine::from))}
         {row!(None)}
         ThreadRow {
-            state: RowState { selection: Selection::Unselected, emphasis: Emphasis::Plain, ..RowState::default() },
+            state: RowState { selection: false, emphasis: false, ..RowState::default() },
             name: "Dana",
             via: None,
             subject: "Re: UIDL",

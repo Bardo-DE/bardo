@@ -67,7 +67,7 @@ use crate::stack::layer_stack::LayerStack;
 use crate::stack::toast_hub::use_toast_hub_provider;
 use dioxus::prelude::*;
 use ds_core::geometry::scale::Scale;
-use ds_core::vocab::{Activity, InputModality};
+use ds_core::vocab::modality_word;
 use ds_core::word::Word;
 use ds_motion::hover_intent::HoverWarmth;
 use ds_style::appearance::{appearance::Appearance, resolve::resolve, system::SystemPrefs};
@@ -123,8 +123,8 @@ pub fn Ds(
     let mut element = use_hook(|| CopyValue::new(None::<Rc<MountedData>>));
     let click_root = use_context_provider(|| ClickRoot::of(element));
     let trail = PointerTrail::provide();
-    let modality = signals.map_or_else(InputModality::default, |signals| (signals.modality)());
-    let activity = signals.map_or(Activity::Active, |signals| (signals.activity)());
+    let modality = signals.is_some_and(|signals| (signals.modality)());
+    let activity = signals.is_none_or(|signals| (signals.activity)());
     let env = use_scope_provider(Scope {
         resolved,
         scheme: resolved.scheme,
@@ -165,8 +165,8 @@ pub fn Ds(
             "data-motion": resolved.motion.slug(),
             "data-material": material.slug(),
             "data-blur": blur.slug(),
-            "data-modality": modality.slug(),
-            "data-activity": (activity == Activity::Inactive).then(|| activity.slug()),
+            "data-modality": modality_word(modality),
+            "data-activity": (!activity).then_some("inactive"),
             "data-hover": hover,
             "data-chrome": chrome.attribute(),
             "data-frame": frame_tint.attribute(),

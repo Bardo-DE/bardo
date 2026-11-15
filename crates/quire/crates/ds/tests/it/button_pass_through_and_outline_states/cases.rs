@@ -41,7 +41,7 @@ fn more(name: &str) -> Element {
 }
 
 /// Projects, `open`, in `drop` state, over one subfolder.
-fn projects(open: Shown, drop: DropState) -> Element {
+fn projects(open: bool, drop: DropState) -> Element {
     rsx! {
         Scoped { Row {
             state: RowState { drop, ..RowState::default() },
@@ -71,38 +71,38 @@ pub const CASES: &[Case] = &[
     },
     Case {
         golden: "lists/row/outline-open-idle.html",
-        make: || projects(Shown::Visible, DropState::Idle),
+        make: || projects(true, DropState::Idle),
     },
     Case {
         golden: "lists/row/outline-open-accepts.html",
-        make: || projects(Shown::Visible, DropState::Accepts),
+        make: || projects(true, DropState::Accepts),
     },
     Case {
         golden: "lists/row/outline-open-target.html",
-        make: || projects(Shown::Visible, DropState::Target),
+        make: || projects(true, DropState::Target),
     },
     Case {
         golden: "lists/row/outline-open-source.html",
-        make: || projects(Shown::Visible, DropState::Source),
+        make: || projects(true, DropState::Source),
     },
     Case {
         golden: "lists/row/outline-closed-idle.html",
-        make: || projects(Shown::Hidden, DropState::Idle),
+        make: || projects(false, DropState::Idle),
     },
     Case {
         golden: "lists/row/outline-closed-accepts.html",
-        make: || projects(Shown::Hidden, DropState::Accepts),
+        make: || projects(false, DropState::Accepts),
     },
     Case {
         golden: "lists/row/outline-closed-target.html",
-        make: || projects(Shown::Hidden, DropState::Target),
+        make: || projects(false, DropState::Target),
     },
     Case {
         golden: "lists/row/outline-closed-source.html",
-        make: || projects(Shown::Hidden, DropState::Source),
+        make: || projects(false, DropState::Source),
     },
     Case {
         golden: "lists/row/outline-leaf-current.html",
-        make: || rsx! { Row { state: RowState { selection: Selection::Selected, ..RowState::default() }, title: "Receipts", outline: Outline::Leaf, accessory: Accessory::Slot(more("Receipts")) } },
+        make: || rsx! { Row { state: RowState { selection: true, ..RowState::default() }, title: "Receipts", outline: Outline::Leaf, accessory: Accessory::Slot(more("Receipts")) } },
     },
 ];

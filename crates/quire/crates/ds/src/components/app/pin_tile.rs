@@ -23,7 +23,7 @@ use crate::focus::click::kept_click;
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use ds_core::press::Press;
-use ds_core::vocab::{DropState, Muting, Selection};
+use ds_core::vocab::{DropState, aria_word};
 use ds_motion::detail::operation::Operation;
 use ds_style::icon::Icon;
 use ds_style::icon::render::{Glyph, IconSize};
@@ -124,15 +124,6 @@ fn label(face: &PinFace) -> String {
     }
 }
 
-/// How an account's avatar is drawn: in its own colour while its tile is the list's filter,
-/// muted (its chroma at .55) while it is not.
-fn muting(selection: Selection) -> Muting {
-    match selection {
-        Selection::Selected => Muting::Audible,
-        Selection::Unselected => Muting::Muted,
-    }
-}
-
 /// A pinned tile. `selection` is whether it is the list's filter (`aria-pressed`, the plate
 /// under it, and an account's colour at full strength); `unread` is the `Badge` on its corner
 /// (zero draws none). `drop` is its part in a drag: `Source` while it is the one being dragged,
@@ -143,7 +134,7 @@ fn muting(selection: Selection) -> Muting {
 #[component]
 pub fn PinTile(
     face: PinFace,
-    #[props(default)] selection: Selection,
+    #[props(default)] selection: bool,
     #[props(default)] unread: u32,
     #[props(default)] drop: DropState,
     #[props(default = MarkStyle::Letter)] mark: MarkStyle,
@@ -219,7 +210,7 @@ pub fn PinTile(
                 initial,
                 size: AvatarSize::Size28,
                 tone: AvatarTone::Account(colour),
-                muting: muting(selection),
+                muting: !selection,
             }
             ProviderMark { provider, size: ControlSize::Regular, style: mark }
         },
@@ -233,12 +224,12 @@ pub fn PinTile(
             id: common.id.clone(),
             class,
             "data-face": slug,
-            "data-selected": (filter && selection == Selection::Selected).then_some("true"),
+            "data-selected": (filter && selection).then_some("true"),
             "data-drop": drop.drop_attr(),
             "data-drag": drop.drag_attr(),
             "data-status": status_slug,
             "data-pressed": pressing.attr(),
-            "aria-pressed": filter.then(|| selection.aria()),
+            "aria-pressed": filter.then(|| aria_word(selection)),
             "aria-label": name,
             title: tip.native(),
             onmouseover: { let tip = tip.clone(); move |event| tip.over(&event) },
@@ -286,18 +277,11 @@ pub fn PinTile(
 
 #[cfg(test)]
 mod tests {
-    use super::{PinFace, PinStatus, label, muting};
+    use super::{PinFace, PinStatus, label};
     use crate::components::content::provider_mark::MarkProvider;
-    use ds_core::vocab::{Muting, Selection};
     use ds_motion::detail::operation::Operation;
     use ds_style::icon::Icon;
     use ds_style::tokens::hex::{Colour, Hex};
-
-    #[test]
-    fn only_a_tile_that_is_not_the_filter_mutes_its_colour() {
-        assert_eq!(muting(Selection::Selected), Muting::Audible);
-        assert_eq!(muting(Selection::Unselected), Muting::Muted);
-    }
 
     #[test]
     fn a_tile_is_quiet_unless_it_has_a_status() {

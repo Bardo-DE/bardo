@@ -32,7 +32,6 @@ use crate::components::lists::virtual_table::outline::OutlineRow;
 use crate::components::lists::virtual_table::row_drag::{RowDrag, RowDropMark};
 use dioxus::prelude::*;
 use ds_core::geometry::units::Px;
-use ds_core::vocab::Selection;
 
 /// The id of the box that scrolls sideways in a table whose root has `id`, once it holds columns
 /// in place: the root itself scrolls sideways otherwise. A caller that scrolls the table
@@ -54,7 +53,7 @@ enum Place {
 /// holds.
 pub(super) struct Line {
     pub(super) row: usize,
-    pub(super) selection: Selection,
+    pub(super) selection: bool,
     pub(super) stripe: Option<&'static str>,
     /// Where the row stands in the outline, when the table is one.
     pub(super) outline: Option<OutlineRow>,
@@ -218,7 +217,7 @@ fn HeldItem(
     onopen: Option<EventHandler<usize>>,
     marquee: Marquee,
     row_drag: RowDrag,
-    selection: Selection,
+    selection: bool,
     stripe: Option<&'static str>,
     outline: Option<OutlineRow>,
     height: f32,
@@ -241,7 +240,7 @@ fn HeldItem(
             "aria-level": outline.map(|step| step.level()),
             "aria-expanded": outline.and_then(OutlineRow::expanded),
             "data-row": row.to_string(),
-            "data-selected": (selection == Selection::Selected).then_some("yes"),
+            "data-selected": selection.then_some("yes"),
             "data-stripe": stripe,
             "data-hover": over,
             style: "height:{height}px",

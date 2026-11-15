@@ -2,7 +2,6 @@
 //! presence resolves to.
 
 use ds_core::geometry::units::Px;
-use ds_core::vocab::Activity;
 use ds_core::word::Word;
 use ds_style::tokens::timing::DurationToken;
 
@@ -74,7 +73,7 @@ pub enum OrbTone {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct OrbLook {
     /// Whether the orb turns at all.
-    pub activity: Activity,
+    pub activity: bool,
     /// The period of the turn; none while it is inactive.
     pub period: Option<OrbPeriod>,
     /// The tone the stylesheet reads.

@@ -22,7 +22,7 @@ const MORE: &str = ".ds-row-more";
 
 /// One card row carrying its `more` button, with or without a snippet and open menu.
 #[component]
-fn Page(lines: ThreadLines, expanded: Shown) -> Element {
+fn Page(lines: ThreadLines, expanded: bool) -> Element {
     let mut log = use_signal(String::new);
     let snippet = match lines {
         ThreadLines::Two => None,
@@ -34,7 +34,7 @@ fn Page(lines: ThreadLines, expanded: Shown) -> Element {
         Ds { appearance: Appearance::default(), material: Material::Window,
             ul { class: "list", style: "width:600px; padding:20px; margin:0",
                 ThreadRow {
-                    state: RowState { selection: Selection::Unselected, emphasis: Emphasis::Strong, ..RowState::default() },
+                    state: RowState { selection: false, emphasis: true, ..RowState::default() },
                     name: "Dana Okafor",
                     via: None,
                     subject: "Re: UIDL stability",
@@ -58,17 +58,17 @@ fn Page(lines: ThreadLines, expanded: Shown) -> Element {
 
 #[allow(non_snake_case)]
 fn Three() -> Element {
-    rsx! { Page { lines: ThreadLines::Three, expanded: Shown::Hidden } }
+    rsx! { Page { lines: ThreadLines::Three, expanded: false } }
 }
 
 #[allow(non_snake_case)]
 fn Two() -> Element {
-    rsx! { Page { lines: ThreadLines::Two, expanded: Shown::Hidden } }
+    rsx! { Page { lines: ThreadLines::Two, expanded: false } }
 }
 
 #[allow(non_snake_case)]
 fn Open() -> Element {
-    rsx! { Page { lines: ThreadLines::Three, expanded: Shown::Visible } }
+    rsx! { Page { lines: ThreadLines::Three, expanded: true } }
 }
 
 fn settled(app: fn() -> Element) -> Harness {

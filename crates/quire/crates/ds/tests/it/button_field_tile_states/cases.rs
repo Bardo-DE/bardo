@@ -12,7 +12,6 @@ use ds::motion::detail::operation::Operation;
 use ds::motion::detail::operation::PendingToken;
 use ds::prelude::*;
 use ds::root::common::Common;
-use ds_core::vocab::Muting;
 use ds_style::tokens::control_size::ControlSize;
 use ds_style::tokens::hex::{Colour, Hex};
 
@@ -61,11 +60,11 @@ pub const CASES: &[Case] = &[
     // Button: a hint, a name for assistive technology, and the open state of what it opens.
     Case {
         golden: "controls/button/mini-titled-open.html",
-        make: || rsx! { Button { common: Common { aria_label: Some("Add account".to_string()), ..Common::default() }, size: ControlSize::Mini, label: "+", title: "Add Account", shown: Shown::Visible, onclick: |_| {} } },
+        make: || rsx! { Button { common: Common { aria_label: Some("Add account".to_string()), ..Common::default() }, size: ControlSize::Mini, label: "+", title: "Add Account", shown: true, onclick: |_| {} } },
     },
     Case {
         golden: "controls/button/quiet-closed.html",
-        make: || rsx! { Button { bezel: Bezel::Inline, label: "More", shown: Shown::Hidden, onclick: |_| {} } },
+        make: || rsx! { Button { bezel: Bezel::Inline, label: "More", shown: false, onclick: |_| {} } },
     },
     // TextField: a secure field, empty (the placeholder) and filled (the dots).
     Case {
@@ -79,7 +78,7 @@ pub const CASES: &[Case] = &[
     // PinTile: the favicon mark, and the Add account tile, with and without a hint.
     Case {
         golden: "lists/pin_tile/one-image-mark.html",
-        make: || rsx! { PinTile { face: poh(), selection: Selection::Selected, unread: 2, mark: MarkStyle::Image(ImageSource("data:image/png;base64,iVBORw0KGgo=".to_string())), onclick: |_| {} } },
+        make: || rsx! { PinTile { face: poh(), selection: true, unread: 2, mark: MarkStyle::Image(ImageSource("data:image/png;base64,iVBORw0KGgo=".to_string())), onclick: |_| {} } },
     },
     Case {
         golden: "lists/pin_tile/add.html",
@@ -107,14 +106,14 @@ pub const CASES: &[Case] = &[
     // and a person's; a muted ink avatar is greyscale already and keeps its colours.
     Case {
         golden: "controls/avatar/account-28-muted.html",
-        make: || rsx! { Avatar { initial: 'P', size: AvatarSize::Size28, tone: AvatarTone::Account(VIOLET), muting: Muting::Muted } },
+        make: || rsx! { Avatar { initial: 'P', size: AvatarSize::Size28, tone: AvatarTone::Account(VIOLET), muting: true } },
     },
     Case {
         golden: "controls/avatar/person-18-muted.html",
-        make: || rsx! { Avatar { initial: 'D', size: AvatarSize::Size18, tone: AvatarTone::Person(PersonHue(212)), muting: Muting::Muted } },
+        make: || rsx! { Avatar { initial: 'D', size: AvatarSize::Size18, tone: AvatarTone::Person(PersonHue(212)), muting: true } },
     },
     Case {
         golden: "controls/avatar/ink-28-muted.html",
-        make: || rsx! { Avatar { initial: 'A', size: AvatarSize::Size28, tone: AvatarTone::Ink, muting: Muting::Muted } },
+        make: || rsx! { Avatar { initial: 'A', size: AvatarSize::Size28, tone: AvatarTone::Ink, muting: true } },
     },
 ];

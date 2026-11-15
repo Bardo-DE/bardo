@@ -45,7 +45,7 @@ fn Page(layout: Layout) -> Element {
     rsx! {
         ul { class: "list", style: "width:600px; padding:20px; margin:0",
             ThreadRow {
-                state: RowState { selection: Selection::Unselected, emphasis: Emphasis::Strong, ..RowState::default() },
+                state: RowState { selection: false, emphasis: true, ..RowState::default() },
                 name: "Dana Okafor",
                 via: None,
                 subject: "Re: UIDL stability",
@@ -56,7 +56,7 @@ fn Page(layout: Layout) -> Element {
                 strip: rsx! {
                     HoverStrip {
                         actions,
-                        shown: Shown::Visible,
+                        shown: true,
                         on_press: move |id: ActionId| log.with_mut(|log| log.push(format!("press:{}", id.0))),
                     }
                 },

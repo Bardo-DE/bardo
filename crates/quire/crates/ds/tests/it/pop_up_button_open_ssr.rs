@@ -28,7 +28,7 @@ fn Closed() -> Element {
 fn NoAnchor() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
-            PopUpButton::<u8> { items: items(), onpick: |_| {}, kind: PopUpKind::Overflow, start: Shown::Visible }
+            PopUpButton::<u8> { items: items(), onpick: |_| {}, kind: PopUpKind::Overflow, start: true }
         }
     }
 }
@@ -41,7 +41,7 @@ fn Open() -> Element {
                 items: items(),
                 onpick: |_| {},
                 kind: PopUpKind::Overflow,
-                start: Shown::Visible,
+                start: true,
                 anchor: Some(Anchor::Point(Point { x: Px(40.0), y: Px(20.0) })),
             }
         }

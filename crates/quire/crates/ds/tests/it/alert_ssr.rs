@@ -112,7 +112,7 @@ fn hidden(flow: Flow) -> Element {
     root(
         Theme::Light,
         rsx! {
-            Alert { title: TITLE, buttons: vec![button("Turn Off", AlertRole::Normal)], flow, shown: Some(Shown::Hidden) }
+            Alert { title: TITLE, buttons: vec![button("Turn Off", AlertRole::Normal)], flow, shown: Some(false) }
         },
     )
 }

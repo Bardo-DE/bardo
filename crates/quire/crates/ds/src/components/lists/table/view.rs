@@ -20,7 +20,7 @@ use crate::components::lists::table::model::{Sort, TableColumn, TableRow};
 use crate::components::lists::table::rules::ColumnRules;
 use crate::root::common::Common;
 use dioxus::prelude::*;
-use ds_core::vocab::{RowState, Selection};
+use ds_core::vocab::RowState;
 use ds_core::word::Word;
 use std::hash::Hash;
 
@@ -57,7 +57,7 @@ pub fn Table<K: Clone + PartialEq + Hash + 'static, C: Clone + PartialEq + 'stat
                     Row {
                         size,
                         state: RowState {
-                            selection: if selected { Selection::Selected } else { Selection::Unselected },
+                            selection: selected,
                             availability: row.availability,
                             ..RowState::default()
                         },

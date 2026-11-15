@@ -5,7 +5,7 @@ use crate::components::content::tip_text::TipText;
 use crate::components::content::title_tip::use_tip;
 use crate::root::common::Common;
 use dioxus::prelude::*;
-use ds_core::vocab::{Check, Selection, Shortcut};
+use ds_core::vocab::{Check, Shortcut, selected_word};
 use ds_core::word::Word;
 use ds_style::space::dot_paint::DotPaint;
 use ds_style::space::frame_vars::FrameVars;
@@ -34,16 +34,13 @@ impl DotFace {
 pub fn SpaceDot(
     name: String,
     frame: FrameVars,
-    selection: Selection,
+    selection: bool,
     shortcut: Shortcut,
     onclick: EventHandler<()>,
     #[props(default)] face: DotFace,
     #[props(default)] common: Common,
 ) -> Element {
-    let pressed = match selection {
-        Selection::Selected => Check::On,
-        Selection::Unselected => Check::Off,
-    };
+    let pressed = if selection { Check::On } else { Check::Off };
     let paint = match face {
         DotFace::Swatch => Some(DotPaint::gradient(&frame.stops)),
         DotFace::Foot => None,
@@ -73,7 +70,7 @@ pub fn SpaceDot(
             },
             "data-face": face.slug(),
             "data-stops": paint.as_ref().map(DotPaint::count),
-            "data-selected": selection.slug(),
+            "data-selected": selected_word(selection),
             style: paint.as_ref().map(DotPaint::style_attr),
             onclick: move |_| onclick.call(()),
             onmounted: {

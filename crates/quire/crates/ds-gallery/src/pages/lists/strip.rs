@@ -49,7 +49,7 @@ pub fn StripPress() -> Element {
                         "Re: UIDL stability",
                         rsx! {
                             ThreadRow {
-                                state: RowState { selection: Selection::Selected, emphasis: Emphasis::Strong, ..RowState::default() },
+                                state: RowState { selection: true, emphasis: true, ..RowState::default() },
                                 name: "Dana Okafor",
                                 via: None,
                                 subject: "Re: UIDL stability",
@@ -60,7 +60,7 @@ pub fn StripPress() -> Element {
                                 strip: rsx! {
                                     HoverStrip {
                                         actions: actions(),
-                                        shown: Shown::Visible,
+                                        shown: true,
                                         on_press: move |id| pressed.set(Some(id)),
                                     }
                                 },
@@ -83,7 +83,7 @@ fn more_row(key: u8, subject: &'static str, tag: &'static str, more: Element) ->
         subject,
         rsx! {
             ThreadRow {
-                state: RowState { selection: Selection::Unselected, emphasis: Emphasis::Strong, ..RowState::default() },
+                state: RowState { selection: false, emphasis: true, ..RowState::default() },
                 name: "Dana Okafor",
                 via: None,
                 subject,
@@ -102,7 +102,7 @@ fn more_row(key: u8, subject: &'static str, tag: &'static str, more: Element) ->
 /// the time.
 #[component]
 pub fn MoreButton() -> Element {
-    let mut open = use_signal(|| Shown::Visible);
+    let mut open = use_signal(|| true);
     rsx! {
         Section {
             title: "Row: the quiet more button",
@@ -112,12 +112,12 @@ pub fn MoreButton() -> Element {
                     label: "More",
                     items: vec![
                         more_row(0, "Hover this row", "spec", rsx! { RowMore { onclick: |_| {} } }),
-                        more_row(1, "Shown by its caller", "spec", rsx! { RowMore { shown: Shown::Visible, onclick: |_| {} } }),
+                        more_row(1, "Shown by its caller", "spec", rsx! { RowMore { shown: true, onclick: |_| {} } }),
                         more_row(
                             2,
                             "Menu open",
                             "spec",
-                            rsx! { RowMore { expanded: open(), on_press: move |()| open.set(open().flipped()), onclick: |_| {} } },
+                            rsx! { RowMore { expanded: open(), on_press: move |()| open.set(!open()), onclick: |_| {} } },
                         ),
                     ],
                 }

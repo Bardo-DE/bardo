@@ -6,7 +6,6 @@ use crate::focus::press_focus::on_click;
 use dioxus::prelude::*;
 use ds_core::press::PointerButton;
 use ds_core::selection::{Pick, PickHow};
-use ds_core::vocab::Selection;
 
 /// The presses a live tile answers, for the row `at`.
 #[derive(Clone, Copy)]
@@ -18,7 +17,7 @@ pub(crate) struct Act {
     /// Hears the row a secondary press asked a menu for, with the event.
     pub(crate) menu: Option<EventHandler<(usize, MouseEvent)>>,
     /// Whether the row is selected now.
-    pub(crate) selection: Selection,
+    pub(crate) selection: bool,
 }
 
 impl Act {
@@ -48,7 +47,7 @@ impl Act {
         event.prevent_default();
         event.stop_propagation();
         on_click(event);
-        if self.selection == Selection::Unselected {
+        if !self.selection {
             self.reach.tell(Pick {
                 row: self.at,
                 how: PickHow::Replace,

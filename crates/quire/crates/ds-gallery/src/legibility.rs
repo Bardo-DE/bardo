@@ -8,7 +8,7 @@ use ds::prelude::*;
 use ds::style::material::recipe::recipe;
 use ds::style::tokens::colour::ColourToken;
 use ds::style::tokens::hex::Hex;
-use ds_core::colour::contrast::{Verdict, ratio};
+use ds_core::colour::contrast::ratio;
 
 /// WCAG AA for body text: what every floor has to clear.
 pub const FLOOR: f64 = 4.5;
@@ -89,12 +89,8 @@ pub struct Floor {
 
 impl Floor {
     /// Whether it clears [`Floor::floor`].
-    pub fn verdict(&self) -> Verdict {
-        if self.measured >= self.floor {
-            Verdict::Pass
-        } else {
-            Verdict::Fail
-        }
+    pub fn clears(&self) -> bool {
+        self.measured >= self.floor
     }
 }
 
@@ -159,7 +155,6 @@ fn over((rgb, alpha): ([u8; 3], f64), backdrop: [u8; 3]) -> String {
 mod tests {
     use super::{Backdrop, Tint, floors, over, rgba};
     use ds::prelude::*;
-    use ds_core::colour::contrast::Verdict;
 
     /// A colour's CSS, and its channels and alpha when it is one.
     type Case = (&'static str, Option<([u8; 3], f64)>);
@@ -201,11 +196,7 @@ mod tests {
         for scheme in Scheme::ALL.iter().copied() {
             for material in Material::ALL.iter().copied() {
                 for floor in floors(material, scheme, Alpha(800)) {
-                    assert_eq!(
-                        floor.verdict(),
-                        Verdict::Pass,
-                        "{material:?} {scheme:?} {floor:?}"
-                    );
+                    assert!(floor.clears(), "{material:?} {scheme:?} {floor:?}");
                 }
             }
         }
@@ -213,6 +204,6 @@ mod tests {
         let over_black = thin
             .iter()
             .find(|floor| floor.tint == Tint::OverBlur && floor.backdrop == Backdrop::Black);
-        assert_eq!(over_black.map(|floor| floor.verdict()), Some(Verdict::Fail));
+        assert_eq!(over_black.map(|floor| floor.clears()), Some(false));
     }
 }

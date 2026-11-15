@@ -54,22 +54,17 @@ pub fn strip_actions() -> Vec<StripAction> {
 }
 
 /// A thread row, unread or read, with the via, tags and strip filled.
-pub fn thread(emphasis: Emphasis, selection: Selection, star: Check) -> Element {
+pub fn thread(emphasis: bool, selection: bool, star: Check) -> Element {
     thread_in_drag(emphasis, selection, star, DropState::Idle)
 }
 
 /// A read thread row playing `drop` in a drag.
 fn dragged_thread(drop: DropState) -> Element {
-    thread_in_drag(Emphasis::Plain, Selection::Unselected, Check::Off, drop)
+    thread_in_drag(false, false, Check::Off, drop)
 }
 
 /// [`thread`], playing `drop` in a drag.
-fn thread_in_drag(
-    emphasis: Emphasis,
-    selection: Selection,
-    star: Check,
-    drop: DropState,
-) -> Element {
+fn thread_in_drag(emphasis: bool, selection: bool, star: Check, drop: DropState) -> Element {
     rsx! {
         ThreadRow {
             state: RowState { selection, emphasis, drop, ..RowState::default() },
@@ -90,12 +85,8 @@ fn thread_in_drag(
 }
 
 /// A read thread row in a list: what a roster draws per entry, keyed by the consumer.
-pub fn listed_thread(key: &'static str, emphasis: Emphasis) -> ListItem<&'static str> {
-    ListItem::row(
-        key,
-        key,
-        thread(emphasis, Selection::Unselected, Check::Off),
-    )
+pub fn listed_thread(key: &'static str, emphasis: bool) -> ListItem<&'static str> {
+    ListItem::row(key, key, thread(emphasis, false, Check::Off))
 }
 
 /// A row named `title` with `accessory`, at settings height.
@@ -141,22 +132,22 @@ pub const ROW_CASES: &[Case] = &[
     Case {
         component: "thread_row",
         state: "unread",
-        make: || thread(Emphasis::Strong, Selection::Unselected, Check::Off),
+        make: || thread(true, false, Check::Off),
     },
     Case {
         component: "thread_row",
         state: "read",
-        make: || thread(Emphasis::Plain, Selection::Unselected, Check::Off),
+        make: || thread(false, false, Check::Off),
     },
     Case {
         component: "thread_row",
         state: "selected",
-        make: || thread(Emphasis::Plain, Selection::Selected, Check::Off),
+        make: || thread(false, true, Check::Off),
     },
     Case {
         component: "thread_row",
         state: "starred-at-rest",
-        make: || thread(Emphasis::Plain, Selection::Unselected, Check::On),
+        make: || thread(false, false, Check::On),
     },
     Case {
         component: "thread_row",
@@ -174,7 +165,7 @@ pub const ROW_CASES: &[Case] = &[
         make: || {
             rsx! {
                 ThreadRow {
-                    state: RowState { selection: Selection::Unselected, emphasis: Emphasis::Plain, ..RowState::default() },
+                    state: RowState { selection: false, emphasis: false, ..RowState::default() },
                     name: "Sam Lindqvist",
                     via: None,
                     subject: "Notes from the sync review",
@@ -196,7 +187,7 @@ pub const ROW_CASES: &[Case] = &[
         make: || {
             rsx! {
                 ThreadRow {
-                    state: RowState { selection: Selection::Unselected, emphasis: Emphasis::Plain, ..RowState::default() },
+                    state: RowState { selection: false, emphasis: false, ..RowState::default() },
                     name: "Maximilian Alexander von Hohenberg-Wittelsbach",
                     via: None,
                     subject: "Notes from the sync review",
@@ -303,12 +294,12 @@ pub const ROW_CASES: &[Case] = &[
     Case {
         component: "row",
         state: "leading-disc-on",
-        make: || rsx! { Row { title: "Home", leading: RowLeading::Disc(Icon::Wifi, Selection::Selected), size: RowSize::Settings } },
+        make: || rsx! { Row { title: "Home", leading: RowLeading::Disc(Icon::Wifi, true), size: RowSize::Settings } },
     },
     Case {
         component: "row",
         state: "leading-disc-off",
-        make: || rsx! { Row { title: "Café", leading: RowLeading::Disc(Icon::Wifi, Selection::Unselected), size: RowSize::Settings } },
+        make: || rsx! { Row { title: "Café", leading: RowLeading::Disc(Icon::Wifi, false), size: RowSize::Settings } },
     },
     Case {
         component: "row",
@@ -326,7 +317,7 @@ pub const ROW_CASES: &[Case] = &[
         state: "selected",
         make: || {
             in_state(RowState {
-                selection: Selection::Selected,
+                selection: true,
                 ..RowState::default()
             })
         },
@@ -336,7 +327,7 @@ pub const ROW_CASES: &[Case] = &[
         state: "unread",
         make: || {
             in_state(RowState {
-                emphasis: Emphasis::Strong,
+                emphasis: true,
                 ..RowState::default()
             })
         },
@@ -414,7 +405,7 @@ pub const ROW_CASES: &[Case] = &[
     Case {
         component: "row",
         state: "chord-selected",
-        make: || rsx! { Row { title: "Invoice.pdf", state: RowState { selection: Selection::Selected, ..RowState::default() }, chord: RowChord::on_selected(Shortcut(vec![ShortcutKey::Super, ShortcutKey::Char('r')])) } },
+        make: || rsx! { Row { title: "Invoice.pdf", state: RowState { selection: true, ..RowState::default() }, chord: RowChord::on_selected(Shortcut(vec![ShortcutKey::Super, ShortcutKey::Char('r')])) } },
     },
     Case {
         component: "row",
@@ -446,7 +437,7 @@ pub const ROW_CASES: &[Case] = &[
     Case {
         component: "list",
         state: "plain",
-        make: || rsx! { Scoped { List::<&'static str> { label: "Threads", items: vec![listed_thread("a", Emphasis::Strong)] } } },
+        make: || rsx! { Scoped { List::<&'static str> { label: "Threads", items: vec![listed_thread("a", true)] } } },
     },
     Case {
         component: "list",
@@ -461,7 +452,7 @@ pub const ROW_CASES: &[Case] = &[
     Case {
         component: "list",
         state: "grouped-selected",
-        make: || rsx! { Scoped { List::<&'static str> { label: "Settings", style: ListStyle::Grouped, cursor: Some("Sound"), items: vec![ListItem::row("Wi-Fi", "Wi-Fi", with_tile("Wi-Fi", Icon::Wifi, Accessory::Chevron)), ListItem::row("Sound", "Sound", rsx! { Scoped { Row { title: "Sound", size: RowSize::Settings, leading: RowLeading::Tile(TileFace::Glyph(Icon::Speaker, Hex([0xff, 0x3b, 0x30]))), state: RowState { selection: Selection::Selected, ..RowState::default() } } } })] } } },
+        make: || rsx! { Scoped { List::<&'static str> { label: "Settings", style: ListStyle::Grouped, cursor: Some("Sound"), items: vec![ListItem::row("Wi-Fi", "Wi-Fi", with_tile("Wi-Fi", Icon::Wifi, Accessory::Chevron)), ListItem::row("Sound", "Sound", rsx! { Scoped { Row { title: "Sound", size: RowSize::Settings, leading: RowLeading::Tile(TileFace::Glyph(Icon::Speaker, Hex([0xff, 0x3b, 0x30]))), state: RowState { selection: true, ..RowState::default() } } } })] } } },
     },
     Case {
         component: "row",
@@ -481,6 +472,6 @@ pub const ROW_CASES: &[Case] = &[
     Case {
         component: "list",
         state: "cursor-held",
-        make: || rsx! { Scoped { List::<&'static str> { label: "Places", cursor: Some("Inbox"), items: vec![ListItem::row("Inbox", "Inbox", in_state(RowState { selection: Selection::Selected, ..RowState::default() }))] } } },
+        make: || rsx! { Scoped { List::<&'static str> { label: "Places", cursor: Some("Inbox"), items: vec![ListItem::row("Inbox", "Inbox", in_state(RowState { selection: true, ..RowState::default() }))] } } },
     },
 ];

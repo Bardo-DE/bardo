@@ -28,7 +28,7 @@ use dioxus::prelude::*;
 use ds_core::command::holds_primary;
 use ds_core::geometry::units::Px;
 use ds_core::press::Press;
-use ds_core::vocab::{Availability, Shown};
+use ds_core::vocab::Availability;
 use ds_style::icon::Icon;
 use ds_style::tokens::control_size::ControlSize;
 use std::collections::HashMap;
@@ -185,10 +185,10 @@ pub fn Toolbar<T: Clone + PartialEq + 'static>(
 ) -> Element {
     let buttons: Buttons = use_hook(|| CopyValue::new(HashMap::new()));
     let probe = use_rect();
-    let mut open = use_signal(|| Shown::Hidden);
+    let mut open = use_signal(|| false);
     let mut chevron = use_signal(|| None::<MountedRef>);
     let platform = use_platform();
-    let mut title_open = use_signal(|| Shown::Hidden);
+    let mut title_open = use_signal(|| false);
     let mut title_seat = use_signal(|| None::<MountedRef>);
     let width = match room {
         ToolbarRoom::Fixed(width) => width,
@@ -217,7 +217,7 @@ pub fn Toolbar<T: Clone + PartialEq + 'static>(
     let menu = (!title_menu.is_empty()).then(|| TitleMenu {
         onclick: EventHandler::new(move |event: MouseEvent| {
             if holds_primary(platform, event.modifiers()) {
-                title_open.set(Shown::Visible);
+                title_open.set(true);
             }
         }),
         onmounted: EventHandler::new(move |event: MountedEvent| {
@@ -262,7 +262,7 @@ pub fn Toolbar<T: Clone + PartialEq + 'static>(
                         icon: Some(IconSource::from(Icon::ChevronRight)),
                         shown: Some(open()),
                         availability: Availability::Enabled,
-                        onclick: move |_: Press| open.set(open().flipped()),
+                        onclick: move |_: Press| open.set(!open()),
                         common: Common {
                             mounted: Some(EventHandler::new(move |event: MountedEvent| {
                                 chevron.set(Some(MountedRef(event.data())));
@@ -276,30 +276,30 @@ pub fn Toolbar<T: Clone + PartialEq + 'static>(
                 }
             }
         }
-        if title_open() == Shown::Visible && let Some(anchor) = title_anchor {
+        if title_open() && let Some(anchor) = title_anchor {
             Menu::<usize> {
                 placement: MenuPlacement::Popup,
                 anchor,
                 items: path_model::rows(&title_menu, 0),
                 onpick: move |at: usize| {
-                    title_open.set(Shown::Hidden);
+                    title_open.set(false);
                     if let Some(hear) = ontitlemenu {
                         hear.call(at);
                     }
                 },
-                onclose: move |()| title_open.set(Shown::Hidden),
+                onclose: move |()| title_open.set(false),
             }
         }
-        if open() == Shown::Visible && let Some(anchor) = anchor {
+        if open() && let Some(anchor) = anchor {
             Menu::<T> {
                 placement: MenuPlacement::Popup,
                 anchor,
                 items: rows,
                 onpick: move |value: T| {
-                    open.set(Shown::Hidden);
+                    open.set(false);
                     onpick.call(Picked { value, anchor: chevron().map(Anchor::Mounted) });
                 },
-                onclose: move |()| open.set(Shown::Hidden),
+                onclose: move |()| open.set(false),
             }
         }
     }

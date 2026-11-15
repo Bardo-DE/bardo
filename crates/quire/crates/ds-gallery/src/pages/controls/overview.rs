@@ -25,7 +25,6 @@ use ds::style::tokens::control_size::ControlSize;
 use ds::style::tokens::hex::{Colour, Hex};
 use ds::style::tokens::label_hue::LabelHue;
 use ds::style::tokens::system_hue::SystemHue;
-use ds_core::colour::contrast::Verdict;
 
 /// The chord the specimens start with: Shift and Command and K.
 fn sample_chord() -> Chord {
@@ -230,8 +229,8 @@ fn Chips() -> Element {
                 Chip { variant: ChipVariant::Accent, text: "Accent" }
                 Chip { variant: ChipVariant::Neutral, text: "Neutral" }
                 Chip { variant: ChipVariant::Token, text: "from:dana" }
-                Chip { variant: ChipVariant::Status(Verdict::Pass), text: "4.8 : 1" }
-                Chip { variant: ChipVariant::Status(Verdict::Fail), text: "2.1 : 1" }
+                Chip { variant: ChipVariant::Status(true), text: "4.8 : 1" }
+                Chip { variant: ChipVariant::Status(false), text: "2.1 : 1" }
                 for hue in LabelHue::ALL.iter().copied() {
                     Chip { variant: ChipVariant::Label(hue), text: hue.slug() }
                 }
@@ -282,7 +281,7 @@ fn Faces() -> Element {
 
 #[component]
 fn Marks() -> Element {
-    let mut selected = use_signal(|| Selection::Selected);
+    let mut selected = use_signal(|| true);
     let one = |initial, provider| PinFace::Account {
         initial,
         colour: Colour::Solid(Hex([0x1a, 0x73, 0xe8])),
@@ -299,11 +298,11 @@ fn Marks() -> Element {
                 }
             }
             div { class: "g-row",
-                PinTile { face: PinFace::All, selection: Selection::Selected, unread: 12, onclick: |_| {} }
-                PinTile { face: one('P', MarkProvider::Google), selection: selected(), unread: 3, onclick: move |_| selected.set(if selected() == Selection::Selected { Selection::Unselected } else { Selection::Selected }) }
+                PinTile { face: PinFace::All, selection: true, unread: 12, onclick: |_| {} }
+                PinTile { face: one('P', MarkProvider::Google), selection: selected(), unread: 3, onclick: move |_| selected.set(!(selected())) }
                 PinTile { face: one('W', MarkProvider::Microsoft), unread: 0, onclick: |_| {} }
-                PinTile { face: one('G', MarkProvider::Google), selection: Selection::Selected, unread: 5, mark: MarkStyle::Image(favicon()), onclick: |_| {} }
-                PinTile { face: one('L', MarkProvider::Local), selection: Selection::Selected, unread: 1, onclick: |_| {} }
+                PinTile { face: one('G', MarkProvider::Google), selection: true, unread: 5, mark: MarkStyle::Image(favicon()), onclick: |_| {} }
+                PinTile { face: one('L', MarkProvider::Local), selection: true, unread: 1, onclick: |_| {} }
                 PinTile { face: PinFace::Add { label: "Add account".to_string(), hint: Some("Add Account".to_string()) }, onclick: |_| {} }
             }
         }

@@ -63,7 +63,7 @@ pub fn ExternalIcons() -> Element {
                 Specimen { name: "Tool, symbolic data: SVG",
                     div { class: "g-row",
                         Button { bezel: Bezel::Toolbar, size: ControlSize::Large, image: ImagePosition::Only, icon: symbolic(bell.clone(), IconSize::Base), label: "Notifications", onclick: |_| {} }
-                        Button { bezel: Bezel::Toolbar, size: ControlSize::Large, image: ImagePosition::Only, icon: symbolic(bell.clone(), IconSize::Base), label: "Notifications expanded", shown: Some(Shown::Visible), onclick: |_| {} }
+                        Button { bezel: Bezel::Toolbar, size: ControlSize::Large, image: ImagePosition::Only, icon: symbolic(bell.clone(), IconSize::Base), label: "Notifications expanded", shown: Some(true), onclick: |_| {} }
                     }
                 }
                 Specimen { name: "Tool, symbolic file: SVG",

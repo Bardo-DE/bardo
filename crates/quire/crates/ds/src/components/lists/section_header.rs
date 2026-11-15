@@ -4,7 +4,7 @@
 use crate::components::controls::disclosure::indicator;
 use crate::root::common::Common;
 use dioxus::prelude::*;
-use ds_core::vocab::{Selection, Shown};
+use ds_core::vocab::aria_word;
 
 /// One action at a header's end: its words and what a press does. `selection: Selected` draws it
 /// as a keyboard selection (`data-selected`): a command palette's cursor resting on a group's
@@ -17,7 +17,7 @@ pub struct HeaderAction {
     /// A press on it.
     pub onclick: EventHandler<()>,
     /// Whether a keyboard cursor rests on it.
-    pub selection: Selection,
+    pub selection: bool,
     /// Hears its element as it mounts.
     pub onmounted: Option<EventHandler<MountedEvent>>,
 }
@@ -28,7 +28,7 @@ impl HeaderAction {
         HeaderAction {
             label: label.into(),
             onclick,
-            selection: Selection::Unselected,
+            selection: false,
             onmounted: None,
         }
     }
@@ -43,18 +43,18 @@ pub fn SectionHeader(
     title: String,
     #[props(default)] value: Option<String>,
     #[props(default)] actions: Vec<HeaderAction>,
-    #[props(default)] collapse: Option<(Shown, EventHandler<Shown>)>,
+    #[props(default)] collapse: Option<(bool, EventHandler<bool>)>,
     #[props(default)] common: Common,
 ) -> Element {
     let data = common.data_attributes();
-    let expanded = collapse.as_ref().map(|(shown, _)| shown.aria());
+    let expanded = collapse.as_ref().map(|(shown, _)| aria_word(*shown));
     let head = match collapse {
         Some((shown, on_toggle)) => rsx! {
             button {
                 r#type: "button",
                 class: "ds-section-header-toggle",
-                "aria-expanded": shown.aria(),
-                onclick: move |_| on_toggle.call(shown.flipped()),
+                "aria-expanded": aria_word(shown),
+                onclick: move |_| on_toggle.call(!shown),
                 {indicator(shown)}
                 span { class: "ds-section-header-title", "{title}" }
             }
@@ -83,7 +83,7 @@ pub fn SectionHeader(
                             key: "{index}",
                             r#type: "button",
                             class: "ds-section-header-action",
-                            "data-selected": (action.selection == Selection::Selected).then_some("true"),
+                            "data-selected": action.selection.then_some("true"),
                             onclick: move |_| action.onclick.call(()),
                             onmounted: move |event| {
                                 if let Some(mounted) = action.onmounted {

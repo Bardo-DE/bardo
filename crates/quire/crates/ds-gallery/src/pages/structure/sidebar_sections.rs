@@ -36,7 +36,7 @@ fn places(
                     title: TextLine::from(title),
                     leading: RowLeading::Icon(icon),
                     state: RowState {
-                        selection: Selection::of(&here, &key),
+                        selection: here == key,
                         ..RowState::default()
                     },
                     onclick: move |_| onselect.call(key),
@@ -64,7 +64,7 @@ const LABELS: &[(&str, &str, Icon)] =
 
 /// The Space dots, a plus and the hide button.
 fn foot(scheme: Scheme) -> Element {
-    let dot = |index: usize, name: &'static str, selection: Selection| {
+    let dot = |index: usize, name: &'static str, selection: bool| {
         let look = default_look(index, Grain(0));
         rsx! {
             SpaceDot {
@@ -81,8 +81,8 @@ fn foot(scheme: Scheme) -> Element {
     rsx! {
         Button { bezel: Bezel::Inline, label: "Home", title: "Edit this Space".to_owned(), onclick: |_| {} }
         div { style: "display:flex;gap:var(--s-5);margin-left:auto",
-            {dot(0, "Home", Selection::Selected)}
-            {dot(2, "Work", Selection::Unselected)}
+            {dot(0, "Home", true)}
+            {dot(2, "Work", false)}
         }
         Button {
             bezel: Bezel::Toolbar, image: ImagePosition::Only, size: ControlSize::Small,

@@ -31,7 +31,7 @@ use crate::root::surface::ClassedScope;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Rect;
 use ds_core::press::Press;
-use ds_core::vocab::{Fraction, Muting, Shown};
+use ds_core::vocab::{Fraction, shown_word};
 use ds_core::word::Word;
 use ds_motion::anim::Anim;
 use ds_motion::presence::{
@@ -87,9 +87,9 @@ fn scrub(slot: &ScrubSlot, onscrub: EventHandler<ScrubEvent>) -> Element {
 /// The capsule's level: a level-look slider whose speaker is slashed at zero.
 fn level(slot: &LevelSlot, onlevel: EventHandler<Fraction>) -> Element {
     let muting = if slot.value == Fraction(0) {
-        Muting::Muted
+        true
     } else {
-        Muting::Audible
+        false
     };
     rsx! {
         span { class: "ds-capsule-level",
@@ -152,7 +152,7 @@ fn unmeasured_style(width: Option<u32>) -> Option<&'static str> {
 pub fn Capsule<T: Clone + PartialEq + 'static>(
     label: String,
     slots: Vec<RankedSlot<T>>,
-    shown: Shown,
+    shown: bool,
     #[props(default)] on_hidden: EventHandler<()>,
     onpick: EventHandler<T>,
     #[props(default)] onpointerenter: EventHandler<()>,
@@ -188,7 +188,7 @@ pub fn Capsule<T: Clone + PartialEq + 'static>(
                     class,
                     role: "toolbar",
                     "aria-label": "{name}",
-                    "data-shown": presence.shown().slug(),
+                    "data-shown": shown_word(presence.shown()),
                     "data-presence": presence.drawn_slug(),
                     "data-pulse": alias.slug(),
                     "data-span": span_of(&drawn),

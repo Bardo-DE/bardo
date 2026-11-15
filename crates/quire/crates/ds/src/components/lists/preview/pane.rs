@@ -15,8 +15,7 @@ use crate::components::controls::progress::spokes::SPIN;
 use crate::components::lists::preview::content::{PaneContent, caption, media};
 use crate::components::lists::preview::cue::{PaneCue, pending_look};
 use dioxus::prelude::*;
-use ds_core::vocab::Shortcut;
-use ds_core::vocab::Shown;
+use ds_core::vocab::{Shortcut, shown_word};
 use ds_core::word::Word;
 use ds_motion::anim::Anim;
 use ds_motion::detail::{
@@ -41,7 +40,7 @@ pub struct PaneAction {
 /// rest on (drawn with the focus ring); `onaction` hears a click on action `i`.
 ///
 /// `shown` plays the pane in and out: it slides in from the right as it mounts shown or turns
-/// `Visible` (`slide-r` over `--t-move`: `Anim::PaneInR`), and out to the right as it turns `Hidden` (`Anim::PaneOutR`), calling `on_hidden` when that
+/// `true` (`slide-r` over `--t-move`: `Anim::PaneInR`), and out to the right as it turns `false` (`Anim::PaneOutR`), calling `on_hidden` when that
 /// settles, which is when the caller drops it (and the palette's `aside`). Hidden and settled,
 /// nothing is laid out.
 ///
@@ -58,7 +57,7 @@ pub fn PreviewPane(
     #[props(default)] actions: Vec<PaneAction>,
     #[props(default)] focused: Option<usize>,
     #[props(default)] onaction: EventHandler<usize>,
-    #[props(default = Shown::Visible)] shown: Shown,
+    #[props(default = true)] shown: bool,
     #[props(default)] on_hidden: EventHandler<()>,
     #[props(into, default)] cue: PaneCue,
     #[props(default)] operation: Operation,
@@ -88,7 +87,7 @@ pub fn PreviewPane(
             role: "region",
             "aria-label": "{label}",
             "data-content": content.slug(),
-            "data-shown": phase.shown().slug(),
+            "data-shown": shown_word(phase.shown()),
             "data-presence": phase.drawn_slug(),
             "data-pulse": alias.slug(),
             "aria-busy": busy,

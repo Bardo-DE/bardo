@@ -19,7 +19,6 @@ use ds::motion::detail::operation::PendingToken;
 use ds::motion::spring::Millis;
 use ds::prelude::*;
 use ds::root::common::Common;
-use ds_core::colour::contrast::Verdict;
 use ds_style::icon::render::IconPx;
 use ds_style::icon::url::IconUrl;
 use ds_style::tokens::control_size::ControlSize;
@@ -139,12 +138,12 @@ pub const CASES: &[Case] = &[
     Case {
         component: "button",
         state: "toolbar-tool-expanded",
-        make: || rsx! { Button { bezel: Bezel::Toolbar, size: ControlSize::Large, image: ImagePosition::Only, icon: Icon::Tag, label: "Labels", shown: Shown::Visible, onclick: |_| {} } },
+        make: || rsx! { Button { bezel: Bezel::Toolbar, size: ControlSize::Large, image: ImagePosition::Only, icon: Icon::Tag, label: "Labels", shown: true, onclick: |_| {} } },
     },
     Case {
         component: "button",
         state: "toolbar-tool-collapsed",
-        make: || rsx! { Button { bezel: Bezel::Toolbar, size: ControlSize::Large, image: ImagePosition::Only, icon: Icon::Tag, label: "Labels", shown: Shown::Hidden, onclick: |_| {} } },
+        make: || rsx! { Button { bezel: Bezel::Toolbar, size: ControlSize::Large, image: ImagePosition::Only, icon: Icon::Tag, label: "Labels", shown: false, onclick: |_| {} } },
     },
     Case {
         component: "button",
@@ -340,12 +339,12 @@ pub const CASES: &[Case] = &[
     Case {
         component: "chip",
         state: "status-ok",
-        make: || rsx! { Chip { variant: ChipVariant::Status(Verdict::Pass), text: "4.8:1" } },
+        make: || rsx! { Chip { variant: ChipVariant::Status(true), text: "4.8:1" } },
     },
     Case {
         component: "chip",
         state: "status-bad",
-        make: || rsx! { Chip { variant: ChipVariant::Status(Verdict::Fail), text: "2.1:1" } },
+        make: || rsx! { Chip { variant: ChipVariant::Status(false), text: "2.1:1" } },
     },
     Case {
         component: "chip",
@@ -407,17 +406,17 @@ pub const CASES: &[Case] = &[
     Case {
         component: "section_header",
         state: "action-selected",
-        make: || rsx! { SectionHeader { title: "Files", actions: vec![HeaderAction { selection: Selection::Selected, ..HeaderAction::new("Show More", EventHandler::new(|_| {})) }] } },
+        make: || rsx! { SectionHeader { title: "Files", actions: vec![HeaderAction { selection: true, ..HeaderAction::new("Show More", EventHandler::new(|_| {})) }] } },
     },
     Case {
         component: "section_header",
         state: "collapsible-open",
-        make: || rsx! { SectionHeader { title: "Favourites", collapse: (Shown::Visible, EventHandler::new(|_| {})) } },
+        make: || rsx! { SectionHeader { title: "Favourites", collapse: (true, EventHandler::new(|_| {})) } },
     },
     Case {
         component: "section_header",
         state: "collapsible-closed",
-        make: || rsx! { SectionHeader { title: "Favourites", collapse: (Shown::Hidden, EventHandler::new(|_| {})) } },
+        make: || rsx! { SectionHeader { title: "Favourites", collapse: (false, EventHandler::new(|_| {})) } },
     },
     // Count: both places, empty at zero.
     Case {

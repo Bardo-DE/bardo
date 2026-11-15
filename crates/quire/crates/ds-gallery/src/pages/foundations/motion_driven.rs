@@ -127,20 +127,15 @@ fn Stage(material: Material, children: Element) -> Element {
 
 #[component]
 fn SheetCell() -> Element {
-    let mut shown = use_signal(|| Shown::Visible);
-    let flip = move |_| {
-        shown.set(match shown() {
-            Shown::Visible => Shown::Hidden,
-            Shown::Hidden => Shown::Visible,
-        })
-    };
+    let mut shown = use_signal(|| true);
+    let flip = move |_| shown.set(!shown());
     rsx! {
         Cell { name: "Sheet", code: "sheet-in / sheet-out",
             controls: rsx! { {mini("Show / hide", flip)} },
             Stage { material: Material::Sheet,
                 Sheet {
                     label: "Rename",
-                    onclose: move |_| shown.set(Shown::Hidden),
+                    onclose: move |_| shown.set(false),
                     shown: Some(shown()),
                     attach: Attach::Centre,
                     div { class: "g-panel", p { class: "g-note", "Hide it and show it again mid-way." } }
@@ -152,13 +147,8 @@ fn SheetCell() -> Element {
 
 #[component]
 fn PanelCell() -> Element {
-    let mut shown = use_signal(|| Shown::Visible);
-    let flip = move |_| {
-        shown.set(match shown() {
-            Shown::Visible => Shown::Hidden,
-            Shown::Hidden => Shown::Visible,
-        })
-    };
+    let mut shown = use_signal(|| true);
+    let flip = move |_| shown.set(!shown());
     rsx! {
         Cell { name: "Side panel", code: "panel-in / panel-out",
             controls: rsx! { {mini("Show / hide", flip)} },

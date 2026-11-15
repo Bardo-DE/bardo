@@ -9,7 +9,6 @@
 use crate::components::app::hover_open::use_hover_open;
 use crate::root::common::Common;
 use dioxus::prelude::*;
-use ds_core::vocab::Shown;
 use ds_core::word::Word;
 use ds_motion::anim::Anim;
 use ds_motion::hover_intent::HoverProfile;
@@ -19,7 +18,7 @@ use ds_motion::presence::spring::use_spring_presence;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
 pub enum SideState {
     /// Pinned: in its column.
-    Shown,
+    bool,
     /// Hidden, and nothing peeking.
     Hidden,
     /// Hidden, floating over the content while the pointer is at the edge.
@@ -27,30 +26,27 @@ pub enum SideState {
 }
 
 /// What `data-side` says, from the sidebar's pin and whether the pointer has it out.
-fn side_state(pinned: Shown, peeking: Shown) -> SideState {
+fn side_state(pinned: bool, peeking: bool) -> SideState {
     match (pinned, peeking) {
-        (Shown::Visible, _) => SideState::Shown,
-        (Shown::Hidden, Shown::Visible) => SideState::Peek,
-        (Shown::Hidden, Shown::Hidden) => SideState::Hidden,
+        (true, _) => SideState::Shown,
+        (false, true) => SideState::Peek,
+        (false, false) => SideState::Hidden,
     }
 }
 
-/// A sidebar that is `pinned` (`Visible`, in its column) or hidden with an edge that peeks it.
+/// A sidebar that is `pinned` (`true`, in its column) or hidden with an edge that peeks it.
 /// `onpin` hears a click on the edge strip. `label` names the sidebar; `common` goes on it.
 #[component]
 pub fn EdgePeek(
     label: String,
-    pinned: Shown,
+    pinned: bool,
     onpin: EventHandler<()>,
     #[props(default)] common: Common,
     children: Element,
 ) -> Element {
     let hover = use_hover_open(HoverProfile::Label);
     let peeking = hover.shown();
-    let wanted = match pinned {
-        Shown::Visible => Shown::Hidden,
-        Shown::Hidden => peeking,
-    };
+    let wanted = if pinned { false } else { peeking };
     let slide = use_spring_presence(Some(wanted), None, Anim::SlideR);
     let side = match (side_state(pinned, peeking), slide.drawn()) {
         (SideState::Hidden, true) => SideState::Peek,
@@ -60,7 +56,7 @@ pub fn EdgePeek(
     let data = common.data_attributes();
     let name = common.aria_label.clone().unwrap_or(label);
     rsx! {
-        if pinned == Shown::Hidden {
+        if !pinned {
             div {
                 class: "ds-edge",
                 "aria-hidden": "true",
@@ -78,7 +74,7 @@ pub fn EdgePeek(
             "aria-label": "{name}",
             "data-side": side.slug(),
             "data-drive": slide.drive(),
-            style: (pinned == Shown::Hidden).then(|| slide.style()),
+            style: (!pinned).then(|| slide.style()),
             onmounted: move |event| common.mounted(event),
             onpointerenter: move |_| hover.enter_card(),
             onpointerleave: move |_| hover.leave_card(),
@@ -91,16 +87,15 @@ pub fn EdgePeek(
 #[cfg(test)]
 mod tests {
     use super::{SideState, side_state};
-    use ds_core::vocab::Shown::{Hidden, Visible};
 
     #[test]
     fn a_pinned_sidebar_is_shown_whatever_the_pointer_does() {
         // (pinned, pointer has it out, state)
-        const CASES: &[(ds_core::vocab::Shown, ds_core::vocab::Shown, SideState)] = &[
-            (Visible, Visible, SideState::Shown),
-            (Visible, Hidden, SideState::Shown),
-            (Hidden, Visible, SideState::Peek),
-            (Hidden, Hidden, SideState::Hidden),
+        const CASES: &[(bool, bool, SideState)] = &[
+            (true, true, SideState::Shown),
+            (true, false, SideState::Shown),
+            (false, true, SideState::Peek),
+            (false, false, SideState::Hidden),
         ];
         for &(pinned, peeking, want) in CASES {
             assert_eq!(side_state(pinned, peeking), want);

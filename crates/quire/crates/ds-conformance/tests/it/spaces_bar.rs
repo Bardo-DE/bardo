@@ -32,7 +32,7 @@ fn ms(n: u64) -> Duration {
 fn tiles() -> Vec<SpaceTile> {
     vec![
         SpaceTile::new(BarSpaceKey("a".to_owned()), "Desktop 1"),
-        SpaceTile::new(BarSpaceKey("b".to_owned()), "Desktop 2").current(Selection::Selected),
+        SpaceTile::new(BarSpaceKey("b".to_owned()), "Desktop 2").current(true),
         SpaceTile::new(BarSpaceKey("c".to_owned()), "Desktop 3")
             .backdrop(ImageSource("data:image/png;base64,BBBB".to_owned()))
             .in_drag(DropState::Target),
@@ -43,7 +43,7 @@ fn tiles() -> Vec<SpaceTile> {
 /// caller holds, if any.
 #[component]
 fn Hung(held: Option<BarExpansion>) -> Element {
-    let shown = use_context::<Signal<Shown>>();
+    let shown = use_context::<Signal<bool>>();
     let mut log = use_signal(Vec::<String>::new);
     let mut layout = use_signal(BarLayout::default);
     rsx! {
@@ -70,7 +70,7 @@ fn Hung(held: Option<BarExpansion>) -> Element {
 
 #[allow(non_snake_case)]
 fn Page() -> Element {
-    use_context_provider(|| Signal::new(Shown::Visible));
+    use_context_provider(|| Signal::new(true));
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport, Hung { held: None } }
     }
@@ -78,7 +78,7 @@ fn Page() -> Element {
 
 #[allow(non_snake_case)]
 fn Held() -> Element {
-    use_context_provider(|| Signal::new(Shown::Visible));
+    use_context_provider(|| Signal::new(true));
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport, Hung { held: Some(BarExpansion::Collapsed) } }
     }
@@ -86,7 +86,7 @@ fn Held() -> Element {
 
 #[allow(non_snake_case)]
 fn Open() -> Element {
-    use_context_provider(|| Signal::new(Shown::Visible));
+    use_context_provider(|| Signal::new(true));
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport, Hung { held: Some(BarExpansion::Expanded) } }
     }
@@ -111,10 +111,10 @@ fn harness(page: fn() -> Element) -> Harness {
     harness
 }
 
-fn set(harness: &mut Harness, to: Shown) {
+fn set(harness: &mut Harness, to: bool) {
     harness.within(|| {
         dioxus::core::Runtime::current()
-            .in_scope(ScopeId::APP, || consume_context::<Signal<Shown>>().set(to))
+            .in_scope(ScopeId::APP, || consume_context::<Signal<bool>>().set(to))
     });
 }
 
@@ -210,7 +210,7 @@ fn the_space_a_drag_is_over_is_lit_and_the_current_one_is_marked() {
 fn a_hidden_bar_lifts_away_reports_at_its_settle_and_draws_nothing_after() {
     let mut harness = harness(Page);
     let asked = harness.now();
-    set(&mut harness, Shown::Hidden);
+    set(&mut harness, false);
     harness.advance(ms(20));
     assert_eq!(
         harness.attr(".ds-spaces-bar", "data-presence").as_deref(),

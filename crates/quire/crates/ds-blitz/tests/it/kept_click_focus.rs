@@ -45,7 +45,7 @@ fn Page() -> Element {
                     onclick: move |_| note("open"),
                     HoverStrip {
                         actions,
-                        shown: Shown::Visible,
+                        shown: true,
                         on_press: move |id: ActionId| note(&format!("press:{}", id.0)),
                     }
                 }
@@ -53,7 +53,7 @@ fn Page() -> Element {
                     Row {
                         title: "Projects",
                         leading: RowLeading::Icon(Icon::Folder),
-                        outline: Outline::Branch(Shown::Visible),
+                        outline: Outline::Branch(true),
                         on_toggle: move |_| note("toggle:projects"),
                         onclick: move |_: Press| note("select"),
                         accessory: Accessory::Slot(rsx! {
@@ -177,13 +177,13 @@ fn Renaming() -> Element {
                             }
                         },
                         leading: RowLeading::Icon(Icon::Folder),
-                        outline: Outline::Branch(Shown::Hidden),
+                        outline: Outline::Branch(false),
                         on_toggle: move |_| note("toggle:projects"),
                         span { "inside" }
                     }
                     Row {
                         title: "Archive",
-                        outline: Outline::Branch(Shown::Hidden),
+                        outline: Outline::Branch(false),
                         on_toggle: move |_| note("toggle:archive"),
                         onclick: move |_: Press| note("select"),
                         span { "inside" }

@@ -36,7 +36,7 @@ pub const CASES: &[Case] = &[
                     title: "Projects",
                     content: rename("Projects"),
                     leading: RowLeading::Icon(Icon::Folder),
-                    outline: Outline::Branch(Shown::Visible),
+                    outline: Outline::Branch(true),
                     on_toggle: |_| {},
                     accessory: Accessory::Slot(more("Projects")),
                     Row { title: "Quire", leading: RowLeading::Icon(Icon::Folder), outline: Outline::Leaf }

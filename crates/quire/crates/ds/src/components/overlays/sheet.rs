@@ -15,7 +15,7 @@ use crate::root::common::Common;
 use dioxus::core::queue_effect;
 use dioxus::prelude::*;
 use ds_core::time::{FRAME_SLACK, clock::sleep};
-use ds_core::vocab::{Dismiss, Shown};
+use ds_core::vocab::Dismiss;
 use ds_core::word::Word;
 use ds_motion::anim::Anim;
 use ds_motion::presence::{
@@ -57,7 +57,7 @@ use std::rc::Rc;
 pub fn Sheet(
     label: String,
     onclose: EventHandler<()>,
-    #[props(default)] shown: Option<Shown>,
+    #[props(default)] shown: Option<bool>,
     #[props(default)] on_hidden: Option<EventHandler<()>>,
     #[props(default)] on_return: Option<EventHandler<()>>,
     #[props(default)] attach: Attach,
@@ -67,7 +67,7 @@ pub fn Sheet(
 ) -> Element {
     let float = use_float(ZLayer::Peek, Stacking::Layer(Dismiss::Semitransient));
     let Presented { presence, alias } = use_presence(
-        shown.unwrap_or(Shown::Visible),
+        shown.unwrap_or(true),
         PresenceSpec {
             enter: Anim::SheetIn,
             exit: Exit::SheetOut,

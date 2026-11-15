@@ -21,7 +21,7 @@ use crate::components::menus::menu::placement::MenuPlacement;
 use crate::host::measure::{Anchor, MountedRef};
 use crate::root::common::Common;
 use dioxus::prelude::*;
-use ds_core::vocab::Shown;
+use ds_core::vocab::aria_word;
 use ds_style::icon::Icon;
 use ds_style::icon::render::IconSize;
 
@@ -91,7 +91,7 @@ pub fn PathControl(
     #[props(default)] ondrop: Option<EventHandler<usize>>,
     #[props(default)] common: Common,
 ) -> Element {
-    let mut open = use_signal(|| Shown::Hidden);
+    let mut open = use_signal(|| false);
     let mut more = use_signal(|| None::<MountedRef>);
     let drops = Drops {
         enter: ondropenter,
@@ -127,8 +127,8 @@ pub fn PathControl(
                             class: "ds-path-more",
                             r#type: "button",
                             "aria-label": "Show hidden folders",
-                            "aria-expanded": open().aria(),
-                            onclick: move |_| open.set(open().flipped()),
+                            "aria-expanded": aria_word(open()),
+                            onclick: move |_| open.set(!open()),
                             onmounted: move |event| more.set(Some(MountedRef(event.data()))),
                             "…"
                         }
@@ -136,16 +136,16 @@ pub fn PathControl(
                 }
             }
         }
-        if open() == Shown::Visible && let (Some(anchor), Some(span)) = (anchor, hidden) {
+        if open() && let (Some(anchor), Some(span)) = (anchor, hidden) {
             Menu::<usize> {
                 placement: MenuPlacement::Popup,
                 anchor,
                 items: rows(&segments[span.clone()], span.start),
                 onpick: move |at: usize| {
-                    open.set(Shown::Hidden);
+                    open.set(false);
                     onpick.call(at);
                 },
-                onclose: move |()| open.set(Shown::Hidden),
+                onclose: move |()| open.set(false),
             }
         }
     }

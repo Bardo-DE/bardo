@@ -31,7 +31,7 @@ use chordkit::Context;
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
 use ds_core::geometry::units::{Point, Px};
-use ds_core::vocab::{DropState, Selection};
+use ds_core::vocab::{DropState, aria_word};
 use ds_motion::drag::{DRAG_THRESHOLD, DragPhase, use_drag};
 use ds_style::icon::Icon;
 use ds_style::icon::render::{Glyph, IconSize};
@@ -148,7 +148,7 @@ pub fn DocumentTabs(
                 key: "{index}",
                 index,
                 title: tab.title,
-                selection: Selection::of(&index, &selected),
+                selection: index == selected,
                 state: drop_state(&phase, index),
                 onselect: move |at| {
                     if !kept.replace(false) {
@@ -215,7 +215,7 @@ pub fn DocumentTabs(
 fn DocumentTabItem(
     index: usize,
     title: String,
-    selection: Selection,
+    selection: bool,
     state: DropState,
     onselect: EventHandler<usize>,
     onclose: EventHandler<usize>,
@@ -230,10 +230,10 @@ fn DocumentTabItem(
             id: common.id.clone(),
             class,
             role: "tab",
-            "aria-selected": selection.aria(),
+            "aria-selected": aria_word(selection),
             "aria-label": title.clone(),
-            tabindex: if selection == Selection::Selected { "0" } else { "-1" },
-            "data-selected": (selection == Selection::Selected).then_some("true"),
+            tabindex: if selection { "0" } else { "-1" },
+            "data-selected": selection.then_some("true"),
             "data-drop": state.drop_attr(),
             "data-drag": state.drag_attr(),
             title: tip.native(),

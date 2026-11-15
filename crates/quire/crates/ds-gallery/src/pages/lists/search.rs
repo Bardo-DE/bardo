@@ -88,7 +88,7 @@ pub fn SearchRows() -> Element {
                                 name,
                                 rsx! {
                                     ThreadRow {
-                                        state: RowState { selection: if at() == index { Selection::Selected } else { Selection::Unselected }, emphasis: Emphasis::Plain, ..RowState::default() },
+                                        state: RowState { selection: at() == index, emphasis: false, ..RowState::default() },
                                         name,
                                         via: None,
                                         subject: subject.clone(),
@@ -99,9 +99,9 @@ pub fn SearchRows() -> Element {
                                         strip: rsx! {
                                             HoverStrip {
                                                 actions: actions(),
-                                                shown: if at() == index { Shown::Visible } else { Shown::Hidden },
+                                                shown: at() == index,
                                                 titles: Titles::FromLabel,
-                                                expanded: vec![(ActionId("label".to_string()), if at() == index { Shown::Visible } else { Shown::Hidden })],
+                                                expanded: vec![(ActionId("label".to_string()), at() == index)],
                                             }
                                         },
                                         common: Common { aria_label: Some(format!("Open {}", subject.plain_text())), ..Common::default() },
