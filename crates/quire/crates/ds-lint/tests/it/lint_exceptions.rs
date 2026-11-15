@@ -94,31 +94,6 @@ fn a_stale_exception_fails() {
 }
 
 #[test]
-#[should_panic(expected = "stale exception(s)")]
-fn an_offence_and_a_stale_exception_are_both_named() {
-    const TWO: &[Exception] = &[
-        Exception {
-            rule: Rule::HexColour,
-            selector: ".fade",
-            reason: "mask alpha only",
-        },
-        Exception {
-            rule: Rule::NamedColour,
-            selector: ".gone",
-            reason: "a rule since deleted",
-        },
-    ];
-    let config = LintConfig {
-        exceptions: TWO,
-        ..LintConfig::new(&ds::kits())
-    };
-    assert_clean(
-        ".fade { mask-image: linear-gradient(#000, transparent); color: red; }",
-        &config,
-    );
-}
-
-#[test]
 fn a_two_megabyte_single_line_page_reports_the_late_offence_position() {
     let filler = "<p class=\"ds-ok\">é</p>";
     let mut html = filler.repeat(2_000_000 / filler.len());

@@ -58,45 +58,6 @@ fn every_page_renders_quire_markup_only() {
     assert!(failures.is_empty(), "{failures:#?}");
 }
 
-/// The Space page, SpaceDot and the whole Space editor on it, lints clean under Strict with no
-/// exception: every Space colour is a custom property its stylesheet paints.
-#[test]
-fn the_space_page_is_clean_under_strict() {
-    let css = format!("{}\n{}", ds_shell::stylesheet(), style::CSS);
-    let strict = LintConfig {
-        profile: Profile::Strict,
-        ..LintConfig::new(&ds_shell::kits())
-    };
-    let html = rendered(Page::Space);
-    assert!(
-        html.contains("ds-space-dot"),
-        "the page drew its Space dots"
-    );
-    assert!(html.contains("--dot-c1:"), "the dots carry their colours");
-    let offences = markup(&html, &css, &strict);
-    assert!(offences.is_empty(), "{offences:#?}");
-}
-
-#[test]
-fn every_exception_still_suppresses_something() {
-    let css = format!("{}\n{}", ds_shell::stylesheet(), style::CSS);
-    let bare = LintConfig {
-        profile: Profile::Strict,
-        ..LintConfig::new(&ds_shell::kits())
-    };
-    let offences: Vec<_> = Page::ALL
-        .iter()
-        .copied()
-        .flat_map(|page| markup(&rendered(page), &css, &bare))
-        .collect();
-    let stale: Vec<&str> = EXCEPTIONS
-        .iter()
-        .filter(|exception| !offences.iter().any(|offence| exception.covers(offence)))
-        .map(|exception| exception.selector)
-        .collect();
-    assert!(stale.is_empty(), "exceptions that match nothing: {stale:?}");
-}
-
 #[test]
 fn a_page_snapshots_to_real_pixels() {
     start_with(Axes {

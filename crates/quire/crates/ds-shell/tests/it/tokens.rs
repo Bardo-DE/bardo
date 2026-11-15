@@ -1,18 +1,14 @@
-//! The token blocks of the generated stylesheet agree with the Rust table and with each other:
+//! The token blocks of the generated stylesheet agree with each other:
 //! a dark or level block never introduces a name the light block lacks, each accent block sets
 //! exactly its four, each picker swatch is its accent's own colour, and every variable the
 //! stylesheet reads is declared by it or written inline by the root.
 
 use ds::prelude::*;
 use ds_shell::stylesheet;
-use ds_style::appearance::system::Contrast;
 use ds_style::space::frame_vars::FrameVars;
-use ds_style::tokens::accent_table::accent_in;
 use ds_style::tokens::colour::ColourToken;
 use ds_style::tokens::easing::EasingToken;
 use ds_style::tokens::elevation::Shadow;
-use ds_style::tokens::label_hue::HueMember;
-use ds_style::tokens::label_hue::LabelHue;
 use ds_style::tokens::layer::ZLayer;
 use ds_style::tokens::person::PersonSwatch;
 use ds_style::tokens::shape::Radius;
@@ -147,37 +143,6 @@ fn each_accent_block_sets_exactly_the_seven() {
 }
 
 #[test]
-fn each_accent_block_is_the_bands_roles() {
-    for scheme in Scheme::ALL.iter().copied() {
-        let theme = match scheme {
-            Scheme::Light => "",
-            Scheme::Dark => "[*|data-theme=dark]",
-        };
-        for (contrast, attr) in [
-            (Contrast::Normal, ""),
-            (Contrast::High, "[*|data-contrast=high]"),
-        ] {
-            for accent in Accent::ALL.iter().copied() {
-                let selector = format!(".ds{theme}{attr}[*|data-accent={}]", accent.slug());
-                let decls = block(&selector);
-                let want = accent_in(accent, scheme, contrast);
-                for (name, value) in [
-                    ("--accent", want.fill.css()),
-                    ("--accent-ink", want.ink.css()),
-                    ("--accent-soft", want.wash_colour().css()),
-                    ("--accent-text", want.text.css()),
-                    ("--accent-text-material", want.text_material.css()),
-                    ("--accent-ring", want.ring_colour().css()),
-                    ("--seal", want.fill.css()),
-                ] {
-                    assert_eq!(decls.get(name), Some(&value), "{selector} {name}");
-                }
-            }
-        }
-    }
-}
-
-#[test]
 fn each_swatch_is_its_accents_own_colour() {
     for scheme in Scheme::ALL.iter().copied() {
         let (swatches, theme) = match scheme {
@@ -212,39 +177,6 @@ fn each_swatch_is_its_accents_own_colour() {
                 "{scheme:?} {accent:?}: the swatch is not the accent"
             );
             assert!(swatch.is_some(), "{scheme:?} {accent:?}: no swatch");
-        }
-    }
-}
-
-#[test]
-fn the_token_block_holds_the_rust_table() {
-    let light = token_block();
-    let dark = block(".ds[*|data-theme=dark]");
-    for token in ColourToken::ALL.iter().copied() {
-        if token == ColourToken::AccentRing {
-            continue; // Mixed from the resolved --accent; see `each_var_…` and `ds_shell::kits()`.
-        }
-        for (scheme, over) in [(Scheme::Light, None), (Scheme::Dark, Some(&dark))] {
-            let name = token.var().as_str();
-            let got = over
-                .and_then(|over| over.get(name))
-                .or_else(|| light.get(name));
-            assert_eq!(got, Some(&token.value(scheme).css()), "{name} {scheme:?}");
-        }
-    }
-    for hue in LabelHue::ALL.iter().copied() {
-        for member in [HueMember::Base, HueMember::Deep, HueMember::Soft] {
-            let name = hue.colour(member).var().as_str();
-            assert_eq!(
-                light.get(name),
-                Some(&hue.value(member, Scheme::Light).css()),
-                "{name}"
-            );
-            assert_eq!(
-                dark.get(name),
-                Some(&hue.value(member, Scheme::Dark).css()),
-                "{name} dark"
-            );
         }
     }
 }

@@ -371,41 +371,35 @@ mod tests {
     }
 
     #[test]
-    fn a_container_with_no_settings_attribute_is_an_error() {
-        let attrs = struct_attrs("struct S;");
-        let err = container_attrs(Span::call_site(), &attrs).unwrap_err();
-        assert!(err.to_string().contains("needs #[settings"), "{err}");
-    }
-
-    #[test]
-    fn a_container_missing_file_is_an_error() {
-        let attrs = struct_attrs("#[settings(domain = \"dock\", page = Page::Dock)] struct S;");
-        let err = container_attrs(attrs[0].span(), &attrs).unwrap_err();
-        assert!(err.to_string().contains("`file`"), "{err}");
-    }
-
-    #[test]
-    fn a_container_missing_domain_is_an_error() {
-        let attrs = struct_attrs("#[settings(file = \"a/b.toml\", page = Page::Dock)] struct S;");
-        let err = container_attrs(attrs[0].span(), &attrs).unwrap_err();
-        assert!(err.to_string().contains("`domain`"), "{err}");
-    }
-
-    #[test]
-    fn a_container_missing_page_is_an_error() {
-        let attrs = struct_attrs("#[settings(file = \"a/b.toml\", domain = \"dock\")] struct S;");
-        let err = container_attrs(attrs[0].span(), &attrs).unwrap_err();
-        assert!(err.to_string().contains("`page`"), "{err}");
-    }
-
-    #[test]
-    fn an_unknown_container_key_is_an_error() {
-        let attrs = struct_attrs(
-            "#[settings(file = \"a/b.toml\", domain = \"dock\", page = Page::Dock, oops = 1)]\
-             struct S;",
-        );
-        let err = container_attrs(attrs[0].span(), &attrs).unwrap_err();
-        assert!(err.to_string().contains("unknown"), "{err}");
+    fn a_malformed_container_is_an_error_naming_the_fault() {
+        const CASES: &[(&str, &str)] = &[
+            ("struct S;", "needs #[settings"),
+            (
+                "#[settings(domain = \"dock\", page = Page::Dock)] struct S;",
+                "`file`",
+            ),
+            (
+                "#[settings(file = \"a/b.toml\", page = Page::Dock)] struct S;",
+                "`domain`",
+            ),
+            (
+                "#[settings(file = \"a/b.toml\", domain = \"dock\")] struct S;",
+                "`page`",
+            ),
+            (
+                "#[settings(file = \"a/b.toml\", domain = \"dock\", page = Page::Dock, oops = 1)] \
+                 struct S;",
+                "unknown",
+            ),
+        ];
+        for (source, fault) in CASES {
+            let attrs = struct_attrs(source);
+            let span = attrs
+                .first()
+                .map_or_else(Span::call_site, |attr| attr.span());
+            let err = container_attrs(span, &attrs).unwrap_err();
+            assert!(err.to_string().contains(fault), "{source}: {err}");
+        }
     }
 
     #[test]
@@ -522,15 +516,6 @@ mod tests {
     }
 
     #[test]
-    fn text_and_range_together_are_an_error() {
-        let attrs = first_field_attrs(
-            "struct S { #[settings(label = \"L\", text, range = \"0..=9\")] f: u8 }",
-        );
-        let err = field_attrs(attrs[0].span(), &attrs).unwrap_err();
-        assert!(err.to_string().contains("`text` and `range`"), "{err}");
-    }
-
-    #[test]
     fn a_skipped_field_needs_no_label() {
         let attrs = first_field_attrs("struct S { #[settings(skip)] f: toml::Table }");
         let parsed = field_attrs(attrs[0].span(), &attrs).unwrap();
@@ -538,24 +523,27 @@ mod tests {
     }
 
     #[test]
-    fn a_field_with_no_settings_attribute_is_an_error() {
-        let attrs = first_field_attrs("struct S { f: u8 }");
-        let err = field_attrs(Span::call_site(), &attrs).unwrap_err();
-        assert!(err.to_string().contains("needs its own"), "{err}");
-    }
-
-    #[test]
-    fn a_field_missing_label_is_an_error() {
-        let attrs = first_field_attrs("struct S { #[settings(help = \"x\")] f: u8 }");
-        let err = field_attrs(attrs[0].span(), &attrs).unwrap_err();
-        assert!(err.to_string().contains("`label`"), "{err}");
-    }
-
-    #[test]
-    fn an_unknown_field_key_is_an_error() {
-        let attrs = first_field_attrs("struct S { #[settings(label = \"L\", oops = 1)] f: u8 }");
-        let err = field_attrs(attrs[0].span(), &attrs).unwrap_err();
-        assert!(err.to_string().contains("unknown"), "{err}");
+    fn a_malformed_field_is_an_error_naming_the_fault() {
+        const CASES: &[(&str, &str)] = &[
+            ("struct S { f: u8 }", "needs its own"),
+            ("struct S { #[settings(help = \"x\")] f: u8 }", "`label`"),
+            (
+                "struct S { #[settings(label = \"L\", oops = 1)] f: u8 }",
+                "unknown",
+            ),
+            (
+                "struct S { #[settings(label = \"L\", text, range = \"0..=9\")] f: u8 }",
+                "`text` and `range`",
+            ),
+        ];
+        for (source, fault) in CASES {
+            let attrs = first_field_attrs(source);
+            let span = attrs
+                .first()
+                .map_or_else(Span::call_site, |attr| attr.span());
+            let err = field_attrs(span, &attrs).unwrap_err();
+            assert!(err.to_string().contains(fault), "{source}: {err}");
+        }
     }
 
     #[test]
