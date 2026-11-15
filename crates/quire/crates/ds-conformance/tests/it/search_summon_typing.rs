@@ -112,32 +112,25 @@ fn typed(harness: &mut Harness) -> String {
 }
 
 #[test]
-fn keys_typed_the_moment_the_field_is_focused_land_in_order() {
-    let mut harness = summoned();
-    "invoice"
-        .chars()
-        .for_each(|c| harness.send(Input::key(ShortcutKey::Char(c))));
-    assert_eq!(typed(&mut harness), "invoice");
-}
-
-#[test]
-fn keys_typed_a_frame_apart_from_the_focus_on_land_in_order() {
-    let mut harness = summoned();
-    "invoice".chars().for_each(|c| {
-        harness.send(Input::key(ShortcutKey::Char(c)));
-        harness.step_frame();
-    });
-    assert_eq!(typed(&mut harness), "invoice");
-}
-
-#[test]
-fn keys_typed_a_few_milliseconds_apart_land_in_order() {
-    let mut harness = summoned();
-    "invoice".chars().for_each(|c| {
-        harness.send(Input::key(ShortcutKey::Char(c)));
-        harness.advance(ms(4));
-    });
-    assert_eq!(typed(&mut harness), "invoice");
+fn keys_typed_after_the_focus_land_in_order_at_any_pace() {
+    // How each key is followed: at once, a frame later, a few milliseconds later.
+    let paces: [(&str, fn(&mut Harness)); 3] = [
+        ("at once", |_| {}),
+        ("a frame apart", |harness| {
+            harness.step_frame();
+        }),
+        ("a few milliseconds apart", |harness| {
+            harness.advance(ms(4));
+        }),
+    ];
+    for (pace, after_each) in paces {
+        let mut harness = summoned();
+        "invoice".chars().for_each(|c| {
+            harness.send(Input::key(ShortcutKey::Char(c)));
+            after_each(&mut harness);
+        });
+        assert_eq!(typed(&mut harness), "invoice", "{pace}");
+    }
 }
 
 #[test]

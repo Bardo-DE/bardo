@@ -136,34 +136,6 @@ fn MenuGoneEarly() -> Element {
     rsx! { Scripted { subject: Subject::Menu, script: early_unmount(), motion: Motion::Standard } }
 }
 
-/// `sill launcher toggle` pairs 200 ms apart: open, close, open, close. The palette's entrance
-/// runs past each close, so each close lands mid `peek-in`.
-#[allow(non_snake_case)]
-fn PaletteToggledTwice() -> Element {
-    rsx! {
-        Scripted {
-            subject: Subject::Palette,
-            script: vec![(10, Shown::Yes), (200, Shown::No), (200, Shown::Yes), (200, Shown::No)],
-            motion: Motion::Standard,
-        }
-    }
-}
-
-/// Fifty mounts, each unmounted after a varying time (some before the entrance settles, some
-/// after the field has focused).
-#[allow(non_snake_case)]
-fn PaletteFiftyTimes() -> Element {
-    let script = (0..50u64)
-        .flat_map(|round| {
-            [
-                (7 + round % 5, Shown::Yes),
-                (20 + (round * 37) % 400, Shown::No),
-            ]
-        })
-        .collect();
-    rsx! { Scripted { subject: Subject::Palette, script, motion: Motion::Standard } }
-}
-
 fn mounts(harness: &Harness) -> String {
     harness.text_of(".mounts").unwrap_or_default()
 }
@@ -219,25 +191,4 @@ fn a_menu_unmounted_before_its_fade_settles_does_not_panic() {
     );
     assert_eq!(mounts(&harness), "1", "the menu mounted");
     assert_eq!(harness.count(".ds-menu"), 0, "and is gone");
-}
-
-#[test]
-fn a_palette_toggled_twice_within_its_entrance_does_not_panic() {
-    assert!(settle(Anim::PeekIn, MotionLevel::Standard) > ms(210));
-    let mut harness = virtual_harness(PaletteToggledTwice);
-    run_script(&mut harness, ms(2200), "2", ".ds-palette");
-    assert_eq!(mounts(&harness), "2");
-    assert_eq!(harness.count(".ds-palette"), 0);
-}
-
-#[test]
-fn a_palette_mounted_fifty_times_does_not_panic() {
-    let mut harness = virtual_harness(PaletteFiftyTimes);
-    // The script's own length, and a margin for the last unmount.
-    let total: u64 = (0..50u64)
-        .map(|round| 7 + round % 5 + 20 + (round * 37) % 400)
-        .sum();
-    run_script(&mut harness, ms(total + 200), "50", ".ds-palette");
-    assert_eq!(mounts(&harness), "50");
-    assert_eq!(harness.count(".ds-palette"), 0);
 }

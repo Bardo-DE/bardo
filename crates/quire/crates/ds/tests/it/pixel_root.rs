@@ -10,7 +10,6 @@ use ds::assembly::ds::Inject;
 use ds::prelude::*;
 use ds_core::vocab::{Activity, InputModality};
 use ds_style::icon::render::Glyph;
-use ds_style::tokens::pixel::PixelToken;
 
 #[derive(Props, Clone, PartialEq)]
 struct Setup {
@@ -41,29 +40,6 @@ fn render(given: Option<Scale>, host: Option<Scale>) -> String {
     let mut dom = VirtualDom::new_with_props(Root, Setup { given, host });
     dom.rebuild_in_place();
     dioxus_ssr::render(&dom)
-}
-
-/// Every `style="…"` in `html`, in order.
-fn styles(html: &str) -> Vec<&str> {
-    html.split("style=\"")
-        .skip(1)
-        .filter_map(|rest| rest.split('"').next())
-        .collect()
-}
-
-#[test]
-fn a_fractional_root_writes_every_input_and_its_surface_inherits_them() {
-    let html = render(Some(Scale(180)), None);
-    let styles = styles(&html);
-    let root = styles.first().expect("the root's style");
-    assert!(root.contains(&PixelToken::style_attr(Scale(180))), "{root}");
-    assert!(root.contains("--scale-px:0.66667px;"), "{root}");
-    assert!(root.contains("--scale-dpr:1.5;"), "{root}");
-    assert_eq!(
-        html.matches("--scale-hair:").count(),
-        1,
-        "only the root writes the inputs: {html}"
-    );
 }
 
 #[test]

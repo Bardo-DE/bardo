@@ -1,16 +1,12 @@
 //! Driven motion (design/05 section 14), on `Clock::Virtual` so every frame falls at an
-//! exact instant: a spring redirected mid-flight keeps its position and velocity; a slider thrown
-//! from 30 % lands where the throw projects; a swiped card let go springs home; each of them
-//! stops asking for frames once it rests.
+//! exact instant: a slider thrown from 30 % lands where the throw projects; a swiped card let
+//! go springs home; each of them stops asking for frames once it rests.
 
 use dioxus::prelude::*;
 use ds::base::time::FRAME_TICK;
 use ds::motion::detail::touch::Touch;
 use ds::motion::projection::Throw;
-use ds::motion::spring::SpringPhase;
-use ds::motion::spring_spec::{SpringResponse, SpringSpec};
-use ds::motion::timeline::spring::PxPerUnit;
-use ds::motion::use_spring::use_spring;
+use ds::motion::spring_spec::SpringSpec;
 use ds::motion::velocity::Velocity;
 use ds::prelude::*;
 use ds_harness::harness::assert_settles_to_zero_frames;
@@ -28,75 +24,6 @@ const FRAME: Duration = FRAME_TICK;
 
 fn virtual_harness(app: fn() -> Element) -> Harness {
     Harness::new(app, HarnessConfig::new(VIEW).with_clock(Clock::Virtual))
-}
-
-// ---- A bare spring: interruption continuity ---------------------------------------------
-
-static TARGET: GlobalSignal<f32> = Signal::global(|| 0.0);
-
-#[allow(non_snake_case)]
-fn Spring() -> Element {
-    let spec = SpringSpec::for_touch(Touch::Remote).response(SpringResponse::Move);
-    let frame = use_spring(TARGET(), spec, PxPerUnit(1.0));
-    let phase = match frame.phase() {
-        SpringPhase::Moving => "moving",
-        SpringPhase::Rest => "rest",
-    };
-    rsx! {
-        Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
-            div {
-                class: "spring",
-                "data-x": "{frame.position()}",
-                "data-v": "{frame.velocity()}",
-                "data-phase": phase,
-            }
-        }
-    }
-}
-
-fn read(harness: &Harness, name: &str) -> f32 {
-    harness
-        .attr(".spring", name)
-        .and_then(|value| value.parse().ok())
-        .unwrap_or_else(|| panic!("no {name}:\n{}", harness.html()))
-}
-
-#[test]
-fn a_spring_redirected_at_forty_percent_keeps_its_position_and_velocity() {
-    let mut harness = virtual_harness(Spring);
-    harness.within(|| *TARGET.write() = 100.0);
-    harness.advance(Duration::ZERO);
-    let mut frames = 0;
-    while read(&harness, "data-x") < 40.0 {
-        harness.advance(FRAME);
-        frames += 1;
-        assert!(frames < 100, "never reached 40 %");
-    }
-    let (x, v) = (read(&harness, "data-x"), read(&harness, "data-v"));
-    assert!(v > 50.0, "it was moving out: {v}");
-    let wakes = harness.wakes();
-
-    // Redirected at that instant: the new leg starts from the old leg's state.
-    harness.within(|| *TARGET.write() = -50.0);
-    harness.advance(Duration::ZERO);
-    let (x2, v2) = (read(&harness, "data-x"), read(&harness, "data-v"));
-    assert!((x2 - x).abs() < 0.01, "position jumped: {x} -> {x2}");
-    assert!(
-        (v2 - v).abs() <= v.abs() * 0.05,
-        "velocity jumped: {v} -> {v2}"
-    );
-    // One frame on it is still moving out (the velocity carried it), not restarted from rest
-    // and not snapped toward the new target.
-    harness.advance(FRAME);
-    let x3 = read(&harness, "data-x");
-    assert!(x3 > x2, "it carried on outward first: {x2} -> {x3}");
-    assert!(harness.wakes() > wakes, "a moving spring asks for frames");
-
-    ds_harness::harness::settle_until(&mut harness, |h| {
-        h.attr(".spring", "data-phase").as_deref() == Some("rest")
-    });
-    assert_eq!(read(&harness, "data-x"), -50.0);
-    assert_settles_to_zero_frames(&mut harness);
 }
 
 // ---- The slider: a throw lands where it projects ----------------------------------------

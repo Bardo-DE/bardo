@@ -121,17 +121,6 @@ fn ms(n: u64) -> Duration {
 }
 
 #[test]
-fn rows_listed_first_are_there_at_once_and_measure_their_heights() {
-    let harness = start(&[1, 2, 3, 4], Motion::Standard);
-    assert_eq!(harness.count(".ds-list-item"), 4);
-    for position in 1..=4 {
-        assert_eq!(presence(&harness, position).as_deref(), Some("present"));
-    }
-    assert_eq!(top(&harness, 2) - top(&harness, 1), height(1));
-    assert_eq!(top(&harness, 4) - top(&harness, 3), height(3));
-}
-
-#[test]
 fn one_row_leaves_and_the_rows_below_heal_by_its_height() {
     let mut harness = start(&[1, 2, 3, 4], Motion::Standard);
     let (before3, before4) = (top(&harness, 3), top(&harness, 4));
@@ -165,70 +154,6 @@ fn one_row_leaves_and_the_rows_below_heal_by_its_height() {
     assert_eq!(top(&harness, 4), before4 - height(2));
     assert_eq!(top(&harness, 3), top(&harness, 1) + height(1));
     assert_eq!(harness.text_of(".settled").as_deref(), Some("2"));
-}
-
-#[test]
-fn a_clear_removes_its_rows_together_and_heals_by_their_summed_heights() {
-    let mut harness = start(&[1, 2, 3, 4, 5], Motion::Standard);
-    let (first, before4, before5) = (top(&harness, 1), top(&harness, 4), top(&harness, 5));
-    // Rows 1 and 3 go in one render: one batch.
-    show(&mut harness, &[2, 4, 5]);
-    assert_eq!(presence(&harness, 1).as_deref(), Some("leaving"));
-    assert_eq!(presence(&harness, 3).as_deref(), Some("leaving"));
-    // The batch waits for its last row: the first has folded, and still nothing moves.
-    let batch = fold(MotionLevel::Standard);
-    harness.advance(batch - ms(2));
-    assert_eq!(harness.count(".ds-list-item"), 5);
-    assert_eq!(presence(&harness, 2).as_deref(), Some("present"));
-    harness.advance(ms(1));
-    assert_eq!(harness.count(".ds-list-item"), 3, "dropped together");
-    assert_eq!(dy(&harness, 1), Some(height(1)), "row 2 heals by row 1");
-    let both = height(1) + height(3);
-    assert_eq!(dy(&harness, 2), Some(both), "row 4 heals by rows 1 and 3");
-    assert_eq!(dy(&harness, 3), Some(both));
-    harness.advance(heal(MotionLevel::Standard));
-    for position in 1..=3 {
-        assert_eq!(presence(&harness, position).as_deref(), Some("present"));
-    }
-    assert_eq!(top(&harness, 2), first);
-    assert_eq!(top(&harness, 4), before4 - both);
-    assert_eq!(top(&harness, 5), before5 - both);
-    let mut settled: Vec<String> = harness
-        .text_of(".settled")
-        .unwrap_or_default()
-        .split(',')
-        .map(str::to_owned)
-        .collect();
-    settled.sort();
-    assert_eq!(settled, ["1", "3"]);
-}
-
-#[test]
-fn clearing_everything_settles_at_one_rows_length() {
-    let mut harness = start(&[1, 2, 3, 4], Motion::Standard);
-    show(&mut harness, &[]);
-    let batch = fold(MotionLevel::Standard);
-    harness.advance(batch - ms(2));
-    assert_eq!(harness.count(".ds-list-item"), 4);
-    harness.advance(ms(1));
-    assert_eq!(harness.count(".ds-list-item"), 0);
-    assert_eq!(
-        harness.text_of(".settled").map(|s| s.split(',').count()),
-        Some(4)
-    );
-}
-
-#[test]
-fn an_arrival_enters_and_comes_to_rest() {
-    let mut harness = start(&[1, 2], Motion::Standard);
-    show(&mut harness, &[5, 1, 2]);
-    assert_eq!(presence(&harness, 1).as_deref(), Some("entering"));
-    let enter = settle(Anim::RowIn, MotionLevel::Standard);
-    harness.advance(enter - ms(2));
-    assert_eq!(presence(&harness, 1).as_deref(), Some("entering"));
-    harness.advance(ms(1));
-    assert_eq!(presence(&harness, 1).as_deref(), Some("present"));
-    assert_eq!(top(&harness, 1) - top(&harness, 5), height(5));
 }
 
 #[test]

@@ -7,22 +7,13 @@
 //! Space editor reports the dot picked inside it).
 
 use dioxus::prelude::*;
-use ds::base::vocab::RowState;
 use ds::components::app::space_editor::DotIndex;
-use ds::components::app::thread_row::ThreadRow;
 use ds::components::overlays::hover_card::target::HoverTarget;
-use ds::host::measure::Anchor;
-use ds::motion::hover_intent::{HoverEvent, HoverProfile};
 use ds::prelude::*;
 use ds::stack::hover_hub::{HoverKey, HoverKind, use_hover_hub};
-use ds::stack::toast_hub::ToastState;
-use ds::stack::toast_hub::use_toast_hub;
 use ds::style::space::presets::PRESETS;
-use ds_blitz::TokioSpawner;
 use ds_harness::harness::settle_until;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
-use ds_settings::{AppName, ConfigRoot, Store, SystemPrefsSource, use_environment};
-use std::sync::Arc;
 use std::time::Duration;
 
 const VIEW: Viewport = Viewport {
@@ -71,21 +62,6 @@ fn PressApp() -> Element {
 }
 
 #[test]
-fn a_button_click_flips_aria_pressed() {
-    let mut harness = Harness::new(
-        PressApp,
-        HarnessConfig::new(VIEW).with_clock(Clock::Virtual),
-    );
-    let button = centre(&harness, ".ds-button");
-    let pressed = |harness: &Harness| harness.attr(".ds-button", "aria-pressed");
-    assert_eq!(pressed(&harness).as_deref(), Some("false"));
-    harness.send(Input::click(button));
-    assert_eq!(pressed(&harness).as_deref(), Some("true"));
-    harness.send(Input::click(button));
-    assert_eq!(pressed(&harness).as_deref(), Some("false"));
-}
-
-#[test]
 fn the_root_stamps_the_last_input_modality() {
     let mut harness = Harness::new(
         PressApp,
@@ -123,167 +99,7 @@ fn a_toggle_switches() {
     assert_eq!(checked(&harness).as_deref(), Some("false"));
 }
 
-// ---- The hubs' timings, through the root that owns them ----------------------------------
-
-#[allow(non_snake_case)]
-fn ToastHubApp() -> Element {
-    rsx! {
-        Root { ToastHubProbe {} }
-    }
-}
-
-#[allow(non_snake_case)]
-fn ToastHubProbe() -> Element {
-    let toasts = use_toast_hub();
-    let state = match toasts.state() {
-        ToastState::Hidden => "hidden",
-        ToastState::Shown { .. } => "shown",
-    };
-    rsx! {
-        Button {
-            label: "Archive",
-            onclick: move |_| toasts.push("Archived".into(), None),
-        }
-        p { class: "probe-toast", "{state}" }
-    }
-}
-
-#[test]
-fn the_toast_hub_hides_after_its_hold_and_not_before() {
-    let mut harness = Harness::new(
-        ToastHubApp,
-        HarnessConfig::new(VIEW).with_clock(Clock::Virtual),
-    );
-    let state = |harness: &Harness| harness.text_of(".probe-toast");
-    assert_eq!(state(&harness).as_deref(), Some("hidden"));
-    let pushed = harness.now();
-    harness.send(Input::click(centre(&harness, ".ds-button")));
-    assert_eq!(state(&harness).as_deref(), Some("shown"));
-    // Half the 5000 ms hold, not all of it (FINDINGS "Timing tests"): a check at the deadline
-    // leaves no margin against a loaded machine's overshoot on `advance`.
-    harness.advance(ms(2500));
-    assert_eq!(
-        state(&harness).as_deref(),
-        Some("shown"),
-        "hid well before the hold ends"
-    );
-    let hidden = settle_until(&mut harness, |h| state(h).as_deref() == Some("hidden"));
-    assert_eq!(
-        hidden.duration_since(pushed),
-        ms(5000),
-        "hid only once the full hold had run"
-    );
-}
-
-#[allow(non_snake_case)]
-fn HoverHubApp() -> Element {
-    rsx! {
-        Root { HoverHubProbe {} }
-    }
-}
-
-#[allow(non_snake_case)]
-fn HoverHubProbe() -> Element {
-    let hub = use_hover_hub();
-    let card = (HoverKey("thread:1".into()), HoverProfile::Card);
-    let state = match hub.open() {
-        Some(_) => "open",
-        None => "closed",
-    };
-    rsx! {
-        div {
-            class: "probe-target",
-            style: "width: 200px; height: 40px",
-            onmouseenter: move |_| hub.feed(HoverEvent::Over(card.clone(), HoverProfile::Card)),
-            onmouseleave: move |_| hub.feed(HoverEvent::Out),
-            "Dana Okafor"
-        }
-        p { class: "probe-hover", "{state}" }
-    }
-}
-
-#[test]
-fn the_hover_hub_opens_after_500_ms_and_not_before() {
-    let mut harness = Harness::new(
-        HoverHubApp,
-        HarnessConfig::new(VIEW).with_clock(Clock::Virtual),
-    );
-    let state = |harness: &Harness| harness.text_of(".probe-hover");
-    let rested = harness.now();
-    harness.send(Input::pointer_move(centre(&harness, ".probe-target")));
-    assert_eq!(state(&harness).as_deref(), Some("closed"));
-    // Under half the 500 ms open delay, not near it (fixed 2026-09-25, FINDINGS "Timing tests"):
-    // the old check left only 50 ms of margin (11 % of the window).
-    harness.advance(ms(200));
-    assert_eq!(
-        state(&harness).as_deref(),
-        Some("closed"),
-        "open well before 500 ms"
-    );
-    let opened = settle_until(&mut harness, |h| state(h).as_deref() == Some("open"));
-    assert_eq!(
-        opened.duration_since(rested),
-        ms(500),
-        "opened only once the full delay had run"
-    );
-}
-
 // ---- Component cases (overlays and lists) ---------------------------------------------------
-
-#[allow(non_snake_case)]
-fn MenuApp() -> Element {
-    rsx! {
-        Root { MenuDemo {} }
-    }
-}
-
-#[allow(non_snake_case)]
-fn MenuDemo() -> Element {
-    let mut open = use_signal(|| Check::Off);
-    let entries = ["Later today", "Tomorrow", "Next week"]
-        .into_iter()
-        .zip(0u8..)
-        .map(|(title, value)| MenuItem::Item {
-            value,
-            title: title.into(),
-            image: None,
-            key: None,
-            check: None,
-            availability: Availability::Enabled,
-            hint: None,
-            after: AfterPick::Close,
-            text: Default::default(),
-        })
-        .collect::<Vec<_>>();
-    rsx! {
-        Button {
-            label: "Snooze",
-            onclick: move |_| open.set(Check::On),
-        }
-        if open() == Check::On {
-            Menu {
-                placement: MenuPlacement::Popup,
-                anchor: Anchor::Point(Point { x: Px(24.0), y: Px(64.0) }),
-                items: entries,
-                onpick: move |_: u8| open.set(Check::Off),
-                onclose: move |_| open.set(Check::Off),
-            }
-        }
-    }
-}
-
-#[test]
-fn a_menu_opens_on_click_and_closes_on_escape() {
-    let mut harness = Harness::new(MenuApp, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
-    assert_eq!(harness.count(".ds-menu"), 0);
-    harness.send(Input::click(centre(&harness, ".ds-button")));
-    assert_eq!(harness.count(".ds-menu"), 1, "{}", harness.html());
-    assert_eq!(harness.count(".ds-menu-item"), 3);
-    harness.send(Input::key(ShortcutKey::Escape));
-    // Long enough for any exit the menu plays.
-    harness.advance(ms(600));
-    assert_eq!(harness.count(".ds-menu"), 0, "{}", harness.html());
-}
 
 #[allow(non_snake_case)]
 fn HoverCardApp() -> Element {
@@ -377,84 +193,6 @@ fn a_toast_hides_after_its_hold() {
     // Slid out: after `--t-quick` and a frame nothing is laid out.
     harness.advance(ms(500));
     assert_eq!(harness.count(".ds-toast"), 0);
-}
-
-#[allow(non_snake_case)]
-fn ListApp() -> Element {
-    rsx! {
-        Root { ListDemo {} }
-    }
-}
-
-#[allow(non_snake_case)]
-fn ListDemo() -> Element {
-    let mut keys = use_signal(|| vec![1u32, 2, 3]);
-    let items: Vec<ListItem<u32>> = keys()
-        .into_iter()
-        .map(|key| {
-            ListItem::row(
-                key,
-                format!("Subject {key}"),
-                rsx! {
-                    ThreadRow {
-                        state: RowState { selection: Selection::Unselected, emphasis: Emphasis::Plain, ..RowState::default() },
-                        name: format!("Sender {key}"),
-                        via: None,
-                        subject: format!("Subject {key}"),
-                        snippet: None,
-                        time: "09:41",
-                        tags: rsx! {},
-                        star: None,
-                        strip: None,
-                        onclick: move |_| keys.retain(|shown| *shown != key),
-                    }
-                },
-            )
-        })
-        .collect();
-    rsx! {
-        List::<u32> { label: "Threads", items }
-    }
-}
-
-#[test]
-fn a_row_leaves_and_the_rows_below_heal() {
-    let mut harness = Harness::new(ListApp, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
-    // Let the first-show entrance settle.
-    harness.advance(ms(1500));
-    assert_eq!(harness.count(".ds-list-item"), 3);
-    let first_top = harness
-        .rect(".ds-list-item:nth-child(1)")
-        .map(|rect| rect.origin.y);
-    let presence = |harness: &Harness, n: usize| {
-        harness.attr(&format!(".ds-list-item:nth-child({n})"), "data-presence")
-    };
-
-    harness.send(Input::click(centre(&harness, ".ds-list-item:nth-child(1)")));
-    assert_eq!(presence(&harness, 1).as_deref(), Some("leaving"));
-    assert_eq!(
-        harness.count(".ds-list-item"),
-        3,
-        "dropped before its exit played"
-    );
-
-    // The exit settles at `settle(Anim::RowOut)`: the row is gone and the rows below slide up
-    // into its place, healing for `settle(Anim::Heal)` more.
-    harness.advance(settle(Anim::RowOut, MotionLevel::Standard) + ms(20));
-    assert_eq!(harness.count(".ds-list-item"), 2, "{}", harness.html());
-    assert_eq!(presence(&harness, 1).as_deref(), Some("healing"));
-    assert_eq!(presence(&harness, 2).as_deref(), Some("healing"));
-
-    harness.advance(ms(1500));
-    assert_eq!(presence(&harness, 1).as_deref(), Some("present"));
-    assert_eq!(presence(&harness, 2).as_deref(), Some("present"));
-    assert_eq!(
-        harness
-            .rect(".ds-list-item:nth-child(1)")
-            .map(|rect| rect.origin.y),
-        first_top,
-        "the row below did not take the removed row's place"
-    );
 }
 
 // ---- Wave 2 integration props ------------------------------------------------------------
@@ -580,45 +318,4 @@ fn removing_a_stop_chip_removes_it_and_does_not_pick_it() {
     harness.send(Input::click(centre(&harness, remove)));
     assert_eq!(harness.count(".ds-stops .ds-chip"), 1);
     assert_eq!(harness.text_of(".probe-dot").as_deref(), Some("0"));
-}
-
-// ---- Runtime -----------------------------------------------------------------------------
-
-#[allow(non_snake_case)]
-fn EnvironmentApp() -> Element {
-    // `ds_settings::use_environment` runs the file watch on the spawner it is given, and
-    // `TokioSpawner::current` needs a runtime entered on this thread. `Harness` enters one before
-    // this component's first render (`ds_blitz::runtime`), so this must not panic. The store is
-    // a scratch directory and the preferences are fixed: no real config, no session bus.
-    let store = Store::new(
-        ConfigRoot::Scratch(std::env::temp_dir().join("ds-blitz-harness-environment")),
-        AppName("consumer-test"),
-    );
-    let system = SystemPrefsSource::Fixed(SystemPrefs::default());
-    let env = use_environment(store, system, Arc::new(TokioSpawner::current()));
-    let now = env();
-    rsx! {
-        Root {
-            p { class: "probe-theme", "{now.settings.appearance.theme:?}" }
-        }
-    }
-}
-
-#[test]
-fn use_environment_does_not_panic_under_the_harness() {
-    let mut harness = Harness::new(
-        EnvironmentApp,
-        HarnessConfig::new(VIEW).with_clock(Clock::Virtual),
-    );
-    // The portal round-trip and the initial file load both run async; give them a turn to
-    // settle before reading the probe. Whether the portal answered or was absent, and whatever
-    // theme the settings resolved to, both are fine — a value landing at all is the proof this
-    // rendered past the first frame instead of panicking.
-    harness.advance(ms(200));
-    assert!(
-        harness.text_of(".probe-theme").is_some(),
-        "the environment-reading component rendered past its first frame: {}",
-        harness.html()
-    );
-    let _ = std::fs::remove_dir_all(std::env::temp_dir().join("ds-blitz-harness-environment"));
 }

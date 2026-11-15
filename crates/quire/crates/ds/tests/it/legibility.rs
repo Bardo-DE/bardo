@@ -254,31 +254,6 @@ fn over(tint: &str, backdrop: [u8; 3]) -> String {
 const BLACK: [u8; 3] = [0, 0, 0];
 const WHITE: [u8; 3] = [255, 255, 255];
 
-#[test]
-fn the_solid_tints_hold_text_over_black_and_white() {
-    let mut failures = Vec::new();
-    for material in Material::ALL
-        .iter()
-        .copied()
-        .filter(|m| *m != Material::Window)
-    {
-        for scheme in Scheme::ALL.iter().copied() {
-            let ink = colour(ColourToken::Ink, scheme);
-            let solid = recipe(material, scheme, DEFAULT_TINT_ALPHA).tint_solid;
-            for (name, backdrop) in [("black", BLACK), ("white", WHITE)] {
-                let ground = over(&solid, backdrop);
-                let got = measured(&ink, &ground);
-                if got < 4.5 {
-                    failures.push(format!(
-                        "{material:?} {scheme:?} over {name}: {ink} on {ground} is {got:.2}"
-                    ));
-                }
-            }
-        }
-    }
-    assert!(failures.is_empty(), "{failures:#?}");
-}
-
 /// Section 17.2's translucent tints at the key's default hold the card's ink at 4.5:1 over a
 /// pure black and a pure white backdrop, the two worst a blur can show. The contrast gates
 /// assume an opaque ground; how they hold over blur is design/03-COLOR.md open decision 11, so
@@ -292,7 +267,7 @@ fn the_solid_tints_hold_text_over_black_and_white() {
 /// is large or bold (the hero and figure numerals, bold city names), where the accessibility
 /// guideline for large text is 3:1, not 4.5:1.
 #[test]
-fn the_translucent_tints_hold_text_over_black_and_white() {
+fn the_tints_hold_text_over_black_and_white() {
     let mut failures = Vec::new();
     for material in Material::ALL
         .iter()
@@ -301,19 +276,30 @@ fn the_translucent_tints_hold_text_over_black_and_white() {
     {
         for scheme in Scheme::ALL.iter().copied() {
             let ink = colour(ColourToken::Ink, scheme);
-            let tint = recipe(material, scheme, DEFAULT_TINT_ALPHA).tint;
-            let floor = if material == Material::Widget {
-                3.0
-            } else {
-                4.5
-            };
-            for (name, backdrop) in [("black", BLACK), ("white", WHITE)] {
-                let ground = over(&tint, backdrop);
-                let got = measured(&ink, &ground);
-                if got < floor {
-                    failures.push(format!(
-                        "{material:?} {scheme:?} over {name}: {ink} on {ground} is {got:.2}, needs {floor}"
-                    ));
+            let paint = recipe(material, scheme, DEFAULT_TINT_ALPHA);
+            // The solid tint holds 4.5:1 for every material; the translucent one only 3:1 for
+            // the widget.
+            let tints = [
+                ("solid", paint.tint_solid, 4.5),
+                (
+                    "translucent",
+                    paint.tint,
+                    if material == Material::Widget {
+                        3.0
+                    } else {
+                        4.5
+                    },
+                ),
+            ];
+            for (kind, tint, floor) in tints {
+                for (name, backdrop) in [("black", BLACK), ("white", WHITE)] {
+                    let ground = over(&tint, backdrop);
+                    let got = measured(&ink, &ground);
+                    if got < floor {
+                        failures.push(format!(
+                            "{kind} {material:?} {scheme:?} over {name}: {ink} on {ground} is {got:.2}, needs {floor}"
+                        ));
+                    }
                 }
             }
         }
