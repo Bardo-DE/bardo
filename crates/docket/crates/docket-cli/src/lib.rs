@@ -26,7 +26,7 @@ mod sessions;
 mod skills;
 pub mod when;
 
-pub use args::{CallArgs, Command, JsonFlag, Parsed, RunMode, UndoWhich, parse};
+pub use args::{CallArgs, Command, JsonFlag, Parsed, UndoWhich, parse};
 pub use ask::ask as ask_companion;
 pub use exec::Style;
 pub use exit::{Exit, Failure};

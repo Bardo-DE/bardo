@@ -16,15 +16,6 @@ pub enum JsonFlag {
     Auto,
 }
 
-/// Whether to run the call or only describe what it would change.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RunMode {
-    /// Perform it.
-    Run,
-    /// `--dry-run`: print the preview.
-    DryRun,
-}
-
 /// Which undo.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum UndoWhich {
@@ -41,8 +32,8 @@ pub struct CallArgs {
     pub app: String,
     /// The action word (without the app's prefix, or the full name).
     pub action: String,
-    /// Run or dry run.
-    pub mode: RunMode,
+    /// `--dry-run`: print the preview instead of performing the call.
+    pub dry_run: bool,
     /// `--session`.
     pub session: Option<SessionId>,
     /// `--<param> <value>`, in order, the flag spelled with underscores.
@@ -268,11 +259,7 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
         [app, action, targets @ ..] => Ok(Command::Call(CallArgs {
             app: (*app).to_owned(),
             action: (*action).to_owned(),
-            mode: if scan.has("dry-run") {
-                RunMode::DryRun
-            } else {
-                RunMode::Run
-            },
+            dry_run: scan.has("dry-run"),
             session: scan
                 .session
                 .as_deref()

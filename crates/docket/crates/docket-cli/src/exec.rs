@@ -2,7 +2,7 @@
 //! text. Nothing here talks to an app, and nothing here decides: every call is the router's to
 //! allow, ask about or refuse.
 
-use crate::args::{CallArgs, JsonFlag, RunMode, UndoWhich};
+use crate::args::{CallArgs, JsonFlag, UndoWhich};
 use crate::exit::{Failure, of_client, of_refusal, of_undo};
 use crate::outcome::{context_json, dry_run_json, hits_json, outcome_json};
 use crate::params::{Reading, StdinSlot, arguments, target};
@@ -147,34 +147,30 @@ pub async fn call<T: Transport>(
         args: arguments(decl, &mut reading, &args.params)?,
         origin: Origin::Cli,
     };
-    match args.mode {
-        RunMode::DryRun => {
-            let preview = intents
-                .dry_run(request, args.session.clone())
-                .await
-                .map_err(|e| of_client(&e))?;
-            Ok(Printed {
-                human: render::preview(&preview),
-                json: dry_run_json(&preview),
-            })
-        }
-        RunMode::Run => {
-            let outcome = intents
-                .perform(request, args.session.clone(), None)
-                .await
-                .map_err(|e| of_client(&e))?
-                .map_err(|refusal| of_refusal(&refusal))?;
-            let undo = match &outcome.undo {
-                Undoable::Journaled(row) => Some(*row),
-                Undoable::Yes(token) => undo_id(intents, token).await,
-                Undoable::No => None,
-            };
-            Ok(Printed {
-                human: render::outcome(&outcome, undo),
-                json: outcome_json(&outcome, undo),
-            })
-        }
+    if args.dry_run {
+        let preview = intents
+            .dry_run(request, args.session.clone())
+            .await
+            .map_err(|e| of_client(&e))?;
+        return Ok(Printed {
+            human: render::preview(&preview),
+            json: dry_run_json(&preview),
+        });
     }
+    let outcome = intents
+        .perform(request, args.session.clone(), None)
+        .await
+        .map_err(|e| of_client(&e))?
+        .map_err(|refusal| of_refusal(&refusal))?;
+    let undo = match &outcome.undo {
+        Undoable::Journaled(row) => Some(*row),
+        Undoable::Yes(token) => undo_id(intents, token).await,
+        Undoable::No => None,
+    };
+    Ok(Printed {
+        human: render::outcome(&outcome, undo),
+        json: outcome_json(&outcome, undo),
+    })
 }
 
 /// `<app> search <text>`.

@@ -1,7 +1,7 @@
 //! The command line's own grammar: which words are the command, the flags and the parameters,
 //! before any manifest is read.
 
-use docket_cli::{Command, JsonFlag, RunMode, UndoWhich, parse};
+use docket_cli::{Command, JsonFlag, UndoWhich, parse};
 
 fn command(words: &[&str]) -> Result<Command, String> {
     let words: Vec<String> = words.iter().map(|w| (*w).to_owned()).collect();
@@ -60,7 +60,7 @@ fn the_command_line_grammar() {
         Ok(Command::Call(call)) => {
             assert_eq!(call.app, "mail");
             assert_eq!(call.action, "message.send");
-            assert_eq!(call.mode, RunMode::DryRun);
+            assert!(call.dry_run);
             assert_eq!(call.session.expect("session").as_str(), "s-9");
             assert_eq!(
                 call.params,
