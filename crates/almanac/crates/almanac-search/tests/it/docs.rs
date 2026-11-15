@@ -10,16 +10,12 @@ fn event(seq: u64) -> EventRef {
 }
 
 #[test]
-fn a_fact_document_id_names_its_fact() {
+fn a_document_id_names_what_it_indexes() {
     let id = FactId::parse("01j9zk3m0q8h2v6x4c1b7n5t2a").expect("fact id");
     assert_eq!(
         DocRef::parse(&fact_doc_id(&id)),
         Some(DocRef::Fact(id.clone()))
     );
-}
-
-#[test]
-fn an_event_document_id_names_its_replica_and_sequence() {
     let at = event(7);
     for id in [event_doc_id(&at), IndexPart::Narrative.doc_id(&at)] {
         assert_eq!(

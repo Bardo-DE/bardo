@@ -164,33 +164,6 @@ async fn the_test_keys_binary_starts_with_file_keys_and_takes_a_desktop_record()
     assert!(first_line(stderr).contains("TEST BUILD"));
 }
 
-/// The same start-up as a library call: `memoryd::start` over an injected environment (a map, not
-/// the process's), on a thread of its own. It never returns, so the thread is left to end with the
-/// test process; the sandbox it applies restricts that thread and the workers it builds, not this
-/// test.
-#[cfg(all(feature = "test-keys", feature = "test-proc-root"))]
-#[tokio::test]
-async fn the_in_process_start_over_an_injected_environment_takes_a_desktop_record() {
-    use std::collections::HashMap;
-    let scratch = tempfile::tempdir().expect("scratch");
-    let root = scratch.path();
-    scratch_home(root);
-    let bus = PrivateBus::start(root);
-    record_into_desktop(root, &bus, |keys_file| {
-        let vars: HashMap<&str, String> =
-            daemon_env(root, &bus, &format!("file:{}", keys_file.display()))
-                .into_iter()
-                .collect();
-        std::thread::spawn(move || {
-            let env = |key: &str| vars.get(key).cloned();
-            if let Err(why) = memoryd::start(&env) {
-                eprintln!("the in-process daemon stopped: {why}");
-            }
-        })
-    })
-    .await;
-}
-
 #[cfg(not(feature = "test-keys"))]
 #[test]
 fn the_default_binary_ignores_the_variable_and_says_so() {

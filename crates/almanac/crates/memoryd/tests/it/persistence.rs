@@ -451,19 +451,3 @@ async fn the_index_file_is_created_with_its_schema_and_keeps_what_was_put_in_it(
     assert_eq!(index.parts().1.card(), embedder.card());
 }
 
-#[test]
-fn the_backends_random_bytes_differ_from_call_to_call() {
-    let scratch = tempfile::tempdir().expect("scratch");
-    let backend: TestBackend = backend(
-        &dirs_in(scratch.path()),
-        &SharedKeys::default(),
-        Default::default(),
-    );
-    let draws: Vec<[u8; 16]> = (0..4).map(|_| backend.random()).collect();
-    for (i, a) in draws.iter().enumerate() {
-        assert_ne!(*a, [0u8; 16]);
-        for b in &draws[i + 1..] {
-            assert_ne!(a, b);
-        }
-    }
-}

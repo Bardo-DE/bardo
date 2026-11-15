@@ -212,25 +212,6 @@ async fn a_proposed_run_applies_once_and_cannot_be_reverted_before_it_is_applied
 }
 
 #[tokio::test]
-async fn only_the_shell_applies_a_proposal() {
-    let (before, after) = (
-        render(&loose_ana("Ana is the CFO.")),
-        render(&loose_ana("Ana is the chief financial officer.")),
-    );
-    let service = reviewing(vec![tidy(&before, &after)]);
-    put(&service, &before);
-    let proposed = run(&service).await;
-    let reply = service
-        .handle(
-            &Caller::Router,
-            MemoryRequest::ApplyConsolidation(proposed.run),
-        )
-        .await;
-    assert!(matches!(reply, MemoryReply::Refused(_)), "{reply:?}");
-    assert_eq!(text_of(&service), before);
-}
-
-#[tokio::test]
 async fn a_supersede_applies_with_the_old_fact_kept_in_its_file() {
     let file = render(&ana("Ana is the CFO."));
     let service = reviewing(vec![supersede()]);

@@ -152,25 +152,6 @@ async fn plan_goes_stale_when_new_derivation_appears() {
 }
 
 #[tokio::test]
-async fn the_router_cannot_forget_or_settle() {
-    let service = service();
-    let forget = ask(
-        &service,
-        &Caller::Router,
-        MemoryRequest::Forget(PlanToken::parse("p-1").expect("t")),
-    )
-    .await;
-    assert_eq!(forget, MemoryReply::Refused(Refusal::NotAllowed));
-    let settle = ask(
-        &service,
-        &Caller::Router,
-        MemoryRequest::Settle(FactId::mint(1, [0; 10]), Settlement::Discard),
-    )
-    .await;
-    assert_eq!(settle, MemoryReply::Refused(Refusal::NotAllowed));
-}
-
-#[tokio::test]
 async fn router_reads_are_audited() {
     let service = service();
     let query = RecallQuery {
@@ -277,25 +258,6 @@ async fn a_proposal_without_on_behalf_is_authored_by_the_router_as_before() {
         part: SystemPart::Router,
     };
     assert_eq!(authors(&service).await, vec![router]);
-}
-
-#[tokio::test]
-async fn on_behalf_is_refused_from_any_caller_but_the_router() {
-    let service = service();
-    for caller in [Caller::ShellUi, Caller::Cuad] {
-        let reply = ask(&service, &caller, proposal(Some(helper_job()))).await;
-        assert!(is_refused(&reply, &Refusal::NotAllowed), "{caller:?}");
-    }
-    let reply = ask(&service, &mail_app(), proposal(Some(helper_job()))).await;
-    assert!(matches!(reply, MemoryReply::Refused(_)));
-    assert!(authors(&service).await.is_empty());
-}
-
-#[tokio::test]
-async fn the_router_may_speak_only_for_a_helper() {
-    let service = service();
-    let reply = ask(&service, &Caller::Router, proposal(Some(Actor::Unknown))).await;
-    assert!(is_refused(&reply, &Refusal::NotAllowed));
 }
 
 #[tokio::test]

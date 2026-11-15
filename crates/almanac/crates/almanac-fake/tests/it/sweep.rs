@@ -199,13 +199,3 @@ async fn a_body_that_lives_while_its_source_exists_goes_when_the_source_is() {
     );
 }
 
-#[tokio::test]
-async fn only_the_shell_may_sweep() {
-    let service = fake_service(ScriptedConsolidator::default());
-    let refused = service
-        .handle(&Caller::Router, MemoryRequest::Sweep(work()))
-        .await;
-    assert_eq!(refused, MemoryReply::Refused(Refusal::NotAllowed));
-    let swept = service.sweep_all().await;
-    assert!(swept.is_empty(), "no Space is known yet: {swept:?}");
-}

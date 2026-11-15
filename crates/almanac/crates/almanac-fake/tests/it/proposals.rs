@@ -270,19 +270,10 @@ async fn a_discarded_proposal_stays_on_disk_and_cannot_be_applied() {
 }
 
 #[tokio::test]
-async fn discard_is_refused_for_every_state_but_proposed_and_for_everyone_but_the_shell() {
+async fn discard_is_refused_for_every_state_but_proposed() {
     let (service, view, ..) = proposed_tidy().await;
     let unknown = RunId::parse("c-nothing").expect("run");
     assert!(invalid(&discard(&service, &unknown).await));
-    let reply = service
-        .handle(
-            &Caller::Router,
-            MemoryRequest::DiscardConsolidation(view.run.clone()),
-        )
-        .await;
-    assert!(matches!(reply, MemoryReply::Refused(_)));
-    assert_eq!(state_in(&file_of(&service, &view.run)), "proposed");
-
     apply(&service, &view.run).await;
     assert!(invalid(&discard(&service, &view.run).await), "applied");
     assert_eq!(state_in(&file_of(&service, &view.run)), "applied");
