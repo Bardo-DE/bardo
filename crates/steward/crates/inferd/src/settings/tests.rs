@@ -176,7 +176,7 @@ fn the_model_row_decides_between_models_and_auto_and_empty_hand_back_to_the_cata
         ),
         local("beta"),
     ];
-    let row = |value: &str| format!("[ai.model.llm]\nbest = \"{value}\"\n");
+    let row = |value: &str| format!("[ai.model.text]\nbest = \"{value}\"\n");
     let best = |text: &str| decide(text, DataClass::Notes, Tier::Best, &models);
     assert_eq!(served(best(&row("local/beta"))), "beta");
     assert_eq!(served(best(&row("local/alpha"))), "alpha");
@@ -227,7 +227,7 @@ fn never_evict_refuses_the_swap_idle_only_makes() {
     let with = |evict: &str| {
         decide(
             &format!(
-                "[ai.model.llm]\nbalanced = \"auto\"\n[ai.auto]\nallow_evict = \"{evict}\"\n\
+                "[ai.model.text]\nbalanced = \"auto\"\n[ai.auto]\nallow_evict = \"{evict}\"\n\
                  [ai.auto.pool]\ntext = [\"local/alpha\"]\n"
             ),
             DataClass::Notes,
@@ -332,7 +332,7 @@ async fn a_reload_changes_the_route_of_the_next_session_and_a_bad_file_changes_n
     };
     assert!(route().is_ok());
     // A named model that is not here: refused, naming it.
-    file.set("ai.model.llm.balanced", "local/ghost".into())
+    file.set("ai.model.text.balanced", "local/ghost".into())
         .expect("write");
     reload.now().expect("reload");
     assert!(route().is_err());
@@ -340,10 +340,10 @@ async fn a_reload_changes_the_route_of_the_next_session_and_a_bad_file_changes_n
     std::fs::write(file.path(), "[ai\nbroken").expect("write");
     assert!(reload.now().is_err());
     assert!(route().is_err());
-    file.set("ai.model.llm.balanced", "".into()).ok();
+    file.set("ai.model.text.balanced", "".into()).ok();
     std::fs::write(
         file.path(),
-        "[ai.model.llm]\nbalanced = \"local/tiny-chat\"\n",
+        "[ai.model.text]\nbalanced = \"local/tiny-chat\"\n",
     )
     .expect("write");
     reload.now().expect("reload");
@@ -506,7 +506,7 @@ fn a_cap_out_of_range_is_no_cap_and_is_named() {
 #[test]
 fn a_value_a_row_does_not_accept_is_named_and_falls_back_for_that_row_only() {
     let text = "[ai]\nlocal_only = \"maybe\"\n[ai.floor]\nmail = \"nowhere\"\ntelepathy = \"anywhere\"\nnotes = \"anywhere\"\n\
-                [ai.model.llm]\nfast = \"no-slash\"\nhuge = \"local/a\"\nbalanced = \"local/alpha\"\n\
+                [ai.model.text]\nfast = \"no-slash\"\nhuge = \"local/a\"\nbalanced = \"local/alpha\"\n\
                 [ai.auto]\nallow_evict = \"sometimes\"\nshow_reason = \"off\"\n";
     let resolved = resolve(&config(text));
     let mut rejected = resolved.rejected.clone();
@@ -518,8 +518,8 @@ fn a_value_a_row_does_not_accept_is_named_and_falls_back_for_that_row_only() {
             "ai.floor.mail",
             "ai.floor.telepathy",
             "ai.local_only",
-            "ai.model.llm.fast",
-            "ai.model.llm.huge",
+            "ai.model.text.fast",
+            "ai.model.text.huge",
         ]
     );
     let s = resolved.settings;
@@ -545,14 +545,14 @@ fn set_writes_one_row_at_its_path_and_keeps_the_rest() {
         file.read().expect("missing is the default"),
         InferdConfig::default()
     );
-    file.set("ai.model.llm.fast", "auto".into()).expect("write");
-    file.set("ai.model.llm.best", "local/beta".into())
+    file.set("ai.model.text.fast", "auto".into()).expect("write");
+    file.set("ai.model.text.best", "local/beta".into())
         .expect("write");
     file.set("ai.auto.allow_evict", "never".into())
         .expect("write");
     let read = file.read().expect("reads");
-    assert_eq!(read.ai.model["llm"]["fast"], "auto");
-    assert_eq!(read.ai.model["llm"]["best"], "local/beta");
+    assert_eq!(read.ai.model["text"]["fast"], "auto");
+    assert_eq!(read.ai.model["text"]["best"], "local/beta");
     assert_eq!(read.ai.auto.allow_evict.as_deref(), Some("never"));
     // rel-8: the write is synced and renamed, and nothing is left staged. (A crash that loses an
     // unsynced file cannot be made in a test; this keeps the synced path working.)
@@ -573,30 +573,15 @@ fn picked(settings: &Settings, slot: Slot) -> Option<Pick> {
 }
 
 #[test]
-fn a_slot_row_and_the_old_kind_row_load_to_the_same_slot() {
-    let cases = [
-        ("text", "llm", Slot::Text),
-        ("voice_in", "speech_in", Slot::VoiceIn),
-        ("voice_out", "speech_out", Slot::VoiceOut),
-    ];
-    for (new, old, slot) in cases {
-        let from_new = settings(&format!("[ai.model.{new}]\nbalanced = \"local/alpha\"\n"));
-        let from_old = settings(&format!("[ai.model.{old}]\nbalanced = \"local/alpha\"\n"));
-        assert_eq!(from_new.tiers, from_old.tiers, "{new} / {old}");
-        assert!(
-            matches!(picked(&from_new, slot), Some(Pick::Named(m)) if m.model.as_str() == "alpha"),
-            "{new}"
-        );
-    }
-    let rows = [
+fn every_slot_has_its_own_model_row() {
+    for slug in [
         "text",
         "voice_in",
         "voice_out",
         "image_in",
         "computer_use",
         "embeddings",
-    ];
-    for slug in rows {
+    ] {
         let slot = from_slug::<Slot>(slug).expect(slug);
         let got = settings(&format!("[ai.model.{slug}]\nbalanced = \"auto\"\n"));
         assert!(
@@ -604,24 +589,6 @@ fn a_slot_row_and_the_old_kind_row_load_to_the_same_slot() {
             "{slug}"
         );
     }
-}
-
-#[test]
-fn when_a_file_says_both_the_slots_own_row_wins_whatever_the_order() {
-    let got = settings(
-        "[ai.model.text]\nbalanced = \"local/new\"\n[ai.model.llm]\nbalanced = \"local/old\"\nfast = \"auto\"\n",
-    );
-    assert!(matches!(
-        picked(&got, Slot::Text),
-        Some(Pick::Named(m)) if m.model.as_str() == "new"
-    ));
-    assert!(
-        matches!(
-            got.tiers.pick(Slot::Text, Tier::Fast),
-            Some(Pick::Auto { .. })
-        ),
-        "an old row for another tier still applies"
-    );
 }
 
 #[test]
@@ -721,30 +688,6 @@ fn a_coding_agent_is_a_choice_of_the_text_slot_and_of_no_pool() {
             "{name}"
         );
     }
-}
-
-/// The file moved into inferd's own folder: while only the old one is there it is read, and the
-/// first change writes the whole of it to the new place, leaving the old file as it was.
-#[test]
-fn a_file_at_its_old_place_is_read_and_the_first_change_moves_it() {
-    let scratch = Scratch::new("settings-moved");
-    let old = scratch.path().join("quire").join("inferd.toml");
-    let new = scratch.path().join("inferd").join("inferd.toml");
-    std::fs::create_dir_all(old.parent().unwrap()).unwrap();
-    let before = "[ai.auto]\nshow_reason = \"off\"\n";
-    std::fs::write(&old, before).unwrap();
-    let file = ConfigFile::new(new.clone()).moved_from(old.clone());
-    assert_eq!(file.source(), old.as_path());
-    assert_eq!(
-        file.read().unwrap(),
-        InferdConfig::from_toml(before).unwrap()
-    );
-    file.set("ai.model.text.balanced", "auto".into())
-        .expect("write");
-    assert_eq!(file.source(), new.as_path());
-    let moved: toml::Table = std::fs::read_to_string(&new).unwrap().parse().unwrap();
-    assert_eq!(moved["ai"]["auto"]["show_reason"].as_str(), Some("off"));
-    assert_eq!(std::fs::read_to_string(&old).unwrap(), before);
 }
 
 #[test]

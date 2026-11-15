@@ -49,8 +49,7 @@ pub fn model_path(slot: Slot, tier: Tier) -> String {
     slot.setting_key(tier)
 }
 
-/// The slot and tier an `ai.model.<slot>.<tier>` path names. An old kind segment (`llm`,
-/// `speech_in`, `speech_out`) names the slot it became.
+/// The slot and tier an `ai.model.<slot>.<tier>` path names.
 pub fn parse_model_path(path: &str) -> Option<(Slot, Tier)> {
     let (slot, tier) = path.strip_prefix("ai.model.")?.split_once('.')?;
     Some((Slot::from_slug(slot)?, from_slug(tier)?))
@@ -141,7 +140,7 @@ mod tests {
     }
 
     #[test]
-    fn model_paths_round_trip_and_old_kinds_map_to_slots() {
+    fn model_paths_round_trip() {
         for slot in SLOTS {
             for tier in TIERS {
                 assert_eq!(
@@ -149,14 +148,6 @@ mod tests {
                     Some((slot, tier))
                 );
             }
-        }
-        let old = [
-            ("ai.model.llm.fast", Slot::Text, Tier::Fast),
-            ("ai.model.speech_in.balanced", Slot::VoiceIn, Tier::Balanced),
-            ("ai.model.speech_out.best", Slot::VoiceOut, Tier::Best),
-        ];
-        for (path, slot, tier) in old {
-            assert_eq!(parse_model_path(path), Some((slot, tier)), "{path}");
         }
         for bad in [
             "ai.model.text",

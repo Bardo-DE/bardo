@@ -24,21 +24,12 @@ pub enum FileError {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ConfigFile {
     path: PathBuf,
-    before: Option<PathBuf>,
 }
 
 impl ConfigFile {
     /// The file at `path`; it need not exist yet.
     pub fn new(path: PathBuf) -> Self {
-        Self { path, before: None }
-    }
-
-    /// The file that was at `before` until it moved to `path`: read while `path` is missing, never
-    /// written. The first change a person makes writes the whole of it to `path`.
-    #[must_use]
-    pub fn moved_from(mut self, before: PathBuf) -> Self {
-        self.before = Some(before);
-        self
+        Self { path }
     }
 
     /// Where it is.
@@ -46,16 +37,8 @@ impl ConfigFile {
         &self.path
     }
 
-    /// The file to read: `path`, or, while only the file at its old place is there, that one.
-    pub fn source(&self) -> &Path {
-        match &self.before {
-            Some(before) if !self.path.exists() && before.exists() => before,
-            _ => &self.path,
-        }
-    }
-
     fn text(&self) -> Result<String, FileError> {
-        let source = self.source();
+        let source = &self.path;
         match std::fs::read_to_string(source) {
             Ok(text) => Ok(text),
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(String::new()),
@@ -66,7 +49,7 @@ impl ConfigFile {
     /// The configuration in the file; a missing file is the default.
     pub fn read(&self) -> Result<InferdConfig, FileError> {
         InferdConfig::from_toml(&self.text()?)
-            .map_err(|e| FileError::Toml(format!("{}: {e}", self.source().display())))
+            .map_err(|e| FileError::Toml(format!("{}: {e}", self.path.display())))
     }
 
     /// Sets the row at the dotted settings `path` to `value` and writes the file (to a sibling,
@@ -115,7 +98,7 @@ impl ConfigFile {
     /// The file's modification time and length, `None` while it is missing: what the watch
     /// compares.
     fn stamp(&self) -> Option<(SystemTime, u64)> {
-        let meta = std::fs::metadata(self.source()).ok()?;
+        let meta = std::fs::metadata(self.path).ok()?;
         Some((meta.modified().ok()?, meta.len()))
     }
 }

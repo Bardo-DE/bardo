@@ -1,4 +1,4 @@
-//! The file's `[ai]` table (laid over the old `[policy]` and `[tiers]` tables) as [`Settings`].
+//! The file's `[ai]` table as [`Settings`].
 
 use super::keys::{from_slug, parse_pool_key, slug_of};
 use super::{
@@ -31,8 +31,7 @@ use porter_router::local::Lengths;
 pub struct Resolved {
     /// What routing runs under.
     pub settings: Settings,
-    /// The rows that held a value they do not accept and fell back to their default (or, for the
-    /// policy and the tier map, to the old table's value).
+    /// The rows that held a value they do not accept and fell back to their default.
     pub rejected: Vec<String>,
 }
 
@@ -72,20 +71,16 @@ fn policy_of(ai: &AiConfig, mut policy: Policy, rejected: &mut Vec<String>) -> P
     policy
 }
 
-/// The rows of `[ai.model.*]` in the order they apply: a row under an old kind segment first, so
-/// a row under the slot's own segment wins over it when a file says both.
+/// The rows of `[ai.model.*]`.
 fn model_rows(ai: &AiConfig) -> Vec<(&str, &str, &str)> {
-    let mut rows: Vec<(&str, &str, &str)> = ai
-        .model
+    ai.model
         .iter()
         .flat_map(|(slot, tiers)| {
             tiers
                 .iter()
                 .map(move |(tier, text)| (slot.as_str(), tier.as_str(), text.as_str()))
         })
-        .collect();
-    rows.sort_by_key(|(slot, _, _)| !Slot::is_legacy_slug(slot));
-    rows
+        .collect()
 }
 
 fn tiers_of(ai: &AiConfig, mut tiers: TierMap, rejected: &mut Vec<String>) -> TierMap {
@@ -112,7 +107,7 @@ fn tiers_of(ai: &AiConfig, mut tiers: TierMap, rejected: &mut Vec<String>) -> Ti
                 }
             },
         };
-        // The row at its settings path replaces whatever the old tables said for the slot.
+        // The row at its settings path replaces any earlier row for the slot.
         tiers.rows.retain(|r| !slot(r.kind, r.tier));
         tiers.autos.retain(|r| !slot(r.kind, r.tier));
         match (text, named) {
@@ -273,8 +268,8 @@ pub fn resolve(config: &InferdConfig) -> Resolved {
     let auto = config.ai.auto.resolve();
     rejected.extend(auto.rejected.iter().map(|path| (*path).to_owned()));
     let settings = Settings {
-        policy: policy_of(&config.ai, config.policy(), &mut rejected),
-        tiers: tiers_of(&config.ai, config.tiers.clone(), &mut rejected),
+        policy: policy_of(&config.ai, Policy::proposed(), &mut rejected),
+        tiers: tiers_of(&config.ai, TierMap::default(), &mut rejected),
         auto: auto.policy,
         spend: spend_of(&config.ai, &mut rejected),
         describe_images: describe_images_of(&config.ai, &mut rejected),

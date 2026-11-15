@@ -1,6 +1,4 @@
 use super::*;
-use porter_core::DataClass;
-use porter_infer::{Floor, LocalOnly};
 use std::collections::BTreeMap;
 
 fn vars(pairs: &[(&str, &str)]) -> impl Fn(&str) -> Option<String> {
@@ -105,13 +103,6 @@ fn without_a_runtime_directory_or_a_home_there_is_nowhere_to_put_the_sockets() {
 }
 
 #[test]
-fn an_empty_file_is_the_default_and_the_default_has_the_proposed_policy() {
-    let config = InferdConfig::from_toml("").expect("empty");
-    assert_eq!(config.policy(), Policy::proposed());
-    assert_eq!(config.policy().floor(DataClass::Prompt), Floor::OnDevice);
-}
-
-#[test]
 fn every_table_of_the_file_reads() {
     let config = InferdConfig::from_toml(
         r#"
@@ -119,10 +110,6 @@ fn every_table_of_the_file_reads() {
 vllm_python = "/opt/vllm/bin/python"
 llama_server = "/usr/bin/llama-server"
 hf_cache = "/data/hub"
-
-[policy]
-local_only = "off"
-floors = [{ class = "mail", floor = "local_network" }]
 
 [callers]
 cua = ["cuad.service"]
@@ -137,14 +124,6 @@ cua = ["cuad.service"]
     );
     assert_eq!(config.engines.speech_host, None);
     assert_eq!(config.engines.speech_host_libs, None);
-    let policy = config.policy();
-    assert_eq!(policy.local_only, LocalOnly::Off);
-    assert_eq!(policy.floor(DataClass::Mail), Floor::LocalNetwork);
-    assert_eq!(
-        policy.floor(DataClass::Notes),
-        Floor::Anywhere,
-        "a class with no row may go anywhere"
-    );
     assert!(
         config.ignored_callers.is_some(),
         "an old [callers] table still reads, and is left unread"
@@ -153,11 +132,7 @@ cua = ["cuad.service"]
 
 #[test]
 fn a_file_that_does_not_read_says_why() {
-    for text in [
-        "[engines",
-        "engines = 3",
-        "[policy]\nlocal_only = \"maybe\"",
-    ] {
+    for text in ["[engines", "engines = 3"] {
         assert!(
             matches!(InferdConfig::from_toml(text), Err(ConfigError::Toml(_))),
             "{text:?}"

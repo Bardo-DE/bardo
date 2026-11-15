@@ -8,7 +8,6 @@ mod discover;
 use crate::probe::ProbeConfig;
 use crate::structured::AiConfig;
 use porter_daemon::{xdg::PathError, xdg::Xdg};
-use porter_infer::{Policy, TierMap};
 use porter_router::catalog::CatalogDirs;
 use porter_router::local::EngineConfig;
 use serde::{Deserialize, Serialize};
@@ -36,15 +35,6 @@ pub struct InferdConfig {
     /// Engine programs and the weights cache.
     #[serde(default)]
     pub engines: EngineConfig,
-    /// The old shape of the policy, a `[policy]` table. Still read (one way: the rows at their
-    /// settings paths under `[ai]` win over it, and a write by Settings goes there); the design's
-    /// proposed defaults when absent. Goes when FINDINGS "inferd.toml: the old [policy] and
-    /// [tiers] tables" says.
-    #[serde(default)]
-    pub policy: Option<Policy>,
-    /// The old shape of the tier map, `[[tiers.rows]]`: read the same way as `policy`.
-    #[serde(default)]
-    pub tiers: TierMap,
     /// A `[callers]` table, which this file no longer gives: who is calling comes only from the
     /// system's table ([`porter_callers::INFERD_CALLERS`]), which a person cannot write. Kept
     /// only so that the daemon can say once that it is ignored.
@@ -77,12 +67,6 @@ impl InferdConfig {
         config.engines.attached()?;
         Ok(config)
     }
-
-    /// The policy of the old `[policy]` table, or the proposed one; the `ai.*` rows are laid over
-    /// it by [`crate::settings::resolve`].
-    pub fn policy(&self) -> Policy {
-        self.policy.clone().unwrap_or_else(Policy::proposed)
-    }
 }
 
 /// Where everything is.
@@ -90,9 +74,6 @@ impl InferdConfig {
 pub struct Dirs {
     /// `$XDG_CONFIG_HOME/inferd/inferd.toml`: inferd's own folder, where Settings looks for it.
     pub config: PathBuf,
-    /// `$XDG_CONFIG_HOME/quire/inferd.toml`, where the file was before: read while the new one is
-    /// missing, for one release, and never written.
-    pub config_before: PathBuf,
     /// The catalog directories.
     pub catalog: CatalogDirs,
     /// `$XDG_RUNTIME_DIR/inferd`: the engines' sockets.
@@ -163,7 +144,6 @@ impl Dirs {
             clients_own: config.join("porter").join("clients.toml"),
             applications,
             config: config.join("inferd").join("inferd.toml"),
-            config_before: config.join("quire").join("inferd.toml"),
             catalog: CatalogDirs {
                 system: xdg.shipped("stoker/catalog"),
                 user: data.join("stoker").join("catalog"),

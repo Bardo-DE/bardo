@@ -26,12 +26,10 @@ porter-fs = {path = "../../../porter/crates/porter-fs"}
 cua-action = {path = "../../../stoker/crates/cua-action"}
 porter-callers = {path = "../../../porter/crates/porter-callers"}
 porter-dbus = {path = "../../../porter/crates/porter-dbus"}
-# The AI keys are accountd's: inferd asks it through porter-client (`broker`), and removes its old
-# store once accountd has copied it (`old_keys`, the record is porter-store's).
+# The AI keys are accountd's: inferd asks it through porter-client (`broker`).
 porter-client = {path = "../../../porter/crates/porter-client"}
 porter-client-dbus = {path = "../../../porter/crates/porter-client-dbus"}
 porter-settings = {path = "../../../porter/crates/porter-settings"}
-porter-store = {path = "../../../porter/crates/porter-store"}
 inferd-probe = {path = "../inferd-probe"}
 steward-dbus = {path = "../steward-dbus"}
 porter-http = {path = "../../../porter/crates/porter-http"}

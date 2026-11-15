@@ -5,8 +5,7 @@
 //!   tier map (`ai.model.<slot>.<tier>`), Automatic (`ai.auto.*`) and the spend line
 //!   (`ai.spend.warn_permille`) and, for the models on this computer, the longest conversation
 //!   and reply the person set (`ai.length.*`, Automatic where they set none; a window takes effect
-//!   the next time an engine starts). [`resolve`] reads it from the file's `[ai]` table, laid over the
-//!   old `[policy]` and `[tiers]` tables; a value a row does not accept falls back to the row's
+//!   the next time an engine starts). [`resolve`] reads it from the file's `[ai]` table; a value a row does not accept falls back to the row's
 //!   default, for that field only, and is named in [`Resolved::rejected`].
 //! * [`Live`] holds the settings in force, shared by every clone of `Engines`; a session is routed
 //!   by what is in force when it opens.

@@ -123,20 +123,6 @@ impl<P: Peers> InferdSettings<P> {
         pool::hosted(&self.reload, slot).await
     }
 
-    /// The path of the old-kind row for this slot and tier, when the file has one.
-    fn legacy_row(&self, slot: Slot, tier: Tier) -> Option<String> {
-        let old = slot.legacy_slug()?;
-        let path = model_path(slot, tier).replacen(slot.slug(), old, 1);
-        let config = self.reload.file().read().ok()?;
-        let (_, tier_slug) = path.strip_prefix("ai.model.")?.split_once('.')?;
-        config
-            .ai
-            .model
-            .get(old)
-            .is_some_and(|row| row.contains_key(tier_slug))
-            .then_some(path)
-    }
-
     fn current(&self, kind: Slot, tier: Tier) -> String {
         slot_value(&self.reload.engines().settings().tiers, kind, tier)
     }
@@ -511,15 +497,10 @@ impl<P: Peers> LiveModule for InferdSettings<P> {
             )));
         }
         let _one_writer = self.reload.writing().lock().await;
-        // Always the slot's own path; an old kind row for the same slot, if the file still has
-        // one, is kept in step so it cannot say otherwise.
         let file = self.reload.file();
         let value = toml::Value::String(text);
         file.set(&model_path(slot, tier), value.clone())
             .map_err(failed)?;
-        if let Some(old) = self.legacy_row(slot, tier) {
-            file.set(&old, value).map_err(failed)?;
-        }
         self.reload.now().map_err(failed).map(|_| ())
     }
 }

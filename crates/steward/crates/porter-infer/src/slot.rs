@@ -1,9 +1,6 @@
 //! Slots: the jobs a person picks a model for (capabilities.md section 2). A slot is a capability
 //! signature; any catalogue entry that satisfies it is listed there, so one model may sit in
 //! several slots. The settings key is `ai.model.<slot>.<tier>`.
-//!
-//! `Slot` replaces the old `AiKind`. Old settings files and wire frames name the old kinds (`llm`,
-//! `speech_in`, `speech_out`); they still read, as serde aliases, and map to their slot.
 
 use porter_capability::Tier;
 use serde::{Deserialize, Serialize};
@@ -13,13 +10,10 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "snake_case")]
 pub enum Slot {
     /// Text in, text out (with tools): language models. Was `AiKind::Llm`.
-    #[serde(alias = "llm")]
     Text,
     /// Audio in, text out: speech to text. Was `AiKind::SpeechIn`.
-    #[serde(alias = "speech_in")]
     VoiceIn,
     /// Text in, audio out: text to speech. Was `AiKind::SpeechOut`.
-    #[serde(alias = "speech_out")]
     VoiceOut,
     /// Image in, text out: a model that reads or describes pictures.
     ImageIn,
@@ -60,32 +54,9 @@ impl Slot {
         }
     }
 
-    /// The slot a slug names, the old kind slugs (`llm`, `speech_in`, `speech_out`) included.
+    /// The slot a slug names.
     pub fn from_slug(slug: &str) -> Option<Slot> {
-        Slot::ALL
-            .into_iter()
-            .find(|slot| slot.slug() == slug)
-            .or(match slug {
-                "llm" => Some(Slot::Text),
-                "speech_in" => Some(Slot::VoiceIn),
-                "speech_out" => Some(Slot::VoiceOut),
-                _ => None,
-            })
-    }
-
-    /// The old kind slug this slot was written under, if it had one.
-    pub fn legacy_slug(self) -> Option<&'static str> {
-        match self {
-            Slot::Text => Some("llm"),
-            Slot::VoiceIn => Some("speech_in"),
-            Slot::VoiceOut => Some("speech_out"),
-            _ => None,
-        }
-    }
-
-    /// Whether `slug` is an old kind slug rather than the slot's own.
-    pub fn is_legacy_slug(slug: &str) -> bool {
-        matches!(slug, "llm" | "speech_in" | "speech_out")
+        Slot::ALL.into_iter().find(|slot| slot.slug() == slug)
     }
 
     /// The settings key for the model chosen at `tier` (`ai.model.voice_in.balanced`).
@@ -96,35 +67,5 @@ impl Slot {
             Tier::Best => "best",
         };
         format!("ai.model.{}.{tier}", self.slug())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn old_kinds_map_to_their_slots() {
-        let cases = [
-            ("llm", Slot::Text),
-            ("speech_in", Slot::VoiceIn),
-            ("speech_out", Slot::VoiceOut),
-            ("computer_use", Slot::ComputerUse),
-            ("embeddings", Slot::Embeddings),
-            ("image_gen", Slot::ImageGen),
-            ("rerank", Slot::Rerank),
-            ("text", Slot::Text),
-            ("image_in", Slot::ImageIn),
-        ];
-        for (slug, slot) in cases {
-            assert_eq!(Slot::from_slug(slug), Some(slot), "{slug}");
-            let json = serde_json::Value::String(slug.to_owned());
-            assert_eq!(
-                serde_json::from_value::<Slot>(json).ok(),
-                Some(slot),
-                "{slug}"
-            );
-        }
-        assert_eq!(Slot::from_slug("tv"), None);
     }
 }

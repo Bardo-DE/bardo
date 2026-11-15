@@ -597,58 +597,6 @@ async fn rescan_reads_the_file_again_and_a_file_that_does_not_read_is_its_error(
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn an_old_kind_row_in_the_file_is_the_slots_row_and_a_set_keeps_the_two_in_step() {
-    let rig = Rig::start().await;
-    let settings = rig.live(&rig.client(Role::Settings).await).await;
-    std::fs::write(
-        &rig.file,
-        "[ai.model.llm]\nbalanced = \"anthropic/sonnet\"\n",
-    )
-    .expect("write");
-    let connection = rig.client(Role::App).await;
-    InferenceProxy::new(&connection)
-        .await
-        .expect("proxy")
-        .rescan()
-        .await
-        .expect("rescan");
-    let slot = key("ai.model.text.balanced");
-    assert_eq!(
-        settings.get(&slot).await.expect("get"),
-        text("anthropic/sonnet")
-    );
-    // The old key still names the same row for a client that has not moved.
-    assert_eq!(
-        settings
-            .get(&key("ai.model.llm.balanced"))
-            .await
-            .expect("get"),
-        text("anthropic/sonnet")
-    );
-    settings.set(&slot, &text("auto")).await.expect("set");
-    let written: toml::Table = std::fs::read_to_string(&rig.file)
-        .expect("file")
-        .parse()
-        .expect("toml");
-    assert_eq!(
-        written["ai"]["model"]["text"]["balanced"].as_str(),
-        Some("auto")
-    );
-    assert_eq!(
-        written["ai"]["model"]["llm"]["balanced"].as_str(),
-        Some("auto"),
-        "the old row cannot say otherwise"
-    );
-    assert!(matches!(
-        rig.engines
-            .settings()
-            .tiers
-            .pick(Slot::Text, porter_capability::Tier::Balanced),
-        Some(Pick::Auto { .. })
-    ));
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn a_slot_with_no_model_here_carries_no_note_about_missing_programs() {
     let bus = PrivateBus::start();
     let file = bus.scratch().join("inferd.toml");

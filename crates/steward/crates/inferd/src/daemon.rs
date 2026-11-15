@@ -70,9 +70,6 @@ pub struct Config {
     pub dirs: Dirs,
     /// The configuration file (`inferd.toml`).
     pub config_file: PathBuf,
-    /// Where the file was before it moved into inferd's own folder ([`Dirs::config_before`]):
-    /// read while `config_file` is missing. None for a file named on the command line.
-    pub config_before: Option<PathBuf>,
     /// Tailscale: its socket (the path Tailscale itself uses unless the environment names
     /// another) and where its program is looked for.
     pub tailscale: LocalApi,
@@ -97,7 +94,6 @@ impl Config {
         ));
         Self {
             config_file: dirs.config.clone(),
-            config_before: Some(dirs.config_before.clone()),
             dirs,
             tailscale: LocalApi::system(),
             proc_root: ProcRoot::Unset,
@@ -118,7 +114,6 @@ impl Config {
     #[must_use]
     pub fn with_config_file(mut self, path: PathBuf) -> Self {
         self.config_file = path;
-        self.config_before = None;
         self
     }
 
@@ -366,25 +361,14 @@ impl Daemon {
         let Config {
             dirs,
             config_file,
-            config_before,
             tailscale,
             proc_root,
             callers_file,
             bus,
             programs,
         } = config;
-        let file = match config_before {
-            Some(before) => ConfigFile::new(config_file).moved_from(before),
-            None => ConfigFile::new(config_file),
-        };
-        if file.source() != file.path() {
-            eprintln!(
-                "inferd: reading {}; move it to {}, where Settings looks for it (the old place is read for this release only)",
-                file.source().display(),
-                file.path().display()
-            );
-        }
-        let config = read_config(file.source())?;
+        let file = ConfigFile::new(config_file);
+        let config = read_config(file.path())?;
         let callers = read_callers(&callers_file, &config)?;
         let catalog = read_catalog(&dirs.catalog);
         for skipped in &catalog.skipped {

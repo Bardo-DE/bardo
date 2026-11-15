@@ -170,15 +170,6 @@ fn picker_data_round_trips_with_plain_slugs() {
     })
     .collect();
     assert_eq!(slugs.len(), 7);
-    // A frame written before the rename still reads, as the slot its kind became.
-    assert_eq!(
-        serde_json::from_str::<Slot>(r#""speech_in""#).ok(),
-        Some(Slot::VoiceIn)
-    );
-    assert_eq!(
-        serde_json::from_str::<Slot>(r#""llm""#).ok(),
-        Some(Slot::Text)
-    );
     round_trip(&PickerRow {
         model,
         label: "Nemotron streaming".into(),
