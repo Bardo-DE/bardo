@@ -471,8 +471,7 @@ fn input_devices_are_configured_and_their_keys_reach_the_bindings() {
     assert_eq!(applied.len(), 1, "only the touchpad takes pointer settings");
     assert_eq!(applied[0].0, touchpad);
     assert_eq!(
-        applied[0].1.natural_scroll,
-        true,
+        applied[0].1.natural_scroll, true,
         "the touchpad profile's default"
     );
 
