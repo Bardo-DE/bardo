@@ -10,7 +10,7 @@ use std::time::Duration;
 use porter_core::{ProviderId, SecretText};
 use porter_dbus::accounts::AccountsSheetProxy;
 use porter_sheet::{
-    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, Presence, ProviderRow, SheetInput,
+    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, ProviderRow, SheetInput,
     SheetView, SignInView,
 };
 use sill_model::accounts::sheet::{
@@ -65,7 +65,7 @@ fn form() -> String {
     let spec = |kind, entry| FieldSpec {
         kind,
         entry,
-        presence: Presence::Required,
+        required: true,
         prefill: None,
     };
     json(&SheetView::SignIn(SignInView {

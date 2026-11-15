@@ -150,7 +150,11 @@ impl TreeSession {
         let (bytes, bom) = text.into_parts();
         let tree = read(&bytes, format)?;
         Ok(TreeSession {
-            mark: if bom { "\u{feff}".as_bytes().to_vec() } else { Vec::new() },
+            mark: if bom {
+                "\u{feff}".as_bytes().to_vec()
+            } else {
+                Vec::new()
+            },
             bytes,
             format,
             tree,

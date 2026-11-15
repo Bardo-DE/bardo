@@ -21,7 +21,7 @@ const SAME_USE_SECS: u64 = 120;
 pub fn fold_views(frecency: Frecency, views: &[HistoryEntry]) -> Frecency {
     views.iter().fold(frecency, |counted, view| {
         let key = key_of(view.path.as_path());
-        let viewed = UnixTime(view.viewed.0);
+        let viewed = UnixTime(view.viewed);
         let chosen_just_before = counted.entries.get(&key).is_some_and(|used| {
             viewed.0.saturating_sub(used.last.0) <= SAME_USE_SECS && used.last <= viewed
         });
@@ -98,7 +98,6 @@ fn place_of(id: &ItemId, views: &[HistoryEntry]) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use anyview_core::{FilePath, FormatKind};
-    use anyview_store::Viewed;
     use sill_launcher::{FrecencyScore, ItemId, ProviderKind};
 
     use super::*;
@@ -109,7 +108,7 @@ mod tests {
         HistoryEntry {
             path: FilePath::new(path).unwrap_or_else(|e| panic!("{e}")),
             kind,
-            viewed: Viewed(NOW.0 - ago),
+            viewed: NOW.0 - ago,
             label,
         }
     }

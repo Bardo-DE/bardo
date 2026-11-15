@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
 use keycap_protocol::{
-    Grab, Keyboard, KeyboardInfo, Mode, PROTOCOL_VERSION, ProfileName, Status, Steer, ToClient,
+    Grab, Keyboard, KeyboardInfo, PROTOCOL_VERSION, ProfileName, Status, Steer, ToClient,
     ToDaemon, decode, encode,
 };
 use rustix::event::{PollFd, PollFlags, poll};
@@ -101,9 +101,9 @@ fn focused(app_id: Option<&str>) -> WindowModel {
     }
 }
 
-fn status(mode: Mode, grabs: &[(&str, Grab)]) -> Status {
+fn status(paused: bool, grabs: &[(&str, Grab)]) -> Status {
     Status {
-        mode,
+        paused,
         keyboards: grabs
             .iter()
             .map(|&(device, grab)| Keyboard {
@@ -120,7 +120,7 @@ fn status(mode: Mode, grabs: &[(&str, Grab)]) -> Status {
 }
 
 fn running() -> Status {
-    status(Mode::Running, &[("k1", Grab::Active)])
+    status(false, &[("k1", Grab::Active)])
 }
 
 /// Wait up to `limit` for `fd` to be readable; whether it is.
@@ -449,7 +449,7 @@ async fn the_notice_is_posted_replaced_and_withdrawn_as_keycap_needs() {
     );
 
     peer.tell(&ToClient::Status(status(
-        Mode::Running,
+        false,
         &[("k1", Grab::Active), ("k2", Grab::Conflict)],
     )));
     let posted = next_notice(&mut rig.notices).await;
@@ -478,7 +478,7 @@ async fn the_notice_is_posted_replaced_and_withdrawn_as_keycap_needs() {
     });
 
     peer.tell(&ToClient::Status(status(
-        Mode::Paused,
+        true,
         &[("k1", Grab::Active)],
     )));
     let replaced = next_notice(&mut rig.notices).await;

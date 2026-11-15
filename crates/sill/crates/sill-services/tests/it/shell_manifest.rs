@@ -194,14 +194,13 @@ fn the_window_actions_declare_the_effects_the_model_charges() {
 
 #[test]
 fn the_menu_activation_is_a_destructive_ceiling_the_provider_classifies_under() {
-    use docket_vocab::PerCall;
     use prov::Effect;
     let manifest = manifest().unwrap_or_else(|e| panic!("{e}"));
     let rows: Vec<_> = manifest
         .manifest()
         .actions
         .iter()
-        .filter(|a| a.per_call == PerCall::Classified)
+        .filter(|a| a.classified)
         .map(|a| (a.name.as_str().to_owned(), a.effect))
         .collect();
     assert_eq!(

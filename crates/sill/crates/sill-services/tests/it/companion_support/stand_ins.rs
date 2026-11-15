@@ -19,7 +19,7 @@ use zbus::{Connection, interface};
 use super::{Details, Log, json, task};
 use docket_core::{CallRefusal, Delivery, Follow, Outcome, Preview, SendRefusal, Undoable};
 use docket_manifest::ValidManifest;
-use prov::{Crossing, MessageId, ThreadId};
+use prov::{MessageId, ThreadId};
 
 // ---- intentd ----
 
@@ -127,7 +127,7 @@ impl StandInMessage {
         let delivery: Result<Delivery, SendRefusal> = Ok(Delivery {
             message: MessageId::parse("m-1").unwrap_or_else(|e| panic!("{e}")),
             thread: ThreadId::parse("m-1").unwrap_or_else(|e| panic!("{e}")),
-            crossing: Crossing::Within,
+            crosses: false,
         });
         Ok(json(&delivery))
     }

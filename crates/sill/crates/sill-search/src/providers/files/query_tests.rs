@@ -194,7 +194,7 @@ fn viewed(
     anyview_store::HistoryEntry {
         path: anyview_core::FilePath::new(path).unwrap_or_else(|e| panic!("{e}")),
         kind: anyview_core::FormatKind::Pdf,
-        viewed: anyview_store::Viewed(now - seconds_ago),
+        viewed: now - seconds_ago,
         label,
     }
 }
