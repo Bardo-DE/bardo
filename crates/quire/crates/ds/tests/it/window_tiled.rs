@@ -19,7 +19,7 @@ impl HostWindow for Tiling {
     fn minimize(&self) {}
     fn close(&self) {}
     fn tile(&self, _: WindowTile) -> Result<(), TileError> {
-        Err(TileError::Unsupported)
+        Err(TileError)
     }
     fn supports(&self, _: WindowTile) -> bool {
         false

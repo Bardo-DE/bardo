@@ -85,8 +85,8 @@ pub enum MenuExportError {
     #[error("a menu value could not be written for the bus: {0}")]
     Wire(String),
     /// No runtime for zbus to run on.
-    #[error(transparent)]
-    Runtime(#[from] crate::error::RuntimeError),
+    #[error("the host's tokio runtime could not be started: {0}")]
+    Runtime(#[from] std::io::Error),
 }
 
 /// A menu being served. Dropping it closes the connection, which takes the name with it.

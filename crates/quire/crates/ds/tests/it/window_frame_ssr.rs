@@ -1,6 +1,6 @@
 //! The window frame as markup (FINDINGS "Window frame"): a `Ds` root with
 //! `window: WindowFrame::Titlebar` and the lights shown, with them hidden, and in a maximized
-//! window (a host that reports `Maximized::On`: the green light restores, the edges are gone),
+//! window (a host that reports `maximized: true`: the green light restores, the edges are gone),
 //! each through dioxus-ssr against a golden under `controls/window_frame/`, so the control goldens'
 //! markup lint covers them. A root with no frame is every other root golden, unchanged.
 //!
@@ -12,11 +12,11 @@ use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
 use ds::prelude::*;
 use ds::window::host::use_window_host_provider;
-use ds::window::vocab::{Maximized, TileError, WindowTile, Zoom};
+use ds::window::vocab::{TileError, WindowTile, Zoom};
 use std::rc::Rc;
 
 /// A host that does nothing and reports `maximized`.
-struct Still(Maximized);
+struct Still(bool);
 
 impl HostWindow for Still {
     fn begin_move(&self) {}
@@ -25,7 +25,7 @@ impl HostWindow for Still {
     fn minimize(&self) {}
     fn close(&self) {}
     fn tile(&self, _: WindowTile) -> Result<(), TileError> {
-        Err(TileError::Unsupported)
+        Err(TileError)
     }
     fn supports(&self, _: WindowTile) -> bool {
         false
@@ -57,7 +57,7 @@ const CASES: &[Case] = &[
     ("controls/window_frame/lights.html", || window(true)),
     ("controls/window_frame/no-lights.html", || window(false)),
     ("controls/window_frame/maximized.html", || {
-        use_window_host_provider(|| Rc::new(Still(Maximized::On)));
+        use_window_host_provider(|| Rc::new(Still(true)));
         window(true)
     }),
 ];

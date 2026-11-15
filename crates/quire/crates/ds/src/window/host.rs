@@ -31,7 +31,7 @@ pub trait HostWindow {
     /// Close the window, as the compositor's close would.
     fn close(&self);
     /// Place the window: [`WindowTile::Fill`] maximizes; the others need a client that can
-    /// place itself, and answer [`TileError::Unsupported`] where it cannot.
+    /// place itself, and answer [`TileError`] where it cannot.
     fn tile(&self, tile: WindowTile) -> Result<(), TileError>;
     /// Whether [`HostWindow::tile`] would place the window there, asked before the menu offers it.
     fn supports(&self, tile: WindowTile) -> bool;

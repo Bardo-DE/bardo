@@ -19,7 +19,7 @@ use dioxus_native::winit::window::{ResizeDirection, Window};
 use dioxus_native_dom::NodeHandle;
 use ds::prelude::*;
 use ds::window::icon::WindowIcon;
-use ds::window::vocab::{Activation, Fullscreen, Maximized, PageZoom, TileError, WindowTile, Zoom};
+use ds::window::vocab::{PageZoom, TileError, WindowTile, Zoom};
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -122,11 +122,11 @@ impl HostWindow for WinitWindow {
             return Ok(());
         }
         let (true, Some(output)) = (self.placeable(), self.output()) else {
-            return Err(TileError::Unsupported);
+            return Err(TileError);
         };
         let size = self.window.outer_size();
         let Some(area) = placement(output, (size.width, size.height), tile) else {
-            return Err(TileError::Unsupported);
+            return Err(TileError);
         };
         if self.window.is_maximized() {
             self.window.set_maximized(false);
@@ -151,18 +151,9 @@ impl HostWindow for WinitWindow {
 
     fn state(&self) -> WindowState {
         WindowState {
-            maximized: match self.window.is_maximized() {
-                true => Maximized::On,
-                false => Maximized::Off,
-            },
-            fullscreen: match self.window.fullscreen() {
-                Some(_) => Fullscreen::On,
-                None => Fullscreen::Off,
-            },
-            activated: match self.window.has_focus() {
-                true => Activation::Active,
-                false => Activation::Inactive,
-            },
+            maximized: self.window.is_maximized(),
+            fullscreen: self.window.fullscreen().is_some(),
+            activated: self.window.has_focus(),
         }
     }
 

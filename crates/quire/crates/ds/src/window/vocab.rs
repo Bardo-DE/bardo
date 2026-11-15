@@ -65,75 +65,53 @@ pub enum WindowTile {
     Centre,
 }
 
-/// Why a host did not place its window.
+/// A host did not place its window: the platform does not let a client place itself there.
+/// On Wayland a toplevel cannot read or set its own position (FINDINGS "Window frame").
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, thiserror::Error)]
-pub enum TileError {
-    /// The platform does not let a client place itself there: on Wayland a toplevel cannot
-    /// read or set its own position (FINDINGS "Window frame").
-    #[error("the platform does not let this window place itself there")]
-    Unsupported,
-}
-
-/// Whether the window fills its output's work area.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum Maximized {
-    /// Maximized (zoomed).
-    On,
-    /// Its own size.
-    #[default]
-    Off,
-}
-
-/// Whether the window covers its whole output with no frame.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum Fullscreen {
-    /// Fullscreen.
-    On,
-    /// Not fullscreen.
-    #[default]
-    Off,
-}
-
-/// Whether the window is the one the keyboard goes to (the xdg `activated` state).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum Activation {
-    /// The active window: its lights are coloured at rest.
-    #[default]
-    Active,
-    /// Behind another: its lights are grey until the pointer is over them.
-    Inactive,
-}
+#[error("the platform does not let this window place itself there")]
+pub struct TileError;
 
 /// What the host last reported about its window. The default is what a window with no host
 /// looks like: its own size, not fullscreen, active.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct WindowState {
-    /// Zoomed or not.
-    pub maximized: Maximized,
-    /// Fullscreen or not.
-    pub fullscreen: Fullscreen,
-    /// Active or not.
-    pub activated: Activation,
+    /// Whether the window fills its output's work area (zoomed).
+    pub maximized: bool,
+    /// Whether the window covers its whole output with no frame.
+    pub fullscreen: bool,
+    /// Whether the window is the one the keyboard goes to (the xdg `activated` state): its
+    /// lights are coloured at rest; behind another they are grey until the pointer is over them.
+    pub activated: bool,
+}
+
+impl Default for WindowState {
+    fn default() -> Self {
+        WindowState {
+            maximized: false,
+            fullscreen: false,
+            activated: true,
+        }
+    }
 }
 
 impl WindowState {
     /// Whether the frame may start a move or a resize: not while the window fills its output
     /// (a maximized window's place is the compositor's, and a drag would fight it).
     pub fn movable(self) -> bool {
-        self.maximized == Maximized::Off && self.fullscreen == Fullscreen::Off
+        !self.maximized && !self.fullscreen
     }
 
     /// The `data-window` word the frame is drawn by.
     pub(crate) fn slug(self) -> &'static str {
         match (self.fullscreen, self.maximized) {
-            (Fullscreen::On, _) => "fullscreen",
-            (Fullscreen::Off, Maximized::On) => "maximized",
-            (Fullscreen::Off, Maximized::Off) => "normal",
+            (true, _) => "fullscreen",
+            (false, true) => "maximized",
+            (false, false) => "normal",
         }
     }
 
     /// Whether the window is the one the person works in, as the shared vocabulary says it.
     pub(crate) fn activity(self) -> bool {
-        self.activated == Activation::Active
+        self.activated
     }
 }

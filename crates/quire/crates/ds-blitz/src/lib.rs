@@ -124,7 +124,7 @@ pub use click_focus::FocusFallback;
 pub use close_request::{CloseAnswer, use_close_request};
 pub use content_fit::{ContentFit, use_content_fit};
 pub use contexts::RootContexts;
-pub use error::{LaunchError, OpenWindowError, RuntimeError};
+pub use error::LaunchError;
 pub use fonts::font_context;
 pub use frame_hover::{FrameLinkHover, HoverPhase};
 pub use frame_image::FrameImageClick;

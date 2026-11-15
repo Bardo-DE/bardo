@@ -14,7 +14,6 @@
 //! thread. Its guards share one Tokio entry per thread and count themselves, so they may drop in
 //! any order (Tokio's own guards panic unless they drop newest first).
 
-use crate::error::RuntimeError;
 use ds::base::spawner::Spawner;
 use std::cell::RefCell;
 use std::future::Future;
@@ -23,7 +22,7 @@ use std::pin::Pin;
 use tokio::runtime::{EnterGuard, Handle, Runtime};
 
 /// A runtime of two worker threads, owned by whoever holds it.
-pub(super) fn build() -> Result<Runtime, RuntimeError> {
+pub(super) fn build() -> std::io::Result<Runtime> {
     Ok(tokio::runtime::Builder::new_multi_thread()
         .worker_threads(2)
         .enable_all()
@@ -49,7 +48,7 @@ thread_local! {
 /// Enter a runtime owned by the calling thread (built on the first call on the thread). The
 /// caller holds the returned guard for as long as a spawned task must keep working there. Guards
 /// may drop in any order; the runtime stays entered until the last one on the thread is gone.
-pub fn enter_runtime() -> Result<RuntimeGuard, RuntimeError> {
+pub fn enter_runtime() -> std::io::Result<RuntimeGuard> {
     ENTRY.with(|entry| {
         let mut entry = entry.borrow_mut();
         if entry.runtime.is_none() {

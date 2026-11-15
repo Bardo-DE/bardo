@@ -60,7 +60,7 @@ impl HostWindow for WindowLog {
     fn close(&self) {}
 
     fn tile(&self, _tile: WindowTile) -> Result<(), TileError> {
-        Err(TileError::Unsupported)
+        Err(TileError)
     }
 
     fn supports(&self, _tile: WindowTile) -> bool {

@@ -14,7 +14,7 @@ use crate::host::measure::{Anchor, MountedRef};
 use crate::window::hold::{Hold, HoldIn, HoldOut, HoldTiming, Wait};
 use crate::window::host::{WindowHost, use_window_host, use_window_state};
 use crate::window::timing::FrameTiming;
-use crate::window::vocab::{Maximized, WindowTile, Zoom};
+use crate::window::vocab::{WindowTile, Zoom};
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
 use ds_core::vocab::{Availability, aria_word};
@@ -60,8 +60,8 @@ pub(crate) fn TrafficLightGroup(timing: FrameTiming, pose: bool) -> Element {
     );
     let (close, minimize, pick) = (host.clone(), host.clone(), host);
     let zoom_mark = match state.maximized {
-        Maximized::On => Mark::Restore,
-        Maximized::Off => Mark::Zoom,
+        true => Mark::Restore,
+        false => Mark::Zoom,
     };
     let expanded = match menu() {
         Some(_) => true,

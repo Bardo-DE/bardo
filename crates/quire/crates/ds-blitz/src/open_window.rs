@@ -13,7 +13,6 @@
 //! `tokio::sync::watch` channel, or the app's own store provided with `AppConfig::with_context`).
 
 use crate::app_id::AppId;
-use crate::error::OpenWindowError;
 use crate::window::Decorations;
 use crate::window_requests::{Requests, Root, WindowKey, WindowLife};
 use crate::window_size::WindowSize;
@@ -154,11 +153,11 @@ pub fn use_window_handle() -> Option<WindowHandle> {
 /// Open another window of this app, rendering `root` in a VirtualDom of its own. Call it from a
 /// component or a handler inside a window `launch` opened (or one this opened); anywhere else
 /// (the harness, a snapshot) there is no event loop to ask and it answers
-/// [`OpenWindowError::NoHost`].
+/// `None`.
 pub fn open_window(
     spec: WindowSpec,
     root: fn() -> Element,
-) -> Result<WindowHandle, OpenWindowError> {
+) -> Option<WindowHandle> {
     open(spec, Root::Plain(root))
 }
 
@@ -168,14 +167,14 @@ pub fn open_window_with<P: Clone + 'static>(
     spec: WindowSpec,
     root: fn(P) -> Element,
     props: P,
-) -> Result<WindowHandle, OpenWindowError> {
+) -> Option<WindowHandle> {
     open(spec, Root::Shared(Rc::new(move || root(props.clone()))))
 }
 
-fn open(spec: WindowSpec, root: Root) -> Result<WindowHandle, OpenWindowError> {
-    let requests = try_consume_context::<Requests>().ok_or(OpenWindowError::NoHost)?;
+fn open(spec: WindowSpec, root: Root) -> Option<WindowHandle> {
+    let requests = try_consume_context::<Requests>()?;
     let key = requests.open(spec, root);
-    Ok(WindowHandle { key, requests })
+    Some(WindowHandle { key, requests })
 }
 
 #[cfg(test)]

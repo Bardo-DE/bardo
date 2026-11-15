@@ -8,7 +8,6 @@ use dioxus::prelude::*;
 use ds::components::chrome::window_frame::{TitleRoom, WindowTitlebar};
 use ds::prelude::*;
 use ds::window::host::use_window_host_provider;
-use ds::window::vocab::Maximized;
 use ds_harness::Input;
 use std::rc::Rc;
 
@@ -19,7 +18,7 @@ fn Led() -> Element {
     use_window_host_provider(move || {
         Rc::new(Stub {
             log,
-            maximized: Maximized::Off,
+            maximized: false,
         })
     });
     let leading = rsx! {

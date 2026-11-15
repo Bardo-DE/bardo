@@ -10,7 +10,7 @@ use dioxus::prelude::*;
 use ds::base::press::PointerButton;
 use ds::prelude::*;
 use ds::window::host::use_window_host_provider;
-use ds::window::vocab::{Maximized, TileError, WindowTile, Zoom};
+use ds::window::vocab::{TileError, WindowTile, Zoom};
 use ds_harness::{Clock, Harness, HarnessConfig, Input, PointerAction, PointerInput, Viewport};
 use std::rc::Rc;
 use std::time::Duration;
@@ -24,7 +24,7 @@ pub(crate) const VIEW: Viewport = Viewport {
 /// A host that logs every request and can only maximize.
 pub(crate) struct Stub {
     pub(crate) log: Signal<Vec<String>>,
-    pub(crate) maximized: Maximized,
+    pub(crate) maximized: bool,
 }
 
 impl Stub {
@@ -55,7 +55,7 @@ impl HostWindow for Stub {
         if self.supports(tile) {
             Ok(())
         } else {
-            Err(TileError::Unsupported)
+            Err(TileError)
         }
     }
     fn supports(&self, tile: WindowTile) -> bool {
@@ -76,7 +76,7 @@ impl HostWindow for Stub {
 }
 
 /// A framed window whose host is the stub, in `maximized`.
-fn framed(maximized: Maximized) -> Element {
+fn framed(maximized: bool) -> Element {
     let log = use_signal(Vec::<String>::new);
     use_window_host_provider(move || Rc::new(Stub { log, maximized }));
     rsx! {
@@ -91,12 +91,12 @@ fn framed(maximized: Maximized) -> Element {
 
 #[allow(non_snake_case)]
 fn Normal() -> Element {
-    framed(Maximized::Off)
+    framed(false)
 }
 
 #[allow(non_snake_case)]
 fn Zoomed() -> Element {
-    framed(Maximized::On)
+    framed(true)
 }
 
 pub(crate) fn ms(n: u64) -> Duration {

@@ -6,7 +6,6 @@ use dioxus::prelude::*;
 use ds::prelude::*;
 use ds::window::host::{use_window_host, use_window_host_provider, use_window_title};
 use ds::window::icon::WindowIcon;
-use ds::window::vocab::Maximized;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, WindowHosting};
 use std::rc::Rc;
 
@@ -17,7 +16,7 @@ fn Titled() -> Element {
     use_window_host_provider(move || {
         Rc::new(Stub {
             log,
-            maximized: Maximized::Off,
+            maximized: false,
         })
     });
     use_window_title(format!("Draft {opened}"));

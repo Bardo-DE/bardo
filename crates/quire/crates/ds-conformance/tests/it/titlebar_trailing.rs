@@ -6,7 +6,6 @@ use crate::window_frame_controls::{BAR, Stub, VIEW, at, centre, drag, log, ms, s
 use dioxus::prelude::*;
 use ds::prelude::*;
 use ds::window::host::use_window_host_provider;
-use ds::window::vocab::Maximized;
 use ds_harness::Input;
 use std::rc::Rc;
 
@@ -17,7 +16,7 @@ fn Trailed() -> Element {
     use_window_host_provider(move || {
         Rc::new(Stub {
             log,
-            maximized: Maximized::Off,
+            maximized: false,
         })
     });
     let trailing = rsx! {
