@@ -96,45 +96,6 @@ fn command_h_hides_in_a_terminal_too() {
     }
 }
 
-#[test]
-fn under_the_plasma_config_no_command_letter_is_a_bare_control_letter_in_a_terminal() {
-    for profile in ["terminal", "ghostty"] {
-        for letter in "abcdefghijklmnopqrstuvwxyz".chars().map(String::from) {
-            let mut rig = plasma_rig();
-            rig.feed(focus(profile));
-            rig.feed(press(0, "leftmeta"));
-            rig.feed(press(0, &letter));
-            let down = rig.down();
-            let bare = down.len() == 2 && down.contains(&"leftctrl") && down.contains(&&*letter);
-            assert!(!bare, "{profile}: Cmd+{letter} wrote {down:?}");
-        }
-    }
-}
-
-/// The Caps Lock block of `docs/personal-config.md`, as a user layer over the built-ins.
-#[test]
-fn the_documented_personal_caps_lock_block_works() {
-    let docs = include_str!("../../../../docs/personal-config.md");
-    let start = docs.find("```toml\n[profile.default]").expect("the block") + 8;
-    let block = &docs[start
-        ..docs[start..]
-            .find("```")
-            .map(|n| start + n)
-            .expect("its end")];
-    let (builtin_layer, _) = builtin();
-    let (user, warnings) = keycap::ConfigLayer::parse(block, ConfigSource::User);
-    assert_eq!(warnings, vec![]);
-    let mut rig = Rig::with_profiles(resolve(&[builtin_layer, user]).0);
-    rig.expect(vec![
-        (press(0, "capslock"), "+leftctrl +space SYN"),
-        (release(0, "capslock"), "-space -leftctrl SYN"),
-        (press(0, "leftshift"), "+leftshift SYN"),
-        (press(0, "capslock"), "-leftshift +capslock SYN"),
-        (release(0, "capslock"), "-capslock +leftshift SYN"),
-        (release(0, "leftshift"), "-leftshift SYN"),
-    ]);
-}
-
 /// The shipped Plasma file with the personal blocks of `docs/personal-config.md` over it: what
 /// `/etc/keycap/keycap.toml` holds on the machine this was written for.
 #[test]

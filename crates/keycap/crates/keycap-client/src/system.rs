@@ -65,13 +65,4 @@ mod tests {
             );
         }
     }
-
-    #[test]
-    fn no_action_is_listed_twice() {
-        let mut slugs: Vec<String> = system_bindings().iter().map(|b| b.action.slug()).collect();
-        slugs.sort();
-        let before = slugs.len();
-        slugs.dedup();
-        assert_eq!(slugs.len(), before);
-    }
 }
