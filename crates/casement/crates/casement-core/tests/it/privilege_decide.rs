@@ -2,7 +2,7 @@
 //! person's book (precedence), the book's and the floor's text, and the caps.
 
 use casement_core::privilege::{
-    Book, BookError, Decision, Engine, Fallback, Floor, FloorError, FloorRule, Grant,
+    Book, BookError, Decision, Engine, Floor, FloorError, FloorRule, Grant,
     MAX_FILE_BYTES, MAX_GRANTS, ProgramPath, SandboxAppId, Subject, UnixSeconds, Verdict, decide,
     decide_trusted,
 };
@@ -54,8 +54,8 @@ fn any_opinion() -> impl Strategy<Value = Option<Verdict>> {
     prop_oneof![Just(None), any_verdict().prop_map(Some)]
 }
 
-fn any_fallback() -> impl Strategy<Value = Fallback> {
-    prop_oneof![Just(Fallback::Ask), Just(Fallback::Deny)]
+fn any_fallback() -> impl Strategy<Value = bool> {
+    any::<bool>()
 }
 
 fn any_grant() -> impl Strategy<Value = Grant> {
@@ -75,7 +75,7 @@ fn records(
     power: Power,
     floor_rule: Option<Verdict>,
     book_rule: Option<Verdict>,
-    fallback: Fallback,
+    fallback: bool,
 ) -> (Floor, Book) {
     let floor = Floor::empty().with_fallback(power, fallback);
     let floor = match floor_rule {
@@ -109,10 +109,8 @@ proptest! {
         let want = match (floor_rule, book_rule) {
             (Some(Verdict::Deny), _) | (_, Some(Verdict::Deny)) => Decision::Closed,
             (Some(Verdict::Allow), _) | (_, Some(Verdict::Allow)) => Decision::Open,
-            (None, None) => match fallback {
-                Fallback::Deny => Decision::Closed,
-                Fallback::Ask => Decision::Ask(Memory::Remembered),
-            },
+            (None, None) if fallback => Decision::Closed,
+            (None, None) => Decision::Ask(Memory::Remembered),
         };
         prop_assert_eq!(got, want);
     }
@@ -146,9 +144,10 @@ proptest! {
         let floor = Floor::empty().with_fallback(power, fallback);
         let book = noise.into_iter().fold(Book::empty(), Book::with);
         let got = decide(&floor, &book, None, power);
-        let want = match fallback {
-            Fallback::Deny => Decision::Closed,
-            Fallback::Ask => Decision::Ask(Memory::ThisTimeOnly),
+        let want = if fallback {
+            Decision::Closed
+        } else {
+            Decision::Ask(Memory::ThisTimeOnly)
         };
         prop_assert_eq!(got, want);
     }
@@ -431,9 +430,9 @@ answer  = "deny"
 #[test]
 fn the_floor_reads_its_defaults_programs_and_rules() {
     let floor = Floor::from_toml(FLOOR).expect("reads");
-    assert_eq!(floor.fallback(Power::Screen), Fallback::Ask);
-    assert_eq!(floor.fallback(Power::Lock), Fallback::Deny);
-    assert_eq!(floor.fallback(Power::Keys), Fallback::Ask);
+    assert!(!floor.denies(Power::Screen));
+    assert!(floor.denies(Power::Lock));
+    assert!(!floor.denies(Power::Keys));
     assert_eq!(
         floor.remembers(&program("/opt/app/bin/tool")),
         Memory::ThisTimeOnly
@@ -479,19 +478,19 @@ fn the_floor_fails_loudly() {
 #[test]
 fn merging_floors_keeps_the_refusal_and_every_rule() {
     let a = Floor::empty()
-        .with_fallback(Power::Lock, Fallback::Deny)
-        .with_fallback(Power::Screen, Fallback::Ask);
+        .with_fallback(Power::Lock, true)
+        .with_fallback(Power::Screen, false);
     let b = Floor::empty()
-        .with_fallback(Power::Lock, Fallback::Ask)
-        .with_fallback(Power::Screen, Fallback::Deny)
+        .with_fallback(Power::Lock, false)
+        .with_fallback(Power::Screen, true)
         .with_rule(FloorRule {
             power: Power::Keys,
             subject: program("/usr/bin/wtype"),
             verdict: Verdict::Allow,
         });
     let both = a.merge(b);
-    assert_eq!(both.fallback(Power::Lock), Fallback::Deny);
-    assert_eq!(both.fallback(Power::Screen), Fallback::Deny);
+    assert!(both.denies(Power::Lock));
+    assert!(both.denies(Power::Screen));
     assert_eq!(both.rules().len(), 1);
 }
 

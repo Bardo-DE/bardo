@@ -7,7 +7,7 @@ use crate::support::headless;
 use casement_core::lock::LockEvent;
 use casement_core::policy::{ConnectionRole, GlobalKind, advertised_to};
 use casement_core::privilege::{
-    ASK_TTL, ASKS_PER_MINUTE, AskSubject, Book, ClientStanding, Edit, Engine, Fallback, Floor,
+    ASK_TTL, ASKS_PER_MINUTE, AskSubject, Book, ClientStanding, Edit, Engine, Floor,
     FloorRule, OPEN_ASKS, PowerOutcome, ProgramPath, REASK_AFTER, SHELL_WAIT, SandboxAppId,
     ServiceRole, Subject, UnixSeconds, Verdict,
 };
@@ -928,7 +928,7 @@ fn a_floor_loaded_later_takes_the_power_from_a_program_that_had_it() {
 fn a_floor_default_of_deny_refuses_without_asking_and_a_pre_approval_lets_in() {
     let mut desk = Desk::with_shell();
     let floor = Floor::empty()
-        .with_fallback(Power::Lock, Fallback::Deny)
+        .with_fallback(Power::Lock, true)
         .with_rule(FloorRule {
             power: Power::Clipboard,
             subject: program("/usr/bin/cliphist"),

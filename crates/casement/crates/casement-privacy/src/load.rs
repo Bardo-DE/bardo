@@ -7,7 +7,7 @@
 //! files are still read, and the compositor keeps running.
 
 use super::store::{FloorText, PrivacyStore};
-use casement_core::privilege::{Book, Fallback, Floor, MAX_GRANTS, Subject, UnixSeconds};
+use casement_core::privilege::{Book, Floor, MAX_GRANTS, Subject, UnixSeconds};
 use casement_protocols::vocab::{Power, WireCode};
 
 /// The person's book as it is stored. `now` names the damaged book's new name.
@@ -105,7 +105,7 @@ fn asking_about_everything() -> Floor {
         .iter()
         .copied()
         .fold(Floor::empty(), |floor, power| {
-            floor.with_fallback(power, Fallback::Ask)
+            floor.with_fallback(power, false)
         })
 }
 
@@ -210,16 +210,8 @@ mod tests {
             ..Memory::default()
         };
         let floor = load_floor(&mut store);
-        assert_eq!(
-            floor.fallback(Power::Lock),
-            Fallback::Deny,
-            "the good file counts"
-        );
-        assert_eq!(
-            floor.fallback(Power::Screen),
-            Fallback::Ask,
-            "the bad file does not"
-        );
+        assert!(floor.denies(Power::Lock), "the good file counts");
+        assert!(!floor.denies(Power::Screen), "the bad file does not");
         let mut none = Memory::default();
         assert_eq!(load_floor(&mut none), Floor::empty());
     }

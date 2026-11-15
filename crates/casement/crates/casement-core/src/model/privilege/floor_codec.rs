@@ -15,7 +15,7 @@
 //! ```
 
 use super::book::Verdict;
-use super::floor::{Fallback, Floor, FloorRule};
+use super::floor::{Floor, FloorRule};
 use super::limits::{MAX_FILE_BYTES, MAX_FLOOR_RULES, MAX_NEVER_REMEMBER};
 use super::subject::ProgramPath;
 use super::subject_dto::SubjectDto;
@@ -115,8 +115,8 @@ impl Floor {
             Floor::empty(),
             |floor, (power, stated)| match stated {
                 None => Ok(floor),
-                Some(Stated::Ask) => Ok(floor.with_fallback(power, Fallback::Ask)),
-                Some(Stated::Deny) => Ok(floor.with_fallback(power, Fallback::Deny)),
+                Some(Stated::Ask) => Ok(floor.with_fallback(power, false)),
+                Some(Stated::Deny) => Ok(floor.with_fallback(power, true)),
                 Some(Stated::Allow) => Err(FloorError::DefaultAllow(power)),
             },
         )?;

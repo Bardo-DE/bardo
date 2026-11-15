@@ -40,7 +40,7 @@ pub use book::{Book, Grant, UnixSeconds, Verdict};
 pub use book_codec::{BookError, Loaded};
 pub use decide::{Decision, decide, decide_trusted};
 pub use edit::Edit;
-pub use floor::{Fallback, Floor, FloorRule};
+pub use floor::{Floor, FloorRule};
 pub use floor_codec::FloorError;
 pub use limits::{
     ASK_TTL, ASKS_PER_MINUTE, HELD_REQUESTS, MAX_FILE_BYTES, MAX_GRANTS, OPEN_ASKS, RATE_WINDOW,

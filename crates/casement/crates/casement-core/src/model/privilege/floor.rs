@@ -8,16 +8,6 @@ use super::subject::{ProgramPath, Subject};
 use casement_protocols::vocab::{Memory, Power};
 use std::collections::{BTreeMap, BTreeSet};
 
-/// What a program nobody has answered for gets.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Fallback {
-    /// It is asked.
-    Ask,
-    /// It is refused without being asked. (There is no "allow": a floor cannot let in a
-    /// program nobody named.)
-    Deny,
-}
-
 /// One pre-approval or refusal by the administrator.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FloorRule {
@@ -67,7 +57,7 @@ fn is_interpreter(path: &ProgramPath) -> bool {
 /// The administrator's floor.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Floor {
-    fallbacks: BTreeMap<Power, Fallback>,
+    fallbacks: BTreeMap<Power, bool>,
     never: BTreeSet<ProgramPath>,
     rules: Vec<FloorRule>,
 }
@@ -78,10 +68,11 @@ impl Floor {
         Floor::default()
     }
 
-    /// The floor with `fallback` for `power`.
-    pub fn with_fallback(self, power: Power, fallback: Fallback) -> Floor {
+    /// The floor refusing (`deny`) or asking about a program nobody has answered for, for
+    /// `power`. (There is no "allow": a floor cannot let in a program nobody named.)
+    pub fn with_fallback(self, power: Power, deny: bool) -> Floor {
         let mut fallbacks = self.fallbacks;
-        fallbacks.insert(power, fallback);
+        fallbacks.insert(power, deny);
         Floor { fallbacks, ..self }
     }
 
@@ -105,9 +96,10 @@ impl Floor {
         Floor { never, ..self }
     }
 
-    /// What an unlisted program gets for `power`.
-    pub fn fallback(&self, power: Power) -> Fallback {
-        self.fallbacks.get(&power).copied().unwrap_or(Fallback::Ask)
+    /// Whether an unlisted program is refused without being asked for `power` (otherwise it is
+    /// asked).
+    pub fn denies(&self, power: Power) -> bool {
+        self.fallbacks.get(&power).copied().unwrap_or(false)
     }
 
     /// What the administrator decided about `subject` and `power`: a refusal wins over a
@@ -148,10 +140,7 @@ impl Floor {
                 .fallbacks
                 .into_iter()
                 .fold(self.fallbacks.clone(), |all, (power, fallback)| {
-                    let kept = match (all.get(&power), fallback) {
-                        (Some(Fallback::Deny), _) | (_, Fallback::Deny) => Fallback::Deny,
-                        _ => Fallback::Ask,
-                    };
+                    let kept = all.get(&power).copied().unwrap_or(false) || fallback;
                     let mut all = all;
                     all.insert(power, kept);
                     all

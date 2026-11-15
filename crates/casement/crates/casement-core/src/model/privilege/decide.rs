@@ -6,7 +6,7 @@
 //! no to a pre-approval; an administrator's no is never overruled.
 
 use super::book::{Book, Verdict};
-use super::floor::{Fallback, Floor};
+use super::floor::Floor;
 use super::subject::Subject;
 use casement_protocols::vocab::{Memory, Power};
 
@@ -77,10 +77,13 @@ pub fn decide(floor: &Floor, book: &Book, subject: Option<&Subject>, power: Powe
         Says {
             floor: None,
             book: None,
-        } => match floor.fallback(power) {
-            Fallback::Deny => Decision::Closed,
-            Fallback::Ask => Decision::Ask(memory_of(floor, subject)),
-        },
+        } => {
+            if floor.denies(power) {
+                Decision::Closed
+            } else {
+                Decision::Ask(memory_of(floor, subject))
+            }
+        }
     }
 }
 
