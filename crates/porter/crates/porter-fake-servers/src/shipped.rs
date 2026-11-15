@@ -9,19 +9,9 @@ pub fn nextcloud() -> ProviderSpec {
     parse(include_str!("../../../providers/nextcloud.toml"))
 }
 
-/// The shipped `providers/ollama.toml`.
-pub fn ollama() -> ProviderSpec {
-    parse(include_str!("../../../providers/ollama.toml"))
-}
-
 /// The shipped `providers/google.toml`.
 pub fn google() -> ProviderSpec {
     parse(include_str!("../../../providers/google.toml"))
-}
-
-/// The shipped `providers/local.toml`.
-pub fn local() -> ProviderSpec {
-    parse(include_str!("../../../providers/local.toml"))
 }
 
 /// The shipped `providers/<id>.toml` of an AI company served by the `api_key` family
