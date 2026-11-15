@@ -234,6 +234,29 @@ fn sigint_ends_the_engine_group_with_its_grandchild_and_exits_zero() {
     graceful(Signal::INT);
 }
 
+/// A killed inferd cannot run its shutdown: the engine dies with its parent, the grandchild is the
+/// unit's to end.
+#[test]
+fn a_killed_inferd_takes_its_direct_engine_with_it_and_leaves_the_grandchild_to_the_unit() {
+    let dir = Scratch::new("sd");
+    let (mut inferd, engine, grandchild) = running(&dir, LONG_MS, LONG_MS);
+
+    inferd.0.kill().expect("SIGKILL the stand-in");
+    inferd.0.wait().expect("reaped");
+
+    // PR_SET_PDEATHSIG: the engine is killed with its parent.
+    assert!(
+        gone_soon(engine),
+        "the direct child outlived a SIGKILLed inferd"
+    );
+    // It reaches no grandchild: that is the unit's cgroup's to end (KillMode=control-group).
+    // Outside a unit it lives on; this test ends it.
+    let lives = !gone(grandchild);
+    reap(&[grandchild]);
+    assert!(lives, "the grandchild is not the host's to end");
+    assert!(gone_soon(grandchild));
+}
+
 #[test]
 fn a_second_signal_during_shutdown_kills_everything_and_exits_at_once() {
     let dir = Scratch::new("sd");

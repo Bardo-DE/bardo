@@ -241,57 +241,95 @@ async fn a_missing_shipped_file_changes_nothing_and_asks_nothing_of_the_manager(
     assert_eq!(lending.state(), LendingState::Differs);
 }
 
+/// What enabling or disabling does when the folder or the manager fails: the error says which
+/// step it was, the manager was asked as far as that step, the file is as far as it got, and a
+/// second try does it all again.
 #[tokio::test]
-async fn a_folder_that_cannot_be_made_is_could_not_write_and_the_manager_is_left_alone() {
-    let s = Fixture::new();
-    // `inferd.service.d` is a file, so the drop-in cannot go in it.
-    fs::create_dir_all(s.user_dir()).expect("dir");
-    fs::write(s.user_dir().join("inferd.service.d"), "in the way").expect("block");
-    let (lending, units) = s.lending(Fail::Nowhere);
-
-    let error = lending.enable().await.expect_err("blocked");
-
-    assert!(matches!(error, LendingError::CouldNotWrite(_)), "{error:?}");
-    assert!(units.calls().is_empty());
-}
-
-#[tokio::test]
-async fn a_reload_that_fails_keeps_the_file_and_never_restarts() {
-    let s = Fixture::new();
-    let (lending, units) = s.lending(Fail::Reload);
-
-    let error = lending.enable().await.expect_err("reload");
-
-    assert!(matches!(error, LendingError::ReloadFailed(_)), "{error:?}");
-    assert_eq!(units.calls(), ["reload"]);
-    assert_eq!(lending.state(), LendingState::Installed);
-}
-
-#[tokio::test]
-async fn a_restart_that_fails_keeps_the_file_and_a_second_try_does_it_all_again() {
-    let s = Fixture::new();
-    let (lending, units) = s.lending(Fail::Restart);
-
-    let error = lending.enable().await.expect_err("restart");
-
-    assert!(matches!(error, LendingError::RestartFailed(_)), "{error:?}");
-    assert_eq!(units.calls(), RELOAD_RESTART);
-    assert_eq!(lending.state(), LendingState::Installed);
-    lending.enable().await.expect_err("still failing");
-    assert_eq!(units.calls().len(), 4);
-}
-
-#[tokio::test]
-async fn disable_that_fails_to_restart_has_still_taken_the_file_away() {
-    let s = Fixture::new();
-    s.put(SHIPPED);
-    let (lending, units) = s.lending(Fail::Restart);
-
-    let error = lending.disable().await.expect_err("restart");
-
-    assert!(matches!(error, LendingError::RestartFailed(_)), "{error:?}");
-    assert!(!s.drop_in().exists());
-    assert_eq!(units.calls(), RELOAD_RESTART);
+async fn a_failure_names_its_step_and_a_second_try_does_it_all_again() {
+    struct Row {
+        what: &'static str,
+        fail: Fail,
+        /// `inferd.service.d` is a file, so the drop-in cannot go in it.
+        blocked: bool,
+        /// The shipped file is already installed.
+        installed: bool,
+        disable: bool,
+        error: fn(&LendingError) -> bool,
+        calls: &'static [&'static str],
+        /// Whether the drop-in is there afterwards.
+        kept: Option<bool>,
+    }
+    let rows = [
+        Row {
+            what: "a folder that cannot be made",
+            fail: Fail::Nowhere,
+            blocked: true,
+            installed: false,
+            disable: false,
+            error: |e| matches!(e, LendingError::CouldNotWrite(_)),
+            calls: &[],
+            kept: None,
+        },
+        Row {
+            what: "a reload that fails",
+            fail: Fail::Reload,
+            blocked: false,
+            installed: false,
+            disable: false,
+            error: |e| matches!(e, LendingError::ReloadFailed(_)),
+            calls: &["reload"],
+            kept: Some(true),
+        },
+        Row {
+            what: "a restart that fails",
+            fail: Fail::Restart,
+            blocked: false,
+            installed: false,
+            disable: false,
+            error: |e| matches!(e, LendingError::RestartFailed(_)),
+            calls: &RELOAD_RESTART,
+            kept: Some(true),
+        },
+        Row {
+            what: "a disable whose restart fails",
+            fail: Fail::Restart,
+            blocked: false,
+            installed: true,
+            disable: true,
+            error: |e| matches!(e, LendingError::RestartFailed(_)),
+            calls: &RELOAD_RESTART,
+            kept: Some(false),
+        },
+    ];
+    for row in rows {
+        let s = Fixture::new();
+        if row.blocked {
+            fs::create_dir_all(s.user_dir()).expect("dir");
+            fs::write(s.user_dir().join("inferd.service.d"), "in the way").expect("block");
+        }
+        if row.installed {
+            s.put(SHIPPED);
+        }
+        let (lending, units) = s.lending(row.fail);
+        for time in 1..=2 {
+            let result = if row.disable {
+                lending.disable().await
+            } else {
+                lending.enable().await
+            };
+            let error = result.expect_err(row.what);
+            assert!((row.error)(&error), "{}: {error:?}", row.what);
+            assert_eq!(
+                units.calls(),
+                row.calls.repeat(time),
+                "{} (try {time})",
+                row.what
+            );
+            if let Some(kept) = row.kept {
+                assert_eq!(s.drop_in().exists(), kept, "{}", row.what);
+            }
+        }
+    }
 }
 
 /// The environment's answers, as a table gives them.
@@ -382,16 +420,9 @@ mod session_bus {
     use zbus::object_server::SignalEmitter;
     use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
-    /// What a scripted manager does with a restart.
-    #[derive(Debug, Clone, Copy)]
-    enum Job {
-        Done,
-        Failed,
-    }
-
+    /// A scripted manager whose restart job ends `failed`.
     struct Manager {
         calls: Arc<Mutex<Vec<String>>>,
-        job: Job,
     }
 
     #[zbus::interface(name = "org.freedesktop.systemd1.Manager")]
@@ -416,11 +447,7 @@ mod session_bus {
             Self::job_removed(&emitter, 1, other, "other.service", "failed")
                 .await
                 .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-            let result = match self.job {
-                Job::Done => "done",
-                Job::Failed => "failed",
-            };
-            Self::job_removed(&emitter, 2, ours.clone(), name, result)
+            Self::job_removed(&emitter, 2, ours.clone(), name, "failed")
                 .await
                 .map_err(|e| fdo::Error::Failed(e.to_string()))?;
             Ok(ours.into())
@@ -436,7 +463,7 @@ mod session_bus {
         ) -> zbus::Result<()>;
     }
 
-    async fn run(job: Job) -> (Result<(), LendingError>, Vec<String>, Fixture) {
+    async fn run() -> (Result<(), LendingError>, Vec<String>, Fixture) {
         let bus = PrivateBus::start();
         let systemd = bus.connect().await;
         let calls = Arc::new(Mutex::new(Vec::new()));
@@ -446,7 +473,6 @@ mod session_bus {
                 "/org/freedesktop/systemd1",
                 Manager {
                     calls: Arc::clone(&calls),
-                    job,
                 },
             )
             .await
@@ -467,7 +493,7 @@ mod session_bus {
 
     #[tokio::test]
     async fn a_restart_job_that_ends_failed_is_a_failed_restart() {
-        let (result, calls, _) = run(Job::Failed).await;
+        let (result, calls, _) = run().await;
         let error = result.expect_err("failed job");
         assert!(matches!(error, LendingError::RestartFailed(_)), "{error:?}");
         assert_eq!(calls, ["Reload", "RestartUnit inferd.service replace"]);

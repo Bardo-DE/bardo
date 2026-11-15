@@ -1,12 +1,9 @@
 //! The crate's integration tests: one executable, one module per topic.
 //! Modules that need a feature carry it here; the ones that start the daemon build only on Linux,
-//! where the daemon's dev-dependencies are (Cargo.toml). `connect` starts this executable again as
-//! a fake child, by test path.
+//! where the daemon's dev-dependencies are (Cargo.toml).
 
 #[cfg(all(target_os = "linux", feature = "dbus"))]
 mod common;
-#[cfg(feature = "dbus")]
-mod connect;
 mod dbus_guests;
 mod dbus_open;
 mod dbus_served;

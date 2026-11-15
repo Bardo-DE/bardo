@@ -25,7 +25,6 @@ enum Table {
     System,
     /// A `[callers]` table in the person's `inferd.toml`, which is ignored; the system file the
     /// variable names does not exist.
-    #[cfg(feature = "test-proc-root")]
     InTheConfig,
 }
 const CGROUP: &str =
@@ -83,7 +82,6 @@ fn start(bus: &bus::PrivateBus, proc_root: &Path, table: Table) -> Daemon {
             std::fs::write(&config, CONFIG).expect("config");
             std::fs::write(&system, CALLERS).expect("callers");
         }
-        #[cfg(feature = "test-proc-root")]
         Table::InTheConfig => {
             let mine = CALLERS.replace("[apps]", "[callers.apps]");
             std::fs::write(&config, format!("{CONFIG}\n{mine}")).expect("config");
@@ -151,13 +149,11 @@ fn fake_proc(root: &Path, pid: u32, cgroup: Option<&str>) {
 }
 
 /// The fixture's word that `pid` is the main process of companiond's unit.
-#[cfg(feature = "test-proc-root")]
 fn main_of_companiond(root: &Path, pid: u32) {
     std::fs::create_dir_all(root.join("units")).expect("units");
     std::fs::write(root.join("units/companiond.service"), pid.to_string()).expect("main pid");
 }
 
-#[cfg(feature = "test-proc-root")]
 #[tokio::test(flavor = "multi_thread")]
 async fn a_caller_in_the_fake_proc_root_is_named_and_one_outside_it_is_not() {
     let named = bus::PrivateBus::start();
@@ -183,7 +179,6 @@ async fn a_caller_in_the_fake_proc_root_is_named_and_one_outside_it_is_not() {
 
 /// The person's own `inferd.toml` names nobody: companiond's main process, which the system's
 /// table would name, is nobody when only that file names it, and the daemon says it ignored it.
-#[cfg(feature = "test-proc-root")]
 #[tokio::test(flavor = "multi_thread")]
 async fn a_callers_table_in_the_persons_file_names_nobody() {
     let bus = bus::PrivateBus::start();

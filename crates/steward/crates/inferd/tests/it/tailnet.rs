@@ -16,10 +16,8 @@ use hosting::tailnet::{Addresses, TailnetPlan, addresses, free_port, network};
 use inferd::attached::{Attached, Place, Reach};
 use inferd::peers::Role;
 use porter_capability::ModelId;
-use porter_capability::Tier;
-use porter_core::{AppId, AppName, DataClass, Isolation};
+use porter_core::{AppId, AppName, Isolation};
 use porter_dbus::Details;
-use porter_infer::PlaceId;
 use std::net::{IpAddr, SocketAddr};
 use steward_dbus::inference::GUEST_KEY_STATE;
 use steward_dbus::inference::InferenceProxy;
@@ -169,79 +167,6 @@ fn chat_body(model: &str) -> String {
         "POST /v1/chat/completions HTTP/1.1\r\nHost: pi\r\nContent-Type: application/json\r\nContent-Length: {}\r\n\r\n{body}",
         body.len()
     )
-}
-
-fn place(text: &str) -> PlaceId {
-    PlaceId::parse(text).expect("place")
-}
-
-mod chat {
-    use super::*;
-    use inferd_client::InferSession;
-    use porter_capability::LlmFeature;
-    use porter_core::consent::Usage;
-    use porter_ids::Tokens;
-    use porter_infer::{
-        ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRequest, MessagePart, OpenOptions,
-        Role as ChatRole,
-    };
-    use porter_match::LlmNeed;
-    use porter_match::Need;
-
-    fn llm() -> Need {
-        Need::Llm(LlmNeed::new([LlmFeature::Chat].into(), Tokens(1000)))
-    }
-
-    fn request() -> InferRequest {
-        InferRequest::Chat(ChatRequest::new(
-            vec![ChatMessage {
-                role: ChatRole::User,
-                parts: vec![MessagePart::Text("hello".into())],
-            }],
-            Tier::Balanced,
-            DataClass::Public,
-            Usage::Interactive,
-        ))
-    }
-
-    /// What `world` answers to a chat placed at `computer:pi` with `tiny-chat`: the text, or the
-    /// words of the refusal.
-    pub async fn said(world: &World) -> Result<String, String> {
-        let options = OpenOptions::default()
-            .with_places(vec![place("computer:pi")])
-            .with_place_model(
-                place("computer:pi"),
-                ModelId::parse("tiny-chat").expect("id"),
-            );
-        let mut session = match within(
-            "Open",
-            world
-                .accounts
-                .session_with(&llm(), DataClass::Public, Tier::Balanced, &options),
-        )
-        .await
-        {
-            Ok(session) => session,
-            Err(refused) => return Err(format!("{refused:?}")),
-        };
-        let _ = session.send(ClientFrame::Request(request())).await;
-        let mut text = String::new();
-        loop {
-            match within("the next event", session.next())
-                .await
-                .expect("event")
-            {
-                InferEvent::TextDelta(piece) => text.push_str(&piece),
-                InferEvent::Finished(reply) => {
-                    return match reply {
-                        porter_infer::InferReply::Chat(_) => Ok(text),
-                        other => Err(format!("{other:?}")),
-                    };
-                }
-                _ => {}
-            }
-        }
-    }
 }
 
 /// `desk` adds `pi` as Settings does, and answers who is there.
