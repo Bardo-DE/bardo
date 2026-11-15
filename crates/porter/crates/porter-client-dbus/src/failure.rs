@@ -22,8 +22,6 @@ pub(crate) fn link_error(error: &BusError) -> LinkError {
         BusFailure::NoDaemon => LinkError::Unreachable,
         BusFailure::Denied(_) => LinkError::Denied,
         BusFailure::Other(_) => LinkError::Malformed(Malformed::Reply),
-        // a failure a later porter-dbus adds
-        _ => LinkError::Malformed(Malformed::UnknownFailure),
     }
 }
 

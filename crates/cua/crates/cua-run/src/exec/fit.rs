@@ -115,7 +115,6 @@ pub(super) fn takes(action: &CuaAction<WindowSpace>) -> Takes {
         | CuaAction::Observe
         | CuaAction::Finish { .. }
         | CuaAction::Ask { .. } => Takes::Pointer,
-        _ => Takes::Keys,
     }
 }
 

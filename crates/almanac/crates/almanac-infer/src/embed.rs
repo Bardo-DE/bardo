@@ -208,8 +208,6 @@ pub(crate) fn vectors_of(
         | InferReply::CuaStep(_)
         | InferReply::Transcribed(_)
         | InferReply::Spoke(_) => Err(fatal("inferd answered with another kind of reply")),
-        // porter may add reply kinds (`InferReply` is non-exhaustive); one not named is unreadable.
-        _ => Err(fatal("inferd answered with another kind of reply")),
     }
 }
 

@@ -28,8 +28,6 @@ pub fn busy_words(summary: &Summary) -> String {
         OpKind::Trash => ("Moving", " to the Trash"),
         OpKind::PutBack => ("Putting back", ""),
         OpKind::Erase => ("Erasing", ""),
-        // A kind files-core adds later is just work until this names it.
-        _ => ("Working on", ""),
     };
     match summary.count {
         0 => format!("{doing}{after}"),
@@ -47,8 +45,6 @@ pub fn conflict_words(conflict: &Conflict) -> (String, &'static str) {
     let message = match conflict.kind {
         ConflictKind::Copy => "Do you want to replace it with the one you're copying?",
         ConflictKind::Move => "Do you want to replace it with the one you're moving?",
-        // A kind files-core adds later asks about moving until this names it.
-        _ => "Do you want to replace it with the one you're moving?",
     };
     (title, message)
 }

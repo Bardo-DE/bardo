@@ -48,10 +48,6 @@ fn refusal_of(error: zbus::Error) -> Result<WireRefusal, TransportError> {
         IntentsError::Malformed(_) => Ok(WireRefusal::Malformed),
         IntentsError::Locked(_) => Ok(WireRefusal::Locked),
         IntentsError::ZBus(error) => Err(fault_of(error)),
-        // An error this build does not know yet is the bus's, not a refusal of the request.
-        _ => Err(TransportError::Bus(
-            "an error the bus library does not name".to_owned(),
-        )),
     }
 }
 
@@ -541,9 +537,5 @@ pub(crate) async fn call(connection: &BusConnection, request: IntentsRequest) ->
             let proxy = ControlProxy::new(c).await.map_err(bus)?;
             nothing(proxy.revoke_standing_grant(&to_json(&id)?).await)
         }
-        // A request with no bus member is an error, never a silent success.
-        _ => Err(TransportError::Malformed(
-            "a request the bus has no member for".to_owned(),
-        )),
     }
 }

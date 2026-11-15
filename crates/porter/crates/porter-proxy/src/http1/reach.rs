@@ -46,8 +46,6 @@ pub(super) fn check(
         ReachMethods::ReadProperties => {
             method.eq_ignore_ascii_case("PROPFIND") && depth.is_some_and(|d| d == "0")
         }
-        // a way of limiting methods a newer porter adds: never taken as unlimited
-        _ => false,
     };
     let reached = plan
         .reach

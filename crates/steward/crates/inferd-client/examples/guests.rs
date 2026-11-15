@@ -37,7 +37,6 @@ async fn run(answer: Option<GuestAnswer>) -> Result<(), ClientError> {
                 println!("{} ({node}) asks to use this computer's models", ask.name);
             }
             GuestChange::Changed => println!("the answers changed: read the list again"),
-            _ => {}
         }
     }
     Ok(())

@@ -34,8 +34,6 @@ pub fn refusal(refusal: &Refusal) -> &'static str {
             "That computer is busy with this one's other requests. Try again in a moment."
         }
         Refusal::Off => "That computer isn't lending its models.",
-        // a refusal a newer library adds: the generic one
-        _ => "That computer won't lend its models to this one.",
     }
 }
 
@@ -51,7 +49,6 @@ fn tailscale(error: &TailscaleError) -> &'static str {
         TailscaleError::NoSuchPeer => "Tailscale does not know that computer.",
         TailscaleError::Malformed => "Tailscale gave an answer that couldn't be read.",
         TailscaleError::TimedOut => "Tailscale did not answer in time.",
-        _ => "Tailscale could not be asked.",
     }
 }
 
@@ -68,7 +65,6 @@ pub fn fault(fault: &DialError) -> String {
             "That computer's place on the network now belongs to another computer.".to_owned()
         }
         DialError::Unreachable => "That computer did not answer.".to_owned(),
-        _ => "That computer could not be reached.".to_owned(),
     }
 }
 

@@ -21,7 +21,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         SyncEnd::Complete(token) => println!("complete; next time from {token}"),
         SyncEnd::Truncated(token) => println!("cut short; continue now from {token}"),
         SyncEnd::Missing => println!("no token; list again"),
-        _ => println!("an ending this example does not know"),
     }
     Ok(())
 }

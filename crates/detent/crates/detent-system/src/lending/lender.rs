@@ -30,7 +30,6 @@ fn failure_of(error: LendingError) -> LendFailure {
         LendingError::CouldNotWrite(_) => LendFailure::CouldNotSave,
         LendingError::ReloadFailed(_) => LendFailure::CouldNotReload,
         LendingError::RestartFailed(_) => LendFailure::CouldNotRestart,
-        _ => LendFailure::CouldNotSave,
     }
 }
 

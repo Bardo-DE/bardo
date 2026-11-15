@@ -32,8 +32,6 @@ pub fn reason(reason: Reason) -> &'static str {
         Reason::NoFileFormat => "This document can't be saved as a file.",
         Reason::TooLarge => "This document is too large to save as a copy.",
         Reason::CopyFailed => "The copy couldn't be made. Try again later.",
-        // a reason a newer ferry-drive adds
-        _ => "The drive couldn't take this change.",
     }
 }
 
@@ -46,8 +44,6 @@ pub fn refusal(code: Code) -> &'static str {
         }
         Code::AlreadyShown => "This drive is already shown in Files.",
         Code::NotTakenAway => "Files couldn't stop showing this drive. Try again later.",
-        // a code a newer porter-mountd adds
-        _ => NO_FILES_HERE,
     }
 }
 

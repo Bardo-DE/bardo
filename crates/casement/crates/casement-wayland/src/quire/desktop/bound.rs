@@ -336,7 +336,6 @@ impl Bound {
                 self.told.spaces.remove(id);
                 self.spaces.remove(id).map(|object| object.removed())
             }
-            _ => None,
         };
         match ended {
             Some(()) => Outcome::Ended,

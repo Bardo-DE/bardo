@@ -119,9 +119,7 @@ mod tests {
                 | DataClass::Screen
                 | DataClass::Voice
                 | DataClass::Prompt
-                | DataClass::Public => {}
-                // A class added later is listed above when it is added.
-                _ => {}
+                | DataClass::Public => {} // A class added later is listed above when it is added.
             }
         }
     }

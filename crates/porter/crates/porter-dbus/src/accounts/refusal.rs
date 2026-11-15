@@ -123,8 +123,6 @@ mod tests {
             | Refusal::EndpointNotGranted
             | Refusal::NoLauncher
             | Refusal::NeedsConsent => ALL.contains(&refusal),
-            // a variant a newer porter adds: not covered, so the test fails until ALL lists it
-            _ => false,
         };
         assert!(ALL.into_iter().all(covered));
     }

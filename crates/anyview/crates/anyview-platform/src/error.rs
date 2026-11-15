@@ -154,11 +154,6 @@ impl From<bayonet::run::RunError<Capability>> for PlatformError {
             RunError::Cancelled { plugin } => PlatformError::PluginCancelled {
                 plugin: plugin.to_string(),
             },
-            // bayonet's error is non_exhaustive: a reason it adds later reads as a broken protocol.
-            other => PlatformError::PluginProtocol {
-                plugin: "unknown".to_owned(),
-                reason: other.to_string(),
-            },
         }
     }
 }

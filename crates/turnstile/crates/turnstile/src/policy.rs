@@ -90,7 +90,6 @@ pub fn authorise(kind: Kind, caller: &Caller, seat: ActiveUid) -> Result<(), Ref
     let (role, cgroup) = match kind.maker() {
         Maker::PadDaemon => (PAD_DAEMON, PAD_CGROUP),
         Maker::KeymapDaemon => (KEYMAP_DAEMON, KEYMAP_CGROUP),
-        _ => return Err(Refusal::UnknownKind),
     };
     match &caller.credential {
         Some(Credential { role: have, .. }) if *have != role => {

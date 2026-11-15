@@ -97,7 +97,6 @@ impl SettingsWriter {
             Err(UpdateError::Read(error)) => Err(error.into()),
             Err(UpdateError::Edit(error)) => Err(error),
             Err(UpdateError::Write(error)) => Err(error.into()),
-            Err(_) => Err(self.refuse("the file could not be updated".to_owned())),
         }
     }
 

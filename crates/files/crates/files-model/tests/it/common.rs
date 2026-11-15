@@ -69,6 +69,6 @@ pub fn selected(browser: &Browser) -> Vec<String> {
 pub fn path_of(location: &Location) -> String {
     match location {
         Location::Folder(p) => p.as_path().display().to_string(),
-        other @ (Location::Trash | _) => format!("{other:?}"),
+        other @ Location::Trash => format!("{other:?}"),
     }
 }

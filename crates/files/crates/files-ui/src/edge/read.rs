@@ -37,7 +37,6 @@ impl Edge {
                     .list()
                     .map(|items| items.into_iter().filter_map(ops::row_of).collect())
                     .map_err(ops::failure_of),
-                _ => Err(ListFailure::Other),
             };
             let _ = heard.send(Heard::Tab(tab, Input::Listed(at, result)));
         });
@@ -109,8 +108,6 @@ fn failure_of(err: ListError) -> ListFailure {
         ListError::NoPermission => ListFailure::NoPermission,
         ListError::NotAFolder => ListFailure::NotAFolder,
         ListError::Other(_) => ListFailure::Other,
-        // An error files-fs adds later is an ordinary failure until this names it.
-        _ => ListFailure::Other,
     }
 }
 
@@ -122,8 +119,6 @@ pub fn change_of(lister: &dyn Lister, folder: &FolderPath, event: FolderEvent) -
         FolderEvent::Changed(name) => seen(lister, folder, name, Change::Updated),
         FolderEvent::Removed(name) => Change::Removed(name),
         FolderEvent::Rescan | FolderEvent::Gone => Change::Rescan,
-        // An event files-fs adds later means the listing may be stale.
-        _ => Change::Rescan,
     }
 }
 

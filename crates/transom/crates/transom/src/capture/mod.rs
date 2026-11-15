@@ -189,8 +189,6 @@ impl ExtCapture {
         let wl_source = match source {
             CastSource::Output(name) => link.output_source(name)?,
             CastSource::Window(id) => link.toplevel_source(id)?,
-            // A kind of source a later transom-core adds and this capture does not know.
-            _ => return Err(CaptureError::Unsupported),
         };
         Ok(Self {
             copier: Copier::start(link, wl_source, cursor)?,

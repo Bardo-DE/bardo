@@ -220,8 +220,6 @@ impl SamplingDefaults {
                 ReasoningDefault::On => &self.reasoning_on,
                 ReasoningDefault::Off => &self.reasoning_off,
             },
-            // A mode this build does not know takes the plainer sampling.
-            _ => &self.reasoning_off,
         }
     }
 }

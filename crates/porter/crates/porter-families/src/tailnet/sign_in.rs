@@ -159,8 +159,6 @@ impl Flow for TailnetFlow {
             Standing::Ready => self.signed_in(&status),
             Standing::SignedOut => self.ask_for_the_page().await,
             Standing::Down | Standing::Changing => Move::Fail(SignInFault::NotRunning),
-            // A standing this build does not know is not one to sign in on.
-            _ => Move::Fail(SignInFault::NotRunning),
         }
     }
 

@@ -127,7 +127,6 @@ pub(super) fn request_phrase(kind: CapabilityKind, class: DataClass, usage: Usag
         (CapabilityKind::KeyValue, _) => "keep small settings in sync",
         (CapabilityKind::Push, _) => "send you notifications",
         (CapabilityKind::Agent, _) => "run an assistant with your account",
-        _ => "use your account",
     };
     match usage {
         Usage::Interactive => what.to_owned(),
@@ -142,8 +141,6 @@ pub(super) fn limit_of(reason: LimitReason) -> Limitation {
         LimitReason::PickerOnly => Limitation::PickerOnly,
         LimitReason::AppFolderOnly => Limitation::AppFolderOnly,
         LimitReason::ProviderOffersNone => Limitation::ProviderOffersNone,
-        // A limit this sheet has no line for yet reads as the provider not offering it.
-        _ => Limitation::ProviderOffersNone,
     }
 }
 
@@ -155,8 +152,6 @@ pub(super) fn absence_of(reason: AbsentReason) -> Limitation {
         AbsentReason::UnverifiedBuild => Limitation::UnverifiedBuild,
         AbsentReason::TurnedOff => Limitation::TurnedOff,
         AbsentReason::NotOnServer => Limitation::NotOnServer,
-        // An absence this sheet has no line for yet reads as the provider not offering it.
-        _ => Limitation::ProviderOffersNone,
     }
 }
 
@@ -178,8 +173,6 @@ pub(super) fn fault_of(fault: PorterFault) -> SignInFault {
         PorterFault::NotRunning => SignInFault::NotRunning,
         PorterFault::SignedOut => SignInFault::SignedOut,
         PorterFault::NotAllowed => SignInFault::NotAllowed,
-        // A fault this build has no words for is still a sign-in that ended without an account.
-        _ => SignInFault::Refused,
     }
 }
 
@@ -204,8 +197,6 @@ pub(super) fn recovery_of(fault: PorterFault) -> Option<Recovery> {
         | PorterFault::NotRunning
         | PorterFault::SignedOut
         | PorterFault::NotAllowed => Some(Recovery::Retry),
-        // A newer fault: offer the retry, which asks porter again and gets its own answer.
-        _ => Some(Recovery::Retry),
     }
 }
 

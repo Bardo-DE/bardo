@@ -268,8 +268,6 @@ impl<U: EngineUse> LocalTurns<U> {
             }
             Err(CuaStepFailure::Unparseable) => InferReply::Failed(ModelError::Unparseable),
             Err(CuaStepFailure::ModelFailed(error)) => InferReply::Failed(error),
-            // a variant a newer porter adds: the step failed as unparseable, no actions
-            Err(_) => InferReply::Failed(ModelError::Unparseable),
         }
     }
 }

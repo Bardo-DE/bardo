@@ -208,8 +208,6 @@ impl Edge {
                 }
             }
             Effect::Say(text) => self.say(Heard::Told(text)),
-            // An effect files-model adds later is dropped until this names it.
-            _ => {}
         }
     }
 

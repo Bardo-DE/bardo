@@ -100,7 +100,5 @@ pub fn info_failure_words(failure: ListFailure) -> &'static str {
         ListFailure::NotAFolder | ListFailure::Other => {
             "The details of this item can\u{2019}t be read."
         }
-        // A failure files-model adds later reads as a general one until this names it.
-        _ => "The details of this item can\u{2019}t be read.",
     }
 }

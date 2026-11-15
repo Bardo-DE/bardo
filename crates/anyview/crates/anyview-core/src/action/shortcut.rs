@@ -51,7 +51,6 @@ pub fn file_action_of(action: &Action) -> Option<FileAction> {
             .into_iter()
             .find(|(_, own, _)| own == app)
             .map(|(file, _, _)| file),
-        _ => None,
     }
 }
 

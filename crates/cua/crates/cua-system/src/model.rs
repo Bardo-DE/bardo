@@ -94,8 +94,6 @@ fn failed_turn(reply: InferReply, blind: Option<&str>) -> CuaModelError {
         | InferReply::Embed(_)
         | InferReply::Transcribed(_)
         | InferReply::Spoke(_) => CuaModelError::Fatal,
-        // A reply this build does not know is never read as an answer.
-        _ => CuaModelError::Fatal,
     }
 }
 

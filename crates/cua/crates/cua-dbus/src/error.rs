@@ -60,8 +60,6 @@ impl From<ControlRefusal> for CuaError {
             ControlRefusal::ModeUnsupported => CuaError::ModeUnsupported(text),
             ControlRefusal::BadTask => CuaError::BadTask(text),
             ControlRefusal::ModelUnavailable => CuaError::ModelUnavailable(text),
-            // A refusal this build does not know stays a refusal, and the strictest one.
-            _ => CuaError::NotPermitted(text),
         }
     }
 }

@@ -77,8 +77,6 @@ fn vendor_text(vendor: casement_core::gpu::VendorFact) -> String {
         VendorFact::Nvidia => 0x10de,
         VendorFact::Intel => 0x8086,
         VendorFact::Other(id) => id,
-        // A vendor core learns later: unreadable to detection, which then reads it as 0.
-        _ => 0,
     };
     format!("{id:#06x}")
 }

@@ -57,8 +57,6 @@ pub(super) fn failure_of(err: TrashError) -> ListFailure {
         TrashError::NoPermission => ListFailure::NoPermission,
         TrashError::NotFound => ListFailure::NotFound,
         TrashError::Occupied | TrashError::Other => ListFailure::Other,
-        // An error files-trash adds later is an ordinary failure until this names it.
-        _ => ListFailure::Other,
     }
 }
 

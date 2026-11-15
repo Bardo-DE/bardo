@@ -91,8 +91,6 @@ pub fn settle(
         ConsentAnswer::Allow { account, scope } => {
             allow(registry, need, asker, &account, scope, at)
         }
-        // a variant a newer porter adds: it records nothing and the ask is dismissed
-        _ => AccountsReply::Refused(Refusal::Dismissed),
     }
 }
 

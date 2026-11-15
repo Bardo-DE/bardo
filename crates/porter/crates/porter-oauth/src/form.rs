@@ -16,4 +16,3 @@ pub(crate) fn body(pairs: &[(&str, &str)]) -> String {
         .extend_pairs(pairs)
         .finish()
 }
-

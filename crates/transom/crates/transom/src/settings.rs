@@ -169,7 +169,6 @@ pub fn wire_value(value: SettingValue) -> Option<Value<'static>> {
             .build()
             .ok()
             .map(Value::Structure),
-        _ => None,
     }
 }
 
@@ -185,7 +184,6 @@ pub fn read_setting(
 ) -> Result<OwnedValue, PortalError> {
     let value = transom_core::read(appearance, namespace, key).map_err(|e| match e {
         SettingsRefusal::NotFound => PortalError::NotFound(format!("{namespace} {key}")),
-        _ => PortalError::Failed(e.to_string()),
     })?;
     owned(value).ok_or_else(|| PortalError::Failed("the value has no wire form".into()))
 }

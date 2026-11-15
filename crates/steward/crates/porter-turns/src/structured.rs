@@ -67,9 +67,6 @@ fn read(shape: &pi::ReplyShape, limits: Limits) -> Option<(Shape, Kind)> {
             let items = choices.iter().cloned().map(ChoiceText).collect();
             (Shape::Choice(items), Kind::Choice)
         }),
-        // a variant a newer porter adds: not read as a checkable shape (the request conversion
-        // in porter-bridge refuses an unknown shape before the turn is sent)
-        _ => None,
     }
 }
 

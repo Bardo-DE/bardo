@@ -16,9 +16,6 @@ pub fn kind_words(entry: &Entry) -> String {
         EntryKind::Special(Special::Fifo) => "Pipe".to_owned(),
         EntryKind::Special(Special::Socket) => "Socket".to_owned(),
         EntryKind::Special(Special::Device) => "Device".to_owned(),
-        EntryKind::Special(_) => "Item".to_owned(),
-        // A kind files-core adds later is just an item until this names it.
-        _ => "Item".to_owned(),
     }
 }
 

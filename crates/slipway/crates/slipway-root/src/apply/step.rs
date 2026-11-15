@@ -182,7 +182,6 @@ fn run_steps(
                         .map_err(ApplyError::io("removing an old release"))?;
                 }
             }
-            _ => {}
         }
     }
     Ok(())

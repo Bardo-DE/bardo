@@ -30,8 +30,6 @@ pub(super) fn Questions(browse: Browse) -> Element {
         },
         Question::ForceEject(busy) => force_eject(browse, &busy),
         Question::ChangeExtension(change) => extension(browse, &change),
-        // A question files-model adds later is not asked until this names it.
-        _ => rsx! {},
     }
 }
 

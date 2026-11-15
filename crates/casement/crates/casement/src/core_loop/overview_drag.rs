@@ -121,7 +121,6 @@ pub(super) fn released(state: &mut State) {
                 }
             }
         }
-        _ => {}
     }
 }
 

@@ -133,8 +133,6 @@ impl<'a> Run<'a> {
             OpPlan::PutBack { items } => self.put_back(items),
             OpPlan::DeleteForGood { items } => self.delete_for_good(items),
             OpPlan::EmptyTrash => self.empty_trash(),
-            // A plan files-core adds later cannot be done until this names it.
-            _ => Err(OpFailure::Other),
         }
     }
 

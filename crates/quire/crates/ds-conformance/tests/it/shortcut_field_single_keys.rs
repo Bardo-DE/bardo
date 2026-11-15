@@ -38,7 +38,6 @@ fn Page() -> Element {
                         ShortcutRecorded::Chord(_) => "chord,",
                         ShortcutRecorded::Cleared => "cleared,",
                         ShortcutRecorded::Cancelled => "cancelled,",
-                        _ => "other,",
                     }));
                     match recorded {
                         ShortcutRecorded::Chord(chord) => shortcut.set(Some(chord)),

@@ -14,8 +14,6 @@ pub(crate) fn describe(flavor: Flavor) -> Exchange {
     let path = match root {
         RouteRoot::Server => "/props",
         RouteRoot::Base => "/models",
-        // A root this build does not know: the base listing, the common route.
-        _ => "/models",
     };
     Exchange {
         verb: Verb::Get,

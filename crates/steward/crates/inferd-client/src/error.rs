@@ -167,8 +167,6 @@ impl From<SessionError> for TransportError {
         match error {
             SessionError::Closed => TransportError::Closed,
             SessionError::Malformed(why) => TransportError::Malformed(why),
-            // a variant a newer porter adds: the session is treated as closed
-            _ => TransportError::Closed,
         }
     }
 }

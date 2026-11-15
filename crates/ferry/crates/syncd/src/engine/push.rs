@@ -140,11 +140,6 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
             Err(PutRefused::Transient(after) | PutRefused::InUse(after)) => {
                 Err(Halt::Stop(Outcome::Retry(after)))
             }
-            // a refusal a later ferry-sync adds: counted as refused
-            Err(_) => {
-                report.refused += 1;
-                Ok(())
-            }
         }
     }
 
@@ -194,11 +189,6 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
             Err(PutRefused::Unauthorized) => Err(Halt::Stop(Outcome::Unauthorized)),
             Err(PutRefused::Transient(after) | PutRefused::InUse(after)) => {
                 Err(Halt::Stop(Outcome::Retry(after)))
-            }
-            // a refusal a later ferry-sync adds: counted as refused
-            Err(_) => {
-                report.refused += 1;
-                Ok(())
             }
         }
     }

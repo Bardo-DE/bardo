@@ -397,7 +397,6 @@ fn carry_out(
         },
         ChromeAction::Move => ToplevelRequest::Move { serial },
         ChromeAction::Resize(edges) => ToplevelRequest::Resize { serial, edges },
-        _ => return,
     };
     feed(state, vec![Event::ToplevelRequest { window, request }]);
 }

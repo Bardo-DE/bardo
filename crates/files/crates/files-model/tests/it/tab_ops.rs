@@ -40,7 +40,7 @@ fn shown(tabs: &Tabs, tab: TabId) -> (Option<OpKind>, Option<FileName>) {
     let browser = tabs.get(tab).unwrap().browser();
     let kind = match browser.work() {
         Work::Running { summary, .. } => Some(summary.kind),
-        Work::Idle | _ => None,
+        Work::Idle => None,
     };
     let asking = match browser.question() {
         Question::Conflict(conflict) => Some(conflict.item.clone()),

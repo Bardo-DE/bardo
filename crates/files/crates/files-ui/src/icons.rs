@@ -95,8 +95,6 @@ impl Icons {
             IconPick::Folder(kind) => FileIconChoice::Folder(kind),
             IconPick::Artwork(path) => ImageSource::file(&path)
                 .map_or_else(|_| self.standard_of(facts), FileIconChoice::Artwork),
-            // A pick quire adds later is the standard icon until this names it.
-            _ => self.standard_of(facts),
         }
     }
 
@@ -105,7 +103,7 @@ impl Icons {
             IconPick::Standard { kind, label } => FileIconChoice::Standard { kind, label },
             IconPick::Folder(kind) => FileIconChoice::Folder(kind),
             // The standard set draws no artwork; a pick quire adds later is the plain page.
-            IconPick::Artwork(_) | _ => other(),
+            IconPick::Artwork(_) => other(),
         }
     }
 }

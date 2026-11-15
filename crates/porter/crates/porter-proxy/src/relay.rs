@@ -42,8 +42,6 @@ pub async fn relay<A: ByteStream, C: Connect>(plan: RelayPlan, app: A, connect: 
         Some(EndpointProtocol::Http) => run(HttpRelay::new(plan), ends, connect).await,
         Some(EndpointProtocol::Sieve) => run(SieveRelay::new(plan), ends, connect).await,
         Some(EndpointProtocol::Pop3) => run(Pop3Relay::new(plan), ends, connect).await,
-        // A protocol this build has no machine for is one the server was never spoken to in.
-        Some(_) | None => RelayEnd::Failed(RelayFault::Protocol),
     }
 }
 

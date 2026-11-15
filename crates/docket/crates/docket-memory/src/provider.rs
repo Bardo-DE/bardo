@@ -84,7 +84,6 @@ fn unavailable(error: ClientError) -> AppRefusal {
     match error {
         ClientError::Transport(_) => failed("memory is not available"),
         ClientError::Refused(_) | ClientError::Unexpected => failed("memory said no"),
-        _ => failed("memory is not available"),
     }
 }
 

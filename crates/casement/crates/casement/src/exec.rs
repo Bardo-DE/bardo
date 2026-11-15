@@ -174,8 +174,6 @@ fn apply(state: &mut State, effect: Effect) {
         } => crate::handlers::consent::resolved(state, client, power, outcome),
         // The person's book is kept by the composition root's privacy store.
         Effect::SaveBook(book) => crate::privacy::keep(state, &book),
-        // `Effect` grows in core; one this build does not know is logged, never a panic.
-        other => tracing::warn!(?other, "an effect this build does not apply"),
     }
 }
 

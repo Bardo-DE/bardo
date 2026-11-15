@@ -18,7 +18,6 @@ pub fn compare(a: &Entry, b: &Entry, sort: Sort) -> Ordering {
         SortKey::Modified => a.modified.cmp(&b.modified).then_with(|| by_name(a, b)),
         SortKey::Size => size(a).cmp(&size(b)).then_with(|| by_name(a, b)),
         SortKey::Kind => kind_key(a).cmp(&kind_key(b)).then_with(|| by_name(a, b)),
-        _ => by_name(a, b),
     };
     match sort.order {
         SortOrder::Ascending => ordered,
@@ -36,8 +35,6 @@ fn size(entry: &Entry) -> ByteSize {
     match &entry.kind {
         EntryKind::File(size) | EntryKind::Link(LinkTo::File(size)) => *size,
         EntryKind::Folder | EntryKind::Link(_) | EntryKind::Special(_) => ByteSize(0),
-        // A kind files-core adds later sorts as no size until this names it.
-        _ => ByteSize(0),
     }
 }
 

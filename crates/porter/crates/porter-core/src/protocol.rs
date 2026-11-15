@@ -30,7 +30,6 @@ impl EndpointProtocol {
             UrlScheme::Smtp | UrlScheme::Smtps => Some(EndpointProtocol::Smtp),
             UrlScheme::Sieve | UrlScheme::Sieves => Some(EndpointProtocol::Sieve),
             UrlScheme::Pop3 | UrlScheme::Pop3s => Some(EndpointProtocol::Pop3),
-            _ => None,
         }
     }
 }

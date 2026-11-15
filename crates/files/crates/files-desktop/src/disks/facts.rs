@@ -103,6 +103,6 @@ pub(super) fn volume_of(block: &BlockFacts) -> Option<Volume> {
     };
     Some(match kind {
         VolumeKind::External | VolumeKind::Optical => volume.ejectable(),
-        VolumeKind::Internal | _ => volume,
+        VolumeKind::Internal => volume,
     })
 }

@@ -74,8 +74,6 @@ impl CloudDrives {
                         Ask::News(CloudNews::Items(_, rows)) => {
                             tell(Heard::All(Input::CloudItems(rows)));
                         }
-                        // News a later seam sends that this build does not read.
-                        Ask::News(_) => {}
                         Ask::Read(tab, items) => {
                             if let Ok(rows) = clouds.items(&items) {
                                 tell(Heard::Tab(tab, Input::CloudItems(rows)));

@@ -24,17 +24,15 @@ pub fn volume_trouble_words(name: &VolumeName, trouble: &VolumeTrouble) -> Strin
                 format!("{disk} wasn\u{2019}t ejected because you don\u{2019}t have permission.")
             }
             EjectFailure::Gone => format!("{disk} is not there any more."),
-            EjectFailure::Other | _ => format!("{disk} wasn\u{2019}t ejected."),
+            EjectFailure::Other => format!("{disk} wasn\u{2019}t ejected."),
         },
         VolumeTrouble::NotOpened(failure) => match failure {
             MountFailure::NotAllowed => {
                 format!("{disk} wasn\u{2019}t opened because you don\u{2019}t have permission.")
             }
             MountFailure::Gone => format!("{disk} is not there any more."),
-            MountFailure::Other | _ => format!("{disk} couldn\u{2019}t be opened."),
+            MountFailure::Other => format!("{disk} couldn\u{2019}t be opened."),
         },
-        // A trouble files-core adds later is a plain failure until this names it.
-        _ => format!("{disk} couldn\u{2019}t be used."),
     }
 }
 

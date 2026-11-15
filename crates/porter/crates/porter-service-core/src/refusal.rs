@@ -13,8 +13,6 @@ pub fn provider_refusal(error: ProviderError) -> Refusal {
         ProviderError::Unreachable | ProviderError::Unreadable => Refusal::Unavailable,
         // The account is fine; it was never given this access. Not a fault to wait out.
         ProviderError::NeedsConsent => Refusal::NeedsConsent,
-        // a variant a newer porter adds: the app is told it is unavailable
-        _ => Refusal::Unavailable,
     }
 }
 
@@ -44,8 +42,6 @@ pub fn refusal_of(fault: SignInFault) -> Refusal {
         | SignInFault::NotAllowed
         | SignInFault::AlreadyAdded
         | SignInFault::StoreFailed => Refusal::Unavailable,
-        // a variant a newer porter adds: the app is told it is unavailable
-        _ => Refusal::Unavailable,
     }
 }
 

@@ -73,8 +73,6 @@ impl Frames {
                 .get(usize::from(*index))
                 .cloned()
                 .ok_or(BridgeError::Attachment),
-            // a variant a newer porter adds: refused, as a source this build cannot read
-            _ => Err(BridgeError::Unsupported),
         }
     }
 }
@@ -143,8 +141,6 @@ fn part(one: &pi::MessagePart, frames: &Frames) -> Result<sp::Part, BridgeError>
                 .map(|inner| part(inner, frames))
                 .collect::<Result<_, _>>()?,
         }),
-        // a variant a newer porter adds: the request is refused as one that cannot be expressed
-        _ => return Err(BridgeError::Unsupported),
     })
 }
 
@@ -168,8 +164,6 @@ fn shape(shape: &pi::ReplyShape, json: JsonReply) -> Result<sp::OutputShape, Bri
             }
         }
         pi::ReplyShape::Choice(choices) => sp::OutputShape::Choice(choices.clone()),
-        // a variant a newer porter adds: the request is refused as one that cannot be expressed
-        _ => return Err(BridgeError::Unsupported),
     })
 }
 
@@ -179,8 +173,6 @@ fn tool_choice(choice: &pi::ToolChoice) -> Result<sp::ToolChoice, BridgeError> {
         pi::ToolChoice::Never => sp::ToolChoice::Never,
         pi::ToolChoice::Required => sp::ToolChoice::Required,
         pi::ToolChoice::Named(name) => sp::ToolChoice::Named(tool_name(name)?),
-        // a variant a newer porter adds: the request is refused as one that cannot be expressed
-        _ => return Err(BridgeError::Unsupported),
     })
 }
 
@@ -222,8 +214,6 @@ fn reasoning(reasoning: pi::Reasoning) -> Result<sp::Reasoning, BridgeError> {
         pi::Reasoning::EngineDefault => sp::Reasoning::EngineDefault,
         pi::Reasoning::Off => sp::Reasoning::Off,
         pi::Reasoning::On(level) => sp::Reasoning::On(effort(level)),
-        // a variant a newer porter adds: the request is refused as one that cannot be expressed
-        _ => return Err(BridgeError::Unsupported),
     })
 }
 
@@ -412,8 +402,6 @@ fn task_instruction(task: pi::Task) -> Result<&'static str, BridgeError> {
         pi::Task::Classify => {
             "Classify the text the user gives you in one or two words. Reply with the label only."
         }
-        // a variant a newer porter adds: the task is refused as one that cannot be expressed
-        _ => return Err(BridgeError::Unsupported),
     })
 }
 

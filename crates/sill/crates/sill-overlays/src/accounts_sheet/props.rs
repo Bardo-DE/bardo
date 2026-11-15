@@ -230,7 +230,7 @@ pub(super) fn step_of(sheet: &OpenSheet) -> Option<Step> {
                     kind: match problem {
                         PorterProblem::Missing => ProblemKind::Missing,
                         PorterProblem::Refused => ProblemKind::Refused,
-                        PorterProblem::Invalid | _ => ProblemKind::Invalid,
+                        PorterProblem::Invalid => ProblemKind::Invalid,
                     },
                     attempt: Attempt(draft.submits.0),
                 }),

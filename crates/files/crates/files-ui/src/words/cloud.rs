@@ -13,7 +13,7 @@ pub fn drive_state_words(state: DriveState) -> &'static str {
         DriveState::Offline => "Offline",
         DriveState::Paused => "Syncing paused",
         DriveState::NeedsSignIn => "Needs sign-in",
-        DriveState::Error | _ => "Something went wrong",
+        DriveState::Error => "Something went wrong",
     }
 }
 
@@ -40,7 +40,6 @@ pub fn item_state_words(item: &CloudItem) -> String {
             |words| words.to_string(),
         ),
         CloudState::Conflict => "Two versions of this file are kept".to_owned(),
-        _ => "In the cloud".to_owned(),
     }
 }
 

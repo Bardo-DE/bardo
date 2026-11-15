@@ -191,7 +191,6 @@ fn fault_of(error: ClientError) -> LogFault {
         ClientError::Refused(_) => LogFault::Refused,
         // An unknown failure counts as unavailable, so the reveal it guards is refused.
         ClientError::Transport(_) | ClientError::Unexpected => LogFault::Unavailable,
-        _ => LogFault::Unavailable,
     }
 }
 

@@ -19,7 +19,6 @@ pub(crate) fn repair_text(fault: &ShapeFault) -> String {
         ShapeFault::Unknown { field } => {
             format!("`{}` holds a field that is not allowed", field.as_str())
         }
-        _ => "the reply does not match the requested format".to_owned(),
     };
     format!(
         "Your previous reply was not accepted: {what}. Reply again with only the corrected JSON."

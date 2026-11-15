@@ -157,8 +157,6 @@ fn admits(scheme: UrlScheme, tls: Tls) -> bool {
         UrlScheme::Imap | UrlScheme::Smtp | UrlScheme::Sieve | UrlScheme::Pop3 => {
             matches!(tls, Tls::StartTls | Tls::Plain)
         }
-        // A scheme this build does not know admits no security.
-        _ => false,
     }
 }
 

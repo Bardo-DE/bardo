@@ -41,8 +41,6 @@ fn place_uri(place: &Location) -> Option<String> {
     match place {
         Location::Folder(path) => Some(file_uri(path.as_path())),
         Location::Trash => Some(TRASH_URI.to_owned()),
-        // A place added later has no address here until this names it.
-        _ => None,
     }
 }
 

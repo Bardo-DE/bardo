@@ -185,8 +185,6 @@ impl Run<'_> {
                 self.touch_trash();
                 Ok(Place::At(name.clone()))
             }
-            // An answer files-core adds later is read as Stop until this names it.
-            _ => Ok(Place::Stop),
         }
     }
 }

@@ -140,8 +140,6 @@ async fn say<S: Drivable>(
                 .remove::<RunObject<S, Identity>, _>(run_path(&run))
                 .await;
         }
-        // An event this build does not know has nothing to say on the bus.
-        _ => {}
     }
 }
 

@@ -31,8 +31,6 @@ impl ThumbKey {
         let len = match &entry.kind {
             EntryKind::File(size) | EntryKind::Link(LinkTo::File(size)) => size.0,
             EntryKind::Folder | EntryKind::Link(_) | EntryKind::Special(_) => return None,
-            // A kind files-core adds later has no thumbnail until this names it.
-            _ => return None,
         };
         Some(ThumbKey {
             item,

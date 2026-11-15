@@ -83,8 +83,6 @@ pub fn words_of(reason: NoPlaceReason) -> &'static str {
             "The model chosen for one of the places you allowed is not available there."
         }
         NoPlaceReason::NoneCapable => "None of the places you allowed can do this.",
-        // a reason a newer porter adds
-        _ => "None of the places you allowed can do this.",
     }
 }
 
@@ -111,8 +109,6 @@ pub fn note_words(note: &HardwareNote) -> String {
             "{} replies are waiting for this model; yours will take longer.",
             ahead.0
         ),
-        // a fact a newer porter adds: said without detail
-        _ => "This computer is busy; replies may be slower.".to_owned(),
     }
 }
 

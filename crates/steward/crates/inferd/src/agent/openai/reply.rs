@@ -14,8 +14,6 @@ fn finish_word(stop: StopReason) -> &'static str {
         StopReason::ToolUse => "tool_calls",
         StopReason::MaxTokens => "length",
         StopReason::ContentFilter => "content_filter",
-        // a variant a newer porter adds: told as a content filter stop
-        _ => "content_filter",
     }
 }
 

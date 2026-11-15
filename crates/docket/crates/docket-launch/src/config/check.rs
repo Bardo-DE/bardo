@@ -221,7 +221,6 @@ pub(super) fn check(raw: Raw, dir: Option<&AgentsDir>) -> Result<Entry, ConfigFa
             | NetworkMode::Allowlist
             | NetworkMode::Host,
         ) => {}
-        _ => return Err(bad(&at, "a network this version does not know")),
     }
     let reach = match raw.network {
         NetworkMode::Allowlist => Some(Reach::new(&at, &raw.allow, &raw.deny, &raw.ports)?),

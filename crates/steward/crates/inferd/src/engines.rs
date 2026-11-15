@@ -893,11 +893,6 @@ impl Engines {
         ) {
             Err(Unplaced::NoPlace(refusal)) => Err(refusal),
             Ok(_) | Err(Unplaced::Other(_)) => Ok(()),
-            // a variant a newer porter adds: refused as a place that is not ready
-            Err(_) => Err(PlaceRefusal::new(
-                porter_infer::NoPlaceReason::NotReady,
-                None,
-            )),
         }
     }
 
@@ -929,11 +924,6 @@ impl Engines {
                 // a variant a newer porter adds: not available to the app
                 _ => Availability::Denied,
             }),
-            // a variant a newer porter adds: refused as a place that is not ready
-            Err(_) => Err(PlaceRefusal::new(
-                porter_infer::NoPlaceReason::NotReady,
-                None,
-            )),
         }
     }
 

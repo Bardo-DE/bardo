@@ -206,8 +206,6 @@ pub fn frame(state: &mut State, output: &OutputKey) {
         }
         BackendKind::Winit(winit) => winit.present(&source).map(PresentOutcome::from),
         BackendKind::Tty(seat) => tty::present(seat, &name, &config, capture, now, &source),
-        // A backend this build does not know presents nothing.
-        _ => Ok(PresentOutcome::Waiting),
     };
     match shown {
         Ok(PresentOutcome::Flipped(seq)) => {

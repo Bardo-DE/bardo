@@ -36,7 +36,7 @@ fn icon_of(kind: PlaceKind) -> Icon {
 fn icon_of_volume(kind: VolumeKind) -> Icon {
     match kind {
         VolumeKind::Optical => Icon::Music,
-        VolumeKind::External | VolumeKind::Internal | _ => Icon::Folder,
+        VolumeKind::External | VolumeKind::Internal => Icon::Folder,
     }
 }
 

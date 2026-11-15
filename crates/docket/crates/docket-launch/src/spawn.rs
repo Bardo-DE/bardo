@@ -255,7 +255,6 @@ impl<A: Accounts + 'static, P: Procs> AgentSpawn<A, P> {
             NetworkMode::Allowlist => self.allowlist_net(entry, session, release),
             NetworkMode::None | NetworkMode::Host => AgentNet::of(entry.network, None)
                 .map_err(|_| SpawnFault::Sandbox(SandboxStep::NetworkPlan)),
-            _ => Err(SpawnFault::Sandbox(SandboxStep::NetworkMode)),
         }
     }
 

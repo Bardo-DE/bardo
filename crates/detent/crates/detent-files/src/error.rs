@@ -62,11 +62,6 @@ impl FilesError {
             UpdateError::Read(error) => FilesError::unreadable(path, &error),
             UpdateError::Edit(error) => error,
             UpdateError::Write(error) => error.into(),
-            // `UpdateError` may grow; a case this does not know is a failed write.
-            _ => FilesError::Io {
-                path: path.to_path_buf(),
-                source: std::io::Error::other("the file could not be updated"),
-            },
         }
     }
 
@@ -87,6 +82,5 @@ pub(crate) fn reason_of(error: &ReadError) -> String {
         ReadError::TooBig { .. } => "it is far larger than a settings file".to_owned(),
         ReadError::NotText { .. } => "it isn't plain text".to_owned(),
         ReadError::Io { source, .. } => source.to_string(),
-        other => other.to_string(),
     }
 }

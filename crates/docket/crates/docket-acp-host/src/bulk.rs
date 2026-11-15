@@ -16,8 +16,6 @@ pub const fn cannot(why: ShellCannot) -> CannotSandbox {
         ShellCannot::LimitsUnavailable => CannotSandbox::LimitsUnavailable,
         ShellCannot::SeccompUnavailable => CannotSandbox::SeccompUnavailable,
         ShellCannot::BadLimits => CannotSandbox::BadLimits,
-        // A reason this build cannot name: the sandbox cannot run, so say unsupported.
-        _ => CannotSandbox::Unsupported,
     }
 }
 
@@ -34,8 +32,6 @@ pub const fn access(network: Network) -> NetAccess {
     match network {
         Network::Off => NetAccess::Closed,
         Network::Host => NetAccess::Open,
-        // Unknown network: assume it reaches out, so every command is treated as net-capable.
-        _ => NetAccess::Open,
     }
 }
 
@@ -45,7 +41,5 @@ pub const fn mode_access(mode: NetworkMode) -> NetAccess {
         NetworkMode::None => NetAccess::Closed,
         // An allowlist reaches the named hosts: open, as far as a command is concerned.
         NetworkMode::EndpointOnly | NetworkMode::Allowlist | NetworkMode::Host => NetAccess::Open,
-        // Unknown mode: assume it reaches out, so every command is treated as net-capable.
-        _ => NetAccess::Open,
     }
 }

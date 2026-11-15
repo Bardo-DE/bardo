@@ -108,8 +108,6 @@ fn credential(auth: &RelayAuth, login: &str) -> Result<Option<String>, RelayFaul
         ))),
         RelayAuth::AccessToken(token) => Ok(Some(format!("Bearer {}", token.expose()))),
         RelayAuth::Anonymous => Ok(None),
-        // a variant a newer porter adds: the relay refuses it, never sends it as anonymous
-        _ => Err(RelayFault::Protocol),
     }
 }
 

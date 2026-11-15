@@ -26,8 +26,6 @@ pub fn entry_size_words(entry: &Entry) -> String {
     match &entry.kind {
         EntryKind::File(size) | EntryKind::Link(LinkTo::File(size)) => size_words(*size),
         EntryKind::Folder | EntryKind::Link(_) | EntryKind::Special(_) => NONE.to_owned(),
-        // A kind files-core adds later has no size until this names it.
-        _ => NONE.to_owned(),
     }
 }
 

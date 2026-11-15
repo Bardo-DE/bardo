@@ -623,7 +623,6 @@ pub fn apply_note(
             DesktopNote::Changed(DesktopRef::Space(id)) => held.space(makers, view, id),
             DesktopNote::Active => held.active(view),
             DesktopNote::Removed(gone) => held.removed(gone),
-            _ => Outcome::Same,
         };
         if outcome.closes_a_burst() {
             held.manager.done();

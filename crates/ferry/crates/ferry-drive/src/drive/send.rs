@@ -986,8 +986,6 @@ pub(super) async fn sender(weak: Weak<Inner>, wake: Arc<Notify>) {
                 inner.refused(&op, Reason::Declined);
             }
             Err(PutRefused::Conflict(conflict)) => inner.conflicted(&op, &conflict),
-            // a refusal a later ferry-sync adds: the drive declined it for a reason of its own
-            Err(_) => inner.refused(&op, Reason::Declined),
         }
     }
 }

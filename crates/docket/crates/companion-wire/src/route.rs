@@ -232,6 +232,5 @@ fn blocked_text(refusal: InferRefusal) -> &'static str {
         InferRefusal::NoModelChosen => "no model is chosen yet",
         InferRefusal::NoModelUsesApps => "none of the models in Automatic can use apps",
         InferRefusal::NoModelSeesScreen => "no model here can see the screen",
-        _ => "it was refused",
     }
 }

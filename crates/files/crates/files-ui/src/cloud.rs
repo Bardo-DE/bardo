@@ -77,7 +77,7 @@ pub fn badge_of(item: Option<&CloudItem>) -> Badge {
         CloudState::Waiting => Badge::Marked(WAITING),
         CloudState::Error => Badge::Marked(FAILED),
         CloudState::Conflict => Badge::Marked(CONFLICT),
-        CloudState::Downloaded | _ => Badge::Clear,
+        CloudState::Downloaded => Badge::Clear,
     }
 }
 
@@ -91,6 +91,6 @@ pub fn drive_mark(state: DriveState) -> Option<Mark> {
         DriveState::Offline => Some(Mark::new(Icon::WifiOff, words::OFFLINE)),
         DriveState::Paused => Some(Mark::new(Icon::Pause, words::PAUSED)),
         DriveState::NeedsSignIn => Some(Mark::new(Icon::Key, words::NEEDS_SIGN_IN)),
-        DriveState::Error | _ => Some(Mark::new(Icon::TriangleAlert, words::DRIVE_FAILED)),
+        DriveState::Error => Some(Mark::new(Icon::TriangleAlert, words::DRIVE_FAILED)),
     }
 }

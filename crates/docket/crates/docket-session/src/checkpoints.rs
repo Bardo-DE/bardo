@@ -48,7 +48,5 @@ fn note_row(note: &CheckpointNote) -> Vec<CheckpointRow> {
                 at: note.at,
             },
         ],
-        // A kind of event a newer build wrote: no row rather than a wrong one.
-        _ => Vec::new(),
     }
 }

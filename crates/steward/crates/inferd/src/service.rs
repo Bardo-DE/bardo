@@ -533,8 +533,6 @@ impl<P: Peers, O: AuditOut + 'static, C: Clock + Clone + 'static> InferenceServe
             Ok(readiness) => Ok(readiness.slug().to_owned()),
             Err(Unplaced::NoPlace(refusal)) => Err(InferError::no_place(refusal)),
             Err(Unplaced::Other(refusal)) => Ok(refusal_slug(&refusal.refusal)),
-            // a variant a newer porter adds: told as the usual refusal for it
-            Err(other) => Ok(refusal_slug(&other.into_pick().refusal)),
         }
     }
 

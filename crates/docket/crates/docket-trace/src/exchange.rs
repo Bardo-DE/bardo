@@ -28,7 +28,6 @@ fn words(part: &MessagePart) -> Option<String> {
             Some(format!("[result {:?}: {}]", result.status, inner.join(" ")))
         }
         MessagePart::Thought(_) => None,
-        _ => Some("[part]".to_owned()),
     }
 }
 
@@ -45,7 +44,6 @@ fn shape(shape: &ReplyShape) -> &'static str {
         ReplyShape::Text => "text",
         ReplyShape::Json(_) => "json",
         ReplyShape::Choice(_) => "choice",
-        _ => "other",
     }
 }
 

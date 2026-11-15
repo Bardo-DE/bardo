@@ -25,7 +25,6 @@ async fn run(command: Option<String>) -> Result<(), String> {
         LendingState::Installed => "on",
         LendingState::NotInstalled => "off",
         LendingState::Differs => "off (a different file is there; turning it on replaces it)",
-        _ => "unknown",
     };
     println!("other computers may use this computer's models: {words}");
     Ok(())

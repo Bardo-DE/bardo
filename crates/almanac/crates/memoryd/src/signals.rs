@@ -37,6 +37,5 @@ pub fn delivery_of(change: Change) -> Option<Delivery> {
         }
         Change::PendingChanged(space) => Some(Delivery::PendingChanged(space)),
         Change::StatusChanged(space) => Some(Delivery::StatusChanged(space)),
-        _ => None,
     }
 }

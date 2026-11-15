@@ -79,8 +79,6 @@ impl From<CuaStepFailure> for CuaModelError {
                 // A failure this build does not know is never retried.
                 _ => CuaModelError::Fatal,
             },
-            // A failure kind this build does not know ends the step for good.
-            _ => CuaModelError::Fatal,
         }
     }
 }

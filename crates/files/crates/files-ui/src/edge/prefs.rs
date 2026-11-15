@@ -63,7 +63,7 @@ fn serve(store: &dyn PrefsStore, inbox: &Receiver<Job>, heard: &UnboundedSender<
             Job::Load(tab, at) => {
                 let prefs = match &at {
                     Location::Folder(folder) => store.load(folder),
-                    Location::Trash | _ => FolderPrefs::default(),
+                    Location::Trash => FolderPrefs::default(),
                 };
                 let _ = heard.send(Heard::Tab(tab, Input::PrefsLoaded(at, prefs)));
             }
@@ -75,7 +75,7 @@ fn serve(store: &dyn PrefsStore, inbox: &Receiver<Job>, heard: &UnboundedSender<
                 }
             },
             // The Trash is always shown the same way.
-            Job::Save(Location::Trash | _, _) => {}
+            Job::Save(Location::Trash, _) => {}
         }
     }
 }

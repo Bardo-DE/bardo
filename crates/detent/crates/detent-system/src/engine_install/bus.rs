@@ -181,7 +181,6 @@ impl Desk for OnEngines {
         installs.start(kind, scope).map_err(|why| match why {
             StartError::Busy => EngineFailure::Busy,
             StartError::Nothing => EngineFailure::Unsupported,
-            _ => EngineFailure::Other,
         })
     }
 

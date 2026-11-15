@@ -151,7 +151,6 @@ pub(super) fn serve(state: &mut State, session: &SessionRef, frame: Frame, id: T
     match capture_source::on_frame_request(book, id, size, content) {
         Ok(FrameVerdict::Capture(request)) => answer(state, &request, frame),
         Ok(FrameVerdict::Hold) => state.wl.capture_source.hold_frame(id, frame),
-        Ok(_) => fail(state, id, frame, CaptureFailure::Renderer),
         Err(fault) => {
             tracing::debug!(%fault, "a frame on a window capture session that is gone");
             frame.fail(CaptureFailure::OutputGone.reason());

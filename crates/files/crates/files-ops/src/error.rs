@@ -16,6 +16,6 @@ pub(crate) fn trash(err: TrashError) -> OpFailure {
         TrashError::NotFound => OpFailure::NotFound,
         TrashError::NoPermission => OpFailure::NoPermission,
         TrashError::Occupied => OpFailure::Occupied,
-        TrashError::Other | _ => OpFailure::TrashUnavailable,
+        TrashError::Other => OpFailure::TrashUnavailable,
     }
 }

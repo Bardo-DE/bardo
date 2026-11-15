@@ -200,7 +200,7 @@ fn act(action: &Action, browse: Browse, mut sidebar: Signal<Shown>) -> ActionTak
         }
         Action::App(app) => own_input(app).map_or(ActionTaken::No, send),
         // A standard action the window does not offer, or one chordkit adds later.
-        Action::Standard(_) | _ => ActionTaken::No,
+        Action::Standard(_) => ActionTaken::No,
     }
 }
 
@@ -245,7 +245,7 @@ fn escape(browse: Browse) -> ActionTaken {
             match (state.info(), state.quick_look()) {
                 (InfoView::Closed, None) => None,
                 (InfoView::Closed, Some(_)) => Some(Input::CloseQuickLook),
-                (InfoView::Loading(_) | InfoView::Shown(_) | InfoView::Failed(..) | _, _) => {
+                (InfoView::Loading(_) | InfoView::Shown(_) | InfoView::Failed(..), _) => {
                     Some(Input::CloseInfo)
                 }
             }

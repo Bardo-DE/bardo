@@ -233,7 +233,6 @@ impl Kms for FakeKms {
                 return Err(KmsError::Refused(KmsRefusal::ModesetForbidden));
             }
             CommitVerdict::Refused(refusal) => return Err(KmsError::Refused(refusal)),
-            _ => return Err(KmsError::Refused(KmsRefusal::Unsupported)),
         }
         let committed: Vec<ConnectorId> = commit.outputs.iter().map(|o| o.connector).collect();
         for output in &commit.outputs {

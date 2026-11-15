@@ -33,7 +33,7 @@ pub(crate) fn reauth_help(way: Option<SignInWay>) -> &'static str {
         Some(SignInWay::Agent) => {
             "Asks the assistant to sign itself in, which needs its app to be running."
         }
-        Some(SignInWay::Outside | SignInWay::Nothing | _) | None => "Sign in to the account again.",
+        Some(SignInWay::Outside | SignInWay::Nothing) | None => "Sign in to the account again.",
     }
 }
 
@@ -45,7 +45,7 @@ pub(crate) fn sign_in_words(way: Option<SignInWay>) -> Option<&'static str> {
         SignInWay::Password => Some("Signs in with a password"),
         SignInWay::Key => Some("Signs in with a key"),
         SignInWay::Agent => Some("Signs in inside its own app"),
-        SignInWay::Outside | SignInWay::Nothing | _ => None,
+        SignInWay::Outside | SignInWay::Nothing => None,
     }
 }
 
@@ -55,7 +55,6 @@ pub(crate) fn group_heading(group: ProviderGroup) -> &'static str {
         ProviderGroup::Internet => "Internet Accounts",
         ProviderGroup::Intelligence => "Intelligence",
         ProviderGroup::Agent => "Assistants",
-        _ => "Other Accounts",
     }
 }
 
@@ -160,9 +159,7 @@ pub(crate) fn removal(question: &RemovalQuestion, remove_name: &str) -> RemovalW
 mod tests {
     use super::*;
     use detent_model::external::ProviderGroup;
-    use detent_model::{
-        AccountKey, AccountProvider, AccountSpend, ModuleId, ModuleRow, Place,
-    };
+    use detent_model::{AccountKey, AccountProvider, AccountSpend, ModuleId, ModuleRow, Place};
     use ds_settings::schema::KeyPath;
 
     fn account(status: AccountStatus, provider: Option<&str>) -> Account {

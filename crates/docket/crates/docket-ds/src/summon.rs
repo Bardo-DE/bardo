@@ -13,8 +13,6 @@ pub fn summon_answer_of(mark: SummonAnswerMark) -> SummonAnswer {
         SummonAnswerMark::TookAnchored => SummonAnswer::TookAnchored,
         SummonAnswerMark::Restored => SummonAnswer::Restored,
         SummonAnswerMark::Declined => SummonAnswer::Declined,
-        // A mark newer than this build knows: the field was not taken.
-        _ => SummonAnswer::Declined,
     }
 }
 

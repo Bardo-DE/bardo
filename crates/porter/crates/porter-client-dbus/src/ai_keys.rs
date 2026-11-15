@@ -27,8 +27,6 @@ fn sheet_error(error: SheetError) -> AiKeysError {
         SheetError::Bus(error) => ai_keys_error(&error),
         SheetError::Gone => AiKeysError::Link(LinkError::Unreachable),
         SheetError::Unreadable => malformed(Malformed::Sheet),
-        // a failure a later porter-dbus adds
-        _ => malformed(Malformed::UnknownFailure),
     }
 }
 

@@ -73,7 +73,7 @@ impl Port {
     async fn undo(&self, undoing: Undoing) -> Result<Reply, Refusal> {
         let next = match self.read(Query::NextUndo).await? {
             Reading::Undo(next) => next,
-            Reading::Selection(_) | Reading::Place(_) | _ => None,
+            Reading::Selection(_) | Reading::Place(_) => None,
         };
         match next {
             Some(next) if next.kind == undoing.kind && next.count == undoing.count => {
@@ -110,17 +110,13 @@ impl Port {
             }
             Ask::Selection => match self.read(Query::Selection).await? {
                 Reading::Selection(items) => Ok(Reply::Items(paths_of(items))),
-                Reading::Place(_) | Reading::Undo(_) | _ => Err(Refusal::Closed),
+                Reading::Place(_) | Reading::Undo(_) => Err(Refusal::Closed),
             },
             Ask::CurrentFolder => match self.read(Query::CurrentFolder).await? {
                 Reading::Place(place) => Ok(Reply::Place(place)),
-                Reading::Selection(_) | Reading::Undo(_) | _ => Err(Refusal::Closed),
+                Reading::Selection(_) | Reading::Undo(_) => Err(Refusal::Closed),
             },
             Ask::Undo(undoing) => self.undo(undoing).await,
-            // An ask files-desktop adds later is not carried out until this names it.
-            _ => Err(Refusal::Failed(
-                "Files can\u{2019}t do that yet.".to_owned(),
-            )),
         }
     }
 }

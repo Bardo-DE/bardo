@@ -148,8 +148,6 @@ fn model_error(error: &ProviderError) -> CuaModelError {
         | ProviderError::ContextOverflow { .. }
         | ProviderError::BadRequest(_)
         | ProviderError::Refused(_) => CuaModelError::Fatal,
-        // A failure a later stoker adds ends the run.
-        _ => CuaModelError::Fatal,
     }
 }
 

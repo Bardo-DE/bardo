@@ -269,8 +269,6 @@ pub fn network_word(mode: NetworkMode) -> &'static str {
         NetworkMode::EndpointOnly => "endpoint_only",
         NetworkMode::Allowlist => "allowlist",
         NetworkMode::Host => "host",
-        // Unknown mode: write the most restrictive word.
-        _ => "none",
     }
 }
 

@@ -82,8 +82,6 @@ pub fn start_words(cause: &Cause) -> String {
         Cause::Attached(_) => "the engine runs where you set it up, not here".to_owned(),
         Cause::Unknown => "the engine is not known here".to_owned(),
         Cause::Released => "the model was stopped".to_owned(),
-        // a cause a newer porter adds
-        _ => "the engine could not be started".to_owned(),
     }
 }
 
@@ -162,8 +160,6 @@ impl Engines {
                     EngineState::Stopping { since } => (RunState::Stopping, Some(since)),
                     EngineState::Backoff { .. } => (RunState::Retrying, None),
                     EngineState::Failed(_) => (RunState::Failed, None),
-                    // a state a later supervisor adds: not listed until porter knows it
-                    _ => return None,
                 };
                 let memory = self.supervised.memory_of(id, model.spec.need);
                 let mut row = RunningModel::new(

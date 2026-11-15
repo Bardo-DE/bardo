@@ -82,8 +82,6 @@ fn body_of(
             info.name.display().into_owned(),
             shown(info, zone, icons, cloud),
         )),
-        // A state files-model adds later draws nothing until this names it.
-        _ => None,
     }
 }
 
@@ -111,7 +109,7 @@ pub(super) fn InfoSheet(browse: Browse, zone: Zone) -> Element {
         let state = browse.state.read();
         match &view {
             InfoView::Shown(info) => cloud_rows(&state, info),
-            InfoView::Closed | InfoView::Loading(_) | InfoView::Failed(..) | _ => Vec::new(),
+            InfoView::Closed | InfoView::Loading(_) | InfoView::Failed(..) => Vec::new(),
         }
     };
     let Some((name, body)) = body_of(&view, zone, &icons, cloud) else {

@@ -11,6 +11,5 @@ pub fn backend_of(offer: &GlobalOffer) -> DesktopBackend {
     match desktop_client::backend_for(&protocols) {
         Some(Offered::Quire) => DesktopBackend::Quire,
         Some(Offered::Wlr | Offered::Ext) => DesktopBackend::Wlr,
-        Some(_) | None => DesktopBackend::Bare,
     }
 }

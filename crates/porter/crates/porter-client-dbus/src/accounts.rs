@@ -136,8 +136,6 @@ fn sheet_error(error: SheetError) -> AccountsError {
         SheetError::Bus(error) => accounts_error(&error),
         SheetError::Gone => LinkError::Closed.into(),
         SheetError::Unreadable => LinkError::Malformed(Malformed::Sheet).into(),
-        // a failure a later porter-dbus adds
-        _ => LinkError::Malformed(Malformed::UnknownFailure).into(),
     }
 }
 

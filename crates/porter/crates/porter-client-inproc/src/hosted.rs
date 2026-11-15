@@ -113,8 +113,6 @@ impl<C: Service + 'static, H: RelayHost + 'static> ServerEdits for Hosted<C, H> 
                 porter_service_accounts::EditError::Fixed(fixed) => EditError::Fixed(fixed),
                 porter_service_accounts::EditError::NotThatProvider => EditError::NotThatProvider,
                 porter_service_accounts::EditError::Refused(refusal) => EditError::Refused(refusal),
-                // a reason a newer porter adds
-                _ => EditError::Refused(Refusal::Unavailable),
             })
     }
 }

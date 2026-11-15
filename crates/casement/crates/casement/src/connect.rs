@@ -171,7 +171,6 @@ fn open_socket(
                 state.agent.remote.closed(slot);
                 end_lease_of(state, owner_of);
             }
-            _ => {}
         },
     );
     match inserted {

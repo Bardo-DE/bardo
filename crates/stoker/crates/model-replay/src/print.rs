@@ -129,6 +129,5 @@ fn part_print(part: &Part) -> PartPrint {
             status: result.status,
             parts: result.parts.iter().map(part_print).collect(),
         }),
-        _ => PartPrint::Unknown,
     }
 }

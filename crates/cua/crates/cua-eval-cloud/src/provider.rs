@@ -96,8 +96,6 @@ fn stop_of(stop: StopReason) -> sp::StopReason {
         StopReason::MaxTokens => sp::StopReason::MaxTokens,
         StopReason::StopSequence => sp::StopReason::StopSequence,
         StopReason::ContentFilter => sp::StopReason::ContentFilter,
-        // A stop this build does not know is read as the provider withholding the reply.
-        _ => sp::StopReason::ContentFilter,
     }
 }
 

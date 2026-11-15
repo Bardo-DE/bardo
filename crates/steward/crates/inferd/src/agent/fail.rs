@@ -102,8 +102,6 @@ impl Failure {
             ModelError::Interrupted => {
                 Self::new(Cause::Upstream, "this reply stopped unexpectedly")
             }
-            // a variant a newer porter adds: told to the agent as an upstream failure
-            _ => Self::new(Cause::Upstream, "the model failed"),
         }
     }
 

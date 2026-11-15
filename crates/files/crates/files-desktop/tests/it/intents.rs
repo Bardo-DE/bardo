@@ -52,8 +52,7 @@ impl Window for FakeWindow {
             | Ask::Copy { .. }
             | Ask::Move { .. }
             | Ask::EmptyTrash
-            | Ask::Undo(_)
-            | _ => Reply::Done,
+            | Ask::Undo(_) => Reply::Done,
         };
         self.asked
             .lock()

@@ -134,7 +134,6 @@ pub(super) fn serve(state: &mut State, session: &SessionRef, frame: Frame, id: S
     match state.wl.quire_shell.shots.book.request(id, now) {
         Some(FrameDecision::Draw) => answer(state, id, &shot, now, frame),
         Some(FrameDecision::Hold) => state.wl.quire_shell.shots.hold_frame(id, frame),
-        Some(_) | None => frame.fail(CaptureFailure::Renderer.reason()),
     }
 }
 

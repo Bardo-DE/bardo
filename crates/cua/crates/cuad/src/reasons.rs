@@ -28,8 +28,6 @@ pub(crate) fn words_of(why: ControlRefusal, enabled: Switch) -> &'static str {
         (ControlRefusal::WrongState | ControlRefusal::UnknownQuestion, _) => {
             "On-screen control isn't ready for that."
         }
-        // A refusal this build does not know is still a refusal.
-        _ => "On-screen control couldn't start.",
     }
 }
 

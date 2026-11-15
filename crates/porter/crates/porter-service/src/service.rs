@@ -175,8 +175,6 @@ where
                     .reauthenticate(caller, &account, window)
                     .await
             }
-            // a variant a newer porter adds: refused as unavailable
-            _ => AccountsReply::Refused(Refusal::Unavailable),
         }
     }
 

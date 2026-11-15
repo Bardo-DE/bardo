@@ -27,4 +27,3 @@ pub enum TailscaleError {
     #[error("tailscaled did not answer within the time allowed")]
     TimedOut,
 }
-

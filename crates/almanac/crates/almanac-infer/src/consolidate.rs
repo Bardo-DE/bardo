@@ -116,8 +116,6 @@ impl<T: Transport> Consolidator for InferdConsolidator<T> {
             | InferReply::CuaStep(_)
             | InferReply::Transcribed(_)
             | InferReply::Spoke(_) => Err(ConsolidateError::Unparseable),
-            // porter may add reply kinds (`InferReply` is non-exhaustive); one not named is no draft.
-            _ => Err(ConsolidateError::Unparseable),
         }
     }
 }

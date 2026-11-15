@@ -202,7 +202,6 @@ impl<'a, B: Backend, A: Admission> Session<'a, B, A> {
                     "events arrive faster than any device sends them",
                 ));
             }
-            _ => return Ok(None),
         }
         let filtered = slot.filter.apply(events);
         let denied = u32::try_from(filtered.denied.len()).unwrap_or(u32::MAX);

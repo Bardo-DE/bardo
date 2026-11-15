@@ -274,7 +274,5 @@ pub fn title_words(location: &Location) -> String {
             |name| name.to_string_lossy().into_owned(),
         ),
         Location::Trash => "Trash".to_owned(),
-        // A place files-core adds later has no name until this gives it one.
-        _ => "Files".to_owned(),
     }
 }

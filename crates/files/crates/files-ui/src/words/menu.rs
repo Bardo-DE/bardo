@@ -43,6 +43,6 @@ pub fn view_title(mode: ViewMode) -> &'static str {
     match mode {
         ViewMode::Icons => "Icons",
         // The list, and a mode files-core adds later until the switcher names it.
-        ViewMode::List | _ => "List",
+        ViewMode::List => "List",
     }
 }

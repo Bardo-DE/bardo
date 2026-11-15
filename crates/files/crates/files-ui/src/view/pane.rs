@@ -59,9 +59,9 @@ fn body_of(browse: Browse) -> Body {
         Listing::Failed(failure) => Body::Failed(*failure),
         Listing::Loaded(_) if state.rows().is_empty() => Body::Empty,
         // A listing files-model adds later is drawn as the view is until this names it.
-        Listing::Loaded(_) | Listing::Loading | _ => match state.prefs().view {
+        Listing::Loaded(_) | Listing::Loading => match state.prefs().view {
             ViewMode::Icons => Body::Icons,
-            ViewMode::List | _ => Body::Table,
+            ViewMode::List => Body::Table,
         },
     }
 }
@@ -70,7 +70,7 @@ fn body_of(browse: Browse) -> Body {
 fn empty_words(location: &Location) -> &'static str {
     match location {
         Location::Trash => "Trash is empty",
-        Location::Folder(_) | _ => "This folder is empty.",
+        Location::Folder(_) => "This folder is empty.",
     }
 }
 

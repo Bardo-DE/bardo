@@ -41,10 +41,6 @@ pub fn corner_effect(action: &CornerDo, home: Option<&Path>) -> CornerEffect {
             program: "/bin/sh".to_owned(),
             args: vec!["-c".to_owned(), command.clone()],
         },
-        // `CornerDo` is a foreign `#[non_exhaustive]` enum, so the compiler asks for this arm
-        // and no other: a variant added upstream lands here until it is handled above, and it
-        // must be seen rather than silently do nothing.
-        other => CornerEffect::Cannot(format!("a binding this build does not know ({other:?})")),
     }
 }
 
@@ -62,12 +58,7 @@ fn desktop_effect(action: CornerAction) -> CornerEffect {
         // FakeWake only); until it does, the corner says so rather than doing nothing silently.
         CornerAction::DisplaySleep => {
             CornerEffect::Cannot("putting the displays to sleep is not available yet".to_owned())
-        }
-        // `CornerAction` is a foreign `#[non_exhaustive]` enum: a word added upstream lands here
-        // until it is handled above.
-        other => CornerEffect::Cannot(format!(
-            "a corner action this build does not know ({other:?})"
-        )),
+        } // until it is handled above.
     }
 }
 

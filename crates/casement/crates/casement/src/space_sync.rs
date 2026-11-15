@@ -88,7 +88,6 @@ impl SpaceSync {
                 RegisterFault::Failed(why) => {
                     tracing::warn!(space = %failure.id, %why, "a Space was not registered");
                 }
-                _ => {}
             }
         }
     }

@@ -30,8 +30,6 @@ pub(super) fn Busy(browse: Browse) -> Element {
             BusySheet { browse, summary, progress }
         },
         Work::Idle => rsx! {},
-        // Work files-model adds later shows nothing until this names it.
-        _ => rsx! {},
     }
 }
 

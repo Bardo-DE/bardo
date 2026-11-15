@@ -206,8 +206,6 @@ impl Shared {
                     CastOut::Reply(reply) => {
                         outcome = self.outcome(key, who, selection, reply).await;
                     }
-                    // A later core adds outputs this does not know; they are ignored.
-                    _ => {}
                 }
             }
         }

@@ -42,7 +42,6 @@ impl Confinement {
             NetworkMode::EndpointOnly => "Can reach only its model".to_owned(),
             NetworkMode::Allowlist => format!("Can reach only: {}", self.sites.join(", ")),
             NetworkMode::Host => "Can reach the whole network".to_owned(),
-            _ => "Network not limited".to_owned(),
         }
     }
 }

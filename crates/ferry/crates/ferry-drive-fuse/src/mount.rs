@@ -114,7 +114,6 @@ impl Mounter {
                         Err(AskError::Absent) => {}
                         Err(AskError::Refused(code)) => return Err(MountError::Refused(code)),
                         Err(AskError::Broken(why)) => return Err(MountError::Failed(why)),
-                        Err(why) => return Err(MountError::Failed(std::io::Error::other(why))),
                     }
                 }
                 Err(why) => return Err(MountError::Failed(why)),

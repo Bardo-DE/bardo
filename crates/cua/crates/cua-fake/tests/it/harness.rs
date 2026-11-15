@@ -10,9 +10,7 @@ use cua_fake::{
     DesktopCall, FakeA11y, FakeCapture, FakeDesktop, FakePdp, FakeSeat, FixedClock, Fixture,
     MemoryEvents, ScriptedModel, SeatEvent, World, run_harness_answering,
 };
-use cua_run::{
-    AcquirePhase, CuaConfig, FORCED_YES, Progress, Run, RunEnv, RunPhase, Step,
-};
+use cua_run::{AcquirePhase, CuaConfig, FORCED_YES, Progress, Run, RunEnv, RunPhase, Step};
 use maskcap::{Frame, FrameSeq, MaskReport, PixelBuf, WholeMask};
 use porter_core::AppName;
 use porter_ids::{Px, UnixSeconds};

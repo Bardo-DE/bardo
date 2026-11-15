@@ -41,8 +41,6 @@ fn images_in(parts: &[MessagePart]) -> u32 {
             MessagePart::Image(_) => 1,
             MessagePart::ToolResult(ToolResultPart { parts, .. }) => images_in(parts),
             MessagePart::Text(_) | MessagePart::ToolCall(_) | MessagePart::Thought(_) => 0,
-            // a variant a newer porter adds: counted as one image, so the audit never under-reports
-            _ => 1,
         })
         .sum()
 }
@@ -69,8 +67,6 @@ impl Tally {
             | InferRequest::Task(_)
             | InferRequest::CuaBegin(_)
             | InferRequest::Speak(_) => (0, V1_RATE),
-            // a variant a newer porter adds: counted as one image, so the audit never under-reports
-            _ => (1, V1_RATE),
         };
         Self {
             images,

@@ -114,7 +114,6 @@ impl Session for Connection {
                 Reply::Refused(reason) => return Err(ClientError::Refused(reason)),
                 // Lights written to an earlier device may arrive first; they are not the answer.
                 Reply::Feedback { .. } => {}
-                _ => return Err(ClientError::Unexpected),
             }
         }
     }

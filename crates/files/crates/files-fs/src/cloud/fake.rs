@@ -196,8 +196,7 @@ fn started(found: &CloudItem) -> CloudItem {
         | CloudState::Downloaded
         | CloudState::Uploading
         | CloudState::Waiting
-        | CloudState::Conflict
-        | _ => found.clone(),
+        | CloudState::Conflict => found.clone(),
     }
 }
 
@@ -249,8 +248,7 @@ impl Clouds for FakeClouds {
             CloudState::Cloud
             | CloudState::Downloading
             | CloudState::Downloaded
-            | CloudState::Error
-            | _ => {
+            | CloudState::Error => {
                 let mut next = found.clone();
                 next.state = CloudState::Cloud;
                 next.kept = false;
