@@ -68,7 +68,7 @@ pub fn MonthGrid(
         div {
             class,
             id: common.id.clone(),
-            "data-weeks": weeks.slug(),
+            "data-weeks": if weeks { "true" } else { "false" },
             "data-density": drawn.slug(),
             "data-fit": fit,
             "aria-label": "{label}",

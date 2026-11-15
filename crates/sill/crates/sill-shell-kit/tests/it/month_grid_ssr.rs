@@ -121,7 +121,7 @@ fn the_markup_says_what_the_data_says() {
     assert_eq!(plain.matches("data-place=\"before\"").count(), 1);
     assert_eq!(plain.matches("data-place=\"after\"").count(), 4);
     assert!(!plain.contains("<button"), "no buttons without handlers");
-    assert!(plain.contains("data-weeks=\"hide\""));
+    assert!(plain.contains("data-weeks=\"false\""));
 
     let numbered = render(Case::WeekNumbers);
     assert_eq!(numbered.matches("class=\"ds-month-week\"").count(), 1 + 5);

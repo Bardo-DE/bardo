@@ -6,7 +6,6 @@ use crate::router::Router;
 use crate::seams::Seams;
 use docket_context::state::RouterState;
 use docket_core::{IndexEntry, IndexState};
-use docket_manifest::bool;
 use porter_core::AppName;
 use prov::{EntityKey, EntityKind};
 use std::collections::BTreeMap;

@@ -2,7 +2,7 @@
    calendar widget's month. The title in the data face, upper and tracked .12em, in `--accent`
    (design/02 sections 4-5, "calendar month"); the weekday heads in the data face at
    `--fs-micro`, upper and tracked as a menu's section header. Seven 32 px columns, led by a
-   24 px week-number column under `data-weeks=show`. A day is its number on a 24 px disc: the
+   24 px week-number column under `data-weeks=true`. A day is its number on a 24 px disc: the
    neighbours' days in `--ink-faint`, today on `--accent` in `--accent-ink`, a busy day with a
    4 px dot under it (`--accent`; `--ink-soft` on a neighbour's day). A pressable day
    (`data-kind=pressable`) takes `--surface-2` on its disc under the pointer.
@@ -33,7 +33,7 @@
 
 .ds-month-weeks{ display:flex; flex-direction:column; }
 .ds-month-row{ display:grid; grid-template-columns:repeat(7,32px); }
-.ds-month[*|data-weeks=show] .ds-month-row{ grid-template-columns:24px repeat(7,32px); }
+.ds-month[*|data-weeks=true] .ds-month-row{ grid-template-columns:24px repeat(7,32px); }
 
 .ds-month-head,
 .ds-month-week{

@@ -99,7 +99,7 @@ fn the_density_resolves_and_says_so() {
     for case in [Case::Compact, Case::SmallFrame, Case::MediumFrame] {
         let html = render(case);
         assert!(html.contains("data-density=\"compact\""), "{case:?}");
-        assert!(html.contains("data-weeks=\"hide\""), "{case:?}");
+        assert!(html.contains("data-weeks=\"false\""), "{case:?}");
         assert_eq!(
             html.matches("class=\"ds-month-week\"").count(),
             0,
@@ -123,7 +123,7 @@ fn the_density_resolves_and_says_so() {
         large.contains("data-fit=\"frame\""),
         "a framed month fills its card"
     );
-    assert!(large.contains("data-weeks=\"show\""));
+    assert!(large.contains("data-weeks=\"true\""));
     assert_eq!(large.matches("class=\"ds-month-week\"").count(), 1 + 6);
     assert_eq!(large.matches("data-variant=\"toolbar\"").count(), 2);
     assert!(!large.contains("ds-month-step"));
