@@ -18,7 +18,7 @@ use ds_motion::presence::spring::use_spring_presence;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
 pub enum SideState {
     /// Pinned: in its column.
-    bool,
+    Shown,
     /// Hidden, and nothing peeking.
     Hidden,
     /// Hidden, floating over the content while the pointer is at the edge.

@@ -49,7 +49,7 @@ fn rove_to<T: Clone + PartialEq>(choices: &[Choice<T>], at: &T, rove: Rove) -> O
 
 /// Whether `value` is the checked one.
 fn checked<T: PartialEq>(choice: &Choice<T>, value: &T) -> Check {
-    if choice.value == value {
+    if choice.value == *value {
         Check::On
     } else {
         Check::Off
