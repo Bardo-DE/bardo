@@ -1,7 +1,7 @@
 //! `quire_window_manager_v1` (C50): what an app says about its toplevel (first-mouse regions,
 //! frame, role, accessibility root, edited) and what it learns back (emphasis, placement).
 //! Advertised from P0 so shell-host can tell casement apart by this global; requests are
-//! stored in the model, `request_placement` is acted on from P2 ([`PLACEMENT_POLICY`]).
+//! stored in the model, `request_placement` is acted on from P2 (the model's `place`).
 //!
 //! smithay has no module for our protocol, so this one carries its own `GlobalDispatch2` and
 //! `Dispatch2` impls; `delegate_dispatch2!` in the composition root routes to them, and they
@@ -18,7 +18,7 @@
 mod hints;
 
 pub use hints::{
-    A11Y_MAX_LEN, A11yTooLong, BadRole, PLACEMENT_POLICY, PendingHints, PlacementPolicy, a11y_of,
+    A11Y_MAX_LEN, A11yTooLong, BadRole, PendingHints, a11y_of,
     first_mouse_of, forgotten, frame_of, placement_events, role_request,
 };
 
@@ -489,7 +489,7 @@ pub fn on_set_edited(_part: &mut QuireWindowPart, window: WindowId, edited: Edit
 }
 
 /// `request_placement`, answering the press `serial` (the dispatch has already checked the
-/// press): stored, and from P2 acted on ([`PLACEMENT_POLICY`]).
+/// press): stored, and from P2 acted on (the model's `place`).
 pub fn on_request_placement(
     part: &mut QuireWindowPart,
     window: WindowId,
@@ -497,7 +497,7 @@ pub fn on_request_placement(
     serial: InputSerial,
 ) -> Vec<Event> {
     part.placements.insert(window, (target, serial));
-    placement_events(PLACEMENT_POLICY, window, target, serial)
+    placement_events(window, target, serial)
 }
 
 /// Sends `window` its emphasis (from focus).

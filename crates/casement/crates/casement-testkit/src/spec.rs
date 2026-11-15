@@ -4,7 +4,6 @@ use crate::fakes::{MemoryLockMarker, MemorySpaceStore};
 use crate::gpu::GpuTopology;
 use casement::icons::IconSearch;
 use casement::privacy::PrivacyFiles;
-use casement::relax::AckPolicy;
 use casement::time::WallClock;
 use casement_backend::{RenderCostModel, SoftRenderer, VirtualOutputSpec};
 use casement_core::settings::CasementSettings;
@@ -26,7 +25,7 @@ pub struct FixtureSpec {
     /// Whether `zwp_linux_dmabuf_v1` is offered (a fake main device over `/dev/udmabuf`).
     pub dmabuf: bool,
     /// Whether a buffer attached before the first ack is an error (A37; wlcs needs it lenient).
-    pub ack_policy: AckPolicy,
+    pub lenient_acks: bool,
     /// The Spaces file the compositor starts from and stores into (A1). A second fixture started
     /// with a clone of the same store is a restart.
     pub space_store: MemorySpaceStore,
@@ -57,7 +56,7 @@ impl FixtureSpec {
             settings: CasementSettings::defaults(),
             cost: RenderCostModel::Fixed(Duration::from_millis(4)),
             dmabuf: false,
-            ack_policy: AckPolicy::Strict,
+            lenient_acks: false,
             space_store: MemorySpaceStore::empty(),
             lock_marker: MemoryLockMarker::absent(),
             privacy: None,
@@ -115,8 +114,8 @@ impl FixtureSpec {
     }
 
     /// The same, with this ack policy.
-    pub fn with_ack_policy(self, ack_policy: AckPolicy) -> FixtureSpec {
-        FixtureSpec { ack_policy, ..self }
+    pub fn with_lenient_acks(self, lenient_acks: bool) -> FixtureSpec {
+        FixtureSpec { lenient_acks, ..self }
     }
 
     /// The same, with these outputs.

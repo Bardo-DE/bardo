@@ -117,7 +117,7 @@ impl State {
                         // window keyed and sends its one configure after the keyboard enter
                         // (the order wlcs' text-input tests expect).
                         #[cfg(feature = "testing")]
-                        if self.ack_policy == crate::relax::AckPolicy::Lenient
+                        if self.lenient_acks
                             && let Some(events) = xdg_shell::map_keyed_on_first_buffer(
                                 &mut self.wl.xdg_shell,
                                 surface,
@@ -137,7 +137,7 @@ impl State {
                         // it maps the window too, as it does for the compositors wlcs was
                         // written against. Idempotent for every other commit.
                         #[cfg(feature = "testing")]
-                        if self.ack_policy == crate::relax::AckPolicy::Lenient {
+                        if self.lenient_acks {
                             events.extend(xdg_shell::on_toplevel_commit(
                                 &mut self.wl.xdg_shell,
                                 surface,

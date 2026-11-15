@@ -211,7 +211,7 @@ impl Fixture {
             None => seams,
         };
         let mut state = State::with_seams(config, seams, &mut display, &handle)?;
-        state.ack_policy = spec.ack_policy;
+        state.lenient_acks = spec.lenient_acks;
         if kept_privacy {
             // What the root does before it takes the first client in.
             casement::privacy::start(&mut state);

@@ -100,22 +100,14 @@ impl MainDevice {
 /// The jail's first fabricated render node, `226:128` (A3): the soft main device.
 pub const SOFT_MAIN_DEVICE: MainDevice = MainDevice::of(226, 128);
 
-/// What a tranche is for, as the feedback flags it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum OfferUse {
-    /// The device samples (composites) buffers of these formats.
-    Sampling,
-    /// A plane scans buffers of these formats out directly.
-    Scanout,
-}
-
 /// One tranche of the feedback: a device and its formats, in the order offered.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OfferTranche {
     /// The tranche's target device.
     pub device: MainDevice,
-    /// What the tranche is for.
-    pub purpose: OfferUse,
+    /// Whether a plane scans these formats out directly (otherwise the device samples
+    /// (composites) buffers of them).
+    pub scanout: bool,
     /// Its formats and modifiers.
     pub formats: Vec<Format>,
 }
@@ -154,10 +146,7 @@ impl DmabufOffer {
             .iter()
             .map(|tranche| OfferTranche {
                 device: MainDevice::of(tranche.target.major, tranche.target.minor),
-                purpose: match tranche.purpose {
-                    TrancheUse::Scanout => OfferUse::Scanout,
-                    _ => OfferUse::Sampling,
-                },
+                scanout: matches!(tranche.purpose, TrancheUse::Scanout),
                 formats: tranche
                     .formats
                     .iter()
@@ -187,7 +176,7 @@ impl DmabufOffer {
         if self.tranches.is_empty() {
             vec![OfferTranche {
                 device: self.main_device,
-                purpose: OfferUse::Sampling,
+                scanout: false,
                 formats: self.formats.clone(),
             }]
         } else {
@@ -310,9 +299,10 @@ where
     let builder = offer.tranche_list().into_iter().fold(
         DmabufFeedbackBuilder::new(offer.main_device.0, std::iter::empty::<Format>()),
         |builder, tranche| {
-            let flags = match tranche.purpose {
-                OfferUse::Scanout => TrancheFlags::Scanout,
-                _ => TrancheFlags::Sampling,
+            let flags = if tranche.scanout {
+                TrancheFlags::Scanout
+            } else {
+                TrancheFlags::Sampling
             };
             builder.add_preference_tranche(tranche.device.0, flags, tranche.formats, 3u32..=6)
         },
@@ -461,8 +451,8 @@ mod tests {
         let table = FormatTable::new(BTreeMap::from([(render, vec![entry])]))
             .with_scanout(BTreeMap::from([(render, vec![entry])]));
         let offer = DmabufOffer::from_feedback(&feedback_for(&plan, &table));
-        let purposes: Vec<_> = offer.tranches.iter().map(|t| t.purpose).collect();
-        assert_eq!(purposes, [OfferUse::Scanout], "the pair is offered once");
+        let scanouts: Vec<_> = offer.tranches.iter().map(|t| t.scanout).collect();
+        assert_eq!(scanouts, [true], "the pair is offered once");
         assert_eq!(
             offer.formats.len(),
             1,

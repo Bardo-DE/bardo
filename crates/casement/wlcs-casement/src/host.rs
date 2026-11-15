@@ -10,7 +10,6 @@ use crate::adapter::{
     Button, Compositor, Fixed, FixedPoint, Position, WlcsClient, WlcsEvent, WlcsSurface,
     WlcsTouchId,
 };
-use casement::relax::AckPolicy;
 use casement_core::geometry::{LogicalPoint, SubPoint, SubPx};
 use casement_core::input::{ButtonCode, DeviceClass, TouchStep};
 use casement_core::policy::ConnectionRole;
@@ -55,7 +54,7 @@ pub struct Host {
 impl Host {
     /// A fixture with a pointer and a touchscreen plugged.
     pub fn start() -> Host {
-        let spec = FixtureSpec::desktop().with_ack_policy(AckPolicy::Lenient);
+        let spec = FixtureSpec::desktop().with_lenient_acks(true);
         let mut fixture = Fixture::start(spec).expect("the fixture starts");
         let pointer = fixture.input().plug(
             DeviceClass::Pointer,

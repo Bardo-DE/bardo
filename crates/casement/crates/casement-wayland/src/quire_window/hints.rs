@@ -121,33 +121,13 @@ pub fn a11y_of(bus_name: &str, object_path: &str) -> Result<Option<A11yRoot>, A1
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct A11yTooLong;
 
-/// What a proven `request_placement` does.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum PlacementPolicy {
-    /// It is stored and not acted on (P0: windows only float).
-    StoreOnly,
-    /// The model places the window (P2, the policy in force).
-    Act,
-}
-
-/// The policy this phase runs: from P2 a proven placement request is acted on (the model's
-/// `place`), and the object is told the window's new mark when its state changes.
-pub const PLACEMENT_POLICY: PlacementPolicy = PlacementPolicy::Act;
-
-/// The events a proven placement request is under `policy`.
-pub fn placement_events(
-    policy: PlacementPolicy,
-    window: WindowId,
-    target: PlaceTarget,
-    serial: InputSerial,
-) -> Vec<Event> {
-    match policy {
-        PlacementPolicy::StoreOnly => Vec::new(),
-        PlacementPolicy::Act => vec![Event::ToplevelRequest {
-            window,
-            request: ToplevelRequest::Place { target, serial },
-        }],
-    }
+/// The events a proven `request_placement` makes: the model places the window (its `place`),
+/// and the object is told the window's new mark when its state changes.
+pub fn placement_events(window: WindowId, target: PlaceTarget, serial: InputSerial) -> Vec<Event> {
+    vec![Event::ToplevelRequest {
+        window,
+        request: ToplevelRequest::Place { target, serial },
+    }]
 }
 
 /// What the model goes back to when the extension object is destroyed (the compositor forgets
@@ -286,20 +266,10 @@ mod tests {
     }
 
     #[test]
-    fn placement_is_acted_on_from_p2_and_stored_when_asked_to() {
+    fn a_proven_placement_is_acted_on() {
         let (window, serial) = (WindowId(5), InputSerial(77));
-        assert_eq!(PLACEMENT_POLICY, PlacementPolicy::Act);
         assert_eq!(
-            placement_events(
-                PlacementPolicy::StoreOnly,
-                window,
-                PlaceTarget::Left,
-                serial
-            ),
-            Vec::new()
-        );
-        assert_eq!(
-            placement_events(PlacementPolicy::Act, window, PlaceTarget::Left, serial),
+            placement_events(window, PlaceTarget::Left, serial),
             vec![Event::ToplevelRequest {
                 window,
                 request: ToplevelRequest::Place {

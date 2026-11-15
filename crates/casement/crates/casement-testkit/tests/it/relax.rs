@@ -1,7 +1,6 @@
 //! A37: with the lenient policy a buffer attached before the first ack maps the window instead of
 //! killing the client, which is what wlcs' helpers do.
 
-use casement::relax::AckPolicy;
 use casement_core::geometry::PhysicalSize;
 use casement_core::policy::ConnectionRole;
 use casement_testclient::surface::toplevel::WmBase;
@@ -9,7 +8,7 @@ use casement_testclient::{Pattern, shm_buffer};
 use casement_testkit::{Fixture, FixtureSpec};
 
 fn lenient() -> Fixture {
-    Fixture::start(FixtureSpec::desktop().with_ack_policy(AckPolicy::Lenient)).expect("fixture")
+    Fixture::start(FixtureSpec::desktop().with_lenient_acks(true)).expect("fixture")
 }
 
 #[test]

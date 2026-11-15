@@ -24,7 +24,7 @@ use casement_testkit::gpu::{
     CrossSupport, FabricatedSysRoot, FormatSet, GpuTopology, SoftGpu, SoftRenderer, VendorFact,
 };
 use casement_testkit::{Fixture, FixtureSpec, FrameCount, TtyWorld};
-use casement_wayland::dmabuf::{MainDevice, OfferUse};
+use casement_wayland::dmabuf::{MainDevice};
 use std::time::Duration;
 
 const KEYBOARD: DeviceId = DeviceId(1);
@@ -177,13 +177,13 @@ fn clients_are_offered_the_render_plans_dmabuf_feedback() {
     let shape: Vec<_> = offer
         .tranches
         .iter()
-        .map(|tranche| (tranche.device, tranche.purpose, tranche.formats.len()))
+        .map(|tranche| (tranche.device, tranche.scanout, tranche.formats.len()))
         .collect();
     assert_eq!(
         shape,
         [
-            (render, OfferUse::Scanout, 1),
-            (render, OfferUse::Sampling, 1)
+            (render, true, 1),
+            (render, false, 1)
         ],
         "the plane's XRGB8888 first, then ARGB8888 for compositing"
     );

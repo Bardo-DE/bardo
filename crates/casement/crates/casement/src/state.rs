@@ -74,9 +74,10 @@ pub struct State {
     pub display: DisplayHandle,
     /// The event loop, for inserting sources (security-context listeners, timers).
     pub event_loop: LoopHandle<'static, State>,
-    /// A37: whether a buffer attached before the first ack is an error (`testing` only).
+    /// A37: whether a buffer attached before the first ack is taken as the ack the client skipped
+    /// (wlcs' helpers need it) rather than a protocol error (`testing` only).
     #[cfg(feature = "testing")]
-    pub ack_policy: crate::relax::AckPolicy,
+    pub lenient_acks: bool,
 }
 
 /// The model and what lays it out and animates it.
@@ -400,7 +401,7 @@ impl State {
             display: dh,
             event_loop: event_loop.clone(),
             #[cfg(feature = "testing")]
-            ack_policy: crate::relax::AckPolicy::default(),
+            lenient_acks: false,
         })
     }
 
