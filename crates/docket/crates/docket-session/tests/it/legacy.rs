@@ -28,7 +28,7 @@ fn old_log() -> Vec<Logged> {
         SessionRecord::SkillLoaded {
             task: task("t-1"),
             id: SkillId::parse("triage").expect("id"),
-            version: docket_core::SkillVersion("0.1.0".into()),
+            version: "0.1.0".into(),
         },
         SessionRecord::Replied {
             task: task("t-1"),

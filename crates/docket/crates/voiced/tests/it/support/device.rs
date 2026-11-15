@@ -5,10 +5,7 @@
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use tokio::sync::mpsc;
-use voice_audio::{
-    AudioDevice, AudioNode, CaptureFormat, CaptureStream, DeviceError, MediaClass, NodeId,
-    NodeKind, PlaybackFormat, PlaybackStream,
-};
+use voice_audio::{AudioDevice, AudioNode, CaptureFormat, CaptureStream, DeviceError, NodeId, NodeKind, PlaybackFormat, PlaybackStream};
 
 /// What happened to the device.
 #[derive(Debug, Default)]
@@ -75,7 +72,7 @@ pub fn node(id: u32, kind: NodeKind, class: &str) -> AudioNode {
         id: NodeId(id),
         name: format!("node-{id}"),
         kind,
-        media_class: MediaClass(class.into()),
+        media_class: class.into(),
     }
 }
 

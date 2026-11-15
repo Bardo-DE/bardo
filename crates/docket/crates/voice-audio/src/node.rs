@@ -19,11 +19,6 @@ pub enum NodeKind {
     Sink,
 }
 
-/// The node's `media.class` property (`Audio/Source`).
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct MediaClass(pub String);
-
 /// One audio node.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AudioNode {
@@ -34,5 +29,5 @@ pub struct AudioNode {
     /// What it is.
     pub kind: NodeKind,
     /// Its `media.class`.
-    pub media_class: MediaClass,
+    pub media_class: String,
 }

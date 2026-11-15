@@ -25,4 +25,4 @@ pub use kept::{
 };
 pub use schedule::{Hours, Schedule, ScheduleFault, TimeOfDay, Zone};
 pub use shapes::{JobEnd, NewRoutine, RoutineNotice, RoutineRecord, RunRequest};
-pub use trigger::{EventMatch, JobRef, Trigger};
+pub use trigger::{EventMatch, Trigger};

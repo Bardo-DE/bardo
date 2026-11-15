@@ -1,7 +1,7 @@
 //! One skill: `skill.toml` and `SKILL.md` parsed and checked as pure functions of their text.
 
 use crate::fault::SkillFault;
-use docket_core::{SkillCard, SkillId, SkillText, SkillVersion};
+use docket_core::{SkillCard, SkillId, SkillText};
 use docket_vocab::ActionRef;
 use porter_core::AppName;
 use prov::{ActionName, EntityKind, Source};
@@ -75,7 +75,7 @@ pub struct Skill {
     /// The app that ships it.
     pub owner: AppName,
     /// Its version.
-    pub version: SkillVersion,
+    pub version: String,
     /// The actions it teaches.
     pub uses: Vec<ActionRef>,
     /// When it is preselected.
@@ -132,7 +132,7 @@ pub struct Facts {
     /// `owner`.
     pub owner: AppName,
     /// `version`.
-    pub version: SkillVersion,
+    pub version: String,
     /// `uses`.
     pub uses: Vec<ActionRef>,
     /// `[when]`.
@@ -148,7 +148,7 @@ pub fn parse_facts(text: &str) -> Result<Facts, SkillFault> {
     Ok(Facts {
         id: id(&raw.id)?,
         owner: raw.owner,
-        version: SkillVersion(raw.version),
+        version: raw.version,
         uses: raw
             .uses
             .iter()

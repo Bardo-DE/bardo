@@ -22,7 +22,7 @@ use crate::plan::{
 };
 use companion_model::HandNote;
 use companion_model::helper::HelperSeat;
-use docket_core::{Ledger, SkillId, SkillVersion, StepLine, Summary, UserTurn};
+use docket_core::{Ledger, SkillId, StepLine, Summary, UserTurn};
 use docket_permissions_core::{BreakerTrip, TaskPolicy};
 use docket_vocab::{CallId, Handle};
 use porter_ids::Count;

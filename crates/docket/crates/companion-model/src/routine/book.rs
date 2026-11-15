@@ -6,7 +6,7 @@
 use super::kept::{Missed, Routine, RoutineId, RoutineState, RunOutcome, RunRecord};
 use super::schedule::{Schedule, Zone};
 use super::shapes::{JobEnd, NewRoutine, RoutineNotice, RoutineRecord, RunRequest};
-use super::trigger::{EventMatch, JobRef, Trigger};
+use super::trigger::{EventMatch, Trigger};
 use crate::helper::{JobId, PauseWhy};
 use almanac_core::EventRef;
 use prov::{HelperId, UnixSeconds};
@@ -231,7 +231,7 @@ impl RoutineBook {
             .iter()
             .filter(|r| r.state == RoutineState::Active)
             .filter_map(|r| match &r.trigger {
-                Trigger::AfterJob(JobRef(job)) if r.after != Some(*job) => Some(*job),
+                Trigger::AfterJob(job) if r.after != Some(*job) => Some(*job),
                 _ => None,
             })
             .collect()
@@ -418,7 +418,7 @@ impl RoutineBook {
         if matches!(end, JobEnd::Done) {
             for routine in &mut self.routines {
                 if routine.state == RoutineState::Active
-                    && routine.trigger == Trigger::AfterJob(JobRef(job))
+                    && routine.trigger == Trigger::AfterJob(job)
                     && routine.after != Some(job)
                 {
                     routine.after = Some(job);

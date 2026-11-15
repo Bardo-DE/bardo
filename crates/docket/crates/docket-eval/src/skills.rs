@@ -108,7 +108,7 @@ pub fn check_skills(
                     format!(
                         "{} {} validates: {} bytes, {} action(s) used, all registered",
                         skill.id,
-                        skill.version.0,
+                        skill.version,
                         skill.body.len(),
                         skill.uses.len()
                     ),

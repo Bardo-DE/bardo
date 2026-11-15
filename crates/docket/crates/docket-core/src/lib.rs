@@ -94,7 +94,7 @@ pub use roster::{
 };
 pub use run_end::EndWhy;
 pub use schema::{OneOf, ToolSchema, tool_schema};
-pub use skill::{SKILL_ID_MAX, SkillCard, SkillId, SkillIdError, SkillText, SkillVersion};
+pub use skill::{SKILL_ID_MAX, SkillCard, SkillId, SkillIdError, SkillText};
 pub use spend::{Spent, TaskTotals, TokenTotals, TurnReport, charge_turn, check_turn, totals_of};
 pub use trace::{ExchangeAnswer, ExchangeCall, ExchangeMessage, ModelExchange};
 pub use undo::{UndoEntry, UndoFault, UndoScope, UndoState};

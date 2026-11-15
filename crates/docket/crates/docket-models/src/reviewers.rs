@@ -2,7 +2,7 @@
 //! is configured, and the cascade built from a set and a way to make one transport per stage.
 
 use crate::model::TransportModel;
-use action_review::{InferReviewer, ModelChoice, ModelFamily, ReviewerSet};
+use action_review::{InferReviewer, ModelChoice, ReviewerSet};
 use docket_core::ReviewTimeouts;
 use inferd_client::Transport;
 use porter_capability::{Billing, Locality, ModelId};
@@ -13,7 +13,7 @@ fn choice(model: &str, family: &str) -> Option<ModelChoice> {
     Some(ModelChoice {
         account: AccountId::parse("local").ok()?,
         model: ModelId::parse(model).ok()?,
-        family: ModelFamily(family.to_owned()),
+        family: family.to_owned(),
     })
 }
 

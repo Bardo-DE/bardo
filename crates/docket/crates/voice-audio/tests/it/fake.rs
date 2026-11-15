@@ -1,16 +1,13 @@
 //! The fake device.
 
-use voice_audio::{
-    AudioDevice, AudioNode, CaptureFormat, CaptureStream, DeviceError, FakeAudioDevice, MediaClass,
-    NodeId, NodeKind, PlaybackFormat, PlaybackStream, choose_capture,
-};
+use voice_audio::{AudioDevice, AudioNode, CaptureFormat, CaptureStream, DeviceError, FakeAudioDevice, NodeId, NodeKind, PlaybackFormat, PlaybackStream, choose_capture};
 
 fn node(id: u32, kind: NodeKind, class: &str) -> AudioNode {
     AudioNode {
         id: NodeId(id),
         name: format!("n{id}"),
         kind,
-        media_class: MediaClass(class.into()),
+        media_class: class.into(),
     }
 }
 

@@ -3,7 +3,7 @@
 use crate::default_source::DefaultSources;
 use pipewire as pw;
 use std::time::Duration;
-use voice_audio::{AudioNode, MediaClass, NodeId, NodeKind};
+use voice_audio::{AudioNode, NodeId, NodeKind};
 
 /// The node kind PipeWire's `media.class` and name say.
 fn kind_of(class: &str, name: &str) -> Option<NodeKind> {
@@ -74,7 +74,7 @@ pub(crate) fn list_nodes(budget: Duration) -> Result<(Vec<AudioNode>, DefaultSou
                             id: NodeId(global.id),
                             name: name.to_owned(),
                             kind,
-                            media_class: MediaClass(class.to_owned()),
+                            media_class: class.to_owned(),
                         });
                     }
                 }

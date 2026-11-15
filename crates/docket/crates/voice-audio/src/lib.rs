@@ -18,6 +18,6 @@ pub use device::{
 };
 #[cfg(feature = "testing")]
 pub use fake::{FakeAudioDevice, FakeCapture, FakePlayback};
-pub use node::{AudioNode, MediaClass, NodeId, NodeKind};
+pub use node::{AudioNode, NodeId, NodeKind};
 pub use pcm::samples_of;
 pub use snapshot::{SNAPSHOT_BUDGET, snapshot_before};

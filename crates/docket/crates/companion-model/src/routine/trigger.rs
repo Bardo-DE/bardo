@@ -25,11 +25,6 @@ impl EventMatch {
     }
 }
 
-/// The job whose end starts a routine.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct JobRef(pub JobId);
-
 /// What starts a routine.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
@@ -39,7 +34,7 @@ pub enum Trigger {
     /// An almanac event.
     On(EventMatch),
     /// Another job ending done.
-    AfterJob(JobRef),
+    AfterJob(JobId),
 }
 
 impl Trigger {

@@ -3,7 +3,7 @@
 use crate::refusal::Refusal;
 use almanac_core::KindPattern;
 use companion_model::helper::GoalText;
-use companion_model::routine::{EventMatch, JobRef, NewRoutine, RunBudget, Schedule, Trigger};
+use companion_model::routine::{EventMatch, NewRoutine, RunBudget, Schedule, Trigger};
 use companion_wire::{EventForm, RoutineForm, WhenForm};
 use porter_ids::Count;
 
@@ -26,7 +26,7 @@ fn trigger_of(when: WhenForm) -> Result<Trigger, Refusal> {
             .map(Trigger::At)
             .map_err(Refusal::Schedule),
         WhenForm::On(event) => event_of(event).map(Trigger::On),
-        WhenForm::AfterJob(job) => Ok(Trigger::AfterJob(JobRef(job))),
+        WhenForm::AfterJob(job) => Ok(Trigger::AfterJob(job)),
     }
 }
 

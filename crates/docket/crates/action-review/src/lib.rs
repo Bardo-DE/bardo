@@ -18,9 +18,7 @@ mod verdict;
 pub use breaker::{
     ArgDigest, Breaker, DecisionMark, DenialMark, DeniedBy, GoalKey, note, repeated,
 };
-pub use cascade::{
-    Gate, ModelChoice, ModelFamily, Reviewer, ReviewerSet, escalate, plan, tighten,
-};
+pub use cascade::{Gate, ModelChoice, Reviewer, ReviewerSet, escalate, plan, tighten};
 pub use infer::{InferReviewer, REVIEW_CLASS};
 pub use parse::parse_verdict;
 pub use render::render;

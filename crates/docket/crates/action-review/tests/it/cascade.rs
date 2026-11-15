@@ -216,7 +216,7 @@ fn choice(family: &str) -> ModelChoice {
     ModelChoice {
         account: AccountId::parse("local").expect("account"),
         model: ModelId::parse("m").expect("model"),
-        family: ModelFamily(family.into()),
+        family: family.into(),
     }
 }
 

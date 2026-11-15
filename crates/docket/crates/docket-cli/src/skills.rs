@@ -41,7 +41,7 @@ pub fn list(apps: &Apps, roots: &Roots) -> Printed {
         lines.push(format!(
             "{:<20} {:<8} {:<11} {}  [{}, {}]{tail}",
             skill.id,
-            skill.version.0,
+            skill.version,
             word,
             skill.description,
             skill.owner,

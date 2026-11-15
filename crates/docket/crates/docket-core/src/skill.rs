@@ -58,11 +58,6 @@ impl std::fmt::Display for SkillId {
     }
 }
 
-/// The version a skill's owner gave it (`0.1.0`), as written.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct SkillVersion(pub String);
-
 /// One line of the catalogue: what the planner may choose to load.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SkillCard {

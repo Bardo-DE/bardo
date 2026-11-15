@@ -89,11 +89,6 @@ pub trait Reviewer: Send + Sync {
     ) -> impl Future<Output = Result<ReviewVerdict, ReviewError>> + Send;
 }
 
-/// The family a model belongs to (`qwen`, `llama`): what "a different model" means.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct ModelFamily(pub String);
-
 /// One model chosen for a stage.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct ModelChoice {
@@ -102,7 +97,7 @@ pub struct ModelChoice {
     /// The model.
     pub model: ModelId,
     /// Its family.
-    pub family: ModelFamily,
+    pub family: String,
 }
 
 /// The three models behind the stages.

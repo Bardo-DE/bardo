@@ -9,10 +9,7 @@
 use companion_model::HandNote;
 use companion_model::helper::HelperSeat;
 use docket_core::Ledger;
-use docket_core::{
-    CheckpointNote, Covers, HandleShape, Rewind, SkillId, SkillVersion, StepLine, SummaryText,
-    UserTurn,
-};
+use docket_core::{CheckpointNote, Covers, HandleShape, Rewind, SkillId, StepLine, SummaryText, UserTurn};
 use docket_permissions_core::BreakerTrip;
 use docket_permissions_core::ProgramName;
 use docket_permissions_core::TaskPolicy;
@@ -166,7 +163,7 @@ pub struct SkillUse {
     /// The skill.
     pub id: SkillId,
     /// Its version.
-    pub version: SkillVersion,
+    pub version: String,
 }
 
 /// Why a session closed.

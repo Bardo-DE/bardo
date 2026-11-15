@@ -5,7 +5,7 @@
 
 use crate::answer::AnswerPhase;
 use almanac_core::Skeleton;
-use docket_core::{SkillId, SkillVersion, UserTurn};
+use docket_core::{SkillId, UserTurn};
 use prov::{AgentRef, SpaceId, TaskId};
 use serde::{Deserialize, Serialize};
 
@@ -63,7 +63,7 @@ pub enum SessionRecord {
         /// The skill.
         id: SkillId,
         /// Its version.
-        version: SkillVersion,
+        version: String,
     },
     /// The session closed.
     Closed,

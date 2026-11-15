@@ -172,7 +172,7 @@ fn a_second_opening_is_ignored_and_reported() {
 fn skills_are_listed_once() {
     let skill = SessionEntry::Skill(SkillUse {
         id: docket_core::SkillId::parse("triage").expect("id"),
-        version: docket_core::SkillVersion("0.1.0".into()),
+        version: "0.1.0".into(),
     });
     let p = plan(&[SessionEntry::Opened(opening()), skill.clone(), skill]);
     assert_eq!(p.skills.len(), 1);
