@@ -257,7 +257,7 @@ impl BrowserIssuer for Google {
         session: &OAuthSession<Self, H>,
         audience: &Audience,
     ) -> Result<(Option<String>, TokenKind), ProviderError> {
-        let wanted = audience.trim_end_matches('/');
+        let wanted = audience.0.trim_end_matches('/');
         if wanted == "imap" || wanted == "smtp" {
             return match session.byo() {
                 true => Ok((None, TokenKind::Xoauth2)),
@@ -338,7 +338,7 @@ fn grant_target<H>(
     audience: &Audience,
     kind: CapabilityKind,
 ) -> Result<(Family, TokenKind), ProviderError> {
-    let wanted = audience.trim_end_matches('/');
+    let wanted = audience.0.trim_end_matches('/');
     let mail = |family| match (kind, session.byo()) {
         (CapabilityKind::Mail, true) => Ok((family, TokenKind::Xoauth2)),
         _ => Err(ProviderError::Forbidden),

@@ -166,7 +166,7 @@ impl BrowserIssuer for Standard {
 }
 
 fn audience_word(audience: &Audience) -> String {
-    audience.trim_end_matches('/').to_owned()
+    audience.0.trim_end_matches('/').to_owned()
 }
 
 fn names(row: &porter_provider::CapabilityRow, wanted: &str) -> bool {

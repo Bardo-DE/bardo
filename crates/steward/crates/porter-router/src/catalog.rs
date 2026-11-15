@@ -19,7 +19,7 @@ use model_provider::{
 use porter_capability::ModelId;
 use porter_capability::{
     Capability, CuaBatching, CuaCap, CuaEnv, EmbedCap, EmbedPrompts, LanguageSet, LanguageTag,
-    LlmCap, LlmFeature, LlmWire, Modality, PrefixText, SpeechCap, SpeechMode,
+    LlmCap, LlmFeature, LlmWire, Modality, SpeechCap, SpeechMode,
 };
 use porter_capability::{Claim, Offer, Provenance, Subject};
 use porter_ids::{Count, Dims, Px, Tokens};
@@ -277,8 +277,8 @@ fn embed_cap(embed: &EmbedCaps) -> EmbedCap {
         max_input: Tokens(embed.max_input.0),
         max_batch: Count(embed.max_batch.0),
         prompts: Box::new(EmbedPrompts {
-            query: PrefixText(embed.prompts.query.0.clone()),
-            document: PrefixText(embed.prompts.document.0.clone()),
+            query: embed.prompts.query.0.clone(),
+            document: embed.prompts.document.0.clone(),
         }),
     }
 }

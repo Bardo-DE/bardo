@@ -106,6 +106,7 @@ impl Spaces {
         look: &SpaceLook,
     ) -> Result<DesktopSpace, SpacesError> {
         let id = self
+            .bus
             .spaces_proxy()
             .await?
             .create(name.as_str(), look.as_str())

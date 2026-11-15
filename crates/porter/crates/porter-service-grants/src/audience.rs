@@ -16,7 +16,7 @@ pub(crate) fn covers(spec: &ProviderSpec, kind: CapabilityKind, audience: &Audie
         .any(|row| {
             let sends = matches!(&row.capability, Capability::Mail(mail) if mail.send);
             audience.0 == word_of(&row.family)
-                || row.endpoint.as_ref().is_some_and(|e| e.0 == audience.0)
+                || row.endpoint.as_ref().is_some_and(|e| *e == audience.0)
                 || (sends && audience.0 == word_of(&Family::Smtp))
         })
 }

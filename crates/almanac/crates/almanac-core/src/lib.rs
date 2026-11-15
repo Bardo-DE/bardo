@@ -103,6 +103,6 @@ pub use prov::{
     ActionName, Actor, ActorKind, Address, AgentRef, AgentRole, Channel, ClientName,
     Confidentiality, ConfirmId, ConfirmReceipt, Effect, HelperId, InputProof, Integrity, Label,
     Labelled, Message, MessageId, MessageKind, MessageText, ModelRole, OutcomeRef, Part,
-    ReportStatus, RunId, SenderCheck, SessionId, Source, SystemPart, TaskId, ThreadId, UndoHandle,
-    Witness, declassify, endorse,
+    ReportStatus, RunId, SessionId, Source, SystemPart, TaskId, ThreadId, UndoHandle, Witness,
+    declassify, endorse,
 };

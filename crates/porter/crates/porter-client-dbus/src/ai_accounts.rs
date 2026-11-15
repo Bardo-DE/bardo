@@ -159,6 +159,7 @@ impl AiAccounts {
         let claims =
             serde_json::to_string(claims).map_err(|_| AiAccountsError::Link(LinkError::Invalid))?;
         let id = self
+            .bus
             .broker()
             .await?
             .report_local(provider.as_str(), &claims, word_of(&state))
@@ -172,6 +173,7 @@ impl AiAccounts {
     /// between the look and the subscription is not missed.
     pub async fn changes(&self) -> Result<Changes<()>, AiAccountsError> {
         let stream = self
+            .bus
             .broker()
             .await?
             .receive_changed()

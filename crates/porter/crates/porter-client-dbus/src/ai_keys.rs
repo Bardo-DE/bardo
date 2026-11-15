@@ -74,6 +74,7 @@ impl AiKeys {
         window: &ParentWindow,
     ) -> Result<GrantId, AiKeysError> {
         let proxy: KeysProxy<'static> = self
+            .bus
             .accounts
             .proxy(&self.bus.connection)
             .await

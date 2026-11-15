@@ -1,7 +1,7 @@
 //! The label check on a `Record`: its label covers its documents' labels, a message is well
 //! formed, an episode's skeleton is trusted.
 
-use almanac_core::{EventBody, Integrity, Label, MessageFault, SenderCheck};
+use almanac_core::{EventBody, Integrity, Label, MessageFault};
 
 /// Whether `outer` is at least as restrictive as `inner`: no more trusted, no less
 /// confidential, every class and source of `inner` carried. (`outer` joined with `inner` is
@@ -28,7 +28,7 @@ pub(crate) fn record_fault(record: &almanac_core::Record) -> Option<String> {
             .err()
             .map(|f: MessageFault| format!("message: {f:?}"))
             .or_else(|| {
-                (m.sender_matches(&record.actor) == SenderCheck::Mismatch)
+                !m.sender_matches(&record.actor)
                     .then(|| "message: sender is not the recording actor".to_owned())
             }),
         EventBody::Episode(e) => (e.skeleton.label.integrity != Integrity::Trusted)
