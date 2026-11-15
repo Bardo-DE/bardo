@@ -5,7 +5,6 @@
 
 use crate::support::world::*;
 use docket_client::Transport;
-use docket_settings::{AcpAgents, AcpExpose};
 use docket_vocab::CallerRole;
 use docket_wire::{IntentsReply, IntentsRequest, RecallAsk, SessionOpen, WireRefusal};
 use intentd::{ACP_NAME, AcpGate, IntentdConfig};
@@ -46,7 +45,7 @@ fn refused(reply: &IntentsReply) -> bool {
 }
 
 /// What the connection that owns the ACP name is allowed to do in a world with `role` for it.
-async fn allowed(role: CallerRole, request: IntentsRequest, expose: AcpExpose) -> bool {
+async fn allowed(role: CallerRole, request: IntentsRequest, expose: bool) -> bool {
     let gate = AcpGate::new(expose);
     let world = World::serving_gated(mail_router(), only(role), "test-runner.service", gate).await;
     let (acp, _keep) = world.client(&[ACP_NAME]).await;
@@ -55,14 +54,14 @@ async fn allowed(role: CallerRole, request: IntentsRequest, expose: AcpExpose) -
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn with_the_setting_off_the_acp_name_is_neither_an_editor_nor_a_companion() {
-    assert!(!allowed(CallerRole::Editor, open(), AcpExpose::Off).await);
-    assert!(!allowed(CallerRole::Companion, recall(), AcpExpose::Off).await);
+    assert!(!allowed(CallerRole::Editor, open(), false).await);
+    assert!(!allowed(CallerRole::Companion, recall(), false).await);
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn with_the_setting_on_the_acp_name_plays_its_roles() {
-    assert!(allowed(CallerRole::Editor, open(), AcpExpose::On).await);
-    assert!(allowed(CallerRole::Companion, recall(), AcpExpose::On).await);
+    assert!(allowed(CallerRole::Editor, open(), true).await);
+    assert!(allowed(CallerRole::Companion, recall(), true).await);
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -77,7 +76,7 @@ async fn flipping_the_setting_changes_the_next_call() {
     .await;
     let (acp, _keep) = world.client(&[ACP_NAME]).await;
     let mut seen = Vec::new();
-    for expose in [AcpExpose::Off, AcpExpose::On, AcpExpose::Off] {
+    for expose in [false, true, false] {
         gate.set(expose);
         seen.push(refused(&acp.call(open()).await.expect("a reply")));
     }
@@ -117,7 +116,7 @@ fn turn() -> IntentsRequest {
 }
 
 /// Whether the connection that owns the agent host's name is let make an `acp_agent`'s request.
-async fn host_allowed(agents: AcpAgents, expose: AcpExpose) -> bool {
+async fn host_allowed(agents: bool, expose: bool) -> bool {
     let gate = AcpGate::new(expose);
     gate.set_agents(agents);
     let config = IntentdConfig {
@@ -136,6 +135,6 @@ async fn host_allowed(agents: AcpAgents, expose: AcpExpose) -> bool {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_agent_host_name_plays_its_role_only_while_the_agents_setting_is_on() {
-    assert!(!host_allowed(AcpAgents::Off, AcpExpose::On).await);
-    assert!(host_allowed(AcpAgents::On, AcpExpose::Off).await);
+    assert!(!host_allowed(false, true).await);
+    assert!(host_allowed(true, false).await);
 }

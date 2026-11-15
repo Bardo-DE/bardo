@@ -2,7 +2,6 @@
 //! optional. Whether the edge is on is not here: it is the setting `agent.mcp.expose` in docket's
 //! own settings file (`settings.rs`), off when nothing says otherwise (QUESTIONS S7).
 
-use crate::expose::McpExpose;
 use crate::settings;
 use prov::ClientName;
 use serde::{Deserialize, Serialize};
@@ -24,7 +23,7 @@ fn client() -> ClientName {
 pub struct McpConfig {
     /// Whether external clients may use the registry's offered actions.
     #[serde(default)]
-    pub expose: McpExpose,
+    pub expose: bool,
     /// The name every argument and call of this process is labelled with.
     #[serde(default = "client")]
     pub client: ClientName,
@@ -33,7 +32,7 @@ pub struct McpConfig {
 impl Default for McpConfig {
     fn default() -> Self {
         Self {
-            expose: McpExpose::Off,
+            expose: false,
             client: client(),
         }
     }

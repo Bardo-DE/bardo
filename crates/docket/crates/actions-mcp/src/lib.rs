@@ -4,7 +4,7 @@
 //! from `Source::Mcp(client)`, so an MCP client gets `Allow` for reads and a confirmation for
 //! everything else. Importing third-party MCP tools into the registry is later work.
 //!
-//! - `McpExpose`: the switch. `McpEdge::new` is `Off`.
+//! - `expose`: the switch (a `bool`). `McpEdge::new` is off.
 //! - `read_call` (`args`): JSON arguments and the `target` key to typed ones, by declared type.
 //! - `McpEdge::call` and its `ServerHandler`: one tool call through `Intents::perform`.
 //! - `BoundEdge`: the bridge an external ACP agent starts (`--host-socket`), forwarding to the host
@@ -15,7 +15,6 @@ mod bound;
 mod config;
 mod daemon;
 mod edge;
-mod expose;
 mod settings;
 
 pub use bound::{BoundEdge, NoToken};
@@ -25,5 +24,4 @@ pub use daemon::{
     start_following, write_schema,
 };
 pub use edge::McpEdge;
-pub use expose::McpExpose;
 pub use settings::{SCHEMA, SETTINGS_FILE, SETTINGS_KEY, exposed};

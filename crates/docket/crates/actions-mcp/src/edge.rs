@@ -1,6 +1,5 @@
 //! The server: `rmcp` over stdio or a Unix socket, with the router behind it.
 
-use crate::expose::McpExpose;
 use actions_tools::{ToolFault, ToolHints, ToolRefusal, ToolSpec, listing, outcome_json, prepare};
 use docket_client::{Intents, Transport};
 use docket_manifest::ValidManifest;
@@ -19,8 +18,8 @@ use std::sync::Arc;
 /// read again at every request.
 #[derive(Clone)]
 enum Source {
-    Fixed(McpExpose),
-    Read(Arc<dyn Fn() -> McpExpose + Send + Sync>),
+    Fixed(bool),
+    Read(Arc<dyn Fn() -> bool + Send + Sync>),
 }
 
 impl std::fmt::Debug for Source {
@@ -32,7 +31,7 @@ impl std::fmt::Debug for Source {
     }
 }
 
-/// An MCP server over the router, speaking as one client. Off until `with_expose(McpExpose::On)`.
+/// An MCP server over the router, speaking as one client. Off until `with_expose(true)`.
 #[derive(Debug)]
 pub struct McpEdge<T: Transport> {
     intents: Intents<T>,
@@ -47,12 +46,12 @@ impl<T: Transport> McpEdge<T> {
         Self {
             intents,
             client,
-            expose: Source::Fixed(McpExpose::default()),
+            expose: Source::Fixed(false),
         }
     }
 
     /// The same edge with `expose` (the person's setting).
-    pub fn with_expose(self, expose: McpExpose) -> Self {
+    pub fn with_expose(self, expose: bool) -> Self {
         Self {
             expose: Source::Fixed(expose),
             ..self
@@ -61,7 +60,7 @@ impl<T: Transport> McpEdge<T> {
 
     /// The same edge following the person's setting: `read` is asked at every listing and call, so
     /// a change in the Settings app applies to the next request.
-    pub fn with_expose_read(self, read: impl Fn() -> McpExpose + Send + Sync + 'static) -> Self {
+    pub fn with_expose_read(self, read: impl Fn() -> bool + Send + Sync + 'static) -> Self {
         Self {
             expose: Source::Read(Arc::new(read)),
             ..self
@@ -69,7 +68,7 @@ impl<T: Transport> McpEdge<T> {
     }
 
     /// Whether the edge is on.
-    pub fn expose(&self) -> McpExpose {
+    pub fn expose(&self) -> bool {
         match &self.expose {
             Source::Fixed(expose) => *expose,
             Source::Read(read) => read(),
@@ -85,13 +84,11 @@ impl<T: Transport> McpEdge<T> {
 
     /// The tools offered right now, each with its description: nothing while the edge is off.
     pub async fn listing(&self) -> Result<Vec<(ToolSpec, String)>, ToolFault> {
-        match self.expose() {
-            McpExpose::Off => Ok(Vec::new()),
-            McpExpose::On => {
-                let registry = self.registry().await?;
-                Ok(listing(&registry, |_| true))
-            }
+        if !self.expose() {
+            return Ok(Vec::new());
         }
+        let registry = self.registry().await?;
+        Ok(listing(&registry, |_| true))
     }
 
     /// One tool call: finds the action by tool name, reads the arguments by their declared
@@ -100,7 +97,7 @@ impl<T: Transport> McpEdge<T> {
     /// answered here: the person answers it on the sheet. An argument that does not fit its
     /// declaration is refused before the router is asked anything.
     pub async fn call(&self, tool: &str, arguments: Json) -> Result<Json, ToolFault> {
-        if self.expose() == McpExpose::Off {
+        if !self.expose() {
             return Err(ToolFault::Off);
         }
         let registry = self.registry().await?;

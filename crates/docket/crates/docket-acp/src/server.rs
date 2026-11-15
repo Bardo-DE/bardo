@@ -13,7 +13,6 @@
 //! not ours to run.
 
 use crate::covered::Covered;
-use crate::expose::Permit;
 use crate::helpers::{Helpers, NoHelpers};
 use crate::link::{Gone, Inbound, Link, answer};
 use crate::mode::Mode;
@@ -89,9 +88,8 @@ pub struct Server<H, L, T, S = NoHelpers> {
 }
 
 impl<H: SessionHost, L: SessionLog, T: Clock> Server<H, L, T, NoHelpers> {
-    /// A server for the editor `editor` (the opener its sessions record), allowed to serve by
-    /// `permit`.
-    pub fn new(_permit: Permit, editor: AppName, host: H, log: L, ticks: T) -> Self {
+    /// A server for the editor `editor` (the opener its sessions record).
+    pub fn new(editor: AppName, host: H, log: L, ticks: T) -> Self {
         Self {
             host,
             log,

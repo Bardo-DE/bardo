@@ -3,7 +3,7 @@
 //!
 //! - `Server`: the protocol over the SDK's agent role, a `SessionHost` and a `SessionLog`. It holds
 //!   no authority; every call a session makes goes through the host's gate.
-//! - `Permit`: the proof that `agent.acp.expose` is on. No permit, no server.
+//! - `exposed` / `exposed_in`: whether `agent.acp.expose` is on. The binary serves only when it is.
 //! - `turn`: one prompt turn as a pure step machine. `calls`, `permission`, `mode`, `history`:
 //!   the mappings from our step lines, the editor's extra gate, the modes and the stored
 //!   sessions.
@@ -44,7 +44,7 @@ mod turn;
 pub use calls::{Outcome, outcome};
 pub use conversation::ConversationTurns;
 pub use covered::Covered;
-pub use expose::{Permit, Refusal};
+pub use expose::{exposed, exposed_in};
 pub use helpers::{HelperRefusal, HelperRow, Helpers, NoHelpers};
 pub use mode::{Mode, Say};
 pub use permission::{options, sheet_options, sheet_request};

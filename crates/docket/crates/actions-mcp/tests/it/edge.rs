@@ -89,7 +89,7 @@ fn allow_mail_for_the_client(router: &Router<FakeSeams>) {
     }
 }
 
-async fn rig(expose: McpExpose) -> Rig {
+async fn rig(expose: bool) -> Rig {
     rig_with(|edge| edge.with_expose(expose)).await
 }
 
@@ -154,8 +154,7 @@ fn performs(rig: &Rig) -> Vec<CallRequest> {
 
 #[tokio::test]
 async fn an_edge_nobody_switched_on_lists_nothing_and_refuses_every_call() {
-    assert_eq!(McpExpose::default(), McpExpose::Off);
-    let rig = rig(McpExpose::default()).await;
+    let rig = rig(false).await;
     assert!(rig.client.list_all_tools().await.expect("list").is_empty());
     let result = call(
         &rig,
@@ -170,7 +169,7 @@ async fn an_edge_nobody_switched_on_lists_nothing_and_refuses_every_call() {
 
 #[tokio::test]
 async fn the_tools_are_the_offered_actions_with_hints_and_a_target_key() {
-    let rig = rig(McpExpose::On).await;
+    let rig = rig(true).await;
     let tools = rig.client.list_all_tools().await.expect("list");
     let names: Vec<&str> = tools.iter().map(|t| t.name.as_ref()).collect();
     assert!(names.contains(&"mail__mail_thread_read"), "{names:?}");
@@ -198,7 +197,7 @@ async fn the_tools_are_the_offered_actions_with_hints_and_a_target_key() {
 
 #[tokio::test]
 async fn a_read_is_allowed_and_its_arguments_reach_the_router_untrusted() {
-    let rig = rig(McpExpose::On).await;
+    let rig = rig(true).await;
     let result = call(
         &rig,
         "mail__mail_thread_read",
@@ -216,7 +215,7 @@ async fn a_read_is_allowed_and_its_arguments_reach_the_router_untrusted() {
 
 #[tokio::test]
 async fn a_write_asks_and_nothing_runs_when_the_person_does_not_answer() {
-    let rig = rig(McpExpose::On).await;
+    let rig = rig(true).await;
     let result = call(
         &rig,
         "mail__mail_thread_archive",
@@ -243,7 +242,7 @@ async fn a_write_asks_and_nothing_runs_when_the_person_does_not_answer() {
 
 #[tokio::test]
 async fn every_argument_is_sent_untrusted_from_this_client() {
-    let rig = rig(McpExpose::On).await;
+    let rig = rig(true).await;
     let _ = call(
         &rig,
         "mail__mail_draft_create",
@@ -264,7 +263,7 @@ async fn every_argument_is_sent_untrusted_from_this_client() {
 
 #[tokio::test]
 async fn bad_arguments_and_unknown_tools_never_reach_the_router() {
-    let rig = rig(McpExpose::On).await;
+    let rig = rig(true).await;
     let cases = [
         (
             "mail__mail_thread_read",
@@ -299,7 +298,7 @@ async fn bad_arguments_and_unknown_tools_never_reach_the_router() {
 
 #[tokio::test]
 async fn a_refusal_names_a_kind_and_never_a_reason() {
-    let rig = rig(McpExpose::On).await;
+    let rig = rig(true).await;
     // The client holds no grant for Files: the router refuses, and the edge says only "denied".
     let result = call(
         &rig,
@@ -328,8 +327,8 @@ async fn call_can_be_used_without_a_server() {
             .await,
         Err(ToolFault::Off)
     );
-    let edge = edge.with_expose(McpExpose::On);
-    assert_eq!(edge.expose(), McpExpose::On);
+    let edge = edge.with_expose(true);
+    assert!(edge.expose());
     assert_eq!(
         edge.call("mail__mail_thread_read", json!([1])).await,
         Err(ToolFault::Args(ArgsFault::NotAnObject))

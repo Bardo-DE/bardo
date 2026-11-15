@@ -5,7 +5,6 @@
 //! watch is the daemon's (intentd), so this crate reaches no runtime and no watcher.
 
 mod agents;
-mod expose;
 mod keys;
 mod locate;
 mod places;
@@ -22,7 +21,6 @@ pub use agents::{
     find_known, read_agents, unlisted, write_agent_add, write_agent_choice, write_agent_remove,
     write_agent_rewind,
 };
-pub use expose::{AcpAgents, AcpExpose, McpExpose};
 pub use locate::Locator;
 pub use places::{
     CloudAccount, CloudAllowed, Floor, Known, KnownPlace, ModelChoice, OwnComputer, PLACES_PATH,
@@ -46,17 +44,19 @@ pub const REVIEW_CEILING: docket_core::ReviewTimeouts = docket_core::ReviewTimeo
 };
 
 /// Every value of the file, typed: what the router and the companion read, and whether the MCP
-/// and ACP edges are on.
+/// and ACP edges are on. The file keeps the Settings app's `"on"` / `"off"` words for the three
+/// switches; the typed value is a `bool`. All three are off by default: an edge that was never
+/// switched on serves nothing.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct AgentSettings {
     /// The proposed values, with the person's choices in them.
     pub agent: AgentConfig,
-    /// `agent.mcp.expose`.
-    pub expose: McpExpose,
-    /// `agent.acp.expose`.
-    pub acp: AcpExpose,
-    /// `agent.acp.agents`.
-    pub agents: AcpAgents,
+    /// `agent.mcp.expose`: whether external MCP clients may use the registry's offered actions.
+    pub expose: bool,
+    /// `agent.acp.expose`: whether a code editor may drive the companion over ACP.
+    pub acp: bool,
+    /// `agent.acp.agents`: whether docket may run external coding agents as session backends.
+    pub agents: bool,
 }
 
 impl AgentSettings {
@@ -64,9 +64,9 @@ impl AgentSettings {
     pub fn over(agent: AgentConfig) -> Self {
         Self {
             agent,
-            expose: McpExpose::Off,
-            acp: AcpExpose::Off,
-            agents: AcpAgents::Off,
+            expose: false,
+            acp: false,
+            agents: false,
         }
     }
 }

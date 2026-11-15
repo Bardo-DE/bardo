@@ -4,7 +4,7 @@
 
 use agent_client_protocol::schema::v1::RequestId;
 use agent_client_protocol::{Agent, DynConnectTo};
-use docket_acp::{Helpers, NoHelpers, Permit, Server, capped_lines};
+use docket_acp::{Helpers, NoHelpers, Server, capped_lines};
 use docket_core::{CallRefusal, StepEnd, StepLine, StepShown};
 use docket_fake::FixedClock;
 use docket_permissions_core::DenyCode;
@@ -42,10 +42,6 @@ pub type Fixed = FixedClock;
 
 pub fn app(name: &str) -> AppName {
     AppName::parse(name).expect("app")
-}
-
-pub fn permit() -> Permit {
-    Permit::from_text("[agent.acp]\nexpose = \"on\"\n").expect("on")
 }
 
 pub fn action(name: &str) -> ActionRef {
@@ -130,7 +126,6 @@ pub fn rig_with<S: Helpers>(
     let lines = capped_lines(BufReader::new(server_read), server_write);
     let host = FakeHost::new(log.clone(), scripts);
     let server = Server::new(
-        permit(),
         app(editor_app),
         host,
         log.clone(),

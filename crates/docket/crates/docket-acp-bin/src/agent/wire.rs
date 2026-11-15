@@ -12,7 +12,7 @@ use docket_dbus::BusConnection;
 use docket_dbus::callers::Identity;
 use docket_host::EditorDesk;
 use docket_launch::dbus::DbusAccounts;
-use docket_launch::{AgentsFile, AgentsPermit, ChildProc, Registry, Supervisor};
+use docket_launch::{AgentsFile, ChildProc, Registry, Supervisor};
 use docket_settings::AgentSettings;
 use std::sync::Arc;
 
@@ -26,12 +26,10 @@ pub enum Tools {
     Unwanted,
 }
 
-/// What `agent.acp.agents` and `agents.toml` say, before anything starts: the proof the setting
-/// is on, and the programs that may start.
+/// What `agents.toml` says, once `agent.acp.agents` is on and before anything starts: the programs
+/// that may start.
 #[derive(Debug)]
 pub struct Allowed {
-    /// The proof that `agent.acp.agents` is on.
-    pub permit: AgentsPermit,
     /// The programs that may start.
     pub file: Arc<AgentsFile>,
 }
@@ -39,8 +37,11 @@ pub struct Allowed {
 /// Reads the setting and `agents.toml`. Off, or no file, or a file that is wrong, is a fault.
 pub fn allowed(places: &Places) -> Result<Allowed, AgentFault> {
     let loaded = places.locator().read(AgentSettings::default());
-    let permit = AgentsPermit::from_setting(loaded.value.agents)
-        .map_err(|e| AgentFault::Permit(e.to_string()))?;
+    if !loaded.value.agents {
+        return Err(AgentFault::Permit(
+            "agent.acp.agents is off: no agent program starts".to_owned(),
+        ));
+    }
     let text = std::fs::read_to_string(places.config_dir().join("docket/agents.toml"))
         .map_err(|_| AgentFault::NoAgentsFile)?;
     let agents = places.agents_dir();
@@ -48,7 +49,7 @@ pub fn allowed(places: &Places) -> Result<Allowed, AgentFault> {
         AgentsFile::parse_in(&text, Some(&agents))
             .map_err(|e| AgentFault::Agents(e.to_string()))?,
     );
-    Ok(Allowed { permit, file })
+    Ok(Allowed { file })
 }
 
 /// The wiring of a host on `bus`: the sandbox, the launcher registered on the bus and the tool
@@ -62,7 +63,7 @@ pub async fn build(
     limits: SandboxLimits,
     places: Places,
 ) -> Result<Wiring<DbusAccounts>, AgentFault> {
-    let Allowed { permit, file } = allowed;
+    let Allowed { file } = allowed;
     let bwrap = match limits.probe(places.path()) {
         Detected::Bwrap(bwrap) => bwrap,
         Detected::Missing(why) => return Err(AgentFault::NoSandbox(why)),
@@ -128,7 +129,6 @@ pub async fn build(
         bus,
         accounts,
         file,
-        permit,
         bwrap: Detected::Bwrap(bwrap),
         forwarder,
         enter,

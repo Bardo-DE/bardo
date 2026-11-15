@@ -11,7 +11,6 @@
 //! This only narrows the exposure while the feature is off. Identity stays advisory for processes
 //! of the same user (see `peer.rs`): with the setting on, any of them can still own the name.
 
-use docket_settings::{AcpAgents, AcpExpose};
 use porter_core::AppName;
 use std::sync::Arc;
 use tokio::sync::watch;
@@ -23,41 +22,41 @@ pub const ACP_NAME: &str = "org.quire.Acp";
 /// read them).
 #[derive(Debug, Clone)]
 pub struct AcpGate {
-    expose: Arc<watch::Sender<AcpExpose>>,
-    agents: Arc<watch::Sender<AcpAgents>>,
+    expose: Arc<watch::Sender<bool>>,
+    agents: Arc<watch::Sender<bool>>,
 }
 
 impl AcpGate {
     /// A gate showing `expose`.
-    pub fn new(expose: AcpExpose) -> Self {
+    pub fn new(expose: bool) -> Self {
         Self {
             expose: Arc::new(watch::channel(expose).0),
-            agents: Arc::new(watch::channel(AcpAgents::Off).0),
+            agents: Arc::new(watch::channel(false).0),
         }
     }
 
     /// A gate that is shut: the name is nobody. What a daemon that never read the setting uses.
     pub fn shut() -> Self {
-        Self::new(AcpExpose::Off)
+        Self::new(false)
     }
 
     /// Puts a newly read setting in force for the next call.
-    pub fn set(&self, expose: AcpExpose) {
+    pub fn set(&self, expose: bool) {
         self.expose.send_replace(expose);
     }
 
     /// Puts a newly read `agent.acp.agents` in force for the next call.
-    pub fn set_agents(&self, agents: AcpAgents) {
+    pub fn set_agents(&self, agents: bool) {
         self.agents.send_replace(agents);
     }
 
     /// The setting now.
-    pub fn expose(&self) -> AcpExpose {
+    pub fn expose(&self) -> bool {
         *self.expose.borrow()
     }
 
     /// `agent.acp.agents` now.
-    pub fn agents(&self) -> AcpAgents {
+    pub fn agents(&self) -> bool {
         *self.agents.borrow()
     }
 
@@ -66,8 +65,8 @@ impl AcpGate {
     /// `agent.acp.agents` is.
     pub(crate) fn keeps(&self, name: &AppName) -> bool {
         match name.as_str() {
-            ACP_NAME => self.expose() == AcpExpose::On,
-            docket_permissions_core::ACP_AGENT_APP => self.agents() == AcpAgents::On,
+            ACP_NAME => self.expose(),
+            docket_permissions_core::ACP_AGENT_APP => self.agents(),
             _ => true,
         }
     }
@@ -88,12 +87,12 @@ mod tests {
         assert!(!gate.keeps(&name(ACP_NAME)));
         assert!(!gate.keeps(&host));
         assert!(gate.keeps(&name("org.quire.Shell")));
-        gate.set(AcpExpose::On);
+        gate.set(true);
         assert!(gate.keeps(&name(ACP_NAME)));
         assert!(!gate.keeps(&host), "the editor setting is not the agents'");
-        gate.set(AcpExpose::Off);
+        gate.set(false);
         assert!(!gate.keeps(&name(ACP_NAME)));
-        gate.set_agents(AcpAgents::On);
+        gate.set_agents(true);
         assert!(gate.keeps(&host));
         assert!(!gate.keeps(&name(ACP_NAME)));
     }

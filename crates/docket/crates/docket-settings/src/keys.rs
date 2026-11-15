@@ -137,11 +137,16 @@ fn rest() -> Vec<Key> {
     let switch: &[&str] = &["off", "on"];
     vec![
         word("agent.mcp.expose", switch, |s, w| {
-            parse_into(&mut s.expose, w)
+            s.expose = w == "on";
+            true
         }),
-        word("agent.acp.expose", switch, |s, w| parse_into(&mut s.acp, w)),
+        word("agent.acp.expose", switch, |s, w| {
+            s.acp = w == "on";
+            true
+        }),
         word("agent.acp.agents", switch, |s, w| {
-            parse_into(&mut s.agents, w)
+            s.agents = w == "on";
+            true
         }),
         num("agent.budget.spend_microusd", 0..=1_000_000_000, |s, v| {
             // Millionths of a US dollar in the file. 0 is a cap of nothing: the turn after any

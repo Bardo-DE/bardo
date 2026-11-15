@@ -14,7 +14,7 @@ use docket_acp_bin::harness::host::{HostError, Hosted, Places, SandboxLimits, Wi
 use docket_acp_host::{Fallback, Models, ToolsOffer};
 use docket_core::{TurnVia, UserTurn};
 use docket_host::EditorDesk;
-use docket_launch::{AgentsFile, AgentsPermit, LoginOnly, Registry};
+use docket_launch::{AgentsFile, LoginOnly, Registry};
 use docket_permissions_core::ProgramName;
 use docket_session::{BackendEvent, EndCause, SessionHost, TurnEnd};
 use docket_vocab::{Caller, TurnId};
@@ -46,9 +46,6 @@ pub enum PlayFault {
     /// The agent's `agents.toml` entry does not parse.
     #[error("{0}")]
     Entry(String),
-    /// The agents setting is off.
-    #[error("agents are off")]
-    AgentsOff,
     /// The program's name does not parse.
     #[error("the program name")]
     ProgramName,
@@ -118,8 +115,6 @@ async fn open(
         .map(|pick| agents_core::dirs::AgentsDir::at(&pick.dir));
     let file = AgentsFile::parse_in(&entry, dir.as_ref())
         .map_err(|why| PlayFault::Entry(why.to_string()))?;
-    let permit = AgentsPermit::from_text("[agent.acp]\nagents = \"on\"\n")
-        .map_err(|_| PlayFault::AgentsOff)?;
     let program = ProgramName::parse(&spec.program).map_err(|_| PlayFault::ProgramName)?;
     // The agent host is its own process to the daemons (docket-agent's scope), as it is on a
     // desktop; the harness process stays the shell.
@@ -137,7 +132,6 @@ async fn open(
         bus,
         accounts: Arc::new(LoginOnly),
         file: Arc::new(file),
-        permit,
         // The world is `env -i` with a scratch runtime dir: no user manager holds a scope, so the
         // agent is bounded per process, as in the acceptance jail.
         bwrap: SandboxLimits::PerProcess.probe("/usr/bin:/bin:/usr/local/bin"),

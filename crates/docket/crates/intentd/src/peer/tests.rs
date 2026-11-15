@@ -107,7 +107,7 @@ fn a_table_of_callers_and_the_roles_their_standing_backs() {
 fn the_acp_apps_count_only_while_their_settings_are_on() {
     let acp = held("org.quire.Acp", Role::Agent);
     assert_eq!(who(&acp, &AcpGate::shut()), None);
-    let on = AcpGate::new(docket_settings::AcpExpose::On);
+    let on = AcpGate::new(true);
     assert_eq!(
         who(&acp, &on),
         Some((
@@ -117,7 +117,7 @@ fn the_acp_apps_count_only_while_their_settings_are_on() {
     );
     let host = held("org.quire.AcpAgent", Role::Agent);
     assert_eq!(who(&host, &on), None);
-    on.set_agents(docket_settings::AcpAgents::On);
+    on.set_agents(true);
     assert_eq!(
         who(&host, &on),
         Some(("org.quire.AcpAgent".to_owned(), vec![CallerRole::AcpAgent]))
@@ -187,7 +187,7 @@ fn a_process_is_identified_by_its_unit_and_a_scope_or_a_stranger_is_not_the_unit
     }
     // A scope has no main process: the editor's host is matched by the program it runs.
     std::os::unix::fs::symlink("/usr/bin/docket-acp", root.join("8").join("exe")).expect("exe");
-    let on = AcpGate::new(docket_settings::AcpExpose::On);
+    let on = AcpGate::new(true);
     // A row: what it is, its pid, and the app and roles it is taken for (none: refused).
     type Row<'a> = (&'a str, u32, Option<(&'a str, &'a [CallerRole])>);
     let rows: [Row<'_>; 12] = [

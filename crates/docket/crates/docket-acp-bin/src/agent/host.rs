@@ -16,7 +16,7 @@ use docket_dbus::BusConnection;
 use docket_dbus::callers::Identity;
 use docket_host::EditorDesk;
 use docket_launch::{
-    Accounts, AgentSpawn, AgentsFile, AgentsPermit, BwrapProcs, ChildProc, Registry,
+    Accounts, AgentSpawn, AgentsFile, BwrapProcs, ChildProc, Registry,
 };
 use docket_permissions_core::ProgramName;
 use docket_session::{BackendKind, HostFault, Opening, SessionHost};
@@ -49,8 +49,6 @@ pub struct Wiring<A: Accounts + 'static> {
     pub accounts: Arc<A>,
     /// The programs that may start.
     pub file: Arc<AgentsFile>,
-    /// The proof that `agent.acp.agents` is on.
-    pub permit: AgentsPermit,
     /// The sandbox program found by `Detected::probe`.
     pub bwrap: Detected,
     /// `docket-net-forward`, for an `endpoint_only` or `allowlist` entry.

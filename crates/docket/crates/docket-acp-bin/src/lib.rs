@@ -26,7 +26,7 @@ pub mod helpers;
 
 use companion_client::DbusHelpers;
 use confirm::ConfirmObject;
-use docket_acp::{Permit, Server, capped_lines};
+use docket_acp::{Server, capped_lines};
 use docket_client::{DbusTransport, Intents};
 use docket_core::AgentConfig;
 use docket_dbus::callers::Identity;
@@ -75,11 +75,10 @@ pub enum LiveFault {
 /// the router records the opener and the editor's turns under the app behind the connection.
 /// `env` is the environment `main` hands in.
 pub async fn serve(
-    permit: Permit,
     trace: docket_dbus::InferWatch,
     env: &impl Fn(&str) -> Option<String>,
 ) -> Result<(), LiveFault> {
-    serve_on(permit, trace, Callers::default(), env).await
+    serve_on(trace, Callers::default(), env).await
 }
 
 /// Where the callers are read from: the system's `/proc` and callers file, unless the acceptance
@@ -100,7 +99,6 @@ impl Default for Callers {
 }
 
 async fn serve_on(
-    permit: Permit,
     trace: docket_dbus::InferWatch,
     seams: Callers,
     env: &impl Fn(&str) -> Option<String>,
@@ -158,7 +156,7 @@ async fn serve_on(
     let helpers = LiveHelpers::over(talking).await;
     let host: LiveHost = NativeHost::over(companion, log.clone()).with_desk(desk);
     let lines = capped_lines(BufReader::new(stdin()), stdout());
-    let mut server = Server::new(permit, editor, host, log, SystemClock).with_helpers(helpers);
+    let mut server = Server::new(editor, host, log, SystemClock).with_helpers(helpers);
     // The editor closing the pipe is the normal end.
     let _ = server.run(lines).await;
     Ok(())

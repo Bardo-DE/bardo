@@ -2,14 +2,10 @@
 //! acceptance harness (the packaged binary reads the person's settings file; this is the
 //! setting `agent.acp.expose = "on"` already read).
 
-use docket_acp::Permit;
 use std::process::ExitCode;
 
 fn main() -> ExitCode {
     docket_log::init("docket-acp");
-    let Ok(permit) = Permit::from_text("[agent.acp]\nexpose = \"on\"\n") else {
-        return ExitCode::from(2);
-    };
     let runtime = match tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()
@@ -29,7 +25,6 @@ fn main() -> ExitCode {
         ),
     };
     match runtime.block_on(docket_acp_bin::harness::acp::serve_with(
-        permit,
         docket_accept::seams::trace(&env),
         seams,
         &env,

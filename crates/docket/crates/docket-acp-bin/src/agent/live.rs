@@ -20,7 +20,7 @@ use companion_model::{SeenCommand, WatchedAgent};
 use docket_dbus::CONFIRM_PATH;
 use docket_host::EditorDesk;
 use docket_launch::{
-    Accounts, AgentSpawn, AgentsFile, AgentsPermit, BwrapProcs, ChildProc, Entry, Registry,
+    Accounts, AgentSpawn, AgentsFile, BwrapProcs, ChildProc, Entry, Registry,
     ToolsMode, login_run,
 };
 use docket_manifest::ValidManifest;
@@ -38,7 +38,6 @@ const MANIFEST: &str = include_str!("../../../../manifests/org.quire.AcpAgent.to
 #[allow(missing_debug_implementations)]
 pub struct Live<A: Accounts + 'static> {
     file: Arc<AgentsFile>,
-    permit: AgentsPermit,
     accounts: Arc<A>,
     sandbox: BwrapSandbox,
     forwarder: AbsPath,
@@ -110,7 +109,6 @@ impl<A: Accounts + 'static> Live<A> {
             bus,
             accounts,
             file,
-            permit,
             bwrap,
             forwarder,
             enter,
@@ -156,7 +154,6 @@ impl<A: Accounts + 'static> Live<A> {
         let court = IntentsCourt::over(DbusTransport::new(bus));
         Ok(Self {
             file,
-            permit,
             accounts,
             sandbox,
             forwarder,
@@ -283,7 +280,6 @@ impl<A: Accounts + 'static> Live<A> {
     /// every session of this host shares, and a tool edge that offers what `menu` allows.
     pub fn backend(&self, program: &ProgramName, menu: EdgeMenu) -> AcpBackend<Hosting<A>> {
         let spawn = AgentSpawn::new(
-            self.permit,
             Arc::clone(&self.file),
             Arc::clone(&self.accounts),
             BwrapProcs::new(self.sandbox.clone(), self.run_dir.clone()),

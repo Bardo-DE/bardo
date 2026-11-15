@@ -312,15 +312,9 @@ fn each_key_lands_in_the_typed_value_the_design_names() {
         read(&both, AgentSettings::default()).value.agent.start_mode,
         Mode::Auto
     );
-    assert_eq!(
-        read_one("agent.mcp.expose", word("on")).expose,
-        McpExpose::On
-    );
-    assert_eq!(read_one("agent.acp.expose", word("on")).acp, AcpExpose::On);
-    assert_eq!(
-        read_one("agent.acp.agents", word("on")).agents,
-        crate::AcpAgents::On
-    );
+    assert!(read_one("agent.mcp.expose", word("on")).expose);
+    assert!(read_one("agent.acp.expose", word("on")).acp);
+    assert!(read_one("agent.acp.agents", word("on")).agents);
     assert_eq!(
         read_one("agent.budget.spend_microusd", int(2_500_000))
             .agent
@@ -402,7 +396,7 @@ fn unknown_keys_are_reported_and_version_is_not_one() {
         "version = 1\n[agent.budget]\nbogus = 1\n[agent.mcp]\nexpose = \"on\"\n[other]\nx = 1\n",
         AgentSettings::default(),
     );
-    assert_eq!(loaded.value.expose, McpExpose::On);
+    assert!(loaded.value.expose);
     assert_eq!(loaded.unknown, ["agent.budget.bogus", "other.x"]);
     assert_eq!(
         loaded.lines("intentd"),
@@ -437,7 +431,7 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
     let value = locator.read(AgentSettings::default()).value;
     assert_eq!(value.agent.budget.spend, micro_usd(5));
     // The first file wins whole: the later directory's other keys are not merged in.
-    assert_eq!(value.expose, McpExpose::Off);
+    assert!(!value.expose);
     let none = Locator::from_env(&|_: &str| None::<String>);
     assert_eq!(
         none.read(AgentSettings::default()),

@@ -3,7 +3,6 @@
 //! `agent.acp.expose` is on. Exits 2 when that is off or the command line is bad, 1 for any other
 //! stop.
 
-use docket_acp::Permit;
 use std::process::ExitCode;
 
 const USAGE: &str =
@@ -16,13 +15,10 @@ fn main() -> ExitCode {
         return ExitCode::from(2);
     }
     docket_log::init("docket-acp");
-    let permit = match Permit::from_env(&env) {
-        Ok(permit) => permit,
-        Err(why) => {
-            eprintln!("docket-acp: {why}");
-            return ExitCode::from(2);
-        }
-    };
+    if !docket_acp::exposed_in(&env) {
+        eprintln!("docket-acp: agent.acp.expose is off: docket-acp refuses to serve");
+        return ExitCode::from(2);
+    }
     let runtime = match tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()
@@ -34,7 +30,6 @@ fn main() -> ExitCode {
         }
     };
     match runtime.block_on(docket_acp_bin::serve(
-        permit,
         docket_dbus::InferWatch::off(),
         &env,
     )) {

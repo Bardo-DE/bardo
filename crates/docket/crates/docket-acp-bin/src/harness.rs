@@ -17,7 +17,6 @@ pub mod serve {
 /// `docket-acp` as the harness's own process.
 pub mod acp {
     use crate::{Callers, LiveFault};
-    use docket_acp::Permit;
     use porter_callers::ProcRoot;
     use std::path::PathBuf;
 
@@ -44,7 +43,6 @@ pub mod acp {
 
     /// [`crate::serve`] with the seams the acceptance harness's mains choose.
     pub async fn serve_with(
-        permit: Permit,
         trace: docket_dbus::InferWatch,
         seams: HarnessSeams,
         env: &impl Fn(&str) -> Option<String>,
@@ -54,7 +52,6 @@ pub mod acp {
             system_callers,
         } = seams;
         crate::serve_on(
-            permit,
             trace,
             Callers {
                 proc_root,

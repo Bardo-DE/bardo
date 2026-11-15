@@ -7,7 +7,7 @@
 #[path = "../../../docket-acp-host/tests/it/client/agent.rs"]
 mod agent;
 
-use super::support::{ENDPOINT, abs, permit};
+use super::support::{ENDPOINT, abs};
 use acp_core::call::AgentCall;
 use acp_core::court::{Court, CourtFault, OpenAgent, Ruled};
 use agent::{Act, agent as scripted, say};
@@ -66,7 +66,6 @@ async fn a_session_through_the_launcher_asks_porter_in_order_and_gives_it_all_ba
     let (procs, seen) = FakeProcs::new(vec![wire]);
     let dir = tempfile::tempdir().expect("scratch");
     let spawn = AgentSpawn::new(
-        permit(),
         Arc::new(AgentsFile::parse(ENDPOINT).expect("agents.toml")),
         Arc::new(accounts.clone()),
         procs,

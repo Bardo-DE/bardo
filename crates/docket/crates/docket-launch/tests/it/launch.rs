@@ -258,7 +258,6 @@ async fn a_child_says_how_far_it_is_held_once_the_exec_stage_reported() {
     let (near, _far) = docket_acp_host::fake::pipe();
     let (procs, seen) = FakeProcs::new(vec![near]);
     rig.spawn = docket_launch::AgentSpawn::new(
-        super::support::permit(),
         rig.file.clone(),
         std::sync::Arc::new(rig.accounts.clone()),
         procs.reporting(bulkhead::LandlockLevel::Full),
@@ -296,20 +295,6 @@ async fn a_program_that_is_not_listed_starts_nothing_and_asks_nothing() {
     assert_eq!(err, SpawnFault::NotAllowed);
     assert!(rig.accounts.calls().is_empty());
     assert!(rig.procs.runs().is_empty());
-}
-
-#[test]
-fn with_the_setting_off_there_is_no_spawner_to_build() {
-    for text in [
-        "",
-        "[agent.acp]\nagents = \"off\"\n",
-        "[agent.acp]\nexpose = \"on\"\n",
-    ] {
-        assert!(
-            docket_launch::AgentsPermit::from_text(text).is_err(),
-            "{text:?}"
-        );
-    }
 }
 
 #[tokio::test]

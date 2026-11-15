@@ -241,7 +241,7 @@ async fn over_a_unix_socket_many_clients_share_one_edge() {
 #[test]
 fn the_shipped_configuration_is_off_and_a_bad_file_is_refused() {
     assert_eq!(McpConfig::shipped().expect("shipped"), McpConfig::default());
-    assert_eq!(McpConfig::default().expose, actions_mcp::McpExpose::Off);
+    assert!(!McpConfig::default().expose);
     assert!(McpConfig::parse("client = 5").is_err());
     assert!(McpConfig::parse("acess = \"on\"").is_err());
     // The switch is not a key of this file any more.

@@ -5,7 +5,7 @@ use bulkhead::AbsPath;
 use docket_acp_host::LaunchPlan;
 use docket_acp_host::fake::{ChannelWire, pipe};
 use docket_launch::fake::{FakeAccounts, FakeProc, FakeProcs, Mood, ProcsSeen, Secrets};
-use docket_launch::{AgentSpawn, AgentsFile, AgentsPermit, Registry};
+use docket_launch::{AgentSpawn, AgentsFile, Registry};
 use docket_permissions_core::ProgramName;
 
 use prov::SessionId;
@@ -74,10 +74,6 @@ state = ["/home/me/.claude"]
 home = "/home/me"
 "#;
 
-pub fn permit() -> AgentsPermit {
-    AgentsPermit::from_text("[agent.acp]\nagents = \"on\"\n").expect("on")
-}
-
 pub fn plan(program: &str, session: &str) -> LaunchPlan {
     LaunchPlan {
         program: ProgramName::parse(program).expect("program"),
@@ -109,7 +105,6 @@ pub fn rig(toml: &str, mood: Mood, with_process: bool) -> Rig {
     let file = Arc::new(AgentsFile::parse(toml).expect("agents.toml"));
     let registry = Registry::default();
     let spawn = AgentSpawn::new(
-        permit(),
         file.clone(),
         Arc::new(accounts.clone()),
         procs,

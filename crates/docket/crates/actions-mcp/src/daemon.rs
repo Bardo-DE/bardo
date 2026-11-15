@@ -3,7 +3,6 @@
 
 use crate::config::{ConfigError, McpConfig};
 use crate::edge::McpEdge;
-use crate::expose::McpExpose;
 use docket_client::{DbusTransport, Intents};
 use docket_dbus::BusConnection;
 use rmcp::ServiceExt;
@@ -76,7 +75,7 @@ pub async fn claim(connection: &BusConnection) -> Result<(), DaemonFault> {
 }
 
 /// Tells whether the edge is on, asked at every request.
-pub type ExposeRead = Arc<dyn Fn() -> McpExpose + Send + Sync>;
+pub type ExposeRead = Arc<dyn Fn() -> bool + Send + Sync>;
 
 fn edge(
     connection: &BusConnection,
@@ -216,7 +215,7 @@ pub async fn run(args: Args, env: &impl Fn(&str) -> Option<String>) -> Result<()
     if let Some(client) = args.client {
         config = config.named(client);
     }
-    if config.expose == McpExpose::Off {
+    if !config.expose {
         eprintln!(
             "actions-mcp: off (set agent.mcp.expose = \"on\" in docket/settings.toml): no tools are listed"
         );

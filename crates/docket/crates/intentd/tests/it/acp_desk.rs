@@ -15,7 +15,6 @@ use docket_dbus::callers::{Identity, Role};
 use docket_dbus::{CONFIRM_PATH, ConfirmProxy, INTENTS_BUS};
 use docket_host::EditorDesk;
 use docket_session::{SheetChoice, SheetDesk};
-use docket_settings::AcpExpose;
 use docket_vocab::{LabelText, Seconds};
 use intentd::{AcpGate, IntentdConfig, ProcRoot, SheetConfirmer};
 use porter_core::AppName;
@@ -170,7 +169,7 @@ fn scope_of(answer: &ConfirmAnswer) -> Option<GrantScope> {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_sheet_for_an_editor_session_is_shown_on_the_acp_desk_and_answered_back() {
-    let fixture = Fixture::start(AcpGate::new(AcpExpose::On)).await;
+    let fixture = Fixture::start(AcpGate::new(true)).await;
     let ask = request("c-1", ConfirmOffer::OnceOrAlways).for_editor(Some(route(&session())));
     for (choice, scope) in [
         (SheetChoice::Once, Some(GrantScope::Once)),
@@ -206,7 +205,7 @@ async fn with_the_setting_off_the_acp_process_is_not_trusted_and_the_sheet_expir
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn with_the_acp_process_gone_the_sheet_expires_and_is_not_moved_to_the_desktop() {
-    let mut fixture = Fixture::start(AcpGate::new(AcpExpose::On)).await;
+    let mut fixture = Fixture::start(AcpGate::new(true)).await;
     fixture.acp_leaves().await;
     let ask = request("c-3", ConfirmOffer::OnceOnly).for_editor(Some(route(&session())));
     let answer = fixture.confirmer.confirm(ask).await;
@@ -217,7 +216,7 @@ async fn with_the_acp_process_gone_the_sheet_expires_and_is_not_moved_to_the_des
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn only_intentd_may_put_a_sheet_on_the_acp_desk() {
-    let fixture = Fixture::start(AcpGate::new(AcpExpose::On)).await;
+    let fixture = Fixture::start(AcpGate::new(true)).await;
     let ask = request("c-4", ConfirmOffer::OnceOnly).for_editor(Some(route(&session())));
     let refused = fixture.stranger_asks(&ask).await;
     assert!(refused, "a connection that is not intentd is refused");

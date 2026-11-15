@@ -21,7 +21,6 @@ use crate::egress;
 use crate::env::{Lent, child_env};
 use crate::managed::claude_code_meta;
 use crate::names::launcher_session;
-use crate::permit::AgentsPermit;
 use crate::procs::{Proc, Procs};
 use crate::protect;
 use bulkhead::AbsPath;
@@ -53,12 +52,11 @@ impl<A: Accounts + 'static, P: Procs> std::fmt::Debug for AgentSpawn<A, P> {
 }
 
 impl<A: Accounts + 'static, P: Procs> AgentSpawn<A, P> {
-    /// A spawner for the programs in `file`, allowed by `permit`. Per-session socket directories
+    /// A spawner for the programs in `file`, (the caller has checked that `agent.acp.agents` is on). Per-session socket directories
     /// go under `run_dir` (a directory only the user can enter, such as `$XDG_RUNTIME_DIR`);
     /// `forwarder` is the `docket-net-forward` program; `registry` is shared with the
     /// supervisor.
     pub fn new(
-        _permit: AgentsPermit,
         file: Arc<AgentsFile>,
         accounts: Arc<A>,
         procs: P,

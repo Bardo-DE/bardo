@@ -2,7 +2,7 @@
 //! `acp-sessions.md` section 3b, owner revisions R2, R3). The pieces:
 //!
 //! - `config`: `agents.toml`, the programs the person lists; off unless `agent.acp.agents` is on
-//!   (`permit`).
+//!   (the host checks it before it builds a spawner).
 //! - `accounts`: the seam to porter (accountd's launcher interface, inferd's agent endpoints);
 //!   `dbus::DbusAccounts` is the real link, `fake::FakeAccounts` the test one.
 //! - `spawn`: `AgentSpawn`, the real `Spawn`: a launcher session, the model route (an inferd
@@ -28,7 +28,6 @@ pub mod login;
 mod login_only;
 pub mod managed;
 mod names;
-mod permit;
 pub mod procs;
 mod protect;
 mod reach;
@@ -48,7 +47,6 @@ pub use config::{
 pub use confine::Confinement;
 pub use login_only::LoginOnly;
 pub use names::launcher_session;
-pub use permit::{AgentsPermit, Refusal};
 pub use procs::{BwrapProcs, ChildProc, CommandLine, Proc, ProcFault, Procs, StdioWire};
 pub use reach::Reach;
 pub use spawn::AgentSpawn;

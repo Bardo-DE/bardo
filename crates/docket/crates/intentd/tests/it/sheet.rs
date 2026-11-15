@@ -213,7 +213,7 @@ fn hosted(id: &str) -> ConfirmRequest {
     }
 }
 
-async fn gated_desk(agents: docket_settings::AcpAgents) -> Desk {
+async fn gated_desk(agents: bool) -> Desk {
     let dir = tempfile::tempdir().expect("scratch");
     let bus = PrivateBus::start(dir.path());
     let daemon = bus.connect().await;
@@ -235,7 +235,7 @@ async fn gated_desk(agents: docket_settings::AcpAgents) -> Desk {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_sheet_the_agent_host_asked_for_goes_to_its_confirm1_and_not_to_sill() {
-    let desk = gated_desk(docket_settings::AcpAgents::On).await;
+    let desk = gated_desk(true).await;
     let (apart, other) = (desk.bus.connect().await, desk.bus.connect().await);
     let sill = FakeSill::start(&apart, &["org.quire.Confirm1", "org.quire.Shell"]).await;
     introduce(
@@ -255,7 +255,7 @@ async fn a_sheet_the_agent_host_asked_for_goes_to_its_confirm1_and_not_to_sill()
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_sheet_for_an_agent_host_that_is_off_or_gone_expires_and_is_not_moved_to_sill() {
     // The setting is off: the name is nobody, whoever owns it.
-    let off = gated_desk(docket_settings::AcpAgents::Off).await;
+    let off = gated_desk(false).await;
     let (apart, other) = (off.bus.connect().await, off.bus.connect().await);
     let sill = FakeSill::start(&apart, &["org.quire.Confirm1", "org.quire.Shell"]).await;
     introduce(
@@ -273,7 +273,7 @@ async fn a_sheet_for_an_agent_host_that_is_off_or_gone_expires_and_is_not_moved_
     );
     assert!(host.shown().is_empty());
     // The setting is on and nobody owns the name.
-    let on = gated_desk(docket_settings::AcpAgents::On).await;
+    let on = gated_desk(true).await;
     let connection = on.bus.connect().await;
     let sill_on = FakeSill::start(&connection, &["org.quire.Confirm1", "org.quire.Shell"]).await;
     introduce(
