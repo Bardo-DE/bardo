@@ -3,7 +3,7 @@ use super::add::{
 };
 use super::add_choice::{AddAction, Candidate, Listing, Presence, Step};
 use crate::outside::Assistant;
-use docket_settings::{AddFault, AgentRow, Install, ModelState, Offers, SignInState, Source};
+use docket_settings::{AddFault, AgentRow, ModelState, Offers, SignInState, Source};
 
 fn found(id: &str) -> FoundAgent {
     FoundAgent {
@@ -30,14 +30,12 @@ fn registry(id: &str) -> Source {
     Source::Registry {
         id: id.to_owned(),
         version: "1.0.0".to_owned(),
-        installed: Install::Installed,
+        installed: true,
     }
 }
 
 fn own() -> Source {
-    Source::Own {
-        installed: Install::Installed,
-    }
+    Source::Own { installed: true }
 }
 
 #[test]

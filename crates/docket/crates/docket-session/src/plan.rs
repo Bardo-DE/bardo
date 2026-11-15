@@ -134,7 +134,7 @@ pub struct ResumePlan {
     /// What it has used.
     pub budget: ResumedBudget,
     /// The skills it loaded; a version mismatch against the installed one warns.
-    pub skills: Vec<(SkillId, SkillVersion)>,
+    pub skills: Vec<(SkillId, String)>,
     /// What was wrong with the log.
     pub faults: Vec<ResumeFault>,
 }

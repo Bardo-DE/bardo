@@ -7,7 +7,7 @@ use crate::read::text_of;
 use crate::save::save;
 use crate::values::ConfigHome;
 use detent_model::ConfigFile;
-use docket_settings::{AcpAgents, AgentSettings, Found, SETTINGS_FILE, dirs_of, find_known, read};
+use docket_settings::{AgentSettings, Found, SETTINGS_FILE, dirs_of, find_known, read};
 use ds_settings::schema::{FilePath, KeyPath};
 use std::path::Path;
 
@@ -22,7 +22,7 @@ fn file() -> Result<ConfigFile, FilesError> {
 }
 
 /// Whether coding agents are switched on; off when there is no file, or it cannot be read.
-pub fn agents_switch(home: &ConfigHome) -> AcpAgents {
+pub fn agents_switch(home: &ConfigHome) -> bool {
     let text = file()
         .ok()
         .and_then(|file| text_of(&home.path_of(&file)).ok().flatten())

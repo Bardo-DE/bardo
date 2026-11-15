@@ -12,7 +12,7 @@ label = "Compose"
 on = { kind = "nothing" }
 effect = "read"
 classes = []
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -27,7 +27,7 @@ label = "Check for new mail"
 on = { kind = "nothing" }
 effect = "read"
 classes = []
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -38,7 +38,7 @@ dry_run = "none"
 [[actions.params]]
 name = "folder"
 label = "Folder"
-ty = { kind = "text", v = { max = 100, lines = "one" } }
+ty = { kind = "text", v = { max = 100, multiline = false } }
 need = { kind = "optional" }
 sink = "inert"
 
@@ -48,7 +48,7 @@ label = "Search"
 on = { kind = "nothing" }
 effect = "read"
 classes = []
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -59,7 +59,7 @@ dry_run = "none"
 [[actions.params]]
 name = "words"
 label = "Words"
-ty = { kind = "text", v = { max = 100, lines = "one" } }
+ty = { kind = "text", v = { max = 100, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -69,7 +69,7 @@ label = "Reply"
 on = { kind = "text" }
 effect = "read"
 classes = []
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -84,7 +84,7 @@ label = "Mail settings"
 on = { kind = "nothing" }
 effect = "read"
 classes = []
-undo = "not_undoable"
+undo = false
 reach = "hidden"
 latency = "instant"
 result = { kind = "nothing" }

@@ -15,7 +15,7 @@ use docket_gate_wire::GateAnswer;
 use docket_permissions_core::DenyCode;
 use docket_wire::GrantAnswer;
 use porter_infer::{NoteFrom, PrevResult, StepNote};
-use prov::{Address, AgentRef, Crossing, MessageId, MessageKind, ReportStatus, ThreadId};
+use prov::{Address, AgentRef, MessageId, MessageKind, ReportStatus, ThreadId};
 use seat_input::Emulation;
 
 fn outcome_of(report: &cua_fake::HarnessReport) -> CuaOutcome {
@@ -219,7 +219,7 @@ fn a_message_that_arrived_becomes_a_note_on_the_next_turn_and_the_run_is_told_no
             space(),
         ),
         from: Address::new(AgentRef::User, space()),
-        crossing: Crossing::Within,
+        crosses: false,
         kind: MessageKind::Note,
         parts: vec![docket_core::InboundPart::Text(docket_core::Reveal::Plain(
             "use the work account".to_owned(),

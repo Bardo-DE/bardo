@@ -34,12 +34,16 @@ impl Pinned {
         UniqueName::try_from(self.owner.0.clone()).map_err(|_| Absence::Unavailable)
     }
 
-    /// Porter's client with every call to accountd (the sheets, the Spaces registry) sent to the
-    /// owner that was confirmed.
+    /// Porter's bus transport with every call to accountd sent to the owner that was confirmed:
+    /// the Spaces registry is reached from it (`bus().spaces()`).
+    pub fn bus(&self) -> Result<Bus, Absence> {
+        Ok(Bus::over(self.connection.clone()).accounts_at(self.unique()?))
+    }
+
+    /// Porter's client with every call to accountd (the sheets) sent to the owner that was
+    /// confirmed.
     pub fn accounts(&self) -> Result<Porter<Bus>, Absence> {
-        Ok(Porter::over(
-            Bus::over(self.connection.clone()).accounts_at(self.unique()?),
-        ))
+        Ok(Porter::over(self.bus()?))
     }
 
     /// inferd's carrier with every call to inferd (the computers, the engines) sent to the owner

@@ -5,7 +5,6 @@ use crate::accounts::AccountsPane;
 use crate::computers::ComputerRow;
 use docket_settings::{
     CloudAccount, CloudAllowed, Known, KnownPlace, ModelChoice, OwnComputer, PlaceName, Places,
-    Toggle,
 };
 use porter_infer::ComputerName;
 
@@ -18,7 +17,7 @@ fn state() -> PlacesState {
         this_computer: None,
         own: vec![OwnComputer {
             name: name("lab"),
-            allowed: Toggle::On,
+            allowed: true,
             model: None,
         }],
         cloud: vec![CloudAccount {
@@ -42,7 +41,7 @@ fn written(effects: &[PlacesEffect]) -> Option<&Places> {
 fn a_cloud_account_is_turned_on_only_after_the_person_says_yes() {
     let switch = PlacesInput::CloudSwitched {
         name: name("me@acme.example"),
-        to: Toggle::On,
+        to: true,
     };
     // The switch asks first and writes nothing.
     let (asked, effects) = places_step(state(), switch);
@@ -76,7 +75,7 @@ fn turning_a_cloud_account_off_needs_no_question() {
         on,
         PlacesInput::CloudSwitched {
             name: name("me@acme.example"),
-            to: Toggle::Off,
+            to: false,
         },
     );
     assert_eq!(cloud(&next).allowed, CloudAllowed::Off);
@@ -94,7 +93,7 @@ fn ask_each_time_applies_only_to_an_account_that_is_on() {
             },
         )
     };
-    let (off, effects) = ask(&state(), Toggle::On);
+    let (off, effects) = ask(&state(), true);
     assert_eq!(
         cloud(&off).allowed,
         CloudAllowed::Off,
@@ -103,9 +102,9 @@ fn ask_each_time_applies_only_to_an_account_that_is_on() {
     assert!(effects.is_empty());
     let mut on = state();
     on.places.cloud[0].allowed = CloudAllowed::On;
-    let (asking, _) = ask(&on, Toggle::On);
+    let (asking, _) = ask(&on, true);
     assert_eq!(cloud(&asking).allowed, CloudAllowed::AskEachTime);
-    let (back, _) = ask(&asking, Toggle::Off);
+    let (back, _) = ask(&asking, false);
     assert_eq!(cloud(&back).allowed, CloudAllowed::On);
 }
 
@@ -115,10 +114,10 @@ fn a_computer_of_the_persons_switches_and_writes() {
         state(),
         PlacesInput::OwnSwitched {
             name: name("lab"),
-            to: Toggle::Off,
+            to: false,
         },
     );
-    assert_eq!(next.places.own[0].allowed, Toggle::Off);
+    assert_eq!(next.places.own[0].allowed, false);
     assert_eq!(written(&effects), Some(&next.places));
 }
 
@@ -160,7 +159,7 @@ fn the_question_names_the_account_and_the_provider_in_dockets_words() {
         state(),
         PlacesInput::CloudSwitched {
             name: name("me@acme.example"),
-            to: Toggle::On,
+            to: true,
         },
     );
     assert_eq!(

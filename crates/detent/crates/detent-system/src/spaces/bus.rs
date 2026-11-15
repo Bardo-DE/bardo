@@ -22,7 +22,7 @@ const COULD_NOT_REMOVE: &str = "The Space could not be removed. Try again in a m
 async fn list(bus: &BusSource) -> Result<Vec<SpaceRow>, Absence> {
     let accountd = pinned_starting(bus, ACCOUNTS_BUS).await?;
     let asked = async {
-        let spaces = accountd.accounts()?.spaces();
+        let spaces = accountd.bus()?.spaces();
         spaces.list().await.map_err(absence_of)
     };
     let records = within(Deadline::READ, peer::ACCOUNTS, asked)
@@ -49,7 +49,7 @@ async fn remove(bus: &BusSource, space: &SpaceKey, removal: &Removal) -> Result<
         .map_err(|_| COULD_NOT_REMOVE.to_owned())?;
     tell_memory(bus, space, &wire, removal).await?;
     let registry = accountd
-        .accounts()
+        .bus()
         .map_err(|_| COULD_NOT_REMOVE.to_owned())?
         .spaces();
     let id = DesktopSpace::parse(&space.0).map_err(|_| COULD_NOT_REMOVE.to_owned())?;

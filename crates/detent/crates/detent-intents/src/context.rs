@@ -1,9 +1,7 @@
 //! What Settings answers for the seams ds fills in other apps: it reports no particular place
 //! and declines a summon (the window has no prompt field).
 
-use docket_core::{
-    ContextScope, ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy,
-};
+use docket_core::{ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy};
 use docket_provider::{ContextSource, SummonTarget};
 use docket_wire::{SummonAnswer, SummonOrigin, SummonSerial};
 use porter_core::AppName;
@@ -16,7 +14,7 @@ use crate::answer::own;
 pub(crate) struct SettingsContext(pub AppName);
 
 impl ContextSource for SettingsContext {
-    fn snapshot(&self, _: ContextScope) -> ContextSnapshot {
+    fn snapshot(&self) -> ContextSnapshot {
         ContextSnapshot {
             app: self.0.clone(),
             window: own(&self.0, "Settings"),

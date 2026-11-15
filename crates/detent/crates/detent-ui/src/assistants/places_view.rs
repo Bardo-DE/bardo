@@ -13,7 +13,7 @@ use crate::system::Absent;
 use detent_client::{load_places, save_places};
 use detent_model::external::{
     CloudAccount, CloudAllowed, ComputerName, ModelChoice, OwnComputer, PlaceKind, PlaceName,
-    Toggle, kind_label,
+    kind_label,
 };
 use detent_model::{
     AccountsPane, ComputerRow, ComputersInput, ComputersState, PlaceRef, PlacesEffect, PlacesInput,
@@ -24,18 +24,12 @@ use ds::components::fields::field_row::FieldGroup;
 use ds::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle};
 use ds::prelude::*;
 
-fn toggle_of(check: Check) -> Toggle {
-    match check {
-        Check::On => Toggle::On,
-        Check::Off | Check::Mixed => Toggle::Off,
-    }
+fn toggle_of(check: Check) -> bool {
+    matches!(check, Check::On)
 }
 
-fn check_of(toggle: Toggle) -> Check {
-    match toggle {
-        Toggle::On => Check::On,
-        Toggle::Off => Check::Off,
-    }
+fn check_of(toggle: bool) -> Check {
+    if toggle { Check::On } else { Check::Off }
 }
 
 /// What the line under a computer's name says: the models it lends now.

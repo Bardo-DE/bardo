@@ -345,7 +345,7 @@ fn a_message_changes_no_authority() {
         thread: prov::ThreadId::parse("m-1").unwrap(),
         from: Address::new(AgentRef::User, space()),
         to: Address::new(AgentRef::Cua { run: run_id() }, space()),
-        crossing: prov::Crossing::Within,
+        crosses: false,
         kind: MessageKind::Request,
         parts: vec![],
     };

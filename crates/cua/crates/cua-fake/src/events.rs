@@ -3,7 +3,7 @@
 use cua_bus::CuaRecord;
 use cua_run::{LinkError, MessageLink, RecordSink};
 use docket_core::{Delivery, InboundLine, InboxAsk, MessageDraft};
-use prov::{Crossing, MessageId, SessionId, ThreadId};
+use prov::{MessageId, SessionId, ThreadId};
 use std::collections::VecDeque;
 use std::sync::Mutex;
 
@@ -73,7 +73,7 @@ impl MessageLink for MemoryEvents {
         Ok(Delivery {
             message: id,
             thread,
-            crossing: Crossing::Within,
+            crosses: false,
         })
     }
 

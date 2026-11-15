@@ -1,7 +1,6 @@
 use super::tests::{CHOOSE_DIRECTLY, agents, described, path};
 use super::{AgentOffer, offers, with_agents};
 use crate::picker::{Clearing, Gate, MenuLine, PickerEffect, PickerInput, PickerState, step};
-use docket_settings::AcpAgents;
 
 fn ready_with(offered: &[AgentOffer]) -> PickerState {
     let laid = with_agents(described(), offered);
@@ -19,7 +18,7 @@ fn row_of(state: &PickerState) -> &crate::picker::ModelRow {
 
 #[test]
 fn the_menu_lists_the_agents_under_their_own_header_and_a_blocked_one_cannot_be_picked() {
-    let state = ready_with(&offers(&agents(), &[], AcpAgents::On));
+    let state = ready_with(&offers(&agents(), &[], true));
     let menu = row_of(&state).menu(Clearing::Offered);
     let at = menu
         .iter()
@@ -64,7 +63,7 @@ fn the_menu_lists_the_agents_under_their_own_header_and_a_blocked_one_cannot_be_
 
 #[test]
 fn picking_a_ready_agent_sets_it_like_any_choice() {
-    let state = ready_with(&offers(&agents(), &[], AcpAgents::On));
+    let state = ready_with(&offers(&agents(), &[], true));
     let (_, effects) = step(
         state,
         PickerInput::Chose {
@@ -84,7 +83,7 @@ fn picking_a_ready_agent_sets_it_like_any_choice() {
 #[test]
 fn picking_a_turned_off_agent_asks_and_a_yes_turns_them_on_and_sets_it() {
     let key = path("ai.model.text.balanced");
-    let state = ready_with(&offers(&agents(), &[], AcpAgents::Off));
+    let state = ready_with(&offers(&agents(), &[], false));
     assert_eq!(row_of(&state).gate("agent/claude-code"), Gate::TurnOn);
 
     // The pick asks; nothing is set, and no other pick is taken while the question stands.
@@ -139,7 +138,7 @@ fn a_no_leaves_them_off_and_a_failed_turn_on_says_so() {
         )
         .0
     };
-    let off = ready_with(&offers(&agents(), &[], AcpAgents::Off));
+    let off = ready_with(&offers(&agents(), &[], false));
 
     let (state, effects) = step(asked(off.clone()), PickerInput::CancelTurnOn);
     assert!(effects.is_empty());
@@ -154,7 +153,7 @@ fn a_no_leaves_them_off_and_a_failed_turn_on_says_so() {
 
 #[test]
 fn an_agent_in_automatics_list_is_greyed_and_cannot_be_added() {
-    let mut state = ready_with(&offers(&agents(), &[], AcpAgents::On));
+    let mut state = ready_with(&offers(&agents(), &[], true));
     let pool = {
         let PickerState::Ready(ready) = &state else {
             panic!("ready");

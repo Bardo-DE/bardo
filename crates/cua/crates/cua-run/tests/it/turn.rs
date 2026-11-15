@@ -19,8 +19,8 @@ use maskcap::{Frame, FrameSeq, MaskReason, MaskReport, PixelBuf, WholeMask};
 use porter_core::{AppName, DataClass};
 use porter_infer::{MaskedRegions, NoteFrom, PrevResult, StepIndex, StepNote};
 use prov::{
-    Address, AgentRef, Confidentiality, Crossing, Integrity, Label, Labelled, MessageId,
-    MessageKind, Source, SpaceId, ThreadId,
+    Address, AgentRef, Confidentiality, Integrity, Label, Labelled, MessageId, MessageKind, Source,
+    SpaceId, ThreadId,
 };
 use seat_input::SeatError;
 use std::collections::BTreeSet;
@@ -123,7 +123,7 @@ fn line(from: AgentRef, parts: Vec<InboundPart>) -> InboundLine {
             space(),
         ),
         from: Address::new(from, space()),
-        crossing: Crossing::Within,
+        crosses: false,
         kind: MessageKind::Note,
         parts,
     }

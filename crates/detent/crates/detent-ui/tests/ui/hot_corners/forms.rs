@@ -77,7 +77,7 @@ label = "Compose"
 on = { kind = "nothing" }
 effect = "read"
 classes = []
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -92,7 +92,7 @@ label = "Find Words"
 on = { kind = "nothing" }
 effect = "read"
 classes = []
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -103,7 +103,7 @@ dry_run = "none"
 [[actions.params]]
 name = "words"
 label = "Words"
-ty = { kind = "text", v = { max = 100, lines = "one" } }
+ty = { kind = "text", v = { max = 100, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -113,7 +113,7 @@ label = "Reply"
 on = { kind = "text" }
 effect = "read"
 classes = []
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }

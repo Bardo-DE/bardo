@@ -34,10 +34,10 @@ mod tests {
     use super::{ACCOUNTS_CHARS, KEY_VALUE_CHARS, many_lines, one_line};
     use crate::manifest::manifest;
     use docket_manifest::ResultShape;
-    use docket_vocab::{Lines, ParamType};
+    use docket_vocab::ParamType;
 
     /// The text size and line rule the manifest declares for `action`'s result.
-    fn declared(action: &str) -> (usize, Lines) {
+    fn declared(action: &str) -> (usize, bool) {
         let valid = manifest().expect("a valid manifest");
         let found = valid
             .manifest()
@@ -47,20 +47,17 @@ mod tests {
             .unwrap_or_else(|| panic!("{action} is declared"));
         match &found.result {
             ResultShape::Value {
-                ty: ParamType::Text { max, lines },
+                ty: ParamType::Text { max, multiline },
                 ..
-            } => (usize::try_from(max.0).expect("a size"), *lines),
+            } => (usize::try_from(max.0).expect("a size"), *multiline),
             other => panic!("{action} returns {other:?}"),
         }
     }
 
     #[test]
     fn the_limits_are_what_the_manifest_declares() {
-        assert_eq!(declared("settings.key.read"), (KEY_VALUE_CHARS, Lines::One));
-        assert_eq!(
-            declared("settings.accounts.list"),
-            (ACCOUNTS_CHARS, Lines::Many)
-        );
+        assert_eq!(declared("settings.key.read"), (KEY_VALUE_CHARS, false));
+        assert_eq!(declared("settings.accounts.list"), (ACCOUNTS_CHARS, true));
     }
 
     #[test]

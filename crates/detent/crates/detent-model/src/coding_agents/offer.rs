@@ -1,7 +1,7 @@
 //! What each coding agent is to the person choosing: ready, or greyed with why.
 
 use super::WORD_PREFIX;
-use docket_settings::{AcpAgents, AgentRow, Agents, Found, Install, SignInState, Source};
+use docket_settings::{AgentRow, Agents, Found, SignInState, Source};
 
 /// Why an agent cannot be chosen now.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -48,24 +48,22 @@ fn missing(source: &Source) -> bool {
     matches!(
         source,
         Source::Registry {
-            installed: Install::NotInstalled,
+            installed: false,
             ..
-        } | Source::Own {
-            installed: Install::NotInstalled
-        }
+        } | Source::Own { installed: false }
     )
 }
 
 /// Why an entry cannot be chosen, in the order a person can act on: a program that is not there
 /// first, then a sign-in, then the switch.
-fn blocked_by(row: &AgentRow, switch: AcpAgents) -> Option<AgentReason> {
+fn blocked_by(row: &AgentRow, switch: bool) -> Option<AgentReason> {
     if missing(&row.source) {
         Some(AgentReason::NotInstalled)
     } else if matches!(row.sign_in, SignInState::NeedsSignIn { .. }) {
         Some(AgentReason::NeedsSignIn {
             label: row.label.clone(),
         })
-    } else if switch == AcpAgents::Off {
+    } else if !switch {
         Some(AgentReason::TurnedOff)
     } else {
         None
@@ -75,7 +73,7 @@ fn blocked_by(row: &AgentRow, switch: AcpAgents) -> Option<AgentReason> {
 /// The agents the assistant can be handed to, in the file's order, then the known programs found
 /// on this computer that no entry runs (greyed: "Not set up yet"). An entry whose name is not
 /// an id cannot be a word and is left out.
-pub fn offers(agents: &Agents, found: &[Found], switch: AcpAgents) -> Vec<AgentOffer> {
+pub fn offers(agents: &Agents, found: &[Found], switch: bool) -> Vec<AgentOffer> {
     let listed = agents
         .rows
         .iter()

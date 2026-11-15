@@ -181,7 +181,7 @@ fn a_probed_embedding_model_is_an_embeddings_card_with_its_width_and_prefix() {
     };
     assert_eq!(cap.dims.0, 768);
     let embed = local.embed().expect("embed caps");
-    assert_eq!(embed.prompts.query, "search_query: ");
+    assert_eq!(embed.prompts.query.0, "search_query: ");
 }
 
 #[tokio::test]

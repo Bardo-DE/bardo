@@ -93,7 +93,7 @@ fn a_computer_of_the_persons_switches_without_a_question_and_the_file_follows() 
     assert_eq!(c.harness.attr(LAB, "aria-checked").as_deref(), Some("true"));
     click(&mut c.harness, LAB);
     settle(&mut c.harness, "the write", |_| {
-        written(&c.sandbox).is_some_and(|places| places.own[0].allowed == Toggle::Off)
+        written(&c.sandbox).is_some_and(|places| !places.own[0].allowed)
     });
     assert!(!c.harness.html().contains("Turn on lab-server?"));
 }

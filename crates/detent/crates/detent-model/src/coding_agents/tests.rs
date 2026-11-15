@@ -1,7 +1,5 @@
 use super::*;
-use docket_settings::{
-    AcpAgents, AgentRow, Agents, Found, Install, KNOWN, ModelState, Offers, SignInState, Source,
-};
+use docket_settings::{AgentRow, Agents, Found, KNOWN, ModelState, Offers, SignInState, Source};
 use ds_settings::schema::{
     AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels,
 };
@@ -27,9 +25,7 @@ fn row(program: &str, label: &str, source: Source, sign_in: SignInState) -> Agen
 }
 
 fn installed() -> Source {
-    Source::Own {
-        installed: Install::Installed,
-    }
+    Source::Own { installed: true }
 }
 
 pub(super) fn agents() -> Agents {
@@ -44,9 +40,7 @@ pub(super) fn agents() -> Agents {
             row(
                 "gemini",
                 "Gemini",
-                Source::Own {
-                    installed: Install::NotInstalled,
-                },
+                Source::Own { installed: false },
                 SignInState::NotSeenYet,
             ),
             row(
@@ -138,7 +132,7 @@ fn reasons(spec: &KeySpec) -> Vec<(&str, &str)> {
 
 #[test]
 fn each_agent_is_ready_or_greyed_with_the_first_reason_a_person_can_act_on() {
-    let offered = offers(&agents(), &[], AcpAgents::Off);
+    let offered = offers(&agents(), &[], false);
     let got: Vec<(&str, &str, Option<AgentReason>)> = offered
         .iter()
         .map(|offer| {
@@ -169,7 +163,7 @@ fn each_agent_is_ready_or_greyed_with_the_first_reason_a_person_can_act_on() {
         ],
         "not installed beats the switch; a name that is no id is no word"
     );
-    let on = offers(&agents(), &[], AcpAgents::On);
+    let on = offers(&agents(), &[], true);
     assert_eq!(on[0].blocked, None);
     assert_eq!(on[1].blocked, Some(AgentReason::NotInstalled));
 }
@@ -192,7 +186,7 @@ fn a_known_program_no_entry_runs_is_listed_as_not_set_up_once_per_agent() {
         },
     ];
     let none = Agents { rows: Vec::new() };
-    let offered = offers(&none, &found, AcpAgents::On);
+    let offered = offers(&none, &found, true);
     let words: Vec<(&str, &str)> = offered
         .iter()
         .map(|offer| (offer.word.as_str(), offer.label.as_str()))
@@ -213,7 +207,7 @@ fn a_known_program_no_entry_runs_is_listed_as_not_set_up_once_per_agent() {
 
 #[test]
 fn the_group_lands_on_the_text_rows_and_the_pool_and_on_nothing_else() {
-    let offered = offers(&agents(), &[], AcpAgents::On);
+    let offered = offers(&agents(), &[], true);
     let laid = with_agents(described(), &offered);
 
     let row = spec(&laid, "ai.model.text.balanced");

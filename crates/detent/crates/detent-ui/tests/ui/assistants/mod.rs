@@ -12,7 +12,7 @@ use crate::support::drive::{click, click_when_still, scroll_into_view, type_into
 use crate::support::inferd::Inferd;
 use detent_model::PageSlug;
 use detent_ui::Opening;
-use docket_settings::{CloudAllowed, Toggle, read_places};
+use docket_settings::{CloudAllowed, read_places};
 use ds_harness::{Harness, Input};
 use ds_settings::live::Verdict;
 use std::time::Duration;

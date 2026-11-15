@@ -9,9 +9,7 @@ use crate::start::{answer_open_apps, starts};
 use cua_dbus::{CUA_BUS, CUA_PATH};
 use cua_host::Supervisor;
 use cua_run::Seams;
-use docket_core::{
-    ContextScope, ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy,
-};
+use docket_core::{ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy};
 use docket_dbus::PROVIDER_PATH;
 use docket_dbus::callers::{CallerTable, Identity};
 use docket_provider::{ContextSource, SummonTarget};
@@ -40,8 +38,7 @@ fn bus<E: std::fmt::Display>(error: E) -> ServeError {
 struct NoContext;
 
 impl ContextSource for NoContext {
-    fn snapshot(&self, scope: ContextScope) -> ContextSnapshot {
-        let ContextScope::ActiveWindow = scope;
+    fn snapshot(&self) -> ContextSnapshot {
         ContextSnapshot {
             app: AppName::parse("org.quire.Cua").expect("an app name"),
             window: Labelled::new(String::new(), Label::trusted_user()),

@@ -13,9 +13,7 @@ use casement_backend::gpu::{
 use casement_core::gpu::{
     ByPathId, DrmNodeId, GpuChoice, PlanRefusal, RenderPlan, TrancheUse, feedback_for, plan_for,
 };
-use casement_testkit::gpu::{
-    ARGB8888, CrossSupport, FabricatedSysRoot, GpuTopology, SoftGraphicsApi, XRGB8888,
-};
+use casement_testkit::gpu::{ARGB8888, FabricatedSysRoot, GpuTopology, SoftGraphicsApi, XRGB8888};
 use smithay::backend::allocator::Fourcc;
 use smithay::backend::drm::DrmNode;
 use smithay::backend::renderer::multigpu::GpuManager;

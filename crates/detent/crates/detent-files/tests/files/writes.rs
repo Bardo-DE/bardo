@@ -3,7 +3,7 @@
 
 use crate::round_trip::{home, read_file, save_key, spec, word, write_file};
 use detent_files::{ConfigHome, load_places, save_places};
-use docket_settings::{ModelChoice, OwnComputer, PlaceName, Places, Toggle};
+use docket_settings::{ModelChoice, OwnComputer, PlaceName, Places};
 use ds_helpers::{NewFileMode, ReadCap, update_atomic};
 use std::os::unix::fs::{PermissionsExt, symlink};
 use std::sync::Arc;
@@ -114,7 +114,7 @@ fn places() -> Places {
         this_computer: Some(ModelChoice("small".to_owned())),
         own: vec![OwnComputer {
             name: PlaceName("lab server".to_owned()),
-            allowed: Toggle::On,
+            allowed: true,
             model: None,
         }],
         cloud: Vec::new(),

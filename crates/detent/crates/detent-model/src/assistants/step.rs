@@ -1,9 +1,7 @@
 //! The places' one transition: `(state, input) -> (state, effects)`. A cloud account is turned on
 //! only after the person confirmed; nothing here widens the setting on its own.
 
-use docket_settings::{
-    CloudAllowed, Known, ModelChoice, PlaceName, Places, Toggle, confirm_turn_on,
-};
+use docket_settings::{CloudAllowed, Known, ModelChoice, PlaceName, Places, confirm_turn_on};
 
 /// Which place a model is chosen for.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -45,21 +43,21 @@ pub enum PlacesInput {
         /// The computer.
         name: PlaceName,
         /// What it is now.
-        to: Toggle,
+        to: bool,
     },
     /// The person flipped the switch of a cloud account.
     CloudSwitched {
         /// The account.
         name: PlaceName,
         /// What the person asked for.
-        to: Toggle,
+        to: bool,
     },
     /// The person flipped "Ask me each time" of a cloud account that is on.
     AskEachTime {
         /// The account.
         name: PlaceName,
         /// Asking before each use, or not.
-        to: Toggle,
+        to: bool,
     },
     /// The person said yes to the question before a cloud account is turned on.
     Confirm,
@@ -101,27 +99,22 @@ pub fn places_step(state: PlacesState, input: PlacesInput) -> (PlacesState, Vec<
                 .for_each(|own| own.allowed = to);
             written(places, confirming)
         }
-        PlacesInput::CloudSwitched {
-            name,
-            to: Toggle::On,
-        } => (
+        PlacesInput::CloudSwitched { name, to: true } => (
             PlacesState {
                 places,
                 confirming: Some(name),
             },
             vec![],
         ),
-        PlacesInput::CloudSwitched {
-            name,
-            to: Toggle::Off,
-        } => {
+        PlacesInput::CloudSwitched { name, to: false } => {
             set_cloud(&mut places, &name, CloudAllowed::Off);
             written(places, None)
         }
         PlacesInput::AskEachTime { name, to } => {
-            let allowed = match to {
-                Toggle::On => CloudAllowed::AskEachTime,
-                Toggle::Off => CloudAllowed::On,
+            let allowed = if to {
+                CloudAllowed::AskEachTime
+            } else {
+                CloudAllowed::On
             };
             let on = places
                 .cloud

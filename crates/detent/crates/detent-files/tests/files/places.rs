@@ -3,9 +3,7 @@
 
 use detent_files::{ConfigHome, load_places, save_places};
 use detent_testkit::Scratch;
-use docket_settings::{
-    CloudAccount, CloudAllowed, ModelChoice, OwnComputer, PlaceName, Places, Toggle,
-};
+use docket_settings::{CloudAccount, CloudAllowed, ModelChoice, OwnComputer, PlaceName, Places};
 
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 
@@ -14,7 +12,7 @@ fn places() -> Places {
         this_computer: Some(ModelChoice("small".to_owned())),
         own: vec![OwnComputer {
             name: PlaceName("lab server".to_owned()),
-            allowed: Toggle::On,
+            allowed: true,
             model: None,
         }],
         cloud: vec![CloudAccount {

@@ -47,7 +47,7 @@ struct Fold {
     calls_since: u32,
     tripped: Option<BreakerTrip>,
     closed: Option<EndCause>,
-    skills: Vec<(SkillId, SkillVersion)>,
+    skills: Vec<(SkillId, String)>,
     blocker: Option<Blocker>,
     faults: Vec<ResumeFault>,
 }

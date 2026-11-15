@@ -142,7 +142,7 @@ mod tests {
             source: Source::Registry {
                 id: "claude-code".to_owned(),
                 version: "1.0.0".to_owned(),
-                installed: docket_settings::Install::Installed,
+                installed: true,
             },
             command: None,
             model: ModelState::AgentsOwn,

@@ -7,7 +7,7 @@ pub use almanac_core::{HistoryFate, MemoryFate};
 pub use chordkit::{Action, StandardAction};
 pub use docket_settings::{
     AddFault, AgentChoice, AgentRow, Agents, ChoiceFault, CloudAccount, CloudAllowed, ModelChoice,
-    NewAgent, OwnComputer, PlaceKind, PlaceName, Toggle, kind_label,
+    NewAgent, OwnComputer, PlaceKind, PlaceName, kind_label,
 };
 pub use porter_capability::ModelId;
 pub use porter_core::{AccountId, SecretText, SignInWay};
