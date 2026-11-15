@@ -5,8 +5,8 @@ use crate::assistant_model::AssistantPicker;
 use crate::env::Env;
 use crate::picker::{Picker, use_picker};
 use detent_model::{
-    Clearing, FirstRun, FirstRunEffect, FirstRunInput, PageKind, PickerInput,
-    PickerState, Stage, first_run_step,
+    Clearing, FirstRun, FirstRunEffect, FirstRunInput, PageKind, PickerInput, PickerState, Stage,
+    first_run_step,
 };
 use dioxus::prelude::*;
 use ds::components::content::label::{LabelRole, LabelStyle};

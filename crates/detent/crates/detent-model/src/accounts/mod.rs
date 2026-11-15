@@ -37,8 +37,7 @@ pub use hold_step::{HoldEffect, HoldInput, Holds, hold_step};
 pub use input::AccountsInput;
 pub use model::{
     Account, AccountExpiry, AccountKey, AccountProvider, AccountService, AccountStatus,
-    AccountSync, AccountsPane, AccountsReady, AccountsState, Ask, Place, RemovalQuestion,
-    SyncAdd,
+    AccountSync, AccountsPane, AccountsReady, AccountsState, Ask, Place, RemovalQuestion, SyncAdd,
 };
 pub use module::{ModuleId, ModuleRow, Source, Sources};
 pub use reads::Reads;

@@ -216,7 +216,6 @@ impl World {
             toml::Value::String(word.to_owned()),
         );
     }
-
 }
 
 /// Rests the pointer on the permit's row, so the strip shows under it, and presses Revoke.

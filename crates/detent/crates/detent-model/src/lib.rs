@@ -67,9 +67,9 @@ pub use accounts::{
     AddEnd, Ask, Attention, CalendarDay, Cents, ClientText, ClientValue, DatasetName,
     GrantDecision, GrantScope, GrantSentence, HoldCounts, HoldEffect, HoldInput, Holds, ModuleId,
     ModuleRow, Place, Reads, ReauthEnd, RemovalQuestion, Secret, SignInClient, SignOutEnd,
-    SignedIn, Source, Sources, SpendBar, SpendLine, StorageQuota, SyncAdd, SyncBook,
-    SyncHold, SyncNowEnd, SyncStatus, accounts_row_is_valued, accounts_setup_offer, accounts_step,
-    hold_step, signed_in,
+    SignedIn, Source, Sources, SpendBar, SpendLine, StorageQuota, SyncAdd, SyncBook, SyncHold,
+    SyncNowEnd, SyncStatus, accounts_row_is_valued, accounts_setup_offer, accounts_step, hold_step,
+    signed_in,
 };
 pub use advanced::advanced_name;
 pub use arrival::{Arrival, arrival};
@@ -127,9 +127,7 @@ pub use extensions::{
     ExtensionTrouble, InstalledExtensions, Offer, Offers, extensions_page, stray_word,
 };
 pub use file_uri::path_of_file_uri;
-pub use first_run::{
-    FirstRun, FirstRunEffect, FirstRunInput, Runtime, Stage, first_run_step,
-};
+pub use first_run::{FirstRun, FirstRunEffect, FirstRunInput, Runtime, Stage, first_run_step};
 pub use hot_corners::{
     Corner, CornerAsk, CornerChoice, CornerMenuLine, HOT_CORNERS_CONTROL, HotActionChoice,
     HotActionGroup, HotAddFault, HotApp, HotBinding, HotDesk, HotDo, HotItem, HotKeys, HotKnown,
@@ -163,9 +161,9 @@ pub use picker::{
 };
 pub use picture_add::AddOutcome;
 pub use privacy::{
-    ALLOWED_WORD, CellKind, DENIED_WORD, DesktopApp, EntryVisibility, PowerCell, PowerStanding, PrivacyEffect, PrivacyInput,
-    PrivacyPane, PrivacyPower, PrivacyProgram, PrivacyReady, PrivacyState,
-    ProgramBook, ProgramLook, ProgramSubject, SubjectKind, privacy_step,
+    ALLOWED_WORD, CellKind, DENIED_WORD, DesktopApp, EntryVisibility, PowerCell, PowerStanding,
+    PrivacyEffect, PrivacyInput, PrivacyPane, PrivacyPower, PrivacyProgram, PrivacyReady,
+    PrivacyState, ProgramBook, ProgramLook, ProgramSubject, SubjectKind, privacy_step,
 };
 pub use range::{Number, Range};
 pub use reason::Reason;

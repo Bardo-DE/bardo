@@ -5,21 +5,11 @@ fn ai_stays_on_this_computer_until_the_person_says_otherwise() {
     let state = FirstRun::default();
     assert_eq!(state.local_only, true);
     let (state, effects) = first_run_step(state, FirstRunInput::Finish);
-    assert_eq!(
-        effects,
-        [FirstRunEffect::Save {
-            local_only: true
-        }]
-    );
+    assert_eq!(effects, [FirstRunEffect::Save { local_only: true }]);
     assert_eq!(state.stage, Stage::Saving);
     let (off, _) = first_run_step(FirstRun::default(), FirstRunInput::Kept(false));
     let (_, effects) = first_run_step(off, FirstRunInput::Finish);
-    assert_eq!(
-        effects,
-        [FirstRunEffect::Save {
-            local_only: false
-        }]
-    );
+    assert_eq!(effects, [FirstRunEffect::Save { local_only: false }]);
 }
 
 #[test]

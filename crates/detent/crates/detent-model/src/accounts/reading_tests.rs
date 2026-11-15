@@ -29,10 +29,7 @@ fn an_account_lists_its_services_permissions_and_actions() {
         .iter()
         .map(|s| (s.kind.as_str(), s.on))
         .collect();
-    assert_eq!(
-        services,
-        [("storage", true), ("calendar", false)]
-    );
+    assert_eq!(services, [("storage", true), ("calendar", false)]);
     assert_eq!(home.permissions.len(), 1);
     assert_eq!(home.permissions[0].label, "Photos allowed: storage");
     assert_eq!(home.permissions[0].action, "Revoke");
@@ -134,10 +131,7 @@ fn an_account_carries_the_modules_label_for_each_sync_switch() {
     assert_eq!(
         sync,
         [
-            (
-                "Keep this account's files on this computer",
-                false
-            ),
+            ("Keep this account's files on this computer", false),
             (
                 "Upload new photos from a folder on this computer to Google Photos",
                 true

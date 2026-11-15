@@ -3,7 +3,7 @@
 use super::add_account::AddEnd;
 use super::effect::{AccountsEffect, AccountsNotice};
 use super::input::AccountsInput;
-use super::model::{AccountsPane, AccountsReady, AccountsState, Ask, RemovalQuestion, OFF, ON};
+use super::model::{AccountsPane, AccountsReady, AccountsState, Ask, OFF, ON, RemovalQuestion};
 use super::module::{ModuleId, ModuleRow, Sources};
 use super::sign_in_client::{ClientChange, ClientText, SignInClient};
 use crate::Absence;

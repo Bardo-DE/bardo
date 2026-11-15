@@ -450,4 +450,3 @@ async fn the_index_file_is_created_with_its_schema_and_keeps_what_was_put_in_it(
     );
     assert_eq!(index.parts().1.card(), embedder.card());
 }
-

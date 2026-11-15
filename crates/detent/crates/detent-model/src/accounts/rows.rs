@@ -72,9 +72,7 @@ pub(super) fn classify<'a>(
 ) -> Option<(AccountKey, Row<'a>)> {
     let rest = spec.path.0.strip_prefix(PREFIX)?;
     let key = |id: &str| AccountKey::of(module, id);
-    let held = |path: &KeyPath| {
-        described.values.get(path).is_some_and(|word| word == ON)
-    };
+    let held = |path: &KeyPath| described.values.get(path).is_some_and(|word| word == ON);
     match &spec.kind {
         KeyKind::Toggle { .. } => {
             if let Some((id, kind)) = rest.rsplit_once(SERVICE) {

@@ -95,7 +95,11 @@ fn a_sign_in_that_ended_or_will_end_says_so_in_a_banner_that_replaces_the_rows()
         let rows = vec![google("work.example", "Work mail", state, Some(words))];
         let w = world(name, rows, "work.example");
         assert_eq!(w.harness.count(BANNER), 1, "{name}: {}", w.harness.html());
-        assert!(w.harness.html().contains(sentence), "{name}: {}", w.harness.html());
+        assert!(
+            w.harness.html().contains(sentence),
+            "{name}: {}",
+            w.harness.html()
+        );
         assert_eq!(
             w.harness.count(SIGN_IN_ROW),
             0,

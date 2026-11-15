@@ -118,7 +118,6 @@ impl Fake {
         *self.state.held.lock().expect("held") = false;
         self.state.release.notify_one();
     }
-
 }
 
 /// Serves inferd running `rows`. The model picker's module is not on the bus: a world hosts it in

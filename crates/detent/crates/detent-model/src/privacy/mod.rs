@@ -8,13 +8,12 @@ mod programs;
 mod step;
 
 pub use pane::{
-    ALLOWED_WORD, CellKind, DENIED_WORD, PowerCell, PowerStanding, PrivacyPane, PrivacyProgram, ProgramSubject, SubjectKind,
+    ALLOWED_WORD, CellKind, DENIED_WORD, PowerCell, PowerStanding, PrivacyPane, PrivacyProgram,
+    ProgramSubject, SubjectKind,
 };
 pub use power::PrivacyPower;
 pub use programs::{DesktopApp, EntryVisibility, ProgramBook, ProgramLook};
-pub use step::{
-    PrivacyEffect, PrivacyInput, PrivacyReady, PrivacyState, privacy_step,
-};
+pub use step::{PrivacyEffect, PrivacyInput, PrivacyReady, PrivacyState, privacy_step};
 
 #[cfg(test)]
 mod tests;

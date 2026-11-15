@@ -198,4 +198,3 @@ async fn a_body_that_lives_while_its_source_exists_goes_when_the_source_is() {
         "the archive and the delete both leave with the thread"
     );
 }
-
