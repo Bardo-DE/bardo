@@ -12,7 +12,7 @@ use porter_infer::{HeardDelta, InferEvent, InferReply, ModelError};
 use speech_provider::{FRAME_SAMPLES, Frame512};
 use speech_vad::level_of;
 use voice_audio::AudioDevice;
-use voice_loop::{EngineGate, Transcript, UtteranceEvent, UtteranceState};
+use voice_loop::{Transcript, UtteranceEvent, UtteranceState};
 use voice_wire::{HeardSegment, HeardTail, HeardText, VoiceFault};
 
 impl<D: AudioDevice + 'static, T: Transport + 'static, W: Warm, U: UseSource> Core<D, T, W, U>
@@ -48,12 +48,12 @@ where
 
     async fn one_frame(&mut self, framed: Frame512) {
         let level = wire_level(level_of(&framed));
-        let engine = self
-            .utt
-            .as_ref()
-            .map_or(EngineGate::Cold, |u| u.engine.gate());
+        let engine_ready = self.utt.as_ref().is_some_and(|u| u.engine.is_ready());
         self.cur = framed.samples().to_vec();
-        self.utt_event(UtteranceEvent::Audio { level, engine })
+        self.utt_event(UtteranceEvent::Audio {
+            level,
+            engine_ready,
+        })
             .await;
         let Some(utt) = self.utt.as_mut() else { return };
         let silent = match (utt.state, utt.dictation.as_mut()) {

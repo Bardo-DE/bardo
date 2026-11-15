@@ -95,7 +95,7 @@ fn utterance_table() {
             S::Listening,
             V::Audio {
                 level: Level(500),
-                engine: EngineGate::Ready,
+                engine_ready: true,
             },
             S::Listening,
             vec![E::Emit(VoiceEvent::Level(Level(500))), E::Forward],
@@ -105,7 +105,7 @@ fn utterance_table() {
             S::Listening,
             V::Audio {
                 level: Level(10),
-                engine: EngineGate::Cold,
+                engine_ready: false,
             },
             S::Listening,
             vec![E::Emit(VoiceEvent::Level(Level(10))), E::Buffer],
@@ -115,7 +115,7 @@ fn utterance_table() {
             S::Tail,
             V::Audio {
                 level: Level(10),
-                engine: EngineGate::Ready,
+                engine_ready: true,
             },
             S::Tail,
             vec![E::Forward],
@@ -283,7 +283,7 @@ fn utterance_table() {
             S::Idle,
             V::Audio {
                 level: Level(1),
-                engine: EngineGate::Ready,
+                engine_ready: true,
             },
             S::Idle,
             vec![],
@@ -310,7 +310,7 @@ fn alphabet() -> Vec<UtteranceEvent> {
         V::MicFailed(VoiceFault::MicUnavailable),
         V::Audio {
             level: Level(1),
-            engine: EngineGate::Cold,
+            engine_ready: false,
         },
         V::EngineWaiting(Readiness::Loading),
         V::Partial(HeardTail {

@@ -38,11 +38,8 @@ pub(crate) enum SttLink {
 }
 
 impl SttLink {
-    pub(crate) fn gate(self) -> voice_loop::EngineGate {
-        match self {
-            Self::Ready => voice_loop::EngineGate::Ready,
-            Self::Cold { .. } => voice_loop::EngineGate::Cold,
-        }
+    pub(crate) fn is_ready(self) -> bool {
+        matches!(self, Self::Ready)
     }
 }
 

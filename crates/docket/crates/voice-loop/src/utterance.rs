@@ -44,16 +44,6 @@ pub fn refusal_for(enabled: VoiceUse) -> Option<VoiceRefusal> {
     }
 }
 
-/// Whether the speech engine can take audio now.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum EngineGate {
-    /// Ready: forward audio.
-    Ready,
-    /// Cold: buffer it, never drop.
-    Cold,
-}
-
 /// What happens to the utterance.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
@@ -73,8 +63,9 @@ pub enum UtteranceEvent {
     Audio {
         /// Its level.
         level: Level,
-        /// Whether the engine is ready for it.
-        engine: EngineGate,
+        /// Whether the speech engine can take it now: forward it when ready, buffer it (never
+        /// drop it) when cold.
+        engine_ready: bool,
     },
     /// The engine reported its readiness.
     EngineWaiting(Readiness),
@@ -250,22 +241,16 @@ pub fn utterance_step(
                 E::StatusChanged,
             ],
         ),
-        (S::Listening, V::Audio { level, engine }) => (
+        (S::Listening, V::Audio { level, engine_ready }) => (
             S::Listening,
             vec![
                 E::Emit(VoiceEvent::Level(level)),
-                match engine {
-                    EngineGate::Ready => E::Forward,
-                    EngineGate::Cold => E::Buffer,
-                },
+                if engine_ready { E::Forward } else { E::Buffer },
             ],
         ),
-        (S::Tail, V::Audio { engine, .. }) => (
+        (S::Tail, V::Audio { engine_ready, .. }) => (
             S::Tail,
-            vec![match engine {
-                EngineGate::Ready => E::Forward,
-                EngineGate::Cold => E::Buffer,
-            }],
+            vec![if engine_ready { E::Forward } else { E::Buffer }],
         ),
         (s @ (S::Listening | S::Tail | S::Finishing), V::EngineWaiting(r)) => {
             (s, vec![E::Emit(VoiceEvent::Waiting(r))])
