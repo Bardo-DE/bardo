@@ -5,12 +5,10 @@ use crate::support;
 use casement_core::app::AppKey;
 use casement_core::geometry::LogicalPoint;
 use casement_core::input::{
-    Argv, Binding, BindingAction, Bindings, Chord, DbusCall, DesktopCommand, DeviceClass,
-    Keysym, Origin, PortalSessionId, SpaceStep,
+    Argv, Binding, BindingAction, Bindings, Chord, DbusCall, DesktopCommand, DeviceClass, Keysym,
+    Origin, PortalSessionId, SpaceStep,
 };
-use casement_core::output::{
-    EdidFacts, EdidSerial, OutputConfig, SavedOutputs, ScalePolicy,
-};
+use casement_core::output::{EdidFacts, EdidSerial, OutputConfig, SavedOutputs, ScalePolicy};
 use casement_core::space::{Space, SpaceContent, SpaceIndex, SplitPair, TaskToken};
 use casement_core::{LeaseId, WindowId};
 use casement_protocols::vocab::Transform;
@@ -71,10 +69,7 @@ fn origins() {
         &Origin::Virtual(DeviceClass::Keyboard),
         r#"{"kind":"virtual","v":"keyboard"}"#,
     );
-    pinned(
-        &Origin::Feed,
-        r#"{"kind":"feed"}"#,
-    );
+    pinned(&Origin::Feed, r#"{"kind":"feed"}"#);
     pinned(&Origin::Agent(LeaseId(4)), r#"{"kind":"agent","v":4}"#);
     pinned(
         &Origin::Remote(PortalSessionId(5)),

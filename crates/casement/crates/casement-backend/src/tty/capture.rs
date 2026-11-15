@@ -31,10 +31,7 @@ impl TtyBackend {
         let Some(config) = self.readback.config_of(output) else {
             return Ok(());
         };
-        let lender = self
-            .devices
-            .capture_gpu()
-            .filter(|gpu| gpu.keeps_scenes());
+        let lender = self.devices.capture_gpu().filter(|gpu| gpu.keeps_scenes());
         let Some(mut gpu) = lender else {
             return self.readback.draw(output, seq, at, source);
         };

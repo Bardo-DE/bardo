@@ -197,10 +197,7 @@ mod tests {
             600,
             0,
             SeatState::Held,
-            vec![
-                output("Virtual-1", true),
-                output("Virtual-2", false),
-            ],
+            vec![output("Virtual-1", true), output("Virtual-2", false)],
         );
         assert_eq!(
             report.json_line(),

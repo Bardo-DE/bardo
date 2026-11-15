@@ -56,10 +56,7 @@ fn fastest_at(modes: &[Mode], size: PhysicalSize) -> Option<Mode> {
 }
 
 fn preferred(modes: &[Mode]) -> Option<Mode> {
-    modes
-        .iter()
-        .find(|mode| mode.preferred)
-        .copied()
+    modes.iter().find(|mode| mode.preferred).copied()
 }
 
 fn area(size: PhysicalSize) -> u64 {

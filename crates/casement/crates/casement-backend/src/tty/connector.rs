@@ -7,9 +7,7 @@ use super::kms::{
 };
 use casement_core::OutputKey;
 use casement_core::OutputName;
-use casement_core::output::{
-    EdidFacts, EdidSerial, ModeWish, OutputFacts, pick_mode,
-};
+use casement_core::output::{EdidFacts, EdidSerial, ModeWish, OutputFacts, pick_mode};
 use std::collections::{BTreeMap, BTreeSet};
 
 /// The size of an EDID base block.

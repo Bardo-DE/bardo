@@ -2,8 +2,8 @@
 //! states and outputs; a handle's requests take the transitions the window's own requests do;
 //! `set_rectangle` is stored for the minimise animation; the listing's transcript is a golden.
 
-use crate::protocol::cut_past_cap;
 use crate::protocol::consent::{ScriptedShell, kept, program};
+use crate::protocol::cut_past_cap;
 use crate::protocol::xdg_shell::{boot, check_golden, golden, windows};
 use casement_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, PhysicalSize};
 use casement_core::policy::ConnectionRole;

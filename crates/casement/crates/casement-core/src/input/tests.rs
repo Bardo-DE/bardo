@@ -2,8 +2,8 @@
 //! and the keysym names behind the chord text.
 
 use super::{
-    Binding, BindingAction, Bindings, Chord, DesktopCommand, DeviceClass, InputTarget,
-    InputUse, Keysym, Leases, Origin, PortalSessionId, ReachFacts, Refusal, reach, resolve,
+    Binding, BindingAction, Bindings, Chord, DesktopCommand, DeviceClass, InputTarget, InputUse,
+    Keysym, Leases, Origin, PortalSessionId, ReachFacts, Refusal, reach, resolve,
 };
 use crate::ids::{ClientKey, LayerKey, LeaseId, WindowId};
 use crate::lock::{LockHolder, LockState, LockSurfaces};

@@ -37,9 +37,7 @@ use crate::headless::ConnectorEvent;
 use casement_core::OutputName;
 use casement_core::geometry::PhysicalSize;
 use casement_core::gpu::{FormatEntry, Fourcc, Modifier, OutputRoute};
-use casement_core::output::{
-    GammaRamp, Mode, OutputConfig, PhysicalMm,
-};
+use casement_core::output::{GammaRamp, Mode, OutputConfig, PhysicalMm};
 use casement_core::time::Millihertz;
 use smithay::backend::drm::{DrmDevice, DrmDeviceFd, DrmEvent, DrmNode, DrmSurface, NodeType};
 use smithay::backend::renderer::gles::GlesRenderer;

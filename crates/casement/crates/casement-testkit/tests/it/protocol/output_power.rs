@@ -73,10 +73,7 @@ fn power_off_darkens_a_virtual_output_and_on_lights_it() {
     powers.set_mode(control, true).expect("on");
     settle(&mut fixture, &mut powers);
     assert!(power_of(&fixture, "HEADLESS-1"));
-    assert_eq!(
-        powers.reported(control),
-        [true, false, true]
-    );
+    assert_eq!(powers.reported(control), [true, false, true]);
     assert!(fixture.advance(Duration::from_millis(100)).frames > one);
     assert!(fixture.client(id).protocol_error().is_none());
 }
@@ -128,20 +125,14 @@ fn a_second_control_on_an_output_fails() {
     let first = powers.control("HEADLESS-1").expect("a control");
     let second = powers.control("HEADLESS-1").expect("a second control");
     settle(&mut fixture, &mut powers);
-    assert_eq!(
-        powers.state(first),
-        Some(ControlState::Reported(true))
-    );
+    assert_eq!(powers.state(first), Some(ControlState::Reported(true)));
     assert_eq!(powers.state(second), Some(ControlState::Failed));
 
     powers.destroy(first).expect("destroyed");
     settle(&mut fixture, &mut powers);
     let third = powers.control("HEADLESS-1").expect("a third control");
     settle(&mut fixture, &mut powers);
-    assert_eq!(
-        powers.state(third),
-        Some(ControlState::Reported(true))
-    );
+    assert_eq!(powers.state(third), Some(ControlState::Reported(true)));
 }
 
 /// Controls on different outputs are independent, and a control on an unplugged output fails.
@@ -160,10 +151,7 @@ fn controls_follow_their_own_output() {
     fixture.unplug(&OutputName::parse("HEADLESS-2").expect("a name"));
     settle(&mut fixture, &mut powers);
     assert_eq!(powers.state(two), Some(ControlState::Failed));
-    assert_eq!(
-        powers.state(one),
-        Some(ControlState::Reported(true))
-    );
+    assert_eq!(powers.state(one), Some(ControlState::Reported(true)));
 }
 
 /// A fixture with `outputs`, the scripted shell, and a power manager held by a program that is
@@ -192,19 +180,12 @@ fn a_control_made_while_asked_is_inert_until_the_person_allows() {
 
     powers.set_mode(control, false).expect("off");
     settle(&mut fixture, &mut powers);
-    assert_eq!(
-        power_of(&fixture, "HEADLESS-1"),
-        true,
-        "nothing changed"
-    );
+    assert_eq!(power_of(&fixture, "HEADLESS-1"), true, "nothing changed");
     assert_eq!(powers.state(control), Some(ControlState::Silent));
 
     shell.answer(&mut fixture, shell.only_ask(), Answer::Allow);
     settle(&mut fixture, &mut powers);
-    assert_eq!(
-        powers.state(control),
-        Some(ControlState::Reported(true))
-    );
+    assert_eq!(powers.state(control), Some(ControlState::Reported(true)));
     powers.set_mode(control, false).expect("off");
     settle(&mut fixture, &mut powers);
     assert!(!power_of(&fixture, "HEADLESS-1"));
@@ -248,11 +229,7 @@ fn a_power_taken_back_fails_the_control_and_lights_its_output() {
     }]);
     settle(&mut fixture, &mut powers);
     assert_eq!(powers.state(control), Some(ControlState::Failed));
-    assert_eq!(
-        power_of(&fixture, "HEADLESS-1"),
-        true,
-        "lit again"
-    );
+    assert_eq!(power_of(&fixture, "HEADLESS-1"), true, "lit again");
     powers.set_mode(control, false).expect("off");
     settle(&mut fixture, &mut powers);
     assert!(power_of(&fixture, "HEADLESS-1"));

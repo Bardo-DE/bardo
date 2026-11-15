@@ -115,10 +115,7 @@ fn device(connectors: Vec<ConnectorFacts>, crtcs: u32) -> KmsResources {
                 })
         })
         .collect();
-    let crtcs = ids
-        .into_iter()
-        .map(|id| CrtcFacts::new(id, true))
-        .collect();
+    let crtcs = ids.into_iter().map(|id| CrtcFacts::new(id, true)).collect();
     let connectors = connectors
         .into_iter()
         .map(|c| c.with_crtcs(all.clone()))
@@ -165,10 +162,7 @@ fn dell(id: u32) -> ConnectorFacts {
 
 fn hdmi(id: u32) -> ConnectorFacts {
     connector(id, "HDMI-A-1")
-        .with_modes(vec![
-            mode(1920, 1080, 60, true),
-            mode(1280, 720, 60, false),
-        ])
+        .with_modes(vec![mode(1920, 1080, 60, true), mode(1280, 720, 60, false)])
         .with_physical(PhysicalMm { w: 510, h: 290 })
         .with_edid(edid("GSM", "LG FULL HD", None))
 }

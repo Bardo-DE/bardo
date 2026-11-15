@@ -20,9 +20,7 @@ use super::udev::DevicePath;
 use crate::headless::ConnectorEvent;
 use casement_core::OutputName;
 use casement_core::gpu::FormatEntry;
-use casement_core::output::{
-    GammaRamp, Mode, OutputConfig, PhysicalMm,
-};
+use casement_core::output::{GammaRamp, Mode, OutputConfig, PhysicalMm};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 

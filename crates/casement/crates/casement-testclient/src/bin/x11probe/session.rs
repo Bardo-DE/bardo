@@ -489,4 +489,3 @@ impl Session {
         Ok(())
     }
 }
-

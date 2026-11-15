@@ -104,9 +104,7 @@ fn a_client_that_inhibits_without_end_is_cut() {
         client,
         casement_wayland::limits::MAX_IDLE_INHIBITORS,
         |fixture| {
-            holds.push(
-                InhibitHold::start(fixture.client(client).globals()).expect("an inhibitor"),
-            );
+            holds.push(InhibitHold::start(fixture.client(client).globals()).expect("an inhibitor"));
         },
     );
 }

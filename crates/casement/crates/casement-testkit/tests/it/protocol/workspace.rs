@@ -143,10 +143,7 @@ fn requests_reach_the_model() {
     settle(&mut fixture, &mut watch);
     assert_eq!(row(&fixture), 1, "removed");
     assert_eq!(watch.workspaces().len(), 1);
-    assert!(
-        watch.workspaces()[0].active,
-        "the neighbour is shown again"
-    );
+    assert!(watch.workspaces()[0].active, "the neighbour is shown again");
 }
 
 /// The announcement of one group and workspace: the transcript matches

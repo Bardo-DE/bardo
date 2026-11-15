@@ -4,9 +4,7 @@ pub mod driver;
 
 use casement_core::app::AppKey;
 use casement_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, PhysicalSize};
-use casement_core::output::{
-    EdidFacts, EdidSerial, Mode, OutputFacts, PhysicalMm,
-};
+use casement_core::output::{EdidFacts, EdidSerial, Mode, OutputFacts, PhysicalMm};
 use casement_core::space::{Space, SpaceContent, SpaceIndex};
 use casement_core::time::{Millihertz, Mono};
 use casement_core::window::{
@@ -68,11 +66,7 @@ pub fn display(name: &str, modes: Vec<Mode>, mm: (u32, u32)) -> OutputFacts {
 
 /// A headless 1920x1080 60 Hz output.
 pub fn headless(name: &str) -> OutputFacts {
-    display(
-        name,
-        vec![mode(1920, 1080, 60_000, true)],
-        (0, 0),
-    )
+    display(name, vec![mode(1920, 1080, 60_000, true)], (0, 0))
 }
 
 pub fn desktop(id: &str, output: &OutputKey, position: u32) -> Space {

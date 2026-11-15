@@ -436,7 +436,8 @@ fn a_cursor_session_speaks_physical_pixels() {
 /// when they change.
 #[test]
 fn the_cursor_image_is_a_capture_of_its_own() {
-    let (mut fixture, mut capture, _pointer) = cursor_watch(FixtureSpec::small(), "HEADLESS-1", (300, 200));
+    let (mut fixture, mut capture, _pointer) =
+        cursor_watch(FixtureSpec::small(), "HEADLESS-1", (300, 200));
     capture.request(BufferAsk::Announced).expect("a frame");
     settle(&mut fixture, &mut capture);
     let image = capture

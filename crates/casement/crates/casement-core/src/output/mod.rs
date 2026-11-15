@@ -16,9 +16,7 @@ mod trial;
 
 pub use arrangement::place_outputs;
 pub use config::{OutputConfig, SavedOutputs};
-pub use facts::{
-    EdidFacts, EdidSerial, Mode, OutputFacts, PhysicalMm,
-};
+pub use facts::{EdidFacts, EdidSerial, Mode, OutputFacts, PhysicalMm};
 pub use gamma::{GammaRamp, GammaTable};
 pub use gamut::{Chromaticity, D65, DISPLAY_P3, Gamut, Primaries, SRGB};
 pub use mode_pick::{ModeWish, pick_mode};

@@ -6,7 +6,9 @@
 //! left the motion scene; the number and the weight of what is kept are capped.
 
 use super::closing::Kept;
-use crate::handlers::capture_source::{body_on_gpu, content_and_scale, window_rgba, window_texture};
+use crate::handlers::capture_source::{
+    body_on_gpu, content_and_scale, window_rgba, window_texture,
+};
 use crate::state::State;
 use casement_core::WindowId;
 use casement_core::geometry::LogicalSize;

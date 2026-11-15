@@ -6,8 +6,8 @@
 //! Every event is stamped with the virtual instant [`ImeSession::pump`] was given.
 
 use super::input_method::{
-    GrabData, InputMethodEvent, MethodData, PopupData, bind_input_method, grab_event,
-    method_event, popup_event,
+    GrabData, InputMethodEvent, MethodData, PopupData, bind_input_method, grab_event, method_event,
+    popup_event,
 };
 use super::text_input::{TextInputData, TextInputEvent, bind_text_input, field_event};
 use crate::misc::idle::{pump_queue, side_queue};
@@ -113,7 +113,12 @@ seen_dispatch!(ZwpTextInputManagerV3, (), ignore);
 seen_dispatch!(ZwpTextInputV3, TextInputData, note_field, field_event);
 seen_dispatch!(ZwpInputMethodManagerV2, (), ignore);
 seen_dispatch!(ZwpInputMethodV2, MethodData, note_method, method_event);
-seen_dispatch!(ZwpInputMethodKeyboardGrabV2, GrabData, note_method, grab_event);
+seen_dispatch!(
+    ZwpInputMethodKeyboardGrabV2,
+    GrabData,
+    note_method,
+    grab_event
+);
 seen_dispatch!(ZwpInputPopupSurfaceV2, PopupData, note_method, popup_event);
 
 impl Dispatch<WlSeat, ()> for Seen {

@@ -609,10 +609,7 @@ impl TtyBackend {
         source: &dyn FrameSource,
         now: Mono,
     ) -> Result<PresentOutcome, BackendError> {
-        let dark = self
-            .lit
-            .get(output)
-            .is_some_and(|lit| !lit.power());
+        let dark = self.lit.get(output).is_some_and(|lit| !lit.power());
         if self.seat != SeatState::Held || dark {
             return Ok(PresentOutcome::Waiting);
         }

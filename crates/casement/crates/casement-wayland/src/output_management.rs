@@ -24,8 +24,8 @@ use casement_core::output::{
     OutputChangeSet, OutputConfig, OutputFacts, Requester, keeps_one_lit, resolve_change,
 };
 use casement_core::policy::GlobalKind;
-use desktop_client::output::ConfigPurpose;
 use casement_core::{Event, OutputBook, OutputKey};
+use desktop_client::output::ConfigPurpose;
 use heads::{HeadObjects, create_head};
 use smithay::reexports::wayland_protocols_wlr::output_management::v1::server::{
     zwlr_output_configuration_v1::ZwlrOutputConfigurationV1,

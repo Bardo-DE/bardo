@@ -5,8 +5,8 @@ use crate::support::driver::{Op, plug, run, run_from};
 use crate::support::{display, headless, mode, ms};
 use casement_core::geometry::LogicalPoint;
 use casement_core::output::{
-    GammaRamp, GammaTable, Kelvin, MinuteOfDay, NightLight, OutputChangeSet,
-    OutputConfig, OutputRefusal, Requester, Schedule, keeps_one_lit, resolve_change,
+    GammaRamp, GammaTable, Kelvin, MinuteOfDay, NightLight, OutputChangeSet, OutputConfig,
+    OutputRefusal, Requester, Schedule, keeps_one_lit, resolve_change,
 };
 use casement_core::settings::{CasementSettings, NightLightSettings};
 use casement_core::space::SpaceSeed;
@@ -26,11 +26,7 @@ fn current(facts: &casement_core::output::OutputFacts) -> OutputConfig {
 
 #[test]
 fn a_change_of_power_keeps_the_rest() {
-    let facts = display(
-        "DP-1",
-        vec![mode(1920, 1080, 60_000, true)],
-        (527, 296),
-    );
+    let facts = display("DP-1", vec![mode(1920, 1080, 60_000, true)], (527, 296));
     let config = current(&facts);
     let want = OutputChangeSet::none().with_power(false);
     let resolved = resolve_change(&facts, &config, &want).expect("resolved");
@@ -45,11 +41,7 @@ fn a_change_of_power_keeps_the_rest() {
 
 #[test]
 fn a_mode_the_display_does_not_offer_is_refused() {
-    let facts = display(
-        "DP-1",
-        vec![mode(1920, 1080, 60_000, true)],
-        (527, 296),
-    );
+    let facts = display("DP-1", vec![mode(1920, 1080, 60_000, true)], (527, 296));
     let config = current(&facts);
     let odd = mode(1234, 567, 60_000, false);
     let mut want = OutputChangeSet::none();
@@ -62,11 +54,7 @@ fn a_mode_the_display_does_not_offer_is_refused() {
 
 #[test]
 fn a_scale_outside_what_outputs_take_is_refused() {
-    let facts = display(
-        "DP-1",
-        vec![mode(1920, 1080, 60_000, true)],
-        (527, 296),
-    );
+    let facts = display("DP-1", vec![mode(1920, 1080, 60_000, true)], (527, 296));
     let config = current(&facts);
     for numerator in [0, 29, 961] {
         let mut want = OutputChangeSet::none();
@@ -80,11 +68,7 @@ fn a_scale_outside_what_outputs_take_is_refused() {
 
 #[test]
 fn scale_transform_and_position_replace_only_themselves() {
-    let facts = display(
-        "DP-1",
-        vec![mode(1920, 1080, 60_000, true)],
-        (527, 296),
-    );
+    let facts = display("DP-1", vec![mode(1920, 1080, 60_000, true)], (527, 296));
     let config = current(&facts);
     let mut want = OutputChangeSet::none();
     want.scale = Some(Scale(180));
@@ -162,11 +146,7 @@ fn refused(effects: &[Effect]) -> bool {
 /// CASC-09: a request cannot put an output where the pointer never goes.
 #[test]
 fn a_position_far_outside_any_arrangement_is_refused() {
-    let facts = display(
-        "DP-1",
-        vec![mode(1920, 1080, 60_000, true)],
-        (527, 296),
-    );
+    let facts = display("DP-1", vec![mode(1920, 1080, 60_000, true)], (527, 296));
     let config = current(&facts);
     let cases = [
         ("far right", LogicalPoint { x: i32::MAX, y: 0 }, false),
@@ -221,10 +201,7 @@ fn a_request_cannot_darken_the_last_lit_output() {
         Err(OutputRefusal::NoneLeftLit)
     );
     let swap = [
-        (
-            a.clone(),
-            OutputChangeSet::none().with_power(true),
-        ),
+        (a.clone(), OutputChangeSet::none().with_power(true)),
         (b, dark),
     ];
     assert_eq!(keeps_one_lit(book, &swap), Ok(()));

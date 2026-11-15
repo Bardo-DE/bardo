@@ -138,7 +138,11 @@ fn an_applied_configuration_changes_the_mode() {
         scale: Some(1.5),
     };
     let wanted = manager
-        .configure(None, &[plan("HEADLESS-1", properties)], ConfigPurpose::Apply)
+        .configure(
+            None,
+            &[plan("HEADLESS-1", properties)],
+            ConfigPurpose::Apply,
+        )
         .expect("a configuration");
     settle(&mut fixture, &mut manager);
 
@@ -208,7 +212,9 @@ fn the_only_lit_head_cannot_be_disabled() {
         name: "HEADLESS-1".to_owned(),
         setting: Setting::Disable,
     };
-    let refused = manager.configure(None, &[off], ConfigPurpose::Apply).expect("off");
+    let refused = manager
+        .configure(None, &[off], ConfigPurpose::Apply)
+        .expect("off");
     settle(&mut fixture, &mut manager);
     assert_eq!(manager.answer(refused), Some(ConfigOutcome::Failed));
     assert!(manager.heads()[0].lit);

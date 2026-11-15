@@ -3,7 +3,9 @@
 
 use casement_render::golden::{GoldenOutcome, GoldenTier};
 use casement_render::pass::CaptureFormat;
-use casement_testkit::writeback::{RawFrame, WritebackError, compare_raw, decode, format_named, tolerance};
+use casement_testkit::writeback::{
+    RawFrame, WritebackError, compare_raw, decode, format_named, tolerance,
+};
 use image::{Rgba, RgbaImage};
 
 /// A 2x2 golden of flat grey at `dir/grey`.
@@ -30,7 +32,10 @@ fn decode_swaps_blue_first_to_rgba_and_skips_row_padding() {
     let bytes = [
         3, 2, 1, 0, 6, 5, 4, 0, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
     ];
-    let image = decode(&RawFrame::new(2, 2, 12, CaptureFormat::Xrgb8888), &bytes[..]);
+    let image = decode(
+        &RawFrame::new(2, 2, 12, CaptureFormat::Xrgb8888),
+        &bytes[..],
+    );
     let image = image.expect("a frame");
     assert_eq!(image.get_pixel(0, 0).0, [1, 2, 3, 255]);
     assert_eq!(image.get_pixel(1, 0).0, [4, 5, 6, 255]);

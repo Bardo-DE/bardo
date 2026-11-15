@@ -4,7 +4,7 @@
 //! `GpuTopology::cross` maps onto `can_do_cross_device_imports`; unplugging a GPU is a "gone"
 //! set the enumeration honours.
 
-use super::{CrossSupport, GpuTopology, SoftRenderer, SoftGpu};
+use super::{CrossSupport, GpuTopology, SoftGpu, SoftRenderer};
 use casement_backend::gpu::{CounterHandle, FixedUdmabuf, SoftPixman};
 use casement_backend::{BackendError, GpuId};
 use smithay::backend::allocator::Allocator;

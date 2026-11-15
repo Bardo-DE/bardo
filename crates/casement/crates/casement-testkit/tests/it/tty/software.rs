@@ -3,8 +3,7 @@
 //! software surface flips and reports presentation like the GPU's.
 
 use casement_backend::tty::{
-    ConnectorId, DevicePath, NoGpus, Pace, PresentOutcome, RenderMode, TtyBackend,
-    TtySeams,
+    ConnectorId, DevicePath, NoGpus, Pace, PresentOutcome, RenderMode, TtyBackend, TtySeams,
 };
 use casement_core::OutputName;
 use casement_core::geometry::LogicalPoint;
@@ -101,7 +100,11 @@ fn a_session_with_a_gpu_draws_every_output_with_it() {
     rig.light();
     assert_eq!(rig.kms.gpu_asked(), 3);
     for connector in [1, 2, 3] {
-        assert_eq!(rig.drawn_by(connector), Some(RenderMode::Gpu), "{connector}");
+        assert_eq!(
+            rig.drawn_by(connector),
+            Some(RenderMode::Gpu),
+            "{connector}"
+        );
     }
 }
 

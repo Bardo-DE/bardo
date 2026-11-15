@@ -145,10 +145,10 @@ pub fn keeps_one_lit(
         .0
         .iter()
         .any(|(key, state)| power_after(key, state.config.power));
-    let darkened = outputs.0.iter().any(|(key, state)| {
-        state.config.power
-            && !power_after(key, state.config.power)
-    });
+    let darkened = outputs
+        .0
+        .iter()
+        .any(|(key, state)| state.config.power && !power_after(key, state.config.power));
     match (lit_after, darkened) {
         (false, true) => Err(OutputRefusal::NoneLeftLit),
         (true, _) | (false, false) => Ok(()),

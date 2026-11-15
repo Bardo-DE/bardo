@@ -1,8 +1,8 @@
 //! Reach, chords, binding resolution and the I7 table (what P0-F1-input makes pass).
 
 use casement_core::input::{
-    Binding, BindingAction, Bindings, Chord, DesktopCommand, DeviceClass, InputTarget,
-    InputUse, Keysym, Leases, Origin, PortalSessionId, ReachFacts, Refusal, reach, resolve,
+    Binding, BindingAction, Bindings, Chord, DesktopCommand, DeviceClass, InputTarget, InputUse,
+    Keysym, Leases, Origin, PortalSessionId, ReachFacts, Refusal, reach, resolve,
 };
 use casement_core::lock::{LockHolder, LockState, LockSurfaces};
 use casement_core::policy::{ConnectionRole, GlobalKind, advertised};

@@ -6,8 +6,8 @@ use super::maker::FakeMaker;
 use super::topology::SyntheticTopology;
 use casement_backend::headless::ConnectorEvent;
 use casement_backend::tty::{
-    CaptureGpu, CommitVerdict, ConnectorFacts, ConnectorId, ConnectorStatus, DevicePath,
-    Kms, KmsCommit, KmsError, KmsOpener, KmsRefusal, KmsResources, Lit, RenderMode, Routes,
+    CaptureGpu, CommitVerdict, ConnectorFacts, ConnectorId, ConnectorStatus, DevicePath, Kms,
+    KmsCommit, KmsError, KmsOpener, KmsRefusal, KmsResources, Lit, RenderMode, Routes,
     ScanoutSurface, judge, output_facts,
 };
 use casement_core::output::{GammaRamp, Mode, OutputConfig};

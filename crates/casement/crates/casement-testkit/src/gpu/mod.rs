@@ -13,6 +13,4 @@ pub use casement_backend::gpu::CrossSupport;
 pub use fabricated::{FabricatedNode, fabricated_nodes};
 pub use soft_api::{SoftApiError, SoftDevice, SoftGraphicsApi};
 pub use sys_tree::FabricatedSysRoot;
-pub use topology::{
-    ARGB8888, FormatSet, GpuTopology, SoftGpu, VendorFact, XRGB8888,
-};
+pub use topology::{ARGB8888, FormatSet, GpuTopology, SoftGpu, VendorFact, XRGB8888};

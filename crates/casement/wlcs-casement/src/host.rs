@@ -7,16 +7,16 @@
 //! wall time as they would on a screen.
 
 use crate::adapter::{
-    Button, Compositor, Fixed, FixedPoint, Position, WlcsClient, WlcsEvent,
-    WlcsSurface, WlcsTouchId,
+    Button, Compositor, Fixed, FixedPoint, Position, WlcsClient, WlcsEvent, WlcsSurface,
+    WlcsTouchId,
 };
 use casement::relax::AckPolicy;
 use casement_core::geometry::{LogicalPoint, SubPoint, SubPx};
 use casement_core::input::{ButtonCode, DeviceClass, TouchStep};
-use casement_protocols::vocab::PressEdge;
 use casement_core::policy::ConnectionRole;
 use casement_core::window::WindowState;
 use casement_core::{DeviceId, WindowId};
+use casement_protocols::vocab::PressEdge;
 use casement_testkit::{ClientId, Fixture, FixtureSpec, TestOrigin};
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::ops::ControlFlow;
@@ -198,9 +198,7 @@ impl Compositor for Host {
             }
             WlcsEvent::Button { button, edge } => {
                 let device = self.pointer;
-                self.fixture
-                    .input()
-                    .button(device, code(button), edge);
+                self.fixture.input().button(device, code(button), edge);
                 if edge == PressEdge::Release {
                     // A dragged window glides after the pointer (a spring); the test's next step
                     // hit-tests where it dropped.

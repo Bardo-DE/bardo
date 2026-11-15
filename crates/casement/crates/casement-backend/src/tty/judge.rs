@@ -72,8 +72,7 @@ fn refusal(
     };
     match crtc {
         Some(crtc) if connector.possible_crtcs.contains(&crtc.id) && crtc_free => {
-            let vrr_ok = !output.vrr
-                || (connector.vrr && crtc.vrr);
+            let vrr_ok = !output.vrr || (connector.vrr && crtc.vrr);
             if !connector.modes.contains(&output.mode) {
                 Some(KmsRefusal::Mode)
             } else if !vrr_ok {

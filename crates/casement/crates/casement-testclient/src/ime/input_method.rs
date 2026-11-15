@@ -119,10 +119,12 @@ pub fn method_event(event: zwp_input_method_v2::Event) -> Option<InputMethodEven
             cursor,
             anchor,
         },
-        zwp_input_method_v2::Event::ContentType { hint, purpose } => InputMethodEvent::ContentType {
-            hint: u32::from(hint),
-            purpose: u32::from(purpose),
-        },
+        zwp_input_method_v2::Event::ContentType { hint, purpose } => {
+            InputMethodEvent::ContentType {
+                hint: u32::from(hint),
+                purpose: u32::from(purpose),
+            }
+        }
         zwp_input_method_v2::Event::Done => InputMethodEvent::Done,
         zwp_input_method_v2::Event::Unavailable => InputMethodEvent::Unavailable,
         _ => return None,

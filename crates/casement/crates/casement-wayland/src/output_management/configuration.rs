@@ -5,7 +5,7 @@
 use super::heads::{HeadData, ModeData};
 use super::wire::transform_from;
 use super::{
-    ConfigSerial, Configuration, ConfigurationAnswer, ConfigPurpose, HeadRequest,
+    ConfigPurpose, ConfigSerial, Configuration, ConfigurationAnswer, HeadRequest,
     OutputManagementHandler, on_configuration,
 };
 use crate::consent::{self, Admission, Mortal, Pushed};
@@ -114,12 +114,7 @@ fn custom_mode(facts: Option<&OutputFacts>, size: PhysicalSize, refresh: u32) ->
 
 impl ConfigData {
     /// Adds `head` to the draft, enabled or disabled; a head twice is an error.
-    fn add(
-        &self,
-        resource: &ZwlrOutputConfigurationV1,
-        head: &ZwlrOutputHeadV1,
-        power: bool,
-    ) {
+    fn add(&self, resource: &ZwlrOutputConfigurationV1, head: &ZwlrOutputHeadV1, power: bool) {
         let Some(output) = head.data::<HeadData>().map(|data| data.output.clone()) else {
             return;
         };

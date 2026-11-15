@@ -27,9 +27,7 @@ use bare::BareLayer;
 #[cfg(feature = "tty")]
 pub(crate) use bare::Cursorless;
 use casement_core::geometry::{LogicalPoint, PhysicalRect, PhysicalSize};
-use casement_core::output::{
-    EdidFacts, EdidSerial, Mode, OutputConfig, OutputFacts, PhysicalMm,
-};
+use casement_core::output::{EdidFacts, EdidSerial, Mode, OutputConfig, OutputFacts, PhysicalMm};
 use casement_core::time::{Mono, VblankSeq};
 use casement_core::{OutputKey, OutputName};
 use casement_render::{CasementElement, Compositor};

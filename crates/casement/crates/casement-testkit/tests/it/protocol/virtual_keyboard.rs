@@ -1,7 +1,7 @@
 //! `virtual_keyboard` (P0-H7).
 
-use crate::protocol::cut_past_cap;
 use super::consent::{ScriptedShell, asked_world, kept, program};
+use crate::protocol::cut_past_cap;
 use casement_core::Event;
 use casement_core::policy::ConnectionRole;
 use casement_core::privilege::{HELD_REQUESTS, UnixSeconds, Verdict};

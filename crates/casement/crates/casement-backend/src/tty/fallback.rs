@@ -34,10 +34,7 @@ pub fn mode_ladder(
     listed: &[Mode],
     avoid: Option<Mode>,
 ) -> Vec<Mode> {
-    let preferred = listed
-        .iter()
-        .find(|mode| mode.preferred)
-        .copied();
+    let preferred = listed.iter().find(|mode| mode.preferred).copied();
     let smallest = listed
         .iter()
         .min_by_key(|mode| {

@@ -31,8 +31,7 @@ pub use kms::{
 };
 pub use lock_marker::MemoryLockMarker;
 pub use logind::{
-    FakeLogind, IdleHint, LogindCall, LogindError, PauseKind, PrivateBus,
-    SleepPhase,
+    FakeLogind, IdleHint, LogindCall, LogindError, PauseKind, PrivateBus, SleepPhase,
 };
 pub use notify::FakeNotify;
 pub use palmrest::FakePalmrest;

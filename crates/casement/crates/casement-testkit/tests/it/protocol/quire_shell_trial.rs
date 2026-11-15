@@ -33,7 +33,11 @@ fn rescale(fixture: &mut Fixture, manager: &mut OutputManager, scale: f64) {
         ..Properties::default()
     };
     let wanted = manager
-        .configure(None, &[plan("HEADLESS-1", properties)], ConfigPurpose::Apply)
+        .configure(
+            None,
+            &[plan("HEADLESS-1", properties)],
+            ConfigPurpose::Apply,
+        )
         .expect("a configuration");
     settle(fixture, manager);
     assert_eq!(manager.answer(wanted), Some(ConfigOutcome::Succeeded));

@@ -1,8 +1,8 @@
 //! sill's whole `PreferWhole` table, ported to 120ths, and properties over modes and places.
 
 use super::{
-    EdidFacts, EdidSerial, Mode, ModeWish, OutputConfig, OutputFacts, PhysicalMm, SavedOutputs, ScalePolicy, first_sight_scale, pick_mode,
-    place_outputs,
+    EdidFacts, EdidSerial, Mode, ModeWish, OutputConfig, OutputFacts, PhysicalMm, SavedOutputs,
+    ScalePolicy, first_sight_scale, pick_mode, place_outputs,
 };
 use crate::geometry::{LogicalPoint, PhysicalSize};
 use crate::ids::{OutputKey, OutputName};
@@ -160,11 +160,7 @@ fn whole_like_mac_matches_sills_prefer_whole_table() {
         ("4K TV, nonsense size", (3840, 2160), Some((160, 90)), 200),
     ];
     for (label, (w, h), mm, want) in rows {
-        let facts = display(
-            "DP-1",
-            vec![mode(w, h, 60_000, true)],
-            mm.unwrap_or((0, 0)),
-        );
+        let facts = display("DP-1", vec![mode(w, h, 60_000, true)], mm.unwrap_or((0, 0)));
         assert_eq!(
             first_sight_scale(&facts, &ScalePolicy::WholeLikeMac),
             Scale::from_percent(want),
@@ -204,16 +200,8 @@ fn an_output_without_modes_has_no_mode_and_the_smallest_scale() {
 
 #[test]
 fn a_saved_rotated_display_takes_its_turned_width() {
-    let big = display(
-        "DP-1",
-        vec![mode(3840, 2160, 60_000, true)],
-        (597, 336),
-    );
-    let newcomer = display(
-        "DP-2",
-        vec![mode(1920, 1080, 60_000, true)],
-        (0, 0),
-    );
+    let big = display("DP-1", vec![mode(3840, 2160, 60_000, true)], (597, 336));
+    let newcomer = display("DP-2", vec![mode(1920, 1080, 60_000, true)], (0, 0));
     let saved = SavedOutputs(BTreeMap::from([(
         big.key.clone(),
         OutputConfig {

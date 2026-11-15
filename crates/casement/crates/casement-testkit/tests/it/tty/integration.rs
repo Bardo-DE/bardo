@@ -16,14 +16,12 @@ use casement_protocols::vocab::PressEdge;
 use casement_testclient::Pumped;
 use casement_testclient::capture::{BufferAsk, CursorMode, OutputCapture};
 use casement_testclient::manage::gamma::{ControlState as GammaState, GammaControls};
-use casement_testclient::manage::output_power::{
-    ControlState as PowerState, OutputPowers,
-};
+use casement_testclient::manage::output_power::{ControlState as PowerState, OutputPowers};
 use casement_testkit::fakes::{
     FakeKms, FakeLogind, GlassHandle, PrivateBus, SleepPhase, SyntheticTopology,
 };
 use casement_testkit::gpu::{
-    CrossSupport, FabricatedSysRoot, FormatSet, GpuTopology, SoftRenderer, SoftGpu, VendorFact,
+    CrossSupport, FabricatedSysRoot, FormatSet, GpuTopology, SoftGpu, SoftRenderer, VendorFact,
 };
 use casement_testkit::{Fixture, FixtureSpec, FrameCount, TtyWorld};
 use casement_wayland::dmabuf::{MainDevice, OfferUse};
@@ -304,20 +302,14 @@ fn dpms_off_darkens_the_output_and_on_queues_a_frame_at_once() {
     settle_power(&mut seat.fixture, &mut powers);
     let control = powers.control("eDP-1").expect("a control");
     settle_power(&mut seat.fixture, &mut powers);
-    assert_eq!(
-        powers.state(control),
-        Some(PowerState::Reported(true))
-    );
+    assert_eq!(powers.state(control), Some(PowerState::Reported(true)));
     seat.fixture.advance(ms(50));
     let panel = glass(&seat.world, 1);
 
     powers.set_mode(control, false).expect("off");
     settle_power(&mut seat.fixture, &mut powers);
     assert!(!power_of(&seat.fixture, "eDP-1"));
-    assert_eq!(
-        seat.world.kms.power_of(ConnectorId(1)),
-        Some(false)
-    );
+    assert_eq!(seat.world.kms.power_of(ConnectorId(1)), Some(false));
     assert_eq!(panel.blanks(), 1);
     let dark = panel.queued();
     seat.fixture.advance(ms(100));
@@ -325,10 +317,7 @@ fn dpms_off_darkens_the_output_and_on_queues_a_frame_at_once() {
 
     powers.set_mode(control, true).expect("on");
     settle_power(&mut seat.fixture, &mut powers);
-    assert_eq!(
-        seat.world.kms.power_of(ConnectorId(1)),
-        Some(true)
-    );
+    assert_eq!(seat.world.kms.power_of(ConnectorId(1)), Some(true));
     assert!(
         panel.queued() > dark,
         "DPMS On queues a frame before the next vblank"
@@ -553,8 +542,7 @@ fn a_whole_session_from_start_to_suspend_and_back() {
     let logind = FakeLogind::serve(&bus.address).expect("the fake logind");
     let mut session = seat.world.session.clone();
     let link = session.sleep_link().expect("the session hears a suspend");
-    let _watch =
-        suspend::watch(link, Some(bus.address.clone())).expect("the watcher subscribes");
+    let _watch = suspend::watch(link, Some(bus.address.clone())).expect("the watcher subscribes");
     assert_eq!(logind.held_inhibitors(), ["sleep"]);
     let (pauses, resumes) = seat.world.kms.seat_changes();
 

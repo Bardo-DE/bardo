@@ -4,9 +4,7 @@
 
 use crate::support::driver::{Op, plug, run, run_from};
 use crate::support::headless;
-use casement_core::output::{
-    DISPLAY_CONFIRM_WITHIN, OutputChangeSet, OutputConfig, Requester,
-};
+use casement_core::output::{DISPLAY_CONFIRM_WITHIN, OutputChangeSet, OutputConfig, Requester};
 use casement_core::time::{Mono, TimerKey};
 use casement_core::{Effect, Event, Model, OutputKey};
 use casement_protocols::vocab::{TrialAnswer, TrialId};
