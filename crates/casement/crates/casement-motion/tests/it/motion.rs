@@ -5,7 +5,7 @@ use crate::support;
 
 use casement_core::geometry::SubPx;
 use casement_core::{Cause, WindowId};
-use casement_motion::{MotionBook, Settled, retarget, sample};
+use casement_motion::{MotionBook, retarget, sample};
 use ds_style::appearance::motion::MotionLevel;
 use std::time::Duration;
 use support::{arranged, at, committed, looks, placed, rect};
@@ -28,8 +28,8 @@ fn an_unchanged_arrangement_does_not_move() {
         at(0),
     );
     assert!(!book.is_moving(at(0)), "nothing changed, nothing moves");
-    let (frame, settled) = sample(&book, &committed(&[(1, 400, 300)]), &looks(&[1]), at(0));
-    assert_eq!(settled, Settled::Rest);
+    let (frame, moving) = sample(&book, &committed(&[(1, 400, 300)]), &looks(&[1]), at(0));
+    assert!(!moving);
     let w = placed(&frame, 1).expect("drawn");
     assert_eq!(
         (w.at.x, w.at.y, w.size.w, w.size.h),
@@ -63,8 +63,8 @@ fn a_move_starts_where_it_was_and_ends_exactly_at_its_target() {
     assert!(!book.window_is_moving(WindowId(2), at(10)));
     assert!(!book.window_is_moving(WindowId(1), at(3_000)));
     assert_eq!(x_at(&book, 1, at(10)), 12_000, "starts at the old place");
-    let (frame, settled) = sample(&book, &committed(&[(1, 400, 300)]), &looks(&[1]), at(3_000));
-    assert_eq!(settled, Settled::Rest);
+    let (frame, moving) = sample(&book, &committed(&[(1, 400, 300)]), &looks(&[1]), at(3_000));
+    assert!(!moving);
     assert!(!book.is_moving(at(3_000)));
     let w = placed(&frame, 1).expect("drawn");
     assert_eq!((w.at.x, w.at.y), (SubPx(108_000), SubPx(60_000)));

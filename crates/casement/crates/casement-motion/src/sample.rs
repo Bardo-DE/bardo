@@ -4,7 +4,7 @@ use crate::pose::Pose;
 use crate::quantise::quantise;
 use crate::window_motion::WindowLegs;
 use crate::{
-    CornerRadius, Flight, FrameScene, MotionBook, OutputFrame, PlacedWindow, Settled, ShadowLevel,
+    CornerRadius, Flight, FrameScene, MotionBook, OutputFrame, PlacedWindow, ShadowLevel,
     StripOffset,
 };
 use casement_core::geometry::{LogicalSize, SubPoint, SubPx, SubSize};
@@ -43,7 +43,7 @@ pub fn sample(
     committed: &CommittedSizes,
     looks: &WindowLooks,
     now: Mono,
-) -> (FrameScene, Settled) {
+) -> (FrameScene, bool) {
     let mut rows: Vec<(&OutputKey, u32, PlacedWindow)> = Vec::new();
     let mut frames: BTreeMap<&OutputKey, OutputFrame> = BTreeMap::new();
     for (id, legs) in book.windows.iter().filter(|(_, legs)| !legs.is_gone(now)) {
@@ -60,12 +60,9 @@ pub fn sample(
     for (output, _, window) in rows {
         frame_of(&mut frames, output).windows.push(window);
     }
-    let settled = match book.is_moving(now) {
-        true => Settled::Moving,
-        false => Settled::Rest,
-    };
+    let moving = book.is_moving(now);
     let outputs = frames.into_values().collect();
-    (FrameScene { outputs }, settled)
+    (FrameScene { outputs }, moving)
 }
 
 /// `output`'s frame in `frames`, empty if it has none yet.

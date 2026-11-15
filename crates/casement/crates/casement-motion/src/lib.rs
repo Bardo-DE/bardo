@@ -23,7 +23,6 @@ mod pose;
 mod quantise;
 mod retarget;
 mod sample;
-mod settled;
 mod space_slide;
 mod window_motion;
 
@@ -34,4 +33,3 @@ pub use frame_scene::{
 pub use quantise::quantise;
 pub use retarget::{retarget, retarget_driven};
 pub use sample::{CommittedSizes, WindowLook, WindowLooks, sample};
-pub use settled::Settled;

@@ -5,12 +5,12 @@
 use crate::support;
 
 use casement_core::time::Mono;
-use casement_motion::{FrameScene, MotionBook, Settled, sample};
+use casement_motion::{FrameScene, MotionBook, sample};
 use ds_style::appearance::motion::MotionLevel;
 use support::mc_entry::{INSTANTS_MS, committed_of_scene, entry, journeys, looks_of_scene};
 use support::{at, at_us};
 
-fn frame(book: &MotionBook, t: Mono) -> (FrameScene, Settled) {
+fn frame(book: &MotionBook, t: Mono) -> (FrameScene, bool) {
     sample(book, &committed_of_scene(), &looks_of_scene(), t)
 }
 
@@ -19,8 +19,8 @@ fn dump(book: &MotionBook) -> String {
     INSTANTS_MS
         .iter()
         .map(|ms| {
-            let (scene, settled) = frame(book, at(*ms));
-            format!("t={ms}ms {settled:?}\n{}", scene.text())
+            let (scene, moving) = frame(book, at(*ms));
+            format!("t={ms}ms {moving}\n{}", scene.text())
         })
         .collect()
 }
@@ -32,9 +32,9 @@ fn the_entry_starts_at_the_desktop_and_ends_at_the_slots() {
     let rows = journeys();
     let sub = |p: casement_core::geometry::SubPx| i64::from(p.0);
     let (first, moving) = frame(&book, at(0));
-    assert_eq!(moving, Settled::Moving);
+    assert!(moving);
     let (last, rest) = frame(&book, at(5_000));
-    assert_eq!(rest, Settled::Rest);
+    assert!(!rest);
     let windows = |scene: &FrameScene| scene.outputs[0].windows.clone();
     for ((n, from, slot), (a, z)) in rows.iter().zip(windows(&first).iter().zip(windows(&last))) {
         assert_eq!((a.window.0, z.window.0), (*n, *n));

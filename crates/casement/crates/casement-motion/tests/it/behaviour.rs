@@ -8,7 +8,7 @@ use casement_core::geometry::{LogicalPoint, LogicalSize, SubPx};
 use casement_core::{Cause, MinimiseTarget, SwipeRelease, WindowId};
 use casement_layout::{Arrangement, SpaceTarget};
 use casement_motion::{
-    CommittedSizes, MotionBook, Settled, WindowLooks, retarget, retarget_driven, sample,
+    CommittedSizes, MotionBook, WindowLooks, retarget, retarget_driven, sample,
 };
 use casement_protocols::vocab::{Emphasis, FrameMode};
 use ds_core::vocab::Fraction;
@@ -136,13 +136,13 @@ fn reduced_motion_settles_at_once() {
             at(100),
         );
         assert!(!book.is_moving(at(100)), "{cause:?}: nothing moves");
-        let (frame, settled) = sample(
+        let (frame, moving) = sample(
             &book,
             &CommittedSizes::default(),
             &WindowLooks::default(),
             at(100),
         );
-        assert_eq!(settled, Settled::Rest, "{cause:?}");
+        assert!(!moving, "{cause:?}");
         for (n, _, slot) in journeys() {
             let w = placed(&frame, n).expect("drawn");
             assert_eq!(
@@ -636,11 +636,11 @@ fn an_output_that_loses_its_spaces_loses_its_strip() {
         STANDARD,
         at(10),
     );
-    let (frame, settled) = sample(
+    let (frame, moving) = sample(
         &book,
         &CommittedSizes::default(),
         &WindowLooks::default(),
         at(10),
     );
-    assert_eq!((frame.outputs.len(), settled), (0, Settled::Rest));
+    assert_eq!((frame.outputs.len(), moving), (0, false));
 }
