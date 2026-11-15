@@ -143,9 +143,7 @@ pub(super) fn fit_of(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use cua_desktop::{
-        GlobalCoord, GlobalRect, Pid, ToplevelIdent, WindowTitle, WorkspaceRef,
-    };
+    use cua_desktop::{GlobalCoord, GlobalRect, Pid, ToplevelIdent, WindowTitle, WorkspaceRef};
     use porter_core::AppName;
     use porter_ids::Px;
     use std::collections::BTreeSet;

@@ -3,8 +3,8 @@
 //! kind of window the specs name; the JSON under `fixtures/a11y/` is their serde form.
 
 use a11y_tree::{
-    A11yNode, A11ySnapshot, NodeAction, NodeState, NodeValue, Parent, Role,
-    TreeSource, Truncation, TypedHint,
+    A11yNode, A11ySnapshot, NodeAction, NodeState, NodeValue, Parent, Role, TreeSource, Truncation,
+    TypedHint,
 };
 use cua_action::{Coord, NodeId, Point, Rect, Size};
 use cua_desktop::Stamp;

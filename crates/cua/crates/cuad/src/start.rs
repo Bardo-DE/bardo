@@ -8,8 +8,8 @@ use cua_bus::{
 };
 use cua_desktop::WindowTrust;
 use cua_desktop::{Desktop, RunMode, ToplevelInfo, ToplevelState};
-use cua_host::Supervisor;
 use cua_host::Apps;
+use cua_host::Supervisor;
 use cua_run::{DefaultMode, Seams, choose_mode};
 use porter_core::AppName;
 use prov::Address;

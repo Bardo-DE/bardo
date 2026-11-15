@@ -313,12 +313,7 @@ fn a_tree_that_is_present_but_empty_is_still_present() {
 #[test]
 fn an_input_that_changed_nothing_is_told_with_plain_words_and_a_repeat_is_refused_in_words() {
     let table = [
-        (
-            "changed",
-            ActionResult::Done,
-            false,
-            PrevResult::Done,
-        ),
+        ("changed", ActionResult::Done, false, PrevResult::Done),
         (
             "no visible change",
             ActionResult::Done,

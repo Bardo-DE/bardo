@@ -272,11 +272,7 @@ fn a_stall_says_what_was_tried() {
 
 #[test]
 fn an_input_that_ran_and_changed_nothing_is_marked() {
-    let seen = Tried::of(
-        &click_at(1, 1),
-        &ActionResult::Done,
-        true,
-    );
+    let seen = Tried::of(&click_at(1, 1), &ActionResult::Done, true);
     assert_eq!(
         seen,
         Some(Tried {
@@ -284,11 +280,7 @@ fn an_input_that_ran_and_changed_nothing_is_marked() {
             mark: Mark::NoChange
         })
     );
-    let waited = Tried::of(
-        &crate::support::wait(500),
-        &ActionResult::Done,
-        true,
-    );
+    let waited = Tried::of(&crate::support::wait(500), &ActionResult::Done, true);
     assert_eq!(
         waited,
         Some(Tried {

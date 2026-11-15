@@ -132,9 +132,7 @@ impl GateLink for EvalGate {
         });
         let answer = match asked {
             None | Some(true) => GateAnswer::Run,
-            Some(false) => {
-                GateAnswer::Refused(CallRefusal::Unconfirmed(ConfirmEnd::Refused))
-            }
+            Some(false) => GateAnswer::Refused(CallRefusal::Unconfirmed(ConfirmEnd::Refused)),
         };
         let mut events = VecDeque::new();
         if asked.is_some() {

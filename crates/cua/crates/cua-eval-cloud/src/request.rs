@@ -141,7 +141,7 @@ pub fn chat(
         .collect::<Result<_, RequestFault>>()?;
     let control = pi::ChatControl::new()
         .with_tool_choice(turn.tool_choice.clone())
-.with_tool_calls(turn.tool_calls)
+        .with_tool_calls(turn.tool_calls)
         .with_max_output(pi::Knob::Set(Tokens(turn.limits.max_output.0)))
         .with_reasoning(turn.reasoning)
         .with_sampling(match from {

@@ -1073,10 +1073,7 @@ fn a_chord_for_a_control_the_tree_shows_is_refused_and_one_without_a_tree_is_not
 
 #[test]
 fn the_look_after_an_input_is_recorded_as_changed_or_not() {
-    for (byte, unchanged) in [
-        (1, true),
-        (2, false),
-    ] {
+    for (byte, unchanged) in [(1, true), (2, false)] {
         let mut d = Drive::thinking(STOCK, task(model_says()), tree(vec![]));
         d.run.track.outcomes = vec![ActionOutcome {
             action: cua_bus::TargetedAction {

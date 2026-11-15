@@ -2,8 +2,7 @@
 
 use crate::support::rules;
 use a11y_tree::{
-    A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, TreeSource,
-    Truncation, TypedHint,
+    A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, TreeSource, Truncation, TypedHint,
 };
 use cua_action::{
     Button, Chord, ClickCount, Coord, CuaAction, DeviceSize, FinishOutcome, PixelFormat, Point,
@@ -479,20 +478,8 @@ fn form_tree() -> A11ySnapshot {
         taken: Stamp(900),
         nodes: vec![
             secret_node(0, Role::Document, "Sign in", false, ""),
-            secret_node(
-                1,
-                Role::Entry,
-                "Email",
-                false,
-                "ada@example.org",
-            ),
-            secret_node(
-                2,
-                Role::PasswordText,
-                "Password",
-                true,
-                "hunter2-hunter2",
-            ),
+            secret_node(1, Role::Entry, "Email", false, "ada@example.org"),
+            secret_node(2, Role::PasswordText, "Password", true, "hunter2-hunter2"),
         ],
         truncated: Truncation::Complete,
     }

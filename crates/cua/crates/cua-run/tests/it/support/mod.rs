@@ -3,8 +3,7 @@
 //! feeds inputs one at a time and keeps the effects of the last one.
 
 use a11y_tree::{
-    A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, TreeSource,
-    Truncation, TypedHint,
+    A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, TreeSource, Truncation, TypedHint,
 };
 use cua_action::{
     Button, ClickCount, Coord, CuaAction, DeviceSize, FinishOutcome, PixelFormat, Point, Rect,

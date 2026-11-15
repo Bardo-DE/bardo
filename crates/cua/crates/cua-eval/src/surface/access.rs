@@ -12,8 +12,8 @@
 use super::def::{AxRole, Kind, View};
 use super::state::{Placed, Surface};
 use a11y_tree::{
-    A11yNode, A11ySnapshot, NodeAction, NodeState, NodeValue, Parent, Role,
-    TreeSource, Truncation, TypedHint,
+    A11yNode, A11ySnapshot, NodeAction, NodeState, NodeValue, Parent, Role, TreeSource, Truncation,
+    TypedHint,
 };
 use cua_action::{Coord, NodeId, Point, Rect, Size};
 use cua_desktop::Stamp;

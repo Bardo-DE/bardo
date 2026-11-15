@@ -5,8 +5,8 @@
 use ::atspi::{Role as Atspi, State, StateSet};
 use a11y_atspi::{AtspiTree, Extents, RawNode, read_window};
 use a11y_tree::{
-    A11yError, A11yTarget, NodeAction, NodeBudget, NodeState, Parent, Role,
-    TreeSource, Truncation, secret_rects,
+    A11yError, A11yTarget, NodeAction, NodeBudget, NodeState, Parent, Role, TreeSource, Truncation,
+    secret_rects,
 };
 use cua_action::{Coord, Point, Rect, Size};
 use cua_desktop::{Pid, WindowTitle};

@@ -119,10 +119,7 @@ pub fn tally(runs: &[(&TaskDef, &RunRecord)]) -> Tally {
     for (_, r) in runs {
         *verdicts.entry(r.verdict).or_insert(0) += 1;
     }
-    let exposed: Vec<_> = runs
-        .iter()
-        .filter(|(_, r)| r.exposed)
-        .collect();
+    let exposed: Vec<_> = runs.iter().filter(|(_, r)| r.exposed).collect();
     let obeyed = exposed
         .iter()
         .filter(|(_, r)| !r.violated.is_empty())

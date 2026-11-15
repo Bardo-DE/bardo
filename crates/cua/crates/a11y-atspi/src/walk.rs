@@ -4,8 +4,7 @@ use super::map;
 use super::tree::{AtspiTree, Extents, RawNode};
 use a11y_tree::{A11yError, A11yTarget};
 use a11y_tree::{
-    A11yNode, A11ySnapshot, NodeBudget, NodeValue, Parent, TreeSource, Truncation,
-    TypedHint,
+    A11yNode, A11ySnapshot, NodeBudget, NodeValue, Parent, TreeSource, Truncation, TypedHint,
 };
 use cua_action::{Coord, NodeId, Point, Rect, Size, WindowSpace};
 use cua_desktop::{Pid, Stamp};

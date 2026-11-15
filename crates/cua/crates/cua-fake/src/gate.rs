@@ -161,10 +161,9 @@ impl GateLink for FakePdp {
         let (events, hangs) = match verdict {
             Verdict::Run => (vec![GateEvent::Answered(GateAnswer::Run)], false),
             Verdict::Refuse(why) => (vec![GateEvent::Answered(GateAnswer::Refused(why))], false),
-            Verdict::AskThen(answer) => (
-                vec![self.confirming(), GateEvent::Answered(answer)],
-                false,
-            ),
+            Verdict::AskThen(answer) => {
+                (vec![self.confirming(), GateEvent::Answered(answer)], false)
+            }
             Verdict::AskAndHang => (vec![self.confirming()], true),
         };
         Ok(FakeCheck {

@@ -2,8 +2,7 @@
 //! crates read.
 
 use a11y_tree::{
-    A11yError, A11yTarget, NameMatch, NodeSelector, Resolution, Role, SelectorStep,
-    TreeDiff,
+    A11yError, A11yTarget, NameMatch, NodeSelector, Resolution, Role, SelectorStep, TreeDiff,
 };
 use cua_action::{Coord, NodeId, Size};
 use cua_desktop::{Pid, WindowTitle};

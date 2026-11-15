@@ -22,11 +22,7 @@ fn usable(asks: &[(&'static str, u32, bool)]) -> LogicalRect {
 #[test]
 fn a_client_zone_is_capped_and_the_shells_is_not() {
     // name, asks (edges, zone, whose), what is left for windows
-    type Case = (
-        &'static str,
-        Vec<(&'static str, u32, bool)>,
-        LogicalRect,
-    );
+    type Case = (&'static str, Vec<(&'static str, u32, bool)>, LogicalRect);
     let cases: Vec<Case> = vec![
         (
             "a client bar of a sensible size gets it",

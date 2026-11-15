@@ -16,8 +16,8 @@ mod selector;
 mod source;
 
 pub use model::{
-    A11yNode, A11ySnapshot, NodeAction, NodeBudget, NodeState, NodeValue, Parent, Role,
-    TreeSource, Truncation, TypedHint,
+    A11yNode, A11ySnapshot, NodeAction, NodeBudget, NodeState, NodeValue, Parent, Role, TreeSource,
+    Truncation, TypedHint,
 };
 pub use ops::{TreeDiff, diff, prune, render, resolve, secret_rects, secret_rects_of};
 pub use render::role_word;
