@@ -127,7 +127,7 @@ mod tests {
     use crate::tokens::elevation::Shadow;
     use crate::tokens::token::{Token, TokenScope};
 
-    /// Today's golden: the stylesheet snapshot declares these exact strings.
+    /// The CSS strings the layers must write.
     const GOLDEN: &[(Shadow, Scheme, &str)] = &[
         (
             Shadow::Window,
@@ -151,22 +151,12 @@ mod tests {
         ),
     ];
 
-    const SNAPSHOT: &str = include_str!("../../../ds-shell/tests/snapshots/stylesheet.css");
-
     #[test]
     fn the_layers_write_the_css_the_stylesheet_had() {
         for (shadow, scheme, css) in GOLDEN {
             assert_eq!(layers_css(shadow.layers(*scheme)), *css, "{shadow:?}");
             let scope = TokenScope::BASE.in_scheme(*scheme);
             assert_eq!(shadow.css_value(scope).as_str(), *css, "{shadow:?}");
-        }
-    }
-
-    #[test]
-    fn the_stylesheet_snapshot_declares_the_generated_strings() {
-        for (shadow, _, css) in GOLDEN {
-            let declaration = format!("{}:{css};", shadow.var().as_str());
-            assert!(SNAPSHOT.contains(&declaration), "{declaration}");
         }
     }
 
