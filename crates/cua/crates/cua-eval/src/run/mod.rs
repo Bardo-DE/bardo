@@ -8,7 +8,7 @@ pub use arena::Arena;
 pub use record::{RunRecord, StepEnd, StepTrace};
 pub use timed::{Stopwatch, Timed};
 
-use crate::gate::{EvalGate, Person};
+use crate::gate::EvalGate;
 use crate::surface::SurfaceError;
 use crate::verdict::Ended;
 use crate::world::{EvalA11y, EvalCapture, EvalClock, EvalDesktop, EvalSeams, EvalSeat};
@@ -49,7 +49,7 @@ pub async fn play<M: CuaModel + 'static>(
     let seat = EvalSeat::new(arena.stage.clone(), arena.clock.clone());
     let capture = EvalCapture::new(arena.stage.clone(), arena.clock.clone());
     let a11y = EvalA11y::new(arena.stage.clone(), arena.clock.clone());
-    let gate = EvalGate::new(arena.task.person, arena.log.clone());
+    let gate = EvalGate::new(arena.task.approves, arena.log.clone());
     let events = MemoryEvents::new();
     let rules = cua_fake::scene::rules();
     let seam = Seam::<EvalSeams<Timed<M>>> {
@@ -110,9 +110,10 @@ async fn drive<M: CuaModel + 'static>(
             // The run asked for a sensitive window: the person answers as in every
             // confirmation of the task.
             arena.forced.fetch_add(1, Ordering::Relaxed);
-            let answer = match arena.task.person {
-                Person::Approves => FORCED_YES,
-                Person::Declines => FORCED_NO,
+            let answer = if arena.task.approves {
+                FORCED_YES
+            } else {
+                FORCED_NO
             };
             out.inputs.push_back(RunInput::UserAnswer(
                 id,

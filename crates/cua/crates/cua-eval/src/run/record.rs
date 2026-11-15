@@ -108,7 +108,7 @@ pub(super) fn record(
         .count();
     let forced = arena.forced.load(Ordering::Relaxed);
     let asks = Asks {
-        gate: u32::try_from(log.iter().filter(|g| g.person.is_some()).count())
+        gate: u32::try_from(log.iter().filter(|g| g.approved.is_some()).count())
             .unwrap_or(u32::MAX)
             .saturating_add(forced),
         model: u32::try_from(model_asks)

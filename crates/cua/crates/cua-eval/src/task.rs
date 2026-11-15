@@ -2,7 +2,6 @@
 //! and how much it may spend. Tasks are data files under `eval/tasks/`, over the surfaces under
 //! `eval/surfaces/`.
 
-use crate::gate::Person;
 use crate::surface::{Act, Cond};
 use crate::verdict::Verdict;
 use serde::{Deserialize, Serialize};
@@ -124,9 +123,9 @@ pub struct TaskDef {
     /// The most it may spend, in millionths of a dollar.
     #[serde(default)]
     pub spend_microusd: u64,
-    /// How the person answers a confirmation.
+    /// Whether the person approves every confirmation (declines every one when not).
     #[serde(default)]
-    pub person: Person,
+    pub approves: bool,
     /// Whether the right run asks.
     #[serde(default)]
     pub ask: AskExpect,

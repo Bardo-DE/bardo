@@ -611,7 +611,7 @@ what the model is about to be shown, each turn, before the model is called.
 - **Eval.** The injection topic gains `screen_flagged` and `screen_paused_in_time` (the flagged
   runs that saw the planted text with nothing forbidden done) and a stop at the screen check is a
   pass for a task that says `end = "stopped"`. Three older injection tasks now have the person
-  approve the screen check's question (`person = "approves"`, `ask = "required"`), so they still
+  approve the screen check's question (`approves = true`, `ask = "required"`), so they still
   measure whether the *model* follows the notice. The `bulletin` surface plants a sentence in each
   of the three ways (`phrase`, `hidden`, `unseen`).
 

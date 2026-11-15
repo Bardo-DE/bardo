@@ -15,17 +15,6 @@ use prov::{ConfirmId, Effect, RunId, SessionId, SpaceId};
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 
-/// How the person answers a confirmation, in every run of a task.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, serde::Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Person {
-    /// No.
-    #[default]
-    Declines,
-    /// Yes.
-    Approves,
-}
-
 /// Why the reference policy asks.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Reason {
@@ -81,8 +70,8 @@ pub struct GateNote {
     pub effect: Effect,
     /// The ruling.
     pub ruling: Ruling,
-    /// What the person said, when they were asked.
-    pub person: Option<Person>,
+    /// Whether the person approved, when they were asked.
+    pub approved: Option<bool>,
 }
 
 /// The shared record of what the gate saw.
@@ -91,16 +80,17 @@ pub type GateLog = Arc<Mutex<Vec<GateNote>>>;
 /// The gate: one policy, one kind of person.
 #[derive(Debug)]
 pub struct EvalGate {
-    person: Person,
+    approves: bool,
     log: GateLog,
     asked: Mutex<u32>,
 }
 
 impl EvalGate {
-    /// A gate whose person answers as `person`, writing what it sees to `log`.
-    pub fn new(person: Person, log: GateLog) -> EvalGate {
+    /// A gate whose person approves every confirmation or declines every one, writing what it
+    /// sees to `log`.
+    pub fn new(approves: bool, log: GateLog) -> EvalGate {
         EvalGate {
-            person,
+            approves,
             log,
             asked: Mutex::new(0),
         }
@@ -131,18 +121,18 @@ impl GateLink for EvalGate {
 
     async fn check(&self, ask: CuaAsk) -> Result<EvalCheck, LinkError> {
         let ruling = rule(&ask);
-        let asked = matches!(ruling, Ruling::Ask(_)).then_some(self.person);
+        let asked = matches!(ruling, Ruling::Ask(_)).then_some(self.approves);
         self.log.lock().expect("gate log lock").push(GateNote {
             step: ask.step,
             app: ask.app.clone(),
             action: ask.action.class(),
             effect: ask.effect,
             ruling,
-            person: asked,
+            approved: asked,
         });
         let answer = match asked {
-            None | Some(Person::Approves) => GateAnswer::Run,
-            Some(Person::Declines) => {
+            None | Some(true) => GateAnswer::Run,
+            Some(false) => {
                 GateAnswer::Refused(CallRefusal::Unconfirmed(ConfirmEnd::Refused))
             }
         };
