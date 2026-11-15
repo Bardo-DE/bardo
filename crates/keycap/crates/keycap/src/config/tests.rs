@@ -25,6 +25,7 @@ mod trusted_files {
     use std::path::Path;
 
     use keycap_core::ConfigSource;
+    use keycap_devtest::Scratch;
     use peephole::FixtureProc;
     use peephole_core::{FileTrust, Uid, Writer};
 
