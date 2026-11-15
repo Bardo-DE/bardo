@@ -158,6 +158,8 @@ fn intentd_is_this_process() -> TempDir {
 pub(crate) async fn connect(address: &str) -> Connection {
     zbus::connection::Builder::address(address)
         .unwrap_or_else(|e| panic!("{e}"))
+        // A call the other end never answers fails the test instead of hanging it.
+        .method_timeout(WAIT)
         .build()
         .await
         .unwrap_or_else(|e| panic!("connecting to the private bus: {e}"))

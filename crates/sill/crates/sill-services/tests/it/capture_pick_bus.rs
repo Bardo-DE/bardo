@@ -70,7 +70,10 @@ pub(crate) async fn wait_for<T>(
 }
 
 pub(crate) async fn connect(bus: &PrivateBus, name: Option<&str>) -> Connection {
-    let builder = Builder::address(bus.address.as_str()).unwrap_or_else(|e| panic!("{e}"));
+    let builder = Builder::address(bus.address.as_str())
+        .unwrap_or_else(|e| panic!("{e}"))
+        // A call the other end never answers fails the test instead of hanging it.
+        .method_timeout(std::time::Duration::from_secs(8));
     let builder = match name {
         Some(name) => builder
             .name(name.to_owned())
