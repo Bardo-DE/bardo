@@ -1,8 +1,7 @@
 //! Pictures of a mail-like window built from the layout parts, light and dark: a `SplitView` whose
 //! sidebar pane is an `EdgePeek` holding a `Sidebar` of several sections and a foot clear over the Space's tint, and a card with a `Toolbar` whose picked item hangs a `Menu` or a `Sheet` from the card.
 //! Posed on the virtual clock: pinned; folded away and peeking; a menu hung from a toolbar button;
-//! a sheet hanging from the card. Each render must paint; the pictures are written only when
-//! `QUIRE_GALLERY_SHOTS` names a directory, as `window-layout-<pose>-<scheme>.png`.
+//! a sheet hanging from the card. Each render must paint.
 
 use dioxus::prelude::*;
 use ds::base::geometry::units::{Point, Px};
@@ -183,14 +182,9 @@ fn Page() -> Element {
     }
 }
 
-fn save(harness: &mut Harness, pose: &str, dark: bool) {
+fn save(harness: &mut Harness, pose: &str) {
     let shot = harness.render().expect("renders");
     assert!(shot.width() > 0, "{pose}");
-    if let Ok(dir) = std::env::var("QUIRE_GALLERY_SHOTS") {
-        let scheme = if dark { "dark" } else { "light" };
-        shot.save(format!("{dir}/window-layout-{pose}-{scheme}.png"))
-            .expect("writes the shot");
-    }
 }
 
 fn at(x: f32, y: f32) -> Point {
@@ -201,7 +195,7 @@ fn pose(dark: bool) {
     DARK.with(|cell| cell.set(dark));
     let mut harness = Harness::new(Page, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
     harness.advance(Duration::from_millis(600));
-    save(&mut harness, "pinned", dark);
+    save(&mut harness, "pinned");
 
     let hide = harness
         .centre(".ds-sidebar-foot > .ds-button:last-child")
@@ -216,7 +210,7 @@ fn pose(dark: bool) {
         harness.attr(".ds-side", "data-side").as_deref(),
         Some("peek")
     );
-    save(&mut harness, "peeking", dark);
+    save(&mut harness, "peeking");
 
     harness.send(Input::click(at(3.0, 300.0)));
     harness.advance(Duration::from_millis(900));
@@ -229,7 +223,7 @@ fn pose(dark: bool) {
         harness.count(".ds-menu-item") >= 3,
         "the menu hangs from Group"
     );
-    save(&mut harness, "menu", dark);
+    save(&mut harness, "menu");
 
     harness.send(Input::key(ShortcutKey::Escape));
     harness.advance(Duration::from_millis(400));
@@ -238,7 +232,7 @@ fn pose(dark: bool) {
         .expect("the Rules button");
     harness.send(Input::click(rules));
     harness.advance(Duration::from_millis(700));
-    save(&mut harness, "sheet", dark);
+    save(&mut harness, "sheet");
 }
 
 #[test]

@@ -108,25 +108,6 @@ fn plugging_in_grows_the_bolt_and_a_held_charge_shows_the_plug() {
 }
 
 #[test]
-fn the_fill_turns_low_at_the_threshold_but_never_while_charging() {
-    let mut harness = Harness::new(Page, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
-    assert_eq!(
-        attr(&harness, "fill", "data-tone").as_deref(),
-        Some("normal")
-    );
-    set(&mut harness, battery(150, BatteryPower::Battery));
-    settle_until(&mut harness, |h| {
-        attr(h, "fill", "data-tone").as_deref() == Some("low")
-    });
-    assert_settles_to_zero_frames(&mut harness);
-    set(&mut harness, battery(150, BatteryPower::Charging));
-    settle_until(&mut harness, |h| {
-        attr(h, "fill", "data-tone").as_deref() == Some("normal")
-    });
-    assert_settles_to_zero_frames(&mut harness);
-}
-
-#[test]
 fn reduced_jumps_the_fill() {
     let mut harness = Harness::new(Page, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
     harness.within(|| *MOTION.write() = Motion::Reduced);

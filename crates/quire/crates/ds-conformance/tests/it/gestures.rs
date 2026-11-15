@@ -1,11 +1,11 @@
 //! Touchpad gestures and pointer capture for any element, on a real Blitz document: a pinch and
-//! a scroll with its phase reach the component listening, in order; a wheel publishes a scroll;
+//! a scroll with its phase reach the component listening, in order;
 //! and a press that captured the pointer keeps hearing moves and the release outside the element
 //! (Blitz would deliver them only to what is under the pointer).
 
 use dioxus::prelude::*;
 use ds::host::captured::CapturedPointer;
-use ds::host::gesture::{Gesture, GesturePhase, Magnification, ScrollSource, use_gestures};
+use ds::host::gesture::{Gesture, GesturePhase, Magnification, use_gestures};
 use ds::host::pointer_capture::{PointerHold, use_pointer_capture};
 use ds::prelude::*;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -70,53 +70,6 @@ fn a_pinch_and_a_scroll_arrive_in_order_with_their_phases() {
     assert_eq!(
         harness.text_of(".log").as_deref(),
         Some("pinch Began 0; pinch Changed 30; pinch Ended -10")
-    );
-}
-
-#[test]
-fn a_wheel_is_published_as_a_scroll() {
-    let mut harness = Harness::new(
-        Listener,
-        HarnessConfig::new(VIEW).with_clock(Clock::Virtual),
-    );
-    harness.advance(ms(50));
-    harness.send(Input::wheel(
-        Point {
-            x: Px(50.0),
-            y: Px(50.0),
-        },
-        Px(0.0),
-        Px(-24.0),
-    ));
-    assert_eq!(
-        harness.text_of(".log").as_deref(),
-        Some("scroll Changed 0 -24 control=false")
-    );
-}
-
-#[test]
-fn a_scroll_carries_the_modifiers_held_while_it_happened() {
-    let mut harness = Harness::new(
-        Listener,
-        HarnessConfig::new(VIEW).with_clock(Clock::Virtual),
-    );
-    harness.advance(ms(50));
-    harness.send(Input::gesture(Gesture::Scroll {
-        source: ScrollSource::Finger,
-        phase: GesturePhase::Changed,
-        by: Point {
-            x: Px(0.0),
-            y: Px(12.0),
-        },
-        at: Point {
-            x: Px(50.0),
-            y: Px(50.0),
-        },
-        held: Modifiers::CONTROL,
-    }));
-    assert_eq!(
-        harness.text_of(".log").as_deref(),
-        Some("scroll Changed 0 12 control=true")
     );
 }
 

@@ -117,11 +117,9 @@ fn the_tip_opens_at_once_below_its_anchor_and_goes_with_the_pointer() {
     );
 }
 
-/// Each scheme's picture with the tip up paints; it is written only when `QUIRE_SHOTS` names a
-/// directory, as `tooltip-hooked-<scheme>.png`, for the progress gallery.
+/// Each scheme's picture with the tip up paints.
 #[test]
 fn the_hooked_tip_paints_in_both_schemes() {
-    let out = std::env::var("QUIRE_SHOTS").ok();
     for (app, scheme) in [(Page as fn() -> Element, "light"), (Dark, "dark")] {
         let mut harness = Harness::new(app, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
         harness.advance(ms(200));
@@ -129,10 +127,6 @@ fn the_hooked_tip_paints_in_both_schemes() {
         harness.send(Input::pointer_move(over));
         harness.advance(ms(1300));
         assert_eq!(harness.count(".ds-tooltip"), 1, "{scheme}");
-        let shot = harness.render().expect("renders");
-        if let Some(dir) = &out {
-            shot.save(format!("{dir}/tooltip-hooked-{scheme}.png"))
-                .expect("writes the shot");
-        }
+        harness.render().expect("renders");
     }
 }

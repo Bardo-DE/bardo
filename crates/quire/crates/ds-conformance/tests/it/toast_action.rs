@@ -131,11 +131,9 @@ fn a_later_push_replaces_the_button_and_its_handler() {
     );
 }
 
-/// Each scheme's picture paints; it is written only when `QUIRE_SHOTS` names a directory, as
-/// `toast-action-<scheme>.png`, for the progress gallery.
+/// Each scheme's picture paints.
 #[test]
 fn the_action_toast_paints_in_both_schemes() {
-    let out = std::env::var("QUIRE_SHOTS").ok();
     for (app, scheme) in [(Page as fn() -> Element, "light"), (Dark, "dark")] {
         let mut harness = Harness::new(app, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
         let at = harness.centre("#send").expect("the button");
@@ -143,9 +141,5 @@ fn the_action_toast_paints_in_both_schemes() {
         harness.advance(ms(400));
         let shot = harness.render().expect("renders");
         assert_eq!(shot.width(), VIEW.width, "{scheme}");
-        if let Some(dir) = &out {
-            shot.save(format!("{dir}/toast-action-{scheme}.png"))
-                .expect("writes the shot");
-        }
     }
 }
