@@ -36,7 +36,6 @@ mod lock_switcher_ssr;
 mod month_grid;
 mod month_grid_density;
 mod month_grid_density_ssr;
-mod month_grid_shots;
 mod month_grid_ssr;
 mod notification_card;
 mod notification_stack;

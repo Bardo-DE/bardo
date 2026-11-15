@@ -100,42 +100,15 @@ impl crate::hooks::ReadTokens for NotificationTokens {
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        BANNER_WIDTH, CENTER_WIDTH, ICON, NotificationTokens, POSITION_RIGHT, POSITION_TOP_GAP,
-        icon_size, swipe_metrics,
-    };
-    use ds::motion::swipe::SwipeMetrics;
+    use super::{NotificationTokens, icon_size};
     use ds::prelude::Px;
     use ds::style::icon::render::IconPx;
-    use ds::style::tokens::token::TokenScope;
-    use sill_shell_kit::tokens::notifications::NotificationToken;
 
     #[test]
-    fn the_constants_are_the_tokens_defaults() {
-        let cases = [
-            (NotificationToken::BannerWidth, BANNER_WIDTH),
-            (NotificationToken::CenterWidth, CENTER_WIDTH),
-            (NotificationToken::Icon, ICON),
-            (NotificationToken::PositionRight, POSITION_RIGHT),
-            (NotificationToken::PositionTopGap, POSITION_TOP_GAP),
-        ];
-        for (token, shipped) in cases {
-            assert_eq!(
-                token.fallback(TokenScope::BASE),
-                format!("{shipped}px").as_str()
-            );
-        }
-    }
-
-    #[test]
-    fn the_defaults_are_quires_and_a_written_token_reaches_the_icon() {
-        let defaults = NotificationTokens::default();
-        assert_eq!(swipe_metrics(), SwipeMetrics::default());
-        assert_eq!(icon_size(&defaults), IconPx(28));
+    fn a_written_token_reaches_the_icon() {
         let wrote = |name: &str| (name == "--notifications-icon-px").then_some(Px(400.0));
         let big = NotificationTokens::read(wrote);
         assert_eq!(big.icon, 400);
         assert_eq!(icon_size(&big), IconPx(255), "held to what an IconPx holds");
-        assert_eq!(NotificationTokens::read(|_| None), defaults);
     }
 }

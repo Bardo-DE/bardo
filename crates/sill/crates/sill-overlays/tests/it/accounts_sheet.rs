@@ -4,7 +4,6 @@
 //! the browser wait, the device code, the review, working, failed) and the consent alert; the keys
 //! (Return the default, Escape a dismissal) and what each press tells accountd, taken through the
 //! pure step so the controlled values follow what is typed. Nothing here reaches a bus.
-//! `SILL_SHOTS` names a directory the steps are rendered into (light and dark).
 
 use std::time::Duration;
 
@@ -516,42 +515,6 @@ fn a_press_on_a_pop_up_item_once_it_has_settled_chooses_it() {
 fn a_press_on_a_pop_up_item_right_after_it_opens_chooses_it() {
     for frames in 0..8 {
         assert_eq!(pressed_after(frames), Some("pop3"), "{frames} frames in");
-    }
-}
-
-/// The steps as pictures, light and dark, when `SILL_SHOTS` names a directory.
-#[test]
-fn the_steps_render() {
-    let Some(dir) = std::env::var_os("SILL_SHOTS") else {
-        return;
-    };
-    let dir = std::path::PathBuf::from(dir);
-    std::fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("{e}")); // test-only
-    for (theme, name) in [(Theme::Light, "light"), (Theme::Dark, "dark")] {
-        let mut environment = Environment::default();
-        environment.settings.appearance.theme = theme;
-        for (json, step_name) in [
-            (PROVIDERS, "providers"),
-            (FORM, "sign-in"),
-            (REFUSED, "sign-in-refused"),
-            (BROWSER, "browser"),
-            (CODE, "code"),
-            (REVIEW, "review"),
-            (WORKING, "working"),
-            (FAILED, "failed"),
-            (CONSENT, "consent"),
-        ] {
-            let mut run = start_on(fake::output().id, environment.clone());
-            run.open(json);
-            if json == FORM {
-                run.text("ada@example.org");
-            }
-            run.running.harness.advance(Duration::from_millis(600));
-            let image = run.running.harness.render().expect("renders"); // test-only
-            image
-                .save(dir.join(format!("accounts-sheet-{step_name}-{name}.png")))
-                .unwrap_or_else(|e| panic!("{e}")); // test-only
-        }
     }
 }
 

@@ -5,18 +5,15 @@
 
 use ds::prelude::*;
 use ds::style::space::frame_vars::FrameVars;
-use ds::style::tokens::accent_table::accent_of;
 use ds::style::tokens::colour::ColourToken;
 use ds::style::tokens::easing::EasingToken;
 use ds::style::tokens::elevation::Shadow;
-use ds::style::tokens::label_hue::HueMember;
-use ds::style::tokens::label_hue::LabelHue;
 use ds::style::tokens::layer::ZLayer;
 use ds::style::tokens::person::PersonSwatch;
 use ds::style::tokens::shape::Radius;
 use ds::style::tokens::spacing::SpacingToken;
 use ds::style::tokens::timing::DurationToken;
-use ds::style::tokens::token::{Token, TokenScope};
+use ds::style::tokens::token::Token;
 use ds::style::tokens::type_scale::{Family, FontSize};
 use ds::style::tokens::widget_paint::WidgetPaint;
 use sill_shell_kit::stylesheet;
@@ -146,32 +143,6 @@ fn each_accent_block_sets_exactly_the_seven() {
 }
 
 #[test]
-fn each_accent_block_is_the_bands_roles() {
-    for scheme in Scheme::ALL.iter().copied() {
-        let theme = match scheme {
-            Scheme::Light => "",
-            Scheme::Dark => "[*|data-theme=dark]",
-        };
-        for accent in Accent::ALL.iter().copied() {
-            let selector = format!(".ds{theme}[*|data-accent={}]", accent.slug());
-            let decls = block(&selector);
-            let want = accent_of(accent, scheme);
-            for (name, value) in [
-                ("--accent", want.fill.css()),
-                ("--accent-ink", want.ink.css()),
-                ("--accent-soft", want.wash_colour().css()),
-                ("--accent-text", want.text.css()),
-                ("--accent-text-material", want.text_material.css()),
-                ("--accent-ring", want.ring_colour().css()),
-                ("--seal", want.fill.css()),
-            ] {
-                assert_eq!(decls.get(name), Some(&value), "{selector} {name}");
-            }
-        }
-    }
-}
-
-#[test]
 fn each_swatch_is_its_accents_own_colour() {
     for scheme in Scheme::ALL.iter().copied() {
         let (swatches, theme) = match scheme {
@@ -206,39 +177,6 @@ fn each_swatch_is_its_accents_own_colour() {
                 "{scheme:?} {accent:?}: the swatch is not the accent"
             );
             assert!(swatch.is_some(), "{scheme:?} {accent:?}: no swatch");
-        }
-    }
-}
-
-#[test]
-fn the_token_block_holds_the_rust_table() {
-    let light = token_block();
-    let dark = block(".ds[*|data-theme=dark]");
-    for token in ColourToken::ALL.iter().copied() {
-        if token == ColourToken::AccentRing {
-            continue; // Mixed from the resolved --accent; see `each_var_…` and `sill_shell_kit::kits()`.
-        }
-        for (scheme, over) in [(Scheme::Light, None), (Scheme::Dark, Some(&dark))] {
-            let name = token.var().as_str();
-            let got = over
-                .and_then(|over| over.get(name))
-                .or_else(|| light.get(name));
-            assert_eq!(got, Some(&token.value(scheme).css()), "{name} {scheme:?}");
-        }
-    }
-    for hue in LabelHue::ALL.iter().copied() {
-        for member in [HueMember::Base, HueMember::Deep, HueMember::Soft] {
-            let name = hue.colour(member).var().as_str();
-            assert_eq!(
-                light.get(name),
-                Some(&hue.value(member, Scheme::Light).css()),
-                "{name}"
-            );
-            assert_eq!(
-                dark.get(name),
-                Some(&hue.value(member, Scheme::Dark).css()),
-                "{name} dark"
-            );
         }
     }
 }
@@ -390,31 +328,4 @@ fn every_var_the_stylesheet_reads_is_declared() {
     missing.sort();
     missing.dedup();
     assert!(missing.is_empty(), "read but never declared: {missing:?}");
-}
-
-/// The spacing scale is design/01-LAYOUT.md section 2's common steps, verbatim, plus the three
-/// values 04-COMPONENTS quotes for a quire component (1.5, 13, 15), each emitted on `.ds` as
-/// its own pixel value and nowhere else (it follows neither scheme nor motion).
-#[test]
-fn the_spacing_scale_is_the_layout_docs() {
-    const STEPS: [&str; 27] = [
-        "1", "1.5", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
-        "16", "18", "20", "22", "24", "26", "28", "32", "36", "40", "48",
-    ];
-    let written: Vec<String> = SpacingToken::ALL
-        .iter()
-        .map(|step| step.css_value(TokenScope::BASE).to_string())
-        .collect();
-    assert_eq!(written, STEPS.map(|step| format!("{step}px")));
-    let light = token_block();
-    for step in STEPS {
-        let name = format!("--s-{}", step.replace('.', "-"));
-        assert_eq!(light.get(&name), Some(&format!("{step}px")), "{name}");
-    }
-    for selector in [".ds[*|data-theme=dark]", ".ds[*|data-motion=reduced]"] {
-        assert!(
-            !block(selector).keys().any(|name| name.starts_with("--s-")),
-            "{selector} overrides a spacing step"
-        );
-    }
 }

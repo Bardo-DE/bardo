@@ -13,7 +13,6 @@ mod launcher_harness;
 mod launcher_helpers;
 mod launcher_keys;
 mod launcher_lint;
-mod launcher_pane_shots;
 mod launcher_pdf_rasters;
 mod launcher_preview;
 mod launcher_video_frames;

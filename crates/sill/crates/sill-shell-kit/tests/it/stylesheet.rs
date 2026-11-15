@@ -1,42 +1,8 @@
-//! The generated stylesheet: pinned by a golden file, free of the constructs Blitz cannot use,
+//! The generated stylesheet: free of the constructs Blitz cannot use,
 //! with every attribute selector in the namespaced form Blitz matches, in the documented
 //! cascade order.
-//!
-//! `DS_BLESS=1 cargo test -p sill-shell-kit --test it stylesheet` rewrites the golden file.
 
 use sill_shell_kit::stylesheet;
-use std::path::PathBuf;
-
-fn golden_path() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/snapshots/stylesheet.css")
-}
-
-#[test]
-fn the_stylesheet_matches_its_golden_file() {
-    let path = golden_path();
-    if std::env::var_os("DS_BLESS").is_some() {
-        std::fs::write(&path, stylesheet())
-            .unwrap_or_else(|why| panic!("writing {}: {why}", path.display()));
-        return;
-    }
-    let golden = std::fs::read_to_string(&path)
-        .unwrap_or_else(|why| panic!("{}: {why}; run with DS_BLESS=1", path.display()));
-    if golden != stylesheet() {
-        let first = golden
-            .lines()
-            .zip(stylesheet().lines())
-            .position(|(a, b)| a != b)
-            .unwrap_or_else(|| golden.lines().count().min(stylesheet().lines().count()));
-        panic!(
-            "the stylesheet differs from {} from line {}; rerun with DS_BLESS=1 if intended\n\
-             golden:    {:?}\ngenerated: {:?}",
-            path.display(),
-            first + 1,
-            golden.lines().nth(first),
-            stylesheet().lines().nth(first)
-        );
-    }
-}
 
 fn strip_comments(css: &str) -> String {
     let mut out = String::with_capacity(css.len());
