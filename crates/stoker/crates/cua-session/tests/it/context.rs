@@ -31,15 +31,6 @@ fn texts(request: &TurnRequest) -> Vec<String> {
         .collect()
 }
 
-fn images(request: &TurnRequest) -> usize {
-    request
-        .messages
-        .iter()
-        .flat_map(|m| &m.parts)
-        .filter(|p| matches!(p, Part::Image(_)))
-        .count()
-}
-
 fn tool_use(name: &str, input: &str, id: &str) -> TurnTranscript {
     let mut reply = calls(&[]);
     let mut c = call(name, input);

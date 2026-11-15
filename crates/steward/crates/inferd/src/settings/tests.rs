@@ -545,7 +545,8 @@ fn set_writes_one_row_at_its_path_and_keeps_the_rest() {
         file.read().expect("missing is the default"),
         InferdConfig::default()
     );
-    file.set("ai.model.text.fast", "auto".into()).expect("write");
+    file.set("ai.model.text.fast", "auto".into())
+        .expect("write");
     file.set("ai.model.text.best", "local/beta".into())
         .expect("write");
     file.set("ai.auto.allow_evict", "never".into())

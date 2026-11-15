@@ -1,4 +1,4 @@
-use model_openai_compat::{Flavor, RequestJson};
+use model_openai_compat::RequestJson;
 
 #[test]
 fn request_bodies_do_not_print() {

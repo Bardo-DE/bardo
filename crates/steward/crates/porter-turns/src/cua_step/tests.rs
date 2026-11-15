@@ -131,6 +131,14 @@ fn texts(turn: &TurnRequest, role: Role) -> Vec<String> {
         .collect()
 }
 
+fn images(turn: &TurnRequest) -> usize {
+    turn.messages
+        .iter()
+        .flat_map(|m| m.parts.iter())
+        .filter(|part| matches!(part, Part::Image(_)))
+        .count()
+}
+
 #[tokio::test]
 async fn a_click_on_the_grid_lands_in_window_space_and_is_proposed_then_replied() {
     let provider = says(vec![

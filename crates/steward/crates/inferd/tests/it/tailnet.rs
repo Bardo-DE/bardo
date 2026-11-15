@@ -21,8 +21,8 @@ use porter_core::{AppId, AppName, DataClass, Isolation};
 use porter_dbus::Details;
 use porter_infer::PlaceId;
 use std::net::{IpAddr, SocketAddr};
-use steward_dbus::inference::InferenceProxy;
 use steward_dbus::inference::GUEST_KEY_STATE;
+use steward_dbus::inference::InferenceProxy;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpSocket;
 

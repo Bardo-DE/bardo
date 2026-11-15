@@ -98,7 +98,7 @@ impl ConfigFile {
     /// The file's modification time and length, `None` while it is missing: what the watch
     /// compares.
     fn stamp(&self) -> Option<(SystemTime, u64)> {
-        let meta = std::fs::metadata(self.path).ok()?;
+        let meta = std::fs::metadata(&self.path).ok()?;
         Some((meta.modified().ok()?, meta.len()))
     }
 }

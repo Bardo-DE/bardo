@@ -23,8 +23,8 @@ use porter_infer::{
     OpenOptions, OptionScore, OptionScores, ReplyShape, RequestKind, Role, ScoreOptions, ServedBy,
     StopReason, TokenUsage, ToolParallelism, Traceparent,
 };
-use porter_match::Need;
 use porter_match::LlmNeed;
+use porter_match::Need;
 use std::os::fd::OwnedFd;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;

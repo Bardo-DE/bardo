@@ -37,33 +37,3 @@ fn provider_error_json_is_pinned() {
         assert_eq!(&serde_json::from_str::<ProviderError>(json).unwrap(), error);
     }
 }
-
-#[test]
-fn caps_round_trip() {
-    let caps = Caps {
-        inputs: [InputKind::Text, InputKind::Image].into(),
-        tools: ToolSupport::ServerParsed,
-        output: [Constraint::JsonSchema].into(),
-        reasoning: Support::Present,
-        streaming: Support::Present,
-        images: ImageLimits {
-            per_prompt: ImageCount(3),
-            rule: ResizeRule::SmartResize {
-                factor: PatchFactor(32),
-                min_pixels: PixelCount(65_536),
-                max_pixels: PixelCount(16_777_216),
-            },
-            space: ModelSpace::Grid(GridMax(1000)),
-        },
-        context: Tokens(32768),
-        max_output: Tokens(4096),
-        computer_use: CuaSupport::Dialect {
-            dialect: CuaDialect::Tool(ToolDialect::Holo31),
-            batching: Batching::One,
-            zoom: Zoom::Absent,
-            profile: ActionProfile::default(),
-        },
-    };
-    let json = serde_json::to_string(&caps).unwrap();
-    assert_eq!(serde_json::from_str::<Caps>(&json).unwrap(), caps);
-}

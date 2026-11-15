@@ -476,8 +476,8 @@ mod refusals {
     use super::*;
     use porter_capability::LlmFeature;
     use porter_ids::Tokens;
-    use porter_match::Need;
     use porter_match::LlmNeed;
+    use porter_match::Need;
     use steward_dbus::inference::{InferenceProxy, PLACE_ERROR_PREFIX, place_refusal_of};
 
     const COMPANION: &str = "org.quire.Companion";
