@@ -11,7 +11,7 @@ mod reply;
 mod request;
 mod scores;
 
-pub use reply::{Gathered, event, model_error, stop, stop_back, usage, vectors, width};
+pub use reply::{Gathered, event, model_error, usage};
 pub use request::{
     BridgeError, DefaultSampling, Frames, JsonReply, MAX_ATTACHMENT, Target, chat_turn_for,
     embed_turns_for, extras, image_input, task_turn_for,

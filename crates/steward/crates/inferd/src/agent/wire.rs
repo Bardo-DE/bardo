@@ -143,8 +143,8 @@ mod tests {
             (0..calls)
                 .map(|n| ToolCallPart {
                     id: porter_infer::ToolCallId(format!("c{n}")),
-                    name: porter_infer::ToolName::parse("t").expect("name"),
-                    args: porter_infer::JsonText::parse("{}").expect("json"),
+                    name: porter_infer::ToolName::new("t").expect("name"),
+                    args: porter_infer::JsonText::new("{}").expect("json"),
                 })
                 .collect(),
         );

@@ -4,7 +4,7 @@ use crate::agent::wire::{Parsed, Unmapped, effort_for_budget, limit_of, sampling
 use porter_core::DataClass;
 use porter_core::consent::Usage;
 use porter_infer::{
-    Base64Bytes, ChatControl, ChatMessage, ChatRequest, ImagePart, ImageSource, JsonSchemaText,
+    Base64Bytes, ChatControl, ChatMessage, ChatRequest, ImagePart, ImageSource, SchemaText,
     JsonText, MessagePart, OpaqueText, Reasoning, ReplyShape, Role, SignatureText, ThoughtPart,
     ThoughtSeal, ToolCallId, ToolCallPart, ToolChoice, ToolDecl, ToolName, ToolParallelism,
     ToolResultPart, ToolStatus,
@@ -65,7 +65,7 @@ fn block(block: &Value) -> Result<MessagePart, Unmapped> {
         )),
         "image" => image(block),
         "tool_use" => {
-            let name = ToolName::parse(text_of(block, "name").unwrap_or_default())
+            let name = ToolName::new(text_of(block, "name").unwrap_or_default())
                 .map_err(|_| Unmapped::of("a tool_use whose name is not a tool name"))?;
             let input = block
                 .get("input")
@@ -74,7 +74,7 @@ fn block(block: &Value) -> Result<MessagePart, Unmapped> {
             Ok(MessagePart::ToolCall(ToolCallPart {
                 id: ToolCallId(text_of(block, "id").unwrap_or_default().to_owned()),
                 name,
-                args: JsonText::parse(&input.to_string())
+                args: JsonText::new(&input.to_string())
                     .map_err(|_| Unmapped::of("a tool_use whose input is not JSON"))?,
             }))
         }
@@ -154,11 +154,11 @@ fn tools(value: Option<&Value>) -> Result<Vec<ToolDecl>, Unmapped> {
                 .cloned()
                 .unwrap_or_else(|| serde_json::json!({ "type": "object" }));
             Ok(ToolDecl {
-                name: ToolName::parse(text_of(tool, "name").unwrap_or_default())
+                name: ToolName::new(text_of(tool, "name").unwrap_or_default())
                     .map_err(|_| Unmapped::of("a tool whose name is not a tool name"))?,
                 description: text_of(tool, "description").unwrap_or_default().to_owned(),
-                params: JsonSchemaText(
-                    JsonText::parse(&schema.to_string())
+                params: SchemaText(
+                    JsonText::new(&schema.to_string())
                         .map_err(|_| Unmapped::of("a tool whose schema is not JSON"))?,
                 ),
             })
@@ -184,7 +184,7 @@ fn choice(value: Option<&Value>) -> Result<(ToolChoice, ToolParallelism), Unmapp
         Some("any") => ToolChoice::Required,
         Some("none") => ToolChoice::Never,
         Some("tool") => ToolChoice::Named(
-            ToolName::parse(text_of(choice, "name").unwrap_or_default())
+            ToolName::new(text_of(choice, "name").unwrap_or_default())
                 .map_err(|_| Unmapped::of("a tool_choice whose name is not a tool name"))?,
         ),
         Some(other) => return Err(Unmapped::of(format!("a tool_choice of type {other}"))),

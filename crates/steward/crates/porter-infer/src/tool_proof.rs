@@ -5,7 +5,7 @@
 //! The right answer to [`probe_request`] is one call to [`PROBE_TOOL`] whose arguments are an
 //! object holding the one string the schema asks for.
 
-use crate::ids::{JsonSchemaText, JsonText, ToolName};
+use crate::ids::{SchemaText, JsonText, ToolName};
 use crate::reply::ChatReply;
 use crate::request::{ChatMessage, ChatRequest, MessagePart, Role, ToolDecl};
 use porter_capability::Tier;
@@ -37,9 +37,9 @@ pub fn probe_request() -> Option<ChatRequest> {
         r#"{{"type":"object","properties":{{"{PROBE_ARG}":{{"type":"string"}}}},"required":["{PROBE_ARG}"],"additionalProperties":false}}"#
     );
     let tool = ToolDecl {
-        name: ToolName::parse(PROBE_TOOL).ok()?,
+        name: ToolName::new(PROBE_TOOL).ok()?,
         description: "Writes down one word.".to_owned(),
-        params: JsonSchemaText(JsonText::parse(&schema).ok()?),
+        params: SchemaText(JsonText::new(&schema).ok()?),
     };
     let ask = ChatMessage {
         role: Role::User,

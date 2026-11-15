@@ -5,6 +5,7 @@ use crate::cua::CuaStepReply;
 use crate::error::{InferRefusal, ModelError};
 use crate::scores::OptionScores;
 use model_provider::Money;
+pub use model_provider::EmbedVector;
 use porter_capability::Locality;
 use porter_capability::ModelId;
 use porter_core::AccountId;
@@ -112,11 +113,6 @@ impl EmbedReply {
     }
 }
 
-/// One embedding. It holds floats because embeddings are floats end to end (every model emits
-/// and every index compares them as such); so it is `PartialEq` without `Eq`.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct EmbedVector(pub Vec<f32>);
 
 /// A finished transcript.
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]

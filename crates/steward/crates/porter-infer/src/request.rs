@@ -3,13 +3,15 @@
 
 use crate::control::{ChatControl, ThoughtSeal};
 use crate::cua::{CuaBegin, CuaStepRequest};
-use crate::ids::{AttachIndex, Base64Bytes, JsonSchemaText, JsonText, ToolCallId, ToolName};
+use crate::ids::{AttachIndex, Base64Bytes, SchemaText, JsonText, ToolCallId, ToolName};
 use crate::speech::{SpeakRequest, TranscribeBegin};
 use porter_capability::Tier;
 use porter_core::DataClass;
 use porter_core::consent::Usage;
 use porter_match::DimsNeed;
 use serde::{Deserialize, Serialize};
+
+pub use model_provider::{EmbedRole, ToolStatus};
 
 /// One request to inferd.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -164,7 +166,7 @@ pub struct ToolDecl {
     /// What it does, for the model.
     pub description: String,
     /// Its parameters, as a JSON Schema.
-    pub params: JsonSchemaText,
+    pub params: SchemaText,
 }
 
 /// One message.
@@ -236,16 +238,6 @@ pub struct ToolResultPart {
     pub parts: Vec<MessagePart>,
 }
 
-/// Whether a function call worked.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum ToolStatus {
-    /// It ran.
-    Ok,
-    /// It failed or was refused.
-    Error,
-}
-
 /// An image in a message.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ImagePart {
@@ -311,16 +303,6 @@ impl EmbedRequest {
             usage,
         }
     }
-}
-
-/// What an embedded text is for.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum EmbedRole {
-    /// A search query.
-    Query,
-    /// A passage that is indexed.
-    Document,
 }
 
 /// A task above raw chat. Speech to text is not here: its input is audio, not text (see

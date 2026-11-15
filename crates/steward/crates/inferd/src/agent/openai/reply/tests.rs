@@ -31,8 +31,8 @@ fn reply(
             .iter()
             .map(|(id, name, args)| ToolCallPart {
                 id: ToolCallId((*id).into()),
-                name: ToolName::parse(name).expect("name"),
-                args: JsonText::parse(args).expect("json"),
+                name: ToolName::new(name).expect("name"),
+                args: JsonText::new(args).expect("json"),
             })
             .collect(),
     );

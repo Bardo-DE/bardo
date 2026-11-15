@@ -76,9 +76,9 @@ fn a_request_with_tools_of_its_own_is_not_checked() {
     let scratch = Scratch::new("shaping-tools");
     let model = models(&scratch).remove(0);
     let tool = pi::ToolDecl {
-        name: pi::ToolName::parse("lookup").expect("name"),
+        name: pi::ToolName::new("lookup").expect("name"),
         description: "look it up".into(),
-        params: pi::JsonSchemaText(pi::JsonText::parse(r#"{"type":"object"}"#).expect("json")),
+        params: pi::SchemaText(pi::JsonText::new(r#"{"type":"object"}"#).expect("json")),
     };
     let with = request(json(SCORE), vec![tool]);
     assert!(!is_checked(&shaping(&model, &with, Limits::default())));

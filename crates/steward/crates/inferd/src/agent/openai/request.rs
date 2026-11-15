@@ -5,7 +5,7 @@ use porter_core::DataClass;
 use porter_core::consent::Usage;
 use porter_infer::{
     Base64Bytes, ChatControl, ChatMessage, ChatRequest, Effort, ImagePart, ImageSource,
-    JsonSchemaText, JsonText, Knob, MessagePart, Reasoning, ReplyShape, Role, ScoreOptions,
+    SchemaText, JsonText, Knob, MessagePart, Reasoning, ReplyShape, Role, ScoreOptions,
     ToolCallId, ToolCallPart, ToolChoice, ToolDecl, ToolName, ToolParallelism, ToolResultPart,
     ToolStatus,
 };
@@ -72,9 +72,9 @@ fn call(call: &Value) -> Result<MessagePart, Unmapped> {
     };
     Ok(MessagePart::ToolCall(ToolCallPart {
         id: ToolCallId(text_of(call, "id").unwrap_or_default().to_owned()),
-        name: ToolName::parse(text_of(function, "name").unwrap_or_default())
+        name: ToolName::new(text_of(function, "name").unwrap_or_default())
             .map_err(|_| Unmapped::of("a tool call whose name is not a tool name"))?,
-        args: JsonText::parse(arguments)
+        args: JsonText::new(arguments)
             .map_err(|_| Unmapped::of("a tool call whose arguments are not JSON"))?,
     }))
 }
@@ -157,13 +157,13 @@ fn tools(value: Option<&Value>) -> Result<Vec<ToolDecl>, Unmapped> {
                 .cloned()
                 .unwrap_or_else(|| serde_json::json!({ "type": "object", "properties": {} }));
             Ok(ToolDecl {
-                name: ToolName::parse(text_of(function, "name").unwrap_or_default())
+                name: ToolName::new(text_of(function, "name").unwrap_or_default())
                     .map_err(|_| Unmapped::of("a tool whose name is not a tool name"))?,
                 description: text_of(function, "description")
                     .unwrap_or_default()
                     .to_owned(),
-                params: JsonSchemaText(
-                    JsonText::parse(&schema.to_string())
+                params: SchemaText(
+                    JsonText::new(&schema.to_string())
                         .map_err(|_| Unmapped::of("a tool whose schema is not JSON"))?,
                 ),
             })
@@ -181,7 +181,7 @@ fn choice(value: Option<&Value>) -> Result<ToolChoice, Unmapped> {
             other => Err(Unmapped::of(format!("a tool_choice of {other}"))),
         },
         Some(object) => Ok(ToolChoice::Named(
-            ToolName::parse(
+            ToolName::new(
                 object
                     .get("function")
                     .and_then(|f| text_of(f, "name"))

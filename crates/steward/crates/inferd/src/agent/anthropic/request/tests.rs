@@ -10,8 +10,8 @@ fn read(body: &Value) -> Result<Parsed, Unmapped> {
 fn call(id: &str, name: &str, args: &str) -> MessagePart {
     MessagePart::ToolCall(ToolCallPart {
         id: ToolCallId(id.into()),
-        name: ToolName::parse(name).expect("name"),
-        args: JsonText::parse(args).expect("json"),
+        name: ToolName::new(name).expect("name"),
+        args: JsonText::new(args).expect("json"),
     })
 }
 
@@ -49,7 +49,7 @@ fn a_tool_conversation_maps_to_calls_and_results_in_order() {
     assert_eq!(chat.control.max_output, Knob::Set(Tokens(512)));
     assert_eq!(
         chat.control.tool_choice,
-        ToolChoice::Named(ToolName::parse("read_file").expect("name"))
+        ToolChoice::Named(ToolName::new("read_file").expect("name"))
     );
     assert_eq!(chat.control.tool_calls, ToolParallelism::One);
     assert_eq!(chat.tools.len(), 1);

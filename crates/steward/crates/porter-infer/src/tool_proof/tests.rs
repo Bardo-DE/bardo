@@ -25,8 +25,8 @@ fn reply(calls: &[(&str, &str)]) -> ChatReply {
             .iter()
             .map(|(name, args)| ToolCallPart {
                 id: ToolCallId("c".to_owned()),
-                name: ToolName::parse(name).expect("name"),
-                args: JsonText::parse(args).expect("json"),
+                name: ToolName::new(name).expect("name"),
+                args: JsonText::new(args).expect("json"),
             })
             .collect(),
     )

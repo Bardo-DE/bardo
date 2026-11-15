@@ -1,32 +1,16 @@
 //! The controls of a chat turn beyond its messages (design/31 §5.5): which tool the model may
 //! call, how many at once, how long the reply may be, whether it reasons, how it samples, where
 //! it stops. All typed: there is no untyped parameter bag, so a knob is a field here or it does
-//! not exist. They mirror stoker's `TurnRequest` (stoker has no porter dependency; `porter_turns::bridge`
-//! converts).
+//! not exist. The vocabulary (`Knob`, `ToolChoice`, `Reasoning`, ...) is stoker's `model-provider`
+//! one, re-exported; only the sampling numbers keep porter's units.
 
-use crate::ids::{OpaqueText, SignatureText, ToolName};
 use crate::scores::ScoreOptions;
 use porter_ids::{Count, Permille, Tokens};
 use serde::{Deserialize, Serialize};
 
-/// A setting that is either left to the model's catalog default or set to a value. Written out in
-/// full (an `Option` would be a field an app can leave out unnoticed).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
-#[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-pub enum Knob<T> {
-    /// The model's own default (the catalog entry's, for local models).
-    #[default]
-    Off,
-    /// This value.
-    Set(T),
-}
-
-impl<T> Knob<T> {
-    /// Whether the knob is left to the default.
-    pub fn is_off(&self) -> bool {
-        matches!(self, Knob::Off)
-    }
-}
+pub use model_provider::{
+    Effort, Knob, Reasoning, StopReason, ThoughtSeal, ToolChoice, ToolParallelism,
+};
 
 /// A random seed. 32 bits.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -46,54 +30,6 @@ pub struct Sampling {
     pub min_p: Knob<Permille>,
     /// For a repeatable reply.
     pub seed: Knob<Seed>,
-}
-
-/// Which function the model may call.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-pub enum ToolChoice {
-    /// The model decides.
-    Auto,
-    /// None: reply in text.
-    Never,
-    /// It must call one.
-    Required,
-    /// It must call this one (an engine that cannot enforce that refuses the request).
-    Named(ToolName),
-}
-
-/// Whether a turn may make several calls or only one.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum ToolParallelism {
-    /// One call, then the result comes back.
-    One,
-    /// Several, in order.
-    Many,
-}
-
-/// Whether the model reasons before it replies.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-pub enum Reasoning {
-    /// Whatever the engine does.
-    EngineDefault,
-    /// No reasoning.
-    Off,
-    /// Reasoning, this hard.
-    On(Effort),
-}
-
-/// How hard a model reasons.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Effort {
-    /// Briefly.
-    Low,
-    /// Moderately.
-    Medium,
-    /// At length.
-    High,
 }
 
 /// Everything a chat turn asks beyond its messages and shape.
@@ -183,34 +119,4 @@ impl Default for ChatControl {
     fn default() -> Self {
         Self::new()
     }
-}
-
-/// Why a reply ended. Without it a planner cannot tell a turn cut by `max_output` from a
-/// finished one.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum StopReason {
-    /// The model finished.
-    EndTurn,
-    /// It called a function and waits for the result.
-    ToolUse,
-    /// It hit the output limit: the reply, and any call in it, may be cut.
-    MaxTokens,
-    /// It reached a stop string.
-    StopSequence,
-    /// The provider's content filter ended it.
-    ContentFilter,
-}
-
-/// What a provider attached to a thought so that it can be handed back unchanged on the next
-/// turn. Apps never construct one; inferd keeps it across tool turns. Local engines send none.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-pub enum ThoughtSeal {
-    /// None.
-    None,
-    /// The thought, signed by the provider.
-    Signed(SignatureText),
-    /// The provider withheld the text; this is the encrypted block.
-    Redacted(OpaqueText),
 }

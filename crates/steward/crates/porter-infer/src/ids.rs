@@ -1,19 +1,16 @@
-//! Names and checked text on the inference wire. These mirror stoker's `model-provider` ids
-//! (stoker has no porter dependency and porter-infer does not name its provider crate);
-//! `porter_turns::bridge` converts between the two.
+//! Names and checked text on the inference wire. The tool and JSON ids are stoker's
+//! `model-provider` ones, re-exported: one definition on both sides of the bridge.
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
-use porter_core::CoreError;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
+
+pub use model_provider::{JsonText, OpaqueText, SchemaText, SignatureText, ToolCallId, ToolName};
 
 /// Why wire text was refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum TextError {
-    /// The text is not JSON.
-    #[error("not valid JSON: {0}")]
-    NotJson(String),
     /// The text is not base64.
     #[error("not valid base64")]
     NotBase64,
@@ -21,97 +18,6 @@ pub enum TextError {
     #[error("not a W3C traceparent")]
     NotTraceparent,
 }
-
-/// The id a model gives one tool call, echoed by its result. Opaque.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct ToolCallId(pub String);
-
-/// The name of a function a model may call: 1 to 64 characters of `[A-Za-z0-9_.-]`.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(try_from = "String", into = "String")]
-pub struct ToolName(String);
-
-impl ToolName {
-    /// The name written as `text`, or why it is not one.
-    pub fn parse(text: &str) -> Result<Self, CoreError> {
-        let ok = (1..=64).contains(&text.len())
-            && text
-                .chars()
-                .all(|c| c.is_ascii_alphanumeric() || matches!(c, '_' | '.' | '-'));
-        if ok {
-            Ok(Self(text.to_owned()))
-        } else {
-            Err(CoreError::MalformedId {
-                what: "tool name",
-                text: text.to_owned(),
-            })
-        }
-    }
-
-    /// The name's text.
-    pub fn as_str(&self) -> &str {
-        &self.0
-    }
-}
-
-impl TryFrom<String> for ToolName {
-    type Error = CoreError;
-    fn try_from(text: String) -> Result<Self, CoreError> {
-        Self::parse(&text)
-    }
-}
-
-impl From<ToolName> for String {
-    fn from(name: ToolName) -> String {
-        name.0
-    }
-}
-
-/// Text that parses as JSON, checked where it enters. Model output is untrusted, so tool
-/// arguments cross the wire as `JsonText` and are read into a type by the code that owns it.
-#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(try_from = "String", into = "String")]
-pub struct JsonText(String);
-
-impl JsonText {
-    /// The text, if it is JSON.
-    pub fn parse(text: &str) -> Result<Self, TextError> {
-        serde_json::from_str::<serde::de::IgnoredAny>(text)
-            .map_err(|e| TextError::NotJson(e.to_string()))?;
-        Ok(Self(text.to_owned()))
-    }
-
-    /// The text.
-    pub fn as_str(&self) -> &str {
-        &self.0
-    }
-}
-
-impl TryFrom<String> for JsonText {
-    type Error = TextError;
-    fn try_from(text: String) -> Result<Self, TextError> {
-        Self::parse(&text)
-    }
-}
-
-impl From<JsonText> for String {
-    fn from(text: JsonText) -> String {
-        text.0
-    }
-}
-
-// Tool arguments can carry what the person typed: Debug shows the length only.
-impl fmt::Debug for JsonText {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "JsonText(<{} bytes>)", self.0.len())
-    }
-}
-
-/// A JSON Schema, as text.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct JsonSchemaText(pub JsonText);
 
 /// Bytes that travel in JSON as base64 text (a screenshot, an audio frame). Debug shows the
 /// length only.
@@ -145,28 +51,6 @@ impl<'de> Deserialize<'de> for Base64Bytes {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct AttachIndex(pub u16);
-
-/// A model's signature over a thought, handed back unchanged on the next turn. Opaque.
-#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct SignatureText(pub String);
-
-impl fmt::Debug for SignatureText {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "SignatureText(<{} bytes>)", self.0.len())
-    }
-}
-
-/// A thought the provider returned encrypted, handed back unchanged. Opaque.
-#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct OpaqueText(pub String);
-
-impl fmt::Debug for OpaqueText {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "OpaqueText(<{} bytes>)", self.0.len())
-    }
-}
 
 /// A W3C trace context (`traceparent`): `00-<32 hex>-<16 hex>-<2 hex>`, lower case, neither id
 /// all zero. Carried so one task is one trace across daemons; it holds ids only, never content.
@@ -217,28 +101,6 @@ impl From<Traceparent> for String {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn tool_names_follow_their_grammar() {
-        let cases = [
-            ("mail.thread.archive", true),
-            ("a-b_c", true),
-            ("", false),
-            ("has space", false),
-            (&"x".repeat(65), false),
-        ];
-        for (text, ok) in cases {
-            assert_eq!(ToolName::parse(text).is_ok(), ok, "{text:?}");
-        }
-    }
-
-    #[test]
-    fn json_text_checks_and_hides() {
-        assert!(JsonText::parse("{\"a\":1}").is_ok());
-        assert!(JsonText::parse("{").is_err());
-        let shown = format!("{:?}", JsonText::parse("\"secret\"").expect("json"));
-        assert!(!shown.contains("secret"), "{shown}");
-    }
 
     #[test]
     fn traceparents_follow_the_w3c_grammar() {

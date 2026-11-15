@@ -594,10 +594,10 @@ fn tools_request() -> InferRequest {
         unreachable!("a chat request");
     };
     InferRequest::Chat(chat.with_tools(vec![porter_infer::ToolDecl {
-        name: porter_infer::ToolName::parse("lookup").expect("name"),
+        name: porter_infer::ToolName::new("lookup").expect("name"),
         description: "look something up".into(),
-        params: porter_infer::JsonSchemaText(
-            porter_infer::JsonText::parse(r#"{"type":"object","properties":{}}"#).expect("json"),
+        params: porter_infer::SchemaText(
+            porter_infer::JsonText::new(r#"{"type":"object","properties":{}}"#).expect("json"),
         ),
     }]))
 }

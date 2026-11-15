@@ -50,9 +50,9 @@ fn memfd(bytes: &[u8]) -> OwnedFd {
 
 fn tool(name: &str) -> pi::ToolDecl {
     pi::ToolDecl {
-        name: pi::ToolName::parse(name).expect("name"),
+        name: pi::ToolName::new(name).expect("name"),
         description: "does a thing".into(),
-        params: pi::JsonSchemaText(pi::JsonText::parse(r#"{"type":"object"}"#).expect("json")),
+        params: pi::SchemaText(pi::JsonText::new(r#"{"type":"object"}"#).expect("json")),
     }
 }
 
@@ -104,7 +104,7 @@ fn tools_shapes_and_tool_choices_map_one_to_one() {
         (pi::ToolChoice::Never, sp::ToolChoice::Never),
         (pi::ToolChoice::Required, sp::ToolChoice::Required),
         (
-            pi::ToolChoice::Named(pi::ToolName::parse("mail.send").expect("name")),
+            pi::ToolChoice::Named(pi::ToolName::new("mail.send").expect("name")),
             sp::ToolChoice::Named(sp::ToolName::new("mail.send").expect("name")),
         ),
     ];
@@ -167,8 +167,8 @@ fn history_with_calls_results_thoughts_and_roles_maps_part_by_part() {
     let (_scratch, model) = chat_model();
     let call = pi::ToolCallPart {
         id: pi::ToolCallId("c1".into()),
-        name: pi::ToolName::parse("lookup").expect("name"),
-        args: pi::JsonText::parse(r#"{"q":"x"}"#).expect("json"),
+        name: pi::ToolName::new("lookup").expect("name"),
+        args: pi::JsonText::new(r#"{"q":"x"}"#).expect("json"),
     };
     let messages = vec![
         pi::ChatMessage {

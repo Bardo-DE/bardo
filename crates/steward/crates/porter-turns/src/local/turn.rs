@@ -150,7 +150,7 @@ impl<U: EngineUse> Model for LocalTurn<'_, U> {
                 .await
                 .map_err(|error| bridge::model_error(&error))?;
             input = sp::Tokens(input.0.saturating_add(end.usage.input.0));
-            vectors.extend(bridge::vectors(end.vectors));
+            vectors.extend(end.vectors);
             self.engines.used(&model.spec.id);
         }
         Ok(EmbedReply::new(

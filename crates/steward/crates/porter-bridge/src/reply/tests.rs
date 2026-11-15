@@ -50,8 +50,8 @@ fn only_what_the_client_sees_becomes_an_event() {
             sp::TurnEvent::ToolCallDone(call("lookup")),
             Some(pi::InferEvent::ToolCall(pi::ToolCallPart {
                 id: pi::ToolCallId("c1".into()),
-                name: pi::ToolName::parse("lookup").expect("name"),
-                args: pi::JsonText::parse(r#"{"a":1}"#).expect("json"),
+                name: pi::ToolName::new("lookup").expect("name"),
+                args: pi::JsonText::new(r#"{"a":1}"#).expect("json"),
             })),
         ),
         (sp::TurnEvent::ThoughtSealed(sp::ThoughtSeal::None), None),
@@ -154,16 +154,6 @@ fn every_provider_error_is_a_model_error_the_app_can_act_on() {
     for (given, expected) in cases {
         assert_eq!(model_error(&given), expected, "{given:?}");
     }
-}
-
-#[test]
-fn vectors_keep_their_numbers_and_widths_are_counted() {
-    let mapped = vectors(vec![
-        sp::EmbedVector(vec![0.5, 0.25]),
-        sp::EmbedVector(vec![1.0, 2.0]),
-    ]);
-    assert_eq!(mapped[0], pi::EmbedVector(vec![0.5, 0.25]));
-    assert_eq!(width(&mapped[1]), Dims(2));
 }
 
 fn asking(options: &[&str]) -> Gathered {

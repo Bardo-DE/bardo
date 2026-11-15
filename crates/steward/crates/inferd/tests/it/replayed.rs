@@ -13,7 +13,7 @@ use porter_core::DataClass;
 use porter_core::consent::Usage;
 use porter_ids::Tokens;
 use porter_infer::{
-    ChatMessage, ChatRequest, ClientFrame, InferEvent, InferReply, InferRequest, JsonSchemaText,
+    ChatMessage, ChatRequest, ClientFrame, InferEvent, InferReply, InferRequest, SchemaText,
     JsonText, MessagePart, Role as ChatRole, StopReason, ToolDecl, ToolName,
 };
 use porter_match::LlmNeed;
@@ -48,9 +48,9 @@ fn request(text: &str, tools: Vec<ToolDecl>) -> InferRequest {
 
 fn tool() -> ToolDecl {
     ToolDecl {
-        name: ToolName::parse("org.quire.Mail-mail.thread.search").expect("name"),
+        name: ToolName::new("org.quire.Mail-mail.thread.search").expect("name"),
         description: "find threads".into(),
-        params: JsonSchemaText(JsonText::parse(r#"{"type":"object"}"#).expect("json")),
+        params: SchemaText(JsonText::new(r#"{"type":"object"}"#).expect("json")),
     }
 }
 

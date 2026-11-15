@@ -13,7 +13,7 @@ fn stop_word(stop: StopReason) -> &'static str {
         StopReason::ToolUse => "tool_use",
         StopReason::MaxTokens => "max_tokens",
         StopReason::StopSequence => "stop_sequence",
-        StopReason::ContentFilter => "refusal",
+        StopReason::ContentFilter | StopReason::Unrecognized => "refusal",
     }
 }
 

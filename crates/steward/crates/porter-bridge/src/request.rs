@@ -95,24 +95,6 @@ pub fn image_input(media: vision_prep::MediaType, bytes: Vec<u8>) -> sp::ImageIn
     }
 }
 
-fn tool_name(name: &pi::ToolName) -> Result<sp::ToolName, BridgeError> {
-    sp::ToolName::new(name.as_str()).map_err(|_| BridgeError::Unsupported)
-}
-
-fn json(text: &pi::JsonText) -> Result<sp::JsonText, BridgeError> {
-    sp::JsonText::new(text.as_str()).map_err(|_| BridgeError::Unsupported)
-}
-
-fn seal(seal: &pi::ThoughtSeal) -> sp::ThoughtSeal {
-    match seal {
-        pi::ThoughtSeal::None => sp::ThoughtSeal::None,
-        pi::ThoughtSeal::Signed(text) => sp::ThoughtSeal::Signed(sp::SignatureText(text.0.clone())),
-        pi::ThoughtSeal::Redacted(text) => {
-            sp::ThoughtSeal::Redacted(sp::OpaqueText(text.0.clone()))
-        }
-    }
-}
-
 fn part(one: &pi::MessagePart, frames: &Frames) -> Result<sp::Part, BridgeError> {
     Ok(match one {
         pi::MessagePart::Text(text) => sp::Part::Text(text.clone()),
@@ -122,19 +104,16 @@ fn part(one: &pi::MessagePart, frames: &Frames) -> Result<sp::Part, BridgeError>
         )),
         pi::MessagePart::Thought(thought) => sp::Part::Thought {
             text: thought.text.clone(),
-            seal: seal(&thought.seal),
+            seal: thought.seal.clone(),
         },
         pi::MessagePart::ToolCall(call) => sp::Part::ToolCall(sp::ToolCall {
-            id: sp::ToolCallId(call.id.0.clone()),
-            name: tool_name(&call.name)?,
-            input: json(&call.args)?,
+            id: call.id.clone(),
+            name: call.name.clone(),
+            input: call.args.clone(),
         }),
         pi::MessagePart::ToolResult(result) => sp::Part::ToolResult(sp::ToolResult {
-            id: sp::ToolCallId(result.id.0.clone()),
-            status: match result.status {
-                pi::ToolStatus::Ok => sp::ToolStatus::Ok,
-                pi::ToolStatus::Error => sp::ToolStatus::Error,
-            },
+            id: result.id.clone(),
+            status: result.status,
             parts: result
                 .parts
                 .iter()
@@ -167,23 +146,14 @@ fn shape(shape: &pi::ReplyShape, json: JsonReply) -> Result<sp::OutputShape, Bri
     })
 }
 
-fn tool_choice(choice: &pi::ToolChoice) -> Result<sp::ToolChoice, BridgeError> {
-    Ok(match choice {
-        pi::ToolChoice::Auto => sp::ToolChoice::Auto,
-        pi::ToolChoice::Never => sp::ToolChoice::Never,
-        pi::ToolChoice::Required => sp::ToolChoice::Required,
-        pi::ToolChoice::Named(name) => sp::ToolChoice::Named(tool_name(name)?),
-    })
-}
-
 fn milli(permille: porter_ids::Permille) -> sp::Milli {
     sp::Milli(u16::try_from(permille.0).unwrap_or(u16::MAX))
 }
 
-fn knob<T, U>(knob: pi::Knob<T>, map: impl Fn(T) -> U) -> sp::Knob<U> {
+fn knob<T, U>(knob: sp::Knob<T>, map: impl Fn(T) -> U) -> sp::Knob<U> {
     match knob {
-        pi::Knob::Off => sp::Knob::Off,
-        pi::Knob::Set(value) => sp::Knob::Set(map(value)),
+        sp::Knob::Off => sp::Knob::Off,
+        sp::Knob::Set(value) => sp::Knob::Set(map(value)),
     }
 }
 
@@ -196,25 +166,6 @@ fn sampling(sampling: pi::Sampling) -> sp::Sampling {
         repeat_penalty: sp::Knob::Off,
         seed: knob(sampling.seed, |seed| sp::Seed(seed.0)),
     }
-}
-
-fn effort(effort: pi::Effort) -> sp::Effort {
-    match effort {
-        pi::Effort::Low => sp::Effort::Low,
-        pi::Effort::Medium => sp::Effort::Medium,
-        pi::Effort::High => sp::Effort::High,
-    }
-}
-
-/// Reasoning as the app asked: `EngineDefault` stays `EngineDefault` (the codec then sends no
-/// reasoning field, and the catalog's `reasoning_default` names the sampling that goes with the
-/// engine's own choice).
-fn reasoning(reasoning: pi::Reasoning) -> Result<sp::Reasoning, BridgeError> {
-    Ok(match reasoning {
-        pi::Reasoning::EngineDefault => sp::Reasoning::EngineDefault,
-        pi::Reasoning::Off => sp::Reasoning::Off,
-        pi::Reasoning::On(level) => sp::Reasoning::On(effort(level)),
-    })
 }
 
 /// What the engine's flavor understands beyond the shared fields.
@@ -307,15 +258,15 @@ pub fn chat_turn_for(
     frames: &Frames,
 ) -> Result<sp::TurnRequest, BridgeError> {
     let control = &request.control;
-    let reasoning = reasoning(control.reasoning)?;
+    let reasoning = control.reasoning;
     let sampling = match control.sampling {
-        pi::Knob::Set(own) => Some(sampling(own)),
-        pi::Knob::Off => default_sampling(target, reasoning),
+        sp::Knob::Set(own) => Some(sampling(own)),
+        sp::Knob::Off => default_sampling(target, reasoning),
     }
     .ok_or(BridgeError::Unsupported)?;
     let max_output = match control.max_output {
-        pi::Knob::Set(tokens) => sp::Tokens(tokens.0),
-        pi::Knob::Off => target.max_output,
+        sp::Knob::Set(tokens) => sp::Tokens(tokens.0),
+        sp::Knob::Off => target.max_output,
     };
     let output = shape(&request.shape, target.json)?;
     let choice_scores = crate::scores::choice_scores(control, &output);
@@ -344,17 +295,14 @@ pub fn chat_turn_for(
             .iter()
             .map(|tool| {
                 Ok(sp::ToolSpec::Function {
-                    name: tool_name(&tool.name)?,
+                    name: tool.name.clone(),
                     description: tool.description.clone(),
-                    parameters: sp::SchemaText(json(&tool.params.0)?),
+                    parameters: tool.params.clone(),
                 })
             })
             .collect::<Result<_, BridgeError>>()?,
-        tool_choice: tool_choice(&control.tool_choice)?,
-        tool_calls: match control.tool_calls {
-            pi::ToolParallelism::One => sp::ToolParallelism::One,
-            pi::ToolParallelism::Many => sp::ToolParallelism::Many,
-        },
+        tool_choice: control.tool_choice.clone(),
+        tool_calls: control.tool_calls,
         output,
         limits: sp::Limits {
             max_output,
@@ -443,9 +391,10 @@ pub fn embed_turns_for(
     embed: &EmbedCaps,
     request: &pi::EmbedRequest,
 ) -> Result<Vec<sp::EmbedTurn>, BridgeError> {
-    let (prefix, role) = match request.role {
-        pi::EmbedRole::Query => (&embed.prompts.query.0, sp::EmbedRole::Query),
-        pi::EmbedRole::Document => (&embed.prompts.document.0, sp::EmbedRole::Document),
+    let role = request.role;
+    let prefix = match role {
+        sp::EmbedRole::Query => &embed.prompts.query.0,
+        sp::EmbedRole::Document => &embed.prompts.document.0,
     };
     let dims = match request.dims {
         DimsNeed::Any => sp::Knob::Off,

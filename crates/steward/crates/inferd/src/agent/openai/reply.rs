@@ -13,7 +13,7 @@ fn finish_word(stop: StopReason) -> &'static str {
         StopReason::EndTurn | StopReason::StopSequence => "stop",
         StopReason::ToolUse => "tool_calls",
         StopReason::MaxTokens => "length",
-        StopReason::ContentFilter => "content_filter",
+        StopReason::ContentFilter | StopReason::Unrecognized => "content_filter",
     }
 }
 

@@ -18,7 +18,7 @@ fn pinned<T: Serialize + DeserializeOwned + PartialEq + Debug>(value: &T, json: 
 fn chat_control_has_pinned_json() {
     let control = ChatControl::new()
         .with_tool_choice(ToolChoice::Named(
-            ToolName::parse("mail.search").expect("name"),
+            ToolName::new("mail.search").expect("name"),
         ))
         .with_max_output(Knob::Set(Tokens(1)))
         .with_reasoning(Reasoning::On(Effort::Low))

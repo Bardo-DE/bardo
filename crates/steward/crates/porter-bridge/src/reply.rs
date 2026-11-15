@@ -3,7 +3,7 @@
 //! meet on the way out.
 
 use model_provider as sp;
-use porter_ids::{Dims, Tokens};
+use porter_ids::Tokens;
 use porter_infer as pi;
 
 use crate::scores::{NoScores, option_scores};
@@ -24,7 +24,7 @@ pub fn event(event: &sp::TurnEvent) -> Option<pi::InferEvent> {
     match event {
         sp::TurnEvent::TextDelta(text) => Some(pi::InferEvent::TextDelta(text.clone())),
         sp::TurnEvent::ThoughtDelta(text) => Some(pi::InferEvent::ThoughtDelta(text.clone())),
-        sp::TurnEvent::ToolCallDone(call) => call_part(call).map(pi::InferEvent::ToolCall),
+        sp::TurnEvent::ToolCallDone(call) => Some(pi::InferEvent::ToolCall(call_part(call))),
         sp::TurnEvent::ThoughtSealed(_)
         | sp::TurnEvent::ToolCallStarted { .. }
         | sp::TurnEvent::ToolCallDelta { .. }
@@ -33,14 +33,13 @@ pub fn event(event: &sp::TurnEvent) -> Option<pi::InferEvent> {
     }
 }
 
-/// A finished call as the wire has it. A name stoker accepted is always one of ours, and its
-/// arguments are checked JSON, so this answers `None` only for a name outside our grammar.
-fn call_part(call: &sp::ToolCall) -> Option<pi::ToolCallPart> {
-    Some(pi::ToolCallPart {
-        id: pi::ToolCallId(call.id.0.clone()),
-        name: pi::ToolName::parse(call.name.as_str()).ok()?,
-        args: pi::JsonText::parse(call.input.as_str()).ok()?,
-    })
+/// A finished call as the wire has it: the same checked id, name and arguments.
+fn call_part(call: &sp::ToolCall) -> pi::ToolCallPart {
+    pi::ToolCallPart {
+        id: call.id.clone(),
+        name: call.name.clone(),
+        args: call.input.clone(),
+    }
 }
 
 impl Gathered {
@@ -49,7 +48,7 @@ impl Gathered {
         match event {
             sp::TurnEvent::TextDelta(text) => self.text.push_str(text),
             sp::TurnEvent::ThoughtDelta(text) => self.thought.push_str(text),
-            sp::TurnEvent::ToolCallDone(call) => self.calls.extend(call_part(call)),
+            sp::TurnEvent::ToolCallDone(call) => self.calls.push(call_part(call)),
             _ => {}
         }
     }
@@ -83,7 +82,7 @@ impl Gathered {
                 Err(why) => (None, Some(why)),
             },
         };
-        let mut reply = pi::ChatReply::new(self.text, stop(end.stop), usage(end.usage), served)
+        let mut reply = pi::ChatReply::new(self.text, end.stop, usage(end.usage), served)
             .with_tool_calls(self.calls);
         if !self.thought.is_empty() {
             reply = reply.with_thought(self.thought);
@@ -92,30 +91,6 @@ impl Gathered {
             reply = reply.with_scores(scores);
         }
         (reply, why)
-    }
-}
-
-/// The reason a reply ended.
-pub fn stop(stop: sp::StopReason) -> pi::StopReason {
-    match stop {
-        sp::StopReason::EndTurn => pi::StopReason::EndTurn,
-        sp::StopReason::ToolUse => pi::StopReason::ToolUse,
-        sp::StopReason::MaxTokens => pi::StopReason::MaxTokens,
-        sp::StopReason::StopSequence => pi::StopReason::StopSequence,
-        sp::StopReason::ContentFilter => pi::StopReason::ContentFilter,
-        // A reason a later stoker adds is not trusted as a clean end (the stoker L5 audit).
-        _ => pi::StopReason::ContentFilter,
-    }
-}
-
-/// The reason a reply ended, the other way (a replay of a history that carries one).
-pub fn stop_back(stop: pi::StopReason) -> sp::StopReason {
-    match stop {
-        pi::StopReason::EndTurn => sp::StopReason::EndTurn,
-        pi::StopReason::ToolUse => sp::StopReason::ToolUse,
-        pi::StopReason::MaxTokens => sp::StopReason::MaxTokens,
-        pi::StopReason::StopSequence => sp::StopReason::StopSequence,
-        pi::StopReason::ContentFilter => sp::StopReason::ContentFilter,
     }
 }
 
@@ -128,19 +103,6 @@ pub fn usage(usage: sp::TurnUsage) -> pi::TokenUsage {
         cached: Tokens(usage.cached.0),
         charge: usage.charge,
     }
-}
-
-/// The vectors of an embedding reply.
-pub fn vectors(vectors: Vec<sp::EmbedVector>) -> Vec<pi::EmbedVector> {
-    vectors
-        .into_iter()
-        .map(|vector| pi::EmbedVector(vector.0))
-        .collect()
-}
-
-/// The width of a vector, for a reply that must match what was asked.
-pub fn width(vector: &pi::EmbedVector) -> Dims {
-    Dims(u32::try_from(vector.0.len()).unwrap_or(u32::MAX))
 }
 
 /// What the client is told when the engine fails. A gateway 5xx is a transient reach failure

@@ -73,7 +73,7 @@ pub use error::{InferRefusal, ModelError};
 pub use event::{ClientFrame, InferEvent, ModelLabel, QueueFact, StageNote};
 pub use hardware::{HardwareFacts, HardwareNote, MemoryFacts, QUEUE_LONG_FROM, hardware_notes};
 pub use ids::{
-    AttachIndex, Base64Bytes, JsonSchemaText, JsonText, OpaqueText, SignatureText, TextError,
+    AttachIndex, Base64Bytes, JsonText, OpaqueText, SchemaText, SignatureText, TextError,
     ToolCallId, ToolName, Traceparent,
 };
 pub use model::{ChatSink, Model, ModelCard, TurnError, answer};
