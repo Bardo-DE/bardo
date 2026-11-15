@@ -6,7 +6,7 @@
 //! in it, so every argument is untrusted and every act that is not a read asks the person.
 //!
 //! `run` is the whole command over any `Transport`; `program::execute` is the whole program over
-//! what the process hands it (`Process`) and the buses (`Buses`); `main` only collects those.
+//! what the process hands it (`Process`) and the session bus (`SessionBus`); `main` only collects those.
 
 mod args;
 mod ask;

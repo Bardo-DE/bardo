@@ -6,10 +6,9 @@ use crate::{
     Command, Exit, Invocation, JsonFlag, NoBus, Report, Stdin, Stdout, ask_companion, exit,
     needs_bus, parse, run_in,
 };
-use companion_client::CompanionTransport;
-use docket_client::{Intents, Transport, TransportError};
+use crate::SessionBus;
+use docket_client::Intents;
 use prov::{SpaceId, UnixSeconds};
-use std::future::Future;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Reads standard input to its end. Called only when the command line names `-`.
@@ -33,23 +32,6 @@ pub struct Process {
     pub now: SystemTime,
 }
 
-/// Where the program reaches intentd and the assistant. A connection is made only when a command
-/// needs it.
-pub trait Buses: Send + Sync {
-    /// The carrier of Intents1.
-    type Intents: Transport;
-    /// The carrier of the assistant's conversation calls.
-    type Companion: CompanionTransport;
-
-    /// Connects to intentd.
-    fn intents(
-        &self,
-    ) -> impl Future<Output = Result<Intents<Self::Intents>, TransportError>> + Send;
-
-    /// Connects to the assistant.
-    fn companion(&self) -> impl Future<Output = Result<Self::Companion, TransportError>> + Send;
-}
-
 fn unavailable(what: &impl std::fmt::Display) -> Report {
     Report {
         stdout: String::new(),
@@ -66,8 +48,8 @@ fn seconds(now: SystemTime) -> UnixSeconds {
 }
 
 /// `quire-do ask`: intentd records the turn, companiond is asked.
-async fn ask<B: Buses>(
-    buses: &B,
+async fn ask(
+    buses: &SessionBus,
     text: &str,
     space: SpaceId,
     json: JsonFlag,
@@ -94,7 +76,7 @@ async fn ask<B: Buses>(
 }
 
 /// Runs the program on what `process` hands it, and says what it prints and how it ends.
-pub async fn execute<B: Buses>(process: Process, buses: B) -> Report {
+pub async fn execute(process: Process, buses: SessionBus) -> Report {
     if let Ok(parsed) = parse(&process.words)
         && let Command::Ask { text, space } = &parsed.command
     {
