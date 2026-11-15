@@ -666,7 +666,7 @@ fn a_window_that_never_called_set_frame_is_silent_and_one_that_did_is_not() {
 
 #[test]
 fn a_client_framed_window_is_rounded_by_what_it_said_and_what_it_drew() {
-    use casement_core::window::{Cast, FrameChoice, Round, round_of};
+    use casement_core::window::{FrameChoice, Round, round_of};
     // name, what the client said, whether its buffer holds a margin, the desktop radius, the round
     let cases = [
         (
@@ -674,14 +674,14 @@ fn a_client_framed_window_is_rounded_by_what_it_said_and_what_it_drew() {
             FrameChoice::Shadowed { radius: 12 },
             false,
             10,
-            Some((12, Cast::Casement)),
+            Some((12, true)),
         ),
         (
             "shadow asked for, margin drawn",
             FrameChoice::Shadowed { radius: 12 },
             true,
             10,
-            Some((12, Cast::Casement)),
+            Some((12, true)),
         ),
         ("own frame", FrameChoice::Own, false, 10, None),
         ("own frame, margin", FrameChoice::Own, true, 10, None),
@@ -690,18 +690,21 @@ fn a_client_framed_window_is_rounded_by_what_it_said_and_what_it_drew() {
             FrameChoice::Silent,
             false,
             10,
-            Some((10, Cast::Casement)),
+            Some((10, true)),
         ),
         (
             "silent, shadow in a margin",
             FrameChoice::Silent,
             true,
             10,
-            Some((10, Cast::Client)),
+            Some((10, false)),
         ),
     ];
     for (name, choice, margin, desktop, want) in cases {
-        let want = want.map(|(radius, shadow)| Round { radius, shadow });
+        let want = want.map(|(radius, shadow)| Round {
+            radius,
+            casement_shadow: shadow,
+        });
         assert_eq!(round_of(choice, margin, desktop), want, "{name}");
     }
 }

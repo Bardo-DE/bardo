@@ -11,7 +11,7 @@
 //!
 //! The swipes the desktop takes follow the fingers' unaccelerated movement (`SwipeDelta`), as
 //! the Mac's row stays under the fingers. The clients get the swipes the desktop does not take,
-//! with the touchpad's acceleration; [`Model::swipe_owner`] says, right after a swipe step was
+//! with the touchpad's acceleration; [`Model::desktop_owns_swipe`] says, right after a swipe step was
 //! stepped, whose that step was.
 
 use super::Model;
@@ -30,16 +30,6 @@ use ds_behaviour::space_swipe::{
 };
 use ds_core::machine::Machine;
 use std::time::Duration;
-
-/// Whose a swipe step is.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum SwipeOwner {
-    /// The clients': deliver it to the surface under the pointer.
-    #[default]
-    Client,
-    /// The desktop's: it was taken, so no client sees it.
-    Desktop,
-}
 
 /// Where the row of Spaces is drawn while a swipe moves it.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -78,13 +68,15 @@ pub(super) struct SwipeState {
     following: Option<PageMilli>,
     /// How open the fingers have made Mission Control (while they are down).
     progress: Option<PageMilli>,
-    owner: SwipeOwner,
+    /// Whether the desktop took the latest step, so no client sees it.
+    desktop_owns: bool,
 }
 
 impl Model {
-    /// Whose the latest swipe step was: ask right after the step went through `step`.
-    pub fn swipe_owner(&self) -> SwipeOwner {
-        self.swipe.owner
+    /// Whether the latest swipe step was the desktop's (it was taken, so no client sees it)
+    /// rather than the clients': ask right after the step went through `step`.
+    pub fn desktop_owns_swipe(&self) -> bool {
+        self.swipe.desktop_owns
     }
 
     /// Where the row of Spaces is drawn at `now` while a swipe or its finish moves it; none
@@ -137,11 +129,11 @@ impl Model {
         model.swipe.route = next;
         let drives = match fate {
             Fate::Pass => {
-                model.swipe.owner = SwipeOwner::Client;
+                model.swipe.desktop_owns = false;
                 Vec::new()
             }
             Fate::Take(drives) => {
-                model.swipe.owner = SwipeOwner::Desktop;
+                model.swipe.desktop_owns = true;
                 drives
             }
         };

@@ -25,7 +25,7 @@ use casement_core::input::{
 use casement_core::lock::LockState;
 use casement_core::shell::ShellNote;
 use casement_core::time::{Due, Mono, TimerKey};
-use casement_core::{Effect, InputSerial, KeyboardTarget, Model, SwipeOwner};
+use casement_core::{Effect, InputSerial, KeyboardTarget, Model};
 use casement_protocols::vocab::HeldMods;
 use casement_protocols::vocab::PressEdge;
 use casement_wayland::seat::{
@@ -88,13 +88,12 @@ pub(super) fn through(state: &mut State, event: &InputEvent) {
         InputKind::Button { button, edge } => pressed(state, &seat, event, *button, *edge),
         InputKind::Axis(frame) => scroll(state, &seat, event, *frame),
         // A swipe the desktop took (the Spaces, Mission Control) is not the clients'.
-        InputKind::Swipe(step) => match state.core.model.swipe_owner() {
-            SwipeOwner::Client => {
+        InputKind::Swipe(step) => {
+            if !state.core.model.desktop_owns_swipe() {
                 let step = step.map(|d| d.delta);
                 gesture(state, &seat, event, GestureDelivery::Swipe(step));
             }
-            SwipeOwner::Desktop => {}
-        },
+        }
         InputKind::Pinch(step) => gesture(state, &seat, event, GestureDelivery::Pinch(*step)),
         InputKind::Hold(step) => gesture(state, &seat, event, GestureDelivery::Hold(*step)),
         InputKind::Touch(step) => touch(state, &seat, event, *step),

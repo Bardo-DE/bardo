@@ -72,7 +72,7 @@ use privilege::{Input, Privilege};
 pub use query::OpeningRoom;
 pub use spaces::MAX_DESKTOPS_PER_OUTPUT;
 use std::collections::{BTreeMap, BTreeSet};
-pub use swipe::{SpaceStrip, SwipeOwner};
+pub use swipe::SpaceStrip;
 
 /// Everything casement knows, as one value.
 #[derive(Debug, Clone, PartialEq, Eq)]

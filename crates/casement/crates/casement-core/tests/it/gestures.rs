@@ -15,7 +15,7 @@ use casement_core::overview::Overview;
 use casement_core::settings::{CasementSettings, Enabled, GestureSettings, SwipeFingers};
 use casement_core::space::{SpaceSeed, WorkspaceRequest};
 use casement_core::time::TimerKey;
-use casement_core::{Cause, DeviceId, Effect, Event, Model, PageMilli, SwipeOwner};
+use casement_core::{Cause, DeviceId, Effect, Event, Model, PageMilli};
 use ds_core::time::stamp::Stamp;
 use support::{headless, ms};
 
@@ -356,7 +356,7 @@ fn a_far_swipe_left_follows_the_fingers_then_commits_to_the_next_space() {
             (T0 + 400, by(-60, 0)),
         ],
     );
-    assert_eq!(model.swipe_owner(), SwipeOwner::Desktop);
+    assert!(model.desktop_owns_swipe());
     let strip = model.space_strip(ms(T0 + 400)).expect("the row follows");
     assert_eq!(strip.position, PageMilli(600), "240 px of 400 is 0.6 page");
     assert_eq!(shown_index(&model), 0, "nothing is shown until the lift");
@@ -432,12 +432,7 @@ fn a_swipe_from_palmrests_pad_drives_the_spaces_and_one_from_a_virtual_keyboard_
         .fold((model, Vec::new()), |(model, _), (at, step)| {
             swipe_from(origin, model, at, step)
         });
-        let owner = if drives {
-            SwipeOwner::Desktop
-        } else {
-            SwipeOwner::Client
-        };
-        assert_eq!(model.swipe_owner(), owner, "{origin:?}");
+        assert_eq!(model.desktop_owns_swipe(), drives, "{origin:?}");
     }
 }
 
@@ -490,7 +485,7 @@ fn natural_direction_off_moves_the_spaces_against_the_fingers() {
 fn a_swipe_of_another_finger_count_stays_the_clients() {
     let model = three_spaces(GestureSettings::defaults());
     let (model, _) = swiped(model, vec![(T0, begin(2)), (T0 + 10, by(-300, 0))]);
-    assert_eq!(model.swipe_owner(), SwipeOwner::Client);
+    assert!(!model.desktop_owns_swipe());
     assert_eq!(model.space_strip(ms(T0 + 10)), None);
 }
 

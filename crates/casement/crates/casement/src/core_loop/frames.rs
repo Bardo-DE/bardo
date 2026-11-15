@@ -12,7 +12,7 @@ use casement_core::focus::{HitPart, Press};
 use casement_core::geometry::{LogicalPoint, LogicalRect};
 use casement_core::input::{ButtonCode, InputEvent};
 use casement_core::window::{
-    ArmInput, ArmOutcome, Cast, ChromeAction, Clicks, FrameHit, FrameLook, FrameStyle, LightArm,
+    ArmInput, ArmOutcome, ChromeAction, FrameHit, FrameLook, FrameStyle, LightArm,
     LightAt, WindowState, chrome_action, round_of,
 };
 use casement_core::{Effect, Event, ResizeEdges, ToplevelRequest, WindowId};
@@ -75,16 +75,13 @@ pub(super) fn rounds(state: &State) -> BTreeMap<WindowId, ClientRound> {
                 margin_of(&entry.root),
                 style.look.radius,
             )?;
-            let cast = match round.shadow {
-                Cast::Casement => Some(FrameStyle {
-                    look: FrameLook {
-                        radius: round.radius,
-                        ..style.look
-                    },
-                    ..style
-                }),
-                Cast::Client => None,
-            };
+            let cast = round.casement_shadow.then(|| FrameStyle {
+                look: FrameLook {
+                    radius: round.radius,
+                    ..style.look
+                },
+                ..style
+            });
             let radius = round.radius;
             Some((*id, ClientRound { radius, cast }))
         })
@@ -345,7 +342,7 @@ fn fire(state: &mut State, seat: &Seat<State>, on: LightAt) {
     let double = state.core.model.settings().windows.double_click_title;
     let Some(action) = chrome_action(
         FrameHit::Light(on.light),
-        Clicks::Single,
+        false,
         double,
         mods_of(seat),
         &held.state,

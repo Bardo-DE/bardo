@@ -4,22 +4,13 @@
 
 use super::hints::FrameChoice;
 
-/// Who casts the shadow of a window casement rounds.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Cast {
-    /// Casement, with the shadow its framed windows have.
-    Casement,
-    /// The client, in its own buffer.
-    Client,
-}
-
 /// How casement shapes a window that draws its own frame.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Round {
     /// The corner radius, in logical pixels, at the window geometry's corners.
     pub radius: u32,
     /// Who casts the shadow.
-    pub shadow: Cast,
+    pub casement_shadow: bool,
 }
 
 /// What casement does for a client-framed window, from what the client said (`choice`), whether
@@ -34,11 +25,11 @@ pub struct Round {
 ///   has no shadow of its own, so casement casts one.
 ///
 /// ```
-/// use casement_core::window::{Cast, FrameChoice, Round, round_of};
+/// use casement_core::window::{FrameChoice, Round, round_of};
 ///
 /// let silent = |margin| round_of(FrameChoice::Silent, margin, 10);
-/// assert_eq!(silent(false), Some(Round { radius: 10, shadow: Cast::Casement }));
-/// assert_eq!(silent(true), Some(Round { radius: 10, shadow: Cast::Client }));
+/// assert_eq!(silent(false), Some(Round { radius: 10, casement_shadow: true }));
+/// assert_eq!(silent(true), Some(Round { radius: 10, casement_shadow: false }));
 /// assert_eq!(round_of(FrameChoice::Own, false, 10), None);
 /// ```
 pub fn round_of(choice: FrameChoice, margin: bool, desktop: u32) -> Option<Round> {
@@ -46,15 +37,15 @@ pub fn round_of(choice: FrameChoice, margin: bool, desktop: u32) -> Option<Round
         (FrameChoice::Own, _) => None,
         (FrameChoice::Shadowed { radius }, _) => Some(Round {
             radius,
-            shadow: Cast::Casement,
+            casement_shadow: true,
         }),
         (FrameChoice::Silent, false) => Some(Round {
             radius: desktop,
-            shadow: Cast::Casement,
+            casement_shadow: true,
         }),
         (FrameChoice::Silent, true) => Some(Round {
             radius: desktop,
-            shadow: Cast::Client,
+            casement_shadow: false,
         }),
     }
 }

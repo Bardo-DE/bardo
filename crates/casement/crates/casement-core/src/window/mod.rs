@@ -26,7 +26,7 @@ pub use frame::{FrameGeometry, FrameHit, FrameMetrics, Light};
 pub use frame_arm::{ArmInput, ArmOutcome, LightArm, LightAt};
 pub use frame_draw::{FrameColour, FrameLook, FrameStyle, LightDraw, ShadowLayer};
 pub use frame_press::{
-    ChromeAction, ClickTracker, Clicks, DOUBLE_CLICK_SLOP, DOUBLE_CLICK_WITHIN, chrome_action,
+    ChromeAction, ClickTracker, DOUBLE_CLICK_SLOP, DOUBLE_CLICK_WITHIN, chrome_action,
 };
 pub use hints::{A11yRoot, FrameChoice, FrameHint, WindowHints};
 pub use limits::SizeLimits;
@@ -40,7 +40,7 @@ pub use pip::{
     PIP_MARGIN, PIP_MAX_AREA, PipSource, fit_aspect, floats_above, pip_source_of, snap_corner,
 };
 pub use request::WlrToplevelRequest;
-pub use round::{Cast, Round, round_of};
+pub use round::{Round, round_of};
 pub use sheet::{attach_rect, sheet_parent, slide_clip, slide_start};
 pub use state::{Restore, WindowState};
 pub use tile_drag::{
