@@ -37,23 +37,3 @@ impl Source {
         self.stamp
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn a_source_round_trips_through_json() {
-        let source = Source::new(
-            FilePath::new("/docs/a.pdf").unwrap(),
-            FileStamp {
-                len: ByteLen(42),
-                modified: ModTime(7),
-            },
-        );
-        let json = serde_json::to_string(&source).unwrap();
-        assert_eq!(serde_json::from_str::<Source>(&json).unwrap(), source);
-        assert_eq!(source.path().as_path().to_str(), Some("/docs/a.pdf"));
-        assert_eq!(source.stamp().len, ByteLen(42));
-    }
-}

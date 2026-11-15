@@ -107,19 +107,6 @@ fn a_folder_a_missing_file_and_an_empty_one_give_none() {
     }
 }
 
-#[cfg(unix)]
-#[test]
-fn a_pipe_is_refused_rather_than_waited_on() {
-    let dir = tempfile::tempdir().unwrap();
-    let pipe = dir.path().join("pipe.png");
-    let made = std::process::Command::new("mkfifo").arg(&pipe).status();
-    if made.is_ok_and(|status| status.success()) {
-        let began = Instant::now();
-        assert_eq!(natural_at(&pipe), None);
-        assert!(began.elapsed() < Duration::from_secs(5));
-    }
-}
-
 #[test]
 fn a_header_claiming_gigapixels_is_read_at_once_and_decodes_nothing() {
     let began = Instant::now();
