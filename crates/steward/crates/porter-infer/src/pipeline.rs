@@ -51,35 +51,6 @@ pub struct RequestShape {
     pub answer: Answer,
 }
 
-/// `ai.pipeline.describe_images`: whether an image the answering model cannot read may be
-/// described by the `image_in` model first (the description loses detail, so it is shown).
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum DescribeImages {
-    /// Refuse, with the reason.
-    #[default]
-    Off,
-    /// Describe first.
-    On,
-}
-
-impl DescribeImages {
-    /// The settings value.
-    pub fn slug(self) -> &'static str {
-        match self {
-            DescribeImages::Off => "off",
-            DescribeImages::On => "on",
-        }
-    }
-
-    /// The value a settings string names.
-    pub fn from_slug(slug: &str) -> Option<Self> {
-        [DescribeImages::Off, DescribeImages::On]
-            .into_iter()
-            .find(|one| one.slug() == slug)
-    }
-}
-
 /// The person's pick per slot, for one tier. A slot without an entry is an empty row.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct SlotPicks(pub BTreeMap<Slot, Pick>);
@@ -124,8 +95,10 @@ pub struct PlanRules<'a> {
     pub policy: &'a Policy,
     /// `ai.auto.*`.
     pub auto: AutoPolicy,
-    /// `ai.pipeline.describe_images`.
-    pub describe_images: DescribeImages,
+    /// `ai.pipeline.describe_images`: whether an image the answering model cannot read may be
+    /// described by the `image_in` model first (the description loses detail, so it is shown);
+    /// off refuses, with the reason.
+    pub describe_images: bool,
 }
 
 /// The data classes a stage receives: the joined label of its inputs. A stage is admitted against
@@ -375,13 +348,11 @@ pub fn plan_pipeline(
         before.push(stage(StageRole::Hear, Slot::VoiceIn, &audio)?);
     }
     if sees && !takes(Modality::Image) {
-        match rules.describe_images {
-            DescribeImages::Off => return Err(Refusal::ImagesNeedDescribing),
-            DescribeImages::On => {
-                let image = ClassSet(BTreeSet::from([shape.class]));
-                before.push(stage(StageRole::Describe, Slot::ImageIn, &image)?);
-            }
+        if !rules.describe_images {
+            return Err(Refusal::ImagesNeedDescribing);
         }
+        let image = ClassSet(BTreeSet::from([shape.class]));
+        before.push(stage(StageRole::Describe, Slot::ImageIn, &image)?);
     }
     let speaks_itself = answering.gives.contains(&Modality::Audio)
         && !names_another(picks, Slot::VoiceOut, &answering_ref);

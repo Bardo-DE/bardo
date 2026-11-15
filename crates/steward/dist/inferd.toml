@@ -76,7 +76,7 @@
 # (on_device, local_network, anywhere). The defaults: local-only on, and personal classes (mail,
 # photos, notes, files, contacts, calendar, screen, clipboard, voice, prompt) on this computer.
 # [ai]
-# local_only = "on"
+# local_only = true
 # [ai.floor]
 # mail = "on_device"
 # voice = "on_device"
@@ -90,24 +90,24 @@
 # fast = "auto"
 #
 # What Automatic does (ai.auto.*): warm_first is its only mode; allow_evict is "never" or
-# "idle_only"; show_reason is "on" or "off".
+# "idle_only"; show_reason is true or false.
 # [ai.auto]
 # mode = "warm_first"
 # allow_evict = "idle_only"
-# show_reason = "on"
+# show_reason = true
 #
 # Whether an image the answering model cannot read may be described by the image_in model first
-# (ai.pipeline.describe_images): "off" (refuse, with the reason) or "on".
+# (ai.pipeline.describe_images): false (refuse, with the reason) or true.
 # [ai.pipeline]
-# describe_images = "off"
+# describe_images = false
 #
 # Whether a model on another of your machines (an engine attached with where = "my-network", see
 # the engines.attached example above) counts as this computer for data whose floor is "this
-# computer" (ai.attached.my_network): "off" (the default: such data is not sent to it) or "on". A floor that
+# computer" (ai.attached.my_network): false (the default: such data is not sent to it) or true. A floor that
 # already says local_network lets it through either way. The data leaves this computer, so the
 # default is off.
 # [ai.attached]
-# my_network = "on"
+# my_network = true
 #
 # The share of a spending cap at which a request is warned about, 1 to 1000 (ai.spend.warn_permille),
 # and the caps on cloud models, in US cents (0 is no cap): on each account, counting every app that

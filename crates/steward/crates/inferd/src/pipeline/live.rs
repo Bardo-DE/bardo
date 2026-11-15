@@ -14,7 +14,7 @@ use crate::speech::Ears;
 use porter_core::AppId;
 use porter_infer::{
     Answer, ChatRequest, ChatSink, InferEvent, InferReply, InferRequest, Modality, ModelError,
-    ModelRef, RequestShape, ShowReason, StageRole,
+    ModelRef, RequestShape, StageRole,
 };
 use porter_router::pipeline::plan;
 use porter_router::router::placed::Allowed;
@@ -145,10 +145,9 @@ impl Hearing {
             chat,
             names,
         };
-        let show: ShowReason = settings.auto.show_reason;
         run_pipeline(
             &planned,
-            show,
+            settings.auto.show_reason,
             input,
             &Ears::new(self.engines.clone()),
             &answer,

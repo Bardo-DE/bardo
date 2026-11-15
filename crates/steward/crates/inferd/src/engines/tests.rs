@@ -11,7 +11,7 @@ use porter_capability::{Billing, Locality};
 use porter_capability::{Capability, CuaEnv, LlmCap, LlmFeature, LlmWire, SpeechMode};
 use porter_core::AccountId;
 use porter_ids::Tokens;
-use porter_infer::{LocalOnly, Slot};
+use porter_infer::Slot;
 use porter_match::{CuaNeed, LlmNeed, SpeechNeed};
 use porter_router::seams::Router;
 use test_kit::Scratch;
@@ -381,7 +381,7 @@ async fn what_an_app_is_told_without_a_session_reveals_no_identity() {
 
     // Accounts that are not here: a floor that forbids them, or a grant nobody gave.
     let mut policy = Policy::proposed();
-    policy.local_only = LocalOnly::Off;
+    policy.local_only = false;
     let remote = Engines::new(
         Vec::new(),
         Supervised::idle(),
@@ -414,7 +414,7 @@ async fn a_route_says_why_and_the_snapshot_keeps_the_gpu_the_swap_cost_reads() {
         .route_detailed(&spec(llm(), DataClass::Notes), Role::App)
         .expect("route");
     assert_eq!(decision.why, porter_infer::Why::CatalogueOrder);
-    assert_eq!(decision.show, porter_infer::ShowReason::On);
+    assert!(decision.show);
     // Nothing has looked at the GPU yet; a cold model is then costed as fitting.
     assert_eq!(engines.supervised().snapshot().gpu, None);
     assert!(matches!(

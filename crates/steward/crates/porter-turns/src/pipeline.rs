@@ -6,8 +6,8 @@
 
 use porter_infer::{
     AudioFrame, ChatMessage, ChatRequest, ChatSink, InferEvent, InferReply, InferRequest,
-    MessagePart, ModelError, ModelLabel, ModelRef, Pipeline, Refusal, Role, ShowReason, Stage,
-    StageNote, StageRole, TranscribeBegin, TranscribeReply, Why,
+    MessagePart, ModelError, ModelLabel, ModelRef, Pipeline, Refusal, Role, Stage, StageNote,
+    StageRole, TranscribeBegin, TranscribeReply, Why,
 };
 use porter_router::audio::AudioIn;
 use porter_router::seams::{RunningTurn, TurnRunner, TurnStep};
@@ -63,12 +63,11 @@ pub fn unsupported(pipeline: &Pipeline) -> Option<Refusal> {
 fn announce(
     stage: &Stage,
     names: &BTreeMap<ModelRef, ModelLabel>,
-    show: ShowReason,
+    show: bool,
     sink: &mut impl ChatSink,
 ) -> ControlFlow<()> {
     let evicting = matches!(stage.picked.why, Why::Evicted { .. });
-    let why =
-        (show == ShowReason::On || evicting).then(|| InferEvent::Why(stage.picked.why.clone()));
+    let why = (show || evicting).then(|| InferEvent::Why(stage.picked.why.clone()));
     let note = InferEvent::Stage(StageNote {
         role: stage.role,
         served: stage.served(),
@@ -113,7 +112,7 @@ fn with_transcript(mut chat: ChatRequest, transcript: String) -> ChatRequest {
 /// does not run is refused up front (`unsupported`), before any stage is announced or run.
 pub async fn run_pipeline<H: Transcriber, T: TurnRunner>(
     pipeline: &Pipeline,
-    show: ShowReason,
+    show: bool,
     input: PipelineInput,
     hear: &H,
     answer: &T,

@@ -9,7 +9,6 @@ use hosting::engine::Chat;
 use hosting::entries;
 use hosting::rig::{AgentsPlan, Plan, World};
 use inferd::peers::Role;
-use inferd::settings::AgentEndpoint;
 use porter_infer::Policy;
 use serde_json::json;
 
@@ -243,9 +242,7 @@ async fn an_attached_my_network_engine_follows_the_floor_and_the_my_network_sett
             computer: None,
         }],
         role: Role::AgentLauncher,
-        agents: Some(AgentsPlan {
-            endpoint: AgentEndpoint::On,
-        }),
+        agents: Some(AgentsPlan { endpoint: true }),
         ..Plan::default()
     };
     p.policy = Policy::proposed();
@@ -261,7 +258,7 @@ async fn an_attached_my_network_engine_follows_the_floor_and_the_my_network_sett
     );
     assert!(lab.chats().is_empty(), "nothing was sent");
     let mut settings = (*world.served.settings()).clone();
-    settings.my_network = inferd::settings::MyNetwork::On;
+    settings.my_network = true;
     world.served.apply(settings);
     let endpoint = Endpoint::of(
         open_with(&world, &route, "files", &["openai_compatible"])
@@ -286,7 +283,7 @@ async fn an_attached_my_network_engine_follows_the_floor_and_the_my_network_sett
     assert_eq!(audited[0].usage.charge, None);
     // The setting turned back off: the open session's next request is refused.
     let mut settings = (*world.served.settings()).clone();
-    settings.my_network = inferd::settings::MyNetwork::Off;
+    settings.my_network = false;
     world.served.apply(settings);
     let reply = completions(&endpoint, &ask).await;
     assert_eq!(reply.status, 403, "{}", reply.body);

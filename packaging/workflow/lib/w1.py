@@ -198,8 +198,8 @@ def inferd_config_text(planner, screen):
     )
     return (
         "# Written by workflow/w1-blender.sh for this run only.\n"
-        "[ai]\nlocal_only = \"off\"\n\n"
-        "[ai.attached]\nmy_network = \"on\"\n\n"
+        "[ai]\nlocal_only = false\n\n"
+        "[ai.attached]\nmy_network = true\n\n"
         "[ai.floor]\nprompt = \"local_network\"\nmail = \"on_device\"\nscreen = \"local_network\"\n\n"
         "[ai.spend]\naccount_daily_cents = 0\napp_daily_cents = 0\n\n"
         + models

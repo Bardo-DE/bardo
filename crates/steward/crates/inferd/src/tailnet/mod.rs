@@ -27,7 +27,6 @@ pub use machines::{BusMachines, Machines, NoMachines};
 
 use crate::attached::relay_socket;
 use crate::engines::Engines;
-use crate::settings::TailnetServe;
 use porter_ids::clock::Clock;
 use porter_tailnet::{
     Config, Dialer, GuestEvent, Guests, Lending, Listening, Observer, OnFault, Relay, Timing, lend,
@@ -222,7 +221,7 @@ async fn supervise(
     let mut settings = engines.watch_settings();
     let mut running: Option<Running> = None;
     loop {
-        let on = settings.borrow().tailnet_serve == TailnetServe::On;
+        let on = settings.borrow().tailnet_serve;
         let Some(inner) = inner.upgrade() else { return };
         match (on, running.is_some()) {
             (true, false) => {

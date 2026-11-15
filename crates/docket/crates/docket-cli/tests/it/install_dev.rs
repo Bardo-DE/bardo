@@ -308,11 +308,11 @@ fn a_config_of_the_persons_own_is_never_overwritten_and_a_second_run_changes_not
     let jail = Jail::new();
     let mine = jail.config().join("inferd/inferd.toml");
     std::fs::create_dir_all(mine.parent().expect("dir")).expect("dir");
-    std::fs::write(&mine, "# mine\n[ai]\nlocal_only = \"off\"\n").expect("mine");
+    std::fs::write(&mine, "# mine\n[ai]\nlocal_only = false\n").expect("mine");
     jail.ok(&[]);
     assert_eq!(
         jail.read(".config/inferd/inferd.toml"),
-        "# mine\n[ai]\nlocal_only = \"off\"\n"
+        "# mine\n[ai]\nlocal_only = false\n"
     );
     let first = jail.tree();
     let again = jail.ok(&[]);
@@ -320,7 +320,7 @@ fn a_config_of_the_persons_own_is_never_overwritten_and_a_second_run_changes_not
     assert!(again.contains("kept (yours)"), "{again}");
     assert_eq!(
         jail.read(".config/inferd/inferd.toml"),
-        "# mine\n[ai]\nlocal_only = \"off\"\n"
+        "# mine\n[ai]\nlocal_only = false\n"
     );
 }
 
@@ -365,7 +365,7 @@ fn an_uninstall_removes_exactly_what_was_installed_and_keeps_what_is_the_persons
     // The runbook edits inferd.toml: that edit survives.
     let inferd = jail.config().join("inferd/inferd.toml");
     let edited = format!(
-        "{}\n[ai]\nlocal_only = \"off\"\n",
+        "{}\n[ai]\nlocal_only = false\n",
         std::fs::read_to_string(&inferd).expect("read")
     );
     std::fs::write(&inferd, &edited).expect("edit");

@@ -1,5 +1,5 @@
 use super::*;
-use crate::policy::{ClassFloor, Floor, LocalOnly};
+use crate::policy::{ClassFloor, Floor};
 use crate::route::Permit;
 use crate::spend::SpendVerdict;
 use porter_capability::ModelId;
@@ -88,7 +88,7 @@ fn cloud(name: &str, index: u32) -> PickCandidate {
 
 pub(super) fn open() -> Policy {
     Policy {
-        local_only: LocalOnly::Off,
+        local_only: false,
         floors: vec![],
     }
 }
@@ -274,7 +274,7 @@ fn automatic_table() {
         },
         Case {
             policy: Policy {
-                local_only: LocalOnly::Off,
+                local_only: false,
                 floors: vec![ClassFloor {
                     class: DataClass::Public,
                     floor: Floor::OnDevice,
@@ -424,7 +424,7 @@ fn a_named_model_that_cannot_serve_refuses_and_says_why_without_a_fallback() {
 #[test]
 fn a_named_model_the_floor_forbids_is_blocked_by_the_floor() {
     let policy = Policy {
-        local_only: LocalOnly::Off,
+        local_only: false,
         floors: vec![ClassFloor {
             class: DataClass::Public,
             floor: Floor::OnDevice,

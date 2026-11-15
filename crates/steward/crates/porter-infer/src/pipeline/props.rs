@@ -1,6 +1,6 @@
 use super::tests::{hearing_text, hosted, kokoro, local, rules, set, shape, text_model, whisper};
 use super::*;
-use crate::policy::{ClassFloor, Floor, LocalOnly};
+use crate::policy::{ClassFloor, Floor};
 use proptest::prelude::*;
 
 fn class() -> impl Strategy<Value = DataClass> {
@@ -91,11 +91,7 @@ fn policy() -> impl Strategy<Value = Policy> {
         proptest::sample::select(vec![Floor::OnDevice, Floor::Anywhere]),
     )
         .prop_map(|(local_only, voice)| Policy {
-            local_only: if local_only {
-                LocalOnly::On
-            } else {
-                LocalOnly::Off
-            },
+            local_only: if local_only { true } else { false },
             floors: vec![
                 ClassFloor {
                     class: DataClass::Voice,
@@ -124,7 +120,7 @@ proptest! {
         describe in any::<bool>(),
     ) {
         let shape = shape(class, &inputs, if speech { Answer::Speech } else { Answer::Text });
-        let describe = if describe { DescribeImages::On } else { DescribeImages::Off };
+        let describe = if describe { true } else { false };
         let once = plan_pipeline(&shape, &picks, &catalogue, &granted, rules(&policy, describe));
         let again = plan_pipeline(&shape, &picks, &catalogue, &granted, rules(&policy, describe));
         prop_assert_eq!(&once, &again);
@@ -159,7 +155,7 @@ proptest! {
         policy in policy(),
     ) {
         let shape = shape(class, &inputs, if speech { Answer::Speech } else { Answer::Text });
-        let got = plan_pipeline(&shape, &picks, &catalogue, &granted, rules(&policy, DescribeImages::On));
+        let got = plan_pipeline(&shape, &picks, &catalogue, &granted, rules(&policy, true));
         if let Ok(pipeline) = got {
             for stage in &pipeline.stages {
                 if let Some(Pick::Named(named)) = picks.get(stage.slot) {

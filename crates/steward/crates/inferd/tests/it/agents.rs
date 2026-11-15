@@ -11,7 +11,6 @@ use hosting::agent::*;
 use hosting::engine::Chat;
 use hosting::rig::{AgentsPlan, World};
 use inferd::peers::{Caller, Role};
-use inferd::settings::AgentEndpoint;
 use model_provider::Money;
 use porter_dbus::Details;
 use porter_ids::TurnCount;
@@ -450,15 +449,9 @@ async fn only_the_agent_launcher_may_open_an_endpoint() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_setting_off_refuses_and_the_default_is_off() {
-    assert_eq!(AgentEndpoint::default(), AgentEndpoint::Off);
-    assert_eq!(
-        inferd::settings::Settings::default().agent_endpoint,
-        AgentEndpoint::Off
-    );
+    assert!(!inferd::settings::Settings::default().agent_endpoint);
     let mut off = plan(vec![anthropic_account()], say("x"), say("y"));
-    off.agents = Some(AgentsPlan {
-        endpoint: AgentEndpoint::Off,
-    });
+    off.agents = Some(AgentsPlan { endpoint: false });
     let world = World::start(off).await;
     let refused = open_with(
         &world,
@@ -474,7 +467,7 @@ async fn the_setting_off_refuses_and_the_default_is_off() {
     );
     // Turned on while the daemon runs (the next open reads the settings in force).
     let mut settings = (*world.served.settings()).clone();
-    settings.agent_endpoint = AgentEndpoint::On;
+    settings.agent_endpoint = true;
     world.served.apply(settings);
     assert!(
         open_with(

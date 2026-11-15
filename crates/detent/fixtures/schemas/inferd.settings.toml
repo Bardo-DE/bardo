@@ -23,84 +23,56 @@ foreign = ["engines", "probe", "callers"]
 
 [[key]]
 path = "ai.local_only"
-default = "on"
+default = true
 label = "Keep AI on this computer"
 help = "While on, no request goes to a cloud account, whatever a data class allows."
 section = "Models"
 exposure = "basic"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["on", "off"]
-
-[key.labels]
-on = "On"
-off = "Off"
+kind = "toggle"
 
 [key.page]
 kind = "intelligence"
 
 [[key]]
 path = "ai.attached.my_network"
-default = "off"
+default = false
 label = "Count my other machines as this computer"
 help = "An AI model you set up on another of your own machines (reached through a tunnel, such as a lab server) keeps your data on your own network, but it is not this computer. While off, data set to stay on this computer is not sent to it. While on, it may receive that data too."
 section = "Models"
 exposure = "basic"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["off", "on"]
-
-[key.labels]
-off = "Off"
-on = "On"
+kind = "toggle"
 
 [key.page]
 kind = "intelligence"
 
 [[key]]
 path = "ai.tailnet.serve"
-default = "off"
+default = false
 label = "Let my other computers use this computer's models"
 help = "While on, your other computers on your Tailscale network may ask to use the AI models that run on this computer. The first time each one asks, you are asked whether to let it. Only your own computers are asked about: a server, or a computer that belongs to someone else, is never let in unless you allow it in Settings. Your AI accounts and the models you have set up on other computers are never lent. While off, this computer does not answer them."
 section = "Models"
 exposure = "basic"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["off", "on"]
-
-[key.labels]
-off = "Off"
-on = "On"
+kind = "toggle"
 
 [key.page]
 kind = "intelligence"
 
 [[key]]
 path = "ai.agents.endpoint"
-default = "off"
+default = false
 label = "Let coding agents use my AI models"
 help = "While on, an external coding agent that your desktop starts may be given a private address on this computer through which it uses an AI account you have granted it, or a model on this computer, with your spend limits and without ever holding the account's key. While off, no such address is opened."
 section = "Models"
 exposure = "basic"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["off", "on"]
-
-[key.labels]
-off = "Off"
-on = "On"
+kind = "toggle"
 
 [key.page]
 kind = "intelligence"
@@ -434,21 +406,14 @@ kind = "intelligence"
 
 [[key]]
 path = "ai.auto.show_reason"
-default = "on"
+default = true
 label = "Say why"
 help = "Whether each answer says why Automatic chose its model."
 section = "Automatic"
 exposure = "advanced"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["off", "on"]
-
-[key.labels]
-on = "On"
-off = "Off"
+kind = "toggle"
 
 [key.page]
 kind = "intelligence"
@@ -677,21 +642,14 @@ kind = "intelligence"
 
 [[key]]
 path = "ai.pipeline.describe_images"
-default = "off"
+default = false
 label = "Describe images for text-only models"
 help = "When the answering model cannot read an image, let another model describe it first. The description loses detail, so the answer says it was used. Off refuses instead."
 section = "Models"
 exposure = "basic"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["off", "on"]
-
-[key.labels]
-off = "Off"
-on = "On"
+kind = "toggle"
 
 [key.page]
 kind = "intelligence"

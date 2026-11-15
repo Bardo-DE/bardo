@@ -67,7 +67,7 @@ fn the_planner_model_is_the_one_the_config_names_for_its_tier() {
     let config =
         "[ai.model.text]\nfast = \"local/a\"\nbalanced = \"local/b\"\nbest = \"local/c\"\n";
     assert_eq!(planner_model_name(config).as_deref(), Some("local/b"));
-    assert_eq!(planner_model_name("[ai]\nlocal_only = \"on\"\n"), None);
+    assert_eq!(planner_model_name("[ai]\nlocal_only = true\n"), None);
     assert_eq!(planner_model_name("not toml ["), None);
 }
 

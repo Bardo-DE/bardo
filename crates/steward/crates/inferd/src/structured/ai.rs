@@ -12,9 +12,10 @@ use serde::{Deserialize, Serialize};
 /// refused field by field) in `settings`.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AiConfig {
-    /// `ai.local_only`: `on` or `off`.
+    /// `ai.local_only`: while on, every cloud account is removed from every answer; off, cloud
+    /// accounts may serve classes whose floor allows it.
     #[serde(default)]
-    pub local_only: Option<String>,
+    pub local_only: Option<crate::settings::SwitchSaid>,
     /// `ai.floor.<class>`: `on_device`, `local_network` or `anywhere`, by class slug.
     #[serde(default)]
     pub floor: std::collections::BTreeMap<String, String>,

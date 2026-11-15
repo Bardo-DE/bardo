@@ -84,7 +84,7 @@ fn ai_stays_on_this_computer_by_default_and_done_writes_it_and_remembers() {
         stage(h).as_deref() == Some("done")
     });
     assert!(
-        written(&w.sandbox).contains("local_only = \"on\""),
+        written(&w.sandbox).contains("local_only = true"),
         "{}",
         written(&w.sandbox)
     );
@@ -199,7 +199,7 @@ fn switching_it_off_writes_off() {
     settle(&mut w.harness, "the save", |h| {
         stage(h).as_deref() == Some("done")
     });
-    assert!(written(&w.sandbox).contains("local_only = \"off\""));
+    assert!(written(&w.sandbox).contains("local_only = false"));
 }
 
 #[test]
@@ -212,7 +212,7 @@ fn without_a_bus_there_is_no_model_menu_and_done_still_finishes() {
     settle(&mut harness, "the save", |h| {
         stage(h).as_deref() == Some("done")
     });
-    assert!(written(&sandbox).contains("local_only = \"on\""));
+    assert!(written(&sandbox).contains("local_only = true"));
     assert!(mark(&sandbox));
 }
 
@@ -245,5 +245,5 @@ fn the_same_write_the_page_makes_leaves_every_other_key_of_the_file() {
         text.contains("# mine") && text.contains("future = 3"),
         "{text}"
     );
-    assert!(text.contains("local_only = \"on\""), "{text}");
+    assert!(text.contains("local_only = true"), "{text}");
 }

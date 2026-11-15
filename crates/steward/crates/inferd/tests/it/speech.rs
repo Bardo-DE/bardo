@@ -20,9 +20,9 @@ use porter_core::DataClass;
 use porter_core::consent::Usage;
 use porter_infer::{
     Answer, AudioFrame, AudioRate, AutoPolicy, Base64Bytes, ChatMessage, ChatReply, ChatRequest,
-    ClientFrame, DescribeImages, HeardDelta, InferEvent, InferReply, InferRequest, LangPick,
-    Modality, ModelError, ModelLabel, ModelRef, OpenOptions, Readiness, RequestShape, Role,
-    ShowReason, StageRole, TierMap, TranscribeBegin, TranscribeMode,
+    ClientFrame, HeardDelta, InferEvent, InferReply, InferRequest, LangPick, Modality, ModelError,
+    ModelLabel, ModelRef, OpenOptions, Readiness, RequestShape, Role, StageRole, TierMap,
+    TranscribeBegin, TranscribeMode,
 };
 use porter_match::Need;
 use porter_match::SpeechNeed;
@@ -418,7 +418,7 @@ async fn a_hear_then_answer_pipeline_hears_on_the_speech_host_and_answers_on_a_t
         &settings.policy,
         &TierMap::default(),
         AutoPolicy::default(),
-        DescribeImages::Off,
+        false,
     )
     .expect("a plan");
     let roles: Vec<(StageRole, String)> = planned
@@ -472,7 +472,7 @@ async fn a_hear_then_answer_pipeline_hears_on_the_speech_host_and_answers_on_a_t
     let mut events = Events::default();
     let reply = run_pipeline(
         &planned,
-        ShowReason::On,
+        true,
         input,
         &Ears::new(world.served.clone()),
         &turns,

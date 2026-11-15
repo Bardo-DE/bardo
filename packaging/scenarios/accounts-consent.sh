@@ -57,7 +57,7 @@ step_boot() {
   # person has picked the fast text model on that key (nothing is picked by default, so an unpicked tier is refused unread).
   inferd_write_config <<'TOML'
 [ai]
-local_only = "off"
+local_only = false
 [ai.floor]
 files = "anywhere"
 [ai.model.text]

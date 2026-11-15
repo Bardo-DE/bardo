@@ -4,7 +4,7 @@ use porter_capability::{Capability, LlmCap, LlmFeature, LlmWire};
 use porter_core::AccountId;
 use porter_ids::Tokens;
 use porter_infer::{
-    AutoPolicy, LicenceClass, LocalOnly, ModelCard, Permit, PlaceKind, Policy, Readiness, SwapCost,
+    AutoPolicy, LicenceClass, ModelCard, Permit, PlaceKind, Policy, Readiness, SwapCost,
 };
 use porter_match::{DimsNeed, EmbedNeed, LlmNeed};
 
@@ -67,7 +67,7 @@ fn at(place_text: &str, model: &str, serving: Serving) -> Placed {
 /// Local-only off, the shipped floors.
 fn open() -> Policy {
     Policy {
-        local_only: LocalOnly::Off,
+        local_only: false,
         ..Policy::proposed()
     }
 }

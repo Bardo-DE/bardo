@@ -230,9 +230,9 @@ fn inferd_is_never_given_a_local_engine() {
     assert_eq!(callers["cua"][0].as_str(), Some("cuad.service"));
 
     // The person's own rows are kept, but cannot bring an engine, a probe or other callers back.
-    let extra = "[ai]\nlocal_only = \"off\"\n";
+    let extra = "[ai]\nlocal_only = false\n";
     let with = parsed(&seed::inferd_toml(root, extra).expect("extra rows"));
-    assert_eq!(with["ai"]["local_only"].as_str(), Some("off"));
+    assert_eq!(with["ai"]["local_only"].as_bool(), Some(false));
     assert!(with["engines"].as_table().is_some_and(|t| t.is_empty()));
     let refused = [
         (

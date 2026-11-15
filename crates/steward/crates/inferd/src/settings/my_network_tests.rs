@@ -5,7 +5,7 @@ use super::*;
 use crate::config::InferdConfig;
 use porter_capability::Locality;
 use porter_core::DataClass;
-use porter_infer::{Floor, LocalOnly};
+use porter_infer::Floor;
 
 fn settings(text: &str) -> (Settings, Vec<String>) {
     let config = InferdConfig::from_toml(text).expect("config");
@@ -15,22 +15,22 @@ fn settings(text: &str) -> (Settings, Vec<String>) {
 
 #[test]
 fn the_row_is_off_by_default_and_reads_on_and_names_a_value_it_does_not_know() {
-    assert_eq!(settings("").0.my_network, MyNetwork::Off);
-    let (on, rejected) = settings("[ai.attached]\nmy_network = \"on\"\n");
-    assert_eq!((on.my_network, rejected), (MyNetwork::On, vec![]));
-    let (off, rejected) = settings("[ai.attached]\nmy_network = \"off\"\n");
-    assert_eq!((off.my_network, rejected), (MyNetwork::Off, vec![]));
+    assert!(!settings("").0.my_network);
+    let (on, rejected) = settings("[ai.attached]\nmy_network = true\n");
+    assert_eq!((on.my_network, rejected), (true, vec![]));
+    let (off, rejected) = settings("[ai.attached]\nmy_network = false\n");
+    assert_eq!((off.my_network, rejected), (false, vec![]));
     let (odd, rejected) = settings("[ai.attached]\nmy_network = \"sometimes\"\n");
-    assert_eq!(odd.my_network, MyNetwork::Off);
+    assert!(!odd.my_network);
     assert_eq!(rejected, [MY_NETWORK.to_owned()]);
 }
 
 #[test]
 fn on_lets_an_on_device_floor_reach_my_machines_and_nothing_else_moves() {
-    let text = "[ai]\nlocal_only = \"off\"\n[ai.floor]\nmail = \"on_device\"\nnotes = \"local_network\"\n\
-                files = \"anywhere\"\n[ai.attached]\nmy_network = \"on\"\n";
+    let text = "[ai]\nlocal_only = false\n[ai.floor]\nmail = \"on_device\"\nnotes = \"local_network\"\n\
+                files = \"anywhere\"\n[ai.attached]\nmy_network = true\n";
     let (on, _) = settings(text);
-    let (off, _) = settings(&text.replace("my_network = \"on\"", "my_network = \"off\""));
+    let (off, _) = settings(&text.replace("my_network = true", "my_network = false"));
     let machines = Locality::LocalNetwork;
     let cloud = Locality::Cloud { region: None };
     let table = [
@@ -56,6 +56,6 @@ fn on_lets_an_on_device_floor_reach_my_machines_and_nothing_else_moves() {
     );
     assert!(on.routing_policy().floor(DataClass::Mail).admits(&machines));
     assert!(!on.routing_policy().floor(DataClass::Mail).admits(&cloud));
-    assert_eq!(on.routing_policy().local_only, LocalOnly::Off);
+    assert!(!on.routing_policy().local_only);
     assert_eq!(off.routing_policy(), off.policy);
 }

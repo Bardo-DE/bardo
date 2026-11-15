@@ -7,7 +7,6 @@ use super::session::{Agents, Ctx};
 use super::token::{Token, random_hex};
 use crate::cloud::models::{known_providers, provider_of};
 use crate::engines::Engines;
-use crate::settings::AgentEndpoint;
 use model_catalog::{ModelEntry, ProviderId, Wire};
 use porter_capability::Locality;
 use porter_capability::{AgentProgram, AgentProtocol};
@@ -134,7 +133,7 @@ impl Agents {
     pub async fn open(&self, owner: &str, request: OpenRequest) -> Result<Endpoint, Refusal> {
         let engines = self.engines().clone();
         let settings = engines.settings();
-        if settings.agent_endpoint != AgentEndpoint::On {
+        if !settings.agent_endpoint {
             return Err(refused(
                 Cause::EndpointOff,
                 "agent endpoints are off (ai.agents.endpoint)",

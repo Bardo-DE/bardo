@@ -13,7 +13,7 @@ use porter_ids::Tokens;
 use porter_infer::{
     AudioFrame, AudioRate, Base64Bytes, ClientFrame, CuaBegin, CuaStepReply, InferEvent,
     InferRefusal, InferReply, InferRequest, LangPick, ModelError, ModelRef, Readiness, RequestKind,
-    ServedBy, ShowReason, SpeakRequest, Task, TaskRequest, TranscribeBegin, TranscribeMode, Why,
+    ServedBy, SpeakRequest, Task, TaskRequest, TranscribeBegin, TranscribeMode, Why,
 };
 use porter_match::Need;
 use porter_match::{CuaNeed, LlmNeed, SpeechNeed};
@@ -62,12 +62,12 @@ pub(super) fn decided(readiness: Readiness) -> SessionIn {
         readiness,
         why: Why::Named,
         reached: None,
-        show: ShowReason::Off,
+        show: false,
         name: Some(label()),
     }))
 }
 
-pub(super) fn decided_why(readiness: Readiness, why: Why, show: ShowReason) -> SessionIn {
+pub(super) fn decided_why(readiness: Readiness, why: Why, show: bool) -> SessionIn {
     SessionIn::Routed(Ok(Routing {
         served: served(),
         readiness,

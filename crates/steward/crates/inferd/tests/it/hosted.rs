@@ -364,7 +364,7 @@ async fn a_prompt_class_request_to_a_cloud_only_route_is_refused_by_the_floor() 
     };
     let mut policy = porter_infer::Policy::proposed();
     // The user allows cloud accounts in general; the class's floor is what refuses.
-    policy.local_only = porter_infer::LocalOnly::Off;
+    policy.local_only = false;
     let world = World::start(Plan {
         remote: vec![cloud],
         policy,

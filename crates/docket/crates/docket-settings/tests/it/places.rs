@@ -135,7 +135,7 @@ fn migration_never_widens() {
         KnownPlace::OwnComputer(name("lab")),
         KnownPlace::Cloud(name("acme"), "Acme".to_owned()),
     ]);
-    let migrated = Places::migrated("[ai]\nlocal_only = \"off\"\n", &known);
+    let migrated = Places::migrated("[ai]\nlocal_only = false\n", &known);
     assert!(!migrated.own[0].allowed);
     assert_eq!(migrated.cloud[0].allowed, CloudAllowed::Off);
     let set = Places {

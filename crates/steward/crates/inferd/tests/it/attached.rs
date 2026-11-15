@@ -10,7 +10,7 @@ use hosting::lab::Lab;
 use hosting::rig::{Plan, World};
 use hosting::{bus, entries};
 use inferd::attached::{Attached, KeyFileProblem, NotReady, Place, Reach};
-use inferd::settings::{MyNetwork, Settings};
+use inferd::settings::Settings;
 use inferd_client::InferSession;
 use porter_capability::LlmFeature;
 use porter_capability::ModelId;
@@ -462,7 +462,7 @@ async fn this_device_takes_on_device_only_data_and_my_network_does_not_unless_th
     assert_eq!(routed(&notes).locality, Locality::LocalNetwork);
 
     // `ai.attached.my_network` on: the on-device floor of Mail lets it through.
-    settings.my_network = MyNetwork::On;
+    settings.my_network = true;
     world.served.apply(settings);
     let after = turn(&world, DataClass::Mail, "private").await;
     assert_eq!(routed(&after).locality, Locality::LocalNetwork);
@@ -470,10 +470,7 @@ async fn this_device_takes_on_device_only_data_and_my_network_does_not_unless_th
     assert_eq!(lab.chats().len(), 2);
 
     // It never counts as cloud: local-only stays on throughout, and no cloud spend is recorded.
-    assert_eq!(
-        world.served.settings().policy.local_only,
-        porter_infer::LocalOnly::On
-    );
+    assert_eq!(world.served.settings().policy.local_only, true);
     assert!(world.served.usage_of(&hosting::rig::test_app()).is_empty());
 }
 

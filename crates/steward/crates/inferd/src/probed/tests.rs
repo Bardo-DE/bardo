@@ -6,9 +6,7 @@ use porter_capability::ModelId;
 use porter_capability::{Locality, Tier};
 use porter_core::DataClass;
 use porter_ids::Tokens;
-use porter_infer::{
-    AutoMode, AutoRow, InferRefusal, LocalOnly, ModelRef, Policy, Slot, TierMap, TierRow,
-};
+use porter_infer::{AutoMode, AutoRow, InferRefusal, ModelRef, Policy, Slot, TierMap, TierRow};
 use porter_match::LlmNeed;
 use porter_match::Need;
 use porter_router::seams::EngineHost;
@@ -202,7 +200,7 @@ fn a_runtime_that_is_down_is_unavailable_and_never_replaced_by_a_remote_model() 
 #[test]
 fn local_only_on_leaves_the_runtime_the_only_answer() {
     let policy = Policy {
-        local_only: LocalOnly::On,
+        local_only: true,
         ..Policy::proposed()
     };
     let engines = Engines::new(

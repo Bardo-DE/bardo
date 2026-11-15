@@ -7,10 +7,9 @@ use super::engine::{Chat, Script};
 use super::entries;
 use super::rig::{AgentsPlan, Hosted, Plan, Trust, World};
 use inferd::peers::Role;
-use inferd::settings::AgentEndpoint;
 use porter_core::{AppId, AppName, Isolation};
 use porter_dbus::Details;
-use porter_infer::{LocalOnly, Period, Policy, SpendScope};
+use porter_infer::{Period, Policy, SpendScope};
 use serde_json::{Value, json};
 use std::path::Path;
 use steward_dbus::inference::{AgentsProxy, EndpointArg};
@@ -53,7 +52,7 @@ pub fn openai_account() -> FakeAccount {
 
 pub fn open_policy() -> Policy {
     Policy {
-        local_only: LocalOnly::Off,
+        local_only: false,
         floors: Vec::new(),
     }
 }
@@ -82,9 +81,7 @@ pub fn plan(accounts: Vec<FakeAccount>, cloud: Chat, local: Chat) -> Plan {
             },
             trust: Trust::ScratchCa,
         }),
-        agents: Some(AgentsPlan {
-            endpoint: AgentEndpoint::On,
-        }),
+        agents: Some(AgentsPlan { endpoint: true }),
         ..Plan::default()
     }
 }

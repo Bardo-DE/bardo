@@ -96,7 +96,7 @@ inferd must be able to start the engine in a scratch HOME with Landlock on: `vll
 absolute path (the vLLM virtualenv's python), `hf_cache` as an absolute path (the hub directory the
 weights are in; inferd's default would be under the scratch HOME), and the model rows
 `ai.model.text.{fast,balanced,best}` set (`fast` is the quick judge and the writer, `balanced` the
-deliberate stage and the planner, `best` the second opinion). `ai.local_only = "on"` (the default) keeps
+deliberate stage and the planner, `best` the second opinion). `ai.local_only = true` (the default) keeps
 every class on the machine. The runs need the GPU: do not wrap them in `jail.sh`.
 
 The catalogue has two local text models with tools, `qwen3-4b-instruct-2507-fp8` (family qwen) and

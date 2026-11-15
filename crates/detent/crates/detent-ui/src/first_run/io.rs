@@ -20,7 +20,7 @@ pub(super) fn save(env: &Env, local_only: bool) -> Result<(), String> {
         .ok_or_else(|| crate::copy::first_run::THE_MODEL_SETTINGS_ARE_NOT_INSTALLED.to_owned())?;
     let edit = Edit {
         entry,
-        value: toml::Value::String(if local_only { "on" } else { "off" }.to_owned()),
+        value: toml::Value::Boolean(local_only),
     };
     apply(env, &Files::new(), &edit).map_err(|error| error.to_string())?;
     env.first_run

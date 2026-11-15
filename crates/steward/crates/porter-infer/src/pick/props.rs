@@ -1,6 +1,6 @@
 use super::tests::{ASK, cand, mref, open};
 use super::*;
-use crate::policy::{ClassFloor, Floor, LocalOnly};
+use crate::policy::{ClassFloor, Floor};
 use crate::route::Permit;
 use crate::route::TierChoice;
 use crate::spend::SpendVerdict;
@@ -111,7 +111,7 @@ fn candidates() -> impl Strategy<Value = Vec<PickCandidate>> {
 
 fn policy() -> impl Strategy<Value = Policy> {
     (any::<bool>(), 0u8..3).prop_map(|(local, floor)| Policy {
-        local_only: if local { LocalOnly::On } else { LocalOnly::Off },
+        local_only: if local { true } else { false },
         floors: match floor {
             0 => vec![],
             1 => vec![ClassFloor {
@@ -134,7 +134,7 @@ fn auto_policy() -> impl Strategy<Value = AutoPolicy> {
         } else {
             AutoEvict::IdleOnly
         },
-        show_reason: if off { ShowReason::Off } else { ShowReason::On },
+        show_reason: if off { false } else { true },
     })
 }
 
@@ -211,7 +211,7 @@ proptest! {
                 }
                 SwapCost::Purge { .. } | SwapCost::NoRoom => prop_assert!(false, "unloadable"),
             }
-            if policy.local_only == LocalOnly::On {
+            if policy.local_only {
                 let cloud = matches!(found.route.locality, Locality::Cloud { .. });
                 prop_assert!(!cloud);
             }

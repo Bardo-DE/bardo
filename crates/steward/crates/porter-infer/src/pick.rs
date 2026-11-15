@@ -77,44 +77,26 @@ impl AutoEvict {
     }
 }
 
-/// Whether the reason is announced to the client (`ai.auto.show_reason`). It is always audited;
-/// an eviction is announced whatever this says (a swap is never hidden).
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum ShowReason {
-    /// Only an eviction is announced.
-    Off,
-    /// Every answer says why.
-    #[default]
-    On,
-}
-
-impl ShowReason {
-    /// The settings value.
-    pub fn slug(self) -> &'static str {
-        match self {
-            ShowReason::Off => "off",
-            ShowReason::On => "on",
-        }
-    }
-
-    /// The value a settings string names.
-    pub fn from_slug(slug: &str) -> Option<Self> {
-        [ShowReason::Off, ShowReason::On]
-            .into_iter()
-            .find(|one| one.slug() == slug)
-    }
-}
-
 /// The `ai.auto.*` rows.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct AutoPolicy {
     /// `ai.auto.mode`.
     pub mode: AutoMode,
     /// `ai.auto.allow_evict`.
     pub allow_evict: AutoEvict,
-    /// `ai.auto.show_reason`.
-    pub show_reason: ShowReason,
+    /// `ai.auto.show_reason`: whether the reason is announced to the client. It is always
+    /// audited; an eviction is announced whatever this says (a swap is never hidden).
+    pub show_reason: bool,
+}
+
+impl Default for AutoPolicy {
+    fn default() -> Self {
+        AutoPolicy {
+            mode: AutoMode::default(),
+            allow_evict: AutoEvict::default(),
+            show_reason: true,
+        }
+    }
 }
 
 /// The person's choice for a kind and tier.

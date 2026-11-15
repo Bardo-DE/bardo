@@ -80,17 +80,17 @@ pub use model::{ChatSink, Model, ModelCard, TurnError, answer};
 pub use open::OpenOptions;
 pub use pick::{
     AutoEvict, AutoMode, AutoPolicy, Declined, DeclinedBecause, Door, EngineLoad, Pick,
-    PickCandidate, PickPolicy, PickRefusal, Picked, Sharing, ShowReason, SwapCost, Why, pick,
+    PickCandidate, PickPolicy, PickRefusal, Picked, Sharing, SwapCost, Why, pick,
 };
 pub use pipeline::{
-    Answer, CatalogueModel, ClassSet, DescribeImages, Modality, Pipeline, PlanRules, ProviderId,
-    Refusal, RequestShape, SlotPicks, Stage, StageRole, default_choice, picks_for, plan_pipeline,
+    Answer, CatalogueModel, ClassSet, Modality, Pipeline, PlanRules, ProviderId, Refusal,
+    RequestShape, SlotPicks, Stage, StageRole, default_choice, picks_for, plan_pipeline,
 };
 pub use place::{
     ComputerName, NoPlaceReason, PlaceEngine, PlaceId, PlaceKind, PlaceModel, PlaceRefusal,
     PlaceRow, PlaceState, PlaceTarget,
 };
-pub use policy::{ClassFloor, Floor, LocalOnly, Policy};
+pub use policy::{ClassFloor, Floor, Policy};
 pub use readiness::Readiness;
 pub use reply::{
     ChatReply, EmbedReply, EmbedVector, InferReply, ServedBy, SpeakReply, TokenUsage,

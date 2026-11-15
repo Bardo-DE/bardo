@@ -24,7 +24,7 @@ use porter_fake_servers::{FakeModels, ModelDef, ModelsHandle, Running, Wire};
 use porter_ids::Tokens;
 use porter_infer::{
     ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest,
-    LocalOnly, MessagePart, Policy, Role as ChatRole,
+    MessagePart, Policy, Role as ChatRole,
 };
 use porter_match::LlmNeed;
 use porter_match::Need;
@@ -86,7 +86,7 @@ fn routed(events: &[InferEvent]) -> &porter_infer::ServedBy {
         .unwrap_or_else(|| panic!("a Routed event in {events:?}"))
 }
 
-fn policy(local_only: LocalOnly) -> Policy {
+fn policy(local_only: bool) -> Policy {
     // The floors are lowered: only `local_only` stands between Mail data and the cloud.
     Policy {
         local_only,
@@ -148,7 +148,7 @@ fn only_ollama(port: u16) -> ProbeConfig {
 
 /// A world whose app is Mail, with OpenRouter granted to it (a cloud reach that would answer),
 /// and a probe of one port for Ollama.
-async fn world(port: u16, local_only: LocalOnly) -> World {
+async fn world(port: u16, local_only: bool) -> World {
     World::start(Plan {
         catalog: vec![
             ("a-claude-opus-5.5.toml", entries::claude()),
@@ -201,7 +201,7 @@ async fn acceptance_6_with_local_only_on_a_mail_summary_runs_on_the_probed_ollam
  {
     let ollama = fake_ollama(&Bind::Port(0)).await;
     let port = port_of(&ollama);
-    let world = world(port, LocalOnly::On).await;
+    let world = world(port, true).await;
     rescan(&world).await;
 
     // The runtime was found and reported to accountd as an account, with its one model.
@@ -257,7 +257,7 @@ async fn acceptance_6_with_local_only_on_a_mail_summary_runs_on_the_probed_ollam
 async fn a_runtime_that_starts_later_is_found_on_rescan_and_listed_for_the_picker_and_goes_offline_and_back()
  {
     let (_reserved, port) = reserved_port();
-    let world = world(port, LocalOnly::On).await;
+    let world = world(port, true).await;
     rescan(&world).await;
     assert!(world.served.listed().is_empty(), "nothing runs yet");
 

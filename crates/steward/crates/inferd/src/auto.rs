@@ -5,7 +5,8 @@
 //! value a row does not know falls back to the row's default, for that field only, and is named
 //! in [`ResolvedAuto::rejected`] so the daemon can log it once (as `[ai.structured]` does).
 
-use porter_infer::{AutoEvict, AutoMode, AutoPolicy, ShowReason};
+use crate::settings::SwitchSaid;
+use porter_infer::{AutoEvict, AutoMode, AutoPolicy};
 use serde::{Deserialize, Serialize};
 
 /// `ai.auto.mode`.
@@ -24,9 +25,9 @@ pub struct AutoConfig {
     /// `ai.auto.allow_evict`: `never` or `idle_only`.
     #[serde(default)]
     pub allow_evict: Option<String>,
-    /// `ai.auto.show_reason`: `off` or `on`.
+    /// `ai.auto.show_reason`: whether every answer says why (on by default).
     #[serde(default)]
-    pub show_reason: Option<String>,
+    pub show_reason: Option<SwitchSaid>,
     /// `ai.auto.pool.<slot>`: the `<account>/<model>`s Automatic chooses among, by slot slug.
     #[serde(default)]
     pub pool: std::collections::BTreeMap<String, Vec<String>>,
@@ -60,7 +61,11 @@ impl AutoConfig {
     pub fn resolve(&self) -> ResolvedAuto {
         let (mode, a) = pick(&self.mode, AutoMode::from_slug, MODE);
         let (allow_evict, b) = pick(&self.allow_evict, AutoEvict::from_slug, ALLOW_EVICT);
-        let (show_reason, c) = pick(&self.show_reason, ShowReason::from_slug, SHOW_REASON);
+        let (show_reason, c) = match &self.show_reason {
+            None => (true, None),
+            Some(SwitchSaid::Switch(on)) => (*on, None),
+            Some(SwitchSaid::Word(_)) => (true, Some(SHOW_REASON)),
+        };
         ResolvedAuto {
             policy: AutoPolicy {
                 mode,
@@ -82,31 +87,31 @@ mod tests {
         let resolved = InferdConfig::default().ai.auto.resolve();
         assert_eq!(resolved.policy, AutoPolicy::default());
         assert_eq!(resolved.policy.allow_evict, AutoEvict::IdleOnly);
-        assert_eq!(resolved.policy.show_reason, ShowReason::On);
+        assert!(resolved.policy.show_reason);
         assert!(resolved.rejected.is_empty());
     }
 
     #[test]
     fn the_table_reads_from_the_file() {
         let config = InferdConfig::from_toml(
-            "[ai.auto]\nmode = \"warm_first\"\nallow_evict = \"never\"\nshow_reason = \"off\"\n",
+            "[ai.auto]\nmode = \"warm_first\"\nallow_evict = \"never\"\nshow_reason = false\n",
         )
         .expect("reads");
         let resolved = config.ai.auto.resolve();
         assert_eq!(resolved.policy.allow_evict, AutoEvict::Never);
-        assert_eq!(resolved.policy.show_reason, ShowReason::Off);
+        assert!(!resolved.policy.show_reason);
         assert!(resolved.rejected.is_empty());
     }
 
     #[test]
     fn an_unknown_value_falls_back_for_that_field_only() {
         let config = InferdConfig::from_toml(
-            "[ai.auto]\nallow_evict = \"sometimes\"\nshow_reason = \"off\"\n",
+            "[ai.auto]\nallow_evict = \"sometimes\"\nshow_reason = \"maybe\"\n",
         )
         .expect("reads");
         let resolved = config.ai.auto.resolve();
         assert_eq!(resolved.policy.allow_evict, AutoEvict::IdleOnly);
-        assert_eq!(resolved.policy.show_reason, ShowReason::Off);
-        assert_eq!(resolved.rejected, vec![ALLOW_EVICT]);
+        assert!(resolved.policy.show_reason);
+        assert_eq!(resolved.rejected, vec![ALLOW_EVICT, SHOW_REASON]);
     }
 }

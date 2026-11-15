@@ -27,7 +27,7 @@ fn cloud_on_plan(name: &str) -> RouteCandidate {
 
 fn open_policy() -> Policy {
     Policy {
-        local_only: LocalOnly::Off,
+        local_only: false,
         floors: vec![],
     }
 }
@@ -62,7 +62,7 @@ fn cases() -> Vec<Case> {
         ..ollama()
     };
     let peer_floor = Policy {
-        local_only: LocalOnly::Off,
+        local_only: false,
         floors: vec![ClassFloor {
             class: DataClass::Notes,
             floor: Floor::LocalNetwork,
@@ -101,7 +101,7 @@ fn cases() -> Vec<Case> {
             name: "a floor with only cloud requires cloud",
             class: DataClass::Mail,
             policy: Policy {
-                local_only: LocalOnly::Off,
+                local_only: false,
                 ..Policy::proposed()
             },
             candidates: vec![cloud("a")],
@@ -218,7 +218,7 @@ fn legacy_route(
 ) -> Result<Chosen, InferRefusal> {
     let reachable: Vec<&RouteCandidate> = candidates
         .iter()
-        .filter(|c| policy.local_only == LocalOnly::Off || !is_cloud(&c.locality))
+        .filter(|c| !policy.local_only || !is_cloud(&c.locality))
         .collect();
     if reachable.is_empty() {
         return Err(InferRefusal::Unavailable);
@@ -296,7 +296,7 @@ fn route_decides_as_it_did_before_admit_was_split_out() {
     let pool = pool();
     let policies = [Policy::proposed(), open_policy(), {
         Policy {
-            local_only: LocalOnly::Off,
+            local_only: false,
             floors: vec![ClassFloor {
                 class: DataClass::Notes,
                 floor: Floor::LocalNetwork,

@@ -13,7 +13,7 @@ vllm_python = "/home/you/vllm/.venv/bin/python"
 hf_cache = "/mnt/data/hf/hub"
 
 [ai]
-local_only = "on"
+local_only = true
 
 # fast is the quick judge and the policy writer, balanced the deliberate stage and the planner,
 # best the second opinion. Two families, qwen and granite; they cannot both be resident on 16 GB, so

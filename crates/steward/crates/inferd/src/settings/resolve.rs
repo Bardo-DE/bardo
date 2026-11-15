@@ -1,10 +1,7 @@
 //! The file's `[ai]` table as [`Settings`].
 
 use super::keys::{from_slug, parse_pool_key, slug_of};
-use super::{
-    AGENT_ENDPOINT, AgentEndpoint, DESCRIBE_IMAGES, MY_NETWORK, MyNetwork, TAILNET_SERVE,
-    TailnetServe,
-};
+use super::{AGENT_ENDPOINT, DESCRIBE_IMAGES, LOCAL_ONLY, MY_NETWORK, TAILNET_SERVE, switch_of};
 use super::{
     LENGTH_AUTOMATIC, LENGTH_CONVERSATION, LENGTH_CONVERSATION_RANGE, LENGTH_REPLY,
     LENGTH_REPLY_RANGE, LengthSaid,
@@ -20,10 +17,7 @@ use model_provider::Tokens;
 use porter_capability::Tier;
 use porter_core::DataClass;
 use porter_ids::Permille;
-use porter_infer::{
-    AutoRow, ClassFloor, DescribeImages, Floor, LocalOnly, ModelRef, Policy, PoolRow, Slot,
-    TierMap, TierRow,
-};
+use porter_infer::{AutoRow, ClassFloor, Floor, ModelRef, Policy, PoolRow, Slot, TierMap, TierRow};
 use porter_router::local::Lengths;
 
 /// The settings in force, and the paths of the rows whose values were refused.
@@ -50,12 +44,12 @@ pub fn model_text(model: &ModelRef) -> String {
 }
 
 fn policy_of(ai: &AiConfig, mut policy: Policy, rejected: &mut Vec<String>) -> Policy {
-    if let Some(word) = &ai.local_only {
-        match from_slug::<LocalOnly>(word) {
-            Some(value) => policy.local_only = value,
-            None => rejected.push("ai.local_only".to_owned()),
-        }
-    }
+    policy.local_only = switch_of(
+        ai.local_only.as_ref(),
+        LOCAL_ONLY,
+        policy.local_only,
+        rejected,
+    );
     for (class, word) in &ai.floor {
         let path = format!("ai.floor.{class}");
         match (from_slug::<DataClass>(class), from_slug::<Floor>(word)) {
@@ -149,44 +143,25 @@ fn tiers_of(ai: &AiConfig, mut tiers: TierMap, rejected: &mut Vec<String>) -> Ti
     tiers
 }
 
-fn describe_images_of(ai: &AiConfig, rejected: &mut Vec<String>) -> DescribeImages {
-    match ai.pipeline.describe_images.as_deref() {
-        None => DescribeImages::default(),
-        Some(text) => DescribeImages::from_slug(text).unwrap_or_else(|| {
-            rejected.push(DESCRIBE_IMAGES.to_owned());
-            DescribeImages::default()
-        }),
-    }
+fn describe_images_of(ai: &AiConfig, rejected: &mut Vec<String>) -> bool {
+    switch_of(
+        ai.pipeline.describe_images.as_ref(),
+        DESCRIBE_IMAGES,
+        false,
+        rejected,
+    )
 }
 
-fn my_network_of(ai: &AiConfig, rejected: &mut Vec<String>) -> MyNetwork {
-    match ai.attached.my_network.as_deref() {
-        None => MyNetwork::default(),
-        Some(text) => from_slug(text).unwrap_or_else(|| {
-            rejected.push(MY_NETWORK.to_owned());
-            MyNetwork::default()
-        }),
-    }
+fn my_network_of(ai: &AiConfig, rejected: &mut Vec<String>) -> bool {
+    switch_of(ai.attached.my_network.as_ref(), MY_NETWORK, false, rejected)
 }
 
-fn agent_endpoint_of(ai: &AiConfig, rejected: &mut Vec<String>) -> AgentEndpoint {
-    match ai.agents.endpoint.as_deref() {
-        None => AgentEndpoint::default(),
-        Some(text) => from_slug(text).unwrap_or_else(|| {
-            rejected.push(AGENT_ENDPOINT.to_owned());
-            AgentEndpoint::default()
-        }),
-    }
+fn agent_endpoint_of(ai: &AiConfig, rejected: &mut Vec<String>) -> bool {
+    switch_of(ai.agents.endpoint.as_ref(), AGENT_ENDPOINT, false, rejected)
 }
 
-fn tailnet_serve_of(ai: &AiConfig, rejected: &mut Vec<String>) -> TailnetServe {
-    match ai.tailnet.serve.as_deref() {
-        None => TailnetServe::default(),
-        Some(text) => from_slug(text).unwrap_or_else(|| {
-            rejected.push(TAILNET_SERVE.to_owned());
-            TailnetServe::default()
-        }),
-    }
+fn tailnet_serve_of(ai: &AiConfig, rejected: &mut Vec<String>) -> bool {
+    switch_of(ai.tailnet.serve.as_ref(), TAILNET_SERVE, false, rejected)
 }
 
 fn spend_of(ai: &AiConfig, rejected: &mut Vec<String>) -> SpendLine {

@@ -77,7 +77,7 @@ fn row(engines: &[&str]) -> Route {
 /// Every class may go anywhere unless a floor says otherwise: what the app chose to say.
 fn open_policy() -> Policy {
     Policy {
-        local_only: porter_infer::LocalOnly::Off,
+        local_only: false,
         floors: vec![],
     }
 }

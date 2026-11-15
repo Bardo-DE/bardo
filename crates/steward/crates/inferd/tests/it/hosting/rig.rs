@@ -21,7 +21,7 @@ use inferd::probe::ProbeConfig;
 use inferd::replay::Replays;
 use inferd::report::{NoReports, Reports};
 use inferd::service::{Inference, serve_on};
-use inferd::settings::{Settings, SpendLine, TailnetServe};
+use inferd::settings::{Settings, SpendLine};
 use inferd::supervise::{Ports, Supervised};
 use inferd::tailnet::{BusMachines, Parts, Tailnet};
 use inferd::watch::{Probing, Watch};
@@ -223,7 +223,7 @@ pub struct Plan {
 #[derive(Debug, Clone, Copy)]
 pub struct AgentsPlan {
     /// `ai.agents.endpoint`.
-    pub endpoint: inferd::settings::AgentEndpoint,
+    pub endpoint: bool,
 }
 
 /// The program a real-process world runs as llama-server (a script the test wrote).
@@ -502,10 +502,7 @@ impl World {
             agent_endpoint: plan
                 .agents
                 .map_or_else(Default::default, |agents| agents.endpoint),
-            tailnet_serve: match plan.tailnet.as_ref().is_some_and(|plan| plan.serving) {
-                true => TailnetServe::On,
-                false => TailnetServe::Off,
-            },
+            tailnet_serve: plan.tailnet.as_ref().is_some_and(|plan| plan.serving),
             tiers: TierMap::automatic(Slot::Text, pool),
             ..Settings::default()
         })

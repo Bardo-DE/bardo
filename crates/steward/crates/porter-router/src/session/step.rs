@@ -7,7 +7,7 @@ use super::{
 use crate::audio::{audio_ms, check_audio};
 use porter_infer::{
     AudioRate, ClientFrame, Declined, InferEvent, InferRefusal, InferReply, InferRequest,
-    ModelError, Readiness, RequestKind, ServedBy, ShowReason, StageNote, TranscribeBegin, Why,
+    ModelError, Readiness, RequestKind, ServedBy, StageNote, TranscribeBegin, Why,
 };
 use porter_match::Need;
 
@@ -149,11 +149,8 @@ fn refused(refusal: InferRefusal) -> SessionOut {
 /// a model is unloaded for this one (a swap is never hidden).
 fn why_event(decision: &Routing) -> Vec<SessionOut> {
     let evicting = matches!(decision.why, Why::Evicted { .. });
-    let announce = decision.show == ShowReason::On || evicting;
-    let reached = decision
-        .reached
-        .iter()
-        .filter(|_| decision.show == ShowReason::On);
+    let announce = decision.show || evicting;
+    let reached = decision.reached.iter().filter(|_| decision.show);
     announce
         .then_some(&decision.why)
         .into_iter()

@@ -69,7 +69,7 @@ fn the_cloud_needs_local_only_off_and_a_floor_of_anywhere() {
     );
     assert!(admits(&settings, DataClass::Files, &Locality::OnDevice));
     settings.policy = Policy {
-        local_only: LocalOnly::Off,
+        local_only: false,
         floors: vec![ClassFloor {
             class: DataClass::Files,
             floor: Floor::OnDevice,
@@ -88,7 +88,7 @@ fn the_cloud_needs_local_only_off_and_a_floor_of_anywhere() {
         DataClass::Files,
         &Locality::LocalNetwork
     ));
-    settings.my_network = crate::settings::MyNetwork::On;
+    settings.my_network = true;
     assert!(admits(&settings, DataClass::Files, &Locality::LocalNetwork));
     assert!(
         !admits(&settings, DataClass::Files, &cloud),

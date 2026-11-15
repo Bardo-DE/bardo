@@ -54,7 +54,7 @@ fn catalog() -> Vec<(&'static str, String)> {
 
 fn policy() -> porter_infer::Policy {
     porter_infer::Policy {
-        local_only: porter_infer::LocalOnly::Off,
+        local_only: false,
         floors: Vec::new(),
     }
 }

@@ -13,9 +13,8 @@ use porter_capability::Tier;
 use porter_capability::{LlmFeature, SpeechMode};
 use porter_core::DataClass;
 use porter_infer::{
-    Answer, AutoPolicy, CatalogueModel, DescribeImages, Modality, PickCandidate, Pipeline,
-    PlanRules, Policy, ProviderId, Refusal, RequestShape, RouteCandidate, Slot, TierMap, picks_for,
-    plan_pipeline,
+    Answer, AutoPolicy, CatalogueModel, Modality, PickCandidate, Pipeline, PlanRules, Policy,
+    ProviderId, Refusal, RequestShape, RouteCandidate, Slot, TierMap, picks_for, plan_pipeline,
 };
 use porter_match::Need;
 use std::collections::BTreeSet;
@@ -122,7 +121,7 @@ pub fn plan(
     policy: &Policy,
     tiers: &TierMap,
     auto: AutoPolicy,
-    describe_images: DescribeImages,
+    describe_images: bool,
 ) -> Result<Pipeline, Refusal> {
     plan_pipeline(
         shape,
@@ -153,20 +152,13 @@ pub fn decide_text(
         inputs: BTreeSet::from([Modality::Text]),
         answer: Answer::Text,
     };
-    let pipeline = plan(
-        &shape,
-        need,
-        tier,
-        listed,
-        policy,
-        tiers,
-        auto,
-        DescribeImages::Off,
-    )
-    .map_err(|refusal| match refusal {
-        Refusal::Stage { refusal, .. } => refusal,
-        other => plain(other.infer_refusal()),
-    })?;
+    let pipeline =
+        plan(&shape, need, tier, listed, policy, tiers, auto, false).map_err(|refusal| {
+            match refusal {
+                Refusal::Stage { refusal, .. } => refusal,
+                other => plain(other.infer_refusal()),
+            }
+        })?;
     let stage = pipeline
         .stages
         .into_iter()

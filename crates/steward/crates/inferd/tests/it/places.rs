@@ -256,7 +256,7 @@ mod routing {
     use super::*;
     use porter_capability::LlmFeature;
     use porter_ids::Tokens;
-    use porter_infer::{LocalOnly, OpenOptions, PlaceId, Policy};
+    use porter_infer::{OpenOptions, PlaceId, Policy};
     use porter_match::LlmNeed;
     use porter_match::Need;
     use steward_dbus::inference::InferenceProxy;
@@ -307,7 +307,7 @@ mod routing {
                 computer: Some(ComputerName::parse("lab").expect("name")),
             }],
             policy: Policy {
-                local_only: LocalOnly::Off,
+                local_only: false,
                 floors: Vec::new(),
             },
             role,
@@ -553,8 +553,8 @@ mod computers {
     use porter_dbus::zvariant::{OwnedValue, Value};
     use porter_dbus::{BusStream, Details};
     use porter_infer::{
-        ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRequest, LocalOnly, MessagePart,
-        OpenOptions, PlaceId, Policy, Role as ChatRole,
+        ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRequest, MessagePart, OpenOptions,
+        PlaceId, Policy, Role as ChatRole,
     };
     use std::path::Path;
     use steward_dbus::inference::COMPUTER_ERROR_PREFIX;
@@ -597,7 +597,7 @@ mod computers {
         let plan = Plan {
             catalog: vec![("a-attached.toml", entries::attached())],
             policy: Policy {
-                local_only: LocalOnly::Off,
+                local_only: false,
                 floors: Vec::new(),
             },
             role: Role::Settings,

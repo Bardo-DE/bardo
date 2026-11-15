@@ -5,7 +5,7 @@
 # Prompts may leave this computer. The writer, the reviewers and the planner send the class
 # `prompt`; the reader sends `mail`, so a live smoke of flow-c needs `mail` floored too (leave it
 # out to keep mail on this computer: the reader then fails and the flow reports it).
-local_only = "off"
+local_only = false
 
 [ai.floor]
 prompt = "anywhere"

@@ -16,8 +16,8 @@ use porter_core::AccountId;
 use porter_core::DataClass;
 use porter_ids::{Permille, Tokens, TurnCount};
 use porter_infer::{
-    AutoEvict, EngineLoad, InferRefusal, LicenceClass, LocalOnly, ModelCard, ModelRef, Pick,
-    PickRefusal, Policy, Readiness, ShowReason, Slot, SwapCost, Why,
+    AutoEvict, EngineLoad, InferRefusal, LicenceClass, ModelCard, ModelRef, Pick, PickRefusal,
+    Policy, Readiness, Slot, SwapCost, Why,
 };
 use porter_match::LlmNeed;
 use porter_match::Need;
@@ -101,7 +101,7 @@ fn no_file_is_the_proposed_settings() {
 fn local_only_removes_every_cloud_model_and_off_lets_the_next_rule_speak() {
     let models = [cloud("claude")];
     let on = decide(
-        "[ai]\nlocal_only = \"on\"\n",
+        "[ai]\nlocal_only = true\n",
         DataClass::Public,
         Tier::Balanced,
         &models,
@@ -109,7 +109,7 @@ fn local_only_removes_every_cloud_model_and_off_lets_the_next_rule_speak() {
     assert_eq!(refusal(on), InferRefusal::Unavailable);
     // Off: a cloud model is reachable; for Public data the rule that stops it is consent.
     let off = decide(
-        "[ai]\nlocal_only = \"off\"\n",
+        "[ai]\nlocal_only = false\n",
         DataClass::Public,
         Tier::Balanced,
         &models,
@@ -125,7 +125,7 @@ fn a_floor_refuses_the_cloud_until_the_row_widens_it() {
     let models = [cloud("claude")];
     let with = |floor: &str| {
         decide(
-            &format!("[ai]\nlocal_only = \"off\"\n[ai.floor]\nnotes = \"{floor}\"\n"),
+            &format!("[ai]\nlocal_only = false\n[ai.floor]\nnotes = \"{floor}\"\n"),
             DataClass::Notes,
             Tier::Balanced,
             &models,
@@ -298,7 +298,7 @@ async fn show_reason_off_stops_the_answers_saying_why_and_a_reload_applies_it() 
             .0
             .show
     };
-    assert_eq!(show(), ShowReason::On);
+    assert!(show());
     file.set("ai.model.text.balanced", "auto".into())
         .expect("write");
     let everything = engines
@@ -308,15 +308,15 @@ async fn show_reason_off_stops_the_answers_saying_why_and_a_reload_applies_it() 
         .collect();
     file.set("ai.auto.pool.text", toml::Value::Array(everything))
         .expect("write");
-    file.set("ai.auto.show_reason", "off".into())
+    file.set("ai.auto.show_reason", false.into())
         .expect("write");
     // Nothing is in force until the file is read again.
-    assert_eq!(show(), ShowReason::On);
+    assert!(show());
     assert_eq!(reload.now().expect("reload").rejected, Vec::<String>::new());
-    assert_eq!(show(), ShowReason::Off);
-    file.set("ai.auto.show_reason", "on".into()).expect("write");
+    assert!(!show());
+    file.set("ai.auto.show_reason", true.into()).expect("write");
     reload.now().expect("reload");
-    assert_eq!(show(), ShowReason::On);
+    assert!(show());
 }
 
 #[tokio::test]
@@ -357,17 +357,17 @@ async fn the_watch_notices_a_change_made_by_someone_else() {
     let file = ConfigFile::new(scratch.path().join("inferd.toml"));
     let watch = Reload::new(file.clone(), engines.clone()).watch(Duration::from_millis(20));
     let show = || engines.settings().auto.show_reason;
-    assert_eq!(show(), ShowReason::On);
-    std::fs::write(file.path(), "[ai.auto]\nshow_reason = \"off\"\n").expect("write");
+    assert!(show());
+    std::fs::write(file.path(), "[ai.auto]\nshow_reason = false\n").expect("write");
     let deadline = test_kit::Deadline::generous();
     while !deadline.passed() {
-        if show() == ShowReason::Off {
+        if !show() {
             break;
         }
         tokio::time::sleep(Duration::from_millis(20)).await;
     }
     watch.abort();
-    assert_eq!(show(), ShowReason::Off);
+    assert!(!show());
 }
 
 #[test]
@@ -507,7 +507,7 @@ fn a_cap_out_of_range_is_no_cap_and_is_named() {
 fn a_value_a_row_does_not_accept_is_named_and_falls_back_for_that_row_only() {
     let text = "[ai]\nlocal_only = \"maybe\"\n[ai.floor]\nmail = \"nowhere\"\ntelepathy = \"anywhere\"\nnotes = \"anywhere\"\n\
                 [ai.model.text]\nfast = \"no-slash\"\nhuge = \"local/a\"\nbalanced = \"local/alpha\"\n\
-                [ai.auto]\nallow_evict = \"sometimes\"\nshow_reason = \"off\"\n";
+                [ai.auto]\nallow_evict = \"sometimes\"\nshow_reason = false\n";
     let resolved = resolve(&config(text));
     let mut rejected = resolved.rejected.clone();
     rejected.sort();
@@ -523,7 +523,7 @@ fn a_value_a_row_does_not_accept_is_named_and_falls_back_for_that_row_only() {
         ]
     );
     let s = resolved.settings;
-    assert_eq!(s.policy.local_only, LocalOnly::On);
+    assert!(s.policy.local_only);
     assert_eq!(
         s.policy.floor(DataClass::Notes),
         porter_infer::Floor::Anywhere
@@ -532,7 +532,7 @@ fn a_value_a_row_does_not_accept_is_named_and_falls_back_for_that_row_only() {
         s.policy.floor(DataClass::Mail),
         porter_infer::Floor::OnDevice
     );
-    assert_eq!(s.auto.show_reason, ShowReason::Off);
+    assert!(!s.auto.show_reason);
     assert!(s.tiers.pick(Slot::Text, Tier::Balanced).is_some());
     assert_eq!(s.tiers.pick(Slot::Text, Tier::Fast), None);
 }
@@ -565,7 +565,7 @@ fn set_writes_one_row_at_its_path_and_keeps_the_rest() {
     assert_eq!(staged, 0);
     // A file that does not parse is left as it was.
     std::fs::write(file.path(), "[ai\n").expect("write");
-    assert!(file.set("ai.local_only", "off".into()).is_err());
+    assert!(file.set("ai.local_only", false.into()).is_err());
     assert_eq!(std::fs::read_to_string(file.path()).expect("read"), "[ai\n");
 }
 
@@ -594,15 +594,14 @@ fn every_slot_has_its_own_model_row() {
 
 #[test]
 fn the_describe_images_row_defaults_off_reads_on_and_names_a_bad_value() {
-    use porter_infer::DescribeImages;
-    assert_eq!(settings("").describe_images, DescribeImages::Off);
-    for (word, want) in [("on", DescribeImages::On), ("off", DescribeImages::Off)] {
-        let got = settings(&format!("[ai.pipeline]\ndescribe_images = \"{word}\"\n"));
-        assert_eq!(got.describe_images, want, "{word}");
+    assert!(!settings("").describe_images);
+    for want in [true, false] {
+        let got = settings(&format!("[ai.pipeline]\ndescribe_images = {want}\n"));
+        assert_eq!(got.describe_images, want);
     }
     let resolved = resolve(&config("[ai.pipeline]\ndescribe_images = \"maybe\"\n"));
     assert_eq!(resolved.rejected, vec![DESCRIBE_IMAGES.to_owned()]);
-    assert_eq!(resolved.settings.describe_images, DescribeImages::Off);
+    assert!(!resolved.settings.describe_images);
 }
 
 #[test]

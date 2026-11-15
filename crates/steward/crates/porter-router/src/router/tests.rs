@@ -4,7 +4,7 @@ use porter_capability::ModelId;
 use porter_capability::{Capability, CuaBatching, CuaCap, CuaEnv, LlmCap, LlmFeature, LlmWire};
 use porter_core::AccountId;
 use porter_ids::{Px, Tokens};
-use porter_infer::{AutoMode, AutoRow, Declined, DeclinedBecause, LocalOnly, TierRow};
+use porter_infer::{AutoMode, AutoRow, Declined, DeclinedBecause, TierRow};
 use porter_match::{CuaNeed, LlmNeed};
 
 fn llm_cap() -> Capability {
@@ -67,7 +67,7 @@ fn identity() -> Need {
 
 fn off() -> Policy {
     Policy {
-        local_only: LocalOnly::Off,
+        local_only: false,
         ..Policy::proposed()
     }
 }

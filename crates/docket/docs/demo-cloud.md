@@ -63,13 +63,13 @@ if you will have it read mail.
 
 ## 4. Let prompts leave the computer
 
-The defaults keep every class on this computer (`ai.local_only = "on"`, floors at `on_device`). The companion,
+The defaults keep every class on this computer (`ai.local_only = true`, floors at `on_device`). The companion,
 the policy writer and the reviewers all send the class `prompt`, and only that; readerd sends the class of what
 it reads. Append this to `~/.config/inferd/inferd.toml` (inferd rereads the file within a moment, no restart):
 
 ```toml
 [ai]
-local_only = "off"
+local_only = false
 
 [ai.floor]
 prompt = "anywhere"

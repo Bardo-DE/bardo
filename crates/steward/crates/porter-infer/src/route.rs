@@ -3,7 +3,7 @@
 //! come up empty is a typed refusal, never a silent downgrade to the cloud.
 
 use crate::error::InferRefusal;
-use crate::policy::{LocalOnly, Policy};
+use crate::policy::Policy;
 use crate::spend::SpendVerdict;
 use porter_capability::ModelId;
 use porter_capability::{Billing, Locality};
@@ -89,7 +89,7 @@ pub fn admit<'a>(
 ) -> Result<Vec<&'a RouteCandidate>, InferRefusal> {
     let reachable: Vec<&RouteCandidate> = candidates
         .into_iter()
-        .filter(|c| policy.local_only == LocalOnly::Off || !is_cloud(&c.locality))
+        .filter(|c| !policy.local_only || !is_cloud(&c.locality))
         .collect();
     if reachable.is_empty() {
         return Err(InferRefusal::Unavailable);

@@ -8,7 +8,6 @@ use porter_capability::AgentProgram;
 use porter_capability::Locality;
 use porter_core::AccountId;
 use porter_core::{AppId, AppName, DataClass, Isolation};
-use porter_infer::LocalOnly;
 use steward_dbus::inference::{MODELS_ANY, MODELS_LISTED, ROUTE_ACCOUNT, ROUTE_MODEL, RouteArg};
 
 /// What the route is.
@@ -111,8 +110,7 @@ pub fn agent_app(program: &AgentProgram) -> AppId {
 /// only when `ai.local_only` is off and the class's floor says anywhere; another machine of the
 /// person's only as the floor (and `ai.attached.my_network`) allow; this computer always.
 pub fn admits(settings: &Settings, class: DataClass, locality: &Locality) -> bool {
-    let cloud_ok =
-        !matches!(locality, Locality::Cloud { .. }) || settings.policy.local_only == LocalOnly::Off;
+    let cloud_ok = !matches!(locality, Locality::Cloud { .. }) || !settings.policy.local_only;
     cloud_ok && settings.routing_policy().floor(class).admits(locality)
 }
 

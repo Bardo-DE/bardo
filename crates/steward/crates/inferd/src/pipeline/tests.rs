@@ -17,10 +17,10 @@ use porter_core::DataClass;
 use porter_core::consent::Usage;
 use porter_ids::Tokens;
 use porter_infer::{
-    Answer, AudioFrame, AudioRate, AutoPolicy, Base64Bytes, ChatMessage, ChatReply, DescribeImages,
-    InferEvent, InferRefusal, InferReply, LangPick, LicenceClass, Modality, ModelCard, ModelError,
-    ModelLabel, ModelRef, Pipeline, Policy, Refusal, RequestShape, Role, ShowReason, Slot,
-    StageRole, SwapCost, TierMap, TranscribeBegin, TranscribeMode, TranscribeReply,
+    Answer, AudioFrame, AudioRate, AutoPolicy, Base64Bytes, ChatMessage, ChatReply, InferEvent,
+    InferRefusal, InferReply, LangPick, LicenceClass, Modality, ModelCard, ModelError, ModelLabel,
+    ModelRef, Pipeline, Policy, Refusal, RequestShape, Role, Slot, StageRole, SwapCost, TierMap,
+    TranscribeBegin, TranscribeMode, TranscribeReply,
 };
 use porter_match::LlmNeed;
 use porter_match::Need;
@@ -82,7 +82,7 @@ fn listed(card: ModelCard) -> Listed {
 
 fn open_policy() -> Policy {
     Policy {
-        local_only: porter_infer::LocalOnly::Off,
+        local_only: false,
         floors: Vec::new(),
     }
 }
@@ -104,7 +104,7 @@ fn plan_for(shape: &RequestShape, models: &[Listed], tiers: &TierMap) -> Result<
         &open_policy(),
         tiers,
         AutoPolicy::default(),
-        DescribeImages::Off,
+        false,
     )
 }
 
@@ -321,7 +321,7 @@ async fn a_voice_request_is_heard_by_one_model_and_answered_by_another_over_the_
         heard: Mutex::default(),
     };
     let mut events = Events::default();
-    let reply = run_pipeline(&planned, ShowReason::On, input, &fake, &turns, &mut events).await;
+    let reply = run_pipeline(&planned, true, input, &fake, &turns, &mut events).await;
 
     let InferReply::Chat(ChatReply { text, served, .. }) = reply else {
         panic!("a chat reply, got {reply:?}");
@@ -403,7 +403,7 @@ async fn show_reason_off_keeps_the_stage_notes_and_drops_the_whys() {
         heard: Mutex::default(),
     };
     let mut events = Events::default();
-    let _ = run_pipeline(&planned, ShowReason::Off, input, &fake, &turns, &mut events).await;
+    let _ = run_pipeline(&planned, false, input, &fake, &turns, &mut events).await;
     assert!(!events.0.iter().any(|e| matches!(e, InferEvent::Why(_))));
     assert_eq!(
         events
@@ -442,7 +442,7 @@ async fn a_plan_with_a_stage_the_runner_does_not_run_is_refused_before_anything_
         chat: chat(),
         names: Default::default(),
     };
-    let reply = run_pipeline(&planned, ShowReason::On, input, &fake, &turns, &mut events).await;
+    let reply = run_pipeline(&planned, true, input, &fake, &turns, &mut events).await;
     assert_eq!(reply, InferReply::Refused(InferRefusal::Unsupported));
     assert!(events.0.is_empty());
 }

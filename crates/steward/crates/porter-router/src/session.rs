@@ -15,8 +15,7 @@ use porter_core::DataClass;
 use porter_core::consent::Usage;
 use porter_infer::{
     AudioFrame, ClientFrame, InferEvent, InferReply, InferRequest, ModelLabel, ModelRef,
-    PickRefusal, Readiness, RequestKind, ServedBy, ShowReason, StageNote, StageRole,
-    TranscribeBegin, Why,
+    PickRefusal, Readiness, RequestKind, ServedBy, StageNote, StageRole, TranscribeBegin, Why,
 };
 use porter_match::Need;
 
@@ -78,7 +77,7 @@ pub struct Routing {
     /// footer can say "via OpenRouter". None for a model on this computer.
     pub reached: Option<Why>,
     /// Whether the reason is announced (`ai.auto.show_reason`); an eviction always is.
-    pub show: ShowReason,
+    pub show: bool,
     /// The model's name as a person reads it: the catalogue entry's label. None when there is none.
     pub name: Option<ModelLabel>,
 }
@@ -111,7 +110,7 @@ impl From<RouteDecision> for Routing {
             readiness: decision.readiness,
             why: Why::Named,
             reached: None,
-            show: ShowReason::Off,
+            show: false,
             name: None,
         }
     }

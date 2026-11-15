@@ -101,7 +101,7 @@ fn a_live_engine_needs_the_owners_config_and_never_a_callers_table() {
         Err(EngineError::HasCallers)
     ));
     let fine = dir.path().join("fine.toml");
-    std::fs::write(&fine, "[ai]\nlocal_only = \"off\"\n").expect("write");
+    std::fs::write(&fine, "[ai]\nlocal_only = false\n").expect("write");
     assert!(matches!(
         Engine::Cloud.source(String::new(), Some(&fine)),
         Ok(ModelSource::Live(_))

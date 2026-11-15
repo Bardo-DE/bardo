@@ -21,7 +21,7 @@ fn an_absent_inferd_blocks_nothing_on_the_page() {
     let written = sandbox
         .read("inferd/inferd.toml")
         .expect("the file row wrote");
-    assert!(written.contains("local_only = \"off\""), "{written}");
+    assert!(written.contains("local_only = false"), "{written}");
 }
 
 #[test]

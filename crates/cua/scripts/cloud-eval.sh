@@ -64,7 +64,7 @@ role = "ai_broker"
 TOML
 cat > "$world/config/inferd/inferd.toml" <<TOML
 [ai]
-local_only = "off"
+local_only = false
 
 [ai.floor]
 screen = "anywhere"

@@ -120,7 +120,7 @@ pub(super) fn shape(class: DataClass, inputs: &[Modality], answer: Answer) -> Re
     }
 }
 
-pub(super) fn rules(policy: &Policy, describe: DescribeImages) -> PlanRules<'_> {
+pub(super) fn rules(policy: &Policy, describe: bool) -> PlanRules<'_> {
     PlanRules {
         policy,
         auto: AutoPolicy::default(),
@@ -130,7 +130,7 @@ pub(super) fn rules(policy: &Policy, describe: DescribeImages) -> PlanRules<'_> 
 
 pub(super) fn open() -> Policy {
     Policy {
-        local_only: LocalOnly::Off,
+        local_only: false,
         floors: vec![ClassFloor {
             class: DataClass::Voice,
             floor: Floor::OnDevice,
@@ -143,7 +143,7 @@ fn plan(
     picks: &SlotPicks,
     catalogue: &[CatalogueModel],
     granted: &[ProviderId],
-    describe: DescribeImages,
+    describe: bool,
 ) -> Result<Vec<(StageRole, ModelRef)>, Refusal> {
     let policy = open();
     plan_pipeline(shape, picks, catalogue, granted, rules(&policy, describe)).map(|pipeline| {
@@ -179,7 +179,7 @@ fn text_alone_is_one_stage() {
         &SlotPicks::default(),
         &catalogue,
         &[],
-        DescribeImages::Off,
+        false,
     );
     assert_eq!(got, Ok(vec![(StageRole::Answer, mref("gemma"))]));
 }
@@ -192,7 +192,7 @@ fn audio_goes_through_voice_in_when_the_text_model_cannot_hear() {
         &SlotPicks::default(),
         &catalogue,
         &[],
-        DescribeImages::Off,
+        false,
     );
     assert_eq!(
         got,
@@ -207,20 +207,14 @@ fn audio_goes_through_voice_in_when_the_text_model_cannot_hear() {
 fn a_text_model_that_hears_is_one_stage_unless_another_hearer_is_named() {
     let catalogue = [hearing_text("gemma-e4b"), whisper()];
     let shape = shape(DataClass::Prompt, &[A], Answer::Text);
-    let auto = plan(
-        &shape,
-        &SlotPicks::default(),
-        &catalogue,
-        &[],
-        DescribeImages::Off,
-    );
+    let auto = plan(&shape, &SlotPicks::default(), &catalogue, &[], false);
     assert_eq!(auto, Ok(vec![(StageRole::Answer, mref("gemma-e4b"))]));
     let same = plan(
         &shape,
         &named(Slot::VoiceIn, "gemma-e4b"),
         &catalogue,
         &[],
-        DescribeImages::Off,
+        false,
     );
     assert_eq!(same, auto);
     let other = plan(
@@ -228,7 +222,7 @@ fn a_text_model_that_hears_is_one_stage_unless_another_hearer_is_named() {
         &named(Slot::VoiceIn, "whisper"),
         &catalogue,
         &[],
-        DescribeImages::Off,
+        false,
     );
     assert_eq!(
         other,
@@ -245,11 +239,11 @@ fn images_are_refused_unless_describing_is_on() {
     let shape = shape(DataClass::Notes, &[T, I], Answer::Text);
     let picks = named(Slot::Text, "gemma");
     assert_eq!(
-        plan(&shape, &picks, &catalogue, &[], DescribeImages::Off),
+        plan(&shape, &picks, &catalogue, &[], false),
         Err(Refusal::ImagesNeedDescribing)
     );
     assert_eq!(
-        plan(&shape, &picks, &catalogue, &[], DescribeImages::On),
+        plan(&shape, &picks, &catalogue, &[], true),
         Ok(vec![
             (StageRole::Describe, mref("holo")),
             (StageRole::Answer, mref("gemma"))
@@ -265,7 +259,7 @@ fn a_text_model_that_reads_images_needs_no_describer() {
         &named(Slot::Text, "holo"),
         &catalogue,
         &[],
-        DescribeImages::Off,
+        false,
     );
     assert_eq!(got, Ok(vec![(StageRole::Answer, mref("holo"))]));
 }
@@ -278,7 +272,7 @@ fn speech_out_goes_through_voice_out() {
         &SlotPicks::default(),
         &catalogue,
         &[],
-        DescribeImages::Off,
+        false,
     );
     assert_eq!(
         got,
@@ -297,7 +291,7 @@ fn all_four_stages_in_order() {
         &named(Slot::Text, "gemma"),
         &catalogue,
         &[],
-        DescribeImages::On,
+        true,
     );
     let roles: Vec<StageRole> = got.expect("plan").into_iter().map(|(r, _)| r).collect();
     assert_eq!(
@@ -323,7 +317,7 @@ fn a_named_pick_that_cannot_serve_refuses_and_is_not_replaced() {
         &named(Slot::Text, "claude"),
         &catalogue,
         &[],
-        DescribeImages::Off,
+        false,
     );
     match got {
         Err(Refusal::Stage { role, refusal }) => {
@@ -349,13 +343,7 @@ fn a_hosted_model_is_a_candidate_only_with_a_granted_provider() {
         (vec![ProviderId("anthropic".into())], true),
     ];
     for (granted, serves) in cases {
-        let got = plan(
-            &shape,
-            &SlotPicks::default(),
-            &catalogue,
-            &granted,
-            DescribeImages::Off,
-        );
+        let got = plan(&shape, &SlotPicks::default(), &catalogue, &granted, false);
         assert_eq!(got.is_ok(), serves, "{granted:?}");
     }
 }
@@ -370,7 +358,7 @@ fn voice_never_reaches_a_cloud_transcriber_under_its_floor() {
         &SlotPicks::default(),
         &catalogue,
         &[ProviderId("openai".into())],
-        DescribeImages::Off,
+        false,
     );
     match got {
         Err(Refusal::Stage { role, refusal }) => {
@@ -396,7 +384,7 @@ fn a_transcript_keeps_the_voice_floor_for_the_text_stage() {
         &SlotPicks::default(),
         &catalogue,
         &[ProviderId("anthropic".into())],
-        DescribeImages::Off,
+        false,
     );
     match got {
         Err(Refusal::Stage { role, refusal }) => {
@@ -426,16 +414,8 @@ fn auto_follows_pick_and_names_a_reason() {
         &picks,
         &catalogue,
         &[],
-        rules(&policy, DescribeImages::Off),
+        rules(&policy, false),
     )
     .expect("plan");
     assert_eq!(pipeline.stages[0].picked.why, Why::CatalogueOrder);
-}
-
-#[test]
-fn describe_images_slugs_round_trip() {
-    for one in [DescribeImages::Off, DescribeImages::On] {
-        assert_eq!(DescribeImages::from_slug(one.slug()), Some(one));
-    }
-    assert_eq!(DescribeImages::default(), DescribeImages::Off);
 }

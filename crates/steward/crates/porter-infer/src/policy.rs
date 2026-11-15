@@ -6,16 +6,6 @@ use porter_capability::Locality;
 use porter_core::DataClass;
 use serde::{Deserialize, Serialize};
 
-/// Whether cloud accounts exist at all for routing.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum LocalOnly {
-    /// Every cloud account is removed from every answer.
-    On,
-    /// Cloud accounts may serve classes whose floor allows it.
-    Off,
-}
-
 /// How far a class's data may travel.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -51,8 +41,9 @@ pub struct ClassFloor {
 /// The whole policy.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Policy {
-    /// The switch.
-    pub local_only: LocalOnly,
+    /// The switch: while on, every cloud account is removed from every answer; off, cloud accounts
+    /// may serve classes whose floor allows it.
+    pub local_only: bool,
     /// Floors; a class without a row may go anywhere.
     pub floors: Vec<ClassFloor>,
 }
@@ -76,7 +67,7 @@ impl Policy {
             DataClass::Prompt,
         ];
         Self {
-            local_only: LocalOnly::On,
+            local_only: true,
             floors: on_device
                 .map(|class| ClassFloor {
                     class,

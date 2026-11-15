@@ -5,7 +5,7 @@ use porter_core::DataClass;
 use porter_ids::Permille;
 use porter_infer::{
     ClientFrame, Declined, DeclinedBecause, InferEvent, InferRefusal, InferReply, ModelError,
-    ModelRef, PickRefusal, Readiness, RequestKind, ShowReason, Why,
+    ModelRef, PickRefusal, Readiness, RequestKind, Why,
 };
 
 fn old() -> ModelRef {
@@ -22,7 +22,7 @@ fn reached() -> Why {
     }
 }
 
-fn decided_reached(readiness: Readiness, show: ShowReason) -> SessionIn {
+fn decided_reached(readiness: Readiness, show: bool) -> SessionIn {
     SessionIn::Routed(Ok(crate::session::Routing {
         served: served(),
         readiness,
@@ -47,7 +47,7 @@ pub(super) fn rows() -> Vec<Row> {
             "a hosted model's door is announced after the reason, when reasons are shown",
             llm_spec(DataClass::Mail),
             Phase::Opened,
-            decided_reached(Readiness::Loadable, ShowReason::On),
+            decided_reached(Readiness::Loadable, true),
             waiting_for(answer_for(Why::Warm), None),
             vec![
                 SessionOut::Emit(InferEvent::Why(Why::Warm)),
@@ -60,7 +60,7 @@ pub(super) fn rows() -> Vec<Row> {
             "a hosted model's door stays quiet when reasons are off",
             llm_spec(DataClass::Mail),
             Phase::Opened,
-            decided_reached(Readiness::Loadable, ShowReason::Off),
+            decided_reached(Readiness::Loadable, false),
             waiting_for(answer_for(Why::Warm), None),
             vec![
                 SessionOut::Emit(InferEvent::Waiting(Readiness::Loadable)),
@@ -93,7 +93,7 @@ pub(super) fn rows() -> Vec<Row> {
             "the reason goes out first when the person asked to see it",
             llm_spec(DataClass::Mail),
             Phase::Opened,
-            decided_why(Readiness::Loadable, Why::Warm, ShowReason::On),
+            decided_why(Readiness::Loadable, Why::Warm, true),
             waiting_for(answer_for(Why::Warm), None),
             vec![
                 SessionOut::Emit(InferEvent::Why(Why::Warm)),
@@ -105,11 +105,7 @@ pub(super) fn rows() -> Vec<Row> {
             "an eviction is announced even with the reasons off, before the wait",
             llm_spec(DataClass::Mail),
             Phase::Opened,
-            decided_why(
-                Readiness::Loadable,
-                Why::Evicted { model: old() },
-                ShowReason::Off,
-            ),
+            decided_why(Readiness::Loadable, Why::Evicted { model: old() }, false),
             waiting_for(answer_for(Why::Evicted { model: old() }), None),
             vec![
                 SessionOut::Emit(InferEvent::Why(Why::Evicted { model: old() })),

@@ -20,8 +20,7 @@ use porter_core::{AppId, AppName, DataClass, Isolation};
 use porter_ids::{Tokens, TurnCount};
 use porter_infer::{
     ChargeTotal, ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRefusal, InferReply,
-    InferRequest, LocalOnly, MessagePart, ModelError, OpenOptions, Policy, Role as ChatRole,
-    StopReason,
+    InferRequest, MessagePart, ModelError, OpenOptions, Policy, Role as ChatRole, StopReason,
 };
 use porter_match::LlmNeed;
 use porter_match::Need;
@@ -138,7 +137,7 @@ fn grant_for(usage: &'static str) -> FakeAccount {
 /// A person who allows cloud models for every class: the floors are lowered and local-only is off.
 pub(crate) fn open_policy() -> Policy {
     Policy {
-        local_only: LocalOnly::Off,
+        local_only: false,
         floors: Vec::new(),
     }
 }

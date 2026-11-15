@@ -35,85 +35,85 @@ use model_provider::Money;
 use porter_core::AccountId;
 use porter_core::AppId;
 use porter_ids::Permille;
-use porter_infer::{
-    AutoPolicy, ClassFloor, DescribeImages, Floor, Period, Policy, SpendCap, SpendScope, TierMap,
-};
+use porter_infer::{AutoPolicy, ClassFloor, Floor, Period, Policy, SpendCap, SpendScope, TierMap};
 use porter_router::local::Lengths;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tokio::sync::watch;
 
+/// `ai.local_only`.
+pub const LOCAL_ONLY: &str = "ai.local_only";
+
 /// `ai.attached.my_network`.
 pub const MY_NETWORK: &str = "ai.attached.my_network";
 
-/// `ai.attached.my_network`: whether an engine the person attached on another machine of theirs
-/// (`where = "my-network"`) counts as this computer for a data class whose floor is "this
-/// computer". Off by default: such data goes only to this computer.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum MyNetwork {
-    /// An on-device floor refuses a model on another machine of the person's.
-    #[default]
-    Off,
-    /// An on-device floor admits it (a floor that already says "my machines" admits it either way).
-    On,
+/// A switch row as written: `true` or `false`, or a word, which the row refuses (an old file
+/// that spelled a switch `"on"`), so that one row falls back to its default and the rest of the
+/// file stands.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum SwitchSaid {
+    /// `true` or `false`.
+    Switch(bool),
+    /// Any word.
+    Word(String),
+}
+
+/// The switch row at `path`: `default` where the file says nothing, and also where it says a word
+/// (said in `rejected`).
+pub(crate) fn switch_of(
+    said: Option<&SwitchSaid>,
+    path: &str,
+    default: bool,
+    rejected: &mut Vec<String>,
+) -> bool {
+    match said {
+        None => default,
+        Some(SwitchSaid::Switch(on)) => *on,
+        Some(SwitchSaid::Word(_)) => {
+            rejected.push(path.to_owned());
+            default
+        }
+    }
 }
 
 /// The `[ai.attached]` table, as written.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AttachedConfig {
-    /// `ai.attached.my_network`: `off` or `on`.
+    /// `ai.attached.my_network`: whether an engine the person attached on another machine of
+    /// theirs (`where = "my-network"`) counts as this computer for a data class whose floor is
+    /// "this computer". Off by default: such data goes only to this computer. While on, an
+    /// on-device floor admits it (a floor that already says "my machines" admits it either way).
     #[serde(default)]
-    pub my_network: Option<String>,
+    pub my_network: Option<SwitchSaid>,
 }
 
 /// `ai.agents.endpoint`.
 pub const AGENT_ENDPOINT: &str = "ai.agents.endpoint";
 
-/// `ai.agents.endpoint`: whether inferd opens loopback model endpoints for the external coding
-/// agents the launcher starts. Off by default, like the other ways in for agents (ACP, MCP).
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum AgentEndpoint {
-    /// `OpenEndpoint` is refused `EndpointOff`.
-    #[default]
-    Off,
-    /// The launcher may open endpoints.
-    On,
-}
-
 /// The `[ai.agents]` table, as written.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AgentsConfig {
-    /// `ai.agents.endpoint`: `off` or `on`.
+    /// `ai.agents.endpoint`: whether inferd opens loopback model endpoints for the external
+    /// coding agents the launcher starts. Off by default, like the other ways in for agents (ACP,
+    /// MCP); off, `OpenEndpoint` is refused `EndpointOff`.
     #[serde(default)]
-    pub endpoint: Option<String>,
+    pub endpoint: Option<SwitchSaid>,
 }
 
 /// `ai.tailnet.serve`.
 pub const TAILNET_SERVE: &str = "ai.tailnet.serve";
 
-/// `ai.tailnet.serve`: whether this computer lends its own models to the person's other
-/// computers over their Tailscale network. Off by default; while on, inferd listens on this
-/// computer's network addresses (never on every address), and a computer is let in only when
-/// Tailscale says it is the person's own and the person said yes to it.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum TailnetServe {
-    /// Nothing is listened on.
-    #[default]
-    Off,
-    /// The person's other computers may ask to use the models that run on this one.
-    On,
-}
-
 /// The `[ai.tailnet]` table, as written.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TailnetConfig {
-    /// `ai.tailnet.serve`: `off` or `on`.
+    /// `ai.tailnet.serve`: whether this computer lends its own models to the person's other
+    /// computers over their Tailscale network. Off by default; while on, inferd listens on this
+    /// computer's network addresses (never on every address), and a computer is let in only when
+    /// Tailscale says it is the person's own and the person said yes to it.
     #[serde(default)]
-    pub serve: Option<String>,
+    pub serve: Option<SwitchSaid>,
 }
 
 /// `ai.pipeline.describe_images`.
@@ -196,9 +196,9 @@ pub struct SpendConfig {
 /// The `[ai.pipeline]` table, as written.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PipelineConfig {
-    /// `ai.pipeline.describe_images`: `off` or `on`.
+    /// `ai.pipeline.describe_images`.
     #[serde(default)]
-    pub describe_images: Option<String>,
+    pub describe_images: Option<SwitchSaid>,
 }
 
 /// One scope's limits: none where the person set none.
@@ -296,13 +296,13 @@ pub struct Settings {
     /// `ai.spend.*`.
     pub spend: SpendLine,
     /// `ai.pipeline.describe_images`.
-    pub describe_images: DescribeImages,
+    pub describe_images: bool,
     /// `ai.attached.my_network`.
-    pub my_network: MyNetwork,
+    pub my_network: bool,
     /// `ai.agents.endpoint`.
-    pub agent_endpoint: AgentEndpoint,
+    pub agent_endpoint: bool,
     /// `ai.tailnet.serve`.
-    pub tailnet_serve: TailnetServe,
+    pub tailnet_serve: bool,
     /// `ai.length.*`: what the person set for the models on this computer; Automatic where not.
     pub lengths: Lengths,
 }
@@ -312,20 +312,20 @@ impl Settings {
     /// reach the person's other machines when `ai.attached.my_network` is on. `local_only` and the
     /// floors that already allow more are as the person set them.
     pub fn routing_policy(&self) -> Policy {
-        match self.my_network {
-            MyNetwork::Off => self.policy.clone(),
-            MyNetwork::On => Policy {
-                floors: self
-                    .policy
-                    .floors
-                    .iter()
-                    .map(|row| ClassFloor {
-                        floor: row.floor.max(Floor::LocalNetwork),
-                        ..*row
-                    })
-                    .collect(),
-                ..self.policy.clone()
-            },
+        if !self.my_network {
+            return self.policy.clone();
+        }
+        Policy {
+            floors: self
+                .policy
+                .floors
+                .iter()
+                .map(|row| ClassFloor {
+                    floor: row.floor.max(Floor::LocalNetwork),
+                    ..*row
+                })
+                .collect(),
+            ..self.policy.clone()
         }
     }
 }
@@ -337,10 +337,10 @@ impl Default for Settings {
             tiers: TierMap::default(),
             auto: AutoPolicy::default(),
             spend: SpendLine::default(),
-            describe_images: DescribeImages::default(),
-            my_network: MyNetwork::default(),
-            agent_endpoint: AgentEndpoint::default(),
-            tailnet_serve: TailnetServe::default(),
+            describe_images: false,
+            my_network: false,
+            agent_endpoint: false,
+            tailnet_serve: false,
             lengths: Lengths::default(),
         }
     }
