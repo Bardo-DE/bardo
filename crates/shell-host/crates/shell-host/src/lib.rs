@@ -115,7 +115,7 @@ pub use output::OutputInfo;
 pub use placement::PopupPlacement;
 pub use popup::{
     PopupAdjust, PopupAnchor, PopupConfig, PopupEdge, PopupGrab, PopupOffset, PopupSize,
-    PopupToggle, offset_rect,
+    offset_rect,
 };
 pub use prepaint::{Prepaint, PrepaintFn};
 pub use pulse::Pulse;

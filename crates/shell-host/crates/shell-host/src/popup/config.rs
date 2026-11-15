@@ -34,46 +34,37 @@ pub enum PopupEdge {
     BottomRight,
 }
 
-/// A single-axis toggle. Used instead of `bool` so `PopupAdjust`'s fields read as intent
-/// (`slide_x: PopupToggle::On`) rather than an unlabelled `true`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum PopupToggle {
-    #[default]
-    Off,
-    On,
-}
-
 /// The `xdg_positioner` constraint-adjustment flags: how the compositor may move or resize the
 /// popup if its unadjusted position would be (partly) off-screen.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct PopupAdjust {
-    pub slide_x: PopupToggle,
-    pub slide_y: PopupToggle,
-    pub flip_x: PopupToggle,
-    pub flip_y: PopupToggle,
-    pub resize_x: PopupToggle,
-    pub resize_y: PopupToggle,
+    pub slide_x: bool,
+    pub slide_y: bool,
+    pub flip_x: bool,
+    pub flip_y: bool,
+    pub resize_x: bool,
+    pub resize_y: bool,
 }
 
 impl PopupAdjust {
     /// No adjustment: the popup stays exactly where positioned, even off-screen.
     pub const NONE: PopupAdjust = PopupAdjust {
-        slide_x: PopupToggle::Off,
-        slide_y: PopupToggle::Off,
-        flip_x: PopupToggle::Off,
-        flip_y: PopupToggle::Off,
-        resize_x: PopupToggle::Off,
-        resize_y: PopupToggle::Off,
+        slide_x: false,
+        slide_y: false,
+        flip_x: false,
+        flip_y: false,
+        resize_x: false,
+        resize_y: false,
     };
 
     /// Slide on both axes, flip on both axes, and never resize: the common "menu" behaviour.
     pub const SLIDE_AND_FLIP: PopupAdjust = PopupAdjust {
-        slide_x: PopupToggle::On,
-        slide_y: PopupToggle::On,
-        flip_x: PopupToggle::On,
-        flip_y: PopupToggle::On,
-        resize_x: PopupToggle::Off,
-        resize_y: PopupToggle::Off,
+        slide_x: true,
+        slide_y: true,
+        flip_x: true,
+        flip_y: true,
+        resize_x: false,
+        resize_y: false,
     };
 }
 

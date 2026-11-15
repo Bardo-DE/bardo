@@ -98,7 +98,7 @@ The root of `shell-host` exports exactly these names, each from one `pub use` in
 | Host | `Host`, `HostCtx`, `HostHandle`, `HostConfig` (its `file_roots`: where documents may read files, FINDINGS F21), `Backend`, `AdapterPref`, `FontFaces` and `FileRoots` (re-exported once from `blitz-kit`), `Ms`, `HostError`, `Recovery`, `Result`, `HostRoot`, `registered_families`, `WaylandRoute` (`Environment`, or `Handed(OwnedFd)` read only in `Host::connect`) |
 | Events | `HostEvent` (incl. `SurfaceMapped { id }` and `QuitAsked`), `CloseReason`, `KeyboardFocus`, `SurfaceOp` (`CommonOp`, `LayerOp`, `WindowOp` by role), `Visibility`, `OutputInfo`, `OutputId`, `SurfaceId`, `ColorScheme` |
 | Layer surface | `LayerConfig`, `LayerLevel`, `Anchor`, `LayerExtent`, `LayerSize`, `ExclusiveZone`, `KeyboardMode`, `OutputTarget` |
-| Popup | `PopupConfig`, `PopupAnchor`, `PopupSize`, `PopupEdge`, `PopupToggle`, `PopupAdjust`, `PopupGrab`, `PopupOffset`, `PopupPlacement`, `offset_rect` |
+| Popup | `PopupConfig`, `PopupAnchor`, `PopupSize`, `PopupEdge`, `PopupAdjust`, `PopupGrab`, `PopupOffset`, `PopupPlacement`, `offset_rect` |
 | Toplevel | `ToplevelConfig`, `ToplevelState`, `Decorations`, `ResizeMargin`, `ResizeEdge`, `Maximize`, `Fullscreen`, `Activation`, `Tile`, `TileEdges`, `GrabRefused`, `WindowPlacement`, `PlacementSupport` |
 | Lock | `LockConfig`, `LockError`, `LockId`, `LockHandle`, `LockPhase`, `LockState`, `use_lock`, `use_lock_phase` |
 | Regions and blur | `RegionSpec`, `RoundedRect`, `ElementRegion`, `ElementId`, `BlurSpec` |

@@ -9,7 +9,6 @@ mod wire;
 
 pub use config::{
     PopupAdjust, PopupAnchor, PopupConfig, PopupEdge, PopupGrab, PopupOffset, PopupSize,
-    PopupToggle,
 };
 pub use positioner::offset_rect;
 pub(crate) use positioner::{PositionerParams, positioner_params, refit};

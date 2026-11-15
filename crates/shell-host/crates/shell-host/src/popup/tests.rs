@@ -3,7 +3,7 @@
 
 use crate::popup::{
     PopupAdjust, PopupAnchor, PopupConfig, PopupEdge, PopupGrab, PopupOffset, PopupSize,
-    PopupToggle, positioner_params, to_wire_constraint_adjustment,
+    positioner_params, to_wire_constraint_adjustment,
 };
 use crate::region::{ElementId, Rect};
 use crate::scale::Size;
@@ -56,8 +56,8 @@ const CASES: &[Case] = &[
         edge: PopupEdge::TopRight,
         gravity: PopupEdge::BottomRight,
         adjust: PopupAdjust {
-            resize_x: PopupToggle::On,
-            resize_y: PopupToggle::On,
+            resize_x: true,
+            resize_y: true,
             ..PopupAdjust::NONE
         },
         popup_size: PopupSize::FitContent { max: 120 },
@@ -96,7 +96,7 @@ const CASES: &[Case] = &[
         edge: PopupEdge::TopLeft,
         gravity: PopupEdge::BottomLeft,
         adjust: PopupAdjust {
-            slide_x: PopupToggle::On,
+            slide_x: true,
             ..PopupAdjust::NONE
         },
         popup_size: PopupSize::Fixed,

@@ -4,7 +4,7 @@ use wayland_protocols::xdg::shell::client::xdg_positioner::{
     Anchor, ConstraintAdjustment, Gravity as WireGravity,
 };
 
-use super::config::{PopupAdjust, PopupEdge, PopupToggle};
+use super::config::{PopupAdjust, PopupEdge};
 
 /// The `xdg_positioner` wire value for an anchor edge or gravity direction.
 pub(crate) fn to_wire_anchor(edge: PopupEdge) -> Anchor {
@@ -39,22 +39,22 @@ pub(crate) fn to_wire_gravity(gravity: PopupEdge) -> WireGravity {
 /// The `xdg_positioner` constraint-adjustment bitfield for `adjust`.
 pub(crate) fn to_wire_constraint_adjustment(adjust: PopupAdjust) -> ConstraintAdjustment {
     let mut wire = ConstraintAdjustment::empty();
-    if adjust.slide_x == PopupToggle::On {
+    if adjust.slide_x {
         wire |= ConstraintAdjustment::SlideX;
     }
-    if adjust.slide_y == PopupToggle::On {
+    if adjust.slide_y {
         wire |= ConstraintAdjustment::SlideY;
     }
-    if adjust.flip_x == PopupToggle::On {
+    if adjust.flip_x {
         wire |= ConstraintAdjustment::FlipX;
     }
-    if adjust.flip_y == PopupToggle::On {
+    if adjust.flip_y {
         wire |= ConstraintAdjustment::FlipY;
     }
-    if adjust.resize_x == PopupToggle::On {
+    if adjust.resize_x {
         wire |= ConstraintAdjustment::ResizeX;
     }
-    if adjust.resize_y == PopupToggle::On {
+    if adjust.resize_y {
         wire |= ConstraintAdjustment::ResizeY;
     }
     wire
@@ -100,8 +100,8 @@ mod tests {
         (
             "slide both axes",
             PopupAdjust {
-                slide_x: PopupToggle::On,
-                slide_y: PopupToggle::On,
+                slide_x: true,
+                slide_y: true,
                 ..PopupAdjust::NONE
             },
             ConstraintAdjustment::SlideX.union(ConstraintAdjustment::SlideY),
@@ -109,8 +109,8 @@ mod tests {
         (
             "flip both axes",
             PopupAdjust {
-                flip_x: PopupToggle::On,
-                flip_y: PopupToggle::On,
+                flip_x: true,
+                flip_y: true,
                 ..PopupAdjust::NONE
             },
             ConstraintAdjustment::FlipX.union(ConstraintAdjustment::FlipY),
@@ -118,8 +118,8 @@ mod tests {
         (
             "resize both axes",
             PopupAdjust {
-                resize_x: PopupToggle::On,
-                resize_y: PopupToggle::On,
+                resize_x: true,
+                resize_y: true,
                 ..PopupAdjust::NONE
             },
             ConstraintAdjustment::ResizeX.union(ConstraintAdjustment::ResizeY),
@@ -133,12 +133,12 @@ mod tests {
         (
             "every flag",
             PopupAdjust {
-                slide_x: PopupToggle::On,
-                slide_y: PopupToggle::On,
-                flip_x: PopupToggle::On,
-                flip_y: PopupToggle::On,
-                resize_x: PopupToggle::On,
-                resize_y: PopupToggle::On,
+                slide_x: true,
+                slide_y: true,
+                flip_x: true,
+                flip_y: true,
+                resize_x: true,
+                resize_y: true,
             },
             ConstraintAdjustment::all(),
         ),

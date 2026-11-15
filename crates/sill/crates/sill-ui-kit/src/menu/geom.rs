@@ -5,7 +5,7 @@
 
 use shell_host::{
     PopupAdjust, PopupAnchor, PopupConfig, PopupEdge, PopupGrab, PopupOffset, PopupPlacement,
-    PopupSize, PopupToggle, Rect, Size,
+    PopupSize, Rect, Size,
 };
 
 use super::{CONTEXT_MENU_WIDTH, PopupRoom};
@@ -52,7 +52,7 @@ impl PopupGeom {
                 PopupEdge::Top,
                 PopupEdge::TopRight,
                 PopupAdjust {
-                    slide_x: PopupToggle::On,
+                    slide_x: true,
                     ..PopupAdjust::NONE
                 },
                 PopupOffset {
