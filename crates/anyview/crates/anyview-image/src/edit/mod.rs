@@ -19,7 +19,7 @@ pub(crate) use adjust::adjusted_pixels;
 use crate::decode::{Decoded, decode_bytes, guarded};
 use crate::encode::{encode_bmp, encode_with_metadata};
 use crate::error::ImageError;
-use crate::orientation::{ExifOrientation, Mirror};
+use crate::orientation::ExifOrientation;
 use crate::pixels::Rgba8;
 use crate::rotate::{flip_jpeg, rotate_jpeg};
 use anyview_core::{
@@ -195,7 +195,7 @@ fn moved_pixels(bytes: &[u8], sniffed: &Sniffed, placing: Placing) -> Result<Rgb
         Decoded::Animated(animation) => animation.frames.first().pixels.clone(),
     };
     let by = placing.over(ExifOrientation {
-        mirror: Mirror::Unmirrored,
+        mirrored: false,
         turn: QuarterTurn::None,
     });
     Ok(by.applied(&picture))

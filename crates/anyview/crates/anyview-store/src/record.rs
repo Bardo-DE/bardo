@@ -3,7 +3,7 @@
 
 use crate::error::StoreError;
 use crate::history::History;
-use anyview_core::{FilePath, FileStamp, PanelOpen, Resume};
+use anyview_core::{FilePath, FileStamp, Resume};
 
 /// What is stored for one file: the memory, with the path and fingerprint it was taken at.
 ///
@@ -31,7 +31,7 @@ pub(crate) struct PanelRecord {
     pub width: Option<u32>,
     /// Whether it was open.
     #[serde(default)]
-    pub open: Option<PanelOpen>,
+    pub open: Option<bool>,
     /// The view it was last on.
     #[serde(default)]
     pub view: Option<String>,

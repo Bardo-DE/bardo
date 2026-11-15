@@ -4,7 +4,7 @@ mod adjust;
 #[cfg(test)]
 mod tests;
 
-pub use adjust::{Adjust, PixelRect, Reflection};
+pub use adjust::{Adjust, PixelRect};
 
 use crate::units::{Axis, PageIndex, PageRange, QuarterTurn, TimeRange};
 use ds_core::word::Word;

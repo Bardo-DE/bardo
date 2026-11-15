@@ -30,7 +30,7 @@ use std::time::{Duration, Instant};
 const RETRY_AFTER: Duration = Duration::from_secs(60);
 
 /// How a worker runs. The default is what the launcher's pane uses; change one setting with the
-/// `with_*` methods. It is `#[non_exhaustive]`, so a setting added later breaks no caller.
+/// `with_*` methods.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WorkerConfig {
     /// The name of the worker's thread; each peek's thread is named for it too.

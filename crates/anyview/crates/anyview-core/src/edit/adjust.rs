@@ -1,21 +1,6 @@
 //! What has been done to a picture: the crop, the mirror, the turn and the size.
 
 use crate::units::{Axis, PixelLen, PixelSize, QuarterTurn};
-use ds_core::word::Word;
-
-/// Whether a picture is mirrored left to right before it is turned.
-#[derive(
-    Debug, Clone, Copy, PartialEq, Eq, Hash, Default, serde::Serialize, serde::Deserialize, Word,
-)]
-#[serde(rename_all = "snake_case")]
-#[word(case = snake)]
-pub enum Reflection {
-    /// As it was.
-    #[default]
-    Kept,
-    /// Left and right swapped.
-    Mirrored,
-}
 
 /// A rectangle of a picture's pixels.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
@@ -35,8 +20,8 @@ pub struct PixelRect {
 pub struct Adjust {
     /// The part of the picture that is kept; the whole of it when none.
     pub crop: Option<PixelRect>,
-    /// Whether the kept part is mirrored before it is turned.
-    pub reflection: Reflection,
+    /// Whether the kept part is mirrored left to right before it is turned.
+    pub mirrored: bool,
     /// How far the kept part is turned clockwise.
     pub turn: QuarterTurn,
     /// The size the result is scaled to; the kept part's own when none.
@@ -47,7 +32,7 @@ impl Adjust {
     /// Nothing done.
     pub const NONE: Adjust = Adjust {
         crop: None,
-        reflection: Reflection::Kept,
+        mirrored: false,
         turn: QuarterTurn::None,
         size: None,
     };
@@ -81,12 +66,8 @@ impl Adjust {
     /// mirrored again, is the opposite mirror and the reverse turn; a flip across the horizontal
     /// line is that and a half turn more.
     pub fn flipped(self, axis: Axis) -> Adjust {
-        let reflection = match self.reflection {
-            Reflection::Kept => Reflection::Mirrored,
-            Reflection::Mirrored => Reflection::Kept,
-        };
         let across_vertical = Adjust {
-            reflection,
+            mirrored: !self.mirrored,
             turn: self.turn.reversed(),
             ..self
         };
@@ -149,9 +130,10 @@ impl Adjust {
             QuarterTurn::ThreeQuarter => (width.saturating_sub(y + h), x, h, w),
         };
         // Undo the mirror.
-        let mx = match self.reflection {
-            Reflection::Kept => mx,
-            Reflection::Mirrored => width.saturating_sub(mx + mw),
+        let mx = if self.mirrored {
+            width.saturating_sub(mx + mw)
+        } else {
+            mx
         };
         let mw = mw.min(width.saturating_sub(mx));
         let mh = mh.min(height.saturating_sub(my));

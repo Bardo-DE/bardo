@@ -16,8 +16,8 @@ pub(crate) const PANE_FIT: PixelSize = PixelSize {
 };
 
 /// What a look at a file is asked to do: what it may spend, the box a page is drawn in, and where
-/// a picture of a video comes from. It is `#[non_exhaustive]`, so a setting added later breaks no
-/// caller: start from [`Peeking::pane`] and change one setting with the `with_*` methods.
+/// a picture of a video comes from. Start from [`Peeking::pane`] and change one setting with the
+/// `with_*` methods.
 #[derive(Debug, Clone)]
 pub struct Peeking {
     /// What a peek may spend: bytes read, pixels decoded, time.

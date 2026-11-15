@@ -4,41 +4,32 @@ use crate::pixels::Rgba8;
 use anyview_core::{Axis, QuarterTurn};
 use image::imageops;
 
-/// Whether the stored picture is mirrored left to right before it is turned.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Mirror {
-    /// Not mirrored.
-    Unmirrored,
-    /// Mirrored left to right.
-    Mirrored,
-}
-
 /// How the stored pixels must be placed to display upright: mirror them, then turn them
 /// clockwise. The eight EXIF orientation values are exactly the eight combinations.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct ExifOrientation {
-    /// Applied first.
-    pub mirror: Mirror,
+    /// Whether the stored picture is mirrored left to right, applied first.
+    pub mirrored: bool,
     /// Applied second, clockwise.
     pub turn: QuarterTurn,
 }
 
 /// EXIF tag value, mirror and turn, for the values 1 to 8 (EXIF 2.32, tag 0x0112).
-const TABLE: &[(u16, Mirror, QuarterTurn)] = &[
-    (1, Mirror::Unmirrored, QuarterTurn::None),
-    (2, Mirror::Mirrored, QuarterTurn::None),
-    (3, Mirror::Unmirrored, QuarterTurn::Half),
-    (4, Mirror::Mirrored, QuarterTurn::Half),
-    (5, Mirror::Mirrored, QuarterTurn::ThreeQuarter),
-    (6, Mirror::Unmirrored, QuarterTurn::Quarter),
-    (7, Mirror::Mirrored, QuarterTurn::Quarter),
-    (8, Mirror::Unmirrored, QuarterTurn::ThreeQuarter),
+const TABLE: &[(u16, bool, QuarterTurn)] = &[
+    (1, false, QuarterTurn::None),
+    (2, true, QuarterTurn::None),
+    (3, false, QuarterTurn::Half),
+    (4, true, QuarterTurn::Half),
+    (5, true, QuarterTurn::ThreeQuarter),
+    (6, false, QuarterTurn::Quarter),
+    (7, true, QuarterTurn::Quarter),
+    (8, false, QuarterTurn::ThreeQuarter),
 ];
 
 impl ExifOrientation {
     /// The orientation of a picture that is already upright (tag value 1).
     pub const UPRIGHT: ExifOrientation = ExifOrientation {
-        mirror: Mirror::Unmirrored,
+        mirrored: false,
         turn: QuarterTurn::None,
     };
 
@@ -47,14 +38,14 @@ impl ExifOrientation {
         TABLE
             .iter()
             .find(|(value, _, _)| *value == tag)
-            .map(|&(_, mirror, turn)| ExifOrientation { mirror, turn })
+            .map(|&(_, mirrored, turn)| ExifOrientation { mirrored, turn })
     }
 
     /// The tag value, 1 to 8.
     pub fn tag(self) -> u16 {
         TABLE
             .iter()
-            .find(|(_, mirror, turn)| *mirror == self.mirror && *turn == self.turn)
+            .find(|(_, mirrored, turn)| *mirrored == self.mirrored && *turn == self.turn)
             .map_or(1, |(value, _, _)| *value) // the table holds all eight combinations
     }
 
@@ -62,7 +53,7 @@ impl ExifOrientation {
     /// Rotating a displayed picture adds to the stored turn and leaves the mirror alone.
     pub fn turned(self, turn: QuarterTurn) -> Self {
         ExifOrientation {
-            mirror: self.mirror,
+            mirrored: self.mirrored,
             turn: self.turn.then(turn),
         }
     }
@@ -71,12 +62,8 @@ impl ExifOrientation {
     /// mirror then a turn, mirrored again, is the opposite mirror and the reverse turn; a flip
     /// across the horizontal line is that and a half turn more.
     pub fn flipped(self, axis: Axis) -> Self {
-        let mirror = match self.mirror {
-            Mirror::Unmirrored => Mirror::Mirrored,
-            Mirror::Mirrored => Mirror::Unmirrored,
-        };
         let across_vertical = ExifOrientation {
-            mirror,
+            mirrored: !self.mirrored,
             turn: self.turn.reversed(),
         };
         match axis {
@@ -90,9 +77,10 @@ impl ExifOrientation {
         let Some(image) = picture.to_image() else {
             return picture.clone(); // a buffer `Rgba8::new` accepted always fits its size
         };
-        let mirrored = match self.mirror {
-            Mirror::Unmirrored => image,
-            Mirror::Mirrored => imageops::flip_horizontal(&image),
+        let mirrored = if self.mirrored {
+            imageops::flip_horizontal(&image)
+        } else {
+            image
         };
         let turned = match self.turn {
             QuarterTurn::None => mirrored,
@@ -138,11 +126,11 @@ mod tests {
         // The flip of what the tag shows, done on pixels, is what the flipped tag shows.
         let across = |axis| match axis {
             Axis::Horizontal => ExifOrientation {
-                mirror: Mirror::Mirrored,
+                mirrored: true,
                 turn: QuarterTurn::None,
             },
             Axis::Vertical => ExifOrientation {
-                mirror: Mirror::Mirrored,
+                mirrored: true,
                 turn: QuarterTurn::Half,
             },
         };
@@ -201,7 +189,7 @@ mod tests {
                 let stored = ExifOrientation::from_tag(tag).unwrap();
                 let on_screen = stored.applied(&marked());
                 let rotated = ExifOrientation {
-                    mirror: Mirror::Unmirrored,
+                    mirrored: false,
                     turn,
                 }
                 .applied(&on_screen);

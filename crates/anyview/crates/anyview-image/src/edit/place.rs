@@ -1,7 +1,7 @@
 //! Placing raw pixels: the mirror and quarter turn of an orientation applied to samples of any
 //! width, so a 16-bit or grey picture is moved without being converted to RGBA8 first.
 
-use crate::orientation::{ExifOrientation, Mirror};
+use crate::orientation::ExifOrientation;
 use anyview_core::QuarterTurn;
 
 /// A grid of pixels, `unit` bytes each, row by row.
@@ -33,10 +33,7 @@ impl Grid {
         let mut out = vec![0u8; w * h * unit];
         for y in 0..h {
             for x in 0..w {
-                let mx = match orientation.mirror {
-                    Mirror::Unmirrored => x,
-                    Mirror::Mirrored => w - 1 - x,
-                };
+                let mx = if orientation.mirrored { w - 1 - x } else { x };
                 let (tx, ty) = match orientation.turn {
                     QuarterTurn::None => (x, y),
                     QuarterTurn::Quarter => (h - 1 - y, x),

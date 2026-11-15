@@ -44,9 +44,8 @@ impl FindOption {
     }
 }
 
-/// How a find matches. It is `#[non_exhaustive]`, so an option added later breaks no caller: start
-/// from [`FindOptions::default`] (ignore case, find parts of words) and change one with the
-/// `with_*` methods.
+/// How a find matches. Start from [`FindOptions::default`] (ignore case, find parts of words) and
+/// change one with the `with_*` methods.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct FindOptions {
     /// Whether letter case matters.

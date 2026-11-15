@@ -41,7 +41,7 @@ mod xml_depth;
 pub const APP_NAME: &str = "Viewer";
 
 pub use action::{FileAction, Reach, file_action_of, own_keys, reach, shortcut};
-pub use edit::{Adjust, Edit, EditKind, PixelRect, Reflection};
+pub use edit::{Adjust, Edit, EditKind, PixelRect};
 pub use error::CoreError;
 pub use export::{
     AudioTarget, ExportChoice, ExportExtension, ExportJob, HtmlDoc, MediaExport, MediaExportKind,
@@ -66,7 +66,7 @@ pub use markup::{
     PageRect,
 };
 pub use media::{MediaChapter, MediaTags, MediaTrack, StreamKind, TrackPlay, VideoPresence};
-pub use panel::{PanelKept, PanelOpen};
+pub use panel::PanelKept;
 pub use peek::{Deadline, Peek, PeekBudget, StageSupport};
 pub use percent::percent_decode;
 pub use profile::{actions_for, edits_for, mime_for, stage_support};

@@ -3,7 +3,7 @@
 use crate::support;
 
 use anyview_core::{
-    FilePath, FormatKind, LineIndex, PageIndex, PanelKept, PanelOpen, Permille, Resume, Zoom,
+    FilePath, FormatKind, LineIndex, PageIndex, PanelKept, Permille, Resume, Zoom,
 };
 use anyview_store::{
     HistoryCap, HistoryRead, ResumeLabel, StoreError, StoreWriter, Viewed, read_history,
@@ -166,21 +166,21 @@ fn the_panel_view_is_kept_beside_its_width_and_a_close_keeps_the_view() {
         "a width is not a word on the view"
     );
     let open = PanelKept {
-        open: PanelOpen::Open,
+        open: true,
         view: Some("contents".to_owned()),
     };
     writer.save_panel_view(&open).unwrap();
     assert_eq!(writer.load_panel_view().unwrap(), Some(open));
     writer
         .save_panel_view(&PanelKept {
-            open: PanelOpen::Closed,
+            open: false,
             view: None,
         })
         .unwrap();
     assert_eq!(
         writer.load_panel_view().unwrap(),
         Some(PanelKept {
-            open: PanelOpen::Closed,
+            open: false,
             view: Some("contents".to_owned()),
         }),
         "closed, and still on the view it was on"

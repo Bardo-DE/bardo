@@ -65,7 +65,7 @@ pub use error::ImageError;
 pub use exif::{ExifFacts, Exposure, Flash, FlashMode, FlashState, Location, Ratio, SignedRatio};
 #[cfg(feature = "encode")]
 pub use export::{ImageFile, encode_file, encode_file_via, plan_export};
-pub use orientation::{ExifOrientation, Mirror};
+pub use orientation::ExifOrientation;
 pub use peek::{ImagePeek, PeekedFormat, RasterPeek, VectorPeek};
 pub use picture_facts::picture_facts;
 pub use pixels::{PremultipliedRgba8, Rgba8};

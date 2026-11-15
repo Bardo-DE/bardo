@@ -7,7 +7,7 @@ use crate::support;
 
 use anyview_core::{
     Adjust, Axis, Edit, EditKind, PageIndex, PageRange, PixelLen, PixelRect, PixelSize,
-    QuarterTurn, RasterFormat, Reflection,
+    QuarterTurn, RasterFormat,
 };
 use anyview_image::{Decoded, ExifFacts, ImageError, Location, Rgba8, decode_bytes, edited};
 use image::{RgbaImage, imageops};
@@ -179,7 +179,7 @@ fn a_cut_mirrored_and_turned_png_is_the_cut_of_the_pixels_mirrored_and_turned() 
     };
     let adjust = Adjust {
         crop: Some(rect),
-        reflection: Reflection::Mirrored,
+        mirrored: true,
         turn: QuarterTurn::Quarter,
         size: None,
     };

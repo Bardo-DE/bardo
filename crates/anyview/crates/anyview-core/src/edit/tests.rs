@@ -72,16 +72,16 @@ fn edits_round_trip_adjacently_tagged() {
         (Edit::Markup, r#"{"kind":"markup"}"#),
         (
             Edit::Adjust(Adjust::NONE),
-            r#"{"kind":"adjust","v":{"crop":null,"reflection":"kept","turn":"none","size":null}}"#,
+            r#"{"kind":"adjust","v":{"crop":null,"mirrored":false,"turn":"none","size":null}}"#,
         ),
         (
             Edit::Adjust(Adjust {
                 crop: Some(rect(1, 2, 30, 40)),
-                reflection: Reflection::Mirrored,
+                mirrored: true,
                 turn: QuarterTurn::Quarter,
                 size: Some(size(15, 20)),
             }),
-            r#"{"kind":"adjust","v":{"crop":{"left":1,"top":2,"size":{"width":30,"height":40}},"reflection":"mirrored","turn":"quarter","size":{"width":15,"height":20}}}"#,
+            r#"{"kind":"adjust","v":{"crop":{"left":1,"top":2,"size":{"width":30,"height":40}},"mirrored":true,"turn":"quarter","size":{"width":15,"height":20}}}"#,
         ),
         (
             Edit::Trim(TimeRange::new(MediaTime(1_500_000), Some(MediaTime(2_500_000))).unwrap()),
@@ -101,7 +101,6 @@ fn edits_round_trip_adjacently_tagged() {
 #[test]
 fn edit_kinds_are_stored_as_their_slugs() {
     word_matches_serde::<EditKind>();
-    word_matches_serde::<Reflection>();
 }
 
 #[test]
@@ -114,51 +113,51 @@ fn turns_and_flips_fold_into_one_adjustment() {
     }
     use Step::{Flip, Turn};
     // name, steps, the mirror and turn they make
-    const CASES: &[(&str, &[Step], Reflection, QuarterTurn)] = &[
-        ("a quarter", &[Turn(Quarter)], Reflection::Kept, Quarter),
+    const CASES: &[(&str, &[Step], bool, QuarterTurn)] = &[
+        ("a quarter", &[Turn(Quarter)], false, Quarter),
         (
             "a quarter back",
             &[Turn(Quarter), Turn(ThreeQuarter)],
-            Reflection::Kept,
+            false,
             QuarterTurn::None,
         ),
         (
             "a flip across the vertical line",
             &[Flip(Axis::Horizontal)],
-            Reflection::Mirrored,
+            true,
             QuarterTurn::None,
         ),
         (
             "that flip twice",
             &[Flip(Axis::Horizontal), Flip(Axis::Horizontal)],
-            Reflection::Kept,
+            false,
             QuarterTurn::None,
         ),
         (
             "a flip across the horizontal line is a mirror and a half turn",
             &[Flip(Axis::Vertical)],
-            Reflection::Mirrored,
+            true,
             Half,
         ),
         (
             "a quarter, then a flip across the vertical line",
             &[Turn(Quarter), Flip(Axis::Horizontal)],
-            Reflection::Mirrored,
+            true,
             ThreeQuarter,
         ),
         (
             "a flip, then a quarter keeps the mirror",
             &[Flip(Axis::Horizontal), Turn(Quarter)],
-            Reflection::Mirrored,
+            true,
             Quarter,
         ),
     ];
-    for (name, steps, reflection, turn) in CASES {
+    for (name, steps, mirrored, turn) in CASES {
         let made = steps.iter().fold(Adjust::NONE, |a, step| match step {
             Turn(by) => a.turned(*by),
             Flip(axis) => a.flipped(*axis),
         });
-        assert_eq!((made.reflection, made.turn), (*reflection, *turn), "{name}");
+        assert_eq!((made.mirrored, made.turn), (*mirrored, *turn), "{name}");
     }
 }
 

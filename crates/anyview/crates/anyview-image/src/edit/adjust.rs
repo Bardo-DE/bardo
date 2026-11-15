@@ -11,12 +11,12 @@ use super::{Fidelity, Rewrite, edited, fidelity, format_of, rewrite_of};
 use crate::decode::{Decoded, decode_bytes};
 use crate::encode::{encode_bmp, encode_with_metadata};
 use crate::error::ImageError;
-use crate::orientation::{ExifOrientation, Mirror};
+use crate::orientation::ExifOrientation;
 use crate::pixels::Rgba8;
 use crate::scale::{Resampling, resampled};
 use anyview_core::{
     Adjust, Axis, Edit, MetadataCarry, Percent, PixelLen, PixelRect, PixelSize, Quality,
-    QuarterTurn, RasterTarget, Reflection, Sniffed,
+    QuarterTurn, RasterTarget, Sniffed,
 };
 use image::imageops;
 
@@ -62,9 +62,10 @@ pub(super) fn adjusted(
 /// A mirror and a turn with nothing cut or resized: the format's own lossless edits, one after
 /// the other.
 fn turned_only(bytes: &[u8], sniffed: &Sniffed, adjust: Adjust) -> Result<Vec<u8>, ImageError> {
-    let mirrored = match adjust.reflection {
-        Reflection::Kept => bytes.to_vec(),
-        Reflection::Mirrored => edited(bytes, sniffed, Edit::Flip(Axis::Horizontal))?,
+    let mirrored = if adjust.mirrored {
+        edited(bytes, sniffed, Edit::Flip(Axis::Horizontal))?
+    } else {
+        bytes.to_vec()
     };
     match adjust.turn {
         QuarterTurn::None => Ok(mirrored),
@@ -89,10 +90,7 @@ pub(crate) fn adjusted_pixels(picture: &Rgba8, adjust: Adjust) -> Rgba8 {
         None => picture.clone(),
     };
     let placed = ExifOrientation {
-        mirror: match adjust.reflection {
-            Reflection::Kept => Mirror::Unmirrored,
-            Reflection::Mirrored => Mirror::Mirrored,
-        },
+        mirrored: adjust.mirrored,
         turn: adjust.turn,
     }
     .applied(&cut);

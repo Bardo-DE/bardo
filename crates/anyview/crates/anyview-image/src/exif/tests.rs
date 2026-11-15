@@ -1,6 +1,5 @@
 use super::format;
 use super::*;
-use crate::orientation::Mirror;
 use anyview_core::QuarterTurn;
 
 const ROTATED: &[u8] = include_bytes!("../../tests/fixtures/rotated.jpg");
@@ -18,7 +17,7 @@ fn the_rotated_fixture_reads_back_what_was_written_into_it() {
     let facts = ExifFacts::read(ROTATED);
     assert_eq!(facts.orientation.tag(), 6);
     assert_eq!(facts.orientation.turn, QuarterTurn::Quarter);
-    assert_eq!(facts.orientation.mirror, Mirror::Unmirrored);
+    assert!(!facts.orientation.mirrored);
     assert_eq!(facts.camera().as_deref(), Some("TestCam One"));
     assert_eq!(facts.lens.as_deref(), Some("TestLens 35mm f/2"));
     assert_eq!(

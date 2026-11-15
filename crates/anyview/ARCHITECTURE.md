@@ -179,8 +179,8 @@ no other public path. A module names only modules above it in this list.
 | `sequence` | `NonEmpty`, `Sequence`, `moved`, `neighbours` |
 | `markup` | what a person writes on the pages of a document and the file keeps as standard annotations: `PageRect` and `PagePoint` (thousandths of the displayed page, from the top left), `Mark` (a page, a `MarkColor`, a `MarkShape`: highlight, underline, strike-through, note, rectangle, oval, line, arrow, text box; and `existing`, the `MarkRef` of the annotation the file already held that it stands for; `bounds`, `is_at`, `moved`), `MarkTool`, `FieldFill` and `MarkupSave` (the fields filled, the marks to write, made or changed, and the held marks removed, which the host writes) |
 | `form` | `FormWidget` (one place a field is drawn: its name, `WidgetKind`, `WidgetAccess`, page, `PageRect`, value, the state that means on, the options), in the order the document lists them, which is the order Tab walks |
-| `edit` | `Edit`, `EditKind`, and `Adjust` (a picture's whole adjustment as one value: cut to a `PixelRect`, `Reflection`, `QuarterTurn`, resized; `turned`, `flipped` and `cropped` fold each new step into it, so a series of edits is one `Edit::Adjust`) |
-| `find` | `FindOptions` (how a find matches: `CaseMatch` and `WordMatch`, `#[non_exhaustive]` with `DEFAULT` and `with_*`; the one set text and PDF search both read) and `FindOption` (`MatchCase`, `WholeWords`: one toggle of it, with its label) |
+| `edit` | `Edit`, `EditKind`, and `Adjust` (a picture's whole adjustment as one value: cut to a `PixelRect`, `mirrored`, `QuarterTurn`, resized; `turned`, `flipped` and `cropped` fold each new step into it, so a series of edits is one `Edit::Adjust`) |
+| `find` | `FindOptions` (how a find matches: `CaseMatch` and `WordMatch`, with `DEFAULT` and `with_*`; the one set text and PDF search both read) and `FindOption` (`MatchCase`, `WholeWords`: one toggle of it, with its label) |
 | `action` | `FileAction`, `Reach`, `reach`, `shortcut`, `own_keys`, `file_action_of` |
 | `export` | the per-format export enums, `AudioTarget`, `ExportChoice`, `ExportJob` (its `Transcode` is a cut, a track or a conversion of a recording) and its payloads |
 | `resume` | `Resume`, `TrackChoice` |
@@ -287,7 +287,7 @@ and `decode_bytes` are the one way pixels come out, and `encode` the one way the
 | --- | --- |
 | `error` | `ImageError` |
 | `pixels` | `Rgba8` (straight alpha), `PremultipliedRgba8`, and the one conversion between them |
-| `orientation` | `ExifOrientation` (a `Mirror` then a clockwise `QuarterTurn`), its tag table and `applied` |
+| `orientation` | `ExifOrientation` (a mirror, `mirrored`, then a clockwise `QuarterTurn`), its tag table and `applied` |
 | `exif` | `ExifFacts`, `Exposure`, `Ratio`, `SignedRatio`, `Flash`, `Location`: read with `kamadak-exif` (camera, lens, settings, bias, flash, software, copyright, density, and the GPS block; the body and lens serial numbers are never read); `ExifFacts::camera_facts` are the rows a preview may list; `ExifFacts` holds no place, and `Location::of_file` (read by `picture_facts` alone) is the place, which only the viewer's own Info panel lists; `format` words them; `patch` writes the orientation entry (private) |
 | `picture_facts`, `resolution` | `picture_facts`: the colour, density, camera and location rows of the viewer's Info panel; `Resolution`: dots an inch from EXIF, a PNG `pHYs` chunk or a JPEG's JFIF block |
 | `scale` | `resized` (the export's `Resize`); peek-budget fitting (private) |
@@ -482,7 +482,7 @@ the folder peek (a directory has no bytes) and a thumbnail read from the desktop
 `StillSource`). A PDF takes the page cache when it has a path and `pdf_thumb_bytes` when it has not.
 
 The front door is `look(src, &Peeking) -> AnyPeeked`: it probes the file and peeks at it. `Peeking` is
-`#[non_exhaustive]` with `Default` (the launcher pane's settings, `Peeking::pane()`) and `with_*` builders for
+with `Default` (the launcher pane's settings, `Peeking::pane()`) and `with_*` builders for
 the budget, the box a PDF page is fitted into (`fit`, a `PixelSize`) and the host's `StillSource`. `probe` and
 `peek` stay for a caller that holds a `Probed` between the two (the viewer's window probes on one job and
 peeks on another).
@@ -504,7 +504,7 @@ peeks on another).
 | `folder` | `FolderPeek`, `FolderSummary`: one level, item count, size and kinds |
 | `natural` | `natural_size`: the size a picture or a video shows at, from the first bytes of the file (a picture's header through `anyview-image`, a movie's `moov` or Matroska header up to 8 MiB); any other kind, a path that is not a regular file and a header that does not say give `None` |
 | `pdf` | `PdfPeek`, `PdfPeeked`, `PageLook`, `PageTrouble` (a page drawn, blank or failed, in no component's types): the first page, through `ds-blitz`'s thumbnail cache for a file and `pdf_thumb_bytes` for bytes handed in; facts only without the `pane` feature |
-| `worker` | `PeekWorker` (`spawn`, or `looking` for `look` itself), `WorkerConfig` (`#[non_exhaustive]`, with `with_*` builders): the one thread that looks at the latest file asked for (`ask(input, reply)`), a thread per peek with an 8 MiB stack, the 4 s overrun and the cap on abandoned peeks; it takes no async runtime |
+| `worker` | `PeekWorker` (`spawn`, or `looking` for `look` itself), `WorkerConfig` (with `with_*` builders): the one thread that looks at the latest file asked for (`ask(input, reply)`), a thread per peek with an 8 MiB stack, the 4 s overrun and the cap on abandoned peeks; it takes no async runtime |
 | `when` | `modified_text`: a modification time as the Info panel words it, in the person's zone |
 | `card` | `Card`, `Part`, `Parts` (which of the media, the name and the facts it draws; all by default), `STYLE`; `page` (a `PageLook` to and from quire's `PdfPage`, the only place the two meet), `picture` (a `TextureLayer`), `lines` (plain and highlighted), `grid` (a table, a tree's top level and an archive's first entries, all as quire's `Table`), `specimen` (a font's sample lines, each an inline SVG of the face's outlines) and `frame` (Markdown in a sealed frame) are private, and `card.css` is its stylesheet |
 
