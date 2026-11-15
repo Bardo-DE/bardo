@@ -8,6 +8,7 @@ use reis::handshake::EisHandshaker;
 use reis::request::{DeviceCapability, EisRequest, EisRequestConverter};
 use seat_input::Press;
 use std::io::{ErrorKind, Write};
+use std::ops::ControlFlow;
 use std::os::fd::{AsFd, OwnedFd};
 use std::os::unix::net::UnixStream;
 use tokio::io::{Interest, unix::AsyncFd};
@@ -102,7 +103,7 @@ impl FakeEis {
         };
         loop {
             while let Some(pending) = self.server.pending_request() {
-                if session.on_pending(&self.server, pending) == Flow::Stop {
+                if session.on_pending(&self.server, pending).is_break() {
                     return session.log;
                 }
             }
@@ -118,12 +119,6 @@ impl FakeEis {
         }
         session.log
     }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Flow {
-    Go,
-    Stop,
 }
 
 enum Stage {
@@ -164,41 +159,41 @@ impl Session {
         &mut self,
         context: &eis::Context,
         pending: PendingRequestResult<eis::Request>,
-    ) -> Flow {
+    ) -> ControlFlow<()> {
         let PendingRequestResult::Request(request) = pending else {
-            return Flow::Stop;
+            return ControlFlow::Break(());
         };
         let Session { stage, log, keymap } = self;
         match stage {
             Stage::Handshake(handshaker) => match handshaker.handle_request(request) {
-                Ok(None) => Flow::Go,
+                Ok(None) => ControlFlow::Continue(()),
                 Ok(Some(resp)) => {
                     let converter = EisRequestConverter::new(context, resp, FIRST_SERIAL);
                     advertise_seat(converter.handle());
                     log.push(EisEvent::Handshake);
                     *stage = Stage::Serving(converter);
-                    Flow::Go
+                    ControlFlow::Continue(())
                 }
-                Err(_) => Flow::Stop,
+                Err(_) => ControlFlow::Break(()),
             },
             Stage::Serving(converter) => {
                 if converter.handle_request(request).is_err() {
-                    return Flow::Stop;
+                    return ControlFlow::Break(());
                 }
                 while let Some(request) = converter.next_request() {
-                    if log_request(log, keymap, request) == Flow::Stop {
-                        return Flow::Stop;
+                    if log_request(log, keymap, request).is_break() {
+                        return ControlFlow::Break(());
                     }
                 }
-                Flow::Go
+                ControlFlow::Continue(())
             }
         }
     }
 }
 
-fn log_request(log: &mut Vec<EisEvent>, keymap: &str, request: EisRequest) -> Flow {
+fn log_request(log: &mut Vec<EisEvent>, keymap: &str, request: EisRequest) -> ControlFlow<()> {
     let event = match request {
-        EisRequest::Disconnect => return Flow::Stop,
+        EisRequest::Disconnect => return ControlFlow::Break(()),
         EisRequest::Bind(bind) => {
             add_devices(&bind.seat, keymap, bind.capabilities);
             EisEvent::Bind
@@ -221,10 +216,10 @@ fn log_request(log: &mut Vec<EisEvent>, keymap: &str, request: EisRequest) -> Fl
             x: s.discrete_dx,
             y: s.discrete_dy,
         },
-        _ => return Flow::Go,
+        _ => return ControlFlow::Continue(()),
     };
     log.push(event);
-    Flow::Go
+    ControlFlow::Continue(())
 }
 
 fn advertise_seat(connection: &reis::request::Connection) {
