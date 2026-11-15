@@ -6,7 +6,7 @@ use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
 use ds::prelude::*;
-use ds_style::kit::{CustomStyles, LookStyle, Styles, UserStyle};
+use ds_style::kit::{LookStyle, Styles, UserStyle};
 
 use std::cell::Cell;
 use std::rc::Rc;
@@ -25,7 +25,7 @@ impl PartialEq for Handle {
 struct Setup {
     text: String,
     stylesheet: Inject,
-    custom: CustomStyles,
+    custom: bool,
     handle: Handle,
 }
 
@@ -49,10 +49,10 @@ fn Root(setup: Setup) -> Element {
 }
 
 fn dom(text: &str, stylesheet: Inject) -> (VirtualDom, Handle) {
-    dom_with(text, stylesheet, CustomStyles::Use)
+    dom_with(text, stylesheet, true)
 }
 
-fn dom_with(text: &str, stylesheet: Inject, custom: CustomStyles) -> (VirtualDom, Handle) {
+fn dom_with(text: &str, stylesheet: Inject, custom: bool) -> (VirtualDom, Handle) {
     let handle = Handle::default();
     let setup = Setup {
         text: text.to_owned(),
@@ -189,7 +189,7 @@ fn the_look_the_desktop_sheet_and_the_app_sheet_come_in_that_order_before_the_co
 
 #[test]
 fn use_my_styles_off_draws_none_of_the_three() {
-    let (vdom, _) = dom_with(".a{}", Inject::Host, CustomStyles::Off);
+    let (vdom, _) = dom_with(".a{}", Inject::Host, false);
     let html = dioxus_ssr::render(&vdom);
     assert!(!html.contains("data-ds-style"), "{html}");
     assert!(!html.contains(".a{}"), "{html}");

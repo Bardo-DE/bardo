@@ -4,7 +4,7 @@
 //! sheets to `<state>/quire/styles-guard/<program>` marked `starting`, and once the first frame
 //! has been drawn and the program has lived five seconds it marks the record `good`. If the last
 //! two starts with the same sheets never got there, the next start is without them: the app
-//! draws with `CustomStyles::Off` and shows `ds::prelude::StylesOffNotice`, whose button calls
+//! draws with `custom_styles: false` and shows `ds::prelude::StylesOffNotice`, whose button calls
 //! [`StylesGuard::turn_on_again`]. A change to any of the three sheets clears the guard
 //! ([`StylesGuard::changed`]), so the person can fix the style and try again.
 //!

@@ -3,7 +3,6 @@
 //! look is `@layer look`; the other two are unlayered, desktop-wide first, so the person's rules
 //! beat the look and the app's beat the desktop's.
 
-use super::custom_styles::CustomStyles;
 use super::reach::{self, Cut};
 use super::user_style::UserStyle;
 use crate::css::layers;
@@ -126,24 +125,24 @@ impl Styles {
             .all(|slot| self.text(*slot).trim().is_empty())
     }
 
-    /// The sheets to draw, lowest first: none when `custom` is `Off`, and none that is blank.
-    /// Each has gone through the reach rule.
-    pub fn drawn(&self, custom: CustomStyles) -> Vec<Drawn> {
-        match custom {
-            CustomStyles::Off => Vec::new(),
-            CustomStyles::Use => Slot::ALL
-                .into_iter()
-                .filter(|slot| !self.text(*slot).trim().is_empty())
-                .map(|slot| {
-                    let (text, _) = reach::within(self.text(slot), self.home(slot));
-                    let text = match slot {
-                        Slot::Look => layers::look(&text),
-                        Slot::Desktop | Slot::App => text,
-                    };
-                    Drawn { slot, text }
-                })
-                .collect(),
+    /// The sheets to draw, lowest first: none when `custom_styles` (`appearance.custom_styles`)
+    /// is off, and none that is blank. Each has gone through the reach rule.
+    pub fn drawn(&self, custom_styles: bool) -> Vec<Drawn> {
+        if !custom_styles {
+            return Vec::new();
         }
+        Slot::ALL
+            .into_iter()
+            .filter(|slot| !self.text(*slot).trim().is_empty())
+            .map(|slot| {
+                let (text, _) = reach::within(self.text(slot), self.home(slot));
+                let text = match slot {
+                    Slot::Look => layers::look(&text),
+                    Slot::Desktop | Slot::App => text,
+                };
+                Drawn { slot, text }
+            })
+            .collect()
     }
 
     /// What the reach rule cut from the three sheets, in cascade order.

@@ -1,7 +1,7 @@
 //! `use_styles`: the styles every `Ds` root draws, live, and whether the person's are drawn.
 
 use dioxus::prelude::{ReadSignal, try_consume_context, use_hook};
-use ds::style::kit::{CustomStyles, Styles};
+use ds::style::kit::Styles;
 use ds_blitz::StylesGuard;
 use shell_host::use_watch;
 use tokio::sync::watch;
@@ -14,8 +14,8 @@ use crate::settings::SettingsFeed;
 pub struct StyleSource {
     /// The three sheets, live; empty when the document was built without a [`SettingsFeed`].
     pub styles: ReadSignal<Styles>,
-    /// `appearance.custom_styles`, forced to `Off` while the crash guard has the styles off.
-    pub custom_styles: CustomStyles,
+    /// `appearance.custom_styles`, forced off while the crash guard has the styles off.
+    pub custom_styles: bool,
 }
 
 /// The [`StyleSource`] of this document. Call it before the component's first early return.
@@ -29,10 +29,7 @@ pub fn use_styles() -> StyleSource {
     let guard = use_watch(guard);
     let appearance = use_appearance();
     let withheld = guard().as_ref().map(StylesGuard::load) == Some(false);
-    let custom_styles = match withheld {
-        true => CustomStyles::Off,
-        false => appearance().settings.appearance.custom_styles,
-    };
+    let custom_styles = !withheld && appearance().settings.appearance.custom_styles;
     StyleSource {
         styles,
         custom_styles,

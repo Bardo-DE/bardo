@@ -5,7 +5,7 @@
 
 use std::time::Duration;
 
-use ds::style::kit::{CustomStyles, UserStyle};
+use ds::style::kit::UserStyle;
 use ds_settings::Environment;
 use sill_overlays::Osd;
 use sill_ui_kit::harness::SurfaceHarness;
@@ -32,7 +32,7 @@ fn all_drawn(running: &SurfaceHarness<Osd>) -> usize {
     running.harness.html().matches("data-ds-style").count()
 }
 
-fn with_custom_styles(custom: CustomStyles) -> Environment {
+fn with_custom_styles(custom: bool) -> Environment {
     let mut environment = Environment::default();
     environment.settings.appearance.custom_styles = custom;
     environment
@@ -103,13 +103,13 @@ fn use_my_styles_off_removes_both_sheets_and_on_brings_them_back() {
     settle(&mut running);
     assert_eq!(all_drawn(&running), 2);
 
-    running.set_appearance(with_custom_styles(CustomStyles::Off));
+    running.set_appearance(with_custom_styles(false));
     settle(&mut running);
     assert_eq!(all_drawn(&running), 0);
     let html = running.harness.html();
     assert!(!html.contains(RED) && !html.contains(BLUE), "{html}");
 
-    running.set_appearance(with_custom_styles(CustomStyles::Use));
+    running.set_appearance(with_custom_styles(true));
     settle(&mut running);
     assert_eq!(all_drawn(&running), 2);
 }

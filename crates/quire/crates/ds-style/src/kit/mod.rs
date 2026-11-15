@@ -3,7 +3,6 @@
 //! listed in.
 
 mod blocks;
-mod custom_styles;
 mod kits;
 mod model;
 pub mod reach;
@@ -13,7 +12,6 @@ mod styles;
 mod tests;
 mod user_style;
 
-pub use custom_styles::CustomStyles;
 pub use kits::{Kits, KnownNames};
 pub use model::{Kit, KitRank, Section, Sheet, Vocabulary};
 pub use styles::{Drawn, Dropped, Fingerprint, LookStyle, Slot, StyleHomes, Styles};

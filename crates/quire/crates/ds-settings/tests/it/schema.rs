@@ -135,7 +135,7 @@ fn settable(schema: &Schema) -> Vec<&str> {
 }
 
 #[test]
-fn use_my_styles_is_a_use_off_choice_on_the_appearance_page_that_defaults_to_use() {
+fn use_my_styles_is_a_switch_on_the_appearance_page_that_defaults_to_on() {
     use ds_settings::schema::{KeyKind, Page};
     let schema = quire_schema();
     let key = schema
@@ -145,12 +145,13 @@ fn use_my_styles_is_a_use_off_choice_on_the_appearance_page_that_defaults_to_use
         .expect("the key is in the schema");
     assert_eq!(key.label.0, "Use my styles");
     assert_eq!(key.page, Page::Appearance);
-    assert_eq!(key.default, toml::Value::String("use".to_owned()));
+    assert_eq!(key.default, toml::Value::Boolean(true));
     assert_eq!(key.agent, AgentSetting::Settable);
-    let KeyKind::Segmented { variants } = &key.kind else {
-        panic!("a two-word enum is a segmented choice: {:?}", key.kind);
-    };
-    assert_eq!(variants, &["use".to_owned(), "off".to_owned()]);
+    assert!(
+        matches!(key.kind, KeyKind::Toggle),
+        "a bool is a switch: {:?}",
+        key.kind
+    );
 }
 
 #[test]

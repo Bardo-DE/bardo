@@ -2,7 +2,7 @@
 //! `data:` or a file inside the sheet's own folder, and the rewrite cuts the rest.
 
 use ds_style::kit::reach::within;
-use ds_style::kit::{CustomStyles, LookStyle, Slot, StyleHomes, Styles, UserStyle};
+use ds_style::kit::{LookStyle, Slot, StyleHomes, Styles, UserStyle};
 use std::path::{Path, PathBuf};
 
 const HOME: &str = "/home/ada/.config/quire";
@@ -158,7 +158,7 @@ fn styles() -> Styles {
 
 #[test]
 fn the_sheets_are_drawn_look_then_desktop_then_app_with_the_look_in_its_layer() {
-    let drawn = styles().drawn(CustomStyles::Use);
+    let drawn = styles().drawn(true);
     let slots: Vec<Slot> = drawn.iter().map(|sheet| sheet.slot).collect();
     assert_eq!(slots, [Slot::Look, Slot::Desktop, Slot::App]);
     assert!(
@@ -176,13 +176,13 @@ fn the_sheets_are_drawn_look_then_desktop_then_app_with_the_look_in_its_layer() 
 
 #[test]
 fn off_draws_nothing_and_a_blank_sheet_draws_no_element() {
-    assert!(styles().drawn(CustomStyles::Off).is_empty());
+    assert!(styles().drawn(false).is_empty());
     let only_app = Styles {
         app: UserStyle(".a{}".to_owned()),
         ..Styles::default()
     };
-    assert_eq!(only_app.drawn(CustomStyles::Use).len(), 1);
-    assert!(Styles::default().drawn(CustomStyles::Use).is_empty());
+    assert_eq!(only_app.drawn(true).len(), 1);
+    assert!(Styles::default().drawn(true).is_empty());
 }
 
 #[test]

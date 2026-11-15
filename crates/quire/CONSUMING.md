@@ -328,7 +328,7 @@ fn App() -> Element {
 | `stylesheet` | `Inject` | `Inject::Inline` | `Inline` puts a `<style>` inside `.ds` (spike S1); `Host` lets you inject `ds::stylesheet()` yourself |
 | `sheet` | `Option<&'static str>` | `None`: `ds::stylesheet()` | the text `Inject::Inline` writes; an app that takes `ds-shell` passes `Some(ds_shell::stylesheet())` |
 | `styles` | `ReadSignal<Styles>` | empty | the look and the person's desktop-wide and per-app stylesheets, drawn after the design system's (section 12) |
-| `custom_styles` | `CustomStyles` | `Use` | `Off` draws none of the three sheets (`appearance.custom_styles`, "Use my styles", section 12) |
+| `custom_styles` | `bool` | `true` | `false` draws none of the three sheets (`appearance.custom_styles`, "Use my styles", section 12) |
 | `surface` | `Option<&'static str>` | `None` | stamped as `data-surface`, the name a user stylesheet selects this root by |
 | `chrome` | `Option<RootChrome>` | `None`: `RootChrome::of(material)` | `Painted` or `Transparent`: whether the root box paints its material. A Popover, Sheet or Toast root is transparent by default (it hosts floating cards, which paint the material themselves); pass `Painted` for a root that *is* the panel (the launcher) — section 6, "bar gaps" |
 | `ground` | `Option<Ground>` | `None`: `Ground::of(material)` | `Paper` or `Frame`: which inks the content takes; Bar and Dock default to `Frame` |
@@ -2129,11 +2129,11 @@ the look `@layer look`, and the person's text is unlayered, so a person's rule w
 whatever its specificity (`.ds-button { ... }` beats quire's `.ds-button[data-variant=push]`) and
 never needs `!important`. `homes` names the folder each sheet may read files from (the look
 Extension's folder, the config folders); a sheet with no home may name `data:` and nothing else.
-`custom_styles: CustomStyles` is `appearance.custom_styles` ("Use my styles"): `Off` draws none of
+`custom_styles: bool` is `appearance.custom_styles` ("Use my styles"): `false` draws none of
 the three.
 
 ```rust,ignore
-use ds::style::kit::{CustomStyles, Styles, UserStyle};
+use ds::style::kit::{Styles, UserStyle};
 use ds_settings::{AppName, ConfigRoot, Store};
 
 let desktop = Store::new(ConfigRoot::Xdg, AppName::QUIRE);
@@ -2171,7 +2171,7 @@ use_future(move || {
 });
 rsx! {
     // `custom_styles`: `appearance.custom_styles` from the environment ("Use my styles")
-    Ds { appearance: Appearance::default(), material: Material::Window, styles, custom_styles: CustomStyles::Use, YourPage {} }
+    Ds { appearance: Appearance::default(), material: Material::Window, styles, custom_styles: true, YourPage {} }
 }
 ```
 
@@ -2185,7 +2185,7 @@ which files the document may read at all (`FileRoots`): name the folders of the 
 `ds_blitz::StylesGuard::begin(&state_dir, "your-app", &styles)` (`state_dir` is
 `ConfigRoot::state_dir(AppName::QUIRE)`). If your last two starts with the same sheets never
 reached a first frame plus five seconds alive, `guard.load()` is `false`: draw with
-`custom_styles: CustomStyles::Off`, show `StylesOffNotice { program: "your-app", onturnon }`, and in
+`custom_styles: false`, show `StylesOffNotice { program: "your-app", onturnon }`, and in
 `onturnon` call `guard.turn_on_again(&styles)`. Call `ds_blitz::use_styles_guard(guard)` once in the
 root so the start is marked good. The next change to any of the three sheets clears the guard
 (`guard.changed(&styles)`).

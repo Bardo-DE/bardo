@@ -11,7 +11,6 @@ use ds_style::appearance::motion::Motion;
 use ds_style::appearance::theme::Theme;
 use ds_style::appearance::transparency::Transparency;
 pub use ds_style::icon::retint::IconStyle;
-use ds_style::kit::CustomStyles;
 use serde::{Deserialize, Serialize};
 
 /// `appearance.*`: what every surface resolves its look from.
@@ -78,7 +77,7 @@ pub struct AppearanceSettings {
     )]
     pub file_icons: Provided,
     /// `appearance.custom_styles`: whether the look and the person's own stylesheets are drawn.
-    /// `off` is the way back from a style that broke a surface; it is a switch, "Use my styles".
+    /// Off is the way back from a style that broke a surface; it is a switch, "Use my styles".
     #[settings(
         label = "Use my styles",
         help = "Draws the look you chose and your own style sheets.",
@@ -86,7 +85,7 @@ pub struct AppearanceSettings {
         section = "Style",
         agent_settable
     )]
-    pub custom_styles: CustomStyles,
+    pub custom_styles: bool,
 }
 
 impl Default for AppearanceSettings {
@@ -98,7 +97,7 @@ impl Default for AppearanceSettings {
             transparency: Transparency::System,
             look: Provided::standard(),
             file_icons: Provided::standard(),
-            custom_styles: CustomStyles::Use,
+            custom_styles: true,
         }
     }
 }

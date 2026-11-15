@@ -13,7 +13,7 @@ use crate::links::Outbox;
 
 /// The person pressed Turn On Again on the notice that says their styles were turned off. The
 /// daemon follows the [`SettingsFeed`]'s `turn_on` and sets `appearance.custom_styles` back to
-/// `use`.
+/// `true`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TurnOnStyles;
 

@@ -131,7 +131,7 @@ impl StyleKeeper {
         }
     }
 
-    /// Turn On Again: `appearance.custom_styles` back to `use`, the failed starts forgotten, and
+    /// Turn On Again: `appearance.custom_styles` back to `true`, the failed starts forgotten, and
     /// this start's sheets guarded afresh.
     pub fn turn_on_again(&self) {
         if let Err(error) = write_use(&self.appearance) {
@@ -199,11 +199,11 @@ fn report_dropped(styles: &Styles) {
     }
 }
 
-/// `appearance.custom_styles = "use"`, in place, keeping the rest of the file.
+/// `appearance.custom_styles = true`, in place, keeping the rest of the file.
 fn write_use(store: &Store) -> Result<(), SettingsError> {
     SettingsWriter::of::<AppearanceFile>(store)?.patch(
         &KeyPath("appearance.custom_styles".to_owned()),
-        &toml::Value::String("use".to_owned()),
+        &toml::Value::Boolean(true),
     )
 }
 

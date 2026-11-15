@@ -21,7 +21,7 @@
 //! desktop | app>` right after the design-system sheet, lowest first. The look is `@layer look`
 //! (after `ds` and `app`); the person's two are unlayered, so their rules beat every layered one
 //! whatever the specificity, and the app's own beat the desktop-wide ones. A change to the signal
-//! restyles the document; a blank sheet draws no element. `custom_styles: CustomStyles::Off`
+//! restyles the document; a blank sheet draws no element. `custom_styles: false`
 //! ("Use my styles" is off, `appearance.custom_styles`) draws none of the three.
 //!
 //! `surface` is the consumer's name for the surface this root is (`[data-surface=bar]`, the public
@@ -72,7 +72,7 @@ use ds_core::word::Word;
 use ds_style::appearance::blur::blur_word;
 use ds_style::appearance::material::Material;
 use ds_style::appearance::{appearance::Appearance, resolve::resolve, system::SystemPrefs};
-use ds_style::kit::{CustomStyles, Styles};
+use ds_style::kit::Styles;
 use ds_style::scale::use_root_scale;
 use ds_style::scope::{Scope, use_scope_provider};
 use ds_style::space::{frame_vars::FrameVars, look::SpaceLook, provided::use_space_look_provider};
@@ -108,7 +108,7 @@ pub fn Ds(
     #[props(default)] window: WindowFrame,
     #[props(default)] extent: RootExtent,
     #[props(default)] styles: ReadSignal<Styles>,
-    #[props(default)] custom_styles: CustomStyles,
+    #[props(default = true)] custom_styles: bool,
     #[props(default)] surface: Option<&'static str>,
     #[props(default)] tip_delay: TipDelay,
     children: Element,

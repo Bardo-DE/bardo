@@ -111,7 +111,7 @@ hand-written. Where a note's default disagrees with the table, the table (the co
 | `appearance.transparency` | choice {system, reduced} | `system` |  | Appearance | Settings |  |
 | `appearance.look` | provided (look) | `standard` |  | Appearance | Settings | may set |
 | `appearance.file_icons` | provided (file_icons) | `standard` |  | Appearance | Settings | may set |
-| `appearance.custom_styles` | choice {use, off} | `use` |  | Appearance | Settings | may set |
+| `appearance.custom_styles` | switch | on |  | Appearance | Settings | may set |
 
 <!-- keys:end appearance -->
 
@@ -123,7 +123,7 @@ hand-written. Where a note's default disagrees with the table, the table (the co
 | `appearance.transparency` | the portal has no key for it, so ours is a setting; `Reduced` paints every material solid and drops the vibrancy boost; the compositor reads it from this file, as it reads `theme` | `27-HIG-PARITY.md` section 3.1 | settled (adopted in 27) |
 | `appearance.look` | `standard`, or the id of an installed look Extension; a stored id that is not installed or is turned off reads as `standard` where the installed Extensions are known, and is reported once (`ds_extensions::chosen`). The choices come from the caller (9.1, `Provided`) | the customization design, sections 5 and 7.7 | proposed (2026-10-23) |
 | `appearance.file_icons` | `standard`, or the id of an installed file-icons Extension (a folder of pictures keyed by file type); a stored id that is not installed or is turned off reads as `standard` and is reported once (`ds_extensions::chosen`). A type the Extension has no picture for keeps the standard icon. Section "Files" of the Appearance page | the customization design, sections 5 and 6 | proposed (2026-10-24) |
-| `appearance.custom_styles` | "Use my styles": `off` makes `Ds` draw none of the look, the desktop-wide `style.css` or the app's `style.css`, live; the way back from a broken style (customization design section 7.4) | customization/DESIGN.md section 7.4 | proposed (2026-10-23) |
+| `appearance.custom_styles` | "Use my styles": off makes `Ds` draw none of the look, the desktop-wide `style.css` or the app's `style.css`, live; the way back from a broken style (customization design section 7.4) | customization/DESIGN.md section 7.4 | proposed (2026-10-23) |
 
 **Removed 2026-10-27 (settings keep only what macOS offers or a real behaviour choice).** The seven
 `appearance.material_*` keys are stylesheet tokens, not settings: `--m-tint-alpha` (.8),

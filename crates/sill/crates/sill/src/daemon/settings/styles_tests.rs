@@ -136,7 +136,7 @@ async fn a_desktop_wide_file_write_reaches_the_feed_without_a_reload() {
 }
 
 /// Two starts that never marked themselves good turn the third off; Turn On Again writes
-/// `appearance.custom_styles = "use"` and begins afresh.
+/// `appearance.custom_styles = true` and begins afresh.
 #[test]
 fn two_unfinished_starts_turn_the_styles_off_and_turn_on_again_brings_them_back() {
     let dir = temp_dir("guard");
@@ -151,10 +151,7 @@ fn two_unfinished_starts_turn_the_styles_off_and_turn_on_again_brings_them_back(
     third.publish(&HostEvent::App(ShellMsg::TurnOnStyles));
     assert_eq!(load_of(&third), Some(true));
     let appearance = text_of::<AppearanceFile>(&desktop_store(&dir));
-    assert!(
-        appearance.contains("custom_styles = \"use\""),
-        "{appearance}"
-    );
+    assert!(appearance.contains("custom_styles = true"), "{appearance}");
     let _ = std::fs::remove_dir_all(&dir);
 }
 

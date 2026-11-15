@@ -439,7 +439,7 @@ mod schema {
 /// Section 12, user styles.
 #[component]
 fn UserStyled() -> Element {
-    use ds::style::kit::{CustomStyles, Styles, UserStyle};
+    use ds::style::kit::{Styles, UserStyle};
     use ds_settings::{AppName, ConfigRoot, Store};
 
     let desktop = Store::new(ConfigRoot::Xdg, AppName::QUIRE);
@@ -477,7 +477,7 @@ fn UserStyled() -> Element {
     });
     rsx! {
         // `custom_styles`: `appearance.custom_styles` from the environment ("Use my styles")
-        Ds { appearance: Appearance::default(), material: Material::Window, styles, custom_styles: CustomStyles::Use, YourPage {} }
+        Ds { appearance: Appearance::default(), material: Material::Window, styles, custom_styles: true, YourPage {} }
     }
 }
 
@@ -497,7 +497,6 @@ fn RootApp() -> Element {
 /// Section 4, `Surface`.
 #[component]
 fn Nested() -> Element {
-
     rsx! {
         Surface { material: Material::Popover, theme: Some(Scheme::Dark),
             YourPage {}

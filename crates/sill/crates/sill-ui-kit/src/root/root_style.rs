@@ -4,7 +4,7 @@
 //! a popup's is the name its opener gives its [`crate::menu::PopupFrame`].
 
 use dioxus::prelude::{ReadSignal, try_consume_context, use_hook};
-use ds::style::kit::{CustomStyles, Styles};
+use ds::style::kit::Styles;
 
 use crate::hooks::{StyleSource, use_styles};
 
@@ -21,7 +21,7 @@ pub struct RootStyle {
     /// The three sheets, live.
     pub styles: ReadSignal<Styles>,
     /// Whether they are drawn (`appearance.custom_styles`).
-    pub custom_styles: CustomStyles,
+    pub custom_styles: bool,
 }
 
 impl RootStyle {
