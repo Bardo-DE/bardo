@@ -141,7 +141,6 @@ module); `Rgba8`; `TextureBook`; `Transcript`, `Pattern`; `FixtureSpec`, `TestOr
 | smithay stamps xdg-activation tokens with `Instant::now` | P0-H2 judges token age by `XdgActivationPart::issued` (session `Mono`) only |
 | The model has no tablet input kind, so `VirtualInput` maps tablet events to smithay's `UnusedEvent` | a delta freeze adds tablet input to `casement_core::input::InputKind` |
 | `SoftPixman` and `FixedUdmabuf` (A4) have constructors only; their renderer and allocator trait impls (pure delegation) and the `GraphicsApi` over the jail's fabricated nodes are P1-D4's | P1-D4's soft topology suite ("display on A, client buffers from B", counters asserted, A5) |
-| `casement-scene-css` is filled (lane P3-CSS, branch lane/cas16-scenecss) but never built or run: that lane had no compiler | the first `dev/scene-css.sh` run, after the two dependency lines below are added to `casement-scene-css/Cargo.toml` |
 | Protocol tests carry `todo!()` client steps: the fixture setup and the scenario are written, the testclient helpers are not | each H lane writes its helper module and the steps in the same change |
 | `taffy_bridge` (`new_tree`, `solve`, `rect_of`, `fixed_size`) has no caller outside its test | DONE for Split View (wave-2026-10-15/split: `taffy_bridge/split.rs`, called by `rust_scene/split.rs`); the `expect` on the module is removed. Exposé is the next caller but needs none of it to compile |
 | Mission Control spread quality: scale about 0.30 at 20 windows, 0.19 to 0.22 at 30 to 50 (A21) | the user decides at P3 whether to enable refinement trials or a better packer |
@@ -3346,37 +3345,6 @@ for the toplevel's own buffers (`casement_render::pass`); the borrow split in `i
 `state.render` while `state.core` is read); `scripts/check-boundary.sh` rows B4/B15 (resvg without `text` must not pull
 parley or fontique into the graph).
 
-## casement-scene-css: the exclusions (P3-CSS)
-
-`CssScene` (a blitz-dom document styled by `casement-scene-css/src/scene.css`) answers the layout seam for everything
-`RustScene` lays out today except the rows below. `casement-scene-css/tests/parity.rs` compares the two exactly over 500
-seeded specs and names each exclusion as a constant; none is hidden by loosening the comparison. `dev/scene-css.sh` runs it.
-
-| Exclusion (test constant) | Why CSS cannot say it | What the test does instead |
-| --- | --- | --- |
-| Mission Control slots, icon rects and `LayoutReport::SpreadOverflow` (`SPREAD`) | the spread is an iterative push-apart (24 passes per trial, 0.85 scale steps, shelf-pack fallback); CSS has no loop or search | both sides drop `overview` and `SpreadOverflow`; the RustScene slots must be exactly the shown desktop Space's windows that have a target. `CssScene` returns no slots, so S-L6 does not cover the spread or `icon_rect`; its proptests in `casement-layout` do |
-| a cascade step that is not one positive length on both axes (`CASCADE_STEP`) | the walk is `mod(nth * step, M + step)`, where `M` is the tighter axis's whole steps; with two different steps the period is not one length. Zero and negative steps walk the other way. Production uses one titlebar height on both | specs use equal steps in 1..=80; `document/desktop.rs` clamps to at least 1 |
-| `WindowPlacement::Tiled` (`TILED`) | not CSS: RustScene tiles a window to its zone's half or quarter of the usable area inside the tile margin (`rust_scene/tile_zone.rs`, P3-TL), which CSS does not generate | not generated: a `TileZone` is a `casement-protocols` type this crate does not depend on |
-| App Exposé and Show Desktop (`APP_EXPOSE`, `SHOW_DESKTOP`) | RustScene arranges them as plain desktops today (P3-Z adds them) | generated and compared as desktops; when P3-Z lands them the CSS and the constants change together |
-| `Keep`/`Resize` and `MinUnmet` | they compare a size with the one asked for and with the minimum: not geometry | derived in `read.rs` from the laid-out boxes and the spec, with RustScene's own definitions (a full-screen or Split View window always `Resize`; a full-screen one never `MinUnmet`) |
-| `u32`/`i32` saturation and coordinates beyond f32's 2^24 | CSS lengths are f32 | specs stay within about +-6000 logical pixels |
-
-Also stated, not excluded: Space origins carry `--apart` (the row distance from the shown Space) from `document.rs`, and the
-cascade's `--nth` is the window's place among the Space's new windows; both are ordinals of the spec, not layout.
-
-Unverified (the lane could not compile or run anything; every blitz-dom name was read in the 063ff2b checkout, every CSS
-behaviour below was read in stylo 0.21 or assumed):
-
-- `casement-scene-css/Cargo.toml` needs `porter-core` and `ds-core` (the test builds `SpaceId`, `ClaimedId`, `Scale`; casement-core
-  re-exports neither), as path deps the way `casement-layout` has them, and nothing else. Until then `cargo test` fails to compile
-  the test; the library builds without them.
-- `round(down, a, b)`, `mod()`, `sign()`, `clamp()` and nested `min()`/`max()` inside custom properties: stylo 0.21 parses
-  `Round`, `Mod`, `Rem`, `Sign` in `values/specified/calc.rs` with no pref gate, but whether blitz's taffy conversion keeps a
-  pure-length `calc` as a plain length for `left`/`width` is assumed. If a function is refused, the box falls back to `auto` and the
-  first parity failure shows it.
-- `DocumentConfig::default()` has no viewport: the boxes are absolute and sized in pixels, so none depends on it.
-- Positions are read with `Node::absolute_position(0.0, 0.0)` (the sum of `final_layout().location` up the layout parents) and
-  sizes from `final_layout().size`; `absolute_position` rounds nothing, `final_layout` is blitz's rounded layout.
 ## wave-2026-10-15/dragstart
 
 `quire_shell_v1` is served at **version 4** (lane `cas17-dragstart`, written without a compiler; needs casement-protocols

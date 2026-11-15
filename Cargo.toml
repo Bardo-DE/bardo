@@ -321,7 +321,6 @@ members = [
     "xtask",
 ]
 exclude = [
-    'crates/casement/casement-scene-css',
     'crates/casement/wlcs-casement',
     'crates/docket/fuzz',
     'crates/stoker/crates/speech-host-sherpa',

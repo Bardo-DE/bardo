@@ -13,9 +13,8 @@ trait), section 4 (copy the recipe).
 
 The workspace holds the pure crates (P0-Z1), the smithay-facing crates, the composition root,
 the binaries and the test kit (P0-Z2). casement-intents joins at P4-Z, casement-chrome at P3-Z.
-`wlcs-casement` (the wlcs shim, MIT, its own one unsafe module `src/ffi.rs`) and
-`casement-scene-css` (the CSS layout oracle, P3) are never members: each has its own
-`[workspace]` table and the root lists them under `exclude` (B16).
+`wlcs-casement` (the wlcs shim, MIT, its own one unsafe module `src/ffi.rs`) is never a member: it has its own
+`[workspace]` table and the root lists it under `exclude` (B16).
 
 | Crate | Purpose | I/O |
 | --- | --- | --- |

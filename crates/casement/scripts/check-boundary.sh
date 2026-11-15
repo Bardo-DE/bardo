@@ -148,7 +148,7 @@ names_only "B15 only casement-chrome names the text stack" \
   '\b(parley|fontique|vello_cpu)::|extern crate (parley|fontique|vello_cpu)' 'crates/casement-chrome/'
 
 # B16 the excluded crates are never members.
-for excluded in wlcs-casement casement-scene-css; do
+for excluded in wlcs-casement; do
   if is_member "$excluded"; then bad "B16 $excluded is a workspace member"; else ok "B16 $excluded is not a member"; fi
 done
 
