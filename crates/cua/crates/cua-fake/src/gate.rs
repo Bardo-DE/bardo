@@ -22,25 +22,6 @@ pub enum Verdict {
     AskAndHang,
 }
 
-/// What a check does when it has said everything it was told to say.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum AfterEvents {
-    /// The router is gone: the next read fails.
-    Unavailable,
-    /// The router has not answered yet: the next read never returns.
-    Hang,
-}
-
-/// What the fake router does when asked for the per-app consent.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
-enum GrantWait {
-    /// Answers at once, from the queue.
-    #[default]
-    Answers,
-    /// The person has not answered the question: the call never returns.
-    Never,
-}
-
 /// A [`GateLink`] over a queue of grant answers and a queue of verdicts; when a queue is empty
 /// it grants and runs.
 #[derive(Debug, Default)]
@@ -49,7 +30,8 @@ pub struct FakePdp {
     verdicts: Mutex<VecDeque<Verdict>>,
     checks: Mutex<Vec<CuaAsk>>,
     grant_asks: Mutex<Vec<GrantAsk>>,
-    grant_wait: GrantWait,
+    /// Whether the person never answers the consent question: the call never returns.
+    grant_hangs: bool,
     confirms: Mutex<u32>,
     session: Option<SessionId>,
     closes: Arc<Mutex<u32>>,
@@ -81,7 +63,7 @@ impl FakePdp {
     /// A gate whose consent question nobody answers: `Gate.Grant` never returns.
     pub fn grant_unanswered() -> Self {
         Self {
-            grant_wait: GrantWait::Never,
+            grant_hangs: true,
             ..Self::default()
         }
     }
@@ -117,7 +99,9 @@ impl FakePdp {
 #[derive(Debug)]
 pub struct FakeCheck {
     events: VecDeque<GateEvent>,
-    after: AfterEvents,
+    /// Whether, once it has said everything, the next read never returns (the router has not
+    /// answered yet) rather than failing (the router is gone).
+    hangs: bool,
     proceeded: Mutex<u32>,
     closed: Arc<Mutex<u32>>,
 }
@@ -139,7 +123,7 @@ impl GateLink for FakePdp {
 
     async fn grant(&self, ask: GrantAsk) -> Result<GrantAnswer, LinkError> {
         self.grant_asks.lock().expect("fake gate lock").push(ask);
-        if self.grant_wait == GrantWait::Never {
+        if self.grant_hangs {
             std::future::pending::<()>().await;
         }
         Ok(self
@@ -174,24 +158,18 @@ impl GateLink for FakePdp {
             .expect("fake gate lock")
             .pop_front()
             .unwrap_or(Verdict::Run);
-        let (events, after) = match verdict {
-            Verdict::Run => (
-                vec![GateEvent::Answered(GateAnswer::Run)],
-                AfterEvents::Unavailable,
-            ),
-            Verdict::Refuse(why) => (
-                vec![GateEvent::Answered(GateAnswer::Refused(why))],
-                AfterEvents::Unavailable,
-            ),
+        let (events, hangs) = match verdict {
+            Verdict::Run => (vec![GateEvent::Answered(GateAnswer::Run)], false),
+            Verdict::Refuse(why) => (vec![GateEvent::Answered(GateAnswer::Refused(why))], false),
             Verdict::AskThen(answer) => (
                 vec![self.confirming(), GateEvent::Answered(answer)],
-                AfterEvents::Unavailable,
+                false,
             ),
-            Verdict::AskAndHang => (vec![self.confirming()], AfterEvents::Hang),
+            Verdict::AskAndHang => (vec![self.confirming()], true),
         };
         Ok(FakeCheck {
             events: events.into(),
-            after,
+            hangs,
             proceeded: Mutex::new(0),
             closed: self.closes.clone(),
         })
@@ -202,10 +180,8 @@ impl GateCheck for FakeCheck {
     async fn next(&mut self) -> Result<GateEvent, LinkError> {
         match self.events.pop_front() {
             Some(event) => Ok(event),
-            None => match self.after {
-                AfterEvents::Unavailable => Err(LinkError::Unavailable),
-                AfterEvents::Hang => std::future::pending().await,
-            },
+            None if self.hangs => std::future::pending().await,
+            None => Err(LinkError::Unavailable),
         }
     }
 
