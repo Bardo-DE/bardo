@@ -10,7 +10,7 @@ use ds::prelude::*;
 use sill_bar::control_center::{ControlCenter, ModuleDropdown};
 use sill_model::ids::OutputName;
 use sill_settings::ControlCenterModule;
-use sill_settings::{OnOff, ShellFile};
+use sill_settings::ShellFile;
 use sill_ui_kit::links::FocusLink;
 use sill_ui_kit::services::Services;
 use sill_ui_kit::settings::SettingsFeed;
@@ -64,7 +64,7 @@ fn render_dom(mut dom: VirtualDom, services: Services, file: ShellFile) -> Strin
     let _entered = rt.enter();
     dom.provide_root_context(services);
     dom.provide_root_context(SettingsFeed::fixed(file));
-    dom.provide_root_context(FocusLink::fixed(OnOff::On));
+    dom.provide_root_context(FocusLink::fixed(true));
     dom.rebuild_in_place();
     dioxus_ssr::render(&dom)
 }

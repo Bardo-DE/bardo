@@ -2,7 +2,7 @@
 //! the bar's items stand in the order the settings offer them.
 
 use ds::base::word::Word;
-use sill_settings::{ControlCenterModule, ControlCenterSettings, InMenuBar};
+use sill_settings::{ControlCenterModule, ControlCenterSettings};
 
 use super::{Span, module};
 use crate::bar::BarMenu;
@@ -50,23 +50,18 @@ fn tiles_take_a_column_and_sliders_and_panels_the_row() {
 #[test]
 fn a_module_is_a_bar_item_exactly_when_the_settings_can_show_it() {
     let shown = ControlCenterSettings {
-        menu_bar_wifi: InMenuBar::Show,
-        menu_bar_bluetooth: InMenuBar::Show,
-        menu_bar_sound: InMenuBar::Show,
-        menu_bar_display: InMenuBar::Show,
-        menu_bar_battery: InMenuBar::Show,
-        menu_bar_now_playing: InMenuBar::Show,
+        menu_bar_wifi: true,
+        menu_bar_bluetooth: true,
+        menu_bar_sound: true,
+        menu_bar_display: true,
+        menu_bar_battery: true,
+        menu_bar_now_playing: true,
         ..ControlCenterSettings::default()
     };
     for kind in ControlCenterModule::ALL.iter().copied() {
         let item = module(kind).bar_item();
         let offered = module(kind).menu_bar(&shown);
-        let want = if item.is_some() {
-            InMenuBar::Show
-        } else {
-            InMenuBar::Hide
-        };
-        assert_eq!(offered, want, "{kind:?}");
+        assert_eq!(offered, item.is_some(), "{kind:?}");
         assert_eq!(item.is_some(), MENU_BAR_ORDER.contains(&kind), "{kind:?}");
     }
 }

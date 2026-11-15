@@ -136,7 +136,7 @@ SAFE=unproven
 # The settings both modes run on.
 write_settings() {
   mkdir -p "$CONFIG/sill"
-  printf '[control_center]\nmenu_bar_sound = "hide"\nmenu_bar_battery = "hide"\n' \
+  printf '[control_center]\nmenu_bar_sound = false\nmenu_bar_battery = false\n' \
     >"$CONFIG/sill/settings.toml"
 }
 

@@ -9,7 +9,7 @@ use crate::control_center::modules::use_plate;
 use dioxus::prelude::*;
 use ds::prelude::*;
 use sill_services::NowPlayingService;
-use sill_settings::{ControlCenterSettings, InMenuBar};
+use sill_settings::ControlCenterSettings;
 use sill_shell_kit::prelude::*;
 use sill_ui_kit::hooks::use_service;
 use sill_ui_kit::now_playing::{MediaView, use_media};
@@ -50,7 +50,7 @@ impl CcModule for NowPlayingCc {
         rsx! { NowPlayingModule {} }
     }
 
-    fn menu_bar(&self, settings: &ControlCenterSettings) -> InMenuBar {
+    fn menu_bar(&self, settings: &ControlCenterSettings) -> bool {
         settings.menu_bar_now_playing
     }
 

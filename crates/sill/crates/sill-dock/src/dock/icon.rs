@@ -17,7 +17,7 @@ use ds::prelude::*;
 use ds::style::icon::render::IconPx;
 use ds::style::icon::url::IconUrl;
 use sill_model::apps::{App, AppIcon};
-use sill_settings::{DockSettings, OnOff};
+use sill_settings::DockSettings;
 use sill_shell_kit::dock::tile::plate_side;
 
 use crate::dock::items::ItemKind;
@@ -62,9 +62,10 @@ impl TileSizes {
     /// This frame's `side` under `dock`'s sizes.
     pub fn new(side: f64, dock: &DockSettings) -> TileSizes {
         let rest = f64::from(dock.tile_size_px.0);
-        let largest = match dock.magnification {
-            OnOff::On => rest.max(f64::from(dock.magnified_size_px.0)),
-            OnOff::Off => rest,
+        let largest = if dock.magnification {
+            rest.max(f64::from(dock.magnified_size_px.0))
+        } else {
+            rest
         };
         TileSizes {
             side,

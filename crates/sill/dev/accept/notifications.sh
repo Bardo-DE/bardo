@@ -23,7 +23,7 @@
 #   5. Three from one app within 2 s make one card (one card's height, `status` banners 3); five
 #      from five apps make three cards (three cards' height). Then three from one app and two
 #      others: dev/out/banners-stack-casement.png, a stack with a group.
-#   6. notifications.dnd = "on" and `sill reload`: a normal one shows no banner but kept rises;
+#   6. notifications.dnd = true and `sill reload`: a normal one shows no banner but kept rises;
 #      so does an app's critical one (only the shell's own notices pass Do Not Disturb).
 #   7. `sill debug click` on the body of one sent with `--action default=Open`: the card leaves
 #      and kept falls by one.
@@ -221,7 +221,7 @@ run_recovering() {
 # --- the banners (default mode) ---
 
 dnd_setting() {
-  printf '[notifications]\ndnd = "%s"\n' "$1" >"$CONFIG/sill/settings.toml"
+  printf '[notifications]\ndnd = %s\n' "$1" >"$CONFIG/sill/settings.toml"
 }
 
 # The height of the capture $1's drawn part (rows with any opaque pixel), 0 for none.
@@ -366,7 +366,7 @@ step_grouping() {
 # 6.
 step_dnd() {
   local kept
-  dnd_setting on
+  dnd_setting true
   sill_sent reload >>"$OUT_DIR/notify.log" 2>&1 || return 1
   sleep 0.5
   kept=$(status_field kept)
@@ -379,7 +379,7 @@ step_dnd() {
   if shows; then echo "an app's critical banner showed under Do Not Disturb" >&2; return 1; fi
   await_status kept $((kept + 2)) || return 1
   echo "DND: a normal and a critical one kept without a banner (kept $kept -> $((kept + 2)))" >&2
-  dnd_setting off
+  dnd_setting false
   sill_sent reload >>"$OUT_DIR/notify.log" 2>&1
 }
 
@@ -1231,7 +1231,7 @@ setup_banners() {
   await_no_process || return 1
   start_private_bus || return 1
   : >"$OUT_DIR/notify.log"
-  dnd_setting off
+  dnd_setting false
   backdrop_seed "$CONFIG" || return 1
   launch_daemon || return 1
   NAME=$(output_name) || return 1
@@ -1261,7 +1261,7 @@ setup_real() {
   fi
   KWIN_UP=yes
   [ "$SCALE" = 1 ] || set_scale "$SCALE" || return 1
-  printf '[control_center]\nmenu_bar_sound = "hide"\nmenu_bar_battery = "hide"\n' \
+  printf '[control_center]\nmenu_bar_sound = false\nmenu_bar_battery = false\n' \
     >"$CONFIG/sill/settings.toml"
   seed_checks || { echo "no checks wallpaper" >&2; return 1; }
   launch_daemon || return 1

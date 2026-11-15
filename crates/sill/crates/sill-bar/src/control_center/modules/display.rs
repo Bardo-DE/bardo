@@ -15,7 +15,7 @@ use super::night_shift::NightShiftRow;
 use super::wired::WiredDisplay;
 use crate::bar::{BarMenu, StatusIcon};
 use crate::control_center::LevelModule;
-use sill_settings::{ControlCenterSettings, InMenuBar};
+use sill_settings::ControlCenterSettings;
 
 /// The Display module at `level`.
 #[component]
@@ -50,7 +50,7 @@ impl CcModule for DisplayCc {
         }
     }
 
-    fn menu_bar(&self, settings: &ControlCenterSettings) -> InMenuBar {
+    fn menu_bar(&self, settings: &ControlCenterSettings) -> bool {
         settings.menu_bar_display
     }
 

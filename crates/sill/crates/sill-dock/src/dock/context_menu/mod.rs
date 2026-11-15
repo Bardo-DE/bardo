@@ -15,7 +15,6 @@ use ds::prelude::Availability;
 use sill_launcher::AppId;
 use sill_model::apps::{App, AppIndex};
 use sill_model::windows::{Toplevel, Toplevels, app_of};
-use sill_settings::OnOff;
 
 use crate::dock::items::{DockItem, ItemKind};
 
@@ -56,9 +55,9 @@ pub enum DockMenuRow {
     OpenTrash(AppId),
     EmptyTrash(Availability),
     /// Turn Hiding On / Off, by the state it is in now.
-    Hiding(OnOff),
+    Hiding(bool),
     /// Turn Magnification On / Off, by the state it is in now.
-    Magnifying(OnOff),
+    Magnifying(bool),
     DockSettings,
 }
 

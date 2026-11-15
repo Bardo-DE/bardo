@@ -5,7 +5,7 @@
 
 use dioxus::prelude::*;
 use sill_model::ids::OutputName;
-use sill_settings::{ControlCenterSettings, InMenuBar};
+use sill_settings::ControlCenterSettings;
 
 use crate::bar::BarMenu;
 use crate::control_center::page::Detail;
@@ -54,8 +54,8 @@ pub(crate) trait CcModule: Sync {
     }
 
     /// Whether `settings` show the module as a bar item of its own (`control_center.menu_bar_*`).
-    fn menu_bar(&self, _settings: &ControlCenterSettings) -> InMenuBar {
-        InMenuBar::Hide
+    fn menu_bar(&self, _settings: &ControlCenterSettings) -> bool {
+        false
     }
 
     /// The module's bar item; `None` for a module that cannot be one.

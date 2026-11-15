@@ -12,7 +12,6 @@ use crate::notifications::{
     NotificationsEffect, NotificationsEvent, NotificationsPolicy, NotifyUrgency, Residency,
     STORED_VERSION, ServerMode, ServerStatus, SoundHint, StoredHistory, Transience, UnixMs,
 };
-use crate::on_off::OnOff;
 
 fn posted(note: Notification) -> NotificationsEvent {
     NotificationsEvent::Posted(Box::new(note))
@@ -150,7 +149,7 @@ fn a_post_shows_a_banner_enters_its_group_and_sounds() {
 #[test]
 fn do_not_disturb_keeps_banners_and_sounds_back_except_the_shells_critical() {
     let dnd = NotificationsPolicy {
-        quiet: OnOff::On,
+        quiet: true,
         ..NotificationsPolicy::default()
     };
     let (state, effects) = run(NotesState::default(), vec![posted(note(1, "a"))], &dnd);

@@ -10,7 +10,6 @@ use sill_launcher::AppId;
 use sill_model::apps::AppIndex;
 use sill_model::pins::DockPins;
 use sill_model::windows::{AppMatch, Toplevel, Toplevels, app_of};
-use sill_settings::OnOff;
 
 use crate::dock::machine::{TileApp, TileId};
 
@@ -57,7 +56,7 @@ pub fn dock_items(
     pins: &DockPins,
     toplevels: &Toplevels,
     index: &AppIndex,
-    trash: OnOff,
+    trash: bool,
 ) -> Vec<DockItem> {
     let groups = running_groups(toplevels, index);
     let pinned = pins.pinned.iter().map(|id| {
@@ -72,10 +71,7 @@ pub fn dock_items(
         .iter()
         .filter(|(group, _)| group.app_id().is_none_or(|id| !pins.pinned.contains(id)))
         .map(|(group, windows)| item(group.clone(), windows));
-    let trash = match trash {
-        OnOff::On => Some(item(ItemKind::Trash, &[])),
-        OnOff::Off => None,
-    };
+    let trash = trash.then(|| item(ItemKind::Trash, &[]));
     pinned.chain(running).chain(trash).collect()
 }
 
@@ -163,7 +159,6 @@ mod tests {
     use sill_model::ids::OutputName;
     use sill_model::pins::DockPins;
     use sill_model::windows::{Sizing, Toplevel, Toplevels};
-    use sill_settings::OnOff;
     use std::path::PathBuf;
 
     fn app(id: &str) -> App {
@@ -247,7 +242,7 @@ mod tests {
             &pins(&["org.gnome.Nautilus", "foot"]),
             &toplevels,
             &index(),
-            OnOff::On,
+            true,
         );
         assert_eq!(
             shape(&items),
@@ -266,12 +261,12 @@ mod tests {
         let toplevels = Toplevels {
             windows: vec![window(1, "firefox", false, true)],
         };
-        let items = dock_items(&pins(&[]), &toplevels, &index(), OnOff::Off);
+        let items = dock_items(&pins(&[]), &toplevels, &index(), false);
         assert_eq!(
             shape(&items),
             vec![("run firefox".to_owned(), TileApp::AllMinimized)]
         );
-        assert!(dock_items(&pins(&[]), &Toplevels::default(), &index(), OnOff::Off).is_empty());
+        assert!(dock_items(&pins(&[]), &Toplevels::default(), &index(), false).is_empty());
     }
 
     #[test]
@@ -283,7 +278,7 @@ mod tests {
                 windows: vec![term.clone()],
             },
             &index(),
-            OnOff::On,
+            true,
         );
         let after = dock_items(
             &pins(&[]),
@@ -291,17 +286,12 @@ mod tests {
                 windows: vec![term, window(1, "firefox", false, false)],
             },
             &index(),
-            OnOff::On,
+            true,
         );
         assert_eq!(before[0].kind, after[1].kind, "firefox came first");
         assert_eq!(before[0].tile, after[1].tile);
         assert_ne!(after[0].tile, after[1].tile);
-        let pinned = dock_items(
-            &pins(&["foot"]),
-            &Toplevels::default(),
-            &index(),
-            OnOff::Off,
-        );
+        let pinned = dock_items(&pins(&["foot"]), &Toplevels::default(), &index(), false);
         assert_eq!(
             pinned[0].tile, before[0].tile,
             "pinned or running, one tile"

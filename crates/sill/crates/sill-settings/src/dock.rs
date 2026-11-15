@@ -7,8 +7,6 @@ use ds_settings::Px;
 use ds_settings::schema::Page;
 use serde::{Deserialize, Serialize};
 
-use sill_model::on_off::OnOff;
-
 /// The dock's settings.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ds_settings::SettingsSchema)]
 #[serde(default)]
@@ -31,7 +29,7 @@ pub struct DockSettings {
         help = "Icons grow under the pointer.",
         section = "Dock"
     )]
-    pub magnification: OnOff,
+    pub magnification: bool,
     #[settings(
         label = "Magnified size",
         help = "How big the icon under the pointer gets.",
@@ -48,20 +46,20 @@ pub struct DockSettings {
         section = "Hiding",
         note = "The Dock slides away until the pointer reaches the bottom edge."
     )]
-    pub autohide: OnOff,
+    pub autohide: bool,
     #[settings(
         label = "Show indicators for open apps",
         help = "A dot under each app with a window.",
         section = "Behaviour",
         note = "A small dot shows under apps that are open."
     )]
-    pub indicators: OnOff,
+    pub indicators: bool,
     #[settings(
         label = "Show Trash",
         help = "Adds a Trash tile at the end.",
         section = "Behaviour"
     )]
-    pub trash: OnOff,
+    pub trash: bool,
     /// `dock.floor`.
     #[settings(
         label = "Floor",
@@ -69,19 +67,19 @@ pub struct DockSettings {
         section = "Dock",
         advanced
     )]
-    pub floor: OnOff,
+    pub floor: bool,
 }
 
 impl Default for DockSettings {
     fn default() -> Self {
         DockSettings {
-            magnification: OnOff::On,
+            magnification: true,
             tile_size_px: Px(48),
             magnified_size_px: Px(72),
-            autohide: OnOff::Off,
-            indicators: OnOff::On,
-            trash: OnOff::On,
-            floor: OnOff::Off,
+            autohide: false,
+            indicators: true,
+            trash: true,
+            floor: false,
         }
     }
 }

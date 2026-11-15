@@ -8,9 +8,8 @@ use ds_settings::{ConfigRoot, Px, Store};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use sill_settings::{
-    APP, BarSettings, ControlCenterSettings, DockSettings, InMenuBar, LauncherSettings,
-    NotificationsSettings, OnOff, Percent, ScrollSettings, ScrollbarSettings, ShellFile,
-    TrackClick,
+    APP, BarSettings, ControlCenterSettings, DockSettings, LauncherSettings, NotificationsSettings,
+    Percent, ScrollSettings, ScrollbarSettings, ShellFile, TrackClick,
 };
 
 /// The store whose `sill` directory is inside `dir`.
@@ -60,7 +59,7 @@ fn a_bad_value_costs_only_its_own_key() {
     // table on the bad value fails it.
     let cases: Vec<(&str, &str, ShellFile)> = vec![
         (
-            "an unknown enum word keeps its sibling",
+            "a value of the wrong type keeps its sibling",
             "[dock]\nindicators = \"maybe\"\ntile_size_px = 64\n",
             with(|f| f.dock.tile_size_px = Px(64)),
         ),
@@ -71,8 +70,8 @@ fn a_bad_value_costs_only_its_own_key() {
         ),
         (
             "a missing table is that table's defaults",
-            "[notifications]\ndnd = \"on\"\n",
-            with(|f| f.notifications.dnd = OnOff::On),
+            "[notifications]\ndnd = true\n",
+            with(|f| f.notifications.dnd = true),
         ),
         (
             "a table that is not a table is its defaults",
@@ -82,7 +81,7 @@ fn a_bad_value_costs_only_its_own_key() {
         (
             "a list of unknown modules is the default list",
             "[control_center]\nmodules = [\"toaster\"]\nmenu_bar_wifi = \"show\"\n",
-            with(|f| f.control_center.menu_bar_wifi = InMenuBar::Show),
+            with(|f| f.control_center.menu_bar_wifi = true),
         ),
     ];
     let dir = TempDir::new("lenient");
@@ -90,7 +89,7 @@ fn a_bad_value_costs_only_its_own_key() {
         write(&dir, text.as_bytes());
         let got = load(&dir);
         assert_eq!(got, want, "{name}");
-        assert_eq!(got.dock.indicators, OnOff::On, "{name}");
+        assert!(got.dock.indicators, "{name}");
     }
 }
 
@@ -109,7 +108,7 @@ fn a_save_is_one_file_and_reads_back() {
     let dir = TempDir::new("save");
     let target = dir.path().join("sill");
     let file = with(|f| {
-        f.dock.autohide = sill_settings::OnOff::On;
+        f.dock.autohide = true;
         f.bar.battery_low_percent = Percent(30);
         f.bar.autohide = sill_settings::MenuBarHiding::Always;
         f.screenshot.folders = "~/Shots".to_owned();

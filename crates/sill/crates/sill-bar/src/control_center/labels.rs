@@ -6,7 +6,6 @@ use sill_model::network::{Link, Network};
 use sill_model::power_profile::Profile;
 use sill_model::units::Presence;
 use sill_model::wifi::{AccessPoint, Association, Radio, Saved, Wifi};
-use sill_settings::OnOff;
 
 /// The Wi-Fi tile's status line: "Off", "Unavailable" (no device, or blocked in hardware),
 /// the connected network's name, "Connecting…", or "Not connected".
@@ -54,11 +53,8 @@ pub fn bluetooth_status(bluetooth: &Bluetooth) -> String {
 }
 
 /// The Focus tile's status line: "On" or "Off".
-pub fn focus_status(mode: OnOff) -> &'static str {
-    match mode {
-        OnOff::On => "On",
-        OnOff::Off => "Off",
-    }
+pub fn focus_status(mode: bool) -> &'static str {
+    if mode { "On" } else { "Off" }
 }
 
 /// A power profile's segment label: "Saver", "Balanced", "Performance".
@@ -113,7 +109,6 @@ mod tests {
     use sill_model::power_profile::Profile;
     use sill_model::units::{Percent, Presence};
     use sill_model::wifi::{AccessPoint, Association, Radio, Saved, Security, Ssid, Wifi};
-    use sill_settings::OnOff;
 
     fn wifi(radio: Radio) -> Wifi {
         Wifi {
@@ -178,8 +173,8 @@ mod tests {
         assert_eq!(bluetooth_tile_status(&off), "Off");
         assert_eq!(bluetooth_tile_status(&Bluetooth::default()), "Unavailable");
 
-        assert_eq!(focus_status(OnOff::On), "On");
-        assert_eq!(focus_status(OnOff::Off), "Off");
+        assert_eq!(focus_status(true), "On");
+        assert_eq!(focus_status(false), "Off");
         assert_eq!(profile_label(Profile::PowerSaver), "Saver");
         assert_eq!(profile_label(Profile::Balanced), "Balanced");
         assert_eq!(profile_label(Profile::Performance), "Performance");

@@ -14,7 +14,6 @@ use ds::prelude::*;
 use ds::style::scale::use_scale;
 use sill_model::badges::Badge;
 use sill_model::units::{Cpx, Permille};
-use sill_settings::OnOff;
 use sill_shell_kit::dock::tile::plate_side;
 use sill_shell_kit::prelude::*;
 
@@ -67,7 +66,7 @@ pub fn Tile(item: DockItem, left: Cpx, size: Cpx, badge: Option<Badge>) -> Eleme
     let top = px(rows.baseline) - side;
     // How far the plate's top is below the tile's: the label stands above it.
     let rise = (side - f64::from(plate_side(Px(side as f32)).0)) / 2.0;
-    let running = item.app != TileApp::NotRunning && dock.indicators == OnOff::On;
+    let running = item.app != TileApp::NotRunning && dock.indicators;
     let label = try_use_context::<Signal<LabelShown>>().map_or(LabelShown(None), |shown| shown());
     let shown = label.0 == Some(item.tile);
     rsx! {

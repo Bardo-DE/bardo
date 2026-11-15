@@ -5,7 +5,6 @@
 use dioxus::prelude::*;
 use ds::prelude::*;
 use sill_launcher::actions::ActionId;
-use sill_settings::OnOff;
 use sill_shell_kit::prelude::*;
 
 use super::cc_module::{CcCx, CcModule, Span};
@@ -28,11 +27,8 @@ pub fn FocusModule() -> Element {
     }
 }
 
-pub(crate) fn focus_state(mode: OnOff) -> Check {
-    match mode {
-        OnOff::On => Check::On,
-        OnOff::Off => Check::Off,
-    }
+pub(crate) fn focus_state(mode: bool) -> Check {
+    if mode { Check::On } else { Check::Off }
 }
 
 /// The Focus module as the control center draws it: a tile, never a bar item.
@@ -51,11 +47,10 @@ impl CcModule for FocusCc {
 #[cfg(test)]
 mod tests {
     use super::{Check, focus_state};
-    use sill_settings::OnOff;
 
     #[test]
     fn the_switch_is_do_not_disturb() {
-        assert_eq!(focus_state(OnOff::On), Check::On);
-        assert_eq!(focus_state(OnOff::Off), Check::Off);
+        assert_eq!(focus_state(true), Check::On);
+        assert_eq!(focus_state(false), Check::Off);
     }
 }

@@ -11,7 +11,6 @@ use ds::prelude::*;
 use shell_host::{OutputId, OutputInfo, use_watch};
 use sill_model::screenshots::ShotId;
 use sill_services::ScreenshotsService;
-use sill_settings::ShotThumbnail;
 use sill_shell_kit::notifications::banner_stack::{Banner, BannerKey, BannerPosition};
 use sill_shell_kit::prelude::*;
 
@@ -80,7 +79,7 @@ fn row_of(state: ThumbState) -> Option<(ShotId, bool)> {
 fn Column(
     output: OutputId,
     params: ThumbParams,
-    setting: ShotThumbnail,
+    setting: bool,
     metrics: SwipeMetrics,
     ghost: GhostLook,
 ) -> Element {

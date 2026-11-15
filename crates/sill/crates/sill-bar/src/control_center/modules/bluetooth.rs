@@ -16,7 +16,7 @@ use crate::control_center::page::Detail;
 use crate::control_center::pages::bluetooth_devices::BluetoothPane;
 use crate::control_center::{bluetooth_status, bluetooth_tile_status};
 use sill_services::BluetoothService;
-use sill_settings::{ControlCenterSettings, InMenuBar};
+use sill_settings::ControlCenterSettings;
 use sill_ui_kit::hooks::use_service;
 use sill_ui_kit::status::glyph::bluetooth_glyph_state;
 
@@ -90,7 +90,7 @@ impl CcModule for BluetoothCc {
         Some(rsx! { BluetoothPane { back: None } })
     }
 
-    fn menu_bar(&self, settings: &ControlCenterSettings) -> InMenuBar {
+    fn menu_bar(&self, settings: &ControlCenterSettings) -> bool {
         settings.menu_bar_bluetooth
     }
 

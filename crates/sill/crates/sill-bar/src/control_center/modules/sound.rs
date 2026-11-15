@@ -15,7 +15,7 @@ use super::wired::WiredSound;
 use crate::bar::{BarMenu, StatusIcon};
 use crate::control_center::LevelModule;
 use sill_services::VolumeService;
-use sill_settings::{ControlCenterSettings, InMenuBar};
+use sill_settings::ControlCenterSettings;
 use sill_ui_kit::hooks::use_service;
 use sill_ui_kit::status::glyph::volume_glyph;
 use sill_ui_kit::status::lines::volume_heading;
@@ -67,7 +67,7 @@ impl CcModule for SoundCc {
         rsx! { WiredSound {} }
     }
 
-    fn menu_bar(&self, settings: &ControlCenterSettings) -> InMenuBar {
+    fn menu_bar(&self, settings: &ControlCenterSettings) -> bool {
         settings.menu_bar_sound
     }
 

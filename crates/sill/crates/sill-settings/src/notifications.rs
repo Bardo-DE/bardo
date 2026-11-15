@@ -4,7 +4,6 @@
 use ds_settings::schema::Page;
 use serde::{Deserialize, Serialize};
 use sill_model::notifications::{Presentation, Swipe};
-use sill_model::on_off::OnOff;
 
 /// Notification banners.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ds_settings::SettingsSchema)]
@@ -20,7 +19,7 @@ pub struct NotificationsSettings {
         section = "Alerts",
         note = "Critical notifications still come through."
     )]
-    pub dnd: OnOff,
+    pub dnd: bool,
     #[settings(
         label = "Notification style",
         help = "Banners leave on their own; alerts stay until you act.",
@@ -41,7 +40,7 @@ pub struct NotificationsSettings {
 impl Default for NotificationsSettings {
     fn default() -> Self {
         NotificationsSettings {
-            dnd: OnOff::Off,
+            dnd: false,
             banner_style: Presentation::Banner,
             swipe: Swipe::KeepInCenter,
         }

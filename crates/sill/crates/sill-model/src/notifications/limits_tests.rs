@@ -5,7 +5,6 @@ use super::{
     LIVE_BANNERS_MAX, NotesState, Notification, NotificationId, NotificationsEffect,
     NotificationsEvent, NotificationsPolicy, NotifyUrgency, Transience, UnixMs, step,
 };
-use crate::on_off::OnOff;
 
 fn note(id: u32, app: &str, entry: Option<&str>, hints: Hints) -> Notification {
     Notification {
@@ -99,7 +98,7 @@ fn many_apps_cannot_push_the_live_banners_past_the_total_or_push_out_the_shells_
 #[test]
 fn an_apps_critical_notice_gives_way_to_do_not_disturb_and_leaves_after_its_hold() {
     let dnd = NotificationsPolicy {
-        quiet: OnOff::On,
+        quiet: true,
         ..NotificationsPolicy::default()
     };
     let (held, _) = post(

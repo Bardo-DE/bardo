@@ -15,7 +15,7 @@ use sill_shell_kit::tokens::dock::DockMetrics;
 pub fn dock_metrics(dock: &DockSettings) -> DockMetrics {
     DockMetrics {
         tile: Px(f32::from(dock.tile_size_px.0)),
-        floor: dock.floor.is_on(),
+        floor: dock.floor,
     }
 }
 

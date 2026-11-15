@@ -125,7 +125,7 @@ write_scene() {
   mkdir -p "$CONFIG/sill"
   cat >"$CONFIG/sill/settings.toml" <<'EOF'
 [launcher]
-web_search = "on"
+web_search = true
 EOF
   cat >"$CONFIG/sill/layout.toml" <<'EOF'
 version = 1

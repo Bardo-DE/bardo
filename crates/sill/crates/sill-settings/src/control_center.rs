@@ -5,17 +5,6 @@ use ds_core::word::Word;
 use ds_settings::schema::Page;
 use serde::{Deserialize, Serialize};
 
-/// Whether a module also shows as its own bar item with its own dropdown (macOS's "Show in Menu
-/// Bar"), beside the control center's own item.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]
-#[serde(rename_all = "snake_case")]
-#[word(case = snake)]
-pub enum InMenuBar {
-    Show,
-    #[default]
-    Hide,
-}
-
 /// One control center module, in `control_center.modules` order.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]
 #[serde(rename_all = "snake_case")]
@@ -55,7 +44,7 @@ pub struct ControlCenterSettings {
         section = "Menu bar",
         advanced
     )]
-    pub menu_bar_wifi: InMenuBar,
+    pub menu_bar_wifi: bool,
     /// Whether Bluetooth also has its own bar item and dropdown (macOS's "Show in Menu Bar").
     #[settings(
         label = "Bluetooth in the menu bar",
@@ -63,7 +52,7 @@ pub struct ControlCenterSettings {
         section = "Menu bar",
         advanced
     )]
-    pub menu_bar_bluetooth: InMenuBar,
+    pub menu_bar_bluetooth: bool,
     /// Whether Sound also has its own bar item and dropdown (macOS's "Show in Menu Bar").
     #[settings(
         label = "Sound in the menu bar",
@@ -71,7 +60,7 @@ pub struct ControlCenterSettings {
         section = "Menu bar",
         advanced
     )]
-    pub menu_bar_sound: InMenuBar,
+    pub menu_bar_sound: bool,
     /// Whether Display also has its own bar item and dropdown (macOS's "Show in Menu Bar").
     #[settings(
         label = "Display in the menu bar",
@@ -79,7 +68,7 @@ pub struct ControlCenterSettings {
         section = "Menu bar",
         advanced
     )]
-    pub menu_bar_display: InMenuBar,
+    pub menu_bar_display: bool,
     /// Whether Battery also has its own bar item and dropdown (macOS's "Show in Menu Bar").
     #[settings(
         label = "Battery in the menu bar",
@@ -87,7 +76,7 @@ pub struct ControlCenterSettings {
         section = "Menu bar",
         advanced
     )]
-    pub menu_bar_battery: InMenuBar,
+    pub menu_bar_battery: bool,
     /// Whether Now Playing also has its own bar item and dropdown (macOS's "Show in Menu Bar").
     #[settings(
         label = "Now Playing in the menu bar",
@@ -95,7 +84,7 @@ pub struct ControlCenterSettings {
         section = "Menu bar",
         advanced
     )]
-    pub menu_bar_now_playing: InMenuBar,
+    pub menu_bar_now_playing: bool,
 }
 
 impl Default for ControlCenterSettings {
@@ -117,12 +106,12 @@ impl Default for ControlCenterSettings {
                 Battery,
                 Terminal,
             ],
-            menu_bar_wifi: InMenuBar::Show,
-            menu_bar_bluetooth: InMenuBar::Hide,
-            menu_bar_sound: InMenuBar::Show,
-            menu_bar_display: InMenuBar::Hide,
-            menu_bar_battery: InMenuBar::Show,
-            menu_bar_now_playing: InMenuBar::Hide,
+            menu_bar_wifi: true,
+            menu_bar_bluetooth: false,
+            menu_bar_sound: true,
+            menu_bar_display: false,
+            menu_bar_battery: true,
+            menu_bar_now_playing: false,
         }
     }
 }

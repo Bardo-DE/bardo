@@ -64,17 +64,14 @@ high = "Large"
 
 [[key]]
 path = "dock.magnification"
-default = "on"
+default = true
 label = "Magnification"
 help = "Icons grow under the pointer."
 section = "Dock"
 exposure = "basic"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["on", "off"]
+kind = "toggle"
 
 [key.page]
 kind = "dock"
@@ -104,7 +101,7 @@ high = "Large"
 
 [[key]]
 path = "dock.autohide"
-default = "off"
+default = false
 label = "Automatically hide the Dock"
 help = "Shows the Dock when the pointer reaches the bottom."
 section = "Hiding"
@@ -112,17 +109,14 @@ exposure = "basic"
 note = "The Dock slides away until the pointer reaches the bottom edge."
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["on", "off"]
+kind = "toggle"
 
 [key.page]
 kind = "dock"
 
 [[key]]
 path = "dock.indicators"
-default = "on"
+default = true
 label = "Show indicators for open apps"
 help = "A dot under each app with a window."
 section = "Behaviour"
@@ -130,44 +124,35 @@ exposure = "basic"
 note = "A small dot shows under apps that are open."
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["on", "off"]
+kind = "toggle"
 
 [key.page]
 kind = "dock"
 
 [[key]]
 path = "dock.trash"
-default = "on"
+default = true
 label = "Show Trash"
 help = "Adds a Trash tile at the end."
 section = "Behaviour"
 exposure = "basic"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["on", "off"]
+kind = "toggle"
 
 [key.page]
 kind = "dock"
 
 [[key]]
 path = "dock.floor"
-default = "off"
+default = false
 label = "Floor"
 help = "A soft light band under the icons."
 section = "Dock"
 exposure = "advanced"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["on", "off"]
+kind = "toggle"
 
 [key.page]
 kind = "dock"
@@ -208,17 +193,14 @@ kind = "appearance"
 
 [[key]]
 path = "launcher.web_search"
-default = "on"
+default = true
 label = "Search the web"
 help = "Offers a web search as the last result."
 section = "Search"
 exposure = "advanced"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["on", "off"]
+kind = "toggle"
 
 [key.page]
 kind = "appearance"
@@ -260,17 +242,14 @@ kind = "mouse_and_gestures"
 
 [[key]]
 path = "scroll.momentum"
-default = "on"
+default = true
 label = "Momentum"
 help = "A flick keeps scrolling after you lift."
 section = "Momentum"
 exposure = "advanced"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["on", "off"]
+kind = "toggle"
 
 [key.page]
 kind = "mouse_and_gestures"
@@ -311,7 +290,7 @@ kind = "mouse_and_gestures"
 
 [[key]]
 path = "notifications.dnd"
-default = "off"
+default = false
 label = "Do Not Disturb"
 help = "No banners or sounds, except critical ones."
 section = "Alerts"
@@ -319,10 +298,7 @@ exposure = "basic"
 note = "Critical notifications still come through."
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["on", "off"]
+kind = "toggle"
 
 [key.page]
 kind = "notifications"
@@ -385,102 +361,84 @@ kind = "appearance"
 
 [[key]]
 path = "control_center.menu_bar_wifi"
-default = "show"
+default = true
 label = "Wi-Fi in the menu bar"
 help = "Shows Wi-Fi as its own menu bar item."
 section = "Menu bar"
 exposure = "advanced"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["show", "hide"]
+kind = "toggle"
 
 [key.page]
 kind = "appearance"
 
 [[key]]
 path = "control_center.menu_bar_bluetooth"
-default = "hide"
+default = false
 label = "Bluetooth in the menu bar"
 help = "Shows Bluetooth as its own menu bar item."
 section = "Menu bar"
 exposure = "advanced"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["show", "hide"]
+kind = "toggle"
 
 [key.page]
 kind = "appearance"
 
 [[key]]
 path = "control_center.menu_bar_sound"
-default = "show"
+default = true
 label = "Sound in the menu bar"
 help = "Shows Sound as its own menu bar item."
 section = "Menu bar"
 exposure = "advanced"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["show", "hide"]
+kind = "toggle"
 
 [key.page]
 kind = "appearance"
 
 [[key]]
 path = "control_center.menu_bar_display"
-default = "hide"
+default = false
 label = "Display in the menu bar"
 help = "Shows Display as its own menu bar item."
 section = "Menu bar"
 exposure = "advanced"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["show", "hide"]
+kind = "toggle"
 
 [key.page]
 kind = "appearance"
 
 [[key]]
 path = "control_center.menu_bar_battery"
-default = "show"
+default = true
 label = "Battery in the menu bar"
 help = "Shows Battery as its own menu bar item."
 section = "Menu bar"
 exposure = "advanced"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["show", "hide"]
+kind = "toggle"
 
 [key.page]
 kind = "appearance"
 
 [[key]]
 path = "control_center.menu_bar_now_playing"
-default = "hide"
+default = false
 label = "Now Playing in the menu bar"
 help = "Shows Now Playing as its own menu bar item."
 section = "Menu bar"
 exposure = "advanced"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["show", "hide"]
+kind = "toggle"
 
 [key.page]
 kind = "appearance"
@@ -645,17 +603,14 @@ kind = "notifications"
 
 [[key]]
 path = "screenshot.thumbnail"
-default = "show"
+default = true
 label = "Show floating thumbnail"
 help = "Click it to open, drag it into a document, or swipe it away."
 section = "Screenshots"
 exposure = "advanced"
 
 [key.kind]
-kind = "segmented"
-
-[key.kind.v]
-variants = ["show", "hide"]
+kind = "toggle"
 
 [key.page]
 kind = "keyboard_and_shortcuts"

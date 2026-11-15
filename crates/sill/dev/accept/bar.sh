@@ -614,9 +614,9 @@ start_real_daemon() {
   cat >"$CONFIG/sill/settings.toml" <<'EOF'
 [control_center]
 modules = ["focus", "appearance", "wifi", "bluetooth", "sound"]
-menu_bar_wifi = "show"
-menu_bar_sound = "show"
-menu_bar_battery = "hide"
+menu_bar_wifi = true
+menu_bar_sound = true
+menu_bar_battery = false
 EOF
   launch_daemon || return 1
   NAME=$(output_name) || return 1
@@ -789,7 +789,7 @@ step_hover_switch() {
 await_dnd() {
   local now=
   for _ in $(seq 30); do
-    now=$(sed -n 's/^dnd *= *"\(.*\)"$/\1/p' "$CONFIG/sill/settings.toml")
+    now=$(sed -n 's/^dnd *= *\(.*\)$/\1/p' "$CONFIG/sill/settings.toml")
     [ "$now" = "$1" ] && break
     sleep 0.1
   done
@@ -819,19 +819,19 @@ step_control_center_keys() {
   # and `settled` waits out the watch's debounce plus the redraw.
   press_keys space || return 1
   local dnd_on dnd_off
-  dnd_on=$(await_dnd on)
+  dnd_on=$(await_dnd true)
   settled "$POPUP" cc-space || return 1
   space=$(diff_box cc-back cc-space)
   echo "real Space on the focused tile (Focus): notifications.dnd $dnd_on; the tile changed" \
     "[$space] with no 'sill reload'" >&2
   press_keys space || return 1
-  dnd_off=$(await_dnd off)
+  dnd_off=$(await_dnd false)
   echo "real Space again: notifications.dnd $dnd_off" >&2
   press_keys Escape || return 1
   wait_surface "$POPUP" 20 down || { echo "real Escape left the control center up" >&2; return 1; }
   echo "real Escape closed it; keys the sink got meanwhile: $(( $(sink_keys) - sunk ))" >&2
   [ "$b1" != none ] && [ "$b2" != none ] && [ "$back" = none ] && [ "$space" != none ] \
-    && [ "$dnd_on" = on ] && [ "$dnd_off" = off ] && [ "$(sink_keys)" = "$sunk" ]
+    && [ "$dnd_on" = true ] && [ "$dnd_off" = false ] && [ "$(sink_keys)" = "$sunk" ]
 }
 
 # Two made-up notifications for the center's rows, once per run; both stay in the center after

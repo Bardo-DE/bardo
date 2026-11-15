@@ -3,7 +3,6 @@
 use ds::prelude::*;
 use sill_launcher::{AppId, WindowKey};
 use sill_model::windows::Toplevel;
-use sill_settings::OnOff;
 
 use super::{Checked, DockMenuRow};
 use crate::dock::pick::{DockPick, LoginChange};
@@ -178,12 +177,12 @@ fn row_entry(
         DockMenuRow::EmptyTrash(availability) => {
             Line::new("Empty Trash", DockPick::EmptyTrash).available(*availability)
         }
-        DockMenuRow::Hiding(OnOff::Off) => Line::new("Turn Hiding On", DockPick::ToggleHiding),
-        DockMenuRow::Hiding(OnOff::On) => Line::new("Turn Hiding Off", DockPick::ToggleHiding),
-        DockMenuRow::Magnifying(OnOff::Off) => {
+        DockMenuRow::Hiding(false) => Line::new("Turn Hiding On", DockPick::ToggleHiding),
+        DockMenuRow::Hiding(true) => Line::new("Turn Hiding Off", DockPick::ToggleHiding),
+        DockMenuRow::Magnifying(false) => {
             Line::new("Turn Magnification On", DockPick::ToggleMagnification)
         }
-        DockMenuRow::Magnifying(OnOff::On) => {
+        DockMenuRow::Magnifying(true) => {
             Line::new("Turn Magnification Off", DockPick::ToggleMagnification)
         }
         DockMenuRow::DockSettings => Line::new("Dock Settings…", DockPick::OpenDockSettings),

@@ -13,7 +13,7 @@ use ds::prelude::*;
 use shell_host::OutputId;
 use sill_model::screenshots::{Shot, ShotCommand, ShotId, ShotLeave, ShotPreview, Shots};
 use sill_notify_ui::ScreenshotThumb;
-use sill_settings::{ScreenshotSettings, ShellFile, ShotThumbnail};
+use sill_settings::{ScreenshotSettings, ShellFile};
 use sill_ui_kit::harness::{SurfaceHarness, fake};
 use sill_ui_kit::links::{BannerLink, BannerOutput};
 
@@ -368,7 +368,7 @@ fn a_newer_shot_replaces_the_shown_one() {
 fn hidden_by_the_setting_and_on_another_output() {
     let mut hidden = start(ShellFile {
         screenshot: ScreenshotSettings {
-            thumbnail: ShotThumbnail::Hide,
+            thumbnail: false,
             ..ScreenshotSettings::default()
         },
         ..ShellFile::default()

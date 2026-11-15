@@ -18,7 +18,7 @@ const WEB_SEARCH_URL: &str = "https://duckduckgo.com/?q={query}";
 pub fn search_policy_of(l: &LauncherSettings) -> LauncherPolicy {
     LauncherPolicy {
         files_budget: FILES_BUDGET,
-        web: l.web_search.is_on().then(|| WEB_SEARCH_URL.to_owned()),
+        web: l.web_search.then(|| WEB_SEARCH_URL.to_owned()),
         emoji_tone: l.emoji_skin_tone,
         currency: l.currency,
     }
@@ -47,7 +47,7 @@ mod tests {
 
     use sill_launcher::SkinTone;
     use sill_model::results::CurrencyPolicy;
-    use sill_settings::{LauncherSettings, OnOff};
+    use sill_settings::LauncherSettings;
 
     use super::search_policy_of;
 
@@ -71,7 +71,7 @@ mod tests {
     fn every_setting_reaches_the_search_policy() {
         let l = LauncherSettings {
             emoji_skin_tone: SkinTone::MediumDark,
-            web_search: OnOff::Off,
+            web_search: false,
             currency: CurrencyPolicy::Ecb,
             ..LauncherSettings::default()
         };

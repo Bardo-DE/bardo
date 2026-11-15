@@ -5,7 +5,6 @@ use serde::{Deserialize, Serialize};
 
 use sill_launcher::SkinTone;
 use sill_model::clipboard::HistoryMode;
-use sill_model::on_off::OnOff;
 use sill_model::results::CurrencyPolicy;
 
 /// The launcher panel's placement and rows.
@@ -39,7 +38,7 @@ pub struct LauncherSettings {
         section = "Search",
         advanced
     )]
-    pub web_search: OnOff,
+    pub web_search: bool,
     /// `launcher.currency`.
     #[settings(
         label = "Currency conversion",
@@ -55,7 +54,7 @@ impl Default for LauncherSettings {
         LauncherSettings {
             clipboard_history: HistoryMode::Memory,
             emoji_skin_tone: SkinTone::Default,
-            web_search: OnOff::On,
+            web_search: true,
             currency: CurrencyPolicy::Off,
         }
     }

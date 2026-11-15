@@ -23,7 +23,7 @@ use super::cc_module::{BarItemFace, CcCx, CcModule, Span};
 use crate::bar::{BarMenu, StatusIcon};
 use crate::control_center::modules::use_plate;
 use sill_services::{BatteryService, BluetoothService, PowerProfileService};
-use sill_settings::{ControlCenterSettings, InMenuBar};
+use sill_settings::ControlCenterSettings;
 use sill_ui_kit::hooks::{use_service, use_settings};
 use sill_ui_kit::status::device::device_of;
 use sill_ui_kit::status::glyph::battery_glyph;
@@ -177,7 +177,7 @@ impl CcModule for BatteryCc {
         rsx! { BatteryModule {} }
     }
 
-    fn menu_bar(&self, settings: &ControlCenterSettings) -> InMenuBar {
+    fn menu_bar(&self, settings: &ControlCenterSettings) -> bool {
         settings.menu_bar_battery
     }
 

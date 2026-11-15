@@ -33,7 +33,7 @@ pub use companion::{
     CONFIRM_ARM, CompanionSettings, InField, NotifyWhen, SummonKey, confirm_arm,
     params as companion_params,
 };
-pub use control_center::{ControlCenterModule, ControlCenterSettings, InMenuBar};
+pub use control_center::{ControlCenterModule, ControlCenterSettings};
 pub use display::DisplaySettings;
 pub use dock::DockSettings;
 pub use file::{APP, ShellFile};
@@ -46,7 +46,7 @@ pub use keyboard::{KeyboardOverride, KeyboardSettings, RejectedRow, overrides};
 pub use launcher::LauncherSettings;
 pub use notifications::NotificationsSettings;
 pub use schema::{schema, schemas};
-pub use screenshot::{ScreenshotSettings, ShotThumbnail};
+pub use screenshot::ScreenshotSettings;
 pub use scroll::{NaturalScroll, ScrollSettings, ScrollbarVisibility};
 pub use scrollbar::{ScrollbarSettings, TrackClick};
 pub use session::SessionSettings;
@@ -54,6 +54,5 @@ pub use voice::{HoldToTalk, VoiceConsent, VoiceSettings, params as voice_params}
 pub use wallpaper::WallpaperSettings;
 
 pub use sill_model::displays::NightWarmthMode;
-pub use sill_model::on_off::OnOff;
 
 pub use ds_settings::{Count, Fraction, Mins, Ms, Percent, Px, Scalar, Secs};

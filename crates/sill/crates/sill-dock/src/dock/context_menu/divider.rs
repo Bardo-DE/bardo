@@ -3,12 +3,10 @@
 //! Minimise Windows Using rows are not here: the dock has no setting for either (it stays at the
 //! bottom, and has one minimise effect).
 
-use sill_settings::OnOff;
-
 use super::DockMenuRow;
 
 /// The rows, given how hiding and magnification are set now.
-pub fn rows(autohide: OnOff, magnification: OnOff) -> Vec<DockMenuRow> {
+pub fn rows(autohide: bool, magnification: bool) -> Vec<DockMenuRow> {
     vec![
         DockMenuRow::Hiding(autohide),
         DockMenuRow::Magnifying(magnification),

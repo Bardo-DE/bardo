@@ -200,7 +200,7 @@ fn displayed_progress_is_eased_and_zero_when_magnification_is_off() {
     let (half, _) = displayed(&dock, Stamp(60), &p);
     assert!(half.0 > 850 && half.0 < 1000, "{half:?}");
     let off = crate::dock::machine::DockParams {
-        magnification: sill_settings::OnOff::Off,
+        magnification: false,
         ..params()
     };
     assert_eq!(displayed(&dock, Stamp(60), &off).0, Permille(0));

@@ -18,7 +18,7 @@ use crate::control_center::page::Detail;
 use crate::control_center::pages::wifi_networks::WifiPane;
 use crate::control_center::wifi_status;
 use sill_services::NetworkService;
-use sill_settings::{ControlCenterSettings, InMenuBar};
+use sill_settings::ControlCenterSettings;
 use sill_ui_kit::hooks::{use_control, use_service};
 use sill_ui_kit::status::glyph::{NetworkGlyph, network_glyph};
 use sill_ui_kit::status::lines::network_lines;
@@ -109,7 +109,7 @@ impl CcModule for WifiCc {
         Some(rsx! { WifiPane { back: None } })
     }
 
-    fn menu_bar(&self, settings: &ControlCenterSettings) -> InMenuBar {
+    fn menu_bar(&self, settings: &ControlCenterSettings) -> bool {
         settings.menu_bar_wifi
     }
 

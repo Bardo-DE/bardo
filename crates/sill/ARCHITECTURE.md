@@ -183,8 +183,8 @@ code into `tests.rs`. Exceptions and renames:
 | From | To |
 | --- | --- |
 | `sill-settings/src/{bar,calendar,control_center,display,dock,hot_corners,idle,keyboard,launcher,notifications,screenshot,scroll,scrollbar,session,switcher}.rs` | stay; keys with no reader deleted; `flatten extra` and `version` deleted |
-| `dock_words.rs`, `launcher_kinds.rs`, enums a service reads | `OnOff` for the `on`/`off` keys (`sill-model/src/on_off.rs`); an enum a service reads (`NightWarmthMode`) is in `sill-model` and the settings field uses that type |
-| `focus.rs` (`FocusMode`) | deleted: Do Not Disturb is `notifications.dnd`, an `OnOff` |
+| `dock_words.rs`, `launcher_kinds.rs`, enums a service reads | a plain `bool` for the on/off keys; an enum a service reads (`NightWarmthMode`) is in `sill-model` and the settings field uses that type |
+| `focus.rs` (`FocusMode`) | deleted: Do Not Disturb is `notifications.dnd`, a `bool` |
 | `focus_link.rs` | `sill-ui-kit/src/links/focus.rs` (the link) and `sill/src/daemon/settings/focus.rs` (the task that writes the file) |
 | `watch.rs`, `file.rs` `load`/`save`/`try_load`/`unknown_keys` | `sill/src/daemon/settings/{watch,store}.rs` over `ds_settings::Store`; `file.rs` keeps `ShellFile` and `impl SettingsDoc` |
 | `feed.rs` (`SettingsFeed`) | `sill-ui-kit/src/settings.rs` |
@@ -519,7 +519,7 @@ pub trait CcModule: Sync {
     fn span(&self) -> Span;                                          // one or two columns
     fn tile(&self, cx: &CcCx) -> Element;                            // the grid tile
     fn dropdown(&self, cx: &CcCx) -> Option<Element>;                // bar-item dropdown body
-    fn menu_bar(&self, settings: &ControlCenterSettings) -> InMenuBar;
+    fn menu_bar(&self, settings: &ControlCenterSettings) -> bool;
     fn bar_item(&self) -> Option<BarItemFace>;
     fn detail(&self, page: Detail, cx: &CcCx) -> Option<Element>;
 }
@@ -715,9 +715,8 @@ Each ends with its tests. Name the concept once and use it in every file name be
 
 1. The design/22 row in quire first (with `RETIRING` when removing one).
 2. `sill-settings/src/<domain>.rs`: a field of a typed value: a `Word` enum, a `ds-settings`
-   unit newtype, or `OnOff` for a key stored as `on`/`off` (`sill_model::on_off`, re-exported
-   by `sill-settings`); a two-state key whose words differ (`show`/`hide`, `natural`/
-   `traditional`) is a named enum. A `bool` is a field of a runtime struct, not a stored word.
+   unit newtype, or a `bool` for a yes/no key (stored as TOML `true`/`false`, drawn as a switch); a
+   two-state key whose words differ (`natural`/`traditional`) is a named enum.
    The default is the design's, set in the struct's `Default`. A string that
    names a closed set is an enum parsed at load; a shared enum lives in `sill-model`, and the
    settings field uses that type, never a copy.

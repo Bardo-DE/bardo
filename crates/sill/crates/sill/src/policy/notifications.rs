@@ -4,7 +4,6 @@
 use sill_model::notifications::{
     HistoryCap, NotificationsCommand, NotificationsPolicy, ServerMode,
 };
-use sill_model::on_off::OnOff;
 use sill_settings::{NotificationsSettings, ShellFile};
 use tokio::sync::watch;
 use tokio::sync::watch::error::RecvError;
@@ -15,7 +14,7 @@ use super::Policy;
 const HISTORY_CAP: HistoryCap = HistoryCap(100);
 
 /// The policy `n` and Do Not Disturb `focus` make: the service owns the bus name.
-pub fn policy_of(n: &NotificationsSettings, focus: OnOff) -> NotificationsPolicy {
+pub fn policy_of(n: &NotificationsSettings, focus: bool) -> NotificationsPolicy {
     NotificationsPolicy {
         server: ServerMode::Own,
         quiet: focus,
@@ -30,7 +29,7 @@ pub fn policy_of(n: &NotificationsSettings, focus: OnOff) -> NotificationsPolicy
 /// the control center sets it, before the file round-trips.
 #[derive(Debug)]
 pub struct NotificationsBridge {
-    pub focus: watch::Receiver<OnOff>,
+    pub focus: watch::Receiver<bool>,
 }
 
 impl Policy for NotificationsBridge {
@@ -55,14 +54,13 @@ mod tests {
     use super::policy_of;
     use sill_model::notifications::Swipe;
     use sill_model::notifications::{HistoryCap, Presentation, ServerMode};
-    use sill_model::on_off::OnOff;
     use sill_settings::NotificationsSettings;
 
     #[test]
     fn the_settings_and_focus_become_the_policy() {
-        let defaults = policy_of(&NotificationsSettings::default(), OnOff::Off);
+        let defaults = policy_of(&NotificationsSettings::default(), false);
         assert_eq!(defaults.server, ServerMode::Own, "own by default");
-        assert_eq!(defaults.quiet, OnOff::Off);
+        assert!(!defaults.quiet);
         assert_eq!(defaults.style, Presentation::Banner);
         assert_eq!(defaults.history_cap, HistoryCap(100));
         assert_eq!(
@@ -75,8 +73,8 @@ mod tests {
             swipe: Swipe::Dismiss,
             ..NotificationsSettings::default()
         };
-        let quiet = policy_of(&n, OnOff::On);
-        assert_eq!(quiet.quiet, OnOff::On);
+        let quiet = policy_of(&n, true);
+        assert!(quiet.quiet);
         assert_eq!(quiet.style, Presentation::HistoryOnly);
         assert_eq!(quiet.swipe, Swipe::Dismiss);
     }
@@ -90,7 +88,7 @@ mod tests {
 
         let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
         let (settings_tx, settings) = watch::channel(ShellFile::default());
-        let (focus_tx, focus) = watch::channel(OnOff::Off);
+        let (focus_tx, focus) = watch::channel(false);
         let (control, mut commands) = Control::channel();
         crate::policy::follow(
             rt.handle(),
@@ -108,13 +106,13 @@ mod tests {
         };
         let first = next(&mut commands);
         assert!(
-            matches!(&first, Some(NotificationsCommand::Policy(p)) if p.quiet == OnOff::Off),
+            matches!(&first, Some(NotificationsCommand::Policy(p)) if !p.quiet),
             "{first:?}"
         );
-        let _ = focus_tx.send(OnOff::On);
+        let _ = focus_tx.send(true);
         let second = next(&mut commands);
         assert!(
-            matches!(&second, Some(NotificationsCommand::Policy(p)) if p.quiet == OnOff::On),
+            matches!(&second, Some(NotificationsCommand::Policy(p)) if p.quiet),
             "{second:?}"
         );
         drop(settings_tx);

@@ -851,7 +851,7 @@ group_palette() {
   : >"$OUT_DIR/keys.log"
   seed_documents "$HOME_DIR" 3000 pdfs
   mkdir -p "$CONFIG/sill"
-  printf '[launcher]\nweb_search = "on"\n' >"$CONFIG/sill/settings.toml"
+  printf '[launcher]\nweb_search = true\n' >"$CONFIG/sill/settings.toml"
   start_private_bus || { group_end; return 1; }
   launch_daemon || { group_end; return 1; }
   NAME=$(output_name) || { group_end; return 1; }
@@ -1461,7 +1461,7 @@ main_real() {
   echo "$COMPOSITOR at $WL; data-control: $(env WAYLAND_DISPLAY="$WL" wayland-info 2>/dev/null \
     | grep -o "'[a-z_]*data_control_manager_v1'" | tr '\n' ' ')" >&2
   mkdir -p "$CONFIG/sill"
-  printf '[launcher]\nweb_search = "on"\nclipboard_history = "memory"\n' \
+  printf '[launcher]\nweb_search = true\nclipboard_history = "memory"\n' \
     >"$CONFIG/sill/settings.toml"
   launch_daemon || exit 1
   NAME=$(output_name) || exit 1

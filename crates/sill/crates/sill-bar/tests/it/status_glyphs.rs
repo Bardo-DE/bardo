@@ -18,7 +18,7 @@ use sill_model::network::{Connectivity, Link, Network};
 use sill_model::units::{Percent, Presence};
 use sill_model::volume::{Mute, Volume};
 use sill_model::wifi::Radio;
-use sill_settings::{InMenuBar, ShellFile};
+use sill_settings::ShellFile;
 use sill_ui_kit::harness::SurfaceHarness;
 use sill_ui_kit::links::ControlCenterLink;
 
@@ -32,7 +32,7 @@ const BAR: Viewport = Viewport {
 /// (`control_center.menu_bar_bluetooth`), settled.
 fn bar() -> (Harness, fake::Feeds) {
     let mut file = ShellFile::default();
-    file.control_center.menu_bar_bluetooth = InMenuBar::Show;
+    file.control_center.menu_bar_bluetooth = true;
     let mut run = SurfaceHarness::<Bar>::setup(ControlCenterLink::new(), ())
         .settings(file)
         .viewport(BAR)

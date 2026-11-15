@@ -4,7 +4,7 @@
 use ds_settings::Store;
 use sill_ipc::response::{FailureKind, Response};
 use sill_model::actions::Pref;
-use sill_settings::{OnOff, ShellFile};
+use sill_settings::ShellFile;
 use sill_ui_kit::links::Delivery;
 use tokio::sync::watch;
 
@@ -23,15 +23,15 @@ pub fn flip(reach: &Reach, pref: Pref) -> Response {
     }
 }
 
-/// Flip the `OnOff` key `key`, which `read` finds in the file, in `settings.toml`, and publish
+/// Flip the `bool` key `key`, which `read` finds in the file, in `settings.toml`, and publish
 /// the file at once so the surfaces follow before the watch has fired.
 fn flip_key(
     store: &Store,
     settings: &watch::Sender<ShellFile>,
     key: &str,
-    read: fn(&ShellFile) -> OnOff,
+    read: fn(&ShellFile) -> bool,
 ) -> Response {
-    let now = read(&crate::daemon::settings::load(store)).toggle();
+    let now = !read(&crate::daemon::settings::load(store));
     if let Err(error) = write_key(store, key, &now) {
         return failed(
             FailureKind::Internal,
@@ -45,7 +45,7 @@ fn flip_key(
 /// Turn Do Not Disturb on when it is off, off when it is on.
 fn toggle_focus(reach: &Reach) -> Response {
     let focus = &reach.links.focus;
-    let next = focus.mode().borrow().toggle();
+    let next = !*focus.mode().borrow();
     match focus.set(next) {
         Delivery::Queued => Response::Done,
         Delivery::Gone => failed(
