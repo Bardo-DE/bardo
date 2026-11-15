@@ -39,95 +39,112 @@ fn entry(extra: &str) -> String {
     format!("[[agent]]\nprogram = \"x\"\ncommand = \"/usr/bin/x\"\n{extra}\n")
 }
 
-#[test]
-fn an_entry_that_does_not_make_sense_refuses_the_whole_file() {
-    // The endpoint route cannot reach its endpoint with no network.
-    assert!(matches!(
-        refused(&entry("route = \"endpoint\"\nnetwork = \"none\"")),
-        ConfigFault::Entry { .. }
-    ));
-    // An endpoint route needs its pair of variables and its target.
-    assert!(matches!(
-        refused(&entry(
-            "route = \"endpoint\"\nnetwork = \"endpoint_only\"\nkey_env = \"K\""
-        )),
-        ConfigFault::Entry { .. }
-    ));
-    assert!(matches!(
-        refused(&entry(
-            "route = \"endpoint\"\nnetwork = \"endpoint_only\"\nkey_env = \"K\"\nbase_url_env = \"B\""
-        )),
-        ConfigFault::Entry { .. }
-    ));
-    // A handed-off key is for a program that reaches its provider, and says so.
-    assert!(matches!(
-        refused(&entry("route = \"handoff\"\nkey_env = \"K\"")),
-        ConfigFault::Entry { .. }
-    ));
-    // endpoint_only belongs to the endpoint route.
-    assert!(matches!(
-        refused(&entry("route = \"login\"\nnetwork = \"endpoint_only\"")),
-        ConfigFault::Entry { .. }
-    ));
+/// What kind of refusal a fault is, as the table below names it.
+fn kind_of(fault: &ConfigFault) -> &'static str {
+    match fault {
+        ConfigFault::Entry { .. } => "entry",
+        ConfigFault::Syntax(why) if why.contains("delivery") => "delivery",
+        ConfigFault::Syntax(_) => "syntax",
+        ConfigFault::Twice(_) => "twice",
+        _ => "other",
+    }
 }
 
+fn plain(extra: &str) -> String {
+    format!("[[agent]]\nprogram = \"plain\"\ncommand = \"/usr/bin/true\"\nroute = \"login\"\n{extra}\n")
+}
+
+/// Every way a file is refused whole, named by what is wrong with it.
 #[test]
-fn paths_variables_and_unknown_fields_are_checked() {
-    assert!(matches!(
-        refused(&entry("route = \"login\"\nstate = [\"relative/dir\"]")),
-        ConfigFault::Entry { .. }
-    ));
-    assert!(matches!(
-        refused(&entry("route = \"login\"\nreads = [\"/\"]")),
-        ConfigFault::Entry { .. }
-    ));
-    assert!(matches!(
-        refused("[[agent]]\nprogram = \"x\"\ncommand = \"bin/x\"\nroute = \"login\"\n"),
-        ConfigFault::Entry { .. }
-    ));
-    for bad in ["LD_PRELOAD", "PATH", "HOME", "BASH_ENV", "DOCKET_X"] {
-        let text = format!("{}[agent.set]\n{bad} = \"1\"\n", entry("route = \"login\""));
-        assert!(matches!(refused(&text), ConfigFault::Entry { .. }), "{bad}");
-    }
-    let key = format!(
+fn a_file_that_does_not_make_sense_is_refused_whole() {
+    let long = "x".repeat(65);
+    let login = |more: &str| entry(&format!("route = \"login\"\n{more}"));
+    let set = |name: &str| format!("{}[agent.set]\n{name} = \"1\"\n", login(""));
+    let key_set = format!(
         "{}[agent.set]\nK = \"1\"\n",
         entry("route = \"handoff\"\nnetwork = \"host\"\nkey_env = \"K\"")
     );
-    assert!(
-        matches!(refused(&key), ConfigFault::Entry { .. }),
-        "a key cannot be set in the clear"
-    );
-    assert!(matches!(
-        refused(&entry("route = \"login\"\nsurprise = 1")),
-        ConfigFault::Syntax(_)
-    ));
-    assert!(matches!(refused("not toml ["), ConfigFault::Syntax(_)));
-    assert!(matches!(
-        refused(
-            "[[agent]]\nprogram = \"Not Lower\"\ncommand = \"/usr/bin/x\"\nroute = \"login\"\n"
+    let table: Vec<(&str, String, &str)> = vec![
+        // The endpoint route cannot reach its endpoint with no network.
+        ("endpoint without network", entry("route = \"endpoint\"\nnetwork = \"none\""), "entry"),
+        // An endpoint route needs its pair of variables and its target.
+        (
+            "endpoint without variables",
+            entry("route = \"endpoint\"\nnetwork = \"endpoint_only\"\nkey_env = \"K\""),
+            "entry",
         ),
-        ConfigFault::Entry { .. }
-    ));
-}
-
-#[test]
-fn a_program_listed_twice_refuses() {
-    let two = format!(
-        "{}{}",
-        entry("route = \"login\""),
-        entry("route = \"login\"")
-    );
-    assert_eq!(refused(&two), ConfigFault::Twice("x".to_owned()));
-}
-
-#[test]
-fn a_delivery_line_is_refused_by_name() {
-    let ConfigFault::Syntax(why) = refused(&entry(
-        "route = \"handoff\"\nkey_env = \"K\"\ndelivery = \"file\"",
-    )) else {
-        panic!("expected a syntax fault");
-    };
-    assert!(why.contains("delivery"), "{why}");
+        (
+            "endpoint without target",
+            entry("route = \"endpoint\"\nnetwork = \"endpoint_only\"\nkey_env = \"K\"\nbase_url_env = \"B\""),
+            "entry",
+        ),
+        // A handed-off key is for a program that reaches its provider, and says so.
+        ("handoff without network", entry("route = \"handoff\"\nkey_env = \"K\""), "entry"),
+        // endpoint_only belongs to the endpoint route.
+        ("endpoint_only elsewhere", login("network = \"endpoint_only\""), "entry"),
+        ("relative state", login("state = [\"relative/dir\"]"), "entry"),
+        ("root read", login("reads = [\"/\"]"), "entry"),
+        (
+            "relative command",
+            "[[agent]]\nprogram = \"x\"\ncommand = \"bin/x\"\nroute = \"login\"\n".to_owned(),
+            "entry",
+        ),
+        ("LD_PRELOAD", set("LD_PRELOAD"), "entry"),
+        ("PATH", set("PATH"), "entry"),
+        ("HOME", set("HOME"), "entry"),
+        ("BASH_ENV", set("BASH_ENV"), "entry"),
+        ("DOCKET_X", set("DOCKET_X"), "entry"),
+        ("a key set in the clear", key_set, "entry"),
+        ("unknown field", login("surprise = 1"), "syntax"),
+        ("not toml", "not toml [".to_owned(), "syntax"),
+        (
+            "program name",
+            "[[agent]]\nprogram = \"Not Lower\"\ncommand = \"/usr/bin/x\"\nroute = \"login\"\n".to_owned(),
+            "entry",
+        ),
+        (
+            "listed twice",
+            format!("{}{}", login(""), login("")),
+            "twice",
+        ),
+        (
+            "delivery line",
+            entry("route = \"handoff\"\nkey_env = \"K\"\ndelivery = \"file\""),
+            "delivery",
+        ),
+        ("model id with a space", login("model = \"two words\""), "entry"),
+    ];
+    for (name, text, expected) in &table {
+        let fault = refused(text);
+        assert_eq!(kind_of(&fault), *expected, "{name}: {fault:?}");
+    }
+    assert!(AgentsFile::parse(&login("model = \"flash\"")).is_ok());
+    // A label or a sign-in method that is empty, long or odd is refused naming the program.
+    let labels = [
+        "\"   \"".to_owned(),
+        format!("\"{long}\""),
+        "\"two\\nlines\"".to_owned(),
+        "\"tab\\there\"".to_owned(),
+    ];
+    let methods = [
+        "\"\"".to_owned(),
+        format!("\"{long}\""),
+        "\"two words\"".to_owned(),
+        "\"new\\nline\"".to_owned(),
+        "\"a/b\"".to_owned(),
+    ];
+    let odd = labels
+        .iter()
+        .map(|v| plain(&format!("label = {v}")))
+        .chain(methods.iter().map(|v| plain(&format!("sign_in = {v}"))));
+    for text in odd {
+        match AgentsFile::parse(&text) {
+            Err(ConfigFault::Entry { program, .. }) => assert_eq!(program, "plain", "{text}"),
+            other => panic!("{text}: {other:?}"),
+        }
+    }
+    let longest = "x".repeat(64);
+    assert!(AgentsFile::parse(&plain(&format!("label = \"{longest}\""))).is_ok());
 }
 
 #[test]
@@ -201,24 +218,6 @@ fn a_label_is_the_trimmed_text_the_person_wrote_and_is_optional() {
     assert_eq!(label_of(bare), None);
 }
 
-#[test]
-fn a_label_that_is_empty_long_or_has_control_characters_is_refused_naming_the_program() {
-    let long = format!("\"{}\"", "x".repeat(65));
-    for bad in [
-        r#""   ""#.to_owned(),
-        long,
-        r#""two\nlines""#.to_owned(),
-        r#""tab\there""#.to_owned(),
-    ] {
-        match AgentsFile::parse(&labelled(&bad)) {
-            Err(ConfigFault::Entry { program, .. }) => assert_eq!(program, "plain"),
-            other => panic!("{bad}: {other:?}"),
-        }
-    }
-    let longest = format!("\"{}\"", "x".repeat(64));
-    assert!(AgentsFile::parse(&labelled(&longest)).is_ok());
-}
-
 fn signed_in(value: &str) -> String {
     format!(
         "[[agent]]\nprogram = \"plain\"\ncommand = \"/usr/bin/true\"\nroute = \"login\"\nsign_in = {value}\n"
@@ -237,23 +236,6 @@ fn a_sign_in_method_is_a_short_id_and_is_optional() {
     let file = AgentsFile::parse(bare).expect("file");
     let entry = file.by_program(&"plain".parse_program()).expect("entry");
     assert!(entry.sign_in.is_none());
-}
-
-#[test]
-fn a_sign_in_method_that_is_empty_long_or_odd_is_refused_naming_the_program() {
-    let long = format!("\"{}\"", "x".repeat(65));
-    for bad in [
-        r#""""#.to_owned(),
-        long,
-        r#""two words""#.to_owned(),
-        r#""new\nline""#.to_owned(),
-        r#""a/b""#.to_owned(),
-    ] {
-        match AgentsFile::parse(&signed_in(&bad)) {
-            Err(ConfigFault::Entry { program, .. }) => assert_eq!(program, "plain"),
-            other => panic!("{bad}: {other:?}"),
-        }
-    }
 }
 
 // ---- agents from the registry ----
@@ -345,13 +327,6 @@ fn a_registry_agent_that_is_not_installed_or_not_pinned_is_refused() {
     assert!(AgentsFile::parse(REGISTRY_ENTRY).is_err());
     let both = REGISTRY_ENTRY.replace("registry =", "command = \"/usr/bin/x\"\nregistry =");
     assert!(AgentsFile::parse_in(&both, Some(&dir)).is_err());
-}
-
-#[test]
-fn a_model_id_with_a_space_is_refused() {
-    refused(&entry("route = \"login\"\nmodel = \"two words\""));
-    let ok = entry("route = \"login\"\nmodel = \"flash\"");
-    assert!(AgentsFile::parse(&ok).is_ok());
 }
 
 #[test]
