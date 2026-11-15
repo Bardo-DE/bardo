@@ -5,18 +5,14 @@
 use crate::standard_action::normalized;
 use crate::vocab::{Shortcut, ShortcutKey};
 use chordkit::keyboard_types::{Modifiers, NamedKey};
-use chordkit::{Chord, DefaultChord, Key, PrimaryUse};
+use chordkit::{Chord, DefaultChord, Key};
 
 impl Shortcut {
     /// The portable chord this shortcut is: Command is `Primary`. `None` for no key at all, or
     /// a key chordkit has no name for (the Menu key).
     pub fn default_chord(&self) -> Option<DefaultChord> {
         let keys = self.keys();
-        let primary = if keys.contains(&ShortcutKey::Super) {
-            PrimaryUse::Held
-        } else {
-            PrimaryUse::Unused
-        };
+        let primary = keys.contains(&ShortcutKey::Super);
         let modifiers = keys
             .iter()
             .filter_map(|key| modifier_of(*key))
@@ -32,9 +28,10 @@ impl Shortcut {
     /// vocabulary has no cap for (`F13` and up, print screen, a tap).
     pub fn from_default_chord(chord: DefaultChord) -> Option<Shortcut> {
         let base = chord.base();
-        let held = match chord.primary() {
-            PrimaryUse::Held => Modifiers::META,
-            PrimaryUse::Unused => Modifiers::empty(),
+        let held = if chord.primary() {
+            Modifiers::META
+        } else {
+            Modifiers::empty()
         };
         let modifiers = SHORTCUT_MODIFIERS
             .iter()

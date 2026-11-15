@@ -610,6 +610,7 @@ mod availability_tests {
 #[cfg(test)]
 mod companion_tests {
     use super::EffectMark;
+    use crate::word::Word;
 
     #[test]
     fn effect_marks_order_by_severity() {
