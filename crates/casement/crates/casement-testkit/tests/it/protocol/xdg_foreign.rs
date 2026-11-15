@@ -1,6 +1,7 @@
 //! `xdg_foreign` (P0-H2): an imported parent reaches the model through `xdg_shell::on_parent`
 //! (the model only parents windows of one app, so the two clients declare one app id).
 
+use crate::protocol::cut_past_cap;
 use crate::protocol::xdg_shell::{boot, map_named, windows};
 use casement_core::policy::ConnectionRole;
 use casement_testclient::surface::toplevel::WmBase;
@@ -106,19 +107,10 @@ fn a_client_that_exports_without_end_is_cut() {
     let foreign = Foreign::bind(fixture.client(owner));
     let parent = map_named(&mut fixture, owner, &base, (500, 400), Some(APP));
     let mut made = Vec::new();
-    for _ in 0..casement_wayland::limits::MAX_EXPORTS {
-        made.push(foreign.export(fixture.client(owner), &parent));
-    }
-    fixture.pump();
-    assert!(
-        fixture.client(owner).protocol_error().is_none(),
-        "up to the cap is allowed"
-    );
-    made.push(foreign.export(fixture.client(owner), &parent));
-    fixture.pump();
-    // The cut closes the connection (the system backend sends no error first).
-    assert!(
-        !fixture.client(owner).is_connected(),
-        "the client past the cap is cut"
+    cut_past_cap(
+        &mut fixture,
+        owner,
+        casement_wayland::limits::MAX_EXPORTS,
+        |fixture| made.push(foreign.export(fixture.client(owner), &parent)),
     );
 }

@@ -1,5 +1,6 @@
 //! `virtual_keyboard` (P0-H7).
 
+use crate::protocol::cut_past_cap;
 use super::consent::{ScriptedShell, asked_world, kept, program};
 use casement_core::Event;
 use casement_core::policy::ConnectionRole;
@@ -86,20 +87,13 @@ fn a_keyboard_that_sends_keymaps_without_end_is_cut() {
     fixture.pump();
     let board = VirtualBoard::start(fixture.client(id).globals()).expect("the keyboard");
     fixture.pump();
-    for _ in 0..casement_wayland::limits::MAX_KEYMAPS {
-        board.keymap(KEYMAP).expect("keymap");
-    }
-    fixture.pump();
-    assert!(
-        fixture.client(id).protocol_error().is_none(),
-        "up to the cap is allowed"
-    );
-    board.keymap(KEYMAP).expect("keymap");
-    fixture.pump();
-    // The cut closes the connection (the system backend sends no error first).
-    assert!(
-        !fixture.client(id).is_connected(),
-        "the client past the cap is cut"
+    cut_past_cap(
+        &mut fixture,
+        id,
+        casement_wayland::limits::MAX_KEYMAPS,
+        |_| {
+            board.keymap(KEYMAP).expect("keymap");
+        },
     );
 }
 

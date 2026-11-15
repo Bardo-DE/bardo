@@ -1,5 +1,6 @@
 //! `layer_shell` (P0-H3).
 
+use crate::protocol::cut_past_cap;
 use casement_core::OutputName;
 use casement_core::geometry::{LogicalPoint, PhysicalSize};
 use casement_core::input::{DeviceClass, KeyCode};
@@ -546,19 +547,12 @@ fn a_client_that_makes_layer_surfaces_without_end_is_cut() {
     let id = fixture.connect(ConnectionRole::Public);
     fixture.pump();
     let mut made = Vec::new();
-    for _ in 0..casement_wayland::limits::MAX_LAYERS {
-        made.push(LayerSurface::create(fixture.client(id), &wallpaper()).expect("a layer"));
-    }
-    fixture.pump();
-    assert!(
-        fixture.client(id).protocol_error().is_none(),
-        "up to the cap is allowed"
-    );
-    made.push(LayerSurface::create(fixture.client(id), &wallpaper()).expect("a layer"));
-    fixture.pump();
-    // The cut closes the connection (the system backend sends no error first).
-    assert!(
-        !fixture.client(id).is_connected(),
-        "the client past the cap is cut"
+    cut_past_cap(
+        &mut fixture,
+        id,
+        casement_wayland::limits::MAX_LAYERS,
+        |fixture| {
+            made.push(LayerSurface::create(fixture.client(id), &wallpaper()).expect("a layer"));
+        },
     );
 }

@@ -2,6 +2,7 @@
 //! fixture and the test client core (P0-B-headless, P0-T-client) and the core loop's idle
 //! hooks (P0-B-loop, interface asks of this lane) exist.
 
+use crate::protocol::cut_past_cap;
 use casement_core::input::{DeviceClass, KeyCode};
 use casement_core::policy::ConnectionRole;
 use casement_core::time::Mono;
@@ -139,32 +140,19 @@ fn a_client_that_asks_for_idle_notifications_without_end_is_cut() {
     let client = fixture.connect(ConnectionRole::Public);
     fixture.pump();
     let mut made = Vec::new();
-    for _ in 0..casement_wayland::limits::MAX_IDLE_WATCHES {
-        made.push(
-            IdleWatch::start(
-                fixture.client(client).globals(),
-                IdleKind::Inhibitable,
-                Duration::from_secs(30),
-            )
-            .expect("a notification within the cap"),
-        );
-    }
-    fixture.pump();
-    assert!(
-        fixture.client(client).is_connected(),
-        "up to the cap is allowed"
-    );
-    made.push(
-        IdleWatch::start(
-            fixture.client(client).globals(),
-            IdleKind::Inhibitable,
-            Duration::from_secs(30),
-        )
-        .expect("the request is sent"),
-    );
-    fixture.pump();
-    assert!(
-        !fixture.client(client).is_connected(),
-        "the client past the cap is cut"
+    cut_past_cap(
+        &mut fixture,
+        client,
+        casement_wayland::limits::MAX_IDLE_WATCHES,
+        |fixture| {
+            made.push(
+                IdleWatch::start(
+                    fixture.client(client).globals(),
+                    IdleKind::Inhibitable,
+                    Duration::from_secs(30),
+                )
+                .expect("a notification"),
+            );
+        },
     );
 }

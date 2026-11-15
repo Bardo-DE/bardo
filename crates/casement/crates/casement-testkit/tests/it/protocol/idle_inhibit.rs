@@ -1,5 +1,6 @@
 //! `idle_inhibit` (P0-H8). Runs once the fixture and test client core land.
 
+use crate::protocol::cut_past_cap;
 use casement_core::policy::ConnectionRole;
 use casement_testclient::misc::idle::{IdleKind, IdleSignal, IdleWatch};
 use casement_testclient::misc::idle_inhibit::InhibitHold;
@@ -98,18 +99,14 @@ fn a_client_that_inhibits_without_end_is_cut() {
     let client = fixture.connect(ConnectionRole::Public);
     fixture.pump();
     let mut holds = Vec::new();
-    for _ in 0..casement_wayland::limits::MAX_IDLE_INHIBITORS {
-        holds.push(InhibitHold::start(fixture.client(client).globals()).expect("an inhibitor"));
-    }
-    fixture.pump();
-    assert!(
-        fixture.client(client).is_connected(),
-        "up to the cap is allowed"
-    );
-    holds.push(InhibitHold::start(fixture.client(client).globals()).expect("the request is sent"));
-    fixture.pump();
-    assert!(
-        !fixture.client(client).is_connected(),
-        "the client past the cap is cut"
+    cut_past_cap(
+        &mut fixture,
+        client,
+        casement_wayland::limits::MAX_IDLE_INHIBITORS,
+        |fixture| {
+            holds.push(
+                InhibitHold::start(fixture.client(client).globals()).expect("an inhibitor"),
+            );
+        },
     );
 }

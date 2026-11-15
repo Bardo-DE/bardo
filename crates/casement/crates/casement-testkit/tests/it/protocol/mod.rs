@@ -76,3 +76,28 @@ pub(crate) use layer_shell::map as map_layer;
 pub(crate) use xdg_shell::{map_toplevel, rect_of, settle, windows};
 mod xdg_toplevel_icon;
 mod xdg_toplevel_tag;
+
+/// The one shape of every "is cut" cap test: `ask` runs `cap` times and the client is still
+/// connected after a pump, then once more and the compositor has cut it (the system backend
+/// sends no error first, so the connection is simply closed).
+pub(crate) fn cut_past_cap(
+    fixture: &mut casement_testkit::Fixture,
+    client: casement_testkit::ClientId,
+    cap: usize,
+    mut ask: impl FnMut(&mut casement_testkit::Fixture),
+) {
+    for _ in 0..cap {
+        ask(fixture);
+    }
+    fixture.pump();
+    assert!(
+        fixture.client(client).is_connected(),
+        "up to the cap is allowed"
+    );
+    ask(fixture);
+    fixture.pump();
+    assert!(
+        !fixture.client(client).is_connected(),
+        "the client past the cap is cut"
+    );
+}

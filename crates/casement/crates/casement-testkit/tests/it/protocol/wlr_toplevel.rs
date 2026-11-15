@@ -2,6 +2,7 @@
 //! states and outputs; a handle's requests take the transitions the window's own requests do;
 //! `set_rectangle` is stored for the minimise animation; the listing's transcript is a golden.
 
+use crate::protocol::cut_past_cap;
 use crate::protocol::consent::{ScriptedShell, kept, program};
 use crate::protocol::xdg_shell::{boot, check_golden, golden, windows};
 use casement_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, PhysicalSize};
@@ -379,21 +380,10 @@ fn a_client_that_binds_the_window_list_without_end_is_cut() {
     let (mut fixture, id) = boot();
     let cap = casement_wayland::limits::MAX_WINDOW_LIST_MANAGERS;
     let mut watches = Vec::new();
-    for _ in 0..cap {
+    cut_past_cap(&mut fixture, id, cap, |fixture| {
         watches.push(ToplevelWatch::start(fixture.client(id).globals()).expect("the list"));
         fixture.pump();
-    }
-    assert!(
-        fixture.client(id).protocol_error().is_none(),
-        "up to the cap is allowed"
-    );
-    watches.push(ToplevelWatch::start(fixture.client(id).globals()).expect("a bind"));
-    fixture.pump();
-    // The cut closes the connection (the system backend sends no error first).
-    assert!(
-        !fixture.client(id).is_connected(),
-        "the client past the cap is cut"
-    );
+    });
 }
 
 /// A desktop with the scripted shell, a window "Inbox" mapped by a client the desktop trusts,

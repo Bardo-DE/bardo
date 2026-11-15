@@ -1,5 +1,6 @@
 //! `xdg_toplevel_icon` (P0-H2). Ignored until the fixture and the core loop are filled.
 
+use crate::protocol::cut_past_cap;
 use crate::protocol::xdg_shell::boot;
 use casement_core::geometry::PhysicalSize;
 use casement_testclient::surface::toplevel::WmBase;
@@ -151,23 +152,14 @@ fn a_client_that_adds_icon_buffers_without_end_is_cut() {
         Pattern::Gradient,
     );
     let mut made = Vec::new();
-    for _ in 0..casement_wayland::limits::MAX_ICON_BUFFERS {
-        let icon = icons.manager.create_icon(&fixture.client(id).qh(), ());
-        icon.add_buffer(square.buffer(), 1);
-        made.push(icon);
-    }
-    fixture.pump();
-    assert!(
-        fixture.client(id).protocol_error().is_none(),
-        "up to the cap is allowed"
-    );
-    let icon = icons.manager.create_icon(&fixture.client(id).qh(), ());
-    icon.add_buffer(square.buffer(), 1);
-    made.push(icon);
-    fixture.pump();
-    // The cut closes the connection (the system backend sends no error first).
-    assert!(
-        !fixture.client(id).is_connected(),
-        "the client past the cap is cut"
+    cut_past_cap(
+        &mut fixture,
+        id,
+        casement_wayland::limits::MAX_ICON_BUFFERS,
+        |fixture| {
+            let icon = icons.manager.create_icon(&fixture.client(id).qh(), ());
+            icon.add_buffer(square.buffer(), 1);
+            made.push(icon);
+        },
     );
 }

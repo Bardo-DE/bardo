@@ -5,6 +5,7 @@
 //! Every test drives the real `State` through the `Fixture` and is ignored until the fixture
 //! (P0-B-headless) and the core loop (P0-B-loop) are filled: they could not be run in this lane.
 
+use crate::protocol::cut_past_cap;
 use casement_core::app::AppLife;
 use casement_core::geometry::{LogicalPoint, LogicalRect, PhysicalSize};
 use casement_core::input::{ButtonCode, DeviceClass, KeyCode};
@@ -734,20 +735,11 @@ fn a_client_that_makes_toplevels_without_end_is_cut() {
     let (mut fixture, id) = boot();
     let base = WmBase::bind(fixture.client(id), 7);
     let mut made = Vec::new();
-    for _ in 0..casement_wayland::limits::MAX_TOPLEVELS {
-        made.push(base.toplevel(fixture.client(id)));
-    }
-    fixture.pump();
-    assert!(
-        fixture.client(id).protocol_error().is_none(),
-        "up to the cap is allowed"
-    );
-    made.push(base.toplevel(fixture.client(id)));
-    fixture.pump();
-    // The cut closes the connection (the system backend sends no error first).
-    assert!(
-        !fixture.client(id).is_connected(),
-        "the client past the cap is cut"
+    cut_past_cap(
+        &mut fixture,
+        id,
+        casement_wayland::limits::MAX_TOPLEVELS,
+        |fixture| made.push(base.toplevel(fixture.client(id))),
     );
     let other = fixture.connect(ConnectionRole::Public);
     fixture.pump();
