@@ -7,7 +7,7 @@ use casement_core::layer::{
     Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerSpec, Margins, ShellRoleTag,
 };
 use casement_core::output::{
-    EdidFacts, EdidSerial, Mode, OutputFacts, PhysicalMm, VrrCapability,
+    EdidFacts, EdidSerial, Mode, OutputFacts, PhysicalMm,
 };
 use casement_core::settings::CasementSettings;
 use casement_core::space::SpaceSeed;
@@ -39,7 +39,7 @@ fn headless(name: &str) -> OutputFacts {
             preferred: true,
         }],
         physical: PhysicalMm { w: 0, h: 0 },
-        vrr: VrrCapability::Incapable,
+        vrr: false,
     }
 }
 

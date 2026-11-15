@@ -94,7 +94,7 @@ mod tests {
     use casement_core::OutputState;
     use casement_core::geometry::{LogicalPoint, PhysicalSize};
     use casement_core::output::{
-        EdidFacts, EdidSerial, Mode, OutputConfig, OutputFacts, PhysicalMm, VrrCapability,
+        EdidFacts, EdidSerial, Mode, OutputConfig, OutputFacts, PhysicalMm,
     };
     use casement_core::time::Millihertz;
     use casement_core::{OutputKey, OutputName};
@@ -119,7 +119,7 @@ mod tests {
             edid,
             modes: vec![mode],
             physical: PhysicalMm { w: 0, h: 0 },
-            vrr: VrrCapability::Incapable,
+            vrr: false,
         };
         let config = OutputConfig {
             mode,

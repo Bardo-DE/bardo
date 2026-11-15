@@ -1,7 +1,7 @@
 //! sill's whole `PreferWhole` table, ported to 120ths, and properties over modes and places.
 
 use super::{
-    EdidFacts, EdidSerial, Mode, ModeWish, OutputConfig, OutputFacts, PhysicalMm, SavedOutputs, ScalePolicy, VrrCapability, first_sight_scale, pick_mode,
+    EdidFacts, EdidSerial, Mode, ModeWish, OutputConfig, OutputFacts, PhysicalMm, SavedOutputs, ScalePolicy, first_sight_scale, pick_mode,
     place_outputs,
 };
 use crate::geometry::{LogicalPoint, PhysicalSize};
@@ -33,7 +33,7 @@ fn display(name: &str, modes: Vec<Mode>, mm: (u32, u32)) -> OutputFacts {
         edid,
         modes,
         physical: PhysicalMm { w: mm.0, h: mm.1 },
-        vrr: VrrCapability::Incapable,
+        vrr: false,
     }
 }
 

@@ -8,7 +8,7 @@ use super::kms::{
 use casement_core::OutputKey;
 use casement_core::OutputName;
 use casement_core::output::{
-    EdidFacts, EdidSerial, ModeWish, OutputFacts, VrrCapability, pick_mode,
+    EdidFacts, EdidSerial, ModeWish, OutputFacts, pick_mode,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -193,14 +193,7 @@ pub enum VrrPolicy {
 /// Whether `policy` turns variable refresh on for an output: only when asked for and when both
 /// the monitor and the CRTC can do it, so a commit never sets a property the device lacks.
 pub fn vrr_enabled(policy: VrrPolicy, connector: &ConnectorFacts, crtc: &CrtcFacts) -> bool {
-    matches!(
-        (policy, connector.vrr, crtc.vrr),
-        (
-            VrrPolicy::WhenCapable,
-            VrrCapability::Capable,
-            VrrCapability::Capable
-        )
-    )
+    matches!(policy, VrrPolicy::WhenCapable) && connector.vrr && crtc.vrr
 }
 
 /// What to commit for every attached connector of `resources`: the mode `wishes` asks for by

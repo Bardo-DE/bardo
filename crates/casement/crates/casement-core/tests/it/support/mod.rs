@@ -5,7 +5,7 @@ pub mod driver;
 use casement_core::app::AppKey;
 use casement_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, PhysicalSize};
 use casement_core::output::{
-    EdidFacts, EdidSerial, Mode, OutputFacts, PhysicalMm, VrrCapability,
+    EdidFacts, EdidSerial, Mode, OutputFacts, PhysicalMm,
 };
 use casement_core::space::{Space, SpaceContent, SpaceIndex};
 use casement_core::time::{Millihertz, Mono};
@@ -62,7 +62,7 @@ pub fn display(name: &str, modes: Vec<Mode>, mm: (u32, u32)) -> OutputFacts {
         edid,
         modes,
         physical: PhysicalMm { w: mm.0, h: mm.1 },
-        vrr: VrrCapability::Incapable,
+        vrr: false,
     }
 }
 

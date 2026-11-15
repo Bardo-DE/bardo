@@ -8,7 +8,7 @@ use casement_backend::tty::{
 use casement_core::OutputName;
 use casement_core::geometry::PhysicalSize;
 use casement_core::gpu::{FormatEntry, Fourcc, Modifier};
-use casement_core::output::{Mode, PhysicalMm, VrrCapability};
+use casement_core::output::{Mode, PhysicalMm};
 use casement_core::time::Millihertz;
 use std::path::Path;
 
@@ -117,7 +117,7 @@ fn device(connectors: Vec<ConnectorFacts>, crtcs: u32) -> KmsResources {
         .collect();
     let crtcs = ids
         .into_iter()
-        .map(|id| CrtcFacts::new(id, VrrCapability::Capable))
+        .map(|id| CrtcFacts::new(id, true))
         .collect();
     let connectors = connectors
         .into_iter()
@@ -148,7 +148,7 @@ fn panel(id: u32) -> ConnectorFacts {
         ])
         .with_physical(PhysicalMm { w: 300, h: 190 })
         .with_edid(edid("BOE", "NE135A1M", None))
-        .with_vrr(VrrCapability::Capable)
+        .with_vrr(true)
 }
 
 fn dell(id: u32) -> ConnectorFacts {

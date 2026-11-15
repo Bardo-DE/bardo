@@ -18,7 +18,7 @@ use crate::headless::{
 };
 use casement_core::OutputName;
 use casement_core::geometry::PhysicalSize;
-use casement_core::output::{EdidFacts, EdidSerial, OutputConfig, VrrCapability};
+use casement_core::output::{EdidFacts, EdidSerial, OutputConfig};
 use casement_core::time::{Mono, VblankSeq};
 use ds_core::geometry::scale::Scale;
 use std::collections::BTreeMap;
@@ -212,7 +212,7 @@ fn spec_of(output: &OutputName, config: &OutputConfig) -> VirtualOutputSpec {
         transform: config.transform,
         position: config.position,
         gpu: GpuId(0),
-        vrr: VrrCapability::Incapable,
+        vrr: false,
         edid: EdidSource::Synthetic(EdidFacts {
             make: "Casement".to_owned(),
             model: "Shadow".to_owned(),

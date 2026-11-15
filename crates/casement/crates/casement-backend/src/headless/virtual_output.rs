@@ -9,7 +9,7 @@
 use crate::backend::BackendError;
 use casement_core::OutputName;
 use casement_core::geometry::{LogicalPoint, PhysicalSize};
-use casement_core::output::{EdidFacts, EdidSerial, Mode, VrrCapability};
+use casement_core::output::{EdidFacts, EdidSerial, Mode};
 use casement_core::time::Millihertz;
 use casement_protocols::vocab::Transform;
 use ds_core::geometry::scale::Scale;
@@ -30,7 +30,7 @@ pub struct VirtualOutputSpec {
     /// The soft GPU it hangs off (the display GPU in a fake topology).
     pub gpu: GpuId,
     /// Whether it can vary its refresh rate.
-    pub vrr: VrrCapability,
+    pub vrr: bool,
     /// Where its EDID comes from.
     pub edid: EdidSource,
 }
@@ -110,7 +110,7 @@ impl VirtualOutputSpec {
             transform: Transform::Normal,
             position,
             gpu: GpuId(0),
-            vrr: VrrCapability::Incapable,
+            vrr: false,
         };
         fields.try_fold(base, |spec, field| {
             with_option(spec, field).ok_or_else(|| bad(SpecError::UnknownOption(field.to_owned())))
@@ -135,7 +135,7 @@ impl VirtualOutputSpec {
         if self.gpu != GpuId(0) {
             text.push_str(&format!(":gpu={}", self.gpu.0));
         }
-        if self.vrr == VrrCapability::Capable {
+        if self.vrr {
             text.push_str(":vrr=capable");
         }
         if let EdidSource::Recorded(fixture) = &self.edid {
@@ -179,8 +179,8 @@ fn with_option(spec: VirtualOutputSpec, field: &str) -> Option<VirtualOutputSpec
         }),
         "vrr" => Some(VirtualOutputSpec {
             vrr: match value {
-                "capable" => VrrCapability::Capable,
-                "incapable" => VrrCapability::Incapable,
+                "capable" => true,
+                "incapable" => false,
                 _ => return None,
             },
             ..spec
@@ -229,7 +229,7 @@ mod tests {
         assert_eq!(spec.position, LogicalPoint { x: 0, y: 0 });
         assert_eq!(spec.transform, Transform::Normal);
         assert_eq!(spec.gpu, GpuId(0));
-        assert_eq!(spec.vrr, VrrCapability::Incapable);
+        assert!(!spec.vrr);
         assert!(matches!(
             spec.edid,
             EdidSource::Synthetic(EdidFacts {

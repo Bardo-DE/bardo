@@ -5,7 +5,6 @@
 use super::kms::{
     CommitVerdict, ConnectorId, ConnectorStatus, KmsCommit, KmsRefusal, KmsResources, OutputCommit,
 };
-use casement_core::output::VrrCapability;
 use std::collections::BTreeMap;
 
 /// The lit outputs of a device, by connector.
@@ -74,7 +73,7 @@ fn refusal(
     match crtc {
         Some(crtc) if connector.possible_crtcs.contains(&crtc.id) && crtc_free => {
             let vrr_ok = !output.vrr
-                || (connector.vrr == VrrCapability::Capable && crtc.vrr == VrrCapability::Capable);
+                || (connector.vrr && crtc.vrr);
             if !connector.modes.contains(&output.mode) {
                 Some(KmsRefusal::Mode)
             } else if !vrr_ok {

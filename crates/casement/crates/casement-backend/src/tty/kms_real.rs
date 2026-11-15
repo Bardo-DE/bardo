@@ -38,7 +38,7 @@ use casement_core::OutputName;
 use casement_core::geometry::PhysicalSize;
 use casement_core::gpu::{FormatEntry, Fourcc, Modifier, OutputRoute};
 use casement_core::output::{
-    GammaRamp, Mode, OutputConfig, PhysicalMm, VrrCapability,
+    GammaRamp, Mode, OutputConfig, PhysicalMm,
 };
 use casement_core::time::Millihertz;
 use smithay::backend::drm::{DrmDevice, DrmDeviceFd, DrmEvent, DrmNode, DrmSurface, NodeType};
@@ -455,13 +455,6 @@ fn property(device: &DrmDevice, handle: impl ResourceHandle, name: &str) -> Opti
     })
 }
 
-fn capability(present: bool) -> VrrCapability {
-    match present {
-        true => VrrCapability::Capable,
-        false => VrrCapability::Incapable,
-    }
-}
-
 /// Reads every connector, CRTC and plane the device has now.
 fn probe(device: &DrmDevice) -> Result<KmsResources, KmsError> {
     let handles = device.resource_handles()?;
@@ -471,7 +464,7 @@ fn probe(device: &DrmDevice) -> Result<KmsResources, KmsError> {
         .map(|h| {
             let vrr = property(device, *h, "VRR_ENABLED").is_some();
             let gamma = device.get_crtc(*h).map_or(0, |info| info.gamma_length());
-            CrtcFacts::new(CrtcId(u32::from(*h)), capability(vrr)).with_gamma_size(gamma)
+            CrtcFacts::new(CrtcId(u32::from(*h)), vrr).with_gamma_size(gamma)
         })
         .collect();
     let connectors = handles
@@ -521,7 +514,7 @@ fn connector_facts(
             .with_modes(info.modes().iter().map(mode_of).collect())
             .with_physical(PhysicalMm { w, h })
             .with_edid(edid)
-            .with_vrr(capability(vrr))
+            .with_vrr(vrr)
             .with_crtcs(possible.into_iter().collect()),
     ))
 }

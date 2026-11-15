@@ -46,16 +46,6 @@ pub struct PhysicalMm {
     pub h: u32,
 }
 
-/// Whether a display can vary its refresh rate.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum VrrCapability {
-    /// It can.
-    Capable,
-    /// It cannot.
-    Incapable,
-}
-
 /// Everything an output reports, read once when it is plugged.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OutputFacts {
@@ -70,5 +60,5 @@ pub struct OutputFacts {
     /// Its physical size.
     pub physical: PhysicalMm,
     /// Whether it can vary its refresh rate.
-    pub vrr: VrrCapability,
+    pub vrr: bool,
 }

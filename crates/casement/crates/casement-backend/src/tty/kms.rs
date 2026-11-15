@@ -21,7 +21,7 @@ use crate::headless::ConnectorEvent;
 use casement_core::OutputName;
 use casement_core::gpu::FormatEntry;
 use casement_core::output::{
-    GammaRamp, Mode, OutputConfig, PhysicalMm, VrrCapability,
+    GammaRamp, Mode, OutputConfig, PhysicalMm,
 };
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -78,7 +78,7 @@ pub struct ConnectorFacts {
     /// The raw EDID block (empty when unreadable); `connector::parse_edid` reads it.
     pub edid: Vec<u8>,
     /// Whether the monitor can vary its refresh rate.
-    pub vrr: VrrCapability,
+    pub vrr: bool,
     /// The CRTCs that can drive it.
     pub possible_crtcs: Vec<CrtcId>,
 }
@@ -94,7 +94,7 @@ impl ConnectorFacts {
             modes: Vec::new(),
             physical: PhysicalMm { w: 0, h: 0 },
             edid: Vec::new(),
-            vrr: VrrCapability::Incapable,
+            vrr: false,
             possible_crtcs: Vec::new(),
         }
     }
@@ -119,7 +119,7 @@ impl ConnectorFacts {
 
     /// The same with this variable-refresh capability.
     #[must_use]
-    pub fn with_vrr(self, vrr: VrrCapability) -> ConnectorFacts {
+    pub fn with_vrr(self, vrr: bool) -> ConnectorFacts {
         ConnectorFacts { vrr, ..self }
     }
 
@@ -139,7 +139,7 @@ pub struct CrtcFacts {
     /// Its kernel id.
     pub id: CrtcId,
     /// Whether it can drive a variable-refresh monitor.
-    pub vrr: VrrCapability,
+    pub vrr: bool,
     /// How many steps its gamma table has per channel (`GAMMA_LUT_SIZE`; 0 when it has no gamma
     /// table). A recorded fixture that predates the field reads as [`DEFAULT_GAMMA_SIZE`].
     #[serde(default = "default_gamma_size")]
@@ -155,7 +155,7 @@ fn default_gamma_size() -> u32 {
 
 impl CrtcFacts {
     /// A CRTC with a [`DEFAULT_GAMMA_SIZE`] gamma table.
-    pub fn new(id: CrtcId, vrr: VrrCapability) -> CrtcFacts {
+    pub fn new(id: CrtcId, vrr: bool) -> CrtcFacts {
         CrtcFacts {
             id,
             vrr,
