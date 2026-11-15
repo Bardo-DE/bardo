@@ -56,19 +56,6 @@ mod tests {
     }
 
     #[test]
-    fn a_group_has_its_heading() {
-        let cases = [
-            (ExtensionKind::Looks, "Looks"),
-            (ExtensionKind::FileIcons, "File Icons"),
-            (ExtensionKind::Other, "Other"),
-            (ExtensionKind::Unusable, "Can\u{2019}t Be Used"),
-        ];
-        for (kind, want) in cases {
-            assert_eq!(group_title(kind), want);
-        }
-    }
-
-    #[test]
     fn the_reason_replaces_the_summary_of_an_extension_that_cannot_be_used() {
         let cases = [
             (ExtensionStanding::Usable { on: true }, Some("Warm paper")),

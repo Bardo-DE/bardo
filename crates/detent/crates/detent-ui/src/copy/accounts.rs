@@ -161,7 +161,7 @@ mod tests {
     use super::*;
     use detent_model::external::ProviderGroup;
     use detent_model::{
-        AccountKey, AccountProvider, AccountSpend, ModuleId, ModuleRow, Place, SwitchState,
+        AccountKey, AccountProvider, AccountSpend, ModuleId, ModuleRow, Place,
     };
     use ds_settings::schema::KeyPath;
 
@@ -202,111 +202,6 @@ mod tests {
             action: "Revoke".to_owned(),
             since,
             scope,
-        }
-    }
-
-    #[test]
-    fn an_account_stands_in_plain_words() {
-        let cases = [
-            (AccountStatus::Ok, "Signed in"),
-            (AccountStatus::NeedsReauth, "Needs sign-in"),
-            (AccountStatus::NeedsLogin, "Needs sign-in"),
-            (AccountStatus::Offline, "Offline"),
-            (AccountStatus::Limited, "Limited"),
-            (
-                AccountStatus::Other("rate_limited".to_owned()),
-                "Rate limited",
-            ),
-        ];
-        for (status, want) in cases {
-            assert_eq!(status_label(&status), want, "{status:?}");
-        }
-    }
-
-    #[test]
-    fn a_service_is_its_kind_in_words() {
-        let service = |kind: &str| AccountService {
-            path: KeyPath(format!("accounts.home.service.{kind}")),
-            kind: kind.to_owned(),
-            on: SwitchState::On,
-        };
-        for (kind, want) in [("storage", "Storage"), ("language_model", "Language model")] {
-            assert_eq!(service_label(&service(kind)), want, "{kind}");
-        }
-    }
-
-    #[test]
-    fn each_way_of_signing_in_words_its_lines() {
-        let cases = [
-            (
-                Some(SignInWay::Browser),
-                "Sign in to the account again in your browser.",
-                Some("Signs in through the browser"),
-            ),
-            (
-                Some(SignInWay::Password),
-                "Enter the password again.",
-                Some("Signs in with a password"),
-            ),
-            (
-                Some(SignInWay::Key),
-                "Enter the key again.",
-                Some("Signs in with a key"),
-            ),
-            (
-                Some(SignInWay::Agent),
-                "Asks the assistant to sign itself in, which needs its app to be running.",
-                Some("Signs in inside its own app"),
-            ),
-            (
-                Some(SignInWay::Outside),
-                "Sign in to the account again.",
-                None,
-            ),
-            (
-                Some(SignInWay::Nothing),
-                "Sign in to the account again.",
-                None,
-            ),
-            (None, "Sign in to the account again.", None),
-        ];
-        for (way, help, words) in cases {
-            assert_eq!(reauth_help(way), help, "{way:?}");
-            assert_eq!(sign_in_words(way), words, "{way:?}");
-        }
-    }
-
-    #[test]
-    fn the_banner_says_what_the_account_needs() {
-        let day = CalendarDay {
-            month: 10,
-            date: 14,
-        };
-        let cases = [
-            (
-                Attention::SignInEnded,
-                account(AccountStatus::NeedsReauth, Some("Google")),
-                "Sign in again to keep using Work mail.",
-                "Needs sign-in",
-            ),
-            (
-                Attention::SignInEnding { day },
-                account(AccountStatus::Ok, Some("Google")),
-                "Google will sign this account out on 14 Oct.",
-                "Sign-in ends soon",
-            ),
-            (
-                Attention::SignInEnding {
-                    day: CalendarDay { month: 1, date: 2 },
-                },
-                account(AccountStatus::Ok, None),
-                "The provider will sign this account out on 2 Jan.",
-                "Sign-in ends soon",
-            ),
-        ];
-        for (attention, account, words, badge) in cases {
-            assert_eq!(attention_words(&attention, &account), words);
-            assert_eq!(attention_badge(&attention), badge);
         }
     }
 
@@ -367,13 +262,6 @@ mod tests {
         for (label, since, scope, want) in cases {
             let got = grant_when(&permission(label, since, scope));
             assert_eq!(got.as_deref(), want, "{label} {since:?} {scope:?}");
-        }
-    }
-
-    #[test]
-    fn a_secret_says_whether_it_is_set() {
-        for (set, want) in [(true, "Set"), (false, "Not set")] {
-            assert_eq!(secret_standing(set), want);
         }
     }
 

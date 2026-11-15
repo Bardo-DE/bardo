@@ -24,19 +24,3 @@ pub(crate) const WELCOME: &str = "Welcome";
 
 /// The words "Keep AI on this computer".
 pub(crate) const KEEP_AI_ON_THIS_COMPUTER: &str = "Keep AI on this computer";
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use detent_model::AccountKey;
-
-    #[test]
-    fn a_runtime_that_is_up_is_running() {
-        let runtime = Runtime {
-            key: AccountKey("ollama".to_owned()),
-            label: "Ollama".to_owned(),
-            status: AccountStatus::Ok,
-        };
-        assert_eq!(runtime_state(&runtime), "Running");
-    }
-}

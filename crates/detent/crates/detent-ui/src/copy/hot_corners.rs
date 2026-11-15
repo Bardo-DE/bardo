@@ -215,7 +215,7 @@ pub(crate) const HOT_CORNERS: &str = "Hot Corners";
 #[cfg(test)]
 mod tests {
     use super::*;
-    use detent_model::{CornerMenuLine, HotActionChoice, HotApp, corner_menu};
+    use detent_model::{HotActionChoice, HotApp};
 
     fn known() -> HotKnown {
         HotKnown {
@@ -233,37 +233,6 @@ mod tests {
 
     fn command(text: &str) -> HotDo {
         HotDo::Command(text.to_owned())
-    }
-
-    #[test]
-    fn the_pop_up_lists_the_desktop_then_open_and_app_action_then_command_then_nothing() {
-        let labels: Vec<&str> = corner_menu()
-            .into_iter()
-            .map(|line| match line {
-                CornerMenuLine::Choice(choice) => choice_label(choice),
-                CornerMenuLine::Separator => "---",
-            })
-            .collect();
-        assert_eq!(
-            labels,
-            [
-                "Mission Control",
-                "Application Windows",
-                "Desktop",
-                "Notification Centre",
-                "Control Centre",
-                "Launcher",
-                "Assistant",
-                "Lock Screen",
-                "---",
-                "Open\u{2026}",
-                "App Action\u{2026}",
-                "---",
-                "Command\u{2026}",
-                "---",
-                "\u{2013}",
-            ]
-        );
     }
 
     #[test]

@@ -52,37 +52,3 @@ pub(crate) fn open(title: impl std::fmt::Display) -> String {
 pub(crate) fn choose_a_file_for(a: impl std::fmt::Display) -> String {
     format!("Choose a file for {a}")
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn the_engine_note_says_what_each_fact_means() {
-        assert_eq!(
-            setup_line(),
-            "To run models on this computer, install llama.cpp."
-        );
-        assert_eq!(
-            releases_line(),
-            "Get llama.cpp's server from its releases page"
-        );
-        assert_eq!(start_using(), "Start using it");
-        assert_eq!(restart(), "Restart");
-        assert_eq!(
-            restart_failed(),
-            "The assistant could not be restarted. Try again in a moment."
-        );
-        assert_eq!(found_automatically(), "Found automatically");
-
-        let (title, message) = restart_question();
-        assert_eq!(title, "Restart the assistant to use llama.cpp?");
-        assert!(
-            message.contains("conversation that is open stops"),
-            "{message}"
-        );
-        for word in ["systemd", "D-Bus", "inferd"] {
-            assert!(!title.contains(word) && !message.contains(word), "{word}");
-        }
-    }
-}

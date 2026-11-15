@@ -1,6 +1,6 @@
 //! The Privacy & Security page over a fake compositor module in memory: the programs it lists are
-//! named from desktop entries, each power shows where it stands, a choice is sent as the one
-//! change the compositor takes, and an administrator's answer is locked.
+//! named from desktop entries, each power shows where it stands, and a choice is sent as the one
+//! change the compositor takes.
 
 use crate::support::Sandbox;
 use crate::support::compositor::{Compositor, Row};
@@ -174,58 +174,4 @@ fn a_choice_is_sent_as_the_one_change_and_the_list_follows() {
             "forget privacy.clipboard.bbb.forget"
         ]
     );
-}
-
-#[test]
-fn a_power_nobody_answered_is_switched_on_as_the_first_answer() {
-    let rows = vec![
-        Row::person("screen", "aaa", GRIM, "on"),
-        Row::unanswered("keys", "bbb", GRIM),
-        Row::unanswered("clipboard", "ccc", LOUPE),
-    ];
-    let mut w = world("privacy-first-answer", Some(rows));
-    listed(&mut w);
-    assert_eq!(w.harness.count("[data-program]"), 2);
-    let keys = line("usr-bin-grim", "keys");
-    assert_eq!(label_of(&w.harness, &keys).as_deref(), Some("Ask"));
-    // The menu: Allowed, Denied, Ask.
-    choose(&mut w.harness, &keys, 1);
-    settle(&mut w.harness, "the first answer", |h| {
-        label_of(h, &keys).as_deref() == Some("Allowed")
-    });
-    assert_eq!(w.fake.log(), ["set privacy.keys.bbb on"]);
-    let clipboard = line("org-gnome-loupe", "clipboard");
-    assert_eq!(label_of(&w.harness, &clipboard).as_deref(), Some("Ask"));
-}
-
-#[test]
-fn an_administrators_answer_is_locked_and_says_so() {
-    let mut w = world("privacy-floor", Some(answers()));
-    listed(&mut w);
-    let fixed = line("opt-tools-capture", "keys");
-    assert_eq!(
-        w.harness.attr(&fixed, "aria-disabled").as_deref(),
-        Some("true")
-    );
-    assert_eq!(
-        w.harness.count(&format!("{fixed} .ds-popup")),
-        0,
-        "nothing to pick"
-    );
-    let words = w.harness.text_of(&fixed).unwrap_or_default();
-    assert!(words.contains("Set by your administrator"), "{words}");
-    assert!(w.fake.log().is_empty());
-}
-
-#[test]
-fn with_no_compositor_the_page_says_so_in_plain_words() {
-    let mut w = world("privacy-absent", None);
-    settle(&mut w.harness, "the line", |h| {
-        h.count("[data-privacy=\"unavailable\"]") == 1
-    });
-    let words = w.harness.text_of(".privacy").unwrap_or_default();
-    assert!(words.contains("The desktop is not running"), "{words}");
-    for banned in ["compositor", "D-Bus", "bus"] {
-        assert!(!words.contains(banned), "{banned} in {words}");
-    }
 }

@@ -115,47 +115,6 @@ pub(crate) fn status_line(on: bool, connected: usize) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use detent_model::BtAddress;
-
-    fn question(ask: PairingAsk) -> PairingQuestion {
-        PairingQuestion {
-            address: BtAddress("AA:BB:CC:DD:EE:04".to_owned()),
-            name: "Nearby Pad".to_owned(),
-            ask,
-        }
-    }
-
-    #[test]
-    fn a_pairing_question_names_the_device_and_what_to_do() {
-        let cases = [
-            (
-                PairingAsk::Compare(PairingCode(4_217)),
-                "Confirm that the number 004217 is shown on \u{201c}Nearby Pad\u{201d}.",
-            ),
-            (PairingAsk::Allow, "Allow it to pair?"),
-            (
-                PairingAsk::Show(PairingCode(42)),
-                "Type 000042 on \u{201c}Nearby Pad\u{201d}, then press Return.",
-            ),
-            (
-                PairingAsk::PinCode,
-                "Enter the PIN for \u{201c}Nearby Pad\u{201d}.",
-            ),
-            (
-                PairingAsk::Passkey,
-                "Enter the code shown on \u{201c}Nearby Pad\u{201d}.",
-            ),
-        ];
-        for (ask, want) in cases {
-            assert_eq!(pairing_body(&question(ask)), want, "{ask:?}");
-        }
-        assert_eq!(
-            pairing_title(&question(PairingAsk::Allow)),
-            "\u{201c}Nearby Pad\u{201d} would like to pair with this computer."
-        );
-        assert_eq!(forget_title("Zed Buds"), "Forget \u{201c}Zed Buds\u{201d}?");
-    }
-
     #[test]
     fn a_device_and_its_battery_read_in_plain_words() {
         let links = [

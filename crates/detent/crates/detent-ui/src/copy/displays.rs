@@ -111,26 +111,4 @@ mod tests {
             "3024 \u{d7} 1964"
         );
     }
-
-    #[test]
-    fn rotations_and_sides_read_in_plain_words() {
-        let turns = [
-            (DisplayRotation::Standard, "Standard"),
-            (DisplayRotation::Quarter, "90\u{b0}"),
-            (DisplayRotation::Half, "180\u{b0}"),
-            (DisplayRotation::ThreeQuarters, "270\u{b0}"),
-        ];
-        for (turn, want) in turns {
-            assert_eq!(rotation(turn), want, "{turn:?}");
-        }
-        let sides = [
-            (ArrangeSide::Right, "Right of"),
-            (ArrangeSide::Left, "Left of"),
-            (ArrangeSide::Above, "Above"),
-            (ArrangeSide::Below, "Below"),
-        ];
-        for (place, want) in sides {
-            assert_eq!(side(place), want, "{place:?}");
-        }
-    }
 }

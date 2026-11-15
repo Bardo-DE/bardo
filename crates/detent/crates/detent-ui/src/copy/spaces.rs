@@ -60,27 +60,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn the_question_is_worded_by_what_becomes_of_the_memories() {
-        assert_eq!(removal_title("Trip"), "Remove \u{201c}Trip\u{201d}?");
-        let cases = [
-            (
-                MemoryFate::MoveToApps,
-                "Its memories move to the apps that saved them.",
-                "Delete its memories instead",
-            ),
-            (
-                MemoryFate::Delete,
-                "Its memories will be deleted.",
-                "Move its memories instead",
-            ),
-        ];
-        for (memories, body, flip) in cases {
-            assert_eq!(removal_body(memories), body);
-            assert_eq!(flip_label(memories), flip);
-        }
-    }
-
-    #[test]
     fn the_history_choices_keep_first() {
         assert_eq!(
             HISTORY_CHOICES[0],

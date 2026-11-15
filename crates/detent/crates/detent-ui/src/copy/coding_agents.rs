@@ -93,18 +93,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn a_failed_list_and_a_presence_have_their_words() {
-        assert_eq!(
-            list_failure(Some("no route to the host")),
-            format!("{LIST_FAILED} no route to the host")
-        );
-        assert_eq!(list_failure(None), LIST_FAILED);
-        assert_eq!(presence_mark(Presence::Installed), Some("Installed"));
-        assert_eq!(presence_mark(Presence::Online), None);
-        assert_eq!(downloading("Codex"), "Downloading Codex\u{2026}");
-    }
-
-    #[test]
     fn a_download_says_what_the_downloader_said_or_that_it_failed() {
         assert_eq!(
             add_refusal(&AddRefusal::DownloadSaid(

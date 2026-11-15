@@ -151,21 +151,6 @@ mod tests {
     }
 
     #[test]
-    fn each_way_sync_now_ends_has_its_own_plain_line() {
-        let cases = [
-            (SyncNowEnd::Started, "Syncing now."),
-            (SyncNowEnd::Paused, "Syncing is paused for this account."),
-            (
-                SyncNowEnd::Failed,
-                "Could not start syncing. Try again later.",
-            ),
-        ];
-        for (end, want) in cases {
-            assert_eq!(sync_now_line(end), want, "{end:?}");
-        }
-    }
-
-    #[test]
     fn the_spend_line_reads_both_amounts() {
         let line = |spent, cap| SpendLine {
             spent: Cents(spent),

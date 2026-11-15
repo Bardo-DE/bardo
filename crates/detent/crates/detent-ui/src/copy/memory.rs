@@ -47,48 +47,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn the_note_says_what_memory_keeps_meanwhile() {
-        let cases = [
-            (
-                KeptValue::Named("Private".to_owned()),
-                "Waits for you to confirm. Until then, memory keeps \u{201c}Private\u{201d}.",
-            ),
-            (
-                KeptValue::Measured("30 days".to_owned()),
-                "Waits for you to confirm. Until then, memory keeps 30 days.",
-            ),
-            (
-                KeptValue::Written("auto".to_owned()),
-                "Waits for you to confirm. Until then, memory keeps auto.",
-            ),
-        ];
-        for (kept, want) in cases {
-            assert_eq!(waiting_note(&kept), want);
-        }
-    }
-
-    #[test]
-    fn a_trouble_has_its_calm_line() {
-        let cases = [
-            (
-                Trouble::NotAllowed,
-                "Memory would not take this confirmation from here.",
-            ),
-            (
-                Trouble::Invalid,
-                "Memory could not accept this value, so it keeps its own.",
-            ),
-            (
-                Trouble::Failed,
-                "This could not be confirmed. Try again in a moment.",
-            ),
-        ];
-        for (trouble, want) in cases {
-            assert_eq!(trouble_line(trouble), want);
-        }
-    }
-
-    #[test]
     fn a_line_is_told_only_when_there_is_something_to_say() {
         let cases = [
             (

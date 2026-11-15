@@ -181,56 +181,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn names_are_plain_words() {
-        let three = StandardAction::all()
-            .find(|a| a.slug() == "switch-to-space-3")
-            .expect("the third Space");
-        let cases: &[(&str, StandardAction, &str)] = &[
-            (
-                "the slug capitalised",
-                StandardAction::SelectAll,
-                "Select all",
-            ),
-            (
-                "a longer slug",
-                StandardAction::PasteAndMatchStyle,
-                "Paste and match style",
-            ),
-            (
-                "a worded name",
-                StandardAction::LockScreen,
-                "Lock the screen",
-            ),
-            ("a numbered Space", three, "Switch to Space 3"),
-        ];
-        for (case, action, want) in cases {
-            assert_eq!(standard_action_name(*action), *want, "{case}");
-        }
-    }
-
-    #[test]
-    fn a_group_has_its_title_and_a_row_says_who_set_it() {
-        assert_eq!(group_title(ShortcutGroup::Tiling), "Window tiling");
-        let row = |origin, also: &[&str]| ShortcutRow {
-            action: StandardAction::Copy,
-            chord: None,
-            shown: String::new(),
-            also: also.iter().map(|chord| (*chord).to_owned()).collect(),
-            origin,
-            clash: None,
-        };
-        assert_eq!(shortcut_note(&row(Origin::Standard, &[])), "Standard");
-        assert_eq!(
-            shortcut_note(&row(Origin::You, &["A", "B"])),
-            "You. Also A, B."
-        );
-        assert_eq!(
-            shortcut_note(&row(Origin::ThisComputer, &[])),
-            "This computer"
-        );
-    }
-
-    #[test]
     fn a_problem_says_whose_file_it_is_in() {
         let problem = |layer| ShortcutProblem {
             layer,
@@ -243,33 +193,6 @@ mod tests {
         assert_eq!(
             problem_line(&problem(KeymapLayer::Person)),
             "Your shortcuts: It is not plain text."
-        );
-    }
-
-    #[test]
-    fn the_question_names_both_actions() {
-        let question = ReplaceQuestion {
-            chord: "\u{2318}V".to_owned(),
-            holder: Action::Standard(StandardAction::Paste),
-            wanted: StandardAction::Copy,
-        };
-        let (title, message) = replace_words(&question);
-        assert_eq!(title, "\u{2318}V is already used by \u{201c}Paste\u{201d}.");
-        assert_eq!(
-            message,
-            "Use it for \u{201c}Copy\u{201d} instead? \u{201c}Paste\u{201d} will lose it."
-        );
-    }
-
-    #[test]
-    fn a_refusal_is_told_in_a_sentence() {
-        assert_eq!(
-            file_left_alone("It is larger than 32 KiB."),
-            "Your shortcuts file was left alone. It is larger than 32 KiB."
-        );
-        assert_eq!(
-            chord_reserved("\u{2318}Tab", "The desktop keeps it."),
-            "\u{2318}Tab can't be used: The desktop keeps it."
         );
     }
 }

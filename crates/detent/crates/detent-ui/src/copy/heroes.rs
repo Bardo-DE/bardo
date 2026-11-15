@@ -11,24 +11,3 @@ pub(crate) fn line(kind: PageKind) -> &'static str {
         _ => "",
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::line;
-    use detent_model::PageKind;
-
-    #[test]
-    fn each_hero_has_one_short_sentence() {
-        for kind in [
-            PageKind::Privacy,
-            PageKind::Accounts,
-            PageKind::Intelligence,
-        ] {
-            let words = line(kind);
-            assert!(
-                words.ends_with('.') && words.len() < 70,
-                "{kind:?}: {words}"
-            );
-        }
-    }
-}

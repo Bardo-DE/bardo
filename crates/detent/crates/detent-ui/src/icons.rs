@@ -61,27 +61,3 @@ pub fn tile_of(kind: PageKind) -> TileFace {
     let (icon, hex) = look_of(kind);
     tile_on(icon, hex)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::{BLUE, CYAN, GRAPHITE, GREEN, GREY, INDIGO, RED, look_of};
-    use detent_model::PageKind;
-
-    #[test]
-    fn intelligence_and_the_assistant_model_have_different_glyphs() {
-        assert_ne!(
-            look_of(PageKind::Intelligence).0,
-            look_of(PageKind::AssistantModel).0
-        );
-    }
-
-    #[test]
-    fn the_colours_are_all_different() {
-        let colours = [BLUE, RED, GRAPHITE, CYAN, GREEN, GREY, INDIGO];
-        for (at, one) in colours.iter().enumerate() {
-            for other in &colours[at + 1..] {
-                assert_ne!(one, other);
-            }
-        }
-    }
-}

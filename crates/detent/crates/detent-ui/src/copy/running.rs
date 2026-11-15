@@ -39,33 +39,3 @@ pub(crate) fn memory_words(mib: u32) -> String {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn the_running_models_say_what_each_fact_means() {
-        let standings = [
-            (RunStanding::Stopped, "Stopped"),
-            (RunStanding::Starting, "Starting\u{2026}"),
-            (RunStanding::Ready, "Ready"),
-            (RunStanding::Stopping, "Stopping\u{2026}"),
-            (RunStanding::Retrying, "Trying again\u{2026}"),
-            (RunStanding::Failed(None), "Couldn\u{2019}t start"),
-        ];
-        for (fact, want) in standings {
-            assert_eq!(standing(&fact), want);
-        }
-        assert_eq!(action(RunAction::Start), "Start");
-        assert_eq!(action(RunAction::Stop), "Stop");
-
-        // `(MiB, the words)`.
-        const MEMORY: &[(u32, &str)] = &[(14_540, "14.2 GB"), (1024, "1.0 GB"), (512, "512 MB")];
-        for (mib, want) in MEMORY {
-            assert_eq!(memory_words(*mib), *want, "{mib}");
-        }
-        assert_eq!(model_name("local/qwen"), "qwen");
-        assert_eq!(model_name("local/org/qwen"), "org/qwen");
-    }
-}

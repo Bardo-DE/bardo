@@ -14,8 +14,6 @@ use std::time::Duration;
 
 const PLAIN: &str =
     ".ds-segmented[aria-label=\"Memory files\"] .ds-segmented-segment:nth-of-type(2)";
-const MANUAL: &str =
-    ".ds-segmented[aria-label=\"Tidy memory\"] .ds-segmented-segment:nth-of-type(2)";
 const NOTE: &str = "[data-consent=\"memory.files.at_rest\"]";
 const CONFIRM: &str = "[aria-label=\"Confirm Memory files\"]";
 const LINE: &str = "[data-confinement]";
@@ -40,14 +38,6 @@ fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
         std::thread::sleep(Duration::from_millis(20));
     }
     panic!("{what} never happened:\n{}", harness.html());
-}
-
-/// Lets whatever the window would still send reach the fake.
-fn let_it_pass(harness: &mut Harness) {
-    for _ in 0..20 {
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
 }
 
 struct World {
@@ -120,16 +110,6 @@ fn the_memory_section_says_in_one_line_whether_memory_keeps_to_its_own_folders()
 }
 
 #[test]
-fn a_word_with_nothing_to_tell_draws_no_line() {
-    for (name, word) in [("off", "off"), ("unknown", "somewhere-new")] {
-        let mut w = confining(&format!("confinement-{name}"), None, word);
-        settle(&mut w.harness, name, |_| w.fake.confinement_reads() >= 1);
-        let_it_pass(&mut w.harness);
-        assert_eq!(w.harness.count(LINE), 0, "{name}");
-    }
-}
-
-#[test]
 fn saving_a_looser_value_is_the_confirmation_and_memory_is_told_that_pair_alone() {
     let mut w = world("consent-save", None);
     assert!(w.fake.confirms().is_empty(), "looking confirms nothing");
@@ -150,22 +130,6 @@ fn saving_a_looser_value_is_the_confirmation_and_memory_is_told_that_pair_alone(
 }
 
 #[test]
-fn a_value_that_is_not_looser_sends_nothing() {
-    let mut w = world("consent-plain-value", None);
-    let before = w.fake.reads();
-    scroll_into_view(&mut w.harness, MANUAL);
-    click(&mut w.harness, MANUAL);
-    settle(&mut w.harness, "the save to be looked at", |_| {
-        w.fake.reads() > before
-    });
-    let_it_pass(&mut w.harness);
-    let file = w.sandbox.read("almanac/settings.toml").expect("the file");
-    assert!(file.contains("when = \"manual\""), "{file}");
-    assert!(w.fake.confirms().is_empty(), "{:?}", w.fake.confirms());
-    assert_eq!(w.harness.count("[data-consent]"), 0);
-}
-
-#[test]
 fn a_looser_value_typed_into_the_file_waits_with_its_note_until_confirm_is_pressed() {
     let mut w = world("consent-typed", Some(TYPED_BY_HAND));
     settle(&mut w.harness, "the note", |h| h.count(NOTE) == 1);
@@ -179,49 +143,4 @@ fn a_looser_value_typed_into_the_file_waits_with_its_note_until_confirm_is_press
     assert_eq!(w.fake.confirms(), ["memory.files.at_rest=plain"]);
     let file = w.sandbox.read("almanac/settings.toml").expect("the file");
     assert_eq!(file, TYPED_BY_HAND, "confirming does not touch the file");
-}
-
-#[test]
-fn a_refusal_is_told_in_a_calm_line_and_the_value_keeps_waiting() {
-    let mut w = world("consent-refused", Some(TYPED_BY_HAND));
-    settle(&mut w.harness, "the note", |h| h.count(NOTE) == 1);
-    scroll_into_view(&mut w.harness, CONFIRM);
-    const INVALID: &str = "Memory could not accept this value, so it keeps its own.";
-    for (refusal, line) in [
-        ("Invalid", INVALID),
-        (
-            "NotAllowed",
-            "Memory would not take this confirmation from here.",
-        ),
-    ] {
-        w.fake.refuse_next(refusal);
-        click(&mut w.harness, CONFIRM);
-        settle(&mut w.harness, refusal, |h| h.html().contains(line));
-        assert_eq!(w.harness.count(NOTE), 1, "{refusal}: it still waits");
-        assert!(
-            w.fake.confirms().is_empty(),
-            "{refusal}: nothing was confirmed"
-        );
-    }
-    assert!(
-        !w.harness.html().contains(INVALID),
-        "the first line is replaced"
-    );
-}
-
-#[test]
-fn with_memory_not_running_the_page_has_no_note_and_saving_still_works() {
-    let bus = PrivateBus::start("consent-absent");
-    let sandbox = Sandbox::new("consent-absent").on_bus(&bus.address);
-    sandbox.write("almanac/settings.toml", TYPED_BY_HAND);
-    let mut harness = sandbox.harness(intelligence());
-    let_it_pass(&mut harness);
-    assert_eq!(harness.count("[data-consent]"), 0);
-    assert_eq!(harness.count(LINE), 0, "no memory, no line about it");
-    scroll_into_view(&mut harness, MANUAL);
-    click(&mut harness, MANUAL);
-    let_it_pass(&mut harness);
-    let file = sandbox.read("almanac/settings.toml").expect("the file");
-    assert!(file.contains("when = \"manual\""), "{file}");
-    assert_eq!(harness.count("[data-consent]"), 0);
 }

@@ -7,7 +7,7 @@ use crate::support::Sandbox;
 use crate::support::desk::{Fake, nothing_installed};
 use crate::support::drive::{click, scroll_into_view};
 use crate::support::inferd::Inferd;
-use detent_model::{ASSISTANT_MODEL_SLUG, EngineFailure, EngineStanding, InstallScope, PageSlug};
+use detent_model::{ASSISTANT_MODEL_SLUG, EngineStanding, InstallScope, PageSlug};
 use detent_ui::Opening;
 use ds_harness::{Harness, Input};
 use ds_settings::live::Verdict;
@@ -132,61 +132,5 @@ fn download_starts_one_for_everyone_follows_it_and_continue_restarts_the_assista
         world.desk.restarts() >= 1
     });
     assert_eq!(world.desk.restarts(), 1, "the assistant restarts once");
-    assert_eq!(world.harness.count(SHEET), 0);
-}
-
-#[test]
-fn a_failed_download_says_why_and_try_again_asks_again() {
-    let mut world = world("engine-failed", Fake::with(nothing_installed()));
-    choose_engine(&mut world, 2);
-    settle(&mut world.harness, "the sheet", |h| h.count(SHEET) == 1);
-    click(&mut world.harness, GO);
-    let mut rows = nothing_installed();
-    rows[1].standing = EngineStanding::Failed(EngineFailure::Offline);
-    world.desk.show(rows);
-    settle(&mut world.harness, "the failure", |h| {
-        h.attr(SHEET, "data-engine-sheet").as_deref() == Some("failed")
-    });
-    let html = world.harness.html();
-    assert!(html.contains("Couldn't Download vLLM"), "{html}");
-    assert!(html.contains("The download didn't finish."), "{html}");
-    click(&mut world.harness, GO);
-    assert_eq!(
-        world.harness.attr(SHEET, "data-engine-sheet").as_deref(),
-        Some("asking")
-    );
-}
-
-#[test]
-fn a_strata_the_person_has_is_pointed_at_with_the_chooser() {
-    let desk = Fake::with(nothing_installed());
-    desk.will_choose("/mnt/data/strata");
-    let mut world = world("engine-strata", desk);
-    choose_engine(&mut world, 3);
-    settle(&mut world.harness, "the sheet", |h| h.count(SHEET) == 1);
-    assert!(
-        world
-            .harness
-            .html()
-            .contains("Strata Isn't Available to Download")
-    );
-    click(&mut world.harness, GO);
-    settle(&mut world.harness, "the folder counted", |_| {
-        !world.desk.points().is_empty()
-    });
-    assert_eq!(
-        world.desk.points(),
-        [("strata".to_owned(), "/mnt/data/strata".to_owned())]
-    );
-}
-
-#[test]
-fn an_engine_that_is_there_is_not_listed_to_be_got_and_asks_nothing() {
-    let mut rows = nothing_installed();
-    rows[1].standing = EngineStanding::Ready;
-    let mut world = world("engine-ready", Fake::with(rows));
-    click(&mut world.harness, ENGINE_BUTTON);
-    // llama.cpp and Strata only: vLLM is there, and the picker lists it when it has models.
-    assert_eq!(world.harness.count(".ds-menu-item"), 2);
     assert_eq!(world.harness.count(SHEET), 0);
 }

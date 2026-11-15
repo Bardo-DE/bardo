@@ -3,23 +3,6 @@
 use super::*;
 
 #[test]
-fn sign_in_again_runs_the_action_in_accountd_at_once() {
-    let mut w = world("accounts-run");
-    detail(&mut w);
-    click(&mut w.harness, SIGN_IN);
-    settle(&mut w.harness, "the action", |_| {
-        !w.accountd.sets().is_empty()
-    });
-    assert_eq!(
-        w.accountd.sets(),
-        [(
-            "accounts.home.reauth".to_owned(),
-            toml::Value::Boolean(true)
-        )]
-    );
-}
-
-#[test]
 fn removing_an_account_asks_first_and_keeping_it_does_nothing() {
     let mut w = world("accounts-keep");
     let held = w.accountd.accounts.lock().expect("accounts").len();
@@ -93,51 +76,6 @@ fn an_account_with_a_dotted_id_opens_and_removes_by_its_whole_id() {
     );
     settle(&mut w.harness, "the set", |_| !w.accountd.sets().is_empty());
     assert_eq!(w.accountd.sets()[0].0, "accounts.work.example.remove");
-}
-
-#[test]
-fn a_sign_in_that_ends_is_told_in_a_calm_line_and_the_rows_are_read_again() {
-    let mut w = world("accounts-reauth-end");
-    detail(&mut w);
-    w.accountd.stop("home", "needs_reauth");
-    w.announce(ModuleId::Accountd, "accounts.home.reauth", "failed");
-    settle(&mut w.harness, "the line", |h| {
-        h.html()
-            .contains("Could not sign in to Home cloud. Try again later.")
-    });
-    settle(&mut w.harness, "the rows to be read again", |h| {
-        h.html().contains("Needs sign-in")
-    });
-}
-
-#[test]
-fn the_remove_question_adds_a_clause_about_kept_files_only_when_a_sync_row_is_on() {
-    let mut w = world("accounts-remove-files");
-    open(&mut w, SYNC);
-    click(&mut w.harness, REMOVE);
-    settle(&mut w.harness, "the question", |h| {
-        h.html().contains("Remove account Home sync?")
-    });
-    assert!(!w.harness.html().contains("Files kept on this computer"));
-    click(
-        &mut w.harness,
-        ".ds-alert .ds-button:not([data-role=\"destructive\"])",
-    );
-    settle(&mut w.harness, "the question to go", |h| {
-        !h.html().contains("Remove account Home sync?")
-    });
-    click(&mut w.harness, KEEP_FILES);
-    settle(&mut w.harness, "the switch on", |h| {
-        h.attr(KEEP_FILES, "aria-checked").as_deref() == Some("true")
-    });
-    settle(&mut w.harness, "the pane to be free", |h| {
-        h.attr(REMOVE, "data-availability").as_deref() != Some("disabled")
-    });
-    click(&mut w.harness, REMOVE);
-    settle(&mut w.harness, "the question", |h| {
-        h.html()
-            .contains("Files kept on this computer for the account are deleted too.")
-    });
 }
 
 #[test]

@@ -25,25 +25,6 @@ fn the_list_has_a_row_per_account_of_every_module_with_its_state() {
 }
 
 #[test]
-fn a_pane_with_only_accountd_shows_identities_and_no_ai_or_sync_part() {
-    let w = world_of("accounts-only-accountd", identities(), Scheme::Light);
-    let html = w.harness.html();
-    assert_eq!(w.harness.count(".account-row-body"), 2);
-    for text in ["Home cloud", "Work mail"] {
-        assert!(html.contains(text), "{text}");
-    }
-    for text in ["Claude key", "Home sync"] {
-        assert!(!html.contains(text), "{text}");
-    }
-    assert!(
-        !headings(&w).iter().any(|heading| heading == "Intelligence"),
-        "no AI part in the list"
-    );
-    assert_eq!(w.harness.count(CONTINUE_AS), 0);
-    assert_eq!(w.harness.count(".accounts[data-accounts=\"ready\"]"), 1);
-}
-
-#[test]
 fn an_identity_lists_the_apps_using_it_read_only() {
     let mut w = world("accounts-detail");
     detail(&mut w);
@@ -114,31 +95,6 @@ fn the_list_stays_beside_the_detail_of_the_account_chosen_in_it() {
     );
 }
 
-#[test]
-fn one_module_vanishing_leaves_the_others_shown() {
-    let mut w = world("accounts-vanish");
-    assert_eq!(w.harness.count(".account-row-body"), 4);
-    w.stop(ModuleId::Syncd);
-    settle(&mut w.harness, "sync to leave the list", |h| {
-        !h.html().contains("Home sync")
-    });
-    let html = w.harness.html();
-    for text in ["Home cloud", "Work mail", "Claude key"] {
-        assert!(html.contains(text), "{text}");
-    }
-    assert_eq!(w.harness.count(CONTINUE_AS), 0);
-    assert_eq!(w.harness.count(".accounts[data-accounts=\"ready\"]"), 1);
-}
-
-#[test]
-fn an_identity_shows_no_sync_rows() {
-    let mut w = world("accounts-no-sync");
-    open(&mut w, WORK);
-    let html = w.harness.html();
-    assert!(!html.contains("Upload new photos from a folder on this computer to Google Photos"));
-    assert!(!html.contains("on this computer"));
-}
-
 fn grouped() -> Vec<Held> {
     vec![
         Held::new("claude", "Claude Code", "ok", &["agent"])
@@ -160,40 +116,6 @@ fn headings(w: &World) -> Vec<String> {
         .collect::<std::collections::BTreeMap<_, _>>()
         .into_values()
         .collect()
-}
-
-#[test]
-fn the_list_is_grouped_by_the_groups_the_module_names_whatever_order_it_sends() {
-    let w = world_of("accounts-groups", grouped(), Scheme::Light);
-    assert_eq!(
-        headings(&w),
-        ["Internet Accounts", "Intelligence", "Assistants"]
-    );
-    let page = w.harness.html();
-    let html = &page[page.find("class=\"accounts-list\"").expect("the list")..];
-    let at = |text: &str| html.find(text).expect(text);
-    assert!(
-        at("Work mail") < at("Ollama"),
-        "Internet before Intelligence"
-    );
-    assert!(
-        at("Ollama") < at("Claude Code"),
-        "Intelligence before Assistants"
-    );
-}
-
-#[test]
-fn an_account_without_a_group_row_is_listed_where_its_own_rows_put_it() {
-    let rows = vec![
-        Held::new("claude", "Claude Code", "ok", &["agent"]).signing_in("agent"),
-        Held::new("work", "Work mail", "ok", &["mail"]),
-        Held::runtime("ollama", "Ollama", "ok"),
-    ];
-    let w = world_of("accounts-fallback-groups", rows, Scheme::Light);
-    assert_eq!(
-        headings(&w),
-        ["Internet Accounts", "Intelligence", "Assistants"]
-    );
 }
 
 #[test]

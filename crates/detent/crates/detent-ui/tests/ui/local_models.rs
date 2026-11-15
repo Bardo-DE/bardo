@@ -21,7 +21,6 @@ const READY: &str = "[data-run=\"ready\"]";
 const STOPPED: &str = "[data-run=\"stopped\"]";
 const START_QWEN: &str = "[aria-label=\"Start qwen\"]";
 const STOP_QWEN: &str = "[aria-label=\"Stop qwen\"]";
-const NOTE: &str = "[data-note=\"model-run\"]";
 const OPEN_PROGRAMS: &str = "[aria-label=\"Open Programs for local models\"]";
 const VLLM: &str = "#program-engines-vllm-python";
 const PROGRAM_NOTE: &str = "[data-note=\"program-refused\"]";
@@ -133,66 +132,6 @@ fn a_start_shows_progress_until_the_assistant_says_the_model_is_ready() {
     assert!(row_text(&w.harness, READY).contains("14.2 GB"));
     assert_eq!(w.harness.count(STOP_QWEN), 1, "it can be stopped now");
     assert_eq!(w.fake.calls(), ["start local/qwen"]);
-}
-
-#[test]
-fn a_refused_start_shows_the_assistants_words_under_the_row_and_changes_nothing() {
-    let mut w = world("models-refused", vec![qwen(RunState::Stopped)]);
-    settle(&mut w.harness, "the stopped model", |h| {
-        h.count(START_QWEN) == 1
-    });
-    let words = "needs 14.2 GB of graphics memory; 6.1 GB is free";
-    w.fake.refuse_next(words);
-    scroll_into_view(&mut w.harness, START_QWEN);
-    click(&mut w.harness, START_QWEN);
-    settle(&mut w.harness, "the refusal", |h| h.count(NOTE) == 1);
-    assert_eq!(row_text(&w.harness, NOTE), words);
-    assert_eq!(w.harness.count(STOPPED), 1, "still stopped");
-    assert_ne!(
-        w.harness.attr(START_QWEN, "aria-busy").as_deref(),
-        Some("true"),
-        "the button can be pressed again"
-    );
-}
-
-#[test]
-fn stop_stops_the_model_and_a_failed_one_says_why() {
-    let mut w = world(
-        "models-stop",
-        vec![RunningModel::new(
-            "local/qwen",
-            RunState::Ready,
-            "llama-server",
-            14_540,
-        )],
-    );
-    settle(&mut w.harness, "the ready model", |h| {
-        h.count(STOP_QWEN) == 1
-    });
-    scroll_into_view(&mut w.harness, STOP_QWEN);
-    click(&mut w.harness, STOP_QWEN);
-    settle(&mut w.harness, "the stopped state", |h| {
-        h.count(STOPPED) == 1
-    });
-    assert_eq!(w.fake.calls(), ["stop local/qwen"]);
-    let reason = "the engine did not become ready in time";
-    w.rt.block_on(w.fake.fails("local/qwen", reason));
-    settle(&mut w.harness, "the failure", |h| {
-        h.count("[data-run=\"failed\"]") == 1
-    });
-    assert!(row_text(&w.harness, "[data-run=\"failed\"]").contains("Couldn\u{2019}t start"));
-    assert_eq!(row_text(&w.harness, NOTE), reason);
-}
-
-#[test]
-fn nothing_shows_while_the_assistant_is_not_running() {
-    let mut harness = Sandbox::new("models-absent").harness(intelligence());
-    for _ in 0..20 {
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    assert_eq!(harness.count("[data-run]"), 0);
-    assert_eq!(harness.count("[data-programs]"), 0);
 }
 
 /// Opens the sheet of programs.

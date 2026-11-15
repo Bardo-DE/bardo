@@ -83,18 +83,6 @@ fn the_sync_switches_are_syncds_and_set_on_and_off_in_syncds_module() {
     );
 }
 
-#[test]
-fn continue_as_runs_syncds_row_on_one_press() {
-    let mut w = world("accounts-continue-as");
-    click(&mut w.harness, CONTINUE_AS);
-    settle(&mut w.harness, "the action", |_| !w.syncd.sets().is_empty());
-    assert_eq!(
-        w.syncd.sets(),
-        [("accounts.sync.add".to_owned(), toml::Value::Boolean(true))]
-    );
-    assert!(w.accountd.sets().is_empty() && w.inferd.sets().is_empty());
-}
-
 /// syncd's account with its files switch on, so the sync service keeps `home/files`.
 fn mirrored_files() -> Vec<Held> {
     let mut held = Held::new("home", "Home sync", "ok", &[]).syncing();

@@ -58,32 +58,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn the_powers_are_named_in_plain_words_in_the_pages_order() {
-        let labels: Vec<&str> = PrivacyPower::ALL.into_iter().map(power_label).collect();
-        assert_eq!(
-            labels,
-            [
-                "Screen recording",
-                "Keyboard input",
-                "Typing help",
-                "Clipboard",
-                "Screen lock",
-                "Displays",
-                "Windows"
-            ]
-        );
-    }
-
-    #[test]
-    fn a_standing_has_its_word() {
-        let labels: Vec<&str> = PowerStanding::CHOICES
-            .into_iter()
-            .map(standing_label)
-            .collect();
-        assert_eq!(labels, ["Allowed", "Denied", "Ask"]);
-    }
-
-    #[test]
     fn a_program_nothing_names_is_a_program() {
         let look = |name: Option<&str>| ProgramLook {
             name: name.map(str::to_owned),

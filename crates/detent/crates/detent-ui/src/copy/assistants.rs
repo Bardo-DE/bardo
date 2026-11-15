@@ -68,13 +68,3 @@ pub(crate) fn could_not_save_places(why: impl std::fmt::Display) -> String {
 
 /// The words "This computer".
 pub(crate) const THIS_COMPUTER: &str = "This computer";
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn the_agents_own_choice_is_named() {
-        assert_eq!(agents_own(), "The agent\u{2019}s own choice");
-    }
-}

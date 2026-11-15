@@ -144,11 +144,6 @@ fn world_in(name: &str, scheme: Scheme) -> World {
     )
 }
 
-/// Only accountd, holding `rows`.
-fn world_of(name: &str, rows: Vec<Held>, scheme: Scheme) -> World {
-    start(name, scheme, rows, &[ModuleId::Accountd])
-}
-
 /// The page with the modules in `served` running; the others are not on the bus.
 fn start(name: &str, scheme: Scheme, rows: Vec<Held>, served: &[ModuleId]) -> World {
     start_syncing(name, scheme, rows, served, syncing(), Syncd::default())
