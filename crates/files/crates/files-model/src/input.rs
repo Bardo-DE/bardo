@@ -3,9 +3,9 @@
 use std::time::Duration;
 
 use files_core::{
-    Behaviour, Bring, CloudDrive, CloudItem, EjectFailure, Entry, FileName, FolderPath, FolderPrefs, Info,
-    ItemRef, Location, MountFailure, OpEvent, Refused, Resolution, SavedCopies, Sort, ViewMode,
-    Volume, VolumeId,
+    Behaviour, Bring, CloudDrive, CloudItem, EjectFailure, Entry, FileName, FolderPath,
+    FolderPrefs, Info, ItemRef, Location, MountFailure, OpEvent, Refused, Resolution, SavedCopies,
+    Sort, ViewMode, Volume, VolumeId,
 };
 
 use crate::app::AppPick;

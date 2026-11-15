@@ -69,7 +69,7 @@ pub use media::{MediaChapter, MediaTags, MediaTrack, StreamKind, VideoPresence};
 pub use panel::PanelKept;
 pub use peek::{Deadline, Peek, PeekBudget};
 pub use percent::percent_decode;
-pub use profile::{actions_for, edits_for, mime_for, has_stage};
+pub use profile::{actions_for, edits_for, has_stage, mime_for};
 pub use resume::{Resume, TrackChoice};
 pub use sequence::{
     Heading, Neighbours, NonEmpty, Sequence, SequenceMove, SequenceOrigin, SequencePosition, moved,
@@ -84,8 +84,8 @@ pub use source::{
 };
 pub use tree_path::{OpenNodes, TreePath};
 pub use units::{
-    Axis, Bitrate, DocPoint, DocUnit, Dpi, LineIndex, MediaLength, MediaTime,
-    PageCount, PageIndex, PageRange, PageSelection, Percent, Permille, PixelArea, PixelLen,
-    PixelSize, Quality, QuarterTurn, SectionCount, SectionIndex, Speed, TimeRange, Volume, Zoom,
+    Axis, Bitrate, DocPoint, DocUnit, Dpi, LineIndex, MediaLength, MediaTime, PageCount, PageIndex,
+    PageRange, PageSelection, Percent, Permille, PixelArea, PixelLen, PixelSize, Quality,
+    QuarterTurn, SectionCount, SectionIndex, Speed, TimeRange, Volume, Zoom,
 };
 pub use xml_depth::{MAX_XML_DEPTH, nests_deeper_than};

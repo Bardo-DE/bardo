@@ -5,9 +5,7 @@
 //! [`ConsentAnswer::Dismiss`], which stores nothing; only "Don't Allow" denies. With no account
 //! that fits it offers "Add Account..." instead.
 
-use super::model::{
-    AccountChoice, AllowScope, ChoiceKey, ConsentAnswer, PickerChoice,
-};
+use super::model::{AccountChoice, AllowScope, ChoiceKey, ConsentAnswer, PickerChoice};
 use super::picker::AccountPicker;
 use super::wording::{allow_label, consent_message, consent_title, effective_choice};
 use dioxus::prelude::*;

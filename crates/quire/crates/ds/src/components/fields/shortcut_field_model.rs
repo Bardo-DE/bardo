@@ -60,7 +60,9 @@ pub(crate) fn hear(
         (Key::Backspace, true, _) => Heard::Clear,
         (Key::Delete, true, false) => Heard::Clear,
         (Key::Tab, true, _) => Heard::Leave,
-        _ => match chord_of(platform, key, modifiers).filter(|chord| is_shortcut(single_keys, chord)) {
+        _ => match chord_of(platform, key, modifiers)
+            .filter(|chord| is_shortcut(single_keys, chord))
+        {
             Some(chord) => Heard::Offer(chord),
             None => Heard::Wait,
         },
@@ -190,11 +192,7 @@ mod tests {
             ),
         ];
         for (name, key, modifiers, want) in cases {
-            assert_eq!(
-                hear(ours(), false, &key, modifiers),
-                want,
-                "{name}"
-            );
+            assert_eq!(hear(ours(), false, &key, modifiers), want, "{name}");
         }
     }
 
@@ -253,11 +251,7 @@ mod tests {
             ),
         ];
         for (name, key, modifiers, want) in cases {
-            assert_eq!(
-                hear(ours(), true, &key, modifiers),
-                want,
-                "{name}"
-            );
+            assert_eq!(hear(ours(), true, &key, modifiers), want, "{name}");
         }
     }
 }

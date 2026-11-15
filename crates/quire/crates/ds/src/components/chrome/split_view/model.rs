@@ -193,30 +193,15 @@ mod tests {
     #[test]
     fn a_drag_is_held_to_the_widths_and_may_fold_a_collapsible_pane() {
         const CASES: &[(&str, bool, f32, DividerDrag)] = &[
-            (
-                "inside",
-                true,
-                250.0,
-                DividerDrag::Resize(Px(250.0)),
-            ),
-            (
-                "over the most",
-                true,
-                500.0,
-                DividerDrag::Resize(Px(320.0)),
-            ),
+            ("inside", true, 250.0, DividerDrag::Resize(Px(250.0))),
+            ("over the most", true, 500.0, DividerDrag::Resize(Px(320.0))),
             (
                 "under the least but past half",
                 true,
                 100.0,
                 DividerDrag::Resize(Px(180.0)),
             ),
-            (
-                "under half the least",
-                true,
-                60.0,
-                DividerDrag::Collapse,
-            ),
+            ("under half the least", true, 60.0, DividerDrag::Collapse),
             (
                 "not collapsible",
                 false,

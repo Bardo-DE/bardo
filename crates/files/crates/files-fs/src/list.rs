@@ -54,10 +54,7 @@ impl DiskLister {
                 None => skipped += 1,
             }
         }
-        Ok(Listing {
-            entries,
-            skipped,
-        })
+        Ok(Listing { entries, skipped })
     }
 }
 

@@ -86,8 +86,8 @@ pub use crate::components::forms::pane_stack::stack::PaneStack;
 
 // Keys as actions
 pub use crate::keys::{
-    KeySource, Keys, on_action, use_keys, use_keys_provider, use_platform,
-    use_register, use_register_actions,
+    KeySource, Keys, on_action, use_keys, use_keys_provider, use_platform, use_register,
+    use_register_actions,
 };
 
 // Overlays
@@ -196,8 +196,7 @@ pub use crate::components::menus::palette::palette_host::CommandPaletteHost;
 pub use crate::components::menus::pick_list::PickList;
 pub use crate::components::menus::pull_down_button::{PullDownButton, PullDownFace};
 pub use crate::components::menus::search::model::{
-    CardPlace, Panel, SearchCursor, SuggestionSection,
-    SuggestionsPresent,
+    CardPlace, Panel, SearchCursor, SuggestionSection, SuggestionsPresent,
 };
 pub use crate::components::menus::search::view::SearchField;
 pub use crate::components::overlays::empty_state::EmptyState;

@@ -13,4 +13,3 @@ pub enum MorphStyle {
     /// The base stays (cross-fading if it changes); a slash draws on or off (mute, radio off).
     Slash,
 }
-

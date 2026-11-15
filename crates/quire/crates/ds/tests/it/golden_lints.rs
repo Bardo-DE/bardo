@@ -66,7 +66,11 @@ fn every_golden_lints_clean() {
     let mut failures = Vec::new();
     for &(dir, least) in DIRS {
         let goldens = golden::all_in(dir);
-        assert!(goldens.len() >= least, "{dir}: only {} goldens", goldens.len());
+        assert!(
+            goldens.len() >= least,
+            "{dir}: only {} goldens",
+            goldens.len()
+        );
         for (name, html) in &goldens {
             failures.extend(
                 markup(html, &css, &config)

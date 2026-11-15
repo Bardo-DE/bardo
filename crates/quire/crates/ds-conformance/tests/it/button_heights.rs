@@ -6,7 +6,7 @@
 //! side, at `ControlSize::Regular` and at `ControlSize::Mini`.
 
 use dioxus::prelude::*;
-use ds::components::controls::button_model::{Answers};
+use ds::components::controls::button_model::Answers;
 use ds::prelude::*;
 use ds::style::tokens::control_size::ControlSize;
 use ds_harness::{Clock, Harness, HarnessConfig, Viewport};

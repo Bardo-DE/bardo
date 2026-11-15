@@ -105,14 +105,7 @@ fn subscribers_beyond_the_cap_are_closed_at_once() {
 fn a_flood_is_read_a_budget_at_a_time() {
     let mut s = Stepped::new("flood");
     let chatty = s.subscribe();
-    (0..PACKETS_PER_PASS).for_each(|_| {
-        send(
-            &chatty,
-            &ToDaemon::PointerOver {
-                over: false,
-            },
-        )
-    });
+    (0..PACKETS_PER_PASS).for_each(|_| send(&chatty, &ToDaemon::PointerOver { over: false }));
     send(&chatty, &ToDaemon::PointerOver { over: true });
     assert_eq!(s.server.pass(), None);
     assert!(
@@ -137,15 +130,9 @@ fn a_full_queue_drops_messages_instead_of_blocking_the_reader() {
 fn a_user_switch_closes_the_connection_of_the_one_who_left() {
     let mut s = Stepped::new("switch");
     let shell = s.subscribe();
-    send(
-        &shell,
-        &ToDaemon::SessionLock { locked: false },
-    );
+    send(&shell, &ToDaemon::SessionLock { locked: false });
     assert_eq!(s.server.pass(), None);
-    assert_eq!(
-        s.claims.try_recv(),
-        Ok(FromSocket::Session(false))
-    );
+    assert_eq!(s.claims.try_recv(), Ok(FromSocket::Session(false)));
 
     seat_file(&s.dir, Some(me() + 1));
     assert_eq!(s.server.look_at_seat(), Some(me() + 1));
@@ -161,10 +148,7 @@ fn a_user_switch_closes_the_connection_of_the_one_who_left() {
     s.handle.send(ToSocket::Msg(TOUCHES));
     assert_eq!(s.server.pass(), None);
     assert_eq!(s.claims.try_recv(), Ok(FromSocket::UserConfig(None)));
-    assert_eq!(
-        s.claims.try_recv(),
-        Ok(FromSocket::Session(true))
-    );
+    assert_eq!(s.claims.try_recv(), Ok(FromSocket::Session(true)));
 }
 
 #[test]

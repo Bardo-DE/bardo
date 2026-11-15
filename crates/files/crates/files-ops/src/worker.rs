@@ -171,7 +171,8 @@ impl<T> Host for QueueHost<'_, T> {
         loop {
             match self.answers.recv_timeout(LOOK_EVERY) {
                 Ok(resolution) => return resolution,
-                Err(RecvTimeoutError::Timeout) if self.cancel.flow() == ControlFlow::Continue(()) => {}
+                Err(RecvTimeoutError::Timeout)
+                    if self.cancel.flow() == ControlFlow::Continue(()) => {}
                 Err(RecvTimeoutError::Timeout | RecvTimeoutError::Disconnected) => {
                     return Resolution::once(Answer::Stop);
                 }

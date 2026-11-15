@@ -14,6 +14,6 @@ pub use keycap_core::{
     Backoff, ChordError, ConfigLayer, ConfigSource, DEFAULTS_TOML, Decision, DeviceId, Edge,
     Escape, Held, Hold, KEYS_DOWN_BYTES, Key, KeysDown, Layout, LayoutOverrides, Logical,
     MAX_PROFILES, ModMap, Mono, OutEvent, OutMod, OutMods, Oversize, Physical, Profile, Profiles,
-    Record, RemapInput, RemapOut, Remapper, Role, Roles, RuleAction, Stroke, Trigger,
-    builtin, check_gate, layout_overrides, resolve, role, within_limits,
+    Record, RemapInput, RemapOut, Remapper, Role, Roles, RuleAction, Stroke, Trigger, builtin,
+    check_gate, layout_overrides, resolve, role, within_limits,
 };

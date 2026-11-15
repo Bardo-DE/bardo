@@ -5,4 +5,4 @@ mod table;
 #[cfg(test)]
 mod tests;
 
-pub use table::{actions_for, edits_for, mime_for, has_stage};
+pub use table::{actions_for, edits_for, has_stage, mime_for};

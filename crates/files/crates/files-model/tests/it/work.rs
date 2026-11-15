@@ -1,8 +1,7 @@
 //! Work under way: undo, what is shown from start to finish, questions and how a change ended.
 
 use files_core::{
-    Answer, ByteSize, Conflict, Bring, Finish, OpEvent, OpFailure, OpKind, Progress,
-    Resolution,
+    Answer, Bring, ByteSize, Conflict, Finish, OpEvent, OpFailure, OpKind, Progress, Resolution,
 };
 use files_model::{Effect, Input, Question, Work};
 

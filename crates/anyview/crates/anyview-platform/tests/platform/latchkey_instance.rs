@@ -58,12 +58,8 @@ async fn a_handoff_keeps_its_results_and_its_place() {
     let mut first = primary(&LatchkeyInstance::under(dir.path().to_owned())).await;
 
     let entries = NonEmpty::from_vec(vec![path("/a/1.pdf"), path("/a/2.pdf")]).unwrap();
-    let sequence = Sequence::starting_at(
-        entries,
-        &path("/a/2.pdf"),
-        SequenceOrigin::Results(9),
-    )
-    .unwrap();
+    let sequence =
+        Sequence::starting_at(entries, &path("/a/2.pdf"), SequenceOrigin::Results(9)).unwrap();
     let handed = Handoff {
         file: path("/a/2.pdf"),
         resume: Resume::Text {

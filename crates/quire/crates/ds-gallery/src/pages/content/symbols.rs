@@ -89,7 +89,11 @@ fn WhileSection() -> Element {
 #[component]
 fn WhileCell(effect: LoopEffect) -> Element {
     let mut activity = use_signal(|| false);
-    let (label, next) = if activity() { ("Stop", false) } else { ("Start", true) };
+    let (label, next) = if activity() {
+        ("Stop", false)
+    } else {
+        ("Start", true)
+    };
     rsx! {
         Cell { name: effect.label(), code: "SymbolEffect::While({effect:?}, activity)",
             controls: rsx! {
@@ -165,7 +169,11 @@ fn PartCell(icon: Icon, effect: OnceEffect) -> Element {
         OnceEffect::VariableColor => LoopEffect::VariableColor,
         _ => LoopEffect::Part,
     };
-    let (label, next) = if activity() { ("Stop", false) } else { ("Loop", true) };
+    let (label, next) = if activity() {
+        ("Stop", false)
+    } else {
+        ("Loop", true)
+    };
     rsx! {
         Cell { name: format!("{icon:?}"), code: "SymbolEffect::Once({effect:?}, trigger)",
             controls: rsx! {

@@ -277,21 +277,13 @@ mod tests {
                 vec![field(true, plain("ada@example.org"))],
                 true,
             ),
-            (
-                "required and empty",
-                vec![field(true, plain(""))],
-                false,
-            ),
+            ("required and empty", vec![field(true, plain(""))], false),
             (
                 "required and only blanks",
                 vec![field(true, plain("  \t"))],
                 false,
             ),
-            (
-                "optional and empty",
-                vec![field(false, plain(""))],
-                true,
-            ),
+            ("optional and empty", vec![field(false, plain(""))], true),
             (
                 "a secret still empty",
                 vec![
@@ -329,10 +321,7 @@ mod tests {
             field_placeholder(FieldRole::Username, false),
             "Same as your address"
         );
-        assert_eq!(
-            field_placeholder(FieldRole::Username, true),
-            "Required"
-        );
+        assert_eq!(field_placeholder(FieldRole::Username, true), "Required");
     }
 
     #[test]

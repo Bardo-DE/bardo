@@ -64,13 +64,8 @@ pub(crate) struct Field {
 /// is composing (its preedit is not the value yet, but it is drawn): Blitz draws no
 /// `placeholder` attribute and has no `::placeholder` (O-23's fallback). The input carries the
 /// text as `aria-placeholder` instead, so a browser does not draw it twice.
-pub(crate) fn placeholder_shown(
-    value: &str,
-    placeholder: &str,
-    composing: bool,
-) -> Option<String> {
-    (value.is_empty() && !placeholder.is_empty() && !composing)
-        .then(|| placeholder.to_string())
+pub(crate) fn placeholder_shown(value: &str, placeholder: &str, composing: bool) -> Option<String> {
+    (value.is_empty() && !placeholder.is_empty() && !composing).then(|| placeholder.to_string())
 }
 
 /// `aria-placeholder`, when there is a placeholder at all.

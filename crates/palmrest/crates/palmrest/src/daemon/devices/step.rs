@@ -7,12 +7,7 @@ use std::iter::once;
 
 pub(super) fn step(life: Life, event: Event) -> (Life, Vec<Effect>) {
     match (life, event) {
-        (Life::Ready { .. }, Event::Written) => (
-            Life::Ready {
-                cuts: 0,
-            },
-            vec![],
-        ),
+        (Life::Ready { .. }, Event::Written) => (Life::Ready { cuts: 0 }, vec![]),
         (Life::Ready { cuts }, Event::WriteFailed(why)) => lose(cuts, &why),
         (Life::Lost { cuts }, Event::Due(now)) => begin_wait(cuts, now),
         (Life::Waiting { retry_at, .. }, Event::Due(now)) if now >= retry_at => {

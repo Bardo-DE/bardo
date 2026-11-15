@@ -119,7 +119,11 @@ fn ring(
     centre: Option<Element>,
     notched: bool,
 ) -> Element {
-    let whole = if notched { RingSpan::GAPPED } else { RingSpan::FULL };
+    let whole = if notched {
+        RingSpan::GAPPED
+    } else {
+        RingSpan::FULL
+    };
     let span = match frame {
         PendingFrame::Step(_) => whole.filled(Fraction(250)),
         PendingFrame::Idle => whole.filled(shown),

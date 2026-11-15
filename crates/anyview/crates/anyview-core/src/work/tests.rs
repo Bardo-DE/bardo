@@ -28,13 +28,7 @@ const CASES: &[(&str, Option<u64>, Act, u64, bool)] = &[
         99,
         false,
     ),
-    (
-        "at the deadline stops",
-        Some(100),
-        Act::Nothing,
-        100,
-        true,
-    ),
+    ("at the deadline stops", Some(100), Act::Nothing, 100, true),
     (
         "past the deadline stops",
         Some(100),

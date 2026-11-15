@@ -27,10 +27,7 @@ pub(super) fn interpret(heard: Result<ToDaemon, String>, peer: Peer) -> Hearing 
         }
         (Ok(ToDaemon::PointerOver { over }), Peer::Shell) => Hearing::Pointer(over),
         (Ok(ToDaemon::SessionLock { locked }), Peer::Shell) => Hearing::Lock(locked),
-        (
-            Ok(ToDaemon::SessionLock { locked: true }),
-            Peer::Plain,
-        ) => Hearing::Lock(true),
+        (Ok(ToDaemon::SessionLock { locked: true }), Peer::Plain) => Hearing::Lock(true),
         (Ok(ToDaemon::UserConfig { toml }), Peer::Shell) if toml.len() <= USER_CONFIG_MAX_BYTES => {
             Hearing::Settings(toml)
         }

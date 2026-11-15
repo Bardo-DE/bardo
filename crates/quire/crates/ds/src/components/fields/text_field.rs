@@ -20,9 +20,7 @@ use crate::components::fields::text_field_blink::CaretBlink;
 use crate::components::fields::text_field_focus::{FieldFocus, FieldFocuser};
 use crate::components::fields::text_field_ime::FieldIme;
 use crate::components::fields::text_field_mask::MaskCaret;
-use crate::components::fields::text_field_model::{
-    FieldKind, FieldRows, FieldText, Validity,
-};
+use crate::components::fields::text_field_model::{FieldKind, FieldRows, FieldText, Validity};
 use crate::components::fields::text_field_parts::{Field, Handlers, line};
 use crate::focus::field::FieldHandle;
 use crate::focus::targets::Told;

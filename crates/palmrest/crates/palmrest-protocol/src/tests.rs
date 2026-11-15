@@ -33,9 +33,7 @@ fn samples() -> Vec<ToHost> {
             kind: TapKind::Two,
             t_ns: 9,
         },
-        ToHost::Touches {
-            active: true,
-        },
+        ToHost::Touches { active: true },
         ToHost::DeviceGone,
         ToHost::Run {
             action: HostAction::Command {

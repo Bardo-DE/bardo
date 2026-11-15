@@ -97,11 +97,7 @@ fn only_cuts_count_towards_giving_up() {
     assert_eq!(doings(&effects), [&Effect::DropEmitter, &Effect::Lost]);
 
     let (next, _) = step(Life::Ready { cuts: 3 }, Event::WriteFailed(other()));
-    assert_eq!(
-        next,
-        Life::Lost { cuts: 3 },
-        "other failures never give up"
-    );
+    assert_eq!(next, Life::Lost { cuts: 3 }, "other failures never give up");
 }
 
 #[test]

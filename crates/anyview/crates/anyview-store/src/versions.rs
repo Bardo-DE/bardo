@@ -214,10 +214,7 @@ impl Versions {
                 fresh: false,
             });
         }
-        self.keep(real, at).map(|id| Kept {
-            id,
-            fresh: true,
-        })
+        self.keep(real, at).map(|id| Kept { id, fresh: true })
     }
 
     /// [`keep_as_is`](Self::keep_as_is) for the file as it is now, when someone changed it

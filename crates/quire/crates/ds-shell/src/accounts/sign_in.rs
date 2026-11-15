@@ -37,9 +37,9 @@ pub fn SignInForm(
 ) -> Element {
     let mut opened = use_signal(|| false);
     let ready = form_ready(&fields, problem);
-    let grouped = fields.iter().any(|field| {
-        field.choices.is_some() || field.part.is_some() || field.advanced
-    });
+    let grouped = fields
+        .iter()
+        .any(|field| field.choices.is_some() || field.part.is_some() || field.advanced);
     let advanced = runs(&fields, true);
     let advanced_shown = if marks_advanced(&fields, problem) {
         true

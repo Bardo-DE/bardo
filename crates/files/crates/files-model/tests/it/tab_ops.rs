@@ -1,8 +1,8 @@
 //! Changes under way with several tabs: every report of a job goes to the tab that asked for it.
 
 use files_core::{
-    Answer, ByteSize, Conflict, Bring, FileName, Finish, FolderPath, OpEvent, OpFailure,
-    OpKind, Outcome, Progress, Resolution, Summary,
+    Answer, Bring, ByteSize, Conflict, FileName, Finish, FolderPath, OpEvent, OpFailure, OpKind,
+    Outcome, Progress, Resolution, Summary,
 };
 use files_model::{Effect, Input, Question, TabId, Tabbed, Tabs, Work};
 

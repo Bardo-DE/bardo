@@ -95,10 +95,7 @@ fn the_database_loads_across_folders_and_counts_skips() {
 fn no_globs_anywhere_is_no_database() {
     let root = Scratch::new("none");
     root.write("usr/share/mime/aliases", "a/b c/d\n");
-    assert!(matches!(
-        MimeDb::load(&dirs(&root)),
-        Err(LoadError)
-    ));
+    assert!(matches!(MimeDb::load(&dirs(&root)), Err(LoadError)));
 }
 
 #[test]

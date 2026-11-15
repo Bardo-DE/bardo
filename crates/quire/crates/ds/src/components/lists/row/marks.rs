@@ -38,10 +38,7 @@ mod tests {
     fn marks_split_a_title_into_runs() {
         assert_eq!(
             runs("Re: UIDL", &[4, 5, 6, 7]),
-            vec![
-                ("Re: ".to_string(), false),
-                ("UIDL".to_string(), true)
-            ]
+            vec![("Re: ".to_string(), false), ("UIDL".to_string(), true)]
         );
     }
 }

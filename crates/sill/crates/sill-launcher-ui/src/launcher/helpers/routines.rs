@@ -6,7 +6,7 @@
 use companion_wire::{RoutineLine, RoutineShown};
 use dioxus::prelude::*;
 use ds::components::content::label::{LabelRole, LabelStyle};
-use ds::components::controls::button_model::{Bezel};
+use ds::components::controls::button_model::Bezel;
 use ds::components::fields::field_row::{FieldGroup, FieldRow};
 use ds::prelude::*;
 use prov::HelperId;

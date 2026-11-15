@@ -4,9 +4,9 @@
 use super::chrome::{Ground, RootChrome};
 use dioxus::prelude::*;
 use ds_core::word::Word;
-use ds_style::appearance::{accent::Accent, resolve::Resolved, theme::Scheme};
 use ds_style::appearance::blur::blur_word;
 use ds_style::appearance::material::Material;
+use ds_style::appearance::{accent::Accent, resolve::Resolved, theme::Scheme};
 use ds_style::scope::{Scope, use_scope, use_scope_provider};
 use ds_style::tokens::accent_band::text_grounds::{TextOn, text_on};
 use ds_style::tokens::shape::Corner;

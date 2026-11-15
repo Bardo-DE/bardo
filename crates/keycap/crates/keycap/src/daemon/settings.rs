@@ -214,14 +214,8 @@ mod tests {
     fn the_vendor_file_may_let_lists_through_until_the_machine_file_says_otherwise() {
         const LIST: &str = "[profile.default]\nrules = [\n\
             { when = \"control+option+j\", then = [\"a\", \"b\"] },\n]\n";
-        let allow = layer(
-            "[user_layer]\nsequences = true\n",
-            ConfigSource::Vendor,
-        );
-        let refuse = layer(
-            "[user_layer]\nsequences = false\n",
-            ConfigSource::System,
-        );
+        let allow = layer("[user_layer]\nsequences = true\n", ConfigSource::Vendor);
+        let refuse = layer("[user_layer]\nsequences = false\n", ConfigSource::System);
         let vendor_only = Layers::builtin_only().with_vendor(allow);
         let kept = |layers: &Layers| layers.offered(LIST).unwrap().1.len();
         assert_eq!(kept(&vendor_only), 0, "the vendor's choice stands");

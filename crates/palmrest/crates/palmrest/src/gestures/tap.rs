@@ -6,8 +6,8 @@
 //! `CENTROID_MAX` ellipse around where it was. Taps never scroll: their motion stays under the
 //! lock threshold.
 
-use super::stroke::{LOCK_THRESHOLD_X, LOCK_THRESHOLD_Y};
 use super::Sample;
+use super::stroke::{LOCK_THRESHOLD_X, LOCK_THRESHOLD_Y};
 use crate::config::{Ms, Um};
 use crate::sensor::lattice::Ellipse;
 use crate::time::Mono;

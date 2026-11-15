@@ -68,9 +68,7 @@ pub(crate) fn list(
     let format = ArchiveFormat::Tar;
     match complete {
         Ok(complete) => Ok(tally.finish(format, complete)),
-        Err(_) if hit.happened() || !tally.is_empty() => {
-            Ok(tally.finish(format, false))
-        }
+        Err(_) if hit.happened() || !tally.is_empty() => Ok(tally.finish(format, false)),
         Err(reason) => Err(ArchiveError::malformed(format, reason)),
     }
 }

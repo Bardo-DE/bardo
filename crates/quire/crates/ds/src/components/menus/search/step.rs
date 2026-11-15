@@ -81,9 +81,7 @@ fn landing(live: &[Availability], step: Step) -> Option<usize> {
 fn escape(state: Suggesting, open: bool, text: Text, manner: Manner) -> (Suggesting, Act) {
     match (manner.clear_first, open, text) {
         (_, _, Text::Empty) if manner.panel == Panel::Shown => (state, Act::Pass),
-        (false, true, _) if manner.panel == Panel::Owned => {
-            (Suggesting::closed(), Act::Swallow)
-        }
+        (false, true, _) if manner.panel == Panel::Owned => (Suggesting::closed(), Act::Swallow),
         (_, _, Text::Filled) => (Suggesting::closed(), Act::Clear),
         (_, _, Text::Empty) => (Suggesting::closed(), Act::Pass),
     }

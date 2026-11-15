@@ -15,8 +15,7 @@ fn the_escape_chord_gives_the_keyboard_back_and_resume_takes_it_again() {
     r.press("rightshift", "");
     r.press("esc", "-leftshift SYN");
     ok(
-        r.client
-            .wait_status("Paused", STATUS_WITHIN, |s| s.paused),
+        r.client.wait_status("Paused", STATUS_WITHIN, |s| s.paused),
         "status after the chord",
     );
     r.assert_nothing_held();

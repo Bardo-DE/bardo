@@ -224,7 +224,11 @@ fn Segment<T: Clone + PartialEq + 'static>(
     let tip = use_tip(choice.name.clone().filter(|_| image_only).map(TipText::new));
     let live = enabled == Availability::Enabled && group == Availability::Enabled;
     let checked = if selected { Check::On } else { Check::Off };
-    let under = if thumb.unwrap_or(selected) { "under" } else { "clear" };
+    let under = if thumb.unwrap_or(selected) {
+        "under"
+    } else {
+        "clear"
+    };
     rsx! {
         button {
             r#type: "button",

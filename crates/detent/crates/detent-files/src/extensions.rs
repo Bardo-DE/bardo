@@ -14,8 +14,8 @@ use detent_model::{
 use ds_extensions::bayonet::manifest::Raw;
 use ds_extensions::bayonet::registry::Candidate;
 use ds_extensions::{
-    Capability, ExtensionId, ExtensionsFile, Found, Power, Problem, Search,
-    YOUR_CHANGES_ID, YourChanges, choices_for,
+    Capability, ExtensionId, ExtensionsFile, Found, Power, Problem, Search, YOUR_CHANGES_ID,
+    YourChanges, choices_for,
 };
 use ds_settings::schema::{FilePath, KeyPath};
 use std::collections::BTreeSet;

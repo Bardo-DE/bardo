@@ -13,13 +13,9 @@ use crate::components::content::title_tip::use_tip;
 use crate::components::controls::button_marks::leading as leading_mark;
 use crate::components::controls::button_marks::trailing as trailing_mark;
 use crate::components::controls::button_marks::{Leading, spoken_label};
-use crate::components::controls::button_model::{
-    Answers, Bezel, BusyLook, ImagePosition,
-};
+use crate::components::controls::button_model::{Answers, Bezel, BusyLook, ImagePosition};
 use crate::components::controls::glyph::glyph_size;
-use crate::components::controls::press::{
-    ActivationKeys, PressListeners, disabled, use_pressing,
-};
+use crate::components::controls::press::{ActivationKeys, PressListeners, disabled, use_pressing};
 use crate::components::controls::progress::busy::{busy_class, use_busy, use_busy_seen};
 use crate::components::controls::progress::model::{Progress, ProgressStyle};
 use crate::components::controls::progress::view::ProgressIndicator;

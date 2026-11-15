@@ -10,17 +10,11 @@ const A: Fingerprint = Fingerprint(0xa);
 const B: Fingerprint = Fingerprint(0xb);
 
 const fn start(hash: Fingerprint) -> Record {
-    Record {
-        hash,
-        good: false,
-    }
+    Record { hash, good: false }
 }
 
 const fn good(hash: Fingerprint) -> Record {
-    Record {
-        hash,
-        good: true,
-    }
+    Record { hash, good: true }
 }
 
 #[test]
@@ -139,10 +133,7 @@ fn two_starts_that_never_got_good_make_the_third_start_without_styles() {
     let sheets = styles(".boom{}");
     let first = StylesGuard::begin(&state, "mailo", &sheets);
     let second = StylesGuard::begin(&state, "mailo", &sheets);
-    assert_eq!(
-        [first.load(), second.load()],
-        [true, true]
-    );
+    assert_eq!([first.load(), second.load()], [true, true]);
     let third = StylesGuard::begin(&state, "mailo", &sheets);
     assert!(!third.load());
     // It stays off on the fourth start too: nothing was marked good.

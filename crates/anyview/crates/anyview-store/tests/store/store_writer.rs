@@ -2,12 +2,8 @@
 
 use crate::support;
 
-use anyview_core::{
-    FilePath, FormatKind, LineIndex, PageIndex, PanelKept, Permille, Resume, Zoom,
-};
-use anyview_store::{
-    HistoryCap, HistoryRead, ResumeLabel, StoreError, StoreWriter, read_history,
-};
+use anyview_core::{FilePath, FormatKind, LineIndex, PageIndex, PanelKept, Permille, Resume, Zoom};
+use anyview_store::{HistoryCap, HistoryRead, ResumeLabel, StoreError, StoreWriter, read_history};
 use std::fs;
 use support::{replace_file, stamp_of, viewed_file};
 
@@ -69,12 +65,7 @@ fn viewing_again_replaces_the_entry_and_the_cap_drops_the_oldest() {
 
     for (i, file) in files.iter().enumerate() {
         writer
-            .record_view(
-                file,
-                FormatKind::PlainText,
-                i as u64,
-                &Resume::Nothing,
-            )
+            .record_view(file, FormatKind::PlainText, i as u64, &Resume::Nothing)
             .unwrap();
     }
     let names = |read: &HistoryRead| -> Vec<(FilePath, u64)> {

@@ -5,12 +5,12 @@
 
 use crate::region::RegionSettings;
 use crate::schema::{Page, Provided};
-pub use ds_style::icon::retint::IconStyle;
 use ds_style::appearance::accent::Accent;
 use ds_style::appearance::appearance::Appearance;
 use ds_style::appearance::motion::Motion;
 use ds_style::appearance::theme::Theme;
 use ds_style::appearance::transparency::Transparency;
+pub use ds_style::icon::retint::IconStyle;
 use ds_style::kit::CustomStyles;
 use serde::{Deserialize, Serialize};
 

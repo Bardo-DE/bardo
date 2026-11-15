@@ -74,14 +74,8 @@ mod tests {
     fn g4_is_silent_under_a_claim() {
         let back = Action::Back;
         let key = vec![Out::Key(KeyCombo::alt(Key::LEFT))];
-        assert_eq!(
-            action_outs(&back, Source::OneFingerSwipe, false),
-            key
-        );
-        assert_eq!(
-            action_outs(&back, Source::OneFingerSwipe, true),
-            vec![]
-        );
+        assert_eq!(action_outs(&back, Source::OneFingerSwipe, false), key);
+        assert_eq!(action_outs(&back, Source::OneFingerSwipe, true), vec![]);
         assert_eq!(action_outs(&back, Source::Other, true), key);
     }
 
@@ -111,9 +105,6 @@ mod tests {
             })]
         );
         let o = Action::Workspace(Workspace::Overview);
-        assert_eq!(
-            tap_outs(TapKind::Two, &o, false, 5),
-            vec![Out::Deferred(o)]
-        );
+        assert_eq!(tap_outs(TapKind::Two, &o, false, 5), vec![Out::Deferred(o)]);
     }
 }

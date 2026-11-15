@@ -20,9 +20,9 @@ use ds::components::content::provider_mark::MarkProvider;
 use ds::prelude::Check;
 use ds_shell::accounts::hidden::Hidden;
 use ds_shell::accounts::model::{
-    AccountChoice, Attempt, Choice, ChoiceKey, FieldProblem, FieldRole, FieldText,
-    FormField, FormPart, ProblemKind, ProviderEntry, ProviderKey, ProviderPick, ServiceKey,
-    ServiceLine, ServiceOffer, SignInFault,
+    AccountChoice, Attempt, Choice, ChoiceKey, FieldProblem, FieldRole, FieldText, FormField,
+    FormPart, ProblemKind, ProviderEntry, ProviderKey, ProviderPick, ServiceKey, ServiceLine,
+    ServiceOffer, SignInFault,
 };
 use ds_shell::prelude::{Recovery, WorkingFor};
 use porter_core::consent::{AskPurpose, ConsentAsk};

@@ -68,10 +68,11 @@ fn open_hidraw(purpose: Purpose) -> Result<Opened, Error> {
             d.model, d.vendor, d.product
         );
     }
-    let (fd, writable) = hidraw::open(&found.node, purpose).map_err(|source| Error::HidrawOpen {
-        node: found.node.clone(),
-        source,
-    })?;
+    let (fd, writable) =
+        hidraw::open(&found.node, purpose).map_err(|source| Error::HidrawOpen {
+            node: found.node.clone(),
+            source,
+        })?;
     match (purpose, writable) {
         (Purpose::Run, true) => {
             if let Err(e) = hidraw::enable_multitouch(&fd) {

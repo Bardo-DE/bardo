@@ -11,9 +11,9 @@ use ds::assembly::ds::Inject;
 use ds::components::content::provider_mark::MarkProvider;
 use ds::prelude::*;
 use ds_shell::accounts::model::{
-    AccountChoice, Attempt, Choice, ChoiceKey, FieldProblem, FieldRole, FieldText,
-    FormField, FormPart, Limitation, NoAccountWhy, ProblemKind, ProviderEntry, ProviderKey,
-    ServiceKey, ServiceLine, ServiceOffer, SignInFault,
+    AccountChoice, Attempt, Choice, ChoiceKey, FieldProblem, FieldRole, FieldText, FormField,
+    FormPart, Limitation, NoAccountWhy, ProblemKind, ProviderEntry, ProviderKey, ServiceKey,
+    ServiceLine, ServiceOffer, SignInFault,
 };
 use ds_shell::prelude::*;
 

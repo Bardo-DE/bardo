@@ -22,12 +22,7 @@ fn ms(n: u64) -> Duration {
 
 fn fields(protocol: &str) -> Vec<FormField> {
     let plain = |role, text: &str| {
-        FormField::new(
-            role,
-            true,
-            FieldText::Plain(text.to_owned()),
-        )
-        .in_part(FormPart::Incoming)
+        FormField::new(role, true, FieldText::Plain(text.to_owned())).in_part(FormPart::Incoming)
     };
     vec![
         plain(FieldRole::Protocol, protocol).choosing(vec![

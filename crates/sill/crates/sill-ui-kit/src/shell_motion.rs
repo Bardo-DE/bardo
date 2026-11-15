@@ -21,7 +21,7 @@ pub fn shell_motion(environment: &Environment) -> ShellMotion {
 mod tests {
     use super::shell_motion;
     use ds::prelude::Motion;
-        use ds_settings::Environment;
+    use ds_settings::Environment;
     use sill_model::desktop::Motion as ShellMotion;
 
     #[test]

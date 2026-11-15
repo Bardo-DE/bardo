@@ -10,6 +10,7 @@ pub mod drag;
 pub mod drag_return;
 #[cfg(feature = "dioxus")]
 pub mod entrance;
+pub mod epoch;
 pub mod hover_intent;
 pub mod kit;
 #[cfg(feature = "dioxus")]
@@ -48,4 +49,3 @@ pub mod use_spring;
 #[cfg(feature = "dioxus")]
 pub mod use_swipe;
 pub mod velocity;
-pub mod epoch;

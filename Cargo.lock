@@ -2508,6 +2508,7 @@ name = "chordkit-file"
 version = "0.1.0"
 dependencies = [
  "libc",
+ "tempfile",
  "thiserror 2.0.21",
 ]
 
@@ -5523,7 +5524,6 @@ dependencies = [
  "ds",
  "ds-blitz",
  "ds-harness",
- "ds-settings",
  "ds-shell",
  "image",
 ]
@@ -5661,7 +5661,6 @@ name = "ds-motion"
 version = "0.1.0"
 dependencies = [
  "dioxus",
- "dioxus-ssr",
  "ds",
  "ds-core",
  "ds-style",
@@ -8490,6 +8489,7 @@ dependencies = [
  "keycap-protocol",
  "rustix 1.1.6",
  "shell-verbs",
+ "tempfile",
 ]
 
 [[package]]

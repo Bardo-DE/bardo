@@ -5,7 +5,9 @@ use crate::daemon::socket::FromSocket;
 use crate::daemon::socket::limits::MAX_CLIENTS;
 use crate::daemon::socket::model::{SocketEffect, SocketEvent, Subscribers};
 use latchkey::guard::{ACCEPT_PAUSE, COMPLAINT_INTERVAL};
-use palmrest_protocol::{DeviceInfo, Filter, HostAction, PROTOCOL_VERSION, TapKind, ToDaemon, ToHost, Topic};
+use palmrest_protocol::{
+    DeviceInfo, Filter, HostAction, PROTOCOL_VERSION, TapKind, ToDaemon, ToHost, Topic,
+};
 use rustix::io::Errno;
 use std::time::{Duration, Instant};
 
@@ -34,9 +36,7 @@ fn hello(device: DeviceInfo) -> ToHost {
     }
 }
 
-const TOUCHES: ToHost = ToHost::Touches {
-    active: true,
-};
+const TOUCHES: ToHost = ToHost::Touches { active: true };
 const TAP: ToHost = ToHost::Tap {
     kind: TapKind::Two,
     t_ns: 1,
@@ -172,28 +172,19 @@ fn a_hang_up_releases_the_claim_and_the_lock_word() {
         seated(&[(0, SHELL)]),
         [
             said(0, ToDaemon::PointerOver { over: true }),
-            said(
-                0,
-                ToDaemon::SessionLock { locked: false },
-            ),
+            said(0, ToDaemon::SessionLock { locked: false }),
         ],
         now,
     );
     let (subs, told) = tick(subs);
     assert_eq!(
         told,
-        [
-            FromSocket::Pointer(true),
-            FromSocket::Session(false)
-        ]
+        [FromSocket::Pointer(true), FromSocket::Session(false)]
     );
     let (subs, _) = feed(subs, [SocketEvent::Hangup { id: id(0) }], now);
     assert_eq!(
         tick(subs).1,
-        [
-            FromSocket::Pointer(false),
-            FromSocket::Session(true)
-        ]
+        [FromSocket::Pointer(false), FromSocket::Session(true)]
     );
 }
 
@@ -216,10 +207,7 @@ fn a_user_switch_closes_the_connections_of_the_one_who_left() {
     let now = Instant::now();
     let (subs, _) = feed(
         seated(&[(0, SHELL)]),
-        [said(
-            0,
-            ToDaemon::SessionLock { locked: false },
-        )],
+        [said(0, ToDaemon::SessionLock { locked: false })],
         now,
     );
     let (subs, told) = tick(subs);
@@ -239,10 +227,7 @@ fn a_user_switch_closes_the_connections_of_the_one_who_left() {
     assert!(subs.members.is_empty());
     assert_eq!(
         tick(subs).1,
-        [
-            FromSocket::UserConfig(None),
-            FromSocket::Session(true)
-        ],
+        [FromSocket::UserConfig(None), FromSocket::Session(true)],
         "the one who left takes their settings with them, and the session is locked for the next"
     );
 }

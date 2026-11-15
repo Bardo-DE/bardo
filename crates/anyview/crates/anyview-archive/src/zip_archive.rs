@@ -1,8 +1,6 @@
 //! Zip, jar and apk: the central directory lists every entry without unpacking any.
 
-use crate::entry::{
-    COUNT_LIMIT, Entry, EntryKind, EntryLimit, Listing, Tally,
-};
+use crate::entry::{COUNT_LIMIT, Entry, EntryKind, EntryLimit, Listing, Tally};
 use crate::error::ArchiveError;
 use crate::limit::{Limited, pull};
 use anyview_core::work::Interrupt;

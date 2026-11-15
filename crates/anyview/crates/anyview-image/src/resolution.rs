@@ -136,11 +136,7 @@ fn density(block: &[u8]) -> Option<Resolution> {
         2 => true,
         _ => return None,
     };
-    Resolution::per_unit(
-        whole(x_high, x_low),
-        whole(y_high, y_low),
-        per_centimetre,
-    )
+    Resolution::per_unit(whole(x_high, x_low), whole(y_high, y_low), per_centimetre)
 }
 
 #[cfg(test)]

@@ -95,9 +95,7 @@ pub(crate) fn adjusted_pixels(picture: &Rgba8, adjust: Adjust) -> Rgba8 {
     }
     .applied(&cut);
     match adjust.size {
-        Some(size) if size != placed.size() => {
-            resampled(&placed, at_least_one(size), true)
-        }
+        Some(size) if size != placed.size() => resampled(&placed, at_least_one(size), true),
         Some(_) | None => placed,
     }
 }

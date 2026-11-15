@@ -4,9 +4,9 @@
 //! horizontally by the time the finger lifts, and on our own surfaces the host makes the swipe
 //! decision itself (12.3.6), so this only ever adds a key for foreign clients.
 
+use super::Sample;
 use super::stroke::Intent;
 use super::swipe::FingerDirection;
-use super::Sample;
 use crate::config::{Fraction, Ms, Um};
 use crate::sensor::lattice::units;
 use crate::time::Mono;
@@ -185,12 +185,7 @@ mod tests {
                 at: Point::new(500, 0),
             },
         ];
-        let (s, _) = OneSwipe::Idle.step(
-            &at(0, 0),
-            Some(Intent::Scroll(Axis::X)),
-            Mono(0),
-            false,
-        );
+        let (s, _) = OneSwipe::Idle.step(&at(0, 0), Some(Intent::Scroll(Axis::X)), Mono(0), false);
         let (s, _) = s.step(
             &two,
             Some(Intent::Scroll(Axis::X)),

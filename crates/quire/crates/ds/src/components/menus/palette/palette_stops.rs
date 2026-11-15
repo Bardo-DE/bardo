@@ -204,7 +204,9 @@ pub(crate) enum Run<T> {
 /// What Enter (or a click) does on `stop`.
 pub(crate) fn run_of<T: Clone>(stop: Option<&Stop<T>>) -> Run<T> {
     match stop {
-        Some(Stop::Row(value, Availability::Enabled, keep_open)) => Run::Pick(value.clone(), *keep_open),
+        Some(Stop::Row(value, Availability::Enabled, keep_open)) => {
+            Run::Pick(value.clone(), *keep_open)
+        }
         Some(Stop::Cell(value)) => Run::Pick(value.clone(), false),
         Some(Stop::Action(run)) => Run::Action(*run),
         Some(Stop::Row(..)) | None => Run::Nothing,

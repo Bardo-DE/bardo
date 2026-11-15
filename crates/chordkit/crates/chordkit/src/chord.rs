@@ -166,14 +166,8 @@ mod tests {
 
     #[test]
     fn primary_resolves_per_platform_and_terminal_stands_in_for_shift_clashes() {
-        let undo = DefaultChord::new(
-            true,
-            Chord::new(Modifiers::empty(), Key::Char('z')),
-        );
-        let redo = DefaultChord::new(
-            true,
-            Chord::new(mods(&[Modifiers::SHIFT]), Key::Char('z')),
-        );
+        let undo = DefaultChord::new(true, Chord::new(Modifiers::empty(), Key::Char('z')));
+        let redo = DefaultChord::new(true, Chord::new(mods(&[Modifiers::SHIFT]), Key::Char('z')));
         let windows = Platform::Windows;
         let ours = Platform::Linux {
             desktop: Desktop::Ours,

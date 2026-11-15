@@ -69,7 +69,6 @@ impl SpaceTile {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::{BarSpaceKey, SpaceTile};

@@ -65,9 +65,7 @@ impl Control {
             Control::Picture | Control::Corners => matches!(kind, KeyKind::Text),
             Control::Menu => matches!(
                 kind,
-                KeyKind::Segmented { .. }
-                    | KeyKind::Menu { .. }
-                    | KeyKind::Provided { .. }
+                KeyKind::Segmented { .. } | KeyKind::Menu { .. } | KeyKind::Provided { .. }
             ),
             other => other == kind.default_control(),
         }

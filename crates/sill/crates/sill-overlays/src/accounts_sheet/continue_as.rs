@@ -4,7 +4,7 @@
 
 use dioxus::prelude::*;
 use ds::components::controls::button::Button;
-use ds::components::controls::button_model::{Answers};
+use ds::components::controls::button_model::Answers;
 use ds_shell::accounts::model::{
     AccountChoice, AllowScope, ChoiceKey, ConsentAnswer, PickerChoice,
 };

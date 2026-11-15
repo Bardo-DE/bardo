@@ -10,9 +10,9 @@ use ds::components::content::provider_mark::MarkProvider;
 use ds::prelude::*;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use ds_shell::accounts::model::{
-    AccountChoice, AllowScope, ChoiceKey, ConsentAnswer, FieldRole, FieldText,
-    FormField, Limitation, ProviderEntry, ProviderKey, ProviderPick, ServiceKey,
-    ServiceLine, ServiceOffer, SignInFault, StepTitle,
+    AccountChoice, AllowScope, ChoiceKey, ConsentAnswer, FieldRole, FieldText, FormField,
+    Limitation, ProviderEntry, ProviderKey, ProviderPick, ServiceKey, ServiceLine, ServiceOffer,
+    SignInFault, StepTitle,
 };
 use ds_shell::helpers::HelperPhase;
 use ds_shell::prelude::*;

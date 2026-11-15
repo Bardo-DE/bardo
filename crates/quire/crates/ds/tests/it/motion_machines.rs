@@ -6,9 +6,7 @@ use ds::base::time::stamp::Stamp;
 use ds::motion::drag::fraction_along;
 use ds::prelude::*;
 use ds_motion::drag::{DRAG_THRESHOLD, Drag, DragPhase, WINDOW_DRAG_THRESHOLD};
-use ds_motion::hover_intent::{
-    HoverEvent, HoverIntent, HoverProfile, IntentEffect, IntentPhase,
-};
+use ds_motion::hover_intent::{HoverEvent, HoverIntent, HoverProfile, IntentEffect, IntentPhase};
 
 // ---- hover intent --------------------------------------------------------------------------
 

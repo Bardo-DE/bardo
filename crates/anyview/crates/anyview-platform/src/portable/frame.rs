@@ -175,8 +175,7 @@ mod tests {
         let a = file("/pics/a.png");
         let b = file("/pics/b b.png");
         let entries = NonEmpty::from_vec(vec![a.clone(), b.clone()]).unwrap();
-        let sequence =
-            Sequence::starting_at(entries, &b, SequenceOrigin::Results(7)).unwrap();
+        let sequence = Sequence::starting_at(entries, &b, SequenceOrigin::Results(7)).unwrap();
         let cases = [
             Request::Open(Vec::new()),
             Request::Open(vec![a.clone(), b.clone()]),

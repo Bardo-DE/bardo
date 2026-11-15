@@ -3,9 +3,7 @@
 //! headers that resizes.
 
 use crate::components::controls::edge_grab::EdgeGrab;
-use crate::components::lists::table::model::{
-    CellAlign, Sort, SortDirection, TableColumn,
-};
+use crate::components::lists::table::model::{CellAlign, Sort, SortDirection, TableColumn};
 use crate::components::lists::table::widths::Widths;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Px;

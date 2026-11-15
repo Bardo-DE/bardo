@@ -7,7 +7,7 @@ use crate::support::probe;
 
 use dioxus::prelude::*;
 use ds::components::app::space_editor::DotIndex;
-use ds::components::controls::button_model::{Bezel};
+use ds::components::controls::button_model::Bezel;
 use ds::components::lists::section_header::HeaderAction;
 use ds::prelude::*;
 use ds::style::space::presets::PRESETS;

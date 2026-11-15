@@ -16,9 +16,9 @@ use ds::components::content::provider_mark::{MarkProvider, MarkStyle};
 use ds::prelude::*;
 use ds_lint::LintConfig;
 use ds_shell::accounts::model::{
-    AccountChoice, Attempt, Choice, ChoiceKey, FieldProblem, FieldRole, FieldText,
-    FormField, FormPart, Limitation, NoAccountWhy, ProblemKind, ProviderEntry, ProviderKey,
-    ProviderPick, ServiceKey, ServiceLine, ServiceOffer, SignInFault,
+    AccountChoice, Attempt, Choice, ChoiceKey, FieldProblem, FieldRole, FieldText, FormField,
+    FormPart, Limitation, NoAccountWhy, ProblemKind, ProviderEntry, ProviderKey, ProviderPick,
+    ServiceKey, ServiceLine, ServiceOffer, SignInFault,
 };
 use ds_shell::prelude::*;
 

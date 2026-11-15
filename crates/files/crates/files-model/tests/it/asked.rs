@@ -1,7 +1,9 @@
 //! Changes another program asked for run as the same plans the person's own would, and the
 //! question before emptying the Trash comes up wherever the window is.
 
-use files_core::{Bring, ByteSize, Entry, EntryKind, FolderPath, ItemRef, Location, OpPlan, Transfer};
+use files_core::{
+    Bring, ByteSize, Entry, EntryKind, FolderPath, ItemRef, Location, OpPlan, Transfer,
+};
 use files_model::{Effect, Input, Question};
 
 use crate::common::*;

@@ -77,9 +77,7 @@ fn hello_fanout_filters_and_claims() {
     );
 
     std::thread::sleep(Duration::from_millis(50)); // let b's Subscribe land before the fan-out
-    let touches = ToHost::Touches {
-        active: true,
-    };
+    let touches = ToHost::Touches { active: true };
     let tap = ToHost::Tap {
         kind: TapKind::Two,
         t_ns: 1,

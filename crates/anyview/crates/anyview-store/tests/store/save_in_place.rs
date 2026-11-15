@@ -155,7 +155,11 @@ fn versions_list_newest_first_and_only_for_their_own_file() {
     save(&s, "v3", 200 + DAY);
     let other = s.file.with_file_name("other.txt");
     fs::write(&other, "o").unwrap();
-    assert_eq!(s.versions.list(&other).unwrap(), [], "other files list none");
+    assert_eq!(
+        s.versions.list(&other).unwrap(),
+        [],
+        "other files list none"
+    );
 
     let times: Vec<u64> = s
         .versions
@@ -207,9 +211,7 @@ fn restoring_an_unknown_version_is_an_error() {
     let s = scratch("v0");
     save(&s, "v1", 10);
     let id = s.versions.list(&s.file).unwrap()[0].id.clone();
-    s.versions
-        .prune(KeepPeriod::days(0), 1_000)
-        .unwrap();
+    s.versions.prune(KeepPeriod::days(0), 1_000).unwrap();
     let result = s.versions.restore(&id, 1_001);
     assert!(
         matches!(result, Err(StoreError::NoSuchVersion { .. })),
@@ -278,12 +280,7 @@ fn prune_deletes_the_bytes_and_empties_the_folder() {
         .parent()
         .unwrap()
         .join("state/anyview/versions");
-    assert_eq!(
-        s.versions
-            .prune(KeepPeriod::days(1), 10 * DAY)
-            .unwrap(),
-        1
-    );
+    assert_eq!(s.versions.prune(KeepPeriod::days(1), 10 * DAY).unwrap(), 1);
     assert_eq!(fs::read_dir(&root).unwrap().count(), 0);
 }
 

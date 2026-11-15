@@ -472,11 +472,7 @@ mod tests {
             (Normal, true, (Answers::Return, false)),
             (Normal, false, (Answers::Nothing, false)),
             (Cancel, true, (Answers::Return, false)),
-            (
-                Destructive,
-                false,
-                (Answers::Nothing, true),
-            ),
+            (Destructive, false, (Answers::Nothing, true)),
         ];
         for (role, is_default, want) in cases {
             assert_eq!(face(role, is_default), want, "{role:?} {is_default}");

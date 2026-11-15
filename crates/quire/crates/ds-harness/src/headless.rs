@@ -37,6 +37,7 @@ use ds_blitz::seam::EditListeners;
 use ds_blitz::seam::FrameBook;
 use ds_blitz::seam::FrameParser;
 use ds_blitz::seam::MemoryShell;
+use ds_blitz::seam::Phase;
 use ds_blitz::seam::Setup;
 use ds_blitz::seam::Wakeup;
 use ds_blitz::seam::WindowScroll;
@@ -46,7 +47,6 @@ use ds_blitz::seam::{
     HoverTracker, ask_frame_image, ask_frame_menu, image_under, link_under, live_frames,
     report_frame_hover, report_frame_image, report_frame_menu,
 };
-use ds_blitz::seam::Phase;
 use ds_blitz::seam::{LinkInbox, frame_links, read_link};
 use ds_blitz::seam::{Provided, Wiring};
 use ds_blitz::{FrameHandler, FrameImageClick, FrameLinkHover, FrameLinkMenu};

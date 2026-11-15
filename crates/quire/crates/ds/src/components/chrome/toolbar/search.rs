@@ -83,11 +83,7 @@ impl SearchSeat {
 }
 
 /// The search item: the field in its seat, or the magnifier button.
-pub(crate) fn search_item(
-    search: &ToolbarSearch,
-    fit: SearchFit,
-    opened: Signal<bool>,
-) -> Element {
+pub(crate) fn search_item(search: &ToolbarSearch, fit: SearchFit, opened: Signal<bool>) -> Element {
     let mut opened = opened;
     let place = match (fit, opened()) {
         (SearchFit::Inline, _) => Some(SeatPlace::Inline),

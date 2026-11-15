@@ -6,11 +6,11 @@ use super::*;
 use crate::daemon::events::{EV_KEY, EV_REL, InputEvent, REL_X};
 use crate::daemon::inbox::{ClientId, Inbox, Message, Request, mailbox};
 use crate::daemon::route::Routed;
-use keycap_devtest::Scratch;
 use crate::daemon::socket::client::{connect, recv};
 use crate::daemon::socket::{SeatFile, bind, socket_path, spawn, vouch};
 use crate::daemon::uinput::RecordingEmitter;
 use crate::{DeviceId, Edge, Key, Layout, Mono, Physical, RemapInput};
+use keycap_devtest::Scratch;
 use keycap_protocol::{ProfileName, ToClient};
 use rustix::fd::OwnedFd;
 use std::time::Duration;
@@ -34,8 +34,7 @@ impl Rig {
         let path = socket_path(dir.path());
         let listener = bind(&path).unwrap();
         let (inbox, mailbox) = mailbox().unwrap();
-        let initial =
-            crate::daemon::devices::status_of(&Devices::new(), false);
+        let initial = crate::daemon::devices::status_of(&Devices::new(), false);
         let socket = spawn(
             listener,
             inbox.clone(),

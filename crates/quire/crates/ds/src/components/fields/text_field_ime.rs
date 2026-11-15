@@ -127,7 +127,11 @@ mod tests {
             (true, ImeEvent::Disabled, false),
         ];
         for (before, event, after) in cases {
-            assert_eq!(composing_after(*before, event), *after, "{before:?} then {event:?}");
+            assert_eq!(
+                composing_after(*before, event),
+                *after,
+                "{before:?} then {event:?}"
+            );
         }
     }
 }

@@ -52,7 +52,11 @@ pub fn FormBody(
 
 #[component]
 fn FieldView(field: FormField, on_edit: EventHandler<(FieldKeyId, FormValue)>) -> Element {
-    let need = if field.required { "required" } else { "optional" };
+    let need = if field.required {
+        "required"
+    } else {
+        "optional"
+    };
     rsx! {
         div { class: "ds-card-form-field", "data-need": need,
             span { class: "ds-card-label",

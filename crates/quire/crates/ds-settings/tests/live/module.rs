@@ -39,11 +39,7 @@ pub fn schema() -> LiveSchema {
     LiveSchema {
         version: 1,
         key: vec![
-            spec(
-                TOGGLE,
-                KeyKind::Toggle,
-                toml::Value::Boolean(true),
-            ),
+            spec(TOGGLE, KeyKind::Toggle, toml::Value::Boolean(true)),
             spec(CLIENT, KeyKind::Text, toml::Value::String(String::new())),
             spec(
                 REMOVE,

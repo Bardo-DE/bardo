@@ -9,7 +9,7 @@ mod model;
 mod rows;
 mod write;
 
-pub use model::{CommandSource, UiCommand, UiManifest, UiOnlyRow, UI_VOCAB};
+pub use model::{CommandSource, UI_VOCAB, UiCommand, UiManifest, UiOnlyRow};
 pub use rows::{CommandRow, bar_rows, menu_rows, shortcut_rows};
 pub use write::UiManifestError;
 

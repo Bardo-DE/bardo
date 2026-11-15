@@ -2,8 +2,8 @@
 
 use super::pointer::{close_sub, moved, placed, ticked};
 use super::types::{
-    ItemPath, MenuAnim, MenuDirection, MenuKey, MenuPhase, MenuTarget, MenuTiming,
-    MenuTrack, MenuTrackEffect, MenuTrackEvent, Session, ShownBy, Submenu,
+    ItemPath, MenuAnim, MenuDirection, MenuKey, MenuPhase, MenuTarget, MenuTiming, MenuTrack,
+    MenuTrackEffect, MenuTrackEvent, Session, ShownBy, Submenu,
 };
 use ds_core::geometry::units::Point;
 use ds_core::machine::Machine;

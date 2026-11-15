@@ -1,6 +1,6 @@
 //! Writing the file: rows in, `<AppName>.ui.toml` text out.
 
-use crate::components::menus::ui_manifest::model::{UiCommand, UiManifest, UiOnlyRow, UI_VOCAB};
+use crate::components::menus::ui_manifest::model::{UI_VOCAB, UiCommand, UiManifest, UiOnlyRow};
 use crate::components::menus::ui_manifest::rows::CommandRow;
 use ds_core::command::{CommandFace, CommandId, IntentsApp};
 use std::collections::HashMap;

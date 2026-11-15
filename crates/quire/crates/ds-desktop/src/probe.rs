@@ -20,8 +20,8 @@ impl Desktop {
 
 #[cfg(feature = "dbus")]
 pub(crate) mod bus {
-    use crate::capability::{Bus, Capability};
     use crate::Desktop;
+    use crate::capability::{Bus, Capability};
     use ds_peer::{Deadline, within};
     use std::collections::HashSet;
     use std::future::Future;

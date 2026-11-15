@@ -57,8 +57,8 @@ pub use instance::{Bus, Claim, InstanceError, Served, claim, forward, session};
 pub use intents::{Ask, Reply, Undoing, Window};
 pub use launch::{
     Activate, AppChoice, AppEntry, AppIcons, AppOffer, BusActivate, Catalog, DesktopLauncher,
-    EntryError, ExecError, ExecLine, Expand, IconLookup, LaunchError, LauncherBuilder,
-    NoIcons, Spawn, SpawnCommand, StartError, SystemSpawn, Takes, installed_check, load_apps,
+    EntryError, ExecError, ExecLine, Expand, IconLookup, LaunchError, LauncherBuilder, NoIcons,
+    Spawn, SpawnCommand, StartError, SystemSpawn, Takes, installed_check, load_apps,
 };
 pub use open_url::{OpenUrlError, open_url};
 pub use storage::{DesktopClouds, Storage, StorageError};

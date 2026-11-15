@@ -69,10 +69,7 @@ fn column_widths_follow_the_longest_sampled_cell_counting_wide_characters_twice_
         HeaderMode::Detect,
     )
     .unwrap();
-    assert_eq!(
-        table.column_widths(),
-        vec![4, 14, 60]
-    );
+    assert_eq!(table.column_widths(), vec![4, 14, 60]);
 }
 
 #[test]

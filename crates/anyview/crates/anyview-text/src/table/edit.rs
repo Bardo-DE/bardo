@@ -389,4 +389,3 @@ impl TableEdits {
         ops
     }
 }
-

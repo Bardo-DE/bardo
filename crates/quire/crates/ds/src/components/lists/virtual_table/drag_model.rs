@@ -107,9 +107,7 @@ pub(crate) fn operation_of(platform: Platform, modifiers: Modifiers) -> DropOper
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        RowDropKind, RowDropTarget, allowed, dragged_rows, drop_target, operation_of,
-    };
+    use super::{RowDropKind, RowDropTarget, allowed, dragged_rows, drop_target, operation_of};
     use crate::file_drop::drag::DropOperation;
     use chordkit::Platform;
     use dioxus::prelude::Modifiers;

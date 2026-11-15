@@ -143,17 +143,19 @@ impl BackedUp {
         if self.kept.fresh {
             redundant.push(self.kept.id.clone());
         }
-        let written = self.keep_what_changed(&mut redundant).and_then(|several_links| {
-            let result = if several_links {
-                self.write_through().map(|()| true)
-            } else {
-                self.replace()
-            };
-            match result {
-                Ok(synced) => Ok(synced),
-                Err(failed) => Err(self.after(failed, &redundant)),
-            }
-        });
+        let written = self
+            .keep_what_changed(&mut redundant)
+            .and_then(|several_links| {
+                let result = if several_links {
+                    self.write_through().map(|()| true)
+                } else {
+                    self.replace()
+                };
+                match result {
+                    Ok(synced) => Ok(synced),
+                    Err(failed) => Err(self.after(failed, &redundant)),
+                }
+            });
         written.map(|synced| Written {
             target: self.target.clone(),
             kept: self.kept.id.clone(),

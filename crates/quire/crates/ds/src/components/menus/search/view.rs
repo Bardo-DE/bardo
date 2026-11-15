@@ -17,8 +17,7 @@ use crate::components::menus::menu::placement::MenuPlacement;
 use crate::components::menus::search::card::card;
 use crate::components::menus::search::highlight::{initial, shown_at, value_at};
 use crate::components::menus::search::model::{
-    CardPlace, Manner, Panel, SearchCursor, SuggestionSection,
-    SuggestionsPresent, flatten,
+    CardPlace, Manner, Panel, SearchCursor, SuggestionSection, SuggestionsPresent, flatten,
 };
 use crate::components::menus::search::step::{Act, SuggestKey, Suggesting, Text, press};
 use crate::components::overlays::flow::Flow;

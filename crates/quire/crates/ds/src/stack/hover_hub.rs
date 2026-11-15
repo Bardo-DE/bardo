@@ -10,9 +10,7 @@ use dioxus::core::current_scope_id;
 use dioxus::prelude::*;
 use ds_core::time::clock::sleep;
 use ds_motion::anim::Anim;
-use ds_motion::hover_intent::{
-    HoverEvent, HoverIntent, HoverProfile, IntentEffect, IntentPhase,
-};
+use ds_motion::hover_intent::{HoverEvent, HoverIntent, HoverProfile, IntentEffect, IntentPhase};
 use ds_motion::machine::{MachineRef, use_machine};
 use ds_motion::settle::settle;
 use ds_style::scope::Scope;

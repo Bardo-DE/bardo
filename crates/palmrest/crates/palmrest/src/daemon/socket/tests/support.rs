@@ -92,6 +92,4 @@ pub(super) fn queued(fd: &OwnedFd) -> Vec<ToHost> {
     out
 }
 
-pub(super) const TOUCHES: ToHost = ToHost::Touches {
-    active: true,
-};
+pub(super) const TOUCHES: ToHost = ToHost::Touches { active: true };

@@ -4,8 +4,7 @@ use std::fs;
 use std::path::Path;
 
 use ds_extensions::{
-    Capability, ChangeError, Search, YOUR_CHANGES_ID, YOUR_CHANGES_NAME, YourChanges,
-    choices_for,
+    Capability, ChangeError, Search, YOUR_CHANGES_ID, YOUR_CHANGES_NAME, YourChanges, choices_for,
 };
 use ds_helpers::mime::{IconName, MimeDb, MimeLayer, MimeType};
 

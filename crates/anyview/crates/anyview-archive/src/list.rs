@@ -80,7 +80,9 @@ fn compressed(
 
 fn one_file(src: &Input, format: ArchiveFormat, unpacked: &stream::Unpacked) -> Listing {
     let name = stem_of(src).unwrap_or_default();
-    let size = unpacked.complete.then_some(ByteLen(unpacked.bytes.len() as u64));
+    let size = unpacked
+        .complete
+        .then_some(ByteLen(unpacked.bytes.len() as u64));
     Listing {
         format,
         one_file: true,

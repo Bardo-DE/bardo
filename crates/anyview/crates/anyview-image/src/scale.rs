@@ -86,11 +86,7 @@ pub(crate) fn resampled(picture: &Rgba8, size: PixelSize, sharp: bool) -> Rgba8 
 /// `picture` resized the way an export asked.
 #[must_use]
 pub fn resized(picture: &Rgba8, resize: Resize) -> Rgba8 {
-    resampled(
-        picture,
-        resize_target(picture.size(), resize),
-        true,
-    )
+    resampled(picture, resize_target(picture.size(), resize), true)
 }
 
 #[cfg(test)]

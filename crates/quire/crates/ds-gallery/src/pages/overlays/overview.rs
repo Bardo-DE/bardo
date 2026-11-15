@@ -28,16 +28,8 @@ enum Opened {
 }
 
 const POPOVERS: [(Dismiss, bool, &str); 3] = [
-    (
-        Dismiss::Transient,
-        true,
-        "Popover: transient, arrow",
-    ),
-    (
-        Dismiss::Semitransient,
-        false,
-        "Popover: semitransient",
-    ),
+    (Dismiss::Transient, true, "Popover: transient, arrow"),
+    (Dismiss::Semitransient, false, "Popover: semitransient"),
     (Dismiss::Manual, false, "Popover: manual"),
 ];
 

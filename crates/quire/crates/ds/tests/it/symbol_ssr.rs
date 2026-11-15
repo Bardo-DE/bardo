@@ -128,10 +128,7 @@ fn a_while_effect_plays_while_active_and_holds_once_it_stops() {
         let got = renders(
             icon,
             looped(effect, false),
-            &[
-                looped(effect, true),
-                looped(effect, false),
-            ],
+            &[looped(effect, true), looped(effect, false)],
         );
         assert!(
             got[0].contains("data-run=\"while\"") && !got[0].contains("data-pulse"),

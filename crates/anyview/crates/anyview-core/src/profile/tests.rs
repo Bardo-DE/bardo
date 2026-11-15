@@ -165,12 +165,7 @@ fn each_kind_offers_the_common_actions_then_its_own() {
             case.kind
         );
         assert_eq!(edits_for(case.kind), case.edits, "{:?} edits", case.kind);
-        assert_eq!(
-            has_stage(case.kind),
-            case.stage,
-            "{:?} stage",
-            case.kind
-        );
+        assert_eq!(has_stage(case.kind), case.stage, "{:?} stage", case.kind);
     }
 }
 

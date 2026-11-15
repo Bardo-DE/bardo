@@ -203,30 +203,15 @@ fn a_user_layer_of_at_most_256_rules_is_taken_and_one_of_257_is_refused_whole() 
 fn only_the_system_file_chooses_whether_lists_are_allowed() {
     let cases: &[(&str, &str, bool, &[&str])] = &[
         ("absent", "", false, &[]),
-        (
-            "allow",
-            "[user_layer]\nsequences = true\n",
-            true,
-            &[],
-        ),
-        (
-            "refuse",
-            "[user_layer]\nsequences = false\n",
-            false,
-            &[],
-        ),
+        ("allow", "[user_layer]\nsequences = true\n", true, &[]),
+        ("refuse", "[user_layer]\nsequences = false\n", false, &[]),
         (
             "not a choice",
             "[user_layer]\nsequences = \"yes\"\n",
             false,
             &["user_layer.sequences"],
         ),
-        (
-            "not a table",
-            "user_layer = 3\n",
-            false,
-            &["user_layer"],
-        ),
+        ("not a table", "user_layer = 3\n", false, &["user_layer"]),
     ];
     for &(case, text, want, problems) in cases {
         let (layer, warnings) = ConfigLayer::parse(text, ConfigSource::System);
@@ -243,18 +228,8 @@ fn the_machine_files_choice_wins_and_the_vendors_stands_when_it_has_none() {
         ("neither says", "", "", false),
         ("only the vendor allows", "", allow, true),
         ("the machine allows", allow, "", true),
-        (
-            "the machine refuses over the vendor",
-            refuse,
-            allow,
-            false,
-        ),
-        (
-            "the machine allows over the vendor",
-            allow,
-            refuse,
-            true,
-        ),
+        ("the machine refuses over the vendor", refuse, allow, false),
+        ("the machine allows over the vendor", allow, refuse, true),
     ];
     for &(case, machine, vendor, want) in cases {
         let (machine, _) = ConfigLayer::parse(machine, ConfigSource::System);

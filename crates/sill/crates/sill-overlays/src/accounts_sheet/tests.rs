@@ -4,9 +4,9 @@ use ds::components::content::provider_mark::MarkProvider;
 use ds::prelude::Check;
 use ds_shell::accounts::hidden::Hidden;
 use ds_shell::accounts::model::{
-    AccountChoice, AllowScope, Attempt, ChoiceKey, ConsentAnswer, FieldProblem,
-    FieldRole, FieldText, FormField, Limitation, ProblemKind, ProviderEntry, ProviderKey,
-    ProviderPick, ServiceKey, ServiceLine, ServiceOffer, SignInFault,
+    AccountChoice, AllowScope, Attempt, ChoiceKey, ConsentAnswer, FieldProblem, FieldRole,
+    FieldText, FormField, Limitation, ProblemKind, ProviderEntry, ProviderKey, ProviderPick,
+    ServiceKey, ServiceLine, ServiceOffer, SignInFault,
 };
 use ds_shell::prelude::{Recovery, WorkingFor};
 use porter_capability::{AbsentReason, CapabilityKind};
@@ -258,21 +258,13 @@ fn every_sheet_view_becomes_the_props_of_its_part() {
                 provider: "Nextcloud".to_owned(),
                 mark: MarkProvider::Imap,
                 fields: vec![
-                    FormField::new(
-                        FieldRole::Address,
-                        true,
-                        FieldText::Plain(String::new()),
-                    ),
+                    FormField::new(FieldRole::Address, true, FieldText::Plain(String::new())),
                     FormField::new(
                         FieldRole::Password,
                         true,
                         FieldText::Secret(Hidden::new("")),
                     ),
-                    FormField::new(
-                        FieldRole::Server,
-                        false,
-                        FieldText::Plain(String::new()),
-                    ),
+                    FormField::new(FieldRole::Server, false, FieldText::Plain(String::new())),
                 ],
                 problem: Some(FieldProblem {
                     role: FieldRole::Password,

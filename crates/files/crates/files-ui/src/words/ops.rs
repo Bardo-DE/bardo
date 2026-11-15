@@ -1,7 +1,7 @@
 //! What is said while files change: the toast after a move to the Trash, the progress sheet and
 //! the questions, in Finder's words. Pure.
 
-use files_core::{Conflict, Bring, OpKind, Summary};
+use files_core::{Bring, Conflict, OpKind, Summary};
 use files_model::ExtensionChange;
 
 /// `“name”` in typographic quotes.
@@ -162,7 +162,7 @@ mod tests {
 
     #[test]
     fn a_taken_name_is_asked_in_finders_words() {
-            let here = FolderPath::new("/d").unwrap();
+        let here = FolderPath::new("/d").unwrap();
         let ask = |kind| Conflict::new(FileName::new("a.txt").unwrap(), here.clone(), kind, 0);
         let (title, message) = conflict_words(&ask(Bring::Move));
         assert_eq!(

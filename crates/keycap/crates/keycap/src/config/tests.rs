@@ -33,7 +33,7 @@ mod trusted_files {
     use super::super::trusted::LAYER_FILE_CAP;
     use super::super::vendor::vendor_through;
     use super::*;
-use keycap_devtest::Scratch;
+    use keycap_devtest::Scratch;
 
     const CAPS_RULE: &str =
         "[profile.default]\nrules = [{ when = \"capslock\", then = \"ctrl+space\" }]\n";

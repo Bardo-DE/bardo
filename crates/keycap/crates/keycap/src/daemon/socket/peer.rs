@@ -201,9 +201,6 @@ mod tests {
     fn a_closed_peer_is_gone() {
         let (client, theirs) = pair();
         drop(theirs);
-        assert_eq!(
-            send(&client, &ToClient::Status(status(false))),
-            Sent::Gone
-        );
+        assert_eq!(send(&client, &ToClient::Status(status(false))), Sent::Gone);
     }
 }

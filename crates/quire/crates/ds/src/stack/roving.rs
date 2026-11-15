@@ -303,9 +303,7 @@ mod tests {
             Some(&"a"),
             "a menu wraps"
         );
-        let stops = Roving::new(items, false)
-            .edge(Edge::Last)
-            .step(Step::Down);
+        let stops = Roving::new(items, false).edge(Edge::Last).step(Step::Down);
         assert_eq!(stops.focused(), Some(&"d"), "a list stops");
         assert_eq!(
             stops.clone().focus(&"b").focused(),

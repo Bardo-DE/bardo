@@ -51,9 +51,7 @@ fn is_typing(trigger: &Trigger) -> bool {
 fn objection(trigger: &Trigger, action: &RuleAction, sequences: bool) -> Option<Reason> {
     match (action, sequences) {
         _ if is_typing(trigger) => Some(Reason::KeyAlone),
-        (RuleAction::Sequence(_) | RuleAction::Swallow, false) => {
-            Some(Reason::StrokeList)
-        }
+        (RuleAction::Sequence(_) | RuleAction::Swallow, false) => Some(Reason::StrokeList),
         _ => None,
     }
 }

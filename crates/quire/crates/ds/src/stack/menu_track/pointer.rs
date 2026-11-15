@@ -4,8 +4,8 @@
 use super::machine::{Effects, keep};
 use super::triangle::shielded;
 use super::types::{
-    Branch, ItemPath, MenuPhase, MenuTarget, MenuTiming, MenuTrackEffect,
-    SafeTriangle, Session, Submenu,
+    Branch, ItemPath, MenuPhase, MenuTarget, MenuTiming, MenuTrackEffect, SafeTriangle, Session,
+    Submenu,
 };
 use ds_core::geometry::units::Point;
 use ds_core::time::stamp::Stamp;
@@ -93,8 +93,7 @@ fn retarget<K: Clone>(
             (Some(path.clone()), sub)
         }
         MenuTarget::Item {
-            pickable: false,
-            ..
+            pickable: false, ..
         } => (None, close_sub(session.sub, &mut effects)),
         MenuTarget::Outside if left => (None, Submenu::None),
         _ => (session.hot.clone(), session.sub),

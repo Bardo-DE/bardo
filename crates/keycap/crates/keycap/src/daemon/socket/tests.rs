@@ -5,11 +5,11 @@
 use super::client::{WAIT, connect, recv, send};
 use super::*;
 use crate::daemon::inbox::{Mailbox, Message, Request, mailbox};
-use keycap_devtest::Scratch;
 use keycap_client::FileText;
+use keycap_devtest::Scratch;
 use keycap_protocol::{
-    self as protocol, KeymapCall, KeymapState, PROTOCOL_VERSION, ProfileName,
-    RegisteredAction, Registration, Status, Steer, ToClient, ToDaemon, Warning,
+    self as protocol, KeymapCall, KeymapState, PROTOCOL_VERSION, ProfileName, RegisteredAction,
+    Registration, Status, Steer, ToClient, ToDaemon, Warning,
 };
 use latchkey::guard::{ShellCheck, Vouch};
 use peephole::{FixtureProc, Prober};
