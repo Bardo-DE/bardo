@@ -1,8 +1,9 @@
 //! Plays a wire cassette as a `Transport`.
 
+use std::ops::ControlFlow;
 use std::sync::Mutex;
 
-use model_http::{BodySink, ChunkFlow, Exchange, HttpError, HttpStatus, ResponseHead, Transport};
+use model_http::{BodySink, Exchange, HttpError, HttpStatus, ResponseHead, Transport};
 
 use crate::wire_form::{chunks, is_success, request_of, same_request};
 use crate::{
@@ -120,11 +121,11 @@ fn deliver<K: BodySink>(
         location: None,
         content_range: None,
     };
-    if sink.head(&head) == ChunkFlow::Stop {
+    if sink.head(&head) == ControlFlow::Break(()) {
         return finish(head.status, WireEnd::Complete);
     }
     for chunk in chunks(&reply.body, ex.framing, plan) {
-        if sink.chunk(&chunk) == ChunkFlow::Stop {
+        if sink.chunk(&chunk) == ControlFlow::Break(()) {
             return finish(head.status, WireEnd::Complete);
         }
     }

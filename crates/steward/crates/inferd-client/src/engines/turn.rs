@@ -2,6 +2,7 @@
 //! mapping inferd uses), the key for this turn only, the events streamed to the session as they
 //! come, the reply at the end.
 
+use std::ops::ControlFlow;
 use super::engine::{Engine, KeyUse};
 use super::keys::KeySource;
 use super::wire::provider;
@@ -83,8 +84,8 @@ pub(crate) async fn reply(
     // The same turn the daemon runs: events streamed as they come, the reply gathered. A host
     // with no engine of its own to tell has nothing to touch, and says nothing of option shares.
     let send = |event| match events.send(event) {
-        Ok(()) => sp::Flow::Continue,
-        Err(_) => sp::Flow::Stop,
+        Ok(()) => ControlFlow::Continue(()),
+        Err(_) => ControlFlow::Break(()),
     };
     let (reply, _) = run_chat(&provider, &turn, &pinned.served, send, || {}).await;
     reply

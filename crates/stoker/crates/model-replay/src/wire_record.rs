@@ -1,7 +1,8 @@
 //! Records the exchanges a `Transport` carries.
 
+use std::ops::ControlFlow;
 use model_http::{
-    BodyKind, BodySink, ChunkFlow, Exchange, Framing, HttpError, HttpStatus, NdjsonDecoder,
+    BodyKind, BodySink, Exchange, Framing, HttpError, HttpStatus, NdjsonDecoder,
     Progress, ResponseHead, SseDecoder, Transport, WaitMs,
 };
 
@@ -43,8 +44,8 @@ struct Tee<'a, K: BodySink> {
 }
 
 impl<K: BodySink> Tee<'_, K> {
-    fn pass(&mut self, flow: ChunkFlow) -> ChunkFlow {
-        if flow == ChunkFlow::Stop {
+    fn pass(&mut self, flow: ControlFlow<()>) -> ControlFlow<()> {
+        if flow == ControlFlow::Break(()) {
             self.consumer = Consumer::Stopped;
         }
         flow
@@ -52,13 +53,13 @@ impl<K: BodySink> Tee<'_, K> {
 }
 
 impl<K: BodySink> BodySink for Tee<'_, K> {
-    fn head(&mut self, head: &ResponseHead) -> ChunkFlow {
+    fn head(&mut self, head: &ResponseHead) -> ControlFlow<()> {
         self.head = Some(head.clone());
         let flow = self.inner.head(head);
         self.pass(flow)
     }
 
-    fn chunk(&mut self, bytes: &[u8]) -> ChunkFlow {
+    fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()> {
         self.bytes.extend_from_slice(bytes);
         let flow = self.inner.chunk(bytes);
         self.pass(flow)

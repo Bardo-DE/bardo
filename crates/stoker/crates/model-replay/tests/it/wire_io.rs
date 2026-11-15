@@ -1,9 +1,10 @@
 //! The wire cassette transports: replay in every mode and plan, recording over a fake transport.
 
+use std::ops::ControlFlow;
 use std::sync::Mutex;
 
 use model_http::{
-    BodyKind, BodySink, ChunkFlow, EventName, Exchange, Framing, HttpError, HttpStatus, JsonBody,
+    BodyKind, BodySink, EventName, Exchange, Framing, HttpError, HttpStatus, JsonBody,
     ResponseHead, RouteRoot, Transport, UrlPath, Verb, WaitSeconds,
 };
 use model_provider::{ModelName, Tokens};
@@ -41,15 +42,15 @@ impl Seen {
 }
 
 impl BodySink for Seen {
-    fn head(&mut self, head: &ResponseHead) -> ChunkFlow {
+    fn head(&mut self, head: &ResponseHead) -> ControlFlow<()> {
         self.head = Some(head.clone());
-        ChunkFlow::Continue
+        ControlFlow::Continue(())
     }
-    fn chunk(&mut self, bytes: &[u8]) -> ChunkFlow {
+    fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()> {
         self.chunks.push(bytes.to_vec());
         match self.stop_after {
-            Some(n) if self.chunks.len() >= n => ChunkFlow::Stop,
-            _ => ChunkFlow::Continue,
+            Some(n) if self.chunks.len() >= n => ControlFlow::Break(()),
+            _ => ControlFlow::Continue(()),
         }
     }
 }
@@ -325,11 +326,11 @@ impl Transport for Fake {
         if let Some(h) = canned
             .head
             .as_ref()
-            .filter(|h| sink.head(h) == ChunkFlow::Continue)
+            .filter(|h| sink.head(h) == ControlFlow::Continue(()))
         {
             let _ = h;
             for c in &canned.chunks {
-                if sink.chunk(c.as_bytes()) == ChunkFlow::Stop {
+                if sink.chunk(c.as_bytes()) == ControlFlow::Break(()) {
                     break;
                 }
             }

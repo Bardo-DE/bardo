@@ -6,9 +6,10 @@
 //! its transcript is the fixture's expected output. A replayed synthesis answers silence of the
 //! recorded duration.
 
+use std::ops::ControlFlow;
 use std::sync::Mutex;
 
-use model_provider::{Flow, ModelName, ProviderError, Support};
+use model_provider::{ModelName, ProviderError, Support};
 use serde::{Deserialize, Serialize};
 use speech_provider::{
     AudioChunk, AudioFormat, AudioMs, AudioPull, AudioSink, AudioSource, HeardText, Lang,
@@ -459,7 +460,7 @@ impl SpeechToText for SpeechReplay {
             if let TranscriptEvent::Final { text: t, .. } = event {
                 text.push_str(&t.0);
             }
-            if sink.event(event.clone()) == Flow::Stop {
+            if sink.event(event.clone()) == ControlFlow::Break(()) {
                 return Ok(SttEnd {
                     text: HeardText(text),
                     audio: got.audio.duration,
@@ -501,7 +502,7 @@ impl TextToSpeech for SpeechReplay {
             let mut played = 0u64;
             for chunk in silence(call.audio.format, call.audio.duration) {
                 played += u64::from(chunk.duration().0);
-                if sink.chunk(chunk) == Flow::Stop {
+                if sink.chunk(chunk) == ControlFlow::Break(()) {
                     return Ok(TtsEnd {
                         audio: AudioMs(u32::try_from(played).unwrap_or(u32::MAX)),
                         served: self.cassette.header.model.clone(),
@@ -561,7 +562,7 @@ struct TeeTranscript<'a, K: TranscriptSink> {
 }
 
 impl<K: TranscriptSink> TranscriptSink for TeeTranscript<'_, K> {
-    fn event(&mut self, event: TranscriptEvent) -> Flow {
+    fn event(&mut self, event: TranscriptEvent) -> ControlFlow<()> {
         self.seen.push(event.clone());
         self.inner.event(event)
     }
@@ -573,7 +574,7 @@ struct TeeAudio<'a, K: AudioSink> {
 }
 
 impl<K: AudioSink> AudioSink for TeeAudio<'_, K> {
-    fn chunk(&mut self, chunk: AudioChunk) -> Flow {
+    fn chunk(&mut self, chunk: AudioChunk) -> ControlFlow<()> {
         self.seen.push(chunk.clone());
         self.inner.chunk(chunk)
     }

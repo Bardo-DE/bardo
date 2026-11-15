@@ -14,6 +14,7 @@
 //! `with_notes`; a note keeps who said it in its words ("The person says: ..."), because stoker's
 //! `StepNote` is one line of text.
 
+use std::ops::ControlFlow;
 use crate::bridge::{self, BridgeError, Frames};
 use crate::tee::{Echo, Tee};
 use cua_action::{AnswerShape, CuaDialect};
@@ -24,7 +25,7 @@ use cua_session::{
 use cua_session::{StepNote as NoteLine, TreeText as WindowText};
 use cua_vendors::StepResult;
 use model_provider::{
-    Batching, CuaSupport, Flow, ImageInput, Limits, Provider, Reasoning, Tokens, ToolCallId,
+    Batching, CuaSupport, ImageInput, Limits, Provider, Reasoning, Tokens, ToolCallId,
     ToolParallelism,
 };
 use porter_infer::{
@@ -215,7 +216,7 @@ pub async fn step<P: Provider>(
     provider: &P,
     request: &CuaStepRequest,
     frames: &Frames,
-    mut forward: impl FnMut(InferEvent) -> Flow + Send,
+    mut forward: impl FnMut(InferEvent) -> ControlFlow<()> + Send,
 ) -> Result<CuaStepReply, Failed> {
     let caps = model.caps().ok_or_else(unreadable)?;
     let map = FrameMap::new(
@@ -236,7 +237,7 @@ pub async fn step<P: Provider>(
                 return Err(CuaStepFailure::ModelFailed(bridge::model_error(&error)).into());
             }
         };
-        if tee.flow() == Flow::Stop {
+        if tee.flow() == ControlFlow::Break(()) {
             session.refill_repairs();
             // The session is gone: the cut turn holds no call, and a repair would be asked of nobody.
             return Err(CuaStepFailure::Unparseable.into());
@@ -250,7 +251,7 @@ pub async fn step<P: Provider>(
                 dropped,
             } => {
                 for action in &actions {
-                    if forward(InferEvent::ActionProposed(action.clone())) == Flow::Stop {
+                    if forward(InferEvent::ActionProposed(action.clone())) == ControlFlow::Break(()) {
                         break;
                     }
                 }

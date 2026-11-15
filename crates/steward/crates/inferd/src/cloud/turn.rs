@@ -7,6 +7,7 @@
 //! a transport built for this turn, and dropped with them. It is never put in a log line, an
 //! event, an audit entry or a file; an error from the provider is classified without its body.
 
+use std::ops::ControlFlow;
 use super::Cloud;
 use super::accountd::AccountdFault;
 use super::models::RemoteModel;
@@ -18,7 +19,7 @@ use model_provider::{Provider, Retrying};
 use model_wire::Driver;
 use porter_core::AppId;
 use porter_infer::{
-    ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, Flow, InferRefusal, Knob, Model,
+    ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferRefusal, Knob, Model,
     ModelCard, ModelError, ServedBy, SpendVerdict, TaskRequest, TokenUsage, TurnError,
 };
 use porter_turns::bridge::{self, DefaultSampling, Frames, JsonReply, Target};
@@ -77,14 +78,14 @@ struct Forward<'a, S> {
 }
 
 impl<S: ChatSink> sp::TurnSink for Forward<'_, S> {
-    fn event(&mut self, event: sp::TurnEvent) -> sp::Flow {
+    fn event(&mut self, event: sp::TurnEvent) -> ControlFlow<()> {
         self.gathered.take(&event);
         match bridge::event(&event) {
             Some(out) => match self.sink.event(out) {
-                Flow::Stop => sp::Flow::Stop,
-                _ => sp::Flow::Continue,
+                ControlFlow::Break(()) => ControlFlow::Break(()),
+                _ => ControlFlow::Continue(()),
             },
-            None => sp::Flow::Continue,
+            None => ControlFlow::Continue(()),
         }
     }
 }
@@ -233,7 +234,7 @@ struct Watched<'a, K> {
 }
 
 impl<K: sp::TurnSink> sp::TurnSink for Watched<'_, K> {
-    fn event(&mut self, event: sp::TurnEvent) -> sp::Flow {
+    fn event(&mut self, event: sp::TurnEvent) -> ControlFlow<()> {
         self.inner.event(event)
     }
 

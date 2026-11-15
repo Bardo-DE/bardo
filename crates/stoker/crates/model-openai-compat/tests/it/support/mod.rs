@@ -2,6 +2,7 @@
 
 #![allow(dead_code)]
 
+use std::ops::ControlFlow;
 use model_provider::{
     EngineExtras, ImageInput, Knob, Limits, Message, Milli, ModelName, OutputShape, Part,
     Reasoning, Role, Sampling, SchemaText, Tokens, ToolCall, ToolCallId, ToolChoice, ToolName,
@@ -102,7 +103,7 @@ pub fn body(request: &TurnRequest, flavor: model_openai_compat::Flavor) -> Value
 }
 
 use model_http::{
-    BodyKind, BodySink, ChunkFlow, Exchange, HttpError, HttpStatus, ResponseHead, Transport,
+    BodyKind, BodySink, Exchange, HttpError, HttpStatus, ResponseHead, Transport,
 };
 use model_replay::{
     BuildLabel, CassetteHeader, CassetteVersion, ContextStamp, EngineLabel, EngineStamp, HeadPrint,
@@ -181,7 +182,7 @@ impl Transport for FakeServer {
     ) -> impl Future<Output = Result<HttpStatus, HttpError>> + Send {
         let mut flow = sink.head(&self.head);
         for chunk in &self.chunks {
-            if flow == ChunkFlow::Stop {
+            if flow == ControlFlow::Break(()) {
                 break;
             }
             flow = sink.chunk(chunk);

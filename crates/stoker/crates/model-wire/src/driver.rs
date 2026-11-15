@@ -1,5 +1,6 @@
 //! Joins a codec to a transport.
 
+use std::ops::ControlFlow;
 use model_http::{Transport, WaitMs};
 use model_provider::{
     Charges, Count, Dims, EmbedEnd, EmbedFault, EmbedTurn, Embedder, Knob, ModelInfo, Provider,
@@ -17,7 +18,7 @@ use crate::{ChatCodec, EmbedCodec};
 /// `turn` encodes, then exchanges through a sink adapter. On the head: a non-success status, or
 /// an `Html` body served as 200, is buffered (64 KiB at most) and mapped with `classify`;
 /// otherwise the framer the exchange named runs and each frame goes to the decoder, whose events
-/// go to the caller's `TurnSink`. `Flow::Stop` answers `ChunkFlow::Stop`.
+/// go to the caller's `TurnSink`. `ControlFlow::Break(())` answers `ControlFlow::Break(())`.
 ///
 /// An error envelope inside a 200 stream is the decoder's `fault`; a rate limit that carries no
 /// seconds takes the head's `Retry-After`. A transport that cannot connect, times out or breaks

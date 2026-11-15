@@ -1,8 +1,9 @@
 //! What the speech provider reads back: a body kept whole (a transcription, a model list), a
 //! streamed PCM body cut into chunks, and the two listings.
 
-use model_http::{BodyKind, BodySink, ChunkFlow, HttpError, HttpStatus, ResponseHead};
-use model_provider::{Flow, ModelName, ProviderError};
+use std::ops::ControlFlow;
+use model_http::{BodyKind, BodySink, HttpError, HttpStatus, ResponseHead};
+use model_provider::{ModelName, ProviderError};
 use model_wire::http_error;
 use serde_json::Value;
 use speech_provider::{AudioFormat, AudioMs, AudioSink, VoiceId};
@@ -44,7 +45,7 @@ impl Whole {
         self.head.as_ref().is_some_and(is_failure)
     }
 
-    fn keep(&mut self, bytes: &[u8]) -> ChunkFlow {
+    fn keep(&mut self, bytes: &[u8]) -> ControlFlow<()> {
         let cap = if self.failed() {
             ERROR_BODY_MAX
         } else {
@@ -54,9 +55,9 @@ impl Whole {
         self.body.extend_from_slice(&bytes[..bytes.len().min(room)]);
         self.capped |= bytes.len() > room;
         if self.capped {
-            ChunkFlow::Stop
+            ControlFlow::Break(())
         } else {
-            ChunkFlow::Continue
+            ControlFlow::Continue(())
         }
     }
 
@@ -88,18 +89,18 @@ impl Whole {
 }
 
 impl BodySink for Whole {
-    fn head(&mut self, head: &ResponseHead) -> ChunkFlow {
+    fn head(&mut self, head: &ResponseHead) -> ControlFlow<()> {
         self.set_head(head);
-        ChunkFlow::Continue
+        ControlFlow::Continue(())
     }
 
-    fn chunk(&mut self, bytes: &[u8]) -> ChunkFlow {
+    fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()> {
         self.keep(bytes)
     }
 }
 
 /// Cuts a streamed PCM body into chunks for an [`AudioSink`]. A refusal's body is kept (capped)
-/// for the classifier instead of being played. `Flow::Stop` from the sink closes the connection.
+/// for the classifier instead of being played. `ControlFlow::Break(())` from the sink closes the connection.
 pub(super) struct Pcm<'a, K> {
     decoder: PcmDecoder,
     rate: u32,
@@ -151,29 +152,29 @@ impl<'a, K: AudioSink> Pcm<'a, K> {
 }
 
 impl<K: AudioSink> BodySink for Pcm<'_, K> {
-    fn head(&mut self, head: &ResponseHead) -> ChunkFlow {
+    fn head(&mut self, head: &ResponseHead) -> ControlFlow<()> {
         self.reply.set_head(head);
-        ChunkFlow::Continue
+        ControlFlow::Continue(())
     }
 
-    fn chunk(&mut self, bytes: &[u8]) -> ChunkFlow {
+    fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()> {
         if self.reply.failed() {
             return self.reply.keep(bytes);
         }
         self.received = self.received.saturating_add(bytes.len());
         if self.received > AUDIO_STREAM_MAX {
             self.length = Length::Exceeded;
-            return ChunkFlow::Stop;
+            return ControlFlow::Break(());
         }
         let Some(audio) = self.decoder.feed(bytes) else {
-            return ChunkFlow::Continue;
+            return ControlFlow::Continue(());
         };
         self.samples += u64::from(audio.samples());
         match self.out.chunk(audio) {
-            Flow::Continue => ChunkFlow::Continue,
-            Flow::Stop => {
+            ControlFlow::Continue(()) => ControlFlow::Continue(()),
+            ControlFlow::Break(()) => {
                 self.stopped = true;
-                ChunkFlow::Stop
+                ControlFlow::Break(())
             }
         }
     }

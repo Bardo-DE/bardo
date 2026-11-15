@@ -9,7 +9,7 @@ use model_provider as sp;
 use model_provider::Embedder;
 use porter_capability::Tier;
 use porter_infer::{
-    ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, Flow, InferEvent, InferRefusal,
+    ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferEvent, InferRefusal,
     Model, ModelCard, ServedBy, StopReason, TaskRequest, TokenUsage, TurnError,
 };
 use porter_router::local::LocalModel;
@@ -32,13 +32,6 @@ pub struct LocalTurn<'a, U> {
     /// The most a reply may write, whatever the request asks (the model's most, the person's
     /// length and the window the engine runs with: `LocalModel::reply_ceiling`).
     pub ceiling: sp::Tokens,
-}
-
-fn flow(sent: Flow) -> sp::Flow {
-    match sent {
-        Flow::Stop => sp::Flow::Stop,
-        _ => sp::Flow::Continue,
-    }
 }
 
 impl<U: EngineUse> LocalTurn<'_, U> {
@@ -67,7 +60,7 @@ impl<U: EngineUse> LocalTurn<'_, U> {
             &provider,
             turn,
             self.served,
-            |event| flow(sink.event(event)),
+            |event| sink.event(event),
             || self.engines.used(&self.model.spec.id),
         )
         .await;
@@ -83,7 +76,7 @@ impl<U: EngineUse> LocalTurn<'_, U> {
         turn: &sp::TurnRequest,
         sink: &mut impl ChatSink,
     ) -> Result<ChatReply, TurnError> {
-        let mut forward = |event| flow(sink.event(event));
+        let mut forward = |event| sink.event(event);
         let touch = || self.engines.used(&self.model.spec.id);
         let valid = structured::run(provider, checked, turn, &mut forward, touch).await?;
         let _ = sink.event(InferEvent::TextDelta(valid.text.clone()));

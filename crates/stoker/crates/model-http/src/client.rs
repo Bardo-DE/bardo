@@ -2,6 +2,7 @@
 //! `Transport` (`exchange`); the response body is pushed into a sink as it arrives.
 
 #[cfg(feature = "client")]
+use std::ops::ControlFlow;
 use std::sync::Arc;
 
 use serde::{Deserialize, Serialize};
@@ -43,13 +44,6 @@ impl core::fmt::Debug for RawBody {
     }
 }
 
-/// A sink's answer to a chunk: keep reading, or close the connection (which aborts generation).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum ChunkFlow {
-    Continue,
-    Stop,
-}
-
 /// Whether the last chunk carried anything of the reply. A transport restarts its idle timer only
 /// on `Made`, so a stream of keep-alive comments or empty events cannot hold a turn open.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -61,9 +55,10 @@ pub enum Progress {
 /// Receives a response: its head once, then the body in chunks (already split into frames when
 /// the exchange asked for `Framing::Sse` or `Ndjson`).
 pub trait BodySink: Send {
-    /// Once, before any chunk. `Stop` closes the connection without reading the body.
-    fn head(&mut self, head: &ResponseHead) -> ChunkFlow;
-    fn chunk(&mut self, bytes: &[u8]) -> ChunkFlow;
+    /// Once, before any chunk. `Break` closes the connection without reading the body.
+    fn head(&mut self, head: &ResponseHead) -> ControlFlow<()>;
+    /// `Break` closes the connection (which aborts generation).
+    fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()>;
 
     /// Whether the chunk just delivered made progress. The default counts every chunk.
     fn progress(&self) -> Progress {

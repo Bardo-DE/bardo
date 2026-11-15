@@ -2,8 +2,9 @@
 //! serves the model under. Asked when a session opens and nowhere else (no background polling),
 //! and answered with the one thing that is wrong, typed.
 
+use std::ops::ControlFlow;
 use model_http::{
-    BodySink, ChunkFlow, Exchange, Framing, HttpClient, HttpError, HttpStatus, ResponseHead,
+    BodySink, Exchange, Framing, HttpClient, HttpError, HttpStatus, ResponseHead,
     RouteRoot, Timeouts, Transport, UrlPath, Verb, WaitMs,
 };
 use porter_router::attached::{NotReady, Target};
@@ -34,17 +35,17 @@ struct Reply {
 }
 
 impl BodySink for Reply {
-    fn head(&mut self, head: &ResponseHead) -> ChunkFlow {
+    fn head(&mut self, head: &ResponseHead) -> ControlFlow<()> {
         self.status = Some(head.status.0);
-        ChunkFlow::Continue
+        ControlFlow::Continue(())
     }
 
-    fn chunk(&mut self, bytes: &[u8]) -> ChunkFlow {
+    fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()> {
         let room = MOST_BODY.saturating_sub(self.body.len());
         self.body.extend_from_slice(&bytes[..bytes.len().min(room)]);
         match self.body.len() < MOST_BODY {
-            true => ChunkFlow::Continue,
-            false => ChunkFlow::Stop,
+            true => ControlFlow::Continue(()),
+            false => ControlFlow::Break(()),
         }
     }
 }

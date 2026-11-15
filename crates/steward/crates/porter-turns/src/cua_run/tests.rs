@@ -1,3 +1,4 @@
+use std::ops::ControlFlow;
 use super::*;
 use cua_action::{
     Button, ClickCount, Coord, CuaAction, Point, Scale120, Size, Target, WindowSpace,
@@ -80,11 +81,11 @@ struct Events {
 }
 
 impl ChatSink for Events {
-    fn event(&mut self, event: InferEvent) -> Flow {
+    fn event(&mut self, event: InferEvent) -> ControlFlow<()> {
         self.seen.push(event);
         match self.stop_after {
-            Some(n) if self.seen.len() >= n => Flow::Stop,
-            _ => Flow::Continue,
+            Some(n) if self.seen.len() >= n => ControlFlow::Break(()),
+            _ => ControlFlow::Continue(()),
         }
     }
 }

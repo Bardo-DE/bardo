@@ -1,12 +1,13 @@
 //! Retry classification, `next_wait` and `Retrying`.
 
+use std::ops::ControlFlow;
 use std::future::Future;
 use std::pin::pin;
 use std::sync::Mutex;
 use std::task::{Context, Poll, Waker};
 
 use model_provider::{
-    Attempt, Flow, ModelInfo, ModelName, Permille, Provider, ProviderDetail, ProviderError,
+    Attempt, ModelInfo, ModelName, Permille, Provider, ProviderDetail, ProviderError,
     RetryClass, RetryPolicy, RetrySeconds, Retrying, Script, ScriptedProvider, ServerStatus,
     Sleeper, StopReason, Tokens, TurnEnd, TurnEvent, TurnRequest, TurnSink, TurnUsage, WaitMs,
     next_wait,
@@ -233,9 +234,9 @@ fn delta() -> Script {
 struct Keep(Vec<TurnEvent>);
 
 impl TurnSink for Keep {
-    fn event(&mut self, event: TurnEvent) -> Flow {
+    fn event(&mut self, event: TurnEvent) -> ControlFlow<()> {
         self.0.push(event);
-        Flow::Continue
+        ControlFlow::Continue(())
     }
 }
 

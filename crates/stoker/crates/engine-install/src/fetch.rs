@@ -6,12 +6,13 @@
 //! checksum covers all of it). A file that is complete but wrong is deleted. A stop or a lost
 //! connection that outlasts the retries leaves the part for the next try.
 
+use std::ops::ControlFlow;
 use crate::pinned_url::PinnedUrl;
 use crate::progress::{CancelToken, Meter};
 use engine_manifest::{Artifact, hex};
 use engine_probe::file_digest;
 use model_http::{
-    AuthHeader, BodySink, ChunkFlow, Exchange, ExtraHeader, Framing, HeaderName, HostName,
+    AuthHeader, BodySink, Exchange, ExtraHeader, Framing, HeaderName, HostName,
     HttpClient, HttpEndpoint, HttpError, HttpTarget, Port, Proxy, ResponseHead, RouteRoot, Secret,
     Timeouts, TlsRoots, Transport, UrlPath, Verb, WaitMs,
 };
@@ -305,21 +306,21 @@ impl Sink {
 }
 
 impl BodySink for Sink {
-    fn head(&mut self, head: &ResponseHead) -> ChunkFlow {
+    fn head(&mut self, head: &ResponseHead) -> ControlFlow<()> {
         self.status = head.status.0;
         match self.status {
             301 | 302 | 303 | 307 | 308 => {
                 self.location.clone_from(&head.location);
-                ChunkFlow::Stop
+                ControlFlow::Break(())
             }
             200 => {
                 // The server sent the whole file whatever was asked: begin again.
                 if self.have > 0 && self.start_over().is_err() {
                     self.failed = Some(std::io::ErrorKind::Other);
-                    return ChunkFlow::Stop;
+                    return ControlFlow::Break(());
                 }
                 self.writing = true;
-                ChunkFlow::Continue
+                ControlFlow::Continue(())
             }
             206 => {
                 let wanted = format!("bytes {}-", self.have);
@@ -329,34 +330,34 @@ impl BodySink for Sink {
                     .is_some_and(|range| range.starts_with(&wanted));
                 self.writing = !self.misplaced;
                 if self.writing {
-                    ChunkFlow::Continue
+                    ControlFlow::Continue(())
                 } else {
-                    ChunkFlow::Stop
+                    ControlFlow::Break(())
                 }
             }
-            _ => ChunkFlow::Stop,
+            _ => ControlFlow::Break(()),
         }
     }
 
-    fn chunk(&mut self, bytes: &[u8]) -> ChunkFlow {
+    fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()> {
         if !self.writing {
-            return ChunkFlow::Stop;
+            return ControlFlow::Break(());
         }
         if self.cancel.is_cancelled() {
             self.stopped = true;
-            return ChunkFlow::Stop;
+            return ControlFlow::Break(());
         }
         if let Err(error) = self.file.write_all(bytes) {
             self.failed = Some(error.kind());
-            return ChunkFlow::Stop;
+            return ControlFlow::Break(());
         }
         self.hasher.update(bytes);
         self.have += bytes.len() as u64;
         self.meter.add(bytes.len() as u64);
         if self.have > self.expect {
             self.overrun = true;
-            return ChunkFlow::Stop;
+            return ControlFlow::Break(());
         }
-        ChunkFlow::Continue
+        ControlFlow::Continue(())
     }
 }

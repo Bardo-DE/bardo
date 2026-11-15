@@ -15,6 +15,7 @@
 //! server that was down when it was added is found when it is up, and one that hangs is not
 //! asked at every session.
 
+use std::ops::ControlFlow;
 use super::accountd::AccountVerdict;
 use super::models::{RemoteModel, card_of};
 use super::picker::{Availability, Choice};
@@ -22,7 +23,7 @@ use super::wire::Door;
 use crate::probe::names::id_of;
 use model_catalog::{Locality, ModelEntry, Reach};
 use model_http::{
-    AuthHeader, BodySink, ChunkFlow, Exchange, Framing, HostName, HttpClient, HttpEndpoint,
+    AuthHeader, BodySink, Exchange, Framing, HostName, HttpClient, HttpEndpoint,
     HttpStatus, HttpTarget, Port, Proxy, ResponseHead, RouteRoot, Secret, Timeouts, TlsRoots,
     Transport, UrlPath, Verb, WaitMs,
 };
@@ -372,16 +373,16 @@ struct Reply {
 }
 
 impl BodySink for Reply {
-    fn head(&mut self, _head: &ResponseHead) -> ChunkFlow {
-        ChunkFlow::Continue
+    fn head(&mut self, _head: &ResponseHead) -> ControlFlow<()> {
+        ControlFlow::Continue(())
     }
 
-    fn chunk(&mut self, bytes: &[u8]) -> ChunkFlow {
+    fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()> {
         let room = MOST_BODY.saturating_sub(self.body.len());
         self.body.extend_from_slice(&bytes[..bytes.len().min(room)]);
         match self.body.len() < MOST_BODY {
-            true => ChunkFlow::Continue,
-            false => ChunkFlow::Stop,
+            true => ControlFlow::Continue(()),
+            false => ControlFlow::Break(()),
         }
     }
 }

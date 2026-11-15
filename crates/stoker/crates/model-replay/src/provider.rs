@@ -1,9 +1,10 @@
 //! The replaying and recording providers.
 
+use std::ops::ControlFlow;
 use std::sync::Mutex;
 
 use model_provider::{
-    Charges, Flow, ModelInfo, ModelName, Provider, ProviderError, StopReason, TurnEnd, TurnEvent,
+    Charges, ModelInfo, ModelName, Provider, ProviderError, StopReason, TurnEnd, TurnEvent,
     TurnRequest, TurnSink, TurnUsage, UsageReport,
 };
 use serde::{Deserialize, Serialize};
@@ -133,7 +134,7 @@ fn play<K: TurnSink>(
     served: ModelName,
 ) -> Result<TurnEnd, ProviderError> {
     for event in interaction.events {
-        if sink.event(event) == Flow::Stop {
+        if sink.event(event) == ControlFlow::Break(()) {
             return Ok(TurnEnd {
                 stop: StopReason::EndTurn,
                 usage: TurnUsage::default(),
@@ -211,7 +212,7 @@ struct Tee<'a, K: TurnSink> {
 }
 
 impl<K: TurnSink> TurnSink for Tee<'_, K> {
-    fn event(&mut self, event: TurnEvent) -> Flow {
+    fn event(&mut self, event: TurnEvent) -> ControlFlow<()> {
         self.seen.push(event.clone());
         self.inner.event(event)
     }

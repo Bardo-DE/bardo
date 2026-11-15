@@ -7,14 +7,15 @@
 //! carries one utterance. Cancelling a turn drops the future, which tells the host `Cancel` and
 //! closes the socket, so audio is never kept: frames live in the buffer of the running call.
 
+use std::ops::ControlFlow;
 use super::SpeechRunner;
 use crate::engines::Engines;
 use crate::supervise::Supervised;
 use model_catalog::EngineKind;
-use model_provider::{Flow as ProviderFlow, ModelName, ProviderError};
+use model_provider::{ModelName, ProviderError};
 use porter_capability::LanguageTag;
 use porter_infer::{
-    ChatSink, Flow, HeardDelta, InferEvent, LangPick, ModelError, ModelRef, ServedBy, Stage,
+    ChatSink, HeardDelta, InferEvent, LangPick, ModelError, ModelRef, ServedBy, Stage,
     TranscribeBegin, TranscribeMode, TranscribeReply,
 };
 use porter_router::audio::{AudioIn, AudioPull};
@@ -219,14 +220,14 @@ struct Heard<'a, S> {
 }
 
 impl<S: ChatSink> TranscriptSink for Heard<'_, S> {
-    fn event(&mut self, event: TranscriptEvent) -> ProviderFlow {
+    fn event(&mut self, event: TranscriptEvent) -> ControlFlow<()> {
         self.touch.used();
         let Some(delta) = heard(event) else {
-            return ProviderFlow::Continue;
+            return ControlFlow::Continue(());
         };
         match self.sink.event(InferEvent::Heard(delta)) {
-            Flow::Continue => ProviderFlow::Continue,
-            Flow::Stop => ProviderFlow::Stop,
+            ControlFlow::Continue(()) => ControlFlow::Continue(()),
+            ControlFlow::Break(()) => ControlFlow::Break(()),
         }
     }
 }

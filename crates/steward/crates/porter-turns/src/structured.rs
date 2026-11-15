@@ -19,10 +19,11 @@
 //! While the turns run only the thoughts stream: the text of a first attempt may be repaired, so
 //! the reply is told once, when it has been checked.
 
+use std::ops::ControlFlow;
 use crate::bridge;
 use crate::tee::{Echo, Tee};
 use model_extract::{ExtractFailure, Extracted, ShapedSession, ToolsPresent, choose};
-use model_provider::{ChoiceText, Flow, JsonText, Provider, SchemaText, Shape, TurnRequest};
+use model_provider::{ChoiceText, JsonText, Provider, SchemaText, Shape, TurnRequest};
 use porter_ids::Tokens;
 use porter_infer::{self as pi, ChargeTotal, InferEvent, ModelError};
 use porter_router::local::LocalModel;
@@ -121,7 +122,7 @@ pub async fn run<P: Provider>(
     provider: &P,
     checked: Checked,
     base: &TurnRequest,
-    forward: &mut (impl FnMut(InferEvent) -> Flow + Send),
+    forward: &mut (impl FnMut(InferEvent) -> ControlFlow<()> + Send),
     touch: impl Fn(),
 ) -> Result<Validated, ModelError> {
     let Checked { mut session, kind } = checked;
@@ -143,7 +144,7 @@ pub async fn run<P: Provider>(
             .await
             .map_err(|error| bridge::model_error(&error))?;
         touch();
-        if tee.flow() == Flow::Stop {
+        if tee.flow() == ControlFlow::Break(()) {
             return Err(ModelError::Unreachable);
         }
         let said = tee.finish(end);

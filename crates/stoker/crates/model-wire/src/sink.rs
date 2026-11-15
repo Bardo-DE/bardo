@@ -2,12 +2,13 @@
 //! (a reply to decode, or an error to classify), and the framer the exchange named cuts the reply
 //! into frames for the decoder.
 
+use std::ops::ControlFlow;
 use model_http::{
-    BodySink, ChunkFlow, Framing, HttpError, HttpStatus, NdjsonDecoder, Progress, ResponseHead,
+    BodySink, Framing, HttpError, HttpStatus, NdjsonDecoder, Progress, ResponseHead,
     SseDecoder, WaitMs,
 };
 use model_provider::{
-    Flow, ModelName, ProviderError, StopReason, TurnEnd, TurnEvent, TurnSink, TurnUsage,
+    ModelName, ProviderError, StopReason, TurnEnd, TurnEvent, TurnSink, TurnUsage,
     UsageReport,
 };
 
@@ -174,17 +175,17 @@ impl<'a, C: ChatCodec, K: TurnSink> ChatSink<'a, C, K> {
     }
 
     /// Hands every event of `events` to the caller's sink; `Stop` ends the turn.
-    fn deliver(&mut self, events: Vec<TurnEvent>) -> Flow {
+    fn deliver(&mut self, events: Vec<TurnEvent>) -> ControlFlow<()> {
         for event in events {
             if let TurnEvent::Usage(usage) = &event {
                 self.usage = *usage;
                 self.counted = Counted::Yes;
             }
-            if self.sink.event(event) == Flow::Stop {
-                return Flow::Stop;
+            if self.sink.event(event) == ControlFlow::Break(()) {
+                return ControlFlow::Break(());
             }
         }
-        Flow::Continue
+        ControlFlow::Continue(())
     }
 
     /// Feeds frames to the decoder: its events go to the sink, its failure ends the stream (a
@@ -193,19 +194,19 @@ impl<'a, C: ChatCodec, K: TurnSink> ChatSink<'a, C, K> {
         &mut self,
         decoder: &mut C::Decoder,
         frames: Vec<String>,
-    ) -> Result<Flow, ProviderError> {
+    ) -> Result<ControlFlow<()>, ProviderError> {
         for frame in frames {
             let events = decoder
                 .feed(&frame)
                 .map_err(|e| fault_of(decoder, e, self.head.as_ref()))?;
-            if self.deliver(events) == Flow::Stop {
-                return Ok(Flow::Stop);
+            if self.deliver(events) == ControlFlow::Break(()) {
+                return Ok(ControlFlow::Break(()));
             }
         }
-        Ok(Flow::Continue)
+        Ok(ControlFlow::Continue(()))
     }
 
-    fn read(&mut self, mut decoder: C::Decoder, mut framer: Framer, bytes: &[u8]) -> ChunkFlow {
+    fn read(&mut self, mut decoder: C::Decoder, mut framer: Framer, bytes: &[u8]) -> ControlFlow<()> {
         self.raw = self.raw.saturating_add(bytes.len());
         let step = if self.raw > STREAM_BYTES_MAX {
             Err(ProviderError::Unreadable("the reply is too large".into()))
@@ -216,17 +217,17 @@ impl<'a, C: ChatCodec, K: TurnSink> ChatSink<'a, C, K> {
             })
         };
         match step {
-            Ok(Flow::Continue) => {
+            Ok(ControlFlow::Continue(())) => {
                 self.mode = Mode::Reading { decoder, framer };
-                ChunkFlow::Continue
+                ControlFlow::Continue(())
             }
-            Ok(Flow::Stop) => {
+            Ok(ControlFlow::Break(())) => {
                 self.mode = Mode::Stopped;
-                ChunkFlow::Stop
+                ControlFlow::Break(())
             }
             Err(error) => {
                 self.mode = Mode::Failed(error);
-                ChunkFlow::Stop
+                ControlFlow::Break(())
             }
         }
     }
@@ -299,7 +300,7 @@ impl<'a, C: ChatCodec, K: TurnSink> ChatSink<'a, C, K> {
         framer: Framer,
     ) -> Result<TurnEnd, ProviderError> {
         let frames = framer.finish()?;
-        if self.decode(&mut decoder, frames)? == Flow::Stop {
+        if self.decode(&mut decoder, frames)? == ControlFlow::Break(()) {
             return Ok(TurnEnd {
                 stop: StopReason::EndTurn,
                 usage: self.usage,
@@ -340,7 +341,7 @@ fn fault_of<D: ChatDecoder>(
 }
 
 impl<C: ChatCodec, K: TurnSink> BodySink for ChatSink<'_, C, K> {
-    fn head(&mut self, head: &ResponseHead) -> ChunkFlow {
+    fn head(&mut self, head: &ResponseHead) -> ControlFlow<()> {
         self.head = Some(head.clone());
         let mode = std::mem::replace(&mut self.mode, Mode::Done);
         self.mode = match mode {
@@ -355,10 +356,10 @@ impl<C: ChatCodec, K: TurnSink> BodySink for ChatSink<'_, C, K> {
             },
             other => other,
         };
-        ChunkFlow::Continue
+        ControlFlow::Continue(())
     }
 
-    fn chunk(&mut self, bytes: &[u8]) -> ChunkFlow {
+    fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()> {
         match std::mem::replace(&mut self.mode, Mode::Done) {
             Mode::Reading { decoder, framer } => self.read(decoder, framer, bytes),
             Mode::Failing(mut collect) => {
@@ -368,7 +369,7 @@ impl<C: ChatCodec, K: TurnSink> BodySink for ChatSink<'_, C, K> {
             }
             other => {
                 self.mode = other;
-                ChunkFlow::Stop
+                ControlFlow::Break(())
             }
         }
     }

@@ -1,9 +1,10 @@
 //! Speech replay and recording: prints, silence of the recorded duration, tees.
 
+use std::ops::ControlFlow;
 use std::collections::VecDeque;
 use std::sync::Mutex;
 
-use model_provider::{Flow, ModelName, ProviderError, Support, Tokens};
+use model_provider::{ModelName, ProviderError, Support, Tokens};
 use model_replay::{
     AudioPrint, BuildLabel, CassetteHeader, CassetteVersion, ContextStamp, EngineLabel,
     EngineStamp, RecordedAt, RecordingSpeech, ReplayMode, SinkError, SpeechCassette,
@@ -83,12 +84,12 @@ fn second() -> Vec<AudioChunk> {
 struct Events(Vec<TranscriptEvent>, usize);
 
 impl TranscriptSink for Events {
-    fn event(&mut self, e: TranscriptEvent) -> Flow {
+    fn event(&mut self, e: TranscriptEvent) -> ControlFlow<()> {
         self.0.push(e);
         if self.0.len() >= self.1 {
-            Flow::Stop
+            ControlFlow::Break(())
         } else {
-            Flow::Continue
+            ControlFlow::Continue(())
         }
     }
 }
@@ -96,12 +97,12 @@ impl TranscriptSink for Events {
 struct Chunks(Vec<AudioChunk>, usize);
 
 impl AudioSink for Chunks {
-    fn chunk(&mut self, c: AudioChunk) -> Flow {
+    fn chunk(&mut self, c: AudioChunk) -> ControlFlow<()> {
         self.0.push(c);
         if self.0.len() >= self.1 {
-            Flow::Stop
+            ControlFlow::Break(())
         } else {
-            Flow::Continue
+            ControlFlow::Continue(())
         }
     }
 }

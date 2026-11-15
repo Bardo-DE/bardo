@@ -7,10 +7,11 @@
 //! The rule that matters: never retry once the first event reached the sink. A half-delivered
 //! turn is not idempotent for the planner.
 
+use std::ops::ControlFlow;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    Attempt, Charges, Flow, ModelInfo, Permille, Provider, ProviderError, RetrySeconds, TurnEnd,
+    Attempt, Charges, ModelInfo, Permille, Provider, ProviderError, RetrySeconds, TurnEnd,
     TurnEvent, TurnRequest, TurnSink, UsageReport, WaitMs,
 };
 
@@ -179,7 +180,7 @@ struct Counting<'a, K> {
 }
 
 impl<K: TurnSink> TurnSink for Counting<'_, K> {
-    fn event(&mut self, event: TurnEvent) -> Flow {
+    fn event(&mut self, event: TurnEvent) -> ControlFlow<()> {
         self.seen += 1;
         self.inner.event(event)
     }

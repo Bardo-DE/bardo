@@ -1,5 +1,6 @@
 //! The provider trait and its errors.
 
+use std::ops::ControlFlow;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -10,7 +11,7 @@ use crate::{
 /// One endpoint: a running engine or a cloud account.
 ///
 /// Cancellation is drop: the future is cancel-safe, and dropping it closes the connection, which
-/// aborts generation in vLLM and llama-server. A sink answering `Flow::Stop` ends the turn early
+/// aborts generation in vLLM and llama-server. A sink answering `ControlFlow::Break(())` ends the turn early
 /// with `StopReason::EndTurn`.
 pub trait Provider: Send + Sync {
     /// The models this endpoint serves (`/v1/models`, `/props`).

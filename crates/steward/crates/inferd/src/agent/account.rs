@@ -11,6 +11,7 @@
 //! a usage chunk so the stream can be metered. A provider's error body is never relayed (it may
 //! echo the prompt); the agent is told the kind of thing that went wrong, in its own error shape.
 
+use std::ops::ControlFlow;
 use super::fail::{Cause, Failure, Shape};
 use super::handle::Peek;
 use super::http::{self, Request};
@@ -22,7 +23,7 @@ use crate::cloud::models::{known_providers, provider_of};
 use crate::cloud::wire::charges_of;
 use model_catalog::{ProviderId, Wire};
 use model_http::{
-    BodySink, ChunkFlow, Exchange, Framing, HttpError, JsonBody, ResponseHead, RouteRoot,
+    BodySink, Exchange, Framing, HttpError, JsonBody, ResponseHead, RouteRoot,
     Transport, UrlPath, Verb,
 };
 use porter_capability::Locality;
@@ -44,20 +45,20 @@ enum Piece {
 struct Tap(mpsc::UnboundedSender<Piece>);
 
 impl BodySink for Tap {
-    fn head(&mut self, head: &ResponseHead) -> ChunkFlow {
+    fn head(&mut self, head: &ResponseHead) -> ControlFlow<()> {
         flow(self.0.send(Piece::Head(head.clone())).is_ok())
     }
 
-    fn chunk(&mut self, bytes: &[u8]) -> ChunkFlow {
+    fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()> {
         flow(self.0.send(Piece::Chunk(bytes.to_vec())).is_ok())
     }
 }
 
-fn flow(open: bool) -> ChunkFlow {
+fn flow(open: bool) -> ControlFlow<()> {
     if open {
-        ChunkFlow::Continue
+        ControlFlow::Continue(())
     } else {
-        ChunkFlow::Stop
+        ControlFlow::Break(())
     }
 }
 

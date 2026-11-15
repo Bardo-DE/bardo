@@ -2,6 +2,7 @@
 //! exchange named cuts frames, the decoder's events reach the sink, every failure is a
 //! `ProviderError` that carries no body.
 
+use std::ops::ControlFlow;
 use crate::support;
 
 use model_http::{BodyKind, Framing, HttpError, HttpStatus};
@@ -460,7 +461,7 @@ impl model_http::Transport for Probe {
             *self.sent.lock().unwrap() += 1;
             let flow = sink.chunk(chunk);
             self.progress.lock().unwrap().push(sink.progress());
-            if flow == model_http::ChunkFlow::Stop {
+            if flow == ControlFlow::Break(()) {
                 break;
             }
         }

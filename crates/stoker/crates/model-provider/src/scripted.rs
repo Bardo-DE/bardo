@@ -1,10 +1,11 @@
 //! A provider that plays scripted turns and records every request it was given.
 
+use std::ops::ControlFlow;
 use std::collections::VecDeque;
 use std::sync::Mutex;
 
 use crate::{
-    Flow, ModelInfo, Provider, ProviderError, StopReason, TurnEnd, TurnEvent, TurnRequest,
+    ModelInfo, Provider, ProviderError, StopReason, TurnEnd, TurnEvent, TurnRequest,
     TurnSink, TurnUsage,
 };
 
@@ -75,7 +76,7 @@ fn play<K: TurnSink>(
     served: crate::ModelName,
 ) -> Result<TurnEnd, ProviderError> {
     for event in script.events {
-        if sink.event(event) == Flow::Stop {
+        if sink.event(event) == ControlFlow::Break(()) {
             return Ok(TurnEnd {
                 stop: StopReason::EndTurn,
                 usage: TurnUsage::default(),

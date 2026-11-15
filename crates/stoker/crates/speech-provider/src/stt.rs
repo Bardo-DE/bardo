@@ -1,6 +1,7 @@
 //! Speech to text: the request, the events, the seam.
 
-use model_provider::{Flow, ModelName, ProviderError};
+use std::ops::ControlFlow;
+use model_provider::{ModelName, ProviderError};
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -61,9 +62,9 @@ pub trait AudioSource: Send {
     fn next(&mut self) -> impl Future<Output = AudioPull> + Send;
 }
 
-/// Where transcript events go. `Flow::Stop` ends the transcription early.
+/// Where transcript events go. `ControlFlow::Break(())` ends the transcription early.
 pub trait TranscriptSink: Send {
-    fn event(&mut self, event: TranscriptEvent) -> Flow;
+    fn event(&mut self, event: TranscriptEvent) -> ControlFlow<()>;
 }
 
 /// One endpoint that turns audio into text.

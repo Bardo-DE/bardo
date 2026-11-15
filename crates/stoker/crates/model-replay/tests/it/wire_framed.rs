@@ -1,10 +1,11 @@
 //! SSE and NDJSON through the wire cassette: what a recording makes of the raw bytes a server
 //! writes (CRLF, comments, a split code point, a stream cut in the middle).
 
+use std::ops::ControlFlow;
 use std::sync::Mutex;
 
 use model_http::{
-    BodyKind, BodySink, ChunkFlow, EventName, Exchange, Framing, HttpError, HttpStatus, JsonBody,
+    BodyKind, BodySink, EventName, Exchange, Framing, HttpError, HttpStatus, JsonBody,
     ResponseHead, RouteRoot, Transport, UrlPath, Verb,
 };
 use model_provider::{ModelName, Tokens};
@@ -47,7 +48,7 @@ impl Transport for Server {
         };
         let mut flow = sink.head(&head);
         for chunk in &self.chunks {
-            if flow == ChunkFlow::Stop {
+            if flow == ControlFlow::Break(()) {
                 break;
             }
             flow = sink.chunk(chunk);
@@ -69,11 +70,11 @@ impl WireSink for &Written {
 struct Nothing;
 
 impl BodySink for Nothing {
-    fn head(&mut self, _head: &ResponseHead) -> ChunkFlow {
-        ChunkFlow::Continue
+    fn head(&mut self, _head: &ResponseHead) -> ControlFlow<()> {
+        ControlFlow::Continue(())
     }
-    fn chunk(&mut self, _bytes: &[u8]) -> ChunkFlow {
-        ChunkFlow::Continue
+    fn chunk(&mut self, _bytes: &[u8]) -> ControlFlow<()> {
+        ControlFlow::Continue(())
     }
 }
 

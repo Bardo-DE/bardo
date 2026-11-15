@@ -4,6 +4,7 @@
 //! "runs" in place of the `speech-host` binary. No real binary, model, library, microphone or
 //! network is touched.
 
+use std::ops::ControlFlow;
 use crate::hosting;
 
 use engine_supervisor::{EngineId, SupervisorConfig};
@@ -19,7 +20,7 @@ use porter_core::DataClass;
 use porter_core::consent::Usage;
 use porter_infer::{
     Answer, AudioFrame, AudioRate, AutoPolicy, Base64Bytes, ChatMessage, ChatReply, ChatRequest,
-    ClientFrame, DescribeImages, Flow, HeardDelta, InferEvent, InferReply, InferRequest, LangPick,
+    ClientFrame, DescribeImages, HeardDelta, InferEvent, InferReply, InferRequest, LangPick,
     Modality, ModelError, ModelLabel, ModelRef, OpenOptions, Readiness, RequestShape, Role,
     ShowReason, StageRole, TierMap, TranscribeBegin, TranscribeMode,
 };
@@ -378,9 +379,9 @@ fn chat() -> ChatRequest {
 struct Events(Vec<InferEvent>);
 
 impl porter_infer::ChatSink for Events {
-    fn event(&mut self, event: InferEvent) -> Flow {
+    fn event(&mut self, event: InferEvent) -> ControlFlow<()> {
         self.0.push(event);
-        Flow::Continue
+        ControlFlow::Continue(())
     }
 }
 

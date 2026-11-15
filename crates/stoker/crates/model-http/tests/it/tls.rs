@@ -3,11 +3,12 @@
 //! `TlsRoots::Only`; every other case shows that the checks cannot be skipped.
 #![cfg(feature = "tls")]
 
+use std::ops::ControlFlow;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use model_http::{
-    AuthHeader, BodySink, ChunkFlow, DerCertificate, Exchange, Framing, HostName, HttpClient,
+    AuthHeader, BodySink, DerCertificate, Exchange, Framing, HostName, HttpClient,
     HttpEndpoint, HttpError, HttpStatus, HttpTarget, JsonBody, Port, Proxy, ResponseHead,
     RouteRoot, Timeouts, TlsRoots, Transport, UrlPath, Verb, WaitMs,
 };
@@ -176,13 +177,13 @@ impl Seen {
 }
 
 impl BodySink for Seen {
-    fn head(&mut self, _: &ResponseHead) -> ChunkFlow {
-        ChunkFlow::Continue
+    fn head(&mut self, _: &ResponseHead) -> ControlFlow<()> {
+        ControlFlow::Continue(())
     }
 
-    fn chunk(&mut self, bytes: &[u8]) -> ChunkFlow {
+    fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()> {
         self.chunks.push(bytes.to_vec());
-        ChunkFlow::Continue
+        ControlFlow::Continue(())
     }
 }
 

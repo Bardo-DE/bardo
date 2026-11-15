@@ -13,6 +13,7 @@
 //! What it leaves to its caller: which model the session is pinned to, a hosted model, and a
 //! speech turn (a speech engine is not an OpenAI-compatible one).
 
+use std::ops::ControlFlow;
 use crate::bridge::{self, Frames};
 use crate::cua_run::{CuaRun, StepJob};
 use engine_supervisor::EngineId;
@@ -21,7 +22,7 @@ use model_openai_compat::{Flavor, OpenAiCodec, OpenAiCompat};
 use model_provider as sp;
 use model_provider::Retrying;
 use porter_infer::{
-    ChatReply, ChatSink, CuaBegin, CuaStepFailure, CuaStepReply, Flow, InferEvent, InferRefusal,
+    ChatReply, ChatSink, CuaBegin, CuaStepFailure, CuaStepReply, InferEvent, InferRefusal,
     InferReply, ModelError, ServedBy,
 };
 use porter_router::local::LocalModel;
@@ -102,10 +103,10 @@ impl ToSession {
 }
 
 impl ChatSink for ToSession {
-    fn event(&mut self, event: InferEvent) -> Flow {
+    fn event(&mut self, event: InferEvent) -> ControlFlow<()> {
         match self.steps.send(TurnStep::Event(event)) {
-            Ok(()) => Flow::Continue,
-            Err(_) => Flow::Stop,
+            Ok(()) => ControlFlow::Continue(()),
+            Err(_) => ControlFlow::Break(()),
         }
     }
 }
@@ -121,10 +122,10 @@ struct Forward<S, T> {
 
 impl<S, T> sp::TurnSink for Forward<S, T>
 where
-    S: FnMut(InferEvent) -> sp::Flow + Send,
+    S: FnMut(InferEvent) -> ControlFlow<()> + Send,
     T: FnMut() + Send,
 {
-    fn event(&mut self, event: sp::TurnEvent) -> sp::Flow {
+    fn event(&mut self, event: sp::TurnEvent) -> ControlFlow<()> {
         self.gathered.take(&event);
         if self.last_touch.elapsed() >= TOUCH_EVERY {
             self.last_touch = Instant::now();
@@ -132,7 +133,7 @@ where
         }
         match bridge::event(&event) {
             Some(out) => (self.events)(out),
-            None => sp::Flow::Continue,
+            None => ControlFlow::Continue(()),
         }
     }
 }
@@ -147,7 +148,7 @@ pub async fn run_turn<P: sp::Provider>(
     provider: &P,
     turn: &sp::TurnRequest,
     served: &ServedBy,
-    events: impl FnMut(InferEvent) -> sp::Flow + Send,
+    events: impl FnMut(InferEvent) -> ControlFlow<()> + Send,
     touch: impl FnMut() + Send,
 ) -> (Result<ChatReply, ModelError>, Option<bridge::NoScores>) {
     let mut sink = Forward {
@@ -170,7 +171,7 @@ pub async fn run_chat<P: sp::Provider>(
     provider: &P,
     turn: &sp::TurnRequest,
     served: &ServedBy,
-    events: impl FnMut(InferEvent) -> sp::Flow + Send,
+    events: impl FnMut(InferEvent) -> ControlFlow<()> + Send,
     touch: impl FnMut() + Send,
 ) -> (InferReply, Option<bridge::NoScores>) {
     let (reply, why) = run_turn(provider, turn, served, events, touch).await;

@@ -4,8 +4,9 @@
 //! The transcript joins the request as text, so the answer stage sees what the person said as
 //! words and nothing else about the audio.
 
+use std::ops::ControlFlow;
 use porter_infer::{
-    AudioFrame, ChatMessage, ChatRequest, ChatSink, Flow, InferEvent, InferReply, InferRequest,
+    AudioFrame, ChatMessage, ChatRequest, ChatSink, InferEvent, InferReply, InferRequest,
     MessagePart, ModelError, ModelLabel, ModelRef, Pipeline, Refusal, Role, ShowReason, Stage,
     StageNote, StageRole, TranscribeBegin, TranscribeReply, Why,
 };
@@ -67,7 +68,7 @@ fn announce(
     names: &BTreeMap<ModelRef, ModelLabel>,
     show: ShowReason,
     sink: &mut impl ChatSink,
-) -> Flow {
+) -> ControlFlow<()> {
     let evicting = matches!(stage.picked.why, Why::Evicted { .. });
     let why =
         (show == ShowReason::On || evicting).then(|| InferEvent::Why(stage.picked.why.clone()));
@@ -86,11 +87,11 @@ fn announce(
         .into_iter()
         .chain([InferEvent::Routed(stage.served()), note]);
     for event in events {
-        if sink.event(event) == Flow::Stop {
-            return Flow::Stop;
+        if sink.event(event) == ControlFlow::Break(()) {
+            return ControlFlow::Break(());
         }
     }
-    Flow::Continue
+    ControlFlow::Continue(())
 }
 
 /// The chat with `transcript` joined to its last user message (or as a new one).
@@ -130,7 +131,7 @@ pub async fn run_pipeline<H: Transcriber, T: TurnRunner>(
         names,
     } = input;
     for stage in &pipeline.stages {
-        if announce(stage, &names, show, sink) == Flow::Stop {
+        if announce(stage, &names, show, sink) == ControlFlow::Break(()) {
             return InferReply::Cancelled;
         }
         match stage.role {
@@ -161,7 +162,7 @@ async fn answer_turn<T: TurnRunner>(
     loop {
         match turn.next().await {
             TurnStep::Event(event) => {
-                if sink.event(event) == Flow::Stop {
+                if sink.event(event) == ControlFlow::Break(()) {
                     return InferReply::Cancelled;
                 }
             }

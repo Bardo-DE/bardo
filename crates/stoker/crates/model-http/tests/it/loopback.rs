@@ -6,13 +6,14 @@
 //! `127.0.0.1` with an ephemeral port; nothing leaves the machine.
 #![cfg(feature = "client")]
 
+use std::ops::ControlFlow;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use model_http::{
-    AuthHeader, BodyKind, BodySink, ChunkFlow, Exchange, ExtraHeader, Framing, HeaderName,
+    AuthHeader, BodyKind, BodySink, Exchange, ExtraHeader, Framing, HeaderName,
     HostName, HttpClient, HttpEndpoint, HttpError, HttpStatus, HttpTarget, JsonBody, Port,
     Progress, Proxy, ResponseHead, RouteRoot, Secret, Timeouts, Transport, UrlPath, Verb, WaitMs,
 };
@@ -241,21 +242,21 @@ impl Seen {
 }
 
 impl BodySink for Seen {
-    fn head(&mut self, head: &ResponseHead) -> ChunkFlow {
+    fn head(&mut self, head: &ResponseHead) -> ControlFlow<()> {
         self.order.push("head");
         self.head = Some(head.clone());
         if let Some(tx) = self.on_head.take() {
             let _ = tx.send(());
         }
-        ChunkFlow::Continue
+        ControlFlow::Continue(())
     }
 
-    fn chunk(&mut self, bytes: &[u8]) -> ChunkFlow {
+    fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()> {
         self.order.push("chunk");
         self.chunks.push(bytes.to_vec());
         match self.stop_after {
-            Some(n) if self.chunks.len() >= n => ChunkFlow::Stop,
-            _ => ChunkFlow::Continue,
+            Some(n) if self.chunks.len() >= n => ControlFlow::Break(()),
+            _ => ControlFlow::Continue(()),
         }
     }
 

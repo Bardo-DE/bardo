@@ -1,3 +1,4 @@
+use std::ops::ControlFlow;
 use super::*;
 use crate::entries;
 use crate::speech_host::{FakeSpeechHost, Words};
@@ -59,11 +60,11 @@ struct Events {
 }
 
 impl ChatSink for Events {
-    fn event(&mut self, event: InferEvent) -> Flow {
+    fn event(&mut self, event: InferEvent) -> ControlFlow<()> {
         self.seen.push(event);
         match self.stop_after {
-            Some(n) if self.seen.len() >= n => Flow::Stop,
-            _ => Flow::Continue,
+            Some(n) if self.seen.len() >= n => ControlFlow::Break(()),
+            _ => ControlFlow::Continue(()),
         }
     }
 }

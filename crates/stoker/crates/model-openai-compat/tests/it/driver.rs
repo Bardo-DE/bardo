@@ -5,6 +5,7 @@
 //! acdcf34, MIT, Copyright (c) 2024 Playgrounds Analytics Inc.; see THIRD-PARTY-NOTICES). The
 //! bodies are written here against our types.
 
+use std::ops::ControlFlow;
 use crate::support;
 
 use std::sync::Mutex;
@@ -12,7 +13,7 @@ use std::sync::Mutex;
 use model_http::{BodyKind, HttpStatus, ResponseHead};
 use model_openai_compat::{Flavor, OpenAiCodec};
 use model_provider::{
-    CallIndex, Dims, EmbedRole, EmbedTurn, Embedder, Flow, JsonText, Knob, ModelName, Provider,
+    CallIndex, Dims, EmbedRole, EmbedTurn, Embedder, JsonText, Knob, ModelName, Provider,
     ProviderError, StopReason, Tokens, ToolCall, ToolCallId, ToolName, TurnEnd, TurnEvent,
     TurnSink, TurnUsage,
 };
@@ -28,9 +29,9 @@ use support::*;
 struct Keep(Vec<TurnEvent>);
 
 impl TurnSink for Keep {
-    fn event(&mut self, event: TurnEvent) -> Flow {
+    fn event(&mut self, event: TurnEvent) -> ControlFlow<()> {
         self.0.push(event);
-        Flow::Continue
+        ControlFlow::Continue(())
     }
 }
 

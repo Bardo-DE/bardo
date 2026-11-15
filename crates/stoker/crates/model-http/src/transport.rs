@@ -12,6 +12,7 @@
 //! runs between chunks of the body. The sink's `deadline` bounds the whole exchange, connect
 //! included.
 
+use std::ops::ControlFlow;
 use std::future::Future;
 use std::time::Duration;
 
@@ -22,7 +23,7 @@ use tokio::time::{sleep, timeout};
 use crate::connect::{is_tls_failure, millis};
 use crate::request::{Parts, Prepared, prepare};
 use crate::{
-    BodyKind, BodySink, ChunkFlow, Exchange, HttpClient, HttpError, HttpStatus, HttpTarget,
+    BodyKind, BodySink, Exchange, HttpClient, HttpError, HttpStatus, HttpTarget,
     Progress, Proxy, RequestId, ResponseHead, Timeouts, Transport, Upload, UploadTransport, WaitMs,
     WaitSeconds,
 };
@@ -118,7 +119,7 @@ async fn talk<K: BodySink>(
     // The idle timer restarts only when a chunk made progress, so keep-alive comments and empty
     // events do not hold the turn open.
     let mut timer = Box::pin(sleep(idle));
-    while flow == ChunkFlow::Continue {
+    while flow == ControlFlow::Continue(()) {
         let next = tokio::select! {
             () = &mut timer => return Err(HttpError::Timeout),
             next = response.chunk() => next,

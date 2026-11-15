@@ -1,6 +1,7 @@
 //! A sink that keeps a whole body: what `describe`, `embed` and an error reply need.
 
-use model_http::{BodyKind, BodySink, ChunkFlow, HttpError, HttpStatus, ResponseHead};
+use std::ops::ControlFlow;
+use model_http::{BodyKind, BodySink, HttpError, HttpStatus, ResponseHead};
 use model_provider::ProviderError;
 
 use crate::ErrorWire;
@@ -46,24 +47,24 @@ impl Default for Collect {
 }
 
 impl BodySink for Collect {
-    fn head(&mut self, head: &ResponseHead) -> ChunkFlow {
+    fn head(&mut self, head: &ResponseHead) -> ControlFlow<()> {
         self.cap = if is_failure(head) {
             ERROR_BODY_MAX
         } else {
             REPLY_BODY_MAX
         };
         self.head = Some(head.clone());
-        ChunkFlow::Continue
+        ControlFlow::Continue(())
     }
 
-    fn chunk(&mut self, bytes: &[u8]) -> ChunkFlow {
+    fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()> {
         let room = self.cap.saturating_sub(self.body.len());
         self.body.extend_from_slice(&bytes[..bytes.len().min(room)]);
         if bytes.len() > room {
             self.fill = Fill::Capped;
-            return ChunkFlow::Stop;
+            return ControlFlow::Break(());
         }
-        ChunkFlow::Continue
+        ControlFlow::Continue(())
     }
 }
 

@@ -79,12 +79,22 @@ unit!(
     ServerStatus(u16)
 );
 
-/// A setting that is either left to the engine or set to a value. Written out in full in the
-/// catalog and on the wire (an `Option` would let a file leave a field out unnoticed).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// A setting that is either left to the engine (or the model's catalog default) or set to a
+/// value. Written out in full in the catalog and on the wire (an `Option` would let a file leave a
+/// field out unnoticed).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum Knob<T> {
     /// The engine's own default.
+    #[default]
     Off,
+    /// This value.
     Set(T),
+}
+
+impl<T> Knob<T> {
+    /// Whether the knob is left to the default.
+    pub fn is_off(&self) -> bool {
+        matches!(self, Knob::Off)
+    }
 }

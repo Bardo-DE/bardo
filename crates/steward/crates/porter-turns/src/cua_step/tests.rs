@@ -1,3 +1,4 @@
+use std::ops::ControlFlow;
 use super::*;
 use cua_action::{
     Button, ClickCount, Coord, CuaAction, Point, Scale120, Size, Target, WindowSpace,
@@ -104,7 +105,7 @@ async fn run_one(
     let mut kept = session(&model);
     let result = step(&mut kept, &model, provider, request, &frames, |event| {
         seen.push(event);
-        Flow::Continue
+        ControlFlow::Continue(())
     })
     .await;
     (result, kept, seen)
@@ -227,7 +228,7 @@ async fn a_model_trained_to_think_before_it_acts_is_run_with_its_reasoning() {
         &provider,
         &png_request(),
         &frames,
-        |_| Flow::Continue,
+        |_| ControlFlow::Continue(()),
     )
     .await;
     let sent = &provider.requests()[0];
@@ -282,7 +283,7 @@ async fn the_prompt_holds_one_frame_fewer_than_the_model_takes_and_lists_the_ste
             &provider,
             &png_request(),
             &frames,
-            |_| Flow::Continue,
+            |_| ControlFlow::Continue(()),
         )
         .await
         .expect("a step");
@@ -325,7 +326,7 @@ async fn a_stop_from_the_sink_ends_the_turn_so_there_is_nothing_to_act_on_and_no
         &frames,
         |_| {
             count += 1;
-            Flow::Stop
+            ControlFlow::Break(())
         },
     )
     .await;
@@ -440,7 +441,7 @@ async fn an_engine_failure_after_a_repair_gives_the_repair_budget_back() {
         &provider,
         &png_request(),
         &frames,
-        |_| Flow::Continue,
+        |_| ControlFlow::Continue(()),
     )
     .await;
     assert!(matches!(

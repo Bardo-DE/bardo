@@ -1,5 +1,6 @@
 //! The streaming side of a turn: events pushed into a sink.
 
+use std::ops::ControlFlow;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -80,16 +81,10 @@ pub enum StopReason {
     Unrecognized,
 }
 
-/// A sink's answer to an event: keep going, or end the turn early (with `StopReason::EndTurn`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Flow {
-    Continue,
-    Stop,
-}
-
 /// Where a provider pushes a turn's events.
 pub trait TurnSink: Send {
-    fn event(&mut self, event: TurnEvent) -> Flow;
+    /// `Break` ends the turn early (with `StopReason::EndTurn`).
+    fn event(&mut self, event: TurnEvent) -> ControlFlow<()>;
 
     /// Called once per attempt when the provider is done with the sink, however the attempt ended:
     /// complete, failed, stopped early by this sink, or dropped mid-stream (cancellation). A

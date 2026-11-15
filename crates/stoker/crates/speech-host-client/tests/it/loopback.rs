@@ -1,9 +1,10 @@
 //! The client against a fake host on a loopback Unix socket, speaking `host_wire`.
 
+use std::ops::ControlFlow;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU32, Ordering};
 
-use model_provider::{Flow, ModelName, ProviderError, Support};
+use model_provider::{ModelName, ProviderError, Support};
 use speech_host_client::{HostSocket, SpeechHostClient};
 use speech_provider::{
     AudioChunk, AudioFormat, AudioMs, AudioPull, AudioSource, HeardText, HostIn, HostOut,
@@ -156,11 +157,11 @@ impl Collect {
 }
 
 impl TranscriptSink for Collect {
-    fn event(&mut self, event: TranscriptEvent) -> Flow {
+    fn event(&mut self, event: TranscriptEvent) -> ControlFlow<()> {
         self.events.push(event);
         match self.limit {
-            Some(n) if self.events.len() >= n => Flow::Stop,
-            _ => Flow::Continue,
+            Some(n) if self.events.len() >= n => ControlFlow::Break(()),
+            _ => ControlFlow::Continue(()),
         }
     }
 }

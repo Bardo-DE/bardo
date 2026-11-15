@@ -49,7 +49,7 @@ pub use embed::{
     PrefixText, plan_batches,
 };
 pub use event::{
-    Flow, SafetySignal, StopReason, TurnEnd, TurnEvent, TurnSink, TurnUsage, UsageReport,
+    SafetySignal, StopReason, TurnEnd, TurnEvent, TurnSink, TurnUsage, UsageReport,
 };
 pub use ids::{
     JsonError, JsonText, ModelName, OpaqueText, SchemaText, SignatureText, ToolCallId, ToolName,

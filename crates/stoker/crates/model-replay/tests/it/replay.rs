@@ -1,5 +1,6 @@
 //! Chat cassettes: prints, hashes, sequences, replay in all three modes, recording.
 
+use std::ops::ControlFlow;
 use std::sync::Mutex;
 
 use model_provider::{
@@ -32,12 +33,12 @@ fn block_on<T>(future: impl Future<Output = T>) -> T {
 struct Collect(Vec<TurnEvent>, usize);
 
 impl TurnSink for Collect {
-    fn event(&mut self, event: TurnEvent) -> model_provider::Flow {
+    fn event(&mut self, event: TurnEvent) -> ControlFlow<()> {
         self.0.push(event);
         if self.0.len() >= self.1 {
-            model_provider::Flow::Stop
+            ControlFlow::Break(())
         } else {
-            model_provider::Flow::Continue
+            ControlFlow::Continue(())
         }
     }
 }

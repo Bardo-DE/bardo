@@ -91,16 +91,6 @@ pub enum QueueFact {
     Started,
 }
 
-/// What a sink answers to an event.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Flow {
-    /// Keep going.
-    Continue,
-    /// End the turn early (barge-in, the user stopped it).
-    Stop,
-}
-
 /// One stage of the pipeline that answers a session.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct StageNote {

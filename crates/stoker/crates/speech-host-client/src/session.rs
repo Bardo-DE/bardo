@@ -1,8 +1,9 @@
 //! One connection: the `Hello` exchange and one utterance's pump.
 
+use std::ops::ControlFlow;
 use std::pin::Pin;
 
-use model_provider::{Flow, ProviderError};
+use model_provider::{ProviderError};
 use serde::Serialize;
 use speech_provider::{
     AudioPull, AudioSource, HostIn, HostOut, HostVocab, SpeechModelInfo, SttEnd, SttRequest,
@@ -141,7 +142,7 @@ pub async fn utterance<A: AudioSource, K: TranscriptSink>(
             }
             Step::Host(frame) => match frame? {
                 HostOut::Event(event) if listening == Listening::Yes => {
-                    if sink.event(event) == Flow::Stop {
+                    if sink.event(event) == ControlFlow::Break(()) {
                         listening = Listening::No;
                         if source.take().is_some() {
                             wire.send(&HostIn::End).await?;

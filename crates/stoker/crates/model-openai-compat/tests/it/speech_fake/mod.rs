@@ -2,6 +2,7 @@
 //! `speech_*` tests share. Each test file uses a subset.
 #![allow(dead_code)]
 
+use std::ops::ControlFlow;
 use std::collections::VecDeque;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
@@ -12,7 +13,7 @@ use model_http::{
     AuthHeader, HttpClient, HttpEndpoint, HttpTarget, Proxy, Timeouts, UrlPath, WaitMs,
 };
 use model_openai_compat::{KOKORO_FORMAT, KokoroSpeech, OpenAiTranscription};
-use model_provider::{Flow, ModelName};
+use model_provider::{ModelName};
 use speech_provider::{
     AudioChunk, AudioFormat, AudioPull, AudioSink, AudioSource, Lang, LangChoice, PcmBytes,
     PcmFormat, SampleIndex, SampleRate, SpokenText, SttMode, SttRequest, TranscriptEvent,
@@ -230,9 +231,9 @@ impl AudioSource for Spoken {
 pub struct Events(pub Vec<TranscriptEvent>);
 
 impl TranscriptSink for Events {
-    fn event(&mut self, event: TranscriptEvent) -> Flow {
+    fn event(&mut self, event: TranscriptEvent) -> ControlFlow<()> {
         self.0.push(event);
-        Flow::Continue
+        ControlFlow::Continue(())
     }
 }
 
@@ -244,11 +245,11 @@ pub struct Speaker {
 }
 
 impl AudioSink for Speaker {
-    fn chunk(&mut self, chunk: AudioChunk) -> Flow {
+    fn chunk(&mut self, chunk: AudioChunk) -> ControlFlow<()> {
         self.chunks.push(chunk);
         match self.stop_after {
-            Some(n) if self.chunks.len() >= n => Flow::Stop,
-            _ => Flow::Continue,
+            Some(n) if self.chunks.len() >= n => ControlFlow::Break(()),
+            _ => ControlFlow::Continue(()),
         }
     }
 }

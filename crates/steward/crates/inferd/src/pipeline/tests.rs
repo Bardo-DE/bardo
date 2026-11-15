@@ -2,6 +2,7 @@
 //! run (a fake `voice_in` model, then a text model answered by the replay engine). No network, no
 //! engine process: the replay engine is a task on a socket in the scratch directory.
 
+use std::ops::ControlFlow;
 use crate::replay::cassette::{Cassette, TEST_HEADER};
 use crate::replay::engine::serve;
 use crate::replay::model::model;
@@ -224,9 +225,9 @@ use porter_infer::ChatSink;
 struct Events(Vec<InferEvent>);
 
 impl ChatSink for Events {
-    fn event(&mut self, event: InferEvent) -> porter_infer::Flow {
+    fn event(&mut self, event: InferEvent) -> ControlFlow<()> {
         self.0.push(event);
-        porter_infer::Flow::Continue
+        ControlFlow::Continue(())
     }
 }
 

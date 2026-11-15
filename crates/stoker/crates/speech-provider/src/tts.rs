@@ -1,6 +1,7 @@
 //! Text to speech: the request and the seam.
 
-use model_provider::{Flow, ModelName, ProviderError};
+use std::ops::ControlFlow;
+use model_provider::{ModelName, ProviderError};
 use serde::{Deserialize, Serialize};
 
 use crate::{AudioChunk, AudioFormat, AudioMs, Lang, SpeechModelInfo, SpokenText, VoiceId};
@@ -21,9 +22,9 @@ pub struct TtsEnd {
     pub served: ModelName,
 }
 
-/// Where synthesised audio goes. `Flow::Stop` is barge-in: the person spoke over it.
+/// Where synthesised audio goes. `ControlFlow::Break(())` is barge-in: the person spoke over it.
 pub trait AudioSink: Send {
-    fn chunk(&mut self, chunk: AudioChunk) -> Flow;
+    fn chunk(&mut self, chunk: AudioChunk) -> ControlFlow<()>;
 }
 
 /// One endpoint that turns text into audio. Cancellation is drop.

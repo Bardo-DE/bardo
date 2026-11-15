@@ -1,8 +1,9 @@
 //! Fakes that play scripts and record every request, for tests of the daemons above.
 
+use std::ops::ControlFlow;
 use std::sync::Mutex;
 
-use model_provider::{Flow, ProviderError};
+use model_provider::{ProviderError};
 
 use crate::{
     AudioChunk, AudioMs, AudioPull, AudioSink, AudioSource, Frame512, PcmBytes, SampleIndex,
@@ -75,7 +76,7 @@ impl SpeechToText for ScriptedStt {
                         break;
                     }
                     next += 1;
-                    if sink.event(event.clone()) == Flow::Stop {
+                    if sink.event(event.clone()) == ControlFlow::Break(()) {
                         return self.end.clone();
                     }
                 }
@@ -149,7 +150,7 @@ impl TextToSpeech for ScriptedTts {
                     pcm: PcmBytes::new(vec![0; bytes]),
                 };
                 at += count;
-                if sink.chunk(chunk) == Flow::Stop {
+                if sink.chunk(chunk) == ControlFlow::Break(()) {
                     let ms = (at * 1000).checked_div(rate).unwrap_or(0);
                     return Ok(TtsEnd {
                         audio: AudioMs(u32::try_from(ms).unwrap_or(u32::MAX)),

@@ -3,13 +3,14 @@
 //! reply reaches the sink, and a refusal is `Rejected` with its body in the sink.
 #![cfg(feature = "client")]
 
+use std::ops::ControlFlow;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use model_http::{
-    AuthHeader, BodySink, ChunkFlow, ContentType, Framing, HttpClient, HttpEndpoint, HttpError,
+    AuthHeader, BodySink, ContentType, Framing, HttpClient, HttpEndpoint, HttpError,
     HttpStatus, HttpTarget, Proxy, RawBody, ResponseHead, RouteRoot, Secret, Timeouts, Upload,
     UploadTransport, UrlPath, WaitMs,
 };
@@ -118,13 +119,13 @@ struct Seen {
 }
 
 impl BodySink for Seen {
-    fn head(&mut self, head: &ResponseHead) -> ChunkFlow {
+    fn head(&mut self, head: &ResponseHead) -> ControlFlow<()> {
         self.head = Some(head.clone());
-        ChunkFlow::Continue
+        ControlFlow::Continue(())
     }
-    fn chunk(&mut self, bytes: &[u8]) -> ChunkFlow {
+    fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()> {
         self.body.extend_from_slice(bytes);
-        ChunkFlow::Continue
+        ControlFlow::Continue(())
     }
 }
 

@@ -6,9 +6,9 @@
 use crate::bridge::Frames;
 use crate::cua_step::{self, Failed};
 use cua_session::CuaSession;
-use model_provider::{Flow as ProviderFlow, Provider, Tokens};
+use model_provider::{Provider, Tokens};
 use porter_infer::{
-    ChatSink, CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, Flow, ModelError,
+    ChatSink, CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, ModelError,
 };
 use porter_router::local::LocalModel;
 
@@ -53,14 +53,6 @@ pub struct StepJob<'a, P> {
     pub ceiling: Tokens,
 }
 
-/// The provider's flow control for the session's.
-fn provider_flow(flow: Flow) -> ProviderFlow {
-    match flow {
-        Flow::Continue => ProviderFlow::Continue,
-        Flow::Stop => ProviderFlow::Stop,
-    }
-}
-
 impl CuaRun {
     /// A run for this goal, with nothing done.
     pub fn begin(begin: CuaBegin) -> Self {
@@ -90,7 +82,7 @@ impl CuaRun {
             .session
             .as_mut()
             .ok_or(CuaStepFailure::ModelFailed(ModelError::Unreadable))?;
-        let forward = |event| provider_flow(sink.event(event));
+        let forward = |event| sink.event(event);
         match cua_step::step(
             session,
             job.model,

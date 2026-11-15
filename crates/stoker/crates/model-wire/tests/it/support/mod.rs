@@ -2,14 +2,15 @@
 
 #![allow(dead_code)]
 
+use std::ops::ControlFlow;
 use std::sync::Mutex;
 
 use model_http::{
-    BodyKind, BodySink, ChunkFlow, Exchange, Framing, HttpError, HttpStatus, JsonBody,
+    BodyKind, BodySink, Exchange, Framing, HttpError, HttpStatus, JsonBody,
     ResponseHead, RouteRoot, Transport, UrlPath, Verb, WaitSeconds,
 };
 use model_provider::{
-    Dims, EmbedEnd, EmbedTurn, EmbedVector, Flow, Knob, Limits, Milli, ModelInfo, ModelName,
+    Dims, EmbedEnd, EmbedTurn, EmbedVector, Knob, Limits, Milli, ModelInfo, ModelName,
     OutputShape, ProviderError, Reasoning, RetrySeconds, Sampling, StopReason, Tokens, ToolChoice,
     ToolParallelism, TurnEnd, TurnEvent, TurnRequest, TurnSink, TurnUsage,
 };
@@ -119,13 +120,13 @@ impl Transport for Scripted {
         };
         let result = (|| {
             if let Some(head) = &canned.head
-                && sink.head(head) == ChunkFlow::Stop
+                && sink.head(head) == ControlFlow::Break(())
             {
                 *self.stopped.lock().unwrap() = true;
                 return canned.result;
             }
             for chunk in &canned.chunks {
-                if sink.chunk(chunk) == ChunkFlow::Stop {
+                if sink.chunk(chunk) == ControlFlow::Break(()) {
                     *self.stopped.lock().unwrap() = true;
                     return canned.result;
                 }
@@ -346,11 +347,11 @@ impl TurnSink for Keep {
         self.reports.push(report);
     }
 
-    fn event(&mut self, event: TurnEvent) -> Flow {
+    fn event(&mut self, event: TurnEvent) -> ControlFlow<()> {
         self.events.push(event);
         match self.stop_after {
-            Some(n) if self.events.len() >= n => Flow::Stop,
-            _ => Flow::Continue,
+            Some(n) if self.events.len() >= n => ControlFlow::Break(()),
+            _ => ControlFlow::Continue(()),
         }
     }
 }

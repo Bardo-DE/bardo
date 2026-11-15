@@ -5,8 +5,9 @@
 //! turn before anything is said to the app (the first may be repaired, the second parsed), so
 //! only the thoughts stream; what the turn says is told when it has been checked.
 
+use std::ops::ControlFlow;
 use cua_session::TranscriptSink;
-use model_provider::{Flow, TurnEnd, TurnEvent, TurnSink};
+use model_provider::{TurnEnd, TurnEvent, TurnSink};
 use porter_infer::InferEvent;
 
 /// What of the turn's text is shown as thinking while the turn runs.
@@ -24,7 +25,7 @@ pub struct Tee<'a, F> {
     transcript: TranscriptSink,
     forward: &'a mut F,
     echo: Echo,
-    last: Flow,
+    last: ControlFlow<()>,
 }
 
 impl<F> std::fmt::Debug for Tee<'_, F> {
@@ -33,19 +34,19 @@ impl<F> std::fmt::Debug for Tee<'_, F> {
     }
 }
 
-impl<'a, F: FnMut(InferEvent) -> Flow + Send> Tee<'a, F> {
+impl<'a, F: FnMut(InferEvent) -> ControlFlow<()> + Send> Tee<'a, F> {
     /// A sink that forwards to `forward` what `echo` allows.
     pub fn new(echo: Echo, forward: &'a mut F) -> Self {
         Self {
             transcript: TranscriptSink::new(),
             forward,
             echo,
-            last: Flow::Continue,
+            last: ControlFlow::Continue(()),
         }
     }
 
     /// Whether the session asked to stop (nobody is listening any more).
-    pub fn flow(&self) -> Flow {
+    pub fn flow(&self) -> ControlFlow<()> {
         self.last
     }
 
@@ -55,8 +56,8 @@ impl<'a, F: FnMut(InferEvent) -> Flow + Send> Tee<'a, F> {
     }
 }
 
-impl<F: FnMut(InferEvent) -> Flow + Send> TurnSink for Tee<'_, F> {
-    fn event(&mut self, event: TurnEvent) -> Flow {
+impl<F: FnMut(InferEvent) -> ControlFlow<()> + Send> TurnSink for Tee<'_, F> {
+    fn event(&mut self, event: TurnEvent) -> ControlFlow<()> {
         let shown = match (&event, self.echo) {
             (TurnEvent::ThoughtDelta(text), _)
             | (TurnEvent::TextDelta(text), Echo::ThoughtsAndText) => {
@@ -65,10 +66,10 @@ impl<F: FnMut(InferEvent) -> Flow + Send> TurnSink for Tee<'_, F> {
             _ => None,
         };
         let kept = self.transcript.event(event);
-        let told = shown.map_or(Flow::Continue, |shown| (self.forward)(shown));
+        let told = shown.map_or(ControlFlow::Continue(()), |shown| (self.forward)(shown));
         self.last = match (kept, told) {
-            (Flow::Continue, Flow::Continue) => Flow::Continue,
-            _ => Flow::Stop,
+            (ControlFlow::Continue(()), ControlFlow::Continue(())) => ControlFlow::Continue(()),
+            _ => ControlFlow::Break(()),
         };
         self.last
     }
@@ -88,14 +89,14 @@ mod tests {
         }
     }
 
-    fn run(echo: Echo, stop_after: usize) -> (Vec<InferEvent>, Flow, cua_session::TurnTranscript) {
+    fn run(echo: Echo, stop_after: usize) -> (Vec<InferEvent>, ControlFlow<()>, cua_session::TurnTranscript) {
         let mut seen = Vec::new();
         let mut forward = |event| {
             seen.push(event);
             if seen.len() >= stop_after {
-                Flow::Stop
+                ControlFlow::Break(())
             } else {
-                Flow::Continue
+                ControlFlow::Continue(())
             }
         };
         let mut tee = Tee::new(echo, &mut forward);
@@ -115,7 +116,7 @@ mod tests {
             (said.thought.as_str(), said.text.as_str()),
             ("hm ", "saying")
         );
-        assert_eq!(flow, Flow::Continue);
+        assert_eq!(flow, ControlFlow::Continue(()));
 
         let (seen, _, _) = run(Echo::ThoughtsAndText, usize::MAX);
         assert_eq!(seen.len(), 3);
@@ -130,7 +131,7 @@ mod tests {
             3,
             "the turn is told to stop and the sink keeps answering stop"
         );
-        assert_eq!(flow, Flow::Stop);
+        assert_eq!(flow, ControlFlow::Break(()));
         assert_eq!(said.text, "saying");
     }
 }

@@ -70,7 +70,7 @@ pub use cua::{
     TreeText, WindowGeometry,
 };
 pub use error::{InferRefusal, ModelError};
-pub use event::{ClientFrame, Flow, InferEvent, ModelLabel, QueueFact, StageNote};
+pub use event::{ClientFrame, InferEvent, ModelLabel, QueueFact, StageNote};
 pub use hardware::{HardwareFacts, HardwareNote, MemoryFacts, QUEUE_LONG_FROM, hardware_notes};
 pub use ids::{
     AttachIndex, Base64Bytes, JsonSchemaText, JsonText, OpaqueText, SignatureText, TextError,

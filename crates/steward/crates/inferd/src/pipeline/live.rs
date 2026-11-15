@@ -8,12 +8,13 @@
 //! (`Routed` and a `Stage` note each), so the session's own `Answer` note is not sent for the
 //! turn: exactly one per turn.
 
+use std::ops::ControlFlow;
 use crate::engines::{Engines, Offered, named_tiers, through_grants};
 use crate::runner::Turns;
 use crate::speech::Ears;
 use porter_core::AppId;
 use porter_infer::{
-    Answer, ChatRequest, ChatSink, Flow, InferEvent, InferReply, InferRequest, Modality,
+    Answer, ChatRequest, ChatSink, InferEvent, InferReply, InferRequest, Modality,
     ModelError, ModelRef, RequestShape, ShowReason, StageRole,
 };
 use porter_router::pipeline::plan;
@@ -99,7 +100,7 @@ impl Hearing {
             Ok(planned) => planned,
             Err(refusal) => {
                 if let Some(declined) = refusal.declined()
-                    && sink.event(InferEvent::Declined(declined.clone())) == Flow::Stop
+                    && sink.event(InferEvent::Declined(declined.clone())) == ControlFlow::Break(())
                 {
                     return InferReply::Cancelled;
                 }

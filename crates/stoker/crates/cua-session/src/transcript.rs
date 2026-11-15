@@ -1,6 +1,7 @@
 //! Gathering a streamed turn into the transcript `absorb` reads.
 
-use model_provider::{Flow, SafetySignal, ToolCall, TurnEnd, TurnEvent, TurnSink};
+use std::ops::ControlFlow;
+use model_provider::{SafetySignal, ToolCall, TurnEnd, TurnEvent, TurnSink};
 
 use crate::TurnTranscript;
 
@@ -31,7 +32,7 @@ impl TranscriptSink {
 }
 
 impl TurnSink for TranscriptSink {
-    fn event(&mut self, event: TurnEvent) -> Flow {
+    fn event(&mut self, event: TurnEvent) -> ControlFlow<()> {
         match event {
             TurnEvent::TextDelta(text) => self.text.push_str(&text),
             TurnEvent::ThoughtDelta(text) => self.thought.push_str(&text),
@@ -40,6 +41,6 @@ impl TurnSink for TranscriptSink {
             // Seals, call starts and deltas, usage, and events this build does not know are not kept.
             _ => {}
         }
-        Flow::Continue
+        ControlFlow::Continue(())
     }
 }

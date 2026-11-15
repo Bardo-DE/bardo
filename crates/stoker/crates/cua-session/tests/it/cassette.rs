@@ -7,6 +7,7 @@
 //! (they are not recordings of a model); a recorded run replaces them when
 //! `dev/record-engine.sh` is run against Holo-3.1-4B.
 
+use std::ops::ControlFlow;
 use crate::support;
 
 use std::sync::Mutex;
@@ -14,7 +15,7 @@ use std::sync::Mutex;
 use cua_action::{CuaAction, CuaDialect, ModelSpace, TextDialect, ToolDialect};
 use cua_session::{CuaSession, StepOutcome, TranscriptSink};
 use model_http::{
-    BodyKind, BodySink, ChunkFlow, Exchange, HttpError, HttpStatus, ResponseHead, Transport,
+    BodyKind, BodySink, Exchange, HttpError, HttpStatus, ResponseHead, Transport,
 };
 use model_openai_compat::{Flavor, OpenAiCodec};
 use model_provider::{ModelName, Provider, ProviderError, Seed, Tokens, TurnRequest};
@@ -48,7 +49,7 @@ impl Transport for Canned {
             content_range: None,
         });
         for chunk in body.as_bytes().chunks(11) {
-            if flow == ChunkFlow::Stop {
+            if flow == ControlFlow::Break(()) {
                 break;
             }
             flow = sink.chunk(chunk);

@@ -1,3 +1,4 @@
+use std::ops::ControlFlow;
 use super::*;
 use model_provider::{
     ModelName, OutputShape, Part, ProviderError, Role, Script, ScriptedProvider, StopReason,
@@ -137,9 +138,9 @@ async fn ran_on(
     let mut forward = |event| {
         shown.push(event);
         if shown.len() >= stop_after {
-            Flow::Stop
+            ControlFlow::Break(())
         } else {
-            Flow::Continue
+            ControlFlow::Continue(())
         }
     };
     let touched = std::cell::Cell::new(0);

@@ -42,7 +42,7 @@ mod transport;
 
 pub use auth::{AuthHeader, ExtraHeader, HeaderName, Secret};
 pub use client::{
-    BodySink, ChunkFlow, ContentType, DerCertificate, HttpClient, HttpError, HttpStatus, JsonBody,
+    BodySink, ContentType, DerCertificate, HttpClient, HttpError, HttpStatus, JsonBody,
     Progress, RawBody, TlsRoots,
 };
 pub use exchange::{

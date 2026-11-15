@@ -7,13 +7,14 @@
 //! (`PrivateNetwork`, a read-only home, the GPU device and a memory cap), is not built; the unit
 //! spec already carries the sandbox for it.
 
+use std::ops::ControlFlow;
 use engine_supervisor::{
     EngineHost, EngineId, ExitCode, GpuError, GpuMemory, GpuProbe, HostError, Probe, ReadyProbe,
     UnitSpec,
 };
 use model_catalog::MiB;
 use model_http::{
-    BodySink, ChunkFlow, Exchange, Framing, HttpClient, ResponseHead, RouteRoot, Timeouts,
+    BodySink, Exchange, Framing, HttpClient, ResponseHead, RouteRoot, Timeouts,
     Transport, UrlPath, Verb, WaitMs,
 };
 use porter_router::local::unix_endpoint;
@@ -394,13 +395,13 @@ impl HealthProbe {
 struct StatusOnly(Option<u16>);
 
 impl BodySink for StatusOnly {
-    fn head(&mut self, head: &ResponseHead) -> ChunkFlow {
+    fn head(&mut self, head: &ResponseHead) -> ControlFlow<()> {
         self.0 = Some(head.status.0);
-        ChunkFlow::Stop
+        ControlFlow::Break(())
     }
 
-    fn chunk(&mut self, _: &[u8]) -> ChunkFlow {
-        ChunkFlow::Stop
+    fn chunk(&mut self, _: &[u8]) -> ControlFlow<()> {
+        ControlFlow::Break(())
     }
 }
 

@@ -4,10 +4,11 @@
 //!
 //! Events go to a [`ChatSink`] callback rather than a `Stream`: a turn is one future that pushes
 //! as it runs, so dropping it cancels, and the sink can end the turn early by returning
-//! [`Flow::Stop`].
+//! `ControlFlow::Break(())`.
 
+use std::ops::ControlFlow;
 use crate::error::{InferRefusal, ModelError};
-use crate::event::{Flow, InferEvent};
+use crate::event::{InferEvent};
 use crate::reply::{ChatReply, EmbedReply, InferReply};
 use crate::request::{ChatRequest, EmbedRequest, InferRequest, TaskRequest};
 use porter_capability::Capability;
@@ -33,8 +34,8 @@ pub struct ModelCard {
 
 /// Where a turn's events go as they happen.
 pub trait ChatSink: Send {
-    /// One event; `Flow::Stop` ends the turn early.
-    fn event(&mut self, event: InferEvent) -> Flow;
+    /// One event; `ControlFlow::Break(())` ends the turn early.
+    fn event(&mut self, event: InferEvent) -> ControlFlow<()>;
 }
 
 /// Why a turn on a model gave no reply: it was not run, or it failed.
