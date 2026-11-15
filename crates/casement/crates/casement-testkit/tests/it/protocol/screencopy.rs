@@ -10,7 +10,6 @@ use casement_core::policy::ConnectionRole;
 use casement_core::privilege::{UnixSeconds, Verdict};
 use casement_core::{DeviceId, Event, OutputName};
 use casement_protocols::vocab::{Answer, Power};
-use casement_testclient::Pumped;
 use casement_testclient::capture::{
     Copied, CopyArea, CopyFailure, CopyKind, CursorMode, ScreenCopy,
 };
@@ -33,7 +32,7 @@ fn settle(fixture: &mut Fixture, copy: &mut ScreenCopy) {
     for _ in 0..100 {
         let compositor = fixture.pump();
         let client = copy.pump().expect("pump the copy");
-        if (compositor, client) == (Pumped::Quiet, Pumped::Quiet) {
+        if !(compositor || client) {
             return;
         }
     }
@@ -556,7 +555,7 @@ fn settle_or_cut(fixture: &mut Fixture, copy: &mut ScreenCopy) -> Result<(), Cut
     for _ in 0..100 {
         let compositor = fixture.pump();
         let client = copy.pump().map_err(|_| Cut)?;
-        if (compositor, client) == (Pumped::Quiet, Pumped::Quiet) {
+        if !(compositor || client) {
             return Ok(());
         }
     }

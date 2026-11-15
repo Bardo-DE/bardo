@@ -11,7 +11,7 @@ use casement_testclient::misc::viewporter::Viewporter;
 use casement_testclient::seat::pointer::Pointer;
 use casement_testclient::surface::layer::Layer;
 use casement_testclient::surface::subsurface::{Subcompositor, Surface};
-use casement_testclient::{Pattern, Pumped, shm_buffer};
+use casement_testclient::{Pattern, shm_buffer};
 use casement_testkit::{Fixture, FixtureSpec, FrameCount};
 use wayland_client::protocol::wl_output::Transform;
 
@@ -268,7 +268,7 @@ fn settle_both(fixture: &mut Fixture, a: &mut OutputCapture, b: &mut OutputCaptu
         let compositor = fixture.pump();
         let first = a.pump().expect("pump the capture");
         let second = b.pump().expect("pump the cursor session");
-        if (compositor, first, second) == (Pumped::Quiet, Pumped::Quiet, Pumped::Quiet) {
+        if !(compositor || first || second) {
             return;
         }
     }

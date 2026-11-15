@@ -8,7 +8,6 @@
 
 use crate::protocol::image_capture::{name, opened};
 use casement_core::policy::ConnectionRole;
-use casement_testclient::Pumped;
 use casement_testclient::capture::{CopyArea, CursorMode, ScreenCopy};
 use casement_testkit::{Fixture, FixtureSpec, FrameCount};
 
@@ -31,7 +30,7 @@ fn settle_copy(fixture: &mut Fixture, copy: &mut ScreenCopy) {
     for _ in 0..100 {
         let compositor = fixture.pump();
         let side = copy.pump().expect("pump the copy");
-        if (compositor, side) == (Pumped::Quiet, Pumped::Quiet) {
+        if !(compositor || side) {
             return;
         }
     }

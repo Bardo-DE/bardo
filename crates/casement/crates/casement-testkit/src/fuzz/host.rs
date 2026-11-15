@@ -4,7 +4,7 @@
 use crate::fixture::{ClientId, Fixture};
 use casement_core::InvariantBreak;
 use casement_core::policy::ConnectionRole;
-use casement_testclient::{Pumped, TestClient};
+use casement_testclient::TestClient;
 use std::time::Duration;
 
 /// A compositor the runner can drive.
@@ -14,7 +14,7 @@ pub trait FuzzHost {
     /// A client.
     fn client(&mut self, id: ClientId) -> &mut TestClient;
     /// Pumps every party until quiet.
-    fn pump(&mut self) -> Pumped;
+    fn pump(&mut self) -> bool;
     /// Moves the clock.
     fn advance(&mut self, by: Duration);
     /// The model's invariants (oracle 4).
@@ -30,7 +30,7 @@ impl FuzzHost for Fixture {
         Fixture::client(self, id)
     }
 
-    fn pump(&mut self) -> Pumped {
+    fn pump(&mut self) -> bool {
         Fixture::pump(self)
     }
 

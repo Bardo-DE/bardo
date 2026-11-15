@@ -5,7 +5,7 @@
 
 use super::output_power::{bind_outputs, note_output, output_named};
 use crate::misc::idle::{pump_queue, side_queue};
-use crate::{ClientError, GlobalList, Pumped};
+use crate::{ClientError, GlobalList};
 use rustix::fs::{MemfdFlags, memfd_create};
 use std::os::fd::{AsFd, OwnedFd};
 use wayland_client::protocol::wl_output::{self, WlOutput};
@@ -80,7 +80,7 @@ impl GammaControls {
     }
 
     /// Reads what arrived.
-    pub fn pump(&mut self) -> Result<Pumped, ClientError> {
+    pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.seen)
     }
 

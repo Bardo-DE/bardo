@@ -6,7 +6,7 @@
 //! Self-contained like `misc::idle`, whose side queue it reuses.
 
 use super::idle::{pump_queue, side_queue};
-use crate::{ClientError, GlobalList, Pumped};
+use crate::{ClientError, GlobalList};
 use std::os::fd::{AsFd, OwnedFd};
 use std::os::unix::net::{UnixListener, UnixStream};
 use std::path::{Path, PathBuf};
@@ -87,7 +87,7 @@ impl Listener {
     }
 
     /// Reads what arrived (nothing the helper keeps).
-    pub fn pump(&mut self) -> Result<Pumped, ClientError> {
+    pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut Quiet)
     }
 

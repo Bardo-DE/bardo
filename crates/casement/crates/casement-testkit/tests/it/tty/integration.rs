@@ -13,7 +13,6 @@ use casement_core::input::{
 use casement_core::policy::ConnectionRole;
 use casement_core::{DeviceId, OutputName};
 use casement_protocols::vocab::PressEdge;
-use casement_testclient::Pumped;
 use casement_testclient::capture::{BufferAsk, CursorMode, OutputCapture};
 use casement_testclient::manage::gamma::{ControlState as GammaState, GammaControls};
 use casement_testclient::manage::output_power::{ControlState as PowerState, OutputPowers};
@@ -390,7 +389,7 @@ fn settle_capture(fixture: &mut Fixture, capture: &mut OutputCapture) {
     for _ in 0..100 {
         let compositor = fixture.pump();
         let client = capture.pump().expect("pump the capture");
-        if (compositor, client) == (Pumped::Quiet, Pumped::Quiet) {
+        if !(compositor || client) {
             return;
         }
     }

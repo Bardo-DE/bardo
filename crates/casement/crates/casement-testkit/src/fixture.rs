@@ -36,7 +36,7 @@ use casement_core::policy::ConnectionRole;
 use casement_core::privilege::ClientStanding;
 use casement_core::time::{Mono, Stop, TimerKey};
 use casement_core::{Event, Model, OutputName, WindowId};
-use casement_testclient::{ClientError, Pumped, TestClient};
+use casement_testclient::{ClientError, TestClient};
 use casement_wayland::consent::ImageWatch;
 use casement_wayland::dmabuf::DmabufOffer;
 use smithay::reexports::calloop::EventLoop;
@@ -343,14 +343,15 @@ impl Fixture {
             .unwrap_or_else(|| panic!("no client {id:?} in this fixture"))
     }
 
-    /// Dispatches the server and every client at the current instant until nothing moves.
-    pub fn pump(&mut self) -> Pumped {
-        let mut moved = Pumped::Quiet;
+    /// Dispatches the server and every client at the current instant until nothing moves; whether
+    /// anything moved at all.
+    pub fn pump(&mut self) -> bool {
+        let mut moved = false;
         for _ in 0..ROUND_BOUND {
-            if self.round() == Pumped::Quiet {
+            if !self.round() {
                 return moved;
             }
-            moved = Pumped::Moved;
+            moved = true;
         }
         panic!(
             "the fixture did not go quiet in {ROUND_BOUND} rounds: a loop between server and clients"
@@ -359,7 +360,7 @@ impl Fixture {
 
     /// One round at the current instant: input, the event loop (display and clock), a flush,
     /// every client.
-    fn round(&mut self) -> Pumped {
+    fn round(&mut self) -> bool {
         let before = (self.display.dispatched(), self.clock().delivered());
         let input = core_loop::turn(&mut self.state);
         self.event_loop
@@ -374,15 +375,9 @@ impl Fixture {
                 client.set_now(now);
                 client.pump()
             })
-            .fold(Pumped::Quiet, |all, one| match (all, one) {
-                (Pumped::Quiet, Pumped::Quiet) => Pumped::Quiet,
-                _ => Pumped::Moved,
-            });
+            .fold(false, |all, one| all || one);
         let after = (self.display.dispatched(), self.clock().delivered());
-        match (input, before == after, clients_moved) {
-            (0, true, Pumped::Quiet) => Pumped::Quiet,
-            _ => Pumped::Moved,
-        }
+        !(input == 0 && before == after && !clients_moved)
     }
 
     /// Moves the clock `by`, stopping at every timer and vblank on the way and pumping at each.

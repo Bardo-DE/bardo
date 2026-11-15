@@ -8,7 +8,7 @@ use casement_core::policy::ConnectionRole;
 use casement_layout::{LayoutKnobs, RustScene, SceneLayout, spec_of};
 use casement_testclient::seat::pointer::Pointer;
 use casement_testclient::surface::toplevel::WmBase;
-use casement_testclient::{Pattern, Pumped, TestClient, shm_buffer};
+use casement_testclient::{Pattern, TestClient, shm_buffer};
 use casement_testkit::{ClientId, Fixture, FixtureSpec, TestOrigin};
 use std::time::Duration;
 use wayland_client::Proxy;
@@ -17,7 +17,7 @@ use wayland_client::Proxy;
 fn settle(fixture: &mut Fixture, client: &mut TestClient) {
     for _ in 0..64 {
         let server = fixture.pump();
-        if (server, client.pump()) == (Pumped::Quiet, Pumped::Quiet) {
+        if !(server || client.pump()) {
             return;
         }
     }

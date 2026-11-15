@@ -7,7 +7,7 @@
 //! `wl_output` objects to name in `output_enter`.
 
 use crate::misc::idle::{pump_queue, side_queue};
-use crate::{ClientError, GlobalList, Pumped};
+use crate::{ClientError, GlobalList};
 use wayland_client::protocol::wl_output::{self, WlOutput};
 use wayland_client::protocol::wl_seat::{self, WlSeat};
 use wayland_client::protocol::wl_surface::WlSurface;
@@ -102,7 +102,7 @@ impl ToplevelWatch {
     }
 
     /// Reads what arrived.
-    pub fn pump(&mut self) -> Result<Pumped, ClientError> {
+    pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.roster)
     }
 

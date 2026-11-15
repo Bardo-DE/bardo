@@ -15,7 +15,6 @@ mod testing;
 mod wire;
 
 use crate::globals::{GlobalList, GlobalListContents};
-use crate::pump::Pumped;
 use crate::transcript::Transcript;
 use casement_core::time::Mono;
 use objects::Life;
@@ -208,7 +207,7 @@ impl TestClient {
     }
 
     /// Reads what is there without blocking and dispatches it; says whether anything moved.
-    pub fn pump(&mut self) -> Pumped {
+    pub fn pump(&mut self) -> bool {
         let mut moved = self.dispatch();
         moved += self.relay();
         if self.fault.is_none()
@@ -224,9 +223,9 @@ impl TestClient {
         moved += self.dispatch();
         moved += self.relay();
         if moved == 0 {
-            Pumped::Quiet
+            false
         } else {
-            Pumped::Moved
+            true
         }
     }
 
@@ -433,7 +432,7 @@ mod tests {
         // wl_display.get_registry is opcode 1 on object 1.
         assert_eq!(heads(&read_all(&compositor)), vec![(1, 1)]);
         assert!(client.globals().contents().clone_list().is_empty());
-        assert_eq!(client.pump(), Pumped::Quiet);
+        assert!(!client.pump());
     }
 
     #[test]
@@ -448,7 +447,7 @@ mod tests {
         compositor
             .write_all(&global(2, 2, "wl_shm", 2))
             .expect("global");
-        assert_eq!(client.pump(), Pumped::Moved);
+        assert!(client.pump());
         let listed: Vec<_> = client
             .globals()
             .contents()
@@ -464,7 +463,7 @@ mod tests {
             client.transcript().text(),
             "3.000 wl_registry#2.global(1, \"wl_compositor\", 5)\n3.000 wl_registry#2.global(2, \"wl_shm\", 2)\n"
         );
-        assert_eq!(client.pump(), Pumped::Quiet);
+        assert!(!client.pump());
     }
 
     #[test]
@@ -529,7 +528,7 @@ mod tests {
                 .text()
                 .contains("wl_display#1.error(wl_display#1, 0, \"no such object\")")
         );
-        assert_eq!(client.pump(), Pumped::Quiet);
+        assert!(!client.pump());
     }
 
     #[test]
@@ -539,7 +538,7 @@ mod tests {
         drop(compositor);
         client.pump();
         assert!(!client.is_connected());
-        assert_eq!(client.pump(), Pumped::Quiet);
+        assert!(!client.pump());
     }
 
     #[test]

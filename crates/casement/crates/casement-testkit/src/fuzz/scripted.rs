@@ -7,7 +7,7 @@ use crate::fixture::ClientId;
 use casement_core::InvariantBreak;
 use casement_core::WindowId;
 use casement_core::policy::ConnectionRole;
-use casement_testclient::{Pumped, TestClient};
+use casement_testclient::TestClient;
 use std::collections::BTreeMap;
 use std::io::{Read, Write};
 use std::os::fd::OwnedFd;
@@ -193,25 +193,25 @@ impl FuzzHost for Scripted {
             .client
     }
 
-    fn pump(&mut self) -> Pumped {
+    fn pump(&mut self) -> bool {
         let fault = self.fault;
-        let mut moved = Pumped::Quiet;
+        let mut moved = false;
         for _ in 0..16 {
-            let mut round = Pumped::Quiet;
+            let mut round = false;
             for seat in self.seats.values_mut() {
                 if seat.serve(fault) {
-                    round = Pumped::Moved;
+                    round = true;
                 }
-                round = round.or(seat.client.pump());
+                round |= seat.client.pump();
                 assert!(
                     !(fault == Fault::Panics && seat.saw_request),
                     "the stand-in compositor panics on a request"
                 );
             }
-            if round == Pumped::Quiet {
+            if !round {
                 return moved;
             }
-            moved = Pumped::Moved;
+            moved = true;
         }
         moved
     }

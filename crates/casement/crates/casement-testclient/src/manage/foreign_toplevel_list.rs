@@ -4,7 +4,7 @@
 //! Self-contained like `misc::idle`, whose side queue it reuses.
 
 use crate::misc::idle::{pump_queue, side_queue};
-use crate::{ClientError, GlobalList, Pumped};
+use crate::{ClientError, GlobalList};
 use wayland_client::{Connection, Dispatch, EventQueue, QueueHandle, event_created_child};
 use wayland_protocols::ext::foreign_toplevel_list::v1::client::{
     ext_foreign_toplevel_handle_v1::{self, ExtForeignToplevelHandleV1},
@@ -68,7 +68,7 @@ impl ToplevelList {
     }
 
     /// Reads what arrived.
-    pub fn pump(&mut self) -> Result<Pumped, ClientError> {
+    pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.roster)
     }
 

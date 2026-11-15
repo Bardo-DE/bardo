@@ -6,7 +6,7 @@
 //! [`GlobalList`] holds ([`side_queue`]) and reads its own events on a second queue. Replace
 //! [`side_queue`] and [`pump_queue`] with the core's when it lands.
 
-use crate::{ClientError, GlobalList, Pumped};
+use crate::{ClientError, GlobalList};
 use casement_core::time::Mono;
 use std::time::Duration;
 use wayland_client::protocol::wl_seat::{self, WlSeat};
@@ -36,7 +36,7 @@ pub fn pump_queue<S>(
     connection: &Connection,
     queue: &mut EventQueue<S>,
     state: &mut S,
-) -> Result<Pumped, ClientError> {
+) -> Result<bool, ClientError> {
     connection
         .flush()
         .map_err(|error| ClientError::Dispatch(error.to_string()))?;
@@ -48,9 +48,9 @@ pub fn pump_queue<S>(
         .dispatch_pending(state)
         .map_err(|error| ClientError::Dispatch(error.to_string()))?;
     Ok(if dispatched > 0 {
-        Pumped::Moved
+        true
     } else {
-        Pumped::Quiet
+        false
     })
 }
 
@@ -138,7 +138,7 @@ impl IdleWatch {
     }
 
     /// Reads what arrived, stamping it with `now` (the fixture's virtual instant).
-    pub fn pump(&mut self, now: Mono) -> Result<Pumped, ClientError> {
+    pub fn pump(&mut self, now: Mono) -> Result<bool, ClientError> {
         self.seen.now = now;
         pump_queue(&self.connection, &mut self.queue, &mut self.seen)
     }

@@ -12,7 +12,7 @@ use casement_protocols::vocab::{Answer, Power};
 use casement_testclient::capture::toplevel_source::{CaptureFailure, CursorMode, WindowCapture};
 use casement_testclient::surface::lock::Locker;
 use casement_testclient::surface::toplevel::{Toplevel, WmBase};
-use casement_testclient::{Pattern, Pumped, shm_buffer};
+use casement_testclient::{Pattern, shm_buffer};
 use casement_testkit::{ASKED_PROGRAM, ClientId, Fixture, FixtureSpec, FrameCount};
 use casement_wayland::capture_source::capture_size;
 use casement_wayland::foreign_toplevel_list::identifier_of;
@@ -57,7 +57,7 @@ fn settle(fixture: &mut Fixture, capture: &mut WindowCapture) {
     for _ in 0..100 {
         let compositor = fixture.pump();
         let client = capture.pump().expect("pump the capture");
-        if (compositor, client) == (Pumped::Quiet, Pumped::Quiet) {
+        if !(compositor || client) {
             return;
         }
     }

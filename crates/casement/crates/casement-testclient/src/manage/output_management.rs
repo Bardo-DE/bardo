@@ -6,7 +6,7 @@
 //! its events there.
 
 use crate::misc::idle::{pump_queue, side_queue};
-use crate::{ClientError, GlobalList, Pumped};
+use crate::{ClientError, GlobalList};
 pub use desktop_client::output::{ConfigOutcome, ConfigPurpose};
 use wayland_client::protocol::wl_output::Transform;
 use wayland_client::{Connection, Dispatch, EventQueue, QueueHandle, event_created_child};
@@ -174,7 +174,7 @@ impl OutputManager {
     }
 
     /// Reads what arrived.
-    pub fn pump(&mut self) -> Result<Pumped, ClientError> {
+    pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.roster)
     }
 

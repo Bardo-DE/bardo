@@ -3,7 +3,7 @@
 //! its own queue next to the client's. Filled by the capture lane of wave 2026-10-15.
 
 use crate::misc::idle::{pump_queue, side_queue};
-use crate::{ClientError, GlobalList, Pumped};
+use crate::{ClientError, GlobalList};
 use desktop_client::Size;
 use desktop_client::capture::CursorMode;
 use rustix::fs::{MemfdFlags, ftruncate, memfd_create};
@@ -177,7 +177,7 @@ impl ScreenCopy {
     }
 
     /// Reads what arrived.
-    pub fn pump(&mut self) -> Result<Pumped, ClientError> {
+    pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.state)
     }
 

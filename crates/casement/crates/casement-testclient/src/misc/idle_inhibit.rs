@@ -6,7 +6,7 @@
 //! Self-contained like `misc::idle`, whose side queue it reuses.
 
 use super::idle::{pump_queue, side_queue};
-use crate::{ClientError, GlobalList, Pumped};
+use crate::{ClientError, GlobalList};
 use wayland_client::protocol::wl_compositor::{self, WlCompositor};
 use wayland_client::protocol::wl_surface::{self, WlSurface};
 use wayland_client::{Connection, Dispatch, EventQueue, QueueHandle};
@@ -54,7 +54,7 @@ impl InhibitHold {
     }
 
     /// Reads what arrived (nothing the helper keeps).
-    pub fn pump(&mut self) -> Result<Pumped, ClientError> {
+    pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut Quiet)
     }
 

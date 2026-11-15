@@ -16,7 +16,7 @@ pub struct DmabufFormat {
 
 use super::output_source::NamedOutput;
 use crate::misc::idle::{pump_queue, side_queue};
-use crate::{ClientError, GlobalList, Pumped};
+use crate::{ClientError, GlobalList};
 use casement_protocols::vocab::{Transform, WireCode};
 use desktop_client::capture::{
     CaptureEvent, CaptureFailure, CaptureSession, CursorMode, ShmFormat,
@@ -215,7 +215,7 @@ impl OutputCapture {
     }
 
     /// Reads what arrived.
-    pub fn pump(&mut self) -> Result<Pumped, ClientError> {
+    pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.state)
     }
 

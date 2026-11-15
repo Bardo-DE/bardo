@@ -8,7 +8,6 @@ use casement_core::policy::ConnectionRole;
 use casement_core::privilege::{UnixSeconds, Verdict};
 use casement_core::{DeviceId, Event, OutputName};
 use casement_protocols::vocab::{Answer, Power};
-use casement_testclient::Pumped;
 use casement_testclient::capture::{
     BufferAsk, CaptureFailure, CursorEvent, CursorMode, OutputCapture, Size,
 };
@@ -26,7 +25,7 @@ pub(crate) fn settle(fixture: &mut Fixture, capture: &mut OutputCapture) {
     for _ in 0..100 {
         let compositor = fixture.pump();
         let client = capture.pump().expect("pump the capture");
-        if (compositor, client) == (Pumped::Quiet, Pumped::Quiet) {
+        if !(compositor || client) {
             return;
         }
     }
@@ -231,11 +230,11 @@ fn settle_all(fixture: &mut Fixture, captures: &mut [&mut OutputCapture]) {
     for _ in 0..100 {
         let mut pumped = fixture.pump();
         for capture in captures.iter_mut() {
-            if capture.pump().expect("pump the capture") != Pumped::Quiet {
-                pumped = Pumped::Moved;
+            if capture.pump().expect("pump the capture") {
+                pumped = true;
             }
         }
-        if pumped == Pumped::Quiet {
+        if !pumped {
             return;
         }
     }

@@ -6,7 +6,7 @@
 //! outputs say their names), then ask for a control.
 
 use crate::misc::idle::{pump_queue, side_queue};
-use crate::{ClientError, GlobalList, Pumped};
+use crate::{ClientError, GlobalList};
 use wayland_client::protocol::wl_output::{self, WlOutput};
 use wayland_client::{Connection, Dispatch, EventQueue, QueueHandle};
 use wayland_protocols_wlr::output_power_management::v1::client::{
@@ -130,7 +130,7 @@ impl OutputPowers {
     }
 
     /// Reads what arrived.
-    pub fn pump(&mut self) -> Result<Pumped, ClientError> {
+    pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.seen)
     }
 

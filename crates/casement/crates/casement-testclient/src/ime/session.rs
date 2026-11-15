@@ -11,7 +11,7 @@ use super::input_method::{
 };
 use super::text_input::{TextInputData, TextInputEvent, bind_text_input, field_event};
 use crate::misc::idle::{pump_queue, side_queue};
-use crate::{ClientError, GlobalList, Pumped};
+use crate::{ClientError, GlobalList};
 use casement_core::time::Mono;
 use std::time::Duration;
 use wayland_client::protocol::wl_keyboard::{self, WlKeyboard};
@@ -228,7 +228,7 @@ impl ImeSession {
     }
 
     /// Reads what arrived, stamping it with `now` (the fixture's virtual instant).
-    pub fn pump(&mut self, now: Mono) -> Result<Pumped, ClientError> {
+    pub fn pump(&mut self, now: Mono) -> Result<bool, ClientError> {
         self.seen.now = now;
         pump_queue(&self.connection, &mut self.queue, &mut self.seen)
     }

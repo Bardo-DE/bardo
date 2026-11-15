@@ -4,7 +4,7 @@
 //! Self-contained like `misc::idle`, whose side queue it reuses.
 
 use super::idle::{pump_queue, side_queue};
-use crate::{ClientError, GlobalList, Pumped};
+use crate::{ClientError, GlobalList};
 use casement_core::geometry::LogicalRect;
 use wayland_client::protocol::wl_compositor::{self, WlCompositor};
 use wayland_client::protocol::wl_region::{self, WlRegion};
@@ -67,7 +67,7 @@ impl BlurAsk {
     }
 
     /// Reads what arrived.
-    pub fn pump(&mut self) -> Result<Pumped, ClientError> {
+    pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.announced)
     }
 

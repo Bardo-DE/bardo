@@ -2,7 +2,6 @@
 
 use casement_backend::VirtualOutputSpec;
 use casement_core::OutputName;
-use casement_testclient::Pumped;
 use casement_testkit::{Fixture, FixtureSpec, FrameCount, ShotTarget};
 use std::time::Duration;
 
@@ -13,7 +12,7 @@ fn name(text: &str) -> OutputName {
 #[test]
 fn a_started_fixture_is_quiet_and_has_its_output() {
     let mut fixture = Fixture::start(FixtureSpec::desktop()).expect("fixture");
-    assert_eq!(fixture.pump(), Pumped::Quiet);
+    assert!(!fixture.pump());
     assert_eq!(fixture.model().outputs().0.len(), 1);
 }
 
@@ -46,7 +45,7 @@ fn a_hundred_plug_unplug_cycles_leak_nothing() {
         fixture.unplug(&plugged);
         assert_eq!(fixture.model().outputs().0.len(), 1);
     }
-    assert_eq!(fixture.pump(), Pumped::Quiet);
+    assert!(!fixture.pump());
     assert_eq!(fixture.scene(), before);
 }
 

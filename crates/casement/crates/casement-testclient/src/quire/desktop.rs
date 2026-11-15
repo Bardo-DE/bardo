@@ -9,7 +9,7 @@ mod roster;
 
 use self::roster::{Origin, Roster};
 use crate::misc::idle::{pump_queue, side_queue};
-use crate::{ClientError, GlobalList, Pumped};
+use crate::{ClientError, GlobalList};
 use casement_protocols::client::quire_desktop_v1::quire_desktop_manager_v1::QuireDesktopManagerV1;
 use std::ops::RangeInclusive;
 use wayland_client::Connection;
@@ -143,7 +143,7 @@ impl DesktopWatch {
     }
 
     /// Reads what arrived.
-    pub fn pump(&mut self) -> Result<Pumped, ClientError> {
+    pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.roster)
     }
 

@@ -10,7 +10,7 @@ mod wire;
 
 use crate::manage::foreign_toplevel_list::{Listed, ToplevelList};
 use crate::misc::idle::{pump_queue, side_queue};
-use crate::{ClientError, GlobalList, Pumped};
+use crate::{ClientError, GlobalList};
 use rustix::fs::{MemfdFlags, ftruncate, memfd_create};
 use std::fs::File;
 use std::os::fd::AsFd;
@@ -92,13 +92,10 @@ impl WindowCapture {
     }
 
     /// Reads what arrived on both queues.
-    pub fn pump(&mut self) -> Result<Pumped, ClientError> {
+    pub fn pump(&mut self) -> Result<bool, ClientError> {
         let list = self.list.pump()?;
         let capture = pump_queue(&self.connection, &mut self.queue, &mut self.wire)?;
-        Ok(match (list, capture) {
-            (Pumped::Quiet, Pumped::Quiet) => Pumped::Quiet,
-            _ => Pumped::Moved,
-        })
+        Ok(list || capture)
     }
 
     /// The windows the list announced, in order.
