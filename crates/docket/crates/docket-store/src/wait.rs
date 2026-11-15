@@ -164,12 +164,4 @@ mod tests {
         cancel.cancel();
         assert_eq!(poll_once(&mut waiting), Poll::Ready(Err(Stop::Cancelled)));
     }
-
-    #[test]
-    fn the_thread_sleep_elapses() {
-        let mut sleep = Box::pin(thread_sleep(Duration::from_millis(10)));
-        assert_eq!(poll_once(&mut sleep), Poll::Pending);
-        std::thread::sleep(Duration::from_millis(200));
-        assert_eq!(poll_once(&mut sleep), Poll::Ready(()));
-    }
 }

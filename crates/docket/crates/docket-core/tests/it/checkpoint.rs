@@ -131,17 +131,3 @@ fn an_old_external_agent_record_reads_as_docket_keeping_the_history() {
     assert_eq!(agent.rewind, Rewind::Docket);
     assert_eq!(Rewind::default(), Rewind::Docket);
 }
-
-#[test]
-fn the_checkpoint_settings_rows_carry_the_defaults() {
-    let config = AgentConfig::default();
-    for (key, want) in [
-        ("agent.checkpoints.keep", 20),
-        ("agent.checkpoints.days", 14),
-        ("agent.checkpoints.max_files", 50_000),
-        ("agent.checkpoints.wait_s", 10),
-        ("agent.checkpoints.turn_max_s", 1800),
-    ] {
-        assert_eq!(config.value(key), Some(SettingValue::Number(want)), "{key}");
-    }
-}

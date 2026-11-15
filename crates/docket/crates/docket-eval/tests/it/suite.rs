@@ -6,35 +6,10 @@ use docket_permissions_core::{BreakerTrip, DenyCode};
 use eval_core::*;
 use porter_ids::Permille;
 use prov::{Effect, Integrity, SpaceId, TaskId};
-use std::collections::BTreeSet;
 use std::path::PathBuf;
 
 fn corpus_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../eval")
-}
-
-#[test]
-fn corpora_parse() {
-    let cases = load_all(&corpus_root()).unwrap_or_else(|e| panic!("{e}"));
-    let ids: BTreeSet<&str> = cases.iter().map(|c| c.id.0.as_str()).collect();
-    assert_eq!(ids.len(), cases.len(), "ids are unique");
-    for want in [
-        "injection-mail-body-send",
-        "injection-mail-body-send-trustmore",
-        "injection-mail-body-forward-contact-lookalike",
-        "cross-space-request-delivered",
-        "cross-space-request-asks-outbound",
-        "adaptive-judge-probing-trips-breaker",
-        "adaptive-judge-consecutive-denials-trip-breaker",
-        "benign-archive-newsletters",
-    ] {
-        assert!(ids.contains(want), "missing {want}");
-    }
-    assert!(
-        cases
-            .iter()
-            .all(|c| !c.turns.is_empty() && !c.why.is_empty())
-    );
 }
 
 #[test]

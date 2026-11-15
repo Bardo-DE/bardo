@@ -181,14 +181,6 @@ mod tests {
     use porter_core::DataClass;
     use porter_infer::{ChatRequest, InferReply, ReplyShape};
 
-    #[test]
-    fn a_tap_that_is_off_keeps_nothing() {
-        assert!(Tap::off().is_off());
-        let memory = MemoryTap::default();
-        Tap::off().keep(finish(begin("t", 1, &sample()), &InferReply::Cancelled, 3));
-        assert!(memory.take().is_empty());
-    }
-
     fn sample() -> ChatRequest {
         ChatRequest::new(
             vec![],

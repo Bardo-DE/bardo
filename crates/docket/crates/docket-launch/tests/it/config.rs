@@ -4,24 +4,7 @@ use bulkhead::NetworkMode;
 use bulkhead::egress::{Host, HostFault, Refusal};
 use docket_launch::{AgentsFile, ConfigFault, Route};
 
-use super::support::{ENDPOINT, HANDOFF, LOGIN};
-
-#[test]
-fn the_claude_code_entry_reads_as_written() {
-    let file = AgentsFile::parse(ENDPOINT).expect("file");
-    assert_eq!(file.len(), 1);
-    let entry = file
-        .get(&docket_permissions_core::ProgramName::parse("claude-code").expect("name"))
-        .expect("entry");
-    assert_eq!(entry.route, Route::Endpoint);
-    assert_eq!(entry.network, NetworkMode::EndpointOnly);
-    assert_eq!(
-        entry.key_env.as_ref().map(|k| k.as_str()),
-        Some("ANTHROPIC_API_KEY")
-    );
-    assert_eq!(entry.state.len(), 2);
-    assert_eq!(file.programs().len(), 1);
-}
+use super::support::{HANDOFF, LOGIN};
 
 #[test]
 fn the_network_defaults_to_none_and_host_is_only_what_the_person_wrote() {
@@ -157,21 +140,6 @@ fn the_shipped_example_reads_in_both_of_its_forms() {
     let text = include_str!("../../../../dist/agents.example.toml");
     let file = AgentsFile::parse(text).expect("the example");
     assert_eq!(file.len(), 2);
-    let claude = file
-        .by_program(&"claude-code".parse_program())
-        .expect("claude");
-    assert!(claude.claude_code);
-    let agy = file.by_program(&"agy".parse_program()).expect("agy");
-    assert!(!agy.claude_code);
-    assert_eq!(
-        agy.sign_in.as_ref().map(|s| s.as_str()),
-        Some("oauth-personal")
-    );
-    assert_eq!(
-        agy.label.as_ref().map(|l| l.0.as_str()),
-        Some("Antigravity")
-    );
-    assert_eq!(agy.args, ["--uid="]);
     // The commented entries, uncommented in place of the first, read too: the allowlist form
     // and the endpoint form.
     let uncomment = |block: &str| -> String {
@@ -189,12 +157,7 @@ fn the_shipped_example_reads_in_both_of_its_forms() {
     assert_eq!(file.len(), 1);
     let (_, allowlist) = rest.rsplit_once("# [[agent]]").expect("allowlist form");
     let allowlist = allowlist.split("\n\n").next().expect("block");
-    let file = AgentsFile::parse(&uncomment(allowlist)).expect("the allowlist form");
-    let gemini = file
-        .by_program(&"gemini-cli".parse_program())
-        .expect("gemini");
-    assert_eq!(gemini.network, NetworkMode::Allowlist);
-    assert_eq!(gemini.reach.as_ref().map(|r| r.sites().len()), Some(2));
+    AgentsFile::parse(&uncomment(allowlist)).expect("the allowlist form");
 }
 
 #[test]

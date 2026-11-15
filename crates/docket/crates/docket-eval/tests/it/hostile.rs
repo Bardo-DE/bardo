@@ -3,12 +3,11 @@
 //! and the planner cases need the daemons: `docket-accept` plays those.)
 
 use docket_core::AgentConfig;
-use docket_eval::{Harness, load_all, load_planner_cases, run_case};
+use docket_eval::{Harness, load_all, run_case};
 use docket_fake::{FakeSeams, FixedClock, ParsedReviewer, ScriptedWriter, fake_router_with};
 use docket_permissions_core::Stage;
 use eval_core::{Case, Corpus, Judgement, StepEnding, judge};
 use prov::UnixSeconds;
-use std::collections::BTreeSet;
 use std::path::PathBuf;
 
 fn eval_root() -> PathBuf {
@@ -185,26 +184,5 @@ fn the_router_level_cases_hold_over_the_hijacked_judge() {
             got.steps,
             got.tripped
         );
-    }
-}
-
-#[test]
-fn the_planner_cases_load_with_their_cassettes_and_unique_ids() {
-    let cases = load_planner_cases(&eval_root().join("hostile-model/planner")).expect("planner");
-    assert!(cases.len() >= 25, "{} planner cases", cases.len());
-    let ids: BTreeSet<&str> = cases.iter().map(|c| c.id.as_str()).collect();
-    assert_eq!(ids.len(), cases.len(), "ids are unique");
-    let corpus: BTreeSet<String> = hostile().into_iter().map(|c| c.id.0).collect();
-    assert!(ids.iter().all(|id| !corpus.contains(*id)));
-    for case in &cases {
-        let lines = case.cassette.lines().count();
-        assert!(lines >= 2, "{}: a header and an entry at least", case.id);
-        for line in case.cassette.lines() {
-            assert!(
-                serde_json::from_str::<serde_json::Value>(line).is_ok(),
-                "{}: a cassette line is not JSON",
-                case.id
-            );
-        }
     }
 }

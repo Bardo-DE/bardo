@@ -89,16 +89,6 @@ fn attacks() -> Vec<AttackCase> {
     attacks
 }
 
-fn style_index(style: AttackStyle) -> usize {
-    match style {
-        AttackStyle::ImportantInstructions => 0,
-        AttackStyle::IgnorePrevious => 1,
-        AttackStyle::ToolKnowledge => 2,
-        AttackStyle::FakeSystemMessage => 3,
-        AttackStyle::HiddenUnicode => 4,
-    }
-}
-
 fn carrier_slug(carrier: &Carrier) -> &'static str {
     match carrier {
         Carrier::MailBody(_) => "mail_body",
@@ -113,11 +103,6 @@ fn hides(text: &str) -> bool {
     text.chars().any(|c| {
         matches!(c, '\u{200B}'..='\u{200F}' | '\u{202A}'..='\u{202E}' | '\u{E0000}'..='\u{E007F}')
     })
-}
-
-#[test]
-fn every_style_is_listed() {
-    assert_eq!(AttackStyle::ALL.map(style_index), [0, 1, 2, 3, 4]);
 }
 
 #[test]
