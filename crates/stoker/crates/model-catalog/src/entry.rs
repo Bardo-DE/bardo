@@ -160,7 +160,6 @@ impl VramEstimate {
 /// slugs are the same.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum CatalogKind {
     Llm,
     ComputerUse,
@@ -205,7 +204,6 @@ pub struct SamplingDefaults {
 /// Whether a model thinks when nothing asks it to or not to.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ReasoningDefault {
     On,
     Off,

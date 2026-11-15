@@ -16,7 +16,6 @@ pub enum DropHow {
 
 /// The change being made now, if any.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum Work {
     /// Nothing is being changed.
     #[default]
@@ -32,7 +31,6 @@ pub enum Work {
 
 /// Something the window must ask before it goes on.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum Question {
     /// Nothing is being asked.
     #[default]
@@ -51,7 +49,6 @@ pub enum Question {
 
 /// A rename that changes a file's extension, waiting to be confirmed.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct ExtensionChange {
     /// The folder the file is in.
     pub folder: FolderPath,
@@ -96,7 +93,6 @@ impl ExtensionChange {
 
 /// A disk that would not eject because it is in use.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct BusyDisk {
     /// Which disk.
     pub id: VolumeId,

@@ -7,7 +7,6 @@ use std::sync::Arc;
 
 /// Why a git command did not give what was wanted.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum GitCause {
     /// Git could not be run to its end.
     #[error(transparent)]

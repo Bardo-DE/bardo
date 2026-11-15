@@ -34,7 +34,6 @@ use notify::{RecommendedWatcher, RecursiveMode, Watcher};
 
 /// Why a settings file could not be watched.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum WatchError {
     /// The directory that holds the file could not be made.
     #[error("{}: {source}", dir.display())]

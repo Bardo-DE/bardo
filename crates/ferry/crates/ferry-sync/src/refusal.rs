@@ -35,7 +35,6 @@ pub struct RetryAfter(pub u32);
 
 /// Why a write was refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum PutRefused {
     /// The base is stale.
     #[error("conflict on {:?}", .0.item)]
@@ -65,7 +64,6 @@ pub enum PutRefused {
 
 /// Why an online document could not be exported as a file.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ExportError {
     /// The backend exports no file of it (a Form, a Site, a Map, or a backend with no export).
     #[error("no file format")]
@@ -80,7 +78,6 @@ pub enum ExportError {
 
 /// Why a read failed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ReplicaError {
     /// The anchor is no longer valid (Dropbox 409, Graph resync, an expired page token):
     /// list from `Cursor::Start` and reconcile by content hash, uploading nothing known.

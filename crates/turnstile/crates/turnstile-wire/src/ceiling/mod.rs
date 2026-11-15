@@ -36,7 +36,6 @@ pub struct Plan {
 
 /// Why a request is outside the ceiling.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum BadCaps {
     /// A keyboard with more keys than a request may list.
     #[error("the key list is longer than a request may make it")]

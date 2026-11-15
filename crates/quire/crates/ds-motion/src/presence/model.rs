@@ -52,7 +52,6 @@ impl Life {
 
 /// What happened to the surface.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum PresenceIn {
     /// The caller shows it.
     Show,
@@ -70,7 +69,6 @@ impl From<ds_core::machine::Elapsed> for PresenceIn {
 
 /// What the surface's owner does after a step.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum PresenceOut {
     /// The exit has settled: tell the caller the surface has gone (`on_hidden`), so it can unmap it.
     Gone,

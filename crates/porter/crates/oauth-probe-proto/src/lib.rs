@@ -19,7 +19,6 @@ use porter_ids::WebUrl;
 
 /// Why a read could not be built or its answer not used.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Failure {
     /// The server answered with this status, which the reading does not take as an answer.
     Status(u16),

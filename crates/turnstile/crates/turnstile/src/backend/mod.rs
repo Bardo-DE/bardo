@@ -12,7 +12,6 @@ use turnstile_wire::{DeviceSpec, Event};
 
 /// Why the kernel side failed.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum BackendError {
     /// The device could not be set up or created.
     #[error("the device could not be made: {0}")]

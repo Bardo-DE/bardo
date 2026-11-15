@@ -4,7 +4,6 @@ use crate::time::VblankSeq;
 
 /// What became of a frame.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum FrameOutcome {
     /// Presented at the vblank it was made for.
     OnTime,

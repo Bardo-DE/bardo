@@ -37,7 +37,6 @@ impl Covers {
 
 /// Why a model's summary was refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum SummaryFault {
     /// It said nothing.
     #[error("the summary is empty")]

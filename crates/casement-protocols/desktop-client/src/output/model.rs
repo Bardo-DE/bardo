@@ -8,7 +8,6 @@ use casement_protocols::vocab::Transform;
 
 /// A mode a head can run.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Mode {
     /// This client's key for it.
     pub key: ModeKey,
@@ -34,7 +33,6 @@ impl Mode {
 
 /// One output head (a connector with a display behind it).
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Head {
     /// This client's key for it.
     pub key: HeadKey,

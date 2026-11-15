@@ -7,7 +7,6 @@ use std::collections::BTreeMap;
 /// What happens to one entity (an app, a window, a Space) of key `K` whose properties change by
 /// `C`.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Lifecycle<K, C> {
     /// It appeared.
     Opened(K),

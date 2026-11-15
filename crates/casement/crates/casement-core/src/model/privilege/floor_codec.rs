@@ -24,7 +24,6 @@ use serde::Deserialize;
 
 /// Why the floor's text was refused.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum FloorError {
     /// The text is larger than a floor file can be.
     #[error("the floor file is larger than 64 KiB")]

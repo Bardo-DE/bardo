@@ -100,7 +100,6 @@ impl GammaTable {
 
 /// What an output's gamma should be.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum GammaRamp {
     /// The identity curve (what the output has when no client controls its gamma).
     Identity,

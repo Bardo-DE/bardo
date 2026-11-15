@@ -4,7 +4,6 @@ use porter_infer::{InferRefusal, NoPlaceReason, PlaceKind, SessionError};
 
 /// Why a transport could not carry a request. More reasons may be added: match with a wildcard.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum TransportError {
     /// No daemon answered.
     #[error("no account service reachable")]
@@ -52,7 +51,6 @@ pub enum TransportError {
 /// Why inferd refused a call about computers or guests. More reasons may be added: match with a
 /// wildcard.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ComputerReason {
     /// The name is empty, too long or has control characters.
     #[error("bad name")]
@@ -139,7 +137,6 @@ impl ComputerReason {
 /// Why a client call failed; each variant is something an app can show or act on. More reasons
 /// may be added: match with a wildcard.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ClientError {
     /// The request did not arrive or the reply did not come back. This also carries inferd's
     /// answer that none of the places a call allowed can serve it

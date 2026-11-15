@@ -11,7 +11,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]
 #[serde(rename_all = "snake_case")]
 #[word(case = snake)]
-#[non_exhaustive]
 pub enum AccelProfile {
     /// Constant: the device moves the pointer in proportion.
     Flat,
@@ -21,7 +20,6 @@ pub enum AccelProfile {
 
 /// How one kind of pointing device behaves.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct PointerProfile {
     /// The acceleration curve.
     pub accel: AccelProfile,
@@ -56,7 +54,6 @@ impl PointerProfile {
 
 /// `pointer.*` and `touchpad.*`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct PointerSettings {
     /// Mice and trackballs.
     pub mouse: PointerProfile,

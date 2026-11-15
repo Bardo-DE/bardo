@@ -11,7 +11,6 @@ use super::{AgentSetting, Exposure};
 
 /// Why a doc could not be regenerated.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum DocTableError {
     /// A marker names a domain no schema has a key in.
     #[error("`keys:begin {domain}` names a domain no schema has keys for")]

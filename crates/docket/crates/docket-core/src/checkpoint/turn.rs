@@ -5,7 +5,6 @@ use serde::{Deserialize, Serialize};
 /// How a turn ended. Growing.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum TurnEnd {
     /// The agent answered.
     Answered,

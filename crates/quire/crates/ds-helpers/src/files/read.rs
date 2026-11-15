@@ -10,7 +10,6 @@ use std::string::FromUtf8Error;
 /// absent; every other one means something is there that this read could not take, and a caller
 /// must not treat it as absent (and so must not overwrite it with defaults).
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum ReadError {
     /// There is no file at the path.
     #[error("{path}: no such file")]

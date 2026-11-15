@@ -41,7 +41,6 @@ pub struct PlaneId(pub u32);
 /// What a plane is for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum PlaneKind {
     /// The plane the frame is scanned out from.
     Primary,
@@ -54,7 +53,6 @@ pub enum PlaneKind {
 /// Whether a monitor is attached.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ConnectorStatus {
     /// A monitor is attached.
     Connected,
@@ -66,7 +64,6 @@ pub enum ConnectorStatus {
 
 /// One connector and what its monitor reports.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct ConnectorFacts {
     /// Its kernel id.
     pub id: ConnectorId,
@@ -138,7 +135,6 @@ impl ConnectorFacts {
 
 /// One CRTC.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct CrtcFacts {
     /// Its kernel id.
     pub id: CrtcId,
@@ -176,7 +172,6 @@ impl CrtcFacts {
 
 /// One plane.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PlaneFacts {
     /// Its kernel id.
     pub id: PlaneId,
@@ -207,7 +202,6 @@ impl PlaneFacts {
 
 /// Everything a device offers: connectors, CRTCs and planes.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct KmsResources {
     /// The connectors.
     pub connectors: Vec<ConnectorFacts>,
@@ -234,7 +228,6 @@ impl KmsResources {
 
 /// One output's part of a commit.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct OutputCommit {
     /// The connector.
     pub connector: ConnectorId,
@@ -260,7 +253,6 @@ impl OutputCommit {
 
 /// One atomic commit: the outputs it sets up.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct KmsCommit {
     /// The outputs.
     pub outputs: Vec<OutputCommit>,
@@ -281,7 +273,6 @@ impl KmsCommit {
 
 /// What a `TEST_ONLY` commit said.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum CommitVerdict {
     /// The commit would succeed.
     Accepted,
@@ -293,7 +284,6 @@ pub enum CommitVerdict {
 
 /// Why the kernel refuses a commit.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum KmsRefusal {
     /// Not enough bandwidth for the modes together.
     #[error("not enough bandwidth")]
@@ -317,7 +307,6 @@ pub enum KmsRefusal {
 
 /// Why a KMS call failed.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum KmsError {
     /// The device returned an I/O error.
     #[error("kms: {0}")]

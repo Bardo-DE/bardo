@@ -51,7 +51,6 @@ pub struct A11yVerdict {
 
 /// Why a root could not be queued.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum A11yFault {
     /// Too many roots are waiting.
     Busy,

@@ -2,7 +2,6 @@
 
 /// Why the store could not answer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum SecretsError {
     /// Nothing is filed under that key.
     #[error("no such secret")]

@@ -10,7 +10,6 @@ use crate::tokens::hex::{Alpha, Hex};
 
 /// One layer of a shadow: `dx dy blur spread colour`, as CSS `box-shadow` reads them.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub struct ShadowLayer {
     /// Horizontal offset in px.
     pub dx: i16,

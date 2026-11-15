@@ -10,7 +10,6 @@ pub struct ItemCount(pub u32);
 
 /// The facts about one item, as the filesystem gave them.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Info {
     /// Its name.
     pub name: FileName,

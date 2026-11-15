@@ -22,7 +22,6 @@ pub enum SyncChange {
 
 /// How a sync-collection reply ends.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum SyncEnd {
     /// Every change is listed: the next report starts from this token.
     Complete(String),

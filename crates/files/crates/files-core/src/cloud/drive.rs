@@ -4,7 +4,6 @@ use crate::{AccountLabel, ByteSize, CloudWords, DriveId, FolderPath, ProviderNam
 
 /// Where a drive stands.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum DriveState {
     /// Turned on and its listing not read yet.
     Starting,
@@ -35,7 +34,6 @@ pub struct Usage {
 
 /// One drive the sidebar lists.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct CloudDrive {
     /// What the service calls it.
     pub id: DriveId,

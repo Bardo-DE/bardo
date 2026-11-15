@@ -7,7 +7,6 @@ use crate::journal::Inverse;
 /// A piece of work that has ended: what it was, how it ended, where it changed things, and how
 /// to undo what it did.
 #[derive(Debug, Clone, PartialEq)]
-#[non_exhaustive]
 pub struct Ran {
     /// What the work was about.
     pub summary: Summary,

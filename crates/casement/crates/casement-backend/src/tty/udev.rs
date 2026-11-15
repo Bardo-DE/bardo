@@ -15,7 +15,6 @@ impl DevicePath {
 
 /// One device event.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum DeviceEvent {
     /// A device appeared.
     Added(DevicePath),

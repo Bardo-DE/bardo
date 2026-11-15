@@ -4,7 +4,6 @@ use std::io;
 
 /// Why a folder or an entry could not be read.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ListError {
     /// There is nothing at that path.
     #[error("The folder can't be found.")]
@@ -38,7 +37,6 @@ impl ListError {
 
 /// Why a folder could not be followed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum WatchError {
     /// There is nothing at that path.
     #[error("The folder can't be found.")]
@@ -56,7 +54,6 @@ pub enum WatchError {
 
 /// Why how a folder is shown could not be remembered.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum PrefsError {
     /// The saved file is there but can't be read or understood, so nothing is written over it.
     #[error("How folders are shown can't be remembered right now.")]
@@ -71,7 +68,6 @@ pub enum PrefsError {
 
 /// Why the cloud drives could not be asked.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum CloudError {
     /// The service is not there, or did not answer.
     #[error("The cloud drives can't be reached right now.")]

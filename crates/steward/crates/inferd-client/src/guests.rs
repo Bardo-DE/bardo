@@ -32,7 +32,6 @@ use steward_dbus::inference::{GuestAsksStream, GuestsChangedStream, InferencePro
 
 /// One thing heard about the computers that ask. More may be added: match with a wildcard.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum GuestChange {
     /// A computer began asking: the person is to be asked now. A signal that does not say the
     /// computer's id and name plainly is [`GuestChange::Changed`] instead, so the list is read

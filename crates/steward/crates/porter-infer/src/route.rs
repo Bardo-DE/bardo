@@ -12,7 +12,6 @@ use porter_core::DataClass;
 
 /// What routing needs to know about the request.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct RouteAsk {
     /// The class of data it carries.
     pub class: DataClass,

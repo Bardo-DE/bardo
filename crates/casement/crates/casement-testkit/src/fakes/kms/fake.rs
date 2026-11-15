@@ -16,7 +16,6 @@ use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 /// How a monitor's link behaves after a commit.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum LinkBehaviour {
     /// Nothing changes.
     #[default]

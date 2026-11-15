@@ -81,7 +81,6 @@ impl AutoEvict {
 /// an eviction is announced whatever this says (a swap is never hidden).
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ShowReason {
     /// Only an eviction is announced.
     Off,
@@ -275,7 +274,6 @@ pub struct Picked {
 /// Why a named model could not serve.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum DeclinedBecause {
     /// No account offers it for this request.
     NotListed,

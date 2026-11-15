@@ -167,7 +167,6 @@ impl Mounts for Fusermount {
 
 /// Why a request was refused.
 #[derive(Debug)]
-#[non_exhaustive]
 pub enum Refusal {
     /// The caller is another user.
     Peer(u32),

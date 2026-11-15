@@ -4,7 +4,6 @@ use thiserror::Error as ThisError;
 
 /// Why a body was not a multistatus.
 #[derive(Debug, Clone, PartialEq, Eq, ThisError)]
-#[non_exhaustive]
 pub enum Error {
     /// Not well-formed XML, or XML with a document type declaration, which is refused rather
     /// than expanded. The text is the XML reader's own.

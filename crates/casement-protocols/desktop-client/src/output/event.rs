@@ -9,7 +9,6 @@ use casement_protocols::vocab::Transform;
 
 /// One property of a head changing.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum HeadChange {
     /// The name.
     Name(OutputName),
@@ -39,7 +38,6 @@ pub enum HeadChange {
 
 /// One property of a mode changing.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ModeChange {
     /// Pixels.
     Size(Size),
@@ -53,7 +51,6 @@ pub enum ModeChange {
 
 /// An output event.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum OutputEvent {
     /// A head appeared.
     HeadOpened(HeadKey),

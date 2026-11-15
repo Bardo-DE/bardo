@@ -18,7 +18,6 @@ use casement_protocols::vocab::{
 /// Space or tell an app to hide (FINDINGS). Which protocol carries each command is
 /// [`crate::requires_on`]'s table; [`crate::supports`] answers it for an offer.
 #[derive(Debug, Clone, PartialEq)]
-#[non_exhaustive]
 pub enum DesktopCommand {
     /// Activate on the seat the client picked at bind time.
     Activate(ToplevelKey),
@@ -227,7 +226,6 @@ pub enum DesktopCommand {
 
 /// A place a dragged window can be dropped on a Space.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct SpaceTarget {
     /// The Space the window moves to.
     pub space: SpaceId,
@@ -246,7 +244,6 @@ impl SpaceTarget {
 /// [`requires_on`](crate::requires_on) and the wire client read it, and [`CommandError`](
 /// crate::CommandError) names it instead of the command.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum CommandRoute {
     /// The plain window commands: `zwlr-foreign-toplevel-management` or, on the Quire arm,
     /// `quire_desktop_window_v1`.
@@ -328,7 +325,6 @@ impl DesktopCommand {
 /// A configuration or a capture finishes later; its result arrives as an event carrying the
 /// same id.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Ticket {
     /// Sent; no result will follow.
     Sent,

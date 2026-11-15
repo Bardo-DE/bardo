@@ -5,7 +5,6 @@ use turnstile_wire::{Reason, WireError};
 
 /// Why a request to the service failed.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum ClientError {
     /// There is no service to talk to: no socket, or nothing listening on it. The caller may use
     /// its own fallback.

@@ -11,7 +11,6 @@ use crate::names::ToplevelIdentifier;
 
 /// A toplevel as `ext-foreign-toplevel-list-v1` describes it.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Listed {
     /// The list-side record's key.
     pub key: ToplevelKey,
@@ -42,7 +41,6 @@ impl Listed {
 
 /// A decided pair.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Pairing {
     /// The list-side key.
     pub listed: ToplevelKey,

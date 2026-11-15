@@ -6,7 +6,6 @@ use std::future::Future;
 
 /// Why a session could not carry a frame.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum SessionError {
     /// The other side closed the session.
     #[error("session closed")]

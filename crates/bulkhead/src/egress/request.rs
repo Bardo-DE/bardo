@@ -16,7 +16,6 @@ pub const HEAD_DEADLINE: Duration = Duration::from_secs(10);
 /// Why a request was not understood. Every one is answered with a plain 400, except a stream
 /// that closed before it said anything, which is just dropped.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum BadRequest {
     /// A line or the whole head is longer than allowed.
     #[error("the request is too long")]

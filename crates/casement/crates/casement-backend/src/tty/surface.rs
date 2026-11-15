@@ -8,7 +8,6 @@ use casement_core::time::{Mono, VblankSeq};
 
 /// A client buffer a plane could scan out directly instead of compositing it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct DirectCandidate {
     /// The window whose buffer it is.
     pub window: WindowId,
@@ -22,7 +21,6 @@ impl DirectCandidate {
 }
 
 /// What to put on the glass.
-#[non_exhaustive]
 pub enum QueuedFrame<'a> {
     /// A frame already rendered.
     Rendered(FramePixels),
@@ -44,7 +42,6 @@ impl std::fmt::Debug for QueuedFrame<'_> {
 
 /// What queueing a frame did.
 #[derive(Debug)]
-#[non_exhaustive]
 pub enum QueueOutcome {
     /// Queued for this vblank; `presented` will report it.
     Queued(VblankSeq),
@@ -58,7 +55,6 @@ pub enum QueueOutcome {
 
 /// A frame that reached the glass.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Presented {
     /// Its vblank.
     pub seq: VblankSeq,

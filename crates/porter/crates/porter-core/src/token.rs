@@ -59,7 +59,6 @@ pub struct Audience(pub String);
 /// The form of an issued token.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum TokenKind {
     /// An HTTP bearer access token.
     Bearer,
@@ -81,7 +80,6 @@ pub fn is_due(expires: UnixSeconds, now: UnixSeconds) -> bool {
 
 /// A short-lived token issued to a granted app.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct IssuedToken {
     /// Its form.
     pub kind: TokenKind,

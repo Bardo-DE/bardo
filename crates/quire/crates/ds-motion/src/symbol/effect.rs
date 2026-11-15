@@ -32,7 +32,6 @@ pub enum EffectActivity {
 /// The effects that play once and settle: a hop, a dip, a few swings, a swell, a turn, the
 /// icon's own moving part, the layers lighting in order.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-#[non_exhaustive]
 pub enum OnceEffect {
     /// The symbol hops and settles.
     Bounce,
@@ -54,7 +53,6 @@ pub enum OnceEffect {
 
 /// The effects that run for as long as they are active.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-#[non_exhaustive]
 pub enum LoopEffect {
     /// The symbol bounces again and again.
     Bounce,
@@ -78,7 +76,6 @@ pub enum LoopEffect {
 
 /// The effects that bring a symbol in, take it out, draw it or swap it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-#[non_exhaustive]
 pub enum TransitionEffect {
     /// The symbol grows in from a smaller size as it fades up, when it becomes visible.
     Appear,
@@ -92,7 +89,6 @@ pub enum TransitionEffect {
 
 /// One symbol effect and the run mode that fires it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum SymbolEffect {
     /// Plays once each time the trigger changes; the first render plays nothing.
     Once(OnceEffect, Trigger),

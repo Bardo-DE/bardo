@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 /// The field of a need an offer fell short on, so the UI can say why (G9).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum Shortfall {
     /// Less access than asked.
     Access,

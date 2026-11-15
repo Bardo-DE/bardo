@@ -36,7 +36,6 @@ use crate::names::{AppNames, Found, Registered};
 
 /// Why an app is not remembered.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Why {
     /// Nothing can tell apps apart yet, or nothing was set up to.
     NoProver,
@@ -77,7 +76,6 @@ impl fmt::Display for Why {
 
 /// Whether what an app was allowed may be remembered, or honoured again.
 #[derive(Clone, Debug, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum AppProof {
     /// The app is what its id says; the id is the one to remember it by. It is the id the app
     /// gave, or, for an app that gave none, the id of the entry that runs its program.

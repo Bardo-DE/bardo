@@ -12,7 +12,6 @@ pub use request::{decode_request, encode_request};
 
 /// Why a datagram could not be read or written.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum WireError {
     /// Nothing was sent.
     #[error("the message is empty")]

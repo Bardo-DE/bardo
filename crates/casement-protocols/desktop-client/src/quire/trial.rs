@@ -13,7 +13,6 @@ use casement_protocols::vocab::TrialId;
 /// sends this again, possibly with the same [`TrialId`], so a shell treats an id it already shows
 /// as the same question with a restarted countdown.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct DisplayTrial {
     /// The trial's id; the answer and the end name it.
     pub trial: TrialId,

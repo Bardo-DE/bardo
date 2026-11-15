@@ -49,7 +49,6 @@ pub enum Role {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum Part {
     Text(String),
     Image(ImageInput),
@@ -127,7 +126,6 @@ pub enum ToolStatus {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ToolSpec {
     Function {
         name: ToolName,
@@ -146,7 +144,6 @@ pub struct NativeTool {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ToolChoice {
     Auto,
     Never,
@@ -159,7 +156,6 @@ pub enum ToolChoice {
 /// Lark. `Choice` is a reply that is exactly one of the listed strings.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum OutputShape {
     Free,
     JsonSchema(SchemaText),
@@ -186,7 +182,6 @@ pub struct Limits {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum Reasoning {
     /// Whatever the engine and the model's template do when nothing is said: a codec sends no
     /// reasoning field for it. (A caller that wants a short turn asks for `Off`.)

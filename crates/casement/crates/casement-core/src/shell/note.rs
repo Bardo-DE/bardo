@@ -9,7 +9,6 @@ use casement_protocols::vocab::{DragOutcome, HeldMods, ScreenEdge, ShellRole, Sh
 
 /// Something the shell's protocol layer records or sends.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ShellNote {
     /// A layer surface took a role: the protocol layer records which surface holds it, so
     /// the events addressed to a role (modifiers) find it.
@@ -78,7 +77,6 @@ pub enum ShellNote {
 
 /// The other half of a Split View is being chosen.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct SplitChoices {
     /// The window already full screen on its half.
     pub first: WindowId,

@@ -44,7 +44,6 @@ pub enum Direction {
 
 /// One live change to the folder being watched.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Change {
     /// A new entry appeared.
     Added(Entry),
@@ -58,7 +57,6 @@ pub enum Change {
 
 /// Everything that can happen to a browser: what the person did and what the caller found out.
 #[derive(Debug, Clone, PartialEq)]
-#[non_exhaustive]
 pub enum Input {
     /// The answer to `Effect::List`.
     Listed(Location, Result<Vec<Entry>, ListFailure>),

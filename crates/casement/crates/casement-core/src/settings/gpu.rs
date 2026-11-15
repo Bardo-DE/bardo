@@ -5,7 +5,6 @@ use crate::gpu::GpuChoice;
 
 /// `gpu.*`.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct GpuSettings {
     /// `gpu.render`: the GPU that renders every frame.
     pub render: GpuChoice,

@@ -18,7 +18,6 @@ pub enum SavedState {
 
 /// One row of the list, oldest first.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub enum CheckpointRow {
     /// A point saved before a turn.
     Saved {

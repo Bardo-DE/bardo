@@ -30,7 +30,6 @@ use crate::names::AppNames;
 
 /// Why a screenshot could not be made.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum ShotError {
     /// No screenshots were set up, or there is no output to capture.
     #[error("there is no screen to capture")]

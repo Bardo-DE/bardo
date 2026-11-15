@@ -33,7 +33,6 @@ use crate::Details;
 
 /// Why no `Response` came.
 #[derive(Debug)]
-#[non_exhaustive]
 pub enum SheetError {
     /// The bus refused a step.
     Bus(BusError),

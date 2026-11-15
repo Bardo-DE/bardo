@@ -18,7 +18,6 @@ use crate::ItemRef;
 
 /// What the service tells without being asked.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum CloudNews {
     /// The drives changed (one came or went, a state, the space used): ask for the list again.
     Drives,

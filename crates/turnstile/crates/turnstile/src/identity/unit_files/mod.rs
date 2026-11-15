@@ -65,7 +65,6 @@ const TRANSIENT_DIR: &str = "/run/systemd/transient";
 
 /// Why a caller could not be shown to be the real unit.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum NotUnit {
     /// The control group's last part is not a service.
     #[error("not in a service's control group")]

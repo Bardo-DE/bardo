@@ -33,7 +33,6 @@ pub struct HeaderName(pub String);
 /// The header that authenticates a request, if any. Local engines use `None`.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum AuthHeader {
     None,
     /// `Authorization: Bearer <secret>`. Refused (`HttpError::Insecure`) on a plain `Tcp` target:

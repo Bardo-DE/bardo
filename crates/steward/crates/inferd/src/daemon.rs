@@ -65,7 +65,6 @@ pub const PROC_ROOT_VAR: &str = "INFERD_PROC_ROOT";
 
 /// Everything inferd needs to start, as typed values.
 #[derive(Debug, Clone)]
-#[non_exhaustive]
 pub struct Config {
     /// Where the catalog, the sockets, the audit file and the settings are.
     pub dirs: Dirs,

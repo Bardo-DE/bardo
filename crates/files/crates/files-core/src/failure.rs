@@ -4,7 +4,6 @@ use std::io;
 
 /// Why a change to the files failed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum OpFailure {
     /// An item is gone.
     #[error("An item can't be found any more.")]

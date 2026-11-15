@@ -17,7 +17,6 @@ use porter_core::{AccountId, AccountLabel, AuthKind, ProviderId, SecretText, Ser
 
 /// Why an account's servers cannot be edited.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum ServersFixed {
     /// It signs in at its provider's page (OAuth, a browser sign-in): the token it holds goes
     /// to the provider's servers only.
@@ -58,7 +57,6 @@ pub fn servers_fixed(auth: AuthKind) -> Option<ServersFixed> {
 /// The password is private and `Debug` redacts it; it leaves by [`EditServers::into_parts`],
 /// once.
 #[derive(Debug)]
-#[non_exhaustive]
 pub struct EditServers {
     account: AccountId,
     provider: ProviderId,
@@ -156,7 +154,6 @@ impl EditServers {
 /// no `Clone` and no `PartialEq`, and the password has no accessor: it leaves by
 /// [`EditedServers::into_parts`], once. `Debug` redacts it and any token.
 #[derive(Debug)]
-#[non_exhaustive]
 pub struct EditedServers {
     servers: Manual,
     endpoints: Vec<ServiceEndpoint>,

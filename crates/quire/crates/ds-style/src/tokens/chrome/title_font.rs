@@ -9,7 +9,6 @@ const TITLE_WEIGHT: u16 = 600;
 
 /// A title's font: the family name its face registers as, a size in px and a weight.
 #[derive(Debug, Clone, PartialEq)]
-#[non_exhaustive]
 pub struct TitleFont {
     /// The family name the UI stack leads with: `Inter`.
     pub family: String,

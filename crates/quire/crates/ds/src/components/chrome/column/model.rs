@@ -19,7 +19,6 @@ pub enum ColumnAlign {
 
 /// How far a column reaches along its own height.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-#[non_exhaustive]
 pub enum ColumnExtent {
     /// As tall as its children.
     #[default]

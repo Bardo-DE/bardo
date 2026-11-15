@@ -15,7 +15,6 @@ use ds_core::word::Word;
 /// One signal colour.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]
 #[token(prefix = "signal-", kind = fixed, css = signal_css)]
-#[non_exhaustive]
 pub enum SignalColour {
     /// `--signal-success`: green.
     Success,

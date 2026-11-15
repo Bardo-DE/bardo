@@ -31,7 +31,6 @@ pub struct Skipped(pub usize);
 
 /// A folder's entries and how many were left out.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Listing {
     /// What was read.
     pub entries: Vec<Entry>,

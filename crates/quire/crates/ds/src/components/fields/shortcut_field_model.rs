@@ -9,7 +9,6 @@ use ds_core::word::Word;
 
 /// What one recording ended with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ShortcutRecorded {
     /// The person typed this combination.
     Chord(Chord),
@@ -41,7 +40,6 @@ pub(crate) enum Capture {
 
 /// What the field accepts as a shortcut.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-#[non_exhaustive]
 pub enum ShortcutKinds {
     /// A combination with a modifier, or a function key; the system-settings recorder.
     #[default]

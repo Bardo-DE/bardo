@@ -10,7 +10,6 @@ use porter_provider::{
 
 /// What Google's `prompt` asks for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum GooglePrompt {
     /// Show the consent page again (`prompt=consent`): the only way to be sure of a refresh token.
     Consent,
@@ -44,7 +43,6 @@ impl GooglePrompt {
 
 /// What a sign-in tells the issuer about the person, besides the scopes.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct AuthorizeAsk {
     /// The address to open the page on (`login_hint`), when known.
     pub login_hint: Option<LoginHint>,

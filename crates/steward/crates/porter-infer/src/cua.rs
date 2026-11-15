@@ -12,7 +12,6 @@ use std::fmt;
 /// Opens a computer-use run: the goal and the planner's hints. Later `CuaStep` requests on the
 /// same session continue it; the session is pinned to one model so its history stays valid.
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct CuaBegin {
     /// What the person asked for.
     pub goal: String,
@@ -59,7 +58,6 @@ pub struct StepIndex(pub u32);
 
 /// One step: what the window shows now and what happened to the last actions.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct CuaStepRequest {
     /// Which step.
     pub step: StepIndex,
@@ -239,7 +237,6 @@ pub struct MaskedRegions(pub u16);
 
 /// The model's answer to one step.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct CuaStepReply {
     /// Its reasoning, when it gave any.
     pub thought: Option<String>,
@@ -294,7 +291,6 @@ pub struct DroppedAction {
 /// Why a proposed action was dropped.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum DropReason {
     /// The verb is not on the allow-list.
     UnsupportedVerb,
@@ -326,7 +322,6 @@ pub enum SafetyHint {
 /// Why a step produced no reply.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum CuaStepFailure {
     /// The reply could not be parsed, even after the repair attempt.
     Unparseable,

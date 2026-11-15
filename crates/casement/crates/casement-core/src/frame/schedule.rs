@@ -5,7 +5,6 @@ use std::time::Duration;
 
 /// When to render and which vblank the frame is for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Deadline {
     /// The instant to start rendering.
     pub render_at: Mono,

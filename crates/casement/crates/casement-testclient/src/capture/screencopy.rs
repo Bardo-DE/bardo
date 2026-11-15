@@ -22,7 +22,6 @@ use wayland_protocols_wlr::screencopy::v1::client::{
 
 /// How much of the output to ask for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum CopyArea {
     /// All of it.
     Output,
@@ -32,7 +31,6 @@ pub enum CopyArea {
 
 /// Whether the copy asks for damage (`copy_with_damage`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum CopyKind {
     /// `copy`.
     Plain,
@@ -42,7 +40,6 @@ pub enum CopyKind {
 
 /// A buffer the frame offered.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Offer {
     /// The `wl_shm` format code.
     pub format: u32,
@@ -54,7 +51,6 @@ pub struct Offer {
 
 /// A dma-buf the frame offered: `linux_dmabuf`'s fourcc code and size.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct DmabufOffer {
     /// The fourcc code.
     pub format: u32,
@@ -64,7 +60,6 @@ pub struct DmabufOffer {
 
 /// Why a copy failed.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum CopyFailure {
     /// The compositor sent `failed`.
     Failed,
@@ -74,7 +69,6 @@ pub enum CopyFailure {
 
 /// A finished copy.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Copied {
     /// Its size in pixels.
     pub size: Size,

@@ -113,7 +113,6 @@ pub struct PlacedWindow {
 /// A window flying into a dock tile (minimising) or out of one (coming back): the two ends and
 /// how far along it is. The renderer draws the window shrunk, or as a genie, by it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Flight {
     /// The window's end of the flight, in global logical pixels: where it left from, or where
     /// it comes back to.

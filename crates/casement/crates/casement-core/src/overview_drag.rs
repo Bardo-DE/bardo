@@ -18,7 +18,6 @@ pub const DRAG_THRESHOLD: u32 = 8;
 /// A place a dragged window can be dropped: the rectangle (global logical pixels) and the Space
 /// it moves the window to.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct SpaceTarget {
     /// The Space.
     pub space: SpaceId,
@@ -35,7 +34,6 @@ impl SpaceTarget {
 
 /// What a drop on a target does.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Landing {
     /// The window moves to this Space.
     Space(SpaceId),
@@ -61,7 +59,6 @@ impl Landing {
 
 /// The target under the dragged window: on which output, and what a drop there does.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Over {
     /// The output whose bar holds the target.
     pub output: OutputKey,
@@ -166,7 +163,6 @@ impl SpaceTargets {
 
 /// Where a press on a slot is: not pressed, pressed and not yet moved far, or dragging.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum Drag {
     /// No button held on a slot.
     #[default]
@@ -201,7 +197,6 @@ pub enum Drag {
 
 /// What a pointer move did to a drag.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Moved {
     /// Nothing the loop must act on.
     Nothing,
@@ -218,7 +213,6 @@ pub enum Moved {
 
 /// How a release ended the press.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Released {
     /// There was no press.
     Nothing,

@@ -4,7 +4,6 @@ use files_core::{EjectFailure, MountFailure};
 
 /// Why the disks could not be listed or watched.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum DiskError {
     /// The disk service did not answer.
     #[error("The disks can't be listed right now: {0}")]
@@ -13,7 +12,6 @@ pub enum DiskError {
 
 /// Why the app's actions could not be offered to the assistant.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum IntentError {
     /// The bus would not take the service.
     #[error("Files couldn\u{2019}t offer its actions: {0}")]
@@ -88,7 +86,6 @@ impl Said {
 
 /// Why the window would not do what was asked.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum Refusal {
     /// The window is closed.
     #[error("Files isn\u{2019}t open any more.")]
@@ -103,7 +100,6 @@ pub enum Refusal {
 
 /// Why the bus could not be used.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum InstanceError {
     /// The bus did not answer.
     #[error("Files couldn\u{2019}t reach the desktop: {0}")]
@@ -115,7 +111,6 @@ pub enum InstanceError {
 
 /// Why an address was refused, in the words a person reads.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum UriError {
     /// Not an address at all: no `scheme:` in front.
     #[error("That isn\u{2019}t an address.")]

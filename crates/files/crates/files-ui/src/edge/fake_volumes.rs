@@ -9,7 +9,6 @@ use crate::error::VolumeError;
 
 /// What was asked of a [`FakeVolumes`].
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum VolumeCall {
     /// The disk was opened.
     Mounted(VolumeId),

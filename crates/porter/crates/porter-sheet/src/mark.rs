@@ -10,7 +10,6 @@ use serde::{Deserialize, Serialize};
 
 /// Why a mark face part was refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum MarkFaceError {
     /// The letter is not one or two characters, or has whitespace or a control character.
     #[error("mark letter {0:?} is not one or two visible characters")]

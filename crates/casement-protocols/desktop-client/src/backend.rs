@@ -4,7 +4,6 @@ use crate::protocol::{Protocol, ProtocolSet};
 
 /// The protocols that describe and act on toplevels, chosen from the offer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum DesktopBackend {
     /// `ext-foreign-toplevel-list` for identity plus `quire_desktop_v1` for state, places,
     /// apps and Spaces.

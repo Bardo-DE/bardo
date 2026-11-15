@@ -32,7 +32,6 @@ const JAIL_BREACH: u8 = 5;
 
 /// What [`run`] needs: how casement starts, and where the debug bus is.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct RunConfig {
     /// How casement starts.
     pub start: cli::StartConfig,
@@ -140,7 +139,6 @@ impl RunConfig {
 
 /// Why the compositor stopped with an error.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum RunError {
     /// It could not start.
     #[error("start: {0}")]

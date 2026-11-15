@@ -166,7 +166,6 @@ porter_ids::string_newtype!(EndpointUrl, CoreError);
 
 /// Why an endpoint is not one porter will use.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum EndpointFault {
     /// The family does not speak the URL's scheme, or has no relay protocol.
     #[error("the family does not speak that scheme")]
@@ -235,7 +234,6 @@ impl ServiceEndpoint {
 
 /// What a relay presents to its endpoint. Secret text: its `Debug` redacts.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum RelayAuth {
     /// The account's password or app password: IMAP `LOGIN`, SMTP `AUTH PLAIN`, HTTP Basic.
     Password(SecretText),
@@ -251,7 +249,6 @@ pub enum RelayAuth {
 /// What a relay is told: the one endpoint it dials and what it presents there. It stays inside
 /// the host that runs the relay; it is never serialised.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct RelayPlan {
     /// The only server the relay talks to.
     pub endpoint: ServiceEndpoint,

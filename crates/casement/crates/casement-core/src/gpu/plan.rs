@@ -7,7 +7,6 @@ use std::collections::BTreeMap;
 /// The render plan: one GPU renders every frame, each output is scanned out by the GPU that
 /// drives it (a frame rendered elsewhere is copied across, SP4).
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct RenderPlan {
     /// The GPU that renders.
     pub render: DrmNodeId,
@@ -25,7 +24,6 @@ impl RenderPlan {
 
 /// Why no plan could be made.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum PlanRefusal {
     /// Detection found no GPU.
     #[error("no GPU")]

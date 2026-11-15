@@ -10,7 +10,6 @@ use serde::{Deserialize, Serialize};
 /// One request to accountd (design/31 §4.4; the D-Bus methods carry the same values).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum AccountsRequest {
     /// Ask the user to pick a fitting account and consent (`Keys.RequestKey`).
     Choose {
@@ -46,7 +45,6 @@ pub enum AccountsRequest {
 /// (`wayland:<handle>`, `x11:<xid>`), or none.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ParentWindow {
     /// No parent: the sheet is a free-standing window.
     Unparented,

@@ -6,7 +6,6 @@ use crate::names::{OutputName, ToplevelIdentifier};
 
 /// One property of a toplevel changing.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ToplevelChange {
     /// The stable identifier (`ext_foreign_toplevel_handle_v1.identifier`).
     Identifier(ToplevelIdentifier),
@@ -26,7 +25,6 @@ pub enum ToplevelChange {
 
 /// A toplevel event.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ToplevelEvent {
     /// A handle appeared.
     Opened(ToplevelKey),

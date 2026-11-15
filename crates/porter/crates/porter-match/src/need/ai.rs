@@ -13,7 +13,6 @@ use std::collections::BTreeSet;
 
 /// A language model.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct LlmNeed {
     /// Features it must have.
     pub features: BTreeSet<LlmFeature>,
@@ -36,7 +35,6 @@ pub fn llm_need() -> crate::Need {
 
 /// An embedding model.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct EmbedNeed {
     /// The vector length an index was built with, or any.
     pub dims: DimsNeed,
@@ -63,7 +61,6 @@ pub enum DimsNeed {
 
 /// A speech model.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct SpeechNeed {
     /// Modes it must have.
     pub modes: BTreeSet<SpeechMode>,
@@ -78,7 +75,6 @@ impl SpeechNeed {
 
 /// An image generator.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct ImageGenNeed {
     /// Modes it must have.
     pub modes: BTreeSet<ImageMode>,
@@ -95,7 +91,6 @@ impl ImageGenNeed {
 
 /// A reranker.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct RerankNeed {
     /// At least this many documents per call.
     pub max_docs: Count,
@@ -111,7 +106,6 @@ impl RerankNeed {
 /// A computer-use model. Only the environments are asked for; protocol fields (batching, wire,
 /// image size) are the engine's business.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct CuaNeed {
     /// Environments it must operate.
     pub environments: BTreeSet<CuaEnv>,

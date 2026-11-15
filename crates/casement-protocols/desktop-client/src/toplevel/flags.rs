@@ -4,7 +4,6 @@ use std::collections::BTreeSet;
 
 /// One state.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-#[non_exhaustive]
 pub enum ToplevelFlag {
     /// Maximised.
     Maximized,

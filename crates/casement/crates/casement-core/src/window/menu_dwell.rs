@@ -29,7 +29,6 @@ impl Default for DwellTiming {
 
 /// What the dwell machine is doing.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum Dwell {
     /// The pointer is not on a green light, or the menu was asked for already and it moved.
     #[default]
@@ -49,7 +48,6 @@ pub enum Dwell {
 
 /// What happened.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum DwellInput {
     /// The pointer is at `Mono` over this light, or over no light.
     Over(Option<LightAt>, Mono),
@@ -63,7 +61,6 @@ pub enum DwellInput {
 
 /// What the edge does about a step.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum DwellOutcome {
     /// Nothing.
     Nothing,

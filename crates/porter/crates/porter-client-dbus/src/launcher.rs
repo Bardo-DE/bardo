@@ -54,7 +54,6 @@ use porter_wire::Refusal;
 
 /// Why a launcher call failed. More reasons may be added: match with a wildcard.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum LauncherError {
     /// accountd refused the call for a reason of the launcher interface (a request, a program, a
     /// permit, a credential or a session that is not the connection's to use).
@@ -97,7 +96,6 @@ pub struct LauncherRequest {
 /// [`Launcher::request_agent_key`] answers. It is a `Candidate` with the permit where a grant
 /// was.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct KeyCandidate {
     /// The account that holds the key.
     pub account: AccountId,

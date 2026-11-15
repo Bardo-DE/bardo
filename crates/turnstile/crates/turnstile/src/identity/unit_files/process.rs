@@ -15,7 +15,6 @@ pub const STATUS_CAP: u64 = 16 * 1024;
 
 /// Why the process does not show what a real unit's process shows.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ProcessFault {
     /// Another process traces it.
     #[error("another process is tracing it")]

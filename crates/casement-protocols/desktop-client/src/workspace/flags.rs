@@ -4,7 +4,6 @@ use std::collections::BTreeSet;
 
 /// A workspace state bit (`ext_workspace_handle_v1.state`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-#[non_exhaustive]
 pub enum WorkspaceFlag {
     /// The workspace on show.
     Active,
@@ -16,7 +15,6 @@ pub enum WorkspaceFlag {
 
 /// What a workspace lets the client request (`ext_workspace_handle_v1.workspace_capabilities`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-#[non_exhaustive]
 pub enum WorkspaceAbility {
     /// `activate`.
     Activate,
@@ -30,7 +28,6 @@ pub enum WorkspaceAbility {
 
 /// What a group lets the client request (`group_capabilities`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-#[non_exhaustive]
 pub enum GroupAbility {
     /// `create_workspace`.
     CreateWorkspace,

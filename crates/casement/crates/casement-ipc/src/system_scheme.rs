@@ -33,7 +33,6 @@ use tokio::sync::oneshot;
 
 /// Why the watcher could not start.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum SchemeError {
     /// The runtime or its thread could not be started.
     #[error("the colour scheme watcher: {0}")]

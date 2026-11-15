@@ -103,7 +103,6 @@ pub enum Request {
 
 /// Why the service refused. After it the service closes the connection.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum Reason {
     /// A message or device the service does not know.
     Unknown,

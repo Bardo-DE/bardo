@@ -44,7 +44,6 @@ pub const CONTROL_PATH: &str = "/org/quire/Casement/FakeLogind1";
 
 /// A call the fake recorded, for assertions.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum LogindCall {
     /// `Inhibit(what, ...)`: the `what` string.
     Inhibit(String),
@@ -70,7 +69,6 @@ pub enum LogindCall {
 
 /// Why the fake logind could not serve or emit.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum LogindError {
     /// The bus at `address` could not be reached or refused the name or objects.
     #[error("bus {address}: {source}")]

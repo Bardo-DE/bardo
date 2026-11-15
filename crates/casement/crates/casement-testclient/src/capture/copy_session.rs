@@ -7,7 +7,6 @@ pub use cursor::CursorEvent;
 
 /// A dma-buf format the session offered: the fourcc code and the modifiers allowed with it.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct DmabufFormat {
     /// The fourcc code.
     pub format: u32,
@@ -124,7 +123,6 @@ impl Capturing {
 
 /// What buffer to attach to the next frame.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum BufferAsk {
     /// The size and format the session announced.
     Announced,

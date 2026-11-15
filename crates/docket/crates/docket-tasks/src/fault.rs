@@ -4,7 +4,6 @@ use docket_client::ClientError;
 
 /// Why the daemon could not serve, or an entry point could not answer.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ServeFault {
     /// The bus name is taken or the connection failed.
     #[error("bus: {0}")]

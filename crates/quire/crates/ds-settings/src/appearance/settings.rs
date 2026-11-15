@@ -18,7 +18,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, crate::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "quire/appearance.toml", domain = "appearance", page = Page::Appearance)]
-#[non_exhaustive]
 pub struct AppearanceSettings {
     /// `appearance.theme`: System, Light or Dark.
     #[settings(
@@ -138,7 +137,6 @@ pub enum IconStyle {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, crate::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "quire/appearance.toml", domain = "icons", page = Page::Appearance)]
-#[non_exhaustive]
 pub struct IconsSettings {
     /// `icons.style` (proposed Colour).
     #[settings(
@@ -161,7 +159,6 @@ impl Default for IconsSettings {
 /// `quire/appearance.toml`, whole.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
-#[non_exhaustive]
 pub struct AppearanceFile {
     /// The schema version, 1. Nothing reads it yet but its absence.
     pub version: u16,

@@ -123,7 +123,6 @@ impl ImageCapturePart {
 
 /// What a frame request asks the renderer for.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct CaptureRequest {
     /// The output to capture.
     pub output: OutputKey,
@@ -133,7 +132,6 @@ pub struct CaptureRequest {
 
 /// Why a capture frame failed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum CaptureFailure {
     /// The output went away.
     OutputGone,

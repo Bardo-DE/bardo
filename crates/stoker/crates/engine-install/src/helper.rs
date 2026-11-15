@@ -30,7 +30,6 @@ pub struct Request {
 
 /// Why the arguments were refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ArgError {
     /// Not exactly `install <engine> <backend>`.
     #[error("usage: install <engine> <backend>")]

@@ -13,7 +13,6 @@ use ds_style::space::frame_vars::FrameVars;
 /// How a [`SpaceDot`] looks. `Swatch` is the Space's colour (the editor); `Foot` is the small
 /// quiet dot of the sidebar foot: ink when current, faint ink otherwise, no colour.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum DotFace {
     #[default]
     Swatch,

@@ -69,7 +69,6 @@ impl ClickTracker {
 
 /// What a press on the frame asks the window to do.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ChromeAction {
     /// Ask the client to close.
     Close,

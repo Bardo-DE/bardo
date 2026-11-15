@@ -11,7 +11,6 @@ pub enum OpenWindowError {
 
 /// A Tokio runtime for the host could not be started.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum RuntimeError {
     /// The OS refused to start the runtime's worker threads.
     #[error("the host's tokio runtime could not be started: {0}")]
@@ -20,7 +19,6 @@ pub enum RuntimeError {
 
 /// Why [`launch`](crate::launch) or [`launch_idle`](crate::launch_idle) could not run the app.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum LaunchError {
     /// No runtime for the app's `tokio::spawn` calls (and none was given with
     /// [`AppConfig::with_runtime`](crate::AppConfig::with_runtime)).

@@ -9,7 +9,6 @@ use casement_motion::{Flight, PlacedWindow};
 
 /// How a window is drawn this frame.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum FlightDraw {
     /// As its client committed it, at its sampled place.
     Still,

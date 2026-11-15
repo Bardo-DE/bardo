@@ -26,7 +26,6 @@ use std::sync::Arc;
 
 /// Why a call to the Broker failed. More reasons may be added: match with a wildcard.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum AiAccountsError {
     /// accountd refused for a reason an app also meets: `UnknownGrant` (no such permit, or a
     /// once permit already spent), `AudienceNotGranted`, `Denied` (the person turned the account

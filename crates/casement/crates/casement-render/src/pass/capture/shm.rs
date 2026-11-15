@@ -12,7 +12,6 @@ use smithay::wayland::shm::{BufferAccessError, BufferData};
 
 /// Why a frame could not be written into a client's buffer.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum ShmWriteError {
     /// The buffer is not a shared-memory buffer, or its pool could not be mapped.
     #[error("the buffer cannot be written: {0}")]

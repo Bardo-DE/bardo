@@ -56,7 +56,6 @@ pub struct EnvVar {
 
 /// Where a program runs.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum Home {
     /// With the compositor: it ends when the compositor does (the X11 bridge).
     #[default]
@@ -96,7 +95,6 @@ impl ChildEnv {
 
 /// What to start.
 #[derive(Debug)]
-#[non_exhaustive]
 pub struct SpawnSpec {
     /// The program and its arguments.
     pub argv: Argv,
@@ -150,7 +148,6 @@ impl SpawnSpec {
 
 /// A program that started.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Spawned {
     /// Its process id.
     pub pid: Pid,
@@ -165,7 +162,6 @@ impl Spawned {
 
 /// Why a program did not start.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum SpawnError {
     /// The argument list was empty.
     #[error("nothing to start: the argument list is empty")]

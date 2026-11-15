@@ -31,7 +31,6 @@ use casement_protocols::vocab::ActorKind;
 /// assert_eq!(state.quire.apps().next().unwrap().life, AppLifeKind::Running);
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum DesktopEvent {
     /// The registry's offer is known (once, after the first round trip).
     Globals(ProtocolSet),

@@ -10,7 +10,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]
 #[serde(rename_all = "snake_case")]
 #[word(case = snake)]
-#[non_exhaustive]
 pub enum HourCycle {
     /// Follow the language and region of the session.
     #[default]
@@ -89,7 +88,6 @@ pub fn time_locale<'a>(
 #[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize, crate::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "quire/appearance.toml", domain = "region", page = Page::Appearance)]
-#[non_exhaustive]
 pub struct RegionSettings {
     /// `region.hours`: Auto, 12 or 24.
     #[settings(

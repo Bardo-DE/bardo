@@ -103,7 +103,6 @@ impl From<SandboxAppId> for String {
 /// The sandbox engine that vouches for an app id.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum Engine {
     /// Flatpak.
     Flatpak,

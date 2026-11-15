@@ -5,7 +5,6 @@
 /// Why a request was refused. `Display` says what was refused, in terms of the program; the
 /// words for a person are not here.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum Refusal {
     /// The request came from the lending computer itself.
     #[error("the request came from the lending computer itself")]

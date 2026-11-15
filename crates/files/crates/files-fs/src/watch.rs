@@ -11,7 +11,6 @@ use crate::error::{ListError, WatchError};
 /// Something that happened in a watched folder. Only names cross: the caller looks an entry up
 /// again with [`crate::Lister::entry`]. Events come as the system gives them, not merged.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum FolderEvent {
     /// A name appeared (created, or moved in).
     Added(FileName),

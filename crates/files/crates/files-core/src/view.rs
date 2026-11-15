@@ -2,7 +2,6 @@
 
 /// The way a window lays out a folder. Grows by one variant per view that is built.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-#[non_exhaustive]
 pub enum ViewMode {
     /// Rows with columns (Finder's list view).
     #[default]
@@ -13,7 +12,6 @@ pub enum ViewMode {
 
 /// What a folder is sorted by.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-#[non_exhaustive]
 pub enum SortKey {
     /// The name, as a person reads numbers in it (`file2` before `file10`).
     #[default]
@@ -47,7 +45,6 @@ pub struct Sort {
 
 /// How one folder is shown; remembered per folder.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-#[non_exhaustive]
 pub struct FolderPrefs {
     /// The view.
     pub view: ViewMode,

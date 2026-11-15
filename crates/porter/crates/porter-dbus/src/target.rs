@@ -9,7 +9,6 @@ use zbus::connection::Builder;
 
 /// The bus to connect to.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum BusTarget {
     /// The person's session bus, found the usual way.
     Session,

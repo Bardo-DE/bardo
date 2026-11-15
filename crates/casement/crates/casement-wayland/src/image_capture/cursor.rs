@@ -21,7 +21,6 @@ pub struct CursorSessionId(pub u64);
 
 /// An output as a cursor sees it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct CursorView {
     /// The output's top-left corner in global logical coordinates.
     pub origin: LogicalPoint,
@@ -52,7 +51,6 @@ impl CursorView {
 
 /// Where the cursor is on a frame, in the frame's pixels.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Placement {
     /// The hotspot, from the frame's top-left corner; negative or past the frame when only
     /// part of the cursor is on it.
@@ -159,7 +157,6 @@ pub fn place(
 
 /// A cursor session held: its output and the last image it was sent.
 #[derive(Debug)]
-#[non_exhaustive]
 pub struct CursorHold {
     /// The session; dropping it tells the client `stopped`.
     pub session: CursorSession,
@@ -173,7 +170,6 @@ pub struct CursorHold {
 /// A cursor session that waits for the person's answer about the client's screen: nothing is
 /// told to it, not even where the pointer is, until they allow it (NEW-CAS-4).
 #[derive(Debug)]
-#[non_exhaustive]
 pub struct ParkedCursor {
     /// The session.
     pub session: CursorSession,

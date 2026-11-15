@@ -77,7 +77,6 @@ pub struct Confirm {
 
 /// Why "Sync now" did not start a cycle.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum SyncNowError {
     /// There is no such dataset (never registered, or gone).
     NoSuchDataset,

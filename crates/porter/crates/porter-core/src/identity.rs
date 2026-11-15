@@ -14,7 +14,6 @@ use serde::{Deserialize, Serialize};
 /// socket was made with. The text is as read; `identity_of` decides what it proves.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum SandboxFacts {
     /// No sandbox metadata: a native process.
     Native,
@@ -51,7 +50,6 @@ pub struct PeerFacts {
 /// peer is known at most by a `ClaimedId` and never gets an "Always" grant.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum PeerIdentity {
     /// The app, and how its name was established.
     Proven(AppId),

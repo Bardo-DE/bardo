@@ -213,7 +213,6 @@ pub struct Pipeline {
 
 /// Why no pipeline answers a request.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Refusal {
     /// The answering model cannot read images and `ai.pipeline.describe_images` is off.
     ImagesNeedDescribing,

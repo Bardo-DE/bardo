@@ -114,7 +114,6 @@ impl Session {
 
 /// What `SetIdleHint` was given.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum IdleHint {
     /// The session is idle.
     Idle,
@@ -124,7 +123,6 @@ pub enum IdleHint {
 
 /// The `type` of a `PauseDevice` signal.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum PauseKind {
     /// Pause, then the session answers `PauseDeviceComplete`.
     Pause,

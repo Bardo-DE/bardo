@@ -4,7 +4,6 @@ use smithay::backend::session::AsErrno;
 
 /// Why a session refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum SessionFault {
     /// The open was refused (in a test: the jail is breached; the test fails with exit 5).
     #[error("denied open {0}")]

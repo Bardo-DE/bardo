@@ -30,7 +30,6 @@ pub struct RestorePlan {
 
 /// Why a restore point could not be listed, planned or restored.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error, Serialize, Deserialize)]
-#[non_exhaustive]
 pub enum CheckpointFault {
     /// No such point in the session.
     #[error("there is no such restore point")]

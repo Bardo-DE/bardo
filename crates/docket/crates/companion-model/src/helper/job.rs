@@ -22,7 +22,6 @@ impl fmt::Display for JobId {
 
 /// Why a goal is not one.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum GoalFault {
     /// Nothing but whitespace.
     #[error("the goal is empty")]

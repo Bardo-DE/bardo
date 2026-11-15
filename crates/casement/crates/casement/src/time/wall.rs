@@ -7,7 +7,6 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Where the date comes from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum WallClock {
     /// The system clock.
     System,

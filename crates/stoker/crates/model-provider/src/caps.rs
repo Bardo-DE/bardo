@@ -30,7 +30,6 @@ pub enum InputKind {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ToolSupport {
     Absent,
     /// The provider has its own tool protocol (`ToolSpec::Native`).
@@ -47,7 +46,6 @@ pub enum ToolSupport {
 /// Output constraints an engine can enforce.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum Constraint {
     JsonSchema,
     Regex,
@@ -93,7 +91,6 @@ pub struct ImageLimits {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum CuaSupport {
     Absent,
     Dialect {

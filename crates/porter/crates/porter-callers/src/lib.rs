@@ -109,7 +109,6 @@ use std::future::Future;
 /// unknown role is best treated as a plain app).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum CallerRole {
     /// Any identified app.
     App,

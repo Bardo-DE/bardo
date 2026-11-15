@@ -75,7 +75,6 @@ pub struct Placed {
 
 /// Why a request could not be routed inside the set.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Unplaced {
     /// A place could serve but a rule the person set refuses it (consent, spend, ...): the
     /// refusal is the usual one.

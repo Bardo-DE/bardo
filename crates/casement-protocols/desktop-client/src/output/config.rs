@@ -13,7 +13,6 @@ use casement_protocols::vocab::Transform;
 /// (the protocol's rule is that a configuration must mention every enabled head; the wire
 /// layer fills in the unmentioned ones from the state).
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct OutputConfig {
     /// The heads, each once.
     pub heads: Vec<HeadConfig>,
@@ -79,7 +78,6 @@ fn check_mode(outputs: &Outputs, head: &Head, choice: &ModeChoice) -> Result<(),
 
 /// One head's part of a configuration.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct HeadConfig {
     /// The head.
     pub head: HeadKey,
@@ -96,7 +94,6 @@ impl HeadConfig {
 
 /// Off, or on with settings.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum HeadChangeRequest {
     /// `disable_head`.
     Disable,
@@ -106,7 +103,6 @@ pub enum HeadChangeRequest {
 
 /// The settings of an enabled head; `None` leaves the head's current value.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub struct HeadSettings {
     /// Which mode.
     pub mode: Option<ModeChoice>,
@@ -153,7 +149,6 @@ impl HeadSettings {
 
 /// A mode the head has, or a custom one.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ModeChoice {
     /// One of the head's own modes (`set_mode`).
     Existing(ModeKey),
@@ -177,7 +172,6 @@ pub enum ConfigPurpose {
 
 /// How a configuration ended.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ConfigOutcome {
     /// `succeeded`.
     Succeeded,
@@ -189,7 +183,6 @@ pub enum ConfigOutcome {
 
 /// A configuration that does not fit the current heads.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ConfigError {
     /// It names no head.
     #[error("the configuration names no head")]

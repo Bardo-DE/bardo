@@ -7,7 +7,6 @@ use crate::listing::Entry;
 
 /// Where an item stands.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum ItemState {
     /// Listed, not here: it downloads when opened.
     Cloud,

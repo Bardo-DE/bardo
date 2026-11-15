@@ -22,7 +22,6 @@ use std::time::Duration;
 
 /// Whether to report a fault now.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Repeat {
     /// Report it, and say how many identical ones were held back since the last report.
     Report {

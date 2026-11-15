@@ -10,7 +10,6 @@ pub struct PwNode(pub u32);
 
 /// One thing that can be shared.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[non_exhaustive]
 pub enum CastSource {
     /// A whole display, by its output name.
     Output(String),
@@ -35,7 +34,6 @@ impl CastSource {
 
 /// How the pointer appears in the shared picture. The wire values are the portal's: 1, 2, 4.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[non_exhaustive]
 pub enum CursorMode {
     /// Not in the picture.
     Hidden,
@@ -68,7 +66,6 @@ impl CursorMode {
 
 /// Where a session stands.
 #[derive(Clone, Debug, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum CastSession {
     /// Made, nothing chosen.
     Created,
@@ -85,7 +82,6 @@ pub enum CastSession {
 
 /// What reaches a session.
 #[derive(Clone, Debug, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum CastIn {
     /// The app called Start. `restored` is what its restore token resolved to now, empty if it
     /// had none or the sources are gone.
@@ -107,7 +103,6 @@ pub enum CastIn {
 
 /// What the caller must do.
 #[derive(Clone, Debug, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum CastOut {
     /// Ask the person what to share.
     AskChooser,
@@ -121,7 +116,6 @@ pub enum CastOut {
 
 /// The answer to Start.
 #[derive(Clone, Debug, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum CastReply {
     /// Sharing began.
     Granted {

@@ -17,7 +17,6 @@ const MAX_RECTS: usize = 16;
 
 /// What changed since a client's last frame.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Since {
     /// Everything: the client had no frame, or its frame is older than the log.
     Whole,

@@ -55,7 +55,6 @@ pub trait SleepHandler: Send + 'static {
 
 /// Why the watcher could not start.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum SleepError {
     /// The thread could not be started.
     #[error("the sleep watcher thread: {0}")]

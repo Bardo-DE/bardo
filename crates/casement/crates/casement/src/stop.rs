@@ -15,7 +15,6 @@ const INSTALL_WITHIN: Duration = Duration::from_secs(5);
 
 /// Why the watcher could not start.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum StopError {
     /// The thread or its runtime could not be made.
     #[error("the stop watcher thread: {0}")]

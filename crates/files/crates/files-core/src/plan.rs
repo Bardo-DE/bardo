@@ -4,7 +4,6 @@ use crate::{FileName, FolderPath, ItemRef, TrashedItem};
 
 /// Items to bring to a folder.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Transfer {
     /// What to bring, in order.
     pub sources: Vec<ItemRef>,
@@ -24,7 +23,6 @@ impl Transfer {
 
 /// One change to the files, asked for as a whole.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum OpPlan {
     /// Copy items to a folder.
     Copy(Transfer),
@@ -68,7 +66,6 @@ pub enum OpPlan {
 
 /// What kind of change a plan is, for the words said about it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum OpKind {
     /// Copying.
     Copy,
@@ -88,7 +85,6 @@ pub enum OpKind {
 
 /// What a plan is about, for saying so: its kind, how many items and the first one's name.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Summary {
     /// What kind of change.
     pub kind: OpKind,

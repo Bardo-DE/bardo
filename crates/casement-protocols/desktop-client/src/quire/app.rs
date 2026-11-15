@@ -8,7 +8,6 @@ use casement_protocols::vocab::{AppLifeKind, AppVisibility, Attention, MenuSourc
 
 /// Where to read an app's global menu (`quire_desktop_app_v1.menu_source`).
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct MenuSource {
     /// Which menu protocol.
     pub kind: MenuSourceKind,
@@ -44,7 +43,6 @@ impl MenuSource {
 
 /// One running app.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct QuireApp {
     /// This client's key for it.
     pub key: AppKey,
@@ -92,7 +90,6 @@ impl QuireApp {
 
 /// One property of an app changing.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum AppChange {
     /// Who the app is.
     Identity {

@@ -7,7 +7,6 @@ use crate::output::{GammaRamp, Kelvin, MinuteOfDay, NightLight, Schedule};
 
 /// `night_light.*`.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct NightLightSettings {
     /// `night_light.mode`, `from`, `to`, `kelvin` and `fade_minutes`: when the screen warms, how
     /// warm and how slowly.

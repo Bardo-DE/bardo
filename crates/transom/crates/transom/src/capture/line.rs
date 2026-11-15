@@ -27,7 +27,6 @@ pub const LINE_DEADLINE: Duration = Duration::from_secs(10);
 
 /// Why the compositor did not hand out a connection.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum LineError {
     /// Nothing on the bus hands out connections (another compositor, or none running).
     #[error("no compositor on the bus hands out connections")]

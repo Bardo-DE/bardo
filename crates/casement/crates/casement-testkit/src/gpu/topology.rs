@@ -126,7 +126,6 @@ impl FormatSource for GpuTopology {
 
 /// One soft GPU.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct SoftGpu {
     /// Its number (its fabricated node is `226:(128 + id)`).
     pub id: GpuId,

@@ -102,7 +102,6 @@ pub const SOFT_MAIN_DEVICE: MainDevice = MainDevice::of(226, 128);
 
 /// What a tranche is for, as the feedback flags it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum OfferUse {
     /// The device samples (composites) buffers of these formats.
     Sampling,
@@ -124,7 +123,6 @@ pub struct OfferTranche {
 /// What the backend offers clients: its main device and the formats it imports, plus the
 /// tranches of a multi-GPU plan.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct DmabufOffer {
     /// The main device.
     pub main_device: MainDevice,

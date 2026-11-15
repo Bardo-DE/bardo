@@ -62,7 +62,6 @@ pub enum ClipboardError {
 /// [`ClipboardError::Unavailable`] to a write and nothing to a read: it never falls back to the
 /// regular clipboard, which would replace what the person copied.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-#[non_exhaustive]
 pub enum ClipboardTarget {
     /// The regular clipboard.
     #[default]

@@ -48,7 +48,6 @@ pub type BoxFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
 
 /// How long each wait on the package manager may take before it counts as not answering.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Timeouts {
     /// The quick calls, and a lookup of a package's name with its answer.
     pub step: Deadline,

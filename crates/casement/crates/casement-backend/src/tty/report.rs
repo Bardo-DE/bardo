@@ -20,7 +20,6 @@ pub const REPORT_EVERY: Duration = Duration::from_secs(1);
 
 /// One lit output in the report.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct ReportedOutput {
     /// Its connector's name.
     pub name: OutputName,
@@ -39,7 +38,6 @@ impl ReportedOutput {
 
 /// The backend's state, as the report says it.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct KmsReport {
     /// Frames that reached the glass, on every output.
     pub flips: u64,

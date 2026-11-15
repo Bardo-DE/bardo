@@ -10,7 +10,6 @@ use turnstile_wire::{Create, Delivery, DeviceId, Event, Reason, plan};
 
 /// What the fake does with `send`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum SendMode {
     /// Record the events.
     #[default]
@@ -23,7 +22,6 @@ pub enum SendMode {
 
 /// What the fake does with `open`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum OpenMode {
     /// Connect.
     #[default]

@@ -40,7 +40,6 @@ pub const QUEUE_LIMIT: usize = 64;
 
 /// One Space to register.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct SpaceRegistration {
     /// Its id, as minted.
     pub id: SpaceId,
@@ -57,7 +56,6 @@ impl SpaceRegistration {
 
 /// Why a registration did not go through.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum RegisterFault {
     /// The service does not give this process the compositor role (it is not the unit yet):
     /// asking again changes nothing.
@@ -70,7 +68,6 @@ pub enum RegisterFault {
 
 /// A registration that failed after it was queued.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct RegisterFailure {
     /// The Space.
     pub id: SpaceId,
@@ -87,7 +84,6 @@ impl RegisterFailure {
 
 /// Why a batch could not be queued.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum RegistryError {
     /// The thread that makes the calls could not be started or has stopped.
     #[error("the Spaces registration thread: {0}")]

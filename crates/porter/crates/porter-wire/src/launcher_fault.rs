@@ -4,7 +4,6 @@
 
 /// Why accountd refused a launcher's call.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum LauncherFault {
     /// A live connection already launches this program (first wins).
     AlreadyRegistered,

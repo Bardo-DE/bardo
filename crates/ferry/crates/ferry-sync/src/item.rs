@@ -37,7 +37,6 @@ pub enum BaseVersion {
 /// its folders too, and the documents that live only online.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ItemKind {
     /// A file whose bytes `fetch` reads.
     #[default]

@@ -43,7 +43,6 @@ pub fn keymap_text(names: &XkbNames) -> Option<String> {
 
 /// What to do about the layout a settings change asks for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum KeymapStep {
     /// It is the keymap the seat has: nothing to do.
     Unchanged,

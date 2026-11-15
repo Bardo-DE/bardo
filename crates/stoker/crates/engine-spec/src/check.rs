@@ -6,7 +6,6 @@ use crate::engine::engine;
 
 /// Why an entry does not suit its engines.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum SpecError {
     #[error("engine {engine} needs a GPU memory estimate; the entry's is all zeros")]
     GpuEstimateMissing { engine: &'static str },

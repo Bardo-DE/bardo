@@ -6,7 +6,6 @@ use std::os::fd::OwnedFd;
 
 /// Why there is no socket.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum ActivationError {
     /// Started by hand, or by a unit without a socket.
     #[error("no socket was passed in: start turnstile through its socket unit")]

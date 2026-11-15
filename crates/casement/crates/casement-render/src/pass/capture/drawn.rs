@@ -16,7 +16,6 @@ use casement_protocols::vocab::Transform;
 /// The viewport's source rectangle, in surface-logical units (buffer pixels divided by the
 /// buffer scale, after the buffer transform), as smithay's `SurfaceView::src` has it.
 #[derive(Debug, Clone, Copy, PartialEq)]
-#[non_exhaustive]
 pub struct SourceRect {
     /// Left edge.
     pub x: f64,
@@ -37,7 +36,6 @@ impl SourceRect {
 
 /// How a surface's buffer is turned into the picture the screen shows.
 #[derive(Debug, Clone, Copy, PartialEq)]
-#[non_exhaustive]
 pub struct DrawnView {
     /// The surface's buffer scale (1 when the client sets none).
     pub buffer_scale: i32,

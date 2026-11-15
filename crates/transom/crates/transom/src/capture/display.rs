@@ -7,7 +7,6 @@ use super::line::{LineError, PortalLine};
 
 /// How a connection to the display is made.
 #[derive(Debug)]
-#[non_exhaustive]
 pub enum Route {
     /// A connection the compositor handed this portal over the bus, trusted for what the portal is.
     Handed(OwnedFd),

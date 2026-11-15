@@ -2,7 +2,6 @@
 
 /// Why a text is not an address Files opens.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum UrlError {
     /// Not a web address (`https:` or `http:`).
     #[error("That isn\u{2019}t a web address.")]

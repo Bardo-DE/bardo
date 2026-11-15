@@ -14,7 +14,6 @@ use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 /// How the surface decides a frame reached the glass.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum Pacing {
     /// Only what the test scripted is reported (the scheduler tests).
     #[default]

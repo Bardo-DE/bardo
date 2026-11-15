@@ -23,7 +23,6 @@ pub use version::{Version, stamp_version};
 
 /// Why the settings could not be read or the schema written.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum ConfigError {
     /// ds-settings refused.
     #[error("settings: {0}")]

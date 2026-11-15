@@ -13,7 +13,6 @@ const MOST_HOURS: u8 = 12;
 
 /// Why some words are not a schedule.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ScheduleFault {
     /// Not a time of day.
     #[error("say a time of day like 08:00")]

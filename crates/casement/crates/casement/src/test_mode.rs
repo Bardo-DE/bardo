@@ -39,7 +39,6 @@ pub const TURN: Duration = Duration::from_millis(250);
 
 /// Why the hooks could not be attached.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum HookError {
     /// The signal watcher could not start.
     #[error("{0}")]

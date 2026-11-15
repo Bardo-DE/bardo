@@ -10,7 +10,6 @@ use casement_protocols::vocab::{PlaceTarget, SplitSide, TileZone, Toggle, Window
 
 /// Where the menu shows an entry: at the top level or inside one of its two submenus.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum MenuGroup {
     /// Not in a submenu.
     Top,
@@ -22,7 +21,6 @@ pub enum MenuGroup {
 
 /// What a picked entry asks of the model.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum MenuAction {
     /// Enter or leave full screen on the window's own output.
     FullScreen(Toggle),

@@ -15,7 +15,6 @@ impl Millis {
 
 /// What to do with one datagram.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Admit {
     /// Write it.
     Pass,

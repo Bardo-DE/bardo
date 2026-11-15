@@ -56,7 +56,6 @@ impl RectF {
 
 /// One strip: the band of the window it shows and where that band is drawn.
 #[derive(Debug, Clone, Copy, PartialEq)]
-#[non_exhaustive]
 pub struct Strip {
     /// The band's top, as a share of the window's height (0 at the top).
     pub top: f64,

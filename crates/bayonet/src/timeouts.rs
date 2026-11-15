@@ -5,7 +5,6 @@ use std::time::Duration;
 /// How long the host waits on a plugin. Start from [`Timeouts::default`] and set what differs
 /// with the `with_` methods; fields may be added without breaking a caller.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Timeouts {
     /// From starting the plugin to its greeting.
     pub hello: Duration,

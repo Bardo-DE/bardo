@@ -90,7 +90,6 @@ pub const fn cursor_buffer_fits(size: PhysicalSize) -> bool {
 
 /// The objects whose count per client is capped.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-#[non_exhaustive]
 pub enum Limit {
     /// `xdg_toplevel`.
     Toplevels,

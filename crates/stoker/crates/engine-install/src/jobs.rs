@@ -22,7 +22,6 @@ use tokio::sync::Notify;
 
 /// Why an install was not started.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum StartError {
     /// One is under way already.
     #[error("an install of this engine is already under way")]

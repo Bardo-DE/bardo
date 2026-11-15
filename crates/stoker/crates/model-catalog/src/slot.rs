@@ -15,7 +15,6 @@ use crate::{Capabilities, EngineKind, Locality, Modality, ModelEntry, Serving};
 /// `ai.model.<slot>.<tier>`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum Slot {
     /// Text in, text out.
     Text,

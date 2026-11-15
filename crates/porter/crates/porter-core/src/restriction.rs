@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 
 /// Everything that limits an account beyond its capabilities.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct Restriction {
     /// The OAuth client's verification state for this account's scopes.
     pub verification: Verification,
@@ -95,7 +94,6 @@ impl Restriction {
 /// Closed: the sheet words each, nothing from the network.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ReauthReason {
     /// The provider signs a client that is still in testing out every seven days (R5).
     TestingAppExpired,
@@ -115,7 +113,6 @@ impl ReauthReason {
 /// The OAuth client's verification for the scopes an account uses (C2, C3).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum Verification {
     /// The scopes need none, or the auth is not OAuth.
     NotNeeded,
@@ -131,7 +128,6 @@ pub enum Verification {
 /// How long a sign-in lasts before the user must sign in again.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum TokenLifetime {
     /// Until revoked.
     Standard,
@@ -144,7 +140,6 @@ pub enum TokenLifetime {
 /// Whether an organisation's admin must consent (C11).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum TenantConsent {
     /// The user's own consent is enough.
     User,
@@ -156,7 +151,6 @@ pub enum TenantConsent {
 
 /// One kind's limit and its reason.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct Limit {
     /// The kind limited.
     pub kind: CapabilityKind,
@@ -174,7 +168,6 @@ impl Limit {
 /// Why a present kind is less than the provider's full product.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum LimitReason {
     /// Uploads only; existing items are not readable.
     AppendOnly,

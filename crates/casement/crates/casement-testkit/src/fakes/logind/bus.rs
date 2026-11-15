@@ -14,7 +14,6 @@ pub struct PrivateBus {
 
 /// Why the private bus did not start.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum PrivateBusError {
     /// `dbus-daemon` could not be run or its address not read.
     #[error("dbus-daemon: {0}")]

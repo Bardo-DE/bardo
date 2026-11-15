@@ -55,7 +55,6 @@ pub struct ConnectCall {
 
 /// What a caller asked for, once the bus thread has checked who it is.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct ConnectAsk {
     /// The role it wants a connection to have.
     pub role: ConnectionRole,
@@ -278,7 +277,6 @@ impl ConnectAsk {
 
 /// What the event loop answered.
 #[derive(Debug)]
-#[non_exhaustive]
 pub enum ConnectReply {
     /// The client end of the new connection.
     Granted(OwnedFd),
@@ -299,7 +297,6 @@ pub enum ConnectReply {
 
 /// Why a `Connect` was refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum ConnectRefusal {
     /// The caller holds no role casement hands a connection to (the event loop's second check).
     UnknownUnit,

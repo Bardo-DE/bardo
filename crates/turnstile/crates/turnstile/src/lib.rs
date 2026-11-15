@@ -39,7 +39,6 @@ use serve::Context;
 
 /// Why the service stopped with an error.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum RunError {
     /// It was not started by its socket unit.
     #[error("{0}")]

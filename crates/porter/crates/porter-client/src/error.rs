@@ -5,7 +5,6 @@
 /// Why a call did not complete, whatever the call was. More reasons may be added: match with a
 /// wildcard.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum LinkError {
     /// No daemon answered: nobody owns the name, or there is no bus.
     #[error("unreachable")]
@@ -27,7 +26,6 @@ pub enum LinkError {
 
 /// What the other side got wrong.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Malformed {
     /// A reply that does not answer the call.
     Reply,

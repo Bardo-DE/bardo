@@ -12,7 +12,6 @@ use super::{CloudError, CloudGuard, Clouds, News};
 
 /// What was asked of a [`FakeClouds`].
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum CloudCall {
     /// Download Now.
     Downloaded(Vec<ItemRef>),

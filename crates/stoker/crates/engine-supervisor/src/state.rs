@@ -25,7 +25,6 @@ pub struct ExitCode(pub i32);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum EngineState {
     Stopped,
     Starting { since: MonoMs, attempt: Attempt },
@@ -37,7 +36,6 @@ pub enum EngineState {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum EngineFailure {
     NoRoom { need: MiB, free: MiB },
     Exited { code: ExitCode },
@@ -48,7 +46,6 @@ pub enum EngineFailure {
 /// The answer of a readiness probe (`GET /health` over the engine's socket).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum Probe {
     Ready,
     Loading,

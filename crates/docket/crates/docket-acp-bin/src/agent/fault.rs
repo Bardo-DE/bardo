@@ -3,7 +3,6 @@
 /// Why the agent host could not start or went on no longer. The words are the ones the program
 /// prints, after `docket-agent: `.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum AgentFault {
     /// The settings do not let an agent run.
     #[error("{0}")]

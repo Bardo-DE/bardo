@@ -38,7 +38,6 @@ use std::path::PathBuf;
 
 /// How X11 clients are served.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum XwaylandMode {
     /// Through xwayland-satellite.
     Satellite,
@@ -48,7 +47,6 @@ pub enum XwaylandMode {
 
 /// How the X server behind satellite draws.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-#[non_exhaustive]
 pub enum SatelliteRendering {
     /// Satellite's own choice (graphics hardware when it can).
     #[default]
@@ -64,7 +62,6 @@ pub struct SatellitePath(pub PathBuf);
 
 /// The X11 configuration.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct XwaylandConfig {
     /// How X11 clients are served.
     pub mode: XwaylandMode,
@@ -110,7 +107,6 @@ pub struct WaylandSocket(pub String);
 
 /// Why X11 could not be served.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum XwaylandError {
     /// No X11 display number was free.
     #[error("no free X11 display")]
@@ -125,7 +121,6 @@ pub enum XwaylandError {
 
 /// A running satellite and the sockets it serves.
 #[derive(Debug)]
-#[non_exhaustive]
 pub struct Xwayland {
     /// The process.
     pub process: Spawned,
@@ -196,7 +191,6 @@ fn display_env(display: &DisplayName) -> Vec<EnvVar> {
 
 /// What a call to [`XwaylandState::serve`] did.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ServeStep {
     /// Nothing to do: off, no client waiting, or satellite already running.
     Idle,
@@ -212,7 +206,6 @@ pub enum ServeStep {
 
 /// Whether X11 is being served.
 #[derive(Debug, Default)]
-#[non_exhaustive]
 pub enum XwaylandState {
     /// Not at all.
     #[default]

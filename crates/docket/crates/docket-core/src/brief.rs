@@ -24,7 +24,6 @@ pub fn from_checked_brief(outcome: &Outcome) -> bool {
 
 /// Why some words are not a brief.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum BriefFault {
     /// Nothing but whitespace.
     #[error("the brief is empty")]

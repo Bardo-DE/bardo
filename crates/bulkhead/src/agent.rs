@@ -25,7 +25,6 @@ pub const INSIDE_SOCKET: &str = "/run/bulkhead/ep.sock";
 
 /// How an extra path is bound.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Access {
     /// Visible, not writable.
     ReadOnly,
@@ -35,7 +34,6 @@ pub enum Access {
 
 /// One extra path made visible inside the sandbox at the same path.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Bind {
     /// The path, on the host and inside.
     pub path: AbsPath,
@@ -47,7 +45,6 @@ pub struct Bind {
 /// run, over the agent's own file of that name. The agent cannot change it, and the host's file is
 /// not touched (bubblewrap mounts over it).
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Overlay {
     /// The file on the host.
     pub from: AbsPath,
@@ -57,7 +54,6 @@ pub struct Overlay {
 
 /// Everything needed to confine one agent process.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct AgentRun {
     /// The agent command.
     pub argv: Argv,
@@ -85,7 +81,6 @@ pub struct AgentRun {
 
 /// Why a path cannot be protected.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ProtectFault {
     /// The path is not strictly inside the working directory.
     #[error("a protected path must be inside the working directory")]

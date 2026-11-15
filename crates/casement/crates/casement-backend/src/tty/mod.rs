@@ -144,7 +144,6 @@ use std::collections::BTreeMap;
 
 /// Everything the tty backend is injected with.
 #[derive(Debug)]
-#[non_exhaustive]
 pub struct TtySeams {
     /// Who opens devices and hears the seat change hands.
     pub session: Box<dyn TtySession>,
@@ -231,7 +230,6 @@ impl TtySeams {
 
 /// What the loop learns when it drains the tty backend.
 #[derive(Debug)]
-#[non_exhaustive]
 pub enum TtyNote {
     /// A connector appeared, changed or went.
     Connector(ConnectorEvent),

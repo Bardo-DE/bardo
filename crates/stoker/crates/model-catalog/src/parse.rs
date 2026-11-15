@@ -6,7 +6,6 @@ use crate::{DetailTable, Locality, Modality, ModelEntry, Serving, check, legacy}
 
 /// Why a catalog file was refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum CatalogError {
     /// The text is not TOML, or a field is missing or of the wrong type. Carries the parser's
     /// message, which names the field.

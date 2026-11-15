@@ -21,7 +21,6 @@ const LOOK_EVERY: Duration = Duration::from_millis(100);
 
 /// What the queue is asked to do.
 #[derive(Debug, Clone, PartialEq)]
-#[non_exhaustive]
 pub enum Job {
     /// Do this plan, after the ones before it.
     Run(OpPlan),

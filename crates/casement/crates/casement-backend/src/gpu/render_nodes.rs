@@ -58,7 +58,6 @@ impl SysRoot {
 
 /// An open render node.
 #[derive(Debug, Clone)]
-#[non_exhaustive]
 pub struct GpuHandle {
     /// The node.
     pub node: DrmNodeId,
@@ -78,7 +77,6 @@ impl GpuHandle {
 
 /// Why a GPU call failed.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum GpuError {
     /// The node is not one detection found.
     #[error("no such GPU {0:?}")]

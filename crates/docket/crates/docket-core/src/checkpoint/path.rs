@@ -13,7 +13,6 @@ pub struct WorkPath(String);
 
 /// Why text is not a path inside a workspace.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum WorkPathError {
     /// There is nothing in it.
     #[error("a file name is needed")]

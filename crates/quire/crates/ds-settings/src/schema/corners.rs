@@ -89,7 +89,6 @@ pub enum OpenItem {
 
 /// What a binding does.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum CornerDo {
     /// One of the desktop's own actions.
     Desktop(CornerAction),

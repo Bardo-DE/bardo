@@ -25,7 +25,6 @@ pub enum EntryKind {
 
 /// Why a bundle entry was refused.
 #[derive(Clone, Debug, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum AuditError {
     /// The entry's path is not a plain relative path.
     #[error(transparent)]

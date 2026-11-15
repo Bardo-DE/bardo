@@ -158,7 +158,6 @@ pub struct Record {
 
 /// Why a record could not be read or written.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum RecordError {
     /// The file could not be read or written.
     #[error("the install record cannot be read or written: {0}")]

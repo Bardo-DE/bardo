@@ -80,7 +80,6 @@ pub struct AttachedEngine {
 /// Who starts the entry's engine.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum Serving {
     /// This computer starts it from the entry's `[[engine]]` profiles, within its GPU share.
     #[default]
@@ -98,7 +97,6 @@ impl Serving {
 /// How an engine is told the context window it serves.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ContextArg {
     /// The window is the value of this command-line argument (`--max-model-len` for vLLM,
     /// `--ctx-size` for llama-server); the supervisor appends it, so the profile's `args` do not

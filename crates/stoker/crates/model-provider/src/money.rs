@@ -14,7 +14,6 @@ pub struct Money {
 
 /// Why two amounts could not be added.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum MoneyError {
     #[error("the amounts are in different currencies")]
     CurrencyMismatch,
@@ -48,7 +47,6 @@ impl Money {
 /// there is no price table to fall back on.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum Charges {
     /// Every reply carries its charge (`TurnUsage::charge`), though one may still arrive without.
     PerReply,

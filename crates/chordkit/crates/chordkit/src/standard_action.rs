@@ -21,7 +21,6 @@ impl SpaceNumber {
 /// An action every app and the desktop share the meaning of. Which key does it is decided by
 /// the platform's conventions, never here.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum StandardAction {
     /// Open the launcher, the place to search for and start apps.
     Launcher,

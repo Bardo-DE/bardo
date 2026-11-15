@@ -161,7 +161,6 @@ pub enum Next {
 
 /// Why a reply ended the walk.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum Error {
     /// The server refused the credential (401 or 403).
     #[error("the server refused the account")]

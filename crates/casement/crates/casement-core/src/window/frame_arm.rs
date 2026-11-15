@@ -17,7 +17,6 @@ pub struct LightAt {
 
 /// What the pointer did.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ArmInput {
     /// `button` went down on a light.
     Press {
@@ -41,7 +40,6 @@ pub enum ArmInput {
 
 /// Where the light press stands.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum LightArm {
     /// No light is held down.
     #[default]
@@ -59,7 +57,6 @@ pub enum LightArm {
 
 /// What a step asks the edge to do.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ArmOutcome {
     /// Nothing.
     Nothing,

@@ -49,7 +49,6 @@ pub const fn light_colours(light: Light, _scheme: Scheme) -> LightColours {
 /// One colour of the traffic lights, as a custom property.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]
 #[token(prefix = "light-", kind = fixed, css = light_paint_css)]
-#[non_exhaustive]
 pub enum LightPaint {
     /// `--light-close`: the close disc.
     Close,

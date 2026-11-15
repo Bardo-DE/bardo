@@ -21,7 +21,6 @@ pub const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 
 /// What happened to one request.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Outcome {
     /// A `CONNECT` tunnel was opened.
     Tunnelled,

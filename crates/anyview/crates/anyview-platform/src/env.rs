@@ -100,7 +100,6 @@ pub enum BusRoute {
 /// The seams every implementation is built with: start from [`Env::from_process`] or
 /// [`Env::isolated`] and change a seam with a `with_*` method.
 #[derive(Debug, Clone)]
-#[non_exhaustive]
 pub struct Env {
     /// The person's directories.
     pub dirs: Dirs,

@@ -9,7 +9,6 @@ const SECONDS_PER_DAY: i64 = 24 * 60 * 60;
 
 /// What a turn start does about a restore point.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Decision {
     /// Save the workspace.
     Take(WorkRoot),

@@ -13,7 +13,6 @@ use std::sync::Arc;
 
 /// Why a grants call failed. More reasons may be added: match with a wildcard.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum GrantsError {
     /// accountd refused, or the person closed the sheet (`Refusal::Dismissed`).
     #[error("refused")]
@@ -28,7 +27,6 @@ pub enum GrantsError {
 
 /// An account as a porter daemon that keeps a switch per account reads it.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct ListedAccount {
     /// The account: its id, provider, label, state, what it claims and where its servers are.
     pub account: Account,

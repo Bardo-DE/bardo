@@ -48,7 +48,6 @@ impl FindOption {
 /// from [`FindOptions::default`] (ignore case, find parts of words) and change one with the
 /// `with_*` methods.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub struct FindOptions {
     /// Whether letter case matters.
     pub case: CaseMatch,

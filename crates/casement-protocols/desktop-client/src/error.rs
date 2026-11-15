@@ -8,7 +8,6 @@ use crate::protocol::Protocol;
 
 /// A command that was refused before anything went on the wire.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum CommandError {
     /// The compositor did not offer a protocol the command needs.
     #[error("a {route:?} command needs {needs}, which the compositor does not offer")]

@@ -12,7 +12,6 @@ use std::sync::Arc;
 
 /// Why a request got no reply.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum TransportError {
     /// The connection is closed or the daemon is not there.
     #[error("connection closed")]

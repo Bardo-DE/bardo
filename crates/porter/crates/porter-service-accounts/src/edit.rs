@@ -7,7 +7,6 @@ use std::fmt;
 /// Why [`AccountsApi::edit_servers`](crate::AccountsApi::edit_servers) gave nothing back. More
 /// reasons may be added: match with a wildcard. Nothing here is a sentence for a person.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum EditError {
     /// The provider's sign-in is not a typed password, so its servers are not the person's to
     /// name.

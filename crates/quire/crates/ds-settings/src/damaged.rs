@@ -27,7 +27,6 @@ impl fmt::Display for DamagedFile {
 
 /// What a save did about a damaged file that was in the way.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub struct Saved {
     /// Where the damaged file was moved to (`<name>.bad-<seconds>`) before the new one was
     /// written; `None` when the old file was fine or there was none. Worth telling the person.

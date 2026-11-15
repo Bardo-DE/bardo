@@ -67,7 +67,6 @@ impl RowState {
 
 /// One line of the list of computers that asked.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct GuestRow {
     /// The computer's stable id.
     pub node: NodeId,
@@ -103,7 +102,6 @@ pub enum Approval {
 /// What the `GuestAsks` signal says of a question: the computer's name and when it began
 /// asking. The computer's id travels beside it.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct GuestAsk {
     /// Its name now.
     pub name: String,
@@ -120,7 +118,6 @@ impl GuestAsk {
 
 /// One model a computer lends: its id in the catalogue both computers share, and the name shown.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct CandidateModel {
     /// The catalogue's id for the model.
     pub id: String,
@@ -138,7 +135,6 @@ impl CandidateModel {
 /// A computer of the person's that lends its models and is not added yet, as `Candidates` lists
 /// it.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct ComputerCandidate {
     /// Its stable id: what `add_tailnet_computer` takes.
     pub node: NodeId,

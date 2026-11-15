@@ -20,7 +20,6 @@ use casement_protocols::vocab::{
 /// Apps and windows are named by string (an app key, an ext-foreign-toplevel identifier),
 /// because the protocol is bound on a different connection from the toplevel handles.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ShellEvent {
     /// The modifiers held over a shell surface, on entry and on every change. The surface is the
     /// caller's registered key, `None` for a surface it never registered.
@@ -232,7 +231,6 @@ impl Switcher {
 
 /// A window's slot in the overview.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct OverviewSlot {
     /// The window's identifier.
     pub window: ToplevelIdentifier,
@@ -242,7 +240,6 @@ pub struct OverviewSlot {
 
 /// A Space thumbnail's slot in the overview.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct OverviewSpaceSlot {
     /// The Space.
     pub space: SpaceId,
@@ -413,7 +410,6 @@ impl Reveals {
 
 /// The shell's state.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Shell {
     /// The modifiers held over a shell surface at the last report.
     pub mods: HeldMods,

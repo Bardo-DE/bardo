@@ -36,7 +36,6 @@ pub enum Fixup {
 
 /// Where the Spaces were found.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Origin {
     /// Read from `spaces.json`.
     Stored,
@@ -50,7 +49,6 @@ pub enum Origin {
 
 /// What reading `spaces.json` found.
 #[derive(Debug, Clone, PartialEq)]
-#[non_exhaustive]
 pub enum SpacesLoad<P, R> {
     /// The stored Spaces.
     Stored(Spaces<P, R>),

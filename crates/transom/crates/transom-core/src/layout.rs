@@ -25,7 +25,6 @@ pub struct Extent {
 
 /// Whether an output is shown turned by a quarter, which swaps its sides.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Turn {
     /// Shown the way its mode is.
     Upright,

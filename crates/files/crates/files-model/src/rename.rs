@@ -6,7 +6,6 @@ use crate::error::RenameProblem;
 
 /// Whether a name is being edited.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum Rename {
     /// Nothing is being renamed.
     #[default]

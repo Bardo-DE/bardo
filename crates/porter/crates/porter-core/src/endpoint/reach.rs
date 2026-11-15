@@ -4,7 +4,6 @@
 
 /// What a path of a [`Reach`] lets through.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ReachMethods {
     /// Every method.
     Any,

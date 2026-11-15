@@ -10,7 +10,6 @@ use std::path::Path;
 
 /// Why a binary that can mint test input will not start.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, thiserror::Error)]
-#[non_exhaustive]
 pub enum JailRefusal {
     /// The build refuses every backend but headless.
     #[error("this build refuses every backend but headless")]

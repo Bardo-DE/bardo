@@ -37,7 +37,6 @@ const STDERR_TAIL: usize = 4096;
 
 /// Why git could not be run to its end (a command that ran and failed is a [`GitOut`]).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum GitFault {
     /// The process did not start: no git, or no such folder.
     #[error("git could not be started")]

@@ -7,7 +7,6 @@ use crate::{ByteSize, FileName, MimeType, TrashedItem};
 
 /// One entry of a folder: its name, what it is, and what the listing knew about it.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Entry {
     /// Its name in the folder.
     pub name: FileName,
@@ -74,7 +73,6 @@ impl Entry {
 
 /// What an entry is.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum EntryKind {
     /// A regular file of this size.
     File(ByteSize),
@@ -88,7 +86,6 @@ pub enum EntryKind {
 
 /// What a symbolic link leads to.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum LinkTo {
     /// A file of this size.
     File(ByteSize),
@@ -100,7 +97,6 @@ pub enum LinkTo {
 
 /// A filesystem object that holds no contents a person opens.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Special {
     /// A named pipe.
     Fifo,

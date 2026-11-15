@@ -15,7 +15,6 @@ pub enum CursorMode {
 
 /// A capture of one output.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct CaptureRequest {
     /// The output.
     pub output: OutputName,
@@ -28,7 +27,6 @@ pub struct CaptureRequest {
 
 /// A picture of one Space: which, and how big.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct SpaceShot {
     /// The Space.
     pub space: SpaceId,

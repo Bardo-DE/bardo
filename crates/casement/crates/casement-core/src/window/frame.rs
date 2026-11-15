@@ -11,7 +11,6 @@ use crate::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 
 /// The lengths of a frame, in logical pixels.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct FrameMetrics {
     /// The titlebar's height.
     pub titlebar: u32,
@@ -75,7 +74,6 @@ impl Light {
 
 /// What a point is on.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum FrameHit {
     /// Not on the frame or its zones.
     Outside,

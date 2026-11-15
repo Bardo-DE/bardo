@@ -7,7 +7,6 @@ pub const BUFFER_LIMIT: u32 = 512;
 
 /// What happened to a Space.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum SpaceEvent {
     /// Its key became available.
     KeyAvailable,
@@ -38,7 +37,6 @@ pub enum SpaceEvent {
 
 /// What the service must do, in order.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum SpaceEffect {
     /// Open the databases.
     OpenDatabases,

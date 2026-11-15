@@ -5,7 +5,6 @@ use casement_core::gpu::{DrmNodeId, RenderPlan};
 
 /// How a client buffer reaches the render GPU.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum ImportRoute {
     /// The buffer is already on the render GPU.
     Local,
@@ -20,7 +19,6 @@ pub enum ImportRoute {
 /// How a GPU takes another GPU's buffers (smithay's `can_do_cross_device_imports` and
 /// `should_do_cross_device_exports`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum CrossSupport {
     /// Directly: smithay's dma shadow copy.
     Direct,

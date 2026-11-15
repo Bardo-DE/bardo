@@ -11,7 +11,6 @@ const LABEL_MAX: usize = 63;
 
 /// Why text is not a usable host or host pattern.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum HostFault {
     /// Nothing there.
     #[error("the host is empty")]

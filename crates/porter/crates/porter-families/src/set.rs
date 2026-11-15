@@ -34,7 +34,6 @@ use std::sync::Arc;
 
 /// What reading the directories found.
 #[derive(Debug, Default)]
-#[non_exhaustive]
 pub struct Loaded {
     /// The providers, one per id.
     pub specs: Vec<ProviderSpec>,
@@ -44,7 +43,6 @@ pub struct Loaded {
 
 /// Why a provider file was skipped; each keeps what failed, and its text is what is logged.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum SkipReason {
     /// The file could not be read.
     #[error(transparent)]
@@ -67,7 +65,6 @@ pub enum SkipReason {
 
 /// Whose a provider directory is, which decides what its files may change.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Layer {
     /// The system's (`/usr/share/porter/providers`): what this install ships.
     Shipped,

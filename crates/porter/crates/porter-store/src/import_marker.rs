@@ -11,7 +11,6 @@ use std::path::Path;
 
 /// What was copied from an old registry, and from which file.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct ImportMarker {
     /// The SHA-256 of the old registry file, in lower-case hex.
     pub source_sha256: String,
@@ -31,7 +30,6 @@ pub struct ImportMarker {
 
 /// Why a marker could not be read.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum MarkerError {
     /// The file could not be read.
     #[error("the import record could not be read: {0:?}")]

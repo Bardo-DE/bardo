@@ -171,7 +171,6 @@ struct Entry {
 /// moment, and wait for `ended` to pass it (cycles run one at a time, so the cycle that ends
 /// next after those that had begun is the first to begin later).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub struct Cycles {
     /// Cycles begun.
     pub begun: u64,

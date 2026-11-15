@@ -33,7 +33,6 @@ use std::time::Duration;
 
 /// What waiting for the backend to act on a pause came to.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum SleepSettled {
     /// The backend acted on the pause.
     Done,

@@ -33,7 +33,6 @@ pub enum SettingsTarget {
 
 /// Why a text is not a [`SettingsTarget`].
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum TargetError {
     /// The text does not start with `page:`, `key:`, `account:` or `extension:`.
     #[error(

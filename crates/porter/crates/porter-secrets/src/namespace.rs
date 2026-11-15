@@ -12,7 +12,6 @@ use std::fmt;
 
 /// Why a namespace was refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum NamespaceError {
     /// There was no name.
     #[error("a keyring namespace needs a name")]

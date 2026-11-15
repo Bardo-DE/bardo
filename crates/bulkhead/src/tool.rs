@@ -26,7 +26,6 @@ pub struct TermId(pub u64);
 
 /// A request to run one command.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Launch {
     /// The command.
     pub argv: Argv,
@@ -66,7 +65,6 @@ impl Launch {
 
 /// Why a terminal call failed.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ShellFault {
     /// The command did not start.
     #[error(transparent)]

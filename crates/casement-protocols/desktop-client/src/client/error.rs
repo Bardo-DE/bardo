@@ -8,7 +8,6 @@ use crate::error::CommandError;
 
 /// A failure of the wire layer.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum WireError {
     /// The registry could not be read.
     #[error("reading the registry failed")]

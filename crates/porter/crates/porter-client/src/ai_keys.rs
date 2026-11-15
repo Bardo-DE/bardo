@@ -29,7 +29,6 @@ use std::sync::Arc;
 
 /// Why a call to accountd's Keys failed. More reasons may be added: match with a wildcard.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum AiKeysError {
     /// accountd refused for a reason the person or the machine gave: the person closed the sheet
     /// (`Dismissed`) or refused (`Denied`), no key fits (`NoFittingAccount`), a key must be signed

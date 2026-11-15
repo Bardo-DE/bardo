@@ -4,7 +4,6 @@ use minisign_verify::Signature;
 
 /// Why a signature was not accepted.
 #[derive(Clone, Debug, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum SignError {
     /// The key text is not a minisign public key.
     #[error("the release key is not readable")]

@@ -23,7 +23,6 @@ use std::time::Duration;
 
 /// What casement tells the service manager.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Notice {
     /// Startup is done; `status` says what it is now doing, in plain words.
     Ready {
@@ -51,7 +50,6 @@ impl Notice {
 
 /// Why a notice could not be sent.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum NotifyError {
     /// The socket could not be reached or written.
     #[error("the notification socket {socket}: {source}")]

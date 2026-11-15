@@ -182,7 +182,6 @@ impl Agent {
 
 /// Everything that can go wrong finding, starting or becoming an agent.
 #[derive(Debug)]
-#[non_exhaustive]
 pub enum Error {
     /// Another process holds the lock. Not a failure: it is the answer to "should I start?".
     AlreadyRunning,

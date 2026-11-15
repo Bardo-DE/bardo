@@ -15,7 +15,6 @@ use tokio::signal::unix::{SignalKind, signal};
 
 /// Why the daemon did not start or stopped badly.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum Fatal {
     /// The configuration, the schema directory or the callers table could not be used.
     #[error("{0}")]

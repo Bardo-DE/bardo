@@ -14,7 +14,6 @@ use crate::standing::StandingGrant;
 
 /// How long a stored grant is remembered. The wire values are the portal's: 1 and 2.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[non_exhaustive]
 pub enum Keep {
     /// While the app that asked is running.
     WhileRunning,
@@ -43,7 +42,6 @@ impl Keep {
 
 /// What an app asks to have remembered. The wire values are the portal's: 0, 1, 2.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[non_exhaustive]
 pub enum PersistMode {
     /// Not at all.
     DoNot,

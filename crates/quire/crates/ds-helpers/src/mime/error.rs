@@ -2,7 +2,6 @@
 
 /// Why a name was refused, in the words a person reads.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum NameError {
     /// Nothing was typed.
     #[error("A name can't be empty.")]
@@ -23,7 +22,6 @@ pub enum NameError {
 
 /// Why a text is not a MIME type.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum MimeError {
     /// It is not one `type/subtype` pair of non-empty parts.
     #[error("not a type/subtype pair")]
@@ -32,7 +30,6 @@ pub enum MimeError {
 
 /// Why the file type database could not be loaded.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum LoadError {
     /// No data folder held any file name patterns.
     #[error("No file type database was found.")]

@@ -9,7 +9,6 @@ use std::time::Duration;
 /// limit added later breaks no caller: start from [`PeekBudget::default`] and change a limit with
 /// the `with_*` methods.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub struct PeekBudget {
     /// The most bytes it may read from the file.
     pub bytes: ByteLen,

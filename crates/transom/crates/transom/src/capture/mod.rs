@@ -29,7 +29,6 @@ use wl::Copier;
 
 /// A pixel layout, by the Wayland `wl_shm` names.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum PixelFormat {
     /// 32-bit with alpha.
     Argb8888,
@@ -65,7 +64,6 @@ pub struct DmabufFrame {
 
 /// The pixels of a frame.
 #[derive(Debug)]
-#[non_exhaustive]
 pub enum FrameData {
     /// Copied into memory, `stride` bytes per row.
     Shm {
@@ -93,7 +91,6 @@ pub struct CapturedFrame {
 
 /// Why a frame did not arrive.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum CaptureError {
     /// The source is gone (the window closed, the display unplugged); no more frames will come.
     #[error("the source ended")]
@@ -117,7 +114,6 @@ pub enum CaptureError {
 
 /// What a wait for the next frame came to.
 #[derive(Debug)]
-#[non_exhaustive]
 pub enum Arrival {
     /// A frame arrived.
     Frame(CapturedFrame),

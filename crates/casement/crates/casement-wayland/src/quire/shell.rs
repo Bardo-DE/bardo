@@ -145,7 +145,6 @@ pub struct ShellData;
 
 /// Why `set_role` was refused (a protocol error to the client).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum RoleRefusal {
     /// The surface is not a layer surface of this client (`bad_surface`).
     NotALayer,
@@ -155,7 +154,6 @@ pub enum RoleRefusal {
 
 /// Why a minimise target was refused (a protocol error to the client).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum TargetRefusal {
     /// The dock is not a layer surface of this client (`bad_surface`).
     NotALayer,

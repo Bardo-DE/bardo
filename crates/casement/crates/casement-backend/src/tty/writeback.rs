@@ -35,7 +35,6 @@ pub const FLIPS_TO_WAIT: u64 = 3;
 
 /// One frame read back: the buffer exactly as the device wrote it.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct RawCapture {
     /// The frame's size in pixels.
     pub size: PhysicalSize,
@@ -76,7 +75,6 @@ impl RawCapture {
 
 /// Why a writeback call failed.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum WritebackError {
     /// The device returned an I/O error.
     #[error("writeback: {0}")]

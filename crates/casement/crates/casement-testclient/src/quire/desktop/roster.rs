@@ -36,7 +36,6 @@ fn known<T>(value: WEnum<T>) -> Option<T> {
 
 /// Whether an object is still there or its last event (`closed`, `removed`) arrived.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum Presence {
     /// No last event yet.
     #[default]
@@ -47,7 +46,6 @@ pub enum Presence {
 
 /// An app as announced (a burst applies at `done`; these are the latest values).
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub struct AppView {
     /// The app key (`identity`).
     pub key: String,
@@ -76,7 +74,6 @@ pub struct AppView {
 
 /// A window's rectangle and scale as announced.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct GeometryView {
     /// Left edge, global logical pixels.
     pub x: i32,
@@ -92,7 +89,6 @@ pub struct GeometryView {
 
 /// A window as announced.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub struct WindowView {
     /// The ext-foreign-toplevel identifier.
     pub identifier: String,
@@ -136,7 +132,6 @@ pub struct WindowView {
 
 /// A Space as announced.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub struct SpaceView {
     /// Its id (`id`; also ext-workspace's).
     pub id: String,
@@ -158,7 +153,6 @@ pub struct SpaceView {
 
 /// The active app and key window as announced.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub struct ActiveView {
     /// The key of the active app.
     pub app: Option<String>,

@@ -33,7 +33,6 @@ pub struct FileStore {
 /// host's.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("registry file {} refused: {cause}", file.display())]
-#[non_exhaustive]
 pub struct RegistryRefusal {
     file: PathBuf,
     backup: Option<PathBuf>,

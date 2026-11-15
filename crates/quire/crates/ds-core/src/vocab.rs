@@ -316,7 +316,6 @@ pub enum ShortcutKey {
 /// draws Up, Down, Left and Right larger than the rest of the small face (at 9.5 px
 /// an arrow's stroke reads as a dash).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-#[non_exhaustive]
 pub enum GlyphKind {
     /// Up, Down, Left, Right.
     Arrow,
@@ -534,7 +533,6 @@ impl Fraction {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[word(case = snake)]
-#[non_exhaustive]
 pub enum CompanionPresence {
     /// Still; zero frames anywhere.
     #[default]
@@ -554,7 +552,6 @@ pub enum CompanionPresence {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[word(case = snake)]
-#[non_exhaustive]
 pub enum MemoryVerb {
     /// Delete it, and everything derived from it.
     Forget,
@@ -587,7 +584,6 @@ pub enum EffectMark {
 
 /// Who did a thing, for drawing only: the view of the wire's actor. `data-actor`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-#[non_exhaustive]
 pub enum ActorMark {
     /// The person.
     You,

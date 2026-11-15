@@ -12,7 +12,6 @@ use serde::{Deserialize, Serialize};
 /// One consent question: "Photos wants to keep its library in your files", with the fitting
 /// accounts to choose from (design/31 §4.5: by capability, not by provider).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct ConsentAsk {
     /// Who asks.
     pub app: AppId,
@@ -46,7 +45,6 @@ pub struct ConsentAsk {
 /// What a [`ConsentAsk`]'s answer is for.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum AskPurpose {
     /// The app wants to use an account: the answer is stored as a grant.
     #[default]
@@ -106,7 +104,6 @@ impl ConsentAsk {
 
 /// One account row in the chooser.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct AccountChoice {
     /// The account.
     pub account: AccountId,
@@ -130,7 +127,6 @@ impl AccountChoice {
 /// What the user answered.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ConsentAnswer {
     /// "Allow", with the account picked.
     Allow {

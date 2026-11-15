@@ -12,7 +12,6 @@ type Stepped = (Browser, Vec<Effect>);
 
 /// The Go to Folder sheet: away, or asking for a path.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum GoTo {
     /// Not up.
     #[default]

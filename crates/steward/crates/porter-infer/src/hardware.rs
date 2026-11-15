@@ -11,7 +11,6 @@ pub const QUEUE_LONG_FROM: Count = Count(3);
 /// One fact about the machine, as the picker and the helper's card show it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum HardwareNote {
     /// Several helpers use this model at once, so replies will be slower.
     ModelShared {

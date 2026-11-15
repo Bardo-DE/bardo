@@ -40,7 +40,6 @@ impl XdgDirs {
 
 /// A loaded value and how many files were skipped because they could not be read or were too big.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Loaded<T> {
     /// What was loaded.
     pub value: T,

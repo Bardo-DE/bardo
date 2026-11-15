@@ -30,7 +30,6 @@ pub const WATCH_EVERY: Duration = Duration::from_secs(2);
 
 /// Why the appearance could not be read.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum AppearanceError {
     /// The desktop's settings could not be read.
     #[error("the desktop settings could not be read: {0}")]
@@ -142,7 +141,6 @@ pub type Namespaces = HashMap<String, HashMap<String, OwnedValue>>;
 /// What the portal answers with when a read fails.
 #[derive(Debug, zbus::DBusError)]
 #[zbus(prefix = "org.freedesktop.portal.Error")]
-#[non_exhaustive]
 pub enum PortalError {
     /// The bus itself failed.
     #[zbus(error)]

@@ -56,7 +56,6 @@ pub struct Catalog {
 
 /// Why an entry's text is not an entry: it does not parse, or an engine it names cannot run it.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum EntryError {
     /// Stoker's parser refused it.
     #[error("{0}")]

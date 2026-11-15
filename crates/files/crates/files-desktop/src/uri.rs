@@ -22,7 +22,6 @@ pub use crate::error::UriError;
 
 /// Where an address points.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Uri {
     /// A path on this computer.
     File(PathBuf),

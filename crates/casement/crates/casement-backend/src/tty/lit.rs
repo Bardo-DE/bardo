@@ -22,7 +22,6 @@ pub(super) const DISTRUST_FOR: Duration = Duration::from_secs(60);
 
 /// Where an output is lit, and with what.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct LitOutput {
     /// The device that drives it.
     pub device: DevicePath,
@@ -43,7 +42,6 @@ impl LitOutput {
 
 /// What applying a configuration did.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Lighting {
     /// The output is dark (DPMS off): no frame is wanted.
     Dark,

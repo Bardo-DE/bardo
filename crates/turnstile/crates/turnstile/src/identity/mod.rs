@@ -56,7 +56,6 @@ impl Caller {
 
 /// Why a caller could not be identified.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum IdentifyError {
     /// The kernel would not name the process (an old kernel, or it is gone).
     #[error("the caller could not be pinned: {0}")]

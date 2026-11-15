@@ -2,7 +2,6 @@
 
 /// A frame that could not be encoded or decoded; the connection that sent it is closed.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum FrameError {
     /// The body could not be written as JSON, or the bytes are not an envelope of the body's type.
     #[error("malformed frame: {0}")]

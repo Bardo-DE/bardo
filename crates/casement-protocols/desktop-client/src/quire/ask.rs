@@ -10,7 +10,6 @@ use casement_protocols::vocab::{AskId, Memory, Power, SubjectKind};
 /// sends every ask that is still open again when a shell binds, with the same [`AskId`], so a
 /// shell keeps its queue keyed by id and treats a repeat as the same question.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct PermissionAsk {
     /// The question's id; the answer and the withdrawal name it.
     pub ask: AskId,

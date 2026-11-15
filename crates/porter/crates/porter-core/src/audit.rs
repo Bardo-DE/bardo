@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 /// Why a process credential ended (P2). A closed set of words, never free text.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum CredentialEnd {
     /// The launcher ended it: the process it was handed to exited or was killed
     /// (`Tokens.RevokeProcessCredential`).

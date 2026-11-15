@@ -11,7 +11,6 @@ use crate::error::Refusal;
 /// One thing asked of Files. Paths are full paths; the window decides what a path is (a folder to
 /// open, a file to point at).
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Ask {
     /// Show this file or folder.
     Open(PathBuf),
@@ -94,7 +93,6 @@ impl Undoing {
 
 /// What the window answers.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Reply {
     /// It was done, or the person was asked, or the window was told.
     Done,

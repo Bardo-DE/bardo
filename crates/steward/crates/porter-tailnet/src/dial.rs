@@ -19,7 +19,6 @@ const PATIENCE: Duration = Duration::from_secs(60);
 
 /// Why a computer was not reached.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum DialError {
     /// Tailscale could not be asked, or is not running and signed in.
     #[error("Tailscale: {0}")]

@@ -10,7 +10,6 @@ use serde::{Deserialize, Serialize};
 
 /// One granted account that meets a need: what an app renders and then uses.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct Candidate {
     /// The account.
     pub account: AccountId,

@@ -7,7 +7,6 @@ use casement_core::geometry::{LogicalRect, PhysicalRect, PhysicalSize};
 
 /// One window's pixels and where they go in the picture.
 #[derive(Debug, Clone, Copy)]
-#[non_exhaustive]
 pub struct ThumbLayer<'a> {
     /// Where the window goes, in picture pixels (it may reach outside the picture).
     pub dest: PhysicalRect,

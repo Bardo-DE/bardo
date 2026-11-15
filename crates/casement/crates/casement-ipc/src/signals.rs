@@ -39,7 +39,6 @@ pub trait SignalHandler: Send + 'static {
 
 /// Why the watcher could not start.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum SignalError {
     /// The thread or its runtime could not be started.
     #[error("the signal watcher thread: {0}")]

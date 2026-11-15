@@ -12,7 +12,6 @@ pub const MAX_MONITORS: usize = 64;
 
 /// Why a request was not held.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum HoldError {
     /// The caller or the whole hub is at its limit of holds.
     #[error("too many holds are open")]

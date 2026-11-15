@@ -26,7 +26,6 @@ pub struct CuaCap {
 /// What a computer-use model operates.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum CuaEnv {
     /// A desktop window.
     Desktop,
@@ -39,7 +38,6 @@ pub enum CuaEnv {
 /// How many actions one model step may carry.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum CuaBatching {
     /// One action per step.
     One,

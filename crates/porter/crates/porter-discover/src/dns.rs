@@ -27,7 +27,6 @@ pub struct MxRecord {
 
 /// Why a lookup gave no records.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum DnsFault {
     /// The name has none.
     NoRecords,

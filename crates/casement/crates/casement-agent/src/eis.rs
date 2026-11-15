@@ -50,7 +50,6 @@ pub fn agent_may_lease(held: &RoleName) -> bool {
 
 /// A kind of device a remote session may offer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum RemoteKind {
     /// A keyboard.
     Keyboard,
@@ -112,7 +111,6 @@ impl RemoteInput {
 
 /// What a [`RemoteEisSource`] yields.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum RemoteEvent {
     /// An input event.
     Input(RemoteInput),

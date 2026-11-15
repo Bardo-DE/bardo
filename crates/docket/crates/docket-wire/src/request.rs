@@ -18,7 +18,6 @@ use serde::{Deserialize, Serialize};
 /// Every request of `org.quire.Intents1`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum IntentsRequest {
     /// `.Registry.Manifests`.
     Manifests,

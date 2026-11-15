@@ -93,7 +93,6 @@ pub struct Inherit {
 
 /// Why a child could not be set up. More reasons may be added: match with a wildcard.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum ChildKeyError {
     /// The key could not be read back from the descriptor (what the system said; `InvalidData`
     /// is a key longer than any key).

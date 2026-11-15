@@ -15,7 +15,6 @@ use ds_core::word::Word;
 /// `capability = "..."`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
 #[word(case = snake)]
-#[non_exhaustive]
 pub enum Capability {
     /// A set of file-type pictures: one `dir` of them.
     FileIcons,

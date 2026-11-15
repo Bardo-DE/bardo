@@ -12,7 +12,6 @@ pub const TITLE_CHARS: usize = 256;
 /// One title raster's inputs: the text, the titlebar's logical size, the output scale, the
 /// colour scheme and whether the window is the key window.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub struct TitleKey {
     /// The title, tidied by [`tidy`].
     pub title: String,

@@ -10,7 +10,6 @@ use files_core::{
 
 /// One file to hand to an app: where it is, and what it is called.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct OpenTarget {
     /// The folder it is in.
     pub folder: FolderPath,
@@ -33,7 +32,6 @@ impl OpenTarget {
 /// Something for the caller to carry out; the answer, if any, comes back as an
 /// [`Input`](crate::Input).
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Effect {
     /// Read the folder and answer with `Input::Listed`.
     List(Location),

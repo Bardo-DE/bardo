@@ -2,7 +2,6 @@
 
 /// Why the cloud service could not be asked, or an answer of it not read.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum StorageError {
     /// The service did not answer, or is not there.
     #[error("The cloud drives can't be reached right now: {0}")]

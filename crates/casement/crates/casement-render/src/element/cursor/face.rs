@@ -20,7 +20,6 @@ pub const MAX_CLIENT_CURSOR: u32 = 256;
 
 /// What the cursor looks like, in logical pixels.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct CursorFace {
     /// The image's size.
     pub size: LogicalSize,

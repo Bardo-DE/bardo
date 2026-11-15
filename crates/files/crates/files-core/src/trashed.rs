@@ -27,7 +27,6 @@ impl TrashId {
 /// This is also what a move to the Trash gives back, so the move can be undone by putting this
 /// item back.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct TrashedItem {
     /// The Trash's handle on it.
     pub id: TrashId,

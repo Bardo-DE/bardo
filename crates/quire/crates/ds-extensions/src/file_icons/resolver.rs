@@ -46,7 +46,6 @@ pub struct FileFacts<'a> {
 
 /// The icon to draw. The app maps it to `ds::FileIconChoice` (`Standard`, `Folder`, `Artwork`).
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum IconPick {
     /// The standard page: the kind's mark and, when it has one that fits, the extension.
     Standard {

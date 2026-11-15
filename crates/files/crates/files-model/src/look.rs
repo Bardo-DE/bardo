@@ -10,7 +10,6 @@ type Stepped = (Browser, Vec<Effect>);
 
 /// The Get Info panel: closed, waiting for the facts, showing them, or unable to.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum InfoView {
     /// Not up.
     #[default]

@@ -15,7 +15,6 @@ pub const WINDOW: Duration = Duration::from_secs(30);
 
 /// Whether a start may happen now.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Permit {
     /// Start it; the start is recorded.
     Allowed,

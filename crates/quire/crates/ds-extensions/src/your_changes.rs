@@ -60,7 +60,6 @@ pub enum Removal {
 
 /// A change that could not be made.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum ChangeError {
     /// The type's icon name cannot be a file name.
     #[error("{name:?} is not a usable icon name")]

@@ -6,7 +6,6 @@ use crate::names::OutputName;
 
 /// One workspace.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Workspace {
     /// This client's key for it.
     pub key: WorkspaceKey,
@@ -42,7 +41,6 @@ impl Workspace {
 
 /// A set of workspaces shown together on some outputs.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Group {
     /// This client's key for it.
     pub key: GroupKey,

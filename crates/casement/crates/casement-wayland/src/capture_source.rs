@@ -47,7 +47,6 @@ pub struct ContentStamp(pub u64);
 
 /// What a frame request asks the renderer for.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct ToplevelCaptureRequest {
     /// The session.
     pub session: ToplevelSessionId,
@@ -61,7 +60,6 @@ pub struct ToplevelCaptureRequest {
 
 /// What the damage gate decided for a frame request.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum FrameVerdict {
     /// The content changed since the session's last frame: render this.
     Capture(ToplevelCaptureRequest),

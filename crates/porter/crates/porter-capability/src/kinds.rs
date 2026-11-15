@@ -95,7 +95,6 @@ macro_rules! define_capabilities {
         /// One thing an account (or one of its models) can do, with its parameters.
         #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
         #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-        #[non_exhaustive]
         pub enum Capability {
             $($(#[$doc])* $variant($cap),)*
         }
@@ -113,7 +112,6 @@ macro_rules! define_capabilities {
         /// Its serde form is the stable slug used in files, on the bus and in the consent store.
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
         #[serde(rename_all = "snake_case")]
-        #[non_exhaustive]
         pub enum CapabilityKind {
             $($(#[$doc])* $variant,)*
         }

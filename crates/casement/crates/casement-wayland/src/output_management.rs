@@ -124,7 +124,6 @@ pub struct ManagerData;
 
 /// Whether a configuration is applied or only checked.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum ConfigurationIntent {
     /// `apply`.
     Apply,
@@ -134,7 +133,6 @@ pub enum ConfigurationIntent {
 
 /// One head's part of a configuration.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct HeadRequest {
     /// The output.
     pub output: OutputKey,
@@ -151,7 +149,6 @@ impl HeadRequest {
 
 /// A configuration a client built.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Configuration {
     /// The manager serial the client built it at.
     pub serial: ConfigSerial,
@@ -171,7 +168,6 @@ impl Configuration {
 
 /// How the protocol answers a configuration.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ConfigurationAnswer {
     /// `succeeded`, with the events to feed (none for a test).
     Succeeded(Vec<Event>),

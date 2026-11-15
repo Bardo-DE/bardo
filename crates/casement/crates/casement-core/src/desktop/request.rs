@@ -10,7 +10,6 @@ use porter_core::SpaceId;
 
 /// One management request on the desktop.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum DesktopRequest {
     /// Something asked of an app.
     App {
@@ -42,7 +41,6 @@ pub enum DesktopRequest {
 
 /// A request on `quire_desktop_app_v1`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum AppAsk {
     /// Bring the app forward and raise its windows.
     Activate,
@@ -63,7 +61,6 @@ pub enum AppAsk {
 
 /// A request on `quire_desktop_window_v1`.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum WindowAsk {
     /// Make the window key.
     Activate,
@@ -87,7 +84,6 @@ pub enum WindowAsk {
 
 /// A request on `quire_desktop_space_v1`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum SpaceAsk {
     /// Switch to the Space.
     Activate,

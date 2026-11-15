@@ -24,7 +24,6 @@ pub struct FormatEntry {
 
 /// The formats each node can render to or import.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub struct FormatTable {
     /// Each node's formats.
     pub per_node: BTreeMap<DrmNodeId, Vec<FormatEntry>>,
@@ -52,7 +51,6 @@ impl FormatTable {
 
 /// What a tranche is for (`zwp_linux_dmabuf_feedback_v1.tranche_flags`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum TrancheUse {
     /// Formats the render GPU draws into directly.
     Render,
@@ -64,7 +62,6 @@ pub enum TrancheUse {
 
 /// One tranche: a target device, what it is for and its formats.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Tranche {
     /// The device whose formats these are.
     pub target: DrmNodeId,
@@ -76,7 +73,6 @@ pub struct Tranche {
 
 /// The whole feedback.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct FeedbackPlan {
     /// The main device (the render GPU).
     pub main_device: DrmNodeId,

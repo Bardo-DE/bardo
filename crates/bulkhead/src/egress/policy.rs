@@ -14,7 +14,6 @@ pub const DEFAULT_PORTS: [u16; 2] = [443, 80];
 
 /// Why a policy cannot be made.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum PolicyFault {
     /// No allow entries: that would mean nothing is allowed, and is surely a mistake.
     #[error("an egress policy needs at least one allow entry")]
@@ -51,7 +50,6 @@ impl Default for Ports {
 
 /// Why a request was refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum Refusal {
     /// A deny entry names the host.
     #[error("the host is denied")]

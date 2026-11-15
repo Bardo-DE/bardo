@@ -14,7 +14,6 @@ pub const DISPLAY_CONFIRM_WITHIN: Duration = Duration::from_secs(15);
 
 /// Who asked for a change to an output.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum Requester {
     /// The shell's own connection: the person is at the desk, so the change is never asked
     /// about, and it settles a trial in flight as kept.

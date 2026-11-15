@@ -8,7 +8,6 @@ use casement_protocols::vocab::{SpaceActivity, SpaceKind};
 
 /// One Space.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct QuireSpace {
     /// This client's key for it.
     pub key: SpaceKey,
@@ -46,7 +45,6 @@ impl QuireSpace {
 
 /// One property of a Space changing.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum SpaceChange {
     /// The Space's id.
     Id(SpaceId),

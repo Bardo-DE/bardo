@@ -17,7 +17,6 @@ use ds_core::word::Word;
 /// One of the thirteen system hues, in the order the HIG lists them.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]
 #[token(prefix = "tag-", kind = fixed, css = tag_css)]
-#[non_exhaustive]
 pub enum SystemHue {
     /// systemRed.
     Red,

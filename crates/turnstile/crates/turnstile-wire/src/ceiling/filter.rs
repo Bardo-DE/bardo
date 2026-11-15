@@ -7,7 +7,6 @@ use crate::event::Event;
 
 /// Why an event was not written.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Denial {
     /// The type or code is not one the device has.
     NotAllowed,

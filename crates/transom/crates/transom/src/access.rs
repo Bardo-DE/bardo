@@ -26,7 +26,6 @@ const DENY_LABEL: &str = "Don\u{2019}t Allow";
 
 /// What the person did with the question.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Answer {
     /// They pressed the yes button.
     Granted,

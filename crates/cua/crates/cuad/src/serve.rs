@@ -26,7 +26,6 @@ use zbus::fdo;
 
 /// Why the daemon stopped.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum ServeError {
     /// The session bus could not be reached or the name could not be taken.
     #[error("bus: {0}")]

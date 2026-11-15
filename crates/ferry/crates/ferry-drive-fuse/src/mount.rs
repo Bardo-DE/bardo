@@ -13,7 +13,6 @@ use std::sync::Arc;
 
 /// Why a drive was not mounted.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum MountError {
     /// This computer has no FUSE device.
     #[error("there is no {0}")]

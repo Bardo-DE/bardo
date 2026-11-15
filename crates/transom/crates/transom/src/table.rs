@@ -16,7 +16,6 @@ pub struct SessionKey(pub String);
 
 /// Why a session was not opened.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Refusal {
     /// The handle is open already.
     AlreadyOpen,

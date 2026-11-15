@@ -10,7 +10,6 @@ use ds_core::vocab::Fraction;
 
 /// One request from the shell.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ShellRequest {
     /// A layer surface of the shell is the bar, the dock, the switcher and so on
     /// (`set_role`). The wire layer has already refused a surface that is not a layer surface

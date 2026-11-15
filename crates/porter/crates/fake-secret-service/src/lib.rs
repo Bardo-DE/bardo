@@ -78,7 +78,6 @@ pub struct Shared(Arc<Mutex<Store>>);
 
 /// What can go wrong putting the service on the bus.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum Error {
     /// The bus refused an object or the name [`BUS_NAME`].
     #[error("the bus refused the Secret Service: {0}")]

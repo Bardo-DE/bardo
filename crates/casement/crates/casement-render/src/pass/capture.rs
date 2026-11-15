@@ -31,7 +31,6 @@ pub use shm::{ShmWriteError, write_frame};
 
 /// What to read back.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct CaptureRequest {
     /// The area of the output, in its physical pixels.
     pub area: PhysicalRect,
@@ -48,7 +47,6 @@ impl CaptureRequest {
 
 /// The pixel format of a captured frame.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum CaptureFormat {
     /// 8 bits per channel with alpha, little-endian `AR24`.
     Argb8888,
@@ -58,7 +56,6 @@ pub enum CaptureFormat {
 
 /// A frame read back from an output.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct CapturedFrame {
     /// The area it covers.
     pub area: PhysicalRect,

@@ -3,7 +3,6 @@
 /// Why [`TitleRaster::render`](crate::TitleRaster::render) made no pixels. None of these is a
 /// fault: the frame is drawn without a title.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum TitleError {
     /// The title has no visible text.
     #[error("the title is empty")]

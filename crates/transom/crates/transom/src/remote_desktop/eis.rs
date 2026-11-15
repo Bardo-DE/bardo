@@ -16,7 +16,6 @@ pub const EIS_DEADLINE: Duration = Duration::from_secs(10);
 
 /// Why an EIS socket could not be had.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum EisError {
     /// The compositor is not on the bus.
     #[error("the compositor is not available")]

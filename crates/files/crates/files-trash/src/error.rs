@@ -4,7 +4,6 @@ use trash::Error as Foreign;
 
 /// Why the Trash could not do what was asked.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum TrashError {
     /// An item is gone: it was not where it was said to be.
     #[error("An item can't be found any more.")]

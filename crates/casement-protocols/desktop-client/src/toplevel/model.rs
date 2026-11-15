@@ -16,7 +16,6 @@ pub enum Announcement {
 
 /// A toplevel window.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Toplevel {
     /// This client's key for it.
     pub key: ToplevelKey,

@@ -16,7 +16,6 @@ pub const QUIET_TURN: Duration = Duration::from_millis(250);
 
 /// Why a frame could not be handed on.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum SinkError {
     /// No app is reading the stream any more.
     #[error("nobody is reading the stream")]
@@ -39,7 +38,6 @@ pub trait FrameSink: Send + std::fmt::Debug {
 
 /// What one turn of the pump did.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum PumpOutcome {
     /// A frame went to the sink.
     Pushed,

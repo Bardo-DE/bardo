@@ -9,7 +9,6 @@ use std::os::fd::OwnedFd;
 
 /// A change in who holds the seat.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum SessionNote {
     /// Another session took the seat (a VT switch away, a suspend): stop using devices.
     Paused,
@@ -58,7 +57,6 @@ pub trait TtySession: std::fmt::Debug {
 /// Whether this session holds the seat. While it is [`SeatState::Lent`] no device may be used,
 /// no frame is drawn and hotplug waits.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-#[non_exhaustive]
 pub enum SeatState {
     /// This session is on the screen.
     #[default]
@@ -94,7 +92,6 @@ impl SeatState {
 
 /// Where a seat change came from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum SeatSource {
     /// Another session took the seat or gave it back (a VT switch).
     Session,

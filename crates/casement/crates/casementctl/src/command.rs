@@ -59,7 +59,6 @@ pub enum ShotTarget {
 
 /// Why a command line was refused.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum CommandError {
     /// Not a subcommand casementctl knows.
     #[error("unknown command: {0}")]

@@ -14,7 +14,6 @@ use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 /// What the fake GPU does when asked to draw.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum GpuBehaviour {
     /// It draws.
     #[default]
@@ -25,7 +24,6 @@ pub enum GpuBehaviour {
 
 /// Whether the fake GPU keeps the watched outputs' frames on the GPU.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum SceneBehaviour {
     /// It keeps none: the software shadow reads frames back.
     #[default]

@@ -19,7 +19,6 @@ const NAMESPACE_BASE: usize = 64;
 
 /// What turns an element into strip `index`, all in the output's physical pixels.
 #[derive(Debug, Clone, Copy, PartialEq)]
-#[non_exhaustive]
 pub struct StripPlan {
     /// Which strip of the window this is (it keeps the strip's id steady from frame to frame).
     pub index: usize,
@@ -42,7 +41,6 @@ pub struct StripPlan {
 
 /// How far to reach past a strip's band, in physical pixels of the window at rest.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub struct Margins {
     /// Past the left and right edges.
     pub side: i32,

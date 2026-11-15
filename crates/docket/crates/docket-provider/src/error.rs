@@ -2,7 +2,6 @@
 
 /// Why serving a provider on the bus failed.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum ServeError {
     /// The bus refused or failed.
     #[error("bus")]

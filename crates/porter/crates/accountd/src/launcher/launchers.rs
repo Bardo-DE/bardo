@@ -66,7 +66,6 @@ impl Ask {
 /// The time seam of the requests: accountd's own clock, the bound, and how often the bound is
 /// looked at. The default is the system clock, ten minutes and one second.
 #[derive(Clone)]
-#[non_exhaustive]
 pub struct LoginTiming {
     /// The clock the bound is measured on; none is the system's.
     pub clock: Option<Arc<dyn Clock>>,
@@ -529,7 +528,6 @@ impl LaunchersSeam for Launchers {
 /// The word the Settings pane hears on `accounts.<id>.sign_out` once a sign out has an outcome
 /// (`Changed(key, word)`); the action itself returns when the request is made.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum SignOutNews {
     /// The launcher was asked; the outcome follows.
     Asked,

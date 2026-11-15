@@ -6,7 +6,6 @@ use std::path::{Path, PathBuf};
 /// What stopped a save. The messages are for the person (they appear in a toast): plain words,
 /// the file named, no protocol or format names.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum FilesError {
     /// A directory or file could not be written.
     #[error("Settings couldn't save {path}: {source}")]

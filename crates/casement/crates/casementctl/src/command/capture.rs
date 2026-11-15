@@ -13,7 +13,6 @@ const FAILED: u8 = 1;
 
 /// Why a shot was not taken.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum ShotError {
     /// There is no compositor to connect to (`WAYLAND_DISPLAY`).
     #[error("connecting to the compositor: {0}")]

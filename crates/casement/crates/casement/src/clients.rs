@@ -34,7 +34,6 @@ pub use standing::{client_standing, maker_of, peer_of};
 
 /// How well the program behind a connection is known when it arrives.
 #[derive(Debug, Clone)]
-#[non_exhaustive]
 pub enum Vetting {
     /// Not judged: a connection handed out to the shell, the agent tier or the portal (trusted
     /// by how it was obtained), a sandbox's, or one nobody looked at.

@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 /// The wire protocol an authenticated relay speaks for an endpoint (`porter-proxy`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum EndpointProtocol {
     /// IMAP: the relay authenticates and the app sees a `PREAUTH` greeting.
     Imap,

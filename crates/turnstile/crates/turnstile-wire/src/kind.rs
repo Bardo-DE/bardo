@@ -5,7 +5,6 @@ use crate::maker::Maker;
 
 /// How events reach the kernel.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum Delivery {
     /// The client sends events, the service checks each one against the ceiling and writes it.
     Proxied,
@@ -33,7 +32,6 @@ impl Delivery {
 
 /// A kind of device the service will make.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum Kind {
     /// palmrest's virtual touchpad.
     PalmrestTouchpad,

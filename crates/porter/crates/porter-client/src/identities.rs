@@ -30,7 +30,6 @@ use std::sync::Arc;
 
 /// Why an Identities call failed. More reasons may be added: match with a wildcard.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum IdentitiesError {
     /// The person closed the sheet without picking an identity.
     #[error("cancelled")]
@@ -57,7 +56,6 @@ pub enum IdentitiesError {
 
 /// The identity the person picked in [`Identities::offer`]: who to continue as. It holds no token.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Picked {
     /// The identity's id, which `register_use` and `take_password` take.
     pub id: IdentityId,

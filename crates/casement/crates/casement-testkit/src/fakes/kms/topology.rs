@@ -14,7 +14,6 @@ use std::path::Path;
 
 /// Why a fixture could not be loaded.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum KmsFixtureError {
     /// The file could not be read.
     #[error("{}: {source}", path.display())]
@@ -50,7 +49,6 @@ pub fn load_fixture(path: &Path) -> Result<KmsResources, KmsFixtureError> {
 
 /// Builders for the synthetic topologies the FakeKms suite runs.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum SyntheticTopology {
     /// One laptop panel, `eDP-1`, 2880x1800 at 120 Hz, variable refresh capable.
     LaptopPanel,

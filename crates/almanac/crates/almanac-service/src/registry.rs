@@ -13,7 +13,6 @@ pub enum Listing {
 
 /// Why the registry could not be asked. The service fails closed on it.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum RegistryError {
     /// The registry did not answer in time, or is not there.
     #[error("the Space registry did not answer")]

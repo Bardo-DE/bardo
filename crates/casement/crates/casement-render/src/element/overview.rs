@@ -16,7 +16,6 @@ use smithay::backend::renderer::utils::CommitCounter;
 /// hovered window's ring. The composition root makes them from quire's tokens (the scrim and the
 /// accent, in the person's scheme); this crate holds no colour of its own for them.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct OverviewLook {
     /// The dimming over the picture.
     pub dim: Rgba8,

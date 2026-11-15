@@ -11,7 +11,6 @@ use std::future::Future;
 
 /// Why a backend could not open a Space's stores.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum BackendError {
     /// The key store said no.
     #[error("keys: {0}")]

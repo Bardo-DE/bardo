@@ -10,7 +10,6 @@ use std::sync::Arc;
 
 /// Why the bytes did not come.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum SourceError {
     /// The drive could not be reached (no network, or it asked to wait).
     #[error("the drive could not be reached")]
@@ -34,7 +33,6 @@ impl From<ReplicaError> for SourceError {
 
 /// Why an online document's copy was not made.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum CopyError {
     /// The drive gives no file of it.
     #[error("no file format")]

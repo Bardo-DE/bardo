@@ -44,7 +44,6 @@ use std::sync::Arc;
 
 /// Why "Add Account" did not end in an account.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ContinueError {
     /// The person closed the sheet without finishing the sign-in.
     #[error("the sign-in was closed before it finished")]
@@ -62,7 +61,6 @@ pub enum ContinueError {
 
 /// Why a sync switch did not change.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum SwitchError {
     /// accountd has no such account.
     #[error("that account is not one of the accounts")]
@@ -84,7 +82,6 @@ pub enum SwitchError {
 
 /// Why an account was not removed.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum RemoveError {
     /// accountd has no such account.
     #[error("that account is not one of the accounts")]
@@ -102,7 +99,6 @@ pub enum RemoveError {
 
 /// How "Add Account" ended well.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Continued {
     /// accountd added the account.
     SignedIn(AccountId),

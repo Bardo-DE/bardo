@@ -11,7 +11,6 @@ pub struct BarSpaceKey(pub String);
 
 /// One Space on the bar.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct SpaceTile {
     /// Which Space it is.
     pub key: BarSpaceKey,

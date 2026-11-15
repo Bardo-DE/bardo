@@ -18,7 +18,6 @@ use casement_motion::PlacedWindow;
 
 /// What the loop remembers of a window's frame, to draw it once the window has closed.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct ClosingFrame {
     /// The frame's look and metrics as they were.
     pub style: FrameStyle,

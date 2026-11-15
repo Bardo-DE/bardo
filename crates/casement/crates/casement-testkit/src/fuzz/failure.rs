@@ -33,7 +33,6 @@ impl fmt::Display for PanicSite {
 /// Why a fuzz run failed: the oracle that fired, and for [`FuzzFailure::AtOp`] the op after
 /// which it did.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum FuzzFailure {
     /// Oracle 1: the compositor panicked.
     #[error("oracle 1: the compositor panicked {0}")]

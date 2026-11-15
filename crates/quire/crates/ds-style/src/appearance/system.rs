@@ -43,7 +43,6 @@ impl Contrast {
 /// contrast.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Copy, Hash, Default)]
 #[serde(default)]
-#[non_exhaustive]
 pub struct SystemPrefs {
     /// The desktop's colour scheme.
     pub scheme: Scheme,

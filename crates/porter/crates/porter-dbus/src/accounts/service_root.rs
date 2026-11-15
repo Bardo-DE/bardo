@@ -8,7 +8,6 @@ use porter_wire::names::ACCOUNTS_BUS;
 
 /// A daemon that serves Request objects, and so a sheet a caller waits for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum ServiceRoot {
     /// accountd (`org.quire.Accounts1`): the sheets for identities, for AI keys and for an
     /// agent's key.

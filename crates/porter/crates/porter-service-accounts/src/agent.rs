@@ -11,7 +11,6 @@ use porter_service_core::{Audited, Ports};
 
 /// Why a report of an agent's state was not taken.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum AgentFault {
     /// No account has this id.
     UnknownAccount,

@@ -59,7 +59,6 @@ pub const PORTAL_PATH: &str = "/org/freedesktop/portal/desktop";
 
 /// The seams a running portal is built from.
 #[derive(Debug)]
-#[non_exhaustive]
 pub struct Parts {
     /// Asks the person what to share.
     pub chooser: Box<dyn chooser::Chooser>,

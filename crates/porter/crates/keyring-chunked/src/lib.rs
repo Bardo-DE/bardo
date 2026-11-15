@@ -76,7 +76,6 @@ impl Limit {
 /// A read returns it as the source of an [`Error::BadDataFormat`]; downcast the boxed error to
 /// tell it from the wrapped store's own.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ChunkError {
     /// The head names more parts than were found.
     #[error("the stored value is incomplete: part {index} of {count} is missing")]

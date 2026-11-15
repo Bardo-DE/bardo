@@ -14,7 +14,6 @@ use serde::{Deserialize, Serialize};
 /// One request to inferd.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum InferRequest {
     /// A chat turn.
     Chat(ChatRequest),
@@ -35,7 +34,6 @@ pub enum InferRequest {
 /// Which kind of request a session carries, as the session machine tells them apart.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum RequestKind {
     /// [`InferRequest::Chat`].
     Chat,
@@ -107,7 +105,6 @@ impl MessagePart {
 
 /// A chat turn.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct ChatRequest {
     /// The conversation so far, oldest first.
     pub messages: Vec<ChatMessage>,
@@ -194,7 +191,6 @@ pub enum Role {
 /// One piece of a message.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum MessagePart {
     /// Text.
     Text(String),
@@ -262,7 +258,6 @@ pub struct ImagePart {
 /// Where an image's bytes are.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ImageSource {
     /// In the frame, as base64 text (small images; about a third larger than raw).
     Inline(Base64Bytes),
@@ -273,7 +268,6 @@ pub enum ImageSource {
 /// The form of the reply.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ReplyShape {
     /// Free text.
     Text,
@@ -285,7 +279,6 @@ pub enum ReplyShape {
 
 /// Embeddings for some texts.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct EmbedRequest {
     /// The texts.
     pub inputs: Vec<String>,
@@ -338,7 +331,6 @@ pub enum EmbedRole {
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum Task {
     /// Shorten.
     Summarise,
@@ -352,7 +344,6 @@ pub enum Task {
 
 /// One task.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct TaskRequest {
     /// The task.
     pub task: Task,

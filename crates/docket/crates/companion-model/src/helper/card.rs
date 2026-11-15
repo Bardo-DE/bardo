@@ -9,7 +9,6 @@ use serde::{Deserialize, Serialize};
 
 /// Why a name or a role is not one.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum HelperTextFault {
     /// Nothing but whitespace.
     #[error("it is empty")]

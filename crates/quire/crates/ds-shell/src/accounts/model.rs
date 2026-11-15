@@ -426,7 +426,6 @@ pub use ds::components::controls::copy_state::CopyState;
 
 /// Why a sign-in ended without an account.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-#[non_exhaustive]
 pub enum SignInFault {
     /// The provider refused what was typed.
     Refused,

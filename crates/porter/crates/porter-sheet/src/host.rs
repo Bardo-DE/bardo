@@ -19,7 +19,6 @@ pub struct SheetOpen {
 
 /// Why a conversation could not go on.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum SheetFault {
     /// No sheet host is reachable (sill is not running, no app draws).
     #[error("no sheet host reachable")]

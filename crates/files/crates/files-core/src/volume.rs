@@ -45,7 +45,6 @@ impl fmt::Display for VolumeName {
 
 /// What sort of disk a volume is, for its glyph and its place in the list.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-#[non_exhaustive]
 pub enum VolumeKind {
     /// A drive or card that can be taken away (a USB stick, an SD card).
     External,
@@ -57,7 +56,6 @@ pub enum VolumeKind {
 
 /// One disk the sidebar lists.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Volume {
     /// What the system calls it.
     pub id: VolumeId,
@@ -130,7 +128,6 @@ impl ProgramName {
 
 /// Why a volume was not ejected.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum EjectFailure {
     /// Something has files on it open; the programs are listed when they could be found.
     #[error("One or more programs may be using the disk.")]
@@ -148,7 +145,6 @@ pub enum EjectFailure {
 
 /// Why a volume was not opened.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum MountFailure {
     /// The system would not let this person open it.
     #[error("You don't have permission to open the disk.")]
@@ -163,7 +159,6 @@ pub enum MountFailure {
 
 /// What went wrong with a volume, to be told to the person.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum VolumeTrouble {
     /// It was not ejected.
     NotEjected(EjectFailure),

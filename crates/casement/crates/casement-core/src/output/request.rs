@@ -10,7 +10,6 @@ use ds_core::geometry::scale::Scale;
 
 /// The parts of an output's configuration a request changes; `None` leaves a part as it is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct OutputChangeSet {
     /// A new mode, which the display must offer.
     pub mode: Option<Mode>,
@@ -48,7 +47,6 @@ impl OutputChangeSet {
 
 /// Why a request was refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum OutputRefusal {
     /// The output is not plugged.
     #[error("no such output")]

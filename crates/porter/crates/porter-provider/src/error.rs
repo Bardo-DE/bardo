@@ -4,7 +4,6 @@ use porter_core::ProviderId;
 
 /// Why a provider file was refused. accountd logs it and skips the file; the rest load.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ProviderFileError {
     /// Not valid TOML, or not the provider schema.
     #[error("provider file: {0}")]
@@ -29,7 +28,6 @@ pub enum ProviderFileError {
 
 /// Why a call to a provider failed, in terms the account's state can take.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ProviderError {
     /// The credential was refused: the account needs signing in again.
     #[error("credential refused")]

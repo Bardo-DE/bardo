@@ -19,7 +19,6 @@ use std::path::PathBuf;
 
 /// The running backend.
 #[derive(Debug)]
-#[non_exhaustive]
 pub enum BackendKind {
     /// Virtual outputs and input: every test, every agent run.
     Headless(HeadlessBackend),
@@ -130,7 +129,6 @@ pub enum BackendChoice {
 
 /// Why a backend could not start or act.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum BackendError {
     /// An output spec did not parse.
     #[error("bad output spec {text}: {why}")]

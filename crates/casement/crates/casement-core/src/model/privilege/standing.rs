@@ -39,7 +39,6 @@ impl ServiceRole {
 
 /// How well the compositor knows a public connection's program.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ClientStanding {
     /// One of the desktop's own services, proven by the administrator's table (the portal).
     /// `exe` is its image, when known, so a service that is trusted for nothing is asked like

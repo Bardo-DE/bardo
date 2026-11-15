@@ -5,7 +5,6 @@ use std::fmt;
 
 /// A global this crate can use.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-#[non_exhaustive]
 pub enum Protocol {
     /// `ext_foreign_toplevel_list_v1`: toplevel identity.
     ExtForeignToplevelList,

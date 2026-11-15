@@ -15,7 +15,6 @@ use crate::schema::corners_stored::StoredHotCorners;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]
 #[serde(rename_all = "snake_case")]
 #[word(case = snake)]
-#[non_exhaustive]
 pub enum CornerAction {
     /// Open the launcher.
     Launcher,
@@ -44,7 +43,6 @@ pub enum CornerAction {
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, crate::SettingsSchema)]
 #[serde(try_from = "StoredHotCorners")]
 #[settings(file = "sill/settings.toml", domain = "hot_corners", page = Page::Dock)]
-#[non_exhaustive]
 pub struct HotCornerSettings {
     #[settings(
         label = "Top left",

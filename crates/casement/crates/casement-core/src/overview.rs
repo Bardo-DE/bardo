@@ -9,7 +9,6 @@
 /// assert_eq!(Overview::default(), Overview::Closed);
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-#[non_exhaustive]
 pub enum Overview {
     /// Not shown: the windows are on the desktop.
     #[default]

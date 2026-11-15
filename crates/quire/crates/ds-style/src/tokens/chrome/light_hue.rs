@@ -11,7 +11,6 @@ use ds_core::word::Word;
 
 /// One of the three traffic lights.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-#[non_exhaustive]
 pub enum Light {
     /// Close, red.
     Close,

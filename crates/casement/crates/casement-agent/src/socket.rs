@@ -26,7 +26,6 @@ pub struct Handed {
 
 /// Why a hand-out was refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum RefuseWhy {
     /// The caller holds no role casement hands a connection to.
     UnknownUnit,

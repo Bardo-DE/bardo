@@ -4,7 +4,6 @@ use std::path::PathBuf;
 
 /// An entry of an owned word that is well formed and still not usable.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum Fault {
     /// The entry names a word this crate does not own. Reached only by parsing an entry
     /// directly; a scan hands over just the owned words ([`Provides::owns`]).

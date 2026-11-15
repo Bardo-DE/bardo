@@ -11,7 +11,6 @@ use std::path::{Path, PathBuf};
 
 /// Why an update did not happen.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum UpdateError<E> {
     /// The file is there and could not be read as text under the cap. Nothing was changed.
     #[error(transparent)]

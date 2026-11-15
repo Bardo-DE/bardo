@@ -17,7 +17,6 @@ use std::path::PathBuf;
 /// How a model on another computer is reached from this one: a connection already open on this
 /// computer that leads to it, or a port on this computer that does.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ComputerReach {
     /// The full path of the connection on this computer.
     Socket(PathBuf),
@@ -27,7 +26,6 @@ pub enum ComputerReach {
 
 /// One model a computer serves, and how to reach it.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct NewComputerModel {
     /// The assistant's catalogue id of the model.
     pub model: ModelId,
@@ -57,7 +55,6 @@ impl NewComputerModel {
 
 /// A computer of the person's own to add: what they call it, and the models it serves.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct NewComputer {
     /// What the person calls it (its place id is made from it).
     pub name: String,

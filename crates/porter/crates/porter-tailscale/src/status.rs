@@ -19,7 +19,6 @@ pub struct UserId(pub i64);
 
 /// What tailscaled says it is doing (`ipn.State`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum Backend {
     /// It has not started yet.
     NoState,
@@ -83,7 +82,6 @@ impl Backend {
 
 /// What tailscaled's state means for the account porter keeps for it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum Standing {
     /// Running and signed in.
     Ready,

@@ -128,7 +128,6 @@ pub trait CaptureGpu: std::fmt::Debug {
 
 /// How a closing window's last image is kept.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum BodyCopy {
     /// Copied into a texture on the display GPU, never read back.
     Gpu,
@@ -157,7 +156,6 @@ pub fn body_copy(devices: usize, lending: usize) -> BodyCopy {
 
 /// Whether a lender keeps watched outputs' frames on the GPU.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum SceneSupport {
     /// It does.
     Drawn,
@@ -167,7 +165,6 @@ pub enum SceneSupport {
 
 /// What an output's frame looks like: the mode's size, the scale and the transform.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Picture {
     /// The mode's size in physical pixels.
     pub size: PhysicalSize,
@@ -202,7 +199,6 @@ impl Picture {
 
 /// Which renderer answers a dma-buf capture frame.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum CaptureRoute {
     /// The display GPU's renderer.
     Gpu,

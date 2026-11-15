@@ -19,7 +19,6 @@ use std::time::Duration;
 
 /// Something the model wants done.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Effect {
     /// Send a toplevel a configure.
     Configure {

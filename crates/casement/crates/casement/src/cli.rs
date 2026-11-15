@@ -73,7 +73,6 @@ pub struct StartConfig {
 
 /// Where [`StartConfig::xwayland`] came from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum XwaylandSource {
     /// Neither `--xwayland` nor `--xwayland-satellite` was given: the settings file decides.
     Default,
@@ -83,7 +82,6 @@ pub enum XwaylandSource {
 
 /// Where the tty backend gets its seat. (Ignored by the other backends.)
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum TtyMode {
     /// The machine's seat: libseat, udev, every GPU and input device.
     Seat,
@@ -93,7 +91,6 @@ pub enum TtyMode {
 
 /// The test mode on a vkms node (`--drm-node PATH`): nothing else on the machine is opened.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct DirectTty {
     /// The DRM node, opened directly after its driver was checked to be vkms.
     pub node: PathBuf,
@@ -176,7 +173,6 @@ pub enum Command {
 
 /// Why the command line was refused.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum CliError {
     /// A flag casement does not know.
     #[error("unknown argument {0}")]

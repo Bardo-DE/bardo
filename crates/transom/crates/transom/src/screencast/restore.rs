@@ -16,7 +16,6 @@ const MAX_FILE_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Why the book could not be read or written.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum StoreError {
     /// The file could not be read or written.
     #[error("the restore file: {0}")]

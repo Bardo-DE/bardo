@@ -16,7 +16,6 @@ const DRIVE_FIELDS: &str = "id,name,mimeType,parents,version,md5Checksum,size,tr
 
 /// Where a replica's paths start.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum Root {
     /// The app data folder (`spaces=appDataFolder`): what `drive.appdata` reaches.
     #[default]

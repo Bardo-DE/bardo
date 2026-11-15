@@ -59,7 +59,6 @@ impl TokenResponse {
 
 /// Why an exchange failed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ExchangeFault {
     /// `invalid_grant`, or a 401: the credential is gone; the account needs signing in again.
     #[error("the grant was refused")]

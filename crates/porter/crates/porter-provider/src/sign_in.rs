@@ -18,7 +18,6 @@ use std::future::Future;
 
 /// Why the sign-in was started.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum SignInMode {
     /// A new account.
     Add,
@@ -72,7 +71,6 @@ pub struct LoginHint(String);
 
 /// Why a [`LoginHint`] was refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum LoginHintFault {
     /// Nothing, or only blanks.
     Empty,
@@ -116,7 +114,6 @@ impl LoginHint {
 /// Google shows its consent page, and sends a refresh token, only for a first authorization
 /// unless it is forced to; forcing it on every sign-in is the extra screen "Continue as" avoids.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum ConsentHistory {
     /// The first sign-in of this client for this identity, or not known: ask for consent.
     #[default]
@@ -127,7 +124,6 @@ pub enum ConsentHistory {
 
 /// What a sign-in begins with.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct SignInStart {
     /// Why.
     pub mode: SignInMode,
@@ -164,7 +160,6 @@ impl SignInStart {
 
 /// What a signed-in account hands the host to store. `Debug` redacts every credential.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Signed {
     /// The name the account will have.
     pub label: AccountLabel,
@@ -201,7 +196,6 @@ impl Signed {
 
 /// What a sign-in asks the host to do next.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum SignInStep {
     /// Show a form with these fields and feed the answers back.
     AskFields(Vec<FieldSpec>),
@@ -293,7 +287,6 @@ pub trait SignIn: Send {
 
 /// What revoking an account at its provider came to.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum RevokeOutcome {
     /// The provider no longer honours the credential.
     Revoked,

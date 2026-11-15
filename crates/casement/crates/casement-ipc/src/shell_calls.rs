@@ -32,7 +32,6 @@ use zbus::zvariant::ObjectPath;
 
 /// Why a call could not be made.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum ShellCallError {
     /// A name, path or interface in the call is not valid D-Bus.
     #[error("bad {what} in a binding's call: {text}")]
@@ -72,7 +71,6 @@ pub enum ShellCallError {
 
 /// A call that was sent and then failed.
 #[derive(Debug)]
-#[non_exhaustive]
 pub struct FailedCall {
     /// The call.
     pub call: DbusCall,

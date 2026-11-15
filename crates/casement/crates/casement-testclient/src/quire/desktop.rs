@@ -37,7 +37,6 @@ pub use casement_protocols::client::quire_window_v1::quire_window_v1::{
 
 /// A request on an app.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum AppRequest {
     /// `activate`, with the serial 0 `desktop-client` sends.
     Activate,
@@ -57,7 +56,6 @@ pub enum AppRequest {
 
 /// A request on a window.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum WindowRequest {
     /// `activate`, with serial 0.
     Activate,
@@ -79,7 +77,6 @@ pub enum WindowRequest {
 
 /// A request on a Space.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum SpaceRequest {
     /// `activate`.
     Activate,

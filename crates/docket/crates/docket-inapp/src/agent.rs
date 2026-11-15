@@ -30,7 +30,6 @@ pub use docket_tasks::Failure;
 
 /// Why the host could not run a turn at all (a turn that ran and went badly is a [`Reply`]).
 #[derive(Debug, Clone, PartialEq, thiserror::Error)]
-#[non_exhaustive]
 pub enum AgentFault {
     /// The shipped policy set did not load.
     #[error("policy: {0}")]
@@ -66,7 +65,6 @@ impl From<ServeFault> for AgentFault {
 
 /// How a turn ended.
 #[derive(Debug, Clone, PartialEq)]
-#[non_exhaustive]
 pub enum Ending {
     /// The planner finished.
     Done,

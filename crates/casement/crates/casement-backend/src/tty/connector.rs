@@ -25,7 +25,6 @@ const TAG_SERIAL: u8 = 0xff;
 
 /// Why an EDID block could not be read.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum EdidError {
     /// The block is shorter than the 128 bytes the base block takes.
     #[error("EDID block too short: {0} bytes")]
@@ -183,7 +182,6 @@ fn keyed_by_connector(facts: OutputFacts) -> OutputFacts {
 
 /// The variable-refresh policy: whether to ask for it where it is possible.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-#[non_exhaustive]
 pub enum VrrPolicy {
     /// Fixed refresh everywhere.
     #[default]

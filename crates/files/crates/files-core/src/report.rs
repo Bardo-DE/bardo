@@ -15,7 +15,6 @@ pub enum Finish {
 
 /// A piece of work that ended.
 #[derive(Debug, Clone, PartialEq)]
-#[non_exhaustive]
 pub struct Outcome {
     /// What the work was about.
     pub summary: Summary,

@@ -37,7 +37,6 @@ impl Ceiling {
 
 /// Why what the person named is not a reach.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ReachFault {
     /// No app was named.
     #[error("name at least one app for it to use")]

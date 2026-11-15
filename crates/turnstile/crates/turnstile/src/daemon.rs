@@ -60,7 +60,6 @@ impl Default for Settings {
 
 /// Why the loop failed.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum DaemonError {
     /// Waiting on the listening socket failed.
     #[error("waiting for connections failed: {0}")]

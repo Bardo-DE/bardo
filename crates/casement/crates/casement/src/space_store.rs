@@ -78,7 +78,6 @@ impl StateDirs {
 
 /// Why the Spaces file could not be read or written.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum SpaceStoreError {
     /// The file system refused.
     #[error("{}: {source}", path.display())]

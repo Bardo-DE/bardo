@@ -9,7 +9,6 @@ use serde::{Deserialize, Serialize};
 /// What made a screen suspicious. The slug is the serde form.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ScreenKind {
     /// Text that reads as instructions for an assistant: an override, a claim to speak for the
     /// person or the system, a tool call, a link that carries credentials.

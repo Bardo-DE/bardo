@@ -27,7 +27,6 @@ const PANEL_FILE: &str = "panel.json";
 
 /// The result of recording a view.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct ViewRecorded {
     /// Set when the history file on disk was damaged and was replaced by a fresh one: the
     /// damage, for the caller's log. `None` when the history was read normally or was absent.

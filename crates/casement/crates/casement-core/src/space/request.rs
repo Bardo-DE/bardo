@@ -5,7 +5,6 @@ use porter_core::SpaceId;
 
 /// One request on a Space or on an output's group of Spaces.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum WorkspaceRequest {
     /// Show this Space on its output.
     Activate(SpaceId),

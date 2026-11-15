@@ -12,7 +12,6 @@ use casement_protocols::vocab::{
 
 /// Which Spaces show a window.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum SpacePlace {
     /// Not reported yet.
     #[default]
@@ -25,7 +24,6 @@ pub enum SpacePlace {
 
 /// A window's rectangle in global logical pixels, and its output's scale.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct WindowGeometry {
     /// The rectangle.
     pub rect: Rect,
@@ -42,7 +40,6 @@ impl WindowGeometry {
 
 /// An agent's hold on a window.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Lease {
     /// Whether a lease is held and whether input flows.
     pub state: LeaseState,
@@ -65,7 +62,6 @@ impl Lease {
 /// What the Quire arm knows of one window; its title and app id are on the toplevel with the
 /// same key.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct QuireWindow {
     /// The key of its toplevel.
     pub key: ToplevelKey,
@@ -130,7 +126,6 @@ impl QuireWindow {
 
 /// One property of a window changing.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum WindowChange {
     /// The app it belongs to.
     App(AppKey),

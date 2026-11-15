@@ -2,7 +2,6 @@
 
 /// A way a plugin goes wrong that needs nothing of the host's vocabulary.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum Fault {
     /// It never says hello.
     Mute,

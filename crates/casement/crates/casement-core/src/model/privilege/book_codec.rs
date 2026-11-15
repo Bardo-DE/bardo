@@ -34,7 +34,6 @@ pub struct Loaded<T> {
 
 /// Why the book's text could not be read or written.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum BookError {
     /// The text is larger than a book can be.
     #[error("privacy.toml is larger than 64 KiB")]

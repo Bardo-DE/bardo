@@ -14,7 +14,6 @@
 
 /// What drives a display device.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-#[non_exhaustive]
 pub enum DisplayKind {
     /// A GPU driver (amdgpu, nvidia-drm, i915, a display controller): a real screen.
     Gpu,

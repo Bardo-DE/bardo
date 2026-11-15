@@ -3,7 +3,6 @@
 /// Why a question to Tailscale got no answer. Each variant's text says what failed; the words a
 /// person reads are written by whoever shows it, from the variant.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum TailscaleError {
     /// There is no Tailscale on this computer.
     #[error("no tailscaled program or socket on this computer")]

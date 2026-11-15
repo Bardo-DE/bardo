@@ -13,7 +13,6 @@ const MAX_COMPONENT_BYTES: usize = 255;
 
 /// Why a bundle path was refused.
 #[derive(Clone, Debug, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum PathError {
     /// The path is empty.
     #[error("a path in the release is empty")]

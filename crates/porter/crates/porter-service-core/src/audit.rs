@@ -34,7 +34,6 @@ impl AuditSink for NoAudit {
 /// How a relay ended: both sides finished, or why it did not.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ProxyOutcome {
     /// Both sides finished.
     Finished,
@@ -52,7 +51,6 @@ pub enum ProxyOutcome {
 
 /// One audited event, as a line of `audit.jsonl`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct AuditEntry {
     /// When it happened.
     pub at: UnixSeconds,
@@ -96,7 +94,6 @@ impl AuditEntry {
 /// What happened.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum AuditEvent {
     /// A grant was given.
     Granted {

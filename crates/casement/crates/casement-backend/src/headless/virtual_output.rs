@@ -54,7 +54,6 @@ pub struct GpuId(pub u32);
 
 /// What is wrong with an output spec.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum SpecError {
     /// The first field is not a connector name.
     #[error("the name is not a connector name")]

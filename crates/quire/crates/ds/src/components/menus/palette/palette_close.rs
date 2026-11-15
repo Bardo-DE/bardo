@@ -3,7 +3,6 @@
 
 /// What made the palette call `onclose`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum PaletteClose {
     /// Escape, while the palette was the topmost layer.
     Escape,

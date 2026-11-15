@@ -42,7 +42,6 @@ pub const VKMS_DRIVER: &str = "vkms";
     "the DRM node is driven by `{driver}`, not `vkms`: --drm-node is a test mode for the \
      virtual display driver only and never opens a real GPU"
 )]
-#[non_exhaustive]
 pub struct DriverRefusal {
     /// The driver the version ioctl named.
     pub driver: String,

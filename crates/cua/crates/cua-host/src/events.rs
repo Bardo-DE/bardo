@@ -6,7 +6,6 @@ use prov::RunId;
 
 /// What happened in the supervisor, in order: `serve` turns each into a D-Bus signal.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum SupervisorEvent {
     /// A run began (`RunAdded`).
     Added(RunId),

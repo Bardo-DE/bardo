@@ -32,7 +32,6 @@ impl Rgb {
 
 /// Light or dark.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Scheme {
     /// The person has no preference.
     NoPreference,
@@ -44,7 +43,6 @@ pub enum Scheme {
 
 /// Contrast.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Contrast {
     /// The usual contrast.
     NoPreference,
@@ -74,7 +72,6 @@ pub struct SettingKey {
 
 /// A value, in the shapes the portal uses.
 #[derive(Clone, Copy, Debug, PartialEq)]
-#[non_exhaustive]
 pub enum SettingValue {
     /// A `u`.
     U32(u32),
@@ -84,7 +81,6 @@ pub enum SettingValue {
 
 /// Why a read failed.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum SettingsRefusal {
     /// No such namespace or key.
     #[error("no such setting")]

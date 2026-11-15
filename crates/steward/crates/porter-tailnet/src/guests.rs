@@ -89,7 +89,6 @@ pub enum AskOutcome {
 
 /// What changed, for whoever tells the person.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum GuestEvent {
     /// A computer began waiting for an answer.
     Asked(Ask),
@@ -100,7 +99,6 @@ pub enum GuestEvent {
 
 /// Why a change was not made.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum GuestError {
     /// The computer is not waiting for an answer.
     #[error("the computer is not waiting for an answer")]

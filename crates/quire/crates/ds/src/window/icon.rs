@@ -8,7 +8,6 @@ const PIXEL: usize = 4;
 
 /// Why pixels are not an icon.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum IconError {
     /// The icon has no pixels.
     #[error("an icon needs at least one pixel")]

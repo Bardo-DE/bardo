@@ -105,7 +105,6 @@ pub struct SearchOptions {
 
 /// Why a step found nothing to offer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum DiscoverFault {
     /// The domain answered and named no usable server.
     #[error("no servers named")]

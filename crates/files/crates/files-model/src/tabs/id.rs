@@ -19,7 +19,6 @@ impl TabId {
 
 /// An effect and the tab that asked for it.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Tabbed {
     /// The tab to send the answer back to.
     pub tab: TabId,

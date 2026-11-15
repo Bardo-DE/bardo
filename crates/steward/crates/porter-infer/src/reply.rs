@@ -15,7 +15,6 @@ use std::fmt;
 /// The last event of a turn.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum InferReply {
     /// For `Chat` and `Task`.
     Chat(ChatReply),
@@ -37,7 +36,6 @@ pub enum InferReply {
 
 /// A chat or task answer.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct ChatReply {
     /// The text (JSON text for `ReplyShape::Json`).
     pub text: String,
@@ -94,7 +92,6 @@ impl ChatReply {
 
 /// Embeddings, one per input.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct EmbedReply {
     /// The vectors, in input order.
     pub vectors: Vec<EmbedVector>,
@@ -123,7 +120,6 @@ pub struct EmbedVector(pub Vec<f32>);
 
 /// A finished transcript.
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct TranscribeReply {
     /// Everything that was said.
     pub text: String,
@@ -157,7 +153,6 @@ impl fmt::Debug for TranscribeReply {
 
 /// Speech was synthesised.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct SpeakReply {
     /// How much audio was produced, in milliseconds.
     pub audio_ms: u32,

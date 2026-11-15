@@ -54,7 +54,6 @@ fn namespace() -> Namespace {
 
 /// Everything accountd needs to start, as typed values.
 #[derive(Debug, Clone)]
-#[non_exhaustive]
 pub struct Config {
     /// Where accountd reads and writes.
     pub paths: Paths,
@@ -176,7 +175,6 @@ pub(crate) fn families_of(paths: &Paths, clock: Arc<dyn Clock>) -> Families {
 
 /// Why accountd did not start.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum StartError {
     /// There is no home to keep state in.
     #[error("{0}")]

@@ -4,7 +4,6 @@ use crate::ByteSize;
 
 /// Items and bytes done out of the total.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub struct Progress {
     /// Items finished.
     pub items_done: usize,

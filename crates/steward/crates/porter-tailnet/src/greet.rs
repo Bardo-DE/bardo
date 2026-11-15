@@ -15,7 +15,6 @@ const MOST: usize = 64 * 1024;
 
 /// Why a hello was not read.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum GreetError {
     /// The computer turned this one away: with the reason it gave (its code in the answer's
     /// body), or `None` for a code this build does not know.

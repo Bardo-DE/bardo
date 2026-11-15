@@ -13,7 +13,6 @@ use std::path::Path;
 
 /// How a writeback buffer lays out a pixel.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum PixelFormat {
     /// `XRGB8888`: the fourth byte is padding; every pixel is opaque.
     Xrgb8888,
@@ -40,7 +39,6 @@ impl PixelFormat {
 
 /// The shape of a raw writeback buffer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct RawFrame {
     /// Width in pixels.
     pub width: u32,
@@ -66,7 +64,6 @@ impl RawFrame {
 
 /// Why a raw buffer is not a frame.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum WritebackError {
     /// The pitch cannot hold a row of pixels.
     #[error("pitch {pitch} is smaller than a row of {width} pixels ({needed} bytes)")]

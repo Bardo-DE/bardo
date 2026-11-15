@@ -14,7 +14,6 @@ const INSTALL_WITHIN: Duration = Duration::from_secs(5);
 
 /// Why the watcher could not start.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum HangupError {
     /// The thread or its runtime could not be made.
     #[error("the reload watcher thread: {0}")]

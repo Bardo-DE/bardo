@@ -23,7 +23,6 @@ use crate::typeselect::TypeSelect;
 /// The state of one browser: a location, the way back to it, what it holds and what the person is
 /// doing with it. Change it only with [`Browser::step`].
 #[derive(Debug, Clone, PartialEq)]
-#[non_exhaustive]
 pub struct Browser {
     pub(crate) location: Location,
     pub(crate) history: History,

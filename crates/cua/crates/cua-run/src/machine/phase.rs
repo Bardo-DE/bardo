@@ -11,7 +11,6 @@ use std::collections::VecDeque;
 /// Where a run is.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum RunPhase {
     /// Asking the router for the per-app consent.
     Granting,

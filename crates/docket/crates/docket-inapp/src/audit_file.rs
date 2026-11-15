@@ -20,7 +20,6 @@ use std::path::{Path, PathBuf};
 
 /// Why the file could not be read or written.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum AuditFileError {
     /// The file exists and could not be read.
     #[error("cannot read {path}: {kind}")]
@@ -59,7 +58,6 @@ pub enum AuditFileError {
 
 /// Why the records and their text did not turn into each other.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub(crate) enum CodecFault {
     /// The JSON codec said no.
     #[error("{0}")]

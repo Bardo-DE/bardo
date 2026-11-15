@@ -17,7 +17,6 @@ pub(super) const FILE_CAP: ReadCap = ReadCap::kib(64);
 
 /// Why a privacy file could not be read or written.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum StoreError {
     /// The file could not be read as a small text file.
     #[error("{0}")]
@@ -45,7 +44,6 @@ pub enum StoreError {
 
 /// Why an administrator's file was not believed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Distrust {
     /// Someone other than the administrator owns it.
     NotTheirs,

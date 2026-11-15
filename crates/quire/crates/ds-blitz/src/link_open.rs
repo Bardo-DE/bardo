@@ -20,7 +20,6 @@ const MAX_OPENING: usize = 4;
 /// A clicked link that could not be opened.
 #[derive(Debug, thiserror::Error)]
 #[error("the {scheme} link could not be opened: {source}")]
-#[non_exhaustive]
 pub struct LinkOpenError {
     /// The link's scheme (`https`, `mailto`).
     pub scheme: String,

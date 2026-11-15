@@ -7,7 +7,6 @@ use std::fmt;
 
 /// The schemes an endpoint URL may have.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-#[non_exhaustive]
 pub enum UrlScheme {
     /// `http`.
     Http,

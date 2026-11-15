@@ -26,7 +26,6 @@ pub enum Layout<'a> {
 /// Where to look, and for whom. Build it with [`Search::new`]; fields may be added without
 /// breaking a caller.
 #[derive(Debug, Clone, Copy)]
-#[non_exhaustive]
 pub struct Search<'a> {
     /// The host's name: manifests are in `<data dir>/<app>`, in the places `layout` says.
     pub app: &'a str,
@@ -82,7 +81,6 @@ pub struct Scan<P: Provides> {
 
 /// A manifest file that is not a plugin.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Rejected<P: Provides> {
     /// The file.
     pub file: PathBuf,

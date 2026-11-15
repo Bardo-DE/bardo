@@ -32,7 +32,6 @@ pub const MAX_STORED_SHOWN: usize = 32;
 /// The Spaces file.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(default)]
-#[non_exhaustive]
 pub struct SpaceFile {
     /// Every stored desktop Space.
     pub spaces: Vec<StoredSpace>,
@@ -42,7 +41,6 @@ pub struct SpaceFile {
 
 /// One stored Space.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct StoredSpace {
     /// Its id.
     pub id: SpaceId,
@@ -76,7 +74,6 @@ impl StoredSpace {
 
 /// The Space an output showed.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct StoredShown {
     /// The display.
     pub output: OutputKey,
@@ -93,7 +90,6 @@ impl StoredShown {
 
 /// Why the file's text could not be read or written.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum SpaceFileError {
     /// `spaces.toml` did not parse.
     #[error("spaces.toml: {0}")]

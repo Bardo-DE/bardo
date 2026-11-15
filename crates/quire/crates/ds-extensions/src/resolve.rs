@@ -32,7 +32,6 @@ pub struct Resolved {
 
 /// Why an Extension cannot be used, in the terms Settings explains it in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Trouble {
     /// A file it names is missing, too big, out of its folder or not what it should be.
     FilesUnreadable,

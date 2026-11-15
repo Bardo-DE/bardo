@@ -359,7 +359,6 @@ pub fn on_request(part: &mut WorkspacePart, request: WorkspaceRequest) -> Vec<Ev
 
 /// One Space as a workspace client sees it.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Placed {
     /// The output (and so the group) it is in.
     pub output: OutputKey,
@@ -375,7 +374,6 @@ pub struct Placed {
 
 /// The Spaces as they are published: a group per output with Spaces, each Space once.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Layout {
     /// Each output's Spaces, in row order.
     pub groups: BTreeMap<OutputKey, Vec<SpaceId>>,

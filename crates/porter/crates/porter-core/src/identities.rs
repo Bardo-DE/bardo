@@ -40,7 +40,6 @@ pub struct IdentityName(pub String);
 /// How an identity signs in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum IdentityKind {
     /// In the browser, with OAuth: the app never gets more than the person's pick.
     #[serde(rename = "oauth")]
@@ -52,7 +51,6 @@ pub enum IdentityKind {
 
 /// One identity, as `Identities1.List` gives it.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct Identity {
     /// Its id.
     pub id: IdentityId,

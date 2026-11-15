@@ -40,7 +40,6 @@ pub struct UdmabufSource {
 
 /// Why a source could not be made.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum UdmabufError {
     /// A memfd call failed.
     #[error("memfd: {0}")]

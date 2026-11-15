@@ -39,7 +39,6 @@ impl SwipeFingers {
 
 /// `gestures.*`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct GestureSettings {
     /// `gestures.spaces`: the horizontal swipe between Spaces.
     pub spaces: SwipeFingers,

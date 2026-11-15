@@ -5,7 +5,6 @@ use ds_core::word::Word;
 
 /// What a context chip stands for (`data-kind`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-#[non_exhaustive]
 pub enum ChipKind {
     /// The query the person had typed.
     Query,

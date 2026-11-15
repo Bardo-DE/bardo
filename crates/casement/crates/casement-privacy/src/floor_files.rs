@@ -17,7 +17,6 @@ const OTHERS_WRITE: u32 = 0o022;
 
 /// Who must own the floor files.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Owner {
     /// The administrator (user 0): every real run.
     Root,

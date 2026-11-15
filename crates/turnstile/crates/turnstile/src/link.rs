@@ -68,7 +68,6 @@ impl Default for Inbox {
 
 /// Why a reply was not delivered.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum SendError {
     /// The peer's queue is full: it is not reading.
     #[error("the peer is not reading")]

@@ -5,7 +5,6 @@ use crate::ids::OutputName;
 
 /// The path of one output's frames.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum OutputRoute {
     /// The render GPU also scans this output out: no copy.
     Direct {

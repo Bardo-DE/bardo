@@ -2,7 +2,6 @@
 
 /// Why a desktop entry is not an app.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum EntryError {
     /// The text could not be read as a desktop entry.
     #[error("That isn\u{2019}t an app\u{2019}s description.")]
@@ -20,7 +19,6 @@ pub enum EntryError {
 
 /// Why an `Exec` value was refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ExecError {
     /// Nothing to run.
     #[error("The app has no command to run.")]
@@ -41,7 +39,6 @@ pub enum ExecError {
 
 /// Why files were not opened, in the words a person reads.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum LaunchError {
     /// Nothing opens this file. Holds the file's name.
     #[error("There is no app set to open \u{201c}{0}\u{201d}.")]

@@ -155,7 +155,6 @@ pub struct Changed(pub Vec<NodeId>);
 
 /// Why a drive could not be opened or read.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum DriveError {
     /// The listing could not be read.
     #[error(transparent)]

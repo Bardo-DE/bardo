@@ -5,7 +5,6 @@ use std::path::PathBuf;
 /// Why [`load`](crate::load) made no pixels. None of these is a fault: the next place to look
 /// is tried, and the last resort is the plain plate.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum IconError {
     /// The file could not be read.
     #[error("cannot read the icon {path}")]

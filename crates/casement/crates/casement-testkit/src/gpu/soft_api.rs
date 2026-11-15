@@ -41,7 +41,6 @@ impl SoftGraphicsApi {
 
 /// Why a soft device could not be made.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum SoftApiError {
     /// The GPU's node is not a DRM node smithay can type.
     #[error("GPU {id:?}: {source}")]

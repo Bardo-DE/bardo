@@ -17,7 +17,6 @@ use super::{EndpointUrl, Tls, UrlScheme};
 
 /// Why an address is not accepted.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ServerAddressFault {
     /// Not a web address (`http` or `https`, a host, an optional port and path).
     #[error("not a web address")]

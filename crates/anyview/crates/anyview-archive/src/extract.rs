@@ -12,7 +12,6 @@ use tar::Archive;
 
 /// What an extraction may spend.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub struct ExtractLimits {
     /// The largest entry it returns.
     pub entry: ByteLen,

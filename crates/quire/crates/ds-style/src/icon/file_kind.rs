@@ -16,7 +16,6 @@ use ds_core::word::Word;
 /// (`--file-kind-pdf`): the kind's system hue, light scheme in both.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]
 #[token(prefix = "file-kind-", kind = fixed, css = kind_css)]
-#[non_exhaustive]
 pub enum FileKind {
     /// Text, rich text and word-processor files.
     #[word(label = "Document")]
@@ -127,7 +126,6 @@ fn kind_css(token: FileKind, _scope: TokenScope) -> CssValue {
 
 /// What a folder is, for drawing its icon.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-#[non_exhaustive]
 pub enum FolderKind {
     /// Any folder.
     #[default]

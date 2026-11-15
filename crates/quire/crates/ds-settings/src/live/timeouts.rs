@@ -4,7 +4,6 @@ use ds_peer::Deadline;
 
 /// How long each call to a live module may take before it is [`LiveError::Timeout`](super::LiveError::Timeout).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Timeouts {
     /// `Describe`, `Get`, `Snapshot` and the subscription: the module reads its own state.
     pub read: Deadline,

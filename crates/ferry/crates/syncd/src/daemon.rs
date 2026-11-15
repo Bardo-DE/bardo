@@ -66,7 +66,6 @@ pub const RESCAN_VAR: &str = "SYNCD_RESCAN_S";
 
 /// Everything syncd needs to start, as typed values.
 #[derive(Debug, Clone)]
-#[non_exhaustive]
 pub struct Config {
     /// Where syncd reads and writes.
     pub paths: Paths,

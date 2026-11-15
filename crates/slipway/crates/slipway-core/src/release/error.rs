@@ -4,7 +4,6 @@ use crate::path::PathError;
 
 /// Why `release.toml` was not accepted.
 #[derive(Clone, Debug, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ReleaseError {
     /// The text is not UTF-8, is too large, or is not the expected TOML.
     #[error("the release description is not readable: {0}")]

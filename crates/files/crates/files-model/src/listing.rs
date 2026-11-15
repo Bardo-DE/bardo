@@ -7,7 +7,6 @@ use crate::input::Change;
 
 /// The folder's contents as last loaded.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Listing {
     /// Waiting for the first answer.
     Loading,

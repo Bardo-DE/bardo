@@ -51,7 +51,6 @@ pub struct Sampling {
 /// Which function the model may call.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ToolChoice {
     /// The model decides.
     Auto,
@@ -76,7 +75,6 @@ pub enum ToolParallelism {
 /// Whether the model reasons before it replies.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum Reasoning {
     /// Whatever the engine does.
     EngineDefault,
@@ -100,7 +98,6 @@ pub enum Effort {
 
 /// Everything a chat turn asks beyond its messages and shape.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct ChatControl {
     /// Which function it may call.
     pub tool_choice: ToolChoice,
@@ -192,7 +189,6 @@ impl Default for ChatControl {
 /// finished one.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum StopReason {
     /// The model finished.
     EndTurn,

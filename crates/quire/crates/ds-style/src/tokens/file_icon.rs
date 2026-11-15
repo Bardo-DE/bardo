@@ -12,7 +12,6 @@ use ds_core::word::Word;
 /// One colour of the file icon's own parts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]
 #[token(prefix = "file-", kind = fixed, css = file_css)]
-#[non_exhaustive]
 pub enum FileIconColour {
     /// `--file-fold`: the page's folded corner, a shade under the paper.
     Fold,

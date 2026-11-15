@@ -39,7 +39,6 @@ impl FrameRate {
 
 /// The rate an app and the stream settled on.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Negotiated {
     /// One rate.
     Fixed(FrameRate),
@@ -78,7 +77,6 @@ impl Negotiated {
 
 /// How the newest picture stands with the stream.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Held {
     /// There is no picture yet.
     Nothing,
@@ -93,7 +91,6 @@ pub enum Held {
 
 /// What to do with a free buffer.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Step {
     /// Send the picture, which is new.
     SendNew,

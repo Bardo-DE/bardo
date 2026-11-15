@@ -32,7 +32,6 @@ use ds_style::tokens::hex::Colour;
 
 /// What a tile shows.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum PinFace {
     /// Every account: the inbox glyph.
     All,

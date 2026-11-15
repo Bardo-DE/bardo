@@ -61,7 +61,6 @@ const MAX_DELIVERIES: usize = 256;
 
 /// Whether a copy reports damage.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Damage {
     /// `copy`: the frame as it is now.
     Whole,
@@ -88,7 +87,6 @@ pub struct ScreencopyOutput {
 
 /// How much of an output a request names.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Region {
     /// All of it.
     Whole,
@@ -120,7 +118,6 @@ impl ScreencopyOutput {
 
 /// The output and the part of its frame one frame object copies.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Target {
     /// The output.
     pub output: OutputKey,
@@ -130,7 +127,6 @@ pub struct Target {
 
 /// A `copy` waiting for its frame.
 #[derive(Debug)]
-#[non_exhaustive]
 pub struct PendingCopy {
     /// The frame object to answer.
     pub frame: ZwlrScreencopyFrameV1,

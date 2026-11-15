@@ -13,7 +13,6 @@ const ANSWER_WITHIN: Duration = Duration::from_secs(30);
 
 /// Why the helper did not do what was asked.
 #[derive(Debug)]
-#[non_exhaustive]
 pub enum AskError {
     /// No helper listens at the socket (it is not there, or nothing answers it): the caller
     /// may mount by itself.

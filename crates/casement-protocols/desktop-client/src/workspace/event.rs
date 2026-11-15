@@ -6,7 +6,6 @@ use crate::names::OutputName;
 
 /// One property of a workspace changing.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum WorkspaceChange {
     /// The id.
     Id(String),
@@ -26,7 +25,6 @@ pub enum WorkspaceChange {
 
 /// One property of a group changing.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum GroupChange {
     /// The whole ability set.
     Abilities(Set<GroupAbility>),
@@ -38,7 +36,6 @@ pub enum GroupChange {
 
 /// A workspace event.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum WorkspaceEvent {
     /// A group appeared.
     GroupOpened(GroupKey),

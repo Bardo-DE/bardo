@@ -19,7 +19,6 @@ pub(crate) const PANE_FIT: PixelSize = PixelSize {
 /// a picture of a video comes from. It is `#[non_exhaustive]`, so a setting added later breaks no
 /// caller: start from [`Peeking::pane`] and change one setting with the `with_*` methods.
 #[derive(Debug, Clone)]
-#[non_exhaustive]
 pub struct Peeking {
     /// What a peek may spend: bytes read, pixels decoded, time.
     pub budget: PeekBudget,

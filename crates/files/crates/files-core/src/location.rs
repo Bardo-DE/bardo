@@ -7,7 +7,6 @@ use crate::PathError;
 /// A place a window shows. Grows with the app (Recents, searches, volumes), one variant per
 /// place that is built.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum Location {
     /// A folder on disk.
     Folder(FolderPath),

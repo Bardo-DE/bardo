@@ -16,7 +16,6 @@ const SEPARATOR: &str = "--";
 /// How far Landlock confined the agent.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum LandlockLevel {
     /// Everything asked for is in force: files, and the network where a rule was asked for.
     Full,
@@ -57,7 +56,6 @@ impl LandlockLevel {
 
 /// What Landlock does about TCP.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum NetRule {
     /// No network rule: the host network was chosen.
     Unfiltered,
@@ -69,7 +67,6 @@ pub enum NetRule {
 
 /// The paths and the network rule the exec stage applies to itself before it starts the agent.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct EnterPlan {
     /// Read and execute. A path that does not exist is skipped (it narrows, never widens).
     pub read: Vec<AbsPath>,
@@ -83,7 +80,6 @@ pub struct EnterPlan {
 
 /// Why the exec stage's words were refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum EnterFault {
     /// A word the stage does not know.
     #[error("unknown word {0:?}")]

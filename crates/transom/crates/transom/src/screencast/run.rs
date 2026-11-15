@@ -14,7 +14,6 @@ use crate::capture::{CaptureError, CaptureSource, ExtCapture, Job};
 
 /// Why a share could not be opened.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum OpenError {
     /// A source could not be captured.
     #[error("capture: {0}")]

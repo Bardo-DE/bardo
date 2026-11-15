@@ -110,7 +110,6 @@ impl From<ByPathId> for String {
 
 /// The GPU's vendor, as far as the plan cares (quirks are keyed by it, QUIRKS.md).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[non_exhaustive]
 pub enum VendorFact {
     /// AMD (PCI vendor `0x1002`).
     Amd,
@@ -146,7 +145,6 @@ pub enum BootVga {
 
 /// Everything detection reports about one GPU.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct GpuFacts {
     /// Its render node.
     pub node: DrmNodeId,

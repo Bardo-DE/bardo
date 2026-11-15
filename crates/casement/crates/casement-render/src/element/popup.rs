@@ -64,7 +64,6 @@ pub fn popup_elements<R: Compositor>(
 /// How a window's popups ride with it through a Scale flight: stretched by `ratio` about
 /// `about` (the window's top-left) and drawn at `alpha`, the window's opacity.
 #[derive(Debug, Clone, Copy, PartialEq)]
-#[non_exhaustive]
 pub struct PopupRide {
     /// The point the popups are stretched about, global logical pixels.
     pub about: LogicalPoint,

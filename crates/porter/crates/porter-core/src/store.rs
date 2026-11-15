@@ -45,7 +45,6 @@ pub struct AccountToggle {
 /// Why a stored document was refused. accountd refuses to start over a file it cannot read
 /// rather than start empty and overwrite it.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum StoreFault {
     /// Not valid JSON, or not the stored schema.
     #[error("registry file unreadable: {0}")]
@@ -63,7 +62,6 @@ pub enum StoreFault {
 
 /// Why the registry could not be read or written.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum StoreError {
     /// The stored document was refused (corrupt, from a newer build); the daemon must not start
     /// empty over it.

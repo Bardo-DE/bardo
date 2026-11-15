@@ -37,7 +37,6 @@ pub enum KeptMark {
 
 /// What the context menu offers for the selection in a cloud drive.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct CloudMenu {
     /// Download Now.
     pub download: bool,

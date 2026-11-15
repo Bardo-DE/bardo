@@ -35,7 +35,6 @@ pub struct Request {
 
 /// What another program may ask the window to tell it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Query {
     /// The items selected in the folder shown.
     Selection,
@@ -47,7 +46,6 @@ pub enum Query {
 
 /// What the window answers to a [`Query`].
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Reading {
     /// The selected items in shown order: none when nothing is selected, or in the Trash.
     Selection(Vec<ItemRef>),

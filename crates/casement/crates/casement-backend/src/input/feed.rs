@@ -29,7 +29,6 @@ use casement_core::time::Mono;
 
 /// A device that appeared.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct FedDevice {
     /// Its id for the rest of the run.
     pub id: DeviceId,
@@ -48,7 +47,6 @@ impl FedDevice {
 
 /// One thing the feed reports, in order.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum FedInput {
     /// A device appeared (the loop configures it with the stored settings).
     Appeared(FedDevice),
@@ -61,7 +59,6 @@ pub enum FedInput {
 /// What a poll is told: the instant on the session clock, and the desktop's extent (an absolute
 /// device, a touchscreen or a tablet, covers it).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct PollContext {
     /// Now, on the session clock. The events of one poll are stamped with it: libinput's own
     /// timestamps are on the kernel's clock, which the session clock is not.

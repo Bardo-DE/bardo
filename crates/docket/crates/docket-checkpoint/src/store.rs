@@ -8,7 +8,6 @@ use std::future::Future;
 
 /// Why a store could not do what it was asked.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum StoreFault {
     /// The folder has no history to keep points in.
     #[error("no history to keep points in")]

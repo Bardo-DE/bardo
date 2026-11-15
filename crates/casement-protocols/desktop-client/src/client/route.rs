@@ -25,7 +25,6 @@ use super::error::WireError;
 /// # }
 /// ```
 #[derive(Debug)]
-#[non_exhaustive]
 pub enum WaylandRoute {
     /// Connect the way any Wayland client does: `WAYLAND_SOCKET`, then `WAYLAND_DISPLAY`.
     Environment,

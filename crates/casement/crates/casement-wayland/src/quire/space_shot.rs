@@ -28,7 +28,6 @@ pub struct SpaceSessionId(pub u64);
 
 /// What a source shows.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct SpaceShot {
     /// The output.
     pub output: OutputKey,
@@ -45,7 +44,6 @@ pub struct Look(pub u64);
 
 /// What the damage gate decided for a frame request.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum FrameDecision {
     /// The Space changed since the session's last frame (or it had none): draw it.
     Draw,

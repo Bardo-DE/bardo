@@ -24,7 +24,6 @@ use ds_style::icon::render::IconSize;
 
 /// What a file icon shows.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum FileIconChoice {
     /// A page with the kind's mark and, for a file with one, its extension.
     Standard {

@@ -21,7 +21,6 @@ const MANIFEST: &str = include_str!("../../../manifests/org.quire.Cua.toml");
 
 /// Why the provider could not be built.
 #[derive(Debug, Clone, PartialEq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ProviderError {
     /// The shipped file does not parse (a bug: a test reads it).
     #[error("manifest does not parse: {0}")]

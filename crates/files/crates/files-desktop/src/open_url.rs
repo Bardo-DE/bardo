@@ -9,7 +9,6 @@ use zbus::zvariant::{OwnedObjectPath, Value};
 
 /// Why an address was not opened.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum OpenUrlError {
     /// The desktop would not take the request.
     #[error("The document couldn\u{2019}t be opened in the browser: {0}")]

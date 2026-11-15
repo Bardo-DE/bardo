@@ -4,7 +4,6 @@ use crate::{CloudWords, ItemRef, OnlineUrl};
 
 /// Where one file or folder stands.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum CloudState {
     /// Listed, not downloaded.
     Cloud,
@@ -24,7 +23,6 @@ pub enum CloudState {
 
 /// What an item is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum CloudKind {
     /// A file with content.
     File,
@@ -55,7 +53,6 @@ impl Share {
 
 /// One item's cloud details, as the service gives them.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct CloudItem {
     /// Where it stands.
     pub state: CloudState,

@@ -60,7 +60,6 @@ porter_ids::string_newtype!(EnvName, IdError);
 /// A request format an agent speaks to its model.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum AgentProtocol {
     /// OpenAI-compatible Chat Completions or Responses.
     #[serde(rename = "openai_compatible")]

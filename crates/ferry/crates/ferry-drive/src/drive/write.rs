@@ -45,7 +45,6 @@ const TRIES: usize = 8;
 
 /// Why a change was not made.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum WriteError {
     /// The drive is shown read-only here.
     #[error("the drive is shown read-only")]

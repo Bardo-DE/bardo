@@ -6,7 +6,6 @@
 /// connection it holds, so it says so here and the library never guesses from names or the
 /// environment.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum ShellBinding {
     /// Do not bind `quire_shell_v1`, even if it is offered.
     #[default]
@@ -24,7 +23,6 @@ pub enum ShellBinding {
 /// assert_eq!(DesktopConfig::holding_shell().shell, ShellBinding::Bind);
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub struct DesktopConfig {
     /// Whether to bind `quire_shell_v1`.
     pub shell: ShellBinding,

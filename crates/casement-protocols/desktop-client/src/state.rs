@@ -13,7 +13,6 @@ use casement_protocols::vocab::Shown;
 /// Everything the compositor has said, reduced. Plain data: a consumer reads it and maps it
 /// into its own model.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub struct DesktopState {
     /// What the compositor offers.
     pub protocols: ProtocolSet,

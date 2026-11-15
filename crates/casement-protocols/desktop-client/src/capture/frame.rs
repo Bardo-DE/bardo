@@ -46,7 +46,6 @@ impl ShmFormat {
 
 /// One captured frame of an output.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Frame {
     /// Pixels.
     pub size: Size,
@@ -127,7 +126,6 @@ impl Frame {
 
 /// A frame that cannot be converted.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum FrameError {
     /// This crate cannot read that format.
     #[error("unsupported shm format {0:?}")]

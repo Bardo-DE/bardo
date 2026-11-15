@@ -5,7 +5,6 @@ use ds_helpers::mime::NameError;
 
 /// Why a path is not an item.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ItemError {
     /// Not an absolute path.
     #[error("That is not a full path.")]
@@ -20,7 +19,6 @@ pub enum ItemError {
 
 /// Why a path is not a folder location.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum PathError {
     /// A relative path, which means nothing without a current folder.
     #[error("not an absolute path")]

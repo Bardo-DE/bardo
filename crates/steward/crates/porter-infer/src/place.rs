@@ -296,7 +296,6 @@ impl PlaceModel {
 
 /// One row of `Inference1.Places`: a place known now.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PlaceRow {
     /// The place's id.
     pub id: PlaceId,
@@ -343,7 +342,6 @@ impl PlaceRow {
 /// the first of this order: `NotReady`, `FloorRefused`, `ModelNotOffered`, `NoneCapable`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum NoPlaceReason {
     /// An allowed place could serve it, but is not ready now (an engine down, an account to sign
     /// in again, weights not on the computer yet).
@@ -398,7 +396,6 @@ impl NoPlaceReason {
 /// the reason, and the kind of place outside the set that could have served it, if there is one
 /// (so the app can say "turn on a cloud account", not only "it cannot").
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PlaceRefusal {
     /// Why nothing allowed can serve.
     pub reason: NoPlaceReason,

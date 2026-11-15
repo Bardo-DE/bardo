@@ -28,7 +28,6 @@ use ds_core::vocab::Fraction;
 
 /// What one device is configured with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct DeviceSettings {
     /// The acceleration curve.
     pub accel: AccelProfile,
@@ -63,7 +62,6 @@ impl DeviceSettings {
 
 /// One of the settings a device may not support.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum DeviceSetting {
     /// The acceleration curve.
     Accel,
@@ -79,7 +77,6 @@ pub enum DeviceSetting {
 
 /// What applying settings did.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Applied {
     /// Every setting took.
     All,
@@ -91,7 +88,6 @@ pub enum Applied {
 
 /// Why the input devices could not be opened.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum InputError {
     /// The seat refused to open an input device.
     #[error("session: {0}")]

@@ -14,7 +14,6 @@ use crate::table::{Refusal, SessionKey};
 
 /// Why a `ConnectToEIS` was refused.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum ConnectError {
     /// There is no such session.
     #[error("there is no such session")]

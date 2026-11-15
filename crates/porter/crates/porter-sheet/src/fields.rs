@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 /// What a field is for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum FieldKind {
     /// The account's address (`ada@example.org`).
     Address,

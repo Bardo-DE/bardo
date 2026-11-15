@@ -12,7 +12,6 @@ use crate::{BodySink, HttpError, HttpStatus, JsonBody, RawBody, UrlPath, WaitMs}
 /// chooses; the transport applies.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum Framing {
     /// Server-sent events: one frame per event's data.
     Sse,
@@ -24,7 +23,6 @@ pub enum Framing {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum Verb {
     Get,
     PostJson,
@@ -34,7 +32,6 @@ pub enum Verb {
 /// root, outside the endpoint's `/v1` base.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum RouteRoot {
     /// Under `HttpEndpoint::base`.
     Base,

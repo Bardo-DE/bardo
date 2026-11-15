@@ -16,7 +16,6 @@ use std::path::Path;
 
 /// What [`retire`] found.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Retired {
     /// There was no old registry.
     NothingThere,

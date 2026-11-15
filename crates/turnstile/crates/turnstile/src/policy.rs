@@ -26,7 +26,6 @@ pub const KEYMAP_CGROUP: &str = "/system.slice/keycap.service";
 
 /// Why a caller may not have a device.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum Refusal {
     /// The caller is not a listed desktop program, or was not proven to be one.
     #[error("not a listed desktop program")]

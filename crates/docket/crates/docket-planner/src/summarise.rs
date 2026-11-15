@@ -37,7 +37,6 @@ pub struct Summarised {
 
 /// Why no summary was made. The task carries on with what it has.
 #[derive(Debug, Clone, PartialEq, thiserror::Error)]
-#[non_exhaustive]
 pub enum SummariseFault {
     /// The model gave nothing usable.
     #[error("the summariser model gave nothing usable")]

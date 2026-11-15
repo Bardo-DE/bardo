@@ -19,7 +19,6 @@ use std::path::PathBuf;
 
 /// The choice, pure over the variable's value and the build.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Selection {
     /// The Secret Service (the variable is unset).
     SecretService,
@@ -31,7 +30,6 @@ pub enum Selection {
 
 /// Why a daemon refuses to start over the keys it was told to use.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum KeysRefusal {
     /// In a test build the variable is set but is not `file:<path>`.
     NotFilePath,
@@ -86,7 +84,6 @@ pub fn select_for(var_value: Option<&str>, test_keys: bool) -> Result<Selection,
 
 /// The secret store a daemon runs with.
 #[derive(Debug, Clone)]
-#[non_exhaustive]
 pub enum AnyKeys {
     /// The session's Secret Service, in the daemon's namespace.
     Oo7(Oo7NamedSecrets),

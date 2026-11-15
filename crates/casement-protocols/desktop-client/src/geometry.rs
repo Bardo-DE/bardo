@@ -2,7 +2,6 @@
 
 /// A position.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-#[non_exhaustive]
 pub struct Point {
     /// Horizontal, rightwards.
     pub x: i32,
@@ -19,7 +18,6 @@ impl Point {
 
 /// An extent.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-#[non_exhaustive]
 pub struct Size {
     /// Width.
     pub w: u32,
@@ -36,7 +34,6 @@ impl Size {
 
 /// A rectangle: where and how big.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-#[non_exhaustive]
 pub struct Rect {
     /// Left edge.
     pub x: i32,

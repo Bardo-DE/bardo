@@ -20,7 +20,6 @@
 
 /// Why no filter could be made.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum SeccompFault {
     /// This CPU architecture has no system call table here.
     #[error("no seccomp table for this architecture")]

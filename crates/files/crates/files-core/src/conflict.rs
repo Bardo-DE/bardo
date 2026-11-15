@@ -4,7 +4,6 @@ use crate::{FileName, FolderPath};
 
 /// What the work was doing when it found the name taken.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum ConflictKind {
     /// Copying the item there.
     Copy,
@@ -14,7 +13,6 @@ pub enum ConflictKind {
 
 /// A question the work is waiting on: something in `folder` already has the name `item`.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Conflict {
     /// The name that is taken.
     pub item: FileName,
@@ -40,7 +38,6 @@ impl Conflict {
 
 /// What to do about a taken name.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum Answer {
     /// Keep both: the new item gets another name (`name 2`).
     KeepBoth,
@@ -54,7 +51,6 @@ pub enum Answer {
 
 /// An answer and how far it reaches.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub struct Resolution {
     /// What to do.
     pub answer: Answer,

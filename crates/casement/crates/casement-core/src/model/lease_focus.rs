@@ -11,7 +11,6 @@ use crate::window::{SpacePlace, WindowState};
 
 /// Why a lease may not take the keyboard.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum LeaseFocusRefusal {
     /// The lease is not open (it ended, or its window went).
     NoLease,

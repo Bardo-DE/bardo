@@ -20,7 +20,6 @@ use casement_ipc::shell_calls::{ShellCalls, ZbusShellCalls};
 
 /// The injected seams.
 #[derive(Debug)]
-#[non_exhaustive]
 pub struct Seams {
     /// Where the Spaces file is stored.
     pub space_store: Box<dyn SpaceStore>,

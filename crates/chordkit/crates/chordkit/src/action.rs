@@ -94,7 +94,6 @@ impl FromStr for AppAction {
 
 /// What a key press means: a shared standard action or one an app declared.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum Action {
     /// A standard action.
     Standard(StandardAction),

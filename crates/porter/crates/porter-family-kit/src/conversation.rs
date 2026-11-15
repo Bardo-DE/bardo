@@ -12,7 +12,6 @@ use std::future::Future;
 
 /// What a family's flow does next.
 #[derive(Debug)]
-#[non_exhaustive]
 pub enum Move<M> {
     /// Say `step` (ask a form, open a browser, wait) and carry on from `M` at the next input.
     Next(SignInStep, M),

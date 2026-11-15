@@ -12,7 +12,6 @@ use std::sync::Arc;
 
 /// Why an accounts call failed. More reasons may be added: match with a wildcard.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum AccountsError {
     /// accountd refused, or the person closed the sheet (`Refusal::Dismissed`).
     #[error("refused")]
@@ -32,7 +31,6 @@ pub enum AccountsError {
 /// Why editing an account's servers gave nothing back. More reasons may be added: match with a
 /// wildcard.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum EditError {
     /// The provider's sign-in is not a typed password, so its servers are not the person's to
     /// name: show them read-only.
@@ -165,7 +163,6 @@ impl AccountRef {
 
 /// An account that needs signing in again.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct NeedsReauth {
     /// The account.
     pub account: AccountRef,
@@ -182,7 +179,6 @@ impl NeedsReauth {
 
 /// One account as accountd shows it to the shell.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct AccountView {
     /// Its id.
     pub id: AccountId,
@@ -218,7 +214,6 @@ impl AccountView {
 /// What happened to an account, as accountd tells the shell. More may be added: match with a
 /// wildcard.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum AccountChange {
     /// An account was added.
     Added(AccountRef),

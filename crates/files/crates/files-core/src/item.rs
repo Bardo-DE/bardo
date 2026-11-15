@@ -9,7 +9,6 @@ use crate::{FileName, FolderPath, ItemError};
 /// Two items with the same name in different folders are different items; this is what plans of
 /// work and the trash speak of, where a bare name would not say which.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
-#[non_exhaustive]
 pub struct ItemRef {
     /// The folder it is in.
     pub folder: FolderPath,

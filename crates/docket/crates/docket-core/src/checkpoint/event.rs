@@ -20,7 +20,6 @@ pub enum Rewind {
 /// Why a turn has no restore point.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum SkipReason {
     /// The agent keeps its own history.
     AgentKeepsOwn,
@@ -35,7 +34,6 @@ pub enum SkipReason {
 /// What happened to the workspace at one turn start, or at a restore.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum CheckpointEvent {
     /// A restore point was saved before the turn.
     Taken(CheckpointId),

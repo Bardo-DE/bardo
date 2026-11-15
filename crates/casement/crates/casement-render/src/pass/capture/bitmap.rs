@@ -16,7 +16,6 @@ use smithay::wayland::shm::BufferAccessError;
 
 /// Why a client's cursor buffer could not be read.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum ReadError {
     /// The buffer is not a shared-memory buffer, or its pool could not be mapped.
     #[error("the buffer cannot be read: {0}")]
@@ -32,7 +31,6 @@ pub enum ReadError {
 /// An image of little-endian premultiplied `Argb8888` pixels (B, G, R, A bytes), top row first,
 /// tightly packed.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct ArgbImage {
     /// Its size in pixels.
     pub size: PhysicalSize,

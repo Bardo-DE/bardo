@@ -12,7 +12,6 @@ pub const OWN_SERVER_PROVIDER: &str = "openai-compatible";
 
 /// What the permits say for an app on one account that could serve a language need.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct LlmVerdict {
     /// The account.
     pub account: AccountId,
@@ -52,7 +51,6 @@ impl LlmVerdict {
 
 /// An account that is a server of the person's own, and where it speaks the chat protocol.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct OwnServerRow {
     /// The account.
     pub account: AccountId,
@@ -75,7 +73,6 @@ impl OwnServerRow {
 
 /// One AI account, as the daemon that sends keys to AI companies lists it.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct AiAccountRow {
     /// The account.
     pub account: AccountId,

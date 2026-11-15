@@ -7,7 +7,6 @@ use almanac_core::{EventRef, FactState, MemoryReply, MemoryRequest, RunId, Space
 
 /// One thing that changed.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Change {
     /// An event was stored; `kind` is its kind tag.
     Recorded {

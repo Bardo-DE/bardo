@@ -37,7 +37,6 @@ pub struct AudioRate(pub u32);
 /// Opens a speech-to-text turn. The session class must be `Voice` or the caller's own class
 /// (an app transcribing its own files).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct TranscribeBegin {
     /// Streaming or batch.
     pub mode: TranscribeMode,
@@ -68,7 +67,6 @@ pub struct VoiceName(pub String);
 
 /// Text to speak.
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct SpeakRequest {
     /// What to say (at most 4 KiB).
     pub text: String,

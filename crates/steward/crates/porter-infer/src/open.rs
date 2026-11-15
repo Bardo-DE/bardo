@@ -13,7 +13,6 @@ use std::collections::BTreeMap;
 /// bus, the first frame's options on the socket). Today one key is reserved; an unknown key is
 /// ignored by inferd, so a newer client works with an older daemon.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct OpenOptions {
     /// The caller's trace, so a span started in companiond continues in inferd and one task is
     /// one trace. When absent, inferd starts its own root.

@@ -177,7 +177,6 @@ pub struct IpcState {
 
 /// Why casement could not start.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum StartError {
     /// The backend refused.
     #[error("backend: {0}")]

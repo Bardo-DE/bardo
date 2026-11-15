@@ -8,7 +8,6 @@ use porter_core::SpaceId;
 /// Something about the desktop changed; the note names the object, the protocol layer reads
 /// its new state from the model and sends the difference to every bound manager.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum DesktopNote {
     /// An object appeared or changed. An app: identity, life, visibility, attention, recency.
     /// A window: role, state, place, output, geometry, parent, emphasis, placement mark,
@@ -22,7 +21,6 @@ pub enum DesktopNote {
 
 /// An object `quire_desktop_v1` clients have.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum DesktopRef {
     /// An app.
     App(AppKey),

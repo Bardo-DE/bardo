@@ -13,7 +13,6 @@ use wayland_protocols::ext::image_copy_capture::v1::client::ext_image_copy_captu
 
 /// What a cursor session said about the cursor.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum CursorEvent {
     /// The cursor's image met the captured frame.
     Entered,

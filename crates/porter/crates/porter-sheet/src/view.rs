@@ -42,7 +42,6 @@ pub struct ProviderRow {
 /// Who signs a provider's account in.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ProviderKind {
     /// A service porter signs the person in to (every provider whose auth kind is not
     /// `agent_login`).
@@ -55,7 +54,6 @@ pub enum ProviderKind {
 /// What a row of the provider list stands for.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum RowKind {
     /// One named provider.
     #[default]
@@ -67,7 +65,6 @@ pub enum RowKind {
 /// What is wrong with a field.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum ProblemKind {
     /// A required field was left empty.
     Missing,

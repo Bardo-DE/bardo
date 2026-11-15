@@ -10,7 +10,6 @@ use crate::{Message, Part, Role, ToolCallId};
 
 /// What is wrong with a conversation's order.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, thiserror::Error)]
-#[non_exhaustive]
 pub enum SequenceFault {
     #[error("two assistant messages follow each other")]
     ConsecutiveAssistant,

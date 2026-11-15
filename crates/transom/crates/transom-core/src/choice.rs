@@ -9,7 +9,6 @@ use crate::screencast::{CastSource, CursorMode};
 /// Which kinds of source an app asked for. Built from the portal's `types` bit set (1 display,
 /// 2 window); other bits are dropped.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum SourceKinds {
     /// Displays only.
     Outputs,
@@ -52,7 +51,6 @@ impl SourceKinds {
 
 /// Whether the app may be given more than one source.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum Multiple {
     /// Exactly one.
     One,
@@ -96,7 +94,6 @@ pub struct Choice {
 
 /// Why an answer was not acceptable.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ChoiceRefusal {
     /// Nothing was picked.
     #[error("nothing was picked")]

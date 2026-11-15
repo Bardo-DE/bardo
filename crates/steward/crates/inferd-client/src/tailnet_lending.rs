@@ -127,7 +127,6 @@ impl LendingConfig {
 /// Whether this computer's models can be reached from the person's other computers, as far as
 /// the file says. More may be added: match with a wildcard.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum LendingState {
     /// There is no drop-in: the switch is off.
     NotInstalled,
@@ -141,7 +140,6 @@ pub enum LendingState {
 /// Why turning the sharing on or off did not work. Each text says what failed; the words a person
 /// reads are the app's, written from the variant. More may be added: match with a wildcard.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum LendingError {
     /// The file porter ships is not on this computer.
     #[error("the shipped drop-in file is not on this computer")]

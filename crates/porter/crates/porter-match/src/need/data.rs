@@ -12,7 +12,6 @@ use serde::{Deserialize, Serialize};
 
 /// An identity with at least these parts.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct IdentityNeed {
     /// A display name and avatar.
     #[serde(with = "porter_capability::present")]
@@ -52,7 +51,6 @@ impl Default for IdentityNeed {
 
 /// A mailbox.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct MailNeed {
     /// At least this access.
     pub access: Access,
@@ -76,7 +74,6 @@ impl MailNeed {
 
 /// A calendar, address book or task store.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PimNeed {
     /// At least this access.
     pub access: Access,
@@ -93,7 +90,6 @@ impl PimNeed {
 
 /// A notes store.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct NotesNeed {
     /// At least this access.
     pub access: Access,
@@ -110,7 +106,6 @@ impl NotesNeed {
 
 /// A file store.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct StorageNeed {
     /// At least this access.
     pub access: Access,
@@ -138,7 +133,6 @@ impl StorageNeed {
 
 /// A provider photo library.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PhotosNeed {
     /// At least this much of the existing library.
     pub library_read: LibraryRead,
@@ -176,7 +170,6 @@ impl PhotosNeed {
 
 /// Small synced items.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct KeyValueNeed {
     /// At least this change feed.
     pub delta: Delta,
@@ -193,7 +186,6 @@ impl KeyValueNeed {
 
 /// Any push channel.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[non_exhaustive]
 pub struct PushNeed {}
 
 impl PushNeed {

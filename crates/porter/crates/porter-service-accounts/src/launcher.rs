@@ -14,7 +14,6 @@ use std::sync::Arc;
 
 /// How a request to a launcher ended.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum LoginEnd {
     /// The launcher reported this.
     Reported(LoginOutcome),

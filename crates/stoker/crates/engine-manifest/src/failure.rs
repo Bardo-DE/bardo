@@ -2,7 +2,6 @@
 
 /// Why an install ended without an engine.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Failure {
     /// Not enough free space for the download and its unpacking.
     NoSpace,

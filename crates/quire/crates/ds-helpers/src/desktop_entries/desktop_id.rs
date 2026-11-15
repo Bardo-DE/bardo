@@ -10,7 +10,6 @@ const EXTENSION: &str = "desktop";
 
 /// Why a text is not a desktop id.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Error)]
-#[non_exhaustive]
 pub enum DesktopIdError {
     /// It does not end in `.desktop`.
     #[error("An app id ends in \u{201c}.desktop\u{201d}.")]

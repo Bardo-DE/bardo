@@ -46,7 +46,6 @@ pub struct Held {
 
 /// Whether the lock file at the path is still the one this agent holds.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Standing {
     /// The path names the file this agent holds the lock on.
     Ours,

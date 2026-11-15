@@ -82,7 +82,6 @@ impl Manager {
 
 /// Which side of a suspend `PrepareForSleep` announces.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum SleepPhase {
     /// The machine is about to sleep (`PrepareForSleep(true)`).
     Starting,

@@ -14,7 +14,6 @@ use crate::shell::{Door, answered};
 
 /// Why the shell could not be asked (the chooser, a permission question, a colour pick, a door).
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum ShellError {
     /// The shell is not on the bus, so there is nobody to ask. Sharing is refused.
     #[error("no picker is available")]

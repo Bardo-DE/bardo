@@ -15,7 +15,6 @@ use std::collections::BTreeSet;
 
 /// How a session draws its outputs.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-#[non_exhaustive]
 pub enum RenderMode {
     /// With the GPU (GLES), falling back to the CPU for an output whose GPU surface fails.
     #[default]
@@ -26,7 +25,6 @@ pub enum RenderMode {
 
 /// What one scanout surface draws with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[non_exhaustive]
 pub enum Drawing {
     /// GLES on a GPU.
     Gpu,
@@ -54,7 +52,6 @@ pub trait ScanoutMaker {
 
 /// A surface and how it draws.
 #[derive(Debug)]
-#[non_exhaustive]
 pub struct Opened {
     /// The surface.
     pub surface: Box<dyn ScanoutSurface>,

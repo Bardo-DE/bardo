@@ -15,7 +15,6 @@ use std::time::Duration;
 
 /// How many frames an output has shown and how many were late.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub struct FrameTally {
     /// Frames that reached the glass.
     pub presented: u64,
@@ -25,7 +24,6 @@ pub struct FrameTally {
 
 /// What asking an output for a frame came to.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum PresentOutcome {
     /// A frame was queued for this vblank; its flip will be reported.
     Flipped(VblankSeq),
@@ -218,7 +216,6 @@ fn lost_master(error: &KmsError) -> bool {
 
 /// Whether frames flow.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-#[non_exhaustive]
 pub enum Flow {
     /// The seat is ours: frames are queued.
     #[default]

@@ -13,7 +13,6 @@ use casement_protocols::vocab::ActorKind;
 
 /// Which app is active and which window is key.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct Active {
     /// The active app, if any.
     pub app: Option<AppKey>,

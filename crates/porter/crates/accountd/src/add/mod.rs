@@ -131,7 +131,6 @@ pub struct AddReport {
 
 /// Why `accountd add` did not finish.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum AddError {
     /// An argument is not what it says.
     Argument(String),

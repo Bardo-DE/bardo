@@ -6,7 +6,6 @@ use casement_protocols::vocab::Toggle;
 
 /// One request on a listed window.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum WlrToplevelRequest {
     /// Maximise or restore.
     Maximise(Toggle),

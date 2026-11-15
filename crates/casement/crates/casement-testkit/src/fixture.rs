@@ -116,7 +116,6 @@ pub struct SceneDump(pub serde_json::Value);
 
 /// Why a fixture could not start or a client could not join.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum FixtureError {
     /// The compositor did not start.
     #[error("start: {0}")]

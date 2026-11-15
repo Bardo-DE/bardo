@@ -11,7 +11,6 @@ use std::collections::BTreeSet;
 
 /// The plan and the GPUs it names.
 #[derive(Debug)]
-#[non_exhaustive]
 pub struct GpuStack {
     /// Who renders and who scans out.
     pub plan: RenderPlan,

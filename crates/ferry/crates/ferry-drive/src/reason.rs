@@ -6,7 +6,6 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 /// Why an action did not take an item, or why a change or a download is not done. More reasons
 /// may be added: match with a wildcard. `Display` says what happened, in terms of the program.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, thiserror::Error)]
-#[non_exhaustive]
 pub enum Reason {
     /// A path on no drive.
     #[error("the item is on no drive")]

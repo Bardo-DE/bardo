@@ -11,7 +11,6 @@ use casement_protocols::vocab::Transform;
 
 /// Where a capture is.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum CapturePhase {
     /// Waiting for the session's constraints (buffer size, formats).
     Negotiating,
@@ -25,7 +24,6 @@ pub enum CapturePhase {
 
 /// One capture.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct CaptureSession {
     /// Its id.
     pub id: CaptureId,

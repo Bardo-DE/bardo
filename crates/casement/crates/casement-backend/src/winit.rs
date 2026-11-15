@@ -39,7 +39,6 @@ const POINTER: DeviceId = DeviceId(2);
 
 /// What a read of the window's events found.
 #[derive(Debug)]
-#[non_exhaustive]
 pub struct WindowTurn {
     /// `Break` once the user closed the window.
     pub flow: ControlFlow<()>,

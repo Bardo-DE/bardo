@@ -13,7 +13,6 @@ use ds_core::word::Word;
 
 /// Which edge of the container the bar is pinned to, `data-edge`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-#[non_exhaustive]
 pub enum PinEdge {
     /// The top edge.
     #[default]

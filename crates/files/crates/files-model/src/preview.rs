@@ -16,7 +16,6 @@ type Stepped = (Browser, Vec<Effect>);
 
 /// What the pane is about, from the selection.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Preview {
     /// The pane is not up.
     Hidden,

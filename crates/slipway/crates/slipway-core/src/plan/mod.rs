@@ -23,7 +23,6 @@ pub struct Installed {
 
 /// One step of applying a plan.
 #[derive(Clone, Debug, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Step {
     /// Verify and unpack the bundle into `<version>.partial`, then flush it to disk.
     Unpack(Version),
@@ -53,7 +52,6 @@ pub enum Step {
 
 /// Why no plan can be made.
 #[derive(Clone, Debug, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum PlanError {
     /// The target is the same as or older than what is installed.
     #[error("version {target} is not newer than the installed {current}")]

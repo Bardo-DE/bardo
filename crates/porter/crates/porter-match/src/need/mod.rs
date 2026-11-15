@@ -22,7 +22,6 @@ macro_rules! define_needs {
         /// A capability query: "an account that can do at least this".
         #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
         #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-        #[non_exhaustive]
         pub enum Need {
             $($(#[$doc])* $variant($need),)*
         }

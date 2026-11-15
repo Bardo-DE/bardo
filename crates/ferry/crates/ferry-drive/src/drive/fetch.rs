@@ -19,7 +19,6 @@ use tokio::sync::{Notify, watch};
 
 /// Why a read gave no bytes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum ReadError {
     /// The drive could not be reached: the file downloads when it can be.
     #[error("the drive could not be reached")]

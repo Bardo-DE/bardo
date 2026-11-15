@@ -34,7 +34,6 @@ pub struct PeerUnitRule {
 
 /// Why a table did not parse.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum PeerUnitsError {
     /// An entry had no `=`, or an empty side.
     #[error("not <program-or-pid>=<unit>: {0:?}")]

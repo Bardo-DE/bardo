@@ -49,7 +49,6 @@ pub struct FolderName(String);
 
 /// Why a folder name was refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum BadName {
     /// It is empty.
     Empty,
@@ -103,7 +102,6 @@ impl std::fmt::Display for FolderName {
 
 /// What the caller may do in the folder.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Access {
     /// Read only: every write is refused.
     ReadOnly,
@@ -157,7 +155,6 @@ pub enum Request {
 
 /// Why a message could not be read.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum BadMessage {
     /// It is longer than [`MAX_MESSAGE`].
     TooLong,
@@ -238,7 +235,6 @@ impl Request {
 
 /// Why the helper refused, as a code: the words a person reads for it are the caller's.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
 pub enum Code {
     /// The drive cannot be shown here: no way to, a request out of the format, a caller not this
     /// person, or a folder that is not a plain folder in Cloud.

@@ -25,7 +25,6 @@ pub const RUNNING_KEY_REASON: &str = "reason";
 /// What an engine is doing.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[non_exhaustive]
 pub enum RunState {
     /// Not running, and nothing wants it.
     Stopped,
@@ -55,7 +54,6 @@ impl RunState {
 
 /// One model inferd runs itself, and what its engine is doing.
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[non_exhaustive]
 pub struct RunningModel {
     /// The model, `account/model`.
     pub model: String,
@@ -119,7 +117,6 @@ impl RunningModel {
 
 /// Why a row of `Running` could not be read.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[non_exhaustive]
 pub enum RunningRowError {
     /// A key the interface promises is absent or of another type.
     #[error("no {0}")]

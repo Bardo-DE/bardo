@@ -13,7 +13,6 @@ pub const LOGIND_DEADLINE: Duration = Duration::from_secs(5);
 
 /// Why the session could not be told.
 #[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
 pub enum EffectError {
     /// The service that holds the inhibition refused or could not be reached.
     #[error("the session could not be told: {0}")]
