@@ -3,7 +3,6 @@
 //! `--dock-dot-gap`, `--dock-floor`): the first two tuned tokens (`DockToken`), the floor the `DockMetrics` switch.
 
 use dioxus::prelude::*;
-use ds::base::vocab::Shown;
 use ds::components::overlays::tooltip::{Hint, HintSide};
 use ds::motion::hover_intent::HoverProfile;
 use ds::root::common::Common;
@@ -54,7 +53,7 @@ pub fn DockFloor(#[props(default)] common: Common) -> Element {
 #[component]
 pub fn DockLabel(
     text: String,
-    #[props(default)] shown: Option<Shown>,
+    #[props(default)] shown: Option<bool>,
     #[props(default)] common: Common,
     children: Element,
 ) -> Element {

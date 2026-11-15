@@ -9,7 +9,6 @@ use crate::support::probe;
 
 use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
-use ds::base::vocab::Muting;
 use ds::components::content::level_glyph::vocab::LevelGlyph;
 use ds::components::controls::level_indicator::LevelStyle;
 use ds::components::controls::slider_model::SliderLook;
@@ -51,7 +50,7 @@ fn work(theme: Theme) -> SpaceLook {
 
 fn level() -> Element {
     rsx! {
-        Slider { label: "Volume", value: Fraction(500), glyph: LevelGlyph::Volume(Muting::Audible), onchange: |_| {}, look: SliderLook::Level }
+        Slider { label: "Volume", value: Fraction(500), glyph: LevelGlyph::Volume(false), onchange: |_| {}, look: SliderLook::Level }
     }
 }
 
@@ -79,8 +78,8 @@ fn Specimen() -> Element {
             Ds { sheet: Some(sill_shell_kit::stylesheet()), appearance, look: work(theme), material: Material::Window,
                 Ds { appearance, look: work(theme), material: Material::Osd, chrome: Some(RootChrome::Transparent),
                      blur: BlurState::Available, stylesheet: Inject::Host,
-                    Osd { shown: Shown::Visible, label: "Sound", style: LevelStyle::Continuous,
-                          level: OsdLevel { value: Fraction(500), glyph: LevelGlyph::Volume(Muting::Audible) } }
+                    Osd { shown: true, label: "Sound", style: LevelStyle::Continuous,
+                          level: OsdLevel { value: Fraction(500), glyph: LevelGlyph::Volume(false) } }
                 }
             }
         },

@@ -146,11 +146,7 @@ fn account_item(
 ) -> ListItem<String> {
     let key = account.key.clone();
     let state = RowState {
-        selection: if selected == Some(&key) {
-            Selection::Selected
-        } else {
-            Selection::Unselected
-        },
+        selection: if selected == Some(&key) { true } else { false },
         ..RowState::default()
     };
     let content = rsx! {
@@ -272,7 +268,7 @@ pub(super) fn ClientIds(
     onedit: EventHandler<(ModuleRow, ClientText)>,
     onclear: EventHandler<ModuleRow>,
 ) -> Element {
-    let mut opened = use_signal(|| Shown::Hidden);
+    let mut opened = use_signal(|| false);
     if pane.clients.is_empty() {
         return rsx! {};
     }

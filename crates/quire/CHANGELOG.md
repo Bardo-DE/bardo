@@ -3,6 +3,13 @@
 Quire has published its release notes as the tag message. This file keeps them in the tree, newest
 first, with what a consumer has to change.
 
+## Unreleased
+
+### ds-core vocab
+
+- **Two-state props are `bool`.** `Shown`, `Selection`, `Emphasis`, `Muting`, `Activity`, `InputModality`, `FocusStyle`, `GlyphKind`, `contrast::Verdict` and `placement::Flip` are gone: a prop that was `Shown::Visible` is `true`, `Selection::Selected` is `true`, `Emphasis::Strong` is `true`, `Muting::Muted` is `true`, `Activity::Active` is `true`, `InputModality::Keyboard` is `true`, and `Flip::Allowed` is `true`. `Selection::of(&a, &b)` is `a == b`, `Shown::flipped()` is `!shown`, `.aria()` is `ds_core::vocab::aria_word(on)`. `RowState` keeps its fields, now `bool`. `ContrastCheck::verdict()` and `Floor::verdict()` are `clears() -> bool`; `KeyCap::kind` is `arrow: bool` and `ShortcutKey::glyph_kind()` is `is_arrow()`. The `data-*` words are unchanged: `shown_word`, `selected_word`, `activity_word`, `emphasis_word` and `modality_word` in `ds_core::vocab` write them.
+  **Consumer change:** replace each variant with its `bool`, drop the removed names from imports, and read the `ds::prelude` without `Shown`, `Selection` and `Emphasis`.
+
 ## v0.3.59
 
 ### wh-bd2

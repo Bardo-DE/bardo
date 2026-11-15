@@ -82,19 +82,19 @@ fn Overlays() -> Element {
     );
 
     let items: Vec<MenuItem<u8>> = Vec::new();
-    let mut open = use_signal(|| Shown::Hidden);
+    let mut open = use_signal(|| false);
     let mut more = use_signal(|| None::<MountedRef>);
     rsx! {
         Button {
             label: "More".to_owned(),
-            onclick: move |_| open.set(Shown::Visible),
+            onclick: move |_| open.set(true),
             common: Common {
                 mounted: Some(EventHandler::new(move |event: MountedEvent| more.set(Some(MountedRef(event.data()))))),
                 ..Common::default()
             },
         }
-        if let (Shown::Visible, Some(button)) = (open(), more()) {
-            Menu { placement: MenuPlacement::Popup, anchor: Anchor::Mounted(button), items, onpick: move |_: u8| {}, onclose: move |()| open.set(Shown::Hidden) }
+        if let (true, Some(button)) = (open(), more()) {
+            Menu { placement: MenuPlacement::Popup, anchor: Anchor::Mounted(button), items, onpick: move |_: u8| {}, onclose: move |()| open.set(false) }
         }
     }
 }
@@ -210,13 +210,13 @@ fn EmbeddedPalette() -> Element {
 fn KeptPalette() -> Element {
     let (label, placeholder, empty) = (String::new(), String::new(), String::new());
     let groups: Vec<ds::components::menus::palette::palette_group::PaletteGroup<Hit>> = Vec::new();
-    let mut shown = use_signal(|| Shown::Hidden);
+    let mut shown = use_signal(|| false);
     let mut query = use_signal(String::new);
     rsx! {
         CommandPalette::<Hit> {
             label, placeholder, query: query(), tokens: Vec::new(), groups, empty,
             oninput: move |text: String| query.set(text),
-            onpick: move |_: Hit| {}, onclose: move |_: PaletteClose| shown.set(Shown::Hidden),
+            onpick: move |_: Hit| {}, onclose: move |_: PaletteClose| shown.set(false),
             host: CommandPaletteHost::Surface,
             shown: shown(),
         }

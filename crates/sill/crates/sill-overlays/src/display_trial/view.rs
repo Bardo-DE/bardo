@@ -43,7 +43,7 @@ pub(super) fn display_trial(output: OutputInfo) -> Element {
 
 /// One send of a trial: its alert and its countdown.
 #[component]
-fn TrialCard(run: TrialRun, shown: Shown, stage: Signal<SheetStage<TrialRun>>) -> Element {
+fn TrialCard(run: TrialRun, shown: bool, stage: Signal<SheetStage<TrialRun>>) -> Element {
     let answer = use_answer(run.trial.trial);
     let left = use_left(run.trial.seconds);
     let buttons = vec![

@@ -44,11 +44,7 @@ fn page_row(
 ) -> ListItem<String> {
     let slug = model.slug.clone();
     let label = model.title.clone();
-    let selection = if current == Some(&slug) {
-        Selection::Selected
-    } else {
-        Selection::Unselected
-    };
+    let selection = if current == Some(&slug) { true } else { false };
     ListItem::row(
         slug.0.clone(),
         label.clone(),

@@ -9,7 +9,6 @@
 //! no press of its own: the dock's input layer reads every pointer event.
 
 use dioxus::prelude::*;
-use ds::base::vocab::Activity;
 use ds::components::controls::badge::BadgeContent;
 use ds::prelude::*;
 use ds::style::scale::use_scale;
@@ -69,15 +68,15 @@ pub fn Tile(item: DockItem, left: Cpx, size: Cpx, badge: Option<Badge>) -> Eleme
     // How far the plate's top is below the tile's: the label stands above it.
     let rise = (side - f64::from(plate_side(Px(side as f32)).0)) / 2.0;
     let running = if item.app != TileApp::NotRunning && dock.indicators == OnOff::On {
-        Activity::Active
+        true
     } else {
-        Activity::Inactive
+        false
     };
     let label = try_use_context::<Signal<LabelShown>>().map_or(LabelShown(None), |shown| shown());
     let shown = if label.0 == Some(item.tile) {
-        Shown::Visible
+        true
     } else {
-        Shown::Hidden
+        false
     };
     rsx! {
         div {
@@ -95,10 +94,10 @@ pub fn Tile(item: DockItem, left: Cpx, size: Cpx, badge: Option<Badge>) -> Eleme
                 // Never quire's own: its card is placed in the pill-sized root's coordinates and
                 // lands the pill's origin away from its tile. The label is drawn below, in the
                 // tile's own box, so it follows the tile every frame.
-                label_shown: Some(Shown::Hidden),
+                label_shown: Some(false),
                 onclick: |_| {},
             }
-            if shown == Shown::Visible {
+            if shown {
                 span {
                     class: "sill-dock-label",
                     style: "bottom:calc(100% - {rise}px + {LABEL_GAP}px)",

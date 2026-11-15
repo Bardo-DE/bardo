@@ -63,11 +63,11 @@ impl<T> SheetStage<T> {
     }
 
     /// The value drawn and quire's `shown` for it.
-    pub fn drawn(&self) -> Option<(&T, Shown)> {
+    pub fn drawn(&self) -> Option<(&T, bool)> {
         match self {
             SheetStage::Empty => None,
-            SheetStage::Up(value) => Some((value, Shown::Visible)),
-            SheetStage::Leaving(value) => Some((value, Shown::Hidden)),
+            SheetStage::Up(value) => Some((value, true)),
+            SheetStage::Leaving(value) => Some((value, false)),
         }
     }
 }

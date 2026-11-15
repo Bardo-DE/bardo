@@ -11,7 +11,7 @@ use dioxus::prelude::{
     Key, KeyboardEvent, ModifiersInteraction, ReadableExt, Signal, WritableExt, use_hook,
 };
 use ds::base::command::types_text;
-use ds::prelude::{ActionTaken, Keys, Shown, use_keys};
+use ds::prelude::{ActionTaken, Keys, use_keys};
 use files_core::ViewMode;
 use files_model::{Browser, Chooser, GoTo, InfoView, Input};
 
@@ -142,7 +142,7 @@ pub(crate) fn use_registered() -> Keys {
 pub(crate) fn pressed(
     keys: Keys,
     browse: Browse,
-    sidebar: Signal<Shown>,
+    sidebar: Signal<bool>,
     event: &KeyboardEvent,
 ) -> ActionTaken {
     // The name field has the keyboard while one is typed: its keys are its own.
@@ -164,7 +164,7 @@ pub(crate) fn pressed(
 }
 
 /// Carries out `action`, when the window answers it.
-fn act(action: &Action, browse: Browse, mut sidebar: Signal<Shown>) -> ActionTaken {
+fn act(action: &Action, browse: Browse, mut sidebar: Signal<bool>) -> ActionTaken {
     let send = |input: Input| {
         browse.send(input);
         ActionTaken::Yes
@@ -194,7 +194,7 @@ fn act(action: &Action, browse: Browse, mut sidebar: Signal<Shown>) -> ActionTak
         // Close (Command+W) closes the tab, and the window with the last one.
         Action::Standard(standard) if *standard == StandardAction::Close => send(Input::CloseTab),
         Action::Standard(standard) if *standard == StandardAction::ToggleSidebar => {
-            let next = sidebar().flipped();
+            let next = !sidebar();
             sidebar.set(next);
             ActionTaken::Yes
         }

@@ -59,14 +59,14 @@ pub(super) fn screenshot_thumb(output: OutputInfo) -> Element {
 
 /// What the stack lists for `state`, with the card's `shown`: the row while the shot shows or
 /// plays its own exit, none once a swipe has handed the flight to the row.
-fn row_of(state: ThumbState) -> Option<(ShotId, Shown)> {
+fn row_of(state: ThumbState) -> Option<(ShotId, bool)> {
     match state {
-        ThumbState::Shown { id, .. } => Some((id, Shown::Visible)),
+        ThumbState::Shown { id, .. } => Some((id, true)),
         ThumbState::Leaving {
             id,
             exit: ThumbExit::Card,
             ..
-        } => Some((id, Shown::Hidden)),
+        } => Some((id, false)),
         ThumbState::Leaving {
             exit: ThumbExit::Row,
             ..
@@ -179,9 +179,9 @@ mod tests {
                     keys_held: false,
                     token,
                 },
-                Some((id, Shown::Visible)),
+                Some((id, true)),
             ),
-            (leaving(ThumbExit::Card), Some((id, Shown::Hidden))),
+            (leaving(ThumbExit::Card), Some((id, false))),
             (leaving(ThumbExit::Row), None),
         ];
         for (state, want) in cases {

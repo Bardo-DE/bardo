@@ -24,8 +24,8 @@ pub(super) fn Column(output: OutputId) -> Element {
     let phase = use_phase(output);
     let now = phase.now();
     let shown = match now {
-        Phase::Up(_) => Shown::Visible,
-        Phase::Hidden(_) | Phase::Leaving(_) => Shown::Hidden,
+        Phase::Up(_) => true,
+        Phase::Hidden(_) | Phase::Leaving(_) => false,
     };
     let Some(opening) = now.drawn() else {
         return rsx! {};
@@ -41,12 +41,7 @@ pub(super) fn Column(output: OutputId) -> Element {
 /// motion (the widgets' own remount already would; the stamp also covers a host that keeps them
 /// mounted across an opening).
 #[component]
-fn Opened(
-    output: OutputId,
-    opening: Opening,
-    shown: Shown,
-    on_hidden: EventHandler<()>,
-) -> Element {
+fn Opened(output: OutputId, opening: Opening, shown: bool, on_hidden: EventHandler<()>) -> Element {
     let ctx = use_center_ctx();
     let (resolved, tokens) = use_notification_tokens();
     use_context_provider(|| ctx.clone());

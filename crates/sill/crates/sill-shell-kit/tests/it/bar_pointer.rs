@@ -43,7 +43,7 @@ fn Bar() -> Element {
             div { style: "display:flex; gap:20px; padding:20px",
                 MenuBarItem { label: "File", pointer: pointer("title"), onclick: |_| {} }
                 WorkspacePills { label: "Workspaces",
-                    WorkspacePill { label: "1", current: Selection::Selected, pointer: pointer("pill"), onclick: |_| {} }
+                    WorkspacePill { label: "1", current: true, pointer: pointer("pill"), onclick: |_| {} }
                 }
             }
         }

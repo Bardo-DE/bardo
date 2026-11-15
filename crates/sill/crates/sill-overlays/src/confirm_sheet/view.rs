@@ -52,7 +52,7 @@ pub(super) fn confirm_sheet(output: OutputInfo) -> Element {
 
 /// One question's sheet and its gate.
 #[component]
-fn SheetCard(view: SheetView, shown: Shown, stage: Signal<SheetStage<SheetView>>) -> Element {
+fn SheetCard(view: SheetView, shown: bool, stage: Signal<SheetStage<SheetView>>) -> Element {
     let gate = use_gate(view.id.clone());
     let undo = use_undo();
     let brief = use_brief(&view);

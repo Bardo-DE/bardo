@@ -8,7 +8,7 @@ use ds::components::chrome::toolbar::view::Toolbar;
 use ds::components::content::label::LabelStyle;
 use ds::components::controls::choice::Choice;
 use ds::components::controls::segmented::Tracking;
-use ds::prelude::{Icon, Label, SegmentedControl, Shown};
+use ds::prelude::{Icon, Label, SegmentedControl};
 use ds::style::tokens::control_size::ControlSize;
 use files_core::ViewMode;
 use files_model::Input;
@@ -37,7 +37,7 @@ fn view_choices() -> Vec<Choice<ViewMode>> {
 /// The toolbar over the folder: Back and Forward (and Show Sidebar while it is folded away), and
 /// in the middle the folder's name above the List and Icons switcher.
 #[component]
-pub(super) fn FolderBar(browse: Browse, sidebar: Signal<Shown>) -> Element {
+pub(super) fn FolderBar(browse: Browse, sidebar: Signal<bool>) -> Element {
     let (title, back, forward, view) = {
         let state = browse.state.read();
         (
@@ -48,7 +48,7 @@ pub(super) fn FolderBar(browse: Browse, sidebar: Signal<Shown>) -> Element {
         )
     };
     let mut leading = Vec::new();
-    if sidebar() == Shown::Hidden {
+    if !sidebar() {
         leading.push(ToolbarItem::new(
             Tool::ShowSidebar,
             "Show Sidebar",
@@ -76,7 +76,7 @@ pub(super) fn FolderBar(browse: Browse, sidebar: Signal<Shown>) -> Element {
             onpick: move |picked: Picked<Tool>| match picked.value {
                 Tool::Back => browse.send(Input::Back),
                 Tool::Forward => browse.send(Input::Forward),
-                Tool::ShowSidebar => sidebar.set(Shown::Visible),
+                Tool::ShowSidebar => sidebar.set(true),
             },
         }
     }

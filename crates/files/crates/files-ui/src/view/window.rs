@@ -8,7 +8,7 @@ use ds::components::chrome::split_view::view::SplitView;
 use ds::file_drop::drag::FileDrop;
 use ds::file_drop::hook::use_file_drop;
 use ds::focus::soon::focus_soon;
-use ds::prelude::{ActionTaken, Px, Shown};
+use ds::prelude::{ActionTaken, Px};
 use ds::window::host::use_window_title;
 
 use super::busy::Busy;
@@ -42,7 +42,7 @@ pub(super) fn Window() -> Element {
     let launch = use_hook(consume_context::<Launch>);
     let browse = use_browse(&launch);
     let keys = use_registered();
-    let mut sidebar = use_signal(|| Shown::Visible);
+    let mut sidebar = use_signal(|| true);
     let mut menu = use_signal(|| None::<ContextAt>);
     // Files dropped from outside on the window (not on a folder row) land in the folder shown.
     let drop = use_file_drop(move |files: FileDrop| browse.send(dropped(files, None)));
@@ -65,10 +65,10 @@ pub(super) fn Window() -> Element {
         .clone()
         .with_sidebar(browse.preferences.read().sidebar.clone());
     let side_body = match shown {
-        Shown::Visible => rsx! {
+        true => rsx! {
             PlacesPane { browse, places }
         },
-        Shown::Hidden => rsx! {},
+        false => rsx! {},
     };
     rsx! {
         // The box that hears the keys: a press in the table or the sidebar bubbles up to it, and
@@ -99,7 +99,7 @@ pub(super) fn Window() -> Element {
             SplitView {
                 label: "Files",
                 panes: vec![SplitPane::new(SIDEBAR, side_body).shown(shown)],
-                on_shown: move |(_, now): (usize, Shown)| sidebar.set(now),
+                on_shown: move |(_, now): (usize, bool)| sidebar.set(now),
                 // The folder keeps its place in the tree whether the preview pane is up or not, so
                 // putting the pane away leaves the scroll where it was.
                 div { class: "files-body",

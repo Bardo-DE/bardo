@@ -4,8 +4,8 @@
 
 use dioxus::prelude::*;
 use ds::prelude::{
-    BarLayout as DrawnBar, BarSpaceKey, DropState, ImageSource, Rect, Scheme, Selection, Shown,
-    SpaceLook, SpaceTile, resolve,
+    BarLayout as DrawnBar, BarSpaceKey, DropState, ImageSource, Rect, Scheme, SpaceLook, SpaceTile,
+    resolve,
 };
 use porter_core::SpaceId;
 use shell_host::{OutputInfo, Visibility, use_watch};
@@ -83,10 +83,10 @@ fn use_wallpaper_url(name: Option<String>) -> Memo<Option<String>> {
 
 impl Bar {
     /// quire's word for a bar that is up or down.
-    pub(super) fn shown(&self) -> Shown {
+    pub(super) fn shown(&self) -> bool {
         match (self.up)() {
-            BarShow::Show => Shown::Visible,
-            BarShow::Hide => Shown::Hidden,
+            BarShow::Show => true,
+            BarShow::Hide => false,
         }
     }
 
@@ -127,10 +127,7 @@ fn tile_of(
     wallpaper: Option<&str>,
     space: BarSpace,
 ) -> SpaceTile {
-    let current = match space.current {
-        true => Selection::Selected,
-        false => Selection::Unselected,
-    };
+    let current = space.current;
     let tile = SpaceTile::new(BarSpaceKey(space.id.as_str().to_owned()), space.label)
         .current(current)
         .in_drag(feed.drops.state_of(output, &space.id));

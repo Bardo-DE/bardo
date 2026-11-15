@@ -62,7 +62,7 @@ const CANCEL_ID: &str = "capture-cancel";
 
 /// One request's sheet and what the person has picked on it.
 #[component]
-fn SheetCard(asking: Asking, shown: Shown, stage: Signal<SheetStage<Asking>>) -> Element {
+fn SheetCard(asking: Asking, shown: bool, stage: Signal<SheetStage<Asking>>) -> Element {
     let candidates = use_service_part::<CaptureService, _>(|picker| picker.candidates.clone());
     let end = use_end(asking.id);
     let ask = asking.ask;

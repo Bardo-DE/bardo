@@ -17,7 +17,7 @@ use crate::control_center::module_disc::{Lighting, ModuleDisc};
 use crate::control_center::module_tile_kind::TileSpan;
 use dioxus::prelude::*;
 use ds::base::press::Press;
-use ds::base::vocab::{Availability, Check, Shown};
+use ds::base::vocab::{Availability, Check, aria_word};
 use ds::base::word::Word;
 use ds::components::content::icon_source::IconSource;
 use ds::components::content::text_runs::{TextLine, text};
@@ -48,7 +48,7 @@ pub fn ModuleTile(
     #[props(default)] span: TileSpan,
     onclick: EventHandler<Press>,
     #[props(default)] on_detail: Option<EventHandler<Press>>,
-    #[props(default)] expanded: Shown,
+    #[props(default)] expanded: bool,
     #[props(default)] availability: Availability,
     #[props(default)] common: Common,
 ) -> Element {
@@ -108,7 +108,7 @@ fn opens(key: &Key) -> bool {
 fn chevron_button(
     title: &TextLine,
     on_detail: EventHandler<Press>,
-    expanded: Shown,
+    expanded: bool,
     availability: Availability,
 ) -> Element {
     let name = format!("{} details", title.plain_text());
@@ -121,7 +121,7 @@ fn chevron_button(
             class: "ds-module-chevron",
             "aria-label": "{name}",
             title: "{name}",
-            "aria-expanded": expanded.aria(),
+            "aria-expanded": aria_word(expanded),
             "aria-disabled": inert.aria_disabled(),
             onclick: move |event| {
                 if let Some(listen) = listen {

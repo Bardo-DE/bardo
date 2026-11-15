@@ -123,12 +123,12 @@ fn Labels() -> Element {
                     }
                 }
                 div { class: "shown",
-                    DockLabel { text: "Terminal", shown: Some(Shown::Visible),
+                    DockLabel { text: "Terminal", shown: Some(true),
                         div { style: "width:48px; height:48px" }
                     }
                 }
                 div { class: "hidden",
-                    DockLabel { text: "Firefox", shown: Some(Shown::Hidden),
+                    DockLabel { text: "Firefox", shown: Some(false),
                         div { style: "width:48px; height:48px" }
                     }
                 }
@@ -137,7 +137,7 @@ fn Labels() -> Element {
     }
 }
 
-/// `Shown::Visible` shows the label with no pointer on it; `Shown::Hidden` keeps it down under
+/// `true` shows the label with no pointer on it; `false` keeps it down under
 /// the pointer, where an uncontrolled label shows after the Label profile's 100 ms.
 #[test]
 fn a_caller_shows_and_hides_a_dock_label() {

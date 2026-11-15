@@ -6,7 +6,6 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
-use ds::base::vocab::Activity;
 use ds::prelude::*;
 use ds::style::icon::family::PlateFamily;
 use ds_harness::{Clock, Harness, HarnessConfig, Viewport};
@@ -32,11 +31,11 @@ fn Tile() -> Element {
                 DockTile {
                     icon: IconSource::Glyph(Icon::Folder),
                     plate: Some(PlateFamily::Blue),
-                    running: Activity::Active,
+                    running: true,
                     side: Px(48.0),
                     lift: Px(LIFT.load(Ordering::Relaxed) as f32),
                     label: "Files",
-                    label_shown: Some(Shown::Visible),
+                    label_shown: Some(true),
                     onclick: |_| {},
                 }
             }

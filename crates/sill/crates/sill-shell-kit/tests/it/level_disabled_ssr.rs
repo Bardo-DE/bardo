@@ -5,7 +5,6 @@
 
 use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
-use ds::base::vocab::Muting;
 use ds::components::content::level_glyph::vocab::LevelGlyph;
 use ds::components::controls::slider_model::SliderLook;
 use ds::prelude::*;
@@ -76,7 +75,7 @@ const CASES: &[Case] = &[
                 Slider {
                     label: "Volume",
                     value: Fraction(0),
-                    glyph: LevelGlyph::Volume(Muting::Audible),
+                    glyph: LevelGlyph::Volume(false),
                     availability: Availability::Disabled, look: SliderLook::Level }
             })
         },

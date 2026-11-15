@@ -11,7 +11,6 @@ use crate::lock::vocab::{CapsLock, LockUser, PromptState};
 use crate::user_picture::draw::drawn;
 use dioxus::prelude::*;
 use ds::base::vocab::Availability;
-use ds::base::vocab::Shown;
 use ds::components::content::text_runs::{TextLine, text};
 use ds::components::controls::button::Button;
 use ds::components::controls::button_model::Answers;
@@ -44,7 +43,7 @@ pub fn PolkitPrompt(
     oninput: EventHandler<String>,
     onsubmit: EventHandler<String>,
     oncancel: EventHandler<()>,
-    #[props(default)] shown: Option<Shown>,
+    #[props(default)] shown: Option<bool>,
     #[props(default)] on_hidden: Option<EventHandler<()>>,
     #[props(default)] common: Common,
 ) -> Element {

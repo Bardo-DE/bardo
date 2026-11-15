@@ -8,7 +8,6 @@ use crate::support::probe;
 
 use dioxus::prelude::*;
 use ds::base::geometry::placement::Align;
-use ds::base::geometry::placement::Flip;
 use ds::base::geometry::placement::Side;
 use ds::components::menus::item::item::MenuImage;
 use ds::components::menus::palette::palette_group::PaletteGroup;
@@ -191,7 +190,7 @@ fn Bar() -> Element {
     rsx! {
         Ds { sheet: Some(sill_shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Bar,
             div { style: "display:flex; gap:8px; padding:4px 8px",
-                MenuBarItem { common: Common { id: Some("open".to_string()), ..Common::default() }, shown: Shown::Visible, label: "Files", onclick: |_| {} }
+                MenuBarItem { common: Common { id: Some("open".to_string()), ..Common::default() }, shown: true, label: "Files", onclick: |_| {} }
                 MenuBarItem { common: Common { id: Some("shut".to_string()), ..Common::default() }, label: "Edit", onclick: |_| {} }
             }
         }
@@ -408,7 +407,7 @@ fn Pop() -> Element {
             if open() {
                 Popover {
                     anchor: Anchor::Point(Point { x: Px(60.0), y: Px(60.0) }),
-                    placement: Placement { side: Side::Bottom, align: Align::Start, flip: Flip::Allowed },
+                    placement: Placement { side: Side::Bottom, align: Align::Start, flip: true },
                     gap: Px(4.0),
                     onclose: move |()| open.set(false),
                     button { id: "inside", "Inside" }

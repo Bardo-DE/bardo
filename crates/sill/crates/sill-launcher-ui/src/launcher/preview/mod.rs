@@ -56,7 +56,7 @@ pub fn LauncherPane(
     actions: Vec<Action>,
     focused: Option<usize>,
     #[props(default)] icon: Option<IconSource>,
-    #[props(default = Shown::Visible)] shown: Shown,
+    #[props(default = true)] shown: bool,
     #[props(default)] on_hidden: EventHandler<()>,
     #[props(default)] onaction: EventHandler<usize>,
     #[props(default)] touch: Touch,
@@ -85,12 +85,12 @@ pub fn LauncherPane(
 }
 
 /// The pane as the person sees it: leaving is hidden, then how far its content has loaded.
-fn pane_state(shown: Shown, kind: sill_launcher::PreviewKind, load: Load) -> PaneState {
+fn pane_state(shown: bool, kind: sill_launcher::PreviewKind, load: Load) -> PaneState {
     match (shown, load) {
-        (Shown::Hidden, Load::Ready | Load::Reading | Load::Failed) => PaneState::Hidden,
-        (Shown::Visible, Load::Ready) => PaneState::Showing(kind),
-        (Shown::Visible, Load::Reading) => PaneState::Pending,
-        (Shown::Visible, Load::Failed) => PaneState::Failed,
+        (false, Load::Ready | Load::Reading | Load::Failed) => PaneState::Hidden,
+        (true, Load::Ready) => PaneState::Showing(kind),
+        (true, Load::Reading) => PaneState::Pending,
+        (true, Load::Failed) => PaneState::Failed,
     }
 }
 
@@ -117,11 +117,11 @@ mod tests {
     fn the_pane_state_follows_its_showing_and_its_load() {
         let file = PreviewKind::File;
         let cases = [
-            (Shown::Visible, Load::Ready, PaneState::Showing(file)),
-            (Shown::Visible, Load::Reading, PaneState::Pending),
-            (Shown::Visible, Load::Failed, PaneState::Failed),
-            (Shown::Hidden, Load::Reading, PaneState::Hidden),
-            (Shown::Hidden, Load::Ready, PaneState::Hidden),
+            (true, Load::Ready, PaneState::Showing(file)),
+            (true, Load::Reading, PaneState::Pending),
+            (true, Load::Failed, PaneState::Failed),
+            (false, Load::Reading, PaneState::Hidden),
+            (false, Load::Ready, PaneState::Hidden),
         ];
         for (shown, load, want) in cases {
             assert_eq!(pane_state(shown, file, load), want, "{shown:?} {load:?}");

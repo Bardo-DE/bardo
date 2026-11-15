@@ -40,7 +40,7 @@ and every other name is at its home path (the root keeps only the stylesheet ass
 | `ds-style/appearance/system.rs` | plan "ds-settings" portal mapping | `SystemPrefs{scheme, motion, contrast}` |
 | `ds-style/appearance/resolve.rs` | 05-MOTION §9 rule 11 (explicit `data-motion`); 03-COLOR open decision 13 | `resolve()`, `Resolved::attrs()` |
 | `ds-style/appearance/peek.rs` | 04-COMPONENTS §24 `PeekMode` | Center or Full |
-| `ds-core/colour/contrast.rs` | 03-COLOR §6 (the gates); `archive/03-COLOR-arc.md` (the WCAG ratio code) | `Verdict` |
+| `ds-core/colour/contrast.rs` | 03-COLOR §6 (the gates); `archive/03-COLOR-arc.md` (the WCAG ratio code) | `ratio` |
 | `ds-core/colour/{srgb,oklab,fit}.rs` | 03-COLOR §4, §17.4, §20; 08-ICONS §1.5, §2.10 | `Srgb`, `LinearRgb`, `Oklab`, `Oklch` and their conversions, the one copy every colour computation uses; the prototype's gamut fit (`oklch_bytes`, `oklch_hex`) |
 | `ds-style/space/palette.rs` (+`card.rs`, `readout.rs`, `tests.rs`) | 03-COLOR §4, §6; 21-SPACES §2 (the flat tint; target (clean-up phase): the gradient, the field and `card.rs` go) | `Scheme`/`Capping` |
 | `ds-style/space/look.rs` | 21-SPACES §1 | `SpaceLook`, `Grain`, `CardAccent` (target (clean-up phase): `SpaceLook` is hue, chroma factor, grain, theme; `CardAccent` and the dots go) |
@@ -110,7 +110,7 @@ and every other name is at its home path (the root keeps only the stylesheet ass
 | `ds-core/text/clip.rs` | 04-COMPONENTS "Truncation"; 02-TYPE §10 |
 | `ds-style/icon/{mod,shape,geometry,render}.rs` | 08-ICONS §1.3-1.5 (stroke as attributes) |
 | `ds-style/icon/geometry_shell.rs` | 08-ICONS §1.6 |
-| `components/content/voice_orb/`, `ds-style/tokens/orb.rs`, `--orb-*` in `ds-style/tokens/colour.rs` | 30-CATALOGUE §2.9 (`VoiceOrb`, ADD), §3.2 (orb colours per Look): `OrbMetrics::of` (size-derived look), `Turn` and its frame timer (only while `Activity::Active`), `OrbColours` |
+| `components/content/voice_orb/`, `ds-style/tokens/orb.rs`, `--orb-*` in `ds-style/tokens/colour.rs` | 30-CATALOGUE §2.9 (`VoiceOrb`, ADD), §3.2 (orb colours per Look): `OrbMetrics::of` (size-derived look), `Turn` and its frame timer (only while the orb is active), `OrbColours` |
 | `components/companion/`, `ds-intents/`, `ds-core/vocab.rs` (the companion vocabulary), `ds-shell/confirm/`, `ds-style/tokens/glow.rs`, `ds-style/tokens/timing.rs` (`OrbListen`, `OrbWork`, `OrbAct`) | 30-CATALOGUE §2.13 (proposed), §1.2; 32-COMPANION; 33-AGENT: the companion's presence, prompt, answer cards, plan, replace, runs, activity, memory, served-by chip, the confirmation card and the glow; types frozen, views placeholders, behaviour `todo!()` (FINDINGS "Companion freeze") |
 | `components/content/icon_source.rs`, `ds-style/icon/url.rs` | 08-ICONS §1.5 (settled mechanics): `IconSource`, `ExternalIcon`; `IconUrl` (`data:`/`file:` only) |
 | `ds-style/icon/classify.rs` | 08-ICONS §1.5 step 2: `classify_with(png, limit) -> Result<IconKind::{Symbolic, Image}>`, OKLCH chroma < 0.04 on every half-covered pixel (`ChromaLimit`) |
@@ -119,7 +119,7 @@ and every other name is at its home path (the root keeps only the stylesheet ass
 
 ## `ds`: components
 
-`ds-core/vocab.rs` is 30-CATALOGUE 1.5, the shared state vocabulary (`Check`, `Shown`, `Availability`, `Selection`, `Emphasis`, `Muting`, `PressPhase`, `Dismiss`, `Activity`, `FocusStyle`, `InputModality`, `RowState`; with `ds-core/press.rs` and
+`ds-core/vocab.rs` is 30-CATALOGUE 1.5, the shared state vocabulary (`Check`, `Availability`, `PressPhase`, `Dismiss`, `RowState`; a yes/no state is a `bool`; with `ds-core/press.rs` and
 `ds-core/standard_action.rs`). Components sit in directories by concept: `components/{controls,
 fields,forms,menus,menus/palette,overlays,lists,content,chrome}` hold the general ones, `components/app`
 mail's own, and sill's `sill-shell-kit/` the shell surfaces' parts (`lock`, `switcher`, `bar`, `control_center`,
@@ -172,7 +172,7 @@ Props added in the launcher gaps (FINDINGS "Launcher gaps"): `FieldFocus::Contro
 `CommandPalette` `host: CommandPaletteHost{Overlay, Surface}`, `id`, `focus`, `selected`, `on_select`, `on_select_rect`,
 `onkey`; `Tile::Source(IconSource)`; `IconSize::{Tile48, Tile96, Px(IconPx)}`; `Surface` and
 `Ds` `radius: Option<Corner>` (`ds-style/tokens/shape.rs`: `Corner::{Token(Radius), Px(Px)}`); `Tooltip`
-`shown: Option<Shown{Visible, Hidden}>`.
+`shown: Option<bool>`.
 
 ## Other crates
 

@@ -3,7 +3,6 @@
 use super::model::{Mapped, SheetStage, StageIn};
 use super::step::advance;
 use crate::surface::Pointer;
-use ds::prelude::Shown;
 
 type Stage = SheetStage<u8>;
 
@@ -30,15 +29,15 @@ fn the_stage_follows_the_wanted_value_and_plays_the_exit() {
 }
 
 /// A case: its name, the stage, and what is drawn.
-type DrawnCase = (&'static str, Stage, Option<(u8, Shown)>);
+type DrawnCase = (&'static str, Stage, Option<(u8, bool)>);
 
 #[test]
 fn a_value_is_drawn_visible_while_up_and_hidden_while_leaving() {
     #[rustfmt::skip]
     let cases: &[DrawnCase] = &[
         ("empty draws nothing",  Stage::Empty,      None),
-        ("up is visible",        Stage::Up(1),      Some((1, Shown::Visible))),
-        ("leaving is hidden",    Stage::Leaving(1), Some((1, Shown::Hidden))),
+        ("up is visible",        Stage::Up(1),      Some((1, true))),
+        ("leaving is hidden",    Stage::Leaving(1), Some((1, false))),
     ];
     for (name, stage, want) in cases {
         let drawn = stage.drawn().map(|(value, shown)| (*value, shown));
@@ -63,8 +62,8 @@ fn a_sheet_leaves_with_its_answer_and_hands_it_over_once_settled() {
     for (name, from, input, want, out) in cases {
         assert_eq!(from.advance(*input), (*want, *out), "{name}");
     }
-    assert_eq!(Exit::Open.shown(), Shown::Visible);
-    assert_eq!(Exit::Leaving(1).shown(), Shown::Hidden);
+    assert!(Exit::Open.shown());
+    assert!(!Exit::Leaving(1).shown());
 }
 
 #[test]

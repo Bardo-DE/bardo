@@ -56,7 +56,7 @@ pub(super) fn permission_sheet(output: OutputInfo) -> Element {
 fn QuestionCard(
     output: OutputInfo,
     asking: PermissionAsking,
-    shown: Shown,
+    shown: bool,
     stage: Signal<SheetStage<PermissionAsking>>,
 ) -> Element {
     let end = use_end(asking.id);

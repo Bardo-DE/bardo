@@ -89,7 +89,7 @@ fn items_of(view: &PlaceView) -> Vec<MenuItem<String>> {
 /// A place's row and its Advanced disclosure.
 #[component]
 pub(crate) fn PlaceRow(view: PlaceView, on: PlaceHandlers) -> Element {
-    let mut shown = use_signal(|| Shown::Hidden);
+    let mut shown = use_signal(|| false);
     let items = items_of(&view);
     let current = view
         .model

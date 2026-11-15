@@ -20,12 +20,12 @@ fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
             div { style: "position:absolute;left:300px;top:200px",
-                Tooltip { text: "Snooze until tomorrow", shown: Some(Shown::Visible),
+                Tooltip { text: "Snooze until tomorrow", shown: Some(true),
                     span { id: "a", style: "display:inline-block;width:60px;height:24px", "Snooze" }
                 }
             }
             div { style: "position:absolute;left:100px;top:300px",
-                DockLabel { text: "Files", shown: Some(Shown::Visible),
+                DockLabel { text: "Files", shown: Some(true),
                     span { id: "b", style: "display:inline-block;width:48px;height:48px", "Files" }
                 }
             }
@@ -67,7 +67,7 @@ fn Moving() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
             div { style: "position:absolute;left:300px;top:{200 + SHIFT()}px",
-                Tooltip { text: "Snooze until tomorrow", shown: Some(Shown::Visible),
+                Tooltip { text: "Snooze until tomorrow", shown: Some(true),
                     span { id: "a", style: "display:inline-block;width:60px;height:24px", "Snooze" }
                 }
             }

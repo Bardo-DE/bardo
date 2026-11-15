@@ -17,8 +17,8 @@ pub(crate) fn HotCorners(
     files: Signal<Files>,
     onedit: EventHandler<Edit>,
 ) -> Element {
-    let mut opened = use_signal(|| Shown::Hidden);
-    let close = EventHandler::new(move |()| opened.set(Shown::Hidden));
+    let mut opened = use_signal(|| false);
+    let close = EventHandler::new(move |()| opened.set(false));
     rsx! {
         FieldGroup {
             Row {
@@ -26,10 +26,10 @@ pub(crate) fn HotCorners(
                 accessory: Accessory::Chevron,
                 size: RowSize::Settings,
                 common: Common { id: Some("hot-corners-open".to_owned()), ..Common::default() },
-                onclick: move |_| opened.set(Shown::Visible),
+                onclick: move |_| opened.set(true),
             }
         }
-        if opened() == Shown::Visible {
+        if opened() {
             HotCornersSheet { entries, files, onedit, onclose: close }
         }
     }

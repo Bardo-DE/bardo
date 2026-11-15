@@ -94,7 +94,7 @@ fn TrayButton(index: usize, item: TrayItem, origin: ScreenOrigin) -> Element {
     let (has_menu, pointer, shown) = if has_rows(&item.menu) {
         (ItemMenu::Present, session, shown)
     } else {
-        (ItemMenu::Absent, BarPointer::default(), Shown::Hidden)
+        (ItemMenu::Absent, BarPointer::default(), false)
     };
     let onclick = {
         let control = control.clone();
@@ -131,7 +131,7 @@ fn TrayButtonView(
     index: usize,
     item: TrayItem,
     icon: IconSource,
-    shown: Shown,
+    shown: bool,
     pointer: BarPointer,
     common: Common,
     onclick: EventHandler<Press>,
@@ -191,8 +191,8 @@ mod tests {
     fn two_fake_entries((a, b): (TrayItem, TrayItem)) -> Element {
         let icon = IconSource::Glyph(Icon::Window);
         rsx! {
-            TrayButtonView { index: 0usize, item: a, icon: icon.clone(), shown: Shown::Hidden, pointer: BarPointer::default(), common: Common::default(), onclick: move |_| {}, onwheel: move |_| {} }
-            TrayButtonView { index: 1usize, item: b, icon, shown: Shown::Visible, pointer: BarPointer::default(), common: Common::default(), onclick: move |_| {}, onwheel: move |_| {} }
+            TrayButtonView { index: 0usize, item: a, icon: icon.clone(), shown: false, pointer: BarPointer::default(), common: Common::default(), onclick: move |_| {}, onwheel: move |_| {} }
+            TrayButtonView { index: 1usize, item: b, icon, shown: true, pointer: BarPointer::default(), common: Common::default(), onclick: move |_| {}, onwheel: move |_| {} }
         }
     }
 

@@ -41,7 +41,7 @@ fn read_notes(read: StyleInputs) -> StyleNotes {
 pub(crate) fn StyleNotesLine() -> Element {
     let env = use_context::<Env>();
     let mut notes = use_signal(StyleNotes::default);
-    let mut opened = use_signal(|| Shown::Hidden);
+    let mut opened = use_signal(|| false);
     use_future({
         let env = env.clone();
         move || {
@@ -64,7 +64,7 @@ pub(crate) fn StyleNotesLine() -> Element {
         return rsx! {};
     }
     let summary = notes_summary(total);
-    let close = EventHandler::new(move |()| opened.set(Shown::Hidden));
+    let close = EventHandler::new(move |()| opened.set(false));
     rsx! {
         div { class: "style-notes", "data-style-notes": "{summary}",
             FieldGroup {
@@ -75,11 +75,11 @@ pub(crate) fn StyleNotesLine() -> Element {
                             aria_label: Some(crate::copy::style_notes::show(STYLE_NOTES_TITLE)),
                             ..Common::default()
                         },
-                        onclick: move |_| opened.set(Shown::Visible),
+                        onclick: move |_| opened.set(true),
                     }
                 }
             }
-            if opened() == Shown::Visible {
+            if opened() {
                 Sheet {
                     label: STYLE_NOTES_TITLE.to_owned(),
                     width: SheetWidth::Regular,

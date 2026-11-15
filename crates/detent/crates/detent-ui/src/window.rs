@@ -29,7 +29,7 @@ pub fn Window(
 ) -> Element {
     let env = use_context::<Env>();
     let toasts = use_toasts();
-    let mut sidebar = use_signal(|| Shown::Visible);
+    let mut sidebar = use_signal(|| true);
 
     let sharing = use_sharing(files);
     let owner = sharing.clone();

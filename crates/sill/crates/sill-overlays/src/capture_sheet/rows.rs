@@ -10,7 +10,7 @@ pub(super) struct RowData {
     pub(super) icon: Icon,
     pub(super) title: String,
     pub(super) detail: String,
-    pub(super) selection: Selection,
+    pub(super) selection: bool,
     pub(super) check: Check,
 }
 
@@ -24,9 +24,9 @@ pub(super) fn rows_of(plan: &Plan, tab: Tab, picks: &Picks) -> Vec<RowData> {
         .iter()
         .map(|choice| {
             let (selection, check) = if picks.chosen.contains(&choice.source) {
-                (Selection::Selected, Check::On)
+                (true, Check::On)
             } else {
-                (Selection::Unselected, Check::Off)
+                (false, Check::Off)
             };
             RowData {
                 source: choice.source.clone(),

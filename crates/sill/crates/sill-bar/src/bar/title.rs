@@ -25,11 +25,11 @@ pub(crate) fn pointer_at(event: &PointerEvent) -> Point {
 }
 
 /// Whether `menu` is the bar's open one: its item's `shown`. Read where the item is drawn.
-pub(crate) fn shown_of(menu: BarMenu) -> Shown {
+pub(crate) fn shown_of(menu: BarMenu) -> bool {
     if use_context::<MenuBar>().is_open(menu) {
-        Shown::Visible
+        true
     } else {
-        Shown::Hidden
+        false
     }
 }
 

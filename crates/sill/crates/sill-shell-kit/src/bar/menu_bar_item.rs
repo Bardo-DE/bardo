@@ -6,7 +6,7 @@
 //! `.ds-menu-bar-item-icon` and/or `.ds-menu-bar-item-title`; `aria-expanded` says whether the
 //! item's menu is showing, `aria-pressed` and `data-state` only for a toggled item, and
 //! `data-pressed` while a press is under way. The title is the shell scale's bar size and weight
-//! (`--fs-shell-bar` 13, `--fw-shell-bar` 500; the app name is `Emphasis::Strong`, 700). The pill
+//! (`--fs-shell-bar` 13, `--fw-shell-bar` 500; the app name is strong, 700). The pill
 //! is `--shell-bar-item` (22) high with the 5 px `--r-shell-bar-item` radius: `--surface` under
 //! the pointer, `--surface-2` while pressed or while its menu is open, with no transition (a bar
 //! menu switches in the same frame). A glyph item is as wide as the bar's status slot.
@@ -14,7 +14,7 @@
 use crate::bar::pointer::BarPointer;
 use dioxus::prelude::*;
 use ds::base::press::Press;
-use ds::base::vocab::{Availability, Check, Emphasis, Shown};
+use ds::base::vocab::{Availability, Check, aria_word, emphasis_word};
 use ds::base::word::Word;
 use ds::components::content::icon_source::IconSource;
 use ds::components::content::icon_view::IconView;
@@ -35,8 +35,8 @@ pub fn MenuBarItem(
     #[props(into)] label: TextLine,
     #[props(default)] icon: Option<IconSource>,
     #[props(default)] image: ImagePosition,
-    #[props(default)] emphasis: Emphasis,
-    #[props(default)] shown: Shown,
+    #[props(default)] emphasis: bool,
+    #[props(default)] shown: bool,
     #[props(default)] value: Option<Check>,
     #[props(default)] availability: Availability,
     #[props(default)] title: Option<String>,
@@ -60,13 +60,13 @@ pub fn MenuBarItem(
             id: common.id.clone(),
             class,
             "data-image": image.slug(),
-            "data-emphasis": emphasis.slug(),
+            "data-emphasis": emphasis_word(emphasis),
             "data-availability": availability.slug(),
             "data-state": value.map(Word::slug),
             title,
             "aria-label": aria_label,
             "aria-pressed": value.map(Check::aria),
-            "aria-expanded": shown.aria(),
+            "aria-expanded": aria_word(shown),
             "aria-disabled": availability.aria_disabled(),
             "aria-busy": availability.aria_busy(),
             disabled: disabled(availability),

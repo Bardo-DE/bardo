@@ -16,17 +16,12 @@
 //! the hooks run in the same order on every render.
 
 use dioxus::prelude::*;
-use ds::base::vocab::Activity;
-use ds::base::vocab::InputModality as DsModality;
 use ds::prelude::*;
 use shell_host::{InputModality as SeatModality, Scale120, SurfaceHandle};
 
-/// shell-host's raw modality, as quire's own.
-fn to_ds(modality: SeatModality) -> DsModality {
-    match modality {
-        SeatModality::Pointer => DsModality::Pointer,
-        SeatModality::Keyboard => DsModality::Keyboard,
-    }
+/// shell-host's raw modality, as quire's own: whether the person last used the keyboard.
+fn to_ds(modality: SeatModality) -> bool {
+    matches!(modality, SeatModality::Keyboard)
 }
 
 /// Provides `ds::prelude::HostSignals` to this component and everything under it, kept live from
@@ -47,7 +42,7 @@ pub(super) fn use_republished(modality: ReadSignal<SeatModality>, scale: ReadSig
     let signals = use_context_provider(|| HostSignals {
         modality: Signal::new(to_ds(*modality.peek())),
         scale: Signal::new(Scale(scale.peek().0)),
-        activity: Signal::new(Activity::Active),
+        activity: Signal::new(true),
     });
     use_effect(move || {
         let (mut provided, next) = (signals.modality, to_ds(modality()));

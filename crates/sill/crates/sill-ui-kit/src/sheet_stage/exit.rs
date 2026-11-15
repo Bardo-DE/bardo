@@ -37,10 +37,10 @@ pub enum ExitOut<A> {
 
 impl<A: Clone> SheetExit<A> {
     /// quire's `Sheet { shown }` for this phase.
-    pub fn shown(&self) -> Shown {
+    pub fn shown(&self) -> bool {
         match self {
-            SheetExit::Open => Shown::Visible,
-            SheetExit::Leaving(_) => Shown::Hidden,
+            SheetExit::Open => true,
+            SheetExit::Leaving(_) => false,
         }
     }
 

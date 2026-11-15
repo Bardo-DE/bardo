@@ -30,7 +30,7 @@ pub fn AppName(output: OutputInfo) -> Element {
     rsx! {
         MenuBarItem {
             common: Common { mounted: Some(EventHandler::new(move |event| probe.on_mounted(event))), ..Common::default() },
-            emphasis: Emphasis::Strong,
+            emphasis: true,
             shown: shown_of(BarMenu::App),
             label: name,
             pointer,

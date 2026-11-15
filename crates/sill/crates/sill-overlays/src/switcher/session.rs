@@ -64,13 +64,13 @@ impl Session {
         self.apps.get(index).map(|app| &app.app)
     }
 
-    /// Whether `app`'s tile is listed: `Hidden` while it folds (quire's `AppSwitcher` keeps a tile
+    /// Whether `app`'s tile is listed: `false` while it folds (quire's `AppSwitcher` keeps a tile
     /// it is no longer given until its exit has settled).
-    pub fn shown(&self, app: &AppId) -> Shown {
+    pub fn shown(&self, app: &AppId) -> bool {
         if self.leaving.contains(app) {
-            Shown::Hidden
+            false
         } else {
-            Shown::Visible
+            true
         }
     }
 
@@ -186,8 +186,8 @@ mod tests {
     #[test]
     fn a_quit_tile_folds_then_goes() {
         let session = Session::made_up(AskSerial(1), vec![id("a"), id("b")]).leave(&id("b"));
-        assert_eq!(session.shown(&id("b")), Shown::Hidden);
-        assert_eq!(session.shown(&id("a")), Shown::Visible);
+        assert!(!session.shown(&id("b")));
+        assert!(session.shown(&id("a")));
         let session = session.gone(&id("b"));
         assert_eq!(session.id_at(0), Some(&id("a")));
         assert_eq!(session.id_at(1), None);

@@ -6,7 +6,7 @@
 //! so a new request enters again), `caps` from the last key event's modifiers, `onsubmit` sending
 //! `PolkitCommand::Answer { cookie, secret: Secret::new(text) }` (the text moves into the `Secret`
 //! at once and is never kept in a signal), `oncancel` sending `PolkitCommand::Dismiss(cookie)`;
-//! when the request goes away `shown` turns `Hidden` and the surface unmaps at `on_hidden`
+//! when the request goes away `shown` turns `false` and the surface unmaps at `on_hidden`
 //! (`sill_ui_kit::sheet_stage`). Nothing is styled under `.ds-polkit*`; the only markup of sill's own is the
 //! wrapper that hears the keys' modifiers, since quire's sheet floats in the root's overlay host.
 
@@ -58,7 +58,7 @@ fn caps_of(modifiers: Modifiers) -> CapsLock {
 /// quire's prompt for `view`.
 fn prompt(
     view: PolkitPromptView,
-    shown: Shown,
+    shown: bool,
     caps: CapsLock,
     stage: Signal<SheetStage<PolkitPromptView>>,
     control: Control<PolkitCommand>,

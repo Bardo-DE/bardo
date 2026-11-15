@@ -147,8 +147,8 @@ fn SearchBox(label: String, query: Signal<String>) -> Element {
 fn row_state<T: PartialEq>(chosen: &Option<T>, own: &T) -> RowState {
     RowState {
         selection: match chosen {
-            Some(chosen) if chosen == own => Selection::Selected,
-            _ => Selection::Unselected,
+            Some(chosen) if chosen == own => true,
+            _ => false,
         },
         ..RowState::default()
     }

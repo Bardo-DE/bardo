@@ -38,7 +38,7 @@ fn root(theme: Theme, body: Element) -> Element {
 fn shown() -> Element {
     root(
         Theme::Light,
-        rsx! { ShotThumbnail { image: picture(), size: WIDE, shown: Shown::Visible, common: Common { id: Some("thumb".to_string()), ..Common::default() } } },
+        rsx! { ShotThumbnail { image: picture(), size: WIDE, shown: true, common: Common { id: Some("thumb".to_string()), ..Common::default() } } },
     )
 }
 
@@ -57,21 +57,21 @@ fn with_actions() -> Element {
     ];
     root(
         Theme::Light,
-        rsx! { ShotThumbnail { image: picture(), size: WIDE, shown: Shown::Visible, actions, onopen: |()| {} } },
+        rsx! { ShotThumbnail { image: picture(), size: WIDE, shown: true, actions, onopen: |()| {} } },
     )
 }
 
 fn portrait_dark() -> Element {
     root(
         Theme::Dark,
-        rsx! { ShotThumbnail { image: picture(), size: ImageSize { width: 900, height: 1800 }, width: Px(320.0), shown: Shown::Visible } },
+        rsx! { ShotThumbnail { image: picture(), size: ImageSize { width: 900, height: 1800 }, width: Px(320.0), shown: true } },
     )
 }
 
 fn hidden() -> Element {
     root(
         Theme::Light,
-        rsx! { ShotThumbnail { image: picture(), size: WIDE, shown: Shown::Hidden } },
+        rsx! { ShotThumbnail { image: picture(), size: WIDE, shown: false } },
     )
 }
 
@@ -81,7 +81,7 @@ fn in_stack() -> Element {
         ShotThumbnail {
             image: picture(),
             size: WIDE,
-            shown: Shown::Visible,
+            shown: true,
             swipe: NotificationSwipe::Dismiss(EventHandler::new(|()| {})),
         }
     };

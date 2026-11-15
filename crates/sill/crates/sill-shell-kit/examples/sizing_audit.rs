@@ -5,7 +5,6 @@
 //! `cargo run --release -p ds-blitz --example sizing_audit -- OUT_DIR`
 
 use dioxus::prelude::*;
-use ds::base::vocab::Muting;
 use ds::components::content::level_glyph::vocab::LevelGlyph;
 use ds::components::controls::button_model::{Answers, ImagePosition};
 use ds::components::controls::segmented::Tracking;
@@ -99,11 +98,11 @@ fn Sheet(theme: Theme) -> Element {
                 // The bar: 32 tall as sill's default, a title pill, three status items, the clock.
                 Surface { material: Material::Bar, theme: Some(scheme),
                     div { style: "display:flex;align-items:center;gap:4px;height:32px;padding:0 8px;{metrics}",
-                        MenuBarItem { shown: Shown::Visible, label: "Files", onclick: |_| {} }
+                        MenuBarItem { shown: true, label: "Files", onclick: |_| {} }
                         MenuBarItem { label: "Edit", onclick: |_| {} }
                         span { style: "flex:1" }
                         MenuBarItem { image: ImagePosition::Only, icon: Icon::Wifi, label: "Wi-Fi", onclick: |_| {} }
-                        MenuBarItem { image: ImagePosition::Only, icon: Icon::Volume2, label: "Volume", shown: Shown::Visible, onclick: |_| {} }
+                        MenuBarItem { image: ImagePosition::Only, icon: Icon::Volume2, label: "Volume", shown: true, onclick: |_| {} }
                         MenuBarItem { image: ImagePosition::Only, icon: Icon::Switches, label: "Control center", onclick: |_| {} }
                         MenuBarItem { label: "Sun 27 Sep 12:48", onclick: |_| {} }
                     }
@@ -128,7 +127,7 @@ fn Sheet(theme: Theme) -> Element {
                             ModuleTile { glyph: Icon::Wifi, title: "Wi-Fi", status: "Home", value: Check::On, onclick: |_| {}, on_detail: |_| {} }
                             ModuleTile { glyph: Icon::Bluetooth, title: "Bluetooth", status: "Off", value: Check::Off, onclick: |_| {}, on_detail: |_| {} }
                             ModulePanel { glyph: Icon::Sun, title: "Display", trailing: rsx! { "60%" },
-                                Slider { label: "Display", value: Fraction(600), glyph: LevelGlyph::Volume(Muting::Audible), look: SliderLook::Level }
+                                Slider { label: "Display", value: Fraction(600), glyph: LevelGlyph::Volume(false), look: SliderLook::Level }
                             }
                         }
                     }

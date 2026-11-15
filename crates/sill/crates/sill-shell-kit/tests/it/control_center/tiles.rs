@@ -15,7 +15,7 @@ pub struct TileCase {
     pub availability: Availability,
     pub span: TileSpan,
     pub detail: Detail,
-    pub expanded: Shown,
+    pub expanded: bool,
 }
 
 /// Whether the specimen has a detail pane, and so a chevron.
@@ -49,7 +49,7 @@ pub fn grid() -> Vec<(String, TileCase)> {
                         availability,
                         span,
                         detail: Detail::Chevron,
-                        expanded: Shown::Hidden,
+                        expanded: false,
                     },
                 ));
             }
@@ -66,7 +66,7 @@ pub fn chevrons() -> Vec<(String, TileCase)> {
         availability: Availability::Enabled,
         span: TileSpan::Half,
         detail: Detail::Chevron,
-        expanded: Shown::Hidden,
+        expanded: false,
     };
     vec![
         (
@@ -86,7 +86,7 @@ pub fn chevrons() -> Vec<(String, TileCase)> {
         (
             "tile-open-chevron".to_owned(),
             TileCase {
-                expanded: Shown::Visible,
+                expanded: true,
                 ..base
             },
         ),

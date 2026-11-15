@@ -72,8 +72,8 @@ pub(crate) fn RowList<T: Clone + PartialEq + 'static>(
 fn leading(glyph: Icon, disc: RowDisc) -> RowLeading {
     match disc {
         RowDisc::None => RowLeading::Icon(glyph),
-        RowDisc::Off => RowLeading::Disc(glyph, Selection::Unselected),
-        RowDisc::On => RowLeading::Disc(glyph, Selection::Selected),
+        RowDisc::Off => RowLeading::Disc(glyph, false),
+        RowDisc::On => RowLeading::Disc(glyph, true),
     }
 }
 

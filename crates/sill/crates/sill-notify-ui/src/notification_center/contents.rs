@@ -13,7 +13,6 @@ use ds::components::controls::button_model::Bezel;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use dioxus::prelude::*;
-use ds::base::vocab::FocusStyle;
 use ds::components::content::label::{LabelRole, LabelStyle};
 use ds::prelude::*;
 use shell_host::OutputId;
@@ -62,7 +61,7 @@ pub(super) fn Contents(output: OutputId) -> Element {
             id: PANEL_ID,
             class: "sill-nc-column",
             // The column holds the keyboard and shows it on the rows (their ring), not on itself.
-            "data-focus": FocusStyle::Highlight.slug(),
+            "data-focus": "highlight",
             // macOS's Notification Center rubber-bands (quire design/11 §11.3.7); the launcher's
             // result list and every menu are excluded by that table and carry nothing here.
             "data-overscroll": "band",

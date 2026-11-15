@@ -5,8 +5,7 @@ use dioxus::prelude::*;
 use ds::base::vocab::RowState;
 use ds::components::controls::button_model::Answers;
 use ds::prelude::{
-    Button, Column, ColumnAlign, Form, Icon, IconSize, List, ListItem, Row, RowLeading, Selection,
-    Sheet,
+    Button, Column, ColumnAlign, Form, Icon, IconSize, List, ListItem, Row, RowLeading, Sheet,
 };
 use files_model::{AppPick, Chooser, Input};
 
@@ -28,7 +27,7 @@ pub(super) fn AppChooser(browse: Browse) -> Element {
 
 /// One app's row.
 #[component]
-fn AppRow(line: AppLine, selection: Selection, onpick: EventHandler<AppPick>) -> Element {
+fn AppRow(line: AppLine, selection: bool, onpick: EventHandler<AppPick>) -> Element {
     let pick = line.pick.clone();
     // An app with no picture shows quire's plain app glyph, so the names stay in one column.
     let leading = line
@@ -62,9 +61,9 @@ fn ChooserSheet(browse: Browse) -> Element {
         .into_iter()
         .map(|line| {
             let selection = if here.as_ref() == Some(&line.pick) {
-                Selection::Selected
+                true
             } else {
-                Selection::Unselected
+                false
             };
             let (key, label) = (line.pick.clone(), line.title.clone());
             ListItem::row(

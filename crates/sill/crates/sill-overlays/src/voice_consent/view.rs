@@ -50,7 +50,7 @@ pub(super) fn voice_consent(output: OutputInfo) -> Element {
 }
 
 #[component]
-fn ConsentCard(shown: Shown, stage: Signal<SheetStage<Asked>>) -> Element {
+fn ConsentCard(shown: bool, stage: Signal<SheetStage<Asked>>) -> Element {
     let control = use_control::<VoiceService>();
     let answer = use_callback(move |choice: ConsentAnswer| {
         let _ = control.send(VoiceCommand::Answer(choice));

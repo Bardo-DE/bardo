@@ -100,7 +100,7 @@ pub fn App() -> Element {
             appearance: now.settings.appearance.appearance(),
             system: now.system,
             material: Material::Window,
-            window: WindowFrame::titlebar(title, Shown::Visible),
+            window: WindowFrame::titlebar(title, true),
             style { {crate::STYLE} }
             if assistant_setup {
                 AssistantSetup {}

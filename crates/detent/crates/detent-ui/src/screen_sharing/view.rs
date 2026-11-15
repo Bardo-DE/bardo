@@ -71,7 +71,7 @@ fn AllowApps(
     availability: Availability,
     allow: EventHandler<ScreenSharingInput>,
 ) -> Element {
-    let mut opened = use_signal(|| Shown::Hidden);
+    let mut opened = use_signal(|| false);
     rsx! {
         div { class: "screen-sharing-allow", "data-screen-sharing": "allow",
             FieldGroup { title: Some(crate::copy::screen_sharing::LET_AN_APP_IN.to_owned()),

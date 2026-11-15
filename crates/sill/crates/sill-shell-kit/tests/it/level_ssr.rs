@@ -9,7 +9,6 @@ use crate::support::specimens::{Checks, Specimen};
 
 use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
-use ds::base::vocab::Muting;
 use ds::components::content::level_glyph::vocab::LevelGlyph;
 use ds::components::controls::level_indicator::{LevelIndicator, LevelStyle};
 use ds::components::controls::slider_model::SliderLook;
@@ -38,7 +37,7 @@ fn render(make: fn() -> Element) -> String {
     dioxus_ssr::render(&dom)
 }
 
-const HEARD: LevelGlyph = LevelGlyph::Volume(Muting::Audible);
+const HEARD: LevelGlyph = LevelGlyph::Volume(false);
 
 /// `body` under a transparent Osd root, as a shell surface draws it.
 fn osd_root(body: Element) -> Element {
@@ -64,7 +63,7 @@ const CASES: &[Case] = &[
     }),
     ("slider-level-muted", || {
         osd_root(
-            rsx! { Slider { label: "Volume", value: Fraction(400), glyph: LevelGlyph::Volume(Muting::Muted), look: SliderLook::Level } },
+            rsx! { Slider { label: "Volume", value: Fraction(400), glyph: LevelGlyph::Volume(true), look: SliderLook::Level } },
         )
     }),
     ("indicator-continuous-brightness-30", || {
@@ -74,17 +73,17 @@ const CASES: &[Case] = &[
     }),
     ("osd-top-right", || {
         osd_root(rsx! {
-            Osd { shown: Shown::Visible, label: "MA270U", level: OsdLevel { value: Fraction(620), glyph: HEARD } }
+            Osd { shown: true, label: "MA270U", level: OsdLevel { value: Fraction(620), glyph: HEARD } }
         })
     }),
     ("osd-bottom-centre", || {
         osd_root(rsx! {
-            Osd { shown: Shown::Visible, label: "Display", position: OsdPosition::BottomCentre, level: OsdLevel { value: Fraction(300), glyph: LevelGlyph::Brightness } }
+            Osd { shown: true, label: "Display", position: OsdPosition::BottomCentre, level: OsdLevel { value: Fraction(300), glyph: LevelGlyph::Brightness } }
         })
     }),
     ("osd-hidden", || {
         osd_root(rsx! {
-            Osd { shown: Shown::Hidden, label: "Sound", level: OsdLevel { value: Fraction(500), glyph: HEARD } }
+            Osd { shown: false, label: "Sound", level: OsdLevel { value: Fraction(500), glyph: HEARD } }
         })
     }),
 ];

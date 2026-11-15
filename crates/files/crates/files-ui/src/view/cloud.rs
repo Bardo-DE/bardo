@@ -6,8 +6,8 @@
 use dioxus::prelude::*;
 use ds::components::overlays::empty_state::EmptyForm;
 use ds::prelude::{
-    Button, EmptyState, Fade, Fraction, Progress, ProgressIndicator, ProgressStyle, Shown,
-    StatusBar, Symbol, SymbolEffect,
+    Button, EmptyState, Fade, Fraction, Progress, ProgressIndicator, ProgressStyle, StatusBar,
+    Symbol, SymbolEffect,
 };
 use ds::style::tokens::control_size::ControlSize;
 use files_core::CloudDrive;
@@ -35,11 +35,7 @@ pub(super) fn CloudBadge(badge: Badge) -> Element {
     let Some(mark) = drawn.mark() else {
         return rsx! {};
     };
-    let shown = if badge == Badge::Clear {
-        Shown::Hidden
-    } else {
-        Shown::Visible
-    };
+    let shown = if badge == Badge::Clear { false } else { true };
     rsx! {
         Fade { shown,
             span { role: "img", "aria-label": mark.name,

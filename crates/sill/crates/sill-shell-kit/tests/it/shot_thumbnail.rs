@@ -19,14 +19,14 @@ use sill_shell_kit::thumbs::shot_press::DragStart;
 use sill_shell_kit::thumbs::shot_thumbnail::ThumbAction;
 use std::time::{Duration, Instant};
 
-static SHOWN: GlobalSignal<Shown> = Signal::global(|| Shown::Visible);
+static SHOWN: GlobalSignal<bool> = Signal::global(|| true);
 static HIDDEN: GlobalSignal<u32> = Signal::global(|| 0);
 static OPENED: GlobalSignal<u32> = Signal::global(|| 0);
 static DRAGS: GlobalSignal<Vec<DragStart>> = Signal::global(Vec::new);
 static HOVERS: GlobalSignal<Vec<Hover>> = Signal::global(Vec::new);
 static DELETED: GlobalSignal<u32> = Signal::global(|| 0);
 static SWIPED: GlobalSignal<u32> = Signal::global(|| 0);
-static SWIPE_SHOWN: GlobalSignal<Shown> = Signal::global(|| Shown::Visible);
+static SWIPE_SHOWN: GlobalSignal<bool> = Signal::global(|| true);
 
 const VIEW: Viewport = Viewport {
     width: 400,
@@ -122,7 +122,7 @@ fn it_rises_in_and_on_hidden_runs_only_after_the_slide_out_settles() {
     let before = read(&mut harness, &HIDDEN);
     let out = settle(Anim::PanelOut, MotionLevel::Standard);
     let hiding = harness.now();
-    harness.within(|| *SHOWN.write() = Shown::Hidden);
+    harness.within(|| *SHOWN.write() = false);
     harness.advance(Duration::from_millis(1));
     assert_eq!(presence(&harness).as_deref(), Some("leaving"));
     harness.advance(out / 2);
@@ -253,10 +253,10 @@ fn beside_swipe_to_dismiss_a_drag_right_is_the_swipe_and_left_a_drag_out() {
     );
     assert_eq!(read(&mut harness, &OPENED), 0, "neither gesture opens");
     // Hidden once it has flown, then shown again: a fresh card, not one stuck gone.
-    harness.within(|| *SWIPE_SHOWN.write() = Shown::Hidden);
+    harness.within(|| *SWIPE_SHOWN.write() = false);
     settle_until(&mut harness, |h| presence(h).is_none());
     assert_eq!(read(&mut harness, &HIDDEN), 1);
-    harness.within(|| *SWIPE_SHOWN.write() = Shown::Visible);
+    harness.within(|| *SWIPE_SHOWN.write() = true);
     harness.advance(Duration::from_millis(1));
     assert_eq!(presence(&harness).as_deref(), Some("entering"));
     assert_eq!(

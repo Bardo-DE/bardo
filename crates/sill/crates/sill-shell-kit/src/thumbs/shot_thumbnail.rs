@@ -24,7 +24,7 @@ use crate::thumbs::shot_frame::shot_frame;
 use crate::thumbs::shot_press::{DragLane, DragStart, PressInput, ShotPress};
 use dioxus::prelude::*;
 use ds::base::geometry::units::{Point, Px};
-use ds::base::vocab::Shown;
+use ds::base::vocab::shown_word;
 use ds::base::word::Word;
 use ds::components::content::image_source::{ImageSize, ImageSource};
 use ds::components::content::picture_fit::picture_style;
@@ -65,7 +65,7 @@ pub struct ThumbAction {
 pub fn ShotThumbnail(
     image: ImageSource,
     size: ImageSize,
-    shown: Shown,
+    shown: bool,
     #[props(default)] on_hidden: EventHandler<()>,
     #[props(default = Px(240.0))] width: Px,
     #[props(default)] actions: Vec<ThumbAction>,
@@ -143,7 +143,7 @@ fn ShotCard(
     rsx! {
         div {
             class,
-            "data-shown": presence.shown().slug(),
+            "data-shown": shown_word(presence.shown()),
             "data-presence": presence.drawn_slug(),
             "data-pulse": alias.slug(),
             "data-hover": hover().slug(),

@@ -22,19 +22,17 @@ const SHOW_REASON: &str = "ai.auto.show_reason";
 
 /// Whether the footer is shown: `ai.auto.show_reason`, on when no schema or file says otherwise
 /// (inferd's own default).
-pub(crate) fn show_reason(env: &Env, files: &Files) -> Shown {
-    let on = env
-        .catalogue
+pub(crate) fn show_reason(env: &Env, files: &Files) -> bool {
+    env.catalogue
         .entries()
         .map(|(_, entry)| entry)
         .find(|entry| entry.spec.path.0 == SHOW_REASON)
-        .is_none_or(|entry| value_of(files, entry).as_str() == Some("on"));
-    if on { Shown::Visible } else { Shown::Hidden }
+        .is_none_or(|entry| value_of(files, entry).as_str() == Some("on"))
 }
 
 /// inferd's model rows, or why they are not there. `reasons` is whether the footer is shown.
 #[component]
-pub fn ModelPicker(reasons: Shown) -> Element {
+pub fn ModelPicker(reasons: bool) -> Element {
     let client = use_client();
     let Picker { state, ask } = use_picker();
     let mut reason = use_signal(|| None::<Reason>);
@@ -71,7 +69,7 @@ pub fn ModelPicker(reasons: Shown) -> Element {
                         }
                     }
                     TurnOnAlert { ready: ready.clone(), onask: ask }
-                    if reasons == Shown::Visible {
+                    if reasons {
                         ReasonFooter { reason: reason() }
                     }
                     EngineSheetView {}

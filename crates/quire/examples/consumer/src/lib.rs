@@ -68,7 +68,7 @@ fn items() -> Vec<MenuItem<Action>> {
 #[component]
 fn Page() -> Element {
     let mut subject = use_signal(String::new);
-    let mut menu_open = use_signal(|| Shown::Hidden);
+    let mut menu_open = use_signal(|| false);
     let mut more = use_signal(|| None::<MountedRef>);
     let toasts = use_toasts();
     let badge = use_motion_timer(Anim::Fade);
@@ -96,7 +96,7 @@ fn Page() -> Element {
                 }
                 Button {
                     label: "More".to_owned(),
-                    onclick: move |_| menu_open.set(Shown::Visible),
+                    onclick: move |_| menu_open.set(true),
                     common: Common {
                         mounted: Some(EventHandler::new(move |event: MountedEvent| {
                             more.set(Some(MountedRef(event.data())));
@@ -110,13 +110,13 @@ fn Page() -> Element {
                 "data-shown": if sent() { "shown" } else { "hidden" },
                 "Sent"
             }
-            if let (Shown::Visible, Some(button)) = (menu_open(), more()) {
+            if let (true, Some(button)) = (menu_open(), more()) {
                 Menu {
                     placement: MenuPlacement::Popup,
                     anchor: Anchor::Mounted(button),
                     items: items(),
                     onpick: move |action: Action| {
-                        menu_open.set(Shown::Hidden);
+                        menu_open.set(false);
                         field.request();
                         match action {
                             Action::Duplicate => subject.set(format!("{} (copy)", subject())),
@@ -124,7 +124,7 @@ fn Page() -> Element {
                         }
                     },
                     onclose: move |()| {
-                        menu_open.set(Shown::Hidden);
+                        menu_open.set(false);
                         field.request();
                     },
                 }

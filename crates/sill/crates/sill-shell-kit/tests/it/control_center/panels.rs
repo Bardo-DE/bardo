@@ -3,7 +3,6 @@
 
 use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
-use ds::base::vocab::Muting;
 use ds::components::content::level_glyph::vocab::LevelGlyph;
 use ds::components::controls::radio_group::Arrangement;
 use ds::components::controls::segmented::Tracking;
@@ -53,7 +52,7 @@ pub fn part(props: PartProps) -> Element {
         PartCase::Panel(_) => rsx! {
             ModuleGrid {
                 ModulePanel { glyph: Icon::Volume2, title: "Speakers", trailing: rsx! { "40%" },
-                    Slider { label: "Volume", value: Fraction(400), glyph: LevelGlyph::Volume(Muting::Audible), onchange: |_| {}, look: SliderLook::Level }
+                    Slider { label: "Volume", value: Fraction(400), glyph: LevelGlyph::Volume(false), onchange: |_| {}, look: SliderLook::Level }
                 }
             }
         },

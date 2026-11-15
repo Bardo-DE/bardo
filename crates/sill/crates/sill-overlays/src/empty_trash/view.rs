@@ -43,7 +43,7 @@ pub(super) fn empty_trash(output: OutputInfo) -> Element {
 
 /// One opening of the question.
 #[component]
-fn Question(shown: Shown, stage: Signal<SheetStage<EmptyTrashOpening>>) -> Element {
+fn Question(shown: bool, stage: Signal<SheetStage<EmptyTrashOpening>>) -> Element {
     let link = use_context::<EmptyTrashLink>();
     let buttons = vec![
         AlertButton::new(

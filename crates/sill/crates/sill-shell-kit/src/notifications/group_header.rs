@@ -7,8 +7,7 @@
 
 use dioxus::prelude::*;
 use ds::base::press::Press;
-use ds::base::vocab::Shown;
-use ds::base::word::Word;
+use ds::base::vocab::shown_word;
 use ds::components::content::icon_source::IconSource;
 use ds::components::content::icon_view::IconView;
 use ds::components::content::text_runs::{TextLine, text};
@@ -20,11 +19,11 @@ use ds::style::icon::render::IconSize;
 
 /// The toggle's words: "Show less" while the group is open; while folded to its newest, how
 /// many are hidden ("2 more"), or nothing when there is nothing to show.
-fn toggle_label(expanded: Shown, count: u32) -> Option<String> {
+fn toggle_label(expanded: bool, count: u32) -> Option<String> {
     match (expanded, count) {
-        (Shown::Visible, _) => Some("Show less".to_owned()),
-        (Shown::Hidden, 0 | 1) => None,
-        (Shown::Hidden, n) => Some(format!("{} more", n - 1)),
+        (true, _) => Some("Show less".to_owned()),
+        (false, 0 | 1) => None,
+        (false, n) => Some(format!("{} more", n - 1)),
     }
 }
 
@@ -36,7 +35,7 @@ pub fn GroupHeader(
     icon: IconSource,
     #[props(into)] name: TextLine,
     count: u32,
-    #[props(default)] expanded: Shown,
+    #[props(default)] expanded: bool,
     on_toggle: EventHandler<Press>,
     on_clear: EventHandler<Press>,
     #[props(default)] common: Common,
@@ -48,7 +47,7 @@ pub fn GroupHeader(
         div {
             class,
             id: common.id.clone(),
-            "data-expanded": expanded.slug(),
+            "data-expanded": shown_word(expanded),
             "aria-label": common.aria_label.clone(),
             onmounted: move |event| common.mounted(event),
             ..data,
@@ -84,17 +83,16 @@ pub fn GroupHeader(
 #[cfg(test)]
 mod tests {
     use super::toggle_label;
-    use ds::base::vocab::Shown;
 
     #[test]
     fn the_toggle_names_what_it_will_do() {
         let cases = [
-            (Shown::Visible, 4, Some("Show less")),
-            (Shown::Visible, 1, Some("Show less")),
-            (Shown::Hidden, 4, Some("3 more")),
-            (Shown::Hidden, 2, Some("1 more")),
-            (Shown::Hidden, 1, None),
-            (Shown::Hidden, 0, None),
+            (true, 4, Some("Show less")),
+            (true, 1, Some("Show less")),
+            (false, 4, Some("3 more")),
+            (false, 2, Some("1 more")),
+            (false, 1, None),
+            (false, 0, None),
         ];
         for (expanded, count, want) in cases {
             assert_eq!(

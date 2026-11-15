@@ -6,9 +6,7 @@ use ds::base::press::Press;
 use ds::base::vocab::RowState;
 use ds::components::chrome::sidebar::Sidebar;
 use ds::components::chrome::sidebar_model::SidebarSection;
-use ds::prelude::{
-    Accessory, Icon, ListItem, Row, RowAction, RowLeading, SectionHeader, Selection,
-};
+use ds::prelude::{Accessory, Icon, ListItem, Row, RowAction, RowLeading, SectionHeader};
 use files_core::{CloudDrive, Location, Volume, VolumeId, VolumeKind};
 use files_model::Input;
 
@@ -59,11 +57,7 @@ pub(super) fn sidebar_rows(
     hears: Hears,
 ) -> Vec<SidebarSection<PlaceKey>> {
     let selection_of = move |key: PlaceKey| {
-        if cursor == Some(key) {
-            Selection::Selected
-        } else {
-            Selection::Unselected
-        }
+        if cursor == Some(key) { true } else { false }
     };
     let items = groups(places)
         .into_iter()
@@ -116,7 +110,7 @@ pub(super) fn sidebar_rows(
 /// The cloud drives' heading and one row for each; nothing while there are none.
 fn cloud_section(
     clouds: &[CloudDrive],
-    selection_of: &impl Fn(PlaceKey) -> Selection,
+    selection_of: &impl Fn(PlaceKey) -> bool,
     hears: Hears,
 ) -> Vec<ListItem<PlaceKey>> {
     if clouds.is_empty() {
@@ -147,7 +141,7 @@ fn CloudRow(
     id: files_core::DriveId,
     name: String,
     state: files_core::DriveState,
-    selection: Selection,
+    selection: bool,
     onselect: EventHandler<PlaceKey>,
 ) -> Element {
     let accessory = drive_mark(state).map_or(Accessory::None, |mark| Accessory::Glyph(mark.icon));
@@ -167,7 +161,7 @@ fn CloudRow(
 
 /// One place's row.
 #[component]
-fn PlaceRow(kind: PlaceKind, selection: Selection, onselect: EventHandler<PlaceKey>) -> Element {
+fn PlaceRow(kind: PlaceKind, selection: bool, onselect: EventHandler<PlaceKey>) -> Element {
     rsx! {
         Row {
             leading: RowLeading::Icon(icon_of(kind)),
@@ -183,7 +177,7 @@ fn PlaceRow(kind: PlaceKind, selection: Selection, onselect: EventHandler<PlaceK
 
 /// One disk's row: its name, and an eject button when it can be ejected.
 #[component]
-fn VolumeRow(volume: Volume, selection: Selection, hears: Hears) -> Element {
+fn VolumeRow(volume: Volume, selection: bool, hears: Hears) -> Element {
     let state = RowState {
         selection,
         ..RowState::default()

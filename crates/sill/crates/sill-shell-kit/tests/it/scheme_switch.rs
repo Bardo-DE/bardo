@@ -39,8 +39,8 @@ fn Bar() -> Element {
                     onclick: |_| {},
                 }
                 WorkspacePills { label: "Workspaces",
-                    WorkspacePill { label: "1", current: Selection::Selected, onclick: |_| {} }
-                    WorkspacePill { label: "2", current: Selection::Unselected, onclick: |_| {} }
+                    WorkspacePill { label: "1", current: true, onclick: |_| {} }
+                    WorkspacePill { label: "2", current: false, onclick: |_| {} }
                 }
             }
         }

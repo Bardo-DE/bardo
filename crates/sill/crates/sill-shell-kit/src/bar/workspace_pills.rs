@@ -9,8 +9,7 @@
 use crate::bar::pointer::BarPointer;
 use dioxus::prelude::*;
 use ds::base::press::Press;
-use ds::base::vocab::Selection;
-use ds::base::word::Word;
+use ds::base::vocab::{aria_word, selected_word};
 use ds::components::controls::press::{ActivationKeys, PressListeners};
 use ds::root::common::Common;
 
@@ -40,7 +39,7 @@ pub fn WorkspacePills(
 #[component]
 pub fn WorkspacePill(
     label: String,
-    #[props(default)] current: Selection,
+    #[props(default)] current: bool,
     onclick: EventHandler<Press>,
     #[props(default)] pointer: BarPointer,
     #[props(default)] common: Common,
@@ -53,8 +52,8 @@ pub fn WorkspacePill(
             r#type: "button",
             id: common.id.clone(),
             class,
-            "data-selected": current.slug(),
-            "aria-current": current.aria_current(),
+            "data-selected": selected_word(current),
+            "aria-current": aria_word(current),
             onmounted: move |event| common.mounted(event),
             onpointerdown: {
                 let pointer = pointer.clone();

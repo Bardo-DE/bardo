@@ -7,7 +7,6 @@
 //! A monitor's own speakers follow the software volume (`display.hardware_volume`), so the
 //! volume shown is the sink's level whichever of the two is playing.
 
-use ds::base::vocab::Muting;
 use ds::components::content::level_glyph::vocab::LevelGlyph;
 use ds::prelude::*;
 use sill_model::displays::{BrightnessTarget, Displays};
@@ -78,11 +77,11 @@ fn glyph(kind: OsdKind, level: Option<Level>) -> LevelGlyph {
             Some(Level {
                 mute: Mute::Audible,
                 ..
-            }) => Muting::Audible,
+            }) => false,
             Some(Level {
                 mute: Mute::Muted, ..
             })
-            | None => Muting::Muted,
+            | None => true,
         }),
     }
 }
@@ -121,7 +120,6 @@ fn monitor_name(displays: &Displays, target: &BrightnessTarget) -> Option<String
 #[cfg(test)]
 mod tests {
     use super::{card_level, level_of, title};
-    use ds::base::vocab::Muting;
     use ds::components::content::level_glyph::vocab::LevelGlyph;
     use ds::prelude::*;
     use sill_model::displays::Displays;
@@ -148,29 +146,29 @@ mod tests {
     #[test]
     fn the_card_level_follows_the_glyph_and_fills_by_percent() {
         const CASES: &[(OsdKind, At, LevelGlyph, u16)] = &[
-            (OsdKind::Volume, None, LevelGlyph::Volume(Muting::Muted), 0),
+            (OsdKind::Volume, None, LevelGlyph::Volume(true), 0),
             (
                 OsdKind::Volume,
                 Some((0, Mute::Audible)),
-                LevelGlyph::Volume(Muting::Audible),
+                LevelGlyph::Volume(false),
                 0,
             ),
             (
                 OsdKind::Volume,
                 Some((70, Mute::Muted)),
-                LevelGlyph::Volume(Muting::Muted),
+                LevelGlyph::Volume(true),
                 0,
             ),
             (
                 OsdKind::Volume,
                 Some((45, Mute::Audible)),
-                LevelGlyph::Volume(Muting::Audible),
+                LevelGlyph::Volume(false),
                 450,
             ),
             (
                 OsdKind::Volume,
                 Some((130, Mute::Audible)),
-                LevelGlyph::Volume(Muting::Audible),
+                LevelGlyph::Volume(false),
                 1000,
             ),
             (

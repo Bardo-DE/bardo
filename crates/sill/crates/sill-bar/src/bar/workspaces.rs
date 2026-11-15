@@ -46,7 +46,7 @@ pub fn WorkspaceIndicator(output: OutputInfo) -> Element {
                 WorkspacePill {
                     key: "{workspace.key.0}",
                     label: label(&workspace, index),
-                    current: if workspace.activity == Activity::Active { Selection::Selected } else { Selection::Unselected },
+                    current: workspace.activity == Activity::Active,
                     pointer: BarPointer {
                         down: Some(EventHandler::new(move |event: PointerEvent| {
                             let x = pointer_at(&event).x;

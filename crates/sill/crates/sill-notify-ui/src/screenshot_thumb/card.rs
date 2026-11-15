@@ -28,7 +28,7 @@ use super::step::{ThumbExit, ThumbIn};
 pub(super) fn ThumbCard(
     id: ShotId,
     picture: ThumbPicture,
-    shown: Shown,
+    shown: bool,
     metrics: SwipeMetrics,
     look: GhostLook,
 ) -> Element {

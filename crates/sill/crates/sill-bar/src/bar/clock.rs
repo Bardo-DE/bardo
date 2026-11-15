@@ -23,10 +23,7 @@ pub fn ClockItem(output: OutputInfo) -> Element {
     let given = use_link::<CenterLink>();
     let link = use_hook(move || given.unwrap_or_default());
     let shown = use_watch(link.subscribe());
-    let open = match shown().open_on(output.id) {
-        true => Shown::Visible,
-        false => Shown::Hidden,
-    };
+    let open = shown().open_on(output.id);
     rsx! {
         MenuBarItem {
             common: Common {

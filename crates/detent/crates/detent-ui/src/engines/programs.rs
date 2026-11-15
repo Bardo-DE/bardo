@@ -23,14 +23,14 @@ use ds_settings::schema::KeyPath;
 #[component]
 pub(crate) fn EnginePrograms() -> Element {
     let lived = use_live(Client::engine_programs);
-    let mut opened = use_signal(|| Shown::Hidden);
+    let mut opened = use_signal(|| false);
     let Live::Ready(programs) = (lived.state)() else {
         return rsx! {};
     };
     if programs.rows.is_empty() {
         return rsx! {};
     }
-    let close = EventHandler::new(move |()| opened.set(Shown::Hidden));
+    let close = EventHandler::new(move |()| opened.set(false));
     let pane = lived.pane.clone();
     let onset = EventHandler::new(move |(path, value): (KeyPath, String)| {
         spawn(pane.send(ProgramsInput::Set(path, value)));
@@ -43,12 +43,12 @@ pub(crate) fn EnginePrograms() -> Element {
                     Button {
                         label: crate::copy::common::OPEN,
                         common: Common { aria_label: Some(crate::copy::engines::open(crate::copy::engines::PROGRAMS_FOR_LOCAL_MODELS)), ..Common::default() },
-                        onclick: move |_| opened.set(Shown::Visible),
+                        onclick: move |_| opened.set(true),
                     }
                 }
             }
         }
-        if opened() == Shown::Visible {
+        if opened() {
             Sheet {
                 label: crate::copy::engines::PROGRAMS_FOR_LOCAL_MODELS.to_owned(),
                 width: SheetWidth::Regular,

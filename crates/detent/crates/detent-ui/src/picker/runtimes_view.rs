@@ -11,7 +11,6 @@ use crate::running::RunningModels;
 use crate::system::Absent;
 use detent_model::{Live, Runtime};
 use dioxus::prelude::*;
-use ds::base::vocab::Muting;
 use ds::components::content::avatar::{Avatar, AvatarSize, AvatarTone, person_hue};
 use ds::components::content::label::{LabelRole, LabelStyle};
 use ds::components::fields::field_row::{FieldGroup, FieldRow};
@@ -80,9 +79,9 @@ pub fn LocalRuntimes() -> Element {
 fn RuntimeRow(runtime: Runtime, onopen: EventHandler<()>) -> Element {
     let running = runtime.is_running();
     let (muting, role, state) = if running {
-        (Muting::Audible, LabelRole::Secondary, "running")
+        (false, LabelRole::Secondary, "running")
     } else {
-        (Muting::Muted, LabelRole::Tertiary, "offline")
+        (true, LabelRole::Tertiary, "offline")
     };
     let initial = runtime
         .label

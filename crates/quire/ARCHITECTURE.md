@@ -100,7 +100,7 @@ declarations and re-exports. Directories group a concept; role files are named f
 
 | Crate | Modules, lowest first |
 | --- | --- |
-| `ds-core` | `word`, `vocab` (Availability, Selection, Emphasis, Switch, Expanded, Check, Shown, Fraction, Percent, StaggerIndex, ShortcutKey, Shortcut), `command` (names, `CommandFace`, `AppCommand`, a shortcut's chord text), `press`, `standard_action`, `geometry` (units, scale, scroll, placement), `colour` (srgb, oklab, fit, contrast), `time` (clock, virtual clock, `Stamp`, `FrameClock`), `machine` (the `Machine` trait, `Elapsed`), `selection` (`RowSelection`, `Pick`, `PickHow`), `spawner` (the `Spawner` trait), `error`, `text` (clip, `TypedText`), `codec` (png, base64) |
+| `ds-core` | `word`, `vocab` (Availability, Switch, Expanded, Check, Fraction, Percent, StaggerIndex, ShortcutKey, Shortcut), `command` (names, `CommandFace`, `AppCommand`, a shortcut's chord text), `press`, `standard_action`, `geometry` (units, scale, scroll, placement), `colour` (srgb, oklab, fit, contrast), `time` (clock, virtual clock, `Stamp`, `FrameClock`), `machine` (the `Machine` trait, `Elapsed`), `selection` (`RowSelection`, `Pick`, `PickHow`), `spawner` (the `Spawner` trait), `error`, `text` (clip, `TypedText`), `codec` (png, base64) |
 | `ds-style` | `appearance` (theme, accent, motion, blur, material choice, peek, system prefs, resolve), `scope` (the enclosing `Scope`), `tokens` (one file per token family, `set.rs` = `TokenSet`, `tuned.rs`), `kit` (`Kit`, `Kits`, `Section`, `Vocabulary`), `material`, `space` (palette, look, presets, frame vars, store, and `list`: the pure list of an app's Spaces), `icon` (glyph tables by family, plate, classify, render, url), `fonts`, `scale`, `css` (emission per cascade section, `reset.css`, `utilities.css`), `emit` |
 | `ds-motion` | `anim` (`Anim`), `recipe` (the table), `keyframes` (generated CSS + `motion.css`), `settle` (settle, timers, wake, reduced), `presence`, `timeline` (`Timeline` + `use_timeline` + one file per implementor), `roster`, `pulse`, `gesture` (drag, swipe, velocity, hover intent), `machine` (the hooks that run a `Machine`: `use_machine`, `use_machine_in`, `use_machine_state`, `MachineRef`, `MachineState`), `details` (grammar, `Moment`, `Detailed`, cues, one-shots, glyph morphs) |
 | `ds-behaviour` | `dir` (`Dir`) < `switcher`, `hot_corner`, `modifier_tap` (`tap`, `hold`), `space_swipe` (`numbers`, `velocity`, `finish`; each concept holds `model`, `step`, `tests`) |
@@ -134,7 +134,7 @@ A name in `{...}` is a set of files. Anything not listed keeps its file name.
 | From | To |
 | --- | --- |
 | `ds/core/vocab.rs` | `ds-core::vocab`; `Key` -> `ShortcutKey` |
-| `ds/components/overlays/tooltip.rs::Shown` | `ds-core::vocab::Shown` |
+| `ds/components/overlays/tooltip.rs::Shown` | a `bool` |
 | `ds/core/{press,standard_action}.rs` | `ds-core::{press, standard_action}` |
 | `ds/core/geometry/{units,scale,placement}.rs` | `ds-core::geometry::{units, scale, placement}` |
 | `ds/core/colour/*` | `ds-core::colour::*` (the one copy) |
@@ -266,7 +266,7 @@ The single place a concept lives. Extend it; never write a second one.
 | A recording's progress bar: loaded stretches, a time tooltip, a captured drag | `ds::components::controls::scrubber` (`Scrubber`; drawing in `scrubber_face`, machine in `scrubber_machine`, `BufferedRange`, `merged` and `time_text` in `scrubber_model`) |
 | A floating pill of controls, and its media slots (progress bar, level) | `ds::components::chrome::capsule` (`Capsule`, `CapsuleSlot::{Item, Readout, Divider, Scrub, Level}`, `ScrubEvent`, `SlotPriority`, `RankedSlot`, `fit`) |
 | Scope-owned tasks, spawning | `ds-style::task` (`spawn_in`); the `Spawner` trait in `ds-core::spawner` |
-| Base vocabulary (`Availability`, `Switch`, `Shown`, `Fraction`) | `ds-core::vocab` |
+| Base vocabulary (`Availability`, `Switch`, `Check`, `Fraction`) | `ds-core::vocab` |
 | Standard actions, app actions, chords, `Primary`, the keymap and its sources, shortcut display | chordkit (own repo); quire keeps none of it. `ds-core::standard_action` re-exports `StandardAction`, `SpaceNumber` and `Conflict`; a `Shortcut` is the design vocabulary over a chordkit `DefaultChord` (`ds-core::command::shortcut_chord`, `shortcut_text`) |
 | A key event becoming a chordkit key press, resolving to an action, and the type-ahead and wheel-zoom tests | `ds-core::command` (`key_input`, `resolve`, `types_text`, `holds_primary`); the one place a toolkit modifier is read |
 | The window's keymap: loading from the injected source, reload, registering apps' actions, `on_action`, drawing a shortcut for the platform | `ds::keys` (`Keys`, `KeySource`, `use_keys`, `on_action`); quire's own actions are in `keys::quire_actions`; the launch's source and the detected default are `ds-blitz` (`AppConfig::with_keymap_source`, `keymap_detect`) |
@@ -443,7 +443,7 @@ pub fn use_timeline<T: Timeline>(timeline: T) -> T::Frame;
 // ds-motion::presence (an enum and one hook, not a trait)
 pub enum Presence { Hidden, Entering, Present, Leaving(Exit) }
 pub struct PresenceSpec { pub enter: Anim, pub exit: Exit }
-pub fn use_presence(shown: Shown, spec: PresenceSpec, on_hidden: Option<EventHandler<()>>) -> Presence;
+pub fn use_presence(shown: bool, spec: PresenceSpec, on_hidden: Option<EventHandler<()>>) -> Presence;
 
 // ds-motion::details (kept)
 pub trait Detailed: Clone + PartialEq + 'static {
@@ -516,7 +516,7 @@ pub trait ImeHost {
 pub trait FileDropHost { fn hit(&self, targets: &[Rc<MountedData>], at: Point) -> DropHit; }
 // The host provides one `Rc<dyn DocumentHost>` as root context (`ds_blitz::provide_host`
 // installs every part, so a root can never install a subset) and one `HostSignals
-// { modality: Signal<InputModality>, scale: Signal<Scale>, activity: Signal<Activity> }`;
+// { modality: Signal<bool>, scale: Signal<Scale>, activity: Signal<bool> }`;
 // components read `use_document_host()` and get `NoHost` (every method answers `Busy`/absent) under SSR.
 
 // ds::spell, ds::window (kept)
@@ -682,7 +682,7 @@ from `ds-core`, `ds-style`, `ds-motion` and `ds`, one `pub use` per name:
 | Group | Names |
 | --- | --- |
 | Root and appearance | `Ds`, `Surface`, `Accent`, `Appearance`, `Material`, `Motion`, `MotionLevel`, `SystemPrefs`, `Scheme`, `Theme`, `use_scope`, `SpaceLook` |
-| Vocabulary | `Availability`, `Check`, `DropState`, `Emphasis`, `Fraction`, `Percent`, `Selection`, `Shortcut`, `ShortcutKey`, `Shown`, `Word` |
+| Vocabulary | `Availability`, `Check`, `DropState`, `Fraction`, `Percent`, `Shortcut`, `ShortcutKey`, `Word` |
 | Geometry | `Placement`, `Scale`, `Point`, `Px`, `Rect`, `Size`, `Alpha` |
 | Icons | `ExternalIcon`, `IconSource`, `IconView`, `BatteryGlyph`, `BluetoothGlyph`, `StatusState`, `VolumeGlyph`, `WifiGlyph`, `Icon`, `IconSize` |
 | File icons | `FileIcon`, `FileIconChoice` (`Standard`, `Folder`, `Picture`, `Artwork`), `FileIconStyle`, `FileKind`, `FolderKind`, `ExtLabel` (data in `ds_style::icon::file_kind`, `mime::kind_for_mime`, `file_tint`) |

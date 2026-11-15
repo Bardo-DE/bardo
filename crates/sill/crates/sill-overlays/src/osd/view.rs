@@ -45,8 +45,8 @@ pub(super) fn osd(output: OutputInfo) -> Element {
         .as_ref()
         .and_then(|c| level_of(c.kind, c.level, &volume, &displays, on.as_ref()));
     let shown = match drawn.phase.visible() {
-        Visibility::Shown => Shown::Visible,
-        Visibility::Hidden => Shown::Hidden,
+        Visibility::Shown => true,
+        Visibility::Hidden => false,
     };
     rsx! {
         SurfaceRoot {

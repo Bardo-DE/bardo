@@ -4,7 +4,6 @@
 //! reading the bar's `VolumeState`. Each motion ends at 0 frames.
 
 use dioxus::prelude::*;
-use ds::base::vocab::Muting;
 use ds::components::content::level_glyph::vocab::LevelGlyph;
 use ds::components::content::status::battery_state::{BatteryPower, BatteryState, LowAt};
 use ds::components::content::status::volume::{VolumeState, VolumeWaves};
@@ -224,7 +223,7 @@ fn Sound() -> Element {
                 Slider { label: "Volume", value: Fraction(500), glyph: VOLUME(), onchange: |_| {}, look: SliderLook::Level }
             }
             div { id: "own", style: "width: 300px",
-                Slider { label: "Output", value: Fraction(500), glyph: LevelGlyph::Volume(Muting::Audible), onchange: |_| {}, look: SliderLook::Level }
+                Slider { label: "Output", value: Fraction(500), glyph: LevelGlyph::Volume(false), onchange: |_| {}, look: SliderLook::Level }
             }
         }
     }

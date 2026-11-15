@@ -10,7 +10,7 @@ use ds::components::chrome::column::view::Column;
 use ds::components::content::label::LabelStyle;
 use ds::components::overlays::sheet_width::SheetWidth;
 use ds::prelude::{
-    Button, Fraction, Label, Progress as Share, ProgressIndicator, ProgressStyle, Sheet, Shown,
+    Button, Fraction, Label, Progress as Share, ProgressIndicator, ProgressStyle, Sheet,
 };
 use files_core::{Progress, Summary};
 use files_model::{Input, Work};
@@ -36,14 +36,14 @@ pub(super) fn Busy(browse: Browse) -> Element {
 /// One change's sheet. It lives as long as the change does, so the wait starts anew for each.
 #[component]
 fn BusySheet(browse: Browse, summary: Summary, progress: Progress) -> Element {
-    let mut due = use_signal(|| Shown::Hidden);
+    let mut due = use_signal(|| false);
     use_hook(move || {
         spawn(async move {
             clock::sleep(AFTER).await;
-            due.set(Shown::Visible);
+            due.set(true);
         })
     });
-    if due() == Shown::Hidden {
+    if !due() {
         return rsx! {};
     }
     let cancel = move |()| browse.send(Input::CancelWork);

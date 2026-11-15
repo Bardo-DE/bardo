@@ -10,7 +10,6 @@ use crate::support::specimens::{Checks, Specimen};
 use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
 use ds::base::press::Press;
-use ds::base::vocab::Activity;
 use ds::components::controls::badge::BadgeContent;
 use ds::components::controls::button_model::Bezel;
 use ds::components::menus::palette::palette_group::PaletteGroups;
@@ -117,10 +116,10 @@ const CASES: &[Case] = &[
             DockTile {
                 icon: IconSource::Glyph(Icon::Mail),
                 plate: Some(PlateFamily::Blue),
-                running: Activity::Active,
+                running: true,
                 badge: Some(BadgeContent::Number(3)),
                 label: "Mail",
-                label_shown: Some(Shown::Visible),
+                label_shown: Some(true),
                 onclick: |_| {},
             }
         }
@@ -154,7 +153,7 @@ const CASES: &[Case] = &[
             DockTile {
                 icon: IconSource::Glyph(Icon::Mail),
                 plate: Some(PlateFamily::Blue),
-                running: Activity::Active,
+                running: true,
                 lift: Px(12.0),
                 label: "Mail",
                 onclick: |_| {},
@@ -184,15 +183,15 @@ const CASES: &[Case] = &[
     }),
     ("bar-items", || {
         rsx! {
-            MenuBarItem { emphasis: Emphasis::Strong, label: "Files", onclick: |_| {} }
-            MenuBarItem { shown: Shown::Visible, common: Common { id: Some("file".to_string()), ..Common::default() }, label: "File", onclick: |_| {} }
+            MenuBarItem { emphasis: true, label: "Files", onclick: |_| {} }
+            MenuBarItem { shown: true, common: Common { id: Some("file".to_string()), ..Common::default() }, label: "File", onclick: |_| {} }
             MenuBarItem { label: "Edit", onclick: |_| {} }
         }
     }),
     ("workspace-pills", || {
         rsx! {
             WorkspacePills { label: "Workspaces",
-                WorkspacePill { label: "1", current: Selection::Selected, onclick: |_| {} }
+                WorkspacePill { label: "1", current: true, onclick: |_| {} }
                 WorkspacePill { label: "2", onclick: |_| {} }
             }
         }

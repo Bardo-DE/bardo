@@ -13,7 +13,7 @@ use crate::emoji::id::EmojiId;
 use crate::user_picture::size::PictureSize;
 use dioxus::prelude::*;
 use ds::base::geometry::units::Px;
-use ds::base::vocab::Selection;
+use ds::base::vocab::selected_word;
 use ds::base::word::Word;
 use ds::components::content::avatar::{AvatarFace, AvatarSize, face};
 use ds::components::lists::emoji_grid::grid::grid_style;
@@ -130,7 +130,7 @@ pub fn UserPicturePicker(
                     class: "ds-picture-cell",
                     role: "radio",
                     "aria-checked": if at == Some(index) { "true" } else { "false" },
-                    "data-selected": if at == Some(index) { Selection::Selected.slug() } else { Selection::Unselected.slug() },
+                    "data-selected": selected_word(at == Some(index)),
                     "aria-label": cell_name(cell, letter.initial),
                     onclick: move |_| onpick.call(cell.choice()),
                     {cell_body(cell, letter)}

@@ -4,7 +4,6 @@
 //! shown again while it fades, the hide is taken back and `on_hidden` never runs for it.
 
 use dioxus::prelude::*;
-use ds::base::vocab::Muting;
 use ds::components::content::level_glyph::vocab::LevelGlyph;
 use ds::prelude::*;
 use ds_harness::harness::settle_until;
@@ -13,7 +12,7 @@ use sill_shell_kit::osd::OsdLevel;
 use sill_shell_kit::prelude::*;
 use std::time::Duration;
 
-static SHOWN: GlobalSignal<Shown> = Signal::global(|| Shown::Visible);
+static SHOWN: GlobalSignal<bool> = Signal::global(|| true);
 static HIDDEN: GlobalSignal<u32> = Signal::global(|| 0);
 
 const VIEW: Viewport = Viewport {
@@ -29,7 +28,7 @@ fn Card() -> Element {
             Osd {
                 shown: SHOWN(),
                 label: "Sound",
-                level: OsdLevel { value: Fraction(500), glyph: LevelGlyph::Volume(Muting::Audible) },
+                level: OsdLevel { value: Fraction(500), glyph: LevelGlyph::Volume(false) },
                 on_hidden: move |()| *HIDDEN.write() += 1,
             }
         }
@@ -48,7 +47,7 @@ fn hidden(harness: &mut Harness) -> u32 {
     harness.within(|| *HIDDEN.peek())
 }
 
-fn show(harness: &mut Harness, shown: Shown) {
+fn show(harness: &mut Harness, shown: bool) {
     harness.within(|| *SHOWN.write() = shown);
     harness.advance(ms(1));
 }
@@ -63,7 +62,7 @@ fn hidden_it_fades_and_on_hidden_runs_at_settle_and_not_before() {
     // Marked on the harness's own (virtual) clock, so the comparison against `out`
     // below is exact, not merely a true lower bound.
     let hiding = harness.now();
-    show(&mut harness, Shown::Hidden);
+    show(&mut harness, false);
     assert_eq!(presence(&harness).as_deref(), Some("leaving"));
 
     // Half the fade, not `out - 40ms` (fixed 2026-09-25, FINDINGS "Timing tests"): the old
@@ -94,7 +93,7 @@ fn hidden_it_fades_and_on_hidden_runs_at_settle_and_not_before() {
         Some("hidden")
     );
     // Shown again: it enters from its first frame.
-    show(&mut harness, Shown::Visible);
+    show(&mut harness, true);
     assert_eq!(presence(&harness).as_deref(), Some("entering"));
     assert_eq!(harness.attr(".ds-osd", "data-pulse").as_deref(), Some("a"));
 }
@@ -103,10 +102,10 @@ fn hidden_it_fades_and_on_hidden_runs_at_settle_and_not_before() {
 fn a_show_while_it_fades_takes_the_hide_back() {
     let mut harness = Harness::new(Card, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
     harness.advance(ms(300));
-    show(&mut harness, Shown::Hidden);
+    show(&mut harness, false);
     harness.advance(ms(100));
     assert_eq!(presence(&harness).as_deref(), Some("leaving"));
-    show(&mut harness, Shown::Visible);
+    show(&mut harness, true);
     assert_eq!(presence(&harness).as_deref(), Some("present"));
     harness.advance(ms(500));
     assert_eq!(hidden(&mut harness), 0, "the hide was taken back");

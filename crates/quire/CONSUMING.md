@@ -336,7 +336,7 @@ fn App() -> Element {
 | `radius` | `Option<Corner>` | `None`: the material's own corner | `Corner::Token(Radius::…)` or `Corner::Px(Px(n))`: overrides `--m-radius` inline, for a root whose corner is a setting (the dock's `dock.pill_radius_px`) |
 | `extent` | `RootExtent` | `RootExtent::Content` | `Content`: as tall as the root's content (a window, the bar, a card). `Viewport`: at least the viewport (`min-height:100vh; min-width:100vw`), **the option for an overlay surface** (an OSD, a sheet, a click catcher) whose content is all positioned and would otherwise leave the root, and everything it places, 0 px tall (FINDINGS "Root height") |
 | `scale` | `Option<Scale>` | `None`: the host's `ds::prelude::HostSignals` scale, else 1x | the device scale this root draws for, in 120ths (`Scale(180)` is 1.5x, the `wp_fractional_scale_v1` unit and shell-host's `Scale`); the root writes the pixel tokens for it (below). `ds_blitz::launch`, `Harness` and `snapshot` provide `HostSignals` themselves; a host that is not `ds-blitz` passes `scale` |
-| `window` | `WindowFrame` | `WindowFrame::None`: the root is what it was | `WindowFrame::Titlebar { title, lights: Shown::{Visible, Hidden}, timing }` (or `WindowFrame::titlebar(title, lights)`): the client-decorated window's frame, a 28 px titlebar that moves and zooms the window, the traffic lights, the body and eight resize edges, all acting through the host's `ds::prelude::HostWindow` — section 6, "Window frame" |
+| `window` | `WindowFrame` | `WindowFrame::None`: the root is what it was | `WindowFrame::Titlebar { title, lights: bool, timing }` (or `WindowFrame::titlebar(title, lights)`): the client-decorated window's frame, a 28 px titlebar that moves and zooms the window, the traffic lights, the body and eight resize edges, all acting through the host's `ds::prelude::HostWindow` — section 6, "Window frame" |
 
 ### Pixel snapping: `scale`, the pixel tokens and `snap_to_device`
 
@@ -788,7 +788,7 @@ rsx! {
 quiet trailing action in flow beside the tags, never over the time: `more: rsx! { RowMore { expanded,
 onclick: move |rect: Rect| open_menu_at(rect) } }` (`ds::components::app::row_more`; a 26 px icon-only
 `Icon::Ellipsis` button labelled "More actions", shown on row hover, focus, `shown` or while `expanded`
-is `Shown::Visible`, which the caller owns). `strip` is the older raised pill and still works. A card
+is `true`, which the caller owns). `strip` is the older raised pill and still works. A card
 row's height is `thread_card_height(ThreadLines::Two | Three)` (`ds::components::app::thread_height`,
 the row's own box from the same tokens as its CSS, at scale 1) and the gap below it is
 `thread_card_gap()`, so a `VirtualList`'s pitch is their sum. Everything else that lists uses `List`
@@ -832,7 +832,7 @@ EventHandler<RowSelection>`: a drag that begins on empty space (not on a row or 
 band in the accent tint and hands you the whole selection as the band changes it; store it as `selection`.
 No modifier replaces the selection (a click on empty space clears it), Shift or Command adds to it. Without
 `onmarquee` nothing changes. `VirtualTable { outline: Callback<usize, OutlineRow>, ontoggle }` makes the first
-column an outline: `OutlineRow::leaf(depth)` or `OutlineRow::branch(depth, Shown)` for each mounted row, and
+column an outline: `OutlineRow::leaf(depth)` or `OutlineRow::branch(depth, shown)` for each mounted row, and
 you hear `OutlineToggle { row, shown, reach }` from a press on the triangle or Right and Left on the cursor's
 row (`reach` is `ToggleReach::Subtree` with Option held). You list the rows that show and keep which
 branches are open; the table keeps nothing. `ds::components::lists::name_cell::NameCell { icon, name, room }`
@@ -897,19 +897,19 @@ toasts.push("Sent".to_owned(), None);   // ToastHost is already rendered by Ds �
 toasts.push_undoable("Archived".to_owned(), UndoToken(7), EventHandler::new(move |token| restore(token)));
 
 // A menu anchored to the button that opens it: the button hands over its own element.
-let mut open = use_signal(|| Shown::Hidden);
+let mut open = use_signal(|| false);
 let mut more = use_signal(|| None::<MountedRef>);
 rsx! {
     Button {
         label: "More".to_owned(),
-        onclick: move |_| open.set(Shown::Visible),
+        onclick: move |_| open.set(true),
         common: Common {
             mounted: Some(EventHandler::new(move |event: MountedEvent| more.set(Some(MountedRef(event.data()))))),
             ..Common::default()
         },
     }
-    if let (Shown::Visible, Some(button)) = (open(), more()) {
-        Menu { placement: MenuPlacement::Popup, anchor: Anchor::Mounted(button), items, onpick, onclose: move |()| open.set(Shown::Hidden) }
+    if let (true, Some(button)) = (open(), more()) {
+        Menu { placement: MenuPlacement::Popup, anchor: Anchor::Mounted(button), items, onpick, onclose: move |()| open.set(false) }
     }
 }
 ```
@@ -969,8 +969,8 @@ A few props worth knowing about before you read the signatures:
   over headings and disabled rows. The caller draws the selected row (`Row { state: RowState { selection,
   .. } }`) from its own `cursor`; reordering the items moves nothing, since the cursor is a key.
 - `PopUpButton { value: Option<T>, onpick }` is controlled in its value; its open state is the button's
-  own until the caller passes `open: Some(Shown)`, after which every press, arrow key, pick or dismissal
-  reaches `on_open_change(Shown)` and the caller stores it (`start` is then ignored).
+  own until the caller passes `open: Some(bool)`, after which every press, arrow key, pick or dismissal
+  reaches `on_open_change(bool)` and the caller stores it (`start` is then ignored).
 - `PullDownButton { items, onpick, icon, title }` is `NSPopUpButton`'s pull-down style: an icon and/or a
   label with a chevron down, opening a menu of actions under it. A pick calls `onpick(T)` and the face
   never changes (with an `icon` and no `title` it is the icon alone, named "Menu" unless
@@ -995,7 +995,7 @@ A few props worth knowing about before you read the signatures:
   `SymbolEffect::Once(OnceEffect::Bounce, trigger)` plays each time `trigger` (a `Trigger`, bumped
   with `.next()`) changes and never on the first render or a re-render with the same value;
   `SymbolEffect::While(LoopEffect::Pulse, EffectActivity::Active)` runs until it is `Idle`;
-  `SymbolEffect::Transition(TransitionEffect::Appear, Shown::Visible)` plays when the state changes
+  `SymbolEffect::Transition(TransitionEffect::Appear, true)` plays when the state changes
   (`Appear`, `Disappear`, `DrawOn`, and `Replace`, which cross-fades when `icon` changes). `Part`
   and `VariableColor` move the piece an icon annotates (trash lid, bell, mail flap, folder, lock
   shackle, star and heart, refresh; the bars of Wi-Fi, the waves of volume, the cells of a full
@@ -1077,7 +1077,7 @@ motion machinery, so Reduced is automatic):
   `Skeleton { shape: SkeletonShape::{Line, Block, Circle}, .. }`; both fade in over `--t-quick` and,
   when `shown` goes `Hidden`, fade out and call `on_hidden` once they have settled.
 - `InlineBanner` is static, as Mail's remote-content bar is: it appears and disappears in place with
-  no motion. `shown: Shown` (default `Visible`) is only a render switch: `Hidden` draws nothing and
+  no motion. `shown: bool` (default `true`) is only a render switch: `false` draws nothing and
   what is under it takes its place at once, so you may equally wrap it in an `if`. It needs no `Ds`
   root of its own.
 - A `Button` or `Row` with `Availability::Busy` cross-fades both ways over `--t-quick`: its spinner
@@ -1113,7 +1113,7 @@ A sidebar that folds away and peeks: give the `SplitView` pane a body that is an
 body, so an `EdgePeek` inside one stayed out of reach; a peeking pane stops clipping once it has folded
 away, so the 10 px strip at the window's edge takes the pointer, the sidebar floats out over the content,
 and a click on the strip pins it (`EdgePeek { onpin }`, which sets the pane's `shown` again). Keep one
-`Shown` for both (`pinned` of the `EdgePeek`, `shown` of the pane, `on_shown` of the `SplitView` writing it),
+a `bool` for both (`pinned` of the `EdgePeek`, `shown` of the pane, `on_shown` of the `SplitView` writing it),
 so a drag of the divider, a toolbar button and the edge click move the same state. Pinned, the `EdgePeek`
 fills its column's height, so the `Sidebar` inside keeps its foot at the bottom. No host element outside the
 pane is needed.
@@ -1369,7 +1369,7 @@ For a launcher and a dock (FINDINGS "Launcher gaps"):
 - **Icon sizes for tiles.** `IconSize::Tile48` (48), `IconSize::Tile96` (96) and
   `IconSize::Px(IconPx(n))` for any size a caller resolves (a magnified dock tile): an icon is
   drawn at that size, not scaled from 22.
-- **A caller-driven tooltip or label.** `Tooltip { shown: Some(Shown::Visible | Shown::Hidden), .. }`
+- **A caller-driven tooltip or label.** `Tooltip { shown: Some(true | false), .. }`
   (and the shell's `DockLabel`) shows or hides on the caller's say alone, at once, whatever the
   pointer does (the dock's label machine: hide on press, while a menu is open, while dragging).
   `None` follows the pointer through the hover hub: a tooltip waits by the Tip profile (1 s), a
@@ -1394,8 +1394,8 @@ Palette behaviour:
   `PaletteClose::Pick` (a row whose pick closes; `onpick` follows). A caller that does not care
   writes `onclose: move |_| ..`; one that closes a whole bar on Escape but only dismisses on a
   click outside matches on it.
-- **A palette kept mounted.** `CommandPalette { shown: Some(Shown::Visible | Shown::Hidden),
-  }` (`Shown` is the tooltip's). Hidden, the card is
+- **A palette kept mounted.** `CommandPalette { shown: Some(true | false),
+  }` (a `bool`, the tooltip's). Hidden, the card is
   `display:none` (nothing laid out or painted, no scrim) and leaves the layer stack, while its
   rows and field stay in the document. Each change to `Visible` replays the entrance
   (`cmdk-in`/`peek-in`, restarted through the keyframe's `X--b` alias), reports the selected
@@ -1406,13 +1406,13 @@ Palette behaviour:
   palette as before: shown, its entrance played as it mounts.
 
   ```rust,ignore
-  let mut shown = use_signal(|| Shown::Hidden);
-  // The shell's toggle: shown.set(Shown::Visible) on open, Shown::Hidden on hide.
+  let mut shown = use_signal(|| false);
+  // The shell's toggle: shown.set(true) on open, false on hide.
   rsx! {
       CommandPalette::<Hit> {
           label, placeholder, query: query(), tokens: Vec::new(), groups, empty,
           oninput: move |text: String| query.set(text),
-          onpick, onclose: move |_| shown.set(Shown::Hidden),
+          onpick, onclose: move |_| shown.set(false),
           host: CommandPaletteHost::Surface,
           shown: shown(),
       }
@@ -1974,7 +1974,7 @@ than CSS: `EasingToken::Out.easing().at(Fraction(t))` gives progress in thousand
 
 **Opening a `PopUpButton` in a test with no renderer.** The menu is placed against the button's
 element, which a renderer reports after layout; a `VirtualDom` rendered with `dioxus-ssr` never
-does, so the menu stays shut. Give it a place and it opens: `PopUpButton { start: Shown::Visible,
+does, so the menu stays shut. Give it a place and it opens: `PopUpButton { start: true,
 anchor: Some(Anchor::Point(Point { x: Px(40.0), y: Px(20.0) })), .. }` (or click the button once
 `anchor` is set). Let the root's overlay take the menu with a few `render_immediate` rounds, as
 `crates/ds/tests/it/pop_up_button_open_ssr.rs` does. On a real document `start` opens the menu once
@@ -2273,7 +2273,7 @@ rsx! { Ds { appearance, material, look: spaces.look(),
 } }
 ```
 
-- `SpacesFoot { new_space: Shown::Hidden }` leaves the `+` out, for a foot whose one menu holds New
+- `SpacesFoot { new_space: false }` leaves the `+` out, for a foot whose one menu holds New
   Space (Dia: leading icon, the dots, one chevron). Put a `PullDownButton` in `trailing` and make the
   Space from its pick: `let made = spaces.add(payload); spaces.show(made, at, Showing::Rename);`
   (`SpacesHandle` and `Showing` are in the prelude). `new_payload` is still required.

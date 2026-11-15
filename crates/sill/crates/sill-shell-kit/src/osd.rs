@@ -14,8 +14,7 @@
 //! surface to the card, its margins and the material's shadow, anchored to that edge.
 
 use dioxus::prelude::*;
-use ds::base::vocab::Fraction;
-use ds::base::vocab::Shown;
+use ds::base::vocab::{Fraction, shown_word};
 use ds::base::word::Word;
 use ds::components::content::level_glyph::vocab::LevelGlyph;
 use ds::components::controls::level_indicator::{LevelIndicator, LevelStyle};
@@ -50,7 +49,7 @@ pub enum OsdPosition {
 /// `on_hidden` does not run for that hide).
 #[component]
 pub fn Osd(
-    shown: Shown,
+    shown: bool,
     #[props(default)] level: Option<OsdLevel>,
     #[props(default)] label: Option<String>,
     #[props(default)] on_hidden: EventHandler<()>,
@@ -79,7 +78,7 @@ pub fn Osd(
             "aria-label": named,
             onmounted: move |event| common.mounted(event),
             "data-position": position.slug(),
-            "data-shown": now.shown().slug(),
+            "data-shown": shown_word(now.shown()),
             "data-presence": now.drawn_slug(),
             "data-pulse": alias.slug(),
             ..data,

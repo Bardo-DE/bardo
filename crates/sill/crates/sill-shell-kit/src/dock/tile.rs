@@ -17,8 +17,7 @@ use crate::dock::parts::{DockLabel, RunningDot};
 use dioxus::prelude::*;
 use ds::base::geometry::units::Px;
 use ds::base::press::Press;
-use ds::base::vocab::{Activity, Fraction, Shown};
-use ds::base::word::Word;
+use ds::base::vocab::{Fraction, activity_word};
 use ds::components::content::icon_source::IconSource;
 use ds::components::content::icon_view::IconView;
 use ds::components::controls::badge::{Badge, BadgeContent, BadgeTone};
@@ -46,7 +45,7 @@ pub fn plate_side(side: Px) -> IconPx {
 
 /// A dock tile. `icon` is drawn on `plate` (`None` for an app whose own picture is its plate),
 /// re-coloured by `plate_tint` under a Muted or Monochrome dock. `badge` is the app's count or
-/// dot; `progress` its work under way, as a share; `running` is `Active` while the app has a
+/// dot; `progress` its work under way, as a share; `running` is `true` while the app has a
 /// window, which draws the dot. `side` is the tile's current side, `lift` how far a bounce has
 /// raised the plate.
 #[component]
@@ -56,11 +55,11 @@ pub fn DockTile(
     #[props(default)] plate_tint: Option<PlateTint>,
     #[props(default)] badge: Option<BadgeContent>,
     #[props(default)] progress: Option<Fraction>,
-    #[props(default)] running: Activity,
+    #[props(default)] running: bool,
     #[props(default = REST_SIDE)] side: Px,
     #[props(default)] lift: Px,
     #[props(into)] label: String,
-    #[props(default)] label_shown: Option<Shown>,
+    #[props(default)] label_shown: Option<bool>,
     onclick: EventHandler<Press>,
     #[props(default)] common: Common,
 ) -> Element {
@@ -75,7 +74,7 @@ pub fn DockTile(
             r#type: "button",
             class,
             id: common.id.clone(),
-            "data-running": running.slug(),
+            "data-running": activity_word(running),
             "aria-label": "{name}",
             style: "width:{side.0}px;height:{side.0}px",
             onclick: move |event| listen.click(&event),
@@ -109,7 +108,7 @@ pub fn DockTile(
                     }
                 }
             }
-            if running == Activity::Active {
+            if running {
                 RunningDot {}
             }
         }

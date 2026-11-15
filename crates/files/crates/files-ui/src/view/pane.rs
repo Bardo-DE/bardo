@@ -4,7 +4,7 @@ use dioxus::prelude::*;
 use ds::components::chrome::column::model::ColumnExtent;
 use ds::components::chrome::column::view::Column;
 use ds::components::overlays::empty_state::EmptyForm;
-use ds::prelude::{EmptyState, Shown};
+use ds::prelude::EmptyState;
 use files_core::{CloudDrive, DriveState, Location, ViewMode};
 use files_model::{Input, ListFailure, Listing};
 
@@ -78,7 +78,7 @@ fn empty_words(location: &Location) -> &'static str {
 #[component]
 pub(super) fn FolderPane(
     browse: Browse,
-    sidebar: Signal<Shown>,
+    sidebar: Signal<bool>,
     menu: Signal<Option<ContextAt>>,
     zone: Zone,
 ) -> Element {

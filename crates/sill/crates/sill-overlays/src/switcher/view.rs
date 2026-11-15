@@ -110,7 +110,7 @@ fn row(session: &Session, sel: usize, icons: &TileIcons) -> (Vec<Tile>, AppKey) 
     let listed: Vec<_> = session
         .apps
         .iter()
-        .filter(|app| session.shown(&app.app) == Shown::Visible)
+        .filter(|app| session.shown(&app.app))
         .cloned()
         .collect();
     let row = tiles(&listed, &icons.index, |app| icons.source(app));

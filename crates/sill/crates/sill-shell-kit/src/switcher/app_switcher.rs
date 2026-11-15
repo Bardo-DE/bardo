@@ -8,8 +8,7 @@ use crate::kept::use_kept;
 use crate::switcher::switcher_fit::{SwitcherMetrics, fit};
 use dioxus::prelude::*;
 use ds::base::geometry::units::Px;
-use ds::base::vocab::Selection;
-use ds::base::word::Word;
+use ds::base::vocab::{aria_word, selected_word};
 use ds::components::content::icon_source::IconSource;
 use ds::components::content::icon_view::IconView;
 use ds::motion::detail::touch::Touch;
@@ -141,7 +140,7 @@ pub fn AppSwitcher(
                 div { class: "ds-switcher-row",
                     span { class: "ds-switcher-ring", "aria-hidden": "true" }
                     for (app , presence) in drawn {
-                        {tile(app.clone(), presence, Selection::of(&app.key, &selected), size, onhover, onactivate)}
+                        {tile(app.clone(), presence, app.key == selected, size, onhover, onactivate)}
                     }
                 }
             }
@@ -154,7 +153,7 @@ pub fn AppSwitcher(
 fn tile(
     app: SwitcherApp,
     presence: Presence,
-    selection: Selection,
+    selection: bool,
     size: IconSize,
     onhover: EventHandler<AppKey>,
     onactivate: EventHandler<AppKey>,
@@ -167,9 +166,9 @@ fn tile(
             key: "{app.key.0}",
             class: "ds-switcher-cell",
             role: "option",
-            "aria-selected": selection.aria(),
+            "aria-selected": aria_word(selection),
             "aria-label": "{name}",
-            "data-selected": selection.slug(),
+            "data-selected": selected_word(selection),
             "data-presence": presence_slug(presence, None),
             onpointerenter: move |_| onhover.call(hovered.clone()),
             onclick: move |_| onactivate.call(activated.clone()),

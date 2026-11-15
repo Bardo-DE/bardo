@@ -65,7 +65,7 @@ pub(super) fn force_quit(output: OutputInfo) -> Element {
 #[component]
 fn PanelCard(
     output: OutputInfo,
-    shown: Shown,
+    shown: bool,
     stage: Signal<SheetStage<ForceQuitOpening>>,
 ) -> Element {
     let link = use_context::<ForceQuitLink>();
@@ -107,7 +107,7 @@ fn PanelCard(
                     leading: RowLeading::Source(icons.source(&AppId(key.clone()))),
                     title: title.clone(),
                     state: RowState {
-                        selection: if marked { Selection::Selected } else { Selection::Unselected },
+                        selection: marked,
                         ..RowState::default()
                     },
                     size: RowSize::Settings,
