@@ -105,10 +105,7 @@ impl SpringSpec {
 mod tests {
     use super::SpringSpec;
     use crate::detail::touch::{Contact, Touch};
-    use crate::{
-        spring::Ratio,
-        velocity::Velocity,
-    };
+    use crate::{spring::Ratio, velocity::Velocity};
     use ds_style::appearance::motion::MotionLevel;
 
     fn thrown(v: i32) -> Touch {
