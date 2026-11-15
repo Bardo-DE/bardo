@@ -66,7 +66,7 @@ impl Watch {
 mod live {
     use crate::Desktop;
     use crate::capability::Bus;
-    use crate::probe::bus::{NameOwner, PEER, Side, capabilities_named, fill};
+    use crate::probe::bus::{PEER, Side, capabilities_named, fill};
     use ds_peer::{Deadline, within};
     use std::future::{Future, poll_fn};
     use std::pin::pin;
@@ -105,7 +105,7 @@ mod live {
     struct Moved {
         bus: Bus,
         name: String,
-        owner: NameOwner,
+        owned: bool,
     }
 
     impl Live {
@@ -157,10 +157,10 @@ mod live {
             let Some(followed) = followed else {
                 return false;
             };
-            let presence = followed.side.presence(&moved.name, moved.owner);
+            let presence = followed.side.presence(&moved.name, moved.owned);
             let mut changed = false;
             for capability in capabilities_named(moved.bus, &moved.name) {
-                if self.desktop.get(capability) != presence {
+                if self.desktop.here(capability) != presence {
                     self.desktop.set(capability, presence);
                     changed = true;
                 }
@@ -183,10 +183,7 @@ mod live {
                         return Poll::Ready(Some(Moved {
                             bus,
                             name: args.name().to_string(),
-                            owner: match args.new_owner().as_ref() {
-                                Some(_) => NameOwner::Owned,
-                                None => NameOwner::Unowned,
-                            },
+                            owned: args.new_owner().as_ref().is_some(),
                         }));
                     }
                 }

@@ -15,5 +15,5 @@ mod tests;
 
 pub use model::{
     Heal, LeaveBy, Measured, RosterEntry, RosterIn, RosterOut, RosterParams, RosterState, RowPitch,
-    StayError, Stayed, presence_slug,
+    StayError, presence_slug,
 };

@@ -10,7 +10,6 @@ use super::machine::{MachineRef, use_machine};
 use super::presence::Exit;
 use super::roster::{
     Measured, RosterEntry, RosterIn, RosterOut, RosterParams, RosterState, RowPitch, StayError,
-    Stayed,
 };
 use dioxus::prelude::*;
 use ds_style::scope::use_scope_signal;
@@ -117,9 +116,9 @@ impl<K: Clone + PartialEq + 'static> Roster<K> {
     /// Take `key`'s exit back while it plays: the row is present again where it was and is not
     /// dropped when its batch settles, so nothing below it heals (an undo before the row was
     /// dropped). The consumer lists the key again in the same handler, so the next reconcile
-    /// keeps the row. A row that is not leaving is unchanged; a key the roster no longer holds
+    /// keeps the row. `true` when the row was leaving and is present again; a row that is not leaving is unchanged (`false`); a key the roster no longer holds
     /// is [`StayError::UnknownKey`] (its exit settled: list it again and it enters).
-    pub fn stay(&self, key: K) -> Result<Stayed, StayError> {
+    pub fn stay(&self, key: K) -> Result<bool, StayError> {
         let held = self
             .machine
             .state()

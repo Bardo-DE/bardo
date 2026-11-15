@@ -73,15 +73,6 @@ impl<K: Clone + PartialEq> RosterState<K> {
     }
 }
 
-/// What a [`RosterState::stay`] did.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Stayed {
-    /// The row was leaving and is present again.
-    Restored,
-    /// The row was not leaving (entering, present or healing); nothing changed.
-    Unchanged,
-}
-
 /// Why a stay could not happen.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum StayError {

@@ -3,38 +3,21 @@
 use crate::capability::Capability;
 use std::collections::BTreeMap;
 
-/// Whether a capability answers.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum Presence {
-    /// The service owns its name, or the bus can activate it on demand.
-    Here,
-    /// Nothing answers.
-    #[default]
-    Absent,
-}
-
 /// Every capability and whether it is here. The default is everything `Absent`.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Desktop {
-    presence: BTreeMap<Capability, Presence>,
+    presence: BTreeMap<Capability, bool>,
 }
 
 impl Desktop {
-    /// How `capability` is now.
-    pub fn get(&self, capability: Capability) -> Presence {
-        self.presence
-            .get(&capability)
-            .copied()
-            .unwrap_or(Presence::Absent)
-    }
-
-    /// Whether `capability` is here; the gate an extra's entry point renders under.
+    /// Whether `capability` is here: the service owns its name, or the bus can activate it on
+    /// demand. The gate an extra's entry point renders under.
     pub fn here(&self, capability: Capability) -> bool {
-        self.get(capability) == Presence::Here
+        self.presence.get(&capability).copied().unwrap_or(false)
     }
 
     #[cfg(any(feature = "dbus", test))]
-    pub(crate) fn set(&mut self, capability: Capability, presence: Presence) {
+    pub(crate) fn set(&mut self, capability: Capability, presence: bool) {
         self.presence.insert(capability, presence);
     }
 }

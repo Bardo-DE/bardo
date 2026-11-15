@@ -3,7 +3,7 @@
 
 use super::super::anim::Anim;
 use super::super::presence::{Exit, Presence};
-use super::model::{Heal, RosterEntry, RosterState, RowPitch, StayError, Stayed};
+use super::model::{Heal, RosterEntry, RosterState, RowPitch, StayError};
 use ds_core::geometry::units::Px;
 use ds_core::time::stamp::Stamp;
 
@@ -87,17 +87,17 @@ impl<K: Clone + PartialEq> RosterState<K> {
     /// healing (an undo during the exit, before the row was dropped). A row that is not leaving
     /// is left as it is; a key the roster does not hold is [`StayError::UnknownKey`], because a
     /// row already dropped cannot stay: the consumer lists it again and it enters.
-    pub fn stay(self, key: &K) -> (Self, Result<Stayed, StayError>) {
+    pub fn stay(self, key: &K) -> (Self, Result<bool, StayError>) {
         let Some(at) = self.entries.iter().position(|entry| &entry.key == key) else {
             return (self, Err(StayError::UnknownKey));
         };
         if !matches!(self.entries[at].presence, Presence::Leaving(_)) {
-            return (self, Ok(Stayed::Unchanged));
+            return (self, Ok(false));
         }
         let mut entries = self.entries.clone();
         entries[at].presence = Presence::Present;
         entries[at].until = None;
-        (self.with_entries(entries), Ok(Stayed::Restored))
+        (self.with_entries(entries), Ok(true))
     }
 
     /// The keys whose exit has settled by `at`: leaving, with a deadline that has come.

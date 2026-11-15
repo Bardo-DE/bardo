@@ -21,7 +21,7 @@ impl Desktop {
 #[cfg(feature = "dbus")]
 pub(crate) mod bus {
     use crate::capability::{Bus, Capability};
-    use crate::{Desktop, Presence};
+    use crate::Desktop;
     use ds_peer::{Deadline, within};
     use std::collections::HashSet;
     use std::future::Future;
@@ -46,13 +46,6 @@ pub(crate) mod bus {
         )
     }
 
-    /// Whether a bus name has an owner right now.
-    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-    pub(crate) enum NameOwner {
-        Owned,
-        Unowned,
-    }
-
     /// One bus: its daemon proxy and the names it can activate.
     pub(crate) struct Side {
         pub(crate) proxy: DBusProxy<'static>,
@@ -71,22 +64,16 @@ pub(crate) mod bus {
         }
 
         /// A name with an owner, or one the bus would start, is here.
-        pub(crate) fn presence(&self, name: &str, owner: NameOwner) -> Presence {
-            match owner {
-                NameOwner::Owned => Presence::Here,
-                NameOwner::Unowned if self.activatable.contains(name) => Presence::Here,
-                NameOwner::Unowned => Presence::Absent,
-            }
+        pub(crate) fn presence(&self, name: &str, owned: bool) -> bool {
+            owned || self.activatable.contains(name)
         }
 
-        async fn owner(&self, name: &str) -> NameOwner {
+        /// Whether a bus name has an owner right now.
+        async fn owned(&self, name: &str) -> bool {
             let Ok(name) = zbus::names::BusName::try_from(name) else {
-                return NameOwner::Unowned;
+                return false;
             };
-            match self.proxy.name_has_owner(name).await {
-                Ok(true) => NameOwner::Owned,
-                Ok(false) | Err(_) => NameOwner::Unowned,
-            }
+            matches!(self.proxy.name_has_owner(name).await, Ok(true))
         }
     }
 
@@ -110,8 +97,8 @@ pub(crate) mod bus {
                 Bus::System => system,
             };
             let presence = match side {
-                Some(side) => side.presence(service.name, side.owner(service.name).await),
-                None => Presence::Absent,
+                Some(side) => side.presence(service.name, side.owned(service.name).await),
+                None => false,
             };
             desktop.set(capability, presence);
         }
