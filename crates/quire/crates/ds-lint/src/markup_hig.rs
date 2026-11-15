@@ -7,7 +7,7 @@
 //! as does a descendant's `aria-label` or `alt`; an `aria-hidden="true"` subtree names nothing
 //! and is not checked. A control is judged when it closes.
 
-use super::markup::{attr_value, element_selector, line_col_at, tag_end, tag_name};
+use super::markup::{LineCursor, attr_value, element_selector, tag_end, tag_name};
 use super::rule::{Offence, Rule};
 
 /// Elements that never have content.
@@ -50,6 +50,7 @@ pub(super) fn offences(html: &str) -> Vec<Offence> {
     let labelled = label_targets(html);
     let mut scan = Scan {
         html,
+        lines: LineCursor::new(html),
         labelled,
         open: Vec::new(),
         out: Vec::new(),
@@ -90,6 +91,7 @@ struct Open {
 
 struct Scan<'a> {
     html: &'a str,
+    lines: LineCursor<'a>,
     labelled: Vec<String>,
     open: Vec<Open>,
     out: Vec<Offence>,
@@ -144,7 +146,7 @@ impl Scan<'_> {
     }
 
     fn open_tag(&mut self, tag: &str, start: usize) {
-        let (line, column) = line_col_at(self.html, start);
+        let (line, column) = self.lines.at(start);
         let name = tag_name(tag).to_ascii_lowercase();
         let selector = element_selector(tag);
         let hidden = attr_value(tag, "aria-hidden").is_some_and(|(value, _)| value == "true");
@@ -211,7 +213,7 @@ impl Scan<'_> {
         }
         self.name_open();
         if let Some(at) = text.find("...") {
-            let (line, column) = line_col_at(self.html, from + at);
+            let (line, column) = self.lines.at(from + at);
             let selector = self
                 .open
                 .last()

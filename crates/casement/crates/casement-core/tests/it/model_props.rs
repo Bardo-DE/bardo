@@ -318,7 +318,7 @@ fn op() -> impl Strategy<Value = Op> {
 }
 
 proptest! {
-    #![proptest_config(ProptestConfig::with_cases(3000))]
+    // 256 cases by default; a deeper run sets PROPTEST_CASES (proptest reads it).
 
     /// Every invariant holds after every step of any run, and a run is deterministic.
     #[test]

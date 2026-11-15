@@ -43,6 +43,7 @@ pub fn markup_warnings(html: &str, config: &LintConfig) -> Vec<Offence> {
 /// Every offence in `html`, exceptions not applied.
 fn every_offence(html: &str, consumer_css: &str) -> Vec<Offence> {
     let defined = defined_classes(consumer_css);
+    let mut lines = LineCursor::new(html);
     let mut offences = Vec::new();
     let mut cursor = 0usize;
     while let Some(start) = find_tag_start(html, cursor) {
@@ -50,7 +51,7 @@ fn every_offence(html: &str, consumer_css: &str) -> Vec<Offence> {
             break;
         };
         let tag = &html[start..end];
-        let (line, column) = line_col_at(html, start);
+        let (line, column) = lines.at(start);
         check_tag(tag, line, column, &defined, &mut offences);
         cursor = end;
     }
@@ -244,4 +245,44 @@ pub(super) fn line_col_at(text: &str, byte_offset: usize) -> (u32, u32) {
         }
     }
     (line, column)
+}
+
+/// Line/column lookup that walks forward from the last answer, so asking for offsets in
+/// document order costs one pass over the text in all. An earlier offset restarts from the top.
+/// Same semantics as [`line_col_at`]: columns count chars, from 1.
+pub(super) struct LineCursor<'a> {
+    text: &'a str,
+    offset: usize,
+    line: u32,
+    column: u32,
+}
+
+impl<'a> LineCursor<'a> {
+    pub(super) fn new(text: &'a str) -> Self {
+        Self {
+            text,
+            offset: 0,
+            line: 1,
+            column: 1,
+        }
+    }
+
+    pub(super) fn at(&mut self, byte_offset: usize) -> (u32, u32) {
+        let target = byte_offset.min(self.text.len());
+        if target < self.offset {
+            self.offset = 0;
+            self.line = 1;
+            self.column = 1;
+        }
+        for ch in self.text[self.offset..target].chars() {
+            if ch == '\n' {
+                self.line += 1;
+                self.column = 1;
+            } else {
+                self.column += 1;
+            }
+        }
+        self.offset = target;
+        (self.line, self.column)
+    }
 }

@@ -351,8 +351,8 @@ enum Dress {
     HugeBuffer,
 }
 
-/// A side of the buffer `Dress::HugeBuffer` draws on, over the cursor buffer cap.
-const HUGE_BUFFER: u32 = 1024;
+/// A side of the buffer `Dress::HugeBuffer` draws on: one over the cursor buffer cap.
+const HUGE_BUFFER: u32 = casement_wayland::limits::MAX_CURSOR_BUFFER_SIDE + 1;
 
 /// The image a cursor session sends for a coordinate-encoded 16 x 16 cursor buffer (pixel
 /// (x, y) is red = x, green = y) that the client dressed with `dress`.

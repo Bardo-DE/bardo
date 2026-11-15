@@ -1067,7 +1067,7 @@ mod storms {
     }
 
     proptest! {
-        #![proptest_config(ProptestConfig::with_cases(400))]
+        // 256 cases by default; a deeper run sets PROPTEST_CASES (proptest reads it).
 
         /// Whatever happens in whatever order: the machine stays in step, at most one question
         /// is put to the shell at a time, no question is put twice at once, the administrator's

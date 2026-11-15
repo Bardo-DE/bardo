@@ -47,6 +47,12 @@ impl Pattern {
     /// The whole buffer, rows top to bottom, ARGB8888 little-endian (what `wl_shm` calls
     /// `argb8888`).
     pub fn bytes(self, size: PhysicalSize) -> Vec<u8> {
+        if let Pattern::Solid(argb) = self {
+            let pixel = argb.to_le_bytes();
+            let pixels = usize::try_from(u64::from(size.w) * u64::from(size.h))
+                .expect("a buffer's pixel count fits in memory");
+            return pixel.repeat(pixels);
+        }
         (0..size.h)
             .flat_map(|y| (0..size.w).map(move |x| (x, y)))
             .flat_map(|(x, y)| self.pixel(x, y, size).to_le_bytes())

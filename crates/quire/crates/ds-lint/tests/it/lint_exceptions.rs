@@ -117,3 +117,15 @@ fn an_offence_and_a_stale_exception_are_both_named() {
         &config,
     );
 }
+
+#[test]
+fn a_two_megabyte_single_line_page_reports_the_late_offence_position() {
+    let filler = "<p class=\"ds-ok\">é</p>";
+    let mut html = filler.repeat(2_000_000 / filler.len());
+    let late_column = html.chars().count() as u32 + 1;
+    html.push_str("<p class=\"nope\">x</p>");
+    let offences = markup(&html, ".ds-ok{}", &LintConfig::new(&ds::kits()));
+    assert_eq!(offences.len(), 1, "{offences:?}");
+    assert_eq!((offences[0].line, offences[0].column), (1, late_column));
+    assert_eq!(offences[0].rule, Rule::UnstyledClass);
+}
