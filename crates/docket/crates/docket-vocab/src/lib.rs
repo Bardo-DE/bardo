@@ -17,9 +17,7 @@ pub mod when;
 mod workspace;
 
 pub use caller::{Caller, CallerRole};
-pub use classify::{
-    CallClass, Classification, ClassifyAnswer, ClassifyFault, DelegationEnd, PerCall,
-};
+pub use classify::{CallClass, Classification, ClassifyAnswer, ClassifyFault, DelegationEnd};
 pub use clock::Clock;
 pub use ids::{
     ActionRef, CallId, CardActionId, ChoiceId, EntityRef, FileRef, Handle, IconName, IntentsVocab,
@@ -29,5 +27,5 @@ pub use ids::{
 pub use marks::{hides, plain_text, reorders};
 pub use request::{CallRequest, Origin, RECALL_ACTION, RECALL_APP};
 pub use units::{CharCount, Days, Depth, Generation, Millis, Scale, Seconds};
-pub use value::{Args, ChoiceDecl, CivilDate, Decimal, Lines, ParamType, TargetValue, Value};
+pub use value::{Args, ChoiceDecl, CivilDate, Decimal, ParamType, TargetValue, Value};
 pub use workspace::{Workspace, WorkspaceError};

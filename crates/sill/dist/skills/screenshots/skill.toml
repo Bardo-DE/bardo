@@ -6,4 +6,4 @@ uses = ["org.quire.Shell:shell.screenshot"]
 [when]
 focused_app = []
 kinds = []
-always = "no"
+always = false

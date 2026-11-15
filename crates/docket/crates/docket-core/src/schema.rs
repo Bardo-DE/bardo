@@ -3,7 +3,7 @@
 //! and handles as `{ "handle": n }`; the router labels everything it receives.
 
 use docket_manifest::{ActionDecl, ParamDecl, ParamNeed};
-use docket_vocab::{Lines, ParamName, ParamType};
+use docket_vocab::{ParamName, ParamType};
 use model_provider::{CharCount, ChoiceText, SchemaDialect, Shape};
 use prov::EntityKind;
 use serde::{Deserialize, Serialize};
@@ -120,13 +120,11 @@ fn entity(kind: &EntityKind) -> Value {
 
 fn of_type(ty: &ParamType) -> Value {
     match ty {
-        ParamType::Text { max, lines } => {
+        ParamType::Text { max, multiline } => {
             let mut text = shaped(&Shape::Text {
                 max: CharCount(max.0),
             });
-            if *lines == Lines::One
-                && let Value::Object(fields) = &mut text
-            {
+            if !*multiline && let Value::Object(fields) = &mut text {
                 fields.insert("pattern".into(), json!("^[^\\n]*$"));
             }
             or_handle(text)

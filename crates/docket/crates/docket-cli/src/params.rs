@@ -9,9 +9,7 @@ use crate::resolve::Apps;
 use crate::when;
 use docket_manifest::TargetKind;
 use docket_manifest::{ActionDecl, ParamNeed};
-use docket_vocab::{
-    Args, CharCount, FileRef, Handle, Lines, ParamName, ParamType, TargetValue, Value,
-};
+use docket_vocab::{Args, CharCount, FileRef, Handle, ParamName, ParamType, TargetValue, Value};
 use porter_core::AppName;
 use prov::{Confidentiality, EntityId, EntityKey, EntityKind, Integrity, Label};
 use prov::{Labelled, Source};
@@ -100,7 +98,7 @@ fn entity(kind: &EntityKind, reading: &Reading<'_>, raw: &str) -> Result<EntityI
 
 fn text(
     max: CharCount,
-    lines: Lines,
+    multiline: bool,
     reading: &mut Reading<'_>,
     raw: &str,
 ) -> Result<Value, Failure> {
@@ -114,7 +112,7 @@ fn text(
     if body.chars().count() > max.0 as usize {
         return Err(Failure::usage(format!("longer than {} characters", max.0)));
     }
-    if lines == Lines::One && body.contains('\n') {
+    if !multiline && body.contains('\n') {
         return Err(Failure::usage("this takes one line"));
     }
     Ok(Value::Text(body))
@@ -141,8 +139,8 @@ pub fn value(ty: &ParamType, reading: &mut Reading<'_>, raw: &str) -> Result<Val
         return Ok(Value::Handle(held));
     }
     match ty {
-        ParamType::Text { max, lines } => text(*max, *lines, reading, raw),
-        ParamType::Dynamic(_) => text(CharCount(512), Lines::One, reading, raw),
+        ParamType::Text { max, multiline } => text(*max, *multiline, reading, raw),
+        ParamType::Dynamic(_) => text(CharCount(512), false, reading, raw),
         ParamType::Integer { min, max } => raw
             .parse::<i64>()
             .ok()

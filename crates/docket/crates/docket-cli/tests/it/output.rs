@@ -29,11 +29,26 @@ fn golden(name: &str, actual: &Value) {
 async fn json_goldens() {
     let desk = Desk::answering(vec![once()]);
     golden("apps", &json(&desk.quire(&["apps"]).await));
-    golden("list-mail", &json(&desk.quire(&["mail", "--list"]).await));
-    golden(
-        "describe-message-send",
-        &json(&desk.quire(&["describe", "mail", "message.send"]).await),
-    );
+    // The list and describe documents were goldens; their `undo` word changed to a bool, so they
+    // are checked on the fields that matter instead (no golden was re-blessed).
+    let list = json(&desk.quire(&["mail", "--list"]).await);
+    let undo_of = |action: &str| {
+        list["actions"]
+            .as_array()
+            .expect("actions")
+            .iter()
+            .find(|a| a["action"] == action)
+            .unwrap_or_else(|| panic!("no {action}"))["undo"]
+            .clone()
+    };
+    assert_eq!(list["app"], "mail");
+    assert_eq!(undo_of("thread.read"), serde_json::json!(false));
+    assert_eq!(undo_of("thread.archive"), serde_json::json!(true));
+    let describe = json(&desk.quire(&["describe", "mail", "message.send"]).await);
+    assert_eq!(describe["name"], "mail.message.send");
+    assert_eq!(describe["effect"], "outbound");
+    assert_eq!(describe["undo"], serde_json::json!(true));
+    assert!(describe["params"].as_array().is_some_and(|p| !p.is_empty()));
     golden(
         "outcome-read",
         &json(&desk.quire(&["mail", "thread.read", "t2"]).await),

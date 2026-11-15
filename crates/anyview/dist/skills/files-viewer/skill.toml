@@ -7,4 +7,4 @@ uses = ["org.quire.Anyview:anyview.file.open"]
 [when]
 focused_app = ["org.quire.Anyview"]
 kinds = []
-always = "no"
+always = false

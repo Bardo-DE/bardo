@@ -2,10 +2,10 @@
 
 use crate::support::*;
 use docket_manifest::{
-    ActionDecl, AgentReach, ArgSink, Filled, IndexPolicy, Lasting, Manifest, ManifestError,
-    ParamNeed, TargetKind, UndoSupport, ValidManifest, fits, validate,
+    ActionDecl, AgentReach, ArgSink, Filled, Lasting, Manifest, ManifestError, ParamNeed,
+    TargetKind, ValidManifest, fits, validate,
 };
-use docket_vocab::{CharCount, IntentsVocab, Lines, ParamType, Value};
+use docket_vocab::{CharCount, IntentsVocab, ParamType, Value};
 use prov::{ActionName, Effect};
 use std::path::PathBuf;
 
@@ -66,28 +66,24 @@ fn companion_task_actions_only_read() {
 fn validate_rejects_one_row_per_rule() {
     use ManifestError as E;
     let recipient = text_param("to", ArgSink::Recipient, ParamNeed::Required);
-    let mut outbound = decl(
-        "mail.message.send",
-        Effect::Outbound,
-        UndoSupport::NotUndoable,
-    );
+    let mut outbound = decl("mail.message.send", Effect::Outbound, false);
     outbound.params = vec![recipient.clone()];
-    let mut bad_default = decl("mail.thread.tag", Effect::UndoableWrite, UndoSupport::Token);
+    let mut bad_default = decl("mail.thread.tag", Effect::UndoableWrite, true);
     bad_default.params = vec![text_param(
         "tag",
         ArgSink::Inert,
         ParamNeed::Defaulted(Value::Integer(3)),
     )];
-    let mut twice = decl("mail.thread.tag2", Effect::Read, UndoSupport::NotUndoable);
+    let mut twice = decl("mail.thread.tag2", Effect::Read, false);
     twice.params = vec![
         text_param("x", ArgSink::Inert, ParamNeed::Optional),
         text_param("x", ArgSink::Inert, ParamNeed::Optional),
     ];
-    let mut no_sink = decl("mail.message.forward", Effect::Outbound, UndoSupport::Token);
+    let mut no_sink = decl("mail.message.forward", Effect::Outbound, true);
     no_sink.params = vec![text_param("note", ArgSink::Body, ParamNeed::Optional)];
 
     let filled = |need: ParamNeed, how: Filled| {
-        let mut a = decl("mail.thread.list", Effect::Read, UndoSupport::NotUndoable);
+        let mut a = decl("mail.thread.list", Effect::Read, false);
         let mut p = text_param("said", ArgSink::Inert, need);
         p.filled = Some(how);
         a.params = vec![p];
@@ -110,7 +106,7 @@ fn validate_rejects_one_row_per_rule() {
             "ok: outbound may hold the send and declare a token",
             {
                 let mut held = outbound.clone();
-                held.undo = UndoSupport::Token;
+                held.undo = true;
                 manifest("org.quire.Mail", vec![held])
             },
             None,
@@ -129,7 +125,7 @@ fn validate_rejects_one_row_per_rule() {
             "read with undo",
             manifest(
                 "org.quire.Mail",
-                vec![decl("mail.thread.list", Effect::Read, UndoSupport::Token)],
+                vec![decl("mail.thread.list", Effect::Read, true)],
             ),
             Some(E::ReadWithUndo(action("mail.thread.list"))),
         ),
@@ -137,11 +133,7 @@ fn validate_rejects_one_row_per_rule() {
             "write without undo",
             manifest(
                 "org.quire.Mail",
-                vec![decl(
-                    "mail.thread.tag",
-                    Effect::UndoableWrite,
-                    UndoSupport::NotUndoable,
-                )],
+                vec![decl("mail.thread.tag", Effect::UndoableWrite, false)],
             ),
             Some(E::WriteWithoutUndo(action("mail.thread.tag"))),
         ),
@@ -149,11 +141,7 @@ fn validate_rejects_one_row_per_rule() {
             "destructive without undo is fine",
             manifest(
                 "org.quire.Mail",
-                vec![decl(
-                    "mail.thread.delete",
-                    Effect::Destructive,
-                    UndoSupport::NotUndoable,
-                )],
+                vec![decl("mail.thread.delete", Effect::Destructive, false)],
             ),
             None,
         ),
@@ -161,11 +149,7 @@ fn validate_rejects_one_row_per_rule() {
             "outside the app's prefix",
             manifest(
                 "org.quire.Mail",
-                vec![decl(
-                    "files.thing.read",
-                    Effect::Read,
-                    UndoSupport::NotUndoable,
-                )],
+                vec![decl("files.thing.read", Effect::Read, false)],
             ),
             Some(E::ActionOutsideApp(action("files.thing.read"))),
         ),
@@ -235,7 +219,7 @@ fn validate_rejects_one_row_per_rule() {
 }
 
 fn open_decl() -> ActionDecl {
-    let mut open = decl("mail.thread.open", Effect::Read, UndoSupport::NotUndoable);
+    let mut open = decl("mail.thread.open", Effect::Read, false);
     open.on = TargetKind::One(kind("mail.thread"));
     open
 }
@@ -252,46 +236,30 @@ fn an_indexed_kind_declares_its_open_action_and_every_open_has_the_one_shape() {
     on_many.on = TargetKind::Many(kind("mail.thread"));
     let mut writes = open_decl();
     writes.effect = Effect::UndoableWrite;
-    writes.undo = UndoSupport::Token;
+    writes.undo = true;
     let mut asks = open_decl();
     asks.params = vec![text_param("where", ArgSink::Inert, ParamNeed::Required)];
     let mut optional = open_decl();
     optional.params = vec![text_param("where", ArgSink::Inert, ParamNeed::Optional)];
     let bad = |a: &ActionDecl| Some(E::BadOpen(a.name.clone()));
     let cases: Vec<(&str, Manifest, Option<ManifestError>)> = vec![
-        (
-            "indexed with its open",
-            with(IndexPolicy::Indexed, vec![open_decl()]),
-            None,
-        ),
+        ("indexed with its open", with(true, vec![open_decl()]), None),
         (
             "indexed without one",
-            with(IndexPolicy::Indexed, vec![]),
+            with(true, vec![]),
             Some(E::OpenMissing(kind("mail.thread"))),
         ),
-        (
-            "live-searched kinds may omit it",
-            with(IndexPolicy::NotIndexed, vec![]),
-            None,
-        ),
+        ("live-searched kinds may omit it", with(false, vec![]), None),
         (
             "an optional parameter is fine",
-            with(IndexPolicy::Indexed, vec![optional]),
+            with(true, vec![optional]),
             None,
         ),
-        (
-            "on many",
-            with(IndexPolicy::Indexed, vec![on_many.clone()]),
-            bad(&on_many),
-        ),
-        (
-            "writes",
-            with(IndexPolicy::NotIndexed, vec![writes.clone()]),
-            bad(&writes),
-        ),
+        ("on many", with(true, vec![on_many.clone()]), bad(&on_many)),
+        ("writes", with(false, vec![writes.clone()]), bad(&writes)),
         (
             "requires a parameter",
-            with(IndexPolicy::Indexed, vec![asks.clone()]),
+            with(true, vec![asks.clone()]),
             bad(&asks),
         ),
     ];
@@ -308,7 +276,7 @@ fn defaults_must_fit_their_type() {
             Value::Text("hi".into()),
             ParamType::Text {
                 max: CharCount(5),
-                lines: Lines::One,
+                multiline: false,
             },
             true,
         ),
@@ -317,7 +285,7 @@ fn defaults_must_fit_their_type() {
             Value::Text("toolong".into()),
             ParamType::Text {
                 max: CharCount(5),
-                lines: Lines::One,
+                multiline: false,
             },
             false,
         ),
@@ -326,7 +294,7 @@ fn defaults_must_fit_their_type() {
             Value::Text("a\nb".into()),
             ParamType::Text {
                 max: CharCount(5),
-                lines: Lines::One,
+                multiline: false,
             },
             false,
         ),
@@ -335,7 +303,7 @@ fn defaults_must_fit_their_type() {
             Value::Text("a\nb".into()),
             ParamType::Text {
                 max: CharCount(5),
-                lines: Lines::Many,
+                multiline: true,
             },
             true,
         ),

@@ -2,7 +2,7 @@
 
 use crate::standing::{act, addr, command, files, outbound, path, paths, sends, terminal};
 use bulkhead::Cover;
-use docket_manifest::{AgentReach, ArgSink, UndoSupport};
+use docket_manifest::{AgentReach, ArgSink};
 use docket_permissions_core::*;
 use docket_vocab::ActionRef;
 use proptest::prelude::*;
@@ -11,7 +11,7 @@ use prov::Effect;
 fn facts<'a>(effect: Effect, why: &'a [AskReason], untrusted: &'a [ArgSink]) -> AskFacts<'a> {
     AskFacts {
         effect,
-        undo: UndoSupport::Token,
+        undo: true,
         reach: AgentReach::Offered,
         why,
         untrusted,
@@ -223,7 +223,7 @@ proptest! {
     ) {
         let f = AskFacts {
             effect,
-            undo: if irreversible { UndoSupport::NotUndoable } else { UndoSupport::Token },
+            undo: if irreversible { false } else { true },
             reach: if ask_always { AgentReach::AskAlways } else { AgentReach::Offered },
             why: &why,
             untrusted: &untrusted,

@@ -10,8 +10,8 @@ use docket_core::*;
 use docket_manifest::{ArgSink, ArgsFault, ParamDecl, ParamNeed, Why};
 use docket_planner::Planner;
 use docket_vocab::{
-    CharCount, ChoiceDecl, ChoiceId, CivilDate, Handle, LabelText, Lines, Origin, ParamName,
-    ParamType, Seconds, TargetValue, Value,
+    CharCount, ChoiceDecl, ChoiceId, CivilDate, Handle, LabelText, Origin, ParamName, ParamType,
+    Seconds, TargetValue, Value,
 };
 use porter_core::AppName;
 use prov::{ActionName, EntityId, EntityKey, EntityKind, Integrity, Source};
@@ -108,7 +108,7 @@ fn each_declared_type_reads_its_json() {
     use ParamType as T;
     let text = T::Text {
         max: CharCount(10),
-        lines: Lines::One,
+        multiline: false,
     };
     let choice = T::Choice(vec![ChoiceDecl {
         id: ChoiceId::parse("a").expect("id"),

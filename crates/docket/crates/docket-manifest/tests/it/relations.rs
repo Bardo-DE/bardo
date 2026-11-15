@@ -2,9 +2,8 @@
 
 use crate::support::*;
 use docket_manifest::{
-    ActionDecl, AgentReach, Cardinality, EntityDecl, IndexPolicy, Manifest, ManifestError,
-    ParamNeed, RELATION_ARG, RelationDecl, ResultShape, TargetKind, TitleTrust, UndoSupport,
-    ValidManifest, validate,
+    ActionDecl, AgentReach, Cardinality, EntityDecl, Manifest, ManifestError, ParamNeed,
+    RELATION_ARG, RelationDecl, ResultShape, TargetKind, TitleTrust, ValidManifest, validate,
 };
 use docket_vocab::{ParamType, RelationName};
 use prov::Effect;
@@ -23,12 +22,12 @@ fn contact_kind() -> EntityDecl {
     EntityDecl {
         kind: kind("mail.contact"),
         class: prov::DataClass::Contacts,
-        ..thread_kind(IndexPolicy::NotIndexed)
+        ..thread_kind(false)
     }
 }
 
 fn with_relations(relations: Vec<RelationDecl>, actions: Vec<ActionDecl>) -> Manifest {
-    let mut thread = thread_kind(IndexPolicy::NotIndexed);
+    let mut thread = thread_kind(false);
     thread.relations = relations;
     let mut m = manifest("org.quire.Mail", actions);
     m.entities = vec![thread, contact_kind()];
@@ -48,7 +47,7 @@ fn a_kind_with_relations_gets_a_derived_read_action_that_asks_for_the_classes_of
         .expect("derived action");
     assert_eq!(derived.on, TargetKind::One(kind("mail.thread")));
     assert_eq!(derived.effect, Effect::Read);
-    assert_eq!(derived.undo, UndoSupport::NotUndoable);
+    assert!(!derived.undo);
     assert_eq!(derived.reach, AgentReach::Offered);
     assert_eq!(
         derived.classes,
@@ -95,7 +94,7 @@ fn a_validated_manifest_written_and_read_back_is_the_same_manifest() {
 
 #[test]
 fn a_manifest_without_relations_does_not_write_the_field() {
-    let json = serde_json::to_string(&thread_kind(IndexPolicy::NotIndexed)).expect("json");
+    let json = serde_json::to_string(&thread_kind(false)).expect("json");
     assert!(!json.contains("relations"), "{json}");
     let back: EntityDecl = serde_json::from_str(&json).expect("an older file parses");
     assert!(back.relations.is_empty());
@@ -113,11 +112,7 @@ fn relation_mistakes_are_refused() {
             relation: RelationName::parse("from").expect("relation"),
         })
     );
-    let own = decl(
-        "mail.thread.related",
-        Effect::Read,
-        UndoSupport::NotUndoable,
-    );
+    let own = decl("mail.thread.related", Effect::Read, false);
     let declared = with_relations(vec![from()], vec![own]);
     assert_eq!(
         validate(declared).err(),

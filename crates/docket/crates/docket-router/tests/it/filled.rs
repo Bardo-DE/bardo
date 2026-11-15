@@ -32,7 +32,7 @@ label = "Look"
 on = { kind = "nothing" }
 effect = "read"
 classes = []
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -43,7 +43,7 @@ dry_run = "none"
 [[actions.params]]
 name = "said"
 label = "What the person said"
-ty = { kind = "text", v = { max = 100000, lines = "many" } }
+ty = { kind = "text", v = { max = 100000, multiline = true } }
 need = { kind = "optional" }
 sink = "inert"
 filled = { kind = "person_words" }
@@ -51,7 +51,7 @@ filled = { kind = "person_words" }
 [[actions.params]]
 name = "seen"
 label = "Earlier attempts"
-ty = { kind = "text", v = { max = 100000, lines = "many" } }
+ty = { kind = "text", v = { max = 100000, multiline = true } }
 need = { kind = "optional" }
 sink = "inert"
 filled = { kind = "own_history", v = { kinds = "cua.*" } }

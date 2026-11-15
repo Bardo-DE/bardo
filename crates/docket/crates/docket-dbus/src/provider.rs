@@ -13,7 +13,7 @@ pub trait IntentProvider {
     /// Performs (`Invocation` JSON, flattened with an optional `activation` token and, for an action that classifies per call, the `classified` effect the router gated on; answers `Outcome` or `AppRefusal` JSON). The app labels its undo entry with the invocation's actor.
     fn perform(&self, invocation: &str, options: &Details) -> zbus::Result<String>;
 
-    /// What one call does, for an action that declares `per_call = "classified"` (`Invocation` JSON; answers `CallClass` or `AppRefusal` JSON). The declared effect is a ceiling: the router clamps the answer, and an error, a timeout or an unknown method leaves the ceiling in force.
+    /// What one call does, for an action that declares `classified = true` (`Invocation` JSON; answers `CallClass` or `AppRefusal` JSON). The declared effect is a ceiling: the router clamps the answer, and an error, a timeout or an unknown method leaves the ceiling in force.
     fn classify(&self, invocation: &str, options: &Details) -> zbus::Result<String>;
 
     /// Describes the change without making it (`Preview` JSON).

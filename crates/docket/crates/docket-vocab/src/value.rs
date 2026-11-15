@@ -104,16 +104,6 @@ pub enum TargetValue {
     Files(Vec<FileRef>),
 }
 
-/// Whether a text parameter is one line or many.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Lines {
-    /// One line.
-    One,
-    /// Several.
-    Many,
-}
-
 /// One option a choice parameter offers.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ChoiceDecl {
@@ -131,8 +121,8 @@ pub enum ParamType {
     Text {
         /// The longest allowed.
         max: CharCount,
-        /// One line or many.
-        lines: Lines,
+        /// Whether it may run over several lines (else one line, no control character).
+        multiline: bool,
     },
     /// A whole number in `min..=max`.
     Integer {

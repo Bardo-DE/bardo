@@ -4,8 +4,7 @@
 //! feature.
 
 use docket_vocab::{
-    ChoiceDecl, IconName, IntentsVocab, LabelText, ParamName, ParamType, PerCall, RelationName,
-    Value,
+    ChoiceDecl, IconName, IntentsVocab, LabelText, ParamName, ParamType, RelationName, Value,
 };
 use porter_core::DataClass;
 use prov::{ActionName, Effect, EntityKind, Source};
@@ -62,8 +61,11 @@ pub struct EntityDecl {
     pub icon: IconName,
     /// The data class its content belongs to.
     pub class: DataClass,
-    /// Whether the app pushes it into the router's index.
-    pub index: IndexPolicy,
+    /// Whether the app pushes it into the router's index: pushed to the router while the app runs,
+    /// or shipped in its search file, and found by the launcher from the index. Not indexed, the
+    /// launcher does not find it, nothing is pushed or shipped for it, and a search never asks the
+    /// app.
+    pub index: bool,
     /// Who writes this kind's titles.
     pub titles: TitleTrust,
     /// The properties the context call may report.
@@ -115,18 +117,6 @@ pub fn related_name(kind: &EntityKind) -> Option<ActionName> {
 /// The name of the argument of a related action that picks the relation.
 pub const RELATION_ARG: &str = "relation";
 
-/// Whether a kind is pushed into the shadow index.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum IndexPolicy {
-    /// Not found by the launcher: nothing is pushed or shipped for it, and a search never asks
-    /// the app.
-    NotIndexed,
-    /// Pushed to the router while the app runs, or shipped in its search file, and found by the
-    /// launcher from the index.
-    Indexed,
-}
-
 /// Whether a text came from the app or from someone else through it.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
@@ -159,16 +149,16 @@ pub struct ActionDecl {
     pub on: TargetKind,
     /// What it takes.
     pub params: Vec<ParamDecl>,
-    /// What it can do to the world. With `per_call = "classified"` this is a ceiling.
+    /// What it can do to the world. With `classified = true` this is a ceiling.
     pub effect: Effect,
     /// Whether the provider classifies each call below the declared effect (`Classify`). Absent
-    /// from a file means `declared`; it is not written when it is.
-    #[serde(default, skip_serializing_if = "PerCall::is_declared")]
-    pub per_call: PerCall,
+    /// from a file means false; it is not written when it is.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub classified: bool,
     /// The data classes it touches.
     pub classes: BTreeSet<DataClass>,
-    /// Whether it can be taken back.
-    pub undo: UndoSupport,
+    /// Whether it can be taken back: the app returns an undo token.
+    pub undo: bool,
     /// Whether an agent may see it.
     pub reach: AgentReach,
     /// How long it takes, which sets the router's timeout.
@@ -263,16 +253,6 @@ pub enum ArgSink {
     Path,
     /// A query that leaves the machine.
     Query,
-}
-
-/// Whether an action's effect can be taken back.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum UndoSupport {
-    /// The app returns an undo token.
-    Token,
-    /// It cannot be taken back.
-    NotUndoable,
 }
 
 /// Whether an agent may see and call an action.
@@ -387,9 +367,9 @@ impl EntityDecl {
                 filled: None,
             }],
             effect: Effect::Read,
-            per_call: PerCall::default(),
+            classified: false,
             classes,
-            undo: UndoSupport::NotUndoable,
+            undo: false,
             reach: AgentReach::Offered,
             latency: Latency::Quick,
             result: ResultShape::Entities(first.to.clone()),

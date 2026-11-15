@@ -10,8 +10,8 @@
 
 use crate::manifest::{ActionDecl, ParamDecl, ParamNeed, TargetKind};
 use docket_vocab::{
-    Args, CharCount, CivilDate, Decimal, FileRef, Handle, Lines, ParamName, ParamType, Scale,
-    Seconds, TargetValue, Value,
+    Args, CharCount, CivilDate, Decimal, FileRef, Handle, ParamName, ParamType, Scale, Seconds,
+    TargetValue, Value,
 };
 use porter_core::AppName;
 use prov::{EntityId, EntityKey, EntityKind, Label, Labelled, UnixSeconds};
@@ -105,16 +105,13 @@ fn entity(kind: &EntityKind, json: &Json) -> Read<EntityId> {
     }
 }
 
-fn text(max: CharCount, lines: Lines, json: &Json) -> Read<String> {
+fn text(max: CharCount, multiline: bool, json: &Json) -> Read<String> {
     let body = json.as_str().ok_or(Why::Type)?;
     let too_long = body.chars().count() > max.0 as usize;
     // One line has no control character at all; a body keeps its line breaks and tabs. Neither
     // may hold a mark that reorders the words around it or hides itself: a recipient or a
     // body drawn on a sheet must be what it reads as.
-    let allowed: &[char] = match lines {
-        Lines::One => &[],
-        Lines::Many => &['\n', '\r', '\t'],
-    };
+    let allowed: &[char] = if multiline { &['\n', '\r', '\t'] } else { &[] };
     let deceptive = !docket_vocab::plain_text(body, allowed);
     if too_long || deceptive {
         Err(Why::Range)
@@ -179,13 +176,10 @@ fn value(ty: &ParamType, json: &Json) -> Read<Value> {
         };
     }
     match ty {
-        ParamType::Text { max, lines } => text(*max, *lines, json).map(Value::Text),
-        ParamType::Dynamic(_) => text(
-            CharCount(crate::validate::DYNAMIC_TEXT_MAX),
-            Lines::One,
-            json,
-        )
-        .map(Value::Text),
+        ParamType::Text { max, multiline } => text(*max, *multiline, json).map(Value::Text),
+        ParamType::Dynamic(_) => {
+            text(CharCount(crate::validate::DYNAMIC_TEXT_MAX), false, json).map(Value::Text)
+        }
         ParamType::Integer { min, max } => integer(json)
             .and_then(|n| (*min..=*max).contains(&n).then_some(n).ok_or(Why::Range))
             .map(Value::Integer),

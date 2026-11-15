@@ -2,7 +2,7 @@
 //! rule that an untrusted argument is never inside.
 
 use crate::support::*;
-use docket_manifest::{ActionDecl, ArgSink, ParamNeed, UndoSupport};
+use docket_manifest::{ActionDecl, ArgSink, ParamNeed};
 use docket_permissions_core::*;
 use docket_vocab::{ActionRef, CallRequest, FileRef, Origin, TargetValue, TurnId, Value};
 use porter_ids::Count;
@@ -383,7 +383,7 @@ fn covers_table() {
 /// The manifest's declaration of `call`'s action: `to` feeds a recipient, `body` a body, `into` a
 /// path and `label` nowhere that matters.
 pub(crate) fn declared(call: &CallRequest, effect: Effect) -> ActionDecl {
-    let mut decl = decl(call.action.name.as_str(), effect, UndoSupport::NotUndoable);
+    let mut decl = decl(call.action.name.as_str(), effect, false);
     decl.params = vec![
         text_param("to", ArgSink::Recipient, ParamNeed::Optional),
         text_param("body", ArgSink::Body, ParamNeed::Optional),

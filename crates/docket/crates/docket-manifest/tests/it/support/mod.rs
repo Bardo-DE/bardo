@@ -1,12 +1,10 @@
 //! Builders the tests share; labels come from prov's constructors.
 
 use docket_manifest::{
-    ActionDecl, AgentReach, ArgSink, DryRun, EntityDecl, IndexPolicy, KeyHint, Lasting, Latency,
-    Manifest, ParamDecl, ParamNeed, ResultShape, TargetKind, TitleTrust, UndoSupport, Visibility,
+    ActionDecl, AgentReach, ArgSink, DryRun, EntityDecl, KeyHint, Lasting, Latency, Manifest,
+    ParamDecl, ParamNeed, ResultShape, TargetKind, TitleTrust, Visibility,
 };
-use docket_vocab::{
-    CharCount, IconName, IntentsVocab, LabelText, Lines, ParamName, ParamType, PerCall,
-};
+use docket_vocab::{CharCount, IconName, IntentsVocab, LabelText, ParamName, ParamType};
 use porter_core::{AppName, DataClass};
 use prov::{ActionName, Effect, EntityId, EntityKey, EntityKind, Label};
 use std::collections::BTreeSet;
@@ -37,7 +35,7 @@ pub fn trusted() -> Label {
     Label::trusted_user()
 }
 
-pub fn decl(name: &str, effect: Effect, undo: UndoSupport) -> ActionDecl {
+pub fn decl(name: &str, effect: Effect, undo: bool) -> ActionDecl {
     ActionDecl {
         name: action(name),
         label: words("Do it"),
@@ -52,7 +50,7 @@ pub fn decl(name: &str, effect: Effect, undo: UndoSupport) -> ActionDecl {
         keys: KeyHint::None,
         lasting: Lasting::No,
         dry_run: DryRun::None,
-        per_call: PerCall::Declared,
+        classified: false,
     }
 }
 pub fn text_param(name: &str, sink: ArgSink, need: ParamNeed) -> ParamDecl {
@@ -61,7 +59,7 @@ pub fn text_param(name: &str, sink: ArgSink, need: ParamNeed) -> ParamDecl {
         label: words("Field"),
         ty: ParamType::Text {
             max: CharCount(100),
-            lines: Lines::One,
+            multiline: false,
         },
         need,
         sink,
@@ -78,7 +76,7 @@ pub fn manifest(app_name: &str, actions: Vec<ActionDecl>) -> Manifest {
     }
 }
 /// A mail thread kind with the given index policy and nothing else declared.
-pub fn thread_kind(index: IndexPolicy) -> EntityDecl {
+pub fn thread_kind(index: bool) -> EntityDecl {
     EntityDecl {
         kind: kind("mail.thread"),
         label: words("Thread"),

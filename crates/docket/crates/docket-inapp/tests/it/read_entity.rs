@@ -38,7 +38,7 @@ label = "Find threads"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["mail"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "entities", v = "mail.thread" }
@@ -49,7 +49,7 @@ dry_run = "none"
 [[actions.params]]
 name = "query"
 label = "Words in the subject"
-ty = { kind = "text", v = { max = 200, lines = "one" } }
+ty = { kind = "text", v = { max = 200, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 "#;

@@ -1,4 +1,4 @@
-//! Per-call effect, carried out: for an action that opts in (`per_call = "classified"`), ask the
+//! Per-call effect, carried out: for an action that opts in (`classified = "classified"`), ask the
 //! provider what this call does, then prepare the call on the effect the pure
 //! [`classify_step`] allows. The declared effect is the ceiling; a provider that fails, times
 //! out or has no `Classify` leaves the ceiling in force.
@@ -11,7 +11,7 @@ use docket_core::{AppRefusal, AuditRecord, CallEnd, CallRefusal};
 use docket_gate::classify::{at_ceiling, classify_step, delegation_end};
 use docket_gate::driven::Driven;
 use docket_gate::prepared::{Early, Prepared};
-use docket_vocab::{CallClass, CallRequest, Classification, Clock, Depth, PerCall, WindowKey};
+use docket_vocab::{CallClass, CallRequest, Classification, Clock, Depth, WindowKey};
 
 impl<S: Seams> Router<S> {
     /// Prepares a call and, when its action classifies per call and an agent made it, asks the
@@ -24,7 +24,7 @@ impl<S: Seams> Router<S> {
         depth: Depth,
     ) -> Result<Prepared, Box<Early>> {
         let first = self.prepare(who, request.clone(), window.clone(), depth)?;
-        if first.decl.per_call != PerCall::Classified || who.session.is_none() {
+        if !first.decl.classified || who.session.is_none() {
             return Ok(first);
         }
         let answer = self

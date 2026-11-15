@@ -18,7 +18,7 @@ label = "Item"
 plural = "Items"
 icon = "demo"
 class = "app_own"
-index = "not_indexed"
+index = false
 titles = { kind = "app_authored" }
 props = []
 
@@ -28,7 +28,7 @@ label = "Tune"
 on = { kind = "many", v = "demo.item" }
 effect = "undoable_write"
 classes = ["app_own"]
-undo = "token"
+undo = true
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -39,14 +39,14 @@ dry_run = "none"
 [[actions.params]]
 name = "title"
 label = "Title"
-ty = { kind = "text", v = { max = 20, lines = "one" } }
+ty = { kind = "text", v = { max = 20, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
 [[actions.params]]
 name = "notes"
 label = "Notes"
-ty = { kind = "text", v = { max = 100, lines = "many" } }
+ty = { kind = "text", v = { max = 100, multiline = true } }
 need = { kind = "optional" }
 sink = "body"
 
@@ -139,7 +139,7 @@ label = "Thing"
 plural = "Things"
 icon = "other"
 class = "app_own"
-index = "not_indexed"
+index = false
 titles = { kind = "app_authored" }
 props = []
 "#;

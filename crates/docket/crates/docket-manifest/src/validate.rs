@@ -1,8 +1,7 @@
 //! Manifest validation: pure, total, one error per rule a caller can act on.
 
 use crate::manifest::{
-    ActionDecl, AgentReach, ArgSink, Filled, IndexPolicy, Manifest, ParamDecl, ParamNeed,
-    TargetKind, UndoSupport, Visibility,
+    ActionDecl, AgentReach, ArgSink, Filled, Manifest, ParamDecl, ParamNeed, TargetKind, Visibility,
 };
 use docket_vocab::{IntentsVocab, ParamName, ParamType, RelationName, Value, action_prefix};
 use prov::{ActionName, Effect, EntityKind};
@@ -104,19 +103,19 @@ impl Manifest {
 fn check_opens(manifest: &Manifest) -> Result<(), ManifestError> {
     for e in &manifest.entities {
         match (manifest.open_of(&e.kind), e.index) {
-            (None, IndexPolicy::Indexed) => {
+            (None, true) => {
                 return Err(ManifestError::OpenMissing(e.kind.clone()));
             }
             (Some(a), _) => {
                 let shape = a.on == TargetKind::One(e.kind.clone())
                     && a.effect == Effect::Read
-                    && a.undo == UndoSupport::NotUndoable
+                    && !a.undo
                     && a.params.iter().all(|p| p.need != ParamNeed::Required);
                 if !shape {
                     return Err(ManifestError::BadOpen(a.name.clone()));
                 }
             }
-            (None, IndexPolicy::NotIndexed) => {}
+            (None, false) => {}
         }
     }
     Ok(())
@@ -160,9 +159,8 @@ pub(crate) const DYNAMIC_TEXT_MAX: u32 = 512;
 /// Whether `value` is a legal value of `ty`: what a default must satisfy.
 pub fn fits(value: &Value, ty: &ParamType) -> bool {
     match (value, ty) {
-        (Value::Text(t), ParamType::Text { max, lines }) => {
-            t.chars().count() <= max.0 as usize
-                && (*lines == docket_vocab::Lines::Many || !t.contains('\n'))
+        (Value::Text(t), ParamType::Text { max, multiline }) => {
+            t.chars().count() <= max.0 as usize && (*multiline || !t.contains('\n'))
         }
         (Value::Integer(n), ParamType::Integer { min, max }) => (*min..=*max).contains(n),
         (Value::Decimal(d), ParamType::Decimal { scale }) => d.scale == *scale,
@@ -190,10 +188,10 @@ fn check_action(prefix: &str, a: &ActionDecl) -> Result<(), ManifestError> {
         return Err(ManifestError::ActionOutsideApp(a.name.clone()));
     }
     match (a.effect, a.undo) {
-        (Effect::Read, UndoSupport::Token) => {
+        (Effect::Read, true) => {
             return Err(ManifestError::ReadWithUndo(a.name.clone()));
         }
-        (Effect::UndoableWrite, UndoSupport::NotUndoable) => {
+        (Effect::UndoableWrite, false) => {
             return Err(ManifestError::WriteWithoutUndo(a.name.clone()));
         }
         _ => {}

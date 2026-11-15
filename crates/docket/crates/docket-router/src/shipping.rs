@@ -6,7 +6,7 @@ use crate::router::Router;
 use crate::seams::Seams;
 use docket_context::state::RouterState;
 use docket_core::{IndexEntry, IndexState};
-use docket_manifest::IndexPolicy;
+use docket_manifest::bool;
 use porter_core::AppName;
 use prov::{EntityKey, EntityKind};
 use std::collections::BTreeMap;
@@ -26,7 +26,7 @@ fn indexed_only(
             .manifest()
             .entities
             .iter()
-            .any(|e| e.index == IndexPolicy::Indexed && &e.kind == kind)
+            .any(|e| e.index && &e.kind == kind)
     };
     entries
         .into_iter()

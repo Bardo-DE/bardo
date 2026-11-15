@@ -50,9 +50,9 @@ The manifest `dev/accept/fixtures/org.quire.Mail.toml` is the contract the run p
 
 - `mail.thread.search` (Read, `Entities(mail.thread)`), `mail.thread.read` (Read, text result with
   `trust = third_party(mail)`), `mail.contact.search` (Read, `Entities(mail.contact)`, trusted
-  titles: the person's own address book), `mail.message.forward` (Outbound, `undo = "token"`, an
+  titles: the person's own address book), `mail.message.forward` (Outbound, `undo = true`, an
   entity `to` with the `recipient` sink, `dry_run = "preview"`), `mail.message.send` (Outbound,
-  `to` text with the `recipient` sink, `body` with the `body` sink, `undo = "token"`).
+  `to` text with the `recipient` sink, `body` with the `body` sink, `undo = true`).
 - Entity-list results are labelled by the provider: thread lists `Label::untrusted(Mail, ..)`,
   contact lists trusted by the app. A `Preview::Message` from `DryRun` labels each recipient
   (`to`): the sheet draws a recipient quoted from mail when the label is untrusted.

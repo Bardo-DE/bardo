@@ -14,7 +14,7 @@ label = "Open in Viewer"
 on = { kind = "files" }
 effect = "read"
 classes = ["files"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }

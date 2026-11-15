@@ -4,19 +4,15 @@
 
 use crate::support::*;
 use docket_manifest::{
-    ActionDecl, ArgSink, ArgsFault, ParamDecl, ParamNeed, TargetKind, UndoSupport, args_from_json,
+    ActionDecl, ArgSink, ArgsFault, ParamDecl, ParamNeed, TargetKind, args_from_json,
 };
-use docket_vocab::{CharCount, Lines, ParamType, Value, plain_text};
+use docket_vocab::{CharCount, ParamType, Value, plain_text};
 use proptest::prelude::*;
 use prov::Effect;
 use serde_json::{Map, Value as Json, json};
 
 fn decl_under_test() -> ActionDecl {
-    let mut d = decl(
-        "mail.message.send",
-        Effect::Outbound,
-        UndoSupport::NotUndoable,
-    );
+    let mut d = decl("mail.message.send", Effect::Outbound, false);
     d.on = TargetKind::Many(kind("mail.thread"));
     d.params = vec![
         text_param("to", ArgSink::Recipient, ParamNeed::Required),
@@ -25,7 +21,7 @@ fn decl_under_test() -> ActionDecl {
             label: words("Body"),
             ty: ParamType::Text {
                 max: CharCount(60),
-                lines: Lines::Many,
+                multiline: true,
             },
             need: ParamNeed::Optional,
             sink: ArgSink::Body,

@@ -14,7 +14,7 @@ use docket_context::labels::app_label;
 use docket_context::state::RouterState;
 use docket_core::LinkFault;
 use docket_core::{Hit, IndexBatch, IndexEntry, SearchAsk, SearchScope, SuggestAsk};
-use docket_manifest::{IndexPolicy, TitleTrust};
+use docket_manifest::TitleTrust;
 use docket_vocab::{CallerRole, EntityRef};
 use docket_wire::{CallerId, IntentsReply, WireRefusal};
 use porter_core::AppName;
@@ -95,7 +95,7 @@ impl<S: Seams> Router<S> {
                 .manifest()
                 .entities
                 .iter()
-                .filter(|e| e.index == IndexPolicy::Indexed)
+                .filter(|e| e.index)
                 .map(|e| e.kind.clone())
                 .collect(),
             None => return refuse(WireRefusal::NotAllowed),

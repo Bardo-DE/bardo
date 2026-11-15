@@ -40,7 +40,7 @@ pub trait IntentProvider: Send + Sync {
         let _ = classified;
         self.perform_activated(inv, activation)
     }
-    /// What this call does, for an action that declares `per_call = "classified"`: an effect
+    /// What this call does, for an action that declares `classified = true`: an effect
     /// (never trusted past the declared one) or `Delegates` to another typed action. The
     /// default refuses, which leaves the declared effect in force.
     fn classify(

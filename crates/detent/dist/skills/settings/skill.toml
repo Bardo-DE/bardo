@@ -10,4 +10,4 @@ uses = [
 [when]
 focused_app = ["org.quire.Settings"]
 kinds = []
-always = "no"
+always = false

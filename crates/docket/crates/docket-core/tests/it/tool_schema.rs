@@ -2,8 +2,8 @@
 
 use crate::support::*;
 use docket_core::*;
-use docket_manifest::{ActionDecl, ArgSink, Filled, ParamDecl, ParamNeed, UndoSupport};
-use docket_vocab::{CharCount, ChoiceDecl, ChoiceId, Lines, ParamType, Value};
+use docket_manifest::{ActionDecl, ArgSink, Filled, ParamDecl, ParamNeed};
+use docket_vocab::{CharCount, ChoiceDecl, ChoiceId, ParamType, Value};
 use prov::Effect;
 use serde_json::json;
 
@@ -19,7 +19,7 @@ fn param_of(name: &str, ty: ParamType, need: ParamNeed, sink: ArgSink) -> ParamD
 }
 
 fn send() -> ActionDecl {
-    let mut a = decl("mail.message.send", Effect::Outbound, UndoSupport::Token);
+    let mut a = decl("mail.message.send", Effect::Outbound, true);
     a.params = vec![
         param_of(
             "to",
@@ -31,7 +31,7 @@ fn send() -> ActionDecl {
             "body",
             ParamType::Text {
                 max: CharCount(500),
-                lines: Lines::Many,
+                multiline: true,
             },
             ParamNeed::Required,
             ArgSink::Body,
@@ -40,7 +40,7 @@ fn send() -> ActionDecl {
             "subject",
             ParamType::Text {
                 max: CharCount(80),
-                lines: Lines::One,
+                multiline: false,
             },
             ParamNeed::Optional,
             ArgSink::Inert,
@@ -50,7 +50,7 @@ fn send() -> ActionDecl {
 }
 
 fn move_files() -> ActionDecl {
-    let mut a = decl("files.file.move", Effect::UndoableWrite, UndoSupport::Token);
+    let mut a = decl("files.file.move", Effect::UndoableWrite, true);
     a.params = vec![
         param_of("into", ParamType::File, ParamNeed::Required, ArgSink::Path),
         param_of(
@@ -79,11 +79,7 @@ fn move_files() -> ActionDecl {
 }
 
 fn remind() -> ActionDecl {
-    let mut a = decl(
-        "cal.event.remind",
-        Effect::UndoableWrite,
-        UndoSupport::Token,
-    );
+    let mut a = decl("cal.event.remind", Effect::UndoableWrite, true);
     a.params = vec![
         param_of(
             "count",
@@ -221,11 +217,7 @@ fn tool_schema_snapshot() {
 
 #[test]
 fn an_action_with_no_parameters_takes_an_empty_object() {
-    let a = decl(
-        "mail.thread.archive",
-        Effect::UndoableWrite,
-        UndoSupport::Token,
-    );
+    let a = decl("mail.thread.archive", Effect::UndoableWrite, true);
     assert_eq!(
         tool_schema(&a).0,
         json!({
@@ -244,7 +236,7 @@ fn a_parameter_the_router_fills_is_not_in_the_planners_schema() {
         "said",
         ParamType::Text {
             max: CharCount(500),
-            lines: Lines::Many,
+            multiline: true,
         },
         ParamNeed::Optional,
         ArgSink::Inert,

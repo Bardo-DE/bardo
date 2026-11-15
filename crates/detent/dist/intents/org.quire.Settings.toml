@@ -21,7 +21,7 @@ label = "Page"
 plural = "Pages"
 icon = "settings"
 class = "app_own"
-index = "indexed"
+index = true
 titles = { kind = "app_authored" }
 props = []
 
@@ -31,7 +31,7 @@ label = "Setting"
 plural = "Settings"
 icon = "settings"
 class = "app_own"
-index = "indexed"
+index = true
 titles = { kind = "app_authored" }
 props = []
 
@@ -44,7 +44,7 @@ label = "Open page"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -67,7 +67,7 @@ label = "Open"
 on = { kind = "one", v = "settings.page" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "hidden"
 latency = "instant"
 result = { kind = "nothing" }
@@ -83,7 +83,7 @@ label = "Open"
 on = { kind = "one", v = "settings.key" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "hidden"
 latency = "instant"
 result = { kind = "nothing" }
@@ -99,11 +99,11 @@ label = "Read setting"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 # A free-text key can hold anything, so no value is trusted more than a file's content.
-result = { kind = "value", v = { ty = { kind = "text", v = { max = 500, lines = "one" } }, trust = { kind = "third_party", v = { kind = "file" } } } }
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 500, multiline = false } }, trust = { kind = "third_party", v = { kind = "file" } } } }
 keys = { kind = "none" }
 lasting = "no"
 dry_run = "none"
@@ -122,7 +122,7 @@ label = "Change setting"
 on = { kind = "nothing" }
 effect = "undoable_write"
 classes = ["app_own"]
-undo = "token"
+undo = true
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -140,7 +140,7 @@ sink = "inert"
 [[actions.params]]
 name = "value"
 label = "New value"
-ty = { kind = "text", v = { max = 500, lines = "one" } }
+ty = { kind = "text", v = { max = 500, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -154,11 +154,11 @@ label = "List accounts"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 # An account's label is whatever the service calls it, so no more is trusted than a web page.
-result = { kind = "value", v = { ty = { kind = "text", v = { max = 2000, lines = "many" } }, trust = { kind = "third_party", v = { kind = "web" } } } }
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 2000, multiline = true } }, trust = { kind = "third_party", v = { kind = "web" } } } }
 keys = { kind = "none" }
 lasting = "no"
 dry_run = "none"
@@ -171,7 +171,7 @@ label = "Open accounts"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -189,7 +189,7 @@ label = "Open intelligence settings"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }

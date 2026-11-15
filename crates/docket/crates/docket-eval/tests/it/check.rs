@@ -95,7 +95,7 @@ fn a_manifest_that_is_not_valid_fails_and_says_why() {
                     "effect = \"undoable_write\"\n# x",
                     1,
                 )
-                .replace("undo = \"token\"", "undo = \"not_undoable\""),
+                .replace("undo = true", "undo = false"),
             "writes without undo",
         ),
         (
@@ -326,7 +326,7 @@ label = "Hide"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }

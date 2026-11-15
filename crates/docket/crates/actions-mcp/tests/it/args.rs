@@ -3,11 +3,11 @@
 use actions_tools::*;
 use docket_manifest::{
     ActionDecl, AgentReach, ArgSink, ArgsFault, DryRun, KeyHint, Lasting, Latency, ParamDecl,
-    ParamNeed, ResultShape, TargetFault, TargetKind, UndoSupport, Why, args_from_json,
+    ParamNeed, ResultShape, TargetFault, TargetKind, Why, args_from_json,
 };
 use docket_vocab::{
-    CharCount, ChoiceDecl, ChoiceId, CivilDate, Decimal, FileRef, Handle, LabelText, Lines,
-    ParamName, ParamType, PerCall, Scale, Seconds, TargetValue, Value,
+    CharCount, ChoiceDecl, ChoiceId, CivilDate, Decimal, FileRef, Handle, LabelText, ParamName,
+    ParamType, Scale, Seconds, TargetValue, Value,
 };
 use porter_core::AppName;
 use prov::{ClientName, Effect, EntityId, EntityKey, EntityKind, Integrity, Label, Source};
@@ -36,14 +36,14 @@ fn action(on: TargetKind, params: Vec<ParamDecl>) -> ActionDecl {
         params,
         effect: Effect::Read,
         classes: Default::default(),
-        undo: UndoSupport::NotUndoable,
+        undo: false,
         reach: AgentReach::Offered,
         latency: Latency::Instant,
         result: ResultShape::Nothing,
         keys: KeyHint::None,
         lasting: Lasting::No,
         dry_run: DryRun::None,
-        per_call: PerCall::Declared,
+        classified: false,
     }
 }
 
@@ -74,10 +74,10 @@ fn one(ty: ParamType, given: Json) -> Result<Value, ArgsFault> {
     Ok(args[&name].value.clone())
 }
 
-fn text(max: u32, lines: Lines) -> ParamType {
+fn text(max: u32, multiline: bool) -> ParamType {
     ParamType::Text {
         max: CharCount(max),
-        lines,
+        multiline,
     }
 }
 
@@ -95,16 +95,8 @@ fn each_declared_type_reads_its_json() {
         label: LabelText::parse("Research").expect("label"),
     }]);
     let rows: Vec<(ParamType, Json, Value)> = vec![
-        (
-            text(5, Lines::One),
-            json!("hello"),
-            Value::Text("hello".into()),
-        ),
-        (
-            text(20, Lines::Many),
-            json!("a\nb"),
-            Value::Text("a\nb".into()),
-        ),
+        (text(5, false), json!("hello"), Value::Text("hello".into())),
+        (text(20, true), json!("a\nb"), Value::Text("a\nb".into())),
         (
             ParamType::Integer { min: 1, max: 9 },
             json!(9),
@@ -173,7 +165,7 @@ fn each_declared_type_reads_its_json() {
 fn a_handle_stands_in_where_the_schema_allows_one() {
     let held = json!({ "handle": 4 });
     for ty in [
-        text(9, Lines::One),
+        text(9, false),
         ParamType::Entity(kind("mail.thread")),
         ParamType::File,
         ParamType::Url,
@@ -196,15 +188,15 @@ fn a_handle_stands_in_where_the_schema_allows_one() {
         );
     }
     let extra = json!({ "handle": 4, "also": 1 });
-    assert_eq!(one(text(9, Lines::One), extra), Err(wrong(Why::Type)));
+    assert_eq!(one(text(9, false), extra), Err(wrong(Why::Type)));
 }
 
 #[test]
 fn a_value_that_does_not_fit_is_refused_with_its_parameter() {
     let rows: Vec<(ParamType, Json, Why)> = vec![
-        (text(3, Lines::One), json!("long"), Why::Range),
-        (text(9, Lines::One), json!("a\nb"), Why::Range),
-        (text(9, Lines::One), json!(4), Why::Type),
+        (text(3, false), json!("long"), Why::Range),
+        (text(9, false), json!("a\nb"), Why::Range),
+        (text(9, false), json!(4), Why::Type),
         (ParamType::Integer { min: 1, max: 9 }, json!(10), Why::Range),
         (ParamType::Integer { min: 1, max: 9 }, json!("3"), Why::Type),
         (ParamType::Integer { min: 1, max: 9 }, json!(2.5), Why::Type),
@@ -248,7 +240,7 @@ fn every_argument_is_labelled_untrusted_from_this_client() {
     let decl = action(
         TargetKind::Nothing,
         vec![
-            param("a", text(9, Lines::One), ParamNeed::Required),
+            param("a", text(9, false), ParamNeed::Required),
             param(
                 "b",
                 ParamType::Integer { min: 0, max: 9 },
@@ -275,8 +267,8 @@ fn missing_unknown_and_optional_arguments() {
     let decl = action(
         TargetKind::Nothing,
         vec![
-            param("need", text(9, Lines::One), ParamNeed::Required),
-            param("maybe", text(9, Lines::One), ParamNeed::Optional),
+            param("need", text(9, false), ParamNeed::Required),
+            param("maybe", text(9, false), ParamNeed::Optional),
         ],
     );
     let read =

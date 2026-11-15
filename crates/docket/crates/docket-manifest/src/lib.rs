@@ -15,9 +15,9 @@ mod validate;
 
 pub use args::{ArgsFault, TARGET_KEY, TargetFault, Why, args_from_json, target_from_json};
 pub use manifest::{
-    ActionDecl, AgentReach, ArgSink, Cardinality, DryRun, EntityDecl, Filled, IndexPolicy, KeyHint,
-    Lasting, Latency, Manifest, ParamDecl, ParamNeed, PropDecl, RELATION_ARG, RelationDecl,
-    ResultShape, TargetKind, TitleTrust, UndoSupport, Visibility, related_name,
+    ActionDecl, AgentReach, ArgSink, Cardinality, DryRun, EntityDecl, Filled, KeyHint, Lasting,
+    Latency, Manifest, ParamDecl, ParamNeed, PropDecl, RELATION_ARG, RelationDecl, ResultShape,
+    TargetKind, TitleTrust, Visibility, related_name,
 };
 #[cfg(feature = "manifest-file")]
 pub use manifest_file::{ManifestFileError, parse};

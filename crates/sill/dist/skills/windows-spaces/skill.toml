@@ -18,4 +18,4 @@ uses = [
 [when]
 focused_app = []
 kinds = []
-always = "no"
+always = false

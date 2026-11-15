@@ -2,9 +2,9 @@
 
 use docket_manifest::{
     ActionDecl, AgentReach, ArgSink, DryRun, KeyHint, Lasting, Latency, ParamDecl, ParamNeed,
-    ResultShape, TargetKind, UndoSupport,
+    ResultShape, TargetKind,
 };
-use docket_vocab::{CharCount, LabelText, Lines, ParamName, ParamType, PerCall};
+use docket_vocab::{CharCount, LabelText, ParamName, ParamType};
 use porter_core::{AppName, DataClass};
 use prov::{
     ActionName, Effect, EntityId, EntityKey, EntityKind, Label, Labelled, Source, SpaceId,
@@ -51,7 +51,7 @@ pub fn lab<T>(value: T, label: Label) -> Labelled<T> {
     Labelled { value, label }
 }
 
-pub fn decl(name: &str, effect: Effect, undo: UndoSupport) -> ActionDecl {
+pub fn decl(name: &str, effect: Effect, undo: bool) -> ActionDecl {
     ActionDecl {
         name: action(name),
         label: words("Do it"),
@@ -66,7 +66,7 @@ pub fn decl(name: &str, effect: Effect, undo: UndoSupport) -> ActionDecl {
         keys: KeyHint::None,
         lasting: Lasting::No,
         dry_run: DryRun::None,
-        per_call: PerCall::Declared,
+        classified: false,
     }
 }
 pub fn text_param(name: &str, sink: ArgSink, need: ParamNeed) -> ParamDecl {
@@ -75,7 +75,7 @@ pub fn text_param(name: &str, sink: ArgSink, need: ParamNeed) -> ParamDecl {
         label: words("Field"),
         ty: ParamType::Text {
             max: CharCount(100),
-            lines: Lines::One,
+            multiline: false,
         },
         need,
         sink,

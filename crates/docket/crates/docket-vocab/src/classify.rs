@@ -1,5 +1,5 @@
 //! Per-call effect: an action's declared effect is a ceiling, and an action that opts in
-//! (`per_call = "classified"` in its manifest) lets its provider say what one particular call
+//! (`classified = true` in its manifest) lets its provider say what one particular call
 //! does. The router never lets that answer pass the ceiling (see `docket-router::classify`).
 //!
 //! `Delegates` is the answer of a provider whose call only forwards to another typed action
@@ -12,24 +12,6 @@
 use crate::ids::ActionRef;
 use prov::Effect;
 use serde::{Deserialize, Serialize};
-
-/// Whether an action's effect is the same for every call, or its provider says per call.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum PerCall {
-    /// The declared effect holds for every call.
-    #[default]
-    Declared,
-    /// The declared effect is a ceiling: the provider classifies each call (`Classify`).
-    Classified,
-}
-
-impl PerCall {
-    /// For `skip_serializing_if`: the default is not written, so existing files are unchanged.
-    pub fn is_declared(&self) -> bool {
-        *self == PerCall::Declared
-    }
-}
 
 /// What a provider says one call is.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -105,12 +87,6 @@ mod tests {
         assert_eq!(
             json(&CallClass::Effect(Effect::Read)),
             r#"{"kind":"effect","v":"read"}"#
-        );
-        assert_eq!(PerCall::default(), PerCall::Declared);
-        assert!(PerCall::Declared.is_declared());
-        assert_eq!(
-            serde_json::to_string(&PerCall::Classified).expect("json"),
-            "\"classified\""
         );
     }
 }

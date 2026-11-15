@@ -9,7 +9,7 @@ use crate::grant::GrantCaller;
 use crate::review::AskReason;
 use crate::standing::{CommandPrefix, StandingScope};
 use crate::standing_match::{ArgFacts, CallFacts};
-use docket_manifest::{AgentReach, ArgSink, UndoSupport};
+use docket_manifest::{AgentReach, ArgSink};
 use prov::Effect;
 use serde::{Deserialize, Serialize};
 
@@ -70,7 +70,7 @@ pub struct AskFacts<'a> {
     /// The effect the call is gated on.
     pub effect: Effect,
     /// Whether the app can take it back.
-    pub undo: UndoSupport,
+    pub undo: bool,
     /// Whether the action asks every time.
     pub reach: AgentReach,
     /// Why the router asks.
@@ -86,8 +86,8 @@ pub struct AskFacts<'a> {
 }
 
 /// Whether the effect or the lack of undo makes untrusted input dangerous.
-fn risky(effect: Effect, undo: UndoSupport) -> bool {
-    effect >= Effect::Outbound || undo == UndoSupport::NotUndoable
+fn risky(effect: Effect, undo: bool) -> bool {
+    effect >= Effect::Outbound || !undo
 }
 
 /// Whether the sink sends the value out of the machine.
@@ -98,7 +98,7 @@ fn leaves(sink: ArgSink) -> bool {
     )
 }
 
-fn reason(reason: &AskReason, effect: Effect, undo: UndoSupport) -> Result<(), Withheld> {
+fn reason(reason: &AskReason, effect: Effect, undo: bool) -> Result<(), Withheld> {
     match reason {
         AskReason::Effect(_) | AskReason::FirstUse | AskReason::FromTerminal => Ok(()),
         AskReason::AskAlways => Err(Withheld::AsksEveryTime),

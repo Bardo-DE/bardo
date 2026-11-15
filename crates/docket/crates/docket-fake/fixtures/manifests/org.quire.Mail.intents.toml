@@ -8,7 +8,7 @@ label = "Thread"
 plural = "Threads"
 icon = "mail"
 class = "mail"
-index = "indexed"
+index = true
 # Mail subjects are written by other people.
 titles = { kind = "third_party", v = { kind = "mail" } }
 props = []
@@ -28,7 +28,7 @@ label = "Contact"
 plural = "Contacts"
 icon = "person"
 class = "contacts"
-index = "not_indexed"
+index = false
 titles = { kind = "app_authored" }
 props = []
 
@@ -38,10 +38,10 @@ label = "Read"
 on = { kind = "one", v = "mail.thread" }
 effect = "read"
 classes = ["mail"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
-result = { kind = "value", v = { ty = { kind = "text", v = { max = 20000, lines = "many" } }, trust = { kind = "third_party", v = { kind = "mail" } } } }
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 20000, multiline = true } }, trust = { kind = "third_party", v = { kind = "mail" } } } }
 keys = { kind = "none" }
 lasting = "no"
 dry_run = "none"
@@ -54,7 +54,7 @@ label = "Open"
 on = { kind = "one", v = "mail.thread" }
 effect = "read"
 classes = []
-undo = "not_undoable"
+undo = false
 reach = "hidden"
 latency = "quick"
 result = { kind = "nothing" }
@@ -69,7 +69,7 @@ label = "Archive"
 on = { kind = "many", v = "mail.thread" }
 effect = "undoable_write"
 classes = ["mail"]
-undo = "token"
+undo = true
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -84,7 +84,7 @@ label = "Create draft"
 on = { kind = "nothing" }
 effect = "undoable_write"
 classes = ["mail"]
-undo = "token"
+undo = true
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -95,7 +95,7 @@ dry_run = "none"
 [[actions.params]]
 name = "body"
 label = "Body"
-ty = { kind = "text", v = { max = 20000, lines = "many" } }
+ty = { kind = "text", v = { max = 20000, multiline = true } }
 need = { kind = "required" }
 sink = "body"
 
@@ -106,7 +106,7 @@ on = { kind = "nothing" }
 effect = "outbound"
 classes = ["mail", "contacts"]
 # The app holds the send for an undo window.
-undo = "token"
+undo = true
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -124,7 +124,7 @@ sink = "recipient"
 [[actions.params]]
 name = "body"
 label = "Message"
-ty = { kind = "text", v = { max = 20000, lines = "many" } }
+ty = { kind = "text", v = { max = 20000, multiline = true } }
 need = { kind = "required" }
 sink = "body"
 
@@ -134,7 +134,7 @@ label = "Forward"
 on = { kind = "many", v = "mail.thread" }
 effect = "outbound"
 classes = ["mail", "contacts"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -155,7 +155,7 @@ label = "Delete"
 on = { kind = "many", v = "mail.thread" }
 effect = "destructive"
 classes = ["mail"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }

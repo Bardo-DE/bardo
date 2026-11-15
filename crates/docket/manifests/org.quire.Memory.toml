@@ -10,7 +10,7 @@ label = "Fact"
 plural = "Facts"
 icon = "memory"
 class = "app_own"
-index = "not_indexed"
+index = false
 titles = { kind = "app_authored" }
 props = []
 
@@ -20,7 +20,7 @@ label = "Recall"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "entities", v = "memory.fact" }
@@ -31,7 +31,7 @@ dry_run = "none"
 [[actions.params]]
 name = "query"
 label = "What to recall"
-ty = { kind = "text", v = { max = 500, lines = "one" } }
+ty = { kind = "text", v = { max = 500, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -41,7 +41,7 @@ label = "List facts"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "entities", v = "memory.fact" }
@@ -56,7 +56,7 @@ label = "Remember"
 on = { kind = "nothing" }
 effect = "undoable_write"
 classes = ["app_own"]
-undo = "token"
+undo = true
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -68,7 +68,7 @@ dry_run = "none"
 [[actions.params]]
 name = "text"
 label = "What to remember"
-ty = { kind = "text", v = { max = 1000, lines = "one" } }
+ty = { kind = "text", v = { max = 1000, multiline = false } }
 need = { kind = "required" }
 sink = "body"
 
@@ -78,7 +78,7 @@ label = "Forget"
 on = { kind = "one", v = "memory.fact" }
 effect = "destructive"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 # Forgetting is the person's, from the memory view; an agent never sees it.
 reach = "hidden"
 latency = "quick"

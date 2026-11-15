@@ -10,9 +10,9 @@ name = "menu.item.activate"
 label = "Activate"
 on = { kind = "nothing" }
 effect = "destructive"
-per_call = "classified"
+classified = true
 classes = ["files"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -23,7 +23,7 @@ dry_run = "none"
 [[actions.params]]
 name = "item"
 label = "Item"
-ty = { kind = "text", v = { max = 200, lines = "one" } }
+ty = { kind = "text", v = { max = 200, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -32,9 +32,9 @@ name = "menu.item.adjust"
 label = "Adjust"
 on = { kind = "nothing" }
 effect = "undoable_write"
-per_call = "classified"
+classified = true
 classes = ["files"]
-undo = "token"
+undo = true
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -45,7 +45,7 @@ dry_run = "none"
 [[actions.params]]
 name = "item"
 label = "Item"
-ty = { kind = "text", v = { max = 200, lines = "one" } }
+ty = { kind = "text", v = { max = 200, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -55,7 +55,7 @@ label = "Hide"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["files"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -70,7 +70,7 @@ label = "Close"
 on = { kind = "nothing" }
 effect = "destructive"
 classes = ["files"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }

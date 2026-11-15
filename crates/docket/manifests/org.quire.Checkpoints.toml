@@ -23,7 +23,7 @@ label = "Restore to before this turn"
 on = { kind = "nothing" }
 effect = "destructive"
 classes = ["files"]
-undo = "not_undoable"
+undo = false
 reach = "ask_always"
 latency = "long"
 result = { kind = "nothing" }
@@ -34,7 +34,7 @@ dry_run = "preview"
 [[actions.params]]
 name = "session"
 label = "Session"
-ty = { kind = "text", v = { max = 64, lines = "one" } }
+ty = { kind = "text", v = { max = 64, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -48,6 +48,6 @@ sink = "inert"
 [[actions.params]]
 name = "plan"
 label = "What was shown"
-ty = { kind = "text", v = { max = 64, lines = "one" } }
+ty = { kind = "text", v = { max = 64, multiline = false } }
 need = { kind = "required" }
 sink = "inert"

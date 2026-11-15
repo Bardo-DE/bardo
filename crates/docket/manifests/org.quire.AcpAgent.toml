@@ -28,10 +28,10 @@ label = "Read a file"
 on = { kind = "files" }
 effect = "read"
 classes = ["files"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
-result = { kind = "value", v = { ty = { kind = "text", v = { max = 2097152, lines = "many" } }, trust = { kind = "third_party", v = { kind = "file" } } } }
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 2097152, multiline = true } }, trust = { kind = "third_party", v = { kind = "file" } } } }
 keys = { kind = "none" }
 lasting = "no"
 dry_run = "none"
@@ -39,7 +39,7 @@ dry_run = "none"
 [[actions.params]]
 name = "stage"
 label = "Held request"
-ty = { kind = "text", v = { max = 64, lines = "one" } }
+ty = { kind = "text", v = { max = 64, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -49,7 +49,7 @@ label = "Write a file"
 on = { kind = "files" }
 effect = "undoable_write"
 classes = ["files"]
-undo = "token"
+undo = true
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -67,7 +67,7 @@ sink = "inert"
 [[actions.params]]
 name = "stage"
 label = "Held text"
-ty = { kind = "text", v = { max = 64, lines = "one" } }
+ty = { kind = "text", v = { max = 64, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -77,7 +77,7 @@ label = "Write a file that later runs code"
 on = { kind = "files" }
 effect = "undoable_write"
 classes = ["files"]
-undo = "token"
+undo = true
 reach = "ask_always"
 latency = "quick"
 result = { kind = "nothing" }
@@ -95,7 +95,7 @@ sink = "inert"
 [[actions.params]]
 name = "stage"
 label = "Held text"
-ty = { kind = "text", v = { max = 64, lines = "one" } }
+ty = { kind = "text", v = { max = 64, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -105,10 +105,10 @@ label = "Run a command"
 on = { kind = "nothing" }
 effect = "outbound"
 classes = ["files"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "long"
-result = { kind = "value", v = { ty = { kind = "text", v = { max = 64, lines = "one" } }, trust = { kind = "app_authored" } } }
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 64, multiline = false } }, trust = { kind = "app_authored" } } }
 keys = { kind = "none" }
 lasting = "no"
 dry_run = "none"
@@ -116,7 +116,7 @@ dry_run = "none"
 [[actions.params]]
 name = "command"
 label = "Command"
-ty = { kind = "text", v = { max = 8192, lines = "many" } }
+ty = { kind = "text", v = { max = 8192, multiline = true } }
 need = { kind = "required" }
 sink = "body"
 
@@ -130,7 +130,7 @@ sink = "destination"
 [[actions.params]]
 name = "stage"
 label = "Held command"
-ty = { kind = "text", v = { max = 64, lines = "one" } }
+ty = { kind = "text", v = { max = 64, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -162,10 +162,10 @@ label = "Note what the agent did itself"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["files"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
-result = { kind = "value", v = { ty = { kind = "text", v = { max = 64, lines = "one" } }, trust = { kind = "third_party", v = { kind = "file" } } } }
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 64, multiline = false } }, trust = { kind = "third_party", v = { kind = "file" } } } }
 keys = { kind = "none" }
 lasting = "no"
 dry_run = "none"
@@ -173,7 +173,7 @@ dry_run = "none"
 [[actions.params]]
 name = "what"
 label = "What"
-ty = { kind = "text", v = { max = 64, lines = "one" } }
+ty = { kind = "text", v = { max = 64, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -186,7 +186,7 @@ label = "Allow it to read"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["files"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -201,7 +201,7 @@ label = "Allow it to search"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["files"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -216,7 +216,7 @@ label = "Allow it to think"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["files"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -231,7 +231,7 @@ label = "Allow it to edit files"
 on = { kind = "files" }
 effect = "undoable_write"
 classes = ["files"]
-undo = "token"
+undo = true
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -246,7 +246,7 @@ label = "Allow it to move files"
 on = { kind = "files" }
 effect = "undoable_write"
 classes = ["files"]
-undo = "token"
+undo = true
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -261,7 +261,7 @@ label = "Allow it to delete files"
 on = { kind = "files" }
 effect = "destructive"
 classes = ["files"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -276,7 +276,7 @@ label = "Allow it to run a command"
 on = { kind = "nothing" }
 effect = "outbound"
 classes = ["files"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -287,7 +287,7 @@ dry_run = "none"
 [[actions.params]]
 name = "command"
 label = "Command"
-ty = { kind = "text", v = { max = 8192, lines = "many" } }
+ty = { kind = "text", v = { max = 8192, multiline = true } }
 need = { kind = "required" }
 sink = "body"
 
@@ -304,7 +304,7 @@ label = "Allow it to fetch from the network"
 on = { kind = "nothing" }
 effect = "outbound"
 classes = ["files"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -325,7 +325,7 @@ label = "Allow it to switch its own mode"
 on = { kind = "nothing" }
 effect = "destructive"
 classes = ["files"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }
@@ -340,7 +340,7 @@ label = "Allow something unclassified"
 on = { kind = "nothing" }
 effect = "destructive"
 classes = ["files"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
 result = { kind = "nothing" }

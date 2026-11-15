@@ -23,7 +23,7 @@ label = "Open the launcher"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -34,7 +34,7 @@ dry_run = "none"
 [[actions.params]]
 name = "query"
 label = "What to search for"
-ty = { kind = "text", v = { max = 200, lines = "one" } }
+ty = { kind = "text", v = { max = 200, multiline = false } }
 need = { kind = "optional" }
 sink = "inert"
 
@@ -44,7 +44,7 @@ label = "Switch workspace"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -72,7 +72,7 @@ sink = "inert"
 [[actions.params]]
 name = "workspace"
 label = "Go to the workspace with this id from the list instead (wins over the position)"
-ty = { kind = "text", v = { max = 40, lines = "one" } }
+ty = { kind = "text", v = { max = 40, multiline = false } }
 need = { kind = "optional" }
 sink = "inert"
 
@@ -82,7 +82,7 @@ label = "Keep an app in the dock"
 on = { kind = "nothing" }
 effect = "undoable_write"
 classes = ["app_own"]
-undo = "token"
+undo = true
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -93,7 +93,7 @@ dry_run = "none"
 [[actions.params]]
 name = "app"
 label = "Desktop id of the app"
-ty = { kind = "text", v = { max = 200, lines = "one" } }
+ty = { kind = "text", v = { max = 200, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -103,7 +103,7 @@ label = "Take an app out of the dock"
 on = { kind = "nothing" }
 effect = "undoable_write"
 classes = ["app_own"]
-undo = "token"
+undo = true
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -114,7 +114,7 @@ dry_run = "none"
 [[actions.params]]
 name = "app"
 label = "Desktop id of the app"
-ty = { kind = "text", v = { max = 200, lines = "one" } }
+ty = { kind = "text", v = { max = 200, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -124,7 +124,7 @@ label = "Lock the screen"
 on = { kind = "nothing" }
 effect = "destructive"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -139,10 +139,10 @@ label = "Take a screenshot"
 on = { kind = "nothing" }
 effect = "destructive"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "ask_always"
 latency = "quick"
-result = { kind = "value", v = { ty = { kind = "text", v = { max = 4096, lines = "one" } }, trust = { kind = "app_authored" } } }
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 4096, multiline = false } }, trust = { kind = "app_authored" } } }
 keys = { kind = "none" }
 lasting = "no"
 dry_run = "none"
@@ -164,10 +164,10 @@ label = "List the open windows"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["screen"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
-result = { kind = "value", v = { ty = { kind = "text", v = { max = 12000, lines = "many" } }, trust = { kind = "third_party", v = { kind = "app", v = "org.quire.Shell" } } } }
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 12000, multiline = true } }, trust = { kind = "third_party", v = { kind = "app", v = "org.quire.Shell" } } } }
 keys = { kind = "none" }
 lasting = "no"
 dry_run = "none"
@@ -179,7 +179,7 @@ label = "Bring a window forward"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -190,7 +190,7 @@ dry_run = "none"
 [[actions.params]]
 name = "window"
 label = "The window's id from the window list"
-ty = { kind = "text", v = { max = 40, lines = "one" } }
+ty = { kind = "text", v = { max = 40, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -200,7 +200,7 @@ label = "Minimise a window"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -211,7 +211,7 @@ dry_run = "none"
 [[actions.params]]
 name = "window"
 label = "The window's id from the window list"
-ty = { kind = "text", v = { max = 40, lines = "one" } }
+ty = { kind = "text", v = { max = 40, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -221,7 +221,7 @@ label = "Move a window to a workspace"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -232,14 +232,14 @@ dry_run = "none"
 [[actions.params]]
 name = "window"
 label = "The window's id from the window list"
-ty = { kind = "text", v = { max = 40, lines = "one" } }
+ty = { kind = "text", v = { max = 40, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
 [[actions.params]]
 name = "workspace"
 label = "The workspace's id from the workspace list"
-ty = { kind = "text", v = { max = 40, lines = "one" } }
+ty = { kind = "text", v = { max = 40, multiline = false } }
 need = { kind = "optional" }
 sink = "inert"
 
@@ -256,7 +256,7 @@ label = "Close a window"
 on = { kind = "nothing" }
 effect = "destructive"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -267,7 +267,7 @@ dry_run = "none"
 [[actions.params]]
 name = "window"
 label = "The window's id from the window list"
-ty = { kind = "text", v = { max = 40, lines = "one" } }
+ty = { kind = "text", v = { max = 40, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
 
@@ -277,7 +277,7 @@ label = "Hide an app"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -288,7 +288,7 @@ dry_run = "none"
 [[actions.params]]
 name = "app"
 label = "Which app, by its app id from the window list (the focused app when left out)"
-ty = { kind = "text", v = { max = 200, lines = "one" } }
+ty = { kind = "text", v = { max = 200, multiline = false } }
 need = { kind = "optional" }
 sink = "inert"
 
@@ -298,7 +298,7 @@ label = "Hide the other apps"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -309,7 +309,7 @@ dry_run = "none"
 [[actions.params]]
 name = "app"
 label = "Which app, by its app id from the window list (the focused app when left out)"
-ty = { kind = "text", v = { max = 200, lines = "one" } }
+ty = { kind = "text", v = { max = 200, multiline = false } }
 need = { kind = "optional" }
 sink = "inert"
 
@@ -319,7 +319,7 @@ label = "Show every hidden window"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -334,10 +334,10 @@ label = "List the workspaces"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
-result = { kind = "value", v = { ty = { kind = "text", v = { max = 12000, lines = "many" } }, trust = { kind = "third_party", v = { kind = "app", v = "org.quire.Shell" } } } }
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 12000, multiline = true } }, trust = { kind = "third_party", v = { kind = "app", v = "org.quire.Shell" } } } }
 keys = { kind = "none" }
 lasting = "no"
 dry_run = "none"
@@ -355,10 +355,10 @@ label = "List the menus of a window"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["screen"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
-result = { kind = "value", v = { ty = { kind = "text", v = { max = 12000, lines = "many" } }, trust = { kind = "third_party", v = { kind = "screen", v = { app = "org.quire.Shell" } } } } }
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 12000, multiline = true } }, trust = { kind = "third_party", v = { kind = "screen", v = { app = "org.quire.Shell" } } } } }
 keys = { kind = "none" }
 lasting = "no"
 dry_run = "none"
@@ -366,7 +366,7 @@ dry_run = "none"
 [[actions.params]]
 name = "window"
 label = "Which window (the focused one when left out)"
-ty = { kind = "text", v = { max = 200, lines = "one" } }
+ty = { kind = "text", v = { max = 200, multiline = false } }
 need = { kind = "optional" }
 sink = "inert"
 
@@ -375,9 +375,9 @@ name = "shell.menu.activate"
 label = "Choose a menu item of a window"
 on = { kind = "nothing" }
 effect = "destructive"
-per_call = "classified"
+classified = true
 classes = ["app_own"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
 result = { kind = "nothing" }
@@ -388,13 +388,13 @@ dry_run = "none"
 [[actions.params]]
 name = "window"
 label = "Which window (the focused one when left out)"
-ty = { kind = "text", v = { max = 200, lines = "one" } }
+ty = { kind = "text", v = { max = 200, multiline = false } }
 need = { kind = "optional" }
 sink = "inert"
 
 [[actions.params]]
 name = "item"
 label = "The item's id from the menu listing"
-ty = { kind = "text", v = { max = 40, lines = "one" } }
+ty = { kind = "text", v = { max = 40, multiline = false } }
 need = { kind = "required" }
 sink = "inert"
