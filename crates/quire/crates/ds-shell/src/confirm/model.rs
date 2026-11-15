@@ -17,25 +17,6 @@ pub enum TaintLine {
     },
 }
 
-/// What the person may choose besides this once, `data-offer`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-pub enum ScopeOffer {
-    /// Only this time.
-    OnceOnly,
-    /// This time, or always.
-    OnceOrAlways,
-}
-
-/// Whether the buttons take input yet, `data-arm`: they wait out the arm delay so a stray key
-/// cannot answer.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-pub enum ArmState {
-    /// Waiting out the delay; the buttons take no input.
-    Arming,
-    /// Ready.
-    Armed,
-}
-
 /// How the person answers, `data-gesture`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
 pub enum GestureMark {
@@ -45,22 +26,13 @@ pub enum GestureMark {
     Hold,
 }
 
-/// Whether an allow lasts, `data-always`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-pub enum AlwaysChoice {
-    /// This time only.
-    Once,
-    /// From now on.
-    Always,
-}
-
 /// What the person answered.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ConfirmChoice {
     /// Go ahead, once or always.
     Allow {
-        /// Whether it lasts.
-        always: AlwaysChoice,
+        /// Whether it lasts: "from now on" rather than this time only.
+        always: bool,
     },
     /// Do not.
     Deny,
@@ -84,10 +56,11 @@ pub struct ConfirmView {
     pub effect: EffectMark,
     /// What it read that the person cannot vouch for.
     pub taint: TaintLine,
-    /// What the person may choose.
-    pub offer: ScopeOffer,
+    /// Whether the person may also choose "always" (`data-offer`), rather than only this once.
+    pub offer_always: bool,
     /// How the person answers.
     pub gesture: GestureMark,
-    /// Whether the buttons take input yet.
-    pub arm: ArmState,
+    /// Whether the buttons take input yet (`data-arm`): they wait out the arm delay so a stray
+    /// key cannot answer.
+    pub armed: bool,
 }

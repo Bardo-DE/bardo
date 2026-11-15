@@ -295,17 +295,6 @@ pub enum AllowScope {
     Session,
 }
 
-/// Whether the consent alert offers "This Session Only" between Allow Once and Always Allow: a
-/// host offers it when the service can be granted for one launcher session.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum SessionOffer {
-    /// Two allows: once and always.
-    #[default]
-    None,
-    /// Three allows: once, this session only and always.
-    Offered,
-}
-
 /// What the person answered on the consent alert.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ConsentAnswer {

@@ -18,7 +18,7 @@ use ds_lint::LintConfig;
 use ds_shell::accounts::model::{
     AccountChoice, Attempt, Choice, ChoiceKey, CopyState, FieldProblem, FieldRole, FieldText,
     FormField, FormPart, Limitation, NoAccountWhy, ProblemKind, ProviderEntry, ProviderKey,
-    ProviderPick, ServiceKey, ServiceLine, ServiceOffer, SessionOffer, SignInFault,
+    ProviderPick, ServiceKey, ServiceLine, ServiceOffer, SignInFault,
 };
 use ds_shell::prelude::*;
 
@@ -251,7 +251,7 @@ fn consent_session() -> Element {
             app: "Photos",
             request: "keep its library in your files",
             choices: vec![account("ada@example.org")],
-            session: SessionOffer::Offered,
+            session: true,
             on_choose: |_| {},
             on_answer: |_| {},
         }

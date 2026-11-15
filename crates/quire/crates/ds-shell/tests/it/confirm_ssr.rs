@@ -7,7 +7,7 @@ use ds::components::companion::mark::AppMark;
 use ds::prelude::*;
 use ds_core::vocab::EffectMark;
 use ds_lint::{LintConfig, markup};
-use ds_shell::confirm::model::{ArmState, ConfirmView, GestureMark, ScopeOffer, TaintLine};
+use ds_shell::confirm::model::{ConfirmView, GestureMark, TaintLine};
 use ds_shell::confirm::view::ConfirmCard;
 
 fn mark(name: &str) -> AppMark {
@@ -17,7 +17,7 @@ fn mark(name: &str) -> AppMark {
     }
 }
 
-fn view(arm: ArmState) -> ConfirmView {
+fn view(armed: bool) -> ConfirmView {
     ConfirmView {
         asker: mark("Assistant"),
         target: mark("Mail"),
@@ -26,22 +26,22 @@ fn view(arm: ArmState) -> ConfirmView {
         verb: "Send".to_owned(),
         effect: EffectMark::Outbound,
         taint: TaintLine::Clean,
-        offer: ScopeOffer::OnceOnly,
+        offer_always: false,
         gesture: GestureMark::Press,
-        arm,
+        armed,
     }
 }
 
-fn card(arm: ArmState) -> String {
+fn card(armed: bool) -> String {
     let mut dom = VirtualDom::new_with_props(
-        |arm: ArmState| {
+        |armed: bool| {
             rsx! {
                 Ds { appearance: Appearance::default(), material: Material::Window, stylesheet: Inject::Host,
-                    ConfirmCard { view: view(arm), on_answer: |_| {} }
+                    ConfirmCard { view: view(armed), on_answer: |_| {} }
                 }
             }
         },
-        arm,
+        armed,
     );
     dom.rebuild_in_place();
     dioxus_ssr::render(&dom)
@@ -49,17 +49,17 @@ fn card(arm: ArmState) -> String {
 
 #[test]
 fn the_card_names_its_arm_state_and_offer() {
-    let arming = card(ArmState::Arming);
+    let arming = card(false);
     assert!(arming.contains("data-arm=\"arming\""), "{arming}");
     assert!(arming.contains("data-offer=\"once-only\""), "{arming}");
-    let armed = card(ArmState::Armed);
+    let armed = card(true);
     assert!(armed.contains("data-arm=\"armed\""), "{armed}");
 }
 
 #[test]
 fn the_card_lints_clean_and_its_class_is_styled() {
     let sheet = ds_shell::stylesheet();
-    let html = card(ArmState::Armed);
+    let html = card(true);
     let offences: Vec<String> = markup(&html, sheet, &LintConfig::new(&ds_shell::kits()))
         .into_iter()
         .map(|offence| format!("{:?} {}", offence.rule, offence.text))

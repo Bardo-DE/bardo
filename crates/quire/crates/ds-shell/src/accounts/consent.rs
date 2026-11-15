@@ -6,7 +6,7 @@
 //! that fits it offers "Add Account..." instead.
 
 use super::model::{
-    AccountChoice, AllowScope, ChoiceKey, ConsentAnswer, PickerChoice, SessionOffer,
+    AccountChoice, AllowScope, ChoiceKey, ConsentAnswer, PickerChoice,
 };
 use super::picker::AccountPicker;
 use super::wording::{allow_label, consent_message, consent_title, effective_choice};
@@ -33,7 +33,7 @@ pub fn ConsentBody(
     choices: Vec<AccountChoice>,
     #[props(default)] chosen: Option<ChoiceKey>,
     #[props(default)] icon: Option<IconSource>,
-    #[props(default)] session: SessionOffer,
+    #[props(default)] session: bool,
     on_choose: EventHandler<ChoiceKey>,
     on_answer: EventHandler<ConsentAnswer>,
 ) -> Element {
@@ -65,7 +65,7 @@ pub fn ConsentBody(
     } else {
         let deny = EventHandler::new(move |()| on_answer.call(ConsentAnswer::Deny));
         let mut buttons = vec![say(allow_label(AllowScope::Once), AlertRole::Normal, once)];
-        if session == SessionOffer::Offered {
+        if session {
             buttons.push(say(
                 allow_label(AllowScope::Session),
                 AlertRole::Normal,
@@ -112,7 +112,7 @@ pub fn ConsentAlert(
     choices: Vec<AccountChoice>,
     #[props(default)] chosen: Option<ChoiceKey>,
     #[props(default)] icon: Option<IconSource>,
-    #[props(default)] session: SessionOffer,
+    #[props(default)] session: bool,
     on_choose: EventHandler<ChoiceKey>,
     on_answer: EventHandler<ConsentAnswer>,
 ) -> Element {

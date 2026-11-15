@@ -12,7 +12,7 @@ use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use ds_shell::accounts::model::{
     AccountChoice, AllowScope, ChoiceKey, ConsentAnswer, CopyState, FieldRole, FieldText,
     FormField, Limitation, ProviderEntry, ProviderKey, ProviderPick, ServiceKey,
-    ServiceLine, ServiceOffer, SessionOffer, SignInFault, StepTitle,
+    ServiceLine, ServiceOffer, SignInFault, StepTitle,
 };
 use ds_shell::helpers::HelperPhase;
 use ds_shell::prelude::*;
@@ -137,7 +137,7 @@ fn ConsentSession() -> Element {
             app: "Photos",
             request: "keep its library in your files",
             choices: vec![account("ada@example.org")],
-            session: SessionOffer::Offered,
+            session: true,
             on_choose: move |key: ChoiceKey| LOG.write().push(format!("choose {}", key.0)),
             on_answer: move |answer: ConsentAnswer| LOG.write().push(format!("{answer:?}")),
         }

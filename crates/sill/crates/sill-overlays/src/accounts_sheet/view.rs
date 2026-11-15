@@ -6,7 +6,7 @@
 use dioxus::prelude::*;
 use ds::components::chrome::window_frame::WindowTitlebar;
 use ds::prelude::*;
-use ds_shell::accounts::model::{SessionOffer, StepTitle};
+use ds_shell::accounts::model::StepTitle;
 use ds_shell::prelude::{
     BrowserWait, ConsentBody, ProviderList, ReviewServices, ShowCode, SignInFailed, SignInForm,
     SignInWorking,
@@ -100,10 +100,7 @@ fn body(step: Step, io: Io) -> Element {
         },
         Step::Consent(props) => rsx! {
             ConsentBody {
-                session: match props.session {
-                    Some(_) => SessionOffer::Offered,
-                    None => SessionOffer::None,
-                },
+                session: props.session.is_some(),
                 app: props.app,
                 request: props.request,
                 choices: props.choices,
