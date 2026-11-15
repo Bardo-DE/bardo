@@ -321,20 +321,6 @@ impl Fake {
         self.state.lock().expect("state").refuse = Some(name);
     }
 
-    /// A computer begins asking; inferd says the guests changed.
-    pub async fn asks(&self, asker: Asker) {
-        self.state.lock().expect("state").askers.push(asker);
-        let served = self
-            ._connection
-            .object_server()
-            .interface::<_, Inference>(INFERENCE_PATH)
-            .await
-            .expect("inferd is served");
-        Inference::guests_changed(served.signal_emitter())
-            .await
-            .expect("the signal goes out");
-    }
-
     /// What was changed, in order.
     pub fn changes(&self) -> Vec<String> {
         self.log.lock().expect("log").clone()

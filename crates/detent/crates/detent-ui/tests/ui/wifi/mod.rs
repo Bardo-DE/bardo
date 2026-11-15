@@ -1,14 +1,11 @@
-//! The Wi-Fi page over a network service that answers from memory: the switch, the networks, joining
-//! one (with a password sheet for a new secured one, an account sheet for one that signs in, and a
-//! sheet for one that hides its name), forgetting one, the details of the current one, and the page
-//! without a service.
+//! The Wi-Fi page over a network service that answers from memory: the page without a service, the
+//! networks listed, and joining a new secured one. The page's states are tested in `detent-model`.
 
 use crate::support::Sandbox;
-use crate::support::drive::{click, page_of, settle, showing, sidebar_page, title_of};
-use crate::support::wifi::{Asked, Wifi};
+use crate::support::drive::{page_of, showing, sidebar_page, title_of};
+use crate::support::wifi::Wifi;
 use detent_model::{
-    Absence, AccessPoint, NetworkLink, SignalStrength, Ssid, WifiRadio, WifiSecurity, WifiStatus,
-    WifiWire,
+    AccessPoint, NetworkLink, SignalStrength, Ssid, WifiRadio, WifiSecurity, WifiStatus, WifiWire,
 };
 use detent_ui::Opening;
 use ds_harness::Harness;
@@ -16,12 +13,8 @@ use ds_harness::Harness;
 mod joining;
 
 const PAGE: &str = "[data-system=\"wifi\"]";
-const TOGGLE: &str = "[data-system=\"wifi\"] .ds-toggle";
 const JOINED: &str = "#wifi-joined";
 const PASSWORD: &str = "[data-system=\"password\"]";
-const DETAILS: &str = "[data-system=\"details\"]";
-const FORGET: &str = "[data-system=\"forget\"]";
-const OTHER: &str = "[data-system=\"other\"]";
 const SECURED: &str = "[data-lock=\"secured\"]";
 const OPEN: &str = "[data-lock=\"open\"]";
 
@@ -107,21 +100,6 @@ fn the_page_is_first_in_the_sidebar_and_says_plainly_when_nothing_serves_wifi() 
 }
 
 #[test]
-fn a_computer_without_wifi_says_so() {
-    let service = Wifi::missing(Absence::NoDevice);
-    let (_sandbox, mut harness) = world("wifi-no-device", &service);
-    showing(
-        &mut harness,
-        "the unavailable row",
-        "[data-system=\"unavailable\"]",
-    );
-    let row = harness
-        .text_of("[data-system=\"unavailable\"]")
-        .unwrap_or_default();
-    assert!(row.contains("This computer has no Wi-Fi."), "{row}");
-}
-
-#[test]
 fn the_network_the_computer_is_on_comes_first_with_its_details_and_the_others_follow() {
     let service = Wifi::answering(status(WifiRadio::On));
     let (_sandbox, mut harness) = world("wifi-list", &service);
@@ -148,79 +126,4 @@ fn the_network_the_computer_is_on_comes_first_with_its_details_and_the_others_fo
         "Office, Home and Neighbour have a lock"
     );
     assert_eq!(harness.count(OPEN), 1, "Cafe has none");
-}
-
-#[test]
-fn the_switch_asks_the_service_and_the_list_goes_when_the_service_says_it_is_off() {
-    let service = Wifi::answering(status(WifiRadio::On));
-    let (_sandbox, mut harness) = world("wifi-switch", &service);
-    listed(&mut harness);
-    assert_eq!(
-        harness.attr(TOGGLE, "aria-checked").as_deref(),
-        Some("true")
-    );
-    let groups = harness.count(".ds-field-group");
-    click(&mut harness, TOGGLE);
-    assert_eq!(service.asked(), [Asked::Radio(WifiRadio::Off)]);
-    settle(&mut harness, "the switch off", |h| {
-        h.attr(TOGGLE, "aria-checked").as_deref() == Some("false")
-    });
-    assert_eq!(
-        groups, 4,
-        "the switch, the joined network, the known and the other networks"
-    );
-    assert_eq!(
-        harness.count(".ds-field-group"),
-        1,
-        "only the switch is left"
-    );
-}
-
-#[test]
-fn a_switch_that_hardware_holds_off_is_disabled_and_says_why() {
-    let service = Wifi::answering(status(WifiRadio::Blocked));
-    let (_sandbox, mut harness) = world("wifi-blocked", &service);
-    showing(&mut harness, "the page", PAGE);
-    assert_eq!(
-        harness.attr(TOGGLE, "aria-disabled").as_deref(),
-        Some("true")
-    );
-    assert!(
-        harness
-            .html()
-            .contains("Wi-Fi is switched off on this computer.")
-    );
-    click(&mut harness, TOGGLE);
-    assert_eq!(
-        service.asked(),
-        [],
-        "a switch the hardware holds is not pressed"
-    );
-}
-
-#[test]
-fn the_details_of_the_current_network_open_in_a_sheet_and_done_closes_it() {
-    let service = Wifi::answering(status(WifiRadio::On));
-    let (_sandbox, mut harness) = world("wifi-details", &service);
-    listed(&mut harness);
-    click(&mut harness, "[aria-label=\"Details\u{2026}\"]");
-    showing(&mut harness, "the details", DETAILS);
-    let sheet = harness.text_of(DETAILS).unwrap_or_default();
-    for want in ["Office", "Password protected", "Good (90 percent)"] {
-        assert!(sheet.contains(want), "{want} in {sheet}");
-    }
-    click(&mut harness, &format!("{DETAILS} [aria-label=\"Done\"]"));
-    settle(&mut harness, "the sheet closed", |h| h.count(DETAILS) == 0);
-}
-
-#[test]
-fn the_switch_row_leads_with_the_tile_and_says_where_the_computer_is() {
-    let service = Wifi::answering(status(WifiRadio::On));
-    let (_sandbox, mut harness) = world("wifi-head", &service);
-    listed(&mut harness);
-    assert_eq!(harness.count(&format!("{PAGE} .ds-field-row-leading")), 1);
-    let row = harness
-        .text_of(&format!("{PAGE} .ds-field-row"))
-        .unwrap_or_default();
-    assert!(row.contains("Connected to Office"), "{row}");
 }

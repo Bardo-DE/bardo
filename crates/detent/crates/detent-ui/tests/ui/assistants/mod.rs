@@ -90,12 +90,6 @@ const LAB_COMPUTER: Own = Own {
     models: &[("qwen", "Qwen")],
     ready: true,
 };
-const STUDIO: Lender = Lender {
-    node: "n1",
-    name: "studio",
-    models: &[("llama", "Llama")],
-    needs_approval: true,
-};
 const LAPTOP: Asker = Asker {
     node: "n3",
     name: "laptop",

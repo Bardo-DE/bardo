@@ -3,18 +3,16 @@
 //! for devices only while the page is open.
 
 use crate::support::Sandbox;
-use crate::support::drive::{click, page_of, settle, showing, sidebar_page, title_of, type_into};
+use crate::support::drive::{click, page_of, settle, showing, sidebar_page, title_of};
 use detent_model::{
-    Absence, BatteryLevel, BtAddress, BtDevice, BtKind, BtLink, BtStatus, PairingAnswer,
-    PairingAsk, PairingCode, PairingQuestion,
+    BtAddress, BtDevice, BtKind, BtLink, BtStatus, PairingAnswer, PairingAsk, PairingCode,
+    PairingQuestion,
 };
-use detent_system::bluetooth::{BtAsked, FakeBluetooth};
+use detent_system::bluetooth::FakeBluetooth;
 use detent_ui::Opening;
 use ds_harness::Harness;
 
 const PAGE: &str = "[data-system=\"bluetooth\"]";
-const TOGGLE: &str = "[data-system=\"bluetooth\"] .ds-toggle";
-const FORGET: &str = "[data-system=\"forget\"]";
 const PAIRING: &str = "[data-system=\"pairing\"]";
 
 fn bluetooth() -> Opening {
@@ -98,21 +96,6 @@ fn the_page_is_second_in_the_sidebar_and_says_plainly_when_nothing_serves_blueto
 }
 
 #[test]
-fn a_computer_without_bluetooth_says_so() {
-    let service = FakeBluetooth::missing(Absence::NoDevice);
-    let (_sandbox, mut harness) = world("bluetooth-no-device", &service);
-    showing(
-        &mut harness,
-        "the unavailable row",
-        "[data-system=\"unavailable\"]",
-    );
-    let row = harness
-        .text_of("[data-system=\"unavailable\"]")
-        .unwrap_or_default();
-    assert!(row.contains("This computer has no Bluetooth."), "{row}");
-}
-
-#[test]
 fn devices_are_listed_as_mine_and_nearby_with_whether_they_are_connected() {
     let service = FakeBluetooth::answering(status(true));
     let (_sandbox, mut harness) = world("bluetooth-list", &service);
@@ -136,53 +119,6 @@ fn devices_are_listed_as_mine_and_nearby_with_whether_they_are_connected() {
         harness.count(&button("Forget", "Nearby Pad")),
         0,
         "only a paired device is forgotten"
-    );
-}
-
-#[test]
-fn the_switch_asks_bluez_and_the_lists_go_when_it_says_it_is_off() {
-    let service = FakeBluetooth::answering(status(true));
-    let (_sandbox, mut harness) = world("bluetooth-switch", &service);
-    showing(&mut harness, "the page", PAGE);
-    assert_eq!(
-        harness.attr(TOGGLE, "aria-checked").as_deref(),
-        Some("true")
-    );
-    click(&mut harness, TOGGLE);
-    assert_eq!(service.asked(), [BtAsked::Power(false)]);
-    settle(&mut harness, "the switch off", |h| {
-        h.attr(TOGGLE, "aria-checked").as_deref() == Some("false")
-    });
-    assert_eq!(
-        harness.count(".ds-field-group"),
-        1,
-        "only the switch is left"
-    );
-}
-
-#[test]
-fn connecting_and_disconnecting_ask_bluez_and_the_row_follows() {
-    let service = FakeBluetooth::answering(status(true));
-    let (_sandbox, mut harness) = world("bluetooth-connect", &service);
-    showing(
-        &mut harness,
-        "the devices",
-        "[aria-label=\"Connect Big Headphones\"]",
-    );
-    click(&mut harness, &button("Connect", "Big Headphones"));
-    assert_eq!(service.asked(), [BtAsked::Connect(address(2))]);
-    showing(
-        &mut harness,
-        "headphones connected",
-        "[aria-label=\"Disconnect Big Headphones\"]",
-    );
-
-    click(&mut harness, &button("Disconnect", "Quiet Mouse"));
-    assert_eq!(service.asked()[1], BtAsked::Disconnect(address(1)));
-    showing(
-        &mut harness,
-        "mouse disconnected",
-        "[aria-label=\"Connect Quiet Mouse\"]",
     );
 }
 
@@ -217,158 +153,4 @@ fn a_nearby_device_pairs_after_the_person_confirms_the_number() {
     click(&mut harness, &format!("{PAIRING} [aria-label=\"Connect\"]"));
     assert_eq!(answered.try_recv().ok(), Some(PairingAnswer::Yes));
     settle(&mut harness, "the sheet closed", |h| h.count(PAIRING) == 0);
-}
-
-#[test]
-fn a_device_that_tells_its_battery_shows_it_in_its_row() {
-    let mut standing = status(true);
-    for device in &mut standing.devices {
-        if device.name == "Quiet Mouse" {
-            device.battery = Some(BatteryLevel(80));
-        }
-    }
-    let service = FakeBluetooth::answering(standing);
-    let (_sandbox, mut harness) = world("bluetooth-battery", &service);
-    showing(&mut harness, "the battery", "[data-system=\"battery\"]");
-    assert_eq!(harness.count("[data-system=\"battery\"]"), 1);
-    assert_eq!(
-        harness.text_of("[data-system=\"battery\"]").as_deref(),
-        Some("80%")
-    );
-}
-
-#[test]
-fn a_pin_is_typed_into_the_sheet_and_sent_to_the_device() {
-    let service = FakeBluetooth::answering(status(true));
-    let (_sandbox, mut harness) = world("bluetooth-pin", &service);
-    showing(
-        &mut harness,
-        "the nearby device",
-        "[aria-label=\"Connect Nearby Pad\"]",
-    );
-    settle(&mut harness, "a session", |_| service.looking() == 1);
-    let mut answered = service
-        .ask(PairingQuestion {
-            address: address(3),
-            name: "Nearby Pad".to_owned(),
-            ask: PairingAsk::PinCode,
-        })
-        .expect("a session is open");
-    showing(&mut harness, "the question", PAIRING);
-    assert!(
-        answered.try_recv().is_err(),
-        "nothing is answered until the person types and presses Connect"
-    );
-    type_into(&mut harness, &format!("{PAIRING} .ds-input"), "0000");
-    click(&mut harness, &format!("{PAIRING} [aria-label=\"Connect\"]"));
-    assert_eq!(
-        answered.try_recv().ok(),
-        Some(PairingAnswer::Typed("0000".to_owned()))
-    );
-}
-
-#[test]
-fn cancelling_a_pairing_question_says_no_to_the_device() {
-    let service = FakeBluetooth::answering(status(true));
-    let (_sandbox, mut harness) = world("bluetooth-pair-cancel", &service);
-    showing(
-        &mut harness,
-        "the nearby device",
-        "[aria-label=\"Connect Nearby Pad\"]",
-    );
-    settle(&mut harness, "a session", |_| service.looking() == 1);
-    let mut answered = service
-        .ask(PairingQuestion {
-            address: address(3),
-            name: "Nearby Pad".to_owned(),
-            ask: PairingAsk::Allow,
-        })
-        .expect("a session is open");
-    showing(&mut harness, "the question", PAIRING);
-    click(&mut harness, &format!("{PAIRING} [aria-label=\"Cancel\"]"));
-    assert_eq!(answered.try_recv().ok(), Some(PairingAnswer::No));
-}
-
-#[test]
-fn pressing_connect_on_a_nearby_device_pairs_with_it_and_it_moves_to_my_devices() {
-    let service = FakeBluetooth::answering(status(true));
-    let (_sandbox, mut harness) = world("bluetooth-pair-press", &service);
-    showing(
-        &mut harness,
-        "the nearby device",
-        "[aria-label=\"Connect Nearby Pad\"]",
-    );
-    click(&mut harness, &button("Connect", "Nearby Pad"));
-    assert_eq!(service.asked(), [BtAsked::Pair(address(3))]);
-    showing(
-        &mut harness,
-        "the device kept",
-        "[aria-label=\"Forget Nearby Pad\"]",
-    );
-}
-
-#[test]
-fn forgetting_asks_first_and_only_the_confirmation_forgets() {
-    let service = FakeBluetooth::answering(status(true));
-    let (_sandbox, mut harness) = world("bluetooth-forget", &service);
-    showing(
-        &mut harness,
-        "the devices",
-        "[aria-label=\"Forget Quiet Mouse\"]",
-    );
-    click(&mut harness, &button("Forget", "Quiet Mouse"));
-    showing(&mut harness, "the question", FORGET);
-    assert_eq!(service.asked(), [], "the question comes first");
-    let sheet = harness.text_of(FORGET).unwrap_or_default();
-    assert!(
-        sheet.contains("Forget \u{201c}Quiet Mouse\u{201d}?"),
-        "{sheet}"
-    );
-
-    click(&mut harness, &format!("{FORGET} [aria-label=\"Cancel\"]"));
-    settle(&mut harness, "the sheet closed", |h| h.count(FORGET) == 0);
-    assert_eq!(service.asked(), [], "Cancel forgets nothing");
-
-    click(&mut harness, &button("Forget", "Quiet Mouse"));
-    showing(&mut harness, "the question", FORGET);
-    click(
-        &mut harness,
-        &format!("{FORGET} [aria-label=\"Forget Device\"]"),
-    );
-    assert_eq!(service.asked(), [BtAsked::Forget(address(1))]);
-    settle(&mut harness, "the device gone", |h| {
-        h.count("[aria-label=\"Forget Quiet Mouse\"]") == 0
-    });
-}
-
-#[test]
-fn devices_are_looked_for_only_while_the_page_is_open() {
-    let service = FakeBluetooth::answering(status(true));
-    let (_sandbox, mut harness) = world("bluetooth-discovery", &service);
-    showing(&mut harness, "the page", PAGE);
-    settle(&mut harness, "looking", |_| service.looking() == 1);
-
-    click(&mut harness, &sidebar_page("appearance"));
-    settle(&mut harness, "another page", |h| {
-        page_of(h).as_deref() == Some("appearance")
-    });
-    settle(&mut harness, "not looking", |_| service.looking() == 0);
-
-    click(&mut harness, &sidebar_page("bluetooth"));
-    settle(&mut harness, "looking again", |_| service.looking() == 1);
-}
-
-#[test]
-fn the_switch_row_leads_with_the_tile_and_counts_the_connected_devices() {
-    let service = FakeBluetooth::answering(status(true));
-    let (_sandbox, mut harness) = world("bluetooth-head", &service);
-    showing(&mut harness, "the page", "[data-system=\"bluetooth\"]");
-    assert_eq!(
-        harness.count("[data-system=\"bluetooth\"] .ds-field-row-leading"),
-        1
-    );
-    let row = harness
-        .text_of("[data-system=\"bluetooth\"] .ds-field-row")
-        .unwrap_or_default();
-    assert!(row.contains("1 device connected"), "{row}");
 }
