@@ -1,0 +1,86 @@
+# cargo-deny gate for the whole workspace. Run: cargo xtask check deny (or cargo deny check).
+#
+# Starter file, merged on 2026-11-15 from the 28 per-repo deny.toml files under crates/ (find crates -name deny.toml).
+# Licence lists are the union; advisory ignores are the union (anyview, sill, airwaves, peephole, slipway);
+# bans are only the ones every repo that had them agreed on (openssl). Per-repo bans that guarded one
+# library (bayonet: no codec bindings, zbus, tokio) are NOT merged here; they belong to the layers check in phase 2.
+# GPL, AGPL and EUPL are not allowed for linked code: a dependency under one would change what the desktop may be
+# distributed as and should stop the build.
+
+[graph]
+# Union of the per-repo targets (airwaves listed both).
+targets = ["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu"]
+
+[licenses]
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "0BSD",
+    "CC0-1.0",
+    "Unicode-3.0",
+    "Zlib",
+    # Weak, file-level copyleft: fine to depend on, never to paste source from (stylo, app_units, cssparser,
+    # selectors, option-ext, freedesktop-desktop-entry arrive under it). Reviewers check the paste rule.
+    "MPL-2.0",
+    # bzip2-1.0.6: the bzip2 library's own permissive licence (anyview-archive's bzip2 crate).
+    "bzip2-1.0.6",
+    # webpki-roots: the Mozilla CA list as data, attribution only (porter, steward, ferry had this as a
+    # per-crate exception; slipway and the others allowed it globally).
+    "CDLA-Permissive-2.0",
+]
+confidence-threshold = 0.9
+
+[advisories]
+version = 2
+yanked = "deny"
+# Each ignore says why it is safe to carry and what would end it.
+ignore = [
+    # From anyview.
+    { id = "RUSTSEC-2025-0141", reason = "bincode unmaintained but complete; syntect reads only its own built-in dump with it" },
+    { id = "RUSTSEC-2024-0436", reason = "paste: compile-time proc macro only, no runtime exposure; arrives through rav1e and pulp" },
+    { id = "RUSTSEC-2026-0192", reason = "ttf-parser unmaintained, no known flaw; reached only through the window frame's own font" },
+    # From anyview and sill: zip's extract(); nothing calls it, and calamine holds zip at 8. Remove when calamine moves to zip 9.
+    { id = "RUSTSEC-2026-0367", reason = "zip's extract() keeps SUID bits; nothing here calls extract, and calamine holds zip at 8" },
+    { id = "RUSTSEC-2026-0368", reason = "zip's extract() writes symlinks out of the destination; nothing here calls extract, and calamine holds zip at 8" },
+    { id = "RUSTSEC-2026-0369", reason = "zip's extract() sets permissions through symlinks; nothing here calls extract, and calamine holds zip at 8" },
+    # From airwaves, anyview, peephole, slipway: zbus 5's companion crates are folded into zbus 6. Remove when the desktop moves to zbus 6.
+    { id = "RUSTSEC-2026-0370", reason = "zvariant folded into zbus 6; no known flaw" },
+    { id = "RUSTSEC-2026-0371", reason = "zbus_names folded into zbus 6; no known flaw" },
+    # New with the merged lock (2026-11-15). almanac builds SQLCipher, and even libsqlite3-sys 0.39's SQLCipher still
+    # bundles an affected SQLite (3.53.4). Remove when a SQLCipher bundle with SQLite >= 3.54 ships.
+    { id = "RUSTSEC-2026-0459", reason = "needs a crafted -wal file next to a database; memoryd opens only its own store in the user's data dir, which only the user can write" },
+    { id = "RUSTSEC-2026-0372", reason = "zvariant_derive folded into zbus 6; no known flaw" },
+]
+
+[bans]
+# Two versions of one crate are a size and noise cost, not a fault.
+multiple-versions = "warn"
+# anyview allowed wildcards; airwaves and bayonet denied them with allow-wildcard-paths. Lenient until the root
+# [workspace.dependencies] table lands (step 1.2 follow-up).
+wildcards = "allow"
+# Present in airwaves, porter, steward: TLS goes through rustls. almanac's encrypted store is SQLCipher, which
+# links a vendored OpenSSL for its crypto only (rusqlite's bundled-sqlcipher-vendored-openssl), so libsqlite3-sys
+# may wrap it; nothing else may.
+deny = [
+    { name = "openssl" },
+    { name = "openssl-sys", wrappers = ["libsqlite3-sys"] },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+# The git sources in Cargo.lock today (root [patch] forks and what they pull in). Shrinks as fork patches land upstream.
+allow-git = [
+    "https://github.com/Bardo-DE/anyrender",
+    "https://github.com/Bardo-DE/blitz",
+    "https://github.com/Bardo-DE/dioxus",
+    "https://github.com/Bardo-DE/smithay",
+    "https://github.com/Bardo-DE/vello",
+    "https://github.com/DioxusLabs/taffy",
+    "https://github.com/pop-os/dbus-settings-bindings",
+]

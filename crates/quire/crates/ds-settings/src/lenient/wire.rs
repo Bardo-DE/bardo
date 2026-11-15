@@ -64,8 +64,12 @@ impl Wire for TomlWire {
 
     fn leaves(table: &toml::Table) -> Vec<(Vec<String>, toml::Value)> {
         fn walk(table: &toml::Table, prefix: &[String]) -> Vec<(Vec<String>, toml::Value)> {
-            table
-                .iter()
+            // Key order, whatever the map's own iteration order (a unified `preserve_order`
+            // feature would otherwise make it insertion order and reorder the reports).
+            let mut entries: Vec<_> = table.iter().collect();
+            entries.sort_by(|a, b| a.0.cmp(b.0));
+            entries
+                .into_iter()
                 .flat_map(|(key, value)| {
                     let path: Vec<String> = prefix.iter().cloned().chain([key.clone()]).collect();
                     match value {
@@ -171,8 +175,12 @@ impl Wire for JsonWire {
 
     fn leaves(table: &Object) -> Vec<(Vec<String>, serde_json::Value)> {
         fn walk(object: &Object, prefix: &[String]) -> Vec<(Vec<String>, serde_json::Value)> {
-            object
-                .iter()
+            // Key order, whatever the map's own iteration order (a unified `preserve_order`
+            // feature would otherwise make it insertion order and reorder the reports).
+            let mut entries: Vec<_> = object.iter().collect();
+            entries.sort_by(|a, b| a.0.cmp(b.0));
+            entries
+                .into_iter()
                 .flat_map(|(key, value)| {
                     let path: Vec<String> = prefix.iter().cloned().chain([key.clone()]).collect();
                     match value {

@@ -182,7 +182,7 @@ async fn memory_keeps_the_contract() {
     contract(Memory(MemorySecrets::default())).await;
 }
 
-#[cfg(unix)]
+#[cfg(all(unix, feature = "test-keys"))]
 mod file_store {
     use super::*;
     use porter_secrets::FileSecrets;

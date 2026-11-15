@@ -15,7 +15,7 @@ fn a_recording_shows_its_type_size_and_date_and_nothing_libav_would_give() {
         ("cover.mp3", FormatKind::Audio, "MP3 audio"),
         ("tone.flac", FormatKind::Audio, "FLAC audio"),
     ] {
-        let (src, sniffed) = fixture(Home::Media, name);
+        let (src, sniffed) = fixture(Home::Own, name);
         let peeked = peek(&src, &sniffed, &pane_budget());
         assert_eq!(peeked.kind, kind, "{name}");
         assert_eq!(peeked.body.slug(), "facts", "{name}");

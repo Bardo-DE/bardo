@@ -28,8 +28,7 @@ fn flags_of(held: Modifiers) -> ChordModifiers {
 /// The chord modifiers `held` reports (Ctrl, Alt, Shift and the OS key). Lock and AltGraph
 /// flags are not chord modifiers.
 pub fn modifiers_of(held: Modifiers) -> ChordModifiers {
-    flags_of(held)
-        .difference(ChordModifiers::ALT_GRAPH)
+    flags_of(held).difference(ChordModifiers::ALT_GRAPH)
 }
 
 /// The toolkit flags that stand for the chord modifiers `held`: the reverse of
@@ -194,10 +193,7 @@ mod tests {
     #[test]
     fn keys_map_to_chord_keys_and_the_rest_to_none() {
         let cases: Vec<(Key, Option<ChordKey>)> = vec![
-            (
-                Key::Character(" ".into()),
-                Some(ChordKey::SPACE),
-            ),
+            (Key::Character(" ".into()), Some(ChordKey::SPACE)),
             (Key::Character("Z".into()), Some(ChordKey::Char('z'))),
             (Key::Character("ab".into()), None),
             (Key::Enter, Some(ChordKey::Named(NamedKey::Enter))),

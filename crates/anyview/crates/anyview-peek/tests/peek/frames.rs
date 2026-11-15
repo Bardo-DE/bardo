@@ -51,7 +51,7 @@ fn with(stills: Arc<dyn StillSource>) -> Peeking {
 
 #[test]
 fn a_cached_thumbnail_becomes_the_frame_of_a_video_only() {
-    let (video, video_sniffed) = fixture(Home::Media, "clip.mkv");
+    let (video, video_sniffed) = fixture(Home::Own, "clip.mkv");
     let framed = look(video.clone(), &with(Arc::new(Cached)));
     let Body::Picture(frame) = &framed.body else {
         panic!("expected the frame, got {}", framed.body.slug());
@@ -71,7 +71,7 @@ fn a_cached_thumbnail_becomes_the_frame_of_a_video_only() {
     // shows the facts card.
     let dir = tempfile::tempdir().unwrap();
     let path = dir.path().join("none.mkv");
-    std::fs::copy(support::path(Home::Media, "clip.mkv"), &path).unwrap();
+    std::fs::copy(support::path(Home::Own, "clip.mkv"), &path).unwrap();
     let (uncached, _) = support::on_disk(&path, 0);
     let result = look(uncached, &with(Arc::new(Cached)));
     assert_eq!(
@@ -80,12 +80,12 @@ fn a_cached_thumbnail_becomes_the_frame_of_a_video_only() {
         "step none.mkv: no cached thumbnail"
     );
     // Audio never takes a video's frame.
-    let (audio, _) = fixture(Home::Media, "tone.flac");
+    let (audio, _) = fixture(Home::Own, "tone.flac");
     let song = look(audio.clone(), &with(Arc::new(Cached)));
     assert_eq!(song.body.slug(), "facts");
     // A host that can decode a frame lends it for a video with no cached thumbnail, and for no
     // other kind.
-    let (clip, _) = fixture(Home::Media, "clip.mkv");
+    let (clip, _) = fixture(Home::Own, "clip.mkv");
     let decoded = look(clip, &with(Arc::new(Decoder)));
     assert_eq!(decoded.still().map(|still| still.size().width.0), Some(3));
     assert_eq!(look(audio, &with(Arc::new(Decoder))).body.slug(), "facts");

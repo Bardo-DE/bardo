@@ -302,6 +302,18 @@ mod finding_or_starting {
         let socket = socket_of(&agent).expect("unix");
         std::fs::create_dir_all(socket.parent().unwrap()).unwrap();
         drop(std::os::unix::net::UnixListener::bind(&socket).unwrap());
+        // Dropping the listener closes this process's descriptor, but a sibling test that is
+        // between `fork` and `exec` (the cross-process tests spawn agents on other threads) holds
+        // a copy of it until the exec, and a socket with a live copy still accepts a knock. So
+        // wait until the door really is stale, which is the state this test is about.
+        let deadline = std::time::Instant::now() + Duration::from_secs(30);
+        while std::os::unix::net::UnixStream::connect(&socket).is_ok() {
+            assert!(
+                std::time::Instant::now() < deadline,
+                "the dropped listener's socket still answers"
+            );
+            std::thread::sleep(Duration::from_millis(5));
+        }
 
         agent
             .connect_or_start(|| Ok(()), Duration::from_millis(200))

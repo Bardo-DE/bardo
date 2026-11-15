@@ -55,17 +55,17 @@ pub fn cloud_card() -> porter_infer::ModelCard {
     }
 }
 
-/// The catalog files stoker ships at the rev the workspace pins, embedded by `build.rs`.
+/// The catalog files stoker ships in this tree, embedded by `build.rs`.
 const SHIPPED_CATALOG: &[(&str, &str)] = include!(concat!(env!("OUT_DIR"), "/stoker_catalog.rs"));
 
-/// The catalog stoker ships, at the rev this workspace pins, as a directory a test can read: the
-/// files the build embedded, written once per rev under the system temp directory. A test reads
-/// what the build fetched, never a checkout that happens to sit beside this one, and needs no
+/// The catalog stoker ships, in this tree, as a directory a test can read: the
+/// files the build embedded, written once per content hash under the system temp directory. A test reads
+/// what the build fetched, never a checkout that happens to sit elsewhere, and needs no
 /// cargo or sources where it runs.
 pub fn pinned_stoker_catalog() -> PathBuf {
     assert!(
         !SHIPPED_CATALOG.is_empty(),
-        "this build found no checkout of stoker to take its catalog from (vendored sources?)"
+        "this build found no catalog under crates/stoker to embed"
     );
     let dir = std::env::temp_dir().join(format!(
         "porter-stoker-catalog-{}",

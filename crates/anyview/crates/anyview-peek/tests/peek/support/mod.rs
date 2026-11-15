@@ -18,7 +18,6 @@ pub enum Home {
     Own,
     Image,
     Text,
-    Media,
     Font,
 }
 
@@ -29,7 +28,6 @@ pub fn path(home: Home, name: &str) -> PathBuf {
         Home::Own => Path::new(env!("CARGO_MANIFEST_DIR")).to_path_buf(),
         Home::Image => crates.join("anyview-image"),
         Home::Text => crates.join("anyview-text"),
-        Home::Media => crates.join("anyview-media"),
         Home::Font => crates.join("anyview-font"),
     };
     dir.join("tests/fixtures").join(name)

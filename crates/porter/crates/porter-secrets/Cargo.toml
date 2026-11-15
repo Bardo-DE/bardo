@@ -31,7 +31,10 @@ windows-native-keyring-store = {version = "1", optional = true}
 
 [dev-dependencies]
 test-kit = {path = "../test-kit"}
-porter-secrets = { path = ".", features = ["testing", "keyring", "test-keys"] }
+# `test-keys` is deliberately not enabled here: a dev-dependency feature is unified onto every
+# crate of the workspace that builds with this one, and accountd's shipped-build test needs the
+# file store absent. Run the file store tests with `--features test-keys`.
+porter-secrets = { path = ".", features = ["testing", "keyring"] }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [target.'cfg(target_os = "linux")'.dev-dependencies]

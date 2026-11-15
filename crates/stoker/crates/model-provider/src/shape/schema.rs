@@ -38,8 +38,10 @@ impl Shape {
             Shape::Date => json!({"type": "string", "format": "date"}),
             Shape::DateTime => json!({"type": "string", "format": "date-time"}),
             Shape::Record(fields) => {
-                let properties: Map<String, Value> = fields
-                    .iter()
+                let mut sorted: Vec<_> = fields.iter().collect();
+                sorted.sort_by(|a, b| a.name.as_str().cmp(b.name.as_str()));
+                let properties: Map<String, Value> = sorted
+                    .into_iter()
                     .map(|f| (f.name.as_str().to_owned(), f.shape.schema_value()))
                     .collect();
                 let required: Vec<&str> = fields
@@ -204,7 +206,9 @@ fn require_all(map: &mut Map<String, Value>) {
         map.insert("required".into(), Value::Array(Vec::new()));
         return;
     };
-    let names: Vec<Value> = properties.keys().cloned().map(Value::String).collect();
+    let mut sorted: Vec<&String> = properties.keys().collect();
+    sorted.sort();
+    let names: Vec<Value> = sorted.into_iter().cloned().map(Value::String).collect();
     for (name, schema) in properties.iter_mut() {
         if !was_required.contains(name) {
             *schema = nullable(std::mem::take(schema));

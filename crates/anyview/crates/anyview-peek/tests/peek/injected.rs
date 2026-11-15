@@ -46,8 +46,8 @@ fn injected_bytes_peek_as_the_file_at_a_path_does() {
         (Home::Image, "quadrants.png"),
         (Home::Image, "logo.svg"),
         (Home::Font, "blocks.ttf"),
-        (Home::Media, "cover.mp3"),
-        (Home::Media, "clip.mkv"),
+        (Home::Own, "cover.mp3"),
+        (Home::Own, "clip.mkv"),
         (Home::Own, "clip.mp4"),
         (Home::Own, "tone.wav"),
     ];

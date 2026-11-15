@@ -95,12 +95,11 @@ pub(crate) fn hear(
 fn is_shortcut(kinds: ShortcutKinds, chord: &Chord) -> bool {
     let modifiers = chord.modifiers();
     if kinds == ShortcutKinds::SingleKeys {
-        let shifted = modifiers == ChordModifiers::SHIFT
-            && matches!(chord.key(), ChordKey::Char(_));
+        let shifted =
+            modifiers == ChordModifiers::SHIFT && matches!(chord.key(), ChordKey::Char(_));
         return modifiers.is_empty() || shifted;
     }
-    let typing = modifiers == ChordModifiers::SHIFT
-        && matches!(chord.key(), ChordKey::Char(_));
+    let typing = modifiers == ChordModifiers::SHIFT && matches!(chord.key(), ChordKey::Char(_));
     let function = (1..=24).any(|n| ChordKey::function(n) == Some(chord.key()));
     function || (!modifiers.is_empty() && !typing)
 }
@@ -185,13 +184,19 @@ mod tests {
                 "shift command and a letter",
                 letter("K"),
                 Modifiers::SUPER | Modifiers::SHIFT,
-                chord(ChordModifiers::META | ChordModifiers::SHIFT, ChordKey::Char('k')),
+                chord(
+                    ChordModifiers::META | ChordModifiers::SHIFT,
+                    ChordKey::Char('k'),
+                ),
             ),
             (
                 "control and an arrow",
                 Key::ArrowLeft,
                 Modifiers::CONTROL,
-                chord(ChordModifiers::CONTROL, ChordKey::Named(NamedKey::ArrowLeft)),
+                chord(
+                    ChordModifiers::CONTROL,
+                    ChordKey::Named(NamedKey::ArrowLeft),
+                ),
             ),
             (
                 "a function key needs no modifier",

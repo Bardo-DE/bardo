@@ -224,12 +224,14 @@ fn the_json_shape_is_pinned_and_carries_the_class_never_content() {
         &Why::Named,
     );
     let value = serde_json::to_value(&memory.entries()[0]).expect("json");
-    let keys: Vec<&str> = value
+    // The pinned shape is the set of keys; a JSON object's own order is not part of it.
+    let mut keys: Vec<&str> = value
         .as_object()
         .expect("object")
         .keys()
         .map(String::as_str)
         .collect();
+    keys.sort_unstable();
     assert_eq!(
         keys,
         [

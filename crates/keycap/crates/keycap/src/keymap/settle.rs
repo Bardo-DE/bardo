@@ -176,7 +176,7 @@ mod tests {
         assert_eq!(state.problems.len(), 1, "{:?}", state.problems);
         assert_eq!(state.problems[0].line, 1);
         assert!(
-            state.problems[0].what.contains("Space 1"),
+            state.problems[0].what.contains("switches to a Space"),
             "{:?}",
             state.problems
         );

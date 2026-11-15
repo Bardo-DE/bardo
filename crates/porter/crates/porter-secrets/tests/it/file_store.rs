@@ -1,6 +1,6 @@
 //! `FileSecrets` (feature `test-keys`, TEST ONLY): the file's mode, a crash between the temp file
 //! and the rename, and writers that race. The shared `Secrets` contract is in `contract.rs`.
-#![cfg(unix)]
+#![cfg(all(unix, feature = "test-keys"))]
 
 use porter_core::AccountId;
 use porter_core::{Credential, SecretKey, SecretPurpose, SecretText};

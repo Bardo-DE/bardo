@@ -59,10 +59,8 @@ fn workspace_root(start: &Path) -> PathBuf {
 fn build(sibling: &Sibling, root: &Path, target: &Path) -> PathBuf {
     let env = format!("ACCEPT_{}_DIR", sibling.repo.to_uppercase());
     println!("cargo:rerun-if-env-changed={env}");
-    let dir = std::env::var_os(&env).map_or_else(
-        || root.join("crates").join(sibling.repo),
-        PathBuf::from,
-    );
+    let dir = std::env::var_os(&env)
+        .map_or_else(|| root.join("crates").join(sibling.repo), PathBuf::from);
     let source = dir.join("crates");
     println!("cargo:rerun-if-changed={}", source.display());
     let mut command = Command::new(var("CARGO"));

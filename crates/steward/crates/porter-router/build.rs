@@ -1,63 +1,34 @@
-//! Embeds the catalog stoker ships, at the rev the workspace pins, for `testkit::pinned_stoker_catalog`.
+//! Embeds the catalog stoker ships, as it is in this tree, for `testkit::pinned_stoker_catalog`.
 //!
 //! A test runs where the build's sources may not be (an archive run in a jail binds only the
-//! repo and the target directory), so the files go into the test binary itself. The rev is read
-//! from the workspace's `Cargo.lock` and the files from cargo's checkout of it; asking `cargo
-//! metadata` from here could wait on the package cache the running build holds. A build that
-//! finds no checkout (vendored sources) embeds nothing, and the helper says so when a test asks.
+//! repo and the target directory), so the files go into the test binary itself. stoker lives in
+//! this monorepo at `crates/stoker`, found from this crate's manifest directory. The embedded
+//! files are named by a hash of their content, so a changed catalog never reuses an old copy.
 
 use std::path::{Path, PathBuf};
 
 fn main() {
     let manifest = PathBuf::from(std::env::var_os("CARGO_MANIFEST_DIR").expect("manifest dir"));
-    let lock = manifest.join("../../Cargo.lock");
-    println!("cargo:rerun-if-changed={}", lock.display());
-    let rev = std::fs::read_to_string(&lock)
-        .ok()
-        .and_then(|text| stoker_rev(&text));
-    let files = rev
-        .as_deref()
-        .and_then(checkout)
-        .map(|root| catalog_files(&root.join("catalog")))
-        .unwrap_or_default();
+    let catalog = manifest.join("../../../stoker/catalog");
+    println!("cargo:rerun-if-changed={}", catalog.display());
+    let files = catalog_files(&catalog);
     let mut code = String::from("&[\n");
+    let mut hash: u64 = 0xcbf2_9ce4_8422_2325;
     for (name, path) in &files {
         println!("cargo:rerun-if-changed={}", path.display());
         code.push_str(&format!(
             "    ({name:?}, include_str!({:?})),\n",
             path.display().to_string()
         ));
+        let bytes = name.bytes().chain(std::fs::read(path).unwrap_or_default());
+        for byte in bytes {
+            hash = (hash ^ u64::from(byte)).wrapping_mul(0x0100_0000_01b3);
+        }
     }
     code.push_str("]\n");
     let out = PathBuf::from(std::env::var_os("OUT_DIR").expect("out dir"));
     std::fs::write(out.join("stoker_catalog.rs"), code).expect("write the embedded catalog");
-    println!(
-        "cargo:rustc-env=PORTER_STOKER_CATALOG_REV={}",
-        rev.unwrap_or_default()
-    );
-}
-
-/// The commit of stoker's crates in the lock: `source = "git+…/stoker?rev=…#<commit>"`.
-fn stoker_rev(lock: &str) -> Option<String> {
-    lock.lines()
-        .filter_map(|line| line.trim().strip_prefix("source = \""))
-        .find(|source| source.contains("/stoker?") || source.contains("/stoker#"))
-        .and_then(|source| source.trim_end_matches('"').rsplit_once('#'))
-        .map(|(_, commit)| commit.to_owned())
-}
-
-/// Cargo's checkout of stoker at `rev`: `$CARGO_HOME/git/checkouts/stoker-<hash>/<short rev>`.
-fn checkout(rev: &str) -> Option<PathBuf> {
-    let home = std::env::var_os("CARGO_HOME")
-        .map(PathBuf::from)
-        .or_else(|| std::env::var_os("HOME").map(|home| PathBuf::from(home).join(".cargo")))?;
-    let short = rev.get(..7)?;
-    std::fs::read_dir(home.join("git").join("checkouts"))
-        .ok()?
-        .flatten()
-        .filter(|entry| entry.file_name().to_string_lossy().starts_with("stoker-"))
-        .map(|entry| entry.path().join(short))
-        .find(|dir| dir.is_dir())
+    println!("cargo:rustc-env=PORTER_STOKER_CATALOG_REV={hash:016x}");
 }
 
 /// The catalog's `.toml` files, by name.

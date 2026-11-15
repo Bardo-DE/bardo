@@ -115,7 +115,7 @@ fn a_chord_the_desktop_keeps_is_refused_once_and_a_bad_line_is_reported() {
     let (keymap, problems) = source.load_reporting(OURS);
     assert_eq!(problems.len(), 2, "{problems:?}");
     assert!(problems.iter().any(|p| p.contains("teleport")));
-    assert!(problems.iter().any(|p| p.contains("Space 1")));
+    assert!(problems.iter().any(|p| p.contains("switches to a Space")));
     assert!(!chords(&keymap, StandardAction::Copy).is_empty());
 }
 

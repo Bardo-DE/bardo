@@ -2,8 +2,8 @@
 
 use casement_core::input::{Chord, Keysym};
 use casement_protocols::vocab::HeldMods;
-use chordkit::keyboard_types::{Modifiers, NamedKey};
 use chordkit::Key;
+use chordkit::keyboard_types::{Modifiers, NamedKey};
 
 /// `F1`'s keysym; the function keys follow in order.
 const F1: u32 = 0xffbe;

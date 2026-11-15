@@ -49,10 +49,10 @@ fn each_kind_gives_its_header_size_or_none() {
         ("gif", Of::Fixture(Home::Image, "spin.gif"), size(32, 24)),
         ("svg", Of::Fixture(Home::Image, "logo.svg"), size(64, 32)),
         ("mp4", Of::Fixture(Home::Own, "clip.mp4"), size(64, 48)),
-        ("mkv", Of::Fixture(Home::Media, "clip.mkv"), size(64, 48)),
+        ("mkv", Of::Fixture(Home::Own, "clip.mkv"), size(64, 48)),
         ("pdf has none", Of::Fixture(Home::Own, "hello.pdf"), None),
         ("wav has none", Of::Fixture(Home::Own, "tone.wav"), None),
-        ("mp3 has none", Of::Fixture(Home::Media, "cover.mp3"), None),
+        ("mp3 has none", Of::Fixture(Home::Own, "cover.mp3"), None),
         ("ttf has none", Of::Fixture(Home::Font, "blocks.ttf"), None),
         (
             "a picture extension on other contents",

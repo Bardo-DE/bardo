@@ -370,8 +370,10 @@ fn object(node: &mut Node) -> Found<Shape> {
     if required.iter().any(|name| !properties.contains_key(name)) {
         return Err(node.refuse(Refused::BadName));
     }
-    let fields = properties
-        .iter()
+    let mut sorted: Vec<(&String, &Value)> = properties.iter().collect();
+    sorted.sort_by(|a, b| a.0.cmp(b.0));
+    let fields = sorted
+        .into_iter()
         .map(|(name, schema)| {
             let name_ok = FieldName::new(name.clone());
             let child = node.child(schema, &["properties", name])?;

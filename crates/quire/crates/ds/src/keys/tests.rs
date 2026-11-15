@@ -1,12 +1,11 @@
 use super::source::KeySource;
 use super::state::KeyState;
 use super::use_keys_provider;
+use chordkit::keyboard_types::Modifiers as ChordModifiers;
 use chordkit::{
     Action, AppAction, AppId, Chord, Conflict, Context, DefaultChord, Desktop, KeyInput, Keymap,
-    KeymapSource, Overrides, Platform, Registration, SourceError, StandardAction,
-    SystemBinding,
+    KeymapSource, Overrides, Platform, Registration, SourceError, StandardAction, SystemBinding,
 };
-use chordkit::keyboard_types::Modifiers as ChordModifiers;
 use dioxus::prelude::*;
 use std::cell::RefCell;
 use std::sync::{Arc, Mutex};

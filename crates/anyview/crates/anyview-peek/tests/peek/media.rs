@@ -37,7 +37,7 @@ fn each_format_lists_what_its_header_says() {
     let cases: Vec<(&str, Home, bool, Rows)> = vec![
         (
             "clip.mkv",
-            Home::Media,
+            Home::Own,
             true,
             vec![
                 row("duration", "0:03"),
@@ -70,7 +70,7 @@ fn each_format_lists_what_its_header_says() {
         ),
         (
             "tone.flac",
-            Home::Media,
+            Home::Own,
             false,
             vec![
                 row("duration", "0:02"),
@@ -188,7 +188,7 @@ fn each_format_lists_what_its_header_says() {
 #[test]
 fn an_audio_file_with_a_cover_shows_the_cover_reduced_to_the_budget() {
     // step 1: the pane's budget
-    let audio = peeked(Home::Media, "cover.mp3");
+    let audio = peeked(Home::Own, "cover.mp3");
     assert_eq!(audio.kind, FormatKind::Audio);
     let Body::Picture(cover) = &audio.body else {
         panic!(
@@ -211,7 +211,7 @@ fn an_audio_file_with_a_cover_shows_the_cover_reduced_to_the_budget() {
     assert_eq!(rows[2], ("codec", "mp3".to_owned()));
 
     // step 2: a budget of 256 pixels
-    let (src, sniffed) = fixture(Home::Media, "cover.mp3");
+    let (src, sniffed) = fixture(Home::Own, "cover.mp3");
     let small = support::budget(4_000_000, 256);
     let audio = peek(&src, &sniffed, &small);
     let Body::Picture(cover) = &audio.body else {
@@ -249,8 +249,8 @@ fn a_format_nothing_parses_gets_facts_only() {
 fn a_damaged_recording_says_why_whichever_parser_reads_it() {
     let dir = tempfile::tempdir().unwrap();
     let whole = std::fs::read(support::path(Home::Own, "clip.mp4")).unwrap();
-    let mkv = std::fs::read(support::path(Home::Media, "clip.mkv")).unwrap();
-    let flac = std::fs::read(support::path(Home::Media, "tone.flac")).unwrap();
+    let mkv = std::fs::read(support::path(Home::Own, "clip.mkv")).unwrap();
+    let flac = std::fs::read(support::path(Home::Own, "tone.flac")).unwrap();
     let m4a = std::fs::read(support::path(Home::Own, "song.m4a")).unwrap();
     let cases: [(&str, Vec<u8>); 6] = [
         ("cut.mp4", whole[..whole.len() / 2].to_vec()),
@@ -274,7 +274,7 @@ fn a_damaged_recording_says_why_whichever_parser_reads_it() {
 #[test]
 fn a_matroska_header_that_loops_is_given_up_on() {
     let dir = tempfile::tempdir().unwrap();
-    let mut mkv = std::fs::read(support::path(Home::Media, "clip.mkv")).unwrap();
+    let mut mkv = std::fs::read(support::path(Home::Own, "clip.mkv")).unwrap();
     mkv[51..58].fill(0);
     let path = dir.path().join("loop.mkv");
     std::fs::write(&path, mkv).unwrap();

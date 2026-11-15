@@ -317,6 +317,7 @@ members = [
     "crates/turnstile/crates/turnstile",
     "crates/turnstile/crates/turnstile-client",
     "crates/turnstile/crates/turnstile-wire",
+    "xtask",
 ]
 exclude = [
     'crates/casement/casement-scene-css',
@@ -381,6 +382,53 @@ opt-level = 3
 
 [profile.release]
 strip = "debuginfo"
+
+# The compositor's arithmetic overflows loudly rather than wrapping (casement's release profile).
+[profile.release.package.casement]
+overflow-checks = true
+
+[profile.release.package.casement-agent]
+overflow-checks = true
+
+[profile.release.package.casement-backend]
+overflow-checks = true
+
+[profile.release.package.casement-chrome]
+overflow-checks = true
+
+[profile.release.package.casement-core]
+overflow-checks = true
+
+[profile.release.package.casementctl]
+overflow-checks = true
+
+[profile.release.package.casement-icons]
+overflow-checks = true
+
+[profile.release.package.casement-ipc]
+overflow-checks = true
+
+[profile.release.package.casement-layout]
+overflow-checks = true
+
+[profile.release.package.casement-motion]
+overflow-checks = true
+
+[profile.release.package.casement-privacy]
+overflow-checks = true
+
+[profile.release.package.casement-render]
+overflow-checks = true
+
+[profile.release.package.casement-wayland]
+overflow-checks = true
+
+# What the installer and `cargo xtask dist` build: smaller, faster binaries (anyview's and files'
+# release settings). Plain `release` stays quick for gates and development.
+[profile.dist]
+inherits = "release"
+lto = "thin"
+codegen-units = 1
 
 [patch.crates-io]
 anyrender = {git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826"}
