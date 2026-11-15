@@ -19,8 +19,8 @@ pub fn click(harness: &mut Harness, selector: &str) {
     harness.advance(SETTLE);
 }
 
-/// The `nth` (from 1) segment of the segmented control named `label`: a key of two words, such as
-/// on and off, is two segments.
+/// The `nth` (from 1) segment of the segmented control named `label`: a key of two words that is
+/// not a yes or no (standard and reduced) is two segments.
 pub fn segment(label: &str, nth: usize) -> String {
     format!(".ds-segmented[aria-label=\"{label}\"] .ds-segmented-segment:nth-of-type({nth})")
 }
