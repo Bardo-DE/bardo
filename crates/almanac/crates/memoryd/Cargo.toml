@@ -46,7 +46,7 @@ inferd-client = {features = ["dbus"], path = "../../../steward/crates/inferd-cli
 clap = {version = "4", features = ["derive"]}
 getrandom = {version = "0.3"}
 landlock = {version = "0.4"}
-rusqlite = {version = "0.40", features = ["bundled-sqlcipher-vendored-openssl"]}
+rusqlite = {version = "0.43", features = ["bundled-sqlcipher-vendored-openssl"]}
 serde = {version = "1", features = ["derive"]}
 thiserror = {version = "2"}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}

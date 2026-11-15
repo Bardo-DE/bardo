@@ -43,16 +43,9 @@ ignore = [
     { id = "RUSTSEC-2025-0141", reason = "bincode unmaintained but complete; syntect reads only its own built-in dump with it" },
     { id = "RUSTSEC-2024-0436", reason = "paste: compile-time proc macro only, no runtime exposure; arrives through rav1e and pulp" },
     { id = "RUSTSEC-2026-0192", reason = "ttf-parser unmaintained, no known flaw; reached only through the window frame's own font" },
-    # From anyview and sill: zip's extract(); nothing calls it, and calamine holds zip at 8. Remove when calamine moves to zip 9.
-    { id = "RUSTSEC-2026-0367", reason = "zip's extract() keeps SUID bits; nothing here calls extract, and calamine holds zip at 8" },
-    { id = "RUSTSEC-2026-0368", reason = "zip's extract() writes symlinks out of the destination; nothing here calls extract, and calamine holds zip at 8" },
-    { id = "RUSTSEC-2026-0369", reason = "zip's extract() sets permissions through symlinks; nothing here calls extract, and calamine holds zip at 8" },
     # From airwaves, anyview, peephole, slipway: zbus 5's companion crates are folded into zbus 6. Remove when the desktop moves to zbus 6.
     { id = "RUSTSEC-2026-0370", reason = "zvariant folded into zbus 6; no known flaw" },
     { id = "RUSTSEC-2026-0371", reason = "zbus_names folded into zbus 6; no known flaw" },
-    # New with the merged lock (2026-11-15). almanac builds SQLCipher, and even libsqlite3-sys 0.39's SQLCipher still
-    # bundles an affected SQLite (3.53.4). Remove when a SQLCipher bundle with SQLite >= 3.54 ships.
-    { id = "RUSTSEC-2026-0459", reason = "needs a crafted -wal file next to a database; memoryd opens only its own store in the user's data dir, which only the user can write" },
     { id = "RUSTSEC-2026-0372", reason = "zvariant_derive folded into zbus 6; no known flaw" },
 ]
 

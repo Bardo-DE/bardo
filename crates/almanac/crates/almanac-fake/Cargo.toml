@@ -19,7 +19,7 @@ almanac-service = {path = "../almanac-service"}
 almanac-tidy = {path = "../almanac-tidy"}
 memfiles-format = {path = "../memfiles-format"}
 chrono = {version = "0.4", default-features = false, features = ["std"]}
-rusqlite = {version = "0.40", features = ["bundled-sqlcipher-vendored-openssl"]}
+rusqlite = {version = "0.43", features = ["bundled-sqlcipher-vendored-openssl"]}
 tempfile = {version = "3"}
 serde_json = {version = "1"}
 
