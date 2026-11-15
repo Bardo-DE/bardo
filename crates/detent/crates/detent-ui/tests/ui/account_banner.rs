@@ -70,60 +70,56 @@ fn world(name: &str, rows: Vec<Held>, chosen: &str) -> World {
 }
 
 #[test]
-fn a_sign_in_that_ended_says_so_in_a_banner_that_replaces_the_rows() {
-    let rows = vec![google(
-        "work.example",
-        "Work mail",
-        "needs_reauth",
-        Some(ENDED),
-    )];
-    let w = world("banner-ended", rows, "work.example");
-    assert_eq!(w.harness.count(BANNER), 1, "{}", w.harness.html());
-    assert!(
-        w.harness
-            .html()
-            .contains("Sign in again to keep using Work mail."),
-        "{}",
-        w.harness.html()
-    );
-    assert_eq!(
-        w.harness.count(SIGN_IN_ROW),
-        0,
-        "the row moved into the banner"
-    );
-    assert_eq!(w.harness.count(EXPIRY_ROW), 0, "one message, not two");
-    assert_eq!(
-        w.harness.attr(BANNER_BUTTON, "aria-label").as_deref(),
-        Some("Sign In\u{2026} Work mail")
-    );
-    assert_eq!(
-        w.harness
-            .count("#account-work-example [aria-label=\"Needs sign-in\"]"),
-        1,
-        "the list row carries the dot"
-    );
-}
-
-#[test]
-fn a_sign_in_the_provider_will_end_names_the_provider_and_the_day() {
-    let rows = vec![google("work.example", "Work mail", "ok", Some(ENDING))];
-    let w = world("banner-ending", rows, "work.example");
-    assert_eq!(w.harness.count(BANNER), 1, "{}", w.harness.html());
-    assert!(
-        w.harness
-            .html()
-            .contains("Google will sign this account out on 14 Oct."),
-        "{}",
-        w.harness.html()
-    );
-    assert_eq!(w.harness.count(SIGN_IN_ROW), 0);
-    assert_eq!(w.harness.count(EXPIRY_ROW), 0);
-    assert_eq!(
-        w.harness
-            .count("#account-work-example [aria-label=\"Sign-in ends soon\"]"),
-        1,
-        "the list row carries the dot"
-    );
+fn a_sign_in_that_ended_or_will_end_says_so_in_a_banner_that_replaces_the_rows() {
+    // (name, standing, the provider's words, the banner's sentence, the list row's dot, the
+    // button's label when it names the account)
+    let cases = [
+        (
+            "banner-ended",
+            "needs_reauth",
+            ENDED,
+            "Sign in again to keep using Work mail.",
+            "Needs sign-in",
+            Some("Sign In\u{2026} Work mail"),
+        ),
+        (
+            "banner-ending",
+            "ok",
+            ENDING,
+            "Google will sign this account out on 14 Oct.",
+            "Sign-in ends soon",
+            None,
+        ),
+    ];
+    for (name, state, words, sentence, dot, button) in cases {
+        let rows = vec![google("work.example", "Work mail", state, Some(words))];
+        let w = world(name, rows, "work.example");
+        assert_eq!(w.harness.count(BANNER), 1, "{name}: {}", w.harness.html());
+        assert!(w.harness.html().contains(sentence), "{name}: {}", w.harness.html());
+        assert_eq!(
+            w.harness.count(SIGN_IN_ROW),
+            0,
+            "{name}: the row moved into the banner"
+        );
+        assert_eq!(
+            w.harness.count(EXPIRY_ROW),
+            0,
+            "{name}: one message, not two"
+        );
+        if let Some(button) = button {
+            assert_eq!(
+                w.harness.attr(BANNER_BUTTON, "aria-label").as_deref(),
+                Some(button),
+                "{name}"
+            );
+        }
+        assert_eq!(
+            w.harness
+                .count(&format!("#account-work-example [aria-label=\"{dot}\"]")),
+            1,
+            "{name}: the list row carries the dot"
+        );
+    }
 }
 
 #[test]

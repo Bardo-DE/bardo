@@ -98,20 +98,26 @@ async fn open_target_tells_the_window_the_target_its_text_names() {
 #[tokio::test(flavor = "multi_thread")]
 async fn open_page_shows_the_page_its_slug_names_and_raises() {
     let world = World::start("app-open-page", &[]).await;
-    call(
-        &world,
-        "ActivateAction",
-        ("open-page", vec![Value::from("software-update")], no_data()),
-    )
-    .await
-    .expect("answered");
-    assert_eq!(
-        world.window.told(),
-        [
-            Notice::OpenPage(PageSlug("software-update".to_owned())),
-            Notice::Raise(None)
-        ]
-    );
+    // Each slug is shown and the window raised: a plain page, then the slugs sill is told to send
+    // for the assistant's model page and its first-run step.
+    let slugs = [
+        "software-update",
+        ASSISTANT_MODEL_SLUG,
+        ASSISTANT_SETUP_SLUG,
+    ];
+    let mut want = Vec::new();
+    for slug in slugs {
+        call(
+            &world,
+            "ActivateAction",
+            ("open-page", vec![Value::from(slug)], no_data()),
+        )
+        .await
+        .expect("answered");
+        want.push(Notice::OpenPage(PageSlug(slug.to_owned())));
+        want.push(Notice::Raise(None));
+    }
+    assert_eq!(world.window.told(), want);
     call(
         &world,
         "ActivateAction",
@@ -120,33 +126,9 @@ async fn open_page_shows_the_page_its_slug_names_and_raises() {
     .await
     .expect("answered");
     assert_eq!(
-        world.window.told()[2..],
+        world.window.told()[want.len()..],
         [Notice::Raise(None)],
         "a page that is not named only raises the window"
-    );
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn open_page_shows_the_assistants_model_page_and_its_first_run_step() {
-    let world = World::start("app-open-assistant-model", &[]).await;
-    for slug in [ASSISTANT_MODEL_SLUG, ASSISTANT_SETUP_SLUG] {
-        call(
-            &world,
-            "ActivateAction",
-            ("open-page", vec![Value::from(slug)], no_data()),
-        )
-        .await
-        .expect("answered");
-    }
-    assert_eq!(
-        world.window.told(),
-        [
-            Notice::OpenPage(PageSlug("assistant-model".to_owned())),
-            Notice::Raise(None),
-            Notice::OpenPage(PageSlug("assistant-model-setup".to_owned())),
-            Notice::Raise(None),
-        ],
-        "the slugs sill is told to send, each shown and the window raised"
     );
 }
 

@@ -138,21 +138,6 @@ fn an_app_that_is_not_listed_is_not_asked_about() {
 }
 
 #[test]
-fn a_refusal_is_told_and_the_list_is_read_again() {
-    let state = ready(vec![grant(MEET, ShareLength::UntilRemoved, DAY)]);
-    let (asked, _) = screen_sharing_step(state, ScreenSharingInput::Remove(subject(MEET)));
-    let words = "Screen sharing could not be changed.".to_owned();
-    let (_, effects) = screen_sharing_step(asked, ScreenSharingInput::Removed(Err(words.clone())));
-    assert_eq!(
-        effects,
-        [
-            ScreenSharingEffect::Tell(words),
-            ScreenSharingEffect::Reload
-        ]
-    );
-}
-
-#[test]
 fn the_portal_going_away_is_said_and_coming_back_lists_again() {
     let state = ready(vec![grant(MEET, ShareLength::UntilRemoved, DAY)]);
     let (gone, _) = screen_sharing_step(state, ScreenSharingInput::Found(Err(Absence::NotRunning)));
@@ -201,21 +186,42 @@ fn a_remove_under_way_holds_allow_back() {
 }
 
 #[test]
-fn a_refused_allow_is_told_and_the_list_is_read_again() {
-    let state = ready(vec![]);
-    let (asked, _) = screen_sharing_step(state, ScreenSharingInput::Allow(subject(MEET)));
+fn a_refusal_is_told_and_the_list_is_read_again() {
     let words = "Screen sharing could not be changed.".to_owned();
-    let (freed, effects) =
-        screen_sharing_step(asked, ScreenSharingInput::Allowed(Err(words.clone())));
-    assert_eq!(
-        effects,
-        [
-            ScreenSharingEffect::Tell(words),
-            ScreenSharingEffect::Reload
-        ]
-    );
-    let (_, effects) = screen_sharing_step(freed, ScreenSharingInput::Allow(subject(MEET)));
-    assert_eq!(effects, [ScreenSharingEffect::Allow(subject(MEET))]);
+    // (what the person pressed, the portal's refusal of it, then the press that is heard again
+    // when the refusal frees the page)
+    let cases = [
+        (
+            ready(vec![grant(MEET, ShareLength::UntilRemoved, DAY)]),
+            ScreenSharingInput::Remove(subject(MEET)),
+            ScreenSharingInput::Removed(Err(words.clone())),
+            None,
+        ),
+        (
+            ready(vec![]),
+            ScreenSharingInput::Allow(subject(MEET)),
+            ScreenSharingInput::Allowed(Err(words.clone())),
+            Some((
+                ScreenSharingInput::Allow(subject(MEET)),
+                ScreenSharingEffect::Allow(subject(MEET)),
+            )),
+        ),
+    ];
+    for (state, press, refusal, again) in cases {
+        let (asked, _) = screen_sharing_step(state, press);
+        let (freed, effects) = screen_sharing_step(asked, refusal);
+        assert_eq!(
+            effects,
+            [
+                ScreenSharingEffect::Tell(words.clone()),
+                ScreenSharingEffect::Reload
+            ]
+        );
+        if let Some((press, heard)) = again {
+            let (_, effects) = screen_sharing_step(freed, press);
+            assert_eq!(effects, [heard]);
+        }
+    }
 }
 
 fn entry(id: &str, name: &str, origin: SchemaOrigin, visibility: EntryVisibility) -> DesktopApp {

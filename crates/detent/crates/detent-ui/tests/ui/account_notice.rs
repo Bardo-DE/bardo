@@ -47,21 +47,17 @@ fn world(name: &str) -> (Harness, detent_model::Outbox, impl Sized) {
 }
 
 #[test]
-fn an_account_segment_opens_that_accounts_detail() {
-    let (mut harness, outbox, _keep) = world("notice-account");
-    outbox.send(detail("work_example")).expect("listening");
-    settle(&mut harness, "the account", |h| {
-        h.attr(".accounts-detail", "data-account").as_deref() == Some("work.example")
-    });
-    assert_eq!(page_of(&harness).as_deref(), Some("accounts"));
-}
-
-#[test]
-fn an_unknown_account_opens_the_list() {
-    let (mut harness, outbox, _keep) = world("notice-unknown-account");
-    outbox.send(detail("nobody")).expect("listening");
-    settle(&mut harness, "the list", |h| h.count(".accounts-list") == 1);
-    assert_eq!(page_of(&harness).as_deref(), Some("accounts"));
+fn an_account_segment_opens_that_accounts_detail_and_an_unknown_one_the_list() {
+    // (the segment, the account whose detail opens; none: the list)
+    for (segment, opens) in [("work_example", Some("work.example")), ("nobody", None)] {
+        let (mut harness, outbox, _keep) = world(&format!("notice-account-{segment}"));
+        outbox.send(detail(segment)).expect("listening");
+        settle(&mut harness, "the page", |h| match opens {
+            Some(id) => h.attr(".accounts-detail", "data-account").as_deref() == Some(id),
+            None => h.count(".accounts-list") == 1,
+        });
+        assert_eq!(page_of(&harness).as_deref(), Some("accounts"), "{segment}");
+    }
 }
 
 #[test]
