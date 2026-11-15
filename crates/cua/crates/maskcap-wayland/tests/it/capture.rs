@@ -7,7 +7,7 @@ use casement_protocols::server::quire_agent_v1::quire_agent_lease_v1::RevokeReas
 use cua_action::{Coord, DeviceSize, PixelFormat, Point, Rect, Scale120, Size, WindowSpace};
 use cua_desktop::{
     EiOrigin, GlobalCoord, GlobalRect, LeaseGrant, LeaseId, Pid, SeatIsolation, Stamp,
-    ToplevelIdent, ToplevelInfo, WindowTitle, WindowTrust, WorkspaceRef, WorkspaceShown,
+    ToplevelIdent, ToplevelInfo, WindowTitle, WindowTrust, WorkspaceRef,
 };
 use maskcap::{
     CaptureError, CaptureSession, DamageSource, FrameWant, MaskReason, MaskRegion, WholeMask,
@@ -38,7 +38,7 @@ fn grant(ident: &str) -> LeaseGrant {
             },
             workspace: WorkspaceRef {
                 id: String::new(),
-                shown: WorkspaceShown::Shown,
+                shown: true,
             },
             state: BTreeSet::new(),
             trust: WindowTrust::Native,

@@ -266,7 +266,7 @@ fn window_of(stage: &Stage, ident: &ToplevelIdent) -> Result<ToplevelInfo, Deskt
         },
         workspace: cua_desktop::WorkspaceRef {
             id: "ws-1".into(),
-            shown: cua_desktop::WorkspaceShown::Shown,
+            shown: true,
         },
         state: std::collections::BTreeSet::from([cua_desktop::ToplevelState::Activated]),
         trust: cua_action::WindowTrust::Native,

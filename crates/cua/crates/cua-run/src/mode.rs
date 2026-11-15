@@ -2,7 +2,7 @@
 
 use crate::config::DefaultMode;
 use cua_bus::{ModeGap, ModeSupport};
-use cua_desktop::{BackendCaps, HiddenCapture, RunMode, SeatIsolation};
+use cua_desktop::{BackendCaps, RunMode, SeatIsolation};
 
 /// What `caps` can do for `mode`.
 ///
@@ -19,14 +19,10 @@ pub fn mode_support(caps: &BackendCaps, mode: RunMode) -> ModeSupport {
             SeatIsolation::AgentSeat => ModeSupport::Full,
             SeatIsolation::SharedSeat => ModeSupport::HandsOff,
         },
-        RunMode::AgentWorkspace => match (caps.hidden, caps.seat) {
-            (HiddenCapture::Withheld, _) => {
-                ModeSupport::Unsupported(ModeGap::HiddenCaptureWithheld)
-            }
-            (HiddenCapture::Renders, SeatIsolation::SharedSeat) => {
-                ModeSupport::Unsupported(ModeGap::NoHiddenInput)
-            }
-            (HiddenCapture::Renders, SeatIsolation::AgentSeat) => ModeSupport::Full,
+        RunMode::AgentWorkspace => match (caps.hidden_renders, caps.seat) {
+            (false, _) => ModeSupport::Unsupported(ModeGap::HiddenCaptureWithheld),
+            (true, SeatIsolation::SharedSeat) => ModeSupport::Unsupported(ModeGap::NoHiddenInput),
+            (true, SeatIsolation::AgentSeat) => ModeSupport::Full,
         },
         RunMode::NestedSession => ModeSupport::Unsupported(ModeGap::NoNestedHost),
     }
@@ -77,7 +73,7 @@ mod tests {
 
     fn withheld() -> BackendCaps {
         BackendCaps {
-            hidden: HiddenCapture::Withheld,
+            hidden_renders: false,
             ..agent_seat()
         }
     }

@@ -36,16 +36,6 @@ pub enum ConsentGuard {
     CuadSuspendsInput,
 }
 
-/// Whether a window on another workspace, or minimized, keeps rendering for capture.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum HiddenCapture {
-    /// Frames keep arriving and the content keeps updating (measured on a stock compositor).
-    Renders,
-    /// The compositor stops rendering it.
-    Withheld,
-}
-
 /// What one backend can do.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct BackendCaps {
@@ -57,8 +47,10 @@ pub struct BackendCaps {
     pub masking: MaskWhere,
     /// Who guards confirmations.
     pub consent: ConsentGuard,
-    /// Whether hidden windows keep rendering.
-    pub hidden: HiddenCapture,
+    /// Whether a window on another workspace, or minimized, keeps rendering for capture: frames
+    /// keep arriving and the content keeps updating (measured on a stock compositor). When not,
+    /// the compositor stops rendering it.
+    pub hidden_renders: bool,
 }
 
 impl BackendCaps {
@@ -71,7 +63,7 @@ impl BackendCaps {
                 seat: SeatIsolation::SharedSeat,
                 masking: MaskWhere::Cuad,
                 consent: ConsentGuard::CuadSuspendsInput,
-                hidden: HiddenCapture::Renders,
+                hidden_renders: true,
             },
             // Input reaches only the leased window, but it is still the person's seat and
             // cursor; casement does not mask yet (cuad does) and does not render a window of
@@ -81,7 +73,7 @@ impl BackendCaps {
                 seat: SeatIsolation::SharedSeat,
                 masking: MaskWhere::Cuad,
                 consent: ConsentGuard::CuadSuspendsInput,
-                hidden: HiddenCapture::Withheld,
+                hidden_renders: false,
             },
         }
     }
@@ -99,7 +91,7 @@ mod tests {
         assert_eq!(caps.seat, SeatIsolation::SharedSeat);
         assert_eq!(caps.masking, MaskWhere::Cuad);
         assert_eq!(caps.consent, ConsentGuard::CuadSuspendsInput);
-        assert_eq!(caps.hidden, HiddenCapture::Renders);
+        assert!(caps.hidden_renders);
     }
 
     #[test]
@@ -109,6 +101,6 @@ mod tests {
         assert_eq!(caps.seat, SeatIsolation::SharedSeat);
         assert_eq!(caps.masking, MaskWhere::Cuad);
         assert_eq!(caps.consent, ConsentGuard::CuadSuspendsInput);
-        assert_eq!(caps.hidden, HiddenCapture::Withheld);
+        assert!(!caps.hidden_renders);
     }
 }

@@ -14,7 +14,7 @@ use cua_action::{RunMode, WindowTrust};
 use cua_bus::{CuaTask, ReportRoute, RunBudget, RunOrigin, SuccessCheck, TaskTarget, WindowRef};
 use cua_desktop::{
     BackendCaps, BackendKind, GlobalCoord, GlobalRect, LeaseGrant, LeaseId, MaskWhere, Pid, Stamp,
-    ToplevelIdent, ToplevelInfo, WindowTitle, WorkspaceRef, WorkspaceShown,
+    ToplevelIdent, ToplevelInfo, WindowTitle, WorkspaceRef,
 };
 use cua_run::{
     ContextObs, CuaConfig, CursorObs, Focus, ModelReply, Observation, Rules, Run, RunEffect,
@@ -111,7 +111,7 @@ pub fn window_info() -> ToplevelInfo {
         },
         workspace: WorkspaceRef {
             id: "ws-1".into(),
-            shown: WorkspaceShown::Shown,
+            shown: true,
         },
         state: BTreeSet::new(),
         trust: WindowTrust::Native,

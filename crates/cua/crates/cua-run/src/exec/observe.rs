@@ -21,7 +21,7 @@ use a11y_tree::{
 };
 use cua_action::{Coord, Point, Rect, Size, WindowSpace};
 use cua_bus::WindowRef;
-use cua_desktop::{Desktop, LeaseControl, ToplevelInfo, ToplevelState, WorkspaceShown};
+use cua_desktop::{Desktop, LeaseControl, ToplevelInfo, ToplevelState};
 use docket_core::InboxAsk;
 use maskcap::{CaptureError, CaptureSession, Frame, FrameWant, MaskReason, MaskRegion, WholeMask};
 use porter_infer::StepIndex;
@@ -77,7 +77,7 @@ fn size_of(info: &ToplevelInfo) -> Size<WindowSpace> {
 pub(super) fn visibility_of(info: &ToplevelInfo) -> Visibility {
     if info.state.contains(&ToplevelState::Minimized) {
         Visibility::Minimized
-    } else if info.workspace.shown == WorkspaceShown::Hidden {
+    } else if !info.workspace.shown {
         Visibility::HiddenWorkspace
     } else {
         Visibility::Shown

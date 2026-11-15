@@ -67,7 +67,7 @@ fn window(ident: &str, trust: WindowTrust) -> ToplevelInfo {
         },
         workspace: cua_desktop::WorkspaceRef {
             id: "ws-1".into(),
-            shown: cua_desktop::WorkspaceShown::Shown,
+            shown: true,
         },
         state: BTreeSet::new(),
         trust,

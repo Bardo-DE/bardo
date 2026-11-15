@@ -63,18 +63,9 @@ impl fmt::Debug for WindowTitle {
 pub struct WorkspaceRef {
     /// The compositor's identifier (`ext_workspace_handle_v1.id`).
     pub id: String,
-    /// Whether it is showing.
-    pub shown: WorkspaceShown,
-}
-
-/// Whether a workspace is the one on screen.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum WorkspaceShown {
-    /// Active on its output.
-    Shown,
-    /// Not on screen: a stock compositor renders it for capture but delivers it no input.
-    Hidden,
+    /// Whether it is active on its output. When not, a stock compositor renders it for capture
+    /// but delivers it no input.
+    pub shown: bool,
 }
 
 /// One bit of a toplevel's state.

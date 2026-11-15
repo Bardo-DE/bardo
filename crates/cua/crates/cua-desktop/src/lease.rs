@@ -126,7 +126,7 @@ impl LeaseRequest {
 mod tests {
     use super::*;
     use crate::units::{GlobalCoord, GlobalRect, Pid};
-    use crate::window::{WindowTitle, WorkspaceRef, WorkspaceShown};
+    use crate::window::{WindowTitle, WorkspaceRef};
     use porter_core::AppName;
     use porter_ids::Px;
     use std::collections::BTreeSet;
@@ -145,7 +145,7 @@ mod tests {
             },
             workspace: WorkspaceRef {
                 id: "ws-1".into(),
-                shown: WorkspaceShown::Shown,
+                shown: true,
             },
             state: BTreeSet::new(),
             trust,

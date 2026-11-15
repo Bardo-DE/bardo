@@ -38,7 +38,6 @@ mod tests {
     use super::*;
     use cua_desktop::{
         GlobalCoord, GlobalRect, Pid, ToplevelState, WindowTitle, WindowTrust, WorkspaceRef,
-        WorkspaceShown,
     };
     use porter_core::AppName;
     use porter_ids::Px;
@@ -58,7 +57,7 @@ mod tests {
             },
             workspace: WorkspaceRef {
                 id: "ws-1".into(),
-                shown: WorkspaceShown::Shown,
+                shown: true,
             },
             state: BTreeSet::new(),
             trust: WindowTrust::Native,

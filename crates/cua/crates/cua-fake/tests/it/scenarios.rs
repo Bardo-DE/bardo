@@ -107,7 +107,7 @@ fn input_goes_only_to_the_window_that_is_focused_and_visible() {
             w.state.insert(cua_desktop::ToplevelState::Minimized);
         }),
         ("on a hidden workspace", click, |w| {
-            w.workspace.shown = cua_desktop::WorkspaceShown::Hidden;
+            w.workspace.shown = false;
         }),
     ];
     for (name, action, change) in cases {

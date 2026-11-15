@@ -2,7 +2,7 @@
 
 use cua_desktop::{
     DesktopError, DesktopEvent, GlobalCoord, GlobalRect, Pid, ToplevelIdent, ToplevelInfo,
-    ToplevelState, WindowTitle, WindowTrust, WorkspaceRef, WorkspaceShown,
+    ToplevelState, WindowTitle, WindowTrust, WorkspaceRef,
 };
 use desktop_client::geometry::Rect;
 use desktop_client::quire::{QuireWindow, SpacePlace, WindowChange, WindowEvent};
@@ -96,7 +96,7 @@ fn workspace_of(state: &DesktopState, window: Option<&QuireWindow>) -> Workspace
         _ => {
             return WorkspaceRef {
                 id: String::new(),
-                shown: WorkspaceShown::Shown,
+                shown: true,
             };
         }
     };
@@ -104,12 +104,10 @@ fn workspace_of(state: &DesktopState, window: Option<&QuireWindow>) -> Workspace
         .workspaces
         .active()
         .any(|w| !id.is_empty() && w.id.as_deref() == Some(id.as_str()));
-    let shown = if on_screen {
-        WorkspaceShown::Shown
-    } else {
-        WorkspaceShown::Hidden
-    };
-    WorkspaceRef { id, shown }
+    WorkspaceRef {
+        id,
+        shown: on_screen,
+    }
 }
 
 /// The app id as an [`AppName`]. An id that is not reverse-DNS (`konsole`, `Alacritty`) is
@@ -296,7 +294,7 @@ mod tests {
         assert_eq!(first.trust, WindowTrust::Native);
         assert_eq!(first.state, BTreeSet::from([ToplevelState::Activated]));
         assert_eq!(first.geometry, rect(Rect::new(-10, 20, 400, 300)));
-        assert_eq!(first.workspace.shown, WorkspaceShown::Shown);
+        assert!(first.workspace.shown);
         assert_eq!(all[1].app.as_str(), "app.konsole");
         assert_eq!(all[1].geometry, rect(Rect::new(0, 0, 0, 0)));
     }
@@ -351,9 +349,9 @@ mod tests {
         ));
         let all = infos(&run(script)).unwrap();
         assert_eq!(all[0].workspace.id, "s-main");
-        assert_eq!(all[0].workspace.shown, WorkspaceShown::Shown);
+        assert!(all[0].workspace.shown);
         assert_eq!(all[1].workspace.id, "s-other");
-        assert_eq!(all[1].workspace.shown, WorkspaceShown::Hidden);
+        assert!(!all[1].workspace.shown);
     }
 
     #[test]

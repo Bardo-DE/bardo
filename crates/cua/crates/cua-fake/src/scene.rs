@@ -66,7 +66,7 @@ pub fn window() -> ToplevelInfo {
         },
         workspace: cua_desktop::WorkspaceRef {
             id: "ws-1".into(),
-            shown: cua_desktop::WorkspaceShown::Shown,
+            shown: true,
         },
         // The focused window: input only goes to a window that has the focus on a shared seat.
         state: BTreeSet::from([cua_desktop::ToplevelState::Activated]),

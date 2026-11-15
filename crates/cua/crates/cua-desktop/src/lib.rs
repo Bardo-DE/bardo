@@ -20,7 +20,7 @@ mod traits;
 mod units;
 mod window;
 
-pub use caps::{BackendCaps, BackendKind, ConsentGuard, HiddenCapture, MaskWhere};
+pub use caps::{BackendCaps, BackendKind, ConsentGuard, MaskWhere};
 pub use cua_action::{RunMode, WindowTrust};
 pub use error::DesktopError;
 pub use event::DesktopEvent;
@@ -33,5 +33,4 @@ pub use traits::{Desktop, LeaseControl};
 pub use units::{Digest32, DigestError, GlobalCoord, GlobalRect, Ms, Pid, Stamp};
 pub use window::{
     IdentError, ToplevelIdent, ToplevelInfo, ToplevelState, WindowTitle, WorkspaceRef,
-    WorkspaceShown,
 };
