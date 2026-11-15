@@ -1,4 +1,3 @@
-use std::ops::ControlFlow;
 use super::*;
 use cua_action::{
     Button, ClickCount, Coord, CuaAction, Point, Scale120, Size, Target, WindowSpace,
@@ -14,6 +13,7 @@ use porter_infer::{
 };
 use porter_router::testkit::models;
 use std::io::Write;
+use std::ops::ControlFlow;
 use std::os::fd::OwnedFd;
 use test_kit::Scratch;
 

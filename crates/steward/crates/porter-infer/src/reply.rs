@@ -4,8 +4,8 @@ use crate::control::StopReason;
 use crate::cua::CuaStepReply;
 use crate::error::{InferRefusal, ModelError};
 use crate::scores::OptionScores;
-use model_provider::Money;
 pub use model_provider::EmbedVector;
+use model_provider::Money;
 use porter_capability::Locality;
 use porter_capability::ModelId;
 use porter_core::AccountId;
@@ -112,7 +112,6 @@ impl EmbedReply {
         }
     }
 }
-
 
 /// A finished transcript.
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]

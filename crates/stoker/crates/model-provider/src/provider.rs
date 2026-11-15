@@ -1,7 +1,7 @@
 //! The provider trait and its errors.
 
-use std::ops::ControlFlow;
 use serde::{Deserialize, Serialize};
+use std::ops::ControlFlow;
 
 use crate::{
     Charges, ModelName, ProviderDetail, RetrySeconds, ServerStatus, Tokens, TurnEnd, TurnRequest,

@@ -2,7 +2,6 @@
 //! run (a fake `voice_in` model, then a text model answered by the replay engine). No network, no
 //! engine process: the replay engine is a task on a socket in the scratch directory.
 
-use std::ops::ControlFlow;
 use crate::replay::cassette::{Cassette, TEST_HEADER};
 use crate::replay::engine::serve;
 use crate::replay::model::model;
@@ -30,6 +29,7 @@ use porter_router::pipeline::{catalogue_of, plan};
 use porter_router::router::Listed;
 use porter_turns::pipeline::{PipelineInput, Transcriber, VecAudio, run_pipeline, unsupported};
 use std::collections::BTreeSet;
+use std::ops::ControlFlow;
 use std::sync::{Arc, Mutex};
 use test_kit::Scratch;
 use tokio::net::UnixListener;

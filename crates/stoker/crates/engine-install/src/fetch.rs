@@ -6,20 +6,20 @@
 //! checksum covers all of it). A file that is complete but wrong is deleted. A stop or a lost
 //! connection that outlasts the retries leaves the part for the next try.
 
-use std::ops::ControlFlow;
 use crate::pinned_url::PinnedUrl;
 use crate::progress::{CancelToken, Meter};
 use engine_manifest::{Artifact, hex};
 use engine_probe::file_digest;
 use model_http::{
-    AuthHeader, BodySink, Exchange, ExtraHeader, Framing, HeaderName, HostName,
-    HttpClient, HttpEndpoint, HttpError, HttpTarget, Port, Proxy, ResponseHead, RouteRoot, Secret,
-    Timeouts, TlsRoots, Transport, UrlPath, Verb, WaitMs,
+    AuthHeader, BodySink, Exchange, ExtraHeader, Framing, HeaderName, HostName, HttpClient,
+    HttpEndpoint, HttpError, HttpTarget, Port, Proxy, ResponseHead, RouteRoot, Secret, Timeouts,
+    TlsRoots, Transport, UrlPath, Verb, WaitMs,
 };
 use sha2::{Digest, Sha256};
 use std::ffi::OsString;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
+use std::ops::ControlFlow;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 

@@ -1,7 +1,7 @@
 //! Speech replay and recording: prints, silence of the recorded duration, tees.
 
-use std::ops::ControlFlow;
 use std::collections::VecDeque;
+use std::ops::ControlFlow;
 use std::sync::Mutex;
 
 use model_provider::{ModelName, ProviderError, Support, Tokens};
@@ -11,10 +11,10 @@ use model_replay::{
     SpeechCassetteSink, SpeechInteraction, SpeechReplay, SttPrint, TtsPrint,
 };
 use speech_provider::{
-    AudioChunk, AudioFormat, AudioMs, AudioSink, AudioSource, HeardText, Lang,
-    LangChoice, LangSet, PcmBytes, PcmFormat, SampleIndex, SampleRate, SpeechCaps, SpeechIo,
-    SpeechToText, SpokenText, SttEnd, SttMode, SttRequest, TextToSpeech, TranscriptEvent,
-    TranscriptSink, TtsEnd, TtsRequest, VoiceId,
+    AudioChunk, AudioFormat, AudioMs, AudioSink, AudioSource, HeardText, Lang, LangChoice, LangSet,
+    PcmBytes, PcmFormat, SampleIndex, SampleRate, SpeechCaps, SpeechIo, SpeechToText, SpokenText,
+    SttEnd, SttMode, SttRequest, TextToSpeech, TranscriptEvent, TranscriptSink, TtsEnd, TtsRequest,
+    VoiceId,
 };
 
 fn block_on<T>(future: impl Future<Output = T>) -> T {

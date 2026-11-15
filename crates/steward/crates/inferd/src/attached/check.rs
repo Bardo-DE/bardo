@@ -2,12 +2,12 @@
 //! serves the model under. Asked when a session opens and nowhere else (no background polling),
 //! and answered with the one thing that is wrong, typed.
 
-use std::ops::ControlFlow;
 use model_http::{
-    BodySink, Exchange, Framing, HttpClient, HttpError, HttpStatus, ResponseHead,
-    RouteRoot, Timeouts, Transport, UrlPath, Verb, WaitMs,
+    BodySink, Exchange, Framing, HttpClient, HttpError, HttpStatus, ResponseHead, RouteRoot,
+    Timeouts, Transport, UrlPath, Verb, WaitMs,
 };
 use porter_router::attached::{NotReady, Target};
+use std::ops::ControlFlow;
 
 /// How long the probe waits at each stage: a tunnel that is up answers at once on a quiet
 /// computer and in seconds on a loaded one (a connection made in 20 ms idle took seconds), and

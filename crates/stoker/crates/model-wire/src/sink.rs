@@ -2,15 +2,14 @@
 //! (a reply to decode, or an error to classify), and the framer the exchange named cuts the reply
 //! into frames for the decoder.
 
-use std::ops::ControlFlow;
 use model_http::{
-    BodySink, Framing, HttpError, HttpStatus, NdjsonDecoder, Progress, ResponseHead,
-    SseDecoder, WaitMs,
+    BodySink, Framing, HttpError, HttpStatus, NdjsonDecoder, Progress, ResponseHead, SseDecoder,
+    WaitMs,
 };
 use model_provider::{
-    ModelName, ProviderError, StopReason, TurnEnd, TurnEvent, TurnSink, TurnUsage,
-    UsageReport,
+    ModelName, ProviderError, StopReason, TurnEnd, TurnEvent, TurnSink, TurnUsage, UsageReport,
 };
+use std::ops::ControlFlow;
 
 use crate::collect::{Collect, REPLY_BODY_MAX, is_failure};
 use crate::errors::{codec_error, http_error, with_retry_after};
@@ -206,7 +205,12 @@ impl<'a, C: ChatCodec, K: TurnSink> ChatSink<'a, C, K> {
         Ok(ControlFlow::Continue(()))
     }
 
-    fn read(&mut self, mut decoder: C::Decoder, mut framer: Framer, bytes: &[u8]) -> ControlFlow<()> {
+    fn read(
+        &mut self,
+        mut decoder: C::Decoder,
+        mut framer: Framer,
+        bytes: &[u8],
+    ) -> ControlFlow<()> {
         self.raw = self.raw.saturating_add(bytes.len());
         let step = if self.raw > STREAM_BYTES_MAX {
             Err(ProviderError::Unreadable("the reply is too large".into()))

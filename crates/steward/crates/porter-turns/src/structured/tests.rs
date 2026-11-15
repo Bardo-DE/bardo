@@ -1,4 +1,3 @@
-use std::ops::ControlFlow;
 use super::*;
 use model_provider::{
     ModelName, OutputShape, Part, ProviderError, Role, Script, ScriptedProvider, StopReason,
@@ -7,6 +6,7 @@ use model_provider::{
 use porter_capability::Tier;
 use porter_core::{DataClass, consent::Usage};
 use porter_router::testkit::models;
+use std::ops::ControlFlow;
 use test_kit::Scratch;
 
 const SCORE: &str = r#"{"type":"object","additionalProperties":false,

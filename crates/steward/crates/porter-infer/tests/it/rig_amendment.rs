@@ -96,11 +96,18 @@ fn open_options_pin_their_json_and_refuse_what_is_not_one() {
     // Nothing set reads as the person, interactive.
     let plain = OpenOptions::default();
     assert_eq!(
-        (plain.asker_or_default(), plain.usage_or_default(), plain.model.clone()),
+        (
+            plain.asker_or_default(),
+            plain.usage_or_default(),
+            plain.model.clone()
+        ),
         (Asker::Person, Usage::Interactive, None)
     );
     for refused in [r#"{"traceparent":"nope"}"#, r#"{"usage":"batch"}"#] {
-        assert!(serde_json::from_str::<OpenOptions>(refused).is_err(), "{refused}");
+        assert!(
+            serde_json::from_str::<OpenOptions>(refused).is_err(),
+            "{refused}"
+        );
     }
     // The bus's text form round-trips and refuses what is not one.
     for asker in [Asker::Person, Asker::Helper(helper)] {

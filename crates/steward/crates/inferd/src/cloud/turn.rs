@@ -7,7 +7,6 @@
 //! a transport built for this turn, and dropped with them. It is never put in a log line, an
 //! event, an audit entry or a file; an error from the provider is classified without its body.
 
-use std::ops::ControlFlow;
 use super::Cloud;
 use super::accountd::AccountdFault;
 use super::models::RemoteModel;
@@ -24,6 +23,7 @@ use porter_infer::{
 };
 use porter_turns::bridge::{self, DefaultSampling, Frames, JsonReply, Target};
 use porter_turns::local::{RETRY, TokioSleep};
+use std::ops::ControlFlow;
 use std::os::fd::OwnedFd;
 use std::sync::Arc;
 

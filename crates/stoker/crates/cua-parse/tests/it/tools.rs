@@ -221,8 +221,16 @@ fn qwen_drag_scroll_wait_and_conclusions() {
             "scroll",
             DropReason::MissingArgument,
         ),
-        (r#"{"action":"wait","time":61}"#, "wait", DropReason::BadNumber),
-        (r#"{"action":"wait","time":-1}"#, "wait", DropReason::BadNumber),
+        (
+            r#"{"action":"wait","time":61}"#,
+            "wait",
+            DropReason::BadNumber,
+        ),
+        (
+            r#"{"action":"wait","time":-1}"#,
+            "wait",
+            DropReason::BadNumber,
+        ),
         (
             r#"{"action":"wait","time":"1e400"}"#,
             "wait",

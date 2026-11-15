@@ -1,7 +1,7 @@
 //! The streaming side of a turn: events pushed into a sink.
 
-use std::ops::ControlFlow;
 use serde::{Deserialize, Serialize};
+use std::ops::ControlFlow;
 
 use crate::{
     CallIndex, FirstTokenLogprobs, ImageCount, ModelName, Money, ThoughtSeal, Tokens, ToolCall,

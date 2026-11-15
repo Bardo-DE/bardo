@@ -13,8 +13,8 @@ use porter_core::DataClass;
 use porter_core::consent::Usage;
 use porter_ids::Tokens;
 use porter_infer::{
-    ChatMessage, ChatRequest, ClientFrame, InferEvent, InferReply, InferRequest, SchemaText,
-    JsonText, MessagePart, Role as ChatRole, StopReason, ToolDecl, ToolName,
+    ChatMessage, ChatRequest, ClientFrame, InferEvent, InferReply, InferRequest, JsonText,
+    MessagePart, Role as ChatRole, SchemaText, StopReason, ToolDecl, ToolName,
 };
 use porter_match::LlmNeed;
 use porter_match::Need;

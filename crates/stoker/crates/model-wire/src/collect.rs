@@ -1,8 +1,8 @@
 //! A sink that keeps a whole body: what `describe`, `embed` and an error reply need.
 
-use std::ops::ControlFlow;
 use model_http::{BodyKind, BodySink, HttpError, HttpStatus, ResponseHead};
 use model_provider::ProviderError;
+use std::ops::ControlFlow;
 
 use crate::ErrorWire;
 use crate::errors::{http_error, with_retry_after};

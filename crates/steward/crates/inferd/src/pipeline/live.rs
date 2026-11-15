@@ -8,14 +8,13 @@
 //! (`Routed` and a `Stage` note each), so the session's own `Answer` note is not sent for the
 //! turn: exactly one per turn.
 
-use std::ops::ControlFlow;
 use crate::engines::{Engines, Offered, named_tiers, through_grants};
 use crate::runner::Turns;
 use crate::speech::Ears;
 use porter_core::AppId;
 use porter_infer::{
-    Answer, ChatRequest, ChatSink, InferEvent, InferReply, InferRequest, Modality,
-    ModelError, ModelRef, RequestShape, ShowReason, StageRole,
+    Answer, ChatRequest, ChatSink, InferEvent, InferReply, InferRequest, Modality, ModelError,
+    ModelRef, RequestShape, ShowReason, StageRole,
 };
 use porter_router::pipeline::plan;
 use porter_router::router::placed::Allowed;
@@ -24,6 +23,7 @@ use porter_router::session::{HeardAudio, SessionSpec};
 use porter_turns::Turn;
 use porter_turns::pipeline::{PipelineInput, VecAudio, run_pipeline};
 use std::collections::BTreeSet;
+use std::ops::ControlFlow;
 use tokio::sync::mpsc;
 
 /// What a session needs to plan and run a voice chat: the engines, the app whose grants decide

@@ -2,8 +2,8 @@
 //! exchange named cuts frames, the decoder's events reach the sink, every failure is a
 //! `ProviderError` that carries no body.
 
-use std::ops::ControlFlow;
 use crate::support;
+use std::ops::ControlFlow;
 
 use model_http::{BodyKind, Framing, HttpError, HttpStatus};
 use model_provider::{

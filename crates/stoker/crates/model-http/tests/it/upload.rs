@@ -10,9 +10,9 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use model_http::{
-    AuthHeader, BodySink, ContentType, Framing, HttpClient, HttpEndpoint, HttpError,
-    HttpStatus, HttpTarget, Proxy, RawBody, ResponseHead, RouteRoot, Secret, Timeouts, Upload,
-    UploadTransport, UrlPath, WaitMs,
+    AuthHeader, BodySink, ContentType, Framing, HttpClient, HttpEndpoint, HttpError, HttpStatus,
+    HttpTarget, Proxy, RawBody, ResponseHead, RouteRoot, Secret, Timeouts, Upload, UploadTransport,
+    UrlPath, WaitMs,
 };
 use proptest::prelude::*;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};

@@ -10,7 +10,9 @@
 
 use cua_action::CuaDialect;
 use engine_spec::{SpecError, check_entry, engine};
-use model_catalog::{CatalogError, Modality as CatalogModality, ModelEntry, merge_catalogs, parse_entry};
+use model_catalog::{
+    CatalogError, Modality as CatalogModality, ModelEntry, merge_catalogs, parse_entry,
+};
 use model_provider::{
     Caps, Constraint, CuaSupport, EmbedCaps, InputKind, Support, ToolSupport, Zoom,
 };
@@ -159,9 +161,14 @@ pub fn capabilities_of(entry: &ModelEntry) -> Vec<Capability> {
         }
     }
     if takes(CatalogModality::Text) && gives(CatalogModality::Vector) {
-        offered.extend(c.vector_out.as_ref().map(|embed| Capability::Embeddings(embed_cap(embed))));
+        offered.extend(
+            c.vector_out
+                .as_ref()
+                .map(|embed| Capability::Embeddings(embed_cap(embed))),
+        );
     }
-    let speech_in = takes(CatalogModality::Audio) && gives(CatalogModality::Text) && c.audio_in.is_some();
+    let speech_in =
+        takes(CatalogModality::Audio) && gives(CatalogModality::Text) && c.audio_in.is_some();
     let speech_out = takes(CatalogModality::Text)
         && gives(CatalogModality::Audio)
         && c.audio_out.is_some()

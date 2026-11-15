@@ -7,16 +7,14 @@
 //! (they are not recordings of a model); a recorded run replaces them when
 //! `dev/record-engine.sh` is run against Holo-3.1-4B.
 
-use std::ops::ControlFlow;
 use crate::support;
+use std::ops::ControlFlow;
 
 use std::sync::Mutex;
 
 use cua_action::{CuaAction, CuaDialect, ModelSpace, TextDialect, ToolDialect};
 use cua_session::{CuaSession, StepOutcome, TranscriptSink};
-use model_http::{
-    BodyKind, BodySink, Exchange, HttpError, HttpStatus, ResponseHead, Transport,
-};
+use model_http::{BodyKind, BodySink, Exchange, HttpError, HttpStatus, ResponseHead, Transport};
 use model_openai_compat::{Flavor, OpenAiCodec};
 use model_provider::{ModelName, Provider, ProviderError, Seed, Tokens, TurnRequest};
 use model_replay::{

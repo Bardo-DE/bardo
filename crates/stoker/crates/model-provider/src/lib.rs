@@ -48,9 +48,7 @@ pub use embed::{
     EmbedCaps, EmbedEnd, EmbedFault, EmbedPrompts, EmbedRole, EmbedTurn, EmbedVector, Embedder,
     PrefixText, plan_batches,
 };
-pub use event::{
-    SafetySignal, StopReason, TurnEnd, TurnEvent, TurnSink, TurnUsage, UsageReport,
-};
+pub use event::{SafetySignal, StopReason, TurnEnd, TurnEvent, TurnSink, TurnUsage, UsageReport};
 pub use ids::{
     JsonError, JsonText, ModelName, OpaqueText, SchemaText, SignatureText, ToolCallId, ToolName,
     ToolNameError,

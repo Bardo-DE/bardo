@@ -2,8 +2,8 @@
 //! `speech_*` tests share. Each test file uses a subset.
 #![allow(dead_code)]
 
-use std::ops::ControlFlow;
 use std::collections::VecDeque;
+use std::ops::ControlFlow;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::sync::{Arc, Mutex};
@@ -13,11 +13,11 @@ use model_http::{
     AuthHeader, HttpClient, HttpEndpoint, HttpTarget, Proxy, Timeouts, UrlPath, WaitMs,
 };
 use model_openai_compat::{KOKORO_FORMAT, KokoroSpeech, OpenAiTranscription};
-use model_provider::{ModelName};
+use model_provider::ModelName;
 use speech_provider::{
-    AudioChunk, AudioFormat, AudioSink, AudioSource, Lang, LangChoice, PcmBytes,
-    PcmFormat, SampleIndex, SampleRate, SpokenText, SttMode, SttRequest, TranscriptEvent,
-    TranscriptSink, TtsRequest, VoiceId,
+    AudioChunk, AudioFormat, AudioSink, AudioSource, Lang, LangChoice, PcmBytes, PcmFormat,
+    SampleIndex, SampleRate, SpokenText, SttMode, SttRequest, TranscriptEvent, TranscriptSink,
+    TtsRequest, VoiceId,
 };
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::UnixListener;

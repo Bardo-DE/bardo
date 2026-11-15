@@ -13,9 +13,9 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use model_http::{
-    AuthHeader, BodyKind, BodySink, Exchange, ExtraHeader, Framing, HeaderName,
-    HostName, HttpClient, HttpEndpoint, HttpError, HttpStatus, HttpTarget, JsonBody, Port,
-    Progress, Proxy, ResponseHead, RouteRoot, Secret, Timeouts, Transport, UrlPath, Verb, WaitMs,
+    AuthHeader, BodyKind, BodySink, Exchange, ExtraHeader, Framing, HeaderName, HostName,
+    HttpClient, HttpEndpoint, HttpError, HttpStatus, HttpTarget, JsonBody, Port, Progress, Proxy,
+    ResponseHead, RouteRoot, Secret, Timeouts, Transport, UrlPath, Verb, WaitMs,
 };
 use tokio::io::{AsyncReadExt, AsyncWrite, AsyncWriteExt};
 use tokio::net::{TcpListener, UnixListener};

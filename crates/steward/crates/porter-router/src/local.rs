@@ -305,7 +305,10 @@ fn one(entry: &ModelEntry, engines: &EngineConfig, sockets: &Path) -> Option<Loc
         engines,
     );
     // An embedding-only entry has no chat context: its longest input is what the cache holds.
-    let context = match (entry.capabilities.chat_caps(), &entry.capabilities.vector_out) {
+    let context = match (
+        entry.capabilities.chat_caps(),
+        &entry.capabilities.vector_out,
+    ) {
         (Some(caps), _) => caps.context,
         (None, Some(embed)) => embed.max_input,
         (None, None) => Tokens::default(),

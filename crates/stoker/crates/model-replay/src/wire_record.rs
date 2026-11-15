@@ -1,10 +1,10 @@
 //! Records the exchanges a `Transport` carries.
 
-use std::ops::ControlFlow;
 use model_http::{
-    BodyKind, BodySink, Exchange, Framing, HttpError, HttpStatus, NdjsonDecoder,
-    Progress, ResponseHead, SseDecoder, Transport, WaitMs,
+    BodyKind, BodySink, Exchange, Framing, HttpError, HttpStatus, NdjsonDecoder, Progress,
+    ResponseHead, SseDecoder, Transport, WaitMs,
 };
+use std::ops::ControlFlow;
 
 use crate::wire_form::{head_print, request_of, scrub_text};
 use crate::{WireBody, WireEnd, WireExchange, WireFrame, WireReply, WireSink};

@@ -3,12 +3,12 @@
 use std::ops::ControlFlow;
 use std::sync::Mutex;
 
-use model_provider::{ProviderError};
+use model_provider::ProviderError;
 
 use crate::{
-    AudioChunk, AudioMs, AudioSink, AudioSource, Frame512, PcmBytes, SampleIndex,
-    SpeechModelInfo, SpeechProb, SpeechToText, SttEnd, SttRequest, TextToSpeech, TranscriptEvent,
-    TranscriptSink, TtsEnd, TtsRequest, VoiceActivity, Voiced,
+    AudioChunk, AudioMs, AudioSink, AudioSource, Frame512, PcmBytes, SampleIndex, SpeechModelInfo,
+    SpeechProb, SpeechToText, SttEnd, SttRequest, TextToSpeech, TranscriptEvent, TranscriptSink,
+    TtsEnd, TtsRequest, VoiceActivity, Voiced,
 };
 
 /// Plays `(index, event)` pairs: each event is pushed once the audio pulled so far passes its

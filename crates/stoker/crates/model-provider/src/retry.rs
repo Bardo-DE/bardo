@@ -7,8 +7,8 @@
 //! The rule that matters: never retry once the first event reached the sink. A half-delivered
 //! turn is not idempotent for the planner.
 
-use std::ops::ControlFlow;
 use serde::{Deserialize, Serialize};
+use std::ops::ControlFlow;
 
 use crate::{
     Attempt, Charges, ModelInfo, Permille, Provider, ProviderError, RetrySeconds, TurnEnd,

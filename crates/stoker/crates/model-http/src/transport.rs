@@ -12,8 +12,8 @@
 //! runs between chunks of the body. The sink's `deadline` bounds the whole exchange, connect
 //! included.
 
-use std::ops::ControlFlow;
 use std::future::Future;
+use std::ops::ControlFlow;
 use std::time::Duration;
 
 use reqwest::header::{CONTENT_TYPE, RETRY_AFTER};
@@ -23,9 +23,8 @@ use tokio::time::{sleep, timeout};
 use crate::connect::{is_tls_failure, millis};
 use crate::request::{Parts, Prepared, prepare};
 use crate::{
-    BodyKind, BodySink, Exchange, HttpClient, HttpError, HttpStatus, HttpTarget,
-    Progress, Proxy, RequestId, ResponseHead, Timeouts, Transport, Upload, UploadTransport, WaitMs,
-    WaitSeconds,
+    BodyKind, BodySink, Exchange, HttpClient, HttpError, HttpStatus, HttpTarget, Progress, Proxy,
+    RequestId, ResponseHead, Timeouts, Transport, Upload, UploadTransport, WaitMs, WaitSeconds,
 };
 
 impl Transport for HttpClient {

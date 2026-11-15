@@ -1,8 +1,8 @@
 //! `CuaSession`: prompt assembly, the history window, parse with one repair, and the mapping into
 //! window space, over scripted replies and a `ScriptedProvider`.
 
-use std::ops::ControlFlow;
 use crate::support;
+use std::ops::ControlFlow;
 
 use cua_action::{
     Button, ClickCount, Coord, CuaAction, CuaDialect, ModelSpace, Point, TextDialect, ToolDialect,
@@ -11,8 +11,8 @@ use cua_parse::{DropReason, ParseError};
 use cua_session::{MaskedRegions, StepIndex, StepLines, StepOutcome, TranscriptSink, TurnSettings};
 use cua_vendors::StepResult;
 use model_provider::{
-    Knob, Milli, ModelName, Part, Provider, Role, Script, ScriptedProvider, StopReason,
-    ToolCallId, ToolSpec, TurnEvent, TurnRequest, check_sequence,
+    Knob, Milli, ModelName, Part, Provider, Role, Script, ScriptedProvider, StopReason, ToolCallId,
+    ToolSpec, TurnEvent, TurnRequest, check_sequence,
 };
 use support::*;
 
@@ -528,7 +528,10 @@ fn a_turn_through_a_scripted_provider_becomes_an_outcome() {
         .absorb_for(&provider.requests()[0], transcript, &m);
     assert_eq!(actions(outcome).0.len(), 1);
     // The sink keeps going until the turn ends.
-    assert_eq!(TranscriptSink::new().event_flow(), ControlFlow::Continue(()));
+    assert_eq!(
+        TranscriptSink::new().event_flow(),
+        ControlFlow::Continue(())
+    );
 }
 
 trait Probe {

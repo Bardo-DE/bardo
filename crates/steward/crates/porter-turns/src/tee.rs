@@ -5,10 +5,10 @@
 //! turn before anything is said to the app (the first may be repaired, the second parsed), so
 //! only the thoughts stream; what the turn says is told when it has been checked.
 
-use std::ops::ControlFlow;
 use cua_session::TranscriptSink;
 use model_provider::{TurnEnd, TurnEvent, TurnSink};
 use porter_infer::InferEvent;
+use std::ops::ControlFlow;
 
 /// What of the turn's text is shown as thinking while the turn runs.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -89,7 +89,14 @@ mod tests {
         }
     }
 
-    fn run(echo: Echo, stop_after: usize) -> (Vec<InferEvent>, ControlFlow<()>, cua_session::TurnTranscript) {
+    fn run(
+        echo: Echo,
+        stop_after: usize,
+    ) -> (
+        Vec<InferEvent>,
+        ControlFlow<()>,
+        cua_session::TurnTranscript,
+    ) {
         let mut seen = Vec::new();
         let mut forward = |event| {
             seen.push(event);

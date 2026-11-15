@@ -7,9 +7,7 @@ use crate::bridge::Frames;
 use crate::cua_step::{self, Failed};
 use cua_session::CuaSession;
 use model_provider::{Provider, Tokens};
-use porter_infer::{
-    ChatSink, CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, ModelError,
-};
+use porter_infer::{ChatSink, CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, ModelError};
 use porter_router::local::LocalModel;
 
 /// Only `Screen` data may enter a computer-use session; the rule moved to

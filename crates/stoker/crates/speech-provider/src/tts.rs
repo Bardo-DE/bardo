@@ -1,8 +1,8 @@
 //! Text to speech: the request and the seam.
 
-use std::ops::ControlFlow;
 use model_provider::{ModelName, ProviderError};
 use serde::{Deserialize, Serialize};
+use std::ops::ControlFlow;
 
 use crate::{AudioChunk, AudioFormat, AudioMs, Lang, SpeechModelInfo, SpokenText, VoiceId};
 

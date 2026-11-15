@@ -114,6 +114,8 @@ pub struct ResponseHead {
 }
 
 /// A duration in milliseconds.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default, Serialize, Deserialize)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default, Serialize, Deserialize,
+)]
 #[serde(transparent)]
 pub struct WaitMs(pub u32);

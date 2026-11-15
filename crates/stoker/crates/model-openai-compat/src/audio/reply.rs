@@ -1,12 +1,12 @@
 //! What the speech provider reads back: a body kept whole (a transcription, a model list), a
 //! streamed PCM body cut into chunks, and the two listings.
 
-use std::ops::ControlFlow;
 use model_http::{BodyKind, BodySink, HttpError, HttpStatus, ResponseHead};
 use model_provider::{ModelName, ProviderError};
 use model_wire::http_error;
 use serde_json::Value;
 use speech_provider::{AudioFormat, AudioMs, AudioSink, VoiceId};
+use std::ops::ControlFlow;
 
 use super::PcmDecoder;
 use crate::classify::classify_bare;

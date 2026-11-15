@@ -13,7 +13,6 @@
 //! What it leaves to its caller: which model the session is pinned to, a hosted model, and a
 //! speech turn (a speech engine is not an OpenAI-compatible one).
 
-use std::ops::ControlFlow;
 use crate::bridge::{self, Frames};
 use crate::cua_run::{CuaRun, StepJob};
 use engine_supervisor::EngineId;
@@ -28,6 +27,7 @@ use porter_infer::{
 use porter_router::local::LocalModel;
 use porter_router::seams::TurnStep;
 use std::future::Future;
+use std::ops::ControlFlow;
 use std::sync::{Arc, Mutex, PoisonError};
 use std::time::Duration;
 use tokio::sync::mpsc;

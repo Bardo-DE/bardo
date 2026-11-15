@@ -12,10 +12,10 @@ use std::sync::Mutex;
 use model_provider::{ModelName, ProviderError, Support};
 use serde::{Deserialize, Serialize};
 use speech_provider::{
-    AudioChunk, AudioFormat, AudioMs, AudioSink, AudioSource, HeardText, Lang,
-    LangChoice, LangSet, PcmBytes, PcmFormat, SampleIndex, SampleRate, SpeechCaps, SpeechDir,
-    SpeechIo, SpeechModelInfo, SpeechToText, SttEnd, SttMode, SttRequest, TextToSpeech,
-    TranscriptEvent, TranscriptSink, TtsEnd, TtsRequest, VoiceId,
+    AudioChunk, AudioFormat, AudioMs, AudioSink, AudioSource, HeardText, Lang, LangChoice, LangSet,
+    PcmBytes, PcmFormat, SampleIndex, SampleRate, SpeechCaps, SpeechDir, SpeechIo, SpeechModelInfo,
+    SpeechToText, SttEnd, SttMode, SttRequest, TextToSpeech, TranscriptEvent, TranscriptSink,
+    TtsEnd, TtsRequest, VoiceId,
 };
 
 use crate::canon::{digest_hex, len64};

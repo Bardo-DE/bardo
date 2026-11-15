@@ -14,7 +14,6 @@
 //! `with_notes`; a note keeps who said it in its words ("The person says: ..."), because stoker's
 //! `StepNote` is one line of text.
 
-use std::ops::ControlFlow;
 use crate::bridge::{self, BridgeError, Frames};
 use crate::tee::{Echo, Tee};
 use cua_action::{AnswerShape, CuaDialect};
@@ -32,6 +31,7 @@ use porter_infer::{
     ModelError, NoteFrom, PrevResult, StepNote,
 };
 use porter_router::local::LocalModel;
+use std::ops::ControlFlow;
 use vision_prep::{Encoding, FrameMap, RawFrame, prepare};
 
 /// A step that gave no actions: why the app is told. A reply that never parsed is a step the model
@@ -232,7 +232,8 @@ pub async fn step<P: Provider>(
                 dropped,
             } => {
                 for action in &actions {
-                    if forward(InferEvent::ActionProposed(action.clone())) == ControlFlow::Break(()) {
+                    if forward(InferEvent::ActionProposed(action.clone())) == ControlFlow::Break(())
+                    {
                         break;
                     }
                 }

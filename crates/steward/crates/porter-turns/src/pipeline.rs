@@ -4,7 +4,6 @@
 //! The transcript joins the request as text, so the answer stage sees what the person said as
 //! words and nothing else about the audio.
 
-use std::ops::ControlFlow;
 use porter_infer::{
     AudioFrame, ChatMessage, ChatRequest, ChatSink, InferEvent, InferReply, InferRequest,
     MessagePart, ModelError, ModelLabel, ModelRef, Pipeline, Refusal, Role, ShowReason, Stage,
@@ -14,6 +13,7 @@ use porter_router::audio::AudioIn;
 use porter_router::seams::{RunningTurn, TurnRunner, TurnStep};
 use std::collections::{BTreeMap, VecDeque};
 use std::future::Future;
+use std::ops::ControlFlow;
 
 /// What a speech-to-text stage runs on (stoker's `SpeechToText` behind the engine the stage's
 /// model names; a scripted one in tests). It is inferd's `SpeechRunner::transcribe`'s shape.

@@ -6,9 +6,8 @@
 //! as it runs, so dropping it cancels, and the sink can end the turn early by returning
 //! `ControlFlow::Break(())`.
 
-use std::ops::ControlFlow;
 use crate::error::{InferRefusal, ModelError};
-use crate::event::{InferEvent};
+use crate::event::InferEvent;
 use crate::reply::{ChatReply, EmbedReply, InferReply};
 use crate::request::{ChatRequest, EmbedRequest, InferRequest, TaskRequest};
 use porter_capability::Capability;
@@ -16,6 +15,7 @@ use porter_capability::ModelId;
 use porter_capability::{Billing, Locality};
 use porter_core::AccountId;
 use std::future::Future;
+use std::ops::ControlFlow;
 
 /// What routing knows about one model.
 #[derive(Debug, Clone, PartialEq, Eq)]

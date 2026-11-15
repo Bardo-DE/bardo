@@ -233,7 +233,10 @@ fn each_engine_gets_its_program_and_its_pinned_argv() {
             profile: strata_profile,
             socket: "strata",
             program: "/opt/strata/.venv/bin/python",
-            args: strings(&["serve/server.py", "--socket=/run/user/1000/inferd/strata.sock"]),
+            args: strings(&[
+                "serve/server.py",
+                "--socket=/run/user/1000/inferd/strata.sock",
+            ]),
             gpu: None,
             memory_max: None,
         },

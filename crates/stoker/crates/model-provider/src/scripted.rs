@@ -1,12 +1,12 @@
 //! A provider that plays scripted turns and records every request it was given.
 
-use std::ops::ControlFlow;
 use std::collections::VecDeque;
+use std::ops::ControlFlow;
 use std::sync::Mutex;
 
 use crate::{
-    ModelInfo, Provider, ProviderError, StopReason, TurnEnd, TurnEvent, TurnRequest,
-    TurnSink, TurnUsage,
+    ModelInfo, Provider, ProviderError, StopReason, TurnEnd, TurnEvent, TurnRequest, TurnSink,
+    TurnUsage,
 };
 
 /// One scripted turn: the events to push, then how it ends.

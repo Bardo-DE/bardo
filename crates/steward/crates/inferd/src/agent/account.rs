@@ -11,7 +11,6 @@
 //! a usage chunk so the stream can be metered. A provider's error body is never relayed (it may
 //! echo the prompt); the agent is told the kind of thing that went wrong, in its own error shape.
 
-use std::ops::ControlFlow;
 use super::fail::{Cause, Failure, Shape};
 use super::handle::Peek;
 use super::http::{self, Request};
@@ -23,8 +22,8 @@ use crate::cloud::models::{known_providers, provider_of};
 use crate::cloud::wire::charges_of;
 use model_catalog::{ProviderId, Wire};
 use model_http::{
-    BodySink, Exchange, Framing, HttpError, JsonBody, ResponseHead, RouteRoot,
-    Transport, UrlPath, Verb,
+    BodySink, Exchange, Framing, HttpError, JsonBody, ResponseHead, RouteRoot, Transport, UrlPath,
+    Verb,
 };
 use porter_capability::Locality;
 use porter_capability::ModelId;
@@ -32,6 +31,7 @@ use porter_core::AccountId;
 use porter_core::consent::{Usage, Verdict};
 use porter_infer::{ServedBy, SpendVerdict};
 use serde_json::Value;
+use std::ops::ControlFlow;
 use tokio::io::AsyncWrite;
 use tokio::sync::mpsc;
 

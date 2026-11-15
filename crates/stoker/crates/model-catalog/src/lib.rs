@@ -32,9 +32,9 @@ pub use engine::{
     ServedName, Serving, WeightFiles,
 };
 pub use entry::{
-    CatalogId, ColdStartEstimateS, Family, GitRevision, GpuNeed, HfRepo, Licence,
-    Locality, MiB, ModelEntry, ProviderId, Reach, ReasoningDefault, RemoteModelId,
-    SamplingDefaults, Spdx, VramEstimate, WeightSource, Wire,
+    CatalogId, ColdStartEstimateS, Family, GitRevision, GpuNeed, HfRepo, Licence, Locality, MiB,
+    ModelEntry, ProviderId, Reach, ReasoningDefault, RemoteModelId, SamplingDefaults, Spdx,
+    VramEstimate, WeightSource, Wire,
 };
 pub use file::EntryFile;
 pub use modality::{Modalities, Modality};

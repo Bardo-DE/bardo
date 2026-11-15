@@ -2,7 +2,6 @@
 //! mapping inferd uses), the key for this turn only, the events streamed to the session as they
 //! come, the reply at the end.
 
-use std::ops::ControlFlow;
 use super::engine::{Engine, KeyUse};
 use super::keys::KeySource;
 use super::wire::provider;
@@ -13,6 +12,7 @@ use porter_infer::{
     InferEvent, InferRefusal, InferReply, InferRequest, Knob, ModelError, ServedBy,
 };
 use porter_turns::local::run_chat;
+use std::ops::ControlFlow;
 use tokio::sync::mpsc::UnboundedSender;
 
 /// What a session is pinned to when it opens: the engine its route chose.

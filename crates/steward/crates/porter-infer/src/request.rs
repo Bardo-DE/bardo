@@ -3,7 +3,7 @@
 
 use crate::control::{ChatControl, ThoughtSeal};
 use crate::cua::{CuaBegin, CuaStepRequest};
-use crate::ids::{AttachIndex, Base64Bytes, SchemaText, JsonText, ToolCallId, ToolName};
+use crate::ids::{AttachIndex, Base64Bytes, JsonText, SchemaText, ToolCallId, ToolName};
 use crate::speech::{SpeakRequest, TranscribeBegin};
 use porter_capability::Tier;
 use porter_core::DataClass;

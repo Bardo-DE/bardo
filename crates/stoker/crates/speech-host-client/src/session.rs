@@ -3,7 +3,7 @@
 use std::ops::ControlFlow;
 use std::pin::Pin;
 
-use model_provider::{ProviderError};
+use model_provider::ProviderError;
 use serde::Serialize;
 use speech_provider::{
     AudioChunk, AudioSource, HostIn, HostOut, HostVocab, SpeechModelInfo, SttEnd, SttRequest,

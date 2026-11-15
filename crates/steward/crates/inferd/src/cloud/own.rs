@@ -15,7 +15,6 @@
 //! server that was down when it was added is found when it is up, and one that hangs is not
 //! asked at every session.
 
-use std::ops::ControlFlow;
 use super::accountd::AccountVerdict;
 use super::models::{RemoteModel, card_of};
 use super::picker::{Availability, Choice};
@@ -23,9 +22,9 @@ use super::wire::Door;
 use crate::probe::names::id_of;
 use model_catalog::{Locality, ModelEntry, Reach};
 use model_http::{
-    AuthHeader, BodySink, Exchange, Framing, HostName, HttpClient, HttpEndpoint,
-    HttpStatus, HttpTarget, Port, Proxy, ResponseHead, RouteRoot, Secret, Timeouts, TlsRoots,
-    Transport, UrlPath, Verb, WaitMs,
+    AuthHeader, BodySink, Exchange, Framing, HostName, HttpClient, HttpEndpoint, HttpStatus,
+    HttpTarget, Port, Proxy, ResponseHead, RouteRoot, Secret, Timeouts, TlsRoots, Transport,
+    UrlPath, Verb, WaitMs,
 };
 use porter_capability::ModelId;
 use porter_core::AccountId;
@@ -34,6 +33,7 @@ use porter_ids::{UnixSeconds, UrlScheme};
 use porter_infer::Takes;
 use porter_router::catalog::{capabilities_of, parse_entry_text};
 use std::collections::BTreeMap;
+use std::ops::ControlFlow;
 use std::sync::{Arc, PoisonError, RwLock};
 
 /// The provider file whose accounts are servers of the person's own.

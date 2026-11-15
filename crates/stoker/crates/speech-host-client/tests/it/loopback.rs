@@ -7,10 +7,10 @@ use std::sync::atomic::{AtomicU32, Ordering};
 use model_provider::{ModelName, ProviderError, Support};
 use speech_host_client::{HostSocket, SpeechHostClient};
 use speech_provider::{
-    AudioChunk, AudioFormat, AudioMs, AudioSource, HeardText, HostIn, HostOut,
-    HostVocab, Lang, LangChoice, LangSet, MAX_FRAME_BYTES, PcmBytes, PcmFormat, SampleIndex,
-    SampleRate, SpeechCaps, SpeechIo, SpeechModelInfo, SpeechToText, SttEnd, SttMode, SttRequest,
-    TranscriptEvent, TranscriptSink, decode_frame, encode_frame,
+    AudioChunk, AudioFormat, AudioMs, AudioSource, HeardText, HostIn, HostOut, HostVocab, Lang,
+    LangChoice, LangSet, MAX_FRAME_BYTES, PcmBytes, PcmFormat, SampleIndex, SampleRate, SpeechCaps,
+    SpeechIo, SpeechModelInfo, SpeechToText, SttEnd, SttMode, SttRequest, TranscriptEvent,
+    TranscriptSink, decode_frame, encode_frame,
 };
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{UnixListener, UnixStream};

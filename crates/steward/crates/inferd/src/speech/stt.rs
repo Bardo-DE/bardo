@@ -7,7 +7,6 @@
 //! carries one utterance. Cancelling a turn drops the future, which tells the host `Cancel` and
 //! closes the socket, so audio is never kept: frames live in the buffer of the running call.
 
-use std::ops::ControlFlow;
 use super::SpeechRunner;
 use crate::engines::Engines;
 use crate::supervise::Supervised;
@@ -25,10 +24,11 @@ use porter_turns::bridge;
 use porter_turns::pipeline::Transcriber;
 use speech_host_client::{HostSocket, SpeechHostClient};
 use speech_provider::{
-    AudioChunk, AudioFormat, AudioMs, AudioSource, Lang, LangChoice,
-    PcmBytes, PcmFormat, SampleIndex, SampleRate, SpeechToText, SttEnd, SttMode, SttRequest,
-    TranscriptEvent, TranscriptSink,
+    AudioChunk, AudioFormat, AudioMs, AudioSource, Lang, LangChoice, PcmBytes, PcmFormat,
+    SampleIndex, SampleRate, SpeechToText, SttEnd, SttMode, SttRequest, TranscriptEvent,
+    TranscriptSink,
 };
+use std::ops::ControlFlow;
 use std::time::Duration;
 use tokio::sync::mpsc;
 use tokio::time::Instant;

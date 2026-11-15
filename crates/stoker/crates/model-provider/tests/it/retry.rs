@@ -1,16 +1,15 @@
 //! Retry classification, `next_wait` and `Retrying`.
 
-use std::ops::ControlFlow;
 use std::future::Future;
+use std::ops::ControlFlow;
 use std::pin::pin;
 use std::sync::Mutex;
 use std::task::{Context, Poll, Waker};
 
 use model_provider::{
-    Attempt, ModelInfo, ModelName, Permille, Provider, ProviderDetail, ProviderError,
-    RetryClass, RetryPolicy, RetrySeconds, Retrying, Script, ScriptedProvider, ServerStatus,
-    Sleeper, StopReason, Tokens, TurnEnd, TurnEvent, TurnRequest, TurnSink, TurnUsage, WaitMs,
-    next_wait,
+    Attempt, ModelInfo, ModelName, Permille, Provider, ProviderDetail, ProviderError, RetryClass,
+    RetryPolicy, RetrySeconds, Retrying, Script, ScriptedProvider, ServerStatus, Sleeper,
+    StopReason, Tokens, TurnEnd, TurnEvent, TurnRequest, TurnSink, TurnUsage, WaitMs, next_wait,
 };
 use proptest::prelude::*;
 

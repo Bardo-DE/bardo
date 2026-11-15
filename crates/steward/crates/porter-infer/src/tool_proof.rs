@@ -5,7 +5,7 @@
 //! The right answer to [`probe_request`] is one call to [`PROBE_TOOL`] whose arguments are an
 //! object holding the one string the schema asks for.
 
-use crate::ids::{SchemaText, JsonText, ToolName};
+use crate::ids::{JsonText, SchemaText, ToolName};
 use crate::reply::ChatReply;
 use crate::request::{ChatMessage, ChatRequest, MessagePart, Role, ToolDecl};
 use porter_capability::Tier;

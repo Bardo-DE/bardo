@@ -4,8 +4,8 @@
 //! "runs" in place of the `speech-host` binary. No real binary, model, library, microphone or
 //! network is touched.
 
-use std::ops::ControlFlow;
 use crate::hosting;
+use std::ops::ControlFlow;
 
 use engine_supervisor::{EngineId, SupervisorConfig};
 use hosting::engine::{Chat, Script};

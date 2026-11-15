@@ -7,15 +7,14 @@
 //! (`PrivateNetwork`, a read-only home, the GPU device and a memory cap), is not built; the unit
 //! spec already carries the sandbox for it.
 
-use std::ops::ControlFlow;
 use engine_supervisor::{
     EngineHost, EngineId, ExitCode, GpuError, GpuMemory, GpuProbe, HostError, Probe, ReadyProbe,
     UnitSpec,
 };
 use model_catalog::MiB;
 use model_http::{
-    BodySink, Exchange, Framing, HttpClient, ResponseHead, RouteRoot, Timeouts,
-    Transport, UrlPath, Verb, WaitMs,
+    BodySink, Exchange, Framing, HttpClient, ResponseHead, RouteRoot, Timeouts, Transport, UrlPath,
+    Verb, WaitMs,
 };
 use porter_router::local::unix_endpoint;
 use porter_router::startup::{Cause, Diagnostics, TailBuf, clear_socket};
@@ -23,6 +22,7 @@ use rustix::process::Pid;
 use speech_host_client::{HostSocket, SpeechHostClient};
 use speech_provider::SpeechToText;
 use std::collections::{BTreeMap, BTreeSet};
+use std::ops::ControlFlow;
 use std::path::{Path, PathBuf};
 use std::process::Stdio;
 use std::sync::atomic::{AtomicBool, Ordering};

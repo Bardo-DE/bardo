@@ -2,13 +2,13 @@
 
 #![allow(dead_code)]
 
-use std::ops::ControlFlow;
 use model_provider::{
     EngineExtras, ImageInput, Knob, Limits, Message, Milli, ModelName, OutputShape, Part,
     Reasoning, Role, Sampling, SchemaText, Tokens, ToolCall, ToolCallId, ToolChoice, ToolName,
     ToolParallelism, ToolResult, ToolSpec, ToolStatus, TurnRequest,
 };
 use serde_json::{Value, json};
+use std::ops::ControlFlow;
 
 pub fn block_on<T>(future: impl Future<Output = T>) -> T {
     use std::pin::pin;
@@ -102,9 +102,7 @@ pub fn body(request: &TurnRequest, flavor: model_openai_compat::Flavor) -> Value
     serde_json::from_str(&json.0).unwrap()
 }
 
-use model_http::{
-    BodyKind, BodySink, Exchange, HttpError, HttpStatus, ResponseHead, Transport,
-};
+use model_http::{BodyKind, BodySink, Exchange, HttpError, HttpStatus, ResponseHead, Transport};
 use model_replay::{
     BuildLabel, CassetteHeader, CassetteVersion, ContextStamp, EngineLabel, EngineStamp, HeadPrint,
     RecordedAt, WireBody, WireCassette, WireEnd, WireExchange, WireFrame, WireReply, WireRequest,

@@ -6,12 +6,12 @@ use std::ops::ControlFlow;
 use std::sync::Mutex;
 
 use model_http::{
-    BodyKind, BodySink, Exchange, Framing, HttpError, HttpStatus, JsonBody,
-    ResponseHead, RouteRoot, Transport, UrlPath, Verb, WaitSeconds,
+    BodyKind, BodySink, Exchange, Framing, HttpError, HttpStatus, JsonBody, ResponseHead,
+    RouteRoot, Transport, UrlPath, Verb, WaitSeconds,
 };
 use model_provider::{
-    Dims, EmbedEnd, EmbedTurn, EmbedVector, Knob, Limits, Milli, ModelInfo, ModelName,
-    OutputShape, ProviderError, Reasoning, RetrySeconds, Sampling, StopReason, Tokens, ToolChoice,
+    Dims, EmbedEnd, EmbedTurn, EmbedVector, Knob, Limits, Milli, ModelInfo, ModelName, OutputShape,
+    ProviderError, Reasoning, RetrySeconds, Sampling, StopReason, Tokens, ToolChoice,
     ToolParallelism, TurnEnd, TurnEvent, TurnRequest, TurnSink, TurnUsage,
 };
 use model_wire::{ChatCodec, ChatDecoder, CodecError, EmbedCodec, ErrorWire};

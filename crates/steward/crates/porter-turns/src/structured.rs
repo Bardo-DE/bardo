@@ -19,7 +19,6 @@
 //! While the turns run only the thoughts stream: the text of a first attempt may be repaired, so
 //! the reply is told once, when it has been checked.
 
-use std::ops::ControlFlow;
 use crate::bridge;
 use crate::tee::{Echo, Tee};
 use model_extract::{ExtractFailure, Extracted, ShapedSession, ToolsPresent, choose};
@@ -27,6 +26,7 @@ use model_provider::{ChoiceText, JsonText, Provider, SchemaText, Shape, TurnRequ
 use porter_ids::Tokens;
 use porter_infer::{self as pi, ChargeTotal, InferEvent, ModelError};
 use porter_router::local::LocalModel;
+use std::ops::ControlFlow;
 
 pub mod limits;
 pub use limits::{Limits, Resolved, StructuredConfig};

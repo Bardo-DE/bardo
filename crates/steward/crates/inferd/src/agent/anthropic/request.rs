@@ -4,8 +4,8 @@ use crate::agent::wire::{Parsed, Unmapped, effort_for_budget, limit_of, sampling
 use porter_core::DataClass;
 use porter_core::consent::Usage;
 use porter_infer::{
-    Base64Bytes, ChatControl, ChatMessage, ChatRequest, ImagePart, ImageSource, SchemaText,
-    JsonText, MessagePart, OpaqueText, Reasoning, ReplyShape, Role, SignatureText, ThoughtPart,
+    Base64Bytes, ChatControl, ChatMessage, ChatRequest, ImagePart, ImageSource, JsonText,
+    MessagePart, OpaqueText, Reasoning, ReplyShape, Role, SchemaText, SignatureText, ThoughtPart,
     ThoughtSeal, ToolCallId, ToolCallPart, ToolChoice, ToolDecl, ToolName, ToolParallelism,
     ToolResultPart, ToolStatus,
 };

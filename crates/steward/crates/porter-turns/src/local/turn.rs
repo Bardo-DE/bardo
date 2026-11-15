@@ -9,8 +9,8 @@ use model_provider as sp;
 use model_provider::Embedder;
 use porter_capability::Tier;
 use porter_infer::{
-    ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferEvent, InferRefusal,
-    Model, ModelCard, ServedBy, StopReason, TaskRequest, TokenUsage, TurnError,
+    ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferEvent, InferRefusal, Model,
+    ModelCard, ServedBy, StopReason, TaskRequest, TokenUsage, TurnError,
 };
 use porter_router::local::LocalModel;
 

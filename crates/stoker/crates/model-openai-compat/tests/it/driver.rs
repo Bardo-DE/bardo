@@ -5,8 +5,8 @@
 //! acdcf34, MIT, Copyright (c) 2024 Playgrounds Analytics Inc.; see THIRD-PARTY-NOTICES). The
 //! bodies are written here against our types.
 
-use std::ops::ControlFlow;
 use crate::support;
+use std::ops::ControlFlow;
 
 use std::sync::Mutex;
 

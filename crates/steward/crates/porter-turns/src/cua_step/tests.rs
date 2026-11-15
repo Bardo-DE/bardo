@@ -1,18 +1,18 @@
-use std::ops::ControlFlow;
 use super::*;
 use cua_action::{
     Button, ClickCount, Coord, CuaAction, Point, Scale120, Size, Target, WindowSpace,
 };
+use cua_session::TreeText;
 use model_provider::{
     EngineExtras, ModelName, ProviderError, Script, ScriptedProvider, StopReason, ToolCall,
     ToolCallId as CallId, TurnEnd, TurnEvent, TurnUsage,
 };
 use model_provider::{Part, Role, TurnRequest};
 use porter_capability::CuaEnv;
-use cua_session::TreeText;
 use porter_infer::{AttachIndex, ImageSource, MediaType, StepIndex};
 use porter_router::testkit::models;
 use std::io::Write;
+use std::ops::ControlFlow;
 use std::os::fd::OwnedFd;
 use test_kit::Scratch;
 

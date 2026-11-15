@@ -37,8 +37,7 @@ pub use host_wire::{
     frame_length,
 };
 pub use stt::{
-    AudioSource, SpeechToText, SttEnd, SttMode, SttRequest, TranscriptEvent,
-    TranscriptSink,
+    AudioSource, SpeechToText, SttEnd, SttMode, SttRequest, TranscriptEvent, TranscriptSink,
 };
 #[cfg(feature = "testing")]
 pub use testing::{ScriptedStt, ScriptedTts, ScriptedVad, TtsScript};
