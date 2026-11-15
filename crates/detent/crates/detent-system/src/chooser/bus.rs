@@ -1,9 +1,9 @@
 //! The desktop's file chooser portal on the bus: one request, answered by a signal that is
 //! listened for before the question is asked.
 
-use super::{Asked, ChooserLink, Want};
+use super::{Asked, Want};
 use crate::bus::{BusSource, connect};
-use detent_model::{Work, path_of_file_uri};
+use detent_model::path_of_file_uri;
 use std::collections::HashMap;
 use zbus::export::futures_core::Stream;
 use zbus::zvariant::{OwnedObjectPath, OwnedValue, Value};
@@ -26,13 +26,12 @@ const KIND_IS_MIME: u32 = 1;
 #[derive(Debug)]
 pub struct OnPortal(pub BusSource);
 
-impl ChooserLink for OnPortal {
-    fn ask(&self, want: Want) -> Work<'_, Asked> {
-        Box::pin(async move {
-            ask_through(&self.0, want)
-                .await
-                .unwrap_or(Asked::Unavailable)
-        })
+impl OnPortal {
+    /// Asks the person for a folder, a file or a picture, and waits for the answer.
+    pub async fn ask(&self, want: Want) -> Asked {
+        ask_through(&self.0, want)
+            .await
+            .unwrap_or(Asked::Unavailable)
     }
 }
 

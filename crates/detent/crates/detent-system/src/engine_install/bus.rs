@@ -3,7 +3,7 @@
 
 use super::Desk;
 use crate::bus::{BusSource, inferd};
-use crate::chooser::{ChooserLink, Want, choose};
+use crate::chooser::{OnPortal, Want, choose};
 use crate::deadline::{Deadline, answered, peer};
 use crate::engines::restart;
 use detent_model::{EngineFailure, EngineRow, EngineStanding, EngineWay, InstallScope, Work};
@@ -44,7 +44,7 @@ fn name_of(kind: EngineKind) -> &'static str {
 /// The engines stoker's `engine-install` finds and installs, and what the assistant says of them.
 pub struct OnEngines {
     bus: BusSource,
-    chooser: Arc<dyn ChooserLink>,
+    chooser: Arc<OnPortal>,
     installs: Option<EngineInstalls>,
 }
 
@@ -57,7 +57,7 @@ impl fmt::Debug for OnEngines {
 impl OnEngines {
     /// The engines installed under `data_home`, the assistant looked for on `bus`, and a folder
     /// chosen through `chooser`.
-    pub fn new(bus: BusSource, chooser: Arc<dyn ChooserLink>, data_home: &Path) -> Self {
+    pub fn new(bus: BusSource, chooser: Arc<OnPortal>, data_home: &Path) -> Self {
         let installs = read_host(Path::new("/"), BackendChoice::Detect).map(|host| {
             EngineInstalls::new(Parts {
                 roots: Roots::standard(data_home),

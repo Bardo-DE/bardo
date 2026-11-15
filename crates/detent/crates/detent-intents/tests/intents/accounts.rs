@@ -4,7 +4,7 @@
 use crate::support::{Listed, World, entity, key};
 use detent_model::{
     Absence, Account, AccountKey, AccountService, AccountSpend, AccountStatus, AccountsPane,
-    ModuleId, Place, SwitchState,
+    ModuleId, Place,
 };
 use docket_core::AppRefusal;
 use docket_vocab::Value;
@@ -28,7 +28,7 @@ fn account(id: &str, label: &str, status: AccountStatus, kinds: &[&str]) -> Acco
             .map(|kind| AccountService {
                 path: KeyPath(format!("accounts.{id}.service.{kind}")),
                 kind: (*kind).to_owned(),
-                on: SwitchState::On,
+                on: true,
             })
             .collect(),
         sync: Vec::new(),

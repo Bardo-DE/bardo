@@ -6,9 +6,6 @@ mod bus;
 
 pub use bus::OnPortal;
 
-use detent_model::Work;
-use std::fmt::Debug;
-
 /// What the person is asked for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Want {
@@ -31,15 +28,9 @@ pub enum Asked {
     Unavailable,
 }
 
-/// The desktop's chooser.
-pub trait ChooserLink: Debug + Send + Sync {
-    /// Asks the person for a folder, a file or a picture, and waits for the answer.
-    fn ask(&self, want: Want) -> Work<'_, Asked>;
-}
-
 /// Asks the person for a folder, a file or a picture, and waits for the answer; `None` when the
 /// chooser is closed, there is none, or what was chosen is not a file on this computer.
-pub async fn choose(chooser: &dyn ChooserLink, want: Want) -> Option<String> {
+pub async fn choose(chooser: &OnPortal, want: Want) -> Option<String> {
     match chooser.ask(want).await {
         Asked::Path(path) => Some(path),
         Asked::Closed | Asked::Unavailable => None,

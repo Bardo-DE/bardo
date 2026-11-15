@@ -2,13 +2,13 @@
 
 use crate::bus::plain;
 use crate::modules::Module;
-use detent_model::PrivacySwitch;
+use detent_model::{ALLOWED_WORD, DENIED_WORD};
 use ds_settings::schema::KeyPath;
 
 /// Allows or denies at `path`; the module's own words when it refuses.
-pub async fn set(client: &Module, path: &KeyPath, to: PrivacySwitch) -> Result<(), String> {
+pub async fn set(client: &Module, path: &KeyPath, to: bool) -> Result<(), String> {
     client
-        .set(path, &toml::Value::String(to.word().to_owned()))
+        .set(path, &toml::Value::String(if to { ALLOWED_WORD } else { DENIED_WORD }.to_owned()))
         .await
         .map_err(|error| plain(&error))
 }

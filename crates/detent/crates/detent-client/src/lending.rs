@@ -56,8 +56,8 @@ impl Machine for Lending {
             SharingEffect::Disable => {
                 vec![SharingInput::Finished(self.lender.disable().await)]
             }
-            SharingEffect::Record(way) => {
-                self.live.notice(Notice::Recorded(way));
+            SharingEffect::Record(on) => {
+                self.live.notice(Notice::Recorded(on));
                 Vec::new()
             }
             SharingEffect::Tell(why) => {

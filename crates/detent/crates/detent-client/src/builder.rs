@@ -7,7 +7,7 @@ use detent_files::{CacheHome, ConfigHome, DataHome, PictureDirs};
 use detent_system::accounts::{AccountsLink, OnBus as AccountsOnBus};
 use detent_system::bluetooth::{BluetoothLink, OnBluetooth};
 use detent_system::bus::BusSource;
-use detent_system::chooser::{ChooserLink, OnPortal};
+use detent_system::chooser::OnPortal;
 use detent_system::computers::{ComputersLink, OnBus as ComputersOnBus};
 use detent_system::displays::{DisplaysLink, OnCompositor};
 use detent_system::engine_install::{Desk, OnEngines};
@@ -70,7 +70,7 @@ impl ClientBuilder {
             data,
             cache,
         } = homes;
-        let chooser: Arc<dyn ChooserLink> = Arc::new(OnPortal(bus.clone()));
+        let chooser = Arc::new(OnPortal(bus.clone()));
         let desk = Arc::new(OnEngines::new(bus.clone(), Arc::clone(&chooser), &data.0));
         let pictures = Arc::new(OnDisk::new(
             Arc::clone(&chooser),
@@ -211,12 +211,6 @@ impl ClientBuilder {
     #[must_use]
     pub fn with_corners(self, corners: Arc<dyn CornerDesk>) -> ClientBuilder {
         ClientBuilder(Client { corners, ..self.0 })
-    }
-
-    /// Asking `chooser` for folders, files and pictures.
-    #[must_use]
-    pub fn with_chooser(self, chooser: Arc<dyn ChooserLink>) -> ClientBuilder {
-        ClientBuilder(Client { chooser, ..self.0 })
     }
 
     /// With the panes that follow a daemon's live settings module looking for it in `modules`.

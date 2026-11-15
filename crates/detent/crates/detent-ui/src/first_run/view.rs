@@ -5,7 +5,7 @@ use crate::assistant_model::AssistantPicker;
 use crate::env::Env;
 use crate::picker::{Picker, use_picker};
 use detent_model::{
-    Clearing, FirstRun, FirstRunEffect, FirstRunInput, LocalOnly, PageKind, PickerInput,
+    Clearing, FirstRun, FirstRunEffect, FirstRunInput, PageKind, PickerInput,
     PickerState, Stage, first_run_step,
 };
 use dioxus::prelude::*;
@@ -122,7 +122,7 @@ fn Welcome(
         Availability::Busy
     };
     let stage = format!("{:?}", state.stage).to_lowercase();
-    let on = if state.local_only == LocalOnly::On {
+    let on = if state.local_only {
         Check::On
     } else {
         Check::Off
@@ -145,10 +145,7 @@ fn Welcome(
                         label: crate::copy::first_run::KEEP_AI_ON_THIS_COMPUTER,
                         value: on,
                         onchange: move |next| {
-                            onchange.call(FirstRunInput::Kept(match next {
-                                Check::On => LocalOnly::On,
-                                Check::Off | Check::Mixed => LocalOnly::Off,
-                            }));
+                            onchange.call(FirstRunInput::Kept(next == Check::On));
                         },
                     }
                 }

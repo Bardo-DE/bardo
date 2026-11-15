@@ -1,7 +1,7 @@
 //! This computer's manifests of installed apps, and the desktop's own file chooser.
 
 use super::CornerDesk;
-use crate::chooser::{ChooserLink, Want, choose};
+use crate::chooser::{OnPortal, Want, choose};
 use detent_files::read_manifests;
 use detent_model::{HotActionChoice, HotOpenKind, Work, actions_of_all};
 use std::path::PathBuf;
@@ -10,14 +10,14 @@ use std::sync::Arc;
 /// The manifest folders on disk and the desktop's chooser.
 #[derive(Debug)]
 pub struct OnCorners {
-    chooser: Arc<dyn ChooserLink>,
+    chooser: Arc<OnPortal>,
     intent_dirs: Vec<PathBuf>,
 }
 
 impl OnCorners {
     /// The manifests under `intent_dirs` (the folders of trust, first first), files chosen
     /// through `chooser`.
-    pub fn new(chooser: Arc<dyn ChooserLink>, intent_dirs: Vec<PathBuf>) -> OnCorners {
+    pub fn new(chooser: Arc<OnPortal>, intent_dirs: Vec<PathBuf>) -> OnCorners {
         OnCorners {
             chooser,
             intent_dirs,

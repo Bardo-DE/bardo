@@ -2,7 +2,7 @@
 //! the shared thumbnail cache, and the desktop's own file chooser.
 
 use super::{Pictures, Thumbnails};
-use crate::chooser::{Asked, ChooserLink, Want};
+use crate::chooser::{Asked, OnPortal, Want};
 use detent_files::PictureDirs;
 use detent_model::{AddOutcome, Picture, Work, is_picture};
 use std::path::{Path, PathBuf};
@@ -11,14 +11,14 @@ use std::sync::Arc;
 /// The folders on disk, their small pictures, and the chooser on the bus.
 #[derive(Debug)]
 pub struct OnDisk {
-    chooser: Arc<dyn ChooserLink>,
+    chooser: Arc<OnPortal>,
     dirs: PictureDirs,
     thumbs: Arc<Thumbnails>,
 }
 
 impl OnDisk {
     /// The pictures in `dirs`, made small into `thumbs`, added through `chooser`.
-    pub fn new(chooser: Arc<dyn ChooserLink>, dirs: PictureDirs, thumbs: Thumbnails) -> OnDisk {
+    pub fn new(chooser: Arc<OnPortal>, dirs: PictureDirs, thumbs: Thumbnails) -> OnDisk {
         OnDisk {
             chooser,
             dirs,

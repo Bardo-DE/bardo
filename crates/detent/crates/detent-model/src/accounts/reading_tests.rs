@@ -24,14 +24,14 @@ fn rows_are_read_as_accounts_with_dotted_ids_kept_whole() {
 fn an_account_lists_its_services_permissions_and_actions() {
     let pane = AccountsPane::of(ModuleId::Accountd, &described());
     let home = &pane.accounts[0];
-    let services: Vec<(&str, SwitchState)> = home
+    let services: Vec<(&str, bool)> = home
         .services
         .iter()
         .map(|s| (s.kind.as_str(), s.on))
         .collect();
     assert_eq!(
         services,
-        [("storage", SwitchState::On), ("calendar", SwitchState::Off)]
+        [("storage", true), ("calendar", false)]
     );
     assert_eq!(home.permissions.len(), 1);
     assert_eq!(home.permissions[0].label, "Photos allowed: storage");
@@ -126,7 +126,7 @@ fn classify_tells_a_service_from_a_sync_switch_and_drops_an_unknown_leaf() {
 #[test]
 fn an_account_carries_the_modules_label_for_each_sync_switch() {
     let pane = AccountsPane::of(ModuleId::Accountd, &described());
-    let sync: Vec<(&str, SwitchState)> = pane.accounts[0]
+    let sync: Vec<(&str, bool)> = pane.accounts[0]
         .sync
         .iter()
         .map(|s| (s.label.as_str(), s.on))
@@ -136,11 +136,11 @@ fn an_account_carries_the_modules_label_for_each_sync_switch() {
         [
             (
                 "Keep this account's files on this computer",
-                SwitchState::Off
+                false
             ),
             (
                 "Upload new photos from a folder on this computer to Google Photos",
-                SwitchState::On
+                true
             )
         ]
     );

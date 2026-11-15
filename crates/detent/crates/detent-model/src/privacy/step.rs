@@ -1,8 +1,6 @@
 //! The page's one transition: `(state, input) -> (state, effects)`.
 
-use super::pane::{
-    ALLOWED_WORD, CellKind, DENIED_WORD, PowerStanding, PrivacyPane, ProgramSubject,
-};
+use super::pane::{CellKind, PowerStanding, PrivacyPane, ProgramSubject};
 use super::power::PrivacyPower;
 use crate::Absence;
 use crate::Live;
@@ -41,25 +39,6 @@ pub enum PrivacyInput {
     Failed(String),
 }
 
-/// The two positions of a row that allows or denies.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum PrivacySwitch {
-    /// Allow.
-    On,
-    /// Deny.
-    Off,
-}
-
-impl PrivacySwitch {
-    /// The word the row takes.
-    pub fn word(self) -> &'static str {
-        match self {
-            PrivacySwitch::On => ALLOWED_WORD,
-            PrivacySwitch::Off => DENIED_WORD,
-        }
-    }
-}
-
 /// What the caller must do.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PrivacyEffect {
@@ -67,8 +46,8 @@ pub enum PrivacyEffect {
     Set {
         /// The row.
         path: KeyPath,
-        /// Allow or deny.
-        to: PrivacySwitch,
+        /// Allow (true) or deny (false).
+        to: bool,
     },
     /// Run the action that forgets the answer, so the program asks again.
     Forget(KeyPath),
@@ -151,11 +130,11 @@ fn change(
     match standing {
         PowerStanding::Allowed => Some(PrivacyEffect::Set {
             path: switch.clone(),
-            to: PrivacySwitch::On,
+            to: true,
         }),
         PowerStanding::Denied => Some(PrivacyEffect::Set {
             path: switch.clone(),
-            to: PrivacySwitch::Off,
+            to: false,
         }),
         PowerStanding::Ask => forget.clone().map(PrivacyEffect::Forget),
     }

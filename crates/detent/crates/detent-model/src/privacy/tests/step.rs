@@ -19,7 +19,7 @@ fn a_pick_sends_the_one_change_the_compositor_takes() {
             PowerStanding::Denied,
             Some(PrivacyEffect::Set {
                 path: switch.clone(),
-                to: PrivacySwitch::Off,
+                to: false,
             }),
         ),
         (
@@ -34,7 +34,7 @@ fn a_pick_sends_the_one_change_the_compositor_takes() {
             PowerStanding::Allowed,
             Some(PrivacyEffect::Set {
                 path: path("privacy.clipboard.bbb"),
-                to: PrivacySwitch::On,
+                to: true,
             }),
         ),
         (
@@ -55,7 +55,7 @@ fn a_pick_sends_the_one_change_the_compositor_takes() {
             PowerStanding::Allowed,
             Some(PrivacyEffect::Set {
                 path: path("privacy.keys.ccc"),
-                to: PrivacySwitch::On,
+                to: true,
             }),
         ),
         (
@@ -64,7 +64,7 @@ fn a_pick_sends_the_one_change_the_compositor_takes() {
             PowerStanding::Denied,
             Some(PrivacyEffect::Set {
                 path: path("privacy.keys.ccc"),
-                to: PrivacySwitch::Off,
+                to: false,
             }),
         ),
         (
@@ -83,8 +83,6 @@ fn a_pick_sends_the_one_change_the_compositor_takes() {
             "{case}: a change in flight only when one was sent"
         );
     }
-    assert_eq!(PrivacySwitch::On.word(), "on");
-    assert_eq!(PrivacySwitch::Off.word(), "off");
 }
 
 #[test]

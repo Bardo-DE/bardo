@@ -1,7 +1,7 @@
 //! What can happen to the Accounts pane: what the modules told it and what the person did.
 
 use super::add_account::AddEnd;
-use super::model::{AccountKey, SwitchState};
+use super::model::AccountKey;
 use super::module::{ModuleId, ModuleRow};
 use super::reauth_end::ReauthEnd;
 use super::sign_in_client::ClientText;
@@ -27,7 +27,7 @@ pub enum AccountsInput {
         /// The service's row.
         row: ModuleRow,
         /// What it is now.
-        on: SwitchState,
+        on: bool,
     },
     /// The person pressed a permission's action or Sign in again.
     Ran(ModuleRow),

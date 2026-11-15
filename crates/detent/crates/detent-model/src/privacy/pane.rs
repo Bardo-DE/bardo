@@ -16,10 +16,10 @@ const PREFIX: &str = "privacy.";
 const FORGET: &str = ".forget";
 
 /// The word of a row's value that says the power is allowed.
-pub(super) const ALLOWED_WORD: &str = "on";
+pub const ALLOWED_WORD: &str = "on";
 
 /// The word of a row's value that says the power is denied.
-pub(super) const DENIED_WORD: &str = "off";
+pub const DENIED_WORD: &str = "off";
 
 /// The word of a row's value that says nobody has answered: the program asks first.
 pub(super) const ASK_WORD: &str = "ask";

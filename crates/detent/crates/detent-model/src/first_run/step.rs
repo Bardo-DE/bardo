@@ -1,12 +1,12 @@
 //! The first-run window's one transition: `(state, input) -> (state, effects)`.
 
-use super::model::{FirstRun, LocalOnly, Stage};
+use super::model::{FirstRun, Stage};
 
 /// What happened to the window.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FirstRunInput {
     /// The person set whether AI stays on this computer.
-    Kept(LocalOnly),
+    Kept(bool),
     /// The person pressed Done.
     Finish,
     /// Everything chosen is written.
@@ -22,7 +22,7 @@ pub enum FirstRunEffect {
     /// `Failed`.
     Save {
         /// The value of `ai.local_only`.
-        local_only: LocalOnly,
+        local_only: bool,
     },
     /// Tell the person something went wrong.
     Tell(String),

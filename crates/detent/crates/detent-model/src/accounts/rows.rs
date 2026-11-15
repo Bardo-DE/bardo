@@ -1,7 +1,7 @@
 //! What a row of an account is: the kind of row and the account it belongs to, told from its
 //! path and kind alone.
 
-use super::model::{AccountKey, SwitchState};
+use super::model::{AccountKey, ON};
 use super::module::ModuleId;
 use crate::picker::Described;
 use ds_settings::schema::{KeyKind, KeyPath, KeySpec};
@@ -54,9 +54,9 @@ pub(super) enum Row<'a> {
     UsedBy(&'a str),
     SpendMonth(&'a str),
     SpendCap(&'a str),
-    AccountService(&'a str, SwitchState),
-    Sync(SwitchState),
-    ShowInFiles(SwitchState),
+    AccountService(&'a str, bool),
+    Sync(bool),
+    ShowInFiles(bool),
     Grant,
     Reauth,
     SignOut,
@@ -73,7 +73,7 @@ pub(super) fn classify<'a>(
     let rest = spec.path.0.strip_prefix(PREFIX)?;
     let key = |id: &str| AccountKey::of(module, id);
     let held = |path: &KeyPath| {
-        SwitchState::of_word(described.values.get(path).map_or("", String::as_str))
+        described.values.get(path).is_some_and(|word| word == ON)
     };
     match &spec.kind {
         KeyKind::Toggle { .. } => {

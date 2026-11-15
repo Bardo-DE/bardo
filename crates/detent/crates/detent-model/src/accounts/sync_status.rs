@@ -83,12 +83,12 @@ impl Account {
         let switches = self
             .sync
             .iter()
-            .filter(|sync| sync.on.is_on())
+            .filter(|sync| sync.on)
             .map(|sync| DatasetName::of_switch(&self.key, &sync.path));
         let services = self
             .services
             .iter()
-            .filter(|service| service.on.is_on())
+            .filter(|service| service.on)
             .filter_map(|service| service.dataset(&self.key));
         switches.chain(services).collect()
     }

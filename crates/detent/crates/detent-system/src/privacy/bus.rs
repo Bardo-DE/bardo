@@ -3,7 +3,7 @@
 use super::PrivacyLink;
 use super::set::{forget, set};
 use crate::modules::Module;
-use detent_model::{PrivacySwitch, Work};
+use detent_model::Work;
 use ds_settings::schema::KeyPath;
 
 /// The compositor's module, reached through the client the pane follows it with.
@@ -15,7 +15,7 @@ impl PrivacyLink for OnClient {
         &'a self,
         client: &'a Module,
         path: &'a KeyPath,
-        to: PrivacySwitch,
+        to: bool,
     ) -> Work<'a, Result<(), String>> {
         Box::pin(set(client, path, to))
     }

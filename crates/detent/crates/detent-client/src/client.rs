@@ -27,7 +27,7 @@ use detent_model::{Absence, AccountsPane, AddEnd, ModuleId, UnixSeconds, Work};
 use detent_system::accounts::AccountsLink;
 use detent_system::bluetooth::BluetoothLink;
 use detent_system::bus::{BusSource, start};
-use detent_system::chooser::ChooserLink;
+use detent_system::chooser::OnPortal;
 use detent_system::computers::ComputersLink;
 use detent_system::displays::DisplaysLink;
 use detent_system::engine_install::Desk;
@@ -55,7 +55,7 @@ use std::sync::Arc;
 pub struct Client {
     pub(crate) bus: BusSource,
     pub(crate) modules: Arc<dyn ModulesLink>,
-    pub(crate) chooser: Arc<dyn ChooserLink>,
+    pub(crate) chooser: Arc<OnPortal>,
     pub(crate) accounts: Arc<dyn AccountsLink>,
     pub(crate) sync: Arc<dyn SyncLink>,
     pub(crate) picker: Arc<dyn PickerLink>,

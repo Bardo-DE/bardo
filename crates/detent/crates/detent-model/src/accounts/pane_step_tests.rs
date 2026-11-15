@@ -11,7 +11,7 @@ fn a_switch_sets_the_word_at_once_and_waits_for_the_answer() {
         ready(),
         [AccountsInput::Switched {
             row: storage.clone(),
-            on: SwitchState::Off,
+            on: false,
         }],
     );
     assert_eq!(
@@ -22,14 +22,14 @@ fn a_switch_sets_the_word_at_once_and_waits_for_the_answer() {
         }]
     );
     let up = state_of(state.clone());
-    assert_eq!(up.pane.accounts[0].services[0].on, SwitchState::Off);
+    assert_eq!(up.pane.accounts[0].services[0].on, false);
     assert_eq!(up.pending, Some(storage.clone()));
     // a second change waits for the first
     let (_, again) = apply(
         state.clone(),
         [AccountsInput::Switched {
             row: row("accounts.home.service.calendar"),
-            on: SwitchState::On,
+            on: true,
         }],
     );
     assert!(again.is_empty());
@@ -47,7 +47,7 @@ fn a_refused_set_says_why_and_reads_the_module_again() {
         [
             AccountsInput::Switched {
                 row: storage.clone(),
-                on: SwitchState::Off,
+                on: false,
             },
             AccountsInput::Failed {
                 row: storage,

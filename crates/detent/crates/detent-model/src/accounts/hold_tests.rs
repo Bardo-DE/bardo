@@ -72,7 +72,7 @@ fn a_hold_belongs_to_its_account_and_sits_on_its_sync_row() {
         path: ds_settings::schema::KeyPath(format!("accounts.work.example.sync.{leaf}")),
         label: leaf.to_owned(),
         help: String::new(),
-        on: SwitchState::On,
+        on: true,
     };
     let account = |sync: Vec<AccountSync>| {
         let mut pane = AccountsPane::default();

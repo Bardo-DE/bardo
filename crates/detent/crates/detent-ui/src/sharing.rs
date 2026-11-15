@@ -9,7 +9,7 @@ use crate::copy::{
 use crate::env::Env;
 use crate::files::{Edit, Files, store};
 use detent_client::{Heard, Lending, Notice, Pane};
-use detent_model::{SHARING_KEY, Sharing, SharingInput, Way};
+use detent_model::{SHARING_KEY, Sharing, SharingInput};
 use dioxus::prelude::*;
 use ds::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle};
 use ds::prelude::*;
@@ -39,9 +39,9 @@ pub(crate) fn use_sharing(files: Signal<Files>) -> SharingSwitch {
                 while let Some(heard) = events.next().await {
                     match heard {
                         Heard::State(next) => state.set(next),
-                        Heard::Notice(Notice::Recorded(way)) => {
+                        Heard::Notice(Notice::Recorded(on)) => {
                             let edit = pending.peek().clone();
-                            if let Some(edit) = edit.filter(|edit| way_of(edit) == way) {
+                            if let Some(edit) = edit.filter(|edit| turned_on(edit) == on) {
                                 store(&env, files, toasts, &edit);
                             }
                         }
@@ -62,11 +62,8 @@ pub(crate) fn use_sharing(files: Signal<Files>) -> SharingSwitch {
     }
 }
 
-fn way_of(edit: &Edit) -> Way {
-    match edit.value.as_str() {
-        Some("on") => Way::On,
-        _ => Way::Off,
-    }
+fn turned_on(edit: &Edit) -> bool {
+    edit.value.as_str() == Some("on")
 }
 
 impl SharingSwitch {
@@ -77,12 +74,12 @@ impl SharingSwitch {
 
     /// The person turned the switch.
     pub(crate) fn turned(&self, edit: Edit) {
-        let way = way_of(&edit);
+        let on = turned_on(&edit);
         let mut pending = self.pending;
         pending.set(Some(edit));
         spawn(
             self.pane
-                .send(SharingInput::Switched(way, self.pane.existing())),
+                .send(SharingInput::Switched(on, self.pane.existing())),
         );
     }
 

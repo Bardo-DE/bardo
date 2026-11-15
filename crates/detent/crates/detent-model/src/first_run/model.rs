@@ -2,30 +2,6 @@
 
 use crate::accounts::{AccountKey, AccountStatus, AccountsPane};
 
-/// The word `ai.local_only` stores for on.
-const ON: &str = "on";
-/// The word it stores for off.
-const OFF: &str = "off";
-
-/// Whether AI stays on this computer: inferd's `ai.local_only`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum LocalOnly {
-    /// No request goes to a cloud account.
-    On,
-    /// A data class's floor alone decides.
-    Off,
-}
-
-impl LocalOnly {
-    /// The word the row stores.
-    pub fn word(self) -> &'static str {
-        match self {
-            LocalOnly::On => ON,
-            LocalOnly::Off => OFF,
-        }
-    }
-}
-
 /// A local runtime the window offers.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Runtime {
@@ -70,7 +46,7 @@ pub enum Stage {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FirstRun {
     /// Whether AI stays on this computer; on until the person says otherwise.
-    pub local_only: LocalOnly,
+    pub local_only: bool,
     /// Where it is.
     pub stage: Stage,
 }
@@ -78,7 +54,7 @@ pub struct FirstRun {
 impl Default for FirstRun {
     fn default() -> Self {
         FirstRun {
-            local_only: LocalOnly::On,
+            local_only: true,
             stage: Stage::Asking,
         }
     }

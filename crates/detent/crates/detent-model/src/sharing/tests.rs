@@ -1,6 +1,6 @@
 //! The sharing switch's transitions.
 
-use super::{Existing, LendFailure, Sharing, SharingEffect, SharingInput, Way, sharing_step};
+use super::{Existing, LendFailure, Sharing, SharingEffect, SharingInput, sharing_step};
 
 fn failed() -> Result<(), LendFailure> {
     Err(LendFailure::CouldNotRestart)
@@ -13,20 +13,20 @@ fn the_transitions() {
     let cases: Vec<Case> = vec![
         (
             Sharing::Idle,
-            SharingInput::Switched(Way::On, Existing::Absent),
+            SharingInput::Switched(true, Existing::Absent),
             Sharing::Asking(Existing::Absent),
             vec![],
         ),
         (
             Sharing::Idle,
-            SharingInput::Switched(Way::Off, Existing::Same),
-            Sharing::Working(Way::Off),
+            SharingInput::Switched(false, Existing::Same),
+            Sharing::Working(false),
             vec![SharingEffect::Disable],
         ),
         (
             Sharing::Asking(Existing::Same),
             SharingInput::Allowed,
-            Sharing::Working(Way::On),
+            Sharing::Working(true),
             vec![SharingEffect::Enable],
         ),
         (
@@ -36,37 +36,37 @@ fn the_transitions() {
             vec![],
         ),
         (
-            Sharing::Working(Way::On),
+            Sharing::Working(true),
             SharingInput::Finished(Ok(())),
             Sharing::Idle,
-            vec![SharingEffect::Record(Way::On)],
+            vec![SharingEffect::Record(true)],
         ),
         (
-            Sharing::Working(Way::On),
+            Sharing::Working(true),
             SharingInput::Finished(failed()),
             Sharing::Idle,
             vec![SharingEffect::Tell(LendFailure::CouldNotRestart)],
         ),
         (
-            Sharing::Working(Way::Off),
+            Sharing::Working(false),
             SharingInput::Finished(Ok(())),
             Sharing::Idle,
-            vec![SharingEffect::Record(Way::Off)],
+            vec![SharingEffect::Record(false)],
         ),
         (
-            Sharing::Working(Way::Off),
+            Sharing::Working(false),
             SharingInput::Finished(failed()),
             Sharing::Idle,
             vec![
-                SharingEffect::Record(Way::Off),
+                SharingEffect::Record(false),
                 SharingEffect::Tell(LendFailure::CouldNotRestart),
             ],
         ),
         // Presses that mean nothing now change nothing.
         (
-            Sharing::Working(Way::On),
-            SharingInput::Switched(Way::Off, Existing::Same),
-            Sharing::Working(Way::On),
+            Sharing::Working(true),
+            SharingInput::Switched(false, Existing::Same),
+            Sharing::Working(true),
             vec![],
         ),
         (Sharing::Idle, SharingInput::Allowed, Sharing::Idle, vec![]),

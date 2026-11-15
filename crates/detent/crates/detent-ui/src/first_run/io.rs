@@ -3,7 +3,6 @@
 
 use crate::env::Env;
 use crate::files::{Edit, Files, apply};
-use detent_model::LocalOnly;
 use detent_model::external::toml;
 
 /// inferd's row that keeps AI on this computer.
@@ -11,7 +10,7 @@ const LOCAL_ONLY: &str = "ai.local_only";
 
 /// Writes what the person chose. The first thing that fails is the answer: nothing after it runs,
 /// and the mark is made only when everything before it was written.
-pub(super) fn save(env: &Env, local_only: LocalOnly) -> Result<(), String> {
+pub(super) fn save(env: &Env, local_only: bool) -> Result<(), String> {
     let entry = env
         .catalogue
         .entries()
@@ -21,7 +20,7 @@ pub(super) fn save(env: &Env, local_only: LocalOnly) -> Result<(), String> {
         .ok_or_else(|| crate::copy::first_run::THE_MODEL_SETTINGS_ARE_NOT_INSTALLED.to_owned())?;
     let edit = Edit {
         entry,
-        value: toml::Value::String(local_only.word().to_owned()),
+        value: toml::Value::String(if local_only { "on" } else { "off" }.to_owned()),
     };
     apply(env, &Files::new(), &edit).map_err(|error| error.to_string())?;
     env.first_run

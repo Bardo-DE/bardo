@@ -3,7 +3,7 @@
 use super::add_account::AddEnd;
 use super::effect::{AccountsEffect, AccountsNotice};
 use super::input::AccountsInput;
-use super::model::{AccountsPane, AccountsReady, AccountsState, Ask, RemovalQuestion, SwitchState};
+use super::model::{AccountsPane, AccountsReady, AccountsState, Ask, RemovalQuestion, OFF, ON};
 use super::module::{ModuleId, ModuleRow, Sources};
 use super::sign_in_client::{ClientChange, ClientText, SignInClient};
 use crate::Absence;
@@ -190,7 +190,7 @@ fn ready_step(
 /// The `Set` a switch asks for, and the pane with the switch already turned: a service, a sync
 /// switch and Show in Files are each a path and a state, the same `Set`. None when no switch of
 /// the row's module is at the path or it is already in that state.
-fn switched(ready: &mut AccountsReady, row: ModuleRow, on: SwitchState) -> Option<AccountsEffect> {
+fn switched(ready: &mut AccountsReady, row: ModuleRow, on: bool) -> Option<AccountsEffect> {
     let (_, held) = ready
         .pane
         .accounts
@@ -209,7 +209,7 @@ fn switched(ready: &mut AccountsReady, row: ModuleRow, on: SwitchState) -> Optio
     ready.pending = Some(row.clone());
     Some(AccountsEffect::Set {
         row,
-        value: toml::Value::String(on.word().to_owned()),
+        value: toml::Value::String(if on { ON } else { OFF }.to_owned()),
     })
 }
 
@@ -221,7 +221,7 @@ fn removal_question(pane: &AccountsPane, row: ModuleRow, ask: Ask) -> Option<Rem
         Ask::SignOut => account.sign_out.as_ref(),
     };
     action.filter(|(path, _)| *path == row.path)?;
-    let files_kept = ask == Ask::Remove && account.sync.iter().any(|sync| sync.on.is_on());
+    let files_kept = ask == Ask::Remove && account.sync.iter().any(|sync| sync.on);
     Some(RemovalQuestion {
         ask,
         row,

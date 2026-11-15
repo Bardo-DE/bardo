@@ -3,7 +3,7 @@
 use super::PrivacyLink;
 use crate::fake_kit::Kit;
 use crate::modules::Module;
-use detent_model::{PrivacySwitch, Work};
+use detent_model::Work;
 use ds_settings::schema::KeyPath;
 use std::sync::Arc;
 
@@ -11,7 +11,7 @@ use std::sync::Arc;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PrivacyAsked {
     /// A power was allowed or denied.
-    Set(KeyPath, PrivacySwitch),
+    Set(KeyPath, bool),
     /// A program is asked again.
     Forget(KeyPath),
 }
@@ -42,7 +42,7 @@ impl PrivacyLink for FakePrivacy {
         &'a self,
         _client: &'a Module,
         path: &'a KeyPath,
-        to: PrivacySwitch,
+        to: bool,
     ) -> Work<'a, Result<(), String>> {
         self.0.record(PrivacyAsked::Set(path.clone(), to));
         Box::pin(std::future::ready(self.0.admit()))

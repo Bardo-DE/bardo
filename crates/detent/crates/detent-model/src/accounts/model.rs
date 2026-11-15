@@ -19,8 +19,8 @@ const SYNC_KEY: &str = "sync/";
 const THIS_COMPUTER: &str = "this_computer";
 
 /// The words a switch is stored as.
-const ON: &str = "on";
-const OFF: &str = "off";
+pub(super) const ON: &str = "on";
+pub(super) const OFF: &str = "off";
 
 /// An account's id, as it stands in the rows' paths.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -92,39 +92,6 @@ impl Place {
     }
 }
 
-/// Whether a switch is on.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum SwitchState {
-    /// Apps may use it, or it is kept.
-    On,
-    /// They may not, or it is not.
-    Off,
-}
-
-impl SwitchState {
-    /// The state a row's stored word names; anything but `on` is off.
-    pub(super) fn of_word(word: &str) -> SwitchState {
-        if word == ON {
-            SwitchState::On
-        } else {
-            SwitchState::Off
-        }
-    }
-
-    /// The word the module stores for this state.
-    pub(crate) fn word(self) -> &'static str {
-        match self {
-            SwitchState::On => ON,
-            SwitchState::Off => OFF,
-        }
-    }
-
-    /// Whether it is on.
-    pub fn is_on(self) -> bool {
-        self == SwitchState::On
-    }
-}
-
 /// One service of an account, a switch.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AccountService {
@@ -133,7 +100,7 @@ pub struct AccountService {
     /// The kind as the module names it (`mail`, `calendar`).
     pub kind: String,
     /// Whether apps may use it.
-    pub on: SwitchState,
+    pub on: bool,
 }
 
 /// One sync switch of an account: whether this computer keeps its files, or backs up its photos.
@@ -147,7 +114,7 @@ pub struct AccountSync {
     /// none.
     pub help: String,
     /// Whether it is turned on.
-    pub on: SwitchState,
+    pub on: bool,
 }
 
 /// When a sign-in that expires ends, or that it did: a read-only line the module words, such as

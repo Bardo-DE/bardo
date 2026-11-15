@@ -13,7 +13,7 @@ use crate::copy::accounts::{reauth_help, service_label, sign_in_words, status_la
 use crate::marks::ProviderMarks;
 use detent_model::{
     Account, AccountKey, AccountService, AccountSync, Attention, DatasetName, HoldInput, Holds,
-    ModuleId, ModuleRow, SwitchState, SyncBook, SyncHold,
+    ModuleId, ModuleRow, SyncBook, SyncHold,
 };
 use dioxus::prelude::*;
 use ds::components::content::label::{LabelRole, LabelStyle};
@@ -26,7 +26,7 @@ use ds_settings::schema::ActionWeight;
 #[derive(Clone, Copy, PartialEq)]
 pub(super) struct Handlers {
     /// A service was switched.
-    pub switched: EventHandler<(ModuleRow, SwitchState)>,
+    pub switched: EventHandler<(ModuleRow, bool)>,
     /// A permission's action or Sign in again was pressed.
     pub ran: EventHandler<ModuleRow>,
     /// Remove was pressed.
@@ -144,7 +144,7 @@ pub(super) fn AccountDetail(
                     }
                     for sync in account.sync.iter().cloned() {
                         SyncRow { key: "{sync.path.0}", module: account.module, sync: sync.clone(), availability, on }
-                        if sync.on.is_on() {
+                        if sync.on {
                             SyncNowRow {
                                 key: "now-{sync.path.0}",
                                 account: account.key.clone(),

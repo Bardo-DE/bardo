@@ -5,7 +5,7 @@
 mod step;
 
 pub use step::{
-    Existing, LendFailure, SHARING_KEY, Sharing, SharingEffect, SharingInput, Way, sharing_step,
+    Existing, LendFailure, SHARING_KEY, Sharing, SharingEffect, SharingInput, sharing_step,
 };
 
 #[cfg(test)]

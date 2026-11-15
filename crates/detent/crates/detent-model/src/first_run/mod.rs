@@ -4,7 +4,7 @@
 mod model;
 mod step;
 
-pub use model::{FirstRun, LocalOnly, Runtime, Stage};
+pub use model::{FirstRun, Runtime, Stage};
 pub use step::{FirstRunEffect, FirstRunInput, first_run_step};
 
 #[cfg(test)]

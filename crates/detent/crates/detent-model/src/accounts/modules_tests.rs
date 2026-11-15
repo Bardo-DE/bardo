@@ -179,7 +179,7 @@ fn a_switch_and_an_action_go_back_to_the_module_that_has_the_row() {
         heard_all(),
         AccountsInput::Switched {
             row: files.clone(),
-            on: SwitchState::On,
+            on: true,
         },
     );
     assert_eq!(
@@ -189,7 +189,7 @@ fn a_switch_and_an_action_go_back_to_the_module_that_has_the_row() {
             value: toml::Value::String("on".to_owned())
         }]
     );
-    assert!(ready(state).pane.accounts[2].sync[0].on.is_on());
+    assert!(ready(state).pane.accounts[2].sync[0].on);
     // The same path in accountd is another row: the identity has no such switch.
     let elsewhere = ModuleRow::new(
         ModuleId::Accountd,
@@ -199,7 +199,7 @@ fn a_switch_and_an_action_go_back_to_the_module_that_has_the_row() {
         heard_all(),
         AccountsInput::Switched {
             row: elsewhere,
-            on: SwitchState::On,
+            on: true,
         },
     );
     assert!(effects.is_empty());

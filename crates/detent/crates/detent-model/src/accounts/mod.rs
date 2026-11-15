@@ -38,7 +38,7 @@ pub use input::AccountsInput;
 pub use model::{
     Account, AccountExpiry, AccountKey, AccountProvider, AccountService, AccountStatus,
     AccountSync, AccountsPane, AccountsReady, AccountsState, Ask, Place, RemovalQuestion,
-    SwitchState, SyncAdd,
+    SyncAdd,
 };
 pub use module::{ModuleId, ModuleRow, Source, Sources};
 pub use reads::Reads;

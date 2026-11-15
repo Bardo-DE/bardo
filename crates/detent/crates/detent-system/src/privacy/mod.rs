@@ -11,7 +11,7 @@ pub use bus::OnClient;
 pub use fake::{FakePrivacy, PrivacyAsked};
 
 use crate::modules::Module;
-use detent_model::{PrivacySwitch, Work};
+use detent_model::Work;
 use ds_settings::schema::KeyPath;
 use std::fmt::Debug;
 
@@ -23,7 +23,7 @@ pub trait PrivacyLink: Debug + Send + Sync {
         &'a self,
         client: &'a Module,
         path: &'a KeyPath,
-        to: PrivacySwitch,
+        to: bool,
     ) -> Work<'a, Result<(), String>>;
     /// Asks again at `path`; the module's own words when it refuses.
     fn forget<'a>(&'a self, client: &'a Module, path: &'a KeyPath) -> Work<'a, Result<(), String>>;
