@@ -12,32 +12,23 @@ use std::time::Duration;
 /// How often a device that could not take master is asked again.
 pub const RETRY_EVERY: Duration = Duration::from_secs(1);
 
-/// Whether a device has the display master.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Master {
-    /// It does, as far as is known.
-    Held,
-    /// It could not take it back; nothing may be drawn on it.
-    Lost,
-}
-
 /// The devices that are waiting to take master again.
 ///
 /// ```
-/// use casement_backend::tty::{DevicePath, Master, MasterWatch};
+/// use casement_backend::tty::{DevicePath, MasterWatch};
 /// use casement_core::time::Mono;
 /// use std::time::Duration;
 ///
 /// let card = DevicePath("/dev/dri/card0".into());
 /// let mut watch = MasterWatch::default();
 /// watch.lose(card.clone());
-/// assert_eq!(watch.of(&card), Master::Lost);
+/// assert!(watch.is_lost(&card));
 /// // The first retry is due at once, the next one a second later.
 /// assert_eq!(watch.due(Mono(Duration::ZERO)), [card.clone()]);
 /// assert!(watch.due(Mono(Duration::from_millis(500))).is_empty());
 /// assert_eq!(watch.due(Mono(Duration::from_secs(1))), [card.clone()]);
 /// watch.regain(&card);
-/// assert_eq!(watch.of(&card), Master::Held);
+/// assert!(!watch.is_lost(&card));
 /// ```
 #[derive(Debug, Clone, Default)]
 pub struct MasterWatch {
@@ -62,12 +53,9 @@ impl MasterWatch {
         }
     }
 
-    /// Whether `device` has master.
-    pub fn of(&self, device: &DevicePath) -> Master {
-        match self.lost.contains(device) {
-            true => Master::Lost,
-            false => Master::Held,
-        }
+    /// Whether `device` could not take master back: nothing may be drawn on it.
+    pub fn is_lost(&self, device: &DevicePath) -> bool {
+        self.lost.contains(device)
     }
 
     /// The devices to ask again at `now`: all that are waiting, once per [`RETRY_EVERY`].

@@ -178,30 +178,21 @@ fn keyed_by_connector(facts: OutputFacts) -> OutputFacts {
     }
 }
 
-/// The variable-refresh policy: whether to ask for it where it is possible.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum VrrPolicy {
-    /// Fixed refresh everywhere.
-    #[default]
-    Off,
-    /// Variable refresh on every output whose monitor and CRTC both support it.
-    WhenCapable,
-}
-
-/// Whether `policy` turns variable refresh on for an output: only when asked for and when both
-/// the monitor and the CRTC can do it, so a commit never sets a property the device lacks.
-pub fn vrr_enabled(policy: VrrPolicy, connector: &ConnectorFacts, crtc: &CrtcFacts) -> bool {
-    matches!(policy, VrrPolicy::WhenCapable) && connector.vrr && crtc.vrr
+/// Whether variable refresh is on for an output: only when `asked_for` (`true` asks for it
+/// wherever it is possible) and when both the monitor and the CRTC can do it, so a commit never
+/// sets a property the device lacks.
+pub fn vrr_enabled(asked_for: bool, connector: &ConnectorFacts, crtc: &CrtcFacts) -> bool {
+    asked_for && connector.vrr && crtc.vrr
 }
 
 /// What to commit for every attached connector of `resources`: the mode `wishes` asks for by
 /// connector name (the preferred mode otherwise), on the first CRTC that can drive it and is
-/// not taken, with variable refresh per `policy`. A connector with no mode is left dark, and
+/// not taken, with variable refresh when `asked_for_vrr`. A connector with no mode is left dark, and
 /// so is one no CRTC is left for.
 pub fn plan_outputs(
     resources: &KmsResources,
     wishes: &BTreeMap<OutputName, ModeWish>,
-    policy: VrrPolicy,
+    asked_for_vrr: bool,
 ) -> Vec<OutputCommit> {
     let mut taken: BTreeSet<CrtcId> = BTreeSet::new();
     let mut plan = Vec::new();
@@ -222,7 +213,7 @@ pub fn plan_outputs(
             .and_then(|id| resources.crtcs.iter().find(|c| c.id == *id));
         if let (Some(crtc), true) = (crtc, mode.size.w > 0 && mode.size.h > 0) {
             taken.insert(crtc.id);
-            let vrr = vrr_enabled(policy, connector, crtc);
+            let vrr = vrr_enabled(asked_for_vrr, connector, crtc);
             plan.push(OutputCommit::new(connector.id, crtc.id, mode, vrr));
         }
     }

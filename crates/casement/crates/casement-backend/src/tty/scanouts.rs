@@ -4,7 +4,7 @@
 use super::flip::FlipTracker;
 use super::kms::KmsError;
 use super::surface::{Presented, QueueOutcome, QueuedFrame, ScanoutSurface};
-use super::watch::{Failing, FailureRun, FlipWatch, Health, Level, Recoveries};
+use super::watch::{FailureRun, FlipWatch, Health, Recoveries};
 use crate::backend::BackendError;
 use crate::headless::FrameSource;
 use casement_core::OutputName;
@@ -150,14 +150,13 @@ impl Scanout {
             }
             QueueOutcome::Failed(error) => {
                 self.watch = self.watch.asked(now);
-                let (run, verdict) = self.failures.failed();
+                let (run, too_many) = self.failures.failed();
                 self.failures = run;
-                match verdict {
-                    Failing::Carry => Err(error.into()),
-                    Failing::Reinit => {
-                        tracing::warn!(%error, "frames keep failing; the output draws its picture again");
-                        Ok(self.recover(now))
-                    }
+                if too_many {
+                    tracing::warn!(%error, "frames keep failing; the output draws its picture again");
+                    Ok(self.recover(now))
+                } else {
+                    Err(error.into())
                 }
             }
         }
@@ -170,11 +169,12 @@ impl Scanout {
         self.flip = FlipTracker::new();
         self.watch = self.watch.given_up();
         self.failures = FailureRun::default();
-        let (recoveries, level) = self.recoveries.next(now);
+        let (recoveries, hard) = self.recoveries.next(now);
         self.recoveries = recoveries;
-        match level {
-            Level::Reset => PresentOutcome::Recovered,
-            Level::Reinit => PresentOutcome::Stalled,
+        if hard {
+            PresentOutcome::Stalled
+        } else {
+            PresentOutcome::Recovered
         }
     }
 
@@ -214,21 +214,12 @@ fn lost_master(error: &KmsError) -> bool {
     matches!(error, KmsError::Io(io) if io.kind() == std::io::ErrorKind::PermissionDenied)
 }
 
-/// Whether frames flow.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum Flow {
-    /// The seat is ours: frames are queued.
-    #[default]
-    Running,
-    /// Another session holds the seat: nothing is queued.
-    Held,
-}
-
 /// Every output's scanout.
 #[derive(Debug, Default)]
 pub struct ScanoutSet {
     outputs: BTreeMap<OutputName, Scanout>,
-    flow: Flow,
+    /// Another session holds the seat: nothing is queued.
+    held: bool,
     /// What the scanouts that went away had shown, so the totals only grow.
     retired: FrameTally,
 }
@@ -267,8 +258,8 @@ impl ScanoutSet {
     }
 
     /// Stops or resumes frames (a VT switch, a suspend).
-    pub fn flow(&mut self, flow: Flow) {
-        self.flow = flow;
+    pub fn hold(&mut self, held: bool) {
+        self.held = held;
     }
 
     /// The scanout of `name`.
@@ -289,8 +280,8 @@ impl ScanoutSet {
         source: &dyn FrameSource,
         now: Mono,
     ) -> Result<PresentOutcome, BackendError> {
-        match (self.flow, self.outputs.get_mut(name)) {
-            (Flow::Running, Some(scanout)) => scanout.present(source, now),
+        match (self.held, self.outputs.get_mut(name)) {
+            (false, Some(scanout)) => scanout.present(source, now),
             _ => Ok(PresentOutcome::Waiting),
         }
     }
@@ -325,10 +316,5 @@ impl ScanoutSet {
     /// The outputs that scan out now.
     pub fn names(&self) -> Vec<OutputName> {
         self.outputs.keys().cloned().collect()
-    }
-
-    /// Whether frames flow.
-    pub fn flowing(&self) -> Flow {
-        self.flow
     }
 }

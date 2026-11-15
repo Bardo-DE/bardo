@@ -3,7 +3,7 @@
 use casement_backend::headless::ConnectorEvent;
 use casement_backend::tty::{
     CommitVerdict, ConnectorId, ConnectorStatus, CrtcId, DevicePath, EdidError, Kms, KmsCommit,
-    KmsError, KmsRefusal, KnownConnectors, OutputCommit, TtyDevices, VrrPolicy, output_facts,
+    KmsError, KmsRefusal, KnownConnectors, OutputCommit, TtyDevices, output_facts,
     parse_edid, plan_outputs, reconcile,
 };
 use casement_core::OutputName;
@@ -25,15 +25,15 @@ fn no_wishes() -> BTreeMap<OutputName, ModeWish> {
     BTreeMap::new()
 }
 
-fn first_commit(kms: &FakeKms, policy: VrrPolicy) -> KmsCommit {
-    let plan = plan_outputs(&kms.resources(), &no_wishes(), policy);
+fn first_commit(kms: &FakeKms, asked_for_vrr: bool) -> KmsCommit {
+    let plan = plan_outputs(&kms.resources(), &no_wishes(), asked_for_vrr);
     KmsCommit::new(plan, true)
 }
 
 #[test]
 fn the_laptop_panel_modesets_to_its_preferred_mode() {
     let mut kms = FakeKms::synthetic(SyntheticTopology::LaptopPanel);
-    let commit = first_commit(&kms, VrrPolicy::Off);
+    let commit = first_commit(&kms, false);
     assert_eq!(commit.outputs.len(), 1);
     assert_eq!(kms.test(&commit), CommitVerdict::Accepted);
     kms.commit(commit).expect("commit");
@@ -47,7 +47,7 @@ fn the_laptop_panel_modesets_to_its_preferred_mode() {
 #[test]
 fn a_frame_commit_after_the_modeset_needs_none_and_a_mode_change_does() {
     let mut kms = FakeKms::synthetic(SyntheticTopology::LaptopPanel);
-    let commit = first_commit(&kms, VrrPolicy::Off);
+    let commit = first_commit(&kms, false);
     kms.commit(commit.clone()).expect("modeset");
     let frame = KmsCommit::new(commit.outputs.clone(), false);
     assert_eq!(kms.test(&frame), CommitVerdict::Accepted);
@@ -64,7 +64,7 @@ fn a_frame_commit_after_the_modeset_needs_none_and_a_mode_change_does() {
 #[test]
 fn the_kernel_refuses_what_does_not_fit() {
     let mut kms = FakeKms::synthetic(SyntheticTopology::Dock);
-    let plan = plan_outputs(&kms.resources(), &no_wishes(), VrrPolicy::Off);
+    let plan = plan_outputs(&kms.resources(), &no_wishes(), false);
     assert_eq!(plan.len(), 3);
     let mut crowded = plan.clone();
     crowded[1].crtc = crowded[0].crtc;
@@ -84,7 +84,7 @@ fn mode_wishes_pick_among_the_modes_the_monitor_lists() {
         name("DP-1"),
         ModeWish::HighestRefreshAt(PhysicalSize { w: 2560, h: 1440 }),
     );
-    let plan = plan_outputs(&kms.resources(), &wishes, VrrPolicy::Off);
+    let plan = plan_outputs(&kms.resources(), &wishes, false);
     let dell = plan
         .iter()
         .find(|o| o.connector == ConnectorId(2))
@@ -143,7 +143,7 @@ fn a_retraining_link_reports_changed_and_nothing_else() {
     devices.added(card(0), &mut opener).expect("open");
     assert_eq!(devices.announce().len(), 1);
     for _ in 0..4 {
-        let commit = first_commit(&kms, VrrPolicy::Off);
+        let commit = first_commit(&kms, false);
         let driver = devices.driving(&name("DP-1")).expect("driver");
         driver.commit(commit).expect("commit");
         let events = devices.changed(&card(0)).expect("changed");
@@ -215,9 +215,9 @@ fn dpms_off_and_on_reach_the_device() {
 #[test]
 fn variable_refresh_follows_the_policy_only_on_capable_monitors() {
     let mut kms = FakeKms::synthetic(SyntheticTopology::Dock);
-    let off = plan_outputs(&kms.resources(), &no_wishes(), VrrPolicy::Off);
+    let off = plan_outputs(&kms.resources(), &no_wishes(), false);
     assert!(off.iter().all(|o| !o.vrr));
-    let on = plan_outputs(&kms.resources(), &no_wishes(), VrrPolicy::WhenCapable);
+    let on = plan_outputs(&kms.resources(), &no_wishes(), true);
     let states: Vec<bool> = on.iter().map(|o| o.vrr).collect();
     // The panel is capable, the Dell and the HDMI monitor are not.
     assert_eq!(states, vec![true, false, false]);
@@ -237,7 +237,7 @@ fn a_connector_with_no_modes_is_left_dark() {
     let facts = output_facts(&resources.connectors[0]);
     assert!(facts.modes.is_empty());
     assert_eq!(pick_mode(&facts, &ModeWish::Preferred).size.w, 0);
-    assert!(plan_outputs(&resources, &no_wishes(), VrrPolicy::WhenCapable).is_empty());
+    assert!(plan_outputs(&resources, &no_wishes(), true).is_empty());
     let commit = KmsCommit::new(Vec::new(), true);
     assert_eq!(kms.test(&commit), CommitVerdict::Accepted);
     // It still counts as a plugged display, anonymous and keyed by its connector.
@@ -251,7 +251,7 @@ fn a_connector_with_no_modes_is_left_dark() {
 #[test]
 fn an_unplugged_connector_goes_dark_and_cannot_be_driven() {
     let mut kms = FakeKms::synthetic(SyntheticTopology::Dock);
-    let commit = first_commit(&kms, VrrPolicy::Off);
+    let commit = first_commit(&kms, false);
     kms.commit(commit.clone()).expect("commit");
     kms.unplug(ConnectorId(2));
     assert!(!kms.world().lit.contains_key(&ConnectorId(2)));
@@ -264,7 +264,7 @@ fn an_unplugged_connector_goes_dark_and_cannot_be_driven() {
         CommitVerdict::Refused(KmsRefusal::Unsupported)
     );
     assert_eq!(
-        plan_outputs(&kms.resources(), &no_wishes(), VrrPolicy::Off).len(),
+        plan_outputs(&kms.resources(), &no_wishes(), false).len(),
         2
     );
 }
@@ -298,7 +298,7 @@ fn recorded_fixtures_replay() {
         }
         let resources = load_fixture(&path).expect("fixture parses");
         let mut kms = FakeKms::with(resources);
-        let commit = first_commit(&kms, VrrPolicy::WhenCapable);
+        let commit = first_commit(&kms, true);
         let attached = kms
             .resources()
             .connectors

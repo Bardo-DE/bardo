@@ -73,7 +73,7 @@ mod writeback_real;
 
 pub use capture_gpu::{CaptureGpu, Picture, body_on_gpu, merged_formats, renderable_formats};
 pub use connector::{
-    EdidError, VrrPolicy, attached_outputs, output_facts, parse_edid, plan_outputs, vrr_enabled,
+    EdidError, attached_outputs, output_facts, parse_edid, plan_outputs, vrr_enabled,
 };
 pub use device::{OpenDevice, TtyDevices};
 pub use direct::{
@@ -90,21 +90,21 @@ pub use kms::{
     OutputCommit, PlaneFacts, PlaneId, PlaneKind,
 };
 pub use lit::{Lighting, LitOutput};
-pub use master::{Master, MasterWatch, RETRY_EVERY};
+pub use master::{MasterWatch, RETRY_EVERY};
 pub use offer::scanout_formats;
 pub use pace::Pace;
 pub use readback::Readback;
 pub use render_mode::{Opened, RenderMode, Routes, ScanoutMaker};
 pub use report::{KmsReport, REPORT_EVERY, ReportPacer, ReportedOutput};
-pub use scanouts::{Flow, FrameTally, PresentOutcome, Scanout, ScanoutSet};
+pub use scanouts::{FrameTally, PresentOutcome, Scanout, ScanoutSet};
 pub use session::{SeatCauses, SeatSource, SeatState, SessionNote, TtySession};
 pub use sleep::{SleepInbox, SleepLink, SleepSettled, sleep_channel};
 pub use surface::{DirectCandidate, Presented, QueueOutcome, QueuedFrame, ScanoutSurface};
 pub use udev::{DeviceEvent, DevicePath, DeviceSource};
 pub use vt::{VtNumber, vt_of_chord, vt_of_keysym};
 pub use watch::{
-    FAILURES_ALLOWED, FLIP_DEADLINE, Failing, FailureRun, FlipWatch, Health, Level,
-    RECOVERY_WINDOW, Recoveries, STARVED_AFTER,
+    FAILURES_ALLOWED, FLIP_DEADLINE, FailureRun, FlipWatch, Health, RECOVERY_WINDOW, Recoveries,
+    STARVED_AFTER,
 };
 pub use writeback::{FLIPS_TO_WAIT, RawCapture, Writeback, WritebackError};
 
@@ -255,7 +255,7 @@ pub struct TtyBackend {
     /// The capture shadows, drawn only while a capture is open on the output.
     pub readback: Readback,
     /// Whether to ask for variable refresh where monitor and CRTC can do it.
-    pub vrr: VrrPolicy,
+    pub vrr: bool,
     /// How many frames were queued over the run, whatever became of the outputs.
     queued: u64,
     /// The writeback job, when one is queued.
@@ -328,7 +328,7 @@ impl TtyBackend {
             scanouts: ScanoutSet::empty(),
             lit: BTreeMap::new(),
             readback: Readback::new(),
-            vrr: VrrPolicy::default(),
+            vrr: false,
             queued: 0,
             writeback_job: writeback::WritebackJob::default(),
             kinds,
@@ -433,7 +433,7 @@ impl TtyBackend {
 
     /// The seat was lent away: no frame is queued, the devices give up master, input stops.
     fn paused(&mut self) {
-        self.scanouts.flow(Flow::Held);
+        self.scanouts.hold(true);
         self.devices
             .devices
             .values_mut()
@@ -455,7 +455,7 @@ impl TtyBackend {
             }
         }
         self.scanouts.reset();
-        self.scanouts.flow(Flow::Running);
+        self.scanouts.hold(false);
         if let Some(input) = &mut self.seams.input {
             input.resume();
         }
@@ -614,7 +614,7 @@ impl TtyBackend {
             return Ok(PresentOutcome::Waiting);
         }
         self.retry_master(now);
-        if self.master_lost_on(output) == Master::Lost {
+        if self.master_lost_on(output) {
             return Ok(PresentOutcome::Waiting);
         }
         let shown = self.scanouts.present(output, source, now)?;
@@ -648,11 +648,11 @@ impl TtyBackend {
         Ok(shown)
     }
 
-    /// Whether the device that drives `output` has the display master.
-    fn master_lost_on(&self, output: &OutputName) -> Master {
+    /// Whether the device that drives `output` lost the display master.
+    fn master_lost_on(&self, output: &OutputName) -> bool {
         self.lit
             .get(output)
-            .map_or(Master::Held, |lit| self.master.of(&lit.device))
+            .is_some_and(|lit| self.master.is_lost(&lit.device))
     }
 
     /// Whether the display shows the session at `now`. Every output that asked for frames

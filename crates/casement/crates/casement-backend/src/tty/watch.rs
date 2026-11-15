@@ -92,23 +92,16 @@ impl FlipWatch {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct FailureRun(u32);
 
-/// What a failed frame means for the output.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Failing {
-    /// Report it and try the next frame.
-    Carry,
-    /// Too many in a row: set the output up again.
-    Reinit,
-}
-
 impl FailureRun {
-    /// The run after another failed frame, and what to do about it.
+    /// The run after another failed frame, and whether there were too many in a row, so the
+    /// output must be set up again (`false`: report it and try the next frame).
     #[must_use]
-    pub fn failed(self) -> (FailureRun, Failing) {
+    pub fn failed(self) -> (FailureRun, bool) {
         let run = FailureRun(self.0.saturating_add(1));
-        match run.0 >= FAILURES_ALLOWED {
-            true => (FailureRun::default(), Failing::Reinit),
-            false => (run, Failing::Carry),
+        if run.0 >= FAILURES_ALLOWED {
+            (FailureRun::default(), true)
+        } else {
+            (run, false)
         }
     }
 
@@ -122,15 +115,6 @@ impl FailureRun {
 /// How soon after one recovery another one means the first did not help.
 pub const RECOVERY_WINDOW: Duration = Duration::from_secs(5);
 
-/// How hard to try to get a frozen output going.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Level {
-    /// Make the surface forget the screen and draw the whole picture again.
-    Reset,
-    /// Throw the output's surface away and light it again from the model's configuration.
-    Reinit,
-}
-
 /// The recoveries of one output, to tell a first try from a second one that follows soon after.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct Recoveries {
@@ -138,16 +122,15 @@ pub struct Recoveries {
 }
 
 impl Recoveries {
-    /// The recoveries after one more at `now`, and how hard to try: a reset, unless another
-    /// recovery was needed within [`RECOVERY_WINDOW`], then a re-initialisation (which starts
-    /// the count over).
+    /// The recoveries after one more at `now`, and whether to try hard: `false` is a reset (the
+    /// surface forgets the screen and draws the whole picture again), unless another recovery
+    /// was needed within [`RECOVERY_WINDOW`], then `true`: throw the surface away and light the
+    /// output again from the model's configuration (which starts the count over).
     #[must_use]
-    pub fn next(self, now: Mono) -> (Recoveries, Level) {
+    pub fn next(self, now: Mono) -> (Recoveries, bool) {
         match self.last {
-            Some(last) if now.since(last) < RECOVERY_WINDOW => {
-                (Recoveries::default(), Level::Reinit)
-            }
-            _ => (Recoveries { last: Some(now) }, Level::Reset),
+            Some(last) if now.since(last) < RECOVERY_WINDOW => (Recoveries::default(), true),
+            _ => (Recoveries { last: Some(now) }, false),
         }
     }
 }
@@ -211,32 +194,24 @@ mod tests {
         let run = FailureRun::default();
         let (run, first) = run.failed();
         let (run, second) = run.failed();
-        assert_eq!((first, second), (Failing::Carry, Failing::Carry));
+        assert!(!first && !second);
         let (again, third) = run.failed();
-        assert_eq!(third, Failing::Reinit);
+        assert!(third);
         assert_eq!(again, FailureRun::default());
         let (after_success, next) = run.succeeded().failed();
-        assert_eq!(next, Failing::Carry);
+        assert!(!next);
         assert_ne!(after_success, FailureRun::default());
     }
 
     #[test]
     fn a_second_recovery_soon_after_the_first_is_a_harder_one() {
         let (recoveries, first) = Recoveries::default().next(at(1_000));
-        assert_eq!(first, Level::Reset);
+        assert!(!first);
         let (recoveries, second) = recoveries.next(at(2_000));
-        assert_eq!(second, Level::Reinit);
+        assert!(second);
         let (recoveries, third) = recoveries.next(at(3_000));
-        assert_eq!(
-            third,
-            Level::Reset,
-            "the count starts over after a re-initialisation"
-        );
+        assert!(!third, "the count starts over after a re-initialisation");
         let (_, late) = recoveries.next(at(3_000 + 5_000));
-        assert_eq!(
-            late,
-            Level::Reset,
-            "a recovery long after the last is a first again"
-        );
+        assert!(!late, "a recovery long after the last is a first again");
     }
 }
