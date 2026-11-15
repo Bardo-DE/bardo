@@ -2144,6 +2144,7 @@ dependencies = [
  "casement-protocols",
  "ds-core",
  "ds-settings",
+ "ds-style",
  "peephole-bus",
  "porter-core",
  "porter-dbus",
@@ -2281,6 +2282,7 @@ version = "0.1.0"
 dependencies = [
  "casement-core",
  "casement-protocols",
+ "desktop-client",
  "ds-core",
  "porter-core",
  "smithay",
