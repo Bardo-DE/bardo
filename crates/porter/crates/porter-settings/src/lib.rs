@@ -32,7 +32,7 @@ pub use rows::{
 use accounts::{Directory, UsedBy};
 use ds_settings::live::LiveError;
 use ds_settings::schema::KeySpec;
-use porter_capability::{CapabilityKind};
+use porter_capability::CapabilityKind;
 use porter_core::consent::Grant;
 use porter_core::{Account, AccountId, AppName, GrantId};
 use porter_service_core::registry::Registry;

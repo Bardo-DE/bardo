@@ -7,8 +7,7 @@ use porter_capability::{
     CuaCap, CuaEnv, Delta, EmbedCap, EmbedPrompts, EnvName, HashKind, IdentityCap, ImageGenCap,
     ImageMode, KeyValueCap, LabelModel, LanguageSet, LanguageTag, LibraryRead, LlmCap, LlmFeature,
     LlmWire, MailCap, MailTransport, Modality, NotesCap, NotesTransport, PhotosCap, PimCap,
-    PimTransport, PushCap, PushChannel, RerankCap, SpeechCap, SpeechMode, StorageCap,
-    StorageScope,
+    PimTransport, PushCap, PushChannel, RerankCap, SpeechCap, SpeechMode, StorageCap, StorageScope,
 };
 use porter_core::*;
 use porter_core::{

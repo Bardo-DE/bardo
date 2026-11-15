@@ -3,7 +3,7 @@
 //! only for a permit that still opens it), the audit line that says so without the key, and the
 //! permit an app already holds being answered without a second sheet.
 
-use porter_capability::{CapabilityKind};
+use porter_capability::CapabilityKind;
 use porter_core::consent::{GrantScope, Usage, Verdict};
 use porter_core::{AccountId, GrantId};
 use porter_core::{

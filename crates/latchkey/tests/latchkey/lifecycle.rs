@@ -95,7 +95,6 @@ mod one_per_user {
 #[cfg(unix)]
 mod trusted_directories {
     use super::*;
-    use latchkey::lock::Standing;
     use std::os::unix::fs::{PermissionsExt as _, symlink};
 
     fn home_of(agent: &Agent) -> std::path::PathBuf {
@@ -143,13 +142,12 @@ mod trusted_directories {
         let dir = tempfile::tempdir().unwrap();
         let agent = agent_in(dir.path(), &unique_name(), "test");
         let door = agent.listen().unwrap();
-        assert_eq!(door.standing(), Standing::Ours);
+        assert!(!door.displaced());
         std::fs::remove_file(&agent.address().lock).unwrap();
-        assert_eq!(door.standing(), Standing::Displaced);
+        assert!(door.displaced());
         std::fs::write(&agent.address().lock, b"").unwrap();
-        assert_eq!(
-            door.standing(),
-            Standing::Displaced,
+        assert!(
+            door.displaced(),
             "a fresh file at the path is not the one this agent holds"
         );
     }

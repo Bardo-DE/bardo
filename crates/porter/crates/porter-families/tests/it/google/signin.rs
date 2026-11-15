@@ -5,9 +5,7 @@ use porter_capability::{AbsentReason, Offer, Provenance};
 use porter_core::{Credential, Family, LimitReason, SecretPurpose, TokenLifetime, Verification};
 use porter_fake_servers::{Consent, IssuerEvent, TokenResult};
 use porter_ids::Count;
-use porter_provider::{
-    LoginHint, Provider, SignIn, SignInMode, SignInStart, SignInStep,
-};
+use porter_provider::{LoginHint, Provider, SignIn, SignInMode, SignInStart, SignInStep};
 use porter_sheet::{SignInFault, SignInInput};
 
 /// Signs in by loopback up to the review, with the browser answering.
@@ -212,9 +210,17 @@ async fn a_known_address_is_sent_as_the_hint_and_consent_is_asked_only_the_first
         assert!(matches!(step, SignInStep::Review { .. }), "{step:?}");
         let q = query_of(&rig);
         let want_hint = hint.map(LoginHint::as_str);
-        assert_eq!(get(&q, "login_hint"), want_hint, "{hint:?} {signed_in_before:?}");
+        assert_eq!(
+            get(&q, "login_hint"),
+            want_hint,
+            "{hint:?} {signed_in_before:?}"
+        );
         assert_eq!(get(&q, "prompt"), prompt, "{hint:?} {signed_in_before:?}");
-        assert_eq!(get(&q, "access_type"), Some("offline"), "{signed_in_before:?}");
+        assert_eq!(
+            get(&q, "access_type"),
+            Some("offline"),
+            "{signed_in_before:?}"
+        );
     }
 }
 

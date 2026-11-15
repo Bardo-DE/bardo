@@ -19,7 +19,7 @@ use ds_settings::live::{
 };
 use ds_settings::schema::KeyPath;
 use porter_callers::CallerRole;
-use porter_capability::{CapabilityKind};
+use porter_capability::CapabilityKind;
 use porter_core::ProviderId;
 use porter_core::{
     Account, AccountId, AccountState, AppId, AppName, AuthKind, GrantId, IdentityId, Isolation,

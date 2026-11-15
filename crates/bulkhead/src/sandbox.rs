@@ -58,13 +58,7 @@ pub enum Network {
 
 impl RunSpec {
     /// A command to run in `cwd` with `env`, on `network`, keeping `keep` bytes of output.
-    pub fn new(
-        argv: Argv,
-        cwd: AbsPath,
-        env: Vec<EnvVar>,
-        network: Network,
-        keep: usize,
-    ) -> Self {
+    pub fn new(argv: Argv, cwd: AbsPath, env: Vec<EnvVar>, network: Network, keep: usize) -> Self {
         Self {
             argv,
             cwd,

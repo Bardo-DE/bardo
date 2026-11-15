@@ -2,9 +2,8 @@
 
 use bulkhead::AbsPath;
 use bulkhead::{
-    Access, AgentNet, AgentRun, Argv, Bind, EndpointBind, EnvVar, INSIDE_FORWARDER,
-    INSIDE_SOCKET, Network, NetworkMode, Profile, RESOLVER_FILES, RunSpec, agent_bwrap_args,
-    bwrap_args,
+    Access, AgentNet, AgentRun, Argv, Bind, EndpointBind, EnvVar, INSIDE_FORWARDER, INSIDE_SOCKET,
+    Network, NetworkMode, Profile, RESOLVER_FILES, RunSpec, agent_bwrap_args, bwrap_args,
 };
 
 fn abs(text: &str) -> AbsPath {

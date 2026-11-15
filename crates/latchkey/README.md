@@ -51,8 +51,8 @@ you would be one you fought.
   `Error::Unsafe`, never used). The lock file is opened without following links. On Linux a
   client asks the kernel who is on the other end of the socket and refuses another user's
   process (`Error::WrongOwner`) before it sends anything.
-- **A deleted lock file is noticed.** `Listening::standing()` says whether the lock file is still
-  the one the agent holds; an agent that checks now and then and exits on `Displaced` cannot be
+- **A deleted lock file is noticed.** `Listening::displaced()` says whether the lock file is no longer
+  the one the agent holds; an agent that checks now and then and exits when it says so cannot be
   joined by a second one after a cache cleaner ran.
 - **Every platform rule is a pure function**, so the macOS and Windows answers are tested from
   whatever machine runs `cargo test`.

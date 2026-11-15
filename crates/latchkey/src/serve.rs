@@ -62,10 +62,10 @@ impl Listening {
         std::iter::repeat_with(move || self.accept())
     }
 
-    /// Is the lock file still the one this agent holds? An agent should ask now and then and stop
-    /// when it is [`Standing::Displaced`](lock::Standing::Displaced); see [`lock::Held::standing`].
-    pub fn standing(&self) -> lock::Standing {
-        self.lock.standing()
+    /// Is the lock file no longer the one this agent holds? An agent should ask now and then and
+    /// stop when it is; see [`lock::Held::displaced`].
+    pub fn displaced(&self) -> bool {
+        self.lock.displaced()
     }
 }
 

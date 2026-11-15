@@ -6,7 +6,7 @@ use crate::launcher_rig::*;
 
 use accountd::launcher::LoginTiming;
 use porter_callers::CallerRole;
-use porter_capability::{CapabilityKind};
+use porter_capability::CapabilityKind;
 use porter_core::consent::{Decision, GrantScope, Verdict};
 use porter_core::{AccountState, AppId, AppName, Isolation};
 use porter_dbus::accounts::{BrokerProxy, verdict_from_dbus};

@@ -32,8 +32,7 @@ use porter_http::Http;
 use porter_http_reqwest::ReqwestHttp;
 use porter_oauth::{ExchangeFault, endpoints_of, revoke};
 use porter_provider::{
-    Presented, Provider, ProviderError, ProviderSession, ProviderSpec, RevokeOutcome,
-    SignInStart,
+    Presented, Provider, ProviderError, ProviderSession, ProviderSpec, RevokeOutcome, SignInStart,
 };
 use std::collections::HashMap;
 

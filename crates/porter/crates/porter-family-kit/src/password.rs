@@ -39,9 +39,7 @@ pub fn password() -> FieldSpec {
 /// password.
 pub fn password_for(spec: &ProviderSpec) -> FieldSpec {
     match spec.auth.kind {
-        porter_core::AuthKind::AppPassword => {
-            field(FieldKind::AppPassword, Entry::Secret, true)
-        }
+        porter_core::AuthKind::AppPassword => field(FieldKind::AppPassword, Entry::Secret, true),
         _ => password(),
     }
 }

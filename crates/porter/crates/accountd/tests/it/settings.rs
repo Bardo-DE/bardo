@@ -397,13 +397,7 @@ async fn a_client_id_is_written_to_the_users_file_only_by_settings() {
         })
         .collect();
     let microsoft = "microsoft".to_owned();
-    assert_eq!(
-        changed,
-        [
-            (microsoft.clone(), false),
-            (microsoft, true)
-        ]
-    );
+    assert_eq!(changed, [(microsoft.clone(), false), (microsoft, true)]);
     assert!(
         rig.audit
             .entries()

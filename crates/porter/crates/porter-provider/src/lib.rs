@@ -32,11 +32,10 @@ pub use provider::{Presented, Provider, ProviderSession};
 pub use set::ProviderSet;
 pub use shipped::{SHIPPED_FILES, shipped, shipped_specs};
 pub use sign_in::{
-    LoginHint, LoginHintFault, RevokeOutcome, SignIn, SignInMode, SignInStart,
-    SignInStep, Signed,
+    LoginHint, LoginHintFault, RevokeOutcome, SignIn, SignInMode, SignInStart, SignInStep, Signed,
 };
 pub use spec::{
     AiSpec, ApiRow, AuthOrigin, AuthSpec, CapabilityRow, Discovery, DomainMatch, DomainName,
-    Issuer, IssuerData, IssuerEndpoints, LinkedOrigin, Matching, Port, ProbeRow,
-    ProviderSpec, ScopeClass, ScopeRow,
+    Issuer, IssuerData, IssuerEndpoints, LinkedOrigin, Matching, Port, ProbeRow, ProviderSpec,
+    ScopeClass, ScopeRow,
 };

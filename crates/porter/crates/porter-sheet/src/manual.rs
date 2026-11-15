@@ -17,9 +17,7 @@
 //! The server guesses (`imap.<domain>`, `smtp.<domain>`) are prefills the person edits, as
 //! mailo's form showed them greyed; the answers decide.
 
-use super::fields::{
-    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, first_missing,
-};
+use super::fields::{Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, first_missing};
 use super::view::{FieldProblem, ProblemKind};
 use porter_core::{AuthKind, Direction, SecretText, Tls};
 use porter_core::{EndpointUrl, server_address, server_address_shape};
@@ -175,32 +173,20 @@ pub fn manual_form(protocol: Protocol, domain: Option<&str>) -> Vec<FieldSpec> {
             spec(FieldKind::Token, false, None),
         ]),
         _ => fields.extend([
-            spec(
-                FieldKind::Server,
-                true,
-                guess(guess_label(protocol)),
-            ),
+            spec(FieldKind::Server, true, guess(guess_label(protocol))),
             spec(
                 FieldKind::Security,
                 true,
                 Some(Tls::Implicit.word().to_owned()),
             ),
-            spec(
-                FieldKind::Port,
-                false,
-                port(Direction::Incoming),
-            ),
+            spec(FieldKind::Port, false, port(Direction::Incoming)),
             spec(FieldKind::OutgoingServer, true, guess("smtp")),
             spec(
                 FieldKind::OutgoingSecurity,
                 true,
                 Some(Tls::Implicit.word().to_owned()),
             ),
-            spec(
-                FieldKind::OutgoingPort,
-                false,
-                port(Direction::Outgoing),
-            ),
+            spec(FieldKind::OutgoingPort, false, port(Direction::Outgoing)),
         ]),
     }
     fields.push(spec(FieldKind::Username, false, None));

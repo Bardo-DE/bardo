@@ -21,8 +21,8 @@ use porter_fake::{MemoryStore, RecordingAudit, ScriptedSheets};
 use porter_ids::clock::FixedClock;
 use porter_ids::{UnixSeconds, WebUrl};
 use porter_provider::{
-    LoginHint, Presented, Provider, ProviderError, ProviderSession, ProviderSpec,
-    RevokeOutcome, SignIn, SignInMode, SignInStart, SignInStep, Signed, parse_provider,
+    LoginHint, Presented, Provider, ProviderError, ProviderSession, ProviderSpec, RevokeOutcome,
+    SignIn, SignInMode, SignInStart, SignInStep, Signed, parse_provider,
 };
 use porter_secrets::{MemorySecrets, Secrets, SecretsError};
 use porter_service::AccountService;
@@ -31,8 +31,8 @@ use porter_service_core::audit::AuditEvent;
 use porter_service_core::registry::Registry;
 use porter_sheet::host::{SheetFault, SheetLink, SheetOpen, Sheets};
 use porter_sheet::{
-    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, SheetInput, SheetView,
-    SignInFault, SignInInput, UserCode,
+    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, SheetInput, SheetView, SignInFault,
+    SignInInput, UserCode,
 };
 use porter_wire::{AccountsReply, AccountsRequest};
 use porter_wire::{ParentWindow, Refusal};
@@ -1183,8 +1183,7 @@ async fn providers_with_nothing_to_sign_in_are_not_listed() {
 async fn a_provider_with_no_client_is_not_listed_until_one_is_set() {
     let script = Script::default();
     let oauth_script = Script::default();
-    *oauth_script.readiness.lock().expect("readiness") =
-        Some(false);
+    *oauth_script.readiness.lock().expect("readiness") = Some(false);
     let oauth = ScriptedProvider {
         spec: parse_provider(
             &SPEC

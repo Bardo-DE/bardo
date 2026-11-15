@@ -4,9 +4,7 @@
 //! (`~/mailo/crates/mail-runtime/src/oauth.rs`).
 
 use crate::pkce::Pkce;
-use porter_provider::{
-    ClientEntry, Issuer, IssuerEndpoints, LoginHint, SignInStart,
-};
+use porter_provider::{ClientEntry, Issuer, IssuerEndpoints, LoginHint, SignInStart};
 
 /// What Google's `prompt` asks for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -112,7 +110,9 @@ pub fn authorize_url_for(
     }
     if client.issuer == Issuer::Google {
         pairs.push(("access_type", "offline"));
-        if let Some(prompt) = GooglePrompt::choose(ask.signed_in_before, ask.login_hint.as_ref()).value() {
+        if let Some(prompt) =
+            GooglePrompt::choose(ask.signed_in_before, ask.login_hint.as_ref()).value()
+        {
             pairs.push(("prompt", prompt));
         }
         pairs.push(("include_granted_scopes", "true"));
@@ -221,13 +221,7 @@ mod tests {
         let ada = LoginHint::parse("ada+tag@gmail.com").expect("an address");
         let cases = [
             // (issuer, signed in before, hint, prompt, login_hint)
-            (
-                Issuer::Google,
-                false,
-                None,
-                Some("consent"),
-                None,
-            ),
+            (Issuer::Google, false, None, Some("consent"), None),
             (
                 Issuer::Google,
                 false,
@@ -242,13 +236,7 @@ mod tests {
                 None,
                 Some("ada+tag@gmail.com"),
             ),
-            (
-                Issuer::Google,
-                true,
-                None,
-                Some("select_account"),
-                None,
-            ),
+            (Issuer::Google, true, None, Some("select_account"), None),
             (
                 Issuer::Microsoft,
                 true,
@@ -272,8 +260,16 @@ mod tests {
             );
             let q = query(&url);
             let get = |k: &str| q.iter().find(|(n, _)| n == k).map(|(_, v)| v.as_str());
-            assert_eq!(get("prompt"), prompt, "{issuer:?} {signed_in_before:?} {hint:?}");
-            assert_eq!(get("login_hint"), login_hint, "{issuer:?} {signed_in_before:?}");
+            assert_eq!(
+                get("prompt"),
+                prompt,
+                "{issuer:?} {signed_in_before:?} {hint:?}"
+            );
+            assert_eq!(
+                get("login_hint"),
+                login_hint,
+                "{issuer:?} {signed_in_before:?}"
+            );
         }
     }
 

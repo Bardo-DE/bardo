@@ -54,10 +54,7 @@ pub fn machine_to_dbus(machine: &Machine) -> (String, Details) {
             owned(strings(machine.addresses.iter().map(IpAddr::to_string))),
         ),
         (MACHINE_KEY_OS, owned(Value::from(machine.os.clone()))),
-        (
-            MACHINE_KEY_ONLINE,
-            owned(Value::from(machine.online)),
-        ),
+        (MACHINE_KEY_ONLINE, owned(Value::from(machine.online))),
         (MACHINE_KEY_SSH, owned(Value::from(machine.ssh))),
         (
             MACHINE_KEY_SSH_HOST_KEYS,

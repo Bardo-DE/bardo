@@ -8,8 +8,8 @@ use porter_capability::{CapabilityKind, Claim};
 use porter_core::AccountId;
 use porter_core::{Account, Audience, Credential, IssuedToken};
 use porter_provider::{
-    Presented, Provider, ProviderError, ProviderSession, ProviderSpec, RevokeOutcome,
-    SignIn, SignInStart, SignInStep,
+    Presented, Provider, ProviderError, ProviderSession, ProviderSpec, RevokeOutcome, SignIn,
+    SignInStart, SignInStep,
 };
 use porter_sheet::SignInInput;
 use std::fmt::Debug;

@@ -5,7 +5,7 @@
 //! with no audit line, and the person is told `Unavailable`. (These began as pins of the code
 //! before it, whose behaviour is in the history of this file.)
 
-use porter_capability::{CapabilityKind};
+use porter_capability::CapabilityKind;
 use porter_core::consent::{ConsentAnswer, ConsentAsk, GrantScope, Usage};
 use porter_core::{AccountState, AppId, AppName, DataClass, Isolation, SessionToken};
 use porter_core::{AuthKind, GrantId};

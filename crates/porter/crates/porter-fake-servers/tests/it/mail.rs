@@ -434,7 +434,6 @@ async fn rewrite_points_mail_rows_at_the_fake() {
     assert!(
         imap_rows
             .iter()
-            .all(|r| r.endpoint.clone()
-                == Some(format!("imaps://127.0.0.1:{port}")))
+            .all(|r| r.endpoint.clone() == Some(format!("imaps://127.0.0.1:{port}")))
     );
 }

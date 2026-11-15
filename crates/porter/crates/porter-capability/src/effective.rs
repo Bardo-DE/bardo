@@ -35,9 +35,7 @@ pub fn effective(claims: &[Claim], toggles: &[KindToggle]) -> Vec<Claim> {
 
 fn apply_toggle(claim: Claim, toggles: &[KindToggle]) -> Claim {
     let kind = claim.offer.kind();
-    let off = toggles
-        .iter()
-        .any(|t| t.kind == kind && !t.toggle);
+    let off = toggles.iter().any(|t| t.kind == kind && !t.toggle);
     if off {
         Claim {
             offer: Offer::Absent {

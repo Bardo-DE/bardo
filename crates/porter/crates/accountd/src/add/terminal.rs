@@ -12,8 +12,8 @@ use porter_core::SecretText;
 use porter_core::consent::{ConsentAnswer, ConsentAsk, GrantScope};
 use porter_sheet::host::{SheetFault, SheetLink, SheetOpen, Sheets};
 use porter_sheet::{
-    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, ServiceState, SheetInput,
-    SheetView, refit,
+    Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, ServiceState, SheetInput, SheetView,
+    refit,
 };
 use porter_wire::ParentWindow;
 use std::io::{BufRead, IsTerminal, Write};

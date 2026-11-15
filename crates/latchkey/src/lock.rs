@@ -39,49 +39,39 @@ use std::path::{Path, PathBuf};
 #[derive(Debug)]
 pub struct Held {
     /// Open because dropping it releases the lock, which is the entire point. Also read by
-    /// [`Held::standing`], to ask whether the path still names this very file.
+    /// [`Held::displaced`], to ask whether the path still names this very file.
     file: std::fs::File,
     path: PathBuf,
 }
 
-/// Whether the lock file at the path is still the one this agent holds.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Standing {
-    /// The path names the file this agent holds the lock on.
-    Ours,
-    /// The path is gone, or names another file (a cache cleaner ran, or someone replaced it). A
-    /// new agent would lock the new file and run beside this one, so this agent should stop.
-    Displaced,
-}
-
 impl Held {
-    /// Is the lock file still where this agent locked it?
+    /// Has the lock file been displaced: is the path gone, or does it name another file (a cache
+    /// cleaner ran, or someone replaced it)? A new agent would lock the new file and run beside
+    /// this one, so this agent should stop.
     ///
     /// The lock belongs to a file, not to a path, and this crate never deletes the file — but
     /// something else can: a cache cleaner, `rm -rf ~/.cache`, a tidy-minded person. The next
     /// client would then create a fresh file, lock it without conflict and start a second agent.
-    /// An agent that calls this now and then (once a minute is plenty) and exits on
-    /// [`Standing::Displaced`] turns that from two agents for ever into a short overlap.
-    pub fn standing(&self) -> Standing {
-        same_file(&self.file, &self.path)
+    /// An agent that calls this now and then (once a minute is plenty) and exits when it returns
+    /// `true` turns that from two agents for ever into a short overlap.
+    pub fn displaced(&self) -> bool {
+        !same_file(&self.file, &self.path)
     }
 }
 
 #[cfg(unix)]
-fn same_file(file: &std::fs::File, path: &Path) -> Standing {
+fn same_file(file: &std::fs::File, path: &Path) -> bool {
     use std::os::unix::fs::MetadataExt as _;
     match (file.metadata(), std::fs::symlink_metadata(path)) {
-        (Ok(held), Ok(there)) if held.dev() == there.dev() && held.ino() == there.ino() => {
-            Standing::Ours
-        }
-        _ => Standing::Displaced,
+        (Ok(held), Ok(there)) => held.dev() == there.dev() && held.ino() == there.ino(),
+        _ => false,
     }
 }
 
 #[cfg(not(unix))]
-fn same_file(_file: &std::fs::File, _path: &Path) -> Standing {
+fn same_file(_file: &std::fs::File, _path: &Path) -> bool {
     // Windows locks by handle in a per-user directory a cleaner does not visit.
-    Standing::Ours
+    true
 }
 
 /// Take the lock, or report who has it.

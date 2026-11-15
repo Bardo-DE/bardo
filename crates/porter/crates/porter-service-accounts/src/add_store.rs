@@ -8,9 +8,7 @@
 //! an id no account has, which nothing reads and a later account of that id overwrites.
 
 use crate::Accounts;
-use porter_capability::{
-    Capability, Claim, KindToggle, Offer, Provenance, Subject, effective,
-};
+use porter_capability::{Capability, Claim, KindToggle, Offer, Provenance, Subject, effective};
 use porter_core::consent::{ConsentAnswer, GrantScope, Usage};
 use porter_core::store::AccountToggle;
 use porter_core::{Account, AccountState, AppId, AuthKind, DataClass, LoginName, SecretKey};
@@ -177,7 +175,7 @@ impl<E: Ports> Accounts<'_, E> {
         }
         let off: Vec<KindToggle> = choices
             .iter()
-            .filter(|c| c.toggle == false)
+            .filter(|c| !c.toggle)
             .map(|c| KindToggle {
                 kind: c.kind,
                 toggle: false,

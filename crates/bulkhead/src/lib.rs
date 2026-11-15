@@ -60,8 +60,7 @@ pub use path::{AbsPath, PathFault};
 pub use profile::Profile;
 pub use redact::{MASK, redact};
 pub use sandbox::{
-    Argv, Captured, EnvVar, ExitReport, Job, KILLED, Network, RunSpec, Sandbox,
-    StartFault,
+    Argv, Captured, EnvVar, ExitReport, Job, KILLED, Network, RunSpec, Sandbox, StartFault,
 };
 pub use seccomp::{SeccompFault, default_filter};
 pub use state::{CannotSandbox, SandboxState};

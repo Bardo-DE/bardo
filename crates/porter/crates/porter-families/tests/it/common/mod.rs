@@ -102,10 +102,7 @@ pub fn all_on(
 ) -> Vec<KindToggle> {
     kinds
         .into_iter()
-        .map(|kind| KindToggle {
-            kind,
-            toggle: true,
-        })
+        .map(|kind| KindToggle { kind, toggle: true })
         .collect()
 }
 

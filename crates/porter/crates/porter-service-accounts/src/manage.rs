@@ -159,7 +159,7 @@ impl<E: Ports> Accounts<'_, E> {
                 registry
                     .toggles
                     .retain(|t| !(t.account == *id && t.kind == kind));
-                if toggle == false {
+                if !toggle {
                     registry.toggles.push(AccountToggle {
                         account: id.clone(),
                         kind,

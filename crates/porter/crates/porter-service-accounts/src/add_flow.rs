@@ -17,8 +17,8 @@ use porter_core::ProviderHint;
 use porter_core::{AccountId, ProviderId};
 use porter_core::{AccountLabel, AppId, AuthKind, SecretText, ServiceEndpoint};
 use porter_provider::{
-    LoginHint, Provider, ProviderError, ProviderSpec, SignIn,
-    SignInMode, SignInStart, SignInStep, Signed,
+    LoginHint, Provider, ProviderError, ProviderSpec, SignIn, SignInMode, SignInStart, SignInStep,
+    Signed,
 };
 use porter_service_core::Ports;
 use porter_service_core::refusal::refusal_of;
@@ -407,9 +407,7 @@ fn signable(spec: &ProviderSpec) -> bool {
 /// launcher, when the host keeps a roster). Asked each time a sheet opens, so a client set in
 /// Settings, or a launcher that registers, shows its row at the next one.
 fn listed<P: Provider>(provider: &P, roster: Option<&Roster>) -> bool {
-    signable(provider.spec())
-        && provider.ready()
-        && !launcherless(provider.spec(), roster)
+    signable(provider.spec()) && provider.ready() && !launcherless(provider.spec(), roster)
 }
 
 /// An agent provider whose program no launcher has registered for, by a roster the host keeps:
@@ -692,9 +690,16 @@ impl<E: Ports> Accounts<'_, E> {
         self.ctx.provider_of(provider).map(|provider| {
             let start = SignInStart::new(job.mode());
             provider.sign_in(match (identity, job.hint()) {
-                (Some(SignInAs { hint, signed_in_before, .. }), _) => {
-                    start.with_login_hint(hint.clone()).with_signed_in_before(*signed_in_before)
-                }
+                (
+                    Some(SignInAs {
+                        hint,
+                        signed_in_before,
+                        ..
+                    }),
+                    _,
+                ) => start
+                    .with_login_hint(hint.clone())
+                    .with_signed_in_before(*signed_in_before),
                 (None, Some(hint)) => start.with_login_hint(hint),
                 (None, None) => start,
             })
