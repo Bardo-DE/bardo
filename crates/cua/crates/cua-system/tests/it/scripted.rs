@@ -17,8 +17,7 @@ use porter_ids::Tokens;
 use porter_infer::{
     AttachIndex, ClientFrame, CuaBegin, CuaStepReply, CuaStepRequest, FrameImage, FrameLayout,
     ImageSource, InferEvent, InferReply, InferSession, MaskedRegions, NoteFrom, OpenOptions,
-    PlaceRow, Readiness, ServedBy, SessionError, StepIndex, StepNote, TokenUsage, TreeText,
-    WindowGeometry,
+    PlaceRow, Readiness, ServedBy, SessionError, StepIndex, StepNote, TokenUsage, WindowGeometry,
 };
 use porter_match::Need;
 use rustix::fs::{SealFlags, fcntl_get_seals};
@@ -265,7 +264,7 @@ pub(crate) fn request(note: &str) -> CuaStepRequest {
                 stride: 36,
             },
         },
-        TreeText::Absent,
+        None,
     )
     .with_masked(MaskedRegions(0))
     .with_notes(vec![StepNote {

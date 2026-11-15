@@ -18,7 +18,6 @@ use porter_core::consent::Usage;
 use porter_ids::Tokens;
 use porter_infer::{
     ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest, InferSession, ModelError,
-    StopReason,
 };
 use porter_match::LlmNeed;
 use porter_match::Need;
@@ -86,16 +85,6 @@ fn model_fault(error: ModelError) -> ProviderError {
             limit: sp::Tokens(0),
         },
         other => ProviderError::Unreadable(other.to_string()),
-    }
-}
-
-fn stop_of(stop: StopReason) -> sp::StopReason {
-    match stop {
-        StopReason::EndTurn => sp::StopReason::EndTurn,
-        StopReason::ToolUse => sp::StopReason::ToolUse,
-        StopReason::MaxTokens => sp::StopReason::MaxTokens,
-        StopReason::StopSequence => sp::StopReason::StopSequence,
-        StopReason::ContentFilter => sp::StopReason::ContentFilter,
     }
 }
 
@@ -193,7 +182,7 @@ impl<T> InferdProvider<T> {
                     chat.usage.charge,
                 );
                 Ok(sp::TurnEnd {
-                    stop: stop_of(chat.stop),
+                    stop: chat.stop,
                     usage: sp::TurnUsage {
                         input: sp::Tokens(chat.usage.input.0),
                         output: sp::Tokens(chat.usage.output.0),

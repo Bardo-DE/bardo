@@ -319,7 +319,7 @@ fn blank_request() -> porter_infer::CuaStepRequest {
                 stride: 4,
             },
         },
-        porter_infer::TreeText::Absent,
+        None,
     )
 }
 

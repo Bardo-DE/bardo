@@ -2,7 +2,7 @@
 
 use cua_action::{CuaAction, WindowSpace};
 use cua_run::{CuaModel, CuaModelError, FrameAttachment, StepEvent, StepSink};
-use porter_infer::{CuaBegin, CuaStepReply, CuaStepRequest, ServedBy, TokenUsage, TreeText};
+use porter_infer::{CuaBegin, CuaStepReply, CuaStepRequest, ServedBy, TokenUsage};
 use std::time::Instant;
 
 /// Whether a run's steps are timed. A script or a cassette is a made-up run: what its steps
@@ -53,7 +53,7 @@ impl<M: CuaModel> CuaModel for Timed<M> {
         sink: &mut impl StepSink,
     ) -> Result<CuaStepReply, CuaModelError> {
         // The eval's models read pixels only: the tree is for the run's own rules.
-        request.tree = TreeText::Absent;
+        request.tree = None;
         let began = Instant::now();
         let mut heard = String::new();
         let reply = self

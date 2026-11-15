@@ -501,7 +501,7 @@ fn form_tree() -> A11ySnapshot {
 #[test]
 fn turn_renders_tree_without_secret_values_and_notes_masked_regions() {
     let (request, attachment) = turn(&observation(form_tree(), 2));
-    let TreeText::Present(text) = &request.tree else {
+    let Some(TreeText(text)) = &request.tree else {
         panic!("a tree was observed")
     };
     assert!(text.contains("ada@example.org"), "{text}");
@@ -517,7 +517,7 @@ fn turn_renders_tree_without_secret_values_and_notes_masked_regions() {
         tree: TreeObs::Absent(cua_run::TreeAbsence::NotExposed),
         ..none
     };
-    assert_eq!(turn(&none).0.tree, TreeText::Absent);
+    assert_eq!(turn(&none).0.tree, None);
 }
 
 #[test]

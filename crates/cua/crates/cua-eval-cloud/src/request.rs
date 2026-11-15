@@ -22,7 +22,7 @@ pub enum SamplingFrom {
 /// Why a turn could not be written as a chat request.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum RequestFault {
-    /// A tool name or a piece of JSON the wire refuses.
+    /// A vendor's own tool, which the wire cannot carry.
     #[error("not representable on the inference wire: {0}")]
     Wire(String),
     /// A shape of reply only a local engine can enforce.
@@ -30,32 +30,10 @@ pub enum RequestFault {
     Shape,
 }
 
-fn wire<E: std::fmt::Display>(error: E) -> RequestFault {
-    RequestFault::Wire(error.to_string())
-}
-
-fn json(text: &sp::JsonText) -> Result<pi::JsonText, RequestFault> {
-    pi::JsonText::parse(text.as_str()).map_err(wire)
-}
-
-fn name(name: &sp::ToolName) -> Result<pi::ToolName, RequestFault> {
-    pi::ToolName::parse(name.as_str()).map_err(wire)
-}
-
 fn media(media: MediaType) -> &'static str {
     match media {
         MediaType::Png => "image/png",
         MediaType::Jpeg => "image/jpeg",
-    }
-}
-
-fn seal(seal: &sp::ThoughtSeal) -> pi::ThoughtSeal {
-    match seal {
-        sp::ThoughtSeal::None => pi::ThoughtSeal::None,
-        sp::ThoughtSeal::Signed(text) => pi::ThoughtSeal::Signed(pi::SignatureText(text.0.clone())),
-        sp::ThoughtSeal::Redacted(text) => {
-            pi::ThoughtSeal::Redacted(pi::OpaqueText(text.0.clone()))
-        }
     }
 }
 
@@ -66,21 +44,18 @@ fn part(one: &sp::Part) -> Result<pi::MessagePart, RequestFault> {
             media_type: media(image.media).to_owned(),
             source: pi::ImageSource::Inline(pi::Base64Bytes(image.bytes.0.clone())),
         }),
-        sp::Part::Thought { text, seal: sealed } => pi::MessagePart::Thought(pi::ThoughtPart {
+        sp::Part::Thought { text, seal } => pi::MessagePart::Thought(pi::ThoughtPart {
             text: text.clone(),
-            seal: seal(sealed),
+            seal: seal.clone(),
         }),
         sp::Part::ToolCall(call) => pi::MessagePart::ToolCall(pi::ToolCallPart {
             id: pi::ToolCallId(call.id.0.clone()),
-            name: name(&call.name)?,
-            args: json(&call.input)?,
+            name: call.name.clone(),
+            args: call.input.clone(),
         }),
         sp::Part::ToolResult(result) => pi::MessagePart::ToolResult(pi::ToolResultPart {
             id: pi::ToolCallId(result.id.0.clone()),
-            status: match result.status {
-                sp::ToolStatus::Ok => pi::ToolStatus::Ok,
-                sp::ToolStatus::Error => pi::ToolStatus::Error,
-            },
+            status: result.status,
             parts: result
                 .parts
                 .iter()
@@ -102,25 +77,16 @@ fn role(role: sp::Role) -> pi::Role {
 fn tool(spec: &sp::ToolSpec) -> Result<pi::ToolDecl, RequestFault> {
     match spec {
         sp::ToolSpec::Function {
-            name: tool_name,
+            name,
             description,
             parameters,
         } => Ok(pi::ToolDecl {
-            name: name(tool_name)?,
+            name: name.clone(),
             description: description.clone(),
-            params: pi::JsonSchemaText(json(&parameters.0)?),
+            params: parameters.clone(),
         }),
         sp::ToolSpec::Native(_) => Err(RequestFault::Wire("a vendor's own tool".to_owned())),
     }
-}
-
-fn choice(choice: &sp::ToolChoice) -> Result<pi::ToolChoice, RequestFault> {
-    Ok(match choice {
-        sp::ToolChoice::Auto => pi::ToolChoice::Auto,
-        sp::ToolChoice::Never => pi::ToolChoice::Never,
-        sp::ToolChoice::Required => pi::ToolChoice::Required,
-        sp::ToolChoice::Named(tool_name) => pi::ToolChoice::Named(name(tool_name)?),
-    })
 }
 
 fn knob<T, U>(knob: sp::Knob<T>, map: impl Fn(T) -> U) -> pi::Knob<U> {
@@ -140,20 +106,7 @@ fn sampling(sampling: &sp::Sampling) -> pi::Sampling {
         top_p: knob(sampling.top_p, permille),
         top_k: knob(sampling.top_k, |count| Count(count.0)),
         min_p: knob(sampling.min_p, permille),
-        seed: knob(sampling.seed, |seed| pi::Seed(seed.0)),
-    }
-}
-
-fn reasoning(reasoning: sp::Reasoning) -> pi::Reasoning {
-    let effort = |effort| match effort {
-        sp::Effort::Low => pi::Effort::Low,
-        sp::Effort::Medium => pi::Effort::Medium,
-        sp::Effort::High => pi::Effort::High,
-    };
-    match reasoning {
-        sp::Reasoning::EngineDefault => pi::Reasoning::EngineDefault,
-        sp::Reasoning::Off => pi::Reasoning::Off,
-        sp::Reasoning::On(level) => pi::Reasoning::On(effort(level)),
+        seed: sampling.seed,
     }
 }
 
@@ -187,13 +140,10 @@ pub fn chat(
         .map(tool)
         .collect::<Result<_, RequestFault>>()?;
     let control = pi::ChatControl::new()
-        .with_tool_choice(choice(&turn.tool_choice)?)
-        .with_tool_calls(match turn.tool_calls {
-            sp::ToolParallelism::One => pi::ToolParallelism::One,
-            sp::ToolParallelism::Many => pi::ToolParallelism::Many,
-        })
+        .with_tool_choice(turn.tool_choice.clone())
+.with_tool_calls(turn.tool_calls)
         .with_max_output(pi::Knob::Set(Tokens(turn.limits.max_output.0)))
-        .with_reasoning(reasoning(turn.reasoning))
+        .with_reasoning(turn.reasoning)
         .with_sampling(match from {
             SamplingFrom::Entry => pi::Knob::Set(sampling(&turn.sampling)),
             SamplingFrom::Provider => pi::Knob::Off,

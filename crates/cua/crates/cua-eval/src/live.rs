@@ -10,8 +10,7 @@ use cua_action::{CuaDialect, Size, WindowSpace};
 use cua_run::{CuaModel, CuaModelError, FrameAttachment, StepEvent, StepSink, ThoughtText};
 use cua_session::{
     CuaProfile, CuaSession, CuaTaskText, FrameBudget, MaskedRegions, ObservationIn, RepairBudget,
-    StepIndex, StepLines, StepNote as NoteLine, StepOutcome, TranscriptSink,
-    TreeText as WindowText, TurnSettings,
+    StepIndex, StepLines, StepNote as NoteLine, StepOutcome, TranscriptSink, TurnSettings,
 };
 use cua_vendors::StepResult;
 use model_catalog::{ModelEntry, parse_entry};
@@ -22,7 +21,7 @@ use model_provider::{
 use porter_ids::Tokens;
 use porter_infer::{
     CuaBegin, CuaStepReply, CuaStepRequest, DropReason, DroppedAction, NoteFrom, PrevResult,
-    ServedBy, StepNote, TokenUsage, TreeText,
+    ServedBy, StepNote, TokenUsage,
 };
 use std::sync::Arc;
 use vision_prep::{Encoding, FrameMap, RawFrame, prepare};
@@ -207,8 +206,8 @@ fn observation(request: &CuaStepRequest) -> ObservationIn {
     )
     .with_notes(request.notes.iter().map(note_line).collect());
     match &request.tree {
-        TreeText::Present(tree) => seen.with_tree(WindowText(tree.clone())),
-        TreeText::Absent => seen,
+        Some(tree) => seen.with_tree(tree.clone()),
+        None => seen,
     }
 }
 

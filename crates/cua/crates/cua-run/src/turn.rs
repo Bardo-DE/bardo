@@ -150,8 +150,8 @@ pub fn turn_after(obs: &Observation, effect: Effect) -> (CuaStepRequest, FrameAt
     };
     let pixels = obs.frame.pixels.clone();
     let tree = match &obs.tree {
-        TreeObs::Absent(_) => TreeText::Absent,
-        TreeObs::Present(snapshot) => TreeText::Present(render(snapshot)),
+        TreeObs::Absent(_) => None,
+        TreeObs::Present(snapshot) => Some(TreeText(render(snapshot))),
     };
     let mut request = CuaStepRequest::new(
         obs.step,

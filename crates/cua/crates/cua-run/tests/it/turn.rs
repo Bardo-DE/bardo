@@ -307,7 +307,7 @@ fn a_tree_that_is_present_but_empty_is_still_present() {
         ..observation()
     };
     let (request, _) = turn(&obs);
-    assert_eq!(request.tree, porter_infer::TreeText::Present(String::new()));
+    assert_eq!(request.tree, Some(porter_infer::TreeText(String::new())));
 }
 
 #[test]
