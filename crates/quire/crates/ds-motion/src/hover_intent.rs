@@ -41,16 +41,6 @@ impl HoverProfile {
     }
 }
 
-/// Whether cards and fly labels open at once.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum HoverWarmth {
-    /// A card is open or closed less than HoverWarm ago: no wait.
-    Warm,
-    /// Wait for intent.
-    #[default]
-    Cold,
-}
-
 /// Where the machine is.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum IntentPhase<K> {
@@ -238,18 +228,15 @@ impl<K: Clone + PartialEq> HoverIntent<K> {
         &self.phase
     }
 
-    /// Whether cards open at once: a card is open, or one closed less than HoverWarm ago.
-    pub fn warmth(&self, now: Stamp) -> HoverWarmth {
+    /// Whether cards and fly labels open at once (warm, no wait for intent): a card is open, or
+    /// one closed less than HoverWarm ago.
+    pub fn warmth(&self, now: Stamp) -> bool {
         let open = matches!(
             self.phase,
             IntentPhase::Open { .. } | IntentPhase::Closing { .. }
         );
         let lingering = self.warm_until.is_some_and(|until| now < until);
-        if open || lingering {
-            HoverWarmth::Warm
-        } else {
-            HoverWarmth::Cold
-        }
+        open || lingering
     }
 }
 
@@ -260,7 +247,7 @@ fn over<K: Clone + PartialEq>(
     key: K,
     wait: Duration,
     warm_until: Option<Stamp>,
-    warm: HoverWarmth,
+    warm: bool,
     now: Stamp,
 ) -> (HoverIntent<K>, Effect<K>) {
     match phase {
@@ -274,12 +261,12 @@ fn over<K: Clone + PartialEq>(
             to(IntentPhase::Pending { key: pending, due }, warm_until, None)
         }
         _ => match (warm, wait.is_zero()) {
-            (HoverWarmth::Warm, _) | (HoverWarmth::Cold, true) => to(
+            (true, _) | (false, true) => to(
                 IntentPhase::Open { key: key.clone() },
                 warm_until,
                 Some(IntentEffect::Open(key)),
             ),
-            (HoverWarmth::Cold, false) => to(
+            (false, false) => to(
                 IntentPhase::Pending {
                     key,
                     due: now.after_span(wait),

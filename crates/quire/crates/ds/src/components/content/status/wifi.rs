@@ -9,7 +9,6 @@ use super::stroked::stroked_part_svg;
 use super::wifi_state::{WifiReach, WifiState};
 use dioxus::prelude::*;
 use ds_motion::detail::{
-    morph::Slashed,
     pending::{PendingFrame, PendingLayers, PendingSpec},
     touch::Touch,
     use_detail::use_detail,
@@ -95,14 +94,8 @@ fn badge(state: WifiState) -> Show {
 }
 
 /// Whether the slash is on: only with the radio off.
-fn slashed(state: WifiState) -> Slashed {
-    match state {
-        WifiState::Off => Slashed::On,
-        WifiState::Idle
-        | WifiState::Joining(_)
-        | WifiState::Joined { .. }
-        | WifiState::Failed(_) => Slashed::Off,
-    }
+fn slashed(state: WifiState) -> bool {
+    matches!(state, WifiState::Off)
 }
 
 /// `span.ds-status-glyph[data-kind=wifi]`: the fan in `state` at `size`, in `currentColor`.

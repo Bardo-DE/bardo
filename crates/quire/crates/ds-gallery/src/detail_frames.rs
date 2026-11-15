@@ -9,7 +9,6 @@ use crate::error::GalleryError;
 use crate::style;
 use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
-use ds::motion::detail::morph::Slashed;
 use ds::motion::detail::stamp::EventStamp;
 use ds::prelude::*;
 use ds_harness::{Harness, Viewport};
@@ -42,7 +41,7 @@ impl Strip {
 
 static STRIP: GlobalSignal<Strip> = Signal::global(|| Strip::Pending);
 static NET: GlobalSignal<Net> = Signal::global(|| Net::Off);
-static SLASHED: GlobalSignal<Slashed> = Signal::global(|| Slashed::Off);
+static SLASHED: GlobalSignal<bool> = Signal::global(|| false);
 
 const VIEW: Viewport = Viewport {
     width: 320,
@@ -71,7 +70,7 @@ fn begin(harness: &mut Harness, strip: Strip) {
     match strip {
         Strip::Pending => set(harness, Net::Joining),
         Strip::Shake => set(harness, Net::Failed(EventStamp(1))),
-        Strip::Slash => harness.within(|| *SLASHED.write() = Slashed::On),
+        Strip::Slash => harness.within(|| *SLASHED.write() = true),
     }
 }
 

@@ -8,7 +8,6 @@ use dioxus::prelude::*;
 use ds::components::controls::progress::model::{Progress, ProgressStyle};
 use ds::components::controls::progress::view::ProgressIndicator;
 use ds::motion::detail::morph::MorphStyle;
-use ds::motion::detail::morph::Slashed;
 use ds::motion::detail::morph_glyph::MorphGlyph;
 use ds::motion::detail::operation::Operation;
 use ds::motion::detail::operation::PendingToken;
@@ -95,7 +94,7 @@ fn StateSection() -> Element {
 #[component]
 fn MorphSection() -> Element {
     let mut bars = use_signal(|| 0usize);
-    let mut muted = use_signal(|| Slashed::Off);
+    let mut muted = use_signal(|| false);
     const STRENGTHS: [Icon; 3] = [Icon::WifiLow, Icon::Wifi, Icon::WifiHigh];
     rsx! {
         Section { title: "MorphGlyph", note: "A glyph gives way by cross-fading within one family, or by drawing a slash on and off.",
@@ -107,7 +106,7 @@ fn MorphSection() -> Element {
                     }
                 }
                 Cell { name: "Slash", code: "MorphGlyph {{ style: Slash, slashed }}",
-                    controls: rsx! { {mini("Mute", move |_| muted.set(match muted() { Slashed::Off => Slashed::On, Slashed::On => Slashed::Off }))} },
+                    controls: rsx! { {mini("Mute", move |_| muted.set(!muted()))} },
                     SlashView { slashed: muted() }
                 }
             }

@@ -4,7 +4,6 @@
 
 use dioxus::prelude::*;
 use ds::motion::detail::morph::MorphStyle;
-use ds::motion::detail::morph::Slashed;
 use ds::motion::detail::morph_glyph::MorphGlyph;
 use ds::prelude::*;
 use ds_harness::harness::{assert_settles_to_zero_frames, settle_until};
@@ -18,7 +17,7 @@ const VIEW: Viewport = Viewport {
 };
 
 static ICON: GlobalSignal<Icon> = Signal::global(|| Icon::Volume);
-static SLASHED: GlobalSignal<Slashed> = Signal::global(|| Slashed::Off);
+static SLASHED: GlobalSignal<bool> = Signal::global(|| false);
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
 #[allow(non_snake_case)]
@@ -61,7 +60,7 @@ fn a_slash_draws_on_and_off() {
     // already settled to 0.
     let mut harness = Harness::new(Glyphs, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
     assert_eq!(harness.count("#slash .ds-morph-slash"), 0);
-    harness.within(|| *SLASHED.write() = Slashed::On);
+    harness.within(|| *SLASHED.write() = true);
     let offset = |h: &Harness| {
         h.attr("#slash .ds-morph-slash path", "data-drawn")
             .and_then(|value| value.parse::<f32>().ok())
@@ -70,7 +69,7 @@ fn a_slash_draws_on_and_off() {
     settle_until(&mut harness, |h| offset(h).is_some_and(|o| o > 0.0));
     settle_until(&mut harness, |h| offset(h) == Some(0.0));
     assert_settles_to_zero_frames(&mut harness);
-    harness.within(|| *SLASHED.write() = Slashed::Off);
+    harness.within(|| *SLASHED.write() = false);
     settle_until(&mut harness, |h| h.count("#slash .ds-morph-slash") == 0);
     assert_settles_to_zero_frames(&mut harness);
 }

@@ -3,7 +3,7 @@
 //! 3.2, design/30 section 1.3).
 
 use super::level::use_level;
-use super::morph::{MorphStyle, Slashed};
+use super::morph::MorphStyle;
 use crate::timeline::glide::Glide;
 use crate::timeline::playback::{Playback, use_playback};
 use crate::{
@@ -30,7 +30,7 @@ const FADE_OUT: Anim = Anim::MorphFadeOut;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct Shown {
     icon: Icon,
-    slashed: Slashed,
+    slashed: bool,
     /// The glyph it replaced, while the morph plays.
     before: Option<Icon>,
     /// Which change this is: its layers' keys and pulse alias.
@@ -46,7 +46,7 @@ pub fn MorphGlyph(
     icon: Icon,
     size: IconSize,
     style: MorphStyle,
-    #[props(default)] slashed: Slashed,
+    #[props(default)] slashed: bool,
     #[props(default)] look: GlyphStyle,
 ) -> Element {
     let timer = use_motion_timer(FADE_IN);
@@ -130,15 +130,12 @@ pub fn MorphGlyph(
 }
 
 /// How much of the slash is drawn, in thousandths, for `slashed`.
-fn slash_target(slashed: Slashed) -> i64 {
-    match slashed {
-        Slashed::On => 1000,
-        Slashed::Off => 0,
-    }
+fn slash_target(slashed: bool) -> i64 {
+    if slashed { 1000 } else { 0 }
 }
 
 /// Draw the slash on or off over `--t-quick --e-out`, or at once under Reduced.
-fn slide_slash(slash: Playback<Glide>, slashed: Slashed, reduced: bool) {
+fn slide_slash(slash: Playback<Glide>, slashed: bool, reduced: bool) {
     let to = slash_target(slashed);
     if reduced {
         return slash.play(Glide::still(to));

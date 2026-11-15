@@ -5,7 +5,6 @@ use crate::details_states::Net;
 use dioxus::prelude::*;
 use ds::components::content::status::wifi_state::{WifiBars, WifiReach, WifiState};
 use ds::motion::detail::morph::MorphStyle;
-use ds::motion::detail::morph::Slashed;
 use ds::motion::detail::morph_glyph::MorphGlyph;
 use ds::motion::detail::once::use_shake;
 use ds::motion::detail::touch::Touch;
@@ -68,7 +67,7 @@ pub fn ShakeView(net: Net) -> Element {
 
 /// A speaker whose slash draws on and off (MorphGlyph Slash).
 #[component]
-pub fn SlashView(slashed: Slashed) -> Element {
+pub fn SlashView(slashed: bool) -> Element {
     rsx! {
         div { class: "g-detail",
             MorphGlyph { icon: Icon::Volume, size: IconSize::Bar, style: MorphStyle::Slash, slashed }

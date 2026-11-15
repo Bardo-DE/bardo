@@ -69,7 +69,6 @@ use dioxus::prelude::*;
 use ds_core::geometry::scale::Scale;
 use ds_core::vocab::modality_word;
 use ds_core::word::Word;
-use ds_motion::hover_intent::HoverWarmth;
 use ds_style::appearance::{appearance::Appearance, resolve::resolve, system::SystemPrefs};
 use ds_style::appearance::blur::blur_word;
 use ds_style::appearance::material::Material;
@@ -152,10 +151,7 @@ pub fn Ds(
         crate::root::surface::accent_text_style(material),
     );
     let framing = window.attribute();
-    let hover = match hover.warmth() {
-        HoverWarmth::Warm => "warm",
-        HoverWarmth::Cold => "cold",
-    };
+    let hover = if hover.warmth() { "warm" } else { "cold" };
     rsx! {
         div {
             class: "ds",

@@ -7,7 +7,7 @@ use ds::motion::drag::fraction_along;
 use ds::prelude::*;
 use ds_motion::drag::{DRAG_THRESHOLD, Drag, DragPhase, WINDOW_DRAG_THRESHOLD};
 use ds_motion::hover_intent::{
-    HoverEvent, HoverIntent, HoverProfile, HoverWarmth, IntentEffect, IntentPhase,
+    HoverEvent, HoverIntent, HoverProfile, IntentEffect, IntentPhase,
 };
 
 // ---- hover intent --------------------------------------------------------------------------
@@ -297,8 +297,7 @@ fn warmth_follows_the_card_and_the_warm_window() {
     }
     warmth.push(machine.warmth(Stamp(1049)));
     warmth.push(machine.warmth(Stamp(1050)));
-    use HoverWarmth::{Cold, Warm};
-    assert_eq!(warmth, vec![Cold, Warm, Warm, Warm, Warm, Cold]);
+    assert_eq!(warmth, vec![false, true, true, true, true, false]);
 }
 
 #[test]

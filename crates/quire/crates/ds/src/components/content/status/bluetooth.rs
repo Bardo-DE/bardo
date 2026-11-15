@@ -6,7 +6,6 @@ use super::part::{Part, Pen, Show};
 use super::slash::use_slash;
 use super::stroked::{stroked_part_svg, stroked_slash_svg};
 use dioxus::prelude::*;
-use ds_motion::detail::morph::Slashed;
 use ds_style::icon::render::IconSize;
 use ds_style::icon::shape::Shape;
 use ds_style::icon::stroke::stroke_width;
@@ -28,14 +27,8 @@ fn shows(state: BluetoothState) -> (Show, Show) {
     }
 }
 
-fn slashed(state: BluetoothState) -> Slashed {
-    match state {
-        BluetoothState::Off => Slashed::On,
-        BluetoothState::On
-        | BluetoothState::Connecting(_)
-        | BluetoothState::Failed(_)
-        | BluetoothState::Connected => Slashed::Off,
-    }
+fn slashed(state: BluetoothState) -> bool {
+    matches!(state, BluetoothState::Off)
 }
 
 /// `span.ds-status-glyph[data-kind=bluetooth]`: the rune in `state` at `size`, in

@@ -7,7 +7,6 @@
 use dioxus::prelude::*;
 use ds_core::vocab::Fraction;
 use ds_core::word::Word;
-use ds_motion::detail::pending::Lit;
 use ds_style::icon::posed::Thousandths;
 use ds_style::icon::shape::Shape;
 use ds_style::icon::slash::slash_mark;
@@ -25,11 +24,8 @@ pub(crate) enum Show {
 
 impl Show {
     /// A pending loop's lit layer is `Lit`, an unlit one `Faint`.
-    pub(crate) fn of(lit: Lit) -> Show {
-        match lit {
-            Lit::On => Show::Lit,
-            Lit::Off => Show::Faint,
-        }
+    pub(crate) fn of(lit: bool) -> Show {
+        if lit { Show::Lit } else { Show::Faint }
     }
 }
 

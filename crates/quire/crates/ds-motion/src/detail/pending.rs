@@ -41,15 +41,6 @@ pub enum PendingFrame {
     Step(u8),
 }
 
-/// Whether a layer is drawn in a frame.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Lit {
-    /// Drawn.
-    On,
-    /// Not drawn.
-    Off,
-}
-
 impl PendingFrame {
     /// The `data-pending` word: `idle` or `step`.
     pub fn slug(self) -> &'static str {
@@ -61,21 +52,20 @@ impl PendingFrame {
 
     /// Whether `layer` (0 first) is drawn in this frame of `spec`: Idle draws every layer;
     /// Iterate lights one layer a step; Spin is always On (it turns instead).
-    pub fn lit(self, spec: PendingSpec, layer: u8) -> Lit {
+    pub fn lit(self, spec: PendingSpec, layer: u8) -> bool {
         let PendingFrame::Step(n) = self else {
-            return Lit::On;
+            return true;
         };
-        let on = match spec {
+        match spec {
             PendingSpec::Iterate { .. } => layer == n % spec.cycle(),
             PendingSpec::Spin => true,
-        };
-        if on { Lit::On } else { Lit::Off }
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{Lit, PendingFrame, PendingLayers, PendingSpec};
+    use super::{PendingFrame, PendingLayers, PendingSpec};
 
     #[test]
     fn each_style_lights_its_own_layers() {
@@ -84,10 +74,11 @@ mod tests {
         };
         let lit =
             |frame: PendingFrame, spec| (0..4).map(|l| frame.lit(spec, l)).collect::<Vec<_>>();
-        use Lit::{Off, On};
-        assert_eq!(lit(PendingFrame::Step(2), wifi), [Off, Off, On, Off]);
-        assert_eq!(lit(PendingFrame::Step(5), wifi), [Off, On, Off, Off]);
-        assert_eq!(lit(PendingFrame::Idle, wifi), [On, On, On, On]);
-        assert_eq!(PendingFrame::Step(7).lit(PendingSpec::Spin, 0), On);
+        const ON: bool = true;
+        const OFF: bool = false;
+        assert_eq!(lit(PendingFrame::Step(2), wifi), [OFF, OFF, ON, OFF]);
+        assert_eq!(lit(PendingFrame::Step(5), wifi), [OFF, ON, OFF, OFF]);
+        assert_eq!(lit(PendingFrame::Idle, wifi), [ON, ON, ON, ON]);
+        assert_eq!(PendingFrame::Step(7).lit(PendingSpec::Spin, 0), ON);
     }
 }

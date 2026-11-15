@@ -11,7 +11,7 @@ use dioxus::prelude::*;
 use ds_core::time::clock::sleep;
 use ds_motion::anim::Anim;
 use ds_motion::hover_intent::{
-    HoverEvent, HoverIntent, HoverProfile, HoverWarmth, IntentEffect, IntentPhase,
+    HoverEvent, HoverIntent, HoverProfile, IntentEffect, IntentPhase,
 };
 use ds_motion::machine::{MachineRef, use_machine};
 use ds_motion::settle::settle;
@@ -85,7 +85,7 @@ impl HoverHub {
     }
 
     /// Whether cards open at once right now.
-    pub fn warmth(&self) -> HoverWarmth {
+    pub fn warmth(&self) -> bool {
         let _expiry = self.fades.warm_tick.read();
         self.machine.state().read().warmth(self.machine.now())
     }

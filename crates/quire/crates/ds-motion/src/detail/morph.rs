@@ -14,12 +14,3 @@ pub enum MorphStyle {
     Slash,
 }
 
-/// Whether a `MorphStyle::Slash` glyph wears its slash.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum Slashed {
-    /// No slash: the thing is on.
-    #[default]
-    Off,
-    /// Slashed: muted, off.
-    On,
-}
