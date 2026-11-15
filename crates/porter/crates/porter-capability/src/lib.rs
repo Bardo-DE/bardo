@@ -25,9 +25,9 @@ pub use agent::{AgentCap, AgentProgram, AgentProtocol, EnvName};
 pub use agent_login::{LoginFault, LoginOutcome, LoginRequestId};
 pub use ai::{
     EmbedCap, EmbedPrompts, ImageGenCap, ImageMode, LanguageSet, LanguageTag, LlmCap, LlmFeature,
-    LlmWire, Modality, PrefixText, RerankCap, SpeechCap, SpeechMode,
+    LlmWire, Modality, RerankCap, SpeechCap, SpeechMode,
 };
-pub use ai_props::{Billing, Locality, Region, Tier};
+pub use ai_props::{Billing, Locality, Tier};
 pub use cua::{CuaBatching, CuaCap, CuaEnv};
 pub use effective::{KindToggle, effective};
 pub use kinds::{Capability, CapabilityKind, Service, service};

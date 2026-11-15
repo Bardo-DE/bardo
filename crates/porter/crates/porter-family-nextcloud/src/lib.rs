@@ -68,8 +68,8 @@ impl NextcloudProvider {
     fn fixed_server(&self) -> Option<EndpointUrl> {
         self.spec.capabilities.iter().find_map(|row| {
             let at = row.endpoint.as_ref()?;
-            let root = at.0.split("/remote.php/").next()?;
-            (root.len() < at.0.len())
+            let root = at.split("/remote.php/").next()?;
+            (root.len() < at.len())
                 .then(|| EndpointUrl::parse(root.trim_end_matches('/')).ok())
                 .flatten()
         })

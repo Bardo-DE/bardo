@@ -13,15 +13,11 @@ pub enum Locality {
     LocalNetwork,
     /// A provider's servers.
     Cloud {
-        /// The region, when the account pins one (Azure, Vertex, Bedrock).
-        region: Option<Region>,
+        /// The region as the provider names it (`eu-west-1`), when the account pins one (Azure,
+        /// Vertex, Bedrock).
+        region: Option<String>,
     },
 }
-
-/// A cloud region as the provider names it (`eu-west-1`).
-#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct Region(pub String);
 
 /// The quality tier an app asks for; the user maps tiers to models per account.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]

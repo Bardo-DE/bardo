@@ -87,7 +87,7 @@ pub(crate) fn apis_of(spec: &ProviderSpec) -> Apis {
         spec.capabilities
             .iter()
             .filter_map(|row| {
-                let url = EndpointUrl::parse(&row.endpoint.as_ref()?.0).ok()?;
+                let url = EndpointUrl::parse(row.endpoint.as_ref()?).ok()?;
                 Some((row.family, url))
             })
             .collect(),
@@ -257,7 +257,7 @@ impl BrowserIssuer for Google {
         session: &OAuthSession<Self, H>,
         audience: &Audience,
     ) -> Result<(Option<String>, TokenKind), ProviderError> {
-        let wanted = audience.0.trim_end_matches('/');
+        let wanted = audience.trim_end_matches('/');
         if wanted == "imap" || wanted == "smtp" {
             return match session.byo() {
                 true => Ok((None, TokenKind::Xoauth2)),
@@ -326,7 +326,7 @@ fn names_a_row(spec: &ProviderSpec, wanted: &str) -> bool {
             || row
                 .endpoint
                 .as_ref()
-                .is_some_and(|e| e.0.trim_end_matches('/') == wanted)
+                .is_some_and(|e| e.trim_end_matches('/') == wanted)
     })
 }
 
@@ -338,7 +338,7 @@ fn grant_target<H>(
     audience: &Audience,
     kind: CapabilityKind,
 ) -> Result<(Family, TokenKind), ProviderError> {
-    let wanted = audience.0.trim_end_matches('/');
+    let wanted = audience.trim_end_matches('/');
     let mail = |family| match (kind, session.byo()) {
         (CapabilityKind::Mail, true) => Ok((family, TokenKind::Xoauth2)),
         _ => Err(ProviderError::Forbidden),
@@ -358,7 +358,7 @@ fn grant_target<H>(
                 || row
                     .endpoint
                     .as_ref()
-                    .is_some_and(|e| e.0.trim_end_matches('/') == wanted)
+                    .is_some_and(|e| e.trim_end_matches('/') == wanted)
         })
         .map(|row| (row.family, TokenKind::Bearer))
         .ok_or(ProviderError::Forbidden)

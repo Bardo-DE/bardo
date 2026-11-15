@@ -166,7 +166,7 @@ impl BrowserIssuer for Standard {
 }
 
 fn audience_word(audience: &Audience) -> String {
-    audience.0.trim_end_matches('/').to_owned()
+    audience.trim_end_matches('/').to_owned()
 }
 
 fn names(row: &porter_provider::CapabilityRow, wanted: &str) -> bool {
@@ -174,7 +174,7 @@ fn names(row: &porter_provider::CapabilityRow, wanted: &str) -> bool {
         || row
             .endpoint
             .as_ref()
-            .is_some_and(|e| e.0.trim_end_matches('/') == wanted)
+            .is_some_and(|e| e.trim_end_matches('/') == wanted)
 }
 
 /// The form of token `audience` takes, or `Forbidden` for one that is not the account's: IMAP
@@ -210,7 +210,7 @@ fn declared_claims(spec: &ProviderSpec) -> Vec<Claim> {
 fn declared_endpoints(spec: &ProviderSpec, address: &str) -> Vec<ServiceEndpoint> {
     spec.sign_in_rows()
         .filter_map(|row| {
-            let url = EndpointUrl::parse(&row.endpoint.as_ref()?.0).ok()?;
+            let url = EndpointUrl::parse(row.endpoint.as_ref()?).ok()?;
             let tls = match url.origin().scheme {
                 UrlScheme::Imap | UrlScheme::Smtp => Tls::StartTls,
                 UrlScheme::Http => Tls::Plain,

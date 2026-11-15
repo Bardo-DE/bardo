@@ -37,7 +37,7 @@ use crate::oauth::{FakeIssuer, IssuerHandle, Style};
 use crate::seen::{Running, Seen, lock};
 use porter_core::Family;
 use porter_fake::{FakeAddress, FakeServer};
-use porter_provider::{Endpoint, ProviderSpec};
+use porter_provider::ProviderSpec;
 use serde_json::json;
 use std::collections::HashMap;
 use std::future::Future;
@@ -257,11 +257,10 @@ fn point_at(base: &str, spec: &ProviderSpec) -> ProviderSpec {
     }) {
         if let Some(endpoint) = &row.endpoint {
             let path = endpoint
-                .0
                 .split_once("://")
                 .and_then(|(_, rest)| rest.find('/').map(|at| &rest[at..]))
                 .unwrap_or("");
-            row.endpoint = Some(Endpoint(format!("{base}{path}")));
+            row.endpoint = Some(format!("{base}{path}"));
         }
     }
     out

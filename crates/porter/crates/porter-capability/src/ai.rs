@@ -74,19 +74,14 @@ pub struct EmbedCap {
     pub prompts: Box<EmbedPrompts>,
 }
 
-/// Text put in front of an input of one role (`search_query: `); empty for a symmetric model.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct PrefixText(pub String);
-
 /// The prefixes of an asymmetric embedding model (nomic, e5, Qwen3-embedding), both empty for a
 /// symmetric one.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct EmbedPrompts {
-    /// Before a search query.
-    pub query: PrefixText,
-    /// Before an indexed passage.
-    pub document: PrefixText,
+    /// Text put before a search query (`search_query: `).
+    pub query: String,
+    /// Text put before an indexed passage.
+    pub document: String,
 }
 
 /// A kind of input an embedding model takes.

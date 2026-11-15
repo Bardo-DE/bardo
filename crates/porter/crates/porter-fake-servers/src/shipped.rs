@@ -2,7 +2,7 @@
 //! endpoints at a fake. A fake never invents a provider: it takes the file the product ships.
 
 use porter_core::Family;
-use porter_provider::{Endpoint, ProviderSpec, parse_provider};
+use porter_provider::{ProviderSpec, parse_provider};
 
 /// The shipped `providers/nextcloud.toml`.
 pub fn nextcloud() -> ProviderSpec {
@@ -44,7 +44,7 @@ pub fn point(spec: &ProviderSpec, family: Family, url: &str) -> ProviderSpec {
         .iter_mut()
         .filter(|row| row.family == family)
     {
-        row.endpoint = Some(Endpoint(url.to_owned()));
+        row.endpoint = Some(url.to_owned());
     }
     out
 }

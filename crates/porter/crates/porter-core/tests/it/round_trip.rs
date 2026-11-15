@@ -7,7 +7,7 @@ use porter_capability::{
     CuaCap, CuaEnv, Delta, EmbedCap, EmbedPrompts, EnvName, HashKind, IdentityCap, ImageGenCap,
     ImageMode, KeyValueCap, LabelModel, LanguageSet, LanguageTag, LibraryRead, LlmCap, LlmFeature,
     LlmWire, MailCap, MailTransport, Modality, NotesCap, NotesTransport, PhotosCap, PimCap,
-    PimTransport, PrefixText, PushCap, PushChannel, RerankCap, SpeechCap, SpeechMode, StorageCap,
+    PimTransport, PushCap, PushChannel, RerankCap, SpeechCap, SpeechMode, StorageCap,
     StorageScope,
 };
 use porter_core::*;
@@ -110,8 +110,8 @@ fn every_capability() -> Vec<Capability> {
             max_input: Tokens(8_192),
             max_batch: Count(32),
             prompts: Box::new(EmbedPrompts {
-                query: PrefixText("search_query: ".into()),
-                document: PrefixText("search_document: ".into()),
+                query: "search_query: ".to_owned(),
+                document: "search_document: ".to_owned(),
             }),
         }),
         Capability::Speech(SpeechCap {
@@ -551,8 +551,8 @@ fn an_embedding_capability_keeps_its_prompts_with_the_model() {
         max_input: Tokens(8_192),
         max_batch: Count(32),
         prompts: Box::new(EmbedPrompts {
-            query: PrefixText("search_query: ".into()),
-            document: PrefixText(String::new()),
+            query: "search_query: ".to_owned(),
+            document: String::new(),
         }),
     };
     let json = serde_json::to_string(&cap).expect("serialise");

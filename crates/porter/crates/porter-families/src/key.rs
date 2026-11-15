@@ -52,7 +52,7 @@ fn target_of(spec: &ProviderSpec) -> Result<(EndpointUrl, Family), ProviderError
         .ok_or(ProviderError::Unreadable)?;
     let url = EndpointUrl::parse(&format!(
         "{}/{}",
-        base.0.trim_end_matches('/'),
+        base.trim_end_matches('/'),
         check_path(&spec.id)
     ))
     .map_err(|_| ProviderError::Unreadable)?;

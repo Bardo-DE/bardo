@@ -231,7 +231,7 @@ async fn the_shipped_file_keeps_its_paths_when_it_is_pointed_at_the_fake() {
         .filter_map(|row| {
             row.endpoint
                 .as_ref()
-                .map(|e| (word_of(&row.family).to_owned(), e.0.clone()))
+                .map(|e| (word_of(&row.family).to_owned(), e.clone()))
         })
         .collect();
     let base = google.api.base_url();

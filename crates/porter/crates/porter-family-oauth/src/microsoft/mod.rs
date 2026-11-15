@@ -42,7 +42,7 @@ fn fixed_endpoint(spec: &ProviderSpec, family: Family) -> EndpointUrl {
     spec.capabilities
         .iter()
         .filter(|row| row.family == family)
-        .find_map(|row| EndpointUrl::parse(&row.endpoint.as_ref()?.0).ok())
+        .find_map(|row| EndpointUrl::parse(row.endpoint.as_ref()?).ok())
         .or_else(|| Issuer::Microsoft.data().api(family))
         .unwrap_or_else(|| unreachable!("{family:?} is a Microsoft API family"))
 }

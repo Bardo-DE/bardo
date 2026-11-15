@@ -121,7 +121,7 @@ pub fn fixed(
         .iter()
         .filter_map(|row| row.endpoint.as_ref().map(|url| (row.family, url)))
         .map(|(family, url)| {
-            let url = EndpointUrl::parse(&url.0).map_err(|_| Error::Unreadable)?;
+            let url = EndpointUrl::parse(url).map_err(|_| Error::Unreadable)?;
             let endpoint = ServiceEndpoint {
                 family,
                 tls: tls_of_scheme(&url).ok_or(Error::Unreadable)?,

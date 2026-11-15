@@ -70,7 +70,7 @@ async fn a_token_for_a_calendar_grant_is_a_live_bearer_with_the_calendar_scope()
         .find(|r| r.family == porter_core::Family::GoogleCalendar)
         .and_then(|r| r.endpoint.clone())
         .expect("the calendar row's endpoint");
-    for name in ["google_calendar", calendar_row.0.as_str()] {
+    for name in ["google_calendar", calendar_row.as_str()] {
         let token = session.access_token(&audience(name)).await.expect(name);
         assert_eq!(token.kind, TokenKind::Bearer, "{name}");
         assert!(rig.google.issuer.access_is_live(token.value.expose()));

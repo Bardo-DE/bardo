@@ -140,7 +140,7 @@ fn widened(shipped: &ProviderSpec, file: &ProviderSpec) -> Option<&'static str> 
         spec.capabilities
             .iter()
             .filter_map(|row| row.endpoint.as_ref())
-            .map(|e| EndpointUrl::parse(&e.0).map_or_else(|_| e.0.clone(), |u| u.origin().host))
+            .map(|e| EndpointUrl::parse(e).map_or_else(|_| e.clone(), |u| u.origin().host))
             .collect()
     };
     let origins = |spec: &ProviderSpec, linked: bool| -> BTreeSet<String> {
@@ -553,7 +553,7 @@ mod tests {
             .capabilities
             .iter()
             .filter_map(|row| row.endpoint.as_ref())
-            .any(|e| e.0 == "https://127.0.0.1:4443");
+            .any(|e| e == "https://127.0.0.1:4443");
         assert!(graph);
     }
 }

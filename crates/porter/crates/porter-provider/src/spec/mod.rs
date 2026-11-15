@@ -82,7 +82,7 @@ pub struct CapabilityRow {
     pub family: Family,
     /// A fixed endpoint, when discovery does not find one.
     #[serde(default)]
-    pub endpoint: Option<Endpoint>,
+    pub endpoint: Option<String>,
     /// The capability.
     #[serde(flatten)]
     pub capability: Capability,
@@ -120,11 +120,6 @@ impl CapabilityRow {
         }
     }
 }
-
-/// A service URL written in a provider file.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct Endpoint(pub String);
 
 /// The AI properties of a provider's models (design/31 §2.3).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

@@ -266,7 +266,7 @@ fn file_serving(set: &ProviderSet, host: &str) -> Option<String> {
         spec.capabilities
             .iter()
             .filter_map(|row| row.endpoint.as_ref())
-            .any(|endpoint| host_of(&endpoint.0) == host)
+            .any(|endpoint| host_of(endpoint) == host)
     };
     set.specs()
         .iter()
