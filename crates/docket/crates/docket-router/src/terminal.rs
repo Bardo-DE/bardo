@@ -13,7 +13,7 @@ use docket_context::tasks::TaskState;
 use docket_core::AuditRecord;
 use docket_core::EventSink;
 use docket_gate::prepared::Prepared;
-use docket_gate::terminal::{Revoked, grant_policy, kinds_of};
+use docket_gate::terminal::{grant_policy, kinds_of};
 use docket_permissions_core::{ActionMatch, TaskPolicyState};
 use docket_vocab::{ActionRef, CallerRole, Clock};
 use prov::{Actor, SpaceScope};
@@ -69,7 +69,7 @@ impl<S: Seams> Router<S> {
     }
 
     /// Withdraws the standing grant for `action`: the next call from the terminal asks again.
-    pub fn revoke_terminal_grant(&self, action: &ActionRef) -> Revoked {
+    pub fn revoke_terminal_grant(&self, action: &ActionRef) -> bool {
         let at = self.seams.clock().now();
         let task = {
             let mut st = self.locked();
@@ -92,9 +92,9 @@ impl<S: Seams> Router<S> {
                     state: TaskPolicyState::Revoked,
                     change: docket_permissions_core::PolicyChangeKind::Narrows,
                 });
-                Revoked::Done
+                true
             }
-            None => Revoked::NotHeld,
+            None => false,
         }
     }
 

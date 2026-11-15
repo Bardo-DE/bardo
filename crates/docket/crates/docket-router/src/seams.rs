@@ -13,7 +13,7 @@ use docket_core::{
 use docket_core::{EventSink, LinkFault, MemoryLink};
 use docket_manifest::Latency;
 use docket_permissions_core::Limit;
-use docket_permissions_core::{ActionGrant, Revocation, StandingGrant, StandingGrantId};
+use docket_permissions_core::{ActionGrant, StandingGrant, StandingGrantId};
 use docket_session::{Appended, LogFault, LogPage, PageSize, Seq, SessionEntry, SessionLog};
 use docket_vocab::{EntityRef, UndoToken};
 use policy_point::Presets;
@@ -133,8 +133,8 @@ pub trait GrantStore: Send + Sync {
     fn add_standing(&self, _grant: StandingGrant) {}
     /// Drops a standing grant, or a limit with that id (the one revoke path); it takes effect
     /// on the next call.
-    fn revoke_standing(&self, _id: &StandingGrantId) -> Revocation {
-        Revocation::NotHeld
+    fn revoke_standing(&self, _id: &StandingGrantId) -> bool {
+        false
     }
     /// Every "always ask" and "never" entry. A store that keeps none holds none.
     fn limits(&self) -> Vec<Limit> {

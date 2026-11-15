@@ -5,7 +5,6 @@
 use crate::support::*;
 use docket_core::*;
 use docket_fake::ScriptedConfirmer;
-use docket_gate::terminal::Revoked;
 use docket_permissions_core::{AskReason, DenyCode, Mode};
 use docket_router::Router;
 use docket_vocab::{ActionRef, CallRequest, Origin, TargetValue, Value};
@@ -245,14 +244,8 @@ async fn a_standing_grant_skips_the_ask_until_it_is_revoked() {
     );
     assert_eq!(shown(&router).len(), 2, "another action still asks");
     // Revoked: asks again.
-    assert_eq!(
-        router.revoke_terminal_grant(&action("mail.thread.archive")),
-        Revoked::Done
-    );
-    assert_eq!(
-        router.revoke_terminal_grant(&action("mail.thread.archive")),
-        Revoked::NotHeld
-    );
+    assert!(router.revoke_terminal_grant(&action("mail.thread.archive")));
+    assert!(!router.revoke_terminal_grant(&action("mail.thread.archive")));
     assert!(router.terminal_grants().is_empty());
     let after = run(&router, from_cli("mail.thread.archive", &["t2"], vec![])).await;
     assert_eq!(after, Err(CallRefusal::Unconfirmed(ConfirmEnd::Dismissed)));

@@ -2,12 +2,7 @@
 
 use crate::defaults::{default_grants_file, read_defaults};
 use crate::policies::{PolicyDirs, load_policies};
-use docket_permissions_core::{
-    ActionGrant, Ended, KnownSpaces, Limit, LimitCaller, LimitKey, LimitLevel, LimitMaker,
-    LimitScope, Reconciled, Revocation, RuleFile, SpaceAccess, StandingGrant, StandingGrantId,
-    decode_grants, decode_limits, decode_standing, encode_limits, encode_standing, held_with,
-    held_without, limits_with, limits_without, reconcile, with_rule, without_rule, without_space,
-};
+use docket_permissions_core::{ActionGrant, Ended, KnownSpaces, Limit, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope, Reconciled, RuleFile, SpaceAccess, StandingGrant, StandingGrantId, decode_grants, decode_limits, decode_standing, encode_limits, encode_standing, held_with, held_without, limits_with, limits_without, reconcile, with_rule, without_rule, without_space};
 use docket_router::GrantStore;
 use docket_store::{
     GrantFileError, WriteLock, read_grant_file, read_grant_list, read_optional, write_atomic,
@@ -104,9 +99,9 @@ impl FileGrants {
 
     /// Removes the rule `id` from the rules file that holds it. A file that cannot be read is
     /// left alone.
-    fn revoke_rule(&self, id: &StandingGrantId) -> Revocation {
+    fn revoke_rule(&self, id: &StandingGrantId) -> bool {
         let Some(dirs) = &self.rules else {
-            return Revocation::NotHeld;
+            return false;
         };
         [RuleFile::Never, RuleFile::Assistant]
             .into_iter()
@@ -114,12 +109,12 @@ impl FileGrants {
             .find_map(|path| {
                 let text = read_optional(&path).ok().flatten()?;
                 let (rest, done) = without_rule(&text, id);
-                (done == Revocation::Revoked).then(|| {
+                (done).then(|| {
                     logged(put_rules(&path, &rest));
                     done
                 })
             })
-            .unwrap_or(Revocation::NotHeld)
+            .unwrap_or(false)
     }
 
     fn standing_path(&self) -> PathBuf {
@@ -255,18 +250,18 @@ impl GrantStore for FileGrants {
 
     // One revoke path for both: the id says which file it is in, and the administrator's locked
     // entries are in neither.
-    fn revoke_standing(&self, id: &StandingGrantId) -> Revocation {
+    fn revoke_standing(&self, id: &StandingGrantId) -> bool {
         let _one_at_a_time = self.writing.hold();
         if let Some(held) = logged(self.read_standing()) {
             let (rest, done) = held_without(held, id);
-            if done == Revocation::Revoked {
+            if done {
                 logged(self.write_standing(&rest));
                 return done;
             }
         }
         if let Some(held) = logged(self.read_limits()) {
             let (rest, done) = limits_without(held, id);
-            if done == Revocation::Revoked {
+            if done {
                 logged(self.write_limits(&rest));
                 return done;
             }

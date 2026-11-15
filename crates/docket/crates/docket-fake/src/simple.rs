@@ -2,10 +2,7 @@
 
 use docket_core::AuditRecord;
 use docket_core::EventSink;
-use docket_permissions_core::{
-    ActionGrant, Limit, Revocation, RuleFile, StandingGrant, StandingGrantId, held_with,
-    held_without, limits_with, limits_without, with_rule, without_rule,
-};
+use docket_permissions_core::{ActionGrant, Limit, RuleFile, StandingGrant, StandingGrantId, held_with, held_without, limits_with, limits_without, with_rule, without_rule};
 use docket_router::GrantStore;
 use policy_point::Presets;
 use std::sync::Mutex;
@@ -129,23 +126,23 @@ impl GrantStore for MemoryGrants {
         }
     }
 
-    fn revoke_standing(&self, id: &StandingGrantId) -> Revocation {
+    fn revoke_standing(&self, id: &StandingGrantId) -> bool {
         if let Ok(mut held) = self.standing.lock() {
             let (rest, done) = held_without(std::mem::take(&mut held), id);
             *held = rest;
-            if done == Revocation::Revoked {
+            if done {
                 return done;
             }
         }
         if let Ok(mut held) = self.limits.lock() {
             let (rest, done) = limits_without(std::mem::take(&mut held), id);
             *held = rest;
-            if done == Revocation::Revoked {
+            if done {
                 return done;
             }
         }
         let Ok(mut rules) = self.rules.lock() else {
-            return Revocation::NotHeld;
+            return false;
         };
         [RuleFile::Never, RuleFile::Assistant]
             .into_iter()
@@ -154,8 +151,8 @@ impl GrantStore for MemoryGrants {
                 *rules.file(file) = rest;
                 done
             })
-            .find(|done| *done == Revocation::Revoked)
-            .unwrap_or(Revocation::NotHeld)
+            .find(|done| *done)
+            .unwrap_or(false)
     }
 
     fn add_rule(&self, limit: &Limit) {

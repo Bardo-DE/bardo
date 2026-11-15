@@ -14,9 +14,7 @@ use docket_core::{
 use docket_core::{EventSink, LinkFault, MemoryLink};
 use docket_host::{ConfirmSheet, SheetConfirmer};
 use docket_memory_core::QueuedSink;
-use docket_permissions_core::{
-    ActionGrant, ReviewError, Revocation, StandingGrant, StandingGrantId, held_with, held_without,
-};
+use docket_permissions_core::{ActionGrant, ReviewError, StandingGrant, StandingGrantId, held_with, held_without};
 use docket_provider::{ContextSource, IntentProvider};
 use docket_router::{GrantStore, NoLog, NoStore, Seams};
 use docket_vocab::{Clock, Value};
@@ -55,7 +53,7 @@ impl GrantStore for SessionGrants {
     fn add_standing(&self, grant: StandingGrant) {
         held(&self.1, |g| *g = held_with(std::mem::take(g), grant));
     }
-    fn revoke_standing(&self, id: &StandingGrantId) -> Revocation {
+    fn revoke_standing(&self, id: &StandingGrantId) -> bool {
         held(&self.1, |g| {
             let (rest, done) = held_without(std::mem::take(g), id);
             *g = rest;

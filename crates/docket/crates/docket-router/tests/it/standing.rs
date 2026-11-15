@@ -8,10 +8,7 @@ use action_review::{ReviewReason, ReviewVerdict};
 use bulkhead::AbsPath;
 use docket_core::*;
 use docket_fake::{FakeSeams, MailContact, ReviewMode, ScriptedReviewer};
-use docket_permissions_core::{
-    ActionMatch, AlwaysOffer, DenyCode, GrantCaller, ReasonCode, ReasonText, Recipient,
-    ReviewError, Revocation, StandingGrant, StandingScope, Withheld,
-};
+use docket_permissions_core::{ActionMatch, AlwaysOffer, DenyCode, GrantCaller, ReasonCode, ReasonText, Recipient, ReviewError, StandingGrant, StandingScope, Withheld};
 use docket_router::{GrantStore, Router};
 use docket_vocab::{ActionRef, CallRequest, FileRef, Origin, TargetValue, Value};
 use docket_wire::{IntentsReply, IntentsRequest};
@@ -233,8 +230,8 @@ async fn revoking_takes_effect_on_the_next_call() {
     router.seams.grants.add_standing(g.clone());
     perform(&router, send()).await.expect("ran");
     assert_eq!(router.standing_grants(), vec![g.clone()]);
-    assert_eq!(router.revoke_standing(&g.id), Revocation::Revoked);
-    assert_eq!(router.revoke_standing(&g.id), Revocation::NotHeld);
+    assert!(router.revoke_standing(&g.id));
+    assert!(!router.revoke_standing(&g.id));
     assert!(router.standing_grants().is_empty());
     perform(&router, send()).await.expect_err("asks again");
     assert_eq!(router.seams.confirmer.requests().len(), 1);

@@ -5,10 +5,7 @@
 use crate::support::*;
 use docket_core::*;
 use docket_fake::ScriptedConfirmer;
-use docket_permissions_core::{
-    AlwaysOffer, AskReason, COMPANION_APP, DenyCode, Floor, FloorEntry, FloorFile, Limit,
-    LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope, Revocation, UndoOffer, rule_ids,
-};
+use docket_permissions_core::{AlwaysOffer, AskReason, COMPANION_APP, DenyCode, Floor, FloorEntry, FloorFile, Limit, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope, UndoOffer, rule_ids};
 use docket_router::GrantStore;
 use docket_vocab::{CallId, CallRequest, ChoiceId, Origin, TargetValue, Value};
 use docket_wire::{IntentsReply, IntentsRequest};
@@ -53,7 +50,7 @@ async fn always_ask_beats_the_persons_always_allow_and_says_why() {
     assert!(matches!(shown[0].always, AlwaysOffer::Withheld(_)));
     // Undo is the one revoke path. Another thread, since the same call a third time is the
     // repeat guard's.
-    assert_eq!(router.revoke_standing(&ask.id), Revocation::Revoked);
+    assert!(router.revoke_standing(&ask.id));
     perform(&router, call("mail.thread.archive", &["t2"], vec![]))
         .await
         .expect("allowed again");
@@ -110,7 +107,7 @@ async fn a_locked_floor_entry_beats_the_persons_always_allow() {
     assert_eq!(refused, CallRefusal::Denied(DenyCode::Never));
     // The person cannot remove what the floor holds.
     let locked = router.floor.locked()[0].id.clone();
-    assert_eq!(router.revoke_standing(&locked), Revocation::NotHeld);
+    assert!(!router.revoke_standing(&locked));
     // The person's own launcher acts never meet it.
     let launched = ask(
         &router,
@@ -250,7 +247,7 @@ async fn an_ask_first_rule_makes_the_next_call_ask_and_removing_it_by_id_restore
     assert_eq!(held.undo, UndoOffer::Offered);
     assert!(matches!(shown[0].always, AlwaysOffer::Withheld(_)));
     // Undo is the one revoke path: the rule leaves the file and the next call runs unasked.
-    assert_eq!(router.revoke_standing(&ids[0]), Revocation::Revoked);
+    assert!(router.revoke_standing(&ids[0]));
     assert!(rule_ids(&router.seams.grants.rule_texts().assistant).is_empty());
     perform(&router, call("mail.thread.archive", &["t2"], vec![]))
         .await

@@ -7,7 +7,7 @@
 //! Nothing here reads a clock, a file or the system.
 
 use crate::grant::GrantCaller;
-use crate::standing::{Revocation, StandingGrantId};
+use crate::standing::{StandingGrantId};
 use bulkhead::Cover;
 use docket_vocab::{ActionRef, plain_text};
 use porter_core::AppName;
@@ -362,14 +362,10 @@ pub fn limits_with(mut limits: Vec<Limit>, limit: Limit) -> Vec<Limit> {
 }
 
 /// `limits` without the limit `id`, and whether there was one.
-pub fn limits_without(mut limits: Vec<Limit>, id: &StandingGrantId) -> (Vec<Limit>, Revocation) {
+pub fn limits_without(mut limits: Vec<Limit>, id: &StandingGrantId) -> (Vec<Limit>, bool) {
     let before = limits.len();
     limits.retain(|l| l.id != *id);
-    let done = if limits.len() < before {
-        Revocation::Revoked
-    } else {
-        Revocation::NotHeld
-    };
+    let done = limits.len() < before;
     (limits, done)
 }
 

@@ -65,11 +65,7 @@ pub use review::{
 };
 pub use rules::{RuleFile, generated_rules, rule_ids, rule_text, with_rule, without_rule};
 pub use space_access::{SpaceAccess, SpaceRefusal, space_access};
-pub use standing::{
-    AddressFault, CommandFault, CommandPrefix, Domain, DomainFault, Recipient, Revocation,
-    ScopeKind, StandingFileFault, StandingGrant, StandingGrantId, StandingIdFault, StandingScope,
-    decode_standing, encode_standing, held_with, held_without,
-};
+pub use standing::{AddressFault, CommandFault, CommandPrefix, Domain, DomainFault, Recipient, ScopeKind, StandingFileFault, StandingGrant, StandingGrantId, StandingIdFault, StandingScope, decode_standing, encode_standing, held_with, held_without};
 pub use standing_match::{ArgFacts, CallFacts, find_standing_for};
 pub use standing_offer::{
     AlwaysOffer, AskFacts, Withheld, blocker, holds_standing, may_offer, scope_for,

@@ -227,12 +227,12 @@ fn what_the_assistant_adds_is_theirs_to_remove_by_id_only() {
     );
     let (rest, done) = limits_without(vec![made.clone()], &made.id);
     assert!(rest.is_empty());
-    assert_eq!(done, Revocation::Revoked);
+    assert!(done);
     let (_, none) = limits_without(
         vec![made],
         &StandingGrantId::parse("sg-0000000000000000").expect("id"),
     );
-    assert_eq!(none, Revocation::NotHeld);
+    assert!(!none);
 }
 
 #[test]
@@ -332,11 +332,11 @@ fn a_limit_is_a_rule_in_a_file_that_is_added_replaced_and_removed_by_id() {
     let both = with_rule(&file, &never);
     assert_eq!(rule_ids(&both).len(), 2);
     let (left, done) = without_rule(&both, &made.id);
-    assert_eq!(done, Revocation::Revoked);
+    assert!(done);
     assert_eq!(rule_ids(&left), vec![never.id.clone()]);
     assert!(left.contains(by_hand));
     let (_, none) = without_rule(&left, &made.id);
-    assert_eq!(none, Revocation::NotHeld);
+    assert!(!none);
     assert_eq!(RuleFile::of(LimitMaker::Floor), None);
 }
 

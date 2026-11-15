@@ -316,9 +316,7 @@ fn the_floor_file_is_none_when_missing_and_an_error_when_it_does_not_read() {
 
 #[test]
 fn limits_are_kept_beside_the_grants_and_removed_by_the_one_revoke_path() {
-    use docket_permissions_core::{
-        Limit, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope, Revocation,
-    };
+    use docket_permissions_core::{Limit, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope};
     let dir = tempfile::tempdir().expect("scratch");
     let path = dir.path().join("quire/grants.json");
     let store = FileGrants::at(path.clone());
@@ -339,7 +337,7 @@ fn limits_are_kept_beside_the_grants_and_removed_by_the_one_revoke_path() {
     assert_eq!(FileGrants::at(path.clone()).limits(), vec![limit.clone()]);
     // A grant file written before limits holds none and is not disturbed.
     assert!(store.grants().is_empty());
-    assert_eq!(store.revoke_standing(&limit.id), Revocation::Revoked);
+    assert!(store.revoke_standing(&limit.id));
     assert!(store.limits().is_empty());
     // A damaged limits file asks about everything, and is not written over.
     std::fs::create_dir_all(path.parent().expect("dir")).expect("dir");

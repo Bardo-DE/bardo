@@ -352,16 +352,6 @@ impl StandingGrant {
     }
 }
 
-/// What a revocation did.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Revocation {
-    /// The grant is gone; the next call asks again.
-    Revoked,
-    /// There was no such grant.
-    NotHeld,
-}
-
 /// `grants` with `grant` held: the same id replaces the earlier one.
 pub fn held_with(mut grants: Vec<StandingGrant>, grant: StandingGrant) -> Vec<StandingGrant> {
     grants.retain(|g| g.id != grant.id);
@@ -373,14 +363,10 @@ pub fn held_with(mut grants: Vec<StandingGrant>, grant: StandingGrant) -> Vec<St
 pub fn held_without(
     mut grants: Vec<StandingGrant>,
     id: &StandingGrantId,
-) -> (Vec<StandingGrant>, Revocation) {
+) -> (Vec<StandingGrant>, bool) {
     let before = grants.len();
     grants.retain(|g| g.id != *id);
-    let done = if grants.len() < before {
-        Revocation::Revoked
-    } else {
-        Revocation::NotHeld
-    };
+    let done = grants.len() < before;
     (grants, done)
 }
 

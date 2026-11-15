@@ -8,10 +8,7 @@
 //! must not stop a call over a disk), so a failed write is kept for the app to ask for
 //! ([`FileGrantStore::take_fault`]); the grant still counts for this run.
 
-use docket_permissions_core::{
-    ActionGrant, Revocation, StandingGrant, StandingGrantId, decode_standing, encode_standing,
-    held_with, held_without,
-};
+use docket_permissions_core::{ActionGrant, StandingGrant, StandingGrantId, decode_standing, encode_standing, held_with, held_without};
 use docket_router::GrantStore;
 use docket_store::{GrantFileError, read_grant_list, write_grant_list};
 use std::path::{Path, PathBuf};
@@ -158,17 +155,17 @@ impl GrantStore for FileGrantStore {
             .err();
     }
 
-    fn revoke_standing(&self, id: &StandingGrantId) -> Revocation {
+    fn revoke_standing(&self, id: &StandingGrantId) -> bool {
         let mut held = self.locked();
         let file = self.standing_file();
         match self.base(read_standing(&file), Vec::new()) {
             Err(why) => {
                 held.fault = Some(why);
-                Revocation::NotHeld
+                false
             }
             Ok(current) => {
                 let (rest, done) = held_without(current, id);
-                if done == Revocation::Revoked {
+                if done {
                     held.fault = write_standing(&file, &rest).err();
                 }
                 done

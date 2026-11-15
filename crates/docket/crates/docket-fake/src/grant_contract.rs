@@ -8,9 +8,7 @@
 //! failed check.
 
 use bulkhead::AbsPath;
-use docket_permissions_core::{
-    ActionGrant, ActionGrantKey, GrantCaller, GrantTarget, Revocation, StandingGrant, StandingScope,
-};
+use docket_permissions_core::{ActionGrant, ActionGrantKey, GrantCaller, GrantTarget, StandingGrant, StandingScope};
 use docket_router::GrantStore;
 use docket_vocab::ActionRef;
 use porter_core::consent::{Decision, Grant, GrantScope, Usage};
@@ -158,8 +156,8 @@ fn standing_survives_and_revokes<S: GrantStore>(
     store.add_standing(a.clone());
     let reopened = open(path);
     assert_eq!(reopened.standing(), vec![b.clone(), a.clone()]);
-    assert_eq!(reopened.revoke_standing(&a.id), Revocation::Revoked);
-    assert_eq!(reopened.revoke_standing(&a.id), Revocation::NotHeld);
+    assert!(reopened.revoke_standing(&a.id));
+    assert!(!reopened.revoke_standing(&a.id));
     assert_eq!(
         open(path).standing(),
         vec![b],
@@ -190,7 +188,7 @@ fn damaged_standing_is_never_written_over<S: GrantStore>(
         let held = contract_standing("/w/a");
         store.add_standing(held.clone());
         assert_eq!(std::fs::read_to_string(&damaged).expect("read"), text);
-        assert_eq!(store.revoke_standing(&held.id), Revocation::NotHeld);
+        assert!(!store.revoke_standing(&held.id));
         assert_eq!(std::fs::read_to_string(&damaged).expect("read"), text);
     }
 }

@@ -9,9 +9,7 @@ use crate::seams::{GrantStore, Seams};
 use docket_core::AuditRecord;
 use docket_core::EventSink;
 use docket_gate::prepared::Prepared;
-use docket_permissions_core::{
-    CallFacts, GrantCaller, Revocation, StandingGrant, StandingGrantId, StandingScope,
-};
+use docket_permissions_core::{CallFacts, GrantCaller, StandingGrant, StandingGrantId, StandingScope};
 use docket_vocab::Clock;
 
 impl<S: Seams> Router<S> {
@@ -60,9 +58,9 @@ impl<S: Seams> Router<S> {
     }
 
     /// Revokes a standing grant: the next call it would have covered asks again.
-    pub fn revoke_standing(&self, id: &StandingGrantId) -> Revocation {
+    pub fn revoke_standing(&self, id: &StandingGrantId) -> bool {
         let done = self.seams.grants().revoke_standing(id);
-        if done == Revocation::Revoked {
+        if done {
             // It may have been a rule: the policy then drops it at once.
             self.reload_rules();
             self.seams.sink().append(AuditRecord::StandingRevoked {

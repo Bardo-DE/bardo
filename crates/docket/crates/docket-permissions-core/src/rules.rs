@@ -8,7 +8,7 @@
 
 use crate::grant::GrantCaller;
 use crate::limit::{Limit, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitScope};
-use crate::standing::{Revocation, StandingGrantId};
+use crate::standing::{StandingGrantId};
 use prov::{Effect, SpaceScope};
 
 /// The rules file a limit is written to.
@@ -150,13 +150,9 @@ fn joined<'a>(blocks: impl Iterator<Item = &'a str>) -> String {
 }
 
 /// `file` without the rule `id`, and whether it held one. Everything else in the file stays.
-pub fn without_rule(file: &str, id: &StandingGrantId) -> (String, Revocation) {
+pub fn without_rule(file: &str, id: &StandingGrantId) -> (String, bool) {
     let held = blocks(file).any(|b| is_rule(b, id));
-    let done = if held {
-        Revocation::Revoked
-    } else {
-        Revocation::NotHeld
-    };
+    let done = held;
     (joined(blocks(file).filter(|b| !is_rule(b, id))), done)
 }
 

@@ -246,6 +246,6 @@ fn holding_and_dropping_grants_is_by_id() {
     let held = held_with(held_with(vec![], a.clone()), b.clone());
     assert_eq!(held_with(held.clone(), a.clone()).len(), 2);
     let (rest, done) = held_without(held, &a.id);
-    assert_eq!((rest, done), (vec![b.clone()], Revocation::Revoked));
-    assert_eq!(held_without(vec![b], &a.id).1, Revocation::NotHeld);
+    assert_eq!((rest, done), (vec![b.clone()], true));
+    assert!(!held_without(vec![b], &a.id).1);
 }

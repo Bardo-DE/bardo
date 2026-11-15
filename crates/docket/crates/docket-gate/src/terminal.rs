@@ -57,11 +57,3 @@ pub fn grant_policy(record: &SessionRecord, decl: &ActionDecl, mass_at: Count) -
     }
 }
 
-/// Why a revocation did nothing.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Revoked {
-    /// The grant is gone.
-    Done,
-    /// The terminal held no grant for that action.
-    NotHeld,
-}
