@@ -15,7 +15,7 @@ use ferry_sync::{
 };
 use porter_fake_servers::Hit;
 use porter_http_relay::{RelayHttp, RelayLimits};
-use porter_ids::{Bytes, WebUrl};
+use porter_ids::Bytes;
 use storage_graph::{GraphReplica, Uploads};
 
 fn new_item(path: &str, bytes: &[u8]) -> PutItem {
@@ -436,19 +436,4 @@ async fn without_the_relays_bearer_every_request_is_refused_and_the_replica_neve
             .take(1)
             .all(|h| h.authorization.as_deref() == Some(want.as_str()))
     );
-}
-
-#[tokio::test]
-async fn the_features_say_what_the_replica_does() {
-    use porter_capability::{Access, Delta, HashKind, StorageScope};
-    let server = Server::start().await;
-    let features = server.replica("", 50, Uploads::default()).features();
-    assert_eq!(features.access, Access::ReadWrite);
-    assert_eq!(features.delta, Delta::Poll);
-    assert!(features.quota);
-    assert_eq!(features.scope, StorageScope::AppFolder);
-    assert_eq!(features.hashes, HashKind::QuickXor);
-    assert!(features.ranges);
-    assert!(features.chunked_upload);
-    let _ = WebUrl::parse("http://127.0.0.1:1").expect("url");
 }

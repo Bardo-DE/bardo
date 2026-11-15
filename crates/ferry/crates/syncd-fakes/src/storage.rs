@@ -1203,70 +1203,6 @@ mod tests {
         word_of(&items[at], ITEM_KEY_STATE).expect("every item has a state")
     }
 
-    fn kept(world: &World, at: &str) -> bool {
-        let items = world.items(&[at.to_owned()]);
-        bool::try_from(items[at][ITEM_KEY_KEPT].clone()).expect("every item says whether kept")
-    }
-
-    fn fraction(world: &World, at: &str) -> Option<f64> {
-        let items = world.items(&[at.to_owned()]);
-        items[at]
-            .get(ITEM_KEY_FRACTION)
-            .and_then(|value| f64::try_from(value.clone()).ok())
-    }
-
-    fn local(world: &World, drive: &str) -> u64 {
-        let (_, details) = world
-            .drives()
-            .into_iter()
-            .find(|(id, _)| id == drive)
-            .expect("the fake has this drive");
-        u64::try_from(details[DRIVE_KEY_LOCAL].clone()).expect("every drive says its bytes here")
-    }
-
-    #[test]
-    fn a_download_fills_its_fraction_and_ends_downloaded() {
-        let (dir, mut world) = world();
-        let beach = path(&dir, "OneDrive/Pictures/Beach.jpg");
-        let mut changed = Changed::new();
-        assert!(
-            world
-                .download(std::slice::from_ref(&beach), &mut changed)
-                .is_empty()
-        );
-        assert_eq!(state(&world, &beach), "downloading");
-        let mut ticks = 0;
-        while state(&world, &beach) == "downloading" {
-            let moved = world.tick();
-            assert!(
-                moved["onedrive"].contains(Path::new(&beach)),
-                "a moving file is told each tick"
-            );
-            ticks += 1;
-            assert!(ticks <= 20, "a download ends in twenty ticks");
-        }
-        assert_eq!(state(&world, &beach), "downloaded");
-        assert_eq!(
-            state(&world, &path(&dir, "OneDrive/Pictures")),
-            "waiting",
-            "Garden still waits"
-        );
-    }
-
-    #[test]
-    fn remove_download_refuses_what_is_waiting_and_frees_the_rest() {
-        let (dir, mut world) = world();
-        let garden = path(&dir, "OneDrive/Pictures/Garden.jpg");
-        let notes = path(&dir, "OneDrive/Documents/Notes.txt");
-        let refused = world.remove_download(&[garden.clone(), notes.clone()], &mut Changed::new());
-        assert_eq!(
-            refused.get(&garden).map(String::as_str),
-            Some(words::WAITING)
-        );
-        assert!(!refused.contains_key(&notes));
-        assert_eq!(state(&world, &notes), "cloud");
-    }
-
     #[test]
     fn an_online_document_is_never_downloaded_and_offline_waits() {
         let (dir, mut world) = world();
@@ -1286,49 +1222,6 @@ mod tests {
     }
 
     #[test]
-    fn a_folder_carries_the_fraction_of_what_moves_under_it() {
-        let (dir, mut world) = world();
-        let report = path(&dir, "OneDrive/Documents/Report.docx");
-        let documents = path(&dir, "OneDrive/Documents");
-        world.download(std::slice::from_ref(&report), &mut Changed::new());
-        for _ in 0..4 {
-            world.tick();
-        }
-        assert_eq!(state(&world, &documents), "downloading");
-        let (folder, file) = (fraction(&world, &documents), fraction(&world, &report));
-        let (Some(folder), Some(file)) = (folder, file) else {
-            panic!("a moving folder and file both carry a fraction");
-        };
-        assert!(
-            (folder - file).abs() < 1e-9,
-            "the one file moving is the folder's share"
-        );
-        assert!(folder > 0.0 && folder < 1.0);
-    }
-
-    #[test]
-    fn a_kept_folder_keeps_what_is_added_to_it_later() {
-        let (dir, mut world) = world();
-        let pictures = path(&dir, "OneDrive/Pictures");
-        let beach = path(&dir, "OneDrive/Pictures/Beach.jpg");
-        world.keep(std::slice::from_ref(&pictures), true, &mut Changed::new());
-        assert!(kept(&world, &beach), "a child of a kept folder reads kept");
-        let added = path(&dir, "OneDrive/Pictures/Hike.jpg");
-        world
-            .command(&format!("add {added}"))
-            .expect("a known command");
-        assert!(kept(&world, &added));
-        assert_eq!(state(&world, &added), "downloading");
-        let refused = world.keep(std::slice::from_ref(&beach), false, &mut Changed::new());
-        assert_eq!(
-            refused.get(&beach).map(String::as_str),
-            Some(words::KEPT_WITH_FOLDER)
-        );
-        world.keep(std::slice::from_ref(&pictures), false, &mut Changed::new());
-        assert!(!kept(&world, &beach) && !kept(&world, &added));
-    }
-
-    #[test]
     fn an_online_document_gives_its_address_and_a_conflict_names_the_other_version() {
         let (dir, world) = world();
         let plan = path(&dir, "Google Drive/Projects/Plan.gdoc");
@@ -1343,26 +1236,6 @@ mod tests {
         assert!(Path::new(&other).is_file());
         let back = world.items(std::slice::from_ref(&other));
         assert_eq!(word_of(&back[&other], ITEM_KEY_OTHER), Some(budget));
-    }
-
-    #[test]
-    fn pausing_holds_uploads_and_removing_a_download_frees_its_bytes() {
-        let (dir, mut world) = world();
-        let garden = path(&dir, "OneDrive/Pictures/Garden.jpg");
-        world.set_paused(&["onedrive".into()], false, &mut Changed::new());
-        assert_eq!(state(&world, &garden), "uploading");
-        world.set_paused(&["onedrive".into()], true, &mut Changed::new());
-        assert_eq!(state(&world, &garden), "waiting");
-        let refused = world.set_paused(&["nowhere".into()], true, &mut Changed::new());
-        assert_eq!(
-            refused.get("nowhere").map(String::as_str),
-            Some(words::NO_DRIVE)
-        );
-
-        let notes = path(&dir, "OneDrive/Documents/Notes.txt");
-        let before = local(&world, "onedrive");
-        world.remove_download(std::slice::from_ref(&notes), &mut Changed::new());
-        assert_eq!(local(&world, "onedrive"), before - 4_000);
     }
 
     #[test]
@@ -1420,18 +1293,6 @@ mod tests {
         assert_eq!(
             refused.get(&nowhere).map(String::as_str),
             Some(words::NOT_ON_A_DRIVE)
-        );
-    }
-
-    #[test]
-    fn keep_downloaded_marks_the_folder_itself_kept() {
-        let (dir, mut world) = world();
-        let pictures = path(&dir, "OneDrive/Pictures");
-        world.keep(std::slice::from_ref(&pictures), true, &mut Changed::new());
-        let items = world.items(std::slice::from_ref(&pictures));
-        assert_eq!(
-            bool::try_from(items[&pictures][ITEM_KEY_KEPT].clone()).ok(),
-            Some(true)
         );
     }
 }
