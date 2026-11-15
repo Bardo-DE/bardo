@@ -4,7 +4,7 @@ use crate::files::{inside_repository, person_excludes};
 use crate::names::{PLAN, index_file, ref_name};
 use crate::parse::{object_id, staged_listing, tree_listing};
 use crate::problem::{GitCause, GitProblem, Report};
-use crate::run::{GitCommand, GitFault, GitOut, GitRun, Limits};
+use crate::run::{GitCommand, GitFault, GitOut, Limits, run_git};
 use bulkhead::AbsPath;
 use docket_checkpoint::{StoreFault, TreeListing, WorkRoot};
 use docket_core::CheckpointId;
@@ -51,20 +51,18 @@ const HARDENING: [(&str, &str); 5] = [
 /// attributes belong to whoever can write the folder. The person's own index, HEAD, branches and
 /// stash are never named; only `apply` writes files of the folder.
 #[derive(Debug)]
-pub struct GitStore<R: GitRun> {
-    pub(crate) run: R,
+pub struct GitStore {
     index_dir: AbsPath,
     env: Vec<(String, String)>,
     limits: Limits,
     report: Report,
 }
 
-impl<R: GitRun> GitStore<R> {
-    /// A store that runs git through `run` and keeps its private indexes in `index_dir`, a folder
+impl GitStore {
+    /// A store that runs the `git` on `PATH` and keeps its private indexes in `index_dir`, a folder
     /// of docket's own (never inside a repository's `.git`).
-    pub fn new(run: R, index_dir: AbsPath) -> Self {
+    pub fn new(index_dir: AbsPath) -> Self {
         Self {
-            run,
             index_dir,
             env: Vec::new(),
             limits: Limits::default(),
@@ -108,15 +106,14 @@ impl<R: GitRun> GitStore<R> {
                 .iter()
                 .map(|(k, v)| ((*k).to_owned(), (*v).to_owned())),
         );
-        self.run
-            .run(GitCommand {
-                cwd: root.path().clone(),
-                args: all,
-                env: vars,
-                stdin,
-                limits: self.limits,
-            })
-            .await
+        run_git(GitCommand {
+            cwd: root.path().clone(),
+            args: all,
+            env: vars,
+            stdin,
+            limits: self.limits,
+        })
+        .await
     }
 
     /// One command that must end with success; what it printed.
@@ -219,16 +216,14 @@ impl<R: GitRun> GitStore<R> {
                 .iter()
                 .map(|(k, v)| ((*k).to_owned(), (*v).to_owned())),
         );
-        let made = self
-            .run
-            .run(GitCommand {
-                cwd: self.index_dir.clone(),
-                args,
-                env,
-                stdin: None,
-                limits: self.limits,
-            })
-            .await;
+        let made = run_git(GitCommand {
+            cwd: self.index_dir.clone(),
+            args,
+            env,
+            stdin: None,
+            limits: self.limits,
+        })
+        .await;
         match made {
             Ok(out) if out.succeeded() => Ok(()),
             Ok(out) => {

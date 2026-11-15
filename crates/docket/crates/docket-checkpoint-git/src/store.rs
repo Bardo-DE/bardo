@@ -4,7 +4,6 @@ use crate::files::{delete, stay_inside};
 use crate::git::{GitStore, strings};
 use crate::names::{INDEX, RESTORE, ref_name, session_prefix};
 use crate::parse::{count_paths, held_points, named, object_id};
-use crate::run::GitRun;
 use docket_checkpoint::{
     ApplyAsk, CheckpointStore, DropAsk, PlanAsk, Saved, StoreFault, TakeAsk, TreeId, WorkRoot,
     plan_restore,
@@ -44,7 +43,7 @@ async fn blocking<T: Send + 'static>(
         .map_err(|_| StoreFault::Failed)?
 }
 
-impl<R: GitRun> GitStore<R> {
+impl GitStore {
     /// The points of `session` in the repository holding `root`, oldest first.
     async fn points(&self, root: &WorkRoot, session: &SessionId) -> Result<Vec<Saved>, StoreFault> {
         self.require_repository(root).await?;
@@ -92,7 +91,7 @@ impl<R: GitRun> GitStore<R> {
     }
 }
 
-impl<R: GitRun> CheckpointStore for GitStore<R> {
+impl CheckpointStore for GitStore {
     async fn take(&self, ask: TakeAsk) -> Result<Saved, StoreFault> {
         let TakeAsk {
             root,

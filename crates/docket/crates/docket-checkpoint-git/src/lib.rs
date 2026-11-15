@@ -23,9 +23,8 @@
 //! files themselves. Whether a folder is "in a repository" is decided by looking for a `.git`
 //! entry on the way up, without running git.
 //!
-//! git runs as a process behind [`GitRun`] (no shell, a list of arguments, no inherited
-//! `GIT_DIR` or `GIT_INDEX_FILE`); [`StdGitRun`] is the real one. [`GitStore`] is the
-//! `CheckpointStore`.
+//! git runs as a process (no shell, a list of arguments, no inherited `GIT_DIR` or
+//! `GIT_INDEX_FILE`). [`GitStore`] is the `CheckpointStore`.
 
 mod files;
 mod git;
@@ -38,4 +37,4 @@ mod store;
 pub use git::GitStore;
 pub use names::ref_name;
 pub use problem::{GitCause, GitProblem};
-pub use run::{GitCommand, GitFault, GitOut, GitRun, Limits, StdGitRun};
+pub use run::{GitCommand, GitFault, GitOut, Limits};

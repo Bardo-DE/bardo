@@ -3,7 +3,7 @@
 
 use bulkhead::AbsPath;
 use docket_checkpoint::WorkRoot;
-use docket_checkpoint_git::{GitStore, StdGitRun};
+use docket_checkpoint_git::GitStore;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -91,9 +91,9 @@ impl Scratch {
     }
 
     /// The store under test, keeping its private indexes in the scratch folder.
-    pub fn store(&self) -> GitStore<StdGitRun> {
+    pub fn store(&self) -> GitStore {
         let state = self.path("state");
-        GitStore::new(StdGitRun, abs(&state)).with_env(self.env())
+        GitStore::new(abs(&state)).with_env(self.env())
     }
 }
 

@@ -27,7 +27,7 @@ use crate::signals::{Cadence, pump};
 use crate::space_watch::{RemovedMemories, SpaceKeeper};
 use crate::system::{DaemonLog, SystemSeams};
 use bulkhead::AbsPath;
-use docket_checkpoint_git::{GitStore, StdGitRun};
+use docket_checkpoint_git::GitStore;
 use docket_core::AuditRecord;
 use docket_dbus::BusConnection;
 use docket_dbus::InferWatch;
@@ -327,7 +327,7 @@ pub async fn start(
             SpaceId::desktop(),
             SystemClock,
         )),
-        checkpoints: GitStore::new(StdGitRun, kept),
+        checkpoints: GitStore::new(kept),
     };
     // The policy files, layered: a bad person or assistant file is skipped and a bad preset falls
     // back to the built-in one (both logged); a bad administrator file stops the daemon.

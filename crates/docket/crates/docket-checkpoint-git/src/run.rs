@@ -103,15 +103,6 @@ impl GitOut {
     }
 }
 
-/// The seam: runs a command and gives back what it printed.
-pub trait GitRun: Send + Sync {
-    /// Runs `cmd` to its end, or to its deadline.
-    fn run(
-        &self,
-        cmd: GitCommand,
-    ) -> impl std::future::Future<Output = Result<GitOut, GitFault>> + Send;
-}
-
 /// Reads `pipe` to its end; more than `max` bytes is `TooMuchOutput`, without reading the rest.
 async fn read_bounded<R: AsyncRead + Unpin>(pipe: &mut R, max: usize) -> Result<Vec<u8>, GitFault> {
     let cap = u64::try_from(max).unwrap_or(u64::MAX).saturating_add(1);
@@ -144,70 +135,65 @@ async fn read_tail<R: AsyncRead + Unpin>(pipe: &mut R) -> Result<Vec<u8>, GitFau
 
 /// Runs the `git` found on `PATH` as a child process; a command dropped before it ends is killed,
 /// and so is one that passes its deadline or its output limit.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
-pub struct StdGitRun;
-
-impl GitRun for StdGitRun {
-    async fn run(&self, cmd: GitCommand) -> Result<GitOut, GitFault> {
-        let mut process = Command::new("git");
-        process
-            .args(&cmd.args)
-            .current_dir(cmd.cwd.as_str())
-            .stdin(match cmd.stdin {
-                Some(_) => Stdio::piped(),
-                None => Stdio::null(),
-            })
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            .kill_on_drop(true);
-        for name in REDIRECTING {
-            process.env_remove(name);
-        }
-        process.env("GIT_TERMINAL_PROMPT", "0");
-        process.envs(cmd.env.iter().map(|(k, v)| (k, v)));
-        let mut child = process.spawn().map_err(|why| {
-            tracing::warn!(kind = ?why.kind(), "git could not be started");
-            GitFault::Spawn
-        })?;
-        let (Some(mut stdout), Some(mut stderr)) = (child.stdout.take(), child.stderr.take())
-        else {
-            let _ = child.kill().await;
-            tracing::warn!("git's pipes were not set up");
-            return Err(GitFault::Io);
-        };
-        let pipe = child.stdin.take();
-        let input = cmd.stdin;
-        let feed = async move {
-            if let (Some(mut pipe), Some(bytes)) = (pipe, input) {
-                // A command that stops reading early closes the pipe; its exit status says why.
-                let _ = pipe.write_all(&bytes).await;
-                let _ = pipe.shutdown().await;
-            }
-            Ok::<(), GitFault>(())
-        };
-        let limits = cmd.limits;
-        let work = async {
-            let (_, out, err) = tokio::try_join!(
-                feed,
-                read_bounded(&mut stdout, limits.stdout_max),
-                read_tail(&mut stderr)
-            )?;
-            let status = child.wait().await.map_err(|why| {
-                tracing::warn!(kind = ?why.kind(), "git could not be waited for");
-                GitFault::Io
-            })?;
-            Ok::<GitOut, GitFault>(GitOut {
-                status,
-                stdout: out,
-                stderr: err,
-            })
-        };
-        let done = tokio::time::timeout(limits.deadline, work)
-            .await
-            .unwrap_or(Err(GitFault::TimedOut));
-        if done.is_err() {
-            let _ = child.kill().await;
-        }
-        done
+pub(crate) async fn run_git(cmd: GitCommand) -> Result<GitOut, GitFault> {
+    let mut process = Command::new("git");
+    process
+        .args(&cmd.args)
+        .current_dir(cmd.cwd.as_str())
+        .stdin(match cmd.stdin {
+            Some(_) => Stdio::piped(),
+            None => Stdio::null(),
+        })
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .kill_on_drop(true);
+    for name in REDIRECTING {
+        process.env_remove(name);
     }
+    process.env("GIT_TERMINAL_PROMPT", "0");
+    process.envs(cmd.env.iter().map(|(k, v)| (k, v)));
+    let mut child = process.spawn().map_err(|why| {
+        tracing::warn!(kind = ?why.kind(), "git could not be started");
+        GitFault::Spawn
+    })?;
+    let (Some(mut stdout), Some(mut stderr)) = (child.stdout.take(), child.stderr.take())
+    else {
+        let _ = child.kill().await;
+        tracing::warn!("git's pipes were not set up");
+        return Err(GitFault::Io);
+    };
+    let pipe = child.stdin.take();
+    let input = cmd.stdin;
+    let feed = async move {
+        if let (Some(mut pipe), Some(bytes)) = (pipe, input) {
+            // A command that stops reading early closes the pipe; its exit status says why.
+            let _ = pipe.write_all(&bytes).await;
+            let _ = pipe.shutdown().await;
+        }
+        Ok::<(), GitFault>(())
+    };
+    let limits = cmd.limits;
+    let work = async {
+        let (_, out, err) = tokio::try_join!(
+            feed,
+            read_bounded(&mut stdout, limits.stdout_max),
+            read_tail(&mut stderr)
+        )?;
+        let status = child.wait().await.map_err(|why| {
+            tracing::warn!(kind = ?why.kind(), "git could not be waited for");
+            GitFault::Io
+        })?;
+        Ok::<GitOut, GitFault>(GitOut {
+            status,
+            stdout: out,
+            stderr: err,
+        })
+    };
+    let done = tokio::time::timeout(limits.deadline, work)
+        .await
+        .unwrap_or(Err(GitFault::TimedOut));
+    if done.is_err() {
+        let _ = child.kill().await;
+    }
+    done
 }
