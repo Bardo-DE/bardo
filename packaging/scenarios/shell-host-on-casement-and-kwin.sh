@@ -20,7 +20,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
 
 SCRIPTS=(hover scroll modifiers swipe drag ime lock popup-keyboard)
-SH="$SCEN_SRC/shell-host"
+SH="$SCEN_SIB/shell-host"
 EXAMPLES="$SH/target/debug/examples"
 scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/casementctl" "$SCEN_TOOLS/bin/fake-logind" "$SCEN_TOOLS/bin/casement-shell-exec" \
   "$SCEN_TOOLS/bin/foot" "$SH/scripts/dev/lib/compositor.sh" \

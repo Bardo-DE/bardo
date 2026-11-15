@@ -74,9 +74,9 @@ harness/scenario-build.sh --w2
 # 1. casement with its test features (headless output, the test control), casementctl and fake-logind
 (cd $SCEN_SIB/casement && CARGO_TARGET_DIR=$SCEN_BUILD/casement-target CASEMENT_TOOLS=$SCEN_BUILD/tools nice dev/bootstrap.sh --build-only)
 # 2. private checkouts of the shell and its host library (the scenarios run sill's scripts from there)
-#    sill (scenario-build.sh: checkouts) at $SCEN_SRC/sill
+#    sill (scenario-build.sh: checkouts) at $SCEN_SIB/sill
 # 3. the shell with its test features (the stand-in screen-brightness file)
-(cd $SCEN_SRC/sill && CARGO_TARGET_DIR=$SCEN_BUILD/sill-target nice cargo build -p sill --features debug)
+(cd $SCEN_SIB/sill && CARGO_TARGET_DIR=$SCEN_BUILD/sill-target nice cargo build -p sill --features debug)
 # 4. the screen helper with the fixture caller table (a plain build identifies nobody)
 (cd $SCEN_SIB/cua && CARGO_TARGET_DIR=$SCEN_BUILD/cua-target nice cargo build -p cuad --features fixture-callers)
 # 5. the assistant's services, the bring-up tool and the terminal command (docket-accept: test builds)
@@ -161,7 +161,7 @@ export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" CASEMENT_TOOLS="$SCEN_TOOLS"
 # the floor allows exactly the programs this run starts that take those powers: cuad and casementctl (the pictures).
 floor_shim w2-excalidraw sill cuad casementctl || die "could not write the permission floor"
 # shellcheck source=/dev/null
-source "$SCEN_SRC/sill/dev/lib/all.sh"
+source "$SCEN_SIB/sill/dev/lib/all.sh"
 OUT_DIR=$(scenario_out w2-excalidraw)
 RUN=$OUT_DIR
 OUT=$RUN/out

@@ -25,7 +25,7 @@ require_jail
 TRANSOM_DIR="$SCEN_SIB/transom"
 TRANSOM_BIN="$SCEN_BUILD/transom-target/debug/transom"
 scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/casementctl" "$SCEN_TOOLS/bin/fake-logind" \
-  "$SCEN_SRC/sill/dev/lib/all.sh" "$TRANSOM_BIN" "$TRANSOM_DIR/dist/quire.portal" "$TRANSOM_DIR/dist/quire-portals.conf"
+  "$SCEN_SIB/sill/dev/lib/all.sh" "$TRANSOM_BIN" "$TRANSOM_DIR/dist/quire.portal" "$TRANSOM_DIR/dist/quire-portals.conf"
 for tool in pipewire wireplumber gdbus gst-launch-1.0 /usr/libexec/xdg-desktop-portal; do
   command -v "$tool" >/dev/null || { echo "scenario: $tool is missing (dnf install pipewire wireplumber gstreamer1 xdg-desktop-portal)" >&2; exit 3; }
 done
@@ -35,7 +35,7 @@ export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" CASEMENT_TOOLS="$SCEN_TOOLS"
 # transom (built under build/) is the portal (a row in the caller list) and takes the screen (a floor row); both name its built image.
 floor_shim portal-quire transom xdg-desktop-portal fake-shell
 # shellcheck source=/dev/null
-source "$SCEN_SRC/sill/dev/lib/all.sh"
+source "$SCEN_SIB/sill/dev/lib/all.sh"
 OUT_DIR=$(scenario_out portal-quire)
 
 trap 'stop_compositor' EXIT

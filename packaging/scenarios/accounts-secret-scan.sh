@@ -33,7 +33,7 @@ require_jail
 acc_need
 acc_env
 # shellcheck source=/dev/null
-source "$SCEN_BUILD/pin/sill/dev/lib/all.sh"
+source "$SCEN_SIB/sill/dev/lib/all.sh"
 OUT_DIR=$(scenario_out accounts-secret-scan)
 SCAN="$HARNESS_LIB/secret-scan.py"
 

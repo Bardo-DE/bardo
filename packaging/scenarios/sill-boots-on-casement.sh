@@ -24,7 +24,7 @@ export SILL_COMPOSITOR=casement SILL_PREBUILT=1 SILL_PROFILE=debug
 export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" CASEMENT_TOOLS="$SCEN_TOOLS"
 floor_shim sill-boots-on-casement sill   # sill takes no power a floor row can allow (no rows, nothing waits on a question); the caller list names it as the shell
 # shellcheck source=/dev/null
-source "$SCEN_SRC/sill/dev/lib/all.sh"
+source "$SCEN_SIB/sill/dev/lib/all.sh"
 OUT_DIR=$(scenario_out sill-boots-on-casement)
 
 cleanup() {

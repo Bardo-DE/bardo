@@ -15,7 +15,7 @@
 #   clear     the target for b is set, then cleared (minimise_target null); b minimised: its destination is not the
 #             old rectangle (the default, as with no dock)
 #
-# Needs casement 8383659f or later in the manifest, plus two things the casement-probe/debug bus must offer
+# Needs casement 8383659f or later (this tree has it), plus two things the casement-probe/debug bus must offer
 # (see the lane report): the probe session verb `minimise NAME` (xdg_toplevel.set_minimized on that toplevel) and
 # two fields on every `debug windows` row: "minimised" (bool) and "minimise_destination" ([x,y,w,h] global of the
 # last minimise, or null).

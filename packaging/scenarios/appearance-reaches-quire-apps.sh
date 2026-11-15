@@ -3,7 +3,7 @@
 # an appearance change written to `quire/appearance.toml` reaches a quire app that is not sill,
 # running on the jailed headless casement.
 #
-# The app is detent (the Settings app, built at its manifest pin by harness/scenario-build.sh): a quire ds
+# The app is detent (the Settings app, built from this tree by harness/scenario-build.sh): a quire ds
 # root that follows `quire/appearance.toml` through ds-settings' watch. The change is made the way a
 # settings app makes it, by writing the file in the scratch XDG_CONFIG_HOME (never a real one). The proof is
 # pixels: `casementctl shot --output` (P1-C1: the output's last frame through the debug bus), cropped to the
@@ -30,7 +30,7 @@ export SILL_COMPOSITOR=casement SILL_PREBUILT=1 SILL_PROFILE=debug
 export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" CASEMENT_TOOLS="$SCEN_TOOLS"
 floor_shim appearance-quire casementctl detent casement   # casementctl shot watches the screen; detent is the Settings app (both run from build/)
 # shellcheck source=/dev/null
-source "$SCEN_SRC/sill/dev/lib/all.sh"
+source "$SCEN_SIB/sill/dev/lib/all.sh"
 OUT_DIR=$(scenario_out appearance-quire)
 DETENT_PID=
 BASE_LUM=

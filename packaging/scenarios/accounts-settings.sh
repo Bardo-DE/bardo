@@ -33,7 +33,7 @@ require_jail
 acc_need
 acc_env
 # shellcheck source=/dev/null
-source "$SCEN_BUILD/pin/sill/dev/lib/all.sh"
+source "$SCEN_SIB/sill/dev/lib/all.sh"
 OUT_DIR=$(scenario_out accounts-settings)
 IDENT=fake-mail-ada-rig.test   # the identity (accountd); AI is the OpenAI key's account (accountd's too), set at boot
 AI=

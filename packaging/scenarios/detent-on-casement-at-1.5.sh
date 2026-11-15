@@ -2,7 +2,7 @@
 # Scenario `detent-on-casement-at-1.5` (plan 20 §5.2, P0 exit): detent maps, resizes and is crisp at
 # output scale 1.5 on a headless casement, in the jail.
 #
-# detent (the Settings app, built at its manifest pin by harness/scenario-build.sh) runs against casement's
+# detent (the Settings app, built from this tree by harness/scenario-build.sh) runs against casement's
 # 2880x1620 headless output at scale 1.5 (1920x1080 logical). Steps, each waiting on what it needs:
 #   boot     casement up at scale 1.5, devices plugged
 #   map      detent maps at the 900x640 logical size it asks for (`debug windows`); the client's own
@@ -31,7 +31,7 @@ export SILL_COMPOSITOR=casement SILL_PREBUILT=1 SILL_PROFILE=debug
 export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" CASEMENT_TOOLS="$SCEN_TOOLS"
 floor_shim detent-1.5 casementctl detent casement   # casementctl shot watches the screen; detent is the Settings app (both run from build/)
 # shellcheck source=/dev/null
-source "$SCEN_SRC/sill/dev/lib/all.sh"
+source "$SCEN_SIB/sill/dev/lib/all.sh"
 OUT_DIR=$(scenario_out detent-1.5)
 DETENT_PID=
 
