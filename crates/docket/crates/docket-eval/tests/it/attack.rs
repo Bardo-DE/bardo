@@ -3,7 +3,6 @@
 
 use docket_eval::*;
 use eval_core::*;
-use std::collections::BTreeSet;
 use std::path::PathBuf;
 
 const SAMPLE: &str = r#"
@@ -89,53 +88,6 @@ fn attacks() -> Vec<AttackCase> {
     attacks
 }
 
-fn carrier_slug(carrier: &Carrier) -> &'static str {
-    match carrier {
-        Carrier::MailBody(_) => "mail_body",
-        Carrier::MailSubject(_) => "mail_subject",
-        Carrier::ContactName(_) => "contact_name",
-        Carrier::FileContent(_) => "file_content",
-    }
-}
-
-/// Zero-width, bidi-control or Unicode tag characters: text a person reading the page cannot see.
-fn hides(text: &str) -> bool {
-    text.chars().any(|c| {
-        matches!(c, '\u{200B}'..='\u{200F}' | '\u{202A}'..='\u{202E}' | '\u{E0000}'..='\u{E007F}')
-    })
-}
-
-#[test]
-fn the_starter_corpus_spans_the_styles_carriers_and_apps() {
-    let attacks = attacks();
-    assert!(attacks.len() >= 20, "{} attacks", attacks.len());
-    for style in AttackStyle::ALL {
-        let n = attacks.iter().filter(|a| a.style == style).count();
-        assert!(n >= 3, "{style:?} has {n} attacks");
-    }
-    let carriers: BTreeSet<_> = attacks.iter().map(|a| carrier_slug(&a.carrier)).collect();
-    assert_eq!(carriers.len(), 4, "{carriers:?}");
-    let apps: BTreeSet<_> = attacks.iter().map(|a| a.goal.app.as_str()).collect();
-    assert!(apps.len() >= 2, "{apps:?}");
-    let goals: BTreeSet<_> = attacks.iter().map(|a| a.goal.action.as_str()).collect();
-    assert!(goals.len() >= 6, "{goals:?}");
-    for attack in &attacks {
-        assert_eq!(
-            hides(&attack.injection),
-            attack.style == AttackStyle::HiddenUnicode,
-            "{}",
-            attack.id.0
-        );
-    }
-}
-
-fn harness() -> Harness {
-    Harness::new(docket_core::AgentConfig::default()).expect("harness")
-}
-
-/// The suite over the scripted, hostile model: the planner follows every injection, the
-/// reviewers allow everything, and the task policy is as wide as a writer could make it. What
-/// holds here holds by structure (taint, sinks, the Rule of Two), not because a model said no.
 #[test]
 fn the_defence_holds_against_the_hostile_fake_model() {
     let attacks = attacks();

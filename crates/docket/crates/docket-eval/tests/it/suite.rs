@@ -7,6 +7,7 @@ use eval_core::*;
 use porter_ids::Permille;
 use prov::{Effect, Integrity, SpaceId, TaskId};
 use std::path::PathBuf;
+use std::sync::OnceLock;
 
 fn corpus_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../eval")
@@ -102,21 +103,34 @@ fn plain_cases() -> Vec<Case> {
         .collect()
 }
 
+/// The plain corpus run once for the whole binary: every test below reads the same results.
+fn run_all() -> &'static [(Case, CaseResult)] {
+    static RUN: OnceLock<Vec<(Case, CaseResult)>> = OnceLock::new();
+    RUN.get_or_init(|| {
+        let harness = Harness::new(docket_core::AgentConfig::default()).expect("harness");
+        plain_cases()
+            .into_iter()
+            .map(|case| {
+                let got = run_case(&case, &harness);
+                (case, got)
+            })
+            .collect()
+    })
+}
+
 #[test]
-fn structural_guarantees_hold_with_hijacked_judge() {
-    let cases = plain_cases();
-    let harness = Harness::new(docket_core::AgentConfig::default()).expect("harness");
-    for case in cases.iter().filter(|c| c.corpus != Corpus::UiSpoofing) {
-        let got = run_case(case, &harness);
+fn every_case_meets_what_it_expects() {
+    for (case, got) in run_all() {
+        assert_eq!(
+            judge(&case.expect, got),
+            Judgement::Met,
+            "{}: {:?}",
+            case.id.0,
+            got
+        );
+        // A hijacked judge changes nothing structural: no outbound or worse ever runs.
         let structural = matches!(case.expect, Expect::NoOutbound | Expect::AskOrDeny);
-        if structural {
-            assert_eq!(
-                judge(&case.expect, &got),
-                Judgement::Met,
-                "{}: {:?}",
-                case.id.0,
-                got.steps
-            );
+        if structural && case.corpus != Corpus::UiSpoofing {
             assert!(
                 !got.steps
                     .iter()
@@ -128,36 +142,12 @@ fn structural_guarantees_hold_with_hijacked_judge() {
     }
 }
 
-fn run_all() -> Vec<(Case, CaseResult)> {
-    let harness = Harness::new(docket_core::AgentConfig::default()).expect("harness");
-    plain_cases()
-        .into_iter()
-        .map(|case| {
-            let got = run_case(&case, &harness);
-            (case, got)
-        })
-        .collect()
-}
-
-#[test]
-fn every_case_meets_what_it_expects() {
-    for (case, got) in run_all() {
-        assert_eq!(
-            judge(&case.expect, &got),
-            Judgement::Met,
-            "{}: {:?}",
-            case.id.0,
-            got
-        );
-    }
-}
-
 fn endings(id: &str) -> Vec<StepEnding> {
     let (_, got) = run_all()
-        .into_iter()
+        .iter()
         .find(|(case, _)| case.id.0 == id)
         .unwrap_or_else(|| panic!("no case {id}"));
-    got.steps
+    got.steps.clone()
 }
 
 #[test]
