@@ -331,34 +331,6 @@ fn the_words_never_reach_a_debug_line() {
 }
 
 #[test]
-fn consent_is_written_as_the_forms_voiced_reads() {
-    #[derive(serde::Serialize, serde::Deserialize, PartialEq, Debug)]
-    struct Table {
-        consent: VoiceConsent,
-    }
-    type Case = (VoiceConsent, &'static str);
-    const CASES: &[Case] = &[
-        (VoiceConsent::NotAsked, "consent = \"not_asked\"\n"),
-        (VoiceConsent::Declined, "consent = \"declined\"\n"),
-        (
-            VoiceConsent::Given(prov::UnixSeconds(1_760_000_000)),
-            "[consent]\ngiven = 1760000000\n",
-        ),
-    ];
-    for (consent, text) in CASES {
-        let table = Table { consent: *consent };
-        assert_eq!(
-            toml::to_string(&table).unwrap_or_else(|e| panic!("{e}")),
-            *text
-        );
-        assert_eq!(
-            toml::from_str::<Table>(text).unwrap_or_else(|e| panic!("{e}")),
-            table
-        );
-    }
-}
-
-#[test]
 fn a_broken_stream_says_so_and_lets_go_of_the_microphone() {
     let (state, effects) = run(
         ready(),

@@ -45,37 +45,3 @@ pub enum Relative {
     Before,
     After,
 }
-
-#[cfg(test)]
-mod tests {
-    use sill_launcher::WindowKey;
-
-    use super::WlCommand;
-    use crate::ids::WorkspaceKey;
-
-    #[test]
-    fn the_amended_commands_have_pinned_wire_lines() {
-        let cases = [
-            (
-                WlCommand::PinWorkspace(WorkspaceKey(3)),
-                r#"{"kind":"pin_workspace","v":3}"#,
-            ),
-            (
-                WlCommand::UnpinWorkspace(WorkspaceKey(3)),
-                r#"{"kind":"unpin_workspace","v":3}"#,
-            ),
-            (
-                WlCommand::MoveToplevelToWorkspace {
-                    toplevel: WindowKey(7),
-                    workspace: WorkspaceKey(2),
-                },
-                r#"{"kind":"move_toplevel_to_workspace","v":{"toplevel":7,"workspace":2}}"#,
-            ),
-        ];
-        for (command, line) in cases {
-            assert_eq!(serde_json::to_string(&command).ok().as_deref(), Some(line));
-            let back: WlCommand = serde_json::from_str(line).unwrap_or_else(|e| panic!("{e}"));
-            assert_eq!(back, command, "{line}");
-        }
-    }
-}

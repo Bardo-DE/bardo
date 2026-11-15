@@ -1,14 +1,16 @@
 //! Coherence rules 1 and 2 for the launcher's panel over results (the empty panel and the
-//! catcher are rows of `crates/sill/tests/lint.rs`): the real `Launcher` (open over results, and
-//! with its preview pane) through the markup lint, rendered by the harness (its palette
-//! embedded, measured and focused as live) and by an SSR pass.
+//! catcher are rows of `crates/sill/tests/lint.rs`): the real `Launcher` (open over results, with
+//! its preview pane, in companion mode with an answer card) through the markup lint, rendered by
+//! the harness (its palette embedded, measured and focused as live) and by an SSR pass. All of it
+//! runs under `Profile::Details` (design/26-DETAILS.md): `Strict` plus timing only by the
+//! grammar's tokens and no `infinite` loop.
 
 use crate::launcher_harness;
 
 use launcher_harness::launcher_support;
 
 use dioxus::prelude::*;
-use ds_lint::{LintConfig, Profile, markup};
+use ds_lint::{LintConfig, Profile, assert_clean, markup};
 use sill_launcher_ui::Launcher;
 use sill_settings::ShellFile;
 use sill_ui_kit::links::LauncherLink;
@@ -17,9 +19,9 @@ use sill_ui_kit::surface::{MountProps, mount};
 
 const LAUNCHER_CSS: &str = include_str!("../../src/launcher/style.css");
 
-fn strict() -> LintConfig {
+fn details() -> LintConfig {
     LintConfig {
-        profile: Profile::Strict,
+        profile: Profile::Details,
         ..LintConfig::new(&sill_shell_kit::kits())
     }
 }
@@ -66,6 +68,40 @@ fn full_css() -> String {
     format!("{}\n{}", sill_shell_kit::stylesheet(), LAUNCHER_CSS)
 }
 
+/// The panel over results, with the report's preview pane up, and in companion mode: named
+/// documents, each drawn by the harness.
+fn panel_states() -> Vec<(&'static str, String)> {
+    use launcher_harness::launcher_support::companion::{companion, draft, fresh};
+    // The report's look is held (until `_held` drops), so the pane is the pending one however fast
+    // the page would raster.
+    let (look, _held) = launcher_harness::launcher_support::m9::gated(
+        launcher_harness::launcher_support::m9::folder().join("m9-report.pdf"),
+    );
+    let mut previewing = launcher_harness::open_looking("m9", Some(look));
+    previewing.press(launcher_harness::Press::QuickLook);
+    previewing
+        .harness
+        .advance(std::time::Duration::from_millis(60));
+    let pane = previewing.harness.html();
+    assert!(pane.contains("ds-preview"), "the pane is up");
+    let answering = launcher_harness::open_in("", sill_launcher::LauncherMode::Companion, |bar| {
+        bar.companion
+            .send_replace(companion(vec![draft()], fresh()));
+    })
+    .harness
+    .html();
+    assert!(
+        answering.contains("ds-answer-card"),
+        "the card is up: {answering}"
+    );
+    vec![
+        ("results", panel_html()),
+        ("results over SSR", panel_ssr()),
+        ("preview pane", pane),
+        ("companion answer card", answering),
+    ]
+}
+
 #[test]
 fn the_panel_renders_the_palette() {
     let html = panel_html();
@@ -76,42 +112,15 @@ fn the_panel_renders_the_palette() {
 }
 
 #[test]
-fn the_panel_markup_lint_is_clean() {
-    let offences = markup(&panel_html(), &full_css(), &strict());
-    assert!(offences.is_empty(), "{offences:#?}");
+fn the_launcher_stylesheet_is_clean() {
+    assert_clean(LAUNCHER_CSS, &details());
 }
 
 #[test]
-fn the_panel_with_its_preview_pane_and_sections_lints_clean() {
-    // The report's look is held (until `_held` drops), so the pane is the pending one however fast
-    // the page would raster.
-    let (look, _held) = launcher_harness::launcher_support::m9::gated(
-        launcher_harness::launcher_support::m9::folder().join("m9-report.pdf"),
-    );
-    let mut open = launcher_harness::open_looking("m9", Some(look));
-    open.press(launcher_harness::Press::QuickLook);
-    open.harness.advance(std::time::Duration::from_millis(60));
-    let html = open.harness.html();
-    assert!(html.contains("ds-preview"), "the pane is up");
-    let offences = markup(&html, &full_css(), &strict());
-    assert!(offences.is_empty(), "{offences:#?}");
-}
-
-#[test]
-fn the_panel_ssr_markup_lint_is_clean() {
-    let offences = markup(&panel_ssr(), &full_css(), &strict());
-    assert!(offences.is_empty(), "{offences:#?}");
-}
-
-#[test]
-fn the_panel_in_companion_mode_with_an_answer_card_lints_clean() {
-    use launcher_harness::launcher_support::companion::{companion, draft, fresh};
-    let open = launcher_harness::open_in("", sill_launcher::LauncherMode::Companion, |bar| {
-        bar.companion
-            .send_replace(companion(vec![draft()], fresh()));
-    });
-    let html = open.harness.html();
-    assert!(html.contains("ds-answer-card"), "the card is up: {html}");
-    let offences = markup(&html, &full_css(), &strict());
-    assert!(offences.is_empty(), "{offences:#?}");
+fn the_panel_is_clean_in_each_state() {
+    let css = full_css();
+    for (state, html) in panel_states() {
+        let offences = markup(&html, &css, &details());
+        assert!(offences.is_empty(), "{state}: {offences:#?}");
+    }
 }

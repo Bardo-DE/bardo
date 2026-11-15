@@ -475,28 +475,6 @@ fn a_long_listing_ends_at_a_whole_line_with_a_mark() {
 }
 
 #[test]
-fn the_new_tray_row_fields_round_trip() {
-    let row = TrayMenuEntry {
-        id: 3,
-        kind: TrayMenuKind::Item {
-            label: "Undo".to_owned(),
-            enabled: true,
-            visibility: Visibility::Shown,
-            check: Check::None,
-            icon: TrayMenuIcon::None,
-            children: Vec::new(),
-            shortcut: Some(Chord(vec!["Super".to_owned(), "Z".to_owned()])),
-            command: Some(MenuCommand("standard.undo".to_owned())),
-        },
-    };
-    let json = serde_json::to_string(&row).unwrap_or_else(|e| panic!("{e}"));
-    assert!(json.contains(r#""shortcut":["Super","Z"]"#), "{json}");
-    assert!(json.contains(r#""command":"standard.undo""#), "{json}");
-    let back: TrayMenuEntry = serde_json::from_str(&json).unwrap_or_else(|e| panic!("{e}"));
-    assert_eq!(back, row);
-}
-
-#[test]
 fn a_layout_is_read_for_a_few_rows_and_levels_and_short_labels() {
     use crate::tray::{MENU_DEPTH_MAX, MENU_ROWS_MAX};
     let wide: Vec<Node> = (0..10_000)

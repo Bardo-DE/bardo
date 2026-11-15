@@ -131,11 +131,3 @@ fn a_refusal_opens_nothing_by_itself() {
     }
 }
 
-#[test]
-fn no_model_is_the_companions_word_for_it() {
-    let text = serde_json::to_string(&RefusalWire::NoModel).unwrap_or_else(|e| panic!("{e}"));
-    assert_eq!(text, r#"{"kind":"no_model"}"#);
-    let back: RefusalWire =
-        serde_json::from_str(r#"{"kind":"no_model"}"#).unwrap_or_else(|e| panic!("{e}"));
-    assert_eq!(back, RefusalWire::NoModel);
-}

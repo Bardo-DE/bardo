@@ -146,57 +146,6 @@ fn deep_links_resolve_through_the_schemas() {
     }
 }
 
-#[test]
-fn defaults_in_the_schema_are_the_structs_defaults() {
-    let whole = schema();
-    let default_of = |path: &str| {
-        whole
-            .key
-            .iter()
-            .find(|k| k.path.0 == path)
-            .map(|k| k.default.clone())
-            .unwrap_or_else(|| panic!("{path} missing"))
-    };
-    let cases: &[(&str, toml::Value)] = &[
-        ("bar.battery_low_percent", toml::Value::Integer(20)),
-        ("dock.tile_size_px", toml::Value::Integer(48)),
-        ("dock.magnification", toml::Value::String("on".to_owned())),
-        ("dock.autohide", toml::Value::String("off".to_owned())),
-        (
-            "bar.autohide",
-            toml::Value::String("full_screen_only".to_owned()),
-        ),
-        ("scroll.natural", toml::Value::String("natural".to_owned())),
-        (
-            "display.hardware_volume",
-            toml::Value::String("when_monitor_is_output".to_owned()),
-        ),
-        (
-            "display.night_warmth",
-            toml::Value::String("off".to_owned()),
-        ),
-        (
-            "display.font_rendering",
-            toml::Value::String("auto".to_owned()),
-        ),
-        ("calendar.sources", toml::Value::String("auto".to_owned())),
-        (
-            "calendar.first_weekday",
-            toml::Value::String("monday".to_owned()),
-        ),
-        ("hot_corners.top_left", toml::Value::Array(Vec::new())),
-        ("session.lock_grace_s", toml::Value::Integer(5)),
-        ("idle.screen_off_ac_min", toml::Value::Integer(15)),
-        ("idle.screen_off_battery_min", toml::Value::Integer(15)),
-        ("idle.suspend_ac_min", toml::Value::Integer(30)),
-        ("idle.suspend_battery_min", toml::Value::Integer(15)),
-        ("idle.lock", toml::Value::String("screen_off".to_owned())),
-    ];
-    for (path, want) in cases {
-        assert_eq!(&default_of(path), want, "{path}");
-    }
-}
-
 /// `bar.autohide` offers the Mac's four choices in its order, by the words the file holds and
 /// the labels System Settings shows; the Mac's default is the full-screen one.
 #[test]

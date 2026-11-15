@@ -5,15 +5,61 @@
 
 use std::collections::HashMap;
 
+use std::time::Duration;
+
+use ds::prelude::Theme;
 use ds_harness::{Backdrop, Harness, Srgba};
+use ds_settings::Environment;
 
 use super::SurfaceHarness;
 use crate::surface::Surface;
+
+/// WCAG's floor for a graphic (and large text): a glyph or a pill must reach it.
+pub const GRAPHIC_CONTRAST: f32 = 3.0;
 
 impl<S: Surface> SurfaceHarness<S> {
     /// [`ink_contrast`] of this surface's document.
     pub fn ink_contrast(&mut self, selector: &str) -> Option<f32> {
         ink_contrast(&mut self.harness, self.viewport.scale_percent, selector)
+    }
+
+    /// The `(name, selector)` inks that paint below [`GRAPHIC_CONTRAST`] (or not at all), as
+    /// readable lines; empty when every one reads.
+    pub fn weak_inks(&mut self, inks: &[(&str, &str)]) -> Vec<String> {
+        inks.iter()
+            .filter_map(|(name, selector)| {
+                let contrast = self.ink_contrast(selector);
+                contrast
+                    .is_none_or(|got| got < GRAPHIC_CONTRAST)
+                    .then(|| format!("{name} ({selector}): {contrast:?}"))
+            })
+            .collect()
+    }
+}
+
+/// The environment pinned to `theme`.
+fn appearance(theme: Theme) -> Environment {
+    let mut environment = Environment::default();
+    environment.settings.appearance.theme = theme;
+    environment
+}
+
+/// A surface's `inks` read in both schemes: when it starts in either one, and after a live
+/// switch to the other (the regression: a live change to Dark left glyphs in their light-scheme
+/// ink, dark on a dark surface). `start` mounts the surface pinned to the theme it is given.
+pub fn assert_inks_read_in_each_scheme<S: Surface>(
+    inks: &[(&str, &str)],
+    start: impl Fn(Environment) -> SurfaceHarness<S>,
+) {
+    for theme in [Theme::Light, Theme::Dark] {
+        let mut run = start(appearance(theme));
+        assert_eq!(run.weak_inks(inks), Vec::<String>::new(), "starting in {theme:?}");
+    }
+    for (from, to) in [(Theme::Light, Theme::Dark), (Theme::Dark, Theme::Light)] {
+        let mut run = start(appearance(from));
+        run.set_appearance(appearance(to));
+        run.harness.advance(Duration::from_secs(1));
+        assert_eq!(run.weak_inks(inks), Vec::<String>::new(), "{from:?} to {to:?}");
     }
 }
 

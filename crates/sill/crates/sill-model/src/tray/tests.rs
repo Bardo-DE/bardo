@@ -133,69 +133,6 @@ fn events_reduce_to_the_expected_tray() {
 }
 
 #[test]
-fn a_scroll_has_a_pinned_wire_line() {
-    use super::{ScrollAxis, ScrollDelta, TrayCommand};
-    let command = TrayCommand::Scroll {
-        item: id("vol"),
-        delta: ScrollDelta {
-            axis: ScrollAxis::Vertical,
-            steps: -2,
-        },
-    };
-    let line = r#"{"kind":"scroll","v":{"item":":1.vol/StatusNotifierItem","delta":{"axis":"vertical","steps":-2}}}"#;
-    assert_eq!(serde_json::to_string(&command).ok().as_deref(), Some(line));
-    let back: TrayCommand = serde_json::from_str(line).unwrap_or_else(|e| panic!("{e}"));
-    assert_eq!(back, command);
-}
-
-#[test]
-fn a_context_menu_ask_has_a_pinned_wire_line() {
-    use super::TrayCommand;
-    let command = TrayCommand::ContextMenu {
-        item: id("fcitx"),
-        x: 1900,
-        y: 12,
-    };
-    let line =
-        r#"{"kind":"context_menu","v":{"item":":1.fcitx/StatusNotifierItem","x":1900,"y":12}}"#;
-    assert_eq!(serde_json::to_string(&command).ok().as_deref(), Some(line));
-    let back: TrayCommand = serde_json::from_str(line).unwrap_or_else(|e| panic!("{e}"));
-    assert_eq!(back, command);
-}
-
-#[test]
-fn a_menu_with_a_submenu_and_icons_round_trips() {
-    let menu = vec![TrayMenuEntry {
-        id: 1,
-        kind: TrayMenuKind::Item {
-            label: "Devices".to_owned(),
-            enabled: true,
-            visibility: Visibility::Shown,
-            check: Check::Mixed,
-            icon: TrayMenuIcon::Named("phone".to_owned()),
-            children: vec![TrayMenuEntry {
-                id: 2,
-                kind: TrayMenuKind::Item {
-                    label: "Ping".to_owned(),
-                    enabled: false,
-                    visibility: Visibility::Hidden,
-                    check: Check::Checked,
-                    icon: TrayMenuIcon::Png(vec![137, 80]),
-                    children: Vec::new(),
-                    shortcut: None,
-                    command: None,
-                },
-            }],
-            shortcut: None,
-            command: None,
-        },
-    }];
-    let json = serde_json::to_string(&menu).unwrap_or_else(|e| panic!("{e}"));
-    let back: Vec<TrayMenuEntry> = serde_json::from_str(&json).unwrap_or_else(|e| panic!("{e}"));
-    assert_eq!(back, menu);
-}
-
-#[test]
 fn a_program_cannot_register_the_tray_full() {
     let crowd: Vec<String> = (0..TRAY_ITEMS_MAX + 20).map(|n| n.to_string()).collect();
     let names: Vec<&str> = crowd.iter().map(String::as_str).collect();

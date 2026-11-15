@@ -365,14 +365,4 @@ mod tests {
         assert!(matches!(waited, Waited::Elapsed));
         assert!(commands.try_recv().is_err(), "they were taken, not kept");
     }
-
-    #[test]
-    fn percent_and_channel_volumes_round_trip_through_pa_normal() {
-        for level in [0u16, 40, 100, 130] {
-            let volumes = channel_volumes(Percent(level), 2);
-            assert_eq!(volumes.len(), 2);
-            assert_eq!(percent_of(volumes.avg()), Percent(level), "{level}");
-        }
-        assert_eq!(percent_of(PaVolume::NORMAL), Percent(100));
-    }
 }

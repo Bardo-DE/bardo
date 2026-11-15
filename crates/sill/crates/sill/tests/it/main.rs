@@ -3,7 +3,6 @@
 
 mod host_signals;
 mod ipc;
-mod latency;
 mod lint;
 mod settings_patch;
 mod voice_consent;

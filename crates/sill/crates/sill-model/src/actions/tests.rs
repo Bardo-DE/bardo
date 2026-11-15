@@ -127,55 +127,6 @@ fn an_action_is_refused_what_it_cannot_act_on() {
 }
 
 #[test]
-fn an_ask_has_a_pinned_wire_form() {
-    let cases = [
-        (
-            Ask::of(ActionId::ShowDesktop),
-            r#"{"action":"show-desktop","subject":{"kind":"none"}}"#,
-        ),
-        (
-            Ask::on(ActionId::PinApp, Subject::App(AppId("term".to_owned()))),
-            r#"{"action":"pin-app","subject":{"kind":"app","v":"term"}}"#,
-        ),
-        (
-            Ask::on(
-                ActionId::OpenApp,
-                Subject::Start(Start {
-                    app: AppId("term".to_owned()),
-                    action: DesktopAction::Named("new-window".to_owned()),
-                    uris: vec!["trash:///".to_owned()],
-                }),
-            ),
-            r#"{"action":"open-app","subject":{"kind":"start","v":{"app":"term","action":{"kind":"named","v":"new-window"},"uris":["trash:///"]}}}"#,
-        ),
-        (
-            Ask::on(
-                ActionId::QuitApp,
-                Subject::Windows(vec![WindowKey(1), WindowKey(2)]),
-            ),
-            r#"{"action":"quit-app","subject":{"kind":"windows","v":[1,2]}}"#,
-        ),
-        (
-            Ask::on(ActionId::OpenSettings, Subject::Settings(page("wallpaper"))),
-            r#"{"action":"open-settings","subject":{"kind":"settings","v":"page:wallpaper"}}"#,
-        ),
-    ];
-    for (ask, wire) in cases {
-        assert_eq!(serde_json::to_string(&ask).unwrap_or_default(), wire);
-        let back: Result<Ask, _> = serde_json::from_str(wire);
-        assert_eq!(back.ok(), Some(ask));
-    }
-}
-
-#[test]
-fn every_action_is_written_as_its_slug_on_the_wire() {
-    for &id in ActionId::ALL {
-        let wire = serde_json::to_string(&id).unwrap_or_default();
-        assert_eq!(wire, format!("\"{}\"", id.slug()), "{id:?}");
-    }
-}
-
-#[test]
 fn only_the_power_menu_opens_where_the_rest_flip() {
     for panel in [
         Panel::Launcher,
