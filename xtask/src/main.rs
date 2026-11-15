@@ -21,6 +21,10 @@ commands:
   check deny                    cargo deny check (needs cargo-deny)
   check test-modules            every tests/it file is a module of its main.rs
   check legacy [<repo>]         run the old per-repo check-*.sh scripts unchanged
+  install [<part>...]           build and install the desktop (every part, or just these)
+  install --build [<part>...]   build as you, install nothing
+  install --check               what this machine lacks, with the line that installs it
+  install --parts               every part, in install order
 ";
 
 fn main() -> ExitCode {
@@ -56,6 +60,19 @@ fn run() -> Result<bool> {
                 }
             }
             tasks::gate::run(base.as_deref(), all)
+        }
+        "install" => {
+            let mut request = tasks::install::Request::default();
+            while let Some(arg) = parser.next()? {
+                match arg {
+                    Long("build") => request.build = true,
+                    Long("check") => request.check = true,
+                    Long("parts") => request.parts = true,
+                    Value(v) => request.names.push(v.string()?),
+                    other => return Err(other.unexpected().into()),
+                }
+            }
+            tasks::install::run(&request)
         }
         "check" => {
             let which = parser

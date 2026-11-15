@@ -2,6 +2,7 @@
 
 pub mod deny;
 pub mod gate;
+pub mod install;
 pub mod legacy;
 pub mod test_modules;
 

@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# The plain installer behind the justfile: build the whole desktop once from this tree as you, then install it,
+# The plain installer behind `cargo xtask install`: build the whole desktop once from this tree as you, then install it,
 # one line per part. Each part's whole output goes to the log; a failure prints the log's last lines and stops.
 #
 #   install/plain.sh build   [PART...]   build as you (cargo, release, this system's linker): one cargo run, one target dir
 #   install/plain.sh install [PART...]   build, then install; sudo asks once, at the start
+#   install/plain.sh parts               print every part, in install order
 #
 # With no PART, every part in install order. PREFIX (default /usr/local) and BARDO_TREE (default the parent of
 # packaging/) come from the environment. The tree is one cargo workspace: every program is built by one
@@ -22,6 +23,8 @@ export CARGO_TARGET_DIR=$target
 log=${XDG_STATE_HOME:-$HOME/.local/state}/desktop-install.log
 
 all=(callers porter steward ferry stoker almanac docket cua detent casement sill transom turnstile keycap files palmrest session)
+
+[ "${1:-}" != parts ] || { echo "${all[*]}"; exit 0; }
 
 # install_part PART: install PART from what was built in $target. As root (sudo) only where the installer wants
 # root for the whole run; the rest run as you and use the sudo already granted. sudo drops the environment, so the
@@ -64,7 +67,7 @@ quietly() {
   fi
 }
 
-mode=${1:?usage: plain.sh build|install [PART...]}
+mode=${1:?usage: plain.sh build|install|parts [PART...]}
 shift
 parts=("$@")
 [ ${#parts[@]} -gt 0 ] || parts=("${all[@]}")
