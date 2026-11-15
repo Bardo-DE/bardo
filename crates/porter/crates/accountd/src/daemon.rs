@@ -9,10 +9,8 @@
 //!
 //! accountd holds identities, Spaces and Tailscale, and the AI keys, the agents' logins and the
 //! local runtimes: all of its provider files are served, and its keyring namespace is
-//! [`NAMESPACE`]. The keys inferd held before are copied in when accountd starts
-//! ([`crate::import`]). Sync's sign-ins belong to syncd.
+//! [`NAMESPACE`]. Sync's sign-ins belong to syncd.
 
-use crate::import::{Import, ImportError, OldStore, Outcome};
 use crate::paths::{HONOURS_PROC_ROOT, Paths};
 use crate::{FileAudit, Options, serve_with};
 use porter_callers::choose_proc_root;
@@ -28,7 +26,7 @@ use porter_identities::SheetsDesk;
 use porter_ids::clock::{Clock, SystemClock};
 use porter_provider::{Provider, ProviderSpec};
 use porter_secrets::Namespace;
-use porter_secrets::keysel::{AnyKeys, Chosen, KeysRefusal, Selection, select};
+use porter_secrets::keysel::{Chosen, KeysRefusal, Selection, select};
 use porter_service::AccountService;
 use porter_service_core::registry::Registry;
 use porter_sheets::{AppNames, BusSheets};
@@ -52,14 +50,6 @@ pub const NAMESPACE: &str = "porter.accountd";
 /// accountd's [`Namespace`].
 fn namespace() -> Namespace {
     Namespace::parse(NAMESPACE).expect("a literal namespace")
-}
-
-/// The keyring namespace inferd filed its keys under, which the import reads and then empties.
-const OLD_NAMESPACE: &str = "porter.inferd";
-
-/// The namespace of inferd's old keys.
-fn old_namespace() -> Namespace {
-    Namespace::parse(OLD_NAMESPACE).expect("a literal namespace")
 }
 
 /// Everything accountd needs to start, as typed values.
@@ -224,25 +214,7 @@ impl StartError {
 #[derive(Debug)]
 pub struct Daemon {
     connection: Connection,
-    /// An inferd that still keeps its own keys was running at the start, so they were not copied:
-    /// the daemon ends when it is gone, to be started again and copy them.
-    waiting: bool,
 }
-
-/// Why [`Daemon::run`] returned.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[non_exhaustive]
-pub enum RunEnd {
-    /// The shutdown completed.
-    Stopped,
-    /// The inferd that held the keys itself is gone: start again and copy them. The binary exits
-    /// with [`EXIT_RESTART_FOR_KEYS`], which the unit restarts on.
-    KeysReady,
-}
-
-/// The exit status of a daemon that ends so that it is started again (BSD's `EX_TEMPFAIL`): the
-/// unit's `Restart=on-failure` starts it.
-pub const EXIT_RESTART_FOR_KEYS: u8 = 75;
 
 impl Daemon {
     /// Loads everything and serves: the caller tables, the provider files, the registry (a
@@ -259,10 +231,9 @@ impl Daemon {
             bus,
         } = config;
         // Which secret store, before anything reads or files a credential: refused here, not later.
-        let chosen = Chosen::open(keys.clone(), namespace(), "accountd")?;
+        let chosen = Chosen::open(keys, namespace(), "accountd")?;
         eprintln!("{}", chosen.said);
         let secrets = chosen.keys;
-        let old_secrets = Chosen::open(keys, old_namespace(), "accountd")?.keys;
         let table = load_callers(&paths.callers_system, &paths.callers_user)?;
         // The one clock this daemon reads: the families, the service, the desk and the objects
         // all date by it.
@@ -293,8 +264,6 @@ impl Daemon {
 
         let store = FileStore::new(paths.registry_dir.clone());
         let connection = bus.connect().await.map_err(StartError::Bus)?;
-        // inferd's old keys come in before the registry is read, so the service starts with them.
-        let waiting = bring_in_old_keys(&paths, &old_secrets, &secrets, &store, &connection).await;
         let registry = match store.load().await {
             Ok(stored) => Registry::from_persisted(stored),
             Err(why) => return Err(StartError::RegistryRefused(store.refusal(&why))),
@@ -369,10 +338,7 @@ impl Daemon {
         serve_with(&connection, service, callers, options)
             .await
             .map_err(StartError::Serve)?;
-        Ok(Self {
-            connection,
-            waiting,
-        })
+        Ok(Self { connection })
     }
 
     /// The daemon's connection to the bus.
@@ -381,117 +347,10 @@ impl Daemon {
     }
 
     /// Serves until `shutdown` completes, then closes the connection (the name is released). The
-    /// binary passes a future that never completes: SIGTERM ends the process. A daemon that did
-    /// not copy the keys of an inferd that was still running ends, closing its connection too,
-    /// when that inferd goes ([`RunEnd::KeysReady`]).
-    pub async fn run(self, shutdown: impl Future<Output = ()>) -> RunEnd {
-        let ended = tokio::select! {
-            () = shutdown => RunEnd::Stopped,
-            () = old_inferd_gone(&self.connection), if self.waiting => RunEnd::KeysReady,
-        };
+    /// binary passes a future that never completes: SIGTERM ends the process.
+    pub async fn run(self, shutdown: impl Future<Output = ()>) {
+        shutdown.await;
         // A connection already closed by the bus has nothing left to release.
         let _ = self.connection.close().await;
-        ended
     }
-}
-
-/// The bus name of an inferd.
-const INFERD_NAME: &str = porter_wire::names::INFERENCE_BUS;
-
-/// Whether an inferd that still keeps its own keys is on the bus: the name has an owner, and the
-/// owner serves the `org.quire.Inference1.Keys` interface the inferd that moved the keys here no
-/// longer does. The name is asked about before anything is called, since a call to a name
-/// nobody owns would start inferd.
-pub(crate) async fn old_inferd_serves_keys(connection: &Connection) -> bool {
-    let Ok(bus) = zbus::fdo::DBusProxy::new(connection).await else {
-        return false;
-    };
-    let Ok(name) = zbus::names::BusName::try_from(INFERD_NAME) else {
-        return false;
-    };
-    if !bus.name_has_owner(name).await.unwrap_or(false) {
-        return false;
-    }
-    let Ok(builder) = zbus::fdo::IntrospectableProxy::builder(connection)
-        .destination(INFERD_NAME)
-        .and_then(|builder| builder.path(porter_wire::names::INFERENCE_PATH))
-    else {
-        return false;
-    };
-    let Ok(proxy) = builder.build().await else {
-        return false;
-    };
-    proxy
-        .introspect()
-        .await
-        .is_ok_and(|xml| xml.contains("org.quire.Inference1.Keys"))
-}
-
-/// Resolves when no inferd that keeps its own keys is on the bus any more.
-async fn old_inferd_gone(connection: &Connection) {
-    use zbus::export::futures_core::Stream;
-    let Ok(proxy) = zbus::fdo::DBusProxy::new(connection).await else {
-        return;
-    };
-    let Ok(mut changes) = proxy.receive_name_owner_changed().await else {
-        return;
-    };
-    loop {
-        if !old_inferd_serves_keys(connection).await {
-            return;
-        }
-        let next = std::future::poll_fn(|cx| std::pin::Pin::new(&mut changes).poll_next(cx)).await;
-        if next.is_none() {
-            return;
-        }
-    }
-}
-
-/// Copies inferd's old keys into accountd's store, once. Returns whether it was put off because
-/// an inferd that keeps its own keys is running (it may still change them, so nothing is
-/// copied). A copy that failed is said and tried again at the next start; the daemon serves
-/// either way.
-async fn bring_in_old_keys(
-    paths: &Paths,
-    old_secrets: &AnyKeys,
-    secrets: &AnyKeys,
-    store: &FileStore,
-    connection: &Connection,
-) -> bool {
-    if old_inferd_serves_keys(connection).await {
-        eprintln!(
-            "accountd: inferd still keeps its own AI keys; they are copied when it is replaced"
-        );
-        return true;
-    }
-    let old = OldStore {
-        registry_dir: paths.inferd_keys.clone(),
-        audit: paths.inferd_keys_audit.clone(),
-    };
-    let import = Import {
-        old: &old,
-        old_secrets,
-        secrets,
-        store,
-        audit: &paths.audit,
-        marker: &paths.ai_import,
-    };
-    match import.run().await {
-        Ok(Outcome::Imported(report)) => eprintln!(
-            "accountd: copied inferd's AI keys: {} accounts, {} permits, {} switches, {} keys, \
-             {} kept as they were, {} audit lines",
-            report.accounts,
-            report.grants,
-            report.toggles,
-            report.secrets,
-            report.conflicts,
-            report.audit_lines
-        ),
-        Ok(Outcome::NothingToImport | Outcome::AlreadyImported) => {}
-        Err(why @ ImportError::Conflict(_)) => {
-            eprintln!("accountd: inferd's AI keys were not copied, and nothing was changed: {why}");
-        }
-        Err(why) => eprintln!("accountd: inferd's AI keys were not copied yet: {why}"),
-    }
-    false
 }

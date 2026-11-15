@@ -44,8 +44,7 @@
 //!   permit it already holds or a consent sheet), `org.quire.Accounts1.Launcher` (`launcher`:
 //!   the agent launcher's programs, sessions, the sheet for an agent's key, the logins and the key
 //!   handed to a process it spawns on a sealed memfd) and `org.quire.Accounts1.Broker`
-//!   (`broker`: what an app's permits say and the key behind one, for inferd alone). The keys
-//!   inferd held before are copied in at the start (`import`).
+//!   (`broker`: what an app's permits say and the key behind one, for inferd alone).
 //!
 //! - Tailscale (`tailnet`, `tailnet_object`): the Tailscale account's state follows what
 //!   Tailscale says (running and signed in `ok`, signed out `needs_login`, off or not running
@@ -86,7 +85,6 @@ mod grants_object;
 mod host;
 mod hub;
 mod identities_object;
-pub mod import;
 mod keys;
 pub mod launcher;
 mod manager;

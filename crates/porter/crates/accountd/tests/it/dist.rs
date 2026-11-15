@@ -80,8 +80,7 @@ fn the_unit_is_a_sandbox_with_the_network_it_needs_and_no_more() {
 
 /// accountd holds the AI keys as well now, and its sandbox is exactly what it was: it writes the
 /// two state directories and the config directory it already had, nothing for a key (a key travels
-/// on a sealed memfd), and it reads inferd's old store through the person's home, which is
-/// readable. None of the limits is loosened: the same directives, the same values.
+/// on a sealed memfd). None of the limits is loosened: the same directives, the same values.
 #[test]
 fn holding_the_ai_keys_loosens_no_limit_and_adds_no_path() {
     let unit = dist("accountd.service");

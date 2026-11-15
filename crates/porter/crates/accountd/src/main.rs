@@ -12,7 +12,6 @@
 // The daemon's future holds the service's, whose domain traits each wrap their async bodies.
 #![recursion_limit = "256"]
 
-use accountd::daemon::{EXIT_RESTART_FOR_KEYS, RunEnd};
 use accountd::{Config, Daemon, StartError};
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
@@ -101,13 +100,6 @@ async fn main() -> ExitCode {
         Err(why) => return fail(&why, StartError::exit_code(&why)),
     };
     // Serves until the session ends or the unit stops it (SIGTERM ends the process).
-    match daemon.run(std::future::pending()).await {
-        RunEnd::KeysReady => {
-            eprintln!(
-                "accountd: the inferd that kept the AI keys is gone; starting again to copy them"
-            );
-            ExitCode::from(EXIT_RESTART_FOR_KEYS)
-        }
-        _ => ExitCode::SUCCESS,
-    }
+    daemon.run(std::future::pending()).await;
+    ExitCode::SUCCESS
 }

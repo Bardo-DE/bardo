@@ -20,7 +20,6 @@ mod launcher_login;
 mod launcher_register;
 mod launcher_rig;
 mod launcher_session;
-mod old_keys;
 mod roles;
 mod scenario_fixes;
 mod settings;
