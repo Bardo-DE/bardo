@@ -15,7 +15,6 @@ use crate::input::pointer::{self, PointerPos};
 use crate::modality::Stroke;
 use crate::state::HostState;
 use decide::PressRoute;
-use palmrest_protocol::Over;
 
 impl PointerHandler for HostState {
     /// Enter: focus, zone, the move to its position (so `:hover` and `mouseenter` hold from the
@@ -64,7 +63,7 @@ impl PointerHandler for HostState {
                     // force `Cursor::set` past its no-op-when-unchanged check.
                     self.cursor.current = None;
                     self.show_cursor(pointer, id);
-                    self.palmrest.pointer_over(Over::Ours);
+                    self.palmrest.pointer_over(true);
                 }
                 PointerEventKind::Leave { serial: _ } => {
                     // A leave the compositor sends is always a leave for the document, even
@@ -73,7 +72,7 @@ impl PointerHandler for HostState {
                     self.pointer_off(id);
                     self.invalidate(id);
                     if self.input.pointer_focus == PointerFocus::Nowhere {
-                        self.palmrest.pointer_over(Over::NotOurs);
+                        self.palmrest.pointer_over(false);
                     }
                 }
                 PointerEventKind::Motion { time: _ } => {

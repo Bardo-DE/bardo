@@ -11,8 +11,8 @@ use crate::error::PlatformError;
 use crate::instance::Request;
 use anyview_core::FilePath;
 use docket_core::{
-    AppRefusal, ContextScope, ContextSnapshot, FailText, Follow, Here, Hit, Invocation, Outcome,
-    Preview, Selection, SuggestAsk, TextTarget, UndoFault, Undoable, Visible, WindowPrivacy,
+    AppRefusal, ContextSnapshot, FailText, Follow, Here, Hit, Invocation, Outcome, Preview,
+    Selection, SuggestAsk, TextTarget, UndoFault, Undoable, Visible, WindowPrivacy,
 };
 use docket_dbus::callers::{Identity, intentd_only};
 use docket_manifest::{Manifest, ValidManifest, validate};
@@ -179,7 +179,7 @@ impl PrivateWindow {
 }
 
 impl ContextSource for PrivateWindow {
-    fn snapshot(&self, _scope: ContextScope) -> ContextSnapshot {
+    fn snapshot(&self) -> ContextSnapshot {
         ContextSnapshot {
             app: self.app.clone(),
             window: Labelled {

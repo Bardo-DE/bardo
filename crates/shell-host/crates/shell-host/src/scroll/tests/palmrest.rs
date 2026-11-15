@@ -30,7 +30,7 @@ use blitz_kit::scroll::doc as dom;
 use blitz_kit::scroll::engine::Motion;
 use blitz_kit::scroll::geom::{ScrollAxis, Scroller};
 use blitz_kit::scroll::time::Elapsed;
-use palmrest_protocol::{ActiveTouch, Axis as WireAxis, GestureId, Phase, ToHost};
+use palmrest_protocol::{Axis as WireAxis, GestureId, Phase, ToHost};
 
 const FRAME: Duration = Duration::from_micros(8333);
 const AT: PointerPos = PointerPos { x: 100.0, y: 300.0 };
@@ -193,12 +193,7 @@ fn run(echo: Echo) -> Vec<f64> {
         echo,
     };
     let mut offsets = Vec::new();
-    host.step(
-        Some(ToHost::Touches {
-            active: ActiveTouch::Down,
-        }),
-        None,
-    );
+    host.step(Some(ToHost::Touches { active: true }), None);
     host.step(Some(scroll_msg(Phase::MayBegin, 0.0, host.now.0)), None);
     host.step(Some(scroll_msg(Phase::Began, 0.0, host.now.0)), None);
     for _ in 0..12 {
@@ -208,12 +203,7 @@ fn run(echo: Echo) -> Vec<f64> {
         offsets.push(host.offset());
     }
     host.step(Some(scroll_msg(Phase::Ended, 0.0, host.now.0)), None);
-    host.step(
-        Some(ToHost::Touches {
-            active: ActiveTouch::Up,
-        }),
-        None,
-    );
+    host.step(Some(ToHost::Touches { active: false }), None);
     // The virtual touchpad's lift reaches the compositor a moment later.
     host.advance(Duration::from_millis(5));
     host.step(None, Some((0.0, true)));

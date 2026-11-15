@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 use files_core::Behaviour;
 
-use super::words::{NewWindowsShow, Row};
+use super::words::NewWindowsShow;
 use super::{FilesDoc, SidebarSettings};
 use crate::places::{PlaceKind, Sidebar};
 use crate::preferences::Preferences;
@@ -45,9 +45,9 @@ impl FilesDoc {
         let advanced = &self.advanced;
         Preferences {
             behaviour: Behaviour {
-                folders_first: advanced.folders_on_top.is_on(),
-                ask_before_emptying_trash: advanced.warn_emptying_trash.is_on(),
-                ask_before_changing_extension: advanced.warn_changing_extension.is_on(),
+                folders_first: advanced.folders_on_top,
+                ask_before_emptying_trash: advanced.warn_emptying_trash,
+                ask_before_changing_extension: advanced.warn_changing_extension,
             },
             sidebar: sidebar_of(&self.sidebar),
         }
@@ -68,9 +68,9 @@ fn sidebar_of(rows: &SidebarSettings) -> Sidebar {
     ];
     places
         .into_iter()
-        .filter(|(row, _)| *row == Row::Hide)
+        .filter(|(shown, _)| !*shown)
         .fold(Sidebar::default(), |sidebar, (_, kind)| {
             sidebar.leaving_out(kind)
         })
-        .with_disks(rows.disks.is_shown())
+        .with_disks(rows.disks)
 }

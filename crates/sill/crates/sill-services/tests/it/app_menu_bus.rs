@@ -1042,11 +1042,7 @@ mod routed {
             Err(docket_core::UndoFault::AppUnavailable)
         }
 
-        async fn context(
-            &self,
-            _: &AppName,
-            _: docket_core::ContextScope,
-        ) -> Result<docket_core::ContextSnapshot, LinkFault> {
+        async fn context(&self, _: &AppName) -> Result<docket_core::ContextSnapshot, LinkFault> {
             Err(LinkFault::Unavailable)
         }
 

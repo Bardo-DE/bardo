@@ -7,8 +7,8 @@ use std::time::Duration;
 
 use docket_client::DbusTransport;
 use docket_core::{
-    ActivationToken, AppRefusal, ContextScope, ContextSnapshot, FailText, Here, Hit, Invocation,
-    Outcome, Preview, Selection, SuggestAsk, TextTarget, UndoFault, Visible, WindowPrivacy,
+    ActivationToken, AppRefusal, ContextSnapshot, FailText, Here, Hit, Invocation, Outcome,
+    Preview, Selection, SuggestAsk, TextTarget, UndoFault, Visible, WindowPrivacy,
 };
 use docket_manifest::{Manifest, ValidManifest, validate};
 use docket_provider::{ContextSource, IntentProvider, SummonTarget};
@@ -157,8 +157,7 @@ pub(super) struct ShellContext {
 }
 
 impl ContextSource for ShellContext {
-    fn snapshot(&self, scope: ContextScope) -> ContextSnapshot {
-        let _ = scope;
+    fn snapshot(&self) -> ContextSnapshot {
         ContextSnapshot {
             app: self.app.clone(),
             window: Labelled {

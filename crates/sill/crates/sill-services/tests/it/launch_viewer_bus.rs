@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
-use anyview_core::{FilePath, ResultsId, Resume, SequenceOrigin};
+use anyview_core::{FilePath, Resume, SequenceOrigin};
 use anyview_platform::linux::DbusInstance;
 use anyview_platform::{
     BusRoute as ViewerRoute, Claim, Env as ViewerEnv, Instance, Primary, Request,
@@ -129,7 +129,7 @@ async fn a_file_chosen_in_the_launcher_reaches_the_viewer_with_the_results_it_ca
         &file("/h/b.pdf"),
         "pointing at the chosen file"
     );
-    assert_eq!(sequence.origin(), &SequenceOrigin::Results(ResultsId(41)));
+    assert_eq!(sequence.origin(), &SequenceOrigin::Results(41));
 }
 
 #[tokio::test(flavor = "multi_thread")]

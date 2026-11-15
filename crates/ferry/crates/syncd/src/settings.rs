@@ -825,7 +825,8 @@ pub async fn serve_settings<T: GrantsLink + AccountsLink, C: Callers>(
                 Err(tokio::sync::broadcast::error::RecvError::Closed) => return,
             };
             for id in accounts {
-                announce(&served_slot, &Key::KeepAll(id), keep.keeps_everything(&id)).await;
+                let all = keep.keeps_everything(&id);
+                announce(&served_slot, &Key::KeepAll(id), all).await;
             }
         }
     });

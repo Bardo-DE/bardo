@@ -6,8 +6,8 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use docket_core::{
-    AppRefusal, ContextScope, ContextSnapshot, FailText, Follow, Here, Hit, Invocation, Outcome,
-    Preview, Selection, SuggestAsk, TextTarget, UndoFault, Undoable, Visible, WindowPrivacy,
+    AppRefusal, ContextSnapshot, FailText, Follow, Here, Hit, Invocation, Outcome, Preview,
+    Selection, SuggestAsk, TextTarget, UndoFault, Undoable, Visible, WindowPrivacy,
 };
 use docket_manifest::ValidManifest;
 use docket_provider::{ContextSource, IntentProvider, SummonTarget};
@@ -85,7 +85,7 @@ pub(super) struct Snapshot {
 }
 
 impl ContextSource for Snapshot {
-    fn snapshot(&self, _scope: ContextScope) -> ContextSnapshot {
+    fn snapshot(&self) -> ContextSnapshot {
         let own = Label {
             integrity: Integrity::Trusted,
             confidentiality: Confidentiality::Public,

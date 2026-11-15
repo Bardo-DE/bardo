@@ -9,7 +9,6 @@ use files_trash::{THIRTY_DAYS, Trash, sweep};
 use tokio::runtime::Handle;
 use tokio::sync::watch;
 
-use super::words::Switch;
 use super::{FilesDoc, store};
 use crate::preferences::Preferences;
 
@@ -54,7 +53,7 @@ pub fn follow(
 
 /// Erases what has been in `trash` more than 30 days, when `doc` says to, off the async threads.
 fn tidy(handle: &Handle, trash: &Arc<dyn Trash>, doc: &FilesDoc) {
-    if doc.advanced.remove_old_trash != Switch::On {
+    if !doc.advanced.remove_old_trash {
         return;
     }
     let trash = Arc::clone(trash);

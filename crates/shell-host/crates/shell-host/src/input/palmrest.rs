@@ -30,9 +30,7 @@ use rustix::net::{
 };
 use rustix::process::{PidfdFlags, pidfd_open};
 
-use palmrest_protocol::{
-    Compat, LockState, MAX_PACKET, Over, ToDaemon, ToHost, compat, decode, encode,
-};
+use palmrest_protocol::{Compat, MAX_PACKET, ToDaemon, ToHost, compat, decode, encode};
 
 use crate::lock::machine::LockState as HostLock;
 use backoff::Misses;
@@ -90,21 +88,18 @@ pub(crate) struct Palmrest {
     settings: Option<Settings>,
     link: Link,
     /// Where the pointer is, sent on every change and again after each connect.
-    over: Over,
+    over: bool,
     /// Whether the session is locked, sent on every change and again after each connect: palmrest
-    /// stops gesture actions while any connection says `Locked`.
-    lock: LockState,
+    /// stops gesture actions while any connection says locked.
+    lock: bool,
     /// The attempts in a row that found no usable daemon; the next wait grows with it.
     misses: Misses,
 }
 
-/// What palmrest is told for the host's lock report: only `Locked` locks. `Unlocked`, and
-/// `Finished` (the compositor ended the lock), leave the session unlocked.
-pub(crate) fn lock_for(state: HostLock) -> LockState {
-    match state {
-        HostLock::Locked => LockState::Locked,
-        HostLock::Unlocked | HostLock::Finished => LockState::Unlocked,
-    }
+/// Whether palmrest is told the session is locked for the host's lock report: only `Locked`
+/// locks. `Unlocked`, and `Finished` (the compositor ended the lock), leave it unlocked.
+pub(crate) fn lock_for(state: HostLock) -> bool {
+    matches!(state, HostLock::Locked)
 }
 
 /// The person's settings file and how it looked when its text was last sent.
@@ -133,8 +128,8 @@ impl Palmrest {
             peer: peer_trust,
             settings: None,
             link: Link::Down { retry_due: true },
-            over: Over::NotOurs,
-            lock: LockState::Unlocked,
+            over: false,
+            lock: false,
             misses: Misses::default(),
         }
     }
@@ -214,7 +209,7 @@ impl Palmrest {
         }
         let reader = fd.try_clone().ok()?;
         self.link = Link::Up(fd);
-        self.send(&ToDaemon::SessionLock { state: self.lock });
+        self.send(&ToDaemon::SessionLock { locked: self.lock });
         self.send(&ToDaemon::PointerOver { over: self.over });
         self.tell_settings();
         Some(reader)
@@ -269,12 +264,12 @@ impl Palmrest {
 
     /// The pointer entered or left our surfaces. While down, an enter makes a connection
     /// attempt due.
-    pub(crate) fn pointer_over(&mut self, over: Over) {
+    pub(crate) fn pointer_over(&mut self, over: bool) {
         let changed = self.over != over;
         self.over = over;
         match (&self.link, over) {
-            (Link::Down { .. }, Over::Ours) => self.set_retry(true),
-            (Link::Down { .. }, Over::NotOurs) => {}
+            (Link::Down { .. }, true) => self.set_retry(true),
+            (Link::Down { .. }, false) => {}
             (Link::Up(_), _) => {
                 if changed {
                     self.send(&ToDaemon::PointerOver { over });
@@ -286,16 +281,16 @@ impl Palmrest {
     /// The session was locked or unlocked. Sent on a change only; while down, the state is kept
     /// and `connect` tells it, and a lock makes an attempt due at once: the pointer stays inside
     /// the lock surface, so no enter will.
-    pub(crate) fn session_lock(&mut self, lock: LockState) {
+    pub(crate) fn session_lock(&mut self, lock: bool) {
         if self.lock == lock {
             return;
         }
         self.lock = lock;
         match (&self.link, lock) {
-            (Link::Down { .. }, LockState::Locked) => self.set_retry(true),
-            (Link::Down { .. }, LockState::Unlocked) => {}
+            (Link::Down { .. }, true) => self.set_retry(true),
+            (Link::Down { .. }, false) => {}
             (Link::Up(_), _) => {
-                self.send(&ToDaemon::SessionLock { state: lock });
+                self.send(&ToDaemon::SessionLock { locked: lock });
             }
         }
     }

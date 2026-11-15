@@ -26,7 +26,7 @@ use ds::prelude::Word;
 pub use apply::NewWindow;
 pub use follow::follow;
 pub use sections::{AdvancedSettings, GeneralSettings, SidebarSettings};
-pub use words::{NewWindowsShow, Row, Switch};
+pub use words::NewWindowsShow;
 
 /// The directory under the config root, and the schema's app id.
 pub const APP: AppName = AppName("files");

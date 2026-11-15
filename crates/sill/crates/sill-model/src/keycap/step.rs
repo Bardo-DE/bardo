@@ -1,6 +1,6 @@
 //! The pure transition and the decision to tell the person.
 
-use keycap_protocol::{Grab, Mode, Status};
+use keycap_protocol::{Grab, Status};
 
 use super::command::{KeycapEvent, UnitState};
 use super::model::{Attention, KeycapState};
@@ -48,5 +48,5 @@ fn conflict(status: &Status) -> Option<Attention> {
 }
 
 fn paused(status: &Status) -> Option<Attention> {
-    (status.mode == Mode::Paused).then_some(Attention::Paused)
+    status.paused.then_some(Attention::Paused)
 }

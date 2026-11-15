@@ -4,7 +4,7 @@
 use std::io::Cursor;
 use std::path::PathBuf;
 
-use keycap_protocol::{Grab, Keyboard, KeyboardInfo, Mode, Status};
+use keycap_protocol::{Grab, Keyboard, KeyboardInfo, Status};
 use sill_ipc::act::{DisplayRequest, LevelRequest, VolumeRequest};
 use sill_ipc::debug::{
     DebugRequest, KeyAction, KeySpec, LauncherRows, Micros, Point, PointerButton, RowsSection,
@@ -524,7 +524,7 @@ fn responses() -> Vec<(Response, &'static str)> {
         (
             Response::Status(StatusReport::Keycap(KeycapState::Connected {
                 status: Status {
-                    mode: Mode::Paused,
+                    paused: true,
                     keyboards: vec![Keyboard {
                         info: KeyboardInfo {
                             name: "Apple Keyboard".to_owned(),
@@ -536,7 +536,7 @@ fn responses() -> Vec<(Response, &'static str)> {
                     }],
                 },
             })),
-            r#"{"kind":"status","v":{"kind":"keycap","v":{"kind":"connected","v":{"status":{"mode":"paused","keyboards":[{"info":{"name":"Apple Keyboard","path":"/dev/input/event4","vendor":1452,"product":592},"grab":"conflict"}]}}}}}"#,
+            r#"{"kind":"status","v":{"kind":"keycap","v":{"kind":"connected","v":{"status":{"paused":true,"keyboards":[{"info":{"name":"Apple Keyboard","path":"/dev/input/event4","vendor":1452,"product":592},"grab":"conflict"}]}}}}}"#,
         ),
         (
             Response::Status(StatusReport::Idle(Idle {

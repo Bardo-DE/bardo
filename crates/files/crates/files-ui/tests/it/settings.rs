@@ -9,7 +9,7 @@ use ds_settings::ConfigRoot;
 use ds_settings::schema::Schema;
 use files_core::{Behaviour, FileName, FolderPath, ItemRef};
 use files_trash::{FakeTrash, Trash};
-use files_ui::settings::{self, FilesDoc, NewWindow, Switch};
+use files_ui::settings::{self, FilesDoc, NewWindow};
 use files_ui::{PlaceKind, Preferences, Sidebar};
 use tempfile::TempDir;
 use tokio::runtime::Handle;
@@ -225,7 +225,7 @@ async fn a_change_of_the_file_reaches_the_window() {
     assert_eq!(*feed.borrow(), Preferences::default());
 
     let mut doc = FilesDoc::default();
-    doc.advanced.folders_on_top = Switch::On;
+    doc.advanced.folders_on_top = true;
     settings::store(root).save(&doc).unwrap();
     tokio::time::timeout(Duration::from_secs(10), feed.changed())
         .await
@@ -236,7 +236,7 @@ async fn a_change_of_the_file_reaches_the_window() {
 
 #[tokio::test]
 async fn old_items_leave_the_trash_only_when_the_person_asked() {
-    let table = [("asked", Switch::On, 0), ("not asked", Switch::Off, 1)];
+    let table = [("asked", true, 0), ("not asked", false, 1)];
     for (label, switch, left) in table {
         let dir = tempfile::tempdir().unwrap();
         let root = ConfigRoot::Scratch(dir.path().to_path_buf());
@@ -255,7 +255,7 @@ async fn old_items_leave_the_trash_only_when_the_person_asked() {
         settings::store(root.clone()).save(&doc).unwrap();
 
         let _feed = settings::follow(root, &Handle::current(), trash.clone());
-        if switch == Switch::Off {
+        if !switch {
             // Give a sweep that should not happen the time to show itself.
             tokio::time::sleep(Duration::from_millis(300)).await;
         }

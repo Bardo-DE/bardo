@@ -9,8 +9,6 @@
 
 use std::time::Duration;
 
-use palmrest_protocol::LockState;
-
 /// The wait after the first miss.
 const FIRST: Duration = Duration::from_millis(250);
 
@@ -34,10 +32,11 @@ impl Misses {
     }
 
     /// How long to wait before the next attempt.
-    pub(crate) fn wait(self, lock: LockState) -> Duration {
-        let longest = match lock {
-            LockState::Locked => LONGEST_LOCKED,
-            LockState::Unlocked => LONGEST_UNLOCKED,
+    pub(crate) fn wait(self, locked: bool) -> Duration {
+        let longest = if locked {
+            LONGEST_LOCKED
+        } else {
+            LONGEST_UNLOCKED
         };
         let doublings = self.0.saturating_sub(1).min(MOST_DOUBLINGS);
         FIRST.saturating_mul(1 << doublings).min(longest)
@@ -69,12 +68,8 @@ mod tests {
             } else {
                 misses
             };
-            assert_eq!(misses.wait(LockState::Locked), *locked, "{count} locked");
-            assert_eq!(
-                misses.wait(LockState::Unlocked),
-                *unlocked,
-                "{count} unlocked"
-            );
+            assert_eq!(misses.wait(true), *locked, "{count} locked");
+            assert_eq!(misses.wait(false), *unlocked, "{count} unlocked");
         }
     }
 }

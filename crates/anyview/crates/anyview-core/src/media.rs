@@ -39,7 +39,7 @@ impl MediaTrack {
         match (&self.title, &self.language) {
             (Some(title), Some(language)) => format!("{title} ({language})"),
             (Some(name), None) | (None, Some(name)) => name.clone(),
-            (None, None) => format!("Track {}", self.id.0),
+            (None, None) => format!("Track {}", self.id),
         }
     }
 }

@@ -9,7 +9,7 @@
 
 use std::path::Path;
 
-use anyview_core::{FilePath, NonEmpty, ResultsId, Resume, Sequence, SequenceOrigin};
+use anyview_core::{FilePath, NonEmpty, Resume, Sequence, SequenceOrigin};
 use anyview_platform::linux::forward_over;
 use anyview_platform::{Handoff, Request};
 use sill_launcher::{OpenTarget, ViewerOpen};
@@ -44,12 +44,7 @@ fn handoff(open: &ViewerOpen) -> Option<Request> {
         .filter_map(|path| FilePath::new(Path::new(path)).ok())
         .collect();
     let sequence = NonEmpty::from_vec(entries).and_then(|entries| {
-        Sequence::starting_at(
-            entries,
-            &file,
-            SequenceOrigin::Results(ResultsId(open.search.0)),
-        )
-        .ok()
+        Sequence::starting_at(entries, &file, SequenceOrigin::Results(open.search.0)).ok()
     });
     Some(Request::Handoff(Handoff {
         file,
@@ -73,7 +68,7 @@ pub(crate) async fn hand_over(session: &Bus, request: &Request) -> Handed {
 mod tests {
     use std::path::PathBuf;
 
-    use anyview_core::{FilePath, ResultsId, Resume, SequenceOrigin};
+    use anyview_core::{FilePath, Resume, SequenceOrigin};
     use anyview_platform::Request;
     use sill_launcher::{Generation, OpenTarget, ViewerOpen};
 
@@ -110,7 +105,7 @@ mod tests {
             .collect();
         assert_eq!(names, ["/h/a.pdf", "/h/b.pdf", "/h/c.png"]);
         assert_eq!(sequence.current().as_path(), PathBuf::from("/h/b.pdf"));
-        assert_eq!(sequence.origin(), &SequenceOrigin::Results(ResultsId(41)));
+        assert_eq!(sequence.origin(), &SequenceOrigin::Results(41));
     }
 
     #[test]

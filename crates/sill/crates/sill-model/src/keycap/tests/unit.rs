@@ -1,4 +1,4 @@
-use keycap_protocol::{Mode, Status};
+use keycap_protocol::Status;
 
 use crate::keycap::{KeycapState, UnitState, unit_state, watching_unit};
 
@@ -25,7 +25,7 @@ fn the_managers_words_become_unit_states() {
 fn the_unit_is_asked_about_only_while_the_socket_is_down() {
     let connected = KeycapState::Connected {
         status: Status {
-            mode: Mode::Running,
+            paused: false,
             keyboards: Vec::new(),
         },
     };

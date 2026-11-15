@@ -1,4 +1,4 @@
-use keycap_protocol::{Grab, Keyboard, KeyboardInfo, Mode, Status};
+use keycap_protocol::{Grab, Keyboard, KeyboardInfo, Status};
 
 use crate::keycap::{Attention, KeycapEvent, KeycapState, UnitState, attention, step};
 
@@ -14,15 +14,15 @@ fn keyboard(name: &str, grab: Grab) -> Keyboard {
     }
 }
 
-fn status(mode: Mode, keyboards: &[(&str, Grab)]) -> Status {
+fn status(paused: bool, keyboards: &[(&str, Grab)]) -> Status {
     Status {
-        mode,
+        paused,
         keyboards: keyboards.iter().map(|&(n, g)| keyboard(n, g)).collect(),
     }
 }
 
 fn running() -> Status {
-    status(Mode::Running, &[("k1", Grab::Active)])
+    status(false, &[("k1", Grab::Active)])
 }
 
 fn connected() -> KeycapState {
@@ -33,7 +33,7 @@ fn connected() -> KeycapState {
 fn the_state_follows_the_socket_and_the_unit() {
     use KeycapEvent::{Disconnected, Hello, Status as Update, UnitState as Unit};
     use KeycapState::{Failed, NotInstalled, Restarting, Unknown};
-    let paused = status(Mode::Paused, &[]);
+    let paused = status(true, &[]);
     let cases: Vec<(&str, KeycapState, KeycapEvent, KeycapState)> = vec![
         ("hello connects", Unknown, Hello(running()), connected()),
         (
@@ -174,38 +174,35 @@ fn attention_names_what_the_person_must_know() {
         (
             "no keyboards attached",
             KeycapState::Connected {
-                status: status(Mode::Running, &[]),
+                status: status(false, &[]),
             },
             None,
         ),
         (
             "waiting for a key release is not a problem",
             KeycapState::Connected {
-                status: status(Mode::Running, &[("k1", Grab::WaitingForRelease)]),
+                status: status(false, &[("k1", Grab::WaitingForRelease)]),
             },
             None,
         ),
         (
             "one keyboard conflicts",
             KeycapState::Connected {
-                status: status(
-                    Mode::Running,
-                    &[("k1", Grab::Active), ("k2", Grab::Conflict)],
-                ),
+                status: status(false, &[("k1", Grab::Active), ("k2", Grab::Conflict)]),
             },
             conflict("k2"),
         ),
         (
             "paused",
             KeycapState::Connected {
-                status: status(Mode::Paused, &[("k1", Grab::Active)]),
+                status: status(true, &[("k1", Grab::Active)]),
             },
             Some(Attention::Paused),
         ),
         (
             "a conflict outranks a pause",
             KeycapState::Connected {
-                status: status(Mode::Paused, &[("k1", Grab::Conflict)]),
+                status: status(true, &[("k1", Grab::Conflict)]),
             },
             conflict("k1"),
         ),

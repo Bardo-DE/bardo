@@ -2,37 +2,32 @@
 //! it will send, and removing a chip drops that context from the turn.
 
 use docket_core::{ContextKeep, ContextSnapshot, Here, Keep, Selection, WindowPrivacy};
-use ds_intents::{ChipKind, ContextChip, Removal, Tally};
+use ds_intents::{ChipKind, ContextChip, Tally};
 
 /// The chips for a context taken at the moment of the summon (before the field turned into a
 /// prompt): the query, the results with their count, the selection, the window and the app. A
 /// private window shows the app alone.
 pub fn chips_of(ctx: &ContextSnapshot) -> Vec<ContextChip> {
-    let chip = |kind, label: String, count: Option<u32>, removal| ContextChip {
+    let chip = |kind, label: String, count: Option<u32>, removable| ContextChip {
         kind,
         label,
         count: count.map(Tally),
-        removal,
+        removable,
     };
-    let app = chip(ChipKind::App, ctx.app.to_string(), None, Removal::Fixed);
+    let app = chip(ChipKind::App, ctx.app.to_string(), None, false);
     if ctx.privacy == WindowPrivacy::Private {
         return vec![app];
     }
     let mut chips = Vec::new();
     if let Here::View { query: Some(q), .. } = &ctx.here {
-        chips.push(chip(
-            ChipKind::Query,
-            q.value.clone(),
-            None,
-            Removal::Removable,
-        ));
+        chips.push(chip(ChipKind::Query, q.value.clone(), None, true));
     }
     if ctx.visible.total.0 > 0 {
         chips.push(chip(
             ChipKind::Results,
             "Results".into(),
             Some(ctx.visible.total.0),
-            Removal::Removable,
+            true,
         ));
     }
     match &ctx.selection {
@@ -41,27 +36,22 @@ pub fn chips_of(ctx: &ContextSnapshot) -> Vec<ContextChip> {
             ChipKind::Selection,
             "Selection".into(),
             u32::try_from(items.len()).ok(),
-            Removal::Removable,
+            true,
         )),
         Selection::Text(t) => chips.push(chip(
             ChipKind::Text,
             t.value.chars().take(40).collect(),
             None,
-            Removal::Removable,
+            true,
         )),
         Selection::Files(files) => chips.push(chip(
             ChipKind::Selection,
             "Files".into(),
             u32::try_from(files.len()).ok(),
-            Removal::Removable,
+            true,
         )),
     }
-    chips.push(chip(
-        ChipKind::Window,
-        ctx.window.value.clone(),
-        None,
-        Removal::Removable,
-    ));
+    chips.push(chip(ChipKind::Window, ctx.window.value.clone(), None, true));
     chips.push(app);
     chips
 }

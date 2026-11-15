@@ -6,7 +6,7 @@ use std::time::Duration;
 use crate::scroll::surface::PalmScroll;
 use blitz_kit::scroll::geom::ScrollAxis;
 use blitz_kit::scroll::velocity::SampleTime;
-use palmrest_protocol::{ActiveTouch, Axis as WireAxis, Phase, ToHost};
+use palmrest_protocol::{Axis as WireAxis, Phase, ToHost};
 
 /// A message's effects.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -23,8 +23,8 @@ pub(crate) struct Route {
 pub(crate) fn route(message: &ToHost) -> Route {
     match *message {
         ToHost::Touches { active } => Route {
-            fingers: Some(active == ActiveTouch::Down),
-            scroll: (active == ActiveTouch::Down).then_some(PalmScroll::MayBegin),
+            fingers: Some(active),
+            scroll: active.then_some(PalmScroll::MayBegin),
         },
         ToHost::Scroll {
             phase,
@@ -97,17 +97,13 @@ mod tests {
         let cases = [
             (
                 "touch down",
-                ToHost::Touches {
-                    active: ActiveTouch::Down,
-                },
+                ToHost::Touches { active: true },
                 Some(true),
                 Some(PalmScroll::MayBegin),
             ),
             (
                 "touch up",
-                ToHost::Touches {
-                    active: ActiveTouch::Up,
-                },
+                ToHost::Touches { active: false },
                 Some(false),
                 None,
             ),

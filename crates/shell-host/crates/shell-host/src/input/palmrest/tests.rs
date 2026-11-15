@@ -2,7 +2,7 @@
 
 use super::*;
 use crate::scratch::Dir;
-use palmrest_protocol::{ActiveTouch, Phase};
+use palmrest_protocol::Phase;
 use rustix::net::{accept, bind, listen};
 
 /// A fake daemon: a listening `SOCK_SEQPACKET` socket at a temp path.
@@ -35,7 +35,7 @@ fn no_daemon_is_a_no_op() {
     assert!(client.retry_due());
     assert!(client.connect().is_none());
     assert!(!client.retry_due(), "no retry storm");
-    client.pointer_over(Over::Ours);
+    client.pointer_over(true);
     assert!(client.retry_due(), "an enter tries again");
     assert!(Palmrest::at(None).connect().is_none());
 }
@@ -44,7 +44,7 @@ fn no_daemon_is_a_no_op() {
 fn a_fake_daemon_hears_pointer_over_and_its_events_are_read() {
     let (dir, listener) = daemon();
     let mut client = Palmrest::trusting(dir.path().join("events.sock"), None);
-    client.pointer_over(Over::Ours);
+    client.pointer_over(true);
     let reader = client.connect().expect("connects");
     let peer = accept(&listener).expect("accept");
     assert_eq!(
@@ -57,8 +57,8 @@ fn a_fake_daemon_hears_pointer_over_and_its_events_are_read() {
         r#"{"kind":"pointer_over","v":{"over":"ours"}}"#,
         "then the pointer"
     );
-    client.pointer_over(Over::Ours);
-    client.pointer_over(Over::NotOurs);
+    client.pointer_over(true);
+    client.pointer_over(false);
     assert_eq!(
         received(&peer),
         r#"{"kind":"pointer_over","v":{"over":"not_ours"}}"#,
@@ -79,12 +79,7 @@ fn a_fake_daemon_hears_pointer_over_and_its_events_are_read() {
         "the junk datagram is skipped: {messages:?}"
     );
     assert!(matches!(messages[0], ToHost::Hello { version: 3, .. }));
-    assert_eq!(
-        messages[1],
-        ToHost::Touches {
-            active: ActiveTouch::Down
-        }
-    );
+    assert_eq!(messages[1], ToHost::Touches { active: true });
     assert!(matches!(
         messages[2],
         ToHost::Scroll {
@@ -102,7 +97,7 @@ fn a_fake_daemon_hears_pointer_over_and_its_events_are_read() {
 fn the_lock_is_sent_on_change_and_again_after_a_reconnect() {
     let (dir, listener) = daemon();
     let mut client = Palmrest::trusting(dir.path().join("events.sock"), None);
-    client.session_lock(LockState::Locked);
+    client.session_lock(true);
     let _reader = client.connect().expect("connects");
     let peer = accept(&listener).expect("accept");
     let locked = r#"{"kind":"session_lock","v":{"state":"locked"}}"#;
@@ -116,15 +111,15 @@ fn the_lock_is_sent_on_change_and_again_after_a_reconnect() {
         r#"{"kind":"pointer_over","v":{"over":"not_ours"}}"#
     );
 
-    client.session_lock(LockState::Locked);
-    client.session_lock(LockState::Unlocked);
+    client.session_lock(true);
+    client.session_lock(false);
     assert_eq!(
         received(&peer),
         r#"{"kind":"session_lock","v":{"state":"unlocked"}}"#,
         "only changes are sent"
     );
 
-    client.session_lock(LockState::Locked);
+    client.session_lock(true);
     assert_eq!(received(&peer), locked);
     client.disconnected();
     let _again = client.connect().expect("reconnects");
@@ -140,7 +135,7 @@ fn the_lock_is_sent_on_change_and_again_after_a_reconnect() {
 fn a_daemon_that_starts_late_is_found_on_the_timer_without_a_pointer_enter() {
     let dir = Dir::new();
     let mut client = Palmrest::trusting(dir.path().join("events.sock"), None);
-    client.session_lock(LockState::Locked);
+    client.session_lock(true);
     assert!(client.connect().is_none(), "no daemon yet");
     assert!(!client.retry_due());
     assert_eq!(client.retry_in(), Some(Duration::from_millis(250)));
@@ -183,10 +178,10 @@ fn a_lock_while_the_daemon_is_away_makes_an_attempt_due_and_an_unlock_does_not()
     let mut client = Palmrest::trusting(dir.path().join("events.sock"), None);
     assert!(client.connect().is_none());
     assert!(!client.retry_due());
-    client.session_lock(LockState::Locked);
+    client.session_lock(true);
     assert!(client.retry_due(), "the pointer will not enter anything");
     assert!(client.connect().is_none());
-    client.session_lock(LockState::Unlocked);
+    client.session_lock(false);
     assert!(!client.retry_due());
     assert_eq!(
         client.retry_in(),
@@ -210,14 +205,10 @@ fn a_daemon_that_went_away_is_looked_for_again_and_never_without_a_path() {
 
 #[test]
 fn only_locked_reports_lock_the_session() {
-    let cases: &[(&str, HostLock, LockState)] = &[
-        ("the compositor locked", HostLock::Locked, LockState::Locked),
-        ("we unlocked", HostLock::Unlocked, LockState::Unlocked),
-        (
-            "the compositor ended it",
-            HostLock::Finished,
-            LockState::Unlocked,
-        ),
+    let cases: &[(&str, HostLock, bool)] = &[
+        ("the compositor locked", HostLock::Locked, true),
+        ("we unlocked", HostLock::Unlocked, false),
+        ("the compositor ended it", HostLock::Finished, false),
     ];
     for (name, report, want) in cases {
         assert_eq!(lock_for(*report), *want, "{name}");
