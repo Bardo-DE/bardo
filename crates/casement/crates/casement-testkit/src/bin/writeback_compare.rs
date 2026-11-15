@@ -10,7 +10,7 @@
 //! in `OUT_DIR`), 64 on bad arguments. It reads two files and writes into `OUT_DIR` only.
 
 use casement_render::golden::GoldenOutcome;
-use casement_testkit::writeback::{PixelFormat, RawFrame, compare_raw, tolerance};
+use casement_testkit::writeback::{RawFrame, compare_raw, format_named, tolerance};
 use std::path::PathBuf;
 use std::process::ExitCode;
 
@@ -27,7 +27,7 @@ fn run(args: &[String]) -> Result<ExitCode, String> {
     let pitch = number(args.get(3), "PITCH")?;
     let format = args
         .get(4)
-        .and_then(|name| PixelFormat::named(name))
+        .and_then(|name| format_named(name))
         .ok_or("FORMAT is XR24 or AR24")?;
     let scene = args.get(5).ok_or("missing GOLDEN_SCENE")?;
     let out_dir = PathBuf::from(args.get(6).ok_or("missing OUT_DIR")?);

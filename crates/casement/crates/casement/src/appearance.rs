@@ -15,7 +15,7 @@
 //! directory (a test, a jail) uses a fixed answer and never touches a bus.
 
 use crate::State;
-use casement_ipc::system_scheme::{DesktopScheme, SchemeWatch};
+use casement_ipc::system_scheme::SchemeWatch;
 use casement_layout::{Scheme, Theme, Transparency, reduced_stand_in, scheme_of};
 use casement_render::{BlurFinish, Rgba8};
 use ds_core::spawner::Spawner;
@@ -168,25 +168,16 @@ impl Heard {
     }
 }
 
-/// The desktop's scheme as a `Scheme`.
-fn scheme_of_desktop(scheme: DesktopScheme) -> Scheme {
-    match scheme {
-        DesktopScheme::Dark => Scheme::Dark,
-        DesktopScheme::Light => Scheme::Light,
-    }
-}
-
 /// Starts following the desktop's scheme from `source`, its answers sent as `Input::System`. A
 /// watcher that cannot start is logged and `system` stays Light.
 fn follow_desktop(
     source: SystemPrefsSource,
     sender: channel::Sender<Input>,
 ) -> Option<SchemeWatch> {
-    let tell =
-        move |scheme: DesktopScheme| match sender.send(Input::System(scheme_of_desktop(scheme))) {
-            Ok(()) => ControlFlow::Continue(()),
-            Err(_) => ControlFlow::Break(()),
-        };
+    let tell = move |scheme: Scheme| match sender.send(Input::System(scheme)) {
+        Ok(()) => ControlFlow::Continue(()),
+        Err(_) => ControlFlow::Break(()),
+    };
     match SchemeWatch::start(source, tell) {
         Ok(watch) => Some(watch),
         Err(error) => {
@@ -429,12 +420,6 @@ mod tests {
             SystemPrefsSource::Fixed(Default::default())
         );
         assert_eq!(system_source(None), SystemPrefsSource::Portal);
-    }
-
-    #[test]
-    fn the_desktop_scheme_maps_one_to_one() {
-        assert_eq!(scheme_of_desktop(DesktopScheme::Dark), Scheme::Dark);
-        assert_eq!(scheme_of_desktop(DesktopScheme::Light), Scheme::Light);
     }
 
     #[test]

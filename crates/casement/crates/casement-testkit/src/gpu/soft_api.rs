@@ -4,7 +4,7 @@
 //! `GpuTopology::cross` maps onto `can_do_cross_device_imports`; unplugging a GPU is a "gone"
 //! set the enumeration honours.
 
-use super::{CrossImport, GpuTopology, SoftEngine, SoftGpu};
+use super::{CrossSupport, GpuTopology, SoftRenderer, SoftGpu};
 use casement_backend::gpu::{CounterHandle, FixedUdmabuf, SoftPixman};
 use casement_backend::{BackendError, GpuId};
 use smithay::backend::allocator::Allocator;
@@ -67,12 +67,12 @@ pub struct SoftDevice {
     node: DrmNode,
     renderer: SoftPixman,
     allocator: DmabufAllocator<FixedUdmabuf>,
-    cross: CrossImport,
+    cross: CrossSupport,
 }
 
 impl SoftDevice {
     fn new(gpu: &SoftGpu, node: DrmNode) -> Result<SoftDevice, SoftApiError> {
-        if gpu.engine != SoftEngine::Pixman {
+        if gpu.engine != SoftRenderer::Pixman {
             return Err(SoftApiError::Engine(gpu.id));
         }
         Ok(SoftDevice {
@@ -115,11 +115,11 @@ impl ApiDevice for SoftDevice {
     }
 
     fn can_do_cross_device_imports(&self) -> bool {
-        self.cross == CrossImport::Direct
+        self.cross == CrossSupport::Direct
     }
 
     fn should_do_cross_device_exports(&self) -> bool {
-        self.cross != CrossImport::Refuse
+        self.cross != CrossSupport::Refuse
     }
 }
 

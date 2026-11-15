@@ -23,7 +23,7 @@ use casement_testkit::fakes::{
     FakeKms, FakeLogind, GlassHandle, PrivateBus, SleepPhase, SyntheticTopology,
 };
 use casement_testkit::gpu::{
-    CrossImport, FabricatedSysRoot, FormatSet, GpuTopology, SoftEngine, SoftGpu, VendorFact,
+    CrossSupport, FabricatedSysRoot, FormatSet, GpuTopology, SoftRenderer, SoftGpu, VendorFact,
 };
 use casement_testkit::{Fixture, FixtureSpec, FrameCount, TtyWorld};
 use casement_wayland::dmabuf::{MainDevice, OfferUse};
@@ -51,9 +51,9 @@ fn gpus() -> GpuTopology {
         gpus: vec![
             SoftGpu::new(
                 GpuId(0),
-                SoftEngine::Pixman,
+                SoftRenderer::Pixman,
                 FormatSet::LinearOnly,
-                CrossImport::Direct,
+                CrossSupport::Direct,
                 VendorFact::Amd,
             )
             .driving(drives),

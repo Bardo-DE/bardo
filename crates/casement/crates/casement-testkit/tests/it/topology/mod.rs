@@ -14,7 +14,7 @@ use casement_core::gpu::{
     ByPathId, DrmNodeId, GpuChoice, PlanRefusal, RenderPlan, TrancheUse, feedback_for, plan_for,
 };
 use casement_testkit::gpu::{
-    ARGB8888, CrossImport, FabricatedSysRoot, GpuTopology, SoftGraphicsApi, XRGB8888,
+    ARGB8888, CrossSupport, FabricatedSysRoot, GpuTopology, SoftGraphicsApi, XRGB8888,
 };
 use smithay::backend::allocator::Fourcc;
 use smithay::backend::drm::DrmNode;
@@ -35,7 +35,7 @@ fn drm_node(id: DrmNodeId) -> DrmNode {
     DrmNode::from_dev_id(rustix::fs::makedev(id.major, id.minor)).expect("a render node")
 }
 
-fn pair(cross: CrossImport) -> GpuTopology {
+fn pair(cross: CrossSupport) -> GpuTopology {
     GpuTopology::pair(cross).expect("the pair topology")
 }
 
@@ -57,7 +57,7 @@ fn detection_over_a_fabricated_tree_reports_the_topology() {
 
 #[test]
 fn detection_reads_connectors_and_boot_gpu_of_a_pair() {
-    let topology = pair(CrossImport::Direct);
+    let topology = pair(CrossSupport::Direct);
     let (_dir, nodes) = tree(&topology);
     let found = nodes.nodes();
     assert_eq!(found, topology.facts().expect("facts"));
@@ -73,7 +73,7 @@ fn detection_reads_connectors_and_boot_gpu_of_a_pair() {
 
 #[test]
 fn the_override_picks_the_render_gpu_and_the_stack_opens_what_the_plan_names() {
-    let topology = pair(CrossImport::Direct);
+    let topology = pair(CrossSupport::Direct);
     let (_dir, mut nodes) = tree(&topology);
     let by_path = topology.gpus[1].by_path().expect("id");
     let stack = GpuStack::start(&mut nodes, &GpuChoice::ByPath(by_path)).expect("a stack");
@@ -94,7 +94,7 @@ fn the_override_picks_the_render_gpu_and_the_stack_opens_what_the_plan_names() {
 
 #[test]
 fn format_steering_offers_the_render_gpus_formats_first() {
-    let topology = pair(CrossImport::Direct);
+    let topology = pair(CrossSupport::Direct);
     let (_dir, mut nodes) = tree(&topology);
     let stack = GpuStack::start(&mut nodes, &GpuChoice::Auto).expect("a stack");
     let mut source = topology.clone();
@@ -127,7 +127,7 @@ fn format_steering_offers_the_render_gpus_formats_first() {
 
 #[test]
 fn import_routes_follow_the_plan() {
-    let topology = pair(CrossImport::Direct);
+    let topology = pair(CrossSupport::Direct);
     let (_dir, nodes) = tree(&topology);
     let plan = plan_for(&nodes.nodes(), &GpuChoice::Auto).expect("a plan");
     let (a, b) = (DrmNodeId::new(226, 128), DrmNodeId::new(226, 129));
@@ -150,7 +150,7 @@ fn import_routes_follow_the_plan() {
 /// Display on A, a client buffer allocated on B, tagged from the feedback tranche that offers
 /// its format (A5); returns B's and A's counters after one commit.
 fn display_on_a_client_from_b(
-    cross: CrossImport,
+    cross: CrossSupport,
 ) -> (
     casement_backend::gpu::CopyCounters,
     casement_backend::gpu::CopyCounters,
@@ -218,7 +218,7 @@ fn display_on_a_client_from_b(
 
 #[test]
 fn display_on_a_client_buffers_from_b_take_the_dma_shadow_copy() {
-    let (b, a) = display_on_a_client_from_b(CrossImport::Direct);
+    let (b, a) = display_on_a_client_from_b(CrossSupport::Direct);
     assert_eq!(b.bind_dmabuf, 1, "B rendered the shadow buffer once");
     assert_eq!(b.copy_texture, 0, "no CPU copy");
     assert_eq!(a.import_memory, 0, "no CPU copy");
@@ -227,7 +227,7 @@ fn display_on_a_client_buffers_from_b_take_the_dma_shadow_copy() {
 
 #[test]
 fn display_on_a_client_buffers_from_b_take_the_cpu_copy_when_a_cannot_import() {
-    let (b, a) = display_on_a_client_from_b(CrossImport::CopyOnly);
+    let (b, a) = display_on_a_client_from_b(CrossSupport::CopyOnly);
     assert_eq!(b.copy_texture, 1, "B's texture was read back once");
     assert_eq!(a.import_memory, 1, "A uploaded it once");
     assert_eq!(b.bind_dmabuf, 0, "no shadow buffer");
@@ -237,7 +237,7 @@ fn display_on_a_client_buffers_from_b_take_the_cpu_copy_when_a_cannot_import() {
 fn a_shm_client_renders_exactly_beside_a_foreign_gpu() {
     let (w, h) = SIZE;
     let mut gpu =
-        GpuManager::new(SoftGraphicsApi::new(pair(CrossImport::Direct))).expect("manager");
+        GpuManager::new(SoftGraphicsApi::new(pair(CrossSupport::Direct))).expect("manager");
     let a = drm_node(DrmNodeId::new(226, 128));
     let mut out = TestBuffer::new(w, h, Some(a)).expect("the output buffer");
     let mut renderer = gpu.renderer(&a, &a, Fourcc::Argb8888).expect("a renderer");
@@ -257,7 +257,7 @@ fn a_shm_client_renders_exactly_beside_a_foreign_gpu() {
 
 #[test]
 fn unplugging_a_gpu_falls_back_to_shm() {
-    let topology = pair(CrossImport::Direct);
+    let topology = pair(CrossSupport::Direct);
     let (w, h) = SIZE;
     let (a, b) = (
         drm_node(DrmNodeId::new(226, 128)),
@@ -306,7 +306,7 @@ fn unplugging_a_gpu_falls_back_to_shm() {
 
 #[test]
 fn the_stack_replans_without_an_unplugged_gpu() {
-    let topology = pair(CrossImport::Direct);
+    let topology = pair(CrossSupport::Direct);
     let (dir, mut nodes) = tree(&topology);
     let by_path = topology.gpus[1].by_path().expect("id");
     let choice = GpuChoice::ByPath(by_path.clone());

@@ -1,14 +1,15 @@
 //! Following the desktop's colour scheme over the settings portal: a thread at the binary's edge
 //! that reads the scheme once and then tells the compositor each time it changes, as `sleep` and
 //! `signals` do for their buses. The compositor names no bus type: the one D-Bus crate is this
-//! one (A4).
+//! one (A4). The scheme is `ds_style`'s own `Scheme` (no preference is light).
 //!
 //! The source is a seam: [`SystemPrefsSource::Portal`] reaches the session bus; a test passes
 //! [`SystemPrefsSource::Fixed`] and never does.
 //!
 //! ```
-//! use casement_ipc::system_scheme::{DesktopScheme, SchemeWatch};
+//! use casement_ipc::system_scheme::SchemeWatch;
 //! use ds_settings::SystemPrefsSource;
+//! use ds_style::appearance::theme::Scheme;
 //! use std::ops::ControlFlow;
 //! use std::sync::mpsc;
 //!
@@ -20,12 +21,13 @@
 //!     }
 //! })
 //! .expect("a thread starts");
-//! assert_eq!(rx.recv(), Ok(DesktopScheme::Light));
+//! assert_eq!(rx.recv(), Ok(Scheme::Light));
 //! ```
 
 use crate::stop_on_drop::StopOnDrop;
 use ds_core::spawner::Spawner;
-use ds_settings::{SystemPrefsSource, SystemPrefsWatch, scheme_from_portal};
+use ds_settings::{SystemPrefsSource, SystemPrefsWatch};
+use ds_style::appearance::theme::Scheme;
 use std::future::Future;
 use std::ops::ControlFlow;
 use std::pin::Pin;
@@ -37,29 +39,6 @@ pub enum SchemeError {
     /// The runtime or its thread could not be started.
     #[error("the colour scheme watcher: {0}")]
     Thread(#[source] std::io::Error),
-}
-
-/// The desktop's colour scheme, as the portal's `color-scheme` says it (no preference is light).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum DesktopScheme {
-    /// Light, or no preference.
-    Light,
-    /// The person prefers dark.
-    Dark,
-}
-
-impl DesktopScheme {
-    /// The scheme the portal's `color-scheme` value `code` means: 1 is dark, anything else light.
-    ///
-    /// ```
-    /// use casement_ipc::system_scheme::DesktopScheme;
-    ///
-    /// assert_eq!(DesktopScheme::of_portal(1), DesktopScheme::Dark);
-    /// assert_eq!(DesktopScheme::of_portal(0), DesktopScheme::Light);
-    /// ```
-    pub fn of_portal(code: u32) -> DesktopScheme {
-        pick(&scheme_from_portal(code), &scheme_from_portal(1))
-    }
 }
 
 /// Runs the portal's task on the watcher's own runtime.
@@ -83,7 +62,7 @@ impl SchemeWatch {
     /// is the default scheme once and never a change.
     pub fn start(
         source: SystemPrefsSource,
-        tell: impl FnMut(DesktopScheme) -> ControlFlow<()> + Send + 'static,
+        tell: impl FnMut(Scheme) -> ControlFlow<()> + Send + 'static,
     ) -> Result<SchemeWatch, SchemeError> {
         let runtime = tokio::runtime::Builder::new_current_thread()
             .enable_all()
@@ -100,25 +79,15 @@ impl SchemeWatch {
     }
 }
 
-/// `scheme` as ours, given the portal's dark scheme to compare with (this crate names no
-/// ds-style type, so the value is compared, never matched).
-fn pick<S: PartialEq>(scheme: &S, dark: &S) -> DesktopScheme {
-    if scheme == dark {
-        DesktopScheme::Dark
-    } else {
-        DesktopScheme::Light
-    }
-}
-
 /// The first answer, then every change, until `tell` breaks, the portal goes or `stopped` fires.
 async fn follow(
     source: SystemPrefsSource,
-    mut tell: impl FnMut(DesktopScheme) -> ControlFlow<()>,
+    mut tell: impl FnMut(Scheme) -> ControlFlow<()>,
     mut stopped: oneshot::Receiver<()>,
 ) {
     let spawner = InRuntime(tokio::runtime::Handle::current());
     let mut watch = SystemPrefsWatch::start(&source, &spawner).await;
-    if tell(pick(&watch.current().scheme, &scheme_from_portal(1))).is_break() {
+    if tell(watch.current().scheme).is_break() {
         return;
     }
     loop {
@@ -126,7 +95,7 @@ async fn follow(
             _ = &mut stopped => return,
             next = watch.changed() => match next {
                 Some(prefs) => {
-                    if tell(pick(&prefs.scheme, &scheme_from_portal(1))).is_break() {
+                    if tell(prefs.scheme).is_break() {
                         return;
                     }
                 }
@@ -139,6 +108,7 @@ async fn follow(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use ds_settings::scheme_from_portal;
     use std::sync::mpsc;
 
     /// A fixed source preferring the portal's `color-scheme` `code`.
@@ -150,7 +120,7 @@ mod tests {
         source
     }
 
-    fn watching(source: SystemPrefsSource) -> (SchemeWatch, mpsc::Receiver<DesktopScheme>) {
+    fn watching(source: SystemPrefsSource) -> (SchemeWatch, mpsc::Receiver<Scheme>) {
         let (tx, rx) = mpsc::channel();
         let watch = SchemeWatch::start(source, move |scheme| match tx.send(scheme) {
             Ok(()) => ControlFlow::Continue(()),
@@ -161,34 +131,17 @@ mod tests {
     }
 
     #[test]
-    fn the_portal_codes_map_to_schemes() {
-        const CASES: &[(u32, DesktopScheme)] = &[
-            (0, DesktopScheme::Light),
-            (1, DesktopScheme::Dark),
-            (2, DesktopScheme::Light),
-            (99, DesktopScheme::Light),
-        ];
-        for (code, want) in CASES {
-            assert_eq!(
-                DesktopScheme::of_portal(*code),
-                *want,
-                "color-scheme {code}"
-            );
-        }
-    }
-
-    #[test]
     fn a_fixed_source_answers_its_scheme_and_never_touches_the_bus() {
         for code in [0, 1, 2] {
             let (_watch, rx) = watching(fixed(code));
-            assert_eq!(rx.recv(), Ok(DesktopScheme::of_portal(code)), "code {code}");
+            assert_eq!(rx.recv(), Ok(scheme_from_portal(code)), "code {code}");
         }
     }
 
     #[test]
     fn a_fixed_source_never_changes() {
         let (watch, rx) = watching(fixed(1));
-        assert_eq!(rx.recv(), Ok(DesktopScheme::Dark));
+        assert_eq!(rx.recv(), Ok(Scheme::Dark));
         drop(watch);
         assert!(rx.recv().is_err(), "nothing more, and the thread is gone");
     }

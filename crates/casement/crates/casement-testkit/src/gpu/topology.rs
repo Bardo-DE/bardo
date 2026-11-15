@@ -1,8 +1,8 @@
 //! A fake GPU topology: what detection would report, fed to `core::gpu::plan` exactly as the
 //! real facts would be (P1).
 
-use casement_backend::gpu::{FormatSource, GpuError};
-use casement_backend::{FixtureName, GpuId};
+use casement_backend::gpu::{CrossSupport, FormatSource, GpuError};
+use casement_backend::{FixtureName, GpuId, SoftRenderer};
 use casement_core::CoreError;
 use casement_core::OutputName;
 use casement_core::gpu::{BootVga, ByPathId, DrmNodeId, FormatEntry, Fourcc, GpuFacts, Modifier};
@@ -34,9 +34,9 @@ impl GpuTopology {
         GpuTopology {
             gpus: vec![SoftGpu::new(
                 GpuId(0),
-                SoftEngine::Pixman,
+                SoftRenderer::Pixman,
                 FormatSet::LinearOnly,
-                CrossImport::Direct,
+                CrossSupport::Direct,
                 VendorFact::Amd,
             )],
         }
@@ -46,14 +46,14 @@ impl GpuTopology {
     /// only) and B (NVIDIA-like, driving `HDMI-A-1`, importing ARGB8888 and XRGB8888), both
     /// pixman, taking each other's buffers as `cross` says: "display on A, client buffers
     /// from B". A renders; B's tranche holds the one format A does not, ARGB8888.
-    pub fn pair(cross: CrossImport) -> Result<GpuTopology, CoreError> {
+    pub fn pair(cross: CrossSupport) -> Result<GpuTopology, CoreError> {
         let panel = OutputName::parse("eDP-1")?;
         let hdmi = OutputName::parse("HDMI-A-1")?;
         Ok(GpuTopology {
             gpus: vec![
                 SoftGpu::new(
                     GpuId(0),
-                    SoftEngine::Pixman,
+                    SoftRenderer::Pixman,
                     FormatSet::LinearCodes(vec![XRGB8888]),
                     cross,
                     VendorFact::Amd,
@@ -61,7 +61,7 @@ impl GpuTopology {
                 .driving(vec![panel]),
                 SoftGpu::new(
                     GpuId(1),
-                    SoftEngine::Pixman,
+                    SoftRenderer::Pixman,
                     FormatSet::LinearOnly,
                     cross,
                     VendorFact::Nvidia,
@@ -130,11 +130,11 @@ pub struct SoftGpu {
     /// Its number (its fabricated node is `226:(128 + id)`).
     pub id: GpuId,
     /// What renders on it.
-    pub engine: SoftEngine,
+    pub engine: SoftRenderer,
     /// The formats it imports.
     pub formats: FormatSet,
     /// How it takes another GPU's buffers.
-    pub cross: CrossImport,
+    pub cross: CrossSupport,
     /// The vendor detection would report.
     pub vendor: VendorFact,
     /// The connectors this GPU drives (what `drives` detection would report); none for a GPU
@@ -146,9 +146,9 @@ impl SoftGpu {
     /// A soft GPU that drives no connector.
     pub fn new(
         id: GpuId,
-        engine: SoftEngine,
+        engine: SoftRenderer,
         formats: FormatSet,
-        cross: CrossImport,
+        cross: CrossSupport,
         vendor: VendorFact,
     ) -> SoftGpu {
         SoftGpu {
@@ -176,26 +176,6 @@ impl SoftGpu {
     pub fn driving(self, drives: Vec<OutputName>) -> SoftGpu {
         SoftGpu { drives, ..self }
     }
-}
-
-/// What renders on a soft GPU.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum SoftEngine {
-    /// pixman (exact; the multi-GPU tests' engine).
-    Pixman,
-    /// llvmpipe (effects; instances share one driver, so never two in a topology).
-    Llvmpipe,
-}
-
-/// How a soft GPU takes another's buffers (smithay's `can_do_cross_device_imports`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum CrossImport {
-    /// Directly: smithay's dma shadow copy.
-    Direct,
-    /// Through a CPU copy (`ExportMem`, `ImportMem`).
-    CopyOnly,
-    /// Not at all (CopyOnly plus no cross-device exports from the source).
-    Refuse,
 }
 
 /// The formats a soft GPU imports.

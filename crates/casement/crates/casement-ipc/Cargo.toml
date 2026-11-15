@@ -20,6 +20,7 @@ porter-core = {path = "../../../porter/crates/porter-core"}
 porter-dbus = {path = "../../../porter/crates/porter-dbus"}
 # `live`: `org.quire.SettingsModule1`, the way Settings reads and changes the Privacy list.
 ds-settings = {path = "../../../quire/crates/ds-settings", default-features = false, features = ["live", "quire-desktop"]}
+ds-style = {path = "../../../quire/crates/ds-style", default-features = false}
 calloop = {version = "0.14"}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process", "signal"]}

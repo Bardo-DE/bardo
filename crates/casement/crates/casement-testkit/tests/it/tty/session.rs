@@ -180,9 +180,9 @@ fn on_a_two_gpu_machine_the_backend_routes_each_output_to_the_render_gpu_or_a_co
     use casement_backend::gpu::SysRenderNodes;
     use casement_core::OutputName;
     use casement_core::gpu::OutputRoute;
-    use casement_testkit::gpu::{CrossImport, FabricatedSysRoot, GpuTopology};
+    use casement_testkit::gpu::{CrossSupport, FabricatedSysRoot, GpuTopology};
 
-    let topology = GpuTopology::pair(CrossImport::Direct).expect("the pair topology");
+    let topology = GpuTopology::pair(CrossSupport::Direct).expect("the pair topology");
     let dir = tempfile::tempdir().expect("a directory for the fabricated /sys");
     let root = FabricatedSysRoot::build(&topology, dir.path()).expect("a fabricated tree");
     let seams = TtySeams::new(

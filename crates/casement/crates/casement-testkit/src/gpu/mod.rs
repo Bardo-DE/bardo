@@ -8,9 +8,11 @@ mod soft_api;
 mod sys_tree;
 mod topology;
 
+pub use casement_backend::SoftRenderer;
+pub use casement_backend::gpu::CrossSupport;
 pub use fabricated::{FabricatedNode, fabricated_nodes};
 pub use soft_api::{SoftApiError, SoftDevice, SoftGraphicsApi};
 pub use sys_tree::FabricatedSysRoot;
 pub use topology::{
-    ARGB8888, CrossImport, FormatSet, GpuTopology, SoftEngine, SoftGpu, VendorFact, XRGB8888,
+    ARGB8888, FormatSet, GpuTopology, SoftGpu, VendorFact, XRGB8888,
 };

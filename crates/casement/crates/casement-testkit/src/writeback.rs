@@ -8,32 +8,23 @@
 //! binary.
 
 use casement_render::golden::{Golden, GoldenOutcome, GoldenTier, compare};
+use casement_render::pass::CaptureFormat;
 use image::{Rgba, RgbaImage};
 use std::path::Path;
 
-/// How a writeback buffer lays out a pixel.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum PixelFormat {
-    /// `XRGB8888`: the fourth byte is padding; every pixel is opaque.
-    Xrgb8888,
-    /// `ARGB8888`: the fourth byte is alpha.
-    Argb8888,
-}
-
-impl PixelFormat {
-    /// The format named by its DRM fourcc name (`XR24`, `AR24`) or its long name.
-    ///
-    /// ```
-    /// use casement_testkit::writeback::PixelFormat;
-    /// assert_eq!(PixelFormat::named("XR24"), Some(PixelFormat::Xrgb8888));
-    /// assert_eq!(PixelFormat::named("nope"), None);
-    /// ```
-    pub fn named(name: &str) -> Option<PixelFormat> {
-        match name {
-            "XR24" | "XRGB8888" => Some(PixelFormat::Xrgb8888),
-            "AR24" | "ARGB8888" => Some(PixelFormat::Argb8888),
-            _ => None,
-        }
+/// The format named by its DRM fourcc name (`XR24`, `AR24`) or its long name.
+///
+/// ```
+/// use casement_render::pass::CaptureFormat;
+/// use casement_testkit::writeback::format_named;
+/// assert_eq!(format_named("XR24"), Some(CaptureFormat::Xrgb8888));
+/// assert_eq!(format_named("nope"), None);
+/// ```
+pub fn format_named(name: &str) -> Option<CaptureFormat> {
+    match name {
+        "XR24" | "XRGB8888" => Some(CaptureFormat::Xrgb8888),
+        "AR24" | "ARGB8888" => Some(CaptureFormat::Argb8888),
+        _ => None,
     }
 }
 
@@ -47,12 +38,12 @@ pub struct RawFrame {
     /// Bytes from one row's start to the next (at least `width * 4`).
     pub pitch: u32,
     /// The pixel layout.
-    pub format: PixelFormat,
+    pub format: CaptureFormat,
 }
 
 impl RawFrame {
     /// A frame of `width` x `height` pixels with `pitch` bytes per row.
-    pub fn new(width: u32, height: u32, pitch: u32, format: PixelFormat) -> RawFrame {
+    pub fn new(width: u32, height: u32, pitch: u32, format: CaptureFormat) -> RawFrame {
         RawFrame {
             width,
             height,
@@ -91,8 +82,9 @@ pub enum WritebackError {
 /// The pixels of `bytes` as `frame` describes them. An `XRGB8888` frame comes out opaque.
 ///
 /// ```
-/// use casement_testkit::writeback::{PixelFormat, RawFrame, decode};
-/// let frame = RawFrame::new(1, 1, 4, PixelFormat::Xrgb8888);
+/// use casement_render::pass::CaptureFormat;
+/// use casement_testkit::writeback::{RawFrame, decode};
+/// let frame = RawFrame::new(1, 1, 4, CaptureFormat::Xrgb8888);
 /// let image = decode(&frame, &[3, 2, 1, 0]).expect("a frame");
 /// assert_eq!(image.get_pixel(0, 0).0, [1, 2, 3, 255]);
 /// ```
@@ -118,8 +110,8 @@ pub fn decode(frame: &RawFrame, bytes: &[u8]) -> Result<RgbaImage, WritebackErro
     Ok(RgbaImage::from_fn(frame.width, frame.height, |x, y| {
         let at = (y as usize) * (frame.pitch as usize) + (x as usize) * 4;
         let alpha = match frame.format {
-            PixelFormat::Xrgb8888 => 255,
-            PixelFormat::Argb8888 => bytes[at + 3],
+            CaptureFormat::Xrgb8888 => 255,
+            CaptureFormat::Argb8888 => bytes[at + 3],
         };
         Rgba([bytes[at + 2], bytes[at + 1], bytes[at], alpha])
     }))
