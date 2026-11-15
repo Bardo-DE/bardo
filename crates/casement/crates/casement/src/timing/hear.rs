@@ -1,7 +1,7 @@
 //! The moments, heard from the loop: the glue between what `State` knows and the pure records.
 //! Each function is a few lookups; a frame with nothing to report returns at once.
 
-use super::first_show::{Awaiting, Opened};
+use super::first_show::Opened;
 use super::session_ready::ShellSurface;
 use super::stamp::Stamp;
 use super::token::Token;
@@ -126,12 +126,12 @@ pub(crate) fn flipped(state: &mut State, output: &OutputKey, frame: &OutputFrame
     }
     let at = state.timing.stamp(state.clock.now());
     state.timing.keys_presented(at);
-    for window in state.timing.awaiting(Awaiting::Frame) {
+    for window in state.timing.awaiting_frame() {
         if frame.windows.iter().any(|placed| placed.window == window) {
             state.timing.window_shown(window, at);
         }
     }
-    for window in state.timing.awaiting(Awaiting::Rest) {
+    for window in state.timing.awaiting_rest() {
         if !state.core.motion.window_is_moving(window, sampled) {
             state.timing.window_rested(window, at);
         }

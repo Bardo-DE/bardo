@@ -104,19 +104,12 @@ pub(crate) struct Served {
     _undrained: Option<Channel<ConnectCall>>,
 }
 
-/// Whether the stand-in loop reads the channel.
-#[derive(Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Loop {
-    Reads,
-    Stalled,
-}
-
 impl Served {
     /// Compositor1 on a new private bus, counting calls per `window`, with the Privacy list
-    /// served too when `privacy` is given.
+    /// served too when `privacy` is given. The stand-in loop reads the channel when `reads`.
     pub(crate) fn start(
         window: Duration,
-        event_loop: Loop,
+        reads: bool,
         privacy: Option<PrivacyLink>,
     ) -> Served {
         let bus = PrivateBus::start();
@@ -137,9 +130,10 @@ impl Served {
             None => setup,
         };
         let (channel, connection) = serve_compositor_at(&bus.address, setup).expect("serve");
-        let (drained, undrained) = match event_loop {
-            Loop::Reads => (Some(StandInLoop::run(channel)), None),
-            Loop::Stalled => (None, Some(channel)),
+        let (drained, undrained) = if reads {
+            (Some(StandInLoop::run(channel)), None)
+        } else {
+            (None, Some(channel))
         };
         Served {
             bus,

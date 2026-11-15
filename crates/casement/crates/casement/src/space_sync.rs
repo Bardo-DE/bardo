@@ -14,19 +14,13 @@ use casement_ipc::space_registry::{
 use porter_core::SpaceId;
 use std::collections::BTreeSet;
 
-/// Whether the service still listens to us.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Reception {
-    Asking,
-    Refused,
-}
-
 /// The Spaces sent, and the registry they were sent to.
 #[derive(Debug)]
 pub struct SpaceSync {
     registry: Box<dyn SpaceRegistry>,
     sent: BTreeSet<SpaceId>,
-    standing: Reception,
+    /// Whether the service refused us: it stops listening to our Spaces.
+    refused: bool,
 }
 
 impl SpaceSync {
@@ -35,7 +29,7 @@ impl SpaceSync {
         SpaceSync {
             registry,
             sent: BTreeSet::new(),
-            standing: Reception::Asking,
+            refused: false,
         }
     }
 
@@ -47,7 +41,7 @@ impl SpaceSync {
     /// Sends every desktop in `book` that was not sent yet, in one batch.
     pub fn sync(&mut self, book: &SpaceBook) {
         self.poll();
-        if self.standing == Reception::Refused {
+        if self.refused {
             return;
         }
         let fresh: Vec<SpaceRegistration> = book
@@ -74,12 +68,12 @@ impl SpaceSync {
         for failure in self.registry.failures() {
             match failure.fault {
                 RegisterFault::Refused => {
-                    if self.standing == Reception::Asking {
+                    if !self.refused {
                         tracing::warn!(
                             "the account service does not take this compositor's Spaces yet (it is not running as its service); they stay local"
                         );
                     }
-                    self.standing = Reception::Refused;
+                    self.refused = true;
                 }
                 RegisterFault::Later => {
                     tracing::debug!(space = %failure.id, "the account service was not ready for a Space; asking again at the next change");

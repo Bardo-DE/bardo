@@ -36,7 +36,7 @@ mod window_ready;
 mod xwayland_ready;
 
 pub use book::Timing;
-pub use first_show::{Awaiting, FirstShow, Opened};
+pub use first_show::{FirstShow, Opened};
 pub use key_window::{KeyCause, KeyChange, KeyWindow};
 pub use session_ready::{SessionReady, SessionStage, ShellSurface};
 pub use sink::Sink;

@@ -5,7 +5,7 @@
 //! `/proc` for a caller.
 
 use crate::dbus::{CALLS_PER_WINDOW, CONNECT_QUEUE, NOT_THE_CALLER};
-use crate::test_served::{BAD_ARGS, DENIED, Loop, Served, TOO_MANY, WHOLE_TEST, outcome, service};
+use crate::test_served::{BAD_ARGS, DENIED, Served, TOO_MANY, WHOLE_TEST, outcome, service};
 use casement_core::policy::ConnectionRole;
 use peephole_bus::peephole::fake::{introduced_program, introduced_unverified};
 use peephole_bus::peephole_core::{Proof, WhyNot};
@@ -25,7 +25,7 @@ async fn connect_as(proxy: &zbus::Proxy<'_>, role: &str) -> String {
 /// copied binary, a moved control group running a user-writable image, a peer that left.
 #[tokio::test]
 async fn connect_is_decided_by_who_the_caller_proves_to_be() {
-    let served = Served::start(WHOLE_TEST, Loop::Reads, None);
+    let served = Served::start(WHOLE_TEST, true, None);
     let program = || introduced_program("/usr/bin/sill").expect("a standing");
     // (case, how the caller stands, the role named, what comes back)
     let cases = [
@@ -130,7 +130,7 @@ async fn connect_is_decided_by_who_the_caller_proves_to_be() {
 /// A refused caller learns one sentence and nothing about which check failed.
 #[tokio::test]
 async fn a_refusal_says_one_thing_whatever_failed() {
-    let served = Served::start(WHOLE_TEST, Loop::Reads, None);
+    let served = Served::start(WHOLE_TEST, true, None);
     for standing in [
         service("shell", Proof::Exe),
         introduced_unverified(WhyNot::ImageHidden),
@@ -150,7 +150,7 @@ async fn a_refusal_says_one_thing_whatever_failed() {
 /// remote ask and an end ask carrying who asked.
 #[tokio::test]
 async fn the_remote_input_calls_are_the_portals_alone() {
-    let served = Served::start(WHOLE_TEST, Loop::Reads, None);
+    let served = Served::start(WHOLE_TEST, true, None);
     let portal = served.caller(service("portal", Proof::Full)).await;
     let shell = served.caller(service("shell", Proof::Full)).await;
     let half = served.caller(service("portal", Proof::Exe)).await;
@@ -198,7 +198,7 @@ async fn the_remote_input_calls_are_the_portals_alone() {
 /// ask carries the window and who asked, from the connection that is now watched.
 #[tokio::test]
 async fn leasing_a_window_is_the_agent_tiers_alone() {
-    let served = Served::start(WHOLE_TEST, Loop::Reads, None);
+    let served = Served::start(WHOLE_TEST, true, None);
     let agent = served.caller(service("agent_tier", Proof::Full)).await;
     let shell = served.caller(service("shell", Proof::Full)).await;
     let portal = served.caller(service("portal", Proof::Full)).await;
@@ -271,7 +271,7 @@ async fn leasing_a_window_is_the_agent_tiers_alone() {
 /// reach the loop, proven caller or not.
 #[tokio::test]
 async fn a_caller_that_asks_too_often_is_told_to_wait() {
-    let served = Served::start(WHOLE_TEST, Loop::Reads, None);
+    let served = Served::start(WHOLE_TEST, true, None);
     let proxy = served.caller(service("shell", Proof::Full)).await;
     let mut seen = Vec::new();
     for _ in 0..(CALLS_PER_WINDOW + 2) {
@@ -288,7 +288,7 @@ async fn a_caller_that_asks_too_often_is_told_to_wait() {
 /// dropped.
 #[tokio::test]
 async fn a_stalled_loop_holds_the_queue_and_drops_the_rest() {
-    let served = Served::start(WHOLE_TEST, Loop::Stalled, None);
+    let served = Served::start(WHOLE_TEST, false, None);
     let mut tasks = Vec::new();
     for _ in 0..3 {
         let proxy = served.caller(service("shell", Proof::Full)).await;
@@ -319,7 +319,7 @@ async fn a_stalled_loop_holds_the_queue_and_drops_the_rest() {
 /// remote socket that connection asked for; another connection going changes nothing.
 #[tokio::test]
 async fn the_loop_is_told_when_the_portals_connection_leaves() {
-    let served = Served::start(WHOLE_TEST, Loop::Reads, None);
+    let served = Served::start(WHOLE_TEST, true, None);
     let portal = served.caller(service("portal", Proof::Full)).await;
     let other = served.caller(service("portal", Proof::Full)).await;
     let granted = portal

@@ -148,13 +148,6 @@ mod tests {
     use super::*;
     use crate::test_bus::{PrivateBus, name_of};
 
-    /// What a check is expected to come to.
-    #[derive(Clone, Copy)]
-    enum Comes {
-        Verified,
-        Unknown,
-    }
-
     fn ask(pid: u32, bus_name: &str) -> A11yAsk {
         A11yAsk {
             window: WindowId(4),
@@ -176,31 +169,28 @@ mod tests {
         let theirs = ours.wrapping_add(1);
         let unique = name_of(&owner);
         let cases = [
-            ("its own unique name", ask(ours, &unique), Comes::Verified),
+            ("its own unique name", ask(ours, &unique), true),
             (
                 "someone else's process",
                 ask(theirs, &unique),
-                Comes::Unknown,
+                false,
             ),
-            ("a name nobody owns", ask(ours, ":1.987654"), Comes::Unknown),
+            ("a name nobody owns", ask(ours, ":1.987654"), false),
             (
                 "a well-known name nobody owns",
                 ask(ours, "org.example.Nobody"),
-                Comes::Unknown,
+                false,
             ),
-            ("not a bus name", ask(ours, "no good"), Comes::Unknown),
+            ("not a bus name", ask(ours, "no good"), false),
         ];
         for (case, asked, comes) in cases {
             worker.check(asked.clone()).expect("queued");
             let verdict = answers.recv().expect("an answer");
             assert_eq!(verdict.window, WindowId(4), "{case}");
-            let want = match comes {
-                Comes::Verified => Some(A11yRoot {
-                    bus_name: asked.bus_name,
-                    object_path: asked.object_path,
-                }),
-                Comes::Unknown => None,
-            };
+            let want = comes.then(|| A11yRoot {
+                bus_name: asked.bus_name,
+                object_path: asked.object_path,
+            });
             assert_eq!(verdict.root, want, "{case}");
         }
     }

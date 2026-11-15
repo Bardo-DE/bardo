@@ -1,6 +1,6 @@
 //! What the timing lines remember between the moments.
 
-use super::first_show::{Awaiting, FirstShow, Opened};
+use super::first_show::{FirstShow, Opened};
 use super::key_window::KeyChange;
 use super::session_ready::SessionStage;
 use super::sink::Sink;
@@ -117,11 +117,20 @@ impl Timing {
         }
     }
 
-    /// The windows whose first show waits for `what`, in id order.
-    pub fn awaiting(&self, what: Awaiting) -> Vec<WindowId> {
+    /// The windows whose first show waits for the first frame that shows them, in id order.
+    pub fn awaiting_frame(&self) -> Vec<WindowId> {
+        self.awaiting(false)
+    }
+
+    /// The windows whose first show waits for the end of their open animation, in id order.
+    pub fn awaiting_rest(&self) -> Vec<WindowId> {
+        self.awaiting(true)
+    }
+
+    fn awaiting(&self, shown: bool) -> Vec<WindowId> {
         self.shows
             .iter()
-            .filter(|(_, (_, show))| show.awaiting() == what)
+            .filter(|(_, (_, show))| show.is_shown() == shown)
             .map(|(window, _)| *window)
             .collect()
     }
@@ -170,12 +179,12 @@ mod tests {
         let mut timing = Timing::new(Stamp::NONE).kept();
         let (client, window) = (ClientKey(1), WindowId(7));
         timing.window_mapped(window, client, opened());
-        assert_eq!(timing.awaiting(Awaiting::Frame), vec![window]);
+        assert_eq!(timing.awaiting_frame(), vec![window]);
         // Rest before a frame shows it does nothing.
         timing.window_rested(window, Stamp(30));
         assert!(timing.lines().is_empty());
         timing.window_shown(window, Stamp(40));
-        assert_eq!(timing.awaiting(Awaiting::Rest), vec![window]);
+        assert_eq!(timing.awaiting_rest(), vec![window]);
         timing.window_rested(window, Stamp(90));
         assert_eq!(
             timing.lines(),
@@ -187,10 +196,10 @@ mod tests {
         // It unmaps and maps again: no second line. Its client leaving forgets it.
         timing.window_unmapped(window);
         timing.window_mapped(window, client, opened());
-        assert!(timing.awaiting(Awaiting::Frame).is_empty());
+        assert!(timing.awaiting_frame().is_empty());
         timing.client_gone(client);
         timing.window_mapped(window, ClientKey(2), opened());
-        assert_eq!(timing.awaiting(Awaiting::Frame), vec![window]);
+        assert_eq!(timing.awaiting_frame(), vec![window]);
     }
 
     #[test]

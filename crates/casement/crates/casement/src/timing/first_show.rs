@@ -18,15 +18,6 @@ pub struct Opened {
     pub first_commit_at: Stamp,
 }
 
-/// What a first show waits for next.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Awaiting {
-    /// The first frame that shows the window.
-    Frame,
-    /// The end of its open animation.
-    Rest,
-}
-
 /// One toplevel's first show: it fills its stamps in order and reports once (`settled` gives the
 /// finished record and the show is over).
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -53,12 +44,10 @@ impl FirstShow {
         })
     }
 
-    /// What it waits for.
-    pub fn awaiting(&self) -> Awaiting {
-        match self {
-            FirstShow::Committed(_) => Awaiting::Frame,
-            FirstShow::Shown { .. } => Awaiting::Rest,
-        }
+    /// Whether a frame already showed the window, so it waits for the end of its open
+    /// animation (otherwise it waits for the first frame that shows it).
+    pub fn is_shown(&self) -> bool {
+        matches!(self, FirstShow::Shown { .. })
     }
 
     /// A frame at `at` showed the window. Only the first counts; a show already on a frame keeps
@@ -128,7 +117,7 @@ mod tests {
             .shown(Stamp(900))
             // A later frame does not move the first one.
             .shown(Stamp(950));
-        assert_eq!(animated.awaiting(), Awaiting::Rest);
+        assert!(animated.is_shown());
         assert_eq!(animated.settled(Stamp(1_400)), Ok(done(900, 1_400)));
     }
 
@@ -141,7 +130,7 @@ mod tests {
     #[test]
     fn a_window_not_yet_on_a_frame_is_not_settled() {
         let waiting = FirstShow::committed(opened());
-        assert_eq!(waiting.awaiting(), Awaiting::Frame);
+        assert!(!waiting.is_shown());
         assert_eq!(waiting.clone().settled(Stamp(5_000)), Err(waiting));
     }
 

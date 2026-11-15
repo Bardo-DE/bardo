@@ -5,7 +5,7 @@
 
 use super::{PRIVACY_PATH, PrivacyLink};
 use crate::dbus::COMPOSITOR_BUS_NAME;
-use crate::test_served::{Loop, Served, WHOLE_TEST, outcome, service};
+use crate::test_served::{Served, WHOLE_TEST, outcome, service};
 use calloop::channel::Channel;
 use casement_core::policy::Power;
 use casement_core::privilege::{
@@ -52,7 +52,7 @@ fn served() -> (Served, Channel<Edit>) {
             true,
         ),
     ]);
-    (Served::start(WHOLE_TEST, Loop::Reads, Some(link)), channel)
+    (Served::start(WHOLE_TEST, true, Some(link)), channel)
 }
 
 async fn module(caller: &zbus::Proxy<'_>) -> zbus::Proxy<'static> {
