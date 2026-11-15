@@ -1,7 +1,6 @@
 //! Trackpad gesture settings (`gestures.*`): the multi-finger swipes that switch Spaces and
 //! open Mission Control (03 section 4.2; System Settings, Trackpad, More Gestures).
 
-use super::Enabled;
 use ds_core::word::Word;
 use serde::{Deserialize, Serialize};
 
@@ -46,7 +45,7 @@ pub struct GestureSettings {
     /// Mission Control.
     pub mission_control: SwipeFingers,
     /// `gestures.natural`: the Spaces follow the fingers; off, they move against them.
-    pub natural: Enabled,
+    pub natural: bool,
 }
 
 impl GestureSettings {
@@ -54,7 +53,7 @@ impl GestureSettings {
     pub fn new(
         spaces: SwipeFingers,
         mission_control: SwipeFingers,
-        natural: Enabled,
+        natural: bool,
     ) -> GestureSettings {
         GestureSettings {
             spaces,
@@ -65,6 +64,6 @@ impl GestureSettings {
 
     /// The Mac's defaults: four fingers for both, and the Spaces follow the fingers.
     pub fn defaults() -> GestureSettings {
-        GestureSettings::new(SwipeFingers::Four, SwipeFingers::Four, Enabled::On)
+        GestureSettings::new(SwipeFingers::Four, SwipeFingers::Four, true)
     }
 }

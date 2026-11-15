@@ -13,7 +13,6 @@ use crate::focus::{FocusIn, Press};
 use crate::ids::{ClientKey, WindowId};
 use crate::input::{DesktopCommand, InputTarget, InputUse, Origin, ReachFacts, Refusal, reach};
 use crate::lock::LockState;
-use crate::settings::Enabled;
 use crate::time::Mono;
 use crate::window::{SpacePlace, Window, WindowState};
 use casement_protocols::vocab::{ActorKind, Toggle};
@@ -119,7 +118,7 @@ impl Model {
         self.unhide_app(&app)
             .then(|model| model.feed(FocusIn::ActivateApp { app, by }))
             .then(|model| match (model.focus.key, follow) {
-                (None, Enabled::On) => model.follow_to_a_window_of(&next),
+                (None, true) => model.follow_to_a_window_of(&next),
                 _ => Moved::of(model),
             })
     }

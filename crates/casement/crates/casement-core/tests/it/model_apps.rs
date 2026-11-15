@@ -6,7 +6,7 @@ use crate::support;
 use casement_core::app::AppVisibility;
 use casement_core::focus::TokenCheck;
 use casement_core::input::DesktopCommand;
-use casement_core::settings::{CasementSettings, Enabled};
+use casement_core::settings::CasementSettings;
 use casement_core::{CoreNote, Effect, Event, ToplevelRequest, WindowId};
 use casement_protocols::vocab::{ActorKind, Attention, Toggle};
 use support::driver::{Op, Run, last, map, plug, request, run, run_from};
@@ -171,7 +171,7 @@ fn with_switching_off_the_app_is_active_and_keyless_and_the_space_stays() {
         .id
         .clone();
     let mut settings = CasementSettings::defaults();
-    settings.spaces.switch_on_activate = Enabled::Off;
+    settings.spaces.switch_on_activate = false;
     let run = run_from(
         before.model,
         vec![
@@ -209,7 +209,7 @@ fn a_window_activating_itself_on_another_space_follows_the_setting_too() {
     assert_eq!(on.model.focus().key, Some(WindowId(1)));
 
     let mut settings = CasementSettings::defaults();
-    settings.spaces.switch_on_activate = Enabled::Off;
+    settings.spaces.switch_on_activate = false;
     let off = run_from(
         before.model,
         vec![

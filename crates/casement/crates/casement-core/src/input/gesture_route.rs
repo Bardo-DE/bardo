@@ -11,7 +11,7 @@
 
 use super::GestureStep;
 use crate::geometry::SubPoint;
-use crate::settings::{Enabled, GestureSettings};
+use crate::settings::GestureSettings;
 
 /// Sub-pixels in a logical pixel.
 const SUB_PER_PX: i64 = 120;
@@ -195,7 +195,7 @@ fn advance(
 /// against the fingers. Mission Control's up and down do not change.
 fn directed(axis: Axis, pixels: i32, settings: GestureSettings) -> i32 {
     match (axis, settings.natural) {
-        (Axis::Horizontal, Enabled::Off) => pixels.saturating_neg(),
+        (Axis::Horizontal, false) => pixels.saturating_neg(),
         _ => pixels,
     }
 }

@@ -12,30 +12,19 @@ pub struct WindowSettings {
     /// `windows.double_click_title`.
     pub double_click_title: TitleDoubleClick,
     /// `windows.tile_edges`: dragging to a screen edge tiles.
-    pub tile_edges: Enabled,
+    pub tile_edges: bool,
     /// `windows.tile_top_fills`: dragging to the top edge fills.
-    pub tile_top_fills: Enabled,
+    pub tile_top_fills: bool,
     /// `windows.tile_option_drag`: Option while dragging shows the tile zones.
-    pub tile_option_drag: Enabled,
+    pub tile_option_drag: bool,
     /// `windows.tile_margins`: tiled windows keep a margin.
-    pub tile_margins: Enabled,
+    pub tile_margins: bool,
     /// `windows.first_click`.
     pub first_click: FirstClick,
     /// `windows.quit_grace_ms`: how long a quitting app gets before it is stopped.
     pub quit_grace: Duration,
     /// `windows.not_responding_ms`: how long an unanswered ping takes to mark an app.
     pub not_responding: Duration,
-}
-
-/// A switch.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]
-#[serde(rename_all = "snake_case")]
-#[word(case = snake)]
-pub enum Enabled {
-    /// On.
-    On,
-    /// Off.
-    Off,
 }
 
 /// How a window minimises.
@@ -82,10 +71,10 @@ impl WindowSettings {
         WindowSettings {
             minimise_effect: MinimiseEffect::Genie,
             double_click_title: TitleDoubleClick::Zoom,
-            tile_edges: Enabled::On,
-            tile_top_fills: Enabled::On,
-            tile_option_drag: Enabled::On,
-            tile_margins: Enabled::On,
+            tile_edges: true,
+            tile_top_fills: true,
+            tile_option_drag: true,
+            tile_margins: true,
             first_click: FirstClick::ActivateOnly,
             quit_grace: Duration::from_millis(2000),
             not_responding: Duration::from_millis(5000),

@@ -11,7 +11,7 @@ use casement_core::app::{
 use casement_core::desktop::{AppAsk, DesktopRequest};
 use casement_core::focus::{HitPart, PressRoute, TokenCheck};
 use casement_core::input::{DesktopCommand, DeviceClass, Origin};
-use casement_core::settings::{CasementSettings, Enabled};
+use casement_core::settings::CasementSettings;
 use casement_core::shell::ShellNote;
 use casement_core::time::{Due, TimerKey};
 use casement_core::window::{WindowOrigin, WindowState};
@@ -281,7 +281,7 @@ fn settings_replace_and_lay_out_again_only_when_they_differ() {
     assert_eq!(last(&same), []);
 
     let mut settings = CasementSettings::defaults();
-    settings.spaces.switch_on_activate = Enabled::Off;
+    settings.spaces.switch_on_activate = false;
     let changed = run_from(
         base.model,
         vec![Op::Event(Event::SettingsChanged(Box::new(

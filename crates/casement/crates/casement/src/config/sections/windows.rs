@@ -1,9 +1,7 @@
 //! `windows.*` (03 §1.17).
 
 use crate::config::convert;
-use casement_core::settings::{
-    CasementSettings, Enabled, FirstClick, MinimiseEffect, TitleDoubleClick,
-};
+use casement_core::settings::{CasementSettings, FirstClick, MinimiseEffect, TitleDoubleClick};
 use ds_settings::Ms;
 use ds_settings::schema::Page;
 use serde::{Deserialize, Serialize};
@@ -33,28 +31,28 @@ pub struct WindowsSection {
         help = "Dragging a window to a screen edge tiles it.",
         section = "Tiling"
     )]
-    pub tile_edges: Enabled,
+    pub tile_edges: bool,
     /// `windows.tile_top_fills`.
     #[settings(
         label = "Drag to the top to fill",
         help = "Dragging a window to the top edge fills the usable area.",
         section = "Tiling"
     )]
-    pub tile_top_fills: Enabled,
+    pub tile_top_fills: bool,
     /// `windows.tile_option_drag`.
     #[settings(
         label = "Hold Option to tile",
         help = "Holding Option while dragging shows the tile zones.",
         section = "Tiling"
     )]
-    pub tile_option_drag: Enabled,
+    pub tile_option_drag: bool,
     /// `windows.tile_margins`.
     #[settings(
         label = "Tiled windows have margins",
         help = "Tiled windows keep a margin around them.",
         section = "Tiling"
     )]
-    pub tile_margins: Enabled,
+    pub tile_margins: bool,
     /// `windows.first_click`.
     #[settings(
         label = "First click on an inactive window",

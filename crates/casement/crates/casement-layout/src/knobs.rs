@@ -1,7 +1,7 @@
 //! The numbers layout reads that are not in the spec.
 
 use casement_core::geometry::{LogicalPoint, LogicalSize};
-use casement_core::settings::{CasementSettings, Enabled};
+use casement_core::settings::CasementSettings;
 use ds_core::vocab::Fraction;
 use ds_style::tokens::chrome::ChromeToken;
 
@@ -44,9 +44,10 @@ impl LayoutKnobs {
         let step = i32::from(ChromeToken::TitlebarHeight.length().0);
         LayoutKnobs {
             cascade_step: LogicalPoint { x: step, y: step },
-            tile_margin: match settings.windows.tile_margins {
-                Enabled::On => TILE_MARGIN,
-                Enabled::Off => 0,
+            tile_margin: if settings.windows.tile_margins {
+                TILE_MARGIN
+            } else {
+                0
             },
             spread_gap: SPREAD_GAP,
             spread_floor: SPREAD_FLOOR,

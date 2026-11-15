@@ -2,7 +2,6 @@
 //! each device (P1-I1). The stored keys (`pointer.*`, `touchpad.*`) and their conversion are in
 //! `casement/src/config/`.
 
-use super::Enabled;
 use ds_core::vocab::Fraction;
 use ds_core::word::Word;
 use serde::{Deserialize, Serialize};
@@ -24,23 +23,23 @@ pub struct PointerProfile {
     /// The acceleration curve.
     pub accel: AccelProfile,
     /// Scroll content with the fingers (the Mac's default for every pointer, mice included).
-    pub natural_scroll: Enabled,
+    pub natural_scroll: bool,
     /// Tap to click.
-    pub tap: Enabled,
+    pub tap: bool,
     /// How far a scroll step goes, in thousandths of the device's own step.
     pub scroll_factor: Fraction,
     /// Ignore the touchpad while typing.
-    pub disable_while_typing: Enabled,
+    pub disable_while_typing: bool,
 }
 
 impl PointerProfile {
     /// A profile.
     pub fn new(
         accel: AccelProfile,
-        natural_scroll: Enabled,
-        tap: Enabled,
+        natural_scroll: bool,
+        tap: bool,
         scroll_factor: Fraction,
-        disable_while_typing: Enabled,
+        disable_while_typing: bool,
     ) -> PointerProfile {
         PointerProfile {
             accel,
@@ -73,20 +72,8 @@ impl PointerSettings {
     pub fn defaults() -> PointerSettings {
         let step = Fraction(1000);
         PointerSettings {
-            mouse: PointerProfile::new(
-                AccelProfile::Adaptive,
-                Enabled::On,
-                Enabled::Off,
-                step,
-                Enabled::Off,
-            ),
-            touchpad: PointerProfile::new(
-                AccelProfile::Adaptive,
-                Enabled::On,
-                Enabled::On,
-                step,
-                Enabled::On,
-            ),
+            mouse: PointerProfile::new(AccelProfile::Adaptive, true, false, step, false),
+            touchpad: PointerProfile::new(AccelProfile::Adaptive, true, true, step, true),
         }
     }
 }

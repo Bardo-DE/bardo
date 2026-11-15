@@ -398,7 +398,6 @@ fn settle_capture(fixture: &mut Fixture, capture: &mut OutputCapture) {
 #[test]
 fn a_settings_change_reaches_a_device_already_present() {
     use casement::config::{CasementDoc, PointerSection, TouchpadSection};
-    use casement_core::settings::Enabled;
     let mut seat = seat_with(two_monitors(), FixtureSpec::desktop());
     let (mouse, touchpad, gone) = (DeviceId(3), DeviceId(4), DeviceId(5));
     seat.world.input.plug(mouse, DeviceClass::Pointer, "mouse");
@@ -418,7 +417,7 @@ fn a_settings_change_reaches_a_device_already_present() {
 
     let doc = CasementDoc {
         pointer: PointerSection {
-            natural_scroll: Enabled::Off,
+            natural_scroll: false,
             ..PointerSection::default()
         },
         ..CasementDoc::default()
@@ -428,7 +427,7 @@ fn a_settings_change_reaches_a_device_already_present() {
     assert_eq!(applied.len(), before + 1, "only the mouse is told");
     let (device, settings) = applied.last().expect("an application");
     assert_eq!(*device, mouse);
-    assert_eq!(settings.natural_scroll, Enabled::Off);
+    assert!(!settings.natural_scroll);
 
     seat.fixture.settings_file_changed(&doc);
     assert_eq!(
@@ -439,7 +438,7 @@ fn a_settings_change_reaches_a_device_already_present() {
 
     let doc = CasementDoc {
         touchpad: TouchpadSection {
-            tap: Enabled::Off,
+            tap: false,
             ..TouchpadSection::default()
         },
         ..doc
@@ -448,7 +447,7 @@ fn a_settings_change_reaches_a_device_already_present() {
     let applied = seat.world.input.applied();
     assert_eq!(applied.len(), before + 2, "then only the touchpad");
     assert_eq!(applied.last().map(|(device, _)| *device), Some(touchpad));
-    assert_eq!(applied.last().map(|(_, s)| s.tap), Some(Enabled::Off));
+    assert_eq!(applied.last().map(|(_, s)| s.tap), Some(false));
 }
 
 #[test]
@@ -473,7 +472,7 @@ fn input_devices_are_configured_and_their_keys_reach_the_bindings() {
     assert_eq!(applied[0].0, touchpad);
     assert_eq!(
         applied[0].1.natural_scroll,
-        casement_core::settings::Enabled::On,
+        casement_core::settings::true,
         "the touchpad profile's default"
     );
 

@@ -10,7 +10,6 @@ use crate::event::ToplevelRequest;
 use crate::focus::{FocusIn, TokenCheck};
 use crate::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use crate::ids::{OutputKey, WindowId};
-use crate::settings::Enabled;
 use crate::space::SpaceContent;
 use crate::window::{Restore, SpacePlace, Window, WindowState};
 use casement_protocols::vocab::{PlaceTarget, Toggle};
@@ -277,7 +276,7 @@ impl Model {
                     None => Moved::of(model),
                 })
                 .then(|model| match (space, follow) {
-                    (Some(space), Enabled::On) => model.show(&space),
+                    (Some(space), true) => model.show(&space),
                     _ => Moved::of(model),
                 }),
             TokenCheck::Stale | TokenCheck::Missing => Moved::of(self),

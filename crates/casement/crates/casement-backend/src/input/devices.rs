@@ -5,16 +5,15 @@
 //! ```no_run
 //! use casement_backend::input::{AccelProfile, DeviceSettings, InputFeed};
 //! use casement_core::DeviceId;
-//! use casement_core::settings::Enabled;
 //! use ds_core::vocab::Fraction;
 //!
 //! fn natural(devices: &mut dyn InputFeed, device: DeviceId) {
 //!     let settings = DeviceSettings::new(
 //!         AccelProfile::Adaptive,
-//!         Enabled::On,
-//!         Enabled::On,
+//!         true,
+//!         true,
 //!         Fraction(1000),
-//!         Enabled::On,
+//!         true,
 //!     );
 //!     let _ = devices.apply(device, &settings);
 //! }
@@ -23,7 +22,6 @@
 pub use casement_core::settings::AccelProfile;
 
 use crate::session::SessionFault;
-use casement_core::settings::Enabled;
 use ds_core::vocab::Fraction;
 
 /// What one device is configured with.
@@ -32,23 +30,23 @@ pub struct DeviceSettings {
     /// The acceleration curve.
     pub accel: AccelProfile,
     /// Scroll content with the fingers.
-    pub natural_scroll: Enabled,
+    pub natural_scroll: bool,
     /// Tap to click.
-    pub tap: Enabled,
+    pub tap: bool,
     /// How far a scroll step goes, in thousandths of the device's own step.
     pub scroll_factor: Fraction,
     /// Ignore the touchpad while typing.
-    pub disable_while_typing: Enabled,
+    pub disable_while_typing: bool,
 }
 
 impl DeviceSettings {
     /// A device's settings.
     pub fn new(
         accel: AccelProfile,
-        natural_scroll: Enabled,
-        tap: Enabled,
+        natural_scroll: bool,
+        tap: bool,
         scroll_factor: Fraction,
-        disable_while_typing: Enabled,
+        disable_while_typing: bool,
     ) -> DeviceSettings {
         DeviceSettings {
             accel,

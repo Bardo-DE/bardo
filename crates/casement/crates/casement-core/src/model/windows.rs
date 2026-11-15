@@ -9,7 +9,6 @@ use crate::event::{MappedToplevel, ToplevelMeta, WindowHintChange};
 use crate::focus::{FocusIn, TokenCheck};
 use crate::geometry::LogicalSize;
 use crate::ids::WindowId;
-use crate::settings::Enabled;
 use crate::space::SpaceContent;
 use crate::window::{SpacePlace, Window, WindowHints, WindowState, WindowTitle};
 use casement_protocols::vocab::{Emphasis, Modality, SensitivityLevel, WindowRole};
@@ -64,7 +63,7 @@ impl Model {
                 TokenCheck::Stale | TokenCheck::Missing => Moved::of(model),
             })
             .then(|model| match (token, follow, model.place_of(id)) {
-                (TokenCheck::Valid, Enabled::On, Some(space)) => model.show(&space),
+                (TokenCheck::Valid, true, Some(space)) => model.show(&space),
                 _ => Moved::of(model),
             })
             .then(|model| model.listed(id))

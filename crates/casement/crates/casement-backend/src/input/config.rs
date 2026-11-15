@@ -13,10 +13,10 @@ use ds_core::vocab::Fraction;
 /// ```
 /// use casement_backend::input::device_settings;
 /// use casement_core::input::DeviceClass;
-/// use casement_core::settings::{Enabled, PointerSettings};
+/// use casement_core::settings::PointerSettings;
 ///
 /// let touchpad = device_settings(&PointerSettings::defaults(), DeviceClass::Touchpad);
-/// assert_eq!(touchpad.natural_scroll, Enabled::On);
+/// assert!(touchpad.natural_scroll);
 /// ```
 pub fn device_settings(pointer: &PointerSettings, class: DeviceClass) -> DeviceSettings {
     let profile = match class {

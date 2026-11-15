@@ -2,7 +2,6 @@
 
 use casement_core::WindowId;
 use casement_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
-use casement_core::settings::Enabled;
 use casement_core::window::{TileDrag, TileDrop, TileKnobs, TileScene, TileTarget, target_at};
 use casement_protocols::vocab::{HeldMods, TileZone as Z};
 
@@ -21,9 +20,9 @@ fn zone(zone: Z) -> TileTarget {
 const FILL: TileTarget = TileTarget::Fill;
 
 const ALL_ON: TileKnobs = TileKnobs {
-    edges: Enabled::On,
-    top_fills: Enabled::On,
-    option_drag: Enabled::On,
+    edges: true,
+    top_fills: true,
+    option_drag: true,
 };
 
 const HOME: fn() -> LogicalRect = || rect(0, 0, 1920, 1080);
@@ -104,15 +103,15 @@ fn the_knobs_change_what_the_edges_do() {
     let none = HeldMods::NONE;
     let option = HeldMods::OPTION;
     let fills_off = TileKnobs {
-        top_fills: Enabled::Off,
+        top_fills: false,
         ..ALL_ON
     };
     let edges_off = TileKnobs {
-        edges: Enabled::Off,
+        edges: false,
         ..ALL_ON
     };
     let option_off = TileKnobs {
-        option_drag: Enabled::Off,
+        option_drag: false,
         ..ALL_ON
     };
     check(vec![

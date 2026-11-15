@@ -3,29 +3,29 @@
 use casement_backend::input::{AccelProfile, PresentDevices, device_settings, xkb_of};
 use casement_core::DeviceId;
 use casement_core::input::DeviceClass;
-use casement_core::settings::{CasementSettings, Enabled, PointerSettings};
+use casement_core::settings::{CasementSettings, PointerSettings};
 
 #[test]
 fn a_touchpad_gets_the_touchpad_profile_and_a_mouse_the_mouse_profile() {
     let settings = PointerSettings::defaults();
     let touchpad = device_settings(&settings, DeviceClass::Touchpad);
     let mouse = device_settings(&settings, DeviceClass::Pointer);
-    assert_eq!(touchpad.natural_scroll, Enabled::On);
-    assert_eq!(mouse.natural_scroll, Enabled::On);
+    assert!(touchpad.natural_scroll);
+    assert!(mouse.natural_scroll);
     assert_eq!(touchpad.accel, AccelProfile::Adaptive);
 }
 
 #[test]
 fn a_changed_profile_reaches_the_device_as_applied() {
     let mut settings = PointerSettings::defaults();
-    settings.touchpad.tap = Enabled::Off;
-    settings.mouse.tap = Enabled::On;
+    settings.touchpad.tap = false;
+    settings.mouse.tap = true;
     let applied = device_settings(&settings, DeviceClass::Touchpad);
-    assert_eq!(applied.tap, Enabled::Off);
+    assert!(!applied.tap);
     assert_eq!(applied.scroll_factor, settings.touchpad.scroll_factor);
     assert_eq!(
         device_settings(&settings, DeviceClass::Pointer).tap,
-        Enabled::On,
+        true,
         "the mouse profile is its own"
     );
 }
@@ -45,10 +45,7 @@ fn the_xkb_names_are_the_stored_ones() {
 fn every_pointing_class_gets_natural_scroll_from_the_defaults() {
     let settings = PointerSettings::defaults();
     // A mouse and a trackball are both `Pointer`; libinput calls a pad with finger taps a touchpad.
-    let table = [
-        (DeviceClass::Pointer, Enabled::On),
-        (DeviceClass::Touchpad, Enabled::On),
-    ];
+    let table = [(DeviceClass::Pointer, true), (DeviceClass::Touchpad, true)];
     for (class, natural) in table {
         assert_eq!(
             device_settings(&settings, class).natural_scroll,
@@ -61,14 +58,14 @@ fn every_pointing_class_gets_natural_scroll_from_the_defaults() {
 #[test]
 fn turning_natural_scroll_off_for_mice_leaves_the_touchpad_natural() {
     let mut settings = PointerSettings::defaults();
-    settings.mouse.natural_scroll = Enabled::Off;
+    settings.mouse.natural_scroll = false;
     assert_eq!(
         device_settings(&settings, DeviceClass::Pointer).natural_scroll,
-        Enabled::Off
+        false
     );
     assert_eq!(
         device_settings(&settings, DeviceClass::Touchpad).natural_scroll,
-        Enabled::On
+        true
     );
 }
 
@@ -97,10 +94,10 @@ fn a_settings_change_reaches_exactly_the_devices_it_changes() {
         ("nothing changed", |_| {}, &[]),
         (
             "mouse natural scroll",
-            |s| s.mouse.natural_scroll = Enabled::Off,
+            |s| s.mouse.natural_scroll = false,
             &[MOUSE],
         ),
-        ("touchpad tap", |s| s.touchpad.tap = Enabled::Off, &[PAD]),
+        ("touchpad tap", |s| s.touchpad.tap = false, &[PAD]),
         (
             "touchpad speed curve",
             |s| s.touchpad.accel = AccelProfile::Flat,
@@ -108,14 +105,14 @@ fn a_settings_change_reaches_exactly_the_devices_it_changes() {
         ),
         (
             "mouse disable while typing",
-            |s| s.mouse.disable_while_typing = Enabled::On,
+            |s| s.mouse.disable_while_typing = true,
             &[MOUSE],
         ),
         (
             "both profiles",
             |s| {
-                s.mouse.tap = Enabled::On;
-                s.touchpad.natural_scroll = Enabled::Off;
+                s.mouse.tap = true;
+                s.touchpad.natural_scroll = false;
             },
             &[MOUSE, PAD],
         ),
@@ -137,8 +134,8 @@ fn a_settings_change_reaches_exactly_the_devices_it_changes() {
 fn a_change_carries_the_new_settings_of_the_devices_class() {
     let present = seat_configured_from(&PointerSettings::defaults());
     let mut now = PointerSettings::defaults();
-    now.mouse.natural_scroll = Enabled::Off;
-    now.touchpad.tap = Enabled::Off;
+    now.mouse.natural_scroll = false;
+    now.touchpad.tap = false;
     let changes = present.changes(&now);
     assert_eq!(
         changes,
@@ -166,7 +163,7 @@ fn a_device_that_took_nothing_yet_gets_the_settings_and_one_that_left_does_not()
 #[test]
 fn once_applied_the_same_settings_change_nothing() {
     let mut now = PointerSettings::defaults();
-    now.mouse.natural_scroll = Enabled::Off;
+    now.mouse.natural_scroll = false;
     let mut present = seat_configured_from(&PointerSettings::defaults());
     for (id, settings) in present.changes(&now) {
         present.applied(id, settings);

@@ -11,7 +11,7 @@ use casement_core::layer::{
     Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerSpec, Margins, ShellRoleTag,
 };
 use casement_core::lock::LockEvent;
-use casement_core::settings::{CasementSettings, Enabled};
+use casement_core::settings::CasementSettings;
 use casement_core::time::TimerKey;
 use casement_core::window::{SizeLimits, WindowTitle};
 use casement_core::{
@@ -215,7 +215,7 @@ fn command() -> impl Strategy<Value = DesktopCommand> {
 }
 
 fn settings() -> impl Strategy<Value = CasementSettings> {
-    prop_oneof![Just(Enabled::On), Just(Enabled::Off)].prop_map(|follow| {
+    prop_oneof![Just(true), Just(false)].prop_map(|follow| {
         let mut settings = CasementSettings::defaults();
         settings.spaces.switch_on_activate = follow;
         settings

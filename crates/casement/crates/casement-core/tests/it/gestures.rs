@@ -12,7 +12,7 @@ use casement_core::input::{
     Origin, SwipeDelta,
 };
 use casement_core::overview::Overview;
-use casement_core::settings::{CasementSettings, Enabled, GestureSettings, SwipeFingers};
+use casement_core::settings::{CasementSettings, GestureSettings, SwipeFingers};
 use casement_core::space::{SpaceSeed, WorkspaceRequest};
 use casement_core::time::TimerKey;
 use casement_core::{Cause, DeviceId, Effect, Event, Model, PageMilli};
@@ -32,11 +32,7 @@ fn begin(fingers: u8) -> GestureStep<SubPoint> {
     GestureStep::Begin { fingers }
 }
 
-fn settings(
-    spaces: SwipeFingers,
-    mission_control: SwipeFingers,
-    natural: Enabled,
-) -> GestureSettings {
+fn settings(spaces: SwipeFingers, mission_control: SwipeFingers, natural: bool) -> GestureSettings {
     GestureSettings::new(spaces, mission_control, natural)
 }
 
@@ -55,8 +51,8 @@ fn routed(steps: Vec<GestureStep<SubPoint>>, s: &GestureSettings) -> Vec<(Route,
 #[test]
 fn the_router_passes_other_finger_counts_and_takes_the_configured_ones() {
     let four = GestureSettings::defaults();
-    let three_and_four = settings(SwipeFingers::Three, SwipeFingers::Four, Enabled::On);
-    let off = settings(SwipeFingers::Off, SwipeFingers::Off, Enabled::On);
+    let three_and_four = settings(SwipeFingers::Three, SwipeFingers::Four, true);
+    let off = settings(SwipeFingers::Off, SwipeFingers::Off, true);
     // name, settings, fingers, whether the desktop takes it
     let cases = [
         ("two fingers are the client's", four, 2u8, false),
@@ -115,7 +111,7 @@ fn the_router_carries_the_sub_pixel_remainder() {
 
 #[test]
 fn natural_direction_off_reverses_the_spaces_but_not_mission_control() {
-    let s = settings(SwipeFingers::Four, SwipeFingers::Four, Enabled::Off);
+    let s = settings(SwipeFingers::Four, SwipeFingers::Four, false);
     let sideways = routed(vec![begin(4), by(20, 0)], &s);
     assert_eq!(
         sideways[1].1,
@@ -136,7 +132,7 @@ fn natural_direction_off_reverses_the_spaces_but_not_mission_control() {
 
 #[test]
 fn an_axis_nobody_wants_at_that_count_is_swallowed_to_its_end() {
-    let s = settings(SwipeFingers::Three, SwipeFingers::Four, Enabled::On);
+    let s = settings(SwipeFingers::Three, SwipeFingers::Four, true);
     let steps = routed(vec![begin(3), by(0, -30), by(0, -30), LIFT], &s);
     assert_eq!(steps[1].0, Route::Dead);
     assert!(steps.iter().all(|(_, fate)| *fate == Some(vec![])));
@@ -457,11 +453,7 @@ fn the_row_rubber_bands_past_the_first_space() {
 
 #[test]
 fn natural_direction_off_moves_the_spaces_against_the_fingers() {
-    let model = three_spaces(settings(
-        SwipeFingers::Four,
-        SwipeFingers::Four,
-        Enabled::Off,
-    ));
+    let model = three_spaces(settings(SwipeFingers::Four, SwipeFingers::Four, false));
     let (model, _) = swiped(
         model,
         vec![

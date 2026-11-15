@@ -11,8 +11,7 @@ use casement_core::input::{
 };
 use casement_core::output::{Kelvin, ScalePolicy, Schedule};
 use casement_core::settings::{
-    AccelProfile, CasementSettings, Enabled, FirstClick, MinimiseEffect, RepeatRate,
-    TitleDoubleClick,
+    AccelProfile, CasementSettings, FirstClick, MinimiseEffect, RepeatRate, TitleDoubleClick,
 };
 use casement_protocols::vocab::{PlaceTarget, SplitSide};
 use ds_core::geometry::scale::Scale;
@@ -73,14 +72,14 @@ fn the_keys_a_document_sets_reach_the_model() {
 [windows]
 minimise_effect = "scale"
 double_click_title = "fill"
-tile_margins = "off"
+tile_margins = false
 first_click = "activate_and_click"
 quit_grace_ms = 500
 not_responding_ms = 8000
 
 [spaces]
-per_display = "off"
-auto_rearrange = "on"
+per_display = false
+auto_rearrange = true
 
 [keyboard]
 xkb_layout = "us,de"
@@ -97,13 +96,13 @@ fixed_scale = 150
         let defaults = CasementSettings::defaults();
         assert_eq!(settings.windows.minimise_effect, MinimiseEffect::Scale);
         assert_eq!(settings.windows.double_click_title, TitleDoubleClick::Fill);
-        assert_eq!(settings.windows.tile_margins, Enabled::Off);
+        assert!(!settings.windows.tile_margins);
         assert_eq!(settings.windows.tile_edges, defaults.windows.tile_edges);
         assert_eq!(settings.windows.first_click, FirstClick::ActivateAndClick);
         assert_eq!(settings.windows.quit_grace, Duration::from_millis(500));
         assert_eq!(settings.windows.not_responding, Duration::from_millis(8000));
-        assert_eq!(settings.spaces.per_display, Enabled::Off);
-        assert_eq!(settings.spaces.auto_rearrange, Enabled::On);
+        assert!(!settings.spaces.per_display);
+        assert!(settings.spaces.auto_rearrange);
         assert_eq!(
             settings.spaces.switch_on_activate,
             defaults.spaces.switch_on_activate
@@ -121,21 +120,21 @@ fixed_scale = 150
             r#"
 [pointer]
 accel = "flat"
-natural_scroll = "on"
+natural_scroll = true
 scroll_factor = 2000
 
 [touchpad]
-tap = "off"
-disable_while_typing = "off"
+tap = false
+disable_while_typing = false
 "#,
         );
         let defaults = CasementSettings::defaults();
         assert_eq!(settings.pointer.mouse.accel, AccelProfile::Flat);
-        assert_eq!(settings.pointer.mouse.natural_scroll, Enabled::On);
+        assert!(settings.pointer.mouse.natural_scroll);
         assert_eq!(settings.pointer.mouse.scroll_factor, Fraction(2000));
         assert_eq!(settings.pointer.mouse.tap, defaults.pointer.mouse.tap);
-        assert_eq!(settings.pointer.touchpad.tap, Enabled::Off);
-        assert_eq!(settings.pointer.touchpad.disable_while_typing, Enabled::Off);
+        assert!(!settings.pointer.touchpad.tap);
+        assert!(!settings.pointer.touchpad.disable_while_typing);
         assert_eq!(
             settings.pointer.touchpad.natural_scroll,
             defaults.pointer.touchpad.natural_scroll
@@ -147,12 +146,12 @@ disable_while_typing = "off"
             r#"
 [gestures]
 spaces = "three"
-natural = "off"
+natural = false
 "#,
         );
         let defaults = CasementSettings::defaults();
         assert_eq!(settings.gestures.spaces, SwipeFingers::Three);
-        assert_eq!(settings.gestures.natural, Enabled::Off);
+        assert!(!settings.gestures.natural);
         assert_eq!(
             settings.gestures.mission_control,
             defaults.gestures.mission_control
@@ -183,7 +182,7 @@ fn a_bad_value_costs_only_its_own_key() {
         r#"
 [windows]
 minimise_effect = "explode"
-tile_edges = "off"
+tile_edges = false
 
 [keyboard]
 repeat_rate = "fast"
@@ -195,7 +194,7 @@ repeat_delay_ms = 300
         settings.windows.minimise_effect,
         defaults.windows.minimise_effect
     );
-    assert_eq!(settings.windows.tile_edges, Enabled::Off);
+    assert!(!settings.windows.tile_edges);
     assert_eq!(settings.keyboard.repeat_rate, defaults.keyboard.repeat_rate);
     assert_eq!(settings.keyboard.repeat_delay, Duration::from_millis(300));
 }
@@ -449,32 +448,28 @@ fn the_binary_answers_help() {
 /// current, is kept.
 #[test]
 fn an_old_file_drops_the_retired_default_and_keeps_what_the_person_set() {
-    let table: &[(&str, &str, Enabled)] = &[
-        ("no file keys", "", Enabled::On),
+    let table: &[(&str, &str, bool)] = &[
+        ("no file keys", "", true),
         (
             "the old default, no version",
-            "[pointer]\nnatural_scroll = \"off\"\n",
-            Enabled::On,
+            "[pointer]\nnatural_scroll = false\n",
+            true,
         ),
         (
             "the old default, version 1",
-            "version = 1\n[pointer]\nnatural_scroll = \"off\"\n",
-            Enabled::On,
+            "version = 1\n[pointer]\nnatural_scroll = false\n",
+            true,
         ),
-        (
-            "on, no version",
-            "[pointer]\nnatural_scroll = \"on\"\n",
-            Enabled::On,
-        ),
+        ("on, no version", "[pointer]\nnatural_scroll = true\n", true),
         (
             "off, chosen after the migration",
-            "version = 2\n[pointer]\nnatural_scroll = \"off\"\n",
-            Enabled::Off,
+            "version = 2\n[pointer]\nnatural_scroll = false\n",
+            false,
         ),
         (
             "off in a file from a newer casement",
-            "version = 9\n[pointer]\nnatural_scroll = \"off\"\n",
-            Enabled::Off,
+            "version = 9\n[pointer]\nnatural_scroll = false\n",
+            false,
         ),
     ];
     for (what, text, want) in table {
@@ -490,13 +485,12 @@ fn an_old_file_drops_the_retired_default_and_keeps_what_the_person_set() {
 #[test]
 fn migration_touches_only_the_retired_default() {
     let settings = settings_of(
-        "[pointer]\nnatural_scroll = \"off\"\ntap = \"on\"\n[touchpad]\nnatural_scroll = \"off\"\n",
+        "[pointer]\nnatural_scroll = false\ntap = true\n[touchpad]\nnatural_scroll = false\n",
     );
-    assert_eq!(settings.pointer.mouse.natural_scroll, Enabled::On);
-    assert_eq!(settings.pointer.mouse.tap, Enabled::On);
-    assert_eq!(
-        settings.pointer.touchpad.natural_scroll,
-        Enabled::Off,
+    assert!(settings.pointer.mouse.natural_scroll);
+    assert!(settings.pointer.mouse.tap);
+    assert!(
+        !settings.pointer.touchpad.natural_scroll,
         "the touchpad's default never changed, so this was a choice"
     );
 }
@@ -513,7 +507,7 @@ fn a_migrated_document_is_written_at_the_current_version() {
 
 #[test]
 fn stamping_writes_only_the_version_and_only_once() {
-    let old = "# mine\n[pointer]\nnatural_scroll = \"off\"\n";
+    let old = "# mine\n[pointer]\nnatural_scroll = false\n";
     let (dir, home) = home_with(old);
     let file = dir.path().join("casement/settings.toml");
     assert!(stamp_version(Some(&home)).expect("stamp"));
@@ -527,7 +521,7 @@ fn stamping_writes_only_the_version_and_only_once() {
             .pointer
             .mouse
             .natural_scroll,
-        Enabled::Off
+        false
     );
 }
 
@@ -548,7 +542,7 @@ fn stamping_never_waits_on_a_pipe_and_keeps_a_link_a_link() {
     std::fs::remove_file(&file).expect("the pipe goes");
 
     let target = dir.path().join("dotfiles-settings.toml");
-    std::fs::write(&target, "[pointer]\nnatural_scroll = \"off\"\n").expect("a target");
+    std::fs::write(&target, "[pointer]\nnatural_scroll = false\n").expect("a target");
     std::os::unix::fs::symlink(&target, &file).expect("a link");
     assert!(stamp_version(Some(&home)).expect("stamp"));
     assert!(
@@ -592,7 +586,7 @@ fn the_file_changes_the_pointer_the_repeat_the_layout_and_the_night_light_and_no
     let next = followed(
         &current,
         &doc(
-            "[pointer]\ntap = \"on\"\n[keyboard]\nrepeat_rate = 30\nxkb_layout = \"fr\"\n[windows]\nquit_grace_ms = 9000\n[night_light]\nmode = \"always\"\nkelvin = 2900\nskip_outputs = [\"DP-1\", \"edid:ACME/M1/S1\"]\n",
+            "[pointer]\ntap = true\n[keyboard]\nrepeat_rate = 30\nxkb_layout = \"fr\"\n[windows]\nquit_grace_ms = 9000\n[night_light]\nmode = \"always\"\nkelvin = 2900\nskip_outputs = [\"DP-1\", \"edid:ACME/M1/S1\"]\n",
         ),
     );
     assert_eq!(
@@ -607,7 +601,7 @@ fn the_file_changes_the_pointer_the_repeat_the_layout_and_the_night_light_and_no
         CasementSettings::defaults().night_light,
         "a file without the section is the defaults again, the skip list included"
     );
-    assert_eq!(next.pointer.mouse.tap, Enabled::On);
+    assert!(next.pointer.mouse.tap);
     assert_eq!(next.keyboard.repeat_rate, RepeatRate(30));
     assert_eq!(next.keyboard.layout.layout, "fr", "the layout follows");
     assert_eq!(

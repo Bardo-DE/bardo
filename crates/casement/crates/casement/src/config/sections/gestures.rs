@@ -1,7 +1,7 @@
 //! `gestures.*`.
 
 use crate::config::convert;
-use casement_core::settings::{CasementSettings, Enabled, SwipeFingers};
+use casement_core::settings::{CasementSettings, SwipeFingers};
 use ds_settings::schema::Page;
 use serde::{Deserialize, Serialize};
 
@@ -30,7 +30,7 @@ pub struct GesturesSection {
         help = "The Spaces follow the fingers; off, they move against them.",
         section = "More gestures"
     )]
-    pub natural: Enabled,
+    pub natural: bool,
 }
 
 impl Default for GesturesSection {

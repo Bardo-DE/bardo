@@ -15,7 +15,7 @@ use super::devices::{Applied, DeviceSetting, DeviceSettings, InputError};
 use super::feed::{FedDevice, FedInput, InputFeed, PollContext};
 use casement_core::DeviceId;
 use casement_core::input::{DeviceClass, InputEvent as CoreEvent, KernelIds, Maker, Origin};
-use casement_core::settings::{AccelProfile, Enabled};
+use casement_core::settings::AccelProfile;
 use smithay::backend::input::{Event, InputEvent};
 use smithay::backend::libinput::{LibinputInputBackend, LibinputSessionInterface};
 use smithay::backend::session::Session;
@@ -210,10 +210,6 @@ fn class_of(device: &libinput::Device) -> DeviceClass {
     }
 }
 
-fn on(enabled: Enabled) -> bool {
-    matches!(enabled, Enabled::On)
-}
-
 /// What a device that refused a setting means for the result: unsupported and invalid both skip
 /// the setting.
 fn skipped(result: DeviceConfigResult, setting: DeviceSetting) -> Option<DeviceSetting> {
@@ -239,15 +235,15 @@ impl InputFeed for RealInputFeed {
                 DeviceSetting::Accel,
             ),
             skipped(
-                device.config_scroll_set_natural_scroll_enabled(on(settings.natural_scroll)),
+                device.config_scroll_set_natural_scroll_enabled(settings.natural_scroll),
                 DeviceSetting::NaturalScroll,
             ),
             skipped(
-                device.config_tap_set_enabled(on(settings.tap)),
+                device.config_tap_set_enabled(settings.tap),
                 DeviceSetting::Tap,
             ),
             skipped(
-                device.config_dwt_set_enabled(on(settings.disable_while_typing)),
+                device.config_dwt_set_enabled(settings.disable_while_typing),
                 DeviceSetting::DisableWhileTyping,
             ),
         ]

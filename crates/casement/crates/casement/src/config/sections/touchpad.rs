@@ -1,7 +1,7 @@
 //! `touchpad.*`.
 
 use crate::config::convert;
-use casement_core::settings::{AccelProfile, CasementSettings, Enabled};
+use casement_core::settings::{AccelProfile, CasementSettings};
 use ds_settings::Fraction;
 use ds_settings::schema::Page;
 use serde::{Deserialize, Serialize};
@@ -24,14 +24,14 @@ pub struct TouchpadSection {
         help = "Content follows the fingers.",
         section = "Trackpad"
     )]
-    pub natural_scroll: Enabled,
+    pub natural_scroll: bool,
     /// `touchpad.tap`.
     #[settings(
         label = "Tap to click",
         help = "A light tap counts as a click.",
         section = "Trackpad"
     )]
-    pub tap: Enabled,
+    pub tap: bool,
     /// `touchpad.scroll_factor`.
     #[settings(
         label = "Scroll speed",
@@ -46,7 +46,7 @@ pub struct TouchpadSection {
         help = "The touchpad is ignored while keys are pressed.",
         section = "Trackpad"
     )]
-    pub disable_while_typing: Enabled,
+    pub disable_while_typing: bool,
 }
 
 impl Default for TouchpadSection {

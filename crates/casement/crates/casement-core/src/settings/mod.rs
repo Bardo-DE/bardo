@@ -18,7 +18,7 @@ pub use night_light::NightLightSettings;
 pub use outputs::OutputSettings;
 pub use pointer::{AccelProfile, PointerProfile, PointerSettings};
 pub use spaces::SpaceSettings;
-pub use windows::{Enabled, FirstClick, MinimiseEffect, TitleDoubleClick, WindowSettings};
+pub use windows::{FirstClick, MinimiseEffect, TitleDoubleClick, WindowSettings};
 
 use crate::input::Bindings;
 

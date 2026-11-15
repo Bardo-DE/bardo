@@ -1,7 +1,7 @@
 //! `pointer.*`.
 
 use crate::config::convert;
-use casement_core::settings::{AccelProfile, CasementSettings, Enabled};
+use casement_core::settings::{AccelProfile, CasementSettings};
 use ds_settings::Fraction;
 use ds_settings::schema::Page;
 use serde::{Deserialize, Serialize};
@@ -24,14 +24,14 @@ pub struct PointerSection {
         help = "Content follows the fingers.",
         section = "Mouse"
     )]
-    pub natural_scroll: Enabled,
+    pub natural_scroll: bool,
     /// `pointer.tap`.
     #[settings(
         label = "Tap to click",
         help = "A light tap counts as a click.",
         section = "Mouse"
     )]
-    pub tap: Enabled,
+    pub tap: bool,
     /// `pointer.scroll_factor`.
     #[settings(
         label = "Scroll speed",
@@ -46,7 +46,7 @@ pub struct PointerSection {
         help = "The touchpad is ignored while keys are pressed.",
         section = "Mouse"
     )]
-    pub disable_while_typing: Enabled,
+    pub disable_while_typing: bool,
 }
 
 impl Default for PointerSection {

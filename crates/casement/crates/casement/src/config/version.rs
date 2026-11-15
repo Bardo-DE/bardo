@@ -9,7 +9,6 @@
 use super::ConfigError;
 use super::doc::{CasementDoc, store};
 use super::sections::PointerSection;
-use casement_core::settings::Enabled;
 use ds_helpers::{NewFileMode, ReadCap, read_text_capped, write_atomic};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
@@ -35,7 +34,7 @@ impl Version {
 }
 
 /// What `pointer.natural_scroll` defaulted to before version 2.
-const OLD_MOUSE_NATURAL_SCROLL: Enabled = Enabled::Off;
+const OLD_MOUSE_NATURAL_SCROLL: bool = false;
 
 /// `held`, unless it is the retired default `old`: then the default now, `fresh`.
 fn unless_retired<T: PartialEq>(held: T, old: T, fresh: T) -> T {

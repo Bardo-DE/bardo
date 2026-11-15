@@ -17,7 +17,7 @@
 
 use crate::WindowId;
 use crate::geometry::{LogicalPoint, LogicalRect};
-use crate::settings::{Enabled, WindowSettings};
+use crate::settings::WindowSettings;
 use casement_protocols::vocab::{HeldMods, PlaceTarget, TileZone};
 
 /// How far from an output's edge the pointer counts as at it, in logical pixels.
@@ -50,11 +50,11 @@ impl TileTarget {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TileKnobs {
     /// `windows.tile_edges`: the edges and corners tile.
-    pub edges: Enabled,
+    pub edges: bool,
     /// `windows.tile_top_fills`: the top edge fills instead of tiling the top half.
-    pub top_fills: Enabled,
+    pub top_fills: bool,
     /// `windows.tile_option_drag`: Option shows the zones without reaching an edge.
-    pub option_drag: Enabled,
+    pub option_drag: bool,
 }
 
 impl TileKnobs {
@@ -174,19 +174,20 @@ pub fn target_at(
     if !scene.home.contains(at) {
         return None;
     }
-    let option = mods.holds(HeldMods::OPTION) && knobs.option_drag == Enabled::On;
+    let option = mods.holds(HeldMods::OPTION) && knobs.option_drag;
     match (option, knobs.edges) {
         (true, _) => under_pointer(at, scene.home, *knobs),
-        (false, Enabled::On) => at_edge(at, scene, *knobs),
-        (false, Enabled::Off) => None,
+        (false, true) => at_edge(at, scene, *knobs),
+        (false, false) => None,
     }
 }
 
 /// The top edge's target: Fill, or the top half.
 fn top_of(knobs: TileKnobs) -> TileTarget {
-    match knobs.top_fills {
-        Enabled::On => TileTarget::Fill,
-        Enabled::Off => TileTarget::Zone(TileZone::Top),
+    if knobs.top_fills {
+        TileTarget::Fill
+    } else {
+        TileTarget::Zone(TileZone::Top)
     }
 }
 
