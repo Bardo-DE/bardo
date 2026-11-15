@@ -130,10 +130,7 @@ fn a_press_on_the_triangle_asks_for_the_other_state_and_option_asks_for_the_subt
     click_twisty(&mut harness, 0, Modifiers::empty());
     click_twisty(&mut harness, 1, Modifiers::empty());
     click_twisty(&mut harness, 0, Modifiers::ALT);
-    assert_eq!(
-        log(&harness),
-        "0:Visible:Row,1:Hidden:Row,0:Visible:Subtree,"
-    );
+    assert_eq!(log(&harness), "0:true:Row,1:false:Row,0:true:Subtree,");
 }
 
 #[test]
@@ -145,7 +142,7 @@ fn right_opens_the_cursor_row_and_left_does_nothing_on_a_row_that_is_closed() {
     harness.send(Input::key(ShortcutKey::Left));
     assert_eq!(log(&harness), "", "row 0 is closed already");
     harness.send(Input::key(ShortcutKey::Right));
-    assert_eq!(log(&harness), "0:Visible:Row,");
+    assert_eq!(log(&harness), "0:true:Row,");
 }
 
 #[test]

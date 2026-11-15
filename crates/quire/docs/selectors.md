@@ -62,12 +62,12 @@ The surface is version 1: it is bumped when a listed name is renamed or removed.
 | `data-variant` | a component's role or bezel |
 | `data-size` | the `ControlSize` slug: mini, small, regular, large |
 | `data-state` | `Check`: off, on, mixed |
-| `data-selected` | `Selection` |
+| `data-selected` | selected or unselected |
 | `data-busy` | `Availability::Busy` |
 | `data-availability` | `Availability`: enabled, disabled, busy |
 | `data-pressed` | `PressPhase`: present while a pointer or a key holds the control down |
 | `data-role` | a button's role: normal or destructive |
 | `data-severity` | `Severity` of an inline banner or a label: info, ok, warn, danger |
-| `data-focus` | `FocusStyle`: ring, highlight |
-| `data-activity` | `Activity`, on `.ds`: written as `inactive` while the window is not the one focused, absent while it is |
+| `data-focus` | how focus is drawn: ring, highlight |
+| `data-activity` | whether the window is the one focused, on `.ds`: written as `inactive` while the window is not the one focused, absent while it is |
 | `aria-*` | the state an element exposes to assistive technology |

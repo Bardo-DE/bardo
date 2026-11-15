@@ -28,7 +28,7 @@ fn clicking_a_page_shows_it() {
 }
 
 #[test]
-fn toggling_a_switch_writes_the_file_and_the_value_round_trips() {
+fn choosing_the_other_word_of_a_pair_writes_the_file_and_the_value_round_trips() {
     let sandbox = Sandbox::new("toggle-writes");
     let mut harness = sandbox.harness(opening("dock"));
     assert_eq!(
@@ -36,17 +36,18 @@ fn toggling_a_switch_writes_the_file_and_the_value_round_trips() {
         None,
         "nothing is written by looking"
     );
+    let (on, off) = (segment("Magnification", 1), segment("Magnification", 2));
     assert_eq!(
-        harness.attr(".ds-toggle", "aria-checked").as_deref(),
+        harness.attr(&on, "aria-checked").as_deref(),
         Some("true"),
         "magnification starts on, its default"
     );
 
-    click(&mut harness, ".ds-toggle");
+    click(&mut harness, &off);
     assert_eq!(
-        harness.attr(".ds-toggle", "aria-checked").as_deref(),
-        Some("false"),
-        "the switch turned off"
+        harness.attr(&off, "aria-checked").as_deref(),
+        Some("true"),
+        "the choice moved to off"
     );
     let text = sandbox
         .read("sill/settings.toml")
@@ -62,10 +63,7 @@ fn toggling_a_switch_writes_the_file_and_the_value_round_trips() {
         Some(&toml::Value::String("off".to_owned()))
     );
     let again = sandbox.harness(opening("dock"));
-    assert_eq!(
-        again.attr(".ds-toggle", "aria-checked").as_deref(),
-        Some("false")
-    );
+    assert_eq!(again.attr(&off, "aria-checked").as_deref(), Some("true"));
 }
 
 #[test]
@@ -183,7 +181,7 @@ fn a_write_that_fails_says_so_and_leaves_the_file_alone() {
     let sandbox = Sandbox::new("write-refused");
     sandbox.write("sill/settings.toml", "[dock\nmagnification = ");
     let mut harness = sandbox.harness(opening("dock"));
-    click(&mut harness, ".ds-toggle");
+    click(&mut harness, &segment("Magnification", 2));
     assert_eq!(harness.count(".ds-toast"), 1, "a toast reports the refusal");
     assert_eq!(
         sandbox.read("sill/settings.toml").as_deref(),
@@ -193,33 +191,28 @@ fn a_write_that_fails_says_so_and_leaves_the_file_alone() {
 }
 
 #[test]
-fn reduce_motion_is_a_switch_that_is_on_for_reduced() {
+fn reduce_motion_is_two_segments_and_reduced_is_the_second() {
     let sandbox = Sandbox::new("reduce-motion");
     let mut harness = sandbox.harness(opening("appearance"));
-    let switch = ".section .ds-toggle[*|aria-label=\"Reduce motion\"]";
+    let (standard, reduced) = (segment("Reduce motion", 1), segment("Reduce motion", 2));
     assert_eq!(
-        harness.count(switch),
-        1,
-        "a two-word key that is on and off is one switch"
+        harness.attr(&standard, "aria-checked").as_deref(),
+        Some("true"),
+        "Standard is the default"
     );
-    assert_eq!(
-        harness.attr(switch, "aria-checked").as_deref(),
-        Some("false"),
-        "Standard is off"
-    );
-    click(&mut harness, switch);
+    click(&mut harness, &reduced);
     let text = sandbox
         .read("quire/appearance.toml")
         .expect("the file was written");
     assert!(text.contains("motion_level = \"reduced\""), "{text}");
     assert_eq!(
-        harness.attr(switch, "aria-checked").as_deref(),
+        harness.attr(&reduced, "aria-checked").as_deref(),
         Some("true")
     );
 }
 
 #[test]
-fn a_two_word_choice_that_is_not_on_and_off_is_two_segments() {
+fn a_two_word_choice_is_two_segments() {
     let sandbox = Sandbox::new("two-segments");
     let mut harness = sandbox.harness(opening("intelligence"));
     let start = ".ds-segmented[*|aria-label=\"New conversations start in\"]";

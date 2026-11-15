@@ -19,6 +19,12 @@ pub fn click(harness: &mut Harness, selector: &str) {
     harness.advance(SETTLE);
 }
 
+/// The `nth` (from 1) segment of the segmented control named `label`: a key of two words, such as
+/// on and off, is two segments.
+pub fn segment(label: &str, nth: usize) -> String {
+    format!(".ds-segmented[aria-label=\"{label}\"] .ds-segmented-segment:nth-of-type({nth})")
+}
+
 /// Clicks `selector` once it has held still: parts of a page load on their own threads and push
 /// what is below them down when they come, so a click aimed at an element that has just appeared
 /// can land beside it. The element's centre must be the same over `STILL_FRAMES` steps (at most

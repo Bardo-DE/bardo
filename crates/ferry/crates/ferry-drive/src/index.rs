@@ -407,6 +407,10 @@ mod tests {
         index.next_local = 5;
         file.save(&index).expect("save");
         assert_eq!(file.load().next_local, 5);
+        // A second save would leave the first as the backup, which load falls back to; so the
+        // other format is the only copy.
+        let other = test_kit::Scratch::new("index-other-format");
+        let file = IndexFile::new(other.path());
         index.format = FORMAT + 1;
         file.save(&index).expect("save");
         assert_eq!(file.load().next_local, 0);

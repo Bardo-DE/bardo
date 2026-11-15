@@ -22,8 +22,6 @@ use ds::components::controls::checkbox::Checkbox;
 use ds::components::controls::scrubber_model::BufferedRange;
 use ds::components::fields::fact_list::{Fact, FactList};
 use ds::components::fields::field_row::{FieldGroup, FieldRow, RowLayout};
-use ds::components::fields::stepper::model::StepRange;
-use ds::components::fields::stepper::view::Stepper;
 use ds::components::lists::table::model::{CellAlign, Sort, SortDirection, TableColumn, TableRow};
 use ds::components::lists::table::view::Table;
 use ds::components::overlays::drag_ghost::DragCount;
@@ -38,10 +36,6 @@ pub struct Case {
     pub component: &'static str,
     pub state: &'static str,
     pub make: fn() -> Element,
-}
-
-fn range() -> StepRange {
-    StepRange::new(0, 10, 1)
 }
 
 fn items() -> Vec<ToolbarItem<u8>> {
@@ -149,41 +143,6 @@ fn pane(shown: bool) -> Vec<SplitPane> {
 }
 
 pub const CASES: &[Case] = &[
-    Case {
-        component: "stepper",
-        state: "field",
-        make: || rsx! { Stepper { label: "Copies", value: 4, range: range(), onchange: |_| {} } },
-    },
-    Case {
-        component: "stepper",
-        state: "bare",
-        make: || rsx! { Stepper { label: "Copies", value: 4, range: range(), bare: true, onchange: |_| {} } },
-    },
-    Case {
-        component: "stepper",
-        state: "top",
-        make: || rsx! { Stepper { label: "Copies", value: 10, range: range(), bare: true, onchange: |_| {} } },
-    },
-    Case {
-        component: "stepper",
-        state: "bottom",
-        make: || rsx! { Stepper { label: "Copies", value: 0, range: range(), bare: true, onchange: |_| {} } },
-    },
-    Case {
-        component: "stepper",
-        state: "mini",
-        make: || rsx! { Stepper { label: "Copies", value: 4, range: range(), size: ControlSize::Mini, onchange: |_| {} } },
-    },
-    Case {
-        component: "stepper",
-        state: "disabled",
-        make: || rsx! { Stepper { label: "Copies", value: 4, range: range(), availability: Availability::Disabled, onchange: |_| {} } },
-    },
-    Case {
-        component: "stepper",
-        state: "busy",
-        make: || rsx! { Stepper { label: "Copies", value: 4, range: range(), availability: Availability::Busy, onchange: |_| {} } },
-    },
     Case {
         component: "table",
         state: "sorted-and-selected",

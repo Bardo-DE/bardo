@@ -61,7 +61,7 @@ fn each_choice_changes_what_the_window_does() {
     let table = [
         (
             "folders on top",
-            "[advanced]\nfolders_on_top = \"on\"\n",
+            "[advanced]\nfolders_on_top = true\n",
             behaving(Behaviour {
                 folders_first: true,
                 ..Behaviour::default()
@@ -69,17 +69,17 @@ fn each_choice_changes_what_the_window_does() {
         ),
         (
             "no warning about an extension",
-            "[advanced]\nwarn_changing_extension = \"off\"\n",
+            "[advanced]\nwarn_changing_extension = false\n",
             behaving(ask(true, false)),
         ),
         (
             "no warning about the Trash",
-            "[advanced]\nwarn_emptying_trash = \"off\"\n",
+            "[advanced]\nwarn_emptying_trash = false\n",
             behaving(ask(false, true)),
         ),
         (
             "rows left out of the sidebar",
-            "[sidebar]\nhome = \"hide\"\nvideos = \"hide\"\ncomputer = \"hide\"\ndisks = \"hide\"\n",
+            "[sidebar]\nhome = false\nvideos = false\ncomputer = false\ndisks = false\n",
             Preferences {
                 sidebar: hidden,
                 ..Preferences::default()
@@ -87,7 +87,7 @@ fn each_choice_changes_what_the_window_does() {
         ),
         (
             "rows said to show",
-            "[sidebar]\nhome = \"show\"\n",
+            "[sidebar]\nhome = true\n",
             Preferences::default(),
         ),
     ];
@@ -100,8 +100,8 @@ fn each_choice_changes_what_the_window_does() {
 #[test]
 fn a_bad_value_costs_only_its_own_key() {
     let text = "[general]\nnew_windows_show = \"nowhere\"\n\
-                [sidebar]\nhome = \"sideways\"\ndesktop = \"hide\"\n\
-                [advanced]\nfolders_on_top = \"on\"\n";
+                [sidebar]\nhome = \"sideways\"\ndesktop = false\n\
+                [advanced]\nfolders_on_top = true\n";
     let (_dir, root) = written(text);
     let doc = settings::load(&root);
     assert_eq!(doc.new_window(), NewWindow::Home);

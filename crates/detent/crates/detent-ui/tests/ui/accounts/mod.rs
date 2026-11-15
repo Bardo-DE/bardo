@@ -209,12 +209,9 @@ fn start_syncing(
 
 impl World {
     /// Announces, as `module`, that the row at `path` changed to `word`.
-    fn announce(&self, module: ModuleId, path: &str, word: &str) {
-        self.modules.announce(
-            &module.daemon(),
-            &KeyPath(path.to_owned()),
-            toml::Value::String(word.to_owned()),
-        );
+    fn announce(&self, module: ModuleId, path: &str, value: toml::Value) {
+        self.modules
+            .announce(&module.daemon(), &KeyPath(path.to_owned()), value);
     }
 }
 

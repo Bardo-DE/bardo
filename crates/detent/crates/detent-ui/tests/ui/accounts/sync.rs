@@ -40,7 +40,7 @@ fn show_in_files_is_syncds_switch_with_its_line_under_it_and_a_turn_on_is_a_set(
         w.syncd.sets(),
         [(
             "accounts.home.storage.files".to_owned(),
-            toml::Value::String("on".to_owned())
+            toml::Value::Boolean(true)
         )]
     );
 }
@@ -70,13 +70,13 @@ fn the_sync_switches_are_syncds_and_set_on_and_off_in_syncds_module() {
     settle(&mut w.harness, "the second set", |_| {
         w.syncd.sets().len() == 2
     });
-    let want = |word: &str| {
+    let want = |on: bool| {
         (
             "accounts.home.sync.files".to_owned(),
-            toml::Value::String(word.to_owned()),
+            toml::Value::Boolean(on),
         )
     };
-    assert_eq!(w.syncd.sets(), [want("on"), want("off")]);
+    assert_eq!(w.syncd.sets(), [want(true), want(false)]);
     assert!(
         w.accountd.sets().is_empty(),
         "accountd, which has an account of the same id, heard nothing"
@@ -121,7 +121,11 @@ fn a_synced_dataset_says_when_it_synced_and_how_full_the_storage_is_and_a_ring_t
 
     // Items are left to send: the avatar in the list and the one at the head of the detail turn.
     w.sync1.stands(FILES, Standing { pending: 4, ..idle });
-    w.announce(ModuleId::Syncd, "accounts.home.sync.files", "on");
+    w.announce(
+        ModuleId::Syncd,
+        "accounts.home.sync.files",
+        toml::Value::Boolean(true),
+    );
     settle(&mut w.harness, "the ring", |h| h.count(RING) == 1);
     assert_eq!(
         w.harness
@@ -138,6 +142,10 @@ fn a_synced_dataset_says_when_it_synced_and_how_full_the_storage_is_and_a_ring_t
 
     // It catches up: the ring goes away and the line is the age again.
     w.sync1.stands(FILES, idle);
-    w.announce(ModuleId::Syncd, "accounts.home.sync.files", "on");
+    w.announce(
+        ModuleId::Syncd,
+        "accounts.home.sync.files",
+        toml::Value::Boolean(true),
+    );
     settle(&mut w.harness, "the ring to stop", |h| h.count(RING) == 0);
 }

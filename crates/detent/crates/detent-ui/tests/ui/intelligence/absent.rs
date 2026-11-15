@@ -1,6 +1,7 @@
 //! The page when inferd is missing, refusing or starting late.
 
 use super::*;
+use crate::support::drive::segment;
 use detent_model::Absence;
 use detent_system::bus::Daemon;
 use detent_system::modules::FakeModules;
@@ -10,15 +11,13 @@ fn an_absent_inferd_blocks_nothing_on_the_page() {
     let sandbox = Sandbox::new("intelligence-absent-writes");
     let mut harness = sandbox.harness(intelligence());
     assert_eq!(sandbox.read("inferd/inferd.toml"), None);
-    let local_only = "[aria-label=\"Keep AI on this computer\"] .ds-toggle";
-    let before = harness.attr(local_only, "aria-checked");
+    let on = segment("Keep AI on this computer", 1);
+    let off = segment("Keep AI on this computer", 2);
+    let before = harness.attr(&on, "aria-checked");
     assert_eq!(before.as_deref(), Some("true"), "local-only starts on");
 
-    click(&mut harness, local_only);
-    assert_eq!(
-        harness.attr(local_only, "aria-checked").as_deref(),
-        Some("false")
-    );
+    click(&mut harness, &off);
+    assert_eq!(harness.attr(&off, "aria-checked").as_deref(), Some("true"));
     let written = sandbox
         .read("inferd/inferd.toml")
         .expect("the file row wrote");

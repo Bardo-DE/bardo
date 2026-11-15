@@ -2,7 +2,7 @@
 //! directories. Every write is read back from the scratch config home.
 
 use crate::support::Sandbox;
-use crate::support::drive::{click, page_of, search_for, sidebar_page, title_of};
+use crate::support::drive::{click, page_of, search_for, segment, sidebar_page, title_of};
 use detent_files::load;
 use detent_model::PageSlug;
 use detent_ui::Opening;

@@ -102,7 +102,7 @@ fn saving_never_removes_a_key_from_sill_or_quire_files() {
     sandbox.write("quire/appearance.toml", quire);
 
     let mut harness = sandbox.harness(opening("dock"));
-    click(&mut harness, ".ds-toggle");
+    click(&mut harness, &segment("Magnification", 2));
     let text = sandbox.read("sill/settings.toml").expect("written");
     assert!(
         text.contains("puppy = true") && text.contains("[mystery]\nx = 1"),

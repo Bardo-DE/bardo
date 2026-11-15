@@ -40,7 +40,7 @@ fn a_switch_sets_the_service_in_accountd_and_the_answer_stays_on_screen() {
         w.accountd.sets(),
         [(
             "accounts.claude-key.service.llm".to_owned(),
-            toml::Value::String("off".to_owned())
+            toml::Value::Boolean(false)
         )]
     );
     settle(&mut w.harness, "the switch to read off", |h| {

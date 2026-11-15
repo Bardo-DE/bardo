@@ -1,7 +1,7 @@
 //! The window told from outside while it runs: a page to open, files that changed under it.
 
 use crate::support::Sandbox;
-use crate::support::drive::{click, page_of, search_for, title_of};
+use crate::support::drive::{click, page_of, search_for, segment, title_of};
 use detent_model::{Notice, PageSlug};
 use detent_ui::Opening;
 use std::time::Duration;
@@ -51,15 +51,12 @@ fn files_written_behind_the_window_show_after_a_reload() {
         query: String::new(),
     };
     let (mut harness, outbox) = sandbox.harness_told(opening);
-    let switch = ".ds-toggle";
-    assert_eq!(
-        harness.attr(switch, "aria-checked").as_deref(),
-        Some("true")
-    );
+    let (on, off) = (segment("Magnification", 1), segment("Magnification", 2));
+    assert_eq!(harness.attr(&on, "aria-checked").as_deref(), Some("true"));
 
     sandbox.write("sill/settings.toml", "[dock]\nmagnification = \"off\"\n");
     assert_eq!(
-        harness.attr(switch, "aria-checked").as_deref(),
+        harness.attr(&on, "aria-checked").as_deref(),
         Some("true"),
         "the window reads files once, until it is told"
     );
@@ -67,13 +64,10 @@ fn files_written_behind_the_window_show_after_a_reload() {
         .send(Notice::Reload)
         .expect("the window is listening");
     harness.advance(SETTLE);
-    assert_eq!(
-        harness.attr(switch, "aria-checked").as_deref(),
-        Some("false")
-    );
+    assert_eq!(harness.attr(&off, "aria-checked").as_deref(), Some("true"));
 
     // The window still writes after a reload.
-    click(&mut harness, switch);
+    click(&mut harness, &on);
     let text = sandbox.read("sill/settings.toml").expect("written");
     assert!(text.contains("magnification = \"on\""), "{text}");
 }

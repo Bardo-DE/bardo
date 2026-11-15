@@ -78,9 +78,7 @@ impl LiveModule for Accountd {
             })
         });
         match on {
-            Some(on) => Ok(toml::Value::String(
-                if on { "on" } else { "off" }.to_owned(),
-            )),
+            Some(on) => Ok(toml::Value::Boolean(on)),
             None => Ok(toml::Value::Boolean(false)),
         }
     }
@@ -103,18 +101,18 @@ impl LiveModule for Accountd {
         for held in accounts.iter_mut() {
             for (kind, on) in &mut held.services {
                 if path == format!("accounts.{}.service.{kind}", held.id) {
-                    *on = value.as_str() == Some("on");
+                    *on = value.as_bool() == Some(true);
                 }
             }
             for (leaf, on) in &mut held.sync {
                 if path == format!("accounts.{}.sync.{leaf}", held.id) {
-                    *on = value.as_str() == Some("on");
+                    *on = value.as_bool() == Some(true);
                 }
             }
             if let Some((on, _)) = &mut held.show_in_files
                 && path == format!("accounts.{}.storage.files", held.id)
             {
-                *on = value.as_str() == Some("on");
+                *on = value.as_bool() == Some(true);
             }
             held.grants
                 .retain(|(grant, _)| path != format!("accounts.{}.grant.{grant}", held.id));

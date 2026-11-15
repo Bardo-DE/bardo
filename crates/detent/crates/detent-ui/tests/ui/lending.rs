@@ -4,7 +4,7 @@
 //! down its calls; the files are in a scratch folder.
 
 use crate::support::Sandbox;
-use crate::support::drive::{click, scroll_into_view};
+use crate::support::drive::{click, scroll_into_view, segment};
 use crate::support::lending::SHIPPED;
 use detent_model::PageSlug;
 use detent_ui::Opening;
@@ -24,8 +24,14 @@ fn intelligence() -> Opening {
     }
 }
 
-fn toggle() -> String {
-    format!("[aria-label=\"{LABEL}\"] .ds-toggle")
+/// The segment that says on: the key's words are off, then on.
+fn on() -> String {
+    segment(LABEL, 2)
+}
+
+/// The segment that says off.
+fn off() -> String {
+    segment(LABEL, 1)
 }
 
 /// The page's markup with an apostrophe read back, however the document spells it.
@@ -49,8 +55,8 @@ fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
 /// The window with the switch pressed once: the question is up.
 fn asked(sandbox: &Sandbox) -> Harness {
     let mut harness = sandbox.harness(intelligence());
-    scroll_into_view(&mut harness, &toggle());
-    click(&mut harness, &toggle());
+    scroll_into_view(&mut harness, &on());
+    click(&mut harness, &on());
     settle(&mut harness, "the question", |h| {
         plain(h).contains(QUESTION)
     });
@@ -64,7 +70,7 @@ fn serve_setting(sandbox: &Sandbox) -> Option<String> {
 }
 
 fn checked(harness: &Harness) -> Option<String> {
-    harness.attr(&toggle(), "aria-checked")
+    harness.attr(&on(), "aria-checked")
 }
 
 #[test]
@@ -151,9 +157,9 @@ fn turning_it_off_takes_sharing_away_without_asking() {
     sandbox.write("inferd/inferd.toml", "[ai.tailnet]\nserve = \"on\"\n");
     sandbox.write(DROP_IN, SHIPPED);
     let mut harness = sandbox.harness(intelligence());
-    scroll_into_view(&mut harness, &toggle());
+    scroll_into_view(&mut harness, &on());
     assert_eq!(checked(&harness).as_deref(), Some("true"));
-    click(&mut harness, &toggle());
+    click(&mut harness, &off());
     settle(&mut harness, "the file to go", |_| {
         sandbox.drop_in().is_none()
     });

@@ -62,11 +62,6 @@ const OWN_SHEETS: &[(&str, &str, &str)] = &[
         include_str!("../../src/components/chrome/capsule/capsule.css"),
     ),
     (
-        "stepper",
-        "ds-stepper",
-        include_str!("../../src/components/fields/stepper/stepper.css"),
-    ),
-    (
         "table",
         "ds-table",
         include_str!("../../src/components/lists/table/table.css"),

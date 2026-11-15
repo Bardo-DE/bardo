@@ -151,7 +151,7 @@ fn the_viewer_sits_after_the_fixed_pages_and_edits_anyviews_own_file() {
     assert_eq!(sandbox.read(FILE), None, "looking writes nothing");
     click(&mut harness, ".ds-toggle");
     let text = sandbox.read(FILE).expect("anyview's file was written");
-    assert!(text.contains("enabled = \"off\""), "{text}");
+    assert!(text.contains("enabled = false"), "{text}");
 
     let spec = sandbox
         .env(Opening::default(), ds::prelude::Scheme::Light)
@@ -166,6 +166,6 @@ fn the_viewer_sits_after_the_fixed_pages_and_edits_anyviews_own_file() {
         loaded
             .value
             .get(&KeyPath("viewer.history.enabled".to_owned())),
-        Some(&toml::Value::String("off".to_owned()))
+        Some(&toml::Value::Boolean(false))
     );
 }

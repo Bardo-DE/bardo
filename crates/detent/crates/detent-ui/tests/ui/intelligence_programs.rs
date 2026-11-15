@@ -2,7 +2,7 @@
 //! its own `section` names, a write in the program's own file, and rows that do not fit left alone.
 
 use crate::support::Sandbox;
-use crate::support::drive::{click, scroll_into_view};
+use crate::support::drive::{click, scroll_into_view, segment};
 use detent_model::PageSlug;
 use detent_ui::Opening;
 use ds_harness::Harness;
@@ -93,11 +93,11 @@ fn each_basic_row_is_drawn_in_the_section_its_schema_names() {
     in_order(&basic, &sections);
 }
 
-/// Clicks the switch of `label`, scrolled into view.
-fn flip(harness: &mut Harness, label: &str) {
-    let toggle = format!("[aria-label=\"{label}\"] .ds-toggle");
-    scroll_into_view(harness, &toggle);
-    click(harness, &toggle);
+/// Clicks the `nth` segment of the choice `label`, scrolled into view.
+fn choose(harness: &mut Harness, label: &str, nth: usize) {
+    let segment = segment(label, nth);
+    scroll_into_view(harness, &segment);
+    click(harness, &segment);
 }
 
 #[test]
@@ -113,7 +113,7 @@ fn a_write_lands_in_the_file_of_the_program_that_owns_the_row() {
     }
 
     // Top to bottom, because the page is only ever scrolled down: the Assistant section first.
-    flip(&mut harness, "Other apps");
+    choose(&mut harness, "Other apps", 2);
     let docket = sandbox.read("docket/settings.toml").expect("docket's file");
     assert!(docket.contains("expose = \"on\""), "{docket}");
     assert!(
@@ -132,7 +132,7 @@ fn a_write_lands_in_the_file_of_the_program_that_owns_the_row() {
     assert!(almanac.contains("when = \"manual\""), "{almanac}");
     assert_eq!(sandbox.read("cua/settings.toml"), None);
 
-    flip(&mut harness, "Pause when I touch the window");
+    choose(&mut harness, "Pause when I touch the window", 2);
     let cua = sandbox.read("cua/settings.toml").expect("cua's file");
     assert!(cua.contains("autopause = \"off\""), "{cua}");
     assert!(!cua.contains("when"), "{cua}");
@@ -149,10 +149,10 @@ fn lending_this_computers_models_is_off_until_the_switch_is_flipped() {
     const LABEL: &str = "Let my other computers use this computer's models";
     let sandbox = Sandbox::new("programs-tailnet-serve");
     let mut harness = sandbox.harness(intelligence());
-    let toggle = format!("[aria-label=\"{LABEL}\"] .ds-toggle");
-    scroll_into_view(&mut harness, &toggle);
+    let on = segment(LABEL, 2);
+    scroll_into_view(&mut harness, &on);
     assert_eq!(
-        harness.attr(&toggle, "aria-checked").as_deref(),
+        harness.attr(&on, "aria-checked").as_deref(),
         Some("false"),
         "off by default"
     );
@@ -162,7 +162,7 @@ fn lending_this_computers_models_is_off_until_the_switch_is_flipped() {
         "looking writes nothing"
     );
     // Turning it on is asked about first (tests/ui/lending.rs drives the answer).
-    click(&mut harness, &toggle);
+    click(&mut harness, &on);
     assert_eq!(
         sandbox.read("inferd/inferd.toml"),
         None,

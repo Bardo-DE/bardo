@@ -110,7 +110,11 @@ fn resting_the_pointer_on_an_app_names_the_services_it_uses() {
             .granted_on("g3", "2026-10-08", "always")
             .granting("g4", "Companion can use Speech");
     }
-    w.announce(ModuleId::Accountd, "accounts.claude-key.grant.g4", "added");
+    w.announce(
+        ModuleId::Accountd,
+        "accounts.claude-key.grant.g4",
+        toml::Value::String("added".to_owned()),
+    );
     open(&mut w, KEY);
     let row = "#permission-accounts-claude-key-grant-g3";
     settle(&mut w.harness, "the permit rows", |h| {

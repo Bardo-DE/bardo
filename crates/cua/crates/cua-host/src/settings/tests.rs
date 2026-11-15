@@ -95,9 +95,9 @@ fn the_schema_has_the_shape_the_settings_app_loads() {
                 let default = row["default"].as_integer().expect("a number default");
                 assert!((min..=max).contains(&default), "{p}");
             }
-            (kind @ ("toggle" | "segmented"), v) => {
+            ("segmented", v) => {
                 let words = words(v);
-                assert_eq!(words.len() == 2, kind == "toggle", "{p}");
+                assert!((2..=5).contains(&words.len()), "{p}");
                 assert!(
                     words.contains(&row["default"].as_str().expect("a word default")),
                     "{p}"

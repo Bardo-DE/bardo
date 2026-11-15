@@ -154,7 +154,7 @@ fn the_triangle_asks_the_app_the_row_selects_and_the_trailing_button_acts_alone(
     press(&mut harness, triangle);
     assert_eq!(
         log(&harness),
-        "more:projects,select:projects,toggle:projects:Hidden,toggle:archive:Visible"
+        "more:projects,select:projects,toggle:projects:false,toggle:archive:true"
     );
     assert_eq!(body(&harness, PROJECTS), 0.0, "Projects closed");
     assert!(body(&harness, ARCHIVE) > 10.0, "Archive opened");

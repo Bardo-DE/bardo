@@ -192,7 +192,7 @@ mod tests {
                 ),
                 key(
                     "dock.autohide",
-                    "default = \"off\"\n[kind]\nkind = \"toggle\"\nv = { variants = [\"off\", \"on\"] }\n",
+                    "default = false\n[kind]\nkind = \"toggle\"\n",
                 ),
                 key("bar.title", "default = \"a|b\"\n[kind]\nkind = \"text\"\n"),
             ],
@@ -205,7 +205,7 @@ mod tests {
     #[test]
     fn a_marked_table_is_rewritten_from_the_schema_and_the_rest_is_kept() {
         let got = regenerate(BEFORE, &[schema()]).expect("regenerates");
-        let want = "# Doc\n\n<!-- keys:begin dock -->\n\n| Key | Type | Default | Range | Page | Shown | Agent |\n| --- | --- | --- | --- | --- | --- | --- |\n| `dock.tile_size_px` | number | `48` | `32..=80` px | Desktop & Dock | Settings |  |\n| `dock.autohide` | choice {off, on} | `off` |  | Desktop & Dock | Settings |  |\n\n<!-- keys:end dock -->\n\ntail\n";
+        let want = "# Doc\n\n<!-- keys:begin dock -->\n\n| Key | Type | Default | Range | Page | Shown | Agent |\n| --- | --- | --- | --- | --- | --- | --- |\n| `dock.tile_size_px` | number | `48` | `32..=80` px | Desktop & Dock | Settings |  |\n| `dock.autohide` | toggle | `false` |  | Desktop & Dock | Settings |  |\n\n<!-- keys:end dock -->\n\ntail\n";
         assert_eq!(got, want);
         assert_eq!(regenerate(&got, &[schema()]).as_deref(), Ok(got.as_str()));
     }
