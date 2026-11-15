@@ -7,7 +7,7 @@ use dioxus::prelude::*;
 use ds::components::app::spaces::{
     SlideIn, SpaceHead, SpaceMenu, Spaces, SpacesFoot, SwitchChord, Switched, use_spaces,
 };
-use ds::components::menus::item::item::{AfterPick, MenuItem};
+use ds::components::menus::item::item::MenuItem;
 use ds::prelude::*;
 
 /// The toy payload: the folder a Space opens on.

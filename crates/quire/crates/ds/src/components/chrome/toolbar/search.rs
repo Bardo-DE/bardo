@@ -2,7 +2,7 @@
 //! it, a magnifier button when it does not. Pressing the button opens the field where it was,
 //! with the caret in it; the caret leaving an empty field, or Escape in one, folds it back.
 
-use crate::components::chrome::toolbar::model::{Expansion, SearchFit};
+use crate::components::chrome::toolbar::model::SearchFit;
 use crate::components::content::icon_source::IconSource;
 use crate::components::controls::button::Button;
 use crate::components::controls::button_model::{Bezel, ImagePosition};
@@ -86,18 +86,18 @@ impl SearchSeat {
 pub(crate) fn search_item(
     search: &ToolbarSearch,
     fit: SearchFit,
-    expansion: Signal<Expansion>,
+    opened: Signal<bool>,
 ) -> Element {
-    let mut expansion = expansion;
-    let place = match (fit, expansion()) {
+    let mut opened = opened;
+    let place = match (fit, opened()) {
         (SearchFit::Inline, _) => Some(SeatPlace::Inline),
-        (SearchFit::Collapsed, Expansion::Open) => Some(SeatPlace::Expanded),
-        (SearchFit::Collapsed, Expansion::Folded) => None,
+        (SearchFit::Collapsed, true) => Some(SeatPlace::Expanded),
+        (SearchFit::Collapsed, false) => None,
     };
     let empty = search.value.is_empty();
     let fold = Callback::new(move |()| {
         if empty {
-            expansion.set(Expansion::Folded);
+            opened.set(false);
         }
     });
     let Some(place) = place else {
@@ -110,7 +110,7 @@ pub(crate) fn search_item(
                 image: ImagePosition::Only,
                 icon: Some(IconSource::from(Icon::Search)),
                 availability: Availability::Enabled,
-                onclick: move |_: Press| expansion.set(Expansion::Open),
+                onclick: move |_: Press| opened.set(true),
                 common: Common::default(),
             }
         };

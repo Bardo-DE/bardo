@@ -30,7 +30,7 @@ fn Folders() -> Element {
             let edit = (key == 2).then(|| {
                 rsx! {
                     TextField {
-                        bezel: FieldBezel::Plain,
+                        bezeled: false,
                         label: "Rename folder",
                         value: name(),
                         oninput: move |next| name.set(next),

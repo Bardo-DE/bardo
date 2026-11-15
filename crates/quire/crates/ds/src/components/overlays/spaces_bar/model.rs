@@ -2,7 +2,6 @@
 
 use crate::components::content::image_source::ImageSource;
 use ds_core::vocab::DropState;
-use ds_core::word::Word;
 
 /// Which Space a press names: the host's own id for it, quoted back unchanged. The bar never
 /// reads it.
@@ -70,52 +69,12 @@ impl SpaceTile {
     }
 }
 
-/// How much of the bar shows: the names alone, or thumbnails with the names under them.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum BarExpansion {
-    /// A row of names, the current one marked.
-    #[default]
-    Collapsed,
-    /// A thumbnail for each Space, its name under it.
-    Expanded,
-}
-
-impl BarExpansion {
-    /// What the pointer asks for: expanded while it is over the bar, collapsed once it leaves.
-    pub(crate) fn under_pointer(over: PointerOver) -> Self {
-        match over {
-            PointerOver::Bar => BarExpansion::Expanded,
-            PointerOver::Elsewhere => BarExpansion::Collapsed,
-        }
-    }
-}
-
-/// Whether the pointer is over the bar.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub(crate) enum PointerOver {
-    /// On the bar or anything in it.
-    Bar,
-    /// Anywhere else.
-    Elsewhere,
-}
 
 #[cfg(test)]
 mod tests {
-    use super::{BarExpansion, BarSpaceKey, PointerOver, SpaceTile};
+    use super::{BarSpaceKey, SpaceTile};
     use crate::components::content::image_source::ImageSource;
     use ds_core::vocab::DropState;
-
-    #[test]
-    fn the_bar_is_expanded_exactly_while_the_pointer_is_over_it() {
-        const CASES: &[(PointerOver, BarExpansion)] = &[
-            (PointerOver::Bar, BarExpansion::Expanded),
-            (PointerOver::Elsewhere, BarExpansion::Collapsed),
-        ];
-        for &(over, want) in CASES {
-            assert_eq!(BarExpansion::under_pointer(over), want, "{over:?}");
-        }
-        assert_eq!(BarExpansion::default(), BarExpansion::Collapsed);
-    }
 
     #[test]
     fn a_new_tile_is_not_current_and_has_nothing_dragged_over_it() {

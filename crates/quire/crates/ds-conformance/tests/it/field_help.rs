@@ -4,7 +4,6 @@
 //! is never drawn inline and stays the row's `aria-describedby`.
 
 use dioxus::prelude::*;
-use ds::components::fields::field_help::HelpShown;
 use ds::components::fields::field_row::FieldRow;
 use ds::prelude::*;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -31,7 +30,7 @@ fn Page() -> Element {
                 FieldRow {
                     label: "Wi-Fi",
                     help: Some(TextLine::from("Join known networks.")),
-                    help_shown: HelpShown::OnRequest,
+                    help_on_request: true,
                     common: Common { id: Some("first".to_owned()), ..Common::default() },
                     span { "control" }
                 }
@@ -40,7 +39,7 @@ fn Page() -> Element {
                 FieldRow {
                     label: "Bluetooth",
                     help: Some(TextLine::from("Connect accessories.")),
-                    help_shown: HelpShown::OnRequest,
+                    help_on_request: true,
                     common: Common { id: Some("second".to_owned()), ..Common::default() },
                     span { "control" }
                 }

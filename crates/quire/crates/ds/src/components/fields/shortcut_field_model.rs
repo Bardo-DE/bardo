@@ -28,27 +28,6 @@ pub enum ShortcutClash {
     With(String),
 }
 
-/// Whether the field is listening for a combination.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub(crate) enum Capture {
-    /// Showing its shortcut.
-    #[default]
-    Idle,
-    /// Reading the next combination.
-    Listening,
-}
-
-/// What the field accepts as a shortcut.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum ShortcutKinds {
-    /// A combination with a modifier, or a function key; the system-settings recorder.
-    #[default]
-    Combinations,
-    /// A bare key, or Shift with a character, for an app whose commands are single keys. Delete
-    /// is a key to bind here, not a clear; Backspace still clears.
-    SingleKeys,
-}
-
 /// What a key means to a field that is listening.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum Heard {
@@ -65,34 +44,35 @@ pub(crate) enum Heard {
     Leave,
 }
 
-/// What `key` with `modifiers` held means to a field listening on `platform` for `kinds`. Escape,
-/// Backspace, Delete and Tab are meant bare; with a modifier they are combinations like any
-/// other. For `SingleKeys` Delete is offered as a key.
+/// What `key` with `modifiers` held means to a field listening on `platform`, for single keys
+/// when `single_keys` is set and for combinations otherwise. Escape, Backspace, Delete and Tab
+/// are meant bare; with a modifier they are combinations like any other. For single keys Delete
+/// is offered as a key.
 pub(crate) fn hear(
     platform: Platform,
-    kinds: ShortcutKinds,
+    single_keys: bool,
     key: &Key,
     modifiers: Modifiers,
 ) -> Heard {
     let bare = modifiers_of(modifiers).is_empty();
-    match (key, bare, kinds) {
+    match (key, bare, single_keys) {
         (Key::Escape, true, _) => Heard::Cancel,
         (Key::Backspace, true, _) => Heard::Clear,
-        (Key::Delete, true, ShortcutKinds::Combinations) => Heard::Clear,
+        (Key::Delete, true, false) => Heard::Clear,
         (Key::Tab, true, _) => Heard::Leave,
-        _ => match chord_of(platform, key, modifiers).filter(|chord| is_shortcut(kinds, chord)) {
+        _ => match chord_of(platform, key, modifiers).filter(|chord| is_shortcut(single_keys, chord)) {
             Some(chord) => Heard::Offer(chord),
             None => Heard::Wait,
         },
     }
 }
 
-/// Whether `chord` is something to bind for `kinds`. Combinations: it holds a modifier (Shift
+/// Whether `chord` is something to bind. Combinations: it holds a modifier (Shift
 /// alone with a character is typing), or it is a function key. Single keys: it is bare, or Shift
 /// with a character.
-fn is_shortcut(kinds: ShortcutKinds, chord: &Chord) -> bool {
+fn is_shortcut(single_keys: bool, chord: &Chord) -> bool {
     let modifiers = chord.modifiers();
-    if kinds == ShortcutKinds::SingleKeys {
+    if single_keys {
         let shifted =
             modifiers == ChordModifiers::SHIFT && matches!(chord.key(), ChordKey::Char(_));
         return modifiers.is_empty() || shifted;
@@ -104,7 +84,7 @@ fn is_shortcut(kinds: ShortcutKinds, chord: &Chord) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{Heard, ShortcutKinds, hear};
+    use super::{Heard, hear};
     use chordkit::keyboard_types::{Modifiers as ChordModifiers, NamedKey};
     use chordkit::{Chord, Desktop, Key as ChordKey, Platform};
     use dioxus::prelude::{Key, Modifiers};
@@ -211,7 +191,7 @@ mod tests {
         ];
         for (name, key, modifiers, want) in cases {
             assert_eq!(
-                hear(ours(), ShortcutKinds::Combinations, &key, modifiers),
+                hear(ours(), false, &key, modifiers),
                 want,
                 "{name}"
             );
@@ -274,7 +254,7 @@ mod tests {
         ];
         for (name, key, modifiers, want) in cases {
             assert_eq!(
-                hear(ours(), ShortcutKinds::SingleKeys, &key, modifiers),
+                hear(ours(), true, &key, modifiers),
                 want,
                 "{name}"
             );

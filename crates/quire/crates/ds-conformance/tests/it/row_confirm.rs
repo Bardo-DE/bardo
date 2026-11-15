@@ -3,7 +3,6 @@
 //! and only the confirming button runs the confirmation; the row is not picked while it asks.
 
 use dioxus::prelude::*;
-use ds::components::controls::button_model::ButtonRole;
 use ds::components::lists::row::confirm::RowConfirm;
 use ds::prelude::*;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -26,7 +25,7 @@ fn Folder() -> Element {
     let confirm = asking().then(|| RowConfirm {
         question: "Delete “Receipts” and its 12 messages?".to_string(),
         confirm: "Delete".to_string(),
-        role: ButtonRole::Destructive,
+        destructive: true,
         on_confirm: EventHandler::new(move |()| {
             asking.set(false);
             log.with_mut(|log| log.push("deleted".to_string()));

@@ -9,7 +9,7 @@ use ds_core::word::Word;
 /// Several lines of text, as tall as the field's `rows`.
 pub(crate) fn area(field: Field, value: &str) -> Element {
     let Field {
-        bezel,
+        bezeled,
         rows,
         size,
         label,
@@ -26,11 +26,11 @@ pub(crate) fn area(field: Field, value: &str) -> Element {
         ime,
         blink,
     } = field;
-    let shown = placeholder_shown(value, &placeholder, ime.composition());
+    let shown = placeholder_shown(value, &placeholder, ime.composing());
     rsx! {
         span {
             class: "ds-input-wrap",
-            "data-variant": bezel.slug(),
+            "data-variant": if bezeled { "bezeled" } else { "plain" },
             "data-size": size.slug(),
             "data-kind": "multiline",
             "data-rows": rows.slug(),
@@ -38,7 +38,7 @@ pub(crate) fn area(field: Field, value: &str) -> Element {
             textarea {
                 id,
                 class: "ds-input",
-                "data-variant": bezel.slug(),
+                "data-variant": if bezeled { "bezeled" } else { "plain" },
                 "data-kind": "multiline",
                 "data-rows": rows.slug(),
                 "aria-label": "{label}",

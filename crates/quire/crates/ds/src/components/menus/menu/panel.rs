@@ -87,12 +87,12 @@ impl<T: Clone + PartialEq + 'static> Panel<T> {
                 keymap: self.keymap,
                 onpick: EventHandler::new(move |index: usize| match choices.get(index) {
                     Some(Choice {
-                        act: Act::Pick(value, after),
+                        act: Act::Pick(value, keep_open),
                         ..
                     }) => onpick.call(Picked {
                         value: value.clone(),
                         depth,
-                        after: *after,
+                        keep_open: *keep_open,
                     }),
                     Some(Choice {
                         act: Act::Open(_), ..
@@ -169,10 +169,10 @@ impl<T: Clone + PartialEq + 'static> Panel<T> {
         }
         match &decision {
             Decision::Select(index) => self.select(*index),
-            Decision::Pick(value, after) => self.onpick.call(Picked {
+            Decision::Pick(value, keep_open) => self.onpick.call(Picked {
                 value: value.clone(),
                 depth: self.depth,
-                after: *after,
+                keep_open: *keep_open,
             }),
             Decision::Expand(index) => self.tracker.expand(*index, Via::Keyboard),
             Decision::CloseSub => self.tracker.close_sub(),

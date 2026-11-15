@@ -10,7 +10,6 @@ use ds::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, Avata
 use ds::components::content::provider_mark::{MarkProvider, MarkStyle};
 use ds::components::content::status::battery_state::BatteryState;
 use ds::components::controls::button_model::Bezel;
-use ds::components::controls::button_model::ButtonRole;
 use ds::components::controls::button_model::ImagePosition;
 use ds::components::controls::chip::{Chip, ChipVariant};
 use ds::components::forms::icon_tile::TileFace;
@@ -431,7 +430,7 @@ pub const ROW_CASES: &[Case] = &[
     Case {
         component: "row",
         state: "confirm",
-        make: || rsx! { Row { title: "Receipts", accessory: Accessory::Badge(12), confirm: Some(RowConfirm { question: "Delete “Receipts” and its 12 messages?".to_string(), confirm: "Delete".to_string(), role: ButtonRole::Destructive, on_confirm: EventHandler::new(|()| {}), on_cancel: EventHandler::new(|()| {}) }) } },
+        make: || rsx! { Row { title: "Receipts", accessory: Accessory::Badge(12), confirm: Some(RowConfirm { question: "Delete “Receipts” and its 12 messages?".to_string(), confirm: "Delete".to_string(), destructive: true, on_confirm: EventHandler::new(|()| {}), on_cancel: EventHandler::new(|()| {}) }) } },
     },
     // List: each style, a heading among rows, and an item's exit.
     Case {

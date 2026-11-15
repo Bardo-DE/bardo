@@ -7,7 +7,7 @@
 use super::handles::Field;
 use super::parts::{GrainRow, Stops};
 use super::{DotIndex, Picker, active, edit};
-use crate::components::overlays::popover::{Arrow, Popover};
+use crate::components::overlays::popover::Popover;
 use crate::host::measure::{Anchor, MountedRef};
 use crate::root::common::Common;
 use dioxus::prelude::*;
@@ -112,7 +112,7 @@ pub fn PresetSwatches(
                 anchor: Anchor::Mounted(anchor),
                 placement: Placement::new(Side::Bottom, Align::Center),
                 gap: Px(4.0),
-                arrow: Arrow::Arrow,
+                arrow: true,
                 common: Common { aria_label: Some(CUSTOM.to_owned()), ..Common::default() },
                 onclose: move |()| {
                     shown.set(false);

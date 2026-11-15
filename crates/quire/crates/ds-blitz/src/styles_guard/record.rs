@@ -4,7 +4,7 @@
 //! ```toml
 //! [[start]]
 //! hash = "0123456789abcdef"
-//! state = "starting"
+//! good = false
 //! ```
 //!
 //! Reading is lenient: a line it does not know is skipped and a half-written record is dropped,
@@ -12,59 +12,35 @@
 
 use ds::style::kit::Fingerprint;
 
-/// How far a start got.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Reached {
-    /// Styles were about to load: no first frame plus five seconds yet.
-    Starting,
-    /// The first frame was drawn and the program lived five seconds more.
-    Good,
-}
-
-impl Reached {
-    fn word(self) -> &'static str {
-        match self {
-            Reached::Starting => "starting",
-            Reached::Good => "good",
-        }
-    }
-
-    fn of(word: &str) -> Option<Reached> {
-        [Reached::Starting, Reached::Good]
-            .into_iter()
-            .find(|reached| reached.word() == word)
-    }
-}
-
-/// One start: the hash of the three sheets it loaded, and how far it got.
+/// One start: the hash of the three sheets it loaded, and whether it got far enough.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Record {
     /// The sheets' fingerprint.
     pub hash: Fingerprint,
-    /// How far it got.
-    pub reached: Reached,
+    /// Whether the first frame was drawn and the program lived five seconds more. `false`: the
+    /// styles were about to load and nothing more is known.
 }
 
 /// The records in `text`, oldest first.
 pub fn parse(text: &str) -> Vec<Record> {
     let mut records = Vec::new();
     let mut hash = None;
-    let mut reached = None;
-    let mut close = |hash: &mut Option<Fingerprint>, reached: &mut Option<Reached>| {
-        if let (Some(hash), Some(reached)) = (hash.take(), reached.take()) {
-            records.push(Record { hash, reached });
+    let mut good = None;
+    let mut close = |hash: &mut Option<Fingerprint>, good: &mut Option<bool>| {
+        if let (Some(hash), Some(good)) = (hash.take(), good.take()) {
+            records.push(Record { hash, good });
         }
     };
     for line in text.lines().map(str::trim) {
         if line == "[[start]]" {
-            close(&mut hash, &mut reached);
+            close(&mut hash, &mut good);
         } else if let Some(value) = value_of(line, "hash") {
             hash = u64::from_str_radix(value, 16).ok().map(Fingerprint);
-        } else if let Some(value) = value_of(line, "state") {
-            reached = Reached::of(value);
+        } else if let Some(value) = bool_of(line, "good") {
+            good = Some(value);
         }
     }
-    close(&mut hash, &mut reached);
+    close(&mut hash, &mut good);
     records
 }
 
@@ -78,15 +54,25 @@ fn value_of<'a>(line: &'a str, key: &str) -> Option<&'a str> {
         .strip_suffix('"')
 }
 
+/// `value` of a `key = true` or `key = false` line.
+fn bool_of(line: &str, key: &str) -> Option<bool> {
+    line.strip_prefix(key)?
+        .trim_start()
+        .strip_prefix('=')?
+        .trim()
+        .parse()
+        .ok()
+}
+
 /// The text form of `records`.
 pub fn render(records: &[Record]) -> String {
     records
         .iter()
         .map(|record| {
             format!(
-                "[[start]]\nhash = \"{}\"\nstate = \"{}\"\n",
+                "[[start]]\nhash = \"{}\"\ngood = {}\n",
                 record.hash.hex(),
-                record.reached.word()
+                record.good
             )
         })
         .collect::<Vec<_>>()

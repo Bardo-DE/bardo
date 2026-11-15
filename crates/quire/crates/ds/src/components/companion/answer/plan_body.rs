@@ -140,7 +140,7 @@ fn StepView(step: PlanStep) -> Element {
     rsx! {
         li {
             class: "ds-card-plan-step",
-            "data-inclusion": step.inclusion.slug(),
+            "data-inclusion": if step.included { "included" } else { "excluded" },
             "data-state": state.as_ref().map(|_| step_slug(&step.state)),
             if let Some(app) = step.app.clone() {
                 IconView { source: app, size: IconSize::Compact }

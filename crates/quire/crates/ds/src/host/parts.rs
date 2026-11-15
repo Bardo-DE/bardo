@@ -12,7 +12,7 @@ use crate::host::hand_back::HandBack;
 use crate::host::ime::{ImeEvent, ImeListener};
 use crate::host::measure::Measured;
 use crate::host::pasted::Pasted;
-use crate::host::phase::{Observe, Observed, PhaseWrite, Queued};
+use crate::host::phase::{Observe, Observed, PhaseWrite};
 use crate::host::position::{TextPosition, TextRange};
 use crate::host::probe::Probe;
 use crate::host::reveal::Scrolled;
@@ -78,10 +78,11 @@ pub trait GeometryHost {
     fn observe(&self, _el: &MountedData, _what: Observe) -> Observed {
         Observed::Unsupported
     }
-    /// Queue a write to `el` for the frame phase to apply. A host with no phase answers
-    /// [`Queued::Unsupported`].
-    fn write(&self, _el: &MountedData, _write: PhaseWrite) -> Queued {
-        Queued::Unsupported
+    /// Queue a write to `el` for the frame phase to apply, in the frame's next step. Answers
+    /// whether it was queued: a host with no phase, or an element that is not its own, queues
+    /// nothing.
+    fn write(&self, _el: &MountedData, _write: PhaseWrite) -> bool {
+        false
     }
 }
 

@@ -148,30 +148,18 @@ pub fn search_fit(leading: usize, trailing: usize, room: Px, min_width: Px) -> S
     }
 }
 
-/// Whether a collapsed search field has been opened by pressing its magnifier.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum Expansion {
-    /// The magnifier button alone.
-    #[default]
-    Folded,
-    /// The field, where the button was.
-    Open,
-}
-
 /// The room the search item takes in the band: the field and its gap, or one button while it is
-/// collapsed and folded.
-pub(crate) fn search_room(fit: SearchFit, expansion: Expansion, min_width: Px) -> Px {
-    match (fit, expansion) {
-        (SearchFit::Collapsed, Expansion::Folded) => ITEM_PITCH,
-        (SearchFit::Inline, _) | (SearchFit::Collapsed, Expansion::Open) => {
-            Px(min_width.0 + ITEM_GAP.0)
-        }
+/// collapsed and not `opened` (a collapsed field opens when its magnifier is pressed).
+pub(crate) fn search_room(fit: SearchFit, opened: bool, min_width: Px) -> Px {
+    match (fit, opened) {
+        (SearchFit::Collapsed, false) => ITEM_PITCH,
+        (SearchFit::Inline, _) | (SearchFit::Collapsed, true) => Px(min_width.0 + ITEM_GAP.0),
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{Expansion, Kept, SearchFit, search_fit, search_room};
+    use super::{Kept, SearchFit, search_fit, search_room};
     use ds_core::geometry::units::Px;
 
     #[test]
@@ -235,17 +223,17 @@ mod tests {
 
     #[test]
     fn a_folded_search_item_is_one_button_and_an_open_one_is_the_field() {
-        // (fit, expansion, room)
-        const CASES: &[(SearchFit, Expansion, f32)] = &[
-            (SearchFit::Inline, Expansion::Folded, 208.0),
-            (SearchFit::Collapsed, Expansion::Folded, 40.0),
-            (SearchFit::Collapsed, Expansion::Open, 208.0),
+        // (fit, opened, room)
+        const CASES: &[(SearchFit, bool, f32)] = &[
+            (SearchFit::Inline, false, 208.0),
+            (SearchFit::Collapsed, false, 40.0),
+            (SearchFit::Collapsed, true, 208.0),
         ];
-        for &(fit, expansion, room) in CASES {
+        for &(fit, opened, room) in CASES {
             assert_eq!(
-                search_room(fit, expansion, Px(200.0)),
+                search_room(fit, opened, Px(200.0)),
                 Px(room),
-                "{fit:?} {expansion:?}"
+                "{fit:?} {opened}"
             );
         }
     }

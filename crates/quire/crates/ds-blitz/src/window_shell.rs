@@ -38,7 +38,7 @@ use crate::app_handle::Remote;
 use crate::app_life::Lifecycle;
 use crate::close_request::CloseGuard;
 use crate::open_window::WindowHandle;
-use crate::phase::{Layout, Phase};
+use crate::phase::Phase;
 use crate::startup_token::LaunchTokens;
 use crate::window_activate::raise;
 use crate::window_build::{Base, Shape, WindowParts, WindowSlot, window_config};
@@ -167,7 +167,7 @@ impl Sub {
         };
         let at = self.started.elapsed().as_secs_f64();
         let _ = doc.write(|doc| doc.resolve(at));
-        match self.phase.run(Layout::Resolved).changed() {
+        match self.phase.run(true).changed() {
             true => self.hand_over(event_loop),
             false => Vec::new(),
         }
@@ -190,14 +190,14 @@ impl Sub {
             }
         }
         self.app.proxy_wake_up(event_loop);
-        self.run_phase(Layout::Pending);
+        self.run_phase(false);
         closes
     }
 
     /// Run the window's phase; a frame is asked for when it changed the document, so a write
     /// shows on the next one.
-    fn run_phase(&self, layout: Layout) {
-        if self.phase.run(layout).changed()
+    fn run_phase(&self, resolved: bool) {
+        if self.phase.run(resolved).changed()
             && let Some(window) = self.slot.window()
         {
             window.request_redraw();
@@ -530,7 +530,7 @@ impl ApplicationHandler for Windows {
                 sub.app.window_event(event_loop, window_id, event);
             }
             if drawn {
-                sub.run_phase(Layout::Resolved);
+                sub.run_phase(true);
             }
         }
         for window_id in closes {

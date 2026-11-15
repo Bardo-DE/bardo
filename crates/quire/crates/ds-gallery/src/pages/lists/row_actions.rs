@@ -2,7 +2,6 @@
 
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
-use ds::components::controls::button_model::ButtonRole;
 use ds::components::lists::list::model::ListStyle;
 use ds::components::lists::row::confirm::RowConfirm;
 use ds::components::menus::pop_up_button::{PopUpButton, PopUpKind};
@@ -41,7 +40,7 @@ pub fn RowActions() -> Element {
     let confirm = asking().then(|| RowConfirm {
         question: "Delete “Receipts” and its 12 messages?".to_string(),
         confirm: "Delete".to_string(),
-        role: ButtonRole::Destructive,
+        destructive: true,
         on_confirm: EventHandler::new(move |()| {
             said.set("deleted".to_string());
             asking.set(false);

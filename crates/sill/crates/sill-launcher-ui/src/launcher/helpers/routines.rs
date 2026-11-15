@@ -6,7 +6,7 @@
 use companion_wire::{RoutineLine, RoutineShown};
 use dioxus::prelude::*;
 use ds::components::content::label::{LabelRole, LabelStyle};
-use ds::components::controls::button_model::{Bezel, ButtonRole};
+use ds::components::controls::button_model::{Bezel};
 use ds::components::fields::field_row::{FieldGroup, FieldRow};
 use ds::prelude::*;
 use prov::HelperId;
@@ -117,7 +117,7 @@ fn removal_question(line: &RoutineLine, say: &Say) -> Element {
                 }
                 Button {
                     label: "Remove",
-                    role: ButtonRole::Destructive,
+                    destructive: true,
                     common: Common { id: Some("helper-routine-remove-yes".to_owned()), ..Common::default() },
                     onclick: move |_| remove.msg(routine(RoutinesMsg::Remove(id))),
                 }

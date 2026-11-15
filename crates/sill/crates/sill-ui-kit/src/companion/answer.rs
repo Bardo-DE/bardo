@@ -4,7 +4,7 @@ use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, NeedsYou, RefusalWire}
 use docket_vocab::EntityRef;
 use ds::components::companion::answer::action::{ActionRole, CardAction, CardActionId};
 use ds::components::companion::answer::footer::CardFooter;
-use ds::components::companion::answer::model::{AnswerView, Streaming, TextAnswer};
+use ds::components::companion::answer::model::{AnswerView, TextAnswer};
 use ds::components::companion::answer::refused::{RefusedAnswer, RefusedView};
 use ds::components::companion::draft::model::{DraftReply, PersonLine};
 use ds::components::companion::proposed_event::model::ProposedEvent;
@@ -35,11 +35,11 @@ pub fn answer_view(answer: &AnswerWire, prompt: &str, cx: &ViewCx<'_>) -> Answer
                 .map(|line| TextLine::Plain(plain(line, cx)))
                 .collect(),
             streaming: match answer.phase {
-                AnswerPhase::Streaming | AnswerPhase::Thinking => Streaming::Arriving,
+                AnswerPhase::Streaming | AnswerPhase::Thinking => true,
                 AnswerPhase::NeedsYou(_)
                 | AnswerPhase::Done
                 | AnswerPhase::Failed
-                | AnswerPhase::Cancelled => Streaming::Complete,
+                | AnswerPhase::Cancelled => false,
             },
             actions: needs_you_actions(&answer.phase),
             footer,
@@ -186,7 +186,7 @@ fn refused(refusal: &RefusalWire, footer: CardFooter) -> AnswerView {
         RefusalWire::NoModel => {
             return AnswerView::Text(TextAnswer {
                 body: vec![TextLine::Plain(NO_MODEL_LINE.to_owned())],
-                streaming: Streaming::Complete,
+                streaming: false,
                 actions: Vec::new(),
                 footer,
             });

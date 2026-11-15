@@ -72,12 +72,9 @@ pub use crate::components::editor::raw_keys::RawKeySurface;
 pub use crate::components::editor::surface::EditSurface;
 pub use crate::components::fields::fact_list::{Fact, FactList};
 pub use crate::components::fields::shortcut_field::ShortcutField;
-pub use crate::components::fields::shortcut_field_model::{
-    ShortcutClash, ShortcutKinds, ShortcutRecorded,
-};
+pub use crate::components::fields::shortcut_field_model::{ShortcutClash, ShortcutRecorded};
 pub use crate::components::fields::text_field::TextField;
 pub use crate::components::fields::text_field_focus::FieldFocus;
-pub use crate::components::fields::text_field_model::FieldBezel;
 pub use crate::components::fields::text_field_model::Validity;
 pub use crate::components::fields::text_field_model::{FieldKind, FieldText};
 pub use crate::components::forms::form::Form;
@@ -185,9 +182,7 @@ pub use crate::components::controls::radio_group::RadioGroup;
 pub use crate::components::controls::segmented::SegmentedControl;
 pub use crate::components::controls::slider::Slider;
 pub use crate::components::controls::toggle::Toggle;
-pub use crate::components::menus::item::item::{
-    AfterPick, MenuImage, MenuItem, MenuSwatch, SwatchRow,
-};
+pub use crate::components::menus::item::item::{MenuImage, MenuItem, MenuSwatch, SwatchRow};
 pub use crate::components::menus::item::text::{ItemText, Marks};
 pub use crate::components::menus::menu::hung::{Hung, PanelWidth};
 pub use crate::components::menus::menu::menu::Menu;
@@ -209,7 +204,7 @@ pub use crate::components::overlays::empty_state::EmptyState;
 pub use crate::components::overlays::flow::Flow;
 pub use crate::components::overlays::side_panel::SidePanel;
 pub use crate::components::overlays::spaces_bar::{
-    BarExpansion, BarLayout, BarSpaceKey, SpaceRects, SpaceTile, SpacesBar,
+    BarLayout, BarSpaceKey, SpaceRects, SpaceTile, SpacesBar,
 };
 pub use crate::root::chrome::RootChrome;
 pub use crate::root::common::Common;

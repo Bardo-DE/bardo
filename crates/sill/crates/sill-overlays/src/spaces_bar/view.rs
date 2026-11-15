@@ -48,7 +48,7 @@ fn SpacesStrip(output: OutputInfo) -> Element {
                 label: "Spaces",
                 spaces: tiles(),
                 shown: bar.shown(),
-                expansion: Some(BarExpansion::Expanded),
+                expanded: Some(true),
                 add_drop,
                 on_layout,
                 on_pick: move |key: BarSpaceKey| by_pick.switch(&key),

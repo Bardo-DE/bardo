@@ -5,7 +5,7 @@
 //! behaves as it always does.
 
 use crate::components::menus::search::model::{Manner, Panel};
-use crate::stack::roving::{Step, Wrap, moved_live};
+use crate::stack::roving::{Step, moved_live};
 use ds_core::vocab::Availability;
 
 /// Whether the suggestions are showing, and which choice the cursor is on.
@@ -99,11 +99,7 @@ pub(crate) fn press(
     manner: Manner,
 ) -> (Suggesting, Act) {
     let open = state.is_open(live.len(), manner.panel);
-    let wrap = if manner.stop_at_ends {
-        Wrap::Stops
-    } else {
-        Wrap::Wraps
-    };
+    let wraps = !manner.stop_at_ends;
     match key {
         SuggestKey::Up | SuggestKey::Down => {
             let step = if key == SuggestKey::Up {
@@ -113,7 +109,7 @@ pub(crate) fn press(
             };
             let from = state.cursor.filter(|_| open);
             let to = match from {
-                Some(at) => Some(moved_live(wrap, at, live, step)),
+                Some(at) => Some(moved_live(wraps, at, live, step)),
                 None => landing(live, step),
             };
             match to {

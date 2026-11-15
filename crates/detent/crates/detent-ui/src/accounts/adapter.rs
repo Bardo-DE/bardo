@@ -7,7 +7,7 @@ use crate::copy::accounts::{removal, secret_standing};
 use detent_model::{ClientValue, HoldCounts, RemovalQuestion, SyncHold};
 use dioxus::prelude::*;
 use ds::components::controls::button::Button;
-use ds::components::controls::button_model::{Answers, Bezel, ButtonRole, ImagePosition};
+use ds::components::controls::button_model::{Answers, Bezel, ImagePosition};
 use ds::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle};
 use ds::components::overlays::inline_banner::InlineBanner;
 use ds::prelude::*;
@@ -15,12 +15,9 @@ use ds::root::common::Common;
 use ds::style::tokens::control_size::ControlSize;
 use ds_settings::schema::ActionWeight;
 
-/// What an action's weight does to its button.
-fn role_of(weight: ActionWeight) -> ButtonRole {
-    match weight {
-        ActionWeight::Plain => ButtonRole::Normal,
-        ActionWeight::Destructive => ButtonRole::Destructive,
-    }
+/// Whether an action's weight makes its button destructive.
+fn is_destructive(weight: ActionWeight) -> bool {
+    weight == ActionWeight::Destructive
 }
 
 /// The name a screen reader says for a button that acts on `subject`: "Revoke Photos allowed:
@@ -50,7 +47,7 @@ pub(super) fn ActionButton(
         Button {
             common: spoken(&label, &subject),
             label,
-            role: role_of(weight),
+            destructive: is_destructive(weight),
             size: ControlSize::Small,
             availability,
             onclick: move |_| onpress.call(()),
@@ -239,7 +236,7 @@ pub(super) fn HoldBanner(
                 }
                 Button {
                     label: crate::copy::common::REMOVE,
-                    role: ButtonRole::Destructive,
+                    destructive: true,
                     size: ControlSize::Small,
                     onclick: move |_| onremove.call(()),
                 }

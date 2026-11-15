@@ -12,7 +12,7 @@
 use dioxus::prelude::*;
 use ds::base::press::Press;
 use ds::components::controls::button::Button;
-use ds::components::controls::button_model::{Answers, Bezel, ButtonRole};
+use ds::components::controls::button_model::{Answers, Bezel};
 use ds::components::overlays::sheet_attach::Attach;
 use ds::components::overlays::sheet_width::SheetWidth;
 use ds::focus::soon::focus_soon;
@@ -267,7 +267,7 @@ fn allow(
                 onkeyup: move |_| gate.send(GateIn::HoldEnded),
                 Button {
                     label: if holding { "Keep holding\u{2026}" } else { "Hold to Allow" },
-                    role: ButtonRole::Destructive,
+                    destructive: true,
                     bezel: Bezel::Push,
                     availability: input,
                     // A mouse click is the release of the hold, and only the hold answers. A key

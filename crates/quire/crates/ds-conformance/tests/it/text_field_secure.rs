@@ -90,7 +90,7 @@ fn Titled() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Sheet,
             div { id: "title", style: "display:flex; width:300px; font-size:24px; line-height:1.25",
-                TextField { bezel: FieldBezel::Plain, label: "Name", value: "Work", oninput: |_| {} }
+                TextField { bezeled: false, label: "Name", value: "Work", oninput: |_| {} }
             }
             div { id: "bezeled", style: "display:flex; width:300px; font-size:24px; line-height:1.25",
                 TextField { label: "Name", value: "Work", oninput: |_| {} }

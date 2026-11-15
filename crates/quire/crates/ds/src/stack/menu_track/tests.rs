@@ -4,7 +4,7 @@
 use crate::stack::menu_track::triangle::{inside, shielded};
 use crate::stack::menu_track::types::{
     Branch, ItemPath, MenuAnim, MenuDirection, MenuKey, MenuPhase, MenuTarget, MenuTiming,
-    MenuTrack, MenuTrackEffect, MenuTrackEvent, Pickable, SafeTriangle, Session, ShownBy, Submenu,
+    MenuTrack, MenuTrackEffect, MenuTrackEvent, SafeTriangle, Session, ShownBy, Submenu,
 };
 use ds_core::geometry::units::{Point, Px};
 use ds_core::machine::Machine;
@@ -36,24 +36,24 @@ pub(super) fn path(i: u16) -> ItemPath {
     ItemPath(vec![i])
 }
 
-fn target(i: u16, pick: Pickable, branch: Branch) -> Target {
+fn target(i: u16, pickable: bool, branch: Branch) -> Target {
     MenuTarget::Item {
         path: path(i),
-        pick,
+        pickable,
         branch,
     }
 }
 
 pub(super) fn item(i: u16) -> Target {
-    target(i, Pickable::Enabled, Branch::Leaf)
+    target(i, true, Branch::Leaf)
 }
 
 pub(super) fn parent(i: u16) -> Target {
-    target(i, Pickable::Enabled, Branch::Submenu)
+    target(i, true, Branch::Submenu)
 }
 
 pub(super) fn inert(i: u16) -> Target {
-    target(i, Pickable::Inert, Branch::Leaf)
+    target(i, false, Branch::Leaf)
 }
 
 pub(super) fn pt(x: f32, y: f32) -> Point {

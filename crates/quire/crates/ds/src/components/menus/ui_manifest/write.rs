@@ -1,6 +1,6 @@
 //! Writing the file: rows in, `<AppName>.ui.toml` text out.
 
-use crate::components::menus::ui_manifest::model::{UiCommand, UiManifest, UiOnlyRow, UiVocab};
+use crate::components::menus::ui_manifest::model::{UiCommand, UiManifest, UiOnlyRow, UI_VOCAB};
 use crate::components::menus::ui_manifest::rows::CommandRow;
 use ds_core::command::{CommandFace, CommandId, IntentsApp};
 use std::collections::HashMap;
@@ -63,7 +63,7 @@ impl UiManifest {
             }
         }
         Ok(UiManifest {
-            vocab: UiVocab::CURRENT,
+            vocab: UI_VOCAB,
             app,
             commands,
             ui_only,

@@ -41,12 +41,12 @@ use ds_blitz::seam::Setup;
 use ds_blitz::seam::Wakeup;
 use ds_blitz::seam::WindowScroll;
 use ds_blitz::seam::follow_scheme;
-use ds_blitz::seam::{FocusKeeper, Kept, focus_finder, keep};
+use ds_blitz::seam::{FocusKeeper, focus_finder, keep};
 use ds_blitz::seam::{
     HoverTracker, ask_frame_image, ask_frame_menu, image_under, link_under, live_frames,
     report_frame_hover, report_frame_image, report_frame_menu,
 };
-use ds_blitz::seam::{Layout as PhaseLayout, Phase};
+use ds_blitz::seam::Phase;
 use ds_blitz::seam::{LinkInbox, frame_links, read_link};
 use ds_blitz::seam::{Provided, Wiring};
 use ds_blitz::{FrameHandler, FrameImageClick, FrameLinkHover, FrameLinkMenu};
@@ -418,13 +418,13 @@ impl Headless {
         let landed = self.wakeup.fetched() != fetched;
         // After layout, as the window runs it: a published value or an applied write is
         // seen by the next round's renders.
-        let phased = self.phase.run(PhaseLayout::Resolved).changed();
+        let phased = self.phase.run(true).changed();
         let wanted: Vec<&'static str> = [
             (rendered, RE_RENDERED),
             (restyled, "the colour scheme changed the root's style"),
             (landed, "a fetched resource landed during layout"),
             (phased, "the frame phase changed a published value"),
-            (kept == Kept::Moved, "focus moved to an ancestor"),
+            (kept, "focus moved to an ancestor"),
             (
                 synced == Repaired::Yes,
                 "hover was repaired under the pointer",
@@ -451,13 +451,13 @@ impl Headless {
     }
 
     /// Hand the keyboard to a focusable ancestor of a focused element the renders removed.
-    fn keep_focus(&mut self) -> Kept {
+    fn keep_focus(&mut self) -> bool {
         match &mut self.keeper {
             Keeper::Ancestor(keeper) => keep(
                 &mut keeper.borrow_mut(),
                 &DocRef::Cell(Rc::clone(&self.doc.inner)),
             ),
-            Keeper::Off => Kept::Still,
+            Keeper::Off => false,
         }
     }
 

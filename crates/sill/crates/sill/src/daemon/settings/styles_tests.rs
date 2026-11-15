@@ -9,7 +9,6 @@ use std::time::Duration;
 use ds::style::kit::{Styles, UserStyle};
 use ds_blitz::StylesGuard;
 use ds_blitz::TokioSpawner;
-use ds_blitz::styles_guard::Load;
 use ds_settings::{AppearanceFile, Store};
 use shell_host::HostEvent;
 
@@ -47,7 +46,7 @@ fn styles_of(keeper: &StyleKeeper) -> Styles {
     keeper.feeds().0.borrow().clone()
 }
 
-fn load_of(keeper: &StyleKeeper) -> Option<Load> {
+fn load_of(keeper: &StyleKeeper) -> Option<bool> {
     keeper.feeds().1.borrow().as_ref().map(StylesGuard::load)
 }
 
@@ -144,13 +143,13 @@ fn two_unfinished_starts_turn_the_styles_off_and_turn_on_again_brings_them_back(
     desktop_store(&dir)
         .save(&style(".d { }"))
         .unwrap_or_else(|e| panic!("{e}"));
-    assert_eq!(load_of(&keeper(&dir)), Some(Load::WithStyles));
-    assert_eq!(load_of(&keeper(&dir)), Some(Load::WithStyles));
+    assert_eq!(load_of(&keeper(&dir)), Some(true));
+    assert_eq!(load_of(&keeper(&dir)), Some(true));
     let third = keeper(&dir);
-    assert_eq!(load_of(&third), Some(Load::Without));
+    assert_eq!(load_of(&third), Some(false));
 
     third.publish(&HostEvent::App(ShellMsg::TurnOnStyles));
-    assert_eq!(load_of(&third), Some(Load::WithStyles));
+    assert_eq!(load_of(&third), Some(true));
     let appearance = text_of::<AppearanceFile>(&desktop_store(&dir));
     assert!(
         appearance.contains("custom_styles = \"use\""),
@@ -168,9 +167,9 @@ fn a_change_to_any_sheet_gives_a_turned_off_start_a_fresh_try() {
     keeper(&dir);
     keeper(&dir);
     let third = keeper(&dir);
-    assert_eq!(load_of(&third), Some(Load::Without));
+    assert_eq!(load_of(&third), Some(false));
     third.publish(&watched(Sheet::Desktop, ".fixed { }"));
-    assert_eq!(load_of(&third), Some(Load::WithStyles));
+    assert_eq!(load_of(&third), Some(true));
     let _ = std::fs::remove_dir_all(&dir);
 }
 

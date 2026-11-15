@@ -2,10 +2,9 @@
 //! submenu is open: pure, so the whole keyboard contract is one table (design/06-INTERACTIONS.md
 //! section 2.4; design/13-BEHAVIOUR-menus-windows.md sections 13.3.2-13.3.4).
 
-use crate::components::menus::item::item::AfterPick;
 use crate::components::menus::menu::choices::{Act, Choice, Slot};
 use crate::components::menus::menu::keys::KeyAct;
-use crate::stack::roving::{Step, Wrap, edge_live, moved_live};
+use crate::stack::roving::{Step, edge_live, moved_live};
 use ds_core::vocab::Availability;
 
 /// Which panel: the menu itself, or a submenu (whose Escape and Left go back one level).
@@ -23,7 +22,7 @@ pub(crate) enum Decision<T> {
     /// Move the selection here.
     Select(usize),
     /// Yield this value, then close the whole menu or leave it open, as the item says.
-    Pick(T, AfterPick),
+    Pick(T, bool),
     /// Open this choice's submenu now, by the keyboard.
     Expand(usize),
     /// Close this panel's open submenu.
@@ -90,14 +89,14 @@ pub(crate) fn decide<T: Clone>(
         .filter(|choice| choice.availability == Availability::Enabled);
     match act {
         KeyAct::Move(step) => Decision::Select(moved_live(
-            Wrap::Wraps,
+            true,
             leaving(choices, selected, *step),
             &stops(choices),
             *step,
         )),
         KeyAct::Edge(edge) => Decision::Select(edge_live(*edge, selected, &stops(choices))),
         KeyAct::Pick => match live.map(|choice| &choice.act) {
-            Some(Act::Pick(value, after)) => Decision::Pick(value.clone(), *after),
+            Some(Act::Pick(value, keep_open)) => Decision::Pick(value.clone(), *keep_open),
             Some(Act::Open(_)) => Decision::Expand(selected),
             None => Decision::Nothing,
         },
@@ -115,7 +114,7 @@ pub(crate) fn decide<T: Clone>(
 
 #[cfg(test)]
 mod tests {
-    use super::{AfterPick, Decision, Level, decide};
+    use super::{Decision, Level, decide};
     use crate::components::menus::menu::choices::{Act, Choice, Slot};
     use crate::components::menus::menu::keys::KeyAct;
     use crate::stack::roving::{Edge, Step};
@@ -123,7 +122,7 @@ mod tests {
 
     fn pick(value: u8) -> Choice<u8> {
         Choice {
-            act: Act::Pick(value, AfterPick::Close),
+            act: Act::Pick(value, false),
             availability: Availability::Enabled,
             title: String::new(),
             slot: Slot::Alone,
@@ -132,7 +131,7 @@ mod tests {
 
     fn off(value: u8) -> Choice<u8> {
         Choice {
-            act: Act::Pick(value, AfterPick::Close),
+            act: Act::Pick(value, false),
             availability: Availability::Disabled,
             title: String::new(),
             slot: Slot::Alone,
@@ -158,7 +157,7 @@ mod tests {
         let cases: Vec<(KeyAct, usize, bool, Level, Decision<u8>)> = vec![
             (KeyAct::Move(Step::Down), 0, closed, root, Decision::Select(2)),
             (KeyAct::Move(Step::Up), 2, closed, root, Decision::Select(0)),
-            (KeyAct::Pick, 0, closed, root, Decision::Pick(10, AfterPick::Close)),
+            (KeyAct::Pick, 0, closed, root, Decision::Pick(10, false)),
             (KeyAct::Pick, 1, closed, root, Decision::Nothing),
             (KeyAct::Pick, 2, closed, root, Decision::Expand(2)),
             (KeyAct::Open, 2, closed, sub, Decision::Expand(2)),
@@ -205,7 +204,7 @@ mod tests {
             (KeyAct::Back, 3, root, Decision::Select(2)),
             (KeyAct::Back, 1, root, Decision::Nothing),
             (KeyAct::Back, 1, sub, Decision::Back),
-            (KeyAct::Pick, 2, root, Decision::Pick(2, AfterPick::Close)),
+            (KeyAct::Pick, 2, root, Decision::Pick(2, false)),
         ];
         for (act, selected, level, want) in cases {
             assert_eq!(

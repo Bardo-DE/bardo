@@ -3,7 +3,7 @@
 use dioxus::prelude::*;
 use ds::components::fields::text_field_model::Invalid;
 use ds::motion::detail::stamp::EventStamp;
-use ds::prelude::{FieldBezel, FieldFocus, TextField, TextLine, Validity};
+use ds::prelude::{FieldFocus, TextField, TextLine, Validity};
 use files_model::{Input, RenameProblem};
 
 use crate::state::Browse;
@@ -24,7 +24,7 @@ pub(super) fn RenameCell(browse: Browse, draft: String, problem: Option<RenamePr
         TextField {
             label: "Name".to_owned(),
             value: draft,
-            bezel: FieldBezel::Plain,
+            bezeled: false,
             focus: FieldFocus::OnMount,
             validity,
             oninput: move |text: String| browse.send(Input::EditDraft(text)),

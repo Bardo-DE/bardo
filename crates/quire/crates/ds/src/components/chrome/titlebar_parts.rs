@@ -10,19 +10,8 @@ use crate::host::measure::use_rect;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Px;
 use ds_core::text::clip::clip_middle;
-use ds_core::word::Word;
 use ds_style::icon::Icon;
 use ds_style::icon::render::{Glyph, IconSize};
-
-/// Whether the window's document has changes that are not saved (`isDocumentEdited`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum DocumentState {
-    /// Nothing unsaved.
-    #[default]
-    Saved,
-    /// Unsaved changes: the titlebar draws the edited dot.
-    Edited,
-}
 
 /// The parts beside a title.
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -31,8 +20,9 @@ pub struct TitleParts {
     pub subtitle: Option<String>,
     /// The document's icon before the title: what a person drags to move or attach the file.
     pub proxy: Option<Icon>,
-    /// Whether the document has unsaved changes.
-    pub document: DocumentState,
+    /// Whether the document has unsaved changes (`isDocumentEdited`): the titlebar draws the
+    /// edited dot.
+    pub edited: bool,
 }
 
 /// The room a proxy icon takes beside the name: its 14 px and the gap after it.
@@ -51,10 +41,7 @@ impl TitleParts {
     /// The room beside the name that is not the subtitle's: the proxy icon and the edited dot.
     fn fixed_room(&self) -> Px {
         let proxy = self.proxy.map_or(Px(0.0), |_| PROXY_ROOM);
-        let edited = match self.document {
-            DocumentState::Edited => EDITED_ROOM,
-            DocumentState::Saved => Px(0.0),
-        };
+        let edited = if self.edited { EDITED_ROOM } else { Px(0.0) };
         proxy + edited
     }
 }
@@ -96,7 +83,7 @@ pub(crate) fn TitleArea(title: String, parts: TitleParts) -> Element {
     rsx! {
         span {
             class: "ds-titlebar-title",
-            "data-document": parts.document.slug(),
+            "data-document": if parts.edited { "edited" } else { "saved" },
             onmounted: move |event| area.on_mounted(event),
             if let Some(icon) = parts.proxy {
                 span { class: "ds-titlebar-proxy", "aria-hidden": "true",
@@ -104,7 +91,7 @@ pub(crate) fn TitleArea(title: String, parts: TitleParts) -> Element {
                 }
             }
             span { class: "ds-titlebar-name", "{shown}" }
-            if parts.document == DocumentState::Edited {
+            if parts.edited {
                 span { class: "ds-titlebar-edited", role: "img", "aria-label": "Edited" }
             }
             if let Some(text) = parts.subtitle.as_ref() {

@@ -21,7 +21,6 @@ use ds::components::overlays::hover_card::parts::{
     FlagTone, HoverCardPart, HoverMessage, HoverStat,
 };
 use ds::components::overlays::hover_card::target::HoverTarget;
-use ds::components::overlays::popover::Arrow;
 use ds::components::overlays::sheet_width::SheetWidth;
 use ds::host::measure::Anchor;
 use ds::motion::detail::operation::Operation;
@@ -498,7 +497,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "popover",
         state: "arrow",
-        make: || rsx! { Popover { anchor: Anchor::Rect(button_rect()), placement: Placement::new(Side::Bottom, Align::Center), gap: Px(2.0), arrow: Arrow::Arrow, onclose: |_| {}, "Anything" } },
+        make: || rsx! { Popover { anchor: Anchor::Rect(button_rect()), placement: Placement::new(Side::Bottom, Align::Center), gap: Px(2.0), arrow: true, onclose: |_| {}, "Anything" } },
         wait: NOW,
     },
     // HoverCard: the target at rest, then each kind of card open after the intent.
@@ -954,20 +953,20 @@ pub const CASES: &[Case] = &[
     Case {
         component: "spaces_bar",
         state: "expanded",
-        make: || rsx! { SpacesBar { label: "Spaces", spaces: bar_thumbnails(), shown: true, expansion: Some(BarExpansion::Expanded), on_pick: |_| {} } },
+        make: || rsx! { SpacesBar { label: "Spaces", spaces: bar_thumbnails(), shown: true, expanded: Some(true), on_pick: |_| {} } },
         wait: NOW,
     },
     // The plus lit by a drag, and the Spaces over their backdrops (one with a picture on it).
     Case {
         component: "spaces_bar",
         state: "plus-lit",
-        make: || rsx! { SpacesBar { label: "Spaces", spaces: bar_backdrops(), shown: true, expansion: Some(BarExpansion::Expanded), add_drop: DropState::Target, on_add: |_| {}, on_pick: |_| {} } },
+        make: || rsx! { SpacesBar { label: "Spaces", spaces: bar_backdrops(), shown: true, expanded: Some(true), add_drop: DropState::Target, on_add: |_| {}, on_pick: |_| {} } },
         wait: NOW,
     },
     Case {
         component: "spaces_bar",
         state: "backdrops",
-        make: || rsx! { SpacesBar { label: "Spaces", spaces: bar_backdrops(), shown: true, expansion: Some(BarExpansion::Expanded), on_pick: |_| {} } },
+        make: || rsx! { SpacesBar { label: "Spaces", spaces: bar_backdrops(), shown: true, expanded: Some(true), on_pick: |_| {} } },
         wait: NOW,
     },
 ];

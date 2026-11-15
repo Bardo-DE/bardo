@@ -6,7 +6,6 @@ use std::time::Duration;
 
 use ds::style::kit::{Styles, UserStyle};
 use ds_blitz::StylesGuard;
-use ds_blitz::styles_guard::Load;
 use ds_harness::Input;
 use sill_bar::Bar;
 use sill_testkit::TempDir;
@@ -48,7 +47,7 @@ fn start(guard: StylesGuard) -> SurfaceHarness<Bar> {
 fn a_start_with_its_styles_shows_no_notice_and_draws_them() {
     let dir = TempDir::new("styles-notice-with");
     let guard = guard_after(&dir, 1);
-    assert_eq!(guard.load(), Load::WithStyles);
+    assert!(guard.load());
     let html = start(guard).harness.html();
     assert!(!html.contains(SENTENCE), "{html}");
     assert!(html.contains("data-ds-style=\"desktop\""), "{html}");
@@ -58,7 +57,7 @@ fn a_start_with_its_styles_shows_no_notice_and_draws_them() {
 fn a_start_the_guard_turned_the_styles_off_for_says_so_and_draws_none() {
     let dir = TempDir::new("styles-notice-without");
     let guard = guard_after(&dir, 3);
-    assert_eq!(guard.load(), Load::Without);
+    assert!(!guard.load());
     let html = start(guard).harness.html();
     assert!(html.contains(SENTENCE), "{html}");
     assert!(html.contains("Turn On Again"), "{html}");

@@ -53,7 +53,7 @@ use ds_style::tokens::layer::ZLayer;
 /// `Context` menu also leaves out what cannot be picked (unless `dim_unavailable` is set). Every menu
 /// opens at once. A pick blinks the item twice, then calls `onpick`, fades the menu out over
 /// `--t-quick` and calls `onclose`; Escape and an outside click play the fade and call `onclose`.
-/// An item with `AfterPick::KeepOpen` (a toggle in a set of toggles) yields its value at once and
+/// An item with `keep_open` (a toggle in a set of toggles) yields its value at once and
 /// leaves the menu up, with no blink; the caller redraws the items with the new state.
 /// `on_hover` hears which choice the pointer is over (`None` once it is over none),
 /// `on_release` every button released over a choice; a release over an enabled choice after a

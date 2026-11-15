@@ -6,16 +6,6 @@
 use dioxus::prelude::Key;
 use ds_core::vocab::Availability;
 
-/// How a step moves past the ends: a floating menu wraps, everything else stops
-/// (design/30-CATALOGUE.md section 1.4, Roving focus).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Wrap {
-    /// Past the last is the first.
-    Wraps,
-    /// Past the last stays on the last.
-    Stops,
-}
-
 /// One step of the selection.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Step {
@@ -25,28 +15,30 @@ pub enum Step {
     Up,
 }
 
-/// The selection after `step` from `selected` among `count` items.
-pub(crate) fn moved(nav: Wrap, selected: usize, count: usize, step: Step) -> usize {
+/// The selection after `step` from `selected` among `count` items. A floating menu `wraps` (past
+/// the last is the first); everything else stops (past the last stays on the last)
+/// (design/30-CATALOGUE.md section 1.4, Roving focus).
+pub(crate) fn moved(wraps: bool, selected: usize, count: usize, step: Step) -> usize {
     if count == 0 {
         return 0;
     }
     let last = count - 1;
     let selected = selected.min(last);
-    match (nav, step) {
-        (Wrap::Wraps, Step::Down) => (selected + 1) % count,
-        (Wrap::Wraps, Step::Up) => (selected + last) % count,
-        (Wrap::Stops, Step::Down) => (selected + 1).min(last),
-        (Wrap::Stops, Step::Up) => selected.saturating_sub(1),
+    match (wraps, step) {
+        (true, Step::Down) => (selected + 1) % count,
+        (true, Step::Up) => (selected + last) % count,
+        (false, Step::Down) => (selected + 1).min(last),
+        (false, Step::Up) => selected.saturating_sub(1),
     }
 }
 
 /// The selection after `step` from `selected`, skipping disabled choices (design/13 section
 /// 13.3.3). With no enabled choice the selection stays; clamping at an end with only disabled
 /// choices past it stays too.
-pub(crate) fn moved_live(nav: Wrap, selected: usize, live: &[Availability], step: Step) -> usize {
+pub(crate) fn moved_live(wraps: bool, selected: usize, live: &[Availability], step: Step) -> usize {
     let mut at = selected.min(live.len().saturating_sub(1));
     for _ in 0..live.len() {
-        let next = moved(nav, at, live.len(), step);
+        let next = moved(wraps, at, live.len(), step);
         if next == at {
             return selected;
         }
@@ -123,16 +115,16 @@ impl Rove {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Roving<K> {
     items: Vec<(K, Availability)>,
-    wrap: Wrap,
+    wraps: bool,
     focused: Option<usize>,
 }
 
 impl<K: Clone + PartialEq> Roving<K> {
     /// `items` in order, none focused yet.
-    pub fn new(items: Vec<(K, Availability)>, wrap: Wrap) -> Self {
+    pub fn new(items: Vec<(K, Availability)>, wraps: bool) -> Self {
         Roving {
             items,
-            wrap,
+            wraps,
             focused: None,
         }
     }
@@ -165,7 +157,7 @@ impl<K: Clone + PartialEq> Roving<K> {
     pub fn step(mut self, step: Step) -> Self {
         let live = self.live();
         self.focused = match self.focused {
-            Some(at) => Some(moved_live(self.wrap, at, &live, step)),
+            Some(at) => Some(moved_live(self.wraps, at, &live, step)),
             None => Some(edge_live(
                 match step {
                     Step::Down => Edge::First,
@@ -196,55 +188,55 @@ impl<K: Clone + PartialEq> Roving<K> {
 
 #[cfg(test)]
 mod tests {
-    use super::{Edge, Roving, Step, Wrap, edge_live, moved, moved_live, settled};
+    use super::{Edge, Roving, Step, edge_live, moved, moved_live, settled};
     use ds_core::vocab::Availability::{Disabled as D, Enabled as E};
 
     #[test]
     fn a_menu_wraps_and_the_palette_stops() {
-        // (nav, selected, count, step, want)
+        // (wraps, selected, count, step, want)
         #[rustfmt::skip]
-        const CASES: &[(Wrap, usize, usize, Step, usize)] = &[
-            (Wrap::Wraps, 0, 3, Step::Down, 1),
-            (Wrap::Wraps, 2, 3, Step::Down, 0),
-            (Wrap::Wraps, 0, 3, Step::Up, 2),
-            (Wrap::Wraps, 1, 3, Step::Up, 0),
-            (Wrap::Wraps, 0, 1, Step::Down, 0),
-            (Wrap::Wraps, 0, 0, Step::Down, 0),
-            (Wrap::Wraps, 7, 3, Step::Down, 0),
-            (Wrap::Stops, 0, 3, Step::Down, 1),
-            (Wrap::Stops, 2, 3, Step::Down, 2),
-            (Wrap::Stops, 0, 3, Step::Up, 0),
-            (Wrap::Stops, 2, 3, Step::Up, 1),
-            (Wrap::Stops, 0, 0, Step::Up, 0),
+        const CASES: &[(bool, usize, usize, Step, usize)] = &[
+            (true, 0, 3, Step::Down, 1),
+            (true, 2, 3, Step::Down, 0),
+            (true, 0, 3, Step::Up, 2),
+            (true, 1, 3, Step::Up, 0),
+            (true, 0, 1, Step::Down, 0),
+            (true, 0, 0, Step::Down, 0),
+            (true, 7, 3, Step::Down, 0),
+            (false, 0, 3, Step::Down, 1),
+            (false, 2, 3, Step::Down, 2),
+            (false, 0, 3, Step::Up, 0),
+            (false, 2, 3, Step::Up, 1),
+            (false, 0, 0, Step::Up, 0),
         ];
-        for &(nav, selected, count, step, want) in CASES {
+        for &(wraps, selected, count, step, want) in CASES {
             assert_eq!(
-                moved(nav, selected, count, step),
+                moved(wraps, selected, count, step),
                 want,
-                "{nav:?} {step:?} from {selected} of {count}"
+                "wraps {wraps} {step:?} from {selected} of {count}"
             );
         }
     }
 
     #[test]
     fn up_and_down_skip_disabled_choices() {
-        // (nav, selected, live, step, want)
+        // (wraps, selected, live, step, want)
         #[rustfmt::skip]
-        let cases: &[(Wrap, usize, &[_], Step, usize)] = &[
-            (Wrap::Wraps, 0, &[E, D, E], Step::Down, 2),
-            (Wrap::Wraps, 2, &[E, D, E], Step::Up, 0),
-            (Wrap::Wraps, 2, &[D, E, E], Step::Down, 1),
-            (Wrap::Wraps, 0, &[E, D, D], Step::Down, 0),
-            (Wrap::Wraps, 0, &[D, D, D], Step::Down, 0),
-            (Wrap::Stops, 1, &[E, E, D], Step::Down, 1),
-            (Wrap::Stops, 2, &[E, D, E], Step::Up, 0),
-            (Wrap::Wraps, 0, &[], Step::Down, 0),
+        let cases: &[(bool, usize, &[_], Step, usize)] = &[
+            (true, 0, &[E, D, E], Step::Down, 2),
+            (true, 2, &[E, D, E], Step::Up, 0),
+            (true, 2, &[D, E, E], Step::Down, 1),
+            (true, 0, &[E, D, D], Step::Down, 0),
+            (true, 0, &[D, D, D], Step::Down, 0),
+            (false, 1, &[E, E, D], Step::Down, 1),
+            (false, 2, &[E, D, E], Step::Up, 0),
+            (true, 0, &[], Step::Down, 0),
         ];
-        for &(nav, selected, live, step, want) in cases {
+        for &(wraps, selected, live, step, want) in cases {
             assert_eq!(
-                moved_live(nav, selected, live, step),
+                moved_live(wraps, selected, live, step),
                 want,
-                "{nav:?} {step:?} from {selected} in {live:?}"
+                "wraps {wraps} {step:?} from {selected} in {live:?}"
             );
         }
     }
@@ -298,7 +290,7 @@ mod tests {
     #[test]
     fn a_roving_set_focuses_steps_and_jumps_by_key() {
         let items = vec![("a", E), ("b", D), ("c", E), ("d", E)];
-        let set = Roving::new(items.clone(), Wrap::Wraps);
+        let set = Roving::new(items.clone(), true);
         assert_eq!(set.focused(), None);
         let set = set.step(Step::Down);
         assert_eq!(set.focused(), Some(&"a"), "Down from nothing is the first");
@@ -311,7 +303,7 @@ mod tests {
             Some(&"a"),
             "a menu wraps"
         );
-        let stops = Roving::new(items, Wrap::Stops)
+        let stops = Roving::new(items, false)
             .edge(Edge::Last)
             .step(Step::Down);
         assert_eq!(stops.focused(), Some(&"d"), "a list stops");
@@ -321,7 +313,7 @@ mod tests {
             "a disabled key is refused"
         );
         assert_eq!(stops.focus(&"c").focused(), Some(&"c"));
-        let up = Roving::new(vec![("a", E), ("b", E)], Wrap::Wraps).step(Step::Up);
+        let up = Roving::new(vec![("a", E), ("b", E)], true).step(Step::Up);
         assert_eq!(up.focused(), Some(&"b"), "Up from nothing is the last");
     }
 }

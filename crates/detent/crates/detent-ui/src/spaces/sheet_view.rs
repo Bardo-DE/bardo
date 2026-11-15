@@ -7,7 +7,7 @@ use detent_model::external::HistoryFate;
 use detent_model::{RemovalAsk, RemovalInput};
 use dioxus::prelude::*;
 use ds::components::content::label::{LabelRole, LabelStyle};
-use ds::components::controls::button_model::{Answers, Bezel, ButtonRole};
+use ds::components::controls::button_model::{Answers, Bezel};
 use ds::components::controls::choice::Choice;
 use ds::components::controls::radio_group::RadioGroup;
 use ds::components::overlays::sheet_width::SheetWidth;
@@ -29,11 +29,7 @@ pub(super) struct SheetHandlers {
 /// and Remove and Cancel.
 #[component]
 pub(super) fn RemovalSheetView(ask: RemovalAsk, on: SheetHandlers) -> Element {
-    let role = if ask.destroys() {
-        ButtonRole::Destructive
-    } else {
-        ButtonRole::Normal
-    };
+    let destructive = ask.destroys();
     let choices: Vec<Choice<HistoryFate>> = HISTORY_CHOICES
         .iter()
         .map(|fate| Choice::new(*fate, history_label(*fate)))
@@ -68,7 +64,7 @@ pub(super) fn RemovalSheetView(ask: RemovalAsk, on: SheetHandlers) -> Element {
                     }
                     Button {
                         label: crate::copy::common::REMOVE,
-                        role,
+                        destructive,
                         answers: Answers::Return,
                         onclick: move |_| on.confirm.call(()),
                     }

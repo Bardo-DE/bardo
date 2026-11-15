@@ -5,7 +5,7 @@ use crate::copy::bluetooth::{forget_body, forget_title, pairing_body, pairing_ti
 use detent_model::{BtInput, PairingAnswer, PairingQuestion};
 use dioxus::prelude::*;
 use ds::components::content::label::{LabelRole, LabelStyle};
-use ds::components::controls::button_model::{Answers, ButtonRole};
+use ds::components::controls::button_model::{Answers};
 use ds::components::overlays::sheet_width::SheetWidth;
 use ds::prelude::*;
 use ds::root::common::Common;
@@ -34,7 +34,7 @@ pub(super) fn ForgetSheet(name: String, press: EventHandler<BtInput>) -> Element
                     Button {
                         label: crate::copy::bluetooth::FORGET_DEVICE,
                         common: Common { aria_label: Some(crate::copy::bluetooth::FORGET_DEVICE.to_owned()), ..Common::default() },
-                        role: ButtonRole::Destructive,
+                        destructive: true,
                         onclick: move |_| press.call(BtInput::ConfirmForget),
                     }
                 }

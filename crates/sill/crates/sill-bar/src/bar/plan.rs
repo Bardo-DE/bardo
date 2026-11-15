@@ -3,7 +3,7 @@
 //! swap"), and from what the popup reports back to the machine's inputs. Pure.
 
 use ds::prelude::*;
-use ds::stack::menu_track::types::{Branch, ItemPath, MenuKey, Pickable};
+use ds::stack::menu_track::types::{Branch, ItemPath, MenuKey};
 
 use super::menus::BarMenu;
 use super::pick::BarPick;
@@ -89,7 +89,7 @@ pub(crate) fn popup_input(report: PopupReport, open: Option<MenuId>) -> (Event, 
 fn item(index: usize) -> Target {
     Target::Item {
         path: ItemPath(vec![u16::try_from(index).unwrap_or(u16::MAX)]),
-        pick: Pickable::Enabled,
+        pickable: true,
         branch: Branch::Leaf,
     }
 }

@@ -12,7 +12,7 @@ use ds::base::vocab::Availability;
 use ds::base::word::Word;
 use ds::components::fields::text_field::TextField;
 use ds::components::fields::text_field_focus::FieldFocus;
-use ds::components::fields::text_field_model::{FieldBezel, FieldKind};
+use ds::components::fields::text_field_model::FieldKind;
 use ds::style::icon::Icon;
 use ds::style::icon::render::{Glyph, IconSize};
 
@@ -54,9 +54,9 @@ pub(crate) fn PasswordField(
         None => "ds-password-field".to_owned(),
     };
     let alias = pulse.map(|(_, alias)| alias);
-    let bezel = match form {
-        Form::Pill => FieldBezel::Plain,
-        Form::Boxed => FieldBezel::Bezeled,
+    let bezeled = match form {
+        Form::Pill => false,
+        Form::Boxed => true,
     };
     rsx! {
         div {
@@ -68,7 +68,7 @@ pub(crate) fn PasswordField(
             for round in [password.key()] {
                 TextField {
                     key: "{round}",
-                    bezel,
+                    bezeled,
                     kind: FieldKind::Secure,
                     label: "Password",
                     value: "",

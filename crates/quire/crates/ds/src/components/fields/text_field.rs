@@ -21,7 +21,7 @@ use crate::components::fields::text_field_focus::{FieldFocus, FieldFocuser};
 use crate::components::fields::text_field_ime::FieldIme;
 use crate::components::fields::text_field_mask::MaskCaret;
 use crate::components::fields::text_field_model::{
-    FieldBezel, FieldKind, FieldRows, FieldText, Validity,
+    FieldKind, FieldRows, FieldText, Validity,
 };
 use crate::components::fields::text_field_parts::{Field, Handlers, line};
 use crate::focus::field::FieldHandle;
@@ -123,7 +123,7 @@ fn clear_size(size: ControlSize) -> ControlSize {
 /// `rows` tall (Enter adds a line; the caret leaving commits). `on_token` makes each token a
 /// button and hears which was pressed; `on_token_remove` puts a remove button on each and hears
 /// which was removed; either way the caret goes back to the field. Each is the token's place in
-/// `tokens`. `bezel` is its edge ([`FieldBezel`]).
+/// `tokens`. `bezeled` is its edge (`NSTextField.isBezeled`; `false` is a plain field, no box).
 /// `onchange` hears the value committed: Enter, or the caret leaving (Blitz sends no `change`
 /// event, so the field makes its own, the same on both renderers). `onsubmit` hears the value on
 /// Enter alone (never on the caret leaving, never in a multi-line field, never while the field is
@@ -142,7 +142,7 @@ pub fn TextField(
     #[props(default)] placeholder: String,
     #[props(default)] kind: FieldKind,
     #[props(default)] text: FieldText,
-    #[props(default)] bezel: FieldBezel,
+    #[props(default = true)] bezeled: bool,
     #[props(default)] rows: FieldRows,
     #[props(default)] size: ControlSize,
     #[props(default)] availability: Availability,
@@ -210,12 +210,13 @@ pub fn TextField(
     // A plain field sits inline in a row of text, so its rejection is its ink and a line under
     // it, as a browser marks an invalid input; why is the input's description, not a line that
     // would push the row taller. A bezeled field says why under its frame.
-    let (note, description) = match bezel {
-        FieldBezel::Plain => (help, validity.message().map(TextLine::plain_text)),
-        FieldBezel::Bezeled => (validity.message().cloned().or(help), None),
+    let (note, description) = if bezeled {
+        (validity.message().cloned().or(help), None)
+    } else {
+        (help, validity.message().map(TextLine::plain_text))
     };
     let field = Field {
-        bezel,
+        bezeled,
         rows,
         size,
         label,
@@ -272,7 +273,7 @@ pub fn TextField(
             class,
             "data-pulse": alias,
             "data-kind": kind.data_kind(),
-            "data-variant": bezel.slug(),
+            "data-variant": if bezeled { "bezeled" } else { "plain" },
             "data-size": size.slug(),
             "data-availability": availability.slug(),
             "data-focus": holds().then_some("ring"),

@@ -4,7 +4,7 @@
 
 use crate::pages::Section;
 use dioxus::prelude::*;
-use ds::components::app::hover_strip::{ActionId, HoverStrip, StripAction, Titles};
+use ds::components::app::hover_strip::{ActionId, HoverStrip, StripAction};
 use ds::components::app::thread_row::ThreadRow;
 use ds::components::content::text_runs::RunTone;
 use ds::prelude::*;
@@ -100,7 +100,7 @@ pub fn SearchRows() -> Element {
                                             HoverStrip {
                                                 actions: actions(),
                                                 shown: at() == index,
-                                                titles: Titles::FromLabel,
+                                                titles: true,
                                                 expanded: vec![(ActionId("label".to_string()), at() == index)],
                                             }
                                         },

@@ -11,7 +11,7 @@ use crate::host::parts::EditHost;
 use crate::host::position::{EditNode, TextPosition};
 use crate::host::probe::Probe;
 use crate::spell::lang::{Lang, Spell};
-use crate::spell::marks::{Edit, Misspelt, Typing, marks_for, reconcile, shown, typing_after};
+use crate::spell::marks::{Misspelt, Typing, marks_for, reconcile, shown, typing_after};
 use crate::spell::service::{Paragraph, SpellService};
 use crate::spell::words::words;
 use dioxus::core::{ScopeId, Task, current_scope_id};
@@ -169,15 +169,12 @@ fn refresh(ctx: &SpellCtx, paragraphs: &[Paragraph]) {
     let at = caret
         .as_ref()
         .and_then(|caret| paragraphs.iter().find(|p| p.node == caret.node));
-    let edit = match at.map(|p| seen.get(&p.node) == Some(&p.text)) {
-        Some(true) | None => Edit::Same,
-        Some(false) => Edit::Changed,
-    };
+    let changed = at.is_some_and(|p| seen.get(&p.node) != Some(&p.text));
     let typing = typing_after(
         state.typing.take(),
         caret.as_ref(),
         at.map(|p| p.text.as_str()),
-        edit,
+        changed,
     );
     state.typing.replace(typing);
 }

@@ -400,18 +400,6 @@ pub(crate) fn escape_closes(float: Float, event: &KeyboardEvent, onclose: EventH
     }
 }
 
-/// Whether a popover points at its anchor (`NSPopover`'s arrow, design/30 section 2.5): an app
-/// popover anchored to a control does; a shell popover hung from the bar or Control Center does
-/// not (design/27 5.6).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum Arrow {
-    /// The 34 x 8 arrow on the side facing the anchor.
-    Arrow,
-    /// No arrow: the popover hangs from its anchor.
-    #[default]
-    None,
-}
-
 /// How far the arrow stands out of the popover, and so how much further from its anchor the
 /// popover sits.
 const ARROW_HEIGHT: Px = Px(8.0);
@@ -448,14 +436,16 @@ fn arrow_at(side: Side, anchor: Rect, at: Point, size: Size) -> (&'static str, S
 /// `dismiss` says what closes it: [`Dismiss::Transient`] (the default) Escape and a click
 /// outside, [`Dismiss::Semitransient`] Escape only, [`Dismiss::Manual`] neither. It fades in over
 /// `--t-quick` and, closed by either, fades out before `onclose` runs. `arrow` draws the 34 x 8
-/// arrow toward the anchor. `common` puts the consumer's `id`, `data-*` and classes on the
+/// arrow toward the anchor (`NSPopover`'s arrow, design/30 section 2.5): an app popover
+/// anchored to a control has one; a shell popover hung from the bar or Control Center does not
+/// (design/27 5.6). `common` puts the consumer's `id`, `data-*` and classes on the
 /// surface, and its `aria_label` names it.
 #[component]
 pub fn Popover(
     anchor: Anchor,
     placement: Placement,
     gap: Px,
-    #[props(default)] arrow: Arrow,
+    #[props(default)] arrow: bool,
     #[props(default)] dismiss: Dismiss,
     onclose: EventHandler<()>,
     #[props(default)] common: Common,
@@ -463,10 +453,7 @@ pub fn Popover(
 ) -> Element {
     let layer = ZLayer::Menu;
     let float = use_float(layer, Stacking::Layer(dismiss));
-    let gap = match arrow {
-        Arrow::Arrow => gap + ARROW_HEIGHT,
-        Arrow::None => gap,
-    };
+    let gap = if arrow { gap + ARROW_HEIGHT } else { gap };
     let anchor_rect = float.anchor_rect(&anchor);
     let placed = float.placing(anchor_rect, placement, gap);
     let at = placed.map_or_else(Point::default, |placed| placed.origin);
@@ -488,7 +475,7 @@ pub fn Popover(
         }
     });
     let pointer = match (arrow, placed, anchor_rect, probe.rect()) {
-        (Arrow::Arrow, Some(placed), Some(anchor), Some(size)) => {
+        (true, Some(placed), Some(anchor), Some(size)) => {
             Some(arrow_at(placed.side, anchor, placed.origin, size.size))
         }
         _ => None,

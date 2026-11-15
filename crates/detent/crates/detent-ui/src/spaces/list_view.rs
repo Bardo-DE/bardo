@@ -10,7 +10,6 @@ use detent_model::{
     PageKind, RemovalStage, SpaceKey, SpaceRow, SpacesInput, SpacesReady, SpacesState,
 };
 use dioxus::prelude::*;
-use ds::components::controls::button_model::ButtonRole;
 use ds::components::fields::field_row::{FieldGroup, FieldRow};
 use ds::components::overlays::empty_state::EmptyState;
 use ds::prelude::*;
@@ -91,7 +90,7 @@ fn SpaceLine(
                     ..Common::default()
                 },
                 label: crate::copy::common::REMOVE,
-                role: ButtonRole::Destructive,
+                destructive: true,
                 size: ControlSize::Small,
                 availability,
                 onclick: move |_| drive.call(SpacesInput::AskRemove(key.clone())),

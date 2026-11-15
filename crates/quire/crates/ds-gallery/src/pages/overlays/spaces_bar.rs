@@ -19,10 +19,10 @@ pub fn SpacesBars() -> Element {
                 Bar { name: "SpacesBar, hover it".to_string(), held: None, over: DropState::Idle, add_over: DropState::Idle }
             }
             div { class: "g-row g-row-top",
-                Bar { name: "SpacesBar, held expanded, a drag over Desktop 3".to_string(), held: Some(BarExpansion::Expanded), over: DropState::Target, add_over: DropState::Idle }
+                Bar { name: "SpacesBar, held expanded, a drag over Desktop 3".to_string(), held: Some(true), over: DropState::Target, add_over: DropState::Idle }
             }
             div { class: "g-row g-row-top",
-                Bar { name: "SpacesBar, held expanded, a drag over the plus".to_string(), held: Some(BarExpansion::Expanded), over: DropState::Idle, add_over: DropState::Target }
+                Bar { name: "SpacesBar, held expanded, a drag over the plus".to_string(), held: Some(true), over: DropState::Idle, add_over: DropState::Target }
             }
         }
     }
@@ -31,7 +31,7 @@ pub fn SpacesBars() -> Element {
 /// One bar on the wallpaper with its show-and-hide button. `held` is the expansion the specimen
 /// fixes, if any; `over` is the third Space's part in a drag and `add_over` the plus's.
 #[component]
-fn Bar(name: String, held: Option<BarExpansion>, over: DropState, add_over: DropState) -> Element {
+fn Bar(name: String, held: Option<bool>, over: DropState, add_over: DropState) -> Element {
     let axes = use_context::<Signal<Axes>>();
     let appearance = {
         let axes = axes.read();

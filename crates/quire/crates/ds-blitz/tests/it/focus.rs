@@ -290,7 +290,7 @@ mod kept_click {
                             title: "Projects",
                             content: rsx! {
                                 span { onclick: move |event: MouseEvent| event.stop_propagation(),
-                                    TextField { bezel: FieldBezel::Plain, label: "Rename folder", value: "Projects",
+                                    TextField { bezeled: false, label: "Rename folder", value: "Projects",
                                         focus: FieldFocus::Controlled(request),
                                         oninput: |_: String| {},
                                     }

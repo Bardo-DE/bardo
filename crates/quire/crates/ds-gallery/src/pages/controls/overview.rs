@@ -152,10 +152,10 @@ fn Choosers() -> Element {
                     ShortcutField { label: "Clashing shortcut", value: Some(sample_chord()), clash: ShortcutClash::With("New Space".to_owned()), onrecord: |_| {} }
                 }
                 Specimen { name: "single keys",
-                    ShortcutField { label: "Single key", value: Some(Chord::new(ChordModifiers::empty(), ChordKey::Char('j'))), accepts: ShortcutKinds::SingleKeys, onrecord: |_| {} }
+                    ShortcutField { label: "Single key", value: Some(Chord::new(ChordModifiers::empty(), ChordKey::Char('j'))), single_keys: true, onrecord: |_| {} }
                 }
                 Specimen { name: "extra keys",
-                    ShortcutField { label: "Two keys", value: Some(Chord::new(ChordModifiers::empty(), ChordKey::Char('j'))), more: vec![Chord::new(ChordModifiers::empty(), ChordKey::Named(NamedKey::ArrowDown))], accepts: ShortcutKinds::SingleKeys, onrecord: |_| {} }
+                    ShortcutField { label: "Two keys", value: Some(Chord::new(ChordModifiers::empty(), ChordKey::Char('j'))), more: vec![Chord::new(ChordModifiers::empty(), ChordKey::Named(NamedKey::ArrowDown))], single_keys: true, onrecord: |_| {} }
                 }
                 Specimen { name: "disabled",
                     ShortcutField { label: "Disabled shortcut", value: Some(sample_chord()), availability: Availability::Disabled, onrecord: |_| {} }

@@ -5,10 +5,10 @@
 //! Shown, the bar drops in from the top edge over `--t-overview --e-out`; hidden, it lifts away
 //! over `--t-overview --e-exit` and `on_hidden` runs once the lift has settled, when the host
 //! unmaps its surface. The pointer over the bar expands it to thumbnails, and off it collapses it
-//! again, unless the caller holds `expansion` itself.
+//! again, unless the caller holds `expanded` itself.
 
 use super::layout::{BarLayout, Book, Reporter, use_add_rect, use_card_rect, use_tile_rect};
-use super::model::{BarExpansion, BarSpaceKey, PointerOver, SpaceTile};
+use super::model::{BarSpaceKey, SpaceTile};
 use crate::components::content::icon_source::IconSource;
 use crate::components::content::image_source::ImageSource;
 use crate::components::controls::button::Button;
@@ -33,9 +33,9 @@ const ADD_LABEL: &str = "Add Space";
 /// Mission Control's Spaces bar. `spaces` lists the Spaces left to right; a primary press on one
 /// reports its key through `on_pick`, and the plus (drawn only when `on_add` is given, labelled
 /// `add_label`) reports through `on_add`. `shown` is whether the bar is up: it drops in and lifts
-/// away, and `on_hidden` runs at the end of the lift. `expansion` is how much shows: `None`
-/// follows the pointer, `Some` is what the caller says, and `on_expansion_change` hears each
-/// change the pointer asks for. `add_drop` is the plus's part in a drag, as `SpaceTile::in_drag`
+/// away, and `on_hidden` runs at the end of the lift. `expanded` is whether thumbnails show
+/// under the names: `None` follows the pointer, `Some` is what the caller says, and
+/// `on_expansion_change` hears each change the pointer asks for. `add_drop` is the plus's part in a drag, as `SpaceTile::in_drag`
 /// is a Space's: `Target` lights it with the wash and ring a lit Space gets. `on_layout`, when
 /// given, hears where the Spaces and the plus are drawn (measured) each time any of them moves or
 /// resizes. `common.aria_label` names the group in place of `label`.
@@ -50,8 +50,8 @@ pub fn SpacesBar(
     #[props(default)] add_drop: DropState,
     #[props(default)] on_layout: Option<EventHandler<BarLayout>>,
     #[props(default)] on_hidden: EventHandler<()>,
-    #[props(default)] expansion: Option<BarExpansion>,
-    #[props(default)] on_expansion_change: Option<EventHandler<BarExpansion>>,
+    #[props(default)] expanded: Option<bool>,
+    #[props(default)] on_expansion_change: Option<EventHandler<bool>>,
     #[props(default)] common: Common,
 ) -> Element {
     let Presented { presence, alias } = use_presence(
@@ -63,11 +63,11 @@ pub fn SpacesBar(
         Some(on_hidden),
     );
     Book::provide();
-    let mut own = use_signal(BarExpansion::default);
-    let now = expansion.unwrap_or_else(|| *own.read());
-    let mut ask = move |over: PointerOver| {
-        let next = BarExpansion::under_pointer(over);
-        if expansion.is_none() {
+    let mut own = use_signal(|| false);
+    let now = expanded.unwrap_or_else(|| *own.read());
+    // The pointer is over the bar (`true`) or has left it: expanded exactly while it is over.
+    let mut ask = move |next: bool| {
+        if expanded.is_none() {
             own.set(next);
         }
         if next != now
@@ -89,17 +89,17 @@ pub fn SpacesBar(
             class,
             role: "group",
             "aria-label": "{name}",
-            "data-expansion": now.slug(),
+            "data-expansion": if now { "expanded" } else { "collapsed" },
             "data-presence": drawn,
             "data-pulse": alias.slug(),
             onmounted: move |event| common.mounted(event),
-            onpointerenter: move |_| ask(PointerOver::Bar),
-            onpointerleave: move |_| ask(PointerOver::Elsewhere),
+            onpointerenter: move |_| ask(true),
+            onpointerleave: move |_| ask(false),
             ..data,
             div { class: "ds-spaces-bar-side" }
             div { class: "ds-spaces-bar-row",
                 for tile in spaces {
-                    Tile { key: "{tile.key.0}", tile, expansion: now, on_pick }
+                    Tile { key: "{tile.key.0}", tile, expanded: now, on_pick }
                 }
             }
             div { class: "ds-spaces-bar-side",
@@ -140,7 +140,7 @@ fn Plus(label: String, drop: DropState, on_add: EventHandler<()>) -> Element {
 
 /// One Space: its thumbnail while the bar is expanded, and its name.
 #[component]
-fn Tile(tile: SpaceTile, expansion: BarExpansion, on_pick: EventHandler<BarSpaceKey>) -> Element {
+fn Tile(tile: SpaceTile, expanded: bool, on_pick: EventHandler<BarSpaceKey>) -> Element {
     let SpaceTile {
         key,
         name,
@@ -168,7 +168,7 @@ fn Tile(tile: SpaceTile, expansion: BarExpansion, on_pick: EventHandler<BarSpace
             onclick: move |event| listen.click(&event),
             onkeydown: move |event| listen.key_down(&event, ActivationKeys::ReturnAndSpace),
             oncontextmenu: move |event| listen.context_menu(&event),
-            if expansion == BarExpansion::Expanded {
+            if expanded {
                 Card { space: card, backdrop, picture: thumbnail }
             }
             span { class: "ds-spaces-bar-name", "{name}" }

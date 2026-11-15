@@ -1,7 +1,7 @@
 //! DocumentTabs' rules, pure so they are tested without a pointer or a key: when a strip is
 //! worth showing, what a standard action asks of it, where an arrow lands and what a drop does.
 
-use crate::stack::roving::{Edge, Rove, Wrap, moved};
+use crate::stack::roving::{Edge, Rove, moved};
 use chordkit::{Action, StandardAction};
 
 /// How many tabs make a strip worth showing: one document needs no strip, as in Finder and
@@ -36,7 +36,7 @@ pub fn command_of(action: &Action) -> Option<TabCommand> {
 /// Home and End jump to them.
 pub fn rove_to(rove: Rove, selected: usize, count: usize) -> usize {
     match rove {
-        Rove::Step(step) => moved(Wrap::Stops, selected, count, step),
+        Rove::Step(step) => moved(false, selected, count, step),
         Rove::Edge(Edge::First) => 0,
         Rove::Edge(Edge::Last) => count.saturating_sub(1),
     }

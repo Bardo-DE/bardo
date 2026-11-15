@@ -6,7 +6,6 @@
 
 use crate::components::editor::ctx::SurfaceCtx;
 use crate::components::editor::focus::focus_surface;
-use crate::components::editor::state::Capture;
 use crate::edit::clicks::Clicks;
 use crate::edit::pointer::{EditPointer, Extend};
 use crate::host::captured::{CapturedPointer, PointerPhase};
@@ -36,14 +35,14 @@ pub(crate) fn press(
     if let (Some(edit), Some(element)) = (ctx.host.edit(), ctx.state.element())
         && edit.capture(&element, captured) == Probe::Found(())
     {
-        ctx.state.capture.set(Capture::Held);
+        ctx.state.captured.set(true);
     }
     focus_surface(ctx, told);
 }
 
 /// A move over the surface, when no capture carries it.
 pub(crate) fn moved(ctx: &SurfaceCtx, event: &PointerEvent) {
-    if ctx.state.pressing.get() == PressPhase::Idle || ctx.state.capture.get() == Capture::Held {
+    if ctx.state.pressing.get() == PressPhase::Idle || ctx.state.captured.get() {
         return;
     }
     if !event.held_buttons().contains(MouseButton::Primary) {
@@ -62,7 +61,7 @@ pub(crate) fn moved(ctx: &SurfaceCtx, event: &PointerEvent) {
 
 /// A release over the surface, when no capture carries it.
 pub(crate) fn released(ctx: &SurfaceCtx, event: &PointerEvent) {
-    if ctx.state.capture.get() == Capture::Held {
+    if ctx.state.captured.get() {
         return;
     }
     if ctx.state.pressing.replace(PressPhase::Idle) == PressPhase::Pressed {
@@ -84,7 +83,7 @@ pub(crate) fn captured(ctx: &SurfaceCtx, pointer: CapturedPointer) {
     }
     if pointer.phase == PointerPhase::Release {
         ctx.state.pressing.set(PressPhase::Idle);
-        ctx.state.capture.set(Capture::Free);
+        ctx.state.captured.set(false);
     }
     let clicks = ctx.state.last_clicks();
     report(ctx, pointer.at, pointer.modifiers, pointer.phase, clicks);

@@ -12,7 +12,7 @@ use ds::components::chrome::sidebar_model::{SidebarFill, SidebarSection};
 use ds::components::chrome::split_view::model::{PaneSpec, SplitPane};
 use ds::components::chrome::split_view::view::SplitView;
 use ds::components::chrome::tab_view::TabView;
-use ds::components::chrome::titlebar_parts::{DocumentState, TitleParts};
+use ds::components::chrome::titlebar_parts::TitleParts;
 use ds::components::chrome::toolbar::model::{ToolbarItem, ToolbarRoom};
 use ds::components::chrome::toolbar::view::Toolbar;
 use ds::components::chrome::window_frame::WindowTitlebar;
@@ -21,9 +21,8 @@ use ds::components::controls::button_model::{Bezel, ImagePosition};
 use ds::components::controls::checkbox::Checkbox;
 use ds::components::controls::scrubber_model::BufferedRange;
 use ds::components::fields::fact_list::{Fact, FactList};
-use ds::components::fields::field_help::HelpShown;
 use ds::components::fields::field_row::{FieldGroup, FieldRow, RowLayout};
-use ds::components::fields::stepper::model::{Readout, StepRange};
+use ds::components::fields::stepper::model::StepRange;
 use ds::components::fields::stepper::view::Stepper;
 use ds::components::lists::table::model::{CellAlign, Sort, SortDirection, TableColumn, TableRow};
 use ds::components::lists::table::view::Table;
@@ -158,17 +157,17 @@ pub const CASES: &[Case] = &[
     Case {
         component: "stepper",
         state: "bare",
-        make: || rsx! { Stepper { label: "Copies", value: 4, range: range(), readout: Readout::Bare, onchange: |_| {} } },
+        make: || rsx! { Stepper { label: "Copies", value: 4, range: range(), bare: true, onchange: |_| {} } },
     },
     Case {
         component: "stepper",
         state: "top",
-        make: || rsx! { Stepper { label: "Copies", value: 10, range: range(), readout: Readout::Bare, onchange: |_| {} } },
+        make: || rsx! { Stepper { label: "Copies", value: 10, range: range(), bare: true, onchange: |_| {} } },
     },
     Case {
         component: "stepper",
         state: "bottom",
-        make: || rsx! { Stepper { label: "Copies", value: 0, range: range(), readout: Readout::Bare, onchange: |_| {} } },
+        make: || rsx! { Stepper { label: "Copies", value: 0, range: range(), bare: true, onchange: |_| {} } },
     },
     Case {
         component: "stepper",
@@ -338,7 +337,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "field_row",
         state: "on-request",
-        make: || rsx! { FieldRow { label: TextLine::from("Wi-Fi"), help: Some(TextLine::from("Join known networks.")), help_shown: HelpShown::OnRequest, span { "control" } } },
+        make: || rsx! { FieldRow { label: TextLine::from("Wi-Fi"), help: Some(TextLine::from("Join known networks.")), help_on_request: true, span { "control" } } },
     },
     Case {
         component: "field_row",
@@ -388,6 +387,6 @@ pub const CASES: &[Case] = &[
     Case {
         component: "titlebar",
         state: "parts",
-        make: || rsx! { WindowTitlebar { title: "Report", parts: TitleParts { subtitle: Some("Edited today".to_owned()), proxy: Some(Icon::File), document: DocumentState::Edited }, lights: false } },
+        make: || rsx! { WindowTitlebar { title: "Report", parts: TitleParts { subtitle: Some("Edited today".to_owned()), proxy: Some(Icon::File), edited: true }, lights: false } },
     },
 ];

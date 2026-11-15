@@ -9,15 +9,6 @@ use ds_core::word::Word;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct StepId(pub u32);
 
-/// Whether a step is part of the run, `data-inclusion`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-pub enum Inclusion {
-    /// It runs.
-    Included,
-    /// The person left it out.
-    Excluded,
-}
-
 /// Where a step stands.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PlanStepState {
@@ -48,8 +39,8 @@ pub struct PlanStep {
     pub app: Option<IconSource>,
     /// What it does to the world.
     pub effect: EffectMark,
-    /// Whether it is part of the run.
-    pub inclusion: Inclusion,
+    /// Whether it is part of the run (`false`: the person left it out), `data-inclusion`.
+    pub included: bool,
     /// Where it stands.
     pub state: PlanStepState,
 }

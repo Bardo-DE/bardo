@@ -24,24 +24,6 @@ pub enum ShownBy {
     Hover,
 }
 
-/// Whether the pointer has been inside the menu since it opened.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Entered {
-    /// It has.
-    Entered,
-    /// Not yet.
-    NotYet,
-}
-
-/// Whether an item can be picked (separators, headers and disabled items cannot).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Pickable {
-    /// A live item.
-    Enabled,
-    /// A separator, header or disabled item.
-    Inert,
-}
-
 /// Whether an item opens a submenu.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Branch {
@@ -60,8 +42,8 @@ pub enum MenuTarget<K> {
     Item {
         /// Which item.
         path: ItemPath,
-        /// Whether it can be picked.
-        pick: Pickable,
+        /// Whether it can be picked (separators, headers and disabled items cannot).
+        pickable: bool,
         /// Whether it opens a submenu.
         branch: Branch,
     },
@@ -118,7 +100,7 @@ pub struct Session<K> {
     /// Whether the opening press is still down.
     pub held: PressPhase,
     /// Whether the pointer has been inside the menu.
-    pub entered: Entered,
+    pub entered: bool,
     /// The highlighted item (always a pickable one).
     pub hot: Option<ItemPath>,
     /// Where the keyboard cursor stands: the last item highlighted, kept while the pointer is

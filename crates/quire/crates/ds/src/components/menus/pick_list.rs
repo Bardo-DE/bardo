@@ -8,15 +8,14 @@
 //! what `oninput` says, and a "Create" row is one more row it adds when nothing matches. Up and
 //! Down move the selection, Return picks it, Escape clears a typed query and, on an empty
 //! field, closes the popover, as does a press outside. A
-//! row's [`AfterPick`] says whether its pick closes the list: a row that toggles a label keeps it
+//! row's `keep_open` says whether its pick leaves the list up: a row that toggles a label keeps it
 //! open and the caller redraws the row with its new check, a row that moves the thread closes it.
 
 use crate::components::fields::text_field::TextField;
 use crate::components::fields::text_field_focus::FieldFocus;
-use crate::components::fields::text_field_model::{FieldBezel, FieldKind};
+use crate::components::fields::text_field_model::FieldKind;
 use crate::components::lists::row::size::RowSize;
 use crate::components::menus::alive::use_alive;
-use crate::components::menus::item::item::AfterPick;
 use crate::components::menus::palette::palette_body::{StopEvents, draw_groups};
 use crate::components::menus::palette::palette_group::PaletteGroups;
 use crate::components::menus::palette::palette_lines::{PaletteKey, palette_key};
@@ -27,7 +26,7 @@ use crate::components::menus::palette::palette_select::use_palette_selection;
 use crate::components::menus::palette::palette_stops::{
     Run, Travel, run_of, shown_groups, stops, travel,
 };
-use crate::components::overlays::popover::{Arrow, Popover};
+use crate::components::overlays::popover::Popover;
 use crate::focus::request::use_focus_request;
 use crate::host::caret::InitialCaret;
 use crate::host::measure::{Anchor, MountedRef};
@@ -63,7 +62,7 @@ pub fn PickList<T: Clone + PartialEq + 'static>(
     onpick: EventHandler<T>,
     onclose: EventHandler<()>,
     #[props(default = below())] placement: Placement,
-    #[props(default)] arrow: Arrow,
+    #[props(default)] arrow: bool,
     #[props(default)] common: Common,
 ) -> Element {
     let alive = use_alive();
@@ -82,8 +81,8 @@ pub fn PickList<T: Clone + PartialEq + 'static>(
     let run = {
         let all = all.clone();
         move |index: usize| match run_of(all.get(index)) {
-            Run::Pick(value, after) => {
-                if after == AfterPick::Close {
+            Run::Pick(value, keep_open) => {
+                if !keep_open {
                     onclose.call(());
                 }
                 onpick.call(value);
@@ -152,7 +151,7 @@ pub fn PickList<T: Clone + PartialEq + 'static>(
                     value: query.clone(),
                     placeholder,
                     kind: FieldKind::Search,
-                    bezel: FieldBezel::Plain,
+                    bezeled: false,
                     focus: FieldFocus::Controlled(focus),
                     oninput,
                     onkey,

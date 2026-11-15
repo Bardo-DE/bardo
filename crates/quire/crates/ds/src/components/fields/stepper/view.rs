@@ -1,4 +1,4 @@
-//! Stepper: the pair, and with `Readout::Field` the text field it changes (design/30 section
+//! Stepper: the pair, and unless `bare`, the text field it changes (design/30 section
 //! 2.1, `NSStepper`). A press on a half steps once at once; held past `DelayToken::RepeatStart`
 //! it repeats every `DelayToken::RepeatEvery` until it is let go. The pair takes the keyboard as
 //! a spin button: Up and Down step, Home and End go to the ends. The field beside it commits a
@@ -9,7 +9,7 @@
 //! a half that cannot go further is `aria-disabled`, the half held down `data-pressed`.
 
 use crate::components::fields::stepper::hold::{HoldIn, RepeatPace, StepHold};
-use crate::components::fields::stepper::model::{Readout, StepDirection, StepRange};
+use crate::components::fields::stepper::model::{StepDirection, StepRange};
 use crate::components::fields::text_field::TextField;
 use crate::root::common::Common;
 use dioxus::prelude::*;
@@ -63,13 +63,15 @@ impl Stepping {
 }
 
 /// A stepper over `range`. `value` is the number it shows and steps; `onchange` hears each
-/// step and each typed number, already inside the range. `Busy` and `Disabled` take no input.
+/// step and each typed number, already inside the range. `bare` is the pair alone: the value is
+/// shown somewhere else (a label, a date's segment); otherwise a text field beside the pair is
+/// bound to the value: typing sets it, the pair steps it. `Busy` and `Disabled` take no input.
 #[component]
 pub fn Stepper(
     #[props(into)] label: String,
     value: i32,
     range: StepRange,
-    #[props(default)] readout: Readout,
+    #[props(default)] bare: bool,
     #[props(default)] size: ControlSize,
     #[props(default)] availability: Availability,
     onchange: EventHandler<i32>,
@@ -103,9 +105,10 @@ pub fn Stepper(
         }
     };
     let field_key = on_key;
-    let field = match readout {
-        Readout::Bare => rsx! {},
-        Readout::Field => rsx! {
+    let field = if bare {
+        rsx! {}
+    } else {
+        rsx! {
             TextField {
                 label: label.clone(),
                 value: draft().unwrap_or_else(|| value.to_string()),
@@ -120,7 +123,7 @@ pub fn Stepper(
                 },
                 onkey: field_key,
             }
-        },
+        }
     };
     let half = move |direction: StepDirection, icon: Icon| {
         let held = (pressed == Some(direction))

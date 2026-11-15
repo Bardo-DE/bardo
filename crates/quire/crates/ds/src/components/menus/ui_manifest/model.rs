@@ -15,15 +15,8 @@ pub enum CommandSource {
     Shortcut,
 }
 
-/// The file's vocabulary version.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct UiVocab(pub u32);
-
-impl UiVocab {
-    /// The version `ds` writes.
-    pub const CURRENT: UiVocab = UiVocab(1);
-}
+/// The vocabulary version `ds` writes into a [`UiManifest`].
+pub const UI_VOCAB: u32 = 1;
 
 /// One menu item or shortcut binding: `[[commands]]`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -53,7 +46,7 @@ pub struct UiOnlyRow {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct UiManifest {
     /// The vocabulary version.
-    pub vocab: UiVocab,
+    pub vocab: u32,
     /// The app the file is for.
     pub app: IntentsApp,
     /// One row per menu item and per shortcut binding.

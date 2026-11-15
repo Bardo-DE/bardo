@@ -3,7 +3,7 @@
 //! jump to the next label that starts with them.
 
 use crate::components::lists::list::model::{ListItem, ListRole};
-use crate::stack::roving::{Rove, Roving, Wrap};
+use crate::stack::roving::{Rove, Roving};
 use dioxus::prelude::{Key, Modifiers};
 use ds_core::command::types_text;
 use ds_core::vocab::Availability;
@@ -57,7 +57,7 @@ pub(crate) fn moved<K: Clone + PartialEq>(
             .into_iter()
             .map(|(_, key, availability)| (key, availability))
             .collect(),
-        Wrap::Stops,
+        false,
     );
     let set = match cursor {
         Some(key) => set.focus(key),

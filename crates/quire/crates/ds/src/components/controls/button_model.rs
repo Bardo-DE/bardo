@@ -18,16 +18,6 @@ pub enum Bezel {
     Help,
 }
 
-/// What the button does to the thing it acts on (`NSButton.hasDestructiveAction`), `data-role`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum ButtonRole {
-    /// An ordinary action.
-    #[default]
-    Normal,
-    /// An action that deletes or discards: red under the pointer, and red as a default button.
-    Destructive,
-}
-
 /// Which key of the window the button answers, `data-answers`. A dialog routes Return to the
 /// button that answers it and Escape to the one that answers Cancel. A button that answers
 /// Escape is activated by Space only, leaving Return to the default button; any other focused
@@ -65,17 +55,6 @@ pub enum ImagePosition {
     Only,
 }
 
-/// How the button's glyph changes when its `icon` does (design/30 section 1.3, Cross-fade):
-/// a play button that becomes a pause button fades one into the other, and never pulses.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum IconSwap {
-    /// The new glyph is there at once.
-    #[default]
-    Instant,
-    /// The glyphs cross-fade over `--t-quick`; a quire glyph only, anything else swaps at once.
-    CrossFade,
-}
-
 impl Answers {
     /// `data-answers`, written only for a button that answers a key.
     pub(crate) fn attr(self) -> Option<&'static str> {
@@ -85,7 +64,7 @@ impl Answers {
 
 #[cfg(test)]
 mod tests {
-    use super::{Answers, Bezel, ButtonRole, IconSwap, ImagePosition};
+    use super::{Answers, Bezel, ImagePosition};
     use ds_core::word::Word;
 
     #[test]
@@ -93,17 +72,11 @@ mod tests {
         for bezel in Bezel::ALL {
             assert_eq!(Bezel::parse(bezel.slug()), Some(*bezel));
         }
-        for role in ButtonRole::ALL {
-            assert_eq!(ButtonRole::parse(role.slug()), Some(*role));
-        }
         for answers in Answers::ALL {
             assert_eq!(Answers::parse(answers.slug()), Some(*answers));
         }
         for image in ImagePosition::ALL {
             assert_eq!(ImagePosition::parse(image.slug()), Some(*image));
-        }
-        for swap in IconSwap::ALL {
-            assert_eq!(IconSwap::parse(swap.slug()), Some(*swap));
         }
     }
 

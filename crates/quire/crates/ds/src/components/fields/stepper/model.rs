@@ -1,5 +1,5 @@
-//! What a `Stepper` steps through: its range and step, the direction of a press, and whether it
-//! draws the value in a field beside the pair (data and pure arithmetic only).
+//! What a `Stepper` steps through: its range and step, and the direction of a press (data and
+//! pure arithmetic only).
 
 use ds_core::word::Word;
 
@@ -10,16 +10,6 @@ pub enum StepDirection {
     Up,
     /// The lower half: the value goes down.
     Down,
-}
-
-/// Whether the stepper draws the value it changes.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum Readout {
-    /// The pair alone: the value is shown somewhere else (a label, a date's segment).
-    Bare,
-    /// A text field beside the pair, bound to the value: typing sets it, the pair steps it.
-    #[default]
-    Field,
 }
 
 /// The values a stepper moves through: `min` to `max` in steps of `step`.

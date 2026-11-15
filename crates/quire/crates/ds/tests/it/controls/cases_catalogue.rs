@@ -8,7 +8,7 @@ use ds::components::content::label::{LabelRole, LabelStyle};
 use ds::components::content::level_glyph::vocab::LevelGlyph;
 use ds::components::content::text_runs::RunTone;
 use ds::components::controls::badge::{Badge, BadgeContent, BadgeTone};
-use ds::components::controls::button_model::{Answers, Bezel, ButtonRole, IconSwap, ImagePosition};
+use ds::components::controls::button_model::{Answers, Bezel, ImagePosition};
 use ds::components::controls::checkbox::Checkbox;
 use ds::components::controls::key_equivalent::{KeyEquivalent, KeyStyle};
 use ds::components::controls::level_indicator::{Bands, LevelIndicator, LevelStyle};
@@ -169,12 +169,12 @@ pub const CASES: &[Case] = &[
     Case {
         component: "button",
         state: "destructive",
-        make: || rsx! { Button { role: ButtonRole::Destructive, label: "Delete", onclick: |_| {} } },
+        make: || rsx! { Button { destructive: true, label: "Delete", onclick: |_| {} } },
     },
     Case {
         component: "button",
         state: "destructive-default",
-        make: || rsx! { Button { role: ButtonRole::Destructive, answers: Answers::Return, label: "Erase", onclick: |_| {} } },
+        make: || rsx! { Button { destructive: true, answers: Answers::Return, label: "Erase", onclick: |_| {} } },
     },
     Case {
         component: "button",
@@ -204,7 +204,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "button",
         state: "inline-destructive",
-        make: || rsx! { Button { bezel: Bezel::Inline, role: ButtonRole::Destructive, label: "Remove", onclick: |_| {} } },
+        make: || rsx! { Button { bezel: Bezel::Inline, destructive: true, label: "Remove", onclick: |_| {} } },
     },
     Case {
         component: "button",
@@ -234,7 +234,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "button",
         state: "toolbar-cross-fade",
-        make: || rsx! { Button { bezel: Bezel::Toolbar, size: ControlSize::Large, image: ImagePosition::Only, swap: IconSwap::CrossFade, icon: Icon::Play, label: "Play", onclick: |_| {} } },
+        make: || rsx! { Button { bezel: Bezel::Toolbar, size: ControlSize::Large, image: ImagePosition::Only, cross_fade: true, icon: Icon::Play, label: "Play", onclick: |_| {} } },
     },
     Case {
         component: "button",
@@ -430,7 +430,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "text_field",
         state: "plain-rejected",
-        make: || rsx! { TextField { label: "To", value: "dana@", bezel: FieldBezel::Plain, validity: rejected(), oninput: |_| {} } },
+        make: || rsx! { TextField { label: "To", value: "dana@", bezeled: false, validity: rejected(), oninput: |_| {} } },
     },
     Case {
         component: "text_field",
@@ -475,7 +475,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "text_field",
         state: "plain-secure",
-        make: || rsx! { TextField { label: "Password", value: "", kind: FieldKind::Secure, bezel: FieldBezel::Plain, oninput: |_| {} } },
+        make: || rsx! { TextField { label: "Password", value: "", kind: FieldKind::Secure, bezeled: false, oninput: |_| {} } },
     },
     // ProgressIndicator.
     Case {

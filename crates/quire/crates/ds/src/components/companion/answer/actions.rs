@@ -4,7 +4,7 @@
 use super::action::{ActionRole, CardAction, CardActionId};
 use crate::components::companion::effect::view::EffectTag;
 use crate::components::controls::button::Button;
-use crate::components::controls::button_model::{Answers, ButtonRole};
+use crate::components::controls::button_model::Answers;
 use dioxus::prelude::*;
 use ds_core::vocab::EffectMark;
 use ds_core::word::Word;
@@ -40,11 +40,11 @@ fn focus_of(focused: Option<usize>, index: usize) -> bool {
 }
 
 /// How an action's rank draws: Primary is the default button, Destructive is never one.
-fn rank(role: ActionRole) -> (ButtonRole, Answers) {
+fn rank(role: ActionRole) -> (bool, Answers) {
     match role {
-        ActionRole::Primary => (ButtonRole::Normal, Answers::Return),
-        ActionRole::Secondary => (ButtonRole::Normal, Answers::Nothing),
-        ActionRole::Destructive => (ButtonRole::Destructive, Answers::Nothing),
+        ActionRole::Primary => (false, Answers::Return),
+        ActionRole::Secondary => (false, Answers::Nothing),
+        ActionRole::Destructive => (true, Answers::Nothing),
     }
 }
 
@@ -59,7 +59,7 @@ fn CardActionButton(
     focus: bool,
     on_action: EventHandler<CardActionId>,
 ) -> Element {
-    let (role, answers) = rank(action.role);
+    let (destructive, answers) = rank(action.role);
     let id = action.id.clone();
     let title = action.keys.as_ref().map(|_| action.label.clone());
     rsx! {
@@ -70,7 +70,7 @@ fn CardActionButton(
             "data-focus": focus.then_some("keyboard"),
             Button {
                 label: action.label.clone(),
-                role,
+                destructive,
                 answers,
                 autofocus: focus,
                 availability: action.availability,

@@ -5,7 +5,6 @@
 
 use dioxus::prelude::*;
 use ds::components::content::label::{LabelRole, LabelStyle};
-use ds::components::controls::button_model::ButtonRole;
 use ds::prelude::*;
 use prov::{HelperId, SpaceId};
 use sill_model::companion::{
@@ -176,7 +175,7 @@ fn removal_question(model: &HelpersModel, id: &HelperId, say: &Say) -> Element {
                 }
                 Button {
                     label: "Remove",
-                    role: ButtonRole::Destructive,
+                    destructive: true,
                     common: Common { id: Some("helper-remove-yes".to_owned()), ..Common::default() },
                     onclick: move |_| remove.msg(HelpersMsg::Remove(helper.clone())),
                 }

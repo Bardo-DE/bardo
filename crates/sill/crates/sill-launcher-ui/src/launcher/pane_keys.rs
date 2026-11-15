@@ -11,7 +11,7 @@
 //! having moved the selection) come after it, to [`PanelCtx::field_key`].
 
 use dioxus::prelude::*;
-use ds::components::menus::palette::palette_claim::{Claim, FieldKey};
+use ds::components::menus::palette::palette_claim::FieldKey;
 use sill_launcher::{Choice, Item, OwnAction, Preview, action_for_key, preview_for};
 
 use crate::launcher::claim_keys::{KeyPlace, pane_key};
@@ -25,20 +25,20 @@ use crate::launcher::view::Layout;
 
 impl PanelCtx {
     /// quire's key claim: a key the field got, before the palette, the field or `onkey`.
-    pub fn claim(&self, key: &FieldKey) -> Claim {
+    pub fn claim(&self, key: &FieldKey) -> bool {
         let (pressed, modifiers) = (key.event.key(), key.event.modifiers());
         let action = self.resolved(&pressed, modifiers);
         if self.launcher_key_of(&key.event) == Some(LauncherKey::Actions) {
-            return Claim::Pass;
+            return false;
         }
-        if let Some(claim) = self.companion_claim(&pressed, modifiers, action.as_ref()) {
-            return claim;
+        if self.companion_claim(&pressed, modifiers, action.as_ref()) {
+            return true;
         }
         if let Some(action) = action {
             return self.run_action(&action);
         }
         let Some(pane) = self.current_pane() else {
-            return Claim::Pass;
+            return false;
         };
         let place = KeyPlace {
             pane: pane.preview.pane,
@@ -46,13 +46,10 @@ impl PanelCtx {
             layout: self.selected_layout(),
         };
         let Some(preview) = pane_key(&pressed, modifiers, caret_of(key.caret), place) else {
-            return Claim::Pass;
+            return false;
         };
         let outs = self.preview_key(preview);
-        match outs.contains(&PreviewOut::PassToField) || outs.contains(&PreviewOut::CloseLauncher) {
-            true => Claim::Pass,
-            false => Claim::Take,
-        }
+        !(outs.contains(&PreviewOut::PassToField) || outs.contains(&PreviewOut::CloseLauncher))
     }
 
     /// A key the palette's field got and nobody claimed, after the palette read it (it has moved
@@ -150,24 +147,24 @@ impl PanelCtx {
 
     /// An action the keymap made of a key: Quick Look and `sill.focus-pane` are the pane's; any
     /// other runs the selected row's action bound to it (H5), and nothing else hears it.
-    fn run_action(&self, action: &chordkit::Action) -> Claim {
+    fn run_action(&self, action: &chordkit::Action) -> bool {
         if *action == chordkit::Action::Standard(chordkit::StandardAction::QuickLook) {
             self.preview_key(PreviewKey::QuickLook);
-            return Claim::Take;
+            return true;
         }
         if OwnAction::of(action) == Some(OwnAction::FocusPane) {
             self.preview_key(PreviewKey::CommandRight);
-            return Claim::Take;
+            return true;
         }
         let Some(item) = self.selected_row() else {
-            return Claim::Pass;
+            return false;
         };
         match action_for_key(&item, action) {
             Some(id) => {
                 self.pick(RowRef::of(&item), Choice::Action(id.clone()));
-                Claim::Take
+                true
             }
-            None => Claim::Pass,
+            None => false,
         }
     }
 }

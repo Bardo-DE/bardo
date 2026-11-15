@@ -7,7 +7,7 @@ use crate::support::probe;
 
 use dioxus::prelude::*;
 use ds::components::app::space_editor::DotIndex;
-use ds::components::controls::button_model::{Bezel, ButtonRole};
+use ds::components::controls::button_model::{Bezel};
 use ds::components::lists::section_header::HeaderAction;
 use ds::prelude::*;
 use ds::style::space::presets::PRESETS;
@@ -237,7 +237,7 @@ fn ButtonsApp() -> Element {
                     Button { size: ControlSize::Mini, label: "Delete", onclick: |_| {} }
                 }
                 div { class: "probe-danger",
-                    Button { role: ButtonRole::Destructive, size: ControlSize::Mini, label: "Delete", onclick: |_| {} }
+                    Button { destructive: true, size: ControlSize::Mini, label: "Delete", onclick: |_| {} }
                 }
             }
         }

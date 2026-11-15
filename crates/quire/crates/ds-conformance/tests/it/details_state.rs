@@ -7,7 +7,6 @@ use dioxus::prelude::*;
 use ds::motion::detail::once::use_shake;
 use ds::motion::detail::operation::Operation;
 use ds::motion::detail::operation::PendingToken;
-use ds::motion::detail::pending::PendingLayers;
 use ds::motion::detail::pending::PendingSpec;
 use ds::motion::detail::stamp::EventStamp;
 use ds::motion::detail::touch::Touch;
@@ -48,9 +47,7 @@ static NET: GlobalSignal<Net> = Signal::global(|| Net::Off);
 static OP: GlobalSignal<Operation> = Signal::global(|| Operation::Idle);
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
-const WIFI: PendingSpec = PendingSpec::Iterate {
-    layers: PendingLayers(4),
-};
+const WIFI: PendingSpec = PendingSpec::Iterate { layers: 4 };
 
 #[allow(non_snake_case)]
 fn Item() -> Element {

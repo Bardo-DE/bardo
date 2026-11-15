@@ -6,7 +6,6 @@ use crate::components::controls::choice::Choice;
 use crate::components::controls::segmented::SegmentedControl;
 use crate::components::controls::segmented::Tracking;
 use crate::components::fields::text_field::TextField;
-use crate::components::fields::text_field_model::FieldBezel;
 use crate::components::lists::section_header::SectionHeader;
 use dioxus::prelude::*;
 use ds_core::word::Word;
@@ -75,7 +74,7 @@ pub(super) fn Title(
     let heading = match (&name, on_rename) {
         (_, Some(rename)) => rsx! {
             TextField {
-                bezel: FieldBezel::Plain,
+                bezeled: false,
                 label: "Space name",
                 value: name.clone().unwrap_or_default(),
                 placeholder: "Name this Space",

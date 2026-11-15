@@ -9,7 +9,7 @@ use crate::pages::Section;
 use crate::wallpaper;
 use dioxus::prelude::*;
 use ds::assembly::ds::Inject;
-use ds::components::controls::button_model::{Answers, ButtonRole};
+use ds::components::controls::button_model::{Answers};
 use ds::components::controls::key_equivalent::{KeyEquivalent, KeyStyle};
 use ds::components::overlays::sheet_attach::Attach;
 use ds::prelude::*;
@@ -53,8 +53,8 @@ fn Dialog(theme: Theme, attach: Attach) -> Element {
                         p { class: "g-note", "Open windows close. Unsaved work may be lost." }
                         div { class: "g-row",
                             Button { label: "Cancel", onclick: |_| {} }
-                            Button { role: ButtonRole::Destructive, size: ControlSize::Regular, label: "Suspend", availability: Availability::Disabled, onclick: |_| {} }
-                            Button { role: ButtonRole::Destructive, size: ControlSize::Regular, label: "Restart", onclick: |_| {} }
+                            Button { destructive: true, size: ControlSize::Regular, label: "Suspend", availability: Availability::Disabled, onclick: |_| {} }
+                            Button { destructive: true, size: ControlSize::Regular, label: "Restart", onclick: |_| {} }
                             Button { answers: Answers::Return, label: "Shut Down", onclick: |_| {} }
                         }
                         div { class: "g-row g-note",

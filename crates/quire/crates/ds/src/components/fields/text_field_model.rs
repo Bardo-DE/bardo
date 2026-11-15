@@ -56,21 +56,6 @@ pub enum FieldRows {
     Ten,
 }
 
-/// How the field's edge is drawn (`NSTextField.isBezeled`), `data-variant`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum FieldBezel {
-    /// A rounded rectangle with a hairline and the surface ground, at the control size's height;
-    /// the accent ring while it has the caret.
-    #[default]
-    Bezeled,
-    /// No box, no padding and no ground of its own: font, size, weight, tracking and colour are
-    /// the parent's, so a property row's value, a title or a row's name is edited where it reads,
-    /// and a container that draws the field's ground shows the focus. Only the caret
-    /// (`--accent`) and the selection are styled, and a rejected value: its text and a line
-    /// under it in the danger ink.
-    Plain,
-}
-
 /// A value the field rejects, and which rejection it is.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Invalid {

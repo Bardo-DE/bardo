@@ -2,7 +2,6 @@
 //! frame shows is what the document is when [`Headless::step`] returns.
 
 use crate::headless::{Headless, RE_RENDERED};
-use ds_blitz::seam::Layout as PhaseLayout;
 use std::time::Duration;
 
 /// Where in a frame the phase publishes what a moved caret needs.
@@ -24,7 +23,7 @@ impl Headless {
             return;
         }
         let _ = self.resolve(at);
-        if self.phase.run(PhaseLayout::Resolved).changed() {
+        if self.phase.run(true).changed() {
             self.flush();
         }
     }

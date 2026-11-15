@@ -3,7 +3,7 @@
 use super::controller::SpacesHandle;
 use crate::components::fields::text_field::TextField;
 use crate::components::fields::text_field_focus::FieldFocus;
-use crate::components::overlays::popover::{Arrow, Popover};
+use crate::components::overlays::popover::Popover;
 use crate::focus::request::use_focus_request;
 use crate::host::measure::Anchor;
 use crate::root::common::Common;
@@ -54,7 +54,6 @@ where
             anchor: Anchor::Point(at),
             placement: placed(),
             gap: Px(2.0),
-            arrow: Arrow::None,
             common: Common { aria_label: Some("Rename Space".to_owned()), ..Common::default() },
             onclose: move |()| handle.close_menu(),
             div { class: "ds-space-part ds-space-rename",

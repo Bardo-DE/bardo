@@ -20,7 +20,7 @@
 
 use crate::components::menus::alive::use_alive;
 use crate::components::menus::palette::palette_body::{StopEvents, draw_groups};
-use crate::components::menus::palette::palette_claim::{Claim, FieldKey};
+use crate::components::menus::palette::palette_claim::FieldKey;
 use crate::components::menus::palette::palette_close::PaletteClose;
 use crate::components::menus::palette::palette_group::PaletteGroups;
 use crate::components::menus::palette::palette_lines::{PaletteKey, palette_key};
@@ -39,9 +39,8 @@ use ds_motion::anim::Anim;
 
 use crate::components::fields::text_field::TextField;
 use crate::components::fields::text_field_focus::FieldFocus;
-use crate::components::fields::text_field_model::{FieldBezel, FieldKind};
+use crate::components::fields::text_field_model::FieldKind;
 use crate::components::lists::row::size::RowSize;
-use crate::components::menus::item::item::AfterPick;
 use crate::components::menus::palette::palette_host::CommandPaletteHost;
 use crate::components::menus::palette::palette_host::{card_corner, hosted};
 use crate::components::menus::palette::palette_motion::PaletteHandle;
@@ -80,7 +79,7 @@ pub const ASIDE_WIDTH: Px = Px(360.0);
 /// action reports none.
 ///
 /// `claim` hears every key the field gets first, with the caret's place ([`FieldKey`]):
-/// answering [`Claim::Take`] keeps the key from the palette, the field (its default is
+/// answering `true` (the key is taken) keeps the key from the palette, the field (its default is
 /// prevented: a Space is not typed, a Right does not move the caret) and `onkey`. `onkey`
 /// hears every key not claimed, after the palette has read it, as the event itself: call
 /// `prevent_default` on a key the caller takes (Tab, Ctrl+K) so the document does not also act
@@ -140,7 +139,7 @@ pub fn CommandPalette<T: Clone + PartialEq + 'static>(
     #[props(default)] on_select: Option<EventHandler<usize>>,
     #[props(default)] on_select_rect: Option<EventHandler<Rect>>,
     #[props(default)] onkey: Option<EventHandler<KeyboardEvent>>,
-    #[props(default)] claim: Option<Callback<FieldKey, Claim>>,
+    #[props(default)] claim: Option<Callback<FieldKey, bool>>,
     #[props(default)] shown: Option<bool>,
     #[props(default)] corner: Option<Corner>,
     #[props(default)] aside: Option<Element>,
@@ -201,8 +200,8 @@ pub fn CommandPalette<T: Clone + PartialEq + 'static>(
     let run = {
         let all = all.clone();
         move |index: usize| match run_of(all.get(index)) {
-            Run::Pick(value, after) => {
-                if after == AfterPick::Close {
+            Run::Pick(value, keep_open) => {
+                if !keep_open {
                     onclose.call(PaletteClose::Pick);
                 }
                 onpick.call(value);
@@ -225,7 +224,7 @@ pub fn CommandPalette<T: Clone + PartialEq + 'static>(
                     event: event.clone(),
                     caret,
                 };
-                if claim.call(key) == Claim::Take {
+                if claim.call(key) {
                     event.prevent_default();
                     return;
                 }
@@ -313,7 +312,7 @@ pub fn CommandPalette<T: Clone + PartialEq + 'static>(
             focus: field,
             handle: Some(handle),
             kind: FieldKind::Search,
-            bezel: FieldBezel::Plain,
+            bezeled: false,
         }
     };
     let row = match trailing {

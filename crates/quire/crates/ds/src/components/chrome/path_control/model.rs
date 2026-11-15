@@ -1,7 +1,7 @@
 //! What a `PathControl` shows: a path as data, and the pure rule of which segments stay on the
 //! band when the path is long.
 
-use crate::components::menus::item::item::{AfterPick, MenuImage, MenuItem};
+use crate::components::menus::item::item::{MenuImage, MenuItem};
 use ds_core::vocab::{Availability, DropState};
 use ds_style::icon::Icon;
 use std::ops::Range;

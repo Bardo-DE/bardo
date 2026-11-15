@@ -31,18 +31,6 @@ pub struct StripAction {
     pub onclick: EventHandler<Rect>,
 }
 
-/// Whether each strip button carries a `title` naming it, for a caller that
-/// relies on the renderer's own tooltip. Off by default, so a strip's
-/// markup is what it was.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum Titles {
-    /// No `title`: the Fly names the action.
-    #[default]
-    Omitted,
-    /// Each button's `title` is its label.
-    FromLabel,
-}
-
 /// A row's action strip. It shows while its row is hovered, the buttons fading in, and each one's
 /// Fly label appears as the pointer rests on its button.
 ///
@@ -51,6 +39,9 @@ pub enum Titles {
 /// `Some(false)` keeps it down even under the pointer; `None` is the hover reveal.
 /// `expanded` names the buttons that open a menu and whether theirs is open (`aria-haspopup`,
 /// `aria-expanded`). A click on a strip button never reaches the row: it does not open it.
+///
+/// `titles` gives each strip button a `title` that is its label, for a caller that relies on the
+/// renderer's own tooltip; off by default, the Fly names the action.
 ///
 /// `on_press` hears which button was pressed, synchronously, inside the click and before any
 /// measurement: an archive must never wait on a layout read, and a renderer with
@@ -62,7 +53,7 @@ pub enum Titles {
 pub fn HoverStrip(
     actions: Vec<StripAction>,
     #[props(default)] shown: Option<bool>,
-    #[props(default)] titles: Titles,
+    #[props(default)] titles: bool,
     #[props(default)] expanded: Vec<(ActionId, bool)>,
     #[props(default)] on_press: Option<EventHandler<ActionId>>,
 ) -> Element {
@@ -88,7 +79,7 @@ pub fn HoverStrip(
 #[component]
 fn StripButton(
     action: StripAction,
-    titles: Titles,
+    titles: bool,
     expanded: Option<bool>,
     on_press: Option<EventHandler<ActionId>>,
 ) -> Element {
@@ -102,10 +93,7 @@ fn StripButton(
         onclick,
     } = action;
     let pressed = id.clone();
-    let title = match titles {
-        Titles::Omitted => None,
-        Titles::FromLabel => Some(label.clone()),
-    };
+    let title = titles.then(|| label.clone());
     rsx! {
         button {
             r#type: "button",

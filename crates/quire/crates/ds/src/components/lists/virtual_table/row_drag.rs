@@ -12,7 +12,7 @@ use crate::components::controls::scroller::handle::ScrollerRef;
 use crate::components::lists::marquee::hook::Marquee;
 use crate::components::lists::marquee::model::edge_scroll;
 use crate::components::lists::virtual_table::drag_model::{
-    RowDrop, RowDropKind, RowDropTarget, RowGaps, allowed, dragged_rows, drop_target, operation_of,
+    RowDrop, RowDropKind, RowDropTarget, allowed, dragged_rows, drop_target, operation_of,
 };
 use crate::host::event_point::pointer_point;
 use chordkit::Platform;
@@ -50,7 +50,7 @@ pub(crate) struct RowDragSpec {
     /// The owner's selection, if it keeps one: a drag from a selected row carries it whole.
     pub(crate) selection: Option<RowSelection>,
     pub(crate) kind: Option<Callback<usize, RowDropKind>>,
-    pub(crate) gaps: RowGaps,
+    pub(crate) gaps: bool,
     pub(crate) ondrop: EventHandler<RowDrop>,
 }
 

@@ -20,17 +20,6 @@ pub enum RowDropKind {
     Item,
 }
 
-/// Whether the gaps between rows are places to drop (a list the person can reorder), or only the
-/// container rows are (files moved into folders).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum RowGaps {
-    /// A line is drawn in the nearest gap and the drop lands there.
-    Offered,
-    /// Only a container row takes a drop.
-    #[default]
-    Withheld,
-}
-
 /// Where a drag of rows would land.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RowDropTarget {
@@ -72,7 +61,7 @@ pub(crate) fn drop_target(
     y: f32,
     pitch: f32,
     len: usize,
-    gaps: RowGaps,
+    gaps: bool,
     kind: impl Fn(usize) -> RowDropKind,
 ) -> Option<RowDropTarget> {
     if !(y.is_finite() && pitch > 0.0) || len == 0 || y < 0.0 {
@@ -81,18 +70,18 @@ pub(crate) fn drop_target(
     let at = y / pitch;
     let row = at.floor() as usize;
     if row >= len {
-        return (gaps == RowGaps::Offered).then_some(RowDropTarget::Between(len));
+        return gaps.then_some(RowDropTarget::Between(len));
     }
     let into = at - row as f32;
     let nearest = RowDropTarget::Between(row + usize::from(into >= 0.5));
     match (kind(row), gaps) {
-        (RowDropKind::Container, RowGaps::Withheld) => Some(RowDropTarget::Onto(row)),
-        (RowDropKind::Container, RowGaps::Offered) => Some(match ONTO.contains(&into) {
+        (RowDropKind::Container, false) => Some(RowDropTarget::Onto(row)),
+        (RowDropKind::Container, true) => Some(match ONTO.contains(&into) {
             true => RowDropTarget::Onto(row),
             false => nearest,
         }),
-        (RowDropKind::Item, RowGaps::Offered) => Some(nearest),
-        (RowDropKind::Item, RowGaps::Withheld) => None,
+        (RowDropKind::Item, true) => Some(nearest),
+        (RowDropKind::Item, false) => None,
     }
 }
 
@@ -119,7 +108,7 @@ pub(crate) fn operation_of(platform: Platform, modifiers: Modifiers) -> DropOper
 #[cfg(test)]
 mod tests {
     use super::{
-        RowDropKind, RowDropTarget, RowGaps, allowed, dragged_rows, drop_target, operation_of,
+        RowDropKind, RowDropTarget, allowed, dragged_rows, drop_target, operation_of,
     };
     use crate::file_drop::drag::DropOperation;
     use chordkit::Platform;
@@ -145,7 +134,7 @@ mod tests {
     #[test]
     fn a_pointer_height_finds_a_folder_or_a_gap_by_arithmetic_on_the_pitch() {
         use RowDropTarget::{Between, Onto};
-        let (offered, withheld) = (RowGaps::Offered, RowGaps::Withheld);
+        let (offered, withheld) = (true, false);
         // (y, gaps, wanted) with rows 20 tall and 5 of them.
         let cases = [
             (-3.0, withheld, None),

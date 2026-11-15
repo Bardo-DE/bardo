@@ -6,7 +6,7 @@
 //! side, at `ControlSize::Regular` and at `ControlSize::Mini`.
 
 use dioxus::prelude::*;
-use ds::components::controls::button_model::{Answers, ButtonRole};
+use ds::components::controls::button_model::{Answers};
 use ds::prelude::*;
 use ds::style::tokens::control_size::ControlSize;
 use ds_harness::{Clock, Harness, HarnessConfig, Viewport};
@@ -31,7 +31,7 @@ fn Page() -> Element {
                     Button { label: "Cancel", onclick: move |_| {} }
                 }
                 span { class: "danger-regular",
-                    Button { role: ButtonRole::Destructive, size: ControlSize::Regular, label: "Restart", onclick: move |_| {} }
+                    Button { destructive: true, size: ControlSize::Regular, label: "Restart", onclick: move |_| {} }
                 }
                 span { class: "primary-mini",
                     Button { answers: Answers::Return, size: ControlSize::Mini, label: "Shut Down", onclick: move |_| {} }
@@ -41,7 +41,7 @@ fn Page() -> Element {
                 }
                 span { class: "danger-mini",
                     // No size: Danger's own size is Mini (design/04-COMPONENTS.md section 1).
-                    Button { role: ButtonRole::Destructive, size: ControlSize::Mini, label: "Restart", onclick: move |_| {} }
+                    Button { destructive: true, size: ControlSize::Mini, label: "Restart", onclick: move |_| {} }
                 }
             }
         }

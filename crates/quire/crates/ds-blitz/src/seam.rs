@@ -9,7 +9,7 @@ pub use crate::blitz_host::{Provided, Wiring};
 pub use crate::edit_hit::hit as edit_hit;
 pub use crate::edit_ime::EditListeners;
 pub use crate::focus::finder as focus_finder;
-pub use crate::focus_keep::{FocusKeeper, Kept, keep};
+pub use crate::focus_keep::{FocusKeeper, keep};
 pub use crate::frame_anchor::LinkFacts;
 pub use crate::frame_book::FrameBook;
 pub use crate::frame_hit::{ImageUnder, LinkUnder, image_under, link_under};
@@ -23,7 +23,7 @@ pub use crate::measure::measure as measure_element;
 pub use crate::memory_shell::MemoryShell;
 pub use crate::net::DsNet;
 pub use crate::node_ref::DocRef;
-pub use crate::phase::{Layout, Phase, Ran};
+pub use crate::phase::{Phase, Ran};
 #[cfg(feature = "debug-probe")]
 pub use crate::probe::snapshot as probe_snapshot;
 pub use crate::scheme::follow_root as follow_scheme;

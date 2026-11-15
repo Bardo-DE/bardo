@@ -14,31 +14,21 @@ use ds_core::time::{FRAME_SLACK, clock::sleep};
 use ds_style::task::{spawn_in, try_set_if_changed};
 use std::rc::Rc;
 
-/// Whether an input method has preedit text in the field.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Composition {
-    Idle,
-    Composing,
-}
-
-impl Composition {
-    /// The state an IME event leaves: composing while there is preedit text, idle once it is
-    /// cleared, committed or the IME detaches. The IME attaching changes nothing.
-    pub(crate) fn after(self, event: &ImeEvent) -> Self {
-        match event {
-            ImeEvent::Preedit { text, .. } if !text.is_empty() => Composition::Composing,
-            ImeEvent::Preedit { .. } | ImeEvent::Commit(_) | ImeEvent::Disabled => {
-                Composition::Idle
-            }
-            ImeEvent::Enabled => self,
-        }
+/// Whether an input method has preedit text in the field, after `event` when it was `composing`
+/// before: composing while there is preedit text, not once it is cleared, committed or the IME
+/// detaches. The IME attaching changes nothing.
+fn composing_after(composing: bool, event: &ImeEvent) -> bool {
+    match event {
+        ImeEvent::Preedit { text, .. } => !text.is_empty(),
+        ImeEvent::Commit(_) | ImeEvent::Disabled => false,
+        ImeEvent::Enabled => composing,
     }
 }
 
-/// The field's composition and its registration with the window's IME.
+/// The field's composing state and its registration with the window's IME.
 #[derive(Clone, Copy)]
 pub(crate) struct FieldIme {
-    state: Signal<Composition>,
+    state: Signal<bool>,
     heard: EventHandler<ImeEvent>,
     listener: CopyValue<Option<ImeListener>>,
     /// The document's host, when one was provided: without one nothing is heard.
@@ -49,12 +39,12 @@ pub(crate) struct FieldIme {
 impl FieldIme {
     /// The hook: one per field, kept across renders; its registration ends with the field.
     pub(crate) fn use_new() -> Self {
-        let state = use_signal(|| Composition::Idle);
+        let state = use_signal(|| false);
         let ime = FieldIme {
             state,
             heard: use_hook(|| {
                 EventHandler::new(move |event: ImeEvent| {
-                    let next = state.peek().after(&event);
+                    let next = composing_after(*state.peek(), &event);
                     let _ = try_set_if_changed(state, next);
                 })
             }),
@@ -66,14 +56,14 @@ impl FieldIme {
         ime
     }
 
-    /// The composition now.
-    pub(crate) fn composition(&self) -> Composition {
+    /// Whether an input method is composing now.
+    pub(crate) fn composing(&self) -> bool {
         (self.state)()
     }
 
     /// The caret left the field: whatever the IME was composing there is over.
     pub(crate) fn left(&self) {
-        let _ = try_set_if_changed(self.state, Composition::Idle);
+        let _ = try_set_if_changed(self.state, false);
     }
 
     /// Register the field's element for IME events once the document is free.
@@ -115,7 +105,7 @@ impl FieldIme {
 
 #[cfg(test)]
 mod tests {
-    use super::Composition;
+    use super::composing_after;
     use crate::host::ime::ImeEvent;
 
     fn preedit(text: &str) -> ImeEvent {
@@ -127,18 +117,17 @@ mod tests {
 
     #[test]
     fn composing_lasts_from_the_first_preedit_to_the_commit() {
-        use Composition::{Composing, Idle};
-        let cases: &[(Composition, ImeEvent, Composition)] = &[
-            (Idle, ImeEvent::Enabled, Idle),
-            (Idle, preedit("n"), Composing),
-            (Composing, preedit("ni"), Composing),
-            (Composing, ImeEvent::Enabled, Composing),
-            (Composing, preedit(""), Idle),
-            (Composing, ImeEvent::Commit("你".to_owned()), Idle),
-            (Composing, ImeEvent::Disabled, Idle),
+        let cases: &[(bool, ImeEvent, bool)] = &[
+            (false, ImeEvent::Enabled, false),
+            (false, preedit("n"), true),
+            (true, preedit("ni"), true),
+            (true, ImeEvent::Enabled, true),
+            (true, preedit(""), false),
+            (true, ImeEvent::Commit("你".to_owned()), false),
+            (true, ImeEvent::Disabled, false),
         ];
         for (before, event, after) in cases {
-            assert_eq!(before.after(event), *after, "{before:?} then {event:?}");
+            assert_eq!(composing_after(*before, event), *after, "{before:?} then {event:?}");
         }
     }
 }

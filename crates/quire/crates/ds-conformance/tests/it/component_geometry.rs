@@ -43,10 +43,10 @@ fn FieldsApp() -> Element {
                     TextField { label: "To", value: "", placeholder: "Add a person", oninput: |_| {} }
                 }
                 div { class: "probe-inline", style: "font-size:13.5px",
-                    TextField { bezel: FieldBezel::Plain, label: "To", value: "dana@example.org", oninput: |_| {} }
+                    TextField { bezeled: false, label: "To", value: "dana@example.org", oninput: |_| {} }
                 }
                 div { class: "probe-search",
-                    TextField { label: "Search", value: "", placeholder: "Search mail", tokens: Vec::new(), oninput: |_| {}, onkey: |_| {} , kind: FieldKind::Search, bezel: FieldBezel::Plain}
+                    TextField { label: "Search", value: "", placeholder: "Search mail", tokens: Vec::new(), oninput: |_| {}, onkey: |_| {} , kind: FieldKind::Search, bezeled: false}
                 }
             }
         }

@@ -7,7 +7,6 @@
 
 use dioxus::prelude::*;
 use ds::prelude::StylesOffNotice;
-use ds_blitz::styles_guard::Load;
 use ds_blitz::{StylesGuard, use_styles_guard};
 use shell_host::use_watch;
 use sill_settings::ShellFile;
@@ -26,7 +25,7 @@ pub fn StylesNotice() -> Element {
     let Some(guard) = guard() else {
         return rsx! {};
     };
-    let off = guard.load() == Load::Without;
+    let off = !guard.load();
     rsx! {
         StylesAlive { guard }
         if off {

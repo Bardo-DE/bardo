@@ -11,26 +11,15 @@ use crate::components::content::icon_source::IconSource;
 use crate::components::content::text_runs::{TextLine, text};
 use crate::components::controls::button::Button;
 use crate::components::controls::button_model::{Bezel, ImagePosition};
-use crate::components::overlays::popover::{Arrow, Popover};
+use crate::components::overlays::popover::Popover;
 use crate::host::measure::{Anchor, MountedRef};
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use ds_core::geometry::placement::{Align, Placement, Side};
 use ds_core::geometry::units::Px;
 use ds_core::press::Press;
-use ds_core::word::Word;
 use ds_style::icon::Icon;
 use ds_style::tokens::control_size::ControlSize;
-
-/// Where a row's help text is shown.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
-pub enum HelpShown {
-    /// Under the label, always (`span.ds-field-row-help`).
-    #[default]
-    Inline,
-    /// Behind a small ⓘ button after the label; the text stays in the accessibility tree.
-    OnRequest,
-}
 
 /// The id of the row's help element: the row's own `id` and `-help`, else a slug of its label.
 pub(crate) fn help_id(row_id: Option<&str>, label: &str) -> String {
@@ -88,7 +77,7 @@ pub(crate) fn HelpButton(label: TextLine, help: TextLine) -> Element {
                 anchor: Anchor::Mounted(anchor),
                 placement: Placement::new(Side::Bottom, Align::Center),
                 gap: Px(4.0),
-                arrow: Arrow::Arrow,
+                arrow: true,
                 onclose: move |()| shown.set(false),
                 div { class: "ds-field-help-card",
                     span { class: "ds-field-help-title", {text(&label)} }

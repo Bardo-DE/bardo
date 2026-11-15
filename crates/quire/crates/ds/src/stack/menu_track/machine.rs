@@ -2,8 +2,8 @@
 
 use super::pointer::{close_sub, moved, placed, ticked};
 use super::types::{
-    Entered, ItemPath, MenuAnim, MenuDirection, MenuKey, MenuPhase, MenuTarget, MenuTiming,
-    MenuTrack, MenuTrackEffect, MenuTrackEvent, Pickable, Session, ShownBy, Submenu,
+    ItemPath, MenuAnim, MenuDirection, MenuKey, MenuPhase, MenuTarget, MenuTiming,
+    MenuTrack, MenuTrackEffect, MenuTrackEvent, Session, ShownBy, Submenu,
 };
 use ds_core::geometry::units::Point;
 use ds_core::machine::Machine;
@@ -118,7 +118,7 @@ fn opened<K>(menu: K, shown: ShownBy, held: PressPhase) -> MenuPhase<K> {
         menu,
         shown,
         held,
-        entered: Entered::NotYet,
+        entered: false,
         hot: None,
         cursor: None,
         sub: Submenu::None,
@@ -236,7 +236,7 @@ fn released<K: PartialEq>(
     match target {
         MenuTarget::Item {
             path,
-            pick: Pickable::Enabled,
+            pickable: true,
             ..
         } => close(vec![MenuTrackEffect::Pick(path)]),
         MenuTarget::Title(title) if title == session.menu && session.held != PressPhase::Idle => {

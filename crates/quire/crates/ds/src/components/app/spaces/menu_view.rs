@@ -18,7 +18,7 @@ use ds_style::space::list::SpaceId;
 /// The menu of whichever Space the handle has open; nothing while none is.
 ///
 /// Rows, in order: Edit Space..., Appearance, the app's `extra`
-/// (one submenu, say Accounts, whose picks reach `on_extra`; give them `AfterPick::KeepOpen` to
+/// (one submenu, say Accounts, whose picks reach `on_extra`; give them `keep_open` to
 /// keep the menu up), "Link to..." and "Unlink" when `desktop` lists the desktop's Spaces, a
 /// rule, New Space, and Delete Space... while there is more than one.
 /// Edit Space... opens [`EditSpaceSheet`]: the name and colour, changed live, with Cancel and Save;

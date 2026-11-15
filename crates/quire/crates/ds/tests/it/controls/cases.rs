@@ -3,7 +3,7 @@
 use dioxus::prelude::*;
 use ds::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue};
 use ds::components::controls::badge::{Badge, BadgeContent, BadgeTone};
-use ds::components::controls::button_model::{Answers, Bezel, ButtonRole, ImagePosition};
+use ds::components::controls::button_model::{Answers, Bezel, ImagePosition};
 use ds::components::controls::chip::{Chip, ChipVariant};
 use ds::components::controls::command_line::CommandLine;
 use ds::components::controls::key_equivalent::{KeyEquivalent, KeyStyle};
@@ -104,7 +104,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "button",
         state: "danger",
-        make: || rsx! { Button { role: ButtonRole::Destructive, size: ControlSize::Mini, label: "Delete", icon: Icon::Trash, onclick: |_| {} } },
+        make: || rsx! { Button { destructive: true, size: ControlSize::Mini, label: "Delete", icon: Icon::Trash, onclick: |_| {} } },
     },
     Case {
         component: "button",
@@ -116,7 +116,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "button",
         state: "danger-regular",
-        make: || rsx! { Button { role: ButtonRole::Destructive, size: ControlSize::Regular, label: "Restart", onclick: |_| {} } },
+        make: || rsx! { Button { destructive: true, size: ControlSize::Regular, label: "Restart", onclick: |_| {} } },
     },
     Case {
         component: "button",
@@ -126,7 +126,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "button",
         state: "danger-regular-disabled",
-        make: || rsx! { Button { role: ButtonRole::Destructive, size: ControlSize::Regular, label: "Suspend", availability: Availability::Disabled, onclick: |_| {} } },
+        make: || rsx! { Button { destructive: true, size: ControlSize::Regular, label: "Suspend", availability: Availability::Disabled, onclick: |_| {} } },
     },
     // Toolbar buttons with only an image: four variants, expanded, pressed, tooltip, disabled.
     Case {
@@ -270,12 +270,12 @@ pub const CASES: &[Case] = &[
     Case {
         component: "text_field",
         state: "plain-empty",
-        make: || rsx! { TextField { bezel: FieldBezel::Plain, label: "Link", value: "", placeholder: "Paste a link", oninput: |_| {} } },
+        make: || rsx! { TextField { bezeled: false, label: "Link", value: "", placeholder: "Paste a link", oninput: |_| {} } },
     },
     Case {
         component: "text_field",
         state: "no-placeholder",
-        make: || rsx! { TextField { bezel: FieldBezel::Plain, label: "Name", value: "", oninput: |_| {} } },
+        make: || rsx! { TextField { bezeled: false, label: "Name", value: "", oninput: |_| {} } },
     },
     Case {
         component: "text_field",
@@ -285,18 +285,18 @@ pub const CASES: &[Case] = &[
     Case {
         component: "text_field",
         state: "focus-on-mount",
-        make: || rsx! { TextField { bezel: FieldBezel::Plain, label: "Link", value: "", placeholder: "Paste a link", focus: FieldFocus::OnMount, oninput: |_| {} } },
+        make: || rsx! { TextField { bezeled: false, label: "Link", value: "", placeholder: "Paste a link", focus: FieldFocus::OnMount, oninput: |_| {} } },
     },
     // A search field: empty, and typed with tokens.
     Case {
         component: "text_field",
         state: "search-empty",
-        make: || rsx! { TextField { label: "Search", value: "", placeholder: "Search mail, people, actions", tokens: Vec::new(), oninput: |_| {}, onkey: |_| {} , kind: FieldKind::Search, bezel: FieldBezel::Plain} },
+        make: || rsx! { TextField { label: "Search", value: "", placeholder: "Search mail, people, actions", tokens: Vec::new(), oninput: |_| {}, onkey: |_| {} , kind: FieldKind::Search, bezeled: false} },
     },
     Case {
         component: "text_field",
         state: "search-tokens",
-        make: || rsx! { TextField { label: "Search", value: "uidl", placeholder: "Search mail, people, actions", tokens: vec!["from dana".to_string(), "has:attachment".to_string()], oninput: |_| {}, onkey: |_| {} , kind: FieldKind::Search, bezel: FieldBezel::Plain} },
+        make: || rsx! { TextField { label: "Search", value: "uidl", placeholder: "Search mail, people, actions", tokens: vec!["from dana".to_string(), "has:attachment".to_string()], oninput: |_| {}, onkey: |_| {} , kind: FieldKind::Search, bezeled: false} },
     },
     // Key caps: each size, every modifier.
     Case {

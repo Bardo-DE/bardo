@@ -176,34 +176,25 @@ fn focused(doc: &BaseDocument) -> Option<Held> {
     })
 }
 
-/// Look at the document behind `doc` and focus what the keeper answers. A document the renderer
-/// holds is looked at next time.
-pub fn keep(keeper: &mut FocusKeeper, doc: &DocRef) -> Kept {
+/// Look at the document behind `doc` and focus what the keeper answers. `true` when it focused
+/// an ancestor of a removed element. A document the renderer holds is looked at next time.
+pub fn keep(keeper: &mut FocusKeeper, doc: &DocRef) -> bool {
     let before = keeper.clone();
     let Some(Some(next)) = doc.read(|read| keeper.look(read)) else {
-        return Kept::Still;
+        return false;
     };
     match doc.write(|write| {
         write.set_focus_to(next);
         crate::focus::caret_after_text(write, next);
         write.shell_provider.request_redraw();
     }) {
-        Ok(()) => Kept::Moved,
+        Ok(()) => true,
         Err(_) => {
             // Look again next time, from what was known before this look.
             *keeper = before;
-            Kept::Still
+            false
         }
     }
-}
-
-/// Whether the keeper moved the focus.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Kept {
-    /// It focused an ancestor of a removed element.
-    Moved,
-    /// Nothing to do.
-    Still,
 }
 
 /// The `ds::host::hand_back::HandBack` that records into `keeper`. A registration made while the keeper is

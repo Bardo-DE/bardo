@@ -24,7 +24,7 @@ use crate::components::controls::press::{ActivationKeys, activates, disabled, us
 use crate::components::controls::segmented_thumb::{SEGMENT_PX, group_style, index_of, thumb_over};
 use crate::focus::press_focus::on_click;
 use crate::root::common::Common;
-use crate::stack::roving::{Rove, Roving, Wrap};
+use crate::stack::roving::{Rove, Roving};
 use dioxus::prelude::*;
 use ds_core::vocab::{Availability, Check, Shortcut, selected_word};
 use ds_core::word::Word;
@@ -81,7 +81,7 @@ impl<T: PartialEq> Tracking<T> {
 /// the ends.
 fn rove_to(availability: &[Availability], at: usize, rove: Rove) -> Option<usize> {
     let items = availability.iter().copied().enumerate().collect();
-    Roving::new(items, Wrap::Stops)
+    Roving::new(items, false)
         .focus(&at)
         .rove(rove)
         .focused()

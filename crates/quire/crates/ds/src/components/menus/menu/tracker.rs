@@ -16,7 +16,7 @@ use crate::components::menus::menu::placing::Warm;
 use crate::host::measure::MountedRef;
 use crate::stack::menu_track::types::{
     Branch, ItemPath, MenuKey, MenuTarget, MenuTiming, MenuTrack, MenuTrackEffect, MenuTrackEvent,
-    Pickable, Submenu,
+    Submenu,
 };
 use crate::stack::typeahead::Typeahead;
 use dioxus::core::{ScopeId, current_scope_id};
@@ -105,10 +105,7 @@ pub(crate) fn use_tracker(timing: MenuTiming, pad: Px) -> Tracker {
 pub(crate) fn target<T>(index: usize, choice: &Choice<T>) -> MenuTarget<()> {
     MenuTarget::Item {
         path: path(index),
-        pick: match choice.availability {
-            Availability::Enabled => Pickable::Enabled,
-            Availability::Disabled | Availability::Busy => Pickable::Inert,
-        },
+        pickable: choice.availability == Availability::Enabled,
         branch: match choice.act {
             Act::Pick(..) => Branch::Leaf,
             Act::Open(_) => Branch::Submenu,

@@ -11,7 +11,7 @@ use ds::components::companion::answer::action::{ActionRole, CardAction, CardActi
 use ds::components::companion::answer::footer::{
     CardFooter, ServedByView, ServedPlace, ServedPlaceKind,
 };
-use ds::components::companion::answer::model::{AnswerView, Streaming, TextAnswer};
+use ds::components::companion::answer::model::{AnswerView, TextAnswer};
 use ds::components::companion::answer::refused::{RefusedAnswer, RefusedView};
 use ds::components::companion::answer::view::AnswerCard;
 use ds::components::companion::chips::view::ContextChips;
@@ -25,7 +25,7 @@ use ds::components::companion::orb::model::OrbSize;
 use ds::components::companion::orb::view::CompanionOrb;
 use ds::components::companion::outcome::model::Outcome;
 use ds::components::companion::plan::model::{
-    Inclusion, PlanGroup, PlanPhase, PlanStep, PlanStepState, PlanView, StepId,
+    PlanGroup, PlanPhase, PlanStep, PlanStepState, PlanView, StepId,
 };
 use ds::components::companion::plan::view::PlanList;
 use ds::components::companion::proposed_event::model::{
@@ -96,7 +96,7 @@ const SPECIMENS: &[Specimen] = &[
     ("ds-answer-card", || {
         let view = AnswerView::Text(TextAnswer {
             body: vec!["Done.".into()],
-            streaming: Streaming::Complete,
+            streaming: false,
             actions: Vec::new(),
             footer: footer(),
         });
@@ -337,7 +337,7 @@ fn a_text_card_draws_each_line_its_runs_its_action_and_the_footer() {
             ]),
             "The rest can wait.".into(),
         ],
-        streaming: Streaming::Arriving,
+        streaming: true,
         actions: vec![action(
             "copy",
             "Copy",
@@ -464,7 +464,7 @@ fn a_plan_card_draws_groups_steps_states_and_the_buttons_of_its_phase() {
         detail: None,
         app: None,
         effect: EffectMark::Outbound,
-        inclusion: Inclusion::Included,
+        included: true,
         state,
     };
     let plan = |phase| {

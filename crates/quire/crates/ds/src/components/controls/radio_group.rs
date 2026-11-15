@@ -13,7 +13,7 @@ use crate::components::controls::glyph::glyph_size;
 use crate::components::controls::press::{ActivationKeys, activates, disabled, use_pressing};
 use crate::focus::soon::focus_soon;
 use crate::root::common::Common;
-use crate::stack::roving::{Rove, Roving, Wrap};
+use crate::stack::roving::{Rove, Roving};
 use dioxus::prelude::*;
 use ds_core::vocab::{Availability, Check};
 use ds_core::word::Word;
@@ -39,7 +39,7 @@ fn rove_to<T: Clone + PartialEq>(choices: &[Choice<T>], at: &T, rove: Rove) -> O
         .iter()
         .map(|choice| (choice.value.clone(), choice.availability))
         .collect();
-    Roving::new(items, Wrap::Stops)
+    Roving::new(items, false)
         .focus(at)
         .rove(rove)
         .focused()

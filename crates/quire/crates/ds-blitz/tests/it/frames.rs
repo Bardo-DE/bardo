@@ -789,7 +789,7 @@ mod phase {
     use ds::base::geometry::scroll::Scroll;
     use ds::host::document::{DocumentHost, use_document_host};
     use ds::host::measure::MountedRef;
-    use ds::host::phase::{Observe, Observed, PhaseWrite, Queued, Watch};
+    use ds::host::phase::{Observe, Observed, PhaseWrite, Watch};
     use ds::prelude::*;
     use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
     use std::rc::Rc;
@@ -869,7 +869,7 @@ mod phase {
             let queued = host
                 .geometry()
                 .write(&element, PhaseWrite::ScrollTo(Px(to)));
-            assert_eq!(queued, Queued::Yes);
+            assert!(queued);
         }
     }
 

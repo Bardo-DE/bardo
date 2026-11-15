@@ -6,7 +6,7 @@
 
 use crate::components::fields::text_field::TextField;
 use crate::components::fields::text_field_focus::FieldFocus;
-use crate::components::fields::text_field_model::{FieldBezel, FieldKind};
+use crate::components::fields::text_field_model::FieldKind;
 use crate::components::menus::item::item::MenuItem;
 use crate::components::menus::menu::choices::Choice;
 use crate::components::menus::menu::choices::{Act as Do, choices, liveness};
@@ -84,7 +84,7 @@ impl<T: Clone + 'static> Moves<T> {
 /// closes. A press on the field is inside the panel and leaves it open; a press anywhere else
 /// closes it. The pointer over a row highlights it and a click picks it.
 ///
-/// `highlight` says whether new results light their first row (`TopHit`), so Return picks it.
+/// `top_hit` says whether new results light their first row, so Return picks it.
 /// The highlighted row is the field's own, or the caller's: `cursor: SearchCursor::Is(value)`
 /// lights the row picking `value`, and `on_highlight` hears each move the keys, the pointer or
 /// `highlight` ask for, so a caller can complete the text of the row that is lit on Tab (read in
@@ -175,9 +175,9 @@ pub fn SearchField<T: Clone + PartialEq + 'static>(
     let (type_moves, key_moves, enter_moves, focus_moves) =
         (moves.clone(), moves.clone(), moves.clone(), moves.clone());
     let anchor = field().map(Anchor::Mounted);
-    let bezel = match present {
-        SuggestionsPresent::Popup => FieldBezel::Bezeled,
-        SuggestionsPresent::Card => FieldBezel::Plain,
+    let bezeled = match present {
+        SuggestionsPresent::Popup => true,
+        SuggestionsPresent::Card => false,
     };
     let text_field = rsx! {
         TextField {
@@ -188,7 +188,7 @@ pub fn SearchField<T: Clone + PartialEq + 'static>(
             tokens,
             on_token,
             on_token_remove,
-            bezel,
+            bezeled,
             kind: FieldKind::Search,
             focus,
             oninput: move |next: String| {

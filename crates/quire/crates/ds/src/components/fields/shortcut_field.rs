@@ -4,7 +4,7 @@
 //! gives up, Backspace or Delete clears. While it listens it keeps every key it hears from the
 //! window's actions.
 //!
-//! `accepts` chooses what counts: combinations, or single keys (a bare key, or Shift with a
+//! `single_keys` chooses what counts: combinations, or single keys (a bare key, or Shift with a
 //! character; Delete is then a key). `more` lists the action's further keys, drawn as caps beside
 //! `value`.
 //!
@@ -14,7 +14,7 @@
 
 use crate::components::controls::press::{ActivationKeys, activates, disabled};
 use crate::components::fields::shortcut_field_model::{
-    Capture, Heard, ShortcutClash, ShortcutKinds, ShortcutRecorded, hear,
+    Heard, ShortcutClash, ShortcutRecorded, hear,
 };
 use crate::focus::soon::focus_soon;
 use crate::keys::use_platform;
@@ -39,9 +39,9 @@ pub fn ShortcutField(
     label: String,
     #[props(default)] value: Option<Chord>,
     onrecord: EventHandler<ShortcutRecorded>,
-    /// What the field accepts: combinations (the default) or single keys.
+    /// What the field accepts: single keys when set, combinations (the default) otherwise.
     #[props(default)]
-    accepts: ShortcutKinds,
+    single_keys: bool,
     /// Further keys the action also has, drawn as key caps after `value`. The caller manages
     /// them; recording replaces only `value`.
     #[props(default)]
@@ -51,21 +51,22 @@ pub fn ShortcutField(
     #[props(default)] common: Common,
 ) -> Element {
     let platform = use_platform();
-    let mut capture = use_signal(Capture::default);
+    // Whether the field is listening for a combination, or showing its shortcut.
+    let mut listening = use_signal(|| false);
     // The well itself: a click hands it the keyboard, so the next combination reaches it.
     let mut well = use_signal(|| None::<std::rc::Rc<MountedData>>);
     // Whether the well has the keyboard, so a blur that the click's own focus undoes is not a
     // cancel.
-    let mut held = use_signal(|| Held::Elsewhere);
+    let mut held = use_signal(|| false);
     let live = availability == Availability::Enabled;
     let mut finish = move |recorded: ShortcutRecorded| {
-        capture.set(Capture::Idle);
+        listening.set(false);
         onrecord.call(recorded);
     };
-    let text = match (capture(), value) {
-        (Capture::Listening, _) => LISTENING.to_owned(),
-        (Capture::Idle, Some(chord)) => chord_text(platform, &chord),
-        (Capture::Idle, None) => EMPTY.to_owned(),
+    let text = match (listening(), value) {
+        (true, _) => LISTENING.to_owned(),
+        (false, Some(chord)) => chord_text(platform, &chord),
+        (false, None) => EMPTY.to_owned(),
     };
     let extras: Vec<String> = more
         .iter()
@@ -81,7 +82,7 @@ pub fn ShortcutField(
     rsx! {
         span {
             class,
-            "data-recording": capture().slug(),
+            "data-recording": if listening() { "listening" } else { "idle" },
             "data-clash": used_by.is_some().then_some("with"),
             "data-availability": availability.slug(),
             ..data,
@@ -90,39 +91,39 @@ pub fn ShortcutField(
                 class: "ds-shortcut-field-well",
                 id: common.id.clone(),
                 "aria-label": "{name}",
-                "aria-pressed": (capture() == Capture::Listening).then_some("true"),
+                "aria-pressed": listening().then_some("true"),
                 disabled: disabled(availability),
                 onclick: move |_| {
                     if live {
-                        capture.set(Capture::Listening);
+                        listening.set(true);
                         if let Some(element) = well() {
                             focus_soon(element);
                         }
                     }
                 },
-                onfocus: move |_| held.set(Held::Here),
+                onfocus: move |_| held.set(true),
                 onblur: move |_| {
-                    held.set(Held::Elsewhere);
+                    held.set(false);
                     // Blitz can blur the well around the click that starts listening (it moves
                     // focus off a focused button whose child was hit) and the click focuses it
                     // again; only a blur that still stands a frame later gives up.
                     spawn(async move {
                         sleep(FRAME_SLACK).await;
-                        if held() == Held::Elsewhere && capture() == Capture::Listening {
+                        if !held() && listening() {
                             finish(ShortcutRecorded::Cancelled);
                         }
                     });
                 },
-                onkeydown: move |event: KeyboardEvent| match capture() {
-                    Capture::Idle => {
+                onkeydown: move |event: KeyboardEvent| match listening() {
+                    false => {
                         if live && activates(&event, ActivationKeys::ReturnAndSpace) {
                             event.prevent_default();
                             event.stop_propagation();
-                            capture.set(Capture::Listening);
+                            listening.set(true);
                         }
                     }
-                    Capture::Listening => {
-                        let heard = hear(platform, accepts, &event.key(), event.modifiers());
+                    true => {
+                        let heard = hear(platform, single_keys, &event.key(), event.modifiers());
                         if heard == Heard::Leave {
                             return;
                         }
@@ -156,13 +157,4 @@ pub fn ShortcutField(
             }
         }
     }
-}
-
-/// Whether the well has the keyboard.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Held {
-    /// The well is focused.
-    Here,
-    /// Focus is elsewhere.
-    Elsewhere,
 }

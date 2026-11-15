@@ -8,7 +8,6 @@ use dioxus::prelude::*;
 use ds::components::app::peek::Peek;
 use ds::components::controls::button_model::Answers;
 use ds::components::menus::palette::palette_group::{PaletteGroup, PaletteRow};
-use ds::components::overlays::popover::Arrow;
 use ds::host::measure::{Anchor, MountedRef};
 use ds::prelude::*;
 use ds::stack::toast_hub::ToastAction;
@@ -23,23 +22,23 @@ use ds_core::vocab::Dismiss;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 enum Opened {
     Palette,
-    Popover(Dismiss, Arrow),
+    Popover(Dismiss, bool),
     Peek(PeekMode),
     Sheet,
 }
 
-const POPOVERS: [(Dismiss, Arrow, &str); 3] = [
+const POPOVERS: [(Dismiss, bool, &str); 3] = [
     (
         Dismiss::Transient,
-        Arrow::Arrow,
+        true,
         "Popover: transient, arrow",
     ),
     (
         Dismiss::Semitransient,
-        Arrow::None,
+        false,
         "Popover: semitransient",
     ),
-    (Dismiss::Manual, Arrow::None, "Popover: manual"),
+    (Dismiss::Manual, false, "Popover: manual"),
 ];
 
 /// Where a posed snapshot opens its menu: over the page, clear of the toolbar.

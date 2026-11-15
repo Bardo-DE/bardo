@@ -9,7 +9,6 @@ use crate::components::companion::plan::model::PlanView;
 use crate::components::companion::proposed_event::model::ProposedEvent;
 use crate::components::companion::replace::model::ReplaceProposal;
 use crate::components::content::text_runs::TextLine;
-use ds_core::word::Word;
 
 /// What a card shows: one of the answer shapes.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -30,22 +29,13 @@ pub enum AnswerView {
     Refused(RefusedAnswer),
 }
 
-/// Whether a text answer is still arriving, `data-streaming`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
-pub enum Streaming {
-    /// Text is still coming.
-    Arriving,
-    /// It is whole.
-    Complete,
-}
-
 /// A text answer.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TextAnswer {
     /// The lines, as the shell displays them: never model markup.
     pub body: Vec<TextLine>,
-    /// Whether more is coming.
-    pub streaming: Streaming,
+    /// Whether more is coming (`data-streaming`: `arriving` or `complete`).
+    pub streaming: bool,
     /// What the person can do with it.
     pub actions: Vec<CardAction>,
     /// The footer every card has.

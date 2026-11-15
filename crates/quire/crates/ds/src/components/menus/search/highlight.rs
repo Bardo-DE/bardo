@@ -44,7 +44,6 @@ pub(crate) fn shown_at<T: PartialEq>(
 #[cfg(test)]
 mod tests {
     use super::{initial, shown_at, value_at};
-    use crate::components::menus::item::item::AfterPick;
     use crate::components::menus::menu::choices::{Act, Choice, Slot};
     use crate::components::menus::search::model::SearchCursor;
     use ds_core::vocab::Availability::{Disabled as D, Enabled as E};
@@ -54,7 +53,7 @@ mod tests {
         availability: ds_core::vocab::Availability,
     ) -> Choice<&'static str> {
         Choice {
-            act: Act::Pick(value, AfterPick::default()),
+            act: Act::Pick(value, false),
             availability,
             title: value.to_owned(),
             slot: Slot::Alone,

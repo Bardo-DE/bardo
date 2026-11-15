@@ -7,7 +7,7 @@
 //! a light never starts the titlebar's move, and a double-click on one never zooms.
 
 use crate::components::chrome::light_mark::{LightMark, Mark};
-use crate::components::menus::item::item::{AfterPick, MenuImage, MenuItem};
+use crate::components::menus::item::item::{MenuImage, MenuItem};
 use crate::components::menus::menu::menu::Menu;
 use crate::components::menus::menu::placement::MenuPlacement;
 use crate::host::measure::{Anchor, MountedRef};

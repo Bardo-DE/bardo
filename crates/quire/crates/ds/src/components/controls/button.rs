@@ -14,7 +14,7 @@ use crate::components::controls::button_marks::leading as leading_mark;
 use crate::components::controls::button_marks::trailing as trailing_mark;
 use crate::components::controls::button_marks::{Leading, spoken_label};
 use crate::components::controls::button_model::{
-    Answers, Bezel, BusyLook, ButtonRole, IconSwap, ImagePosition,
+    Answers, Bezel, BusyLook, ImagePosition,
 };
 use crate::components::controls::glyph::glyph_size;
 use crate::components::controls::press::{
@@ -78,7 +78,9 @@ fn spinner_size(size: ControlSize) -> ControlSize {
 /// continuously (the symbol effect `Rotate` while busy; no leading mark; input is dropped and
 /// `aria-busy` written all the same).
 ///
-/// `swap: IconSwap::CrossFade` fades a changed `icon` into the new one.
+/// `cross_fade: true` fades a changed `icon` into the new one (design/30 section 1.3, Cross-fade: a
+/// play button that becomes a pause button fades one into the other, and never pulses); a quire
+/// glyph only, anything else swaps at once.
 ///
 /// `stop_propagation: true` keeps the press at the button: its ancestors never hear the
 /// click (a header action inside a `<summary>` leaves the `<details>` as it was).
@@ -86,12 +88,12 @@ fn spinner_size(size: ControlSize) -> ControlSize {
 pub fn Button(
     #[props(into)] label: TextLine,
     #[props(default)] bezel: Bezel,
-    #[props(default)] role: ButtonRole,
+    #[props(default)] destructive: bool,
     #[props(default)] answers: Answers,
     #[props(default)] autofocus: bool,
     #[props(default)] size: ControlSize,
     #[props(default)] image: ImagePosition,
-    #[props(default)] swap: IconSwap,
+    #[props(default)] cross_fade: bool,
     #[props(default)] icon: Option<IconSource>,
     #[props(default)] value: Option<Check>,
     #[props(default)] shown: Option<bool>,
@@ -134,7 +136,7 @@ pub fn Button(
             id: common.id.clone(),
             class,
             "data-variant": bezel.slug(),
-            "data-role": role.slug(),
+            "data-role": if destructive { "destructive" } else { "normal" },
             "data-answers": answers.attr(),
             "data-size": size.slug(),
             "data-image": image.slug(),
@@ -224,7 +226,7 @@ pub fn Button(
                         None => "ds-button-icon".to_owned(),
                     },
                     "data-pulse": spin.pulse,
-                    {icon_view(icon, glyph, swap, value)}
+                    {icon_view(icon, glyph, cross_fade, value)}
                 }
             }
             if bezel == Bezel::Help {
@@ -240,23 +242,23 @@ pub fn Button(
     }
 }
 
-/// `icon` at `size`; a quire glyph under `IconSwap::CrossFade` fades into the next one it is
+/// `icon` at `size`; a quire glyph under `cross_fade` fades into the next one it is
 /// given. A toggle's `value` picks the glyph's style: a star, heart, pin or bell is outline
 /// while off (`GlyphStyle::for_state`); any other glyph draws its own pick (`Icon::native`).
-fn icon_view(icon: IconSource, size: IconSize, swap: IconSwap, value: Option<Check>) -> Element {
+fn icon_view(icon: IconSource, size: IconSize, cross_fade: bool, value: Option<Check>) -> Element {
     let look = |icon| {
         value.map_or(GlyphStyle::Native, |state| {
             GlyphStyle::for_state(icon, state)
         })
     };
-    match (swap, icon) {
-        (IconSwap::CrossFade, IconSource::Glyph(icon)) => rsx! {
+    match (cross_fade, icon) {
+        (true, IconSource::Glyph(icon)) => rsx! {
             MorphGlyph { icon, size, style: MorphStyle::CrossFade, look: look(icon) }
         },
-        (IconSwap::Instant, IconSource::Glyph(icon)) => rsx! {
+        (false, IconSource::Glyph(icon)) => rsx! {
             Glyph { icon, size, style: look(icon) }
         },
-        (IconSwap::Instant | IconSwap::CrossFade, source) => rsx! {
+        (_, source) => rsx! {
             IconView { source, size }
         },
     }

@@ -17,11 +17,5 @@ pub struct FieldKey {
     pub caret: Caret,
 }
 
-/// The caller's answer for a [`FieldKey`].
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Claim {
-    /// The caller takes it: nothing else acts on it.
-    Take,
-    /// The palette, the field and `onkey` go on as if the caller had not looked.
-    Pass,
-}
+// The caller answers a [`FieldKey`] with a `bool`: `true` takes it, so nothing else acts on it;
+// `false` lets the palette, the field and `onkey` go on as if the caller had not looked.

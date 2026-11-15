@@ -5,7 +5,7 @@ use crate::axes::Axes;
 use crate::pages::{Scope, Section};
 use dioxus::prelude::*;
 use ds::components::app::thread_row::ThreadRow;
-use ds::components::controls::button_model::{Answers, Bezel, ButtonRole};
+use ds::components::controls::button_model::{Answers, Bezel};
 use ds::components::controls::chip::{Chip, ChipVariant};
 use ds::components::controls::segmented::Tracking;
 use ds::components::lists::list::model::ListStyle;
@@ -79,7 +79,7 @@ fn Cell(subject: Subject) -> Element {
             Button { answers: Answers::Return, label: "Send", onclick: |_| {} }
             Button { label: "Pressed", value: Some(Check::On), onclick: |_| {} }
             Button { bezel: Bezel::Inline, label: "Quiet", icon: Some(Icon::Archive), onclick: |_| {} }
-            Button { role: ButtonRole::Destructive, size: ControlSize::Mini, label: "Off", availability: Availability::Disabled, onclick: |_| {} }
+            Button { destructive: true, size: ControlSize::Mini, label: "Off", availability: Availability::Disabled, onclick: |_| {} }
         },
         Subject::Chips => rsx! {
             Chip { variant: ChipVariant::Accent, text: "Accent" }

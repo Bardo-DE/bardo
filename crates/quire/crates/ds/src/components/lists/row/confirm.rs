@@ -5,7 +5,7 @@
 //! appears and Escape answers it; the row is not picked while it asks.
 
 use crate::components::controls::button::Button;
-use crate::components::controls::button_model::{Answers, Bezel, ButtonRole};
+use crate::components::controls::button_model::{Answers, Bezel};
 use crate::focus::click::kept_click;
 use crate::focus::soon::focus_soon;
 use crate::root::common::Common;
@@ -19,8 +19,8 @@ pub struct RowConfirm {
     pub question: String,
     /// The confirming button's words: a verb ("Delete"), never "OK".
     pub confirm: String,
-    /// `Destructive` when confirming deletes or discards.
-    pub role: ButtonRole,
+    /// Whether confirming deletes or discards.
+    pub destructive: bool,
     /// The confirming button was pressed.
     pub on_confirm: EventHandler<()>,
     /// Cancel was pressed or Escape was pressed.
@@ -40,7 +40,7 @@ pub(crate) fn question(confirm: &RowConfirm) -> Element {
 pub(crate) fn buttons(confirm: &RowConfirm) -> Element {
     let RowConfirm {
         confirm: verb,
-        role,
+        destructive,
         on_confirm,
         on_cancel,
         ..
@@ -76,7 +76,7 @@ pub(crate) fn buttons(confirm: &RowConfirm) -> Element {
                 label: verb,
                 bezel: Bezel::Push,
                 size: ControlSize::Small,
-                role,
+                destructive,
                 stop_propagation: true,
                 onclick: move |_| on_confirm.call(()),
             }

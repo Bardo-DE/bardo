@@ -11,14 +11,14 @@
 
 use crate::components::chrome::path_control::model::{self as path_model, PathSegment};
 use crate::components::chrome::toolbar::model::{
-    Expansion, Kept, Picked, ToolbarItem, ToolbarRoom, search_fit, search_room,
+    Kept, Picked, ToolbarItem, ToolbarRoom, search_fit, search_room,
 };
 use crate::components::chrome::toolbar::search::{ToolbarSearch, search_item};
 use crate::components::content::icon_source::IconSource;
 use crate::components::content::text_runs::{TextLine, text};
 use crate::components::controls::button::Button;
 use crate::components::controls::button_model::{Bezel, ImagePosition};
-use crate::components::menus::item::item::{AfterPick, MenuImage, MenuItem};
+use crate::components::menus::item::item::{MenuImage, MenuItem};
 use crate::components::menus::menu::menu::Menu;
 use crate::components::menus::menu::placement::MenuPlacement;
 use crate::host::measure::{Anchor, MountedRef, use_rect};
@@ -194,13 +194,13 @@ pub fn Toolbar<T: Clone + PartialEq + 'static>(
         ToolbarRoom::Fixed(width) => width,
         ToolbarRoom::Measured => probe.rect().map_or(Px(f32::MAX), |rect| rect.size.width),
     };
-    let expansion = use_signal(Expansion::default);
+    let opened = use_signal(|| false);
     let fit = search
         .as_ref()
         .map(|search| search_fit(leading.len(), trailing.len(), width, search.min_width));
     // The search item takes its room first, so the items overflow around it.
     let taken = search.as_ref().zip(fit).map_or(Px(0.0), |(search, fit)| {
-        search_room(fit, expansion(), search.min_width)
+        search_room(fit, opened(), search.min_width)
     });
     let kept = Kept::fitting(leading.len(), trailing.len(), Px(width.0 - taken.0));
     let overflowing = !kept.all(leading.len(), trailing.len());
@@ -272,7 +272,7 @@ pub fn Toolbar<T: Clone + PartialEq + 'static>(
                     }
                 }
                 if let (Some(search), Some(fit)) = (search.as_ref(), fit) {
-                    {search_item(search, fit, expansion)}
+                    {search_item(search, fit, opened)}
                 }
             }
         }

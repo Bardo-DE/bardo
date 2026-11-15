@@ -96,7 +96,7 @@ fn title_words(title: &TextLine, marks: &[usize]) -> Element {
 /// press) and `drop` (its part in a drag). `marks` are the title's matched characters, by index.
 /// `content` replaces the title and detail with the caller's own (a mail row's name, subject and
 /// tags). `edit` is the same place held by a field the person types in (a folder renamed where it
-/// stands: a `TextField` with `FieldBezel::Plain` takes the row's own face): the row keeps its
+/// stands: a `TextField` with `bezeled: false` takes the row's own face): the row keeps its
 /// leading, accessory and action, takes no press or context menu while it is there
 /// (`data-editing`), and the keys, presses and drags inside the field stay the field's, so
 /// the list around it neither moves its cursor, jumps by typeahead nor picks on them. `action` is a button at the end that acts without picking the row; `chord` is the keys

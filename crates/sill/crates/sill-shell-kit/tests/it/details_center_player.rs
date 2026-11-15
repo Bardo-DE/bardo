@@ -4,7 +4,7 @@
 //! Reduced (R7).
 
 use dioxus::prelude::*;
-use ds::components::controls::button_model::{Bezel, IconSwap, ImagePosition};
+use ds::components::controls::button_model::{Bezel, ImagePosition};
 use ds::prelude::*;
 use ds::style::tokens::control_size::ControlSize;
 use ds_harness::harness::{assert_settles_to_zero_frames, settle_until};
@@ -43,7 +43,7 @@ fn Player() -> Element {
                         bezel: Bezel::Toolbar,
                         size: ControlSize::Large,
                         image: ImagePosition::Only,
-                        swap: IconSwap::CrossFade,
+                        cross_fade: true,
                         icon: PLAYBACK().next_action(),
                         label: PLAYBACK().label(),
                         onclick: move |_| *PLAYBACK.write() = match PLAYBACK() {

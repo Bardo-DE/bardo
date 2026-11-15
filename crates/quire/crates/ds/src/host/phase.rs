@@ -90,12 +90,3 @@ pub enum PhaseWrite {
     /// no animation.
     ScrollTo(Px),
 }
-
-/// What the host answered to a [`PhaseWrite`].
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Queued {
-    /// The phase applies it in the frame's next step.
-    Yes,
-    /// The host runs no phase, or the element is not its own: nothing was queued.
-    Unsupported,
-}

@@ -1,5 +1,5 @@
 //! A menu item that keeps its menu open, and the trailing hint, on a real Blitz document
-//! (design/30 section 2.4): an `AfterPick::KeepOpen` item yields its value at once, with no blink
+//! (design/30 section 2.4): an `keep_open` item yields its value at once, with no blink
 //! and no close, as often as it is picked, by the pointer or Return; an ordinary item still
 //! blinks, yields and fades the menu out. A hint draws at the item's end, before its key
 //! equivalent.

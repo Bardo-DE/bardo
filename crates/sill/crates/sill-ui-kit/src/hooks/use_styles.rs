@@ -3,7 +3,6 @@
 use dioxus::prelude::{ReadSignal, try_consume_context, use_hook};
 use ds::style::kit::{CustomStyles, Styles};
 use ds_blitz::StylesGuard;
-use ds_blitz::styles_guard::Load;
 use shell_host::use_watch;
 use tokio::sync::watch;
 
@@ -29,7 +28,7 @@ pub fn use_styles() -> StyleSource {
     let styles = use_watch(styles);
     let guard = use_watch(guard);
     let appearance = use_appearance();
-    let withheld = guard().as_ref().map(StylesGuard::load) == Some(Load::Without);
+    let withheld = guard().as_ref().map(StylesGuard::load) == Some(false);
     let custom_styles = match withheld {
         true => CustomStyles::Off,
         false => appearance().settings.appearance.custom_styles,

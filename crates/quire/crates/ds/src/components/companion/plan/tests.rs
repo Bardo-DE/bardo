@@ -1,4 +1,4 @@
-use super::model::{Inclusion, PlanFinish, StopWhy};
+use super::model::{PlanFinish, StopWhy};
 use ds_core::word::Word;
 
 /// Every member of `T` parses back from its own slug, and no two share one.
@@ -12,7 +12,6 @@ fn round_trips<T: Word + std::fmt::Debug>() {
 
 #[test]
 fn every_plan_word_parses_back_from_its_slug() {
-    round_trips::<Inclusion>();
     round_trips::<PlanFinish>();
     round_trips::<StopWhy>();
 }

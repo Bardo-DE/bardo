@@ -2,7 +2,6 @@
 //! then the menu yields the value and closes. Split from `menu`, with the menu's closing and
 //! gesture states.
 
-use crate::components::menus::item::item::AfterPick;
 use crate::components::menus::menu::blink::{Blink, half, phases, picked};
 use crate::components::overlays::flow::Flow;
 use dioxus::prelude::*;
@@ -28,8 +27,8 @@ pub(crate) struct Picked<T> {
     pub value: T,
     /// The depth of the panel it was picked in: the root is 0.
     pub depth: u8,
-    /// Whether the menu closes after it.
-    pub after: AfterPick,
+    /// Whether the menu stays up after it.
+    pub keep_open: bool,
 }
 
 /// The handler a panel calls with a pick: the first pick of an item that closes the menu gives the
@@ -50,12 +49,12 @@ pub(crate) fn picker<T: 'static>(
         move |Picked {
                   value,
                   depth,
-                  after,
+                  keep_open,
               }: Picked<T>| {
             if picked(*blink.peek()) || *closing.peek() {
                 return;
             }
-            if after == AfterPick::KeepOpen {
+            if keep_open {
                 onpick.call(value);
                 return;
             }

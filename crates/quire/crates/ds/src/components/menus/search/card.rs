@@ -3,7 +3,7 @@
 //! surface and the card adds only its layout.
 
 use crate::components::menus::search::model::CardPlace;
-use crate::components::overlays::popover::{Arrow, Popover};
+use crate::components::overlays::popover::Popover;
 use dioxus::prelude::*;
 use ds_core::geometry::units::Px;
 use ds_core::vocab::Dismiss;
@@ -27,7 +27,6 @@ pub(crate) fn card(
                 anchor,
                 placement,
                 gap: Px(0.0),
-                arrow: Arrow::None,
                 dismiss: Dismiss::Transient,
                 onclose: move |()| ondismiss.call(()),
                 div { class: "ds-search-card", {inside} }

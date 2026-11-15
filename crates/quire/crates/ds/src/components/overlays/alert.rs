@@ -46,7 +46,7 @@ use crate::components::content::icon_source::IconSource;
 use crate::components::content::icon_view::IconView;
 use crate::components::content::text_runs::{TextLine, text};
 use crate::components::controls::button::Button;
-use crate::components::controls::button_model::{Answers, Bezel, ButtonRole};
+use crate::components::controls::button_model::{Answers, Bezel};
 use crate::components::controls::checkbox::Checkbox;
 use crate::components::overlays::alert_arming::{AlertInput, Arming};
 use crate::components::overlays::alert_model::{
@@ -393,7 +393,7 @@ fn slot(slot: Slot<'_>) -> Element {
         mut elements,
     } = slot;
     let is_default = default == Some(index);
-    let (answers, role) = face(button.role, is_default);
+    let (answers, destructive) = face(button.role, is_default);
     rsx! {
         span {
             key: "{index}",
@@ -425,7 +425,7 @@ fn slot(slot: Slot<'_>) -> Element {
                     }
                 })), ..button.common.clone() },
                 answers,
-                role,
+                destructive,
                 size: ControlSize::Regular,
                 availability,
                 label: button.label.clone(),
@@ -438,12 +438,12 @@ fn slot(slot: Slot<'_>) -> Element {
 /// How a button is drawn: the default answers Return and takes the accent, a Cancel that is not
 /// the default answers Escape, a destructive action that is not the default is a destructive
 /// button (the alert's stylesheet fills it with `--danger` and `--danger-ink`).
-fn face(role: AlertRole, is_default: bool) -> (Answers, ButtonRole) {
+fn face(role: AlertRole, is_default: bool) -> (Answers, bool) {
     match (role, is_default) {
-        (_, true) => (Answers::Return, ButtonRole::Normal),
-        (AlertRole::Destructive, false) => (Answers::Nothing, ButtonRole::Destructive),
-        (AlertRole::Cancel, false) => (Answers::Escape, ButtonRole::Normal),
-        (AlertRole::Normal, false) => (Answers::Nothing, ButtonRole::Normal),
+        (_, true) => (Answers::Return, false),
+        (AlertRole::Destructive, false) => (Answers::Nothing, true),
+        (AlertRole::Cancel, false) => (Answers::Escape, false),
+        (AlertRole::Normal, false) => (Answers::Nothing, false),
     }
 }
 
@@ -455,7 +455,7 @@ fn is_space(key: &Key) -> bool {
 #[cfg(test)]
 mod tests {
     use super::{face, is_space};
-    use crate::components::controls::button_model::{Answers, ButtonRole};
+    use crate::components::controls::button_model::Answers;
     use crate::components::overlays::alert_model::AlertRole::{Cancel, Destructive, Normal};
     use dioxus::prelude::Key;
 
@@ -468,14 +468,14 @@ mod tests {
     #[test]
     fn the_default_answers_return_and_a_destructive_action_is_red() {
         let cases = [
-            (Cancel, false, (Answers::Escape, ButtonRole::Normal)),
-            (Normal, true, (Answers::Return, ButtonRole::Normal)),
-            (Normal, false, (Answers::Nothing, ButtonRole::Normal)),
-            (Cancel, true, (Answers::Return, ButtonRole::Normal)),
+            (Cancel, false, (Answers::Escape, false)),
+            (Normal, true, (Answers::Return, false)),
+            (Normal, false, (Answers::Nothing, false)),
+            (Cancel, true, (Answers::Return, false)),
             (
                 Destructive,
                 false,
-                (Answers::Nothing, ButtonRole::Destructive),
+                (Answers::Nothing, true),
             ),
         ];
         for (role, is_default, want) in cases {

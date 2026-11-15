@@ -16,4 +16,4 @@ mod read;
 mod run;
 
 pub(crate) use read::border_box;
-pub use run::{Layout, Phase, Ran};
+pub use run::{Phase, Ran};

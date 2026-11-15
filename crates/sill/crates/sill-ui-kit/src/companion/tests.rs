@@ -10,7 +10,7 @@ use docket_vocab::{
     UndoId, Value,
 };
 use ds::components::companion::answer::footer::ServedPlaceKind;
-use ds::components::companion::answer::model::{AnswerView, Streaming};
+use ds::components::companion::answer::model::AnswerView;
 use ds::components::companion::answer::refused::RefusedView;
 use ds::components::companion::form::model::{FormInput, FormValue};
 use ds::components::companion::plan::model::{PlanFinish, PlanPhase, PlanStepState, StopWhy};
@@ -572,7 +572,7 @@ fn a_refusal_for_want_of_a_model_says_to_choose_one() {
                 "Choose a model to use the assistant.".to_owned()
             )],
             0,
-            Streaming::Complete
+            false
         )
     );
 }

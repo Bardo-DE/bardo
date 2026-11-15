@@ -4,7 +4,7 @@
 //! darkest ink is far lighter than the same button's enabled.
 
 use dioxus::prelude::*;
-use ds::components::controls::button_model::{Bezel, ButtonRole, ImagePosition};
+use ds::components::controls::button_model::{Bezel, ImagePosition};
 use ds::prelude::*;
 use ds::style::tokens::control_size::ControlSize;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -27,13 +27,13 @@ fn Page() -> Element {
                     Button { label: "Cancel", onclick: move |_| log.with_mut(|log| log.push("cancel")) }
                 }
                 span { class: "restart",
-                    Button { role: ButtonRole::Destructive, size: ControlSize::Regular, label: "Restart", onclick: move |_| log.with_mut(|log| log.push("restart")) }
+                    Button { destructive: true, size: ControlSize::Regular, label: "Restart", onclick: move |_| log.with_mut(|log| log.push("restart")) }
                 }
                 span { class: "mini-danger",
-                    Button { role: ButtonRole::Destructive, size: ControlSize::Mini, label: "Delete", onclick: move |_| {} }
+                    Button { destructive: true, size: ControlSize::Mini, label: "Delete", onclick: move |_| {} }
                 }
                 span { class: "suspend",
-                    Button { role: ButtonRole::Destructive, size: ControlSize::Regular, label: "Suspend", availability: Availability::Disabled, onclick: move |_| log.with_mut(|log| log.push("suspend")) }
+                    Button { destructive: true, size: ControlSize::Regular, label: "Suspend", availability: Availability::Disabled, onclick: move |_| log.with_mut(|log| log.push("suspend")) }
                 }
                 span { class: "lock",
                     Button { bezel: Bezel::Toolbar, size: ControlSize::Large, image: ImagePosition::Only, icon: Icon::Lock, label: "Lock", availability: Availability::Disabled, onclick: move |_| log.with_mut(|log| log.push("lock")) }

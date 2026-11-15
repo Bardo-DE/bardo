@@ -14,7 +14,6 @@ use ds::components::content::text_runs::RunTone;
 use ds::components::controls::button_model::Answers;
 use ds::components::overlays::empty_state::EmptyForm;
 use ds::components::overlays::inline_banner::InlineBanner;
-use ds::components::overlays::popover::Arrow;
 use ds::components::overlays::sheet_attach::Attach;
 use ds::components::overlays::sheet_width::SheetWidth;
 use ds::components::overlays::skeleton::{Skeleton, SkeletonShape};
@@ -30,11 +29,11 @@ use ds_core::vocab::Dismiss;
 #[component]
 pub fn OverlaysCataloguePage() -> Element {
     rsx! {
-        Section { title: "Popover", note: "Popover {{ anchor, placement, gap, arrow, dismiss }}: a floating surface anchored to a control. Dismiss::Transient closes on Escape and an outside click, Semitransient on Escape only, Manual by its owner alone. It fades in and out over --t-quick. Arrow::Arrow points the 34 x 8 arrow at the anchor, as an app popover does; a shell popover hung from the bar has none.",
+        Section { title: "Popover", note: "Popover {{ anchor, placement, gap, arrow, dismiss }}: a floating surface anchored to a control. Dismiss::Transient closes on Escape and an outside click, Semitransient on Escape only, Manual by its owner alone. It fades in and out over --t-quick. `arrow: true` points the 34 x 8 arrow at the anchor, as an app popover does; a shell popover hung from the bar has none.",
             div { class: "g-row g-row-top",
-                PopoverCase { dismiss: Dismiss::Transient, arrow: Arrow::Arrow, label: "Transient, arrow" }
-                PopoverCase { dismiss: Dismiss::Semitransient, arrow: Arrow::None, label: "Semitransient" }
-                PopoverCase { dismiss: Dismiss::Manual, arrow: Arrow::None, label: "Manual" }
+                PopoverCase { dismiss: Dismiss::Transient, arrow: true, label: "Transient, arrow" }
+                PopoverCase { dismiss: Dismiss::Semitransient, arrow: false, label: "Semitransient" }
+                PopoverCase { dismiss: Dismiss::Manual, arrow: false, label: "Manual" }
             }
         }
         Section { title: "Sheet", note: "Sheet {{ attach, width }} dims nothing. Attach::Window hangs a card 12 below the top edge of its root and fades in with a scale from .97 over --t-quick; Attach::Centre stands in the middle (an alert's narrow column); Attach::Bottom stands 8 above the bottom edge, wide, never taller than half its root (Edit Widgets). Hidden, it fades and scales out over --t-quick.",
@@ -263,7 +262,7 @@ pub(super) fn appearance(theme: Theme) -> Appearance {
 
 /// A button and the popover it opens, open in a posed snapshot.
 #[component]
-fn PopoverCase(dismiss: Dismiss, arrow: Arrow, label: &'static str) -> Element {
+fn PopoverCase(dismiss: Dismiss, arrow: bool, label: &'static str) -> Element {
     let showcase = use_context::<Signal<Axes>>().peek().showcase;
     let mut open = use_signal(|| showcase == Showcase::Posed);
     let mut anchor = use_signal(|| None::<MountedRef>);

@@ -6,7 +6,6 @@
 //! 5.2.10, G28-G30). Nothing playing: "Not Playing" and no buttons. The view reads no hook: a
 //! press is a [`Transport`] handed to its caller, which sends it to the player.
 
-use ds::components::controls::button_model::IconSwap;
 use ds::components::controls::button_model::{Bezel, ImagePosition};
 use ds::prelude::*;
 use ds::style::tokens::control_size::ControlSize;
@@ -146,7 +145,7 @@ pub fn MediaView(face: MediaFace, onpress: Option<EventHandler<Transport>>) -> E
                         bezel: Bezel::Toolbar,
                         size: ControlSize::Large,
                         image: ImagePosition::Only,
-                        swap: IconSwap::CrossFade,
+                        cross_fade: true,
                         icon: playback.next_action(),
                         label: playback.label(),
                         availability: available(abilities.play_pause),

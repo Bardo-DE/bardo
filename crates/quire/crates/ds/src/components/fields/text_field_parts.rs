@@ -4,9 +4,9 @@
 use crate::components::fields::text_field_area::area;
 use crate::components::fields::text_field_blink::CaretBlink;
 use crate::components::fields::text_field_focus::{FieldFocus, FieldFocuser};
-use crate::components::fields::text_field_ime::{Composition, FieldIme};
+use crate::components::fields::text_field_ime::FieldIme;
 use crate::components::fields::text_field_mask::{MaskCaret, MaskParts};
-use crate::components::fields::text_field_model::{FieldBezel, FieldKind, FieldRows};
+use crate::components::fields::text_field_model::{FieldKind, FieldRows};
 use crate::components::fields::text_field_secret::takes_text_out;
 use crate::focus::targets::Told;
 use crate::keys::use_keys;
@@ -29,7 +29,12 @@ pub(crate) struct Handlers {
 
 /// Everything the line needs besides its value.
 pub(crate) struct Field {
-    pub bezel: FieldBezel,
+    /// Whether the edge is a bezel (`NSTextField.isBezeled`): a rounded rectangle with a hairline
+    /// and the surface ground, the accent ring while it has the caret. Plain (`false`) has no box,
+    /// no padding and no ground of its own: font, size, weight, tracking and colour are the
+    /// parent's, so a property row's value, a title or a row's name is edited where it reads.
+    /// `data-variant`.
+    pub bezeled: bool,
     /// How tall a multi-line field is; a line ignores it.
     pub rows: FieldRows,
     pub size: ControlSize,
@@ -62,9 +67,9 @@ pub(crate) struct Field {
 pub(crate) fn placeholder_shown(
     value: &str,
     placeholder: &str,
-    composing: Composition,
+    composing: bool,
 ) -> Option<String> {
-    (value.is_empty() && !placeholder.is_empty() && composing == Composition::Idle)
+    (value.is_empty() && !placeholder.is_empty() && !composing)
         .then(|| placeholder.to_string())
 }
 
@@ -81,7 +86,7 @@ pub(crate) fn line(field: Field, kind: FieldKind, value: String) -> Element {
         return area(field, &value);
     }
     let Field {
-        bezel,
+        bezeled,
         rows: _,
         size,
         label,
@@ -101,7 +106,7 @@ pub(crate) fn line(field: Field, kind: FieldKind, value: String) -> Element {
     let count = kind.mask(&value).map_or(0, |dots| dots.chars().count());
     let owner = caret.owner(count);
     let mask = (count > 0).then(|| MaskParts::cut(count, caret.selection(), owner));
-    let shown = placeholder_shown(&value, &placeholder, ime.composition());
+    let shown = placeholder_shown(&value, &placeholder, ime.composing());
     // A secure field writes no text, whoever holds it (a caller that empties its text remounts
     // the line, see `TextField`).
     let written = match kind {
@@ -112,13 +117,13 @@ pub(crate) fn line(field: Field, kind: FieldKind, value: String) -> Element {
     rsx! {
         span {
             class: "ds-input-wrap",
-            "data-variant": bezel.slug(),
+            "data-variant": if bezeled { "bezeled" } else { "plain" },
             "data-size": size.slug(),
             "data-blink": blink.attr(),
             input {
                 id,
                 class: "ds-input",
-                "data-variant": bezel.slug(),
+                "data-variant": if bezeled { "bezeled" } else { "plain" },
                 r#type: kind.input_type(),
                 "data-kind": kind.data_kind(),
                 "data-caret": owner.data_caret(),
@@ -208,16 +213,16 @@ pub(crate) fn line(field: Field, kind: FieldKind, value: String) -> Element {
 
 #[cfg(test)]
 mod tests {
-    use super::{Composition, aria_placeholder, placeholder_shown};
+    use super::{aria_placeholder, placeholder_shown};
 
     #[test]
     fn the_placeholder_shows_only_over_an_empty_value_with_nothing_composing() {
-        const CASES: &[(&str, &str, Composition, Option<&str>)] = &[
-            ("", "Add a person", Composition::Idle, Some("Add a person")),
-            ("Dana", "Add a person", Composition::Idle, None),
-            ("", "", Composition::Idle, None),
+        const CASES: &[(&str, &str, bool, Option<&str>)] = &[
+            ("", "Add a person", false, Some("Add a person")),
+            ("Dana", "Add a person", false, None),
+            ("", "", false, None),
             // Pinyin being composed: drawn in the field, not yet its value.
-            ("", "Add a person", Composition::Composing, None),
+            ("", "Add a person", true, None),
         ];
         for &(value, placeholder, composing, want) in CASES {
             assert_eq!(

@@ -6,7 +6,6 @@ use std::time::Duration;
 
 use dioxus::prelude::*;
 use docket_permissions_core::Mode;
-use ds::components::menus::palette::palette_claim::Claim;
 use prov::TaskId;
 use sill_launcher::{LauncherMode, ProviderKind, Subject};
 use sill_model::companion::{CompanionCommand, ModeMsg, Summon};
@@ -78,29 +77,33 @@ impl PanelCtx {
     }
 
     /// A key before the palette reads it, in companion mode: what [`companion_step`] makes of it,
-    /// or `None` when it is not one of its keys or the mode is not the companion's.
+    /// or `false` when it is not one of its keys or the mode is not the companion's.
     pub(crate) fn companion_claim(
         &self,
         key: &Key,
         modifiers: Modifiers,
         action: Option<&chordkit::Action>,
-    ) -> Option<Claim> {
+    ) -> bool {
         if !self.in_companion_mode() {
-            return None;
+            return false;
         }
-        let key = companion_key(key, modifiers, action)?;
-        let (session, pane) = (self.current()?, self.current_pane()?);
+        let Some(key) = companion_key(key, modifiers, action) else {
+            return false;
+        };
+        let (Some(session), Some(pane)) = (self.current(), self.current_pane()) else {
+            return false;
+        };
         let shown = self.view_of(&session, &pane.expanded);
         let selected = selected_of(shown.row(session.keys.selected).as_ref());
         let current = pane_of(&selected, &self.services.companion.state.borrow());
         let outs = companion_step(key, &current, &selected);
         if outs.is_empty() {
-            return None;
+            return false;
         }
         for out in outs {
             self.companion_out(out);
         }
-        Some(Claim::Take)
+        true
     }
 
     fn companion_out(&self, out: CompanionOut) {

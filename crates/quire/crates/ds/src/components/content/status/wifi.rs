@@ -9,7 +9,7 @@ use super::stroked::stroked_part_svg;
 use super::wifi_state::{WifiReach, WifiState};
 use dioxus::prelude::*;
 use ds_motion::detail::{
-    pending::{PendingFrame, PendingLayers, PendingSpec},
+    pending::{PendingFrame, PendingSpec},
     touch::Touch,
     use_detail::use_detail,
     use_operation::use_operation,
@@ -22,9 +22,7 @@ use ds_style::icon::stroke::stroke_width;
 use ds_style::scale::use_scale;
 
 /// The searching loop: the dot and the three arcs, one at a time (a step every `--t-spin-step`).
-pub(crate) const SEARCHING: PendingSpec = PendingSpec::Iterate {
-    layers: PendingLayers(4),
-};
+pub(crate) const SEARCHING: PendingSpec = PendingSpec::Iterate { layers: 4 };
 
 /// The fan's parts, from the inside out: Lucide `wifi`'s dot and three arcs, stroked, and the badge.
 /// The no-internet mark, a bar and a dot, in the fan's free lower-right corner.

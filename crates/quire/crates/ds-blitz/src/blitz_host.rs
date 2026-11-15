@@ -32,7 +32,7 @@ use ds::host::parts::{
     CaretHost, ClickFocusHost, EditHost, FileDropHost, FocusHost, GeometryHost, ImeHost,
 };
 use ds::host::pasted::Pasted;
-use ds::host::phase::{Observe, Observed, PhaseWrite, Queued};
+use ds::host::phase::{Observe, Observed, PhaseWrite};
 use ds::host::position::{TextPosition, TextRange};
 use ds::host::probe::Probe;
 use ds::host::reveal::Scrolled;
@@ -279,7 +279,7 @@ impl GeometryHost for BlitzGeometry {
         self.phase.observe(el, what)
     }
 
-    fn write(&self, el: &MountedData, write: PhaseWrite) -> Queued {
+    fn write(&self, el: &MountedData, write: PhaseWrite) -> bool {
         self.phase.write(el, write)
     }
 }

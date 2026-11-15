@@ -251,7 +251,7 @@ fn Rename(start: Start) -> Element {
             span {
                 class: "fence",
                 onclick: move |event: MouseEvent| event.stop_propagation(),
-                TextField { bezel: FieldBezel::Plain, label: "Rename folder", value: name(),
+                TextField { bezeled: false, label: "Rename folder", value: name(),
                     focus: FieldFocus::Controlled(request),
                     oninput: move |next: String| name.set(next),
                     onkey: move |event: KeyboardEvent| match event.key() {

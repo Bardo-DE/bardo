@@ -10,23 +10,12 @@ use blitz_kit::after_resolve::{self, AfterResolve};
 use dioxus::core::{Runtime, RuntimeGuard};
 use dioxus::prelude::{MountedData, Signal};
 use ds::base::geometry::scroll::Scroll;
-use ds::host::phase::{Observe, Observed, PhaseWrite, Queued, Watch};
+use ds::host::phase::{Observe, Observed, PhaseWrite, Watch};
 use ds::host::position::{TextPosition, TextRange};
 use ds::prelude::Rect;
 use ds::style::task::try_set;
 use std::cell::RefCell;
 use std::rc::Rc;
-
-/// Whether layout is up to date when the phase runs.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Layout {
-    /// Right after a frame was resolved: reads are current and writes clamp against the content as
-    /// drawn. Writes are applied once and dropped.
-    Resolved,
-    /// After the document was updated and before it was resolved: only writes run, and they are
-    /// kept to run again once layout has caught up.
-    Pending,
-}
 
 /// What one run of the phase did.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -114,16 +103,16 @@ impl Phase {
     }
 
     /// Queue `write` to the element `el` for the next run.
-    pub(crate) fn write(&self, el: &MountedData, write: PhaseWrite) -> Queued {
+    pub(crate) fn write(&self, el: &MountedData, write: PhaseWrite) -> bool {
         let (Some(_), Some(node)) = (self.shared.drive.borrow().as_ref(), NodeRef::of(el)) else {
-            return Queued::Unsupported;
+            return false;
         };
         self.shared.book.borrow_mut().queue(node.node, write);
-        Queued::Yes
+        true
     }
 
     /// Whether a caret moved since the phase last read it: the loop then lays out and runs the
-    /// phase before it paints (`Phase::run` with [`Layout::Resolved`]), so the caret is drawn in
+    /// phase before it paints (`Phase::run` with `resolved`), so the caret is drawn in
     /// the frame that draws the text it follows.
     pub fn wants_early_run(&self) -> bool {
         let book = self.shared.book.borrow();
@@ -134,20 +123,20 @@ impl Phase {
                 .any(super::book::SelectionWatch::moved)
     }
 
-    /// Run one step: apply the queued writes, then (once layout is [`Layout::Resolved`]) publish
-    /// every watched value that changed. The document is borrowed only while it is read or
+    /// Run one step: apply the queued writes, then (once layout is `resolved`) publish every
+    /// watched value that changed. `resolved` is true right after a frame was resolved: reads are
+    /// current, and writes clamp against the content as drawn and are applied once and dropped.
+    /// False after the document was updated and before it was resolved: only writes run, and they
+    /// are kept to run again once layout has caught up. The document is borrowed only while it is read or
     /// written, and not at all while signals are set. A document that is borrowed elsewhere is
     /// left for the next run.
-    pub fn run(&self, layout: Layout) -> Ran {
+    pub fn run(&self, resolved: bool) -> Ran {
         let Some(drive) = self.shared.drive.borrow().clone() else {
             return Ran::default();
         };
-        let applied = self.apply_writes(&drive, layout);
-        let published = match layout {
-            Layout::Resolved => self.publish(&drive),
-            Layout::Pending => 0,
-        };
-        if layout == Layout::Resolved {
+        let applied = self.apply_writes(&drive, resolved);
+        let published = if resolved { self.publish(&drive) } else { 0 };
+        if resolved {
             self.shared.probe.publish(&drive.doc);
         }
         Ran { applied, published }
@@ -190,12 +179,13 @@ impl Phase {
             .count()
     }
 
-    fn apply_writes(&self, drive: &Drive, layout: Layout) -> usize {
+    fn apply_writes(&self, drive: &Drive, resolved: bool) -> usize {
         let writes = {
             let mut book = self.shared.book.borrow_mut();
-            match layout {
-                Layout::Resolved => std::mem::take(&mut book.writes),
-                Layout::Pending => book.writes.clone(),
+            if resolved {
+                std::mem::take(&mut book.writes)
+            } else {
+                book.writes.clone()
             }
         };
         if writes.is_empty() {
@@ -211,7 +201,7 @@ impl Phase {
         match written {
             Ok(()) => moved.iter().filter(|moved| **moved).count(),
             Err(_) => {
-                if layout == Layout::Resolved {
+                if resolved {
                     // Put back what was taken, behind anything queued since.
                     let mut book = self.shared.book.borrow_mut();
                     for waiting in writes {

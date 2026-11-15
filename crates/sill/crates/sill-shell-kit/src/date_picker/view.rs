@@ -16,7 +16,7 @@ use crate::month_grid::MonthGrid;
 use crate::month_grid::data::{MonthKey, MonthStep};
 use crate::month_grid::density::MonthDensity;
 use dioxus::prelude::*;
-use ds::components::fields::stepper::model::{Readout, StepDirection};
+use ds::components::fields::stepper::model::StepDirection;
 use ds::components::fields::stepper::view::Stepper;
 use ds::prelude::*;
 use ds::root::common::Common;
@@ -120,7 +120,7 @@ pub fn DatePicker(
             label: current.label(),
             value: value.value(current),
             range: value.range(current),
-            readout: Readout::Bare,
+            bare: true,
             size,
             availability,
             onchange: move |to| onchange.call(value.with(current, to)),

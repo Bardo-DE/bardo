@@ -6,5 +6,5 @@ pub mod model;
 pub mod view;
 
 pub use layout::{BarLayout, SpaceRects};
-pub use model::{BarExpansion, BarSpaceKey, SpaceTile};
+pub use model::{BarSpaceKey, SpaceTile};
 pub use view::SpacesBar;

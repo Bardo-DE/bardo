@@ -7,14 +7,14 @@
 //! selection, a click and the menu tracker's item path all name a choice by that number. Up and
 //! Down skip disabled choices.
 
-use crate::components::menus::item::item::{AfterPick, MenuItem};
+use crate::components::menus::item::item::MenuItem;
 use ds_core::vocab::Availability;
 
 /// What a choice does when it is picked.
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) enum Act<T> {
     /// Yield this value, then close the menu or leave it open.
-    Pick(T, AfterPick),
+    Pick(T, bool),
     /// Open this submenu.
     Open(Vec<MenuItem<T>>),
 }
@@ -56,10 +56,10 @@ fn choices_of<T: Clone>(item: &MenuItem<T>) -> Vec<Choice<T>> {
             value,
             title,
             availability,
-            after,
+            keep_open,
             ..
         } => vec![Choice {
-            act: Act::Pick(value.clone(), *after),
+            act: Act::Pick(value.clone(), *keep_open),
             availability: *availability,
             title: title.clone(),
             slot: Slot::Alone,
@@ -80,7 +80,7 @@ fn choices_of<T: Clone>(item: &MenuItem<T>) -> Vec<Choice<T>> {
             .iter()
             .enumerate()
             .map(|(pos, dot)| Choice {
-                act: Act::Pick(dot.value.clone(), dot.after),
+                act: Act::Pick(dot.value.clone(), dot.keep_open),
                 availability: row.availability,
                 title: dot.name.clone(),
                 slot: Slot::Dot {

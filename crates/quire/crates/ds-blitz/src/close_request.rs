@@ -48,9 +48,9 @@ impl CloseGuard {
 
 /// Decide what the calling component's window does when the person asks to close it (its frame's
 /// close button or the compositor's close). Answer `true` to close the window now, or `false` to
-/// leave it open: the handler is dealing with the request itself (asking the person to save,
-/// say), and closes the window yourself with [`WindowHandle::close`](crate::WindowHandle::close) when the person
-/// agrees. One handler per window: the component that registered last holds it, and it goes when
+/// leave it open while the handler deals with the request itself (asking the person to save,
+/// say); close the window yourself with [`WindowHandle::close`](crate::WindowHandle::close) when
+/// the person agrees. One handler per window: the component that registered last holds it, and it goes when
 /// that component unmounts. `handler` is called from the event loop, so it can write signals but
 /// must not wait. Does nothing outside a window `launch` runs (the harness, a snapshot).
 pub fn use_close_request(handler: impl FnMut() -> bool + 'static) {

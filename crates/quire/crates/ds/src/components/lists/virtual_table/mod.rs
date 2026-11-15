@@ -8,7 +8,7 @@ pub(crate) mod row_drag;
 pub(crate) mod split;
 pub(crate) mod view;
 
-pub use drag_model::{RowDrop, RowDropKind, RowDropTarget, RowGaps};
+pub use drag_model::{RowDrop, RowDropKind, RowDropTarget};
 pub use outline::{OutlineKind, OutlineRow, OutlineToggle, ToggleReach};
 pub use split::columns_id;
 pub use view::{VirtualTable, row_pitch};

@@ -34,7 +34,7 @@ pub struct CollectionItem<K> {
     /// The picture above it.
     pub thumbnail: Thumbnail,
     /// The same place held by a field the person types in (a file renamed where it stands: a
-    /// `TextField` with `FieldBezel::Plain`), as `Row`'s `edit`. The tile takes no press
+    /// `TextField` with `bezeled: false`), as `Row`'s `edit`. The tile takes no press
     /// meanwhile (`data-editing`), and the keys, presses and drags inside the field stay the
     /// field's.
     pub edit: Option<Element>,

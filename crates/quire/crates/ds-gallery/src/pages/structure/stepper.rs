@@ -2,7 +2,7 @@
 
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
-use ds::components::fields::stepper::model::{Readout, StepRange};
+use ds::components::fields::stepper::model::StepRange;
 use ds::components::fields::stepper::view::Stepper;
 use ds::prelude::*;
 use ds::style::tokens::control_size::ControlSize;
@@ -19,7 +19,7 @@ pub fn StepperSection() -> Element {
                 div { class: "g-row",
                     span { class: "g-name g-type-name", "{size.slug()}" }
                     Stepper { label: "Copies", value: value(), range, size, onchange: move |next| value.set(next) }
-                    Stepper { label: "Copies", value: bare(), range, size, readout: Readout::Bare, onchange: move |next| bare.set(next) }
+                    Stepper { label: "Copies", value: bare(), range, size, bare: true, onchange: move |next| bare.set(next) }
                     span { class: "g-code", "field {value()}, bare {bare()}" }
                 }
             }

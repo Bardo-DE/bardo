@@ -4,7 +4,7 @@
 use super::machine::{Effects, keep};
 use super::triangle::shielded;
 use super::types::{
-    Branch, Entered, ItemPath, MenuPhase, MenuTarget, MenuTiming, MenuTrackEffect, Pickable,
+    Branch, ItemPath, MenuPhase, MenuTarget, MenuTiming, MenuTrackEffect,
     SafeTriangle, Session, Submenu,
 };
 use ds_core::geometry::units::Point;
@@ -51,7 +51,7 @@ pub(super) fn moved<K: Clone + PartialEq>(
             guard: Some(guard),
         };
         let session = Session {
-            entered: Entered::Entered,
+            entered: true,
             sub,
             pointer: at,
             under: target,
@@ -77,23 +77,23 @@ fn retarget<K: Clone>(
 ) -> (Session<K>, Effects<K>) {
     let mut effects = Vec::new();
     let entered = match target {
-        MenuTarget::Item { .. } | MenuTarget::Menu => Entered::Entered,
+        MenuTarget::Item { .. } | MenuTarget::Menu => true,
         _ => session.entered,
     };
     let left = matches!(target, MenuTarget::Outside)
-        && session.entered == Entered::Entered
+        && session.entered
         && !matches!(session.sub, Submenu::Open { .. });
     let (hot, sub) = match &target {
         MenuTarget::Item {
             path,
-            pick: Pickable::Enabled,
+            pickable: true,
             branch,
         } => {
             let sub = select(session.sub, path, *branch, now, timing, &mut effects);
             (Some(path.clone()), sub)
         }
         MenuTarget::Item {
-            pick: Pickable::Inert,
+            pickable: false,
             ..
         } => (None, close_sub(session.sub, &mut effects)),
         MenuTarget::Outside if left => (None, Submenu::None),

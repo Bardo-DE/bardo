@@ -87,7 +87,7 @@ mod tests {
             assert!(pace.admit(&sender(n), start));
         }
         assert!(!pace.admit(&sender(SENDERS_MAX), start));
-        assert_eq!(pace.admit(&sender(0), start), Pass::Go, "a known sender");
+        assert!(pace.admit(&sender(0), start), "a known sender");
         assert!(pace.admit(&sender(SENDERS_MAX), start + WINDOW));
     }
 }

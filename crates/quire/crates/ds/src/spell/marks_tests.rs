@@ -1,4 +1,4 @@
-use super::{Edit, Misspelt, Typing, marks_for, reconcile, shown, typing_after};
+use super::{Misspelt, Typing, marks_for, reconcile, shown, typing_after};
 use crate::host::position::{EditNode, TextPosition};
 use crate::spell::words::{WordSpan, words};
 use std::collections::HashSet;
@@ -62,33 +62,33 @@ fn the_word_being_typed_is_held_until_the_caret_leaves_it() {
         span: WordSpan::new(start, end),
     };
     // Typed "teh": the caret is at its end, so it is being typed.
-    let held = typing_after(None, Some(&caret(3)), Some("teh"), Edit::Changed);
+    let held = typing_after(None, Some(&caret(3)), Some("teh"), true);
     assert_eq!(held, Some(typing(0, 3)));
     // The checker's read changes nothing: still held.
-    let held = typing_after(held, Some(&caret(3)), Some("teh"), Edit::Same);
+    let held = typing_after(held, Some(&caret(3)), Some("teh"), false);
     assert_eq!(held, Some(typing(0, 3)));
     // A space: the caret no longer touches it.
     assert_eq!(
-        typing_after(held.clone(), Some(&caret(4)), Some("teh "), Edit::Changed),
+        typing_after(held.clone(), Some(&caret(4)), Some("teh "), true),
         None
     );
     // An arrow key away from it, the text unchanged.
     assert_eq!(
-        typing_after(held.clone(), Some(&caret(0)), Some("teh cat"), Edit::Same),
+        typing_after(held.clone(), Some(&caret(0)), Some("teh cat"), false),
         Some(typing(0, 3)),
         "still at its start"
     );
     assert_eq!(
-        typing_after(held, Some(&caret(5)), Some("teh cat"), Edit::Same),
+        typing_after(held, Some(&caret(5)), Some("teh cat"), false),
         None
     );
     // Clicking into a word already marked, without typing, holds nothing.
     assert_eq!(
-        typing_after(None, Some(&caret(1)), Some("teh cat"), Edit::Same),
+        typing_after(None, Some(&caret(1)), Some("teh cat"), false),
         None
     );
     // No caret: nothing is being typed.
-    assert_eq!(typing_after(None, None, Some("teh"), Edit::Changed), None);
+    assert_eq!(typing_after(None, None, Some("teh"), true), None);
 }
 
 #[test]

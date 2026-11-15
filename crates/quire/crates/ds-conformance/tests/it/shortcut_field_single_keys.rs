@@ -1,4 +1,4 @@
-//! ShortcutField with `accepts: SingleKeys` on a real Blitz document: a bare key and Delete are
+//! ShortcutField with `single_keys: true` on a real Blitz document: a bare key and Delete are
 //! recorded, Escape and Backspace still cancel and clear, and `more` draws a cap per extra key
 //! beside the value without being touched by a recording.
 
@@ -31,7 +31,7 @@ fn Page() -> Element {
             ShortcutField {
                 label: "Next",
                 value: shortcut(),
-                accepts: ShortcutKinds::SingleKeys,
+                single_keys: true,
                 more: vec![plain('n')],
                 onrecord: move |recorded: ShortcutRecorded| {
                     log.with_mut(|log| log.push_str(match recorded {

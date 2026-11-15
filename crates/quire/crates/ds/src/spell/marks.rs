@@ -55,15 +55,6 @@ pub struct Typing {
     pub span: WordSpan,
 }
 
-/// Whether a paragraph's text changed since the surface last read it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Edit {
-    /// It changed: the user typed in it.
-    Changed,
-    /// It reads as before.
-    Same,
-}
-
 /// The misspellings of one paragraph: its `words` that are in `wrong`.
 pub fn marks_for(
     node: &EditNode,
@@ -111,23 +102,24 @@ fn whole_at(text: &str, span: WordSpan, word: &str) -> bool {
         && !joined_at(text, span.end)
 }
 
-/// The word being typed after a read of the caret's paragraph (`text`, `edit` against the last
-/// read): the word at the caret if the paragraph changed; the same word as before while the
+/// The word being typed after a read of the caret's paragraph (`text`; `changed` when it differs
+/// from the last read: the user typed in it): the word at the caret if the paragraph changed; the same word as before while the
 /// caret stays on it; otherwise none.
 pub fn typing_after(
     before: Option<Typing>,
     caret: Option<&TextPosition>,
     text: Option<&str>,
-    edit: Edit,
+    changed: bool,
 ) -> Option<Typing> {
     let (caret, text) = (caret?, text?);
     let at = word_at(text, caret.offset.0);
-    match edit {
-        Edit::Changed => at.map(|span| Typing {
+    if changed {
+        at.map(|span| Typing {
             node: caret.node.clone(),
             span,
-        }),
-        Edit::Same => before.filter(|typing| typing.node == caret.node && Some(typing.span) == at),
+        })
+    } else {
+        before.filter(|typing| typing.node == caret.node && Some(typing.span) == at)
     }
 }
 

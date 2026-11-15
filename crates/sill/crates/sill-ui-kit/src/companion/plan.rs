@@ -4,7 +4,7 @@ use companion_wire::{AnswerPhase, PlanStepWire, PlanWire, StepWireState};
 use docket_vocab::StepId as WireStep;
 use ds::components::companion::answer::footer::CardFooter;
 use ds::components::companion::plan::model::{
-    Inclusion, PlanFinish, PlanGroup, PlanPhase, PlanStep, PlanStepState, PlanView, StepId, StopWhy,
+    PlanFinish, PlanGroup, PlanPhase, PlanStep, PlanStepState, PlanView, StepId, StopWhy,
 };
 use ds_core::vocab::EffectMark;
 
@@ -34,14 +34,7 @@ fn step(step: &PlanStepWire) -> PlanStep {
         detail: None,
         app: None,
         effect: effect_mark(step.effect),
-        inclusion: match step.state {
-            StepWireState::Skipped => Inclusion::Excluded,
-            StepWireState::Pending
-            | StepWireState::Running
-            | StepWireState::Done { .. }
-            | StepWireState::Failed(_)
-            | StepWireState::Undone => Inclusion::Included,
-        },
+        included: !matches!(step.state, StepWireState::Skipped),
         state: match &step.state {
             StepWireState::Pending => PlanStepState::Pending,
             StepWireState::Running => PlanStepState::Running,

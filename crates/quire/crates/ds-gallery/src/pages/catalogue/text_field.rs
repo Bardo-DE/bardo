@@ -82,7 +82,7 @@ pub fn TextFieldSection() -> Element {
                 }
                 Specimen { name: "plain".to_owned(),
                     div { style: "width:190px; font-size:16px; font-weight:600",
-                        TextField { label: "Title", value: "Renamed in place", bezel: FieldBezel::Plain, oninput: |_| {} }
+                        TextField { label: "Title", value: "Renamed in place", bezeled: false, oninput: |_| {} }
                     }
                 }
                 Specimen { name: "multiline, three rows".to_owned(),

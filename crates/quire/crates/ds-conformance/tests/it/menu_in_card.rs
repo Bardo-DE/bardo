@@ -6,7 +6,6 @@ use dioxus::prelude::*;
 use ds::base::geometry::placement::{Align, Side};
 use ds::base::vocab::Dismiss;
 use ds::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone};
-use ds::components::overlays::popover::Arrow;
 use ds::host::measure::Anchor;
 use ds::prelude::*;
 use ds_harness::{Clock, Harness, HarnessConfig, Viewport};
@@ -42,7 +41,6 @@ fn Page() -> Element {
                     anchor: Anchor::Point(Point { x: Px(40.0), y: Px(40.0) }),
                     placement: Placement::new(Side::Bottom, Align::Start),
                     gap: Px(0.0),
-                    arrow: Arrow::None,
                     dismiss: Dismiss::Transient,
                     onclose: |()| {},
                     div { style: "display:flex; flex-direction:column; width:400px",

@@ -10,10 +10,9 @@
 
 use crate::components::lists::emoji_grid::grid::EmojiCells;
 use crate::components::lists::emoji_grid::nav::{GridEdge, GridMove, GridStep, grid_step};
-use crate::components::menus::item::item::AfterPick;
 use crate::components::menus::palette::palette_group::{GroupEntries, PaletteGroup};
 use crate::components::menus::palette::palette_lines::{MarkedRow, marked};
-use crate::stack::roving::{Step, Wrap, moved_live};
+use crate::stack::roving::{Step, moved_live};
 use dioxus::prelude::EventHandler;
 use ds_core::vocab::Availability;
 
@@ -69,7 +68,7 @@ fn stop_count<T: Clone>(shown: &ShownGroup<'_, T>) -> usize {
 #[derive(Clone, PartialEq)]
 pub(crate) enum Stop<T> {
     /// A row: what picking it yields, whether it can be picked, and whether a pick closes.
-    Row(T, Availability, AfterPick),
+    Row(T, Availability, bool),
     /// An emoji cell, yielding this value.
     Cell(T),
     /// A group's header action.
@@ -98,7 +97,7 @@ pub(crate) fn stops<T: Clone>(shown: &[ShownGroup<'_, T>]) -> Vec<Stop<T>> {
                         Stop::Row(
                             marked.row.value.clone(),
                             marked.row.availability,
-                            marked.row.after,
+                            marked.row.keep_open,
                         )
                     })
                     .collect(),
@@ -163,7 +162,7 @@ pub(crate) fn travel(
         .find(|span| (span.first..span.first + span.count).contains(&current));
     match (grid, travel) {
         (None, Travel::Side(_)) => None,
-        (None, Travel::Vertical(step)) => Some(moved_live(Wrap::Stops, current, live, step)),
+        (None, Travel::Vertical(step)) => Some(moved_live(false, current, live, step)),
         (Some(span), travel) => Some(in_grid(*span, current, travel, live)),
     }
 }
@@ -184,7 +183,7 @@ fn in_grid(span: GridSpan, current: usize, travel: Travel, live: &[Availability]
                 GridEdge::Top => (span.first, Step::Up),
                 GridEdge::Bottom => (span.first + span.count - 1, Step::Down),
             };
-            match moved_live(Wrap::Stops, from, live, step) {
+            match moved_live(false, from, live, step) {
                 next if next == from => current,
                 next => next,
             }
@@ -195,7 +194,7 @@ fn in_grid(span: GridSpan, current: usize, travel: Travel, live: &[Availability]
 /// What Enter does on a stop.
 pub(crate) enum Run<T> {
     /// Pick this value, closing first unless the row keeps the list open.
-    Pick(T, AfterPick),
+    Pick(T, bool),
     /// Run a header action; the palette stays.
     Action(EventHandler<()>),
     /// Nothing: a disabled row, or no stop.
@@ -205,8 +204,8 @@ pub(crate) enum Run<T> {
 /// What Enter (or a click) does on `stop`.
 pub(crate) fn run_of<T: Clone>(stop: Option<&Stop<T>>) -> Run<T> {
     match stop {
-        Some(Stop::Row(value, Availability::Enabled, after)) => Run::Pick(value.clone(), *after),
-        Some(Stop::Cell(value)) => Run::Pick(value.clone(), AfterPick::Close),
+        Some(Stop::Row(value, Availability::Enabled, keep_open)) => Run::Pick(value.clone(), *keep_open),
+        Some(Stop::Cell(value)) => Run::Pick(value.clone(), false),
         Some(Stop::Action(run)) => Run::Action(*run),
         Some(Stop::Row(..)) | None => Run::Nothing,
     }

@@ -5,7 +5,6 @@
 use dioxus::prelude::*;
 use ds::base::geometry::placement::{Align, Side};
 use ds::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone};
-use ds::components::overlays::popover::Arrow;
 use ds::host::measure::Anchor;
 use ds::prelude::*;
 use ds::style::tokens::system_hue::SystemHue;
@@ -43,7 +42,6 @@ fn Page() -> Element {
                     anchor: Anchor::Point(Point { x: Px(40.0), y: Px(40.0) }),
                     placement: Placement::new(Side::Bottom, Align::Start),
                     gap: Px(4.0),
-                    arrow: Arrow::None,
                     onclose: |()| {},
                     Menu::<u8> {
                         placement: MenuPlacement::Popup,

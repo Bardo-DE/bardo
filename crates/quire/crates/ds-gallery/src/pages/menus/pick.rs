@@ -109,7 +109,7 @@ pub fn HintsAndPickList() -> Element {
     rsx! {
         Section {
             title: "Menu: hints and toggles",
-            note: "The Mac's menu has no second line, so what an item adds to its title (the time a snooze lands on) stands at its end, faint, before any key equivalent. An item with AfterPick::KeepOpen yields at once and leaves the menu up with no blink, so a set of toggles is one menu; the caller redraws the checks.",
+            note: "The Mac's menu has no second line, so what an item adds to its title (the time a snooze lands on) stands at its end, faint, before any key equivalent. An item with keep_open yields at once and leaves the menu up with no blink, so a set of toggles is one menu; the caller redraws the checks.",
             div { class: "g-row g-row-top",
                 Specimen { name: "Hints", code: "MenuItem::new(1, \"Later today\").with_hint(\"6:00 PM\")".to_string(),
                     div { class: "g-menu-card",

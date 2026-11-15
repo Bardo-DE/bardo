@@ -4,7 +4,7 @@
 
 use dioxus::prelude::*;
 use ds::components::lists::row::shape::RowShape;
-use ds::components::menus::palette::palette_claim::{Claim, FieldKey};
+use ds::components::menus::palette::palette_claim::FieldKey;
 use ds::components::menus::palette::palette_group::PaletteRow;
 use ds::components::menus::palette::palette_group::{PaletteGroup, PaletteGroups};
 use ds::host::caret::{Caret, InitialCaret};
@@ -53,13 +53,13 @@ fn jump(key: &dioxus::prelude::Key) -> Option<usize> {
 #[allow(non_snake_case)]
 fn LongPalette() -> Element {
     let mut selected = use_signal(|| 0usize);
-    let claim = move |key: FieldKey| -> Claim {
+    let claim = move |key: FieldKey| -> bool {
         match jump(&key.event.key()) {
             Some(stop) => {
                 selected.set(stop);
-                Claim::Take
+                true
             }
-            None => Claim::Pass,
+            None => false,
         }
     };
     rsx! {
@@ -268,9 +268,9 @@ fn caret_word(caret: Caret) -> &'static str {
 fn Opened(initial_caret: Option<InitialCaret>) -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut query = use_signal(|| "abc".to_string());
-    let claim = move |key: FieldKey| -> Claim {
+    let claim = move |key: FieldKey| -> bool {
         log.with_mut(|log| log.push(caret_word(key.caret).to_string()));
-        Claim::Take
+        true
     };
     let rows = vec![item(1, "Files")];
     let palette = match initial_caret {
@@ -303,11 +303,11 @@ fn Opened(initial_caret: Option<InitialCaret>) -> Element {
                 onclose: move |_| {},
                 host: CommandPaletteHost::Surface,
                 id: "card".to_string(),
-                claim: move |key: FieldKey| -> Claim {
+                claim: move |key: FieldKey| -> bool {
                     log.with_mut(|log| log.push(caret_word(key.caret).to_string()));
                     match key.event.key() {
-                        dioxus::prelude::Key::Character(_) => Claim::Pass,
-                        _ => Claim::Take,
+                        dioxus::prelude::Key::Character(_) => false,
+                        _ => true,
                     }
                 },
                 initial_caret,

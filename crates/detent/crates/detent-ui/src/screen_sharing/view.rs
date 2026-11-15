@@ -10,7 +10,6 @@ use detent_model::{
 };
 use dioxus::prelude::*;
 use ds::components::content::label::{LabelRole, LabelStyle};
-use ds::components::controls::button_model::ButtonRole;
 use ds::components::controls::disclosure::Disclosure;
 use ds::components::fields::field_row::{FieldGroup, FieldRow};
 use ds::components::overlays::empty_state::EmptyState;
@@ -151,7 +150,7 @@ fn AppLine(
                     ..Common::default()
                 },
                 label: crate::copy::common::REMOVE,
-                role: ButtonRole::Destructive,
+                destructive: true,
                 size: ControlSize::Small,
                 availability,
                 onclick: move |_| remove.call(ScreenSharingInput::Remove(app.clone())),

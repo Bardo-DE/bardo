@@ -6,7 +6,7 @@
 use dioxus::prelude::*;
 use ds::components::lists::emoji_grid::grid::{EMOJI_CELL, EmojiCell, EmojiCells};
 use ds::components::lists::preview::content::PaneContent;
-use ds::components::menus::palette::palette_claim::{Claim, FieldKey};
+use ds::components::menus::palette::palette_claim::FieldKey;
 use ds::components::menus::palette::palette_group::PaletteRow;
 use ds::components::menus::palette::palette_group::{PaletteGroup, PaletteGroups};
 use ds::host::caret::Caret;
@@ -243,7 +243,7 @@ fn ClaimPalette() -> Element {
     let mut query = use_signal(String::new);
     // Browsing: the selection last moved by Up or Down and nothing typed since.
     let mut browsing = use_signal(|| false);
-    let claim = move |key: FieldKey| -> Claim {
+    let claim = move |key: FieldKey| -> bool {
         let name = key.event.key();
         let taken = match name {
             dioxus::prelude::Key::ArrowDown | dioxus::prelude::Key::ArrowUp => {
@@ -264,10 +264,7 @@ fn ClaimPalette() -> Element {
                 log.push(what.to_string());
             }
         });
-        match taken {
-            Some(_) => Claim::Take,
-            None => Claim::Pass,
-        }
+        taken.is_some()
     };
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Sheet,
@@ -346,13 +343,13 @@ fn a_claim_takes_space_only_while_browsing_and_right_only_at_the_end() {
 fn AsidePalette(host: CommandPaletteHost) -> Element {
     let mut pane = use_signal(|| false);
     // Tab toggles the pane: over a window the palette's scrim takes every click outside it.
-    let claim = move |key: FieldKey| -> Claim {
+    let claim = move |key: FieldKey| -> bool {
         match key.event.key() {
             dioxus::prelude::Key::Tab => {
                 pane.toggle();
-                Claim::Take
+                true
             }
-            _ => Claim::Pass,
+            _ => false,
         }
     };
     let aside = pane().then(|| {

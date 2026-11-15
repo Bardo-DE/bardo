@@ -71,7 +71,7 @@ use crate::components::lists::table::rules::scrolled_word;
 use crate::components::lists::table::widths::fit_width;
 use crate::components::lists::virtual_list::layout::Layout;
 use crate::components::lists::virtual_list::view::use_cursor_reveal;
-use crate::components::lists::virtual_table::drag_model::{RowDrop, RowDropKind, RowGaps};
+use crate::components::lists::virtual_table::drag_model::{RowDrop, RowDropKind};
 use crate::components::lists::virtual_table::model::{
     TableKey, held_columns, key_how, page_rows, table_key, target,
 };
@@ -154,7 +154,7 @@ fn row_content<C>(
 /// that are not mounted are places to drop on too, and near the top or bottom edge each pointer
 /// move scrolls the list. `drop_kind` says which rows are folders (`RowDropKind::Container`, the
 /// default is none): a folder takes the drop onto it and is outlined. `drop_gaps` also offers the
-/// gaps between rows (`RowGaps::Offered`) and draws a line in the nearest one; by default only
+/// gaps between rows (`true`) and draws a line in the nearest one; by default only
 /// folders take a drop. Rows are never dropped on themselves or beside their own block.
 /// `onrowdrop` hears a [`RowDrop`]: the dragged row indices, the target and the `DropOperation`
 /// (Option copies, Command moves, both link, none moves). Escape, or the pointer leaving the
@@ -196,7 +196,7 @@ pub fn VirtualTable<C: Clone + PartialEq + 'static>(
     #[props(default)] onmarquee: Option<EventHandler<RowSelection>>,
     #[props(default)] onrowdrop: Option<EventHandler<RowDrop>>,
     #[props(default)] drop_kind: Option<Callback<usize, RowDropKind>>,
-    #[props(default)] drop_gaps: RowGaps,
+    #[props(default)] drop_gaps: bool,
     #[props(default)] cell_width: Option<Callback<(usize, usize), Px>>,
     #[props(default)] outline: Option<Callback<usize, OutlineRow>>,
     #[props(default)] ontoggle: Option<EventHandler<OutlineToggle>>,

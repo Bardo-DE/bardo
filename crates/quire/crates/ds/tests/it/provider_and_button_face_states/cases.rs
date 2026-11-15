@@ -79,6 +79,6 @@ pub const CASES: &[Case] = &[
     },
     Case {
         golden: "controls/text_field/bare.html",
-        make: || rsx! { TextField { bezel: FieldBezel::Plain, label: "Name", value: "Work", placeholder: "Name this Space", oninput: |_| {} } },
+        make: || rsx! { TextField { bezeled: false, label: "Name", value: "Work", placeholder: "Name this Space", oninput: |_| {} } },
     },
 ];

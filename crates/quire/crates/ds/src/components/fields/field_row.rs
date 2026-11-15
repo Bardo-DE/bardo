@@ -10,13 +10,13 @@
 //! keeps the width its words need; the control side shrinks and wraps instead.
 //!
 //! Markup: `div.ds-field-row[data-layout]` of an optional `span.ds-field-row-leading[data-leading]`,
-//! `span.ds-field-row-label` (`.ds-field-row-title`, `.ds-field-row-help`, which `HelpShown::OnRequest`
+//! `span.ds-field-row-label` (`.ds-field-row-title`, `.ds-field-row-help`, which `help_on_request`
 //! hides visually and follows with `.ds-field-row-about`, the ⓘ button) and
 //! `div.ds-field-row-control`; `section.ds-field-group` of an optional
 //! `SectionHeader` and `div.ds-field-group-rows`.
 
 use crate::components::content::text_runs::{TextLine, text};
-use crate::components::fields::field_help::{HelpButton, HelpShown, help_id};
+use crate::components::fields::field_help::{HelpButton, help_id};
 use crate::components::forms::icon_tile::{TileFace, tile};
 use crate::components::lists::section_header::SectionHeader;
 use crate::root::common::Common;
@@ -41,7 +41,7 @@ pub enum RowLayout {
 pub fn FieldRow(
     #[props(into)] label: TextLine,
     #[props(default)] help: Option<TextLine>,
-    #[props(default)] help_shown: HelpShown,
+    #[props(default)] help_on_request: bool,
     #[props(default)] leading: Option<TileFace>,
     #[props(default)] layout: RowLayout,
     #[props(default)] availability: Availability,
@@ -52,7 +52,6 @@ pub fn FieldRow(
     let described = help
         .as_ref()
         .map(|_| help_id(common.id.as_deref(), &label.plain_text()));
-    let on_request = help_shown == HelpShown::OnRequest;
     rsx! {
         div {
             id: common.id.clone(),
@@ -62,7 +61,7 @@ pub fn FieldRow(
             "aria-disabled": availability.aria_disabled(),
             "aria-busy": availability.aria_busy(),
             "aria-describedby": described.clone(),
-            "data-help": on_request.then_some(HelpShown::OnRequest.slug()),
+            "data-help": help_on_request.then_some("on-request"),
             "data-layout": layout.slug(),
             "data-availability": availability.slug(),
             onmounted: move |event| common.mounted(event),
@@ -73,7 +72,7 @@ pub fn FieldRow(
             span { class: "ds-field-row-label",
                 span { class: "ds-field-row-title", {text(&label)} }
                 if let Some(help) = help.as_ref() {
-                    if on_request {
+                    if help_on_request {
                         HelpButton { label: label.clone(), help: help.clone() }
                     }
                     span { id: described.clone(), class: "ds-field-row-help", {text(help)} }

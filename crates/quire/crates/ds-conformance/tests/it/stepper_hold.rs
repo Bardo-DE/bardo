@@ -3,7 +3,7 @@
 //! of the range hold.
 
 use dioxus::prelude::*;
-use ds::components::fields::stepper::model::{Readout, StepRange};
+use ds::components::fields::stepper::model::StepRange;
 use ds::components::fields::stepper::view::Stepper;
 use ds::prelude::*;
 use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -20,7 +20,7 @@ fn Page() -> Element {
     let mut value = use_signal(|| 5i32);
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Popover,
-            Stepper { label: "Copies", value: value(), range: StepRange::new(0, 100, 1), readout: Readout::Bare, onchange: move |next| value.set(next) }
+            Stepper { label: "Copies", value: value(), range: StepRange::new(0, 100, 1), bare: true, onchange: move |next| value.set(next) }
             p { class: "value", "{value()}" }
         }
     }

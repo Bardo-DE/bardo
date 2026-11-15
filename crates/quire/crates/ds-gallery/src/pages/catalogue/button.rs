@@ -3,7 +3,7 @@
 
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
-use ds::components::controls::button_model::{Answers, Bezel, ButtonRole, ImagePosition};
+use ds::components::controls::button_model::{Answers, Bezel, ImagePosition};
 use ds::prelude::*;
 use ds::style::tokens::control_size::ControlSize;
 
@@ -29,8 +29,8 @@ pub fn ButtonSection() -> Element {
                 span { class: "g-name g-type-name", "default, cancel, destructive" }
                 Button { answers: Answers::Return, label: "Send", onclick: |_| {} }
                 Button { answers: Answers::Escape, label: "Cancel", onclick: |_| {} }
-                Button { role: ButtonRole::Destructive, label: "Delete", icon: Icon::Trash, onclick: |_| {} }
-                Button { answers: Answers::Return, role: ButtonRole::Destructive, label: "Erase", onclick: |_| {} }
+                Button { destructive: true, label: "Delete", icon: Icon::Trash, onclick: |_| {} }
+                Button { answers: Answers::Return, destructive: true, label: "Erase", onclick: |_| {} }
                 Button { answers: Answers::Return, label: "Send", availability: Availability::Disabled, onclick: |_| {} }
                 Button { answers: Answers::Return, label: "Sending", availability: Availability::Busy, onclick: |_| {} }
             }

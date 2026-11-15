@@ -42,7 +42,7 @@ fn tiles() -> Vec<SpaceTile> {
 /// The bar the page hangs, with every report written to the log. `held` is the expansion the
 /// caller holds, if any.
 #[component]
-fn Hung(held: Option<BarExpansion>) -> Element {
+fn Hung(held: Option<bool>) -> Element {
     let shown = use_context::<Signal<bool>>();
     let mut log = use_signal(Vec::<String>::new);
     let mut layout = use_signal(BarLayout::default);
@@ -53,10 +53,10 @@ fn Hung(held: Option<BarExpansion>) -> Element {
             label: "Spaces",
             spaces: tiles(),
             shown: shown(),
-            expansion: held,
+            expanded: held,
             on_pick: move |key: BarSpaceKey| log.with_mut(|log| log.push(key.0)),
             on_add: move |()| log.with_mut(|log| log.push("add".to_owned())),
-            on_expansion_change: move |to: BarExpansion| log.with_mut(|log| log.push(to.slug().to_owned())),
+            on_expansion_change: move |to: bool| log.with_mut(|log| log.push(if to { "expanded" } else { "collapsed" }.to_owned())),
             on_hidden: move |()| log.with_mut(|log| log.push("hidden".to_owned())),
         }
         p { class: "log", {log().join(",")} }
@@ -80,7 +80,7 @@ fn Page() -> Element {
 fn Held() -> Element {
     use_context_provider(|| Signal::new(true));
     rsx! {
-        Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport, Hung { held: Some(BarExpansion::Collapsed) } }
+        Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport, Hung { held: Some(false) } }
     }
 }
 
@@ -88,7 +88,7 @@ fn Held() -> Element {
 fn Open() -> Element {
     use_context_provider(|| Signal::new(true));
     rsx! {
-        Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport, Hung { held: Some(BarExpansion::Expanded) } }
+        Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport, Hung { held: Some(true) } }
     }
 }
 

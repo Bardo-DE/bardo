@@ -2184,7 +2184,7 @@ which files the document may read at all (`FileRoots`): name the folders of the 
 **Do not let a bad style lock the person out.** Before the first window loads styles, call
 `ds_blitz::StylesGuard::begin(&state_dir, "your-app", &styles)` (`state_dir` is
 `ConfigRoot::state_dir(AppName::QUIRE)`). If your last two starts with the same sheets never
-reached a first frame plus five seconds alive, it answers `Load::Without`: draw with
+reached a first frame plus five seconds alive, `guard.load()` is `false`: draw with
 `custom_styles: CustomStyles::Off`, show `StylesOffNotice { program: "your-app", onturnon }`, and in
 `onturnon` call `guard.turn_on_again(&styles)`. Call `ds_blitz::use_styles_guard(guard)` once in the
 root so the start is marked good. The next change to any of the three sheets clears the guard

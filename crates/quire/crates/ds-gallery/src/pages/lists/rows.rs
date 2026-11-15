@@ -54,7 +54,7 @@ fn Rename() -> Element {
                                 leading: RowLeading::Icon(Icon::Folder),
                                 state: RowState { selection: true, ..RowState::default() },
                                 edit: rsx! {
-                                    TextField { bezel: FieldBezel::Plain, label: "Rename folder", value: name(), oninput: move |next| name.set(next) }
+                                    TextField { bezeled: false, label: "Rename folder", value: name(), oninput: move |next| name.set(next) }
                                 },
                                 onclick: |_| {},
                             }

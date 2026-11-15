@@ -3,7 +3,7 @@
 //! style off. So before a window first loads styles the guard writes the fingerprint of the three
 //! sheets to `<state>/quire/styles-guard/<program>` marked `starting`, and once the first frame
 //! has been drawn and the program has lived five seconds it marks the record `good`. If the last
-//! two starts with the same sheets never got there, the next start is [`Load::Without`]: the app
+//! two starts with the same sheets never got there, the next start is without them: the app
 //! draws with `CustomStyles::Off` and shows `ds::prelude::StylesOffNotice`, whose button calls
 //! [`StylesGuard::turn_on_again`]. A change to any of the three sheets clears the guard
 //! ([`StylesGuard::changed`]), so the person can fix the style and try again.
@@ -16,8 +16,8 @@
 mod decide;
 mod record;
 
-pub use decide::{FAILED_STARTS, Load, decide};
-pub use record::{Reached, Record, parse, render};
+pub use decide::{FAILED_STARTS, decide};
+pub use record::{Record, parse, render};
 
 use dioxus::prelude::*;
 use ds::style::kit::{Fingerprint, Styles};
@@ -34,19 +34,19 @@ pub struct StylesGuard {
     state: PathBuf,
     program: String,
     hash: Fingerprint,
-    load: Load,
+    load: bool,
 }
 
 impl StylesGuard {
     /// The start of `program` (its short name, which is also the record's file name) with
     /// `styles`: decide from the earlier starts, and write this one as `starting` unless the
-    /// answer is [`Load::Without`]. Call it before the first window loads the styles.
+    /// answer is to start without them. Call it before the first window loads the styles.
     pub fn begin(state_dir: &Path, program: &str, styles: &Styles) -> StylesGuard {
         let guard = StylesGuard {
             state: state_dir.to_owned(),
             program: program.to_owned(),
             hash: styles.fingerprint(),
-            load: Load::WithStyles,
+            load: true,
         };
         let file = guard.file();
         let hash = styles.fingerprint();
@@ -54,11 +54,11 @@ impl StylesGuard {
             .map(|text| parse(&text))
             .unwrap_or_default();
         let load = decide(&earlier, hash);
-        if load == Load::WithStyles {
+        if load {
             let mut records = earlier;
             records.push(Record {
                 hash,
-                reached: Reached::Starting,
+                good: false,
             });
             let keep = records.len().saturating_sub(FAILED_STARTS);
             write(&file, &records[keep..]);
@@ -74,7 +74,7 @@ impl StylesGuard {
     }
 
     /// Whether to load the styles.
-    pub fn load(&self) -> Load {
+    pub fn load(&self) -> bool {
         self.load
     }
 
@@ -85,7 +85,7 @@ impl StylesGuard {
 
     /// Mark this start good, if it is still the last record. Called by [`use_styles_guard`].
     pub fn mark_good(&self) {
-        if self.load == Load::Without {
+        if !self.load {
             return;
         }
         let file = self.file();
@@ -93,7 +93,7 @@ impl StylesGuard {
             .map(|text| parse(&text))
             .unwrap_or_default();
         if let Some(last) = records.last_mut().filter(|last| last.hash == self.hash) {
-            last.reached = Reached::Good;
+            last.good = true;
             write(&file, &records);
         }
     }
@@ -120,7 +120,7 @@ impl StylesGuard {
 /// needs no async runtime.
 pub fn use_styles_guard(guard: StylesGuard) {
     use_effect(use_reactive!(|guard| {
-        if guard.load() == Load::WithStyles {
+        if guard.load() {
             std::thread::spawn(move || {
                 std::thread::sleep(ALIVE_FOR);
                 guard.mark_good();

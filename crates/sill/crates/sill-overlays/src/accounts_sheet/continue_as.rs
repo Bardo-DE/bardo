@@ -4,7 +4,7 @@
 
 use dioxus::prelude::*;
 use ds::components::controls::button::Button;
-use ds::components::controls::button_model::{Answers, ButtonRole};
+use ds::components::controls::button_model::{Answers};
 use ds_shell::accounts::model::{
     AccountChoice, AllowScope, ChoiceKey, ConsentAnswer, PickerChoice,
 };
@@ -77,7 +77,7 @@ pub(super) fn ContinueBody(
                     Button {
                         label: "Continue".to_owned(),
                         answers: Answers::Return,
-                        role: ButtonRole::Normal,
+                        destructive: false,
                         autofocus: true,
                         onclick: move |_| go(()),
                     }
@@ -86,7 +86,7 @@ pub(super) fn ContinueBody(
                     Button {
                         label: "Cancel".to_owned(),
                         answers: Answers::Escape,
-                        role: ButtonRole::Normal,
+                        destructive: false,
                         autofocus: false,
                         onclick: move |_| on_answer.call(ConsentAnswer::Dismiss),
                     }

@@ -5,7 +5,7 @@
 use super::cases::Case;
 use super::rows::strip_actions;
 use dioxus::prelude::*;
-use ds::components::app::hover_strip::{ActionId, HoverStrip, Titles};
+use ds::components::app::hover_strip::{ActionId, HoverStrip};
 use ds::components::app::row_more::RowMore;
 use ds::components::app::thread_row::ThreadRow;
 use ds::components::content::text_runs::RunTone;
@@ -63,7 +63,7 @@ fn caller_strip(shown: bool) -> Element {
         HoverStrip {
             actions: strip_actions(),
             shown,
-            titles: Titles::FromLabel,
+            titles: true,
             expanded: vec![
                 (ActionId("snooze".to_string()), false),
                 (ActionId("label".to_string()), true),

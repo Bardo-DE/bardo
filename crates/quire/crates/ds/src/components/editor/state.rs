@@ -13,21 +13,14 @@ use ds_core::vocab::PressPhase;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
-/// Whether the host routes the pointer to the surface (a press captured it, until release).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub(crate) enum Capture {
-    /// The surface's own pointer events serve.
-    #[default]
-    Free,
-    /// The host's capture carries moves and the release.
-    Held,
-}
-
 /// The surface's memory.
 pub(crate) struct SurfaceState {
     pub(crate) composing: Cell<Composing>,
     pub(crate) pressing: Cell<PressPhase>,
-    pub(crate) capture: Cell<Capture>,
+    /// Whether the host routes the pointer to the surface (a press captured it, until release):
+    /// its capture then carries moves and the release; otherwise the surface's own pointer
+    /// events serve.
+    pub(crate) captured: Cell<bool>,
     last_press: Cell<Option<LastPress>>,
     pub(crate) focus: Cell<EditFocus>,
     pub(crate) element: RefCell<Option<Rc<MountedData>>>,
@@ -41,7 +34,7 @@ impl Default for SurfaceState {
         SurfaceState {
             composing: Cell::new(Composing::Idle),
             pressing: Cell::new(PressPhase::Idle),
-            capture: Cell::new(Capture::Free),
+            captured: Cell::new(false),
             last_press: Cell::new(None),
             focus: Cell::new(EditFocus::Out),
             element: RefCell::new(None),
@@ -58,7 +51,7 @@ impl SurfaceState {
         let clicks = clicks_after(self.last_press.get(), at, when);
         self.last_press.set(Some(LastPress { at, when, clicks }));
         self.pressing.set(PressPhase::Pressed);
-        self.capture.set(Capture::Free);
+        self.captured.set(false);
         clicks
     }
 
