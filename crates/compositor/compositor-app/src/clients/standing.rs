@@ -295,7 +295,7 @@ mod tests {
                 "known by its control group alone",
                 Proof::Cgroup,
                 ClientStanding::Unverified {
-                    exe_name: Some("transom".to_owned()),
+                    exe_name: Some("bardo-portal".to_owned()),
                 },
             ),
         ];

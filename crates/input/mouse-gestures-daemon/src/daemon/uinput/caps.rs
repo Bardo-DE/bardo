@@ -25,13 +25,13 @@ pub(super) struct Identity {
 
 /// O2's identity.
 pub(super) const TOUCHPAD: Identity = Identity {
-    name: "palmrest touchpad",
+    name: "mouse-gestures touchpad",
     vendor: 0x0001,
     product: 0x0002,
 };
 /// O3's identity.
 pub(super) const KEYS: Identity = Identity {
-    name: "palmrest keys",
+    name: "mouse-gestures keys",
     vendor: 0x0001,
     product: 0x0003,
 };
@@ -123,10 +123,10 @@ mod tests {
     #[test]
     fn only_palmrests_own_devices_are_wanted() {
         let keys = wanted(&Create::keys(vec![56, 105])).map(|(id, caps)| (id.name, caps.keys));
-        assert_eq!(keys, Some(("palmrest keys", vec![56, 105])));
+        assert_eq!(keys, Some(("mouse-gestures keys", vec![56, 105])));
         assert_eq!(
             wanted(&Create::touchpad()).map(|(id, _)| id.name),
-            Some("palmrest touchpad")
+            Some("mouse-gestures touchpad")
         );
         assert!(
             wanted(&Create::wheel()).is_none(),

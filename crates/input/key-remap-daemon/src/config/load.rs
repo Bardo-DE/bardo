@@ -1,4 +1,4 @@
-//! Reading the machine file: `keycap.toml` in the config directory.
+//! Reading the machine file: `key-remap.toml` in the config directory.
 
 use std::path::Path;
 
@@ -9,7 +9,7 @@ use key_remap_proto::Warning;
 use super::trusted::read_layer;
 
 /// The file name the machine and vendor layers are read from, in their directories.
-pub const FILE_NAME: &str = "keycap.toml";
+pub const FILE_NAME: &str = "key-remap.toml";
 
 /// The machine layer from `dir`, judged on the real file system. It is read only when it is
 /// root-only, by the check in `trusted.rs` that the vendor file shares. A missing file is an

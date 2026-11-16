@@ -60,7 +60,9 @@ mod tests {
     fn only_our_file_name_matters() {
         assert!(concerns_us(Path::new("/c/mouse-gestures/gestures.toml")));
         assert!(!concerns_us(Path::new("/c/palmrest/config.toml")));
-        assert!(!concerns_us(Path::new("/c/mouse-gestures/gestures.toml.swp")));
+        assert!(!concerns_us(Path::new(
+            "/c/mouse-gestures/gestures.toml.swp"
+        )));
         assert!(!concerns_us(Path::new("/c/palmrest/.gestures.toml.tmp")));
     }
 }

@@ -1,11 +1,11 @@
 //! The command line.
 //!
 //! ```text
-//! casement [--backend headless|winit|tty] [--clock wall|stepped] [--outputs SPEC[;SPEC...]]...
+//! bardo-compositor [--backend headless|winit|tty] [--clock wall|stepped] [--outputs SPEC[;SPEC...]]...
 //!          [--renderer pixman|llvmpipe] [--dmabuf none|soft] [--safe] [--config-home DIR]
 //!          [--state-home DIR] [--system-dir DIR] [--xwayland satellite|off] [--xwayland-satellite PATH]
 //!          [--drm-node PATH [--kms-report FILE] [--writeback-raw PATH]]
-//! casement --write-schema PATH
+//! bardo-compositor --write-schema PATH
 //! ```
 //!
 //! `--outputs` takes `compositor_backend::VirtualOutputSpec`'s grammar, several separated by `;`
@@ -361,11 +361,11 @@ fn word<T: Copy>(flag: &str, value: &str, words: &[(&str, T)]) -> Result<T, CliE
 
 /// The usage text.
 pub const USAGE: &str = concat!(
-    "usage: casement [--backend headless|winit|tty] [--clock wall|stepped] ",
+    "usage: bardo-compositor [--backend headless|winit|tty] [--clock wall|stepped] ",
     "[--outputs SPEC[;SPEC...]] [--renderer pixman|llvmpipe] [--dmabuf none|soft] [--safe] ",
     "[--config-home DIR] [--state-home DIR] [--system-dir DIR] [--xwayland satellite|off] ",
     "[--xwayland-satellite PATH]\n",
-    "       casement --write-schema DIR\n",
+    "       bardo-compositor --write-schema DIR\n",
     "\n",
     "The administrator's privacy settings are read from /etc/bardo; --system-dir DIR reads them\n",
     "from DIR instead (privacy.toml and privacy.d/), for a jailed run or a test.\n",

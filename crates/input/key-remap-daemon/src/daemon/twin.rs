@@ -1,4 +1,4 @@
-//! The "keycap pointer" virtual device: the pointer half of one combo device, created when the
+//! The "key-remap pointer" virtual device: the pointer half of one combo device, created when the
 //! device is grabbed and destroyed when it is let go.
 //!
 //! The unit tests reach it through the stand-in for the device service (`source.rs`) and

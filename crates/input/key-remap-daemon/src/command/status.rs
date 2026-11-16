@@ -1,4 +1,4 @@
-//! `keycap status` and `keycap resume`: the daemon's socket from the command line. Status reads
+//! `bardo-key-remap status` and `bardo-key-remap resume`: the daemon's socket from the command line. Status reads
 //! the `Hello` every client gets; resume sends the one request that ends the escape-chord pause.
 
 use key_remap_client::{ClientError, Connection};
@@ -27,7 +27,9 @@ pub(super) fn send_resume(runtime_dir: &Path) -> Result<(), String> {
 fn connect(runtime_dir: &Path) -> Result<Connection, String> {
     Connection::open(&runtime_dir.join(SOCKET), REPLY_WAIT).map_err(|e| match e {
         ClientError::Connect { .. } => {
-            format!("{e}; is the keycap service running? (systemctl status keycap)")
+            format!(
+                "{e}; is the bardo-key-remap service running? (systemctl status bardo-key-remap)"
+            )
         }
         other => other.to_string(),
     })
@@ -37,7 +39,7 @@ fn connect(runtime_dir: &Path) -> Result<Connection, String> {
 /// when it has one, and goes on a line of its own under it.
 pub(super) fn render(status: &Status, caps: impl Fn(&Keyboard) -> Option<bool>) -> String {
     let mode = if status.paused {
-        "paused by the escape chord; run `keycap resume` to grab again"
+        "paused by the escape chord; run `bardo-key-remap resume` to grab again"
     } else {
         "running"
     };

@@ -17,9 +17,9 @@ const OURS: Platform = Platform::Linux {
 };
 
 /// Where the person's keymap and the machine's sit under a stand-in config home (the layout
-/// of a real one: `keycap/keymap` for the person, and a sibling directory for the machine).
-const PERSON_DIR: &str = "keycap";
-const MACHINE_DIR: &str = "keycap-machine";
+/// of a real one: `key-remap/keymap` for the person, and a sibling directory for the machine).
+const PERSON_DIR: &str = "key-remap";
+const MACHINE_DIR: &str = "key-remap-machine";
 const FILE: &str = "keymap";
 const SOCKET: &str = "key-remap.sock";
 
@@ -129,7 +129,9 @@ mod tests {
 
     fn launcher() -> Option<BindingAction> {
         Some(BindingAction::Spawn(Argv(
-            ["sill", "launcher", "toggle"].map(str::to_owned).to_vec(),
+            ["bardo-shell", "launcher", "toggle"]
+                .map(str::to_owned)
+                .to_vec(),
         )))
     }
 

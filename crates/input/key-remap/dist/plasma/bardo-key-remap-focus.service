@@ -1,7 +1,7 @@
-# bardo-key-remap-focus: the Plasma add-on that tells keycap which window has focus.
+# bardo-key-remap-focus: the Plasma add-on that tells bardo-key-remap which window has focus.
 # Install to ~/.config/systemd/user/ (install.sh --plasma-focus does it).
 [Unit]
-Description=keycap focus feed for Plasma (terminal vs default profile)
+Description=bardo-key-remap focus feed for Plasma (terminal vs default profile)
 PartOf=graphical-session.target
 After=graphical-session.target
 

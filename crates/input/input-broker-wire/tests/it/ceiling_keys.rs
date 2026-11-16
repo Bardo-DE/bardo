@@ -187,7 +187,7 @@ fn the_device_registers_exactly_the_requested_keys_once() {
     let spec = plan(&Create::keys(vec![LEFT, KEY_LEFTALT, LEFT, 106]))
         .expect("plans")
         .spec;
-    assert_eq!(spec.name, "palmrest keys");
+    assert_eq!(spec.name, "mouse-gestures keys");
     assert_eq!((spec.vendor, spec.product), (0x0001, 0x0003));
     assert_eq!(spec.keys, [KEY_LEFTALT, LEFT, 106]);
     assert!(spec.rels.is_empty() && spec.abs.is_empty() && spec.leds.is_empty());

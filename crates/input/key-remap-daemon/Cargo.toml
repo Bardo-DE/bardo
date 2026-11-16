@@ -32,5 +32,5 @@ caller-identity-linux = {features = ["fake"], path = "../../identity/caller-iden
 unsafe_code = "forbid"
 
 [[bin]]
-name = "keycap"
+name = "bardo-key-remap"
 path = "src/main.rs"

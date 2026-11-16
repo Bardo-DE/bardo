@@ -10,7 +10,7 @@
 //! use compositor_app::space_store::{FileSpaceStore, StateDirs, load_spaces};
 //! use std::path::PathBuf;
 //!
-//! let dirs = StateDirs::at(PathBuf::from("/tmp/state/casement"));
+//! let dirs = StateDirs::at(PathBuf::from("/tmp/state/bardo/compositor"));
 //! let store = FileSpaceStore::new(&dirs);
 //! let file = load_spaces(&store).expect("a missing file is no Spaces");
 //! assert!(file.spaces.is_empty());

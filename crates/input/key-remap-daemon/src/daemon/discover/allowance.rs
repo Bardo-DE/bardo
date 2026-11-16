@@ -156,9 +156,9 @@ mod tests {
             ),
             (
                 "palmrest's devices stay excluded even when named",
-                identity("palmrest keys", 0x0001, 0x0003),
+                identity("mouse-gestures keys", 0x0001, 0x0003),
                 VIRTUAL,
-                VirtualAllowance::Named("palmrest keys".to_owned()),
+                VirtualAllowance::Named("mouse-gestures keys".to_owned()),
                 Eligibility::NotKeyboard,
             ),
         ];

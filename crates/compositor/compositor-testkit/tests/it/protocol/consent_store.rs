@@ -35,7 +35,7 @@ impl Home {
     }
 
     fn book(&self) -> PathBuf {
-        self.dir.path().join("state/casement/privacy.toml")
+        self.dir.path().join("state/bardo/compositor/privacy.toml")
     }
 
     fn system(&self) -> PathBuf {

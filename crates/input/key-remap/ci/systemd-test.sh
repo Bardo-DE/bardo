@@ -11,8 +11,8 @@ set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TARGET="${BARDO_KEY_REMAP_TARGET_DIR:-$HERE/target/release}"
-UNIT=keycap
-FAKE_NAME=keycap-ci-keyboard
+UNIT=bardo-key-remap
+FAKE_NAME=bardo-key-remap-ci-keyboard
 SOCKET=/run/bardo/key-remap/key-remap.sock
 DROPIN_DIR=/etc/systemd/system/bardo-key-remap.service.d
 FAKE_LOG="$(mktemp)"
@@ -36,7 +36,7 @@ wait_for() {
   return 1
 }
 
-output_present() { grep -qxF 'keycap keyboard' /sys/class/input/input*/name 2>/dev/null; }
+output_present() { grep -qxF 'key-remap keyboard' /sys/class/input/input*/name 2>/dev/null; }
 output_absent() { ! output_present; }
 unit_active() { [ "$(prop ActiveState)" = active ]; }
 unit_failed() { [ "$(prop ActiveState)" = failed ]; }
@@ -75,7 +75,7 @@ if [ "${CI:-}" != true ] && [ "${BARDO_KEY_REMAP_CI_ALLOW_INSTALL:-}" != 1 ]; th
 fi
 [ "$(ps -p 1 -o comm=)" = systemd ] || fail "PID 1 is not systemd"
 systemctl --version | head -n 1
-for bin in "$TARGET/keycap" "$TARGET/examples/fake_keyboard" "$TARGET/examples/socket_client"; do
+for bin in "$TARGET/bardo-key-remap" "$TARGET/examples/fake_keyboard" "$TARGET/examples/socket_client"; do
   [ -x "$bin" ] || fail "$bin is missing; build with: cargo build --release -p key-remap-daemon --bins --examples"
 done
 
@@ -84,7 +84,7 @@ sudo modprobe uinput
 ls -l /dev/uinput
 
 step "install the binary, the unit, the udev rule and the polkit rule, as install.sh prints"
-sudo install -Dm755 "$TARGET/keycap" /usr/local/bin/bardo-key-remap
+sudo install -Dm755 "$TARGET/bardo-key-remap" /usr/local/bin/bardo-key-remap
 sudo install -Dm644 "$HERE/dist/bardo-key-remap.service" /etc/systemd/system/bardo-key-remap.service
 sudo install -Dm644 "$HERE/dist/bardo-key-remap.uinput.conf" /etc/systemd/system/bardo-key-remap.service.d/10-uinput.conf
 sudo install -Dm644 "$HERE/dist/70-bardo-key-remap.rules" /etc/udev/rules.d/70-bardo-key-remap.rules
@@ -108,7 +108,7 @@ step "start the unit"
 sudo systemctl start "$UNIT"
 systemctl is-active --quiet "$UNIT" || fail "the unit is not active after start"
 echo "main pid $(prop MainPID), restarts so far $(prop NRestarts)"
-wait_for "keycap keyboard to appear" 10 output_present
+wait_for "key-remap keyboard to appear" 10 output_present
 wait_for "the daemon to hold the fake keyboard" 15 grab_active
 
 step "watchdog: kill -STOP the daemon; systemd must restart it"
@@ -123,7 +123,7 @@ elapsed=$((SECONDS - started))
 wait_for "the unit to be active again" 10 unit_active
 new_pid="$(prop MainPID)"
 [ "$new_pid" != "$pid" ] || fail "main pid is still $pid after the watchdog restart"
-wait_for "keycap keyboard to reappear" 10 output_present
+wait_for "key-remap keyboard to reappear" 10 output_present
 wait_for "the new daemon to hold the fake keyboard" 15 grab_active
 sudo journalctl -u "$UNIT" --no-pager | grep -i 'watchdog' || fail "the journal does not mention the watchdog"
 
@@ -146,17 +146,17 @@ wait_for "the unit to fail" 10 unit_failed
 # the limit is read from its own journal line rather than from the property.
 sudo journalctl -u "$UNIT" --no-pager | grep -q 'Start request repeated too quickly' \
   || fail "the unit failed but the journal shows no start-limit hit (Result is '$(prop Result)')"
-wait_for "keycap keyboard to be gone while the unit is failed" 5 output_absent
+wait_for "key-remap keyboard to be gone while the unit is failed" 5 output_absent
 
 step "reset-failed and start: the unit recovers"
 sudo systemctl reset-failed "$UNIT"
 sudo systemctl start "$UNIT"
 systemctl is-active --quiet "$UNIT" || fail "the unit is not active after reset-failed and start"
-wait_for "keycap keyboard to appear" 10 output_present
+wait_for "key-remap keyboard to appear" 10 output_present
 wait_for "the daemon to hold the fake keyboard" 15 grab_active
 
 step "stop: the virtual keyboard goes with the process"
 sudo systemctl stop "$UNIT"
-wait_for "keycap keyboard to be gone" 5 output_absent
+wait_for "key-remap keyboard to be gone" 5 output_absent
 
 step "systemd tier passed"

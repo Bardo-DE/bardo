@@ -1,4 +1,4 @@
-//! The one virtual device keycap writes: "keycap keyboard".
+//! The one virtual device keycap writes: "key-remap keyboard".
 //!
 //! The unit tests use `RecordingEmitter`, or a `Device` over the stand-in for the device service
 //! (`source.rs`); neither touches `/dev/uinput`. The events it writes are the pure `events`
@@ -27,7 +27,7 @@ pub(super) const BUS_VIRTUAL: u16 = 0x06;
 pub(crate) const PROBE_PERMIT: &str = "BARDO_KEY_REMAP_ALLOW_UINPUT_PROBE";
 
 /// The name the virtual keyboard registers under; discovery never grabs a device with it.
-pub(crate) const NAME: &str = "keycap keyboard";
+pub(crate) const NAME: &str = "key-remap keyboard";
 /// Vendor id of the virtual keyboard: "KC" in ASCII. Not a registered USB vendor; it only has
 /// to differ from palmrest's 0x0001 and from every keyboard keycap would grab.
 pub(crate) const VENDOR: u16 = 0x4b43;
@@ -89,7 +89,7 @@ pub(crate) struct Device {
 }
 
 impl Device {
-    /// Gets "keycap keyboard" from `source`.
+    /// Gets "key-remap keyboard" from `source`.
     pub(crate) fn create(source: &Source) -> Result<Self, OutputError> {
         Ok(Self {
             fd: source.keyboard()?,
@@ -98,7 +98,7 @@ impl Device {
     }
 }
 
-/// Opens `/dev/uinput` and makes "keycap keyboard" on it. Closing the descriptor destroys the
+/// Opens `/dev/uinput` and makes "key-remap keyboard" on it. Closing the descriptor destroys the
 /// device, so a failure part way leaves nothing behind.
 pub(super) fn direct_keyboard() -> Result<OwnedFd, OutputError> {
     let unavailable = |e: io::Error| OutputError::Unavailable(e.to_string());
@@ -140,7 +140,7 @@ impl Emitter for Device {
     }
 
     fn recreate(&mut self) -> Result<(), OutputError> {
-        // The old device goes first so the desktop never sees two keycap keyboards. Should the
+        // The old device goes first so the desktop never sees two key-remap keyboards. Should the
         // new one fail, the old fd stays, its writes fail, and the caller decides what next.
         let _ = sys::dev_destroy(&self.fd);
         *self = Device::create(&self.source.clone())?;

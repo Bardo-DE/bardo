@@ -1,5 +1,5 @@
 //! Test unit overrides (feature `debug-inject` only): a table that says "the peer running the
-//! program `sill` is unit `bardo-shell.service`", for a jailed desktop scenario that has no systemd and
+//! program `bardo-shell` is unit `bardo-shell.service`", for a jailed desktop scenario that has no systemd and
 //! so no unit manager to vouch for a unit. [`DebugPeerUnits`] is a [`CallerCheck`] that makes a
 //! matching peer stand as the role of the unit the table names, and asks the real check about
 //! every other. This file is compiled only under `debug-inject`; a release build has no such
@@ -58,9 +58,9 @@ impl PeerUnitTable {
     /// ```
     /// use compositor_ipc::dbus::{PeerMatch, PeerUnitTable};
     ///
-    /// let table = PeerUnitTable::parse("sill=bardo-shell.service,4242=bardo-computer-use.service").unwrap();
+    /// let table = PeerUnitTable::parse("bardo-shell=bardo-shell.service,4242=bardo-computer-use.service").unwrap();
     /// assert_eq!(table.rules().len(), 2);
-    /// assert_eq!(table.rules()[0].who, PeerMatch::Exe("sill".to_owned()));
+    /// assert_eq!(table.rules()[0].who, PeerMatch::Exe("bardo-shell".to_owned()));
     /// assert_eq!(table.rules()[1].who, PeerMatch::Pid(4242));
     /// ```
     pub fn parse(text: &str) -> Result<PeerUnitTable, PeerUnitsError> {
@@ -208,12 +208,15 @@ mod tests {
 
     #[test]
     fn the_table_parses_names_and_pids_and_refuses_the_rest() {
-        let ok = PeerUnitTable::parse(" sill = bardo-shell.service , 7=bardo-computer-use.service,, ").expect("ok");
+        let ok = PeerUnitTable::parse(
+            " bardo-shell = bardo-shell.service , 7=bardo-computer-use.service,, ",
+        )
+        .expect("ok");
         assert_eq!(
             ok.rules(),
             [
                 PeerUnitRule {
-                    who: PeerMatch::Exe("sill".to_owned()),
+                    who: PeerMatch::Exe("bardo-shell".to_owned()),
                     unit: "bardo-shell.service".to_owned()
                 },
                 PeerUnitRule {
@@ -224,19 +227,28 @@ mod tests {
         );
         assert!(PeerUnitTable::parse("").expect("empty").rules().is_empty());
         let bad = [
-            ("sill", PeerUnitsError::BadEntry("sill".to_owned())),
+            (
+                "bardo-shell",
+                PeerUnitsError::BadEntry("bardo-shell".to_owned()),
+            ),
             (
                 "=a.service",
                 PeerUnitsError::BadEntry("=a.service".to_owned()),
             ),
-            ("sill=", PeerUnitsError::BadEntry("sill=".to_owned())),
-            ("sill=sill", PeerUnitsError::BadUnit("sill".to_owned())),
             (
-                "sill=.service",
+                "bardo-shell=",
+                PeerUnitsError::BadEntry("bardo-shell=".to_owned()),
+            ),
+            (
+                "bardo-shell=bardo-shell",
+                PeerUnitsError::BadUnit("bardo-shell".to_owned()),
+            ),
+            (
+                "bardo-shell=.service",
                 PeerUnitsError::BadUnit(".service".to_owned()),
             ),
             (
-                "sill=a/b.service",
+                "bardo-shell=a/b.service",
                 PeerUnitsError::BadUnit("a/b.service".to_owned()),
             ),
         ];
@@ -247,9 +259,17 @@ mod tests {
 
     #[test]
     fn a_rule_matches_by_pid_or_name_first_match_wins_and_the_comm_is_cut() {
-        let table = PeerUnitTable::parse("2=bardo-computer-use.service,sill=bardo-shell.service").expect("a table");
-        assert_eq!(table.unit_of(2, Some("sill")), Some("bardo-computer-use.service"));
-        assert_eq!(table.unit_of(1, Some("sill")), Some("bardo-shell.service"));
+        let table =
+            PeerUnitTable::parse("2=bardo-computer-use.service,bardo-shell=bardo-shell.service")
+                .expect("a table");
+        assert_eq!(
+            table.unit_of(2, Some("bardo-shell")),
+            Some("bardo-computer-use.service")
+        );
+        assert_eq!(
+            table.unit_of(1, Some("bardo-shell")),
+            Some("bardo-shell.service")
+        );
         assert_eq!(table.unit_of(3, Some("other")), None);
         assert_eq!(table.unit_of(3, None), None);
         assert_eq!(comm_cut("a-very-long-program-name"), "a-very-long-pro");

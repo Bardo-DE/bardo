@@ -3,7 +3,7 @@
 use key_remap_client::{FileText, read_text};
 use std::path::Path;
 
-/// The file name, in the config directory next to `keycap.toml`.
+/// The file name, in the config directory next to `key-remap.toml`.
 pub const FILE_NAME: &str = key_remap_proto::KEYMAP_FILE;
 /// The largest keymap file read: an overrides file is a short list, and the served copy must
 /// fit one socket packet.

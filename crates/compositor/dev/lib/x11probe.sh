@@ -25,10 +25,10 @@ x11_compositor() {
   printf '#!/bin/sh\nexec %q "$@" -glamor none\n' "$satellite" >"$wrapper"
   chmod +x "$wrapper"
   start_compositor "$@" --xwayland satellite --xwayland-satellite "$wrapper" || return $?
-  X11_DISPLAY=$(sed -n 's/^casement: X11 display //p' "$state/casement.log" | head -1)
+  X11_DISPLAY=$(sed -n 's/^casement: X11 display //p' "$state/bardo-compositor.log" | head -1)
   if [ -z "$X11_DISPLAY" ]; then
-    echo "x11_compositor: casement did not name an X11 display; $state/casement.log:" >&2
-    tail -20 "$state/casement.log" >&2
+    echo "x11_compositor: casement did not name an X11 display; $state/bardo-compositor.log:" >&2
+    tail -20 "$state/bardo-compositor.log" >&2
     return 1
   fi
   export X11_DISPLAY

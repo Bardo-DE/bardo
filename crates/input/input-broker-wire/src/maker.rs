@@ -3,8 +3,8 @@
 //! The kernel keeps a free-text "physical path" (`phys`) on every input device and shows it in
 //! `/sys/class/input/<event>/device/phys`. Only a process that can open `/dev/uinput` can set it, and
 //! that is turnstile alone (its udev rule makes the node root-only), so a desktop that reads
-//! `turnstile/pad_daemon` there knows which proven service the device was made for. The form is
-//! `turnstile/<role>`, the role being the peephole role the service admitted the caller under.
+//! `input-broker/pad_daemon` there knows which proven service the device was made for. The form is
+//! `input-broker/<role>`, the role being the peephole role the service admitted the caller under.
 //!
 //! casement keeps its own copy of [`Maker::parse`] (it links nothing of turnstile); each repository
 //! pins the exact strings in a test, so a change here fails both.
@@ -12,7 +12,7 @@
 use std::fmt;
 
 /// What comes before the role in a label.
-pub const PREFIX: &str = "turnstile/";
+pub const PREFIX: &str = "input-broker/";
 
 /// The proven service a device was made for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -43,7 +43,7 @@ impl Maker {
     }
 }
 
-/// The label: `turnstile/<role>`.
+/// The label: `input-broker/<role>`.
 impl fmt::Display for Maker {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{PREFIX}{}", self.role())

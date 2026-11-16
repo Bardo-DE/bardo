@@ -47,12 +47,12 @@ done
 EDGES=(
   "key-remap-core: key-remap-proto thiserror toml"
   "key-remap-proto: serde serde_json thiserror"
-  # keycap also links peephole (who the socket's peer is) and input-broker-client (the root service
+  # bardo-key-remap also links peephole (who the socket's peer is) and input-broker-client (the root service
   # that makes its virtual devices), both by tag; neither brings a bus or an async runtime. latchkey
-  # (feature guard) holds the socket guard keycap shares with palmrest.
+  # (feature guard) holds the socket guard bardo-key-remap shares with palmrest.
   "key-remap-daemon: keymap key-remap-client key-remap-core key-remap-proto key-remap-evdev service-locator notify caller-identity-linux caller-identity-core rustix thiserror input-broker-client"
-  # key-remap-evdev: the evdev and uinput ioctls and the node drain that keycap and key-remap-devtest
-  # share; the safe input-linux handles and rustix reads, nothing of keycap's own.
+  # key-remap-evdev: the evdev and uinput ioctls and the node drain that bardo-key-remap and key-remap-devtest
+  # share; the safe input-linux handles and rustix reads, nothing of bardo-key-remap's own.
   "key-remap-evdev: input-linux rustix thiserror"
   # key-remap-client: what an app links to read the desktop keymap. The protocol, chordkit's pure core
   # and its bounded file reader (keymap-fs), and rustix for the SOCK_SEQPACKET socket std

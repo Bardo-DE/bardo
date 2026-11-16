@@ -15,7 +15,7 @@ const VERSION: u16 = 1;
 /// it: a chord table has no fixed keys to draw.
 pub fn schema() -> Schema {
     Schema {
-        app: AppId("casement".to_owned()),
+        app: AppId("compositor".to_owned()),
         file: FilePath("compositor/settings.toml".to_owned()),
         version: VERSION,
         foreign: Default::default(),

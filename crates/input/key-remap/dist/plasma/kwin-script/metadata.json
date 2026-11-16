@@ -1,8 +1,8 @@
 {
     "KPackageStructure": "KWin/Script",
     "KPlugin": {
-        "Name": "keycap focus",
-        "Description": "Tell keycap which window has focus, so terminals get the terminal profile",
+        "Name": "bardo-key-remap focus",
+        "Description": "Tell bardo-key-remap which window has focus, so terminals get the terminal profile",
         "Icon": "preferences-desktop-keyboard",
         "Id": "bardo-key-remap-focus",
         "Version": "1.0",

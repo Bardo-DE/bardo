@@ -1,10 +1,10 @@
-//! `palmrest --write-schema DIR`: writes the schema of `gestures.toml` for the Settings app.
+//! `bardo-mouse-gestures --write-schema DIR`: writes the schema of `gestures.toml` for the Settings app.
 
 use crate::config::{SCHEMA_FILE_NAME, Schema};
 use crate::error::Error;
 use std::path::Path;
 
-/// Writes `palmrest.settings.toml` into `dir`, creating it, by a temporary file and a rename
+/// Writes `mouse-gestures.settings.toml` into `dir`, creating it, by a temporary file and a rename
 /// (the way every settings file is written), and prints where it went.
 pub(super) fn write_schema(dir: &Path) -> Result<(), Error> {
     let target = write_to(dir).map_err(|source| Error::Schema {
@@ -34,8 +34,11 @@ mod tests {
         let _ = std::fs::remove_dir_all(&dir);
         let target = write_to(&dir.join("nested")).unwrap();
         let text = std::fs::read_to_string(&target).unwrap();
-        assert!(text.contains("app = \"palmrest\""));
-        assert!(!dir.join("nested/.palmrest.settings.toml.part").exists());
+        assert!(text.contains("app = \"mouse-gestures\""));
+        assert!(
+            !dir.join("nested/.mouse-gestures.settings.toml.part")
+                .exists()
+        );
         std::fs::remove_dir_all(&dir).unwrap();
     }
 }

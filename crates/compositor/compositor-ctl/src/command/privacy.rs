@@ -14,8 +14,9 @@ use zbus::names::BusName;
 
 /// The well-known name casement holds on the session bus.
 const COMPOSITOR: &str = "org.bardo.Compositor1";
-/// What a casement process calls itself (`/proc/<pid>/comm`).
-const COMM: &str = "casement";
+/// What a compositor process calls itself (`/proc/<pid>/comm`): the program name `bardo-compositor`
+/// cut to the kernel's 15 bytes.
+const COMM: &str = "bardo-composito";
 
 /// What `privacy` was asked to do.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -80,8 +81,8 @@ pub fn run(privacy: Privacy) -> u8 {
     }
 }
 
-/// Casement's state folder: `--state-home`, else `$XDG_STATE_HOME/casement`, else
-/// `$HOME/.local/state/casement`.
+/// Casement's state folder: `--state-home`, else `$XDG_STATE_HOME/bardo/compositor`, else
+/// `$HOME/.local/state/bardo/compositor`.
 fn state_dir(places: &Places) -> Option<PathBuf> {
     places.state_home.clone().or_else(|| {
         let base = std::env::var_os("XDG_STATE_HOME")
@@ -89,7 +90,7 @@ fn state_dir(places: &Places) -> Option<PathBuf> {
             .or_else(|| {
                 std::env::var_os("HOME").map(|home| PathBuf::from(home).join(".local/state"))
             })?;
-        Some(base.join("casement"))
+        Some(base.join("bardo/compositor"))
     })
 }
 

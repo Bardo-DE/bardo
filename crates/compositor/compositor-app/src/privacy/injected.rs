@@ -52,7 +52,7 @@ mod tests {
     use desktop_protocols::vocab::{Memory, Power};
     use std::path::PathBuf;
 
-    const BUILT: &str = "/home/me/build/debug/transom";
+    const BUILT: &str = "/home/me/build/debug/bardo-portal";
 
     /// The judgement of a program run from a build folder, and its image. (The image's trust
     /// is already folded into the judgement, which is all `named_by_floor` reads.)
@@ -62,7 +62,7 @@ mod tests {
             trust: FileTrust::RootOnly,
         };
         let found = Standing::Unverified {
-            exe_name: Some("transom".to_owned()),
+            exe_name: Some("bardo-portal".to_owned()),
             scope_app: None,
             why: WhyNot::ImageWritable,
         };

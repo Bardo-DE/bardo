@@ -36,7 +36,7 @@ fn a_second_write_replaces_the_first() {
 
 #[test]
 fn the_file_is_named_spaces_toml() {
-    let dirs = StateDirs::at(std::path::PathBuf::from("/state/casement"));
+    let dirs = StateDirs::at(std::path::PathBuf::from("/state/bardo/compositor"));
     assert!(dirs.spaces_file().ends_with("spaces.toml"));
 }
 

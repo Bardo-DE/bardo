@@ -6,9 +6,9 @@ function notifyActiveWindow(window) {
         return;
     }
     callDBus(
-        "org.keycap.Focus",
-        "/org/keycap/Focus",
-        "org.keycap.Focus",
+        "org.bardo.KeyRemap.Focus",
+        "/org/bardo/KeyRemap/Focus",
+        "org.bardo.KeyRemap.Focus",
         "Focus",
         window.resourceClass ? String(window.resourceClass) : ""
     );

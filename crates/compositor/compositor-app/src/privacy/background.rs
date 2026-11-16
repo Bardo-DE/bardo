@@ -58,7 +58,7 @@ mod tests {
     #[test]
     fn the_latest_book_is_in_a_private_file_once_the_store_is_dropped() {
         let scratch = tempfile::tempdir().expect("a scratch folder");
-        let book = scratch.path().join("state/casement/privacy.toml");
+        let book = scratch.path().join("state/bardo/compositor/privacy.toml");
         let mut store = BackgroundPrivacyStore::new(PrivacyFiles {
             book: book.clone(),
             floor: FloorFiles::system(),

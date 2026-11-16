@@ -13,7 +13,7 @@ name = "input_broker_daemon"
 path = "src/lib.rs"
 
 [[bin]]
-name = "turnstile"
+name = "bardo-input-broker"
 path = "src/main.rs"
 
 [[test]]

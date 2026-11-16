@@ -23,7 +23,7 @@ use ui_core::vocab::Fraction;
 /// A scratch config home holding `text` as `compositor/settings.toml`.
 fn home_with(text: &str) -> (tempfile::TempDir, PathBuf) {
     let dir = tempfile::tempdir().expect("temp dir");
-    let casement = dir.path().join("casement");
+    let casement = dir.path().join("bardo/compositor");
     std::fs::create_dir_all(&casement).expect("create");
     std::fs::write(casement.join("settings.toml"), text).expect("write");
     let home = dir.path().to_path_buf();
@@ -51,7 +51,7 @@ fn the_defaults_come_from() {
             to_core(&doc)
         }),
         ("a directory that does not exist", || {
-            to_core(&load(Some(Path::new("/nonexistent/casement-test-home"))).expect("load"))
+            to_core(&load(Some(Path::new("/nonexistent/compositor-test-home"))).expect("load"))
         }),
         ("an empty document", || settings_of("")),
         ("the serialised default document", || {
@@ -416,11 +416,11 @@ fn the_schema_is_written_and_reads_back() {
     let read = read_back(dir.path(), "write_schema");
     assert!(!read.key.is_empty(), "every settings key has a row");
     assert_eq!(read, schema(), "write_schema");
-    assert_eq!(read.app.0, "casement");
+    assert_eq!(read.app.0, "compositor");
     assert_eq!(read.file.0, "compositor/settings.toml");
 
     let dir = tempfile::tempdir().expect("temp dir");
-    let status = Command::new(env!("CARGO_BIN_EXE_casement"))
+    let status = Command::new(env!("CARGO_BIN_EXE_bardo-compositor"))
         .arg("--write-schema")
         .arg(dir.path())
         .env_clear()
@@ -433,7 +433,7 @@ fn the_schema_is_written_and_reads_back() {
 /// The binary answers `--help` (a smoke test beside the other one that runs it).
 #[test]
 fn the_binary_answers_help() {
-    let status = Command::new(env!("CARGO_BIN_EXE_casement"))
+    let status = Command::new(env!("CARGO_BIN_EXE_bardo-compositor"))
         .arg("--help")
         .env_clear()
         .status()

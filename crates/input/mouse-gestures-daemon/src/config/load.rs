@@ -17,7 +17,7 @@ pub const FILE_NAME: &str = "gestures.toml";
 pub const FILE_MAX_BYTES: u64 = 256 * 1024;
 
 /// The directory holding the file: the service's `$CONFIGURATION_DIRECTORY`, else
-/// `$XDG_CONFIG_HOME/palmrest`, else `~/.config/palmrest`.
+/// `$XDG_CONFIG_HOME/bardo/mouse-gestures`, else `~/.config/bardo/mouse-gestures`.
 pub fn config_dir(lookup: impl Fn(&str) -> Option<String>) -> Option<PathBuf> {
     if let Some(dir) = first_directory(lookup("CONFIGURATION_DIRECTORY")) {
         return Some(dir);
@@ -30,7 +30,7 @@ pub fn config_dir(lookup: impl Fn(&str) -> Option<String>) -> Option<PathBuf> {
                 .filter(|s| !s.is_empty())
                 .map(|h| Path::new(&h).join(".config"))
         })?;
-    Some(base.join("palmrest"))
+    Some(base.join("bardo/mouse-gestures"))
 }
 
 /// The first directory of one of systemd's directory variables (`$CONFIGURATION_DIRECTORY`,
@@ -130,20 +130,29 @@ mod tests {
             "HOME" => Some("/h".to_owned()),
             _ => None,
         };
-        assert_eq!(config_dir(both), Some(PathBuf::from("/x/palmrest")));
+        assert_eq!(
+            config_dir(both),
+            Some(PathBuf::from("/x/bardo/mouse-gestures"))
+        );
         let home = |k: &str| (k == "HOME").then(|| "/h".to_owned());
-        assert_eq!(config_dir(home), Some(PathBuf::from("/h/.config/palmrest")));
+        assert_eq!(
+            config_dir(home),
+            Some(PathBuf::from("/h/.config/bardo/mouse-gestures"))
+        );
         assert_eq!(config_dir(|_| None), None);
     }
 
     #[test]
     fn the_units_directory_wins_and_only_an_absolute_first_entry_counts() {
         let unit = |k: &str| match k {
-            "CONFIGURATION_DIRECTORY" => Some("/etc/palmrest:/etc/other".to_owned()),
+            "CONFIGURATION_DIRECTORY" => Some("/etc/bardo/mouse-gestures:/etc/other".to_owned()),
             "HOME" => Some("/h".to_owned()),
             _ => None,
         };
-        assert_eq!(config_dir(unit), Some(PathBuf::from("/etc/palmrest")));
+        assert_eq!(
+            config_dir(unit),
+            Some(PathBuf::from("/etc/bardo/mouse-gestures"))
+        );
         assert_eq!(first_directory(Some("relative".to_owned())), None);
         assert_eq!(first_directory(Some(String::new())), None);
         assert_eq!(first_directory(None), None);

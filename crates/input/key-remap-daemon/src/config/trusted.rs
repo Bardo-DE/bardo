@@ -1,5 +1,5 @@
-//! Reading a machine-wide layer file: the one reader the machine file in `/etc/keycap` and the
-//! vendor file in `/usr/lib/keycap` share.
+//! Reading a machine-wide layer file: the one reader the machine file in `/etc/bardo/key-remap` and the
+//! vendor file in `/usr/lib/bardo/key-remap` share.
 //!
 //! Both are trusted like an administrator's word: they may hold the rules that only an
 //! administrator can set, such as one on a key pressed alone. So each is read only when it is
@@ -44,7 +44,7 @@ impl Refusal {
     }
 }
 
-/// The layer `source` from `keycap.toml` in `dir`, judged on `fs`. A missing file or folder is no
+/// The layer `source` from `key-remap.toml` in `dir`, judged on `fs`. A missing file or folder is no
 /// layer and no warning; a file that is not trusted or cannot be read is no layer and one
 /// warning, because the keyboard must keep working whatever the file says.
 pub(super) fn read_layer<P: ProcFs>(

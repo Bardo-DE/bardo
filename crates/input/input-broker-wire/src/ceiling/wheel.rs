@@ -16,7 +16,7 @@ pub(super) const AXES: [u16; 4] = [REL_WHEEL, REL_HWHEEL, REL_WHEEL_HI_RES, REL_
 pub(super) fn plan(maker: Maker) -> Plan {
     Plan {
         spec: DeviceSpec {
-            name: "palmrest wheel".to_owned(),
+            name: "mouse-gestures wheel".to_owned(),
             maker,
             vendor: 0x0001,
             product: 0x0001,

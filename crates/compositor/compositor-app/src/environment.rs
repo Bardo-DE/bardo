@@ -1,4 +1,4 @@
-//! What the `casement` binary reads from the process environment to build a [`RunConfig`] from
+//! What the `bardo-compositor` binary reads from the process environment to build a [`RunConfig`] from
 //! the parsed command line: where state and icons live, how X11 apps are served, the service
 //! manager's sockets and the session bus. `main` only parses arguments and calls [`run_config`].
 
@@ -11,6 +11,10 @@ use crate::space_store::StateDirs;
 use crate::xwayland::{self, XwaylandConfig, XwaylandMode};
 use compositor_backend::BackendChoice;
 use std::path::PathBuf;
+use ui_settings::AppName;
+
+/// The compositor's folder name inside each XDG base (`<base>/bardo/compositor`).
+const APP: AppName = AppName::desktop("compositor");
 
 /// The environment values state placement reads.
 struct StateEnv {
@@ -31,8 +35,8 @@ impl StateEnv {
 
 /// Where state files go. An explicit `--state-home DIR` (`flag` is `Some`) always wins, for any
 /// backend. Otherwise the headless backend keeps none (its runs are throwaway), and the others
-/// use `$XDG_STATE_HOME/casement`, else `$HOME/.local/state/casement`; a missing home keeps none.
-/// The session lock's marker goes to `$XDG_RUNTIME_DIR/casement` on those, when there is one.
+/// use `$XDG_STATE_HOME/bardo/compositor`, else `$HOME/.local/state/bardo/compositor`; a missing home keeps none.
+/// The session lock's marker goes to `$XDG_RUNTIME_DIR/bardo/compositor` on those, when there is one.
 fn state_home(
     flag: Option<StateDirs>,
     backend: BackendChoice,
@@ -49,9 +53,9 @@ fn state_home(
         .clone()
         .or_else(|| env.home.as_ref().map(|home| home.join(".local/state")));
     base.map(|base| {
-        let dirs = StateDirs::at(base.join("casement"));
+        let dirs = StateDirs::at(APP.under(&base));
         match &env.xdg_runtime_dir {
-            Some(runtime) => dirs.with_runtime(runtime.join("casement")),
+            Some(runtime) => dirs.with_runtime(APP.under(runtime)),
             None => dirs,
         }
     })
@@ -164,8 +168,8 @@ mod tests {
             ..env(Some("/x"), None)
         };
         let want = Some(
-            StateDirs::at(PathBuf::from("/x/casement"))
-                .with_runtime(PathBuf::from("/run/user/1000/casement")),
+            StateDirs::at(PathBuf::from("/x/bardo/compositor"))
+                .with_runtime(PathBuf::from("/run/user/1000/bardo/compositor")),
         );
         assert_eq!(state_home(None, BackendChoice::Tty, &with_runtime), want);
         assert_eq!(
@@ -204,14 +208,14 @@ mod tests {
                 None,
                 BackendChoice::Tty,
                 env(Some("/x"), Some("/h")),
-                at("/x/casement"),
+                at("/x/bardo/compositor"),
             ),
             (
                 "winit, home only",
                 None,
                 BackendChoice::Winit,
                 env(None, Some("/h")),
-                at("/h/.local/state/casement"),
+                at("/h/.local/state/bardo/compositor"),
             ),
             (
                 "tty, no home",

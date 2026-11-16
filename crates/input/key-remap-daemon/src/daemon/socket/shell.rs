@@ -21,7 +21,7 @@ pub(super) const STEERING_TABLE: &str = r#"
 app  = "org.bardo.Shell"
 unit = "bardo-shell.service"
 exe  = [
-  "/opt/bardo/releases/*/bin/sill",
+  "/opt/bardo/releases/*/bin/bardo-shell",
   "/opt/bardo/current/bin/bardo-shell",
   "/usr/local/bin/bardo-shell",
   "/usr/bin/bardo-shell",
@@ -29,7 +29,7 @@ exe  = [
 role = "shell"
 
 [[peer]]
-app  = "org.keycap.FocusFeed"
+app  = "org.bardo.KeyRemapFocusFeed"
 unit = "bardo-key-remap-focus.service"
 exe  = [
   "/usr/local/bin/bardo-key-remap-focus",

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build keycap and install it: the binary, the systemd unit, the udev and polkit rules, and
+# Build bardo-key-remap and install it: the binary, the systemd unit, the udev and polkit rules, and
 # (for Plasma) the machine config. Safe to run again: a file already in place and identical is
 # left alone, and /etc/bardo/key-remap/key-remap.toml is never overwritten.
 #
@@ -10,10 +10,10 @@
 #   --prefix P      install under P (default /usr/local). The default keeps the unit, udev, polkit
 #                   and module-load files in /etc; any other prefix puts them in the vendor
 #                   directories under P (P/lib/systemd/system, P/lib/udev/rules.d, ...), and the
-#                   unit's ExecStart names P/bin/keycap
+#                   unit's ExecStart names P/bin/bardo-key-remap
 #   --destdir D     stage every file under D as you: no root, no systemd, no udev, no per-user
 #                   step (for packages and release bundles). $DESTDIR works too
-#   --desktop D     which machine config to install: plasma (dist/keycap.plasma.toml, the
+#   --desktop D     which machine config to install: plasma (dist/bardo-key-remap.plasma.toml, the
 #                   default when $XDG_CURRENT_DESKTOP mentions KDE) or none (the built-in
 #                   mapping alone)
 #   --plasma-focus  also install the Plasma focus feed (terminal vs default profile): the
@@ -60,13 +60,13 @@ fi
 case "$DESKTOP" in plasma|none) ;; *) say "install.sh: --desktop must be plasma or none"; exit 2 ;; esac
 set_layout
 
-BIN="${BARDO_KEY_REMAP_BIN:-${CARGO_TARGET_DIR:-$TREE/target}/release/keycap}"
-say "keycap install ($([[ $DRY_RUN == yes ]] && echo 'dry run: nothing is changed' || echo 'for real')); desktop: $DESKTOP; prefix: $PREFIX${DESTDIR:+; staging into $DESTDIR}"
+BIN="${BARDO_KEY_REMAP_BIN:-${CARGO_TARGET_DIR:-$TREE/target}/release/bardo-key-remap}"
+say "bardo-key-remap install ($([[ $DRY_RUN == yes ]] && echo 'dry run: nothing is changed' || echo 'for real')); desktop: $DESKTOP; prefix: $PREFIX${DESTDIR:+; staging into $DESTDIR}"
 
 # render_unit OUT: the shipped unit with ExecStart naming the installed binary (never the
 # DESTDIR-prefixed path).
 render_unit() {
-  sed "s|^ExecStart=.*|ExecStart=$BINDIR/keycap|" "$HERE/dist/bardo-key-remap.service" >"$1"
+  sed "s|^ExecStart=.*|ExecStart=$BINDIR/bardo-key-remap|" "$HERE/dist/bardo-key-remap.service" >"$1"
 }
 
 RENDERED="$(mktemp -d)"
@@ -83,7 +83,7 @@ else
 fi
 
 say "2. files"
-install_file 755 "$BIN" "$BINDIR/keycap"
+install_file 755 "$BIN" "$BINDIR/bardo-key-remap"
 BIN_CHANGED=$CHANGED; CHANGED=no
 install_file 644 "$RENDERED/bardo-key-remap.service" "$UNITDIR/bardo-key-remap.service"
 UNIT_CHANGED=$CHANGED; CHANGED=no
@@ -94,20 +94,27 @@ install_file 644 "$HERE/dist/70-bardo-key-remap.rules" "$UDEVDIR/70-bardo-key-re
 UDEV_CHANGED=$CHANGED; CHANGED=no
 install_file 644 "$HERE/dist/bardo-key-remap.polkit.rules" "$POLKITDIR/bardo-key-remap.polkit.rules"
 CHANGED=no
-install_file 644 "$HERE/dist/bardo-key-remap-modules.conf" "$MODULESDIR/keycap.conf"
+install_file 644 "$HERE/dist/bardo-key-remap-modules.conf" "$MODULESDIR/bardo-key-remap.conf"
 MODULES_CHANGED=$CHANGED; CHANGED=no
 
 say "3. machine config (/etc/bardo/key-remap/key-remap.toml, never overwritten)"
+# Temporary: an install from before the rename keeps its machine config in /etc/keycap; carry it over
+# once (the file names change with it). Delete in the release after everyone has installed once.
+if [[ -d "$(dest /etc/keycap)" && ! -e "$(dest /etc/bardo/key-remap)" ]]; then
+  root_step "move /etc/keycap to /etc/bardo/key-remap" \
+    sh -c 'mkdir -p "$(dirname "$2")" && mv "$1" "$2" && if [ -e "$2/keycap.toml" ]; then mv "$2/keycap.toml" "$2/key-remap.toml"; fi' \
+    sh "$(dest /etc/keycap)" "$(dest /etc/bardo/key-remap)"
+fi
 if [[ "$DESKTOP" == plasma ]]; then
   if [[ -e "$(dest /etc/bardo/key-remap/key-remap.toml)" ]]; then
-    if cmp -s "$HERE/dist/keycap.plasma.toml" "$(dest /etc/bardo/key-remap/key-remap.toml)"; then
+    if cmp -s "$HERE/dist/bardo-key-remap.plasma.toml" "$(dest /etc/bardo/key-remap/key-remap.toml)"; then
       say "  unchanged: /etc/bardo/key-remap/key-remap.toml"
     else
-      say "  kept your /etc/bardo/key-remap/key-remap.toml (it differs from dist/keycap.plasma.toml; diff them if you want the new lines)"
+      say "  kept your /etc/bardo/key-remap/key-remap.toml (it differs from dist/bardo-key-remap.plasma.toml; diff them if you want the new lines)"
     fi
   else
     root_step "install /etc/bardo/key-remap/key-remap.toml (Plasma shortcuts)" \
-      install -Dm644 "$HERE/dist/keycap.plasma.toml" "$(dest /etc/bardo/key-remap/key-remap.toml)"
+      install -Dm644 "$HERE/dist/bardo-key-remap.plasma.toml" "$(dest /etc/bardo/key-remap/key-remap.toml)"
   fi
 else
   say "  none: the built-in mapping applies"
@@ -118,11 +125,11 @@ MACHINE_CONFIG="$(dest /etc/bardo/key-remap/key-remap.toml)"
 case "${XDG_CURRENT_DESKTOP:-}" in
   *KDE*) ;;
   *)
-    if { [[ -e "$MACHINE_CONFIG" ]] && cmp -s "$HERE/dist/keycap.plasma.toml" "$MACHINE_CONFIG"; } ||
+    if { [[ -e "$MACHINE_CONFIG" ]] && cmp -s "$HERE/dist/bardo-key-remap.plasma.toml" "$MACHINE_CONFIG"; } ||
        { [[ ! -e "$MACHINE_CONFIG" && "$DESKTOP" == plasma ]]; }; then
       say "  note: /etc/bardo/key-remap/key-remap.toml is the Plasma overlay (or about to be) and every session shares it: Cmd+Space"
       say "  is KRunner's Alt+Space, Cmd+H and Cmd+Shift+3/4 are Plasma keys. A desktop that forwards"
-      say "  ~/.config/keycap/keycap.toml (sill does) overrides them in its own sessions only; nothing"
+      say "  ~/.config/bardo/key-remap/key-remap.toml (sill does) overrides them in its own sessions only; nothing"
       say "  here changes for it. See README.md, \"Desktops that forward a config\"."
     fi ;;
 esac
@@ -132,12 +139,12 @@ if [[ "$BIN_CHANGED$UNIT_CHANGED$UDEV_CHANGED$MODULES_CHANGED" == *yes* ]] || ! 
   # Only labelled systems have restorecon; the installed files are named, not the staged ones.
   if command -v restorecon >/dev/null 2>&1; then
     system_step "give the installed files their default SELinux labels" \
-      restorecon -F "$BINDIR/keycap" "$UNITDIR/bardo-key-remap.service" \
+      restorecon -F "$BINDIR/bardo-key-remap" "$UNITDIR/bardo-key-remap.service" \
         "$UNITDIR/bardo-key-remap.service.d/10-uinput.conf" "$UDEVDIR/70-bardo-key-remap.rules" \
-        "$POLKITDIR/bardo-key-remap.polkit.rules" "$MODULESDIR/keycap.conf"
+        "$POLKITDIR/bardo-key-remap.polkit.rules" "$MODULESDIR/bardo-key-remap.conf"
   fi
   system_step "reload systemd" systemctl daemon-reload
-  system_step "load uinput now (it loads at boot from $MODULESDIR/keycap.conf)" modprobe uinput ||
+  system_step "load uinput now (it loads at boot from $MODULESDIR/bardo-key-remap.conf)" modprobe uinput ||
     say "  uinput did not load now; it loads at the next boot"
   if [[ "$UDEV_CHANGED" == yes ]]; then
     system_step "reload udev rules" udevadm control --reload-rules
@@ -149,15 +156,15 @@ fi
 
 say "5. service"
 if [[ "$START" == no ]]; then
-  system_step "enable keycap (not started)" systemctl enable bardo-key-remap.service
+  system_step "enable bardo-key-remap (not started)" systemctl enable bardo-key-remap.service
 elif [[ -z "$DESTDIR" && "$BIN_CHANGED$UNIT_CHANGED" == *yes* ]] && systemctl is-active --quiet bardo-key-remap.service; then
   # `enable --now` leaves a running service alone, so a new binary or unit needs a restart. A
   # changed /etc/bardo/key-remap/key-remap.toml does not: the daemon watches that directory and reloads it.
   system_step "a new binary or unit: restart so it runs (the grab gate waits for keys to be up)" systemctl restart bardo-key-remap.service
 else
-  say "  keycap starts alongside any running remapper: it reports 'held by another remapper'"
+  say "  bardo-key-remap starts alongside any running remapper: it reports 'held by another remapper'"
   say "  and takes the keyboards when that one lets go (docs/switch-from-toshy.md)."
-  system_step "enable and start keycap" systemctl enable --now bardo-key-remap.service
+  system_step "enable and start bardo-key-remap" systemctl enable --now bardo-key-remap.service
 fi
 
 if [[ "$PLASMA_FOCUS" == yes && -n "$DESTDIR" ]]; then
@@ -176,10 +183,10 @@ elif [[ "$PLASMA_FOCUS" == yes ]]; then
   else
     step "install the KWin script" kpackagetool6 --type=KWin/Script -i "$HERE/dist/plasma/kwin-script"
   fi
-  step "enable the KWin script" kwriteconfig6 --file kwinrc --group Plugins --key keycap-focusEnabled true
+  step "enable the KWin script" kwriteconfig6 --file kwinrc --group Plugins --key bardo-key-remap-focusEnabled true
   step "make KWin load it" gdbus call --session --dest org.kde.KWin --object-path /KWin --method org.kde.KWin.reconfigure
 fi
 
 manual_note
-say "done. Check it:  keycap status   (or: systemctl status keycap)"
-say "Emergency: both Shift keys + Esc gives the keyboards back; \`keycap resume\` takes them again."
+say "done. Check it:  bardo-key-remap status   (or: systemctl status bardo-key-remap)"
+say "Emergency: both Shift keys + Esc gives the keyboards back; \`bardo-key-remap resume\` takes them again."

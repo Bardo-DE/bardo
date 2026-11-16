@@ -217,7 +217,7 @@ fn classify_table() {
         (
             "palmrest's virtual keys",
             caps(&ev_kb, &typing_keys(), &[]),
-            identity("palmrest keys", 0x0001, 0x0003),
+            identity("mouse-gestures keys", 0x0001, 0x0003),
             HARDWARE,
             Eligibility::NotKeyboard,
         ),

@@ -1,4 +1,4 @@
-//! The "keycap keyboard" as a reader sees it: what keycap actually wrote to the kernel.
+//! The "key-remap keyboard" as a reader sees it: what keycap actually wrote to the kernel.
 
 use crate::event::{EV_LED, Event, SYN_REPORT, encode, token};
 use crate::failure::{Failure, errno};
@@ -33,7 +33,7 @@ pub struct Output {
 }
 
 impl Output {
-    /// Waits for "keycap keyboard" to register and opens its node. Every event read is
+    /// Waits for "key-remap keyboard" to register and opens its node. Every event read is
     /// appended to `trace`, a file the failure report includes.
     pub fn find(trace: Option<&Path>) -> Result<Self, Failure> {
         let node = wait_for(FIND_WAIT, || find_node(OUTPUT_NAME)).ok_or_else(|| {

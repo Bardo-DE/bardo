@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
-# Build palmrest and install it as a system service.
+# Build bardo-mouse-gestures and install it as a system service.
 #
 #   ./install.sh [--dry-run] [--prefix P] [--destdir D] [--no-build]
 #
 #   (no flags)    the program in /usr/local/bin (a root-owned file: the input service serves only a
-#                 palmrest that only root can change), its unit in /etc/systemd/system, the device
+#                 bardo-mouse-gestures that only root can change), its unit in /etc/systemd/system, the device
 #                 rule, the kernel module options and the module-load file, all copied through $SUDO,
 #                 sudo, doas or pkexec (or printed, when none is found, for you to run as root).
 #                 Then the service is enabled and started the same way. The input service
-#                 (turnstile) comes with the desktop and makes the virtual devices; palmrest has no
-#                 access to /dev/uinput. The desktop's own installer (install/system.sh palmrest)
+#                 (bardo-input-broker) comes with the desktop and makes the virtual devices; bardo-mouse-gestures has no
+#                 access to /dev/uinput. The desktop's own installer (install/system.sh bardo-mouse-gestures)
 #                 does the same for a desktop install.
-#   --prefix P    a packaged layout under P: P/bin/palmrest, the unit in P/lib/systemd/system (its
-#                 ExecStart names P/bin/palmrest), and the system files in P/lib/udev/rules.d,
+#   --prefix P    a packaged layout under P: P/bin/bardo-mouse-gestures, the unit in P/lib/systemd/system (its
+#                 ExecStart names P/bin/bardo-mouse-gestures), and the system files in P/lib/udev/rules.d,
 #                 P/lib/modprobe.d and P/lib/modules-load.d. Nothing is enabled or started. Root is
 #                 used for the copy only when needed ($SUDO, sudo, doas or pkexec, whichever is
 #                 found first).
@@ -120,7 +120,7 @@ put_file() {
   fi
 }
 
-BIN="${BARDO_MOUSE_GESTURES_BIN:-${CARGO_TARGET_DIR:-$TREE/target}/release/palmrest}"
+BIN="${BARDO_MOUSE_GESTURES_BIN:-${CARGO_TARGET_DIR:-$TREE/target}/release/bardo-mouse-gestures}"
 if [[ "$BUILD" == yes ]]; then
   if [[ "$DRY_RUN" == yes ]]; then
     say "  would run: cargo build --release --locked -p mouse-gestures-daemon (in $TREE)"
@@ -132,13 +132,13 @@ fi
 # The unit names the installed program, never the DESTDIR-prefixed path, and always a root-owned one.
 RENDERED="$(mktemp -d)"
 trap 'rm -rf "$RENDERED"' EXIT
-sed "s|^ExecStart=.*|ExecStart=$BINDIR/palmrest|" "$HERE/dist/bardo-mouse-gestures.service" >"$RENDERED/$UNIT"
+sed "s|^ExecStart=.*|ExecStart=$BINDIR/bardo-mouse-gestures|" "$HERE/dist/bardo-mouse-gestures.service" >"$RENDERED/$UNIT"
 
-put_file 755 "$BIN" "$BINDIR/palmrest"
+put_file 755 "$BIN" "$BINDIR/bardo-mouse-gestures"
 put_file 644 "$RENDERED/$UNIT" "$UNITDIR/$UNIT"
 put_file 644 "$HERE/dist/70-bardo-mouse-gestures.rules" "$UDEVDIR/70-bardo-mouse-gestures.rules"
 put_file 644 "$HERE/dist/99-bardo-mouse-gestures.conf" "$MODPROBEDIR/99-bardo-mouse-gestures.conf"
-put_file 644 "$HERE/dist/bardo-mouse-gestures-modules.conf" "$MODULESDIR/palmrest.conf"
+put_file 644 "$HERE/dist/bardo-mouse-gestures-modules.conf" "$MODULESDIR/bardo-mouse-gestures.conf"
 
 if [[ "$LAYOUT" == package ]]; then
   say "Installed under $DESTDIR$PREFIX. On the machine: systemctl enable --now $UNIT"
@@ -160,17 +160,24 @@ root_step() {
   fi
 }
 
-# An earlier install ran palmrest as a service of the person; it would fight the system service for
+# An earlier install ran bardo-mouse-gestures as a service of the person; it would fight the system service for
 # the mouse.
 if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$UNIT" ]]; then
   say "  note: ${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$UNIT is an earlier install; stop and remove it:"
   say "      \$ systemctl --user disable --now $UNIT && rm ${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$UNIT"
 fi
 
+# Temporary: an install from before the rename keeps its config in /etc/palmrest; carry it over once.
+# Delete in the release after everyone has installed once.
+if [[ -d /etc/palmrest && ! -e /etc/bardo/mouse-gestures ]]; then
+  root_step "move /etc/palmrest to /etc/bardo/mouse-gestures" \
+    sh -c 'mkdir -p /etc/bardo && mv /etc/palmrest /etc/bardo/mouse-gestures'
+fi
+
 root_step "load uinput now (it loads at every start of the computer anyway)" modprobe uinput
-root_step "let the mouse's own scrolling go (palmrest scrolls)" \
+root_step "let the mouse's own scrolling go (bardo-mouse-gestures scrolls)" \
   sh -c 'echo 0 > /sys/module/hid_magicmouse/parameters/emulate_scroll_wheel'
 root_step "apply the device rule" udevadm control --reload-rules
 root_step "give the mouse's node to the service" udevadm trigger --subsystem-match=hidraw
 root_step "tell systemd about the new service" systemctl daemon-reload
-root_step "turn palmrest on" systemctl enable --now "$UNIT"
+root_step "turn bardo-mouse-gestures on" systemctl enable --now "$UNIT"

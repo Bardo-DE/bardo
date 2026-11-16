@@ -72,7 +72,7 @@ mod tests {
     use desktop_protocols::vocab::Power;
     use std::path::PathBuf;
 
-    const BUILT: &str = "/home/me/build/debug/transom";
+    const BUILT: &str = "/home/me/build/debug/bardo-portal";
 
     /// The build's shape decides whether an injected floor can name a program the person can
     /// write: a release build asks about it every time whatever the floor says.
@@ -85,7 +85,7 @@ mod tests {
             verdict: Verdict::Allow,
         });
         let found = Standing::Unverified {
-            exe_name: Some("transom".to_owned()),
+            exe_name: Some("bardo-portal".to_owned()),
             scope_app: None,
             why: WhyNot::ImageWritable,
         };
@@ -94,7 +94,7 @@ mod tests {
             trust: FileTrust::RootOnly,
         };
         let asked = ClientStanding::Unverified {
-            exe_name: Some("transom".to_owned()),
+            exe_name: Some("bardo-portal".to_owned()),
         };
         let judged = writable_image(
             &SystemDir::At(PathBuf::from("/scratch/floor")),

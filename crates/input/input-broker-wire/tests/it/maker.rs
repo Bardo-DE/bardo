@@ -5,8 +5,8 @@ use input_broker_wire::Maker;
 #[test]
 fn the_labels_are_these_exact_strings_and_parse_back() {
     const WANT: &[(Maker, &str)] = &[
-        (Maker::PadDaemon, "turnstile/pad_daemon"),
-        (Maker::KeymapDaemon, "turnstile/keymap_daemon"),
+        (Maker::PadDaemon, "input-broker/pad_daemon"),
+        (Maker::KeymapDaemon, "input-broker/keymap_daemon"),
     ];
     for &(maker, label) in WANT {
         assert_eq!(maker.to_string(), label);
@@ -23,13 +23,13 @@ fn the_labels_are_these_exact_strings_and_parse_back() {
 fn any_other_text_is_no_maker() {
     for text in [
         "",
-        "turnstile/",
-        "turnstile/pad_daemon/extra",
-        "turnstile/pad_daemon ",
-        "turnstile/Pad_daemon",
-        "turnstile/settings",
-        "turnstile",
-        "xturnstile/pad_daemon",
+        "input-broker/",
+        "input-broker/pad_daemon/extra",
+        "input-broker/pad_daemon ",
+        "input-broker/Pad_daemon",
+        "input-broker/settings",
+        "input-broker",
+        "xinput-broker/pad_daemon",
         "ydotool virtual device",
         "usb-0000:00:14.0-2/input0",
     ] {

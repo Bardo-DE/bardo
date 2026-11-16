@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """bardo-key-remap-focus: tells keycap which profile the focused Plasma window wants.
 
-A KWin script (kwin-script/) calls org.keycap.Focus.Focus on the session bus with the focused
+A KWin script (kwin-script/) calls org.bardo.KeyRemap.Focus.Focus on the session bus with the focused
 window's resource class; this service turns it into keycap's one desktop-facing message,
 `Focus { profile }`, on /run/bardo/key-remap/key-remap.sock. Terminals get the `terminal` profile, file managers
 `filemanager`, Ghostty `ghostty` (the terminal profile plus Ghostty's own split keys), every
@@ -44,15 +44,15 @@ FILE_MANAGERS = frozenset(
     peony-qt spacefm thunar""".split()
 )
 
-SOCKET = os.path.join(os.environ.get("KEYCAP_RUNTIME_DIR", "/run/keycap"), "key-remap.sock")
-BUS_NAME = "org.keycap.Focus"
+SOCKET = os.path.join(os.environ.get("BARDO_KEY_REMAP_RUNTIME_DIR", "/run/bardo/key-remap"), "key-remap.sock")
+BUS_NAME = "org.bardo.KeyRemap.Focus"
 # The only caller of Focus: the KWin script runs inside KWin, so its calls come from the connection
 # that owns this name. Any other program on the session bus is refused.
 KWIN_NAME = "org.kde.KWin"
 BUS_DAEMON = "org.freedesktop.DBus"
-OBJECT_PATH = "/org/keycap/Focus"
+OBJECT_PATH = "/org/bardo/KeyRemap/Focus"
 INTERFACE_XML = """
-<node><interface name="org.keycap.Focus">
+<node><interface name="org.bardo.KeyRemap.Focus">
   <method name="Focus"><arg type="s" name="resource_class" direction="in"/></method>
 </interface></node>
 """

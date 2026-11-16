@@ -1,4 +1,4 @@
-//! The `casement` binary: arguments, the environment and an exit code around [`compositor_app::run`].
+//! The `bardo-compositor` binary: arguments, the environment and an exit code around [`compositor_app::run`].
 
 #[cfg(feature = "debug-inject")]
 mod debug_peer_units;
@@ -20,30 +20,35 @@ fn main() -> ExitCode {
         Ok(Command::WriteSchema(dir)) => match compositor_app::config::write_schema(&dir) {
             Ok(()) => ExitCode::SUCCESS,
             Err(error) => {
-                eprintln!("casement: {error}");
+                eprintln!("bardo-compositor: {error}");
                 ExitCode::FAILURE
             }
         },
         Ok(Command::Run(start)) => {
+            if start.backend != compositor_backend::BackendChoice::Headless {
+                compositor_app::pre_bardo::move_pre_bardo_folders(
+                    &compositor_app::pre_bardo::Bases::from_env(),
+                );
+            }
             let config = run_config(*start);
             #[cfg(feature = "debug-inject")]
             let config = match debug_peer_units::from_env() {
                 Ok(table) => config.with_debug_peer_units(table),
                 Err(error) => {
-                    eprintln!("casement: {error}");
+                    eprintln!("bardo-compositor: {error}");
                     return ExitCode::from(64);
                 }
             };
             match compositor_app::run(config) {
                 Ok(()) => ExitCode::SUCCESS,
                 Err(error) => {
-                    eprintln!("casement: {error}");
+                    eprintln!("bardo-compositor: {error}");
                     ExitCode::from(error.exit_code())
                 }
             }
         }
         Err(error) => {
-            eprintln!("casement: {error}\n{}", cli::USAGE);
+            eprintln!("bardo-compositor: {error}\n{}", cli::USAGE);
             ExitCode::from(64)
         }
     }

@@ -49,7 +49,7 @@ if [ "$build" = yes ]; then
 fi
 
 tools="${BARDO_COMPOSITOR_TOOLS:-$root/dev/out/tools}"
-for tool in casement bardo-compositorctl fake-logind; do
+for tool in bardo-compositor bardo-compositorctl fake-logind; do
   if [ ! -x "$tools/bin/$tool" ]; then
     echo "accept.sh: artefact $tools/bin/$tool is missing" >&2
     echo "accept.sh: fix: run dev/bootstrap.sh (or dev/accept.sh --build) outside the jail" >&2

@@ -8,7 +8,7 @@
 //! is held). It lives in the runtime directory, so a reboot clears it.
 //!
 //! A stale marker costs one needless password prompt, never an unlocked session. This file is a
-//! seam: the real one writes `$XDG_RUNTIME_DIR/casement/locked`, a test's is in memory.
+//! seam: the real one writes `$XDG_RUNTIME_DIR/bardo/compositor/locked`, a test's is in memory.
 
 use std::path::{Path, PathBuf};
 

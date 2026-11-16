@@ -50,13 +50,13 @@ mod trusted_files {
     const LAYERS: [Layer; 2] = [
         Layer {
             source: ConfigSource::Vendor,
-            dir: "/usr/lib/keycap",
+            dir: "/usr/lib/bardo/key-remap",
             parent: "/usr/lib",
             read: vendor_through::<FixtureProc>,
         },
         Layer {
             source: ConfigSource::System,
-            dir: "/etc/keycap",
+            dir: "/etc/bardo/key-remap",
             parent: "/etc",
             read: system_through::<FixtureProc>,
         },

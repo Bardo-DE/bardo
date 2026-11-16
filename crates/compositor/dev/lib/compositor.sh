@@ -8,8 +8,8 @@
 #   scale 1, the stepped clock (virtual time: `bardo-compositorctl debug clock`), no dma-buf.
 #   Test unit overrides: casement is started with this shell's environment, so a scenario with no
 #   systemd sets BARDO_COMPOSITOR_DEBUG_PEER_UNITS="<program-or-pid>=<unit>[,...]" before start_compositor,
-#   e.g. BARDO_COMPOSITOR_DEBUG_PEER_UNITS="sill=bardo-shell.service" start_compositor. Then a bus peer whose
-#   program name (/proc/<pid>/comm, 15 bytes) is `sill` is taken to run in bardo-shell.service, and
+#   e.g. BARDO_COMPOSITOR_DEBUG_PEER_UNITS="bardo-shell=bardo-shell.service" start_compositor. Then a bus peer whose
+#   program name (/proc/<pid>/comm, 15 bytes) is `bardo-shell` is taken to run in bardo-shell.service, and
 #   org.bardo.Compositor1.Connect("shell") hands it the shell connection. An all-digit left side is
 #   a pid. Only the jail's debug-inject build reads it; any other build ignores it. A bad value
 #   makes casement exit 64 (start_compositor then prints the log). See FINDINGS "## debug-role".
@@ -48,7 +48,7 @@ start_compositor() {
       *) extra+=("$1"); shift ;;
     esac
   done
-  bin=$(casement_tool casement) || return 3
+  bin=$(casement_tool bardo-compositor) || return 3
   logind=$(casement_tool fake-logind) || return 3
   if [ -z "${BARDO_COMPOSITOR_STATE:-}" ]; then casement_new_state; _CASEMENT_STATE_OWNED=1; fi
   state=$(casement_state_dir)
@@ -64,15 +64,15 @@ start_compositor() {
   local args=(--backend headless --clock "$clock" --dmabuf "$dmabuf" --config-home "$state/config")
   [ -z "$outputs" ] || args+=(--outputs "$outputs")
   [ -z "$renderer" ] || args+=(--renderer "$renderer")
-  "$bin" "${args[@]}" "${extra[@]}" >"$state/casement.log" 2>&1 </dev/null &
+  "$bin" "${args[@]}" "${extra[@]}" >"$state/bardo-compositor.log" 2>&1 </dev/null &
   env_set BARDO_COMPOSITOR_PID "$!"
   env_set BARDO_COMPOSITOR_CLOCK "$clock"
 
   local tenths=0 socket=""
   while [ "$tenths" -lt "$BARDO_COMPOSITOR_START_TENTHS" ]; do
     if ! _alive "$BARDO_COMPOSITOR_PID"; then
-      echo "start_compositor: casement exited before its socket appeared; $state/casement.log:" >&2
-      tail -20 "$state/casement.log" >&2
+      echo "start_compositor: casement exited before its socket appeared; $state/bardo-compositor.log:" >&2
+      tail -20 "$state/bardo-compositor.log" >&2
       stop_compositor
       return 1
     fi
@@ -82,8 +82,8 @@ start_compositor() {
     tenths=$((tenths + 1))
   done
   if [ -z "$socket" ]; then
-    echo "start_compositor: no wayland socket after $((BARDO_COMPOSITOR_START_TENTHS / 10)) s; $state/casement.log:" >&2
-    tail -20 "$state/casement.log" >&2
+    echo "start_compositor: no wayland socket after $((BARDO_COMPOSITOR_START_TENTHS / 10)) s; $state/bardo-compositor.log:" >&2
+    tail -20 "$state/bardo-compositor.log" >&2
     stop_compositor
     return 1
   fi

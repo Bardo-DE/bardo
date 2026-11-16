@@ -11,7 +11,7 @@ const DEV_INPUT: &str = "/dev/input";
 pub(crate) const POLL: Duration = Duration::from_millis(10);
 
 /// The name keycap's virtual keyboard registers under.
-pub const OUTPUT_NAME: &str = "keycap keyboard";
+pub const OUTPUT_NAME: &str = "key-remap keyboard";
 
 /// `event<N>` as a number, for ordering.
 fn event_number(name: &str) -> Option<u32> {

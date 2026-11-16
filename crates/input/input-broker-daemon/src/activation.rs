@@ -8,7 +8,7 @@ use std::os::fd::OwnedFd;
 #[derive(Debug, thiserror::Error)]
 pub enum ActivationError {
     /// Started by hand, or by a unit without a socket.
-    #[error("no socket was passed in: start turnstile through its socket unit")]
+    #[error("no socket was passed in: start bardo-input-broker through its socket unit")]
     NotActivated,
     /// The first descriptor is not a sequential-packet socket.
     #[error("the socket passed in is not a sequential-packet socket: {0}")]

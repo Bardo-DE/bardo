@@ -11,7 +11,7 @@ use std::time::{Duration, Instant};
 /// How a daemon is started.
 #[derive(Debug, Clone)]
 pub struct DaemonSpec<'a> {
-    /// The built binary (`env!("CARGO_BIN_EXE_keycap")` in keycap's own tests).
+    /// The built binary (`env!("CARGO_BIN_EXE_bardo-key-remap")` in keycap's own tests).
     pub binary: &'a Path,
     /// Where the runtime directory, config directory, seat file, notify socket and stderr log go.
     pub scratch: &'a Path,
@@ -69,7 +69,10 @@ impl Daemon {
             // (the daemon reads that file only when root-only); a run has no machine layer.
             .env("BARDO_KEY_REMAP_CONFIG_DIR", &config_dir)
             // A folder that is not there is no vendor layer, so a run never reads the machine's.
-            .env("BARDO_KEY_REMAP_VENDOR_DIR", spec.scratch.join("no-vendor-config"))
+            .env(
+                "BARDO_KEY_REMAP_VENDOR_DIR",
+                spec.scratch.join("no-vendor-config"),
+            )
             .env("BARDO_KEY_REMAP_SEAT_FILE", &seat_file)
             .env("RUNTIME_DIRECTORY", &runtime_dir)
             .env("NOTIFY_SOCKET", &notify_path)

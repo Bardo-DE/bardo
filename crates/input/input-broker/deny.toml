@@ -3,7 +3,7 @@
 #   cargo deny check licenses     a dependency whose licence is not listed fails the gate rather than
 #                                 being noticed later by someone reading Cargo.lock
 #   cargo deny check advisories   a dependency with a RustSec advisory (vulnerability, unmaintained
-#                                 crate, unsound code) or a yanked version fails the gate; turnstile
+#                                 crate, unsound code) or a yanked version fails the gate; bardo-input-broker
 #                                 runs as root and is built from this lock file
 #   cargo deny check bans sources nothing from an unknown registry or git repository
 

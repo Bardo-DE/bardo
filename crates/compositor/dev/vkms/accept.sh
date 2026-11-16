@@ -90,7 +90,7 @@ fi
 for tool in jq wlopm; do
   command -v "$tool" >/dev/null || absent "$tool is not installed: $(pkg_hint "$tool")"
 done
-casement="$tools/casement"
+casement="$tools/bardo-compositor"
 compare="$tools/writeback-compare"
 [ -x "$casement" ] && [ -x "$compare" ] || absent "build the tools first: dev/bootstrap.sh (needs $casement and $compare)"
 usage=$("$casement" --help 2>&1 || true)

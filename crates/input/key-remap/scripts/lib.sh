@@ -40,7 +40,7 @@ pick_escalator
 
 # set_layout: where each kind of file goes for $PREFIX. The default prefix keeps the machine-local
 # places in /etc (an admin's files outrank the vendor ones); any other prefix is a package or a
-# bundle, so the vendor directories under it. The machine config is /etc/keycap either way.
+# bundle, so the vendor directories under it. The machine config is /etc/bardo/key-remap either way.
 set_layout() {
   BINDIR="$PREFIX/bin"
   if [[ "$PREFIX" == /usr/local ]]; then

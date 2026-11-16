@@ -52,7 +52,7 @@ fn a_palmrest_device_is_made_fed_and_destroyed_with_the_connection() {
     let made = s.handle(T0, Request::Create(Create::wheel()));
     assert_eq!(created(&made), Some((DeviceId(0), Delivery::Proxied)));
     assert!(!s.in_handshake());
-    assert_eq!(backend.log().specs[0].name, "palmrest wheel");
+    assert_eq!(backend.log().specs[0].name, "mouse-gestures wheel");
 
     let fed = s.handle(T0, events(0, vec![wheel(-1), Event::SYNC]));
     assert!(matches!(fed, Ok(None)));
@@ -108,7 +108,7 @@ fn a_handed_device_leaves_the_service_and_is_not_filtered() {
     assert!(matches!(made, Ok(Some(Outgoing { fd: Some(_), .. }))));
     assert_eq!(s.held(), 0, "the client owns it now");
     assert_eq!(backend.log().fates, [Fate::Handed]);
-    assert_eq!(backend.log().specs[0].name, "keycap keyboard");
+    assert_eq!(backend.log().specs[0].name, "key-remap keyboard");
     // Events for a handed device are not the service's to write.
     let stray = s.handle(T0, events(0, vec![wheel(1)]));
     assert_eq!(refused(&stray), Some(Reason::Unknown));
@@ -129,7 +129,7 @@ fn a_pointer_is_cut_to_the_ceiling_before_the_kernel_hears_of_it() {
     assert_eq!(created(&made), Some((DeviceId(0), Delivery::Handed)));
     let spec = backend.log().specs[0].clone();
     assert_eq!(spec.keys, [BTN_LEFT], "key 30 is dropped");
-    assert_eq!(spec.name, "Mouse (keycap pointer)");
+    assert_eq!(spec.name, "Mouse (key-remap pointer)");
 }
 
 #[test]
@@ -306,7 +306,7 @@ fn every_device_kind_is_made_with_the_label_of_the_caller_it_is_for() {
         let made = s.handle(T0, Request::Create(create));
         assert!(created(&made).is_some(), "{kind:?}");
         let label = backend.log().specs[0].maker.to_string();
-        assert_eq!(label, format!("turnstile/{}", role.as_str()), "{kind:?}");
+        assert_eq!(label, format!("input-broker/{}", role.as_str()), "{kind:?}");
         assert_eq!(Maker::parse(&label), Some(kind.maker()), "{kind:?}");
     }
 }

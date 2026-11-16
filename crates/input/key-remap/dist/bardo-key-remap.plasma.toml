@@ -1,4 +1,4 @@
-# keycap: machine settings for a Plasma 6 session. Install to /etc/bardo/key-remap/key-remap.toml
+# bardo-key-remap: machine settings for a Plasma 6 session. Install to /etc/bardo/key-remap/key-remap.toml
 # (install.sh does it on Plasma when the file is absent). It lays over the built-in mapping, so
 # only the differences are listed. Personal preferences do not belong here: put them in your own
 # config (see docs/personal-config.md).

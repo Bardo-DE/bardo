@@ -1,4 +1,4 @@
-//! The pointer half of a combo device as a value: what a "keycap pointer" twin registers.
+//! The pointer half of a combo device as a value: what a "key-remap pointer" twin registers.
 //! Pure; the ioctls that read the masks and the axis ranges belong to `grabber` and `key-remap-evdev`.
 
 use super::discover::Bits;
@@ -8,7 +8,7 @@ use key_remap_evdev::AbsInfo;
 
 /// What follows the original's name in a twin's name; discovery never grabs a node that ends
 /// with it.
-pub(crate) const NAME_SUFFIX: &str = "(keycap pointer)";
+pub(crate) const NAME_SUFFIX: &str = "(key-remap pointer)";
 /// Bytes of a uinput device name, the terminating NUL included.
 const NAME_BYTES: usize = 80;
 /// `REL_MAX`.
@@ -148,11 +148,11 @@ mod tests {
         let cases: &[(&str, &str)] = &[
             (
                 "Apple Magic Keyboard",
-                "Apple Magic Keyboard (keycap pointer)",
+                "Apple Magic Keyboard (key-remap pointer)",
             ),
-            ("", " (keycap pointer)"),
-            (&long, &format!("{} (keycap pointer)", "x".repeat(62))),
-            (&accented, &format!("{accented} (keycap pointer)")),
+            ("", " (key-remap pointer)"),
+            (&long, &format!("{} (key-remap pointer)", "x".repeat(62))),
+            (&accented, &format!("{accented} (key-remap pointer)")),
         ];
         for &(original, want) in cases {
             let got = twin_name(original);
@@ -163,7 +163,7 @@ mod tests {
         let cut = twin_name(&on_a_boundary);
         assert_eq!(
             cut,
-            format!("{} (keycap pointer)", "x".repeat(61)),
+            format!("{} (key-remap pointer)", "x".repeat(61)),
             "no split char"
         );
     }
@@ -178,7 +178,7 @@ mod tests {
         );
         let abs = vec![axis(0, 1200), axis(1, 800), axis(0x2f, 4)];
         let caps = PointerCaps::new("Combo Receiver", 0x05ac, 0x0250, &masks, abs.clone());
-        assert_eq!(caps.name, "Combo Receiver (keycap pointer)");
+        assert_eq!(caps.name, "Combo Receiver (key-remap pointer)");
         assert_eq!((caps.vendor, caps.product), (0x05ac, 0x0250));
         assert_eq!(caps.props, [0, 2]);
         assert_eq!(

@@ -90,11 +90,11 @@ impl Kind {
     /// A short name for the log.
     pub const fn name(self) -> &'static str {
         match self {
-            Self::PalmrestTouchpad => "palmrest-touchpad",
-            Self::PalmrestWheel => "palmrest-wheel",
-            Self::PalmrestKeys => "palmrest-keys",
-            Self::KeycapKeyboard => "keycap-keyboard",
-            Self::KeycapPointer => "keycap-pointer",
+            Self::PalmrestTouchpad => "mouse-gestures-touchpad",
+            Self::PalmrestWheel => "mouse-gestures-wheel",
+            Self::PalmrestKeys => "mouse-gestures-keys",
+            Self::KeycapKeyboard => "key-remap-keyboard",
+            Self::KeycapPointer => "key-remap-pointer",
         }
     }
 }

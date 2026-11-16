@@ -294,7 +294,7 @@ mod tests {
         ];
         for (name, text, want) in CASES {
             let home = tempfile::tempdir().expect("a scratch directory");
-            let dir = home.path().join("quire");
+            let dir = home.path().join("bardo");
             std::fs::create_dir_all(&dir).expect("a directory");
             std::fs::write(dir.join("appearance.toml"), text).expect("a file");
             assert_eq!(scheme_in(Some(home.path())), *want, "{name}");
@@ -376,7 +376,7 @@ mod tests {
         ];
         for (name, text, want) in CASES {
             let home = tempfile::tempdir().expect("a scratch directory");
-            let dir = home.path().join("quire");
+            let dir = home.path().join("bardo");
             std::fs::create_dir_all(&dir).expect("a directory");
             std::fs::write(dir.join("appearance.toml"), text).expect("a file");
             let stored = stored_in(Some(home.path()));

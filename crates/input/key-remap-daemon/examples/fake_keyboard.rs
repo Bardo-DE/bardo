@@ -1,7 +1,7 @@
 //! A fake keyboard on `/dev/uinput`, for the systemd tier of CI.
 //!
 //! `fake_keyboard hold SECONDS` creates an Apple keyboard called `$BARDO_KEY_REMAP_FAKE_NAME` (default
-//! `keycap-ci-keyboard`), prints `ready <node>` and keeps it plugged in for that long. It
+//! `bardo-key-remap-ci-keyboard`), prints `ready <node>` and keeps it plugged in for that long. It
 //! creates an input device: run it only where a throwaway keyboard is welcome.
 
 use key_remap_devtest::{FakeKeyboard, FakeSpec};
@@ -9,7 +9,7 @@ use std::io::Write;
 use std::process::ExitCode;
 use std::time::Duration;
 
-const DEFAULT_NAME: &str = "keycap-ci-keyboard";
+const DEFAULT_NAME: &str = "bardo-key-remap-ci-keyboard";
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -25,7 +25,8 @@ fn main() -> ExitCode {
         eprintln!("usage: fake_keyboard hold SECONDS");
         return ExitCode::from(2);
     }
-    let name = std::env::var("BARDO_KEY_REMAP_FAKE_NAME").unwrap_or_else(|_| DEFAULT_NAME.to_owned());
+    let name =
+        std::env::var("BARDO_KEY_REMAP_FAKE_NAME").unwrap_or_else(|_| DEFAULT_NAME.to_owned());
     match FakeKeyboard::create(&FakeSpec::apple(&name)) {
         Ok(fake) => {
             println!("ready {}", fake.node().display());

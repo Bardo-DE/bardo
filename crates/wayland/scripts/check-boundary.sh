@@ -67,11 +67,11 @@ else
 fi
 
 # 5. Clean room: every interface is ours (quire_*).
-if grep -nE '<interface name="' protocols/*.xml | grep -vE 'name="quire_[a-z0-9_]+_v1"'; then
-  echo "LEAK: an interface outside quire_*_v1"
+if grep -nE '<interface name="' protocols/*.xml | grep -vE 'name="bardo_[a-z0-9_]+_v1"'; then
+  echo "LEAK: an interface outside bardo_*_v1"
   fail=1
 else
-  echo "boundary holds: every interface is quire_*_v1"
+  echo "boundary holds: every interface is bardo_*_v1"
 fi
 
 # 6. desktop-client: its core reaches no Wayland crate and no I/O, and names none in source;

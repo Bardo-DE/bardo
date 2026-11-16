@@ -4,7 +4,7 @@
 use crate::support::{Rig, focus, press, release};
 use key_remap_daemon::{ConfigSource, builtin, resolve};
 
-const OVERLAY: &str = include_str!("../../../key-remap/dist/keycap.plasma.toml");
+const OVERLAY: &str = include_str!("../../../key-remap/dist/bardo-key-remap.plasma.toml");
 
 fn plasma_rig() -> Rig {
     let (builtin_layer, builtin_warnings) = builtin();

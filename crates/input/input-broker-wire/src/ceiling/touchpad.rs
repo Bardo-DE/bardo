@@ -37,7 +37,7 @@ pub(super) fn plan(maker: Maker) -> Plan {
     let y = AbsAxis::range(ABS_Y, 0, Y_MAX).with_resolution(UNITS_PER_MM);
     Plan {
         spec: DeviceSpec {
-            name: "palmrest touchpad".to_owned(),
+            name: "mouse-gestures touchpad".to_owned(),
             maker,
             vendor: 0x0001,
             product: 0x0002,

@@ -143,26 +143,26 @@ mod tests {
             (
                 "keycap's keyboard",
                 DeviceClass::Keyboard,
-                ids(VIRTUAL, "turnstile/keymap_daemon"),
+                ids(VIRTUAL, "input-broker/keymap_daemon"),
                 true,
             ),
             (
                 "keycap's pointer",
                 DeviceClass::Pointer,
-                ids(VIRTUAL, "turnstile/keymap_daemon\n"),
+                ids(VIRTUAL, "input-broker/keymap_daemon\n"),
                 true,
             ),
             // palmrest turns gestures into synthetic key chords (see `Maker::origin`).
             (
                 "palmrest's touchpad",
                 DeviceClass::Touchpad,
-                ids(VIRTUAL, "turnstile/pad_daemon"),
+                ids(VIRTUAL, "input-broker/pad_daemon"),
                 false,
             ),
             (
                 "palmrest's keys",
                 DeviceClass::Keyboard,
-                ids(VIRTUAL, "turnstile/pad_daemon"),
+                ids(VIRTUAL, "input-broker/pad_daemon"),
                 false,
             ),
             (
@@ -172,21 +172,21 @@ mod tests {
                 false,
             ),
             (
-                "a label that only starts with turnstile",
+                "a label that only starts with input-broker",
                 DeviceClass::Keyboard,
-                ids(VIRTUAL, "turnstile/settings"),
+                ids(VIRTUAL, "input-broker/settings"),
                 false,
             ),
             (
                 "a label with more after the role",
                 DeviceClass::Keyboard,
-                ids(VIRTUAL, "turnstile/keymap_daemon/2"),
+                ids(VIRTUAL, "input-broker/keymap_daemon/2"),
                 false,
             ),
             (
                 "a keycap label on a USB device",
                 DeviceClass::Keyboard,
-                ids(USB, "turnstile/keymap_daemon"),
+                ids(USB, "input-broker/keymap_daemon"),
                 true,
             ),
             (

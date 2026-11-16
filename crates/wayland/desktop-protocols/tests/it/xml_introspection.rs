@@ -192,7 +192,7 @@ fn every_protocol_is_named_after_its_file() {
         let expected = protocol.file.trim_end_matches(".xml").replace('-', "_");
         assert_eq!(protocol.name, expected, "{}", protocol.file);
         assert!(
-            protocol.name.starts_with("quire_") && protocol.name.ends_with("_v1"),
+            protocol.name.starts_with("bardo_") && protocol.name.ends_with("_v1"),
             "{}",
             protocol.name
         );
@@ -214,7 +214,7 @@ fn every_interface_is_a_quire_v1_interface_at_its_version() {
     );
     for interface in all_interfaces(&protocols) {
         assert!(
-            interface.name.starts_with("quire_") && interface.name.ends_with("_v1"),
+            interface.name.starts_with("bardo_") && interface.name.ends_with("_v1"),
             "{}",
             interface.name
         );

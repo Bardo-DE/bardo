@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 /// The name every fake keyboard registers under, which the daemon is told it may grab.
-pub const FAKE_NAME: &str = "keycap-ci-keyboard";
+pub const FAKE_NAME: &str = "bardo-key-remap-ci-keyboard";
 /// The `WATCHDOG_USEC` the daemon runs with.
 pub const WATCHDOG: Duration = Duration::from_secs(2);
 /// How long a test waits for the daemon to announce `READY=1`.
@@ -51,7 +51,7 @@ impl Scene {
 
     /// The built `keycap` binary.
     pub fn binary() -> &'static Path {
-        Path::new(env!("CARGO_BIN_EXE_keycap"))
+        Path::new(env!("CARGO_BIN_EXE_bardo-key-remap"))
     }
 
     /// What starts a daemon here.

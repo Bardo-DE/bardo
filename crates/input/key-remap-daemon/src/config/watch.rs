@@ -88,10 +88,10 @@ mod tests {
     fn only_the_named_file_matters() {
         const CASES: &[(&str, bool)] = &[
             ("/etc/bardo/key-remap/key-remap.toml", true),
-            ("/etc/keycap/other.toml", false),
+            ("/etc/bardo/key-remap/other.toml", false),
             ("/etc/bardo/key-remap/key-remap.toml.swp", false),
-            ("/etc/keycap/.keycap.toml.tmp", false),
-            ("/etc/keycap/keymap", false),
+            ("/etc/bardo/key-remap/.key-remap.toml.tmp", false),
+            ("/etc/bardo/key-remap/keymap", false),
         ];
         for &(path, want) in CASES {
             assert_eq!(concerns(Path::new(path), FILE_NAME), want, "{path}");

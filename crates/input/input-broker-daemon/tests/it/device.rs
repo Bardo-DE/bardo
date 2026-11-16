@@ -46,12 +46,12 @@ fn a_real_touchpad_appears_takes_a_frame_and_disappears() {
     let spec = plan(&Create::touchpad()).expect("plans").spec;
     let mut device = UinputBackend::default().create(&spec).expect("a touchpad");
     assert!(
-        wait_for("palmrest touchpad", true),
+        wait_for("mouse-gestures touchpad", true),
         "the device did not appear"
     );
     assert_eq!(
-        phys_of("palmrest touchpad").as_deref().map(str::trim),
-        Some("turnstile/pad_daemon"),
+        phys_of("mouse-gestures touchpad").as_deref().map(str::trim),
+        Some("input-broker/pad_daemon"),
         "the kernel shows whom it is for"
     );
     device
@@ -59,7 +59,7 @@ fn a_real_touchpad_appears_takes_a_frame_and_disappears() {
         .expect("a frame");
     drop(device);
     assert!(
-        wait_for("palmrest touchpad", false),
+        wait_for("mouse-gestures touchpad", false),
         "the device did not go"
     );
 }
@@ -70,17 +70,17 @@ fn a_real_keyboard_with_lights_is_handed_over_as_a_descriptor() {
     let spec = plan(&Create::keyboard()).expect("plans").spec;
     let device = UinputBackend::default().create(&spec).expect("a keyboard");
     assert!(
-        wait_for("keycap keyboard", true),
+        wait_for("key-remap keyboard", true),
         "the device did not appear"
     );
     let fd = device.into_fd();
     assert!(
-        wait_for("keycap keyboard", true),
+        wait_for("key-remap keyboard", true),
         "it stays while the descriptor lives"
     );
     drop(fd);
     assert!(
-        wait_for("keycap keyboard", false),
+        wait_for("key-remap keyboard", false),
         "it goes with the descriptor"
     );
 }

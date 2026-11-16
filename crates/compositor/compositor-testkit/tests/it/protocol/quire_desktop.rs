@@ -163,7 +163,7 @@ fn binding_sends_the_whole_desktop() {
     let text = flow(
         &mut fixture,
         shell,
-        &["quire_desktop_"],
+        &["bardo_desktop_"],
         &[
             "id",
             "identifier",

@@ -2,7 +2,7 @@
 //! build without that feature does not contain this file, so the variable has no effect there).
 //!
 //! `BARDO_COMPOSITOR_DEBUG_PEER_UNITS="<program-or-pid>=<unit>[,...]"`, for example
-//! `sill=bardo-shell.service`. See `compositor_ipc::dbus::PeerUnitTable::parse` for the grammar.
+//! `bardo-shell=bardo-shell.service`. See `compositor_ipc::dbus::PeerUnitTable::parse` for the grammar.
 
 use compositor_ipc::dbus::{PeerUnitTable, PeerUnitsError};
 
@@ -25,7 +25,7 @@ mod tests {
     #[test]
     fn an_unset_variable_is_an_empty_table_and_a_set_one_is_parsed() {
         assert!(parse(None).expect("unset").rules().is_empty());
-        let table = parse(Some("sill=bardo-shell.service")).expect("set");
+        let table = parse(Some("bardo-shell=bardo-shell.service")).expect("set");
         assert_eq!(table.rules().len(), 1);
         assert!(parse(Some("nonsense")).is_err());
     }

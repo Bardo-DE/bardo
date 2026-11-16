@@ -1,5 +1,5 @@
 //! The harness the device tests drive keycap with: a fake keyboard on `/dev/uinput`, the real
-//! daemon binary as a child process, the "keycap keyboard" it writes, its socket and its
+//! daemon binary as a child process, the "key-remap keyboard" it writes, its socket and its
 //! `sd_notify` messages.
 //!
 //! Everything here creates or opens real input devices. Nothing in the workspace's ordinary

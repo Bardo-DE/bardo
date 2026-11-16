@@ -8,7 +8,7 @@ use crate::daemon::{pointer, uinput};
 use std::path::{Path, PathBuf};
 
 /// Name prefix of palmrest's virtual devices, which keycap must never grab.
-const PALMREST_PREFIX: &str = "palmrest";
+const PALMREST_PREFIX: &str = "mouse-gestures";
 
 /// Who a node says it is.
 #[derive(Debug, Clone, PartialEq, Eq)]

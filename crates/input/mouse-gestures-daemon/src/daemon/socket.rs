@@ -90,7 +90,7 @@ impl SocketHandle {
     }
 }
 
-/// `<runtime_dir>/events.sock`; the runtime directory is `/run/palmrest`, the unit's own.
+/// `<runtime_dir>/events.sock`; the runtime directory is `/run/bardo/mouse-gestures`, the unit's own.
 pub fn default_path(runtime_dir: &Path) -> PathBuf {
     runtime_dir.join("events.sock")
 }

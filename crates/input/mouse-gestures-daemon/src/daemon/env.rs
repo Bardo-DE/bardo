@@ -6,16 +6,16 @@ use crate::config;
 use std::path::PathBuf;
 
 /// Where the socket directory is when systemd does not provide one.
-const DEFAULT_RUNTIME_DIR: &str = "/run/palmrest";
+const DEFAULT_RUNTIME_DIR: &str = "/run/bardo/mouse-gestures";
 
 /// The process environment as the daemon uses it.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Env {
-    /// `$CONFIGURATION_DIRECTORY` (systemd's, `/etc/palmrest` for the unit), else
-    /// `$XDG_CONFIG_HOME/palmrest`, else `~/.config/palmrest` for a tool run by a person; none
+    /// `$CONFIGURATION_DIRECTORY` (systemd's, `/etc/bardo/mouse-gestures` for the unit), else
+    /// `$XDG_CONFIG_HOME/bardo/mouse-gestures`, else `~/.config/bardo/mouse-gestures` for a tool run by a person; none
     /// when none is set.
     pub config_dir: Option<PathBuf>,
-    /// `$RUNTIME_DIRECTORY` (systemd's), else `/run/palmrest`: where the socket lives.
+    /// `$RUNTIME_DIRECTORY` (systemd's), else `/run/bardo/mouse-gestures`: where the socket lives.
     pub runtime_dir: PathBuf,
     /// `$BARDO_MOUSE_GESTURES_SEAT_FILE`, else logind's `seat0` state file: where the person at the seat is
     /// read from; injectable so tests need no logind.
@@ -59,25 +59,28 @@ mod tests {
         const CASES: &[Case] = &[
             (
                 "every variable read from the lookup",
-                &[("HOME", "/home/u"), ("RUNTIME_DIRECTORY", "/run/palmrest")],
-                Some("/home/u/.config/palmrest"),
-                "/run/palmrest",
+                &[
+                    ("HOME", "/home/u"),
+                    ("RUNTIME_DIRECTORY", "/run/bardo/mouse-gestures"),
+                ],
+                Some("/home/u/.config/bardo/mouse-gestures"),
+                "/run/bardo/mouse-gestures",
             ),
             (
                 "the unit's directories win over the home folder",
                 &[
                     ("HOME", "/home/u"),
-                    ("CONFIGURATION_DIRECTORY", "/etc/palmrest"),
+                    ("CONFIGURATION_DIRECTORY", "/etc/bardo/mouse-gestures"),
                     ("RUNTIME_DIRECTORY", "/run/x:/run/y"),
                 ],
-                Some("/etc/palmrest"),
+                Some("/etc/bardo/mouse-gestures"),
                 "/run/x",
             ),
             (
                 "an empty environment has the system runtime directory and no config",
                 &[("RUNTIME_DIRECTORY", "")],
                 None,
-                "/run/palmrest",
+                "/run/bardo/mouse-gestures",
             ),
         ];
         for &(name, vars, config_dir, runtime_dir) in CASES {

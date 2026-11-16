@@ -8,7 +8,7 @@
 //! `bardo-compositorctl` both run, because `bardo-compositorctl` links this crate and not the compositor.
 //!
 //! ```text
-//! $XDG_STATE_HOME/casement/privacy.toml        the person's book; casement alone writes it
+//! $XDG_STATE_HOME/bardo/compositor/privacy.toml        the person's book; casement alone writes it
 //! /etc/bardo/privacy.toml, privacy.d/*.toml    the administrator's floor; casement only reads it
 //! ```
 //!
@@ -39,7 +39,7 @@ use std::path::{Path, PathBuf};
 /// The book's file name, in casement's state folder.
 pub const BOOK_FILE: &str = "privacy.toml";
 
-/// The person's book in casement's state folder `dir` (`$XDG_STATE_HOME/casement`).
+/// The person's book in casement's state folder `dir` (`$XDG_STATE_HOME/bardo/compositor`).
 pub fn book_in(dir: &Path) -> PathBuf {
     dir.join(BOOK_FILE)
 }

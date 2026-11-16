@@ -203,7 +203,7 @@ mod tests {
     #[test]
     fn only_a_build_for_the_jail_reads_test_rows_from_the_injected_folder() {
         let dir = tempfile::tempdir().expect("a scratch folder");
-        let rows = "[[peer]]\napp = \"org.bardo.Shell\"\nrole = \"shell\"\nexe = [\"/scratch/bin/sill\"]\n";
+        let rows = "[[peer]]\napp = \"org.bardo.Shell\"\nrole = \"shell\"\nexe = [\"/scratch/bin/bardo-shell\"]\n";
         let file = dir.path().join("desktop-callers.toml");
         std::fs::write(&file, rows).expect("the rows file");
         std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o600)).expect("its mode");

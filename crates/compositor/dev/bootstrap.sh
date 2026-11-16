@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Fetches and builds every artefact the jailed scripts need, OUTSIDE the jail (A7: nothing inside
 # the jail calls cargo or the network), into dev/out/tools (no root):
-#   bin/casement bin/bardo-compositorctl bin/compositor-probe bin/compositor-shell-exec bin/fake-logind
+#   bin/bardo-compositor bin/bardo-compositorctl bin/compositor-probe bin/compositor-shell-exec bin/fake-logind
 #                the compositor (headless backend, `debug-inject`), its control tool, the test
 #                client's probe and shell launcher, and the fake logind, built with plain cargo
 #                (CARGO_TARGET_DIR is honoured, else ./target; --release builds the release profile)
@@ -65,14 +65,14 @@ build_casement() {
   # One invocation, so the features unify: the test kit builds casement with `testing` and the
   # binary gets `debug-inject` besides. Both refuse to run outside the jail.
   cargo build "${flag[@]}" --bins -p compositor-app -p compositor-ctl -p compositor-testclient -p compositor-testkit \
-    --features casement/debug-inject
+    --features compositor-app/debug-inject
   local bin
-  for bin in casement bardo-compositorctl compositor-probe compositor-shell-exec fake-logind writeback-compare; do
+  for bin in bardo-compositor bardo-compositorctl compositor-probe compositor-shell-exec fake-logind writeback-compare; do
     # A copy, not a link: a later `cargo clean` must not leave the jail a dangling tool.
     cp -f "$target/$profile/$bin" "$tools/bin/$bin.new"
     mv -f "$tools/bin/$bin.new" "$tools/bin/$bin"
   done
-  echo "bootstrap: casement, bardo-compositorctl, compositor-probe, compositor-shell-exec, fake-logind, writeback-compare -> $tools/bin ($profile)"
+  echo "bootstrap: bardo-compositor, bardo-compositorctl, compositor-probe, compositor-shell-exec, fake-logind, writeback-compare -> $tools/bin ($profile)"
 }
 
 fetch_foot() {

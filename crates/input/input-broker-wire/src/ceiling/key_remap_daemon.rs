@@ -17,9 +17,9 @@ use crate::message::PointerCaps;
 use crate::spec::{AbsAxis, DeviceSpec};
 
 /// What follows the original's name in a pointer's name. keycap never grabs a device that ends with it.
-pub const POINTER_SUFFIX: &str = "(keycap pointer)";
+pub const POINTER_SUFFIX: &str = "(key-remap pointer)";
 /// The keyboard's name; keycap never grabs a device with it.
-pub const KEYBOARD_NAME: &str = "keycap keyboard";
+pub const KEYBOARD_NAME: &str = "key-remap keyboard";
 /// "KC" in ASCII: not a registered vendor, only different from palmrest's and every real keyboard's.
 const VENDOR: u16 = 0x4b43;
 /// The highest property bit a pointer may have (`INPUT_PROP_POINTING_STICK`).

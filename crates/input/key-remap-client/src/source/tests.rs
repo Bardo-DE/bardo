@@ -152,17 +152,23 @@ fn the_machine_source_reads_its_paths_from_the_environment() {
     let source = KeycapSource::from_lookup(lookup);
     assert_eq!(source.socket(), Path::new("/tmp/k.sock"));
     assert_eq!(source.machine_file, Path::new("/tmp/cfg/keymap"));
-    assert_eq!(source.person_file(), Path::new("/tmp/xdg/keycap/keymap"));
+    assert_eq!(
+        source.person_file(),
+        Path::new("/tmp/xdg/bardo/key-remap/keymap")
+    );
     let home_only =
         KeycapSource::from_lookup(|name| (name == "HOME").then(|| "/home/me".to_owned()));
     assert_eq!(
         home_only.person_file(),
-        Path::new("/home/me/.config/keycap/keymap")
+        Path::new("/home/me/.config/bardo/key-remap/keymap")
     );
     let default = KeycapSource::from_lookup(|_| None);
     assert_eq!(default.person_file(), Path::new(""));
     assert_eq!(default.socket(), Path::new(SOCKET_PATH));
-    assert_eq!(default.machine_file, Path::new("/etc/keycap/keymap"));
+    assert_eq!(
+        default.machine_file,
+        Path::new("/etc/bardo/key-remap/keymap")
+    );
 }
 
 fn counter() -> (Arc<AtomicUsize>, ChangeCallback) {

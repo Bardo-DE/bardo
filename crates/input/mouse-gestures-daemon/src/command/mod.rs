@@ -19,18 +19,18 @@ use std::process::ExitCode;
 use std::time::Duration;
 
 const USAGE: &str = "usage:
-  palmrest [--direct-uinput]       run the daemon (--direct-uinput: make the virtual devices
-                                   without the input service, for development)
-  palmrest record FILE [SECONDS]   record raw reads of the Magic Mouse
-                                   (stops after 20 s of no touch)
-  palmrest replay FILE [--calibrated] [--latency]
-                                   print the outputs a recording produces
-  palmrest --check-uinput [--direct-uinput]
-                                   can palmrest make its virtual devices? (asks for a touchpad
-                                   and lets it go)
-  palmrest --print-config          print the default gestures.toml
-  palmrest --write-schema DIR      write palmrest.settings.toml, the schema of gestures.toml,
-                                   into DIR (for the Settings app)";
+  bardo-mouse-gestures [--direct-uinput]    run the daemon (--direct-uinput: make the virtual devices
+                                            without the input service, for development)
+  bardo-mouse-gestures record FILE [SECONDS] record raw reads of the Magic Mouse
+                                            (stops after 20 s of no touch)
+  bardo-mouse-gestures replay FILE [--calibrated] [--latency]
+                                            print the outputs a recording produces
+  bardo-mouse-gestures --check-uinput [--direct-uinput]
+                                            can bardo-mouse-gestures make its virtual devices? (asks for a touchpad
+                                            and lets it go)
+  bardo-mouse-gestures --print-config       print the default gestures.toml
+  bardo-mouse-gestures --write-schema DIR   write mouse-gestures.settings.toml, the schema of gestures.toml,
+                                            into DIR (for the Settings app)";
 
 /// A recording stops after this long when no length is given.
 const DEFAULT_RECORD: Duration = Duration::from_secs(600);
@@ -129,6 +129,7 @@ fn replay_report(flags: &[&str]) -> Option<ReplayReport> {
 pub fn run(args: impl IntoIterator<Item = String>) -> ExitCode {
     let args: Vec<String> = args.into_iter().skip(1).collect();
     let args: Vec<&str> = args.iter().map(String::as_str).collect();
+    crate::pre_bardo::move_pre_bardo_folders(|k| std::env::var(k).ok());
     let env = Env::from_lookup(|k| std::env::var(k).ok());
     let result = match parse(&args) {
         None => Err(Error::Usage(USAGE)),
@@ -159,7 +160,7 @@ fn execute(command: Command, env: &Env) -> Result<(), Error> {
         }
         Command::WriteSchema { dir } => schema::write_schema(&dir),
         Command::Version => {
-            println!("palmrest {}", env!("CARGO_PKG_VERSION"));
+            println!("bardo-mouse-gestures {}", env!("CARGO_PKG_VERSION"));
             Ok(())
         }
     }

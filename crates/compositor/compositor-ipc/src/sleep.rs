@@ -212,7 +212,7 @@ async fn take_inhibitor(connection: &Connection) -> Option<OwnedFd> {
             "Inhibit",
             &(
                 "sleep",
-                "casement",
+                "bardo-compositor",
                 "give the displays back before sleep",
                 "delay",
             ),

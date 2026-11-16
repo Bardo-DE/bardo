@@ -22,7 +22,7 @@ pub(super) const SHELL_TABLE: &str = r#"
 app  = "org.bardo.Shell"
 unit = "bardo-shell.service"
 exe  = [
-  "/opt/bardo/releases/*/bin/sill",
+  "/opt/bardo/releases/*/bin/bardo-shell",
   "/opt/bardo/current/bin/bardo-shell",
   "/usr/local/bin/bardo-shell",
   "/usr/bin/bardo-shell",

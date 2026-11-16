@@ -44,7 +44,7 @@ impl Source {
         }
     }
 
-    /// A finished "keycap keyboard".
+    /// A finished "key-remap keyboard".
     pub(crate) fn keyboard(&self) -> Result<OwnedFd, OutputError> {
         self.make(&Create::keyboard(), uinput::direct_keyboard)
     }
@@ -159,7 +159,7 @@ mod tests {
     fn caps() -> PointerCaps {
         PointerCaps {
             label: "Combo Receiver".to_owned(),
-            name: "Combo Receiver (keycap pointer)".to_owned(),
+            name: "Combo Receiver (key-remap pointer)".to_owned(),
             vendor: 0x05ac,
             product: 0x0250,
             props: vec![0, 2],

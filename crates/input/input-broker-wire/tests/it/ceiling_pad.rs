@@ -153,7 +153,7 @@ fn a_click_needs_a_finger_down_and_ends_when_it_lifts() {
 #[test]
 fn the_touchpad_capabilities_are_exactly_palmrests() {
     let spec = plan(&Create::touchpad()).expect("plans").spec;
-    assert_eq!(spec.name, "palmrest touchpad");
+    assert_eq!(spec.name, "mouse-gestures touchpad");
     assert_eq!((spec.vendor, spec.product), (0x0001, 0x0002));
     assert_eq!(
         spec.keys,
@@ -229,7 +229,7 @@ fn the_wheel_passes_its_four_axes_up_to_the_magnitude_cap() {
 #[test]
 fn the_wheel_cannot_click_or_point() {
     let spec = plan(&Create::wheel()).expect("plans").spec;
-    assert_eq!(spec.name, "palmrest wheel");
+    assert_eq!(spec.name, "mouse-gestures wheel");
     assert_eq!(
         spec.rels,
         [REL_WHEEL, REL_HWHEEL, REL_WHEEL_HI_RES, REL_HWHEEL_HI_RES]

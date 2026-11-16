@@ -13,7 +13,7 @@ const DEFAULT_CONFIG_DIR: &str = key_remap_proto::CONFIG_DIR;
 /// Where the vendor config directory is when nothing overrides it.
 const DEFAULT_VENDOR_DIR: &str = crate::config::VENDOR_DIR;
 /// Where the socket directory is when systemd does not provide one.
-const DEFAULT_RUNTIME_DIR: &str = "/run/keycap";
+const DEFAULT_RUNTIME_DIR: &str = "/run/bardo/key-remap";
 
 /// Where logind records the seat's active user.
 const DEFAULT_SEAT_FILE: &str = SEAT_FILE;
@@ -24,12 +24,12 @@ pub(crate) struct Env {
     /// `$NOTIFY_SOCKET`: where `READY=1` goes; none outside systemd. A leading `@` is an
     /// abstract socket.
     pub notify_socket: Option<String>,
-    /// `$BARDO_KEY_REMAP_CONFIG_DIR`, else `/etc/keycap`.
+    /// `$BARDO_KEY_REMAP_CONFIG_DIR`, else `/etc/bardo/key-remap`.
     pub config_dir: PathBuf,
-    /// `$BARDO_KEY_REMAP_VENDOR_DIR`, else `/usr/lib/keycap`: where the desktop's shipped defaults are
+    /// `$BARDO_KEY_REMAP_VENDOR_DIR`, else `/usr/lib/bardo/key-remap`: where the desktop's shipped defaults are
     /// read from, under the file in the config directory. Injectable so tests need no root.
     pub vendor_dir: PathBuf,
-    /// `$RUNTIME_DIRECTORY` (systemd's), else `/run/keycap`: where the socket lives.
+    /// `$RUNTIME_DIRECTORY` (systemd's), else `/run/bardo/key-remap`: where the socket lives.
     pub runtime_dir: PathBuf,
     /// `$BARDO_KEY_REMAP_SEAT_FILE`, else logind's `seat0` state file: where the active user is read
     /// from; injectable so tests need no logind.
@@ -104,7 +104,7 @@ mod tests {
             ("NOTIFY_SOCKET", "/run/systemd/notify"),
             ("BARDO_KEY_REMAP_CONFIG_DIR", "/tmp/cfg"),
             ("BARDO_KEY_REMAP_VENDOR_DIR", "/tmp/vendor"),
-            ("RUNTIME_DIRECTORY", "/run/keycap"),
+            ("RUNTIME_DIRECTORY", "/run/bardo/key-remap"),
             (PROBE_PERMIT, "1"),
             ("WATCHDOG_USEC", "1000000"),
             ("BARDO_KEY_REMAP_SEAT_FILE", "/tmp/seat0"),
@@ -118,7 +118,7 @@ mod tests {
         assert_eq!(env.notify_socket.as_deref(), Some("/run/systemd/notify"));
         assert_eq!(env.config_dir, PathBuf::from("/tmp/cfg"));
         assert_eq!(env.vendor_dir, PathBuf::from("/tmp/vendor"));
-        assert_eq!(env.runtime_dir, PathBuf::from("/run/keycap"));
+        assert_eq!(env.runtime_dir, PathBuf::from("/run/bardo/key-remap"));
         assert_eq!(env.seat_file, PathBuf::from("/tmp/seat0"));
         assert_eq!(env.sys_input, PathBuf::from("/tmp/sys"));
         assert_eq!(env.dev_input, PathBuf::from("/tmp/dev"));
@@ -137,9 +137,9 @@ mod tests {
     fn an_empty_environment_has_the_defaults() {
         let env = Env::from_lookup(lookup(&[]));
         assert_eq!(env.notify_socket, None);
-        assert_eq!(env.config_dir, PathBuf::from("/etc/keycap"));
-        assert_eq!(env.vendor_dir, PathBuf::from("/usr/lib/keycap"));
-        assert_eq!(env.runtime_dir, PathBuf::from("/run/keycap"));
+        assert_eq!(env.config_dir, PathBuf::from("/etc/bardo/key-remap"));
+        assert_eq!(env.vendor_dir, PathBuf::from("/usr/lib/bardo/key-remap"));
+        assert_eq!(env.runtime_dir, PathBuf::from("/run/bardo/key-remap"));
         assert_eq!(env.seat_file, PathBuf::from("/run/systemd/seats/seat0"));
         assert_eq!(env.sys_input, PathBuf::from("/sys/class/input"));
         assert_eq!(env.dev_input, PathBuf::from("/dev/input"));
@@ -172,25 +172,25 @@ mod tests {
             (
                 "empty runtime directory",
                 &[("RUNTIME_DIRECTORY", "")],
-                "/run/keycap",
+                "/run/bardo/key-remap",
                 None,
             ),
             (
                 "unparsable watchdog",
                 &[("WATCHDOG_USEC", "soon")],
-                "/run/keycap",
+                "/run/bardo/key-remap",
                 None,
             ),
             (
                 "zero watchdog",
                 &[("WATCHDOG_USEC", "0")],
-                "/run/keycap",
+                "/run/bardo/key-remap",
                 None,
             ),
             (
                 "500 ms watchdog",
                 &[("WATCHDOG_USEC", "500000")],
-                "/run/keycap",
+                "/run/bardo/key-remap",
                 Some(Duration::from_millis(500)),
             ),
         ];

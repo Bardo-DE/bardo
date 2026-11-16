@@ -1,4 +1,4 @@
-//! The "keycap pointer" twins of the grabbed combo devices: which exist, what each holds down,
+//! The "key-remap pointer" twins of the grabbed combo devices: which exist, what each holds down,
 //! and the pure rule that says when one is made or let go.
 
 use crate::DeviceId;

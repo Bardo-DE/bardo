@@ -10,7 +10,7 @@
 use super::origin::{DeviceClass, Origin};
 
 /// What comes before the role in a label.
-const PREFIX: &str = "turnstile/";
+const PREFIX: &str = "input-broker/";
 
 /// The proven service a virtual device was made for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -58,8 +58,8 @@ mod tests {
     #[test]
     fn the_labels_are_the_strings_turnstile_writes() {
         for (text, maker) in [
-            ("turnstile/pad_daemon", Maker::PadDaemon),
-            ("turnstile/keymap_daemon", Maker::KeymapDaemon),
+            ("input-broker/pad_daemon", Maker::PadDaemon),
+            ("input-broker/keymap_daemon", Maker::KeymapDaemon),
         ] {
             assert_eq!(Maker::parse(text), Some(maker), "{text}");
             assert_eq!(Maker::parse(&format!("{text}\n")), Some(maker), "{text}");
@@ -70,13 +70,13 @@ mod tests {
     fn any_other_text_is_no_maker() {
         for text in [
             "",
-            "turnstile/",
-            "turnstile",
-            "turnstile/settings",
-            "turnstile/pad_daemon/extra",
-            "turnstile/pad_daemon ",
-            "turnstile/Pad_daemon",
-            "xturnstile/pad_daemon",
+            "input-broker/",
+            "input-broker",
+            "input-broker/settings",
+            "input-broker/pad_daemon/extra",
+            "input-broker/pad_daemon ",
+            "input-broker/Pad_daemon",
+            "xinput-broker/pad_daemon",
             "ydotoold virtual device",
             "isa0060/serio0/input0",
         ] {

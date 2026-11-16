@@ -1,9 +1,9 @@
 #!/bin/sh
 # The edges of the dependency graph:
 #   input-broker-wire stays pure: no bus, async runtime, caller identity, socket or device library.
-#   input-broker-client is what palmrest and keycap link, so it must not drag in the bus, an async
+#   input-broker-client is what bardo-mouse-gestures and bardo-key-remap link, so it must not drag in the bus, an async
 #   runtime, the caller-identity crates or the daemon's libraries.
-#   turnstile is a root service: it may read /proc through peephole, but must never link the bus or an
+#   bardo-input-broker is a root service: it may read /proc through peephole, but must never link the bus or an
 #   async runtime.
 set -eu
 cd "$(dirname "$0")/.."

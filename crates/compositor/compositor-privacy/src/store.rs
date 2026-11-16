@@ -163,7 +163,7 @@ impl PrivacyStore for FloorOnlyStore {
 /// Where the two files live.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PrivacyFiles {
-    /// The person's book (`$XDG_STATE_HOME/casement/privacy.toml`).
+    /// The person's book (`$XDG_STATE_HOME/bardo/compositor/privacy.toml`).
     pub book: PathBuf,
     /// The administrator's floor.
     pub floor: FloorFiles,
@@ -276,7 +276,7 @@ mod tests {
 
     fn store_in(dir: &Path) -> FilePrivacyStore {
         FilePrivacyStore::new(PrivacyFiles {
-            book: dir.join("state/casement/privacy.toml"),
+            book: dir.join("state/bardo/compositor/privacy.toml"),
             floor: FloorFiles::system(),
         })
     }
@@ -296,7 +296,7 @@ mod tests {
         let mut store = store_in(scratch.path());
         assert!(matches!(store.read_book(), Ok(None)), "no book yet");
         save_book(&mut store, &book());
-        let folder = scratch.path().join("state/casement");
+        let folder = scratch.path().join("state/bardo/compositor");
         let file = folder.join("privacy.toml");
         let mode = |path: &Path| std::fs::metadata(path).expect("there").mode() & 0o777;
         assert_eq!(mode(&folder), 0o700, "the folder");
@@ -307,7 +307,7 @@ mod tests {
     #[test]
     fn a_folder_open_to_others_is_closed_when_the_book_is_written() {
         let scratch = tempfile::tempdir().expect("a scratch folder");
-        let folder = scratch.path().join("state/casement");
+        let folder = scratch.path().join("state/bardo/compositor");
         std::fs::create_dir_all(&folder).expect("a folder");
         std::fs::set_permissions(&folder, std::fs::Permissions::from_mode(0o755)).expect("open");
         save_book(&mut store_in(scratch.path()), &book());
@@ -321,7 +321,7 @@ mod tests {
     fn a_damaged_or_oversized_book_is_kept_aside_under_the_date_and_an_empty_one_used() {
         let scratch = tempfile::tempdir().expect("a scratch folder");
         let mut store = store_in(scratch.path());
-        let folder = scratch.path().join("state/casement");
+        let folder = scratch.path().join("state/bardo/compositor");
         std::fs::create_dir_all(&folder).expect("a folder");
         let file = folder.join("privacy.toml");
         let damaged: [(&str, Vec<u8>); 3] = [

@@ -1,4 +1,4 @@
-//! `palmrest.settings.toml`: the schema of `gestures.toml` for the Settings app (quire
+//! `mouse-gestures.settings.toml`: the schema of `gestures.toml` for the Settings app (quire
 //! design/22 section 9).
 //!
 //! palmrest is a standalone daemon and takes no quire crate, so it cannot use quire's
@@ -92,7 +92,7 @@ pub struct Schema {
 }
 
 /// The name the file is written under in the schema directory.
-pub const FILE_NAME: &str = "palmrest.settings.toml";
+pub const FILE_NAME: &str = "mouse-gestures.settings.toml";
 
 impl Schema {
     /// palmrest's schema: one key per setting of [`Config`].
@@ -100,7 +100,7 @@ impl Schema {
         let defaults = toml::Value::try_from(Config::default())
             .expect("every field of Config is a plain value or table");
         Schema {
-            app: "palmrest".to_owned(),
+            app: "mouse-gestures".to_owned(),
             file: FILE.to_owned(),
             version: VERSION,
             key: keys::rows(&defaults),

@@ -17,17 +17,17 @@ use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
 const USAGE: &str = "usage:
-  keycap                       run the daemon
-  keycap --print-config        print the built-in defaults.toml
-  keycap --check-uinput        can this user create virtual devices? (needs
-                               BARDO_KEY_REMAP_ALLOW_UINPUT_PROBE=1; opens and closes only)
-  keycap status                what the running daemon is doing (exit 0 only when a keyboard
-                               is grabbed)
-  keycap resume                grab the keyboards again after the escape chord
-  keycap replay FILE [--config FILE]
-                               replay a script of inputs through the remapper and print
-                               what it writes; --config adds a user config layer
-  keycap --help | --version
+  bardo-key-remap                 run the daemon
+  bardo-key-remap --print-config  print the built-in defaults.toml
+  bardo-key-remap --check-uinput  can this user create virtual devices? (needs
+                                  BARDO_KEY_REMAP_ALLOW_UINPUT_PROBE=1; opens and closes only)
+  bardo-key-remap status          what the running daemon is doing (exit 0 only when a keyboard
+                                  is grabbed)
+  bardo-key-remap resume          grab the keyboards again after the escape chord
+  bardo-key-remap replay FILE [--config FILE]
+                                  replay a script of inputs through the remapper and print
+                                  what it writes; --config adds a user config layer
+  bardo-key-remap --help | --version
 
 a replay script has one input per line, `#` starts a comment:
   <ms> press|release|repeat <dev> <apple|pc> <keyname>
@@ -38,7 +38,7 @@ a replay script has one input per line, `#` starts a comment:
   <ms> led caps|num|scroll on|off
                                the desktop sets a LED of the virtual keyboard; a Caps Lock
                                that comes on while the Caps Lock key is remapped and nothing
-                               keycap wrote asked for it is tapped off before the next key";
+                               bardo-key-remap wrote asked for it is tapped off before the next key";
 
 /// One invocation of the command.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -118,7 +118,7 @@ fn execute(command: Command, env: Env) -> Result<(), String> {
             .and_then(|lines| print_out(&lines.join("\n")))
             .and_then(|()| print_out("\n")),
         Command::Help => print_out(&format!("{USAGE}\n")),
-        Command::Version => print_out(&format!("keycap {}\n", env!("CARGO_PKG_VERSION"))),
+        Command::Version => print_out(&format!("bardo-key-remap {}\n", env!("CARGO_PKG_VERSION"))),
     }
 }
 

@@ -68,15 +68,16 @@ impl KeycapSource {
     }
 
     /// The source for this machine and person, read through `lookup`: `$BARDO_KEY_REMAP_SOCKET` (else
-    /// `/run/bardo/key-remap/key-remap.sock`), the machine file in `$BARDO_KEY_REMAP_CONFIG_DIR` (else `/etc/keycap`)
-    /// and the person's file `keycap/keymap` in `$XDG_CONFIG_HOME` (else `$HOME/.config`).
+    /// `/run/bardo/key-remap/key-remap.sock`), the machine file in `$BARDO_KEY_REMAP_CONFIG_DIR` (else `/etc/bardo/key-remap`)
+    /// and the person's file `bardo/key-remap/keymap` in `$XDG_CONFIG_HOME` (else `$HOME/.config`).
     pub fn from_lookup(lookup: impl Fn(&str) -> Option<String>) -> KeycapSource {
         let non_empty = |name: &str| lookup(name).filter(|value| !value.is_empty());
-        let config = non_empty("BARDO_KEY_REMAP_CONFIG_DIR").unwrap_or_else(|| CONFIG_DIR.to_owned());
+        let config =
+            non_empty("BARDO_KEY_REMAP_CONFIG_DIR").unwrap_or_else(|| CONFIG_DIR.to_owned());
         let person = non_empty("XDG_CONFIG_HOME")
             .map(PathBuf::from)
             .or_else(|| non_empty("HOME").map(|home| Path::new(&home).join(".config")))
-            .map(|dir| dir.join("keycap").join(KEYMAP_FILE))
+            .map(|dir| dir.join("bardo/key-remap").join(KEYMAP_FILE))
             .unwrap_or_default();
         KeycapSource::new(
             non_empty("BARDO_KEY_REMAP_SOCKET").unwrap_or_else(|| SOCKET_PATH.to_owned()),

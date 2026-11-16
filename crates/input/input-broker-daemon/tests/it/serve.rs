@@ -58,7 +58,7 @@ fn palmrest_gets_a_proxied_wheel_and_loses_it_when_it_hangs_up() {
         .join()
         .expect("the connection ends when the client goes");
     let log = kernel.log();
-    assert_eq!(log.specs[0].name, "palmrest wheel");
+    assert_eq!(log.specs[0].name, "mouse-gestures wheel");
     assert_eq!(log.writes, [(0, wheel())]);
     assert_eq!(
         log.fates,

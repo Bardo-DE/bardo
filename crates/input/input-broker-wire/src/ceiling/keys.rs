@@ -31,7 +31,7 @@ pub(super) fn plan(maker: Maker, requested: &[u16]) -> Result<Plan, BadCaps> {
     keys.dedup();
     Ok(Plan {
         spec: DeviceSpec {
-            name: "palmrest keys".to_owned(),
+            name: "mouse-gestures keys".to_owned(),
             maker,
             vendor: 0x0001,
             product: 0x0003,

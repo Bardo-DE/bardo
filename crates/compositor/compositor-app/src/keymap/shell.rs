@@ -145,7 +145,7 @@ const ROWS: &[Row] = &[
 ];
 
 /// The program sill's commands run under.
-const SILL: &str = "sill";
+const SILL: &str = "bardo-shell";
 
 /// What the compositor does for `action`, or `None` when the action belongs to apps.
 pub fn shell_action(action: StandardAction) -> Option<BindingAction> {
@@ -227,7 +227,7 @@ mod tests {
         assert_eq!(
             spawn_of(ShellVerb::DockToggleHide),
             BindingAction::Spawn(Argv(vec![
-                "sill".to_owned(),
+                "bardo-shell".to_owned(),
                 "dock".to_owned(),
                 "toggle-hide".to_owned()
             ]))

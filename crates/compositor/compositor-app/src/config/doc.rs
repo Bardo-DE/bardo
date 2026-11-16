@@ -45,7 +45,7 @@ impl SettingsDoc for CasementDoc {
 }
 
 /// The program's directory name under the config home.
-const APP: AppName = AppName("casement");
+const APP: AppName = AppName::desktop("compositor");
 
 /// The document under `home` (a missing file: the defaults). A key the file sets that the
 /// document does not read, or whose value it refuses, is reported in the log and costs only

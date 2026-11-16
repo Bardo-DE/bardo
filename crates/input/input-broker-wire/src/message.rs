@@ -8,11 +8,11 @@ use crate::spec::AbsAxis;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct DeviceId(pub u8);
 
-/// What a keycap pointer asks for: the pointer half of a combo device. The service cuts it to the
+/// What a key-remap pointer asks for: the pointer half of a combo device. The service cuts it to the
 /// pointer ceiling, so a pointer can never register a key below `BTN_MISC`.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct PointerCaps {
-    /// The original device's name; the service adds the fixed suffix `(keycap pointer)`.
+    /// The original device's name; the service adds the fixed suffix `(key-remap pointer)`.
     pub label: String,
     /// The original's vendor id, so per-device quirks still match.
     pub vendor: u16,
