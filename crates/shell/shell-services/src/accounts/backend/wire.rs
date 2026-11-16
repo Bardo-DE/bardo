@@ -74,7 +74,7 @@ pub(crate) async fn sign_in_again(
     accountd: &Accountd,
     key: &AccountKey,
 ) -> Result<(), AccountsError> {
-    let account = ref_of(key).ok_or(LinkError::Malformed(Malformed::Id))?;
+    let account = ref_of(key).ok_or(LinkError::Malformed(Malformed::Id.into()))?;
     accountd
         .reauthenticate_shown(&account, &ParentWindow::Unparented)
         .await

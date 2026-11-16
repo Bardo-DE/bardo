@@ -22,7 +22,7 @@
 
 use crate::Bus;
 use crate::failure::{ai_keys_error, link_error};
-use account_client::{AiKeysError, LinkError, Malformed};
+use account_client::{AiKeysError, LinkError, Malformed, MalformedError};
 use account_core::consent::Usage;
 use account_core::{DataClass, GrantId};
 use account_dbus::accounts::sheet::{SheetKind, reply_of};
@@ -30,8 +30,8 @@ use account_dbus::accounts::{Abandon, KeysProxy, ServiceRoot, Sheet, SheetError}
 use account_wire::{AccountsReply, ParentWindow};
 use base_ids::word::word as word_of;
 
-fn malformed(what: Malformed) -> AiKeysError {
-    AiKeysError::Link(LinkError::Malformed(what))
+fn malformed(what: impl Into<MalformedError>) -> AiKeysError {
+    AiKeysError::Link(LinkError::Malformed(what.into()))
 }
 
 /// The `parent_window` argument: no parent is the empty string.
@@ -105,8 +105,7 @@ impl AiKeys {
         let (code, results) = listener.response(&path).await.map_err(sheet_error)?;
         abandon.answered();
         match reply_of(SheetKind::Choose, code, results)
-            .ok()
-            .ok_or(malformed(Malformed::Reply))?
+            .map_err(|e| malformed(Malformed::Reply.because(e)))?
         {
             // The answer is the chosen key; its `grant` is the permit's id.
             AccountsReply::Chosen(candidate) => Ok(candidate.grant),

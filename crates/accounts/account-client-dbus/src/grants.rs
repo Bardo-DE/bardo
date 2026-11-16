@@ -9,7 +9,7 @@ use crate::failure::{grants_error, link_error};
 use account_capability::CapabilityKind;
 use account_client::{
     AccountsError, AuthenticatedStream, ConsentOffer, GrantsError, GrantsLink, LinkError,
-    ListedAccount, Malformed,
+    ListedAccount, Malformed, MalformedError,
 };
 use account_core::consent::{Availability, Grant, Usage};
 use account_core::{Account, AccountId, Candidate, DataClass, EndpointUrl, GrantId, ProviderId};
@@ -31,8 +31,8 @@ impl Bus {
     }
 }
 
-fn malformed(what: Malformed) -> GrantsError {
-    GrantsError::Link(LinkError::Malformed(what))
+fn malformed(what: impl Into<MalformedError>) -> GrantsError {
+    GrantsError::Link(LinkError::Malformed(what.into()))
 }
 
 /// The sheet wait's failure as the grants domain's.
@@ -67,11 +67,7 @@ impl GrantsLink for Bus {
             .await
             .map_err(|e| grants_error(&e))?
             .into_iter()
-            .map(|row| {
-                candidate_from_dbus(row)
-                    .ok()
-                    .ok_or(malformed(Malformed::Row))
-            })
+            .map(|row| candidate_from_dbus(row).map_err(|e| malformed(Malformed::Row.because(e))))
             .collect()
     }
 
@@ -97,7 +93,7 @@ impl GrantsLink for Bus {
             .grants()
             .await
             .map_err(|e| grants_error(&e))?;
-        from_text(&text).ok().ok_or(malformed(Malformed::Row))
+        from_text(&text).map_err(|e| malformed(Malformed::Row.because(e)))
     }
 
     async fn request_grant(
@@ -144,7 +140,7 @@ impl GrantsLink for Bus {
             .await
             .map_err(|e| grants_error(&e))?;
         let rows: Vec<(Account, String)> =
-            from_text(&text).ok().ok_or(malformed(Malformed::Row))?;
+            from_text(&text).map_err(|e| malformed(Malformed::Row.because(e)))?;
         Ok(rows
             .into_iter()
             .map(|(account, label)| {

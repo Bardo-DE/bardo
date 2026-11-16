@@ -58,9 +58,7 @@ impl Tailnet {
             .map_err(|e| link_error(&e))?
             .iter()
             .map(|row| {
-                machine_from_dbus(row)
-                    .ok()
-                    .ok_or(LinkError::Malformed(Malformed::Row))
+                machine_from_dbus(row).map_err(|e| LinkError::Malformed(Malformed::Row.because(e)))
             })
             .collect()
     }

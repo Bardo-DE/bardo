@@ -2,6 +2,8 @@
 //! complete. Each domain's error holds one beside the reasons it gives of its own. Nothing here
 //! carries a sentence for a person; the apps word them.
 
+use std::sync::Arc;
+
 /// Why a call did not complete, whatever the call was. More reasons may be added: match with a
 /// wildcard.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -19,9 +21,12 @@ pub enum LinkError {
     /// The daemon refused an argument (an id, a name or a program that is not one).
     #[error("invalid")]
     Invalid,
+    /// An argument could not be written for the wire.
+    #[error("an argument could not be written")]
+    Unwritable(#[source] Unwritable),
     /// The other side sent something that is not porter's protocol.
-    #[error("malformed {0:?}")]
-    Malformed(Malformed),
+    #[error("the other side did not speak the protocol")]
+    Malformed(#[source] MalformedError),
 }
 
 /// What the other side got wrong.
@@ -42,3 +47,65 @@ pub enum Malformed {
     /// A failure this client does not know.
     UnknownFailure,
 }
+
+impl Malformed {
+    /// This fault with the error that showed it.
+    pub fn because(self, cause: impl std::error::Error + Send + Sync + 'static) -> MalformedError {
+        MalformedError {
+            what: self,
+            cause: Some(Arc::new(cause)),
+        }
+    }
+}
+
+/// What the other side got wrong, with the error that showed it when there was one. Two are equal
+/// when they name the same fault.
+#[derive(Debug, Clone, thiserror::Error)]
+#[error("malformed {what:?}")]
+pub struct MalformedError {
+    what: Malformed,
+    #[source]
+    cause: Option<Arc<dyn std::error::Error + Send + Sync>>,
+}
+
+impl MalformedError {
+    /// What was wrong.
+    #[must_use]
+    pub fn what(&self) -> Malformed {
+        self.what
+    }
+}
+
+impl From<Malformed> for MalformedError {
+    fn from(what: Malformed) -> Self {
+        Self { what, cause: None }
+    }
+}
+
+impl PartialEq for MalformedError {
+    fn eq(&self, other: &Self) -> bool {
+        self.what == other.what
+    }
+}
+
+impl Eq for MalformedError {}
+
+/// Why an argument could not be written for the wire. Two are equal when they are the same error.
+#[derive(Debug, Clone, thiserror::Error)]
+#[error(transparent)]
+pub struct Unwritable(Arc<dyn std::error::Error + Send + Sync>);
+
+impl Unwritable {
+    /// The failure to write an argument.
+    pub fn new(cause: impl std::error::Error + Send + Sync + 'static) -> Self {
+        Self(Arc::new(cause))
+    }
+}
+
+impl PartialEq for Unwritable {
+    fn eq(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.0, &other.0)
+    }
+}
+
+impl Eq for Unwritable {}

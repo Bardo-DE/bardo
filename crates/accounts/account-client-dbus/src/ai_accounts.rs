@@ -17,7 +17,7 @@
 use crate::Bus;
 use crate::failure::{ai_accounts_error, link_error};
 use account_capability::Claim;
-use account_client::{AiAccountsError, Changes, LinkError, Malformed};
+use account_client::{AiAccountsError, Changes, LinkError, Malformed, MalformedError, Unwritable};
 use account_core::consent::Usage;
 use account_core::{AccountId, AccountState, AiAccountRow, AppId, DataClass, GrantId};
 use account_core::{LlmVerdict, OwnServerRow, ProviderId, SecretText};
@@ -31,8 +31,8 @@ use zeroize::Zeroizing;
 /// The most a key may hold, as the client reads one.
 const KEY_LIMIT: u64 = 16 * 1024;
 
-fn malformed(what: Malformed) -> AiAccountsError {
-    AiAccountsError::Link(LinkError::Malformed(what))
+fn malformed(what: impl Into<MalformedError>) -> AiAccountsError {
+    AiAccountsError::Link(LinkError::Malformed(what.into()))
 }
 
 impl Bus {
@@ -51,8 +51,7 @@ fn read_key(fd: account_dbus::zvariant::OwnedFd) -> Result<SecretText, AiAccount
     std::fs::File::from(owned)
         .take(KEY_LIMIT + 1)
         .read_to_string(&mut text)
-        .ok()
-        .ok_or(malformed(Malformed::Descriptor))?;
+        .map_err(|e| malformed(Malformed::Descriptor.because(e)))?;
     if u64::try_from(text.len()).map_or(true, |len| len > KEY_LIMIT) {
         return Err(malformed(Malformed::Descriptor));
     }
@@ -97,7 +96,7 @@ impl AiAccounts {
             .await
             .map_err(|e| ai_accounts_error(&e))?
             .into_iter()
-            .map(|row| verdict_from_dbus(row).ok().ok_or(malformed(Malformed::Row)))
+            .map(|row| verdict_from_dbus(row).map_err(|e| malformed(Malformed::Row.because(e))))
             .collect()
     }
 
@@ -133,11 +132,7 @@ impl AiAccounts {
             .await
             .map_err(|e| ai_accounts_error(&e))?
             .into_iter()
-            .map(|row| {
-                ai_account_from_dbus(row)
-                    .ok()
-                    .ok_or(malformed(Malformed::Row))
-            })
+            .map(|row| ai_account_from_dbus(row).map_err(|e| malformed(Malformed::Row.because(e))))
             .collect()
     }
 
@@ -154,11 +149,7 @@ impl AiAccounts {
             .await
             .map_err(|e| ai_accounts_error(&e))?
             .into_iter()
-            .map(|row| {
-                own_server_from_dbus(row)
-                    .ok()
-                    .ok_or(malformed(Malformed::Row))
-            })
+            .map(|row| own_server_from_dbus(row).map_err(|e| malformed(Malformed::Row.because(e))))
             .collect()
     }
 
@@ -193,8 +184,7 @@ impl AiAccounts {
         state: AccountState,
     ) -> Result<AccountId, AiAccountsError> {
         let claims = serde_json::to_string(claims)
-            .ok()
-            .ok_or(AiAccountsError::Link(LinkError::Invalid))?;
+            .map_err(|e| AiAccountsError::Link(LinkError::Unwritable(Unwritable::new(e))))?;
         let id = self
             .bus
             .broker()
@@ -202,7 +192,7 @@ impl AiAccounts {
             .report_local(provider.as_str(), &claims, word_of(&state))
             .await
             .map_err(|e| ai_accounts_error(&e))?;
-        AccountId::parse(&id).ok().ok_or(malformed(Malformed::Id))
+        AccountId::parse(&id).map_err(|e| malformed(Malformed::Id.because(e)))
     }
 
     /// "An AI account, a permit or a switch changed", from now on; each item says only that

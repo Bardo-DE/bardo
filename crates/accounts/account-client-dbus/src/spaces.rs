@@ -15,7 +15,7 @@
 
 use crate::Bus;
 use crate::failure::{link_error, spaces_error};
-use account_client::{Changes, LinkError, Malformed, SpacesError};
+use account_client::{Changes, LinkError, Malformed, MalformedError, SpacesError};
 use account_core::{DesktopSpace, DesktopSpaceRecord, SpaceChange, SpaceLook, SpaceName};
 use account_dbus::Details;
 use account_dbus::accounts::{
@@ -24,6 +24,7 @@ use account_dbus::accounts::{
 use base_ids::word::from_word;
 use base_time::UnixSeconds;
 use futures_util::StreamExt;
+use zbus::zvariant::OwnedValue;
 
 /// accountd's registry of desktop-wide Spaces, as an app uses it over the bus.
 #[derive(Debug, Clone)]
@@ -48,34 +49,32 @@ impl Bus {
     }
 }
 
-fn malformed(what: Malformed) -> SpacesError {
-    SpacesError::Link(LinkError::Malformed(what))
+fn malformed(what: impl Into<MalformedError>) -> SpacesError {
+    SpacesError::Link(LinkError::Malformed(what.into()))
+}
+
+fn field<'a>(details: &'a Details, key: &str) -> Result<&'a OwnedValue, SpacesError> {
+    details.get(key).ok_or_else(|| malformed(Malformed::Row))
 }
 
 fn text(details: &Details, key: &str) -> Result<String, SpacesError> {
-    details
-        .get(key)
-        .and_then(|v| v.try_clone().ok())
-        .and_then(|v| String::try_from(v).ok())
-        .ok_or_else(|| malformed(Malformed::Row))
+    let value = field(details, key)?
+        .try_clone()
+        .map_err(|e| malformed(Malformed::Row.because(e)))?;
+    String::try_from(value).map_err(|e| malformed(Malformed::Row.because(e)))
 }
 
 fn record(id: &str, details: &Details) -> Result<DesktopSpaceRecord, SpacesError> {
-    let created = details
-        .get(SPACE_KEY_CREATED)
-        .and_then(|v| v.try_clone().ok())
-        .and_then(|v| i64::try_from(v).ok())
-        .ok_or_else(|| malformed(Malformed::Row))?;
+    let created = field(details, SPACE_KEY_CREATED)?
+        .try_clone()
+        .map_err(|e| malformed(Malformed::Row.because(e)))?;
+    let created = i64::try_from(created).map_err(|e| malformed(Malformed::Row.because(e)))?;
     Ok(DesktopSpaceRecord {
-        id: DesktopSpace::parse(id)
-            .ok()
-            .ok_or(malformed(Malformed::Id))?,
+        id: DesktopSpace::parse(id).map_err(|e| malformed(Malformed::Id.because(e)))?,
         name: SpaceName::parse(&text(details, SPACE_KEY_NAME)?)
-            .ok()
-            .ok_or(malformed(Malformed::Row))?,
+            .map_err(|e| malformed(Malformed::Row.because(e)))?,
         look: SpaceLook::parse(&text(details, SPACE_KEY_LOOK)?)
-            .ok()
-            .ok_or(malformed(Malformed::Row))?,
+            .map_err(|e| malformed(Malformed::Row.because(e)))?,
         created: UnixSeconds(created),
     })
 }
@@ -84,11 +83,11 @@ fn record(id: &str, details: &Details) -> Result<DesktopSpaceRecord, SpacesError
     clippy::needless_pass_by_value,
     reason = "a stream `map` callback, which is handed the signal by value"
 )]
-fn change(signal: SpaceChanged) -> Result<(DesktopSpace, SpaceChange), Malformed> {
-    let args = signal.args().ok().ok_or(Malformed::Signal)?;
+fn change(signal: SpaceChanged) -> Result<(DesktopSpace, SpaceChange), MalformedError> {
+    let args = signal.args().map_err(|e| Malformed::Signal.because(e))?;
     let what = from_word::<SpaceChange>(args.what).ok_or(Malformed::Signal)?;
     Ok((
-        DesktopSpace::parse(args.id).ok().ok_or(Malformed::Id)?,
+        DesktopSpace::parse(args.id).map_err(|e| Malformed::Id.because(e))?,
         what,
     ))
 }
@@ -130,9 +129,7 @@ impl Spaces {
             .create(name.as_str(), look.as_str())
             .await
             .map_err(|e| spaces_error(&e))?;
-        DesktopSpace::parse(&id)
-            .ok()
-            .ok_or(malformed(Malformed::Id))
+        DesktopSpace::parse(&id).map_err(|e| malformed(Malformed::Id.because(e)))
     }
 
     /// Registers a Space whose id the caller minted (the compositor, per workspace); one already

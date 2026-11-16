@@ -98,14 +98,20 @@ pub struct Inherit {
 pub enum ChildKeyError {
     /// The key could not be read back from the descriptor (what the system said; `InvalidData`
     /// is a key longer than any key).
-    #[error("the key could not be read: {0}")]
-    Unreadable(io::ErrorKind),
+    #[error("the key could not be read")]
+    Unreadable(#[source] io::Error),
     /// The key is not text.
     #[error("the key is not text")]
-    NotText,
+    NotText(#[source] std::str::Utf8Error),
     /// `<key variable>_FILE` is not a valid variable name (the variable's name is too long).
-    #[error("`{0}_FILE` is not a variable name")]
-    NoFileVariable(String),
+    #[error("`{name}_FILE` is not a variable name")]
+    NoFileVariable {
+        /// The key variable.
+        name: String,
+        /// Why the name with its suffix is refused.
+        #[source]
+        source: base_ids::IdError,
+    },
 }
 
 impl ProcessCredential {
@@ -139,13 +145,12 @@ impl ProcessCredential {
             .as_fd()
             .try_clone_to_owned()
             .map(std::fs::File::from)
-            .map_err(|why| ChildKeyError::Unreadable(why.kind()))?;
-        let bytes = read_all_at(&file).map_err(|why| ChildKeyError::Unreadable(why.kind()))?;
+            .map_err(ChildKeyError::Unreadable)?;
+        let bytes = read_all_at(&file).map_err(ChildKeyError::Unreadable)?;
         // `SecretText` wipes its own copy; the buffer is wiped when `bytes` drops.
         std::str::from_utf8(&bytes)
             .map(SecretText::new)
-            .ok()
-            .ok_or(ChildKeyError::NotText)
+            .map_err(ChildKeyError::NotText)
     }
 
     /// What to give the child whose key variable is `key_env` (`AgentCap.key_env`), by `delivery`.
@@ -165,14 +170,18 @@ impl ProcessCredential {
                 value: self.read_key()?,
             }),
             Delivery::File { child_fd } => {
-                let var = EnvName::parse(&format!("{}_FILE", key_env.as_str()))
-                    .ok()
-                    .ok_or_else(|| ChildKeyError::NoFileVariable(key_env.as_str().to_owned()))?;
+                let var =
+                    EnvName::parse(&format!("{}_FILE", key_env.as_str())).map_err(|source| {
+                        ChildKeyError::NoFileVariable {
+                            name: key_env.as_str().to_owned(),
+                            source,
+                        }
+                    })?;
                 let copy = self
                     .key
                     .as_fd()
                     .try_clone_to_owned()
-                    .map_err(|why| ChildKeyError::Unreadable(why.kind()))?;
+                    .map_err(ChildKeyError::Unreadable)?;
                 Ok(ChildKey::File {
                     var,
                     path: format!("/proc/self/fd/{child_fd}"),
@@ -265,7 +274,7 @@ mod tests {
         let var = EnvName::parse(&long).expect("var");
         assert!(matches!(
             credential("k").child_key(&var, Delivery::File { child_fd: 3 }),
-            Err(ChildKeyError::NoFileVariable(_))
+            Err(ChildKeyError::NoFileVariable { .. })
         ));
     }
 
@@ -273,7 +282,7 @@ mod tests {
     fn a_key_over_the_limit_is_unreadable_and_one_at_the_limit_is_read() {
         assert!(matches!(
             credential(&"k".repeat(KEY_LIMIT + 1)).read_key(),
-            Err(ChildKeyError::Unreadable(io::ErrorKind::InvalidData))
+            Err(ChildKeyError::Unreadable(ref why)) if why.kind() == io::ErrorKind::InvalidData
         ));
         assert_eq!(
             credential(&"k".repeat(KEY_LIMIT))
@@ -292,6 +301,6 @@ mod tests {
         rustix::io::write(&memfd, &[0xff_u8, 0xfe]).expect("written");
         let credential =
             ProcessCredential::new(ProcessCredentialId::parse("cred-3").expect("id"), memfd);
-        assert!(matches!(credential.read_key(), Err(ChildKeyError::NotText)));
+        assert!(matches!(credential.read_key(), Err(ChildKeyError::NotText(_))));
     }
 }

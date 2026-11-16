@@ -11,7 +11,7 @@ use crate::Bus;
 use crate::failure::{accounts_error, link_error};
 use account_client::{
     AccountChange, AccountRef, AccountView, AccountWatch, AccountsError, AccountsLink, Changes,
-    LinkError, Malformed, NeedsReauth,
+    LinkError, Malformed, MalformedError, NeedsReauth,
 };
 use account_core::{AccountId, AccountLabel, AccountState, ProviderHint, ProviderId, ReauthReason};
 use account_dbus::accounts::account_path;
@@ -48,7 +48,7 @@ impl AccountsLink for Bus {
             AccountsReply::Added(account) => Ok(account),
             AccountsReply::AlreadyAdded(account) => Err(AccountsError::AlreadyAdded(account)),
             AccountsReply::Refused(refusal) => Err(AccountsError::Refused(refusal)),
-            _ => Err(LinkError::Malformed(Malformed::Reply).into()),
+            _ => Err(LinkError::Malformed(Malformed::Reply.into()).into()),
         }
     }
 
@@ -76,7 +76,7 @@ impl AccountsLink for Bus {
         match reply {
             AccountsReply::Reauthenticated => Ok(()),
             AccountsReply::Refused(refusal) => Err(AccountsError::Refused(refusal)),
-            _ => Err(LinkError::Malformed(Malformed::Reply).into()),
+            _ => Err(LinkError::Malformed(Malformed::Reply.into()).into()),
         }
     }
 }
@@ -110,8 +110,7 @@ impl Bus {
         let (code, results) = listener.response(&path).await.map_err(sheet_error)?;
         abandon.answered();
         reply_of(kind, code, results)
-            .ok()
-            .ok_or_else(|| LinkError::Malformed(Malformed::Reply).into())
+            .map_err(|e| LinkError::Malformed(Malformed::Reply.because(e)).into())
     }
 }
 
@@ -135,7 +134,7 @@ fn sheet_error(error: SheetError) -> AccountsError {
     match error {
         SheetError::Bus(error) => accounts_error(&error),
         SheetError::Gone => LinkError::Closed.into(),
-        SheetError::Unreadable => LinkError::Malformed(Malformed::Sheet).into(),
+        SheetError::Unreadable => LinkError::Malformed(Malformed::Sheet.into()).into(),
     }
 }
 
@@ -174,7 +173,7 @@ const ACCOUNT_INTERFACE: &str = "org.bardo.Accounts1.Account";
 async fn state_change(
     bus: &Bus,
     message: zbus::Result<zbus::Message>,
-) -> Option<Result<AccountChange, Malformed>> {
+) -> Option<Result<AccountChange, MalformedError>> {
     let message = message.ok()?;
     let account = AccountRef::of_object_path(message.header().path()?.as_str())?;
     let (interface, changed, invalidated) = message
@@ -225,17 +224,17 @@ impl AccountWatch for Bus {
         let label = proxy.label().await.map_err(read)?;
         let state = proxy.state().await.map_err(read)?;
         let reason = proxy.reauth_reason().await.map_err(read)?;
-        let malformed = |what| LinkError::Malformed(what);
+        let malformed = |what: MalformedError| LinkError::Malformed(what);
         Ok(AccountView::new(
-            AccountId::parse(&id).ok().ok_or(malformed(Malformed::Id))?,
-            ProviderId::parse(&provider)
-                .ok()
-                .ok_or(malformed(Malformed::Id))?,
+            AccountId::parse(&id).map_err(|e| malformed(Malformed::Id.because(e)))?,
+            ProviderId::parse(&provider).map_err(|e| malformed(Malformed::Id.because(e)))?,
             AccountLabel(label),
-            from_word::<AccountState>(&state).ok_or(malformed(Malformed::Row))?,
+            from_word::<AccountState>(&state).ok_or(malformed(Malformed::Row.into()))?,
             match reason.as_str() {
                 "" => None,
-                word => Some(from_word::<ReauthReason>(word).ok_or(malformed(Malformed::Row))?),
+                word => {
+                    Some(from_word::<ReauthReason>(word).ok_or(malformed(Malformed::Row.into()))?)
+                }
             },
         ))
     }
@@ -255,7 +254,7 @@ impl AccountWatch for Bus {
         match reply {
             AccountsReply::Reauthenticated => Ok(()),
             AccountsReply::Refused(refusal) => Err(AccountsError::Refused(refusal)),
-            _ => Err(LinkError::Malformed(Malformed::Reply).into()),
+            _ => Err(LinkError::Malformed(Malformed::Reply.into()).into()),
         }
     }
 
@@ -266,7 +265,7 @@ impl AccountWatch for Bus {
             .await
             .map_err(|e| link_error(&e))?
             .map(|signal: AccountAdded| {
-                let args = signal.args().ok().ok_or(Malformed::Signal)?;
+                let args = signal.args().map_err(|e| Malformed::Signal.because(e))?;
                 account_ref(args.account.as_str()).map(AccountChange::Added)
             });
         let removed = manager
@@ -274,7 +273,7 @@ impl AccountWatch for Bus {
             .await
             .map_err(|e| link_error(&e))?
             .map(|signal: AccountRemoved| {
-                let args = signal.args().ok().ok_or(Malformed::Signal)?;
+                let args = signal.args().map_err(|e| Malformed::Signal.because(e))?;
                 account_ref(args.account.as_str()).map(AccountChange::Removed)
             });
         // A change of any account's state is a `PropertiesChanged` of its object, sent to the shell

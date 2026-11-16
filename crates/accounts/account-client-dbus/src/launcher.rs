@@ -34,7 +34,7 @@ use crate::credential::{ProcessCredential, Revoked};
 use crate::failure::{launcher_error, link_error};
 use account_capability::AgentProgram;
 use account_capability::{LoginOutcome, LoginRequestId};
-use account_client::{Changes, LinkError, Malformed};
+use account_client::{Changes, LinkError, Malformed, MalformedError};
 use account_core::audit::CredentialEnd;
 use account_core::{AccountId, GrantId};
 use account_core::{Candidate, DataClass};
@@ -83,8 +83,8 @@ pub struct LauncherRequest {
     pub program: AgentProgram,
 }
 
-fn malformed(what: Malformed) -> LauncherError {
-    LauncherError::Link(LinkError::Malformed(what))
+fn malformed(what: impl Into<MalformedError>) -> LauncherError {
+    LauncherError::Link(LinkError::Malformed(what.into()))
 }
 
 impl Bus {
@@ -109,12 +109,12 @@ fn request(
     request: &str,
     account: &str,
     program: &str,
-) -> Result<LauncherRequest, Malformed> {
+) -> Result<LauncherRequest, MalformedError> {
     Ok(LauncherRequest {
         kind,
-        request: LoginRequestId::parse(request).ok().ok_or(Malformed::Id)?,
-        account: AccountId::parse(account).ok().ok_or(Malformed::Id)?,
-        program: AgentProgram::parse(program).ok().ok_or(Malformed::Id)?,
+        request: LoginRequestId::parse(request).map_err(|e| Malformed::Id.because(e))?,
+        account: AccountId::parse(account).map_err(|e| Malformed::Id.because(e))?,
+        program: AgentProgram::parse(program).map_err(|e| Malformed::Id.because(e))?,
     })
 }
 
@@ -122,8 +122,8 @@ fn request(
     clippy::needless_pass_by_value,
     reason = "a stream `map` callback, which is handed the signal by value"
 )]
-fn login(signal: AgentLoginRequested) -> Result<LauncherRequest, Malformed> {
-    let args = signal.args().ok().ok_or(Malformed::Signal)?;
+fn login(signal: AgentLoginRequested) -> Result<LauncherRequest, MalformedError> {
+    let args = signal.args().map_err(|e| Malformed::Signal.because(e))?;
     request(AskKind::Login, &args.request, &args.account, &args.program)
 }
 
@@ -131,8 +131,8 @@ fn login(signal: AgentLoginRequested) -> Result<LauncherRequest, Malformed> {
     clippy::needless_pass_by_value,
     reason = "a stream `map` callback, which is handed the signal by value"
 )]
-fn logout(signal: AgentLogoutRequested) -> Result<LauncherRequest, Malformed> {
-    let args = signal.args().ok().ok_or(Malformed::Signal)?;
+fn logout(signal: AgentLogoutRequested) -> Result<LauncherRequest, MalformedError> {
+    let args = signal.args().map_err(|e| Malformed::Signal.because(e))?;
     request(AskKind::Logout, &args.request, &args.account, &args.program)
 }
 
@@ -140,12 +140,10 @@ fn logout(signal: AgentLogoutRequested) -> Result<LauncherRequest, Malformed> {
     clippy::needless_pass_by_value,
     reason = "a stream `map` callback, which is handed the signal by value"
 )]
-fn revoked(signal: ProcessCredentialRevoked) -> Result<Revoked, Malformed> {
-    let args = signal.args().ok().ok_or(Malformed::Signal)?;
+fn revoked(signal: ProcessCredentialRevoked) -> Result<Revoked, MalformedError> {
+    let args = signal.args().map_err(|e| Malformed::Signal.because(e))?;
     Ok(Revoked {
-        id: ProcessCredentialId::parse(&args.id)
-            .ok()
-            .ok_or(Malformed::Id)?,
+        id: ProcessCredentialId::parse(&args.id).map_err(|e| Malformed::Id.because(e))?,
         reason: from_word::<CredentialEnd>(&args.reason).ok_or(Malformed::Signal)?,
     })
 }
@@ -244,8 +242,7 @@ impl Launcher {
         let (code, results) = listener.response(&path).await.map_err(sheet_error)?;
         abandon.answered();
         match reply_of(SheetKind::Choose, code, results)
-            .ok()
-            .ok_or(malformed(Malformed::Reply))?
+            .map_err(|e| malformed(Malformed::Reply.because(e)))?
         {
             AccountsReply::Chosen(candidate) => Ok(candidate),
             AccountsReply::Refused(refusal) => Err(LauncherError::Refused(refusal)),
@@ -280,9 +277,8 @@ impl Launcher {
             .issue_process_credential(permit.as_str(), program.as_str())
             .await
             .map_err(|e| launcher_error(&e))?;
-        let id = ProcessCredentialId::parse(&id)
-            .ok()
-            .ok_or(malformed(Malformed::Id))?;
+        let id =
+            ProcessCredentialId::parse(&id).map_err(|e| malformed(Malformed::Id.because(e)))?;
         Ok(ProcessCredential::new(id, handle.into()))
     }
 

@@ -21,7 +21,9 @@ pub(crate) fn link_error(error: &BusError) -> LinkError {
     match classify(error) {
         BusFailure::NoDaemon => LinkError::Unreachable,
         BusFailure::Denied(_) => LinkError::Denied,
-        BusFailure::Other(_) => LinkError::Malformed(Malformed::Reply),
+        BusFailure::Other(text) => {
+            LinkError::Malformed(Malformed::Reply.because(std::io::Error::other(text)))
+        }
     }
 }
 

@@ -21,7 +21,7 @@
 
 use crate::Bus;
 use crate::failure::{identities_error, link_error};
-use account_client::{Changes, IdentitiesError, LinkError, Malformed, Picked};
+use account_client::{Changes, IdentitiesError, LinkError, Malformed, MalformedError, Picked};
 use account_core::SecretText;
 use account_core::{AppName, Identity, IdentityAddress, IdentityId, ProviderHint, ProviderId};
 use account_dbus::accounts::{IdentitiesProxy, IdentityRemoved, identity_from_dbus};
@@ -52,19 +52,17 @@ impl Bus {
     }
 }
 
-fn malformed(what: Malformed) -> IdentitiesError {
-    IdentitiesError::Link(LinkError::Malformed(what))
+fn malformed(what: impl Into<MalformedError>) -> IdentitiesError {
+    IdentitiesError::Link(LinkError::Malformed(what.into()))
 }
 
 #[expect(
     clippy::needless_pass_by_value,
     reason = "a stream `map` callback, which is handed the signal by value"
 )]
-fn removed(signal: IdentityRemoved) -> Result<IdentityId, Malformed> {
-    let args = signal.args().ok().ok_or(Malformed::Signal)?;
-    IdentityId::parse(args.identity_id)
-        .ok()
-        .ok_or(Malformed::Id)
+fn removed(signal: IdentityRemoved) -> Result<IdentityId, MalformedError> {
+    let args = signal.args().map_err(|e| Malformed::Signal.because(e))?;
+    IdentityId::parse(args.identity_id).map_err(|e| Malformed::Id.because(e))
 }
 
 impl Identities {
@@ -81,11 +79,7 @@ impl Identities {
             .await
             .map_err(|e| identities_error(&e))?
             .iter()
-            .map(|row| {
-                identity_from_dbus(row)
-                    .ok()
-                    .ok_or(malformed(Malformed::Row))
-            })
+            .map(|row| identity_from_dbus(row).map_err(|e| malformed(Malformed::Row.because(e))))
             .collect()
     }
 
@@ -117,13 +111,9 @@ impl Identities {
             .await
             .map_err(|e| identities_error(&e))?;
         Ok(Picked::new(
-            IdentityId::parse(&id)
-                .ok()
-                .ok_or(malformed(Malformed::Id))?,
+            IdentityId::parse(&id).map_err(|e| malformed(Malformed::Id.because(e)))?,
             IdentityAddress(address),
-            ProviderId::parse(&provider)
-                .ok()
-                .ok_or(malformed(Malformed::Id))?,
+            ProviderId::parse(&provider).map_err(|e| malformed(Malformed::Id.because(e)))?,
         ))
     }
 
@@ -145,8 +135,7 @@ impl Identities {
         let mut text = String::new();
         std::fs::File::from(std::os::fd::OwnedFd::from(fd))
             .read_to_string(&mut text)
-            .ok()
-            .ok_or(malformed(Malformed::Descriptor))?;
+            .map_err(|e| malformed(Malformed::Descriptor.because(e)))?;
         Ok(SecretText::new(text))
     }
 
@@ -179,7 +168,7 @@ impl Identities {
             .await
             .map_err(|e| identities_error(&e))?
             .iter()
-            .map(|name| AppName::parse(name).ok().ok_or(malformed(Malformed::Id)))
+            .map(|name| AppName::parse(name).map_err(|e| malformed(Malformed::Id.because(e))))
             .collect()
     }
 
