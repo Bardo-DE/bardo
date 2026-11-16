@@ -31,12 +31,10 @@ impl HickoryDns {
     /// `DnsFault::Unreachable` when the system's resolver configuration cannot be read or a
     /// resolver cannot be built from it.
     pub fn system() -> Result<Self, DnsFault> {
-        let mut builder = TokioResolver::builder_tokio()
-            .ok()
-            .ok_or(DnsFault::Unreachable)?;
+        let mut builder = TokioResolver::builder_tokio().map_err(DnsFault::resolver)?;
         builder.options_mut().timeout = PER_QUERY;
         builder.options_mut().attempts = 1;
-        builder.build().map(Self).ok().ok_or(DnsFault::Unreachable)
+        builder.build().map(Self).map_err(DnsFault::resolver)
     }
 }
 
@@ -48,7 +46,7 @@ fn fault(e: NetError) -> DnsFault {
     if e.is_no_records_found() {
         DnsFault::NoRecords
     } else {
-        DnsFault::Unreachable
+        DnsFault::resolver(e)
     }
 }
 

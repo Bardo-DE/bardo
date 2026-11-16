@@ -52,7 +52,7 @@ pub async fn lookup_srv<D: Dns>(dns: &D, domain: &DomainName) -> Result<SrvAnswe
     ];
     let reached = answers
         .iter()
-        .any(|a| !matches!(a, Err(DnsFault::Unreachable)));
+        .any(|a| !a.as_ref().is_err_and(DnsFault::is_unreachable));
     let [imaps, imap, pop3s, submissions, submission] = answers.map(Result::unwrap_or_default);
     if reached {
         Ok(SrvAnswers {

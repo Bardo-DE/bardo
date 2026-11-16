@@ -17,7 +17,7 @@
 
 use crate::autoconfig::{autoconfig_urls, domain_of, ispdb_url, parse_autoconfig_with};
 use crate::dns::{Dns, DnsFault};
-use crate::found::{DiscoverFault, Found, SearchOptions, Source};
+use crate::found::{Cause, DiscoverFault, Found, SearchOptions, Source};
 use crate::mx::{ProviderLead, ispdb_candidates, lookup_mx, provider_leads};
 use crate::srv::{found_from_srv_with, lookup_srv};
 use account_core::Tls;
@@ -26,6 +26,7 @@ use account_http::{Http, HttpError, request};
 use account_provider::{DomainMatch, ProviderSet};
 use base_url::WebUrl;
 use std::fmt;
+use std::sync::Arc;
 
 /// The most a configuration document may weigh. Real ones are a few kilobytes.
 const MAX_DOCUMENT: usize = 256 * 1024;
@@ -40,7 +41,11 @@ pub enum Outcome {
 }
 
 /// Why one step found nothing.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+///
+/// Two misses are equal when they are the same kind of failure: [`Self::Down`] is the kind
+/// [`Self::Unreachable`] is, and [`Self::Garbled`] the kind [`Self::Malformed`] is; the cause does
+/// not count.
+#[derive(Debug, Clone)]
 pub enum Miss {
     /// The source answered: there is nothing there (404, no records).
     Absent,
@@ -50,7 +55,41 @@ pub enum Miss {
     Malformed,
     /// A configuration that cannot be used, and why.
     Unusable(DiscoverFault),
+    /// No answer, and why.
+    Down(Cause),
+    /// An answer that is not a configuration, and why.
+    Garbled(Cause),
 }
+
+impl Miss {
+    fn down(cause: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> Self {
+        Self::Down(Arc::from(cause.into()))
+    }
+
+    fn garbled(cause: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> Self {
+        Self::Garbled(Arc::from(cause.into()))
+    }
+
+    fn kind(&self) -> u8 {
+        match self {
+            Self::Absent => 0,
+            Self::Unreachable | Self::Down(_) => 1,
+            Self::Malformed | Self::Garbled(_) => 2,
+            Self::Unusable(_) => 3,
+        }
+    }
+}
+
+impl PartialEq for Miss {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Unusable(a), Self::Unusable(b)) => a == b,
+            _ => self.kind() == other.kind(),
+        }
+    }
+}
+
+impl Eq for Miss {}
 
 /// One step of the search and what came of it.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -86,8 +125,8 @@ impl fmt::Display for NotFound {
         self.tried.iter().try_for_each(|tried| {
             let why = match tried.miss {
                 Miss::Absent => "nothing there",
-                Miss::Unreachable => "no answer",
-                Miss::Malformed => "not a configuration",
+                Miss::Unreachable | Miss::Down(_) => "no answer",
+                Miss::Malformed | Miss::Garbled(_) => "not a configuration",
                 Miss::Unusable(DiscoverFault::NoServers) => "names no usable server",
                 Miss::Unusable(_) => "unusable",
             };
@@ -232,6 +271,7 @@ fn dns_miss(fault: DnsFault) -> Miss {
     match fault {
         DnsFault::NoRecords => Miss::Absent,
         DnsFault::Unreachable => Miss::Unreachable,
+        DnsFault::Resolver(cause) => Miss::Down(cause),
     }
 }
 
@@ -249,6 +289,7 @@ async fn document<H: Http>(
         Ok(body) => match parse_autoconfig_with(&body, address, options) {
             Ok(found) => return Some(Found { source, ..found }),
             Err(DiscoverFault::Unreadable) => Miss::Malformed,
+            Err(DiscoverFault::Unparsed(cause)) => Miss::Garbled(cause),
             Err(why) => Miss::Unusable(why),
         },
         Err(miss) => miss,
@@ -264,20 +305,17 @@ async fn document<H: Http>(
 async fn fetch<H: Http>(http: &H, url: &WebUrl) -> Result<String, Miss> {
     let asked = request(Method::GET, url)
         .body(Vec::new())
-        .ok()
-        .ok_or(Miss::Malformed)?;
-    let response = http.send(asked).await.map_err(|e| match e {
-        HttpError::TooLarge | HttpError::Malformed(..) => Miss::Malformed,
+        .map_err(Miss::garbled)?;
+    let response = http.send(asked).await.map_err(|error| match error {
+        HttpError::TooLarge | HttpError::Malformed(..) => Miss::garbled(error),
         // unreachable, TLS, timed out, not granted, and a failure a later account-http adds
-        _ => Miss::Unreachable,
+        _ => Miss::down(error),
     })?;
     match response.status().as_u16() {
         404 | 410 => Err(Miss::Absent),
         _ if !response.status().is_success() => Err(Miss::Malformed),
         _ if response.body().len() > MAX_DOCUMENT => Err(Miss::Malformed),
-        _ => String::from_utf8(response.into_body())
-            .ok()
-            .ok_or(Miss::Malformed),
+        _ => String::from_utf8(response.into_body()).map_err(Miss::garbled),
     }
 }
 

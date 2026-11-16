@@ -2,6 +2,10 @@
 
 use account_capability::Claim;
 use account_core::{Direction, ServiceEndpoint};
+use std::sync::Arc;
+
+/// The error under a fault, shared so the fault stays `Clone`.
+pub type Cause = Arc<dyn std::error::Error + Send + Sync>;
 
 /// Where a finding came from, for the review step ("from the provider's autoconfig", "via MX").
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -95,7 +99,11 @@ pub struct SearchOptions {
 }
 
 /// Why a step found nothing to offer.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+///
+/// Two faults are equal when they are the same kind of failure: each variant that carries a cause
+/// is the kind of the one beside it that does not ([`Self::Transport`] is [`Self::Unreachable`],
+/// [`Self::Unparsed`] is [`Self::Unreadable`], [`Self::BadEndpoint`] is [`Self::NoServers`]).
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum DiscoverFault {
     /// The domain answered and named no usable server.
     #[error("no servers named")]
@@ -106,4 +114,46 @@ pub enum DiscoverFault {
     /// The answer was not the format the step reads.
     #[error("unreadable answer")]
     Unreadable,
+    /// Nothing could be reached to ask, and why.
+    #[error("unreachable")]
+    Transport(#[source] Cause),
+    /// The answer was not the format the step reads, and why.
+    #[error("unreadable answer")]
+    Unparsed(#[source] Cause),
+    /// The answer named a server that cannot be used, and why.
+    #[error("no servers named")]
+    BadEndpoint(#[source] Cause),
 }
+
+impl DiscoverFault {
+    /// Nothing could be reached because of `cause`.
+    pub fn transport(cause: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> Self {
+        Self::Transport(Arc::from(cause.into()))
+    }
+
+    /// The answer did not read because of `cause`.
+    pub fn unparsed(cause: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> Self {
+        Self::Unparsed(Arc::from(cause.into()))
+    }
+
+    /// The server the answer names cannot be used because of `cause`.
+    pub fn bad_endpoint(cause: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> Self {
+        Self::BadEndpoint(Arc::from(cause.into()))
+    }
+
+    fn kind(&self) -> u8 {
+        match self {
+            Self::NoServers | Self::BadEndpoint(_) => 0,
+            Self::Unreachable | Self::Transport(_) => 1,
+            Self::Unreadable | Self::Unparsed(_) => 2,
+        }
+    }
+}
+
+impl PartialEq for DiscoverFault {
+    fn eq(&self, other: &Self) -> bool {
+        self.kind() == other.kind()
+    }
+}
+
+impl Eq for DiscoverFault {}

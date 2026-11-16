@@ -36,7 +36,10 @@ pub(super) async fn session(
 /// What a session document the discovery step could not use means for a sign-in.
 fn discover_fault(fault: DiscoverFault) -> SignInFault {
     match fault {
-        DiscoverFault::Unreachable => SignInFault::Unreachable,
-        DiscoverFault::NoServers | DiscoverFault::Unreadable => SignInFault::Unreadable,
+        DiscoverFault::Unreachable | DiscoverFault::Transport(_) => SignInFault::Unreachable,
+        DiscoverFault::NoServers
+        | DiscoverFault::Unreadable
+        | DiscoverFault::Unparsed(_)
+        | DiscoverFault::BadEndpoint(_) => SignInFault::Unreadable,
     }
 }

@@ -98,7 +98,7 @@ pub async fn discover_well_known<H: Http>(
             continue;
         };
         match http.send(request).await {
-            Err(_) => fault = DiscoverFault::Unreachable,
+            Err(error) => fault = DiscoverFault::transport(error),
             Ok(response) => match well_known_found(kind, &url, &response, login) {
                 Ok(found) => return Ok(found),
                 Err(why) => fault = why,
@@ -124,9 +124,7 @@ fn redirect_target(
     } else {
         location.to_owned()
     };
-    let url = EndpointUrl::parse(&text)
-        .ok()
-        .ok_or(DiscoverFault::Unreadable)?;
+    let url = EndpointUrl::parse(&text).map_err(DiscoverFault::unparsed)?;
     if url.origin().scheme == base_url::UrlScheme::Https {
         Ok(url)
     } else {
@@ -178,15 +176,11 @@ struct Session {
 /// `DiscoverFault::Unreadable` when `json` is not a JMAP session or its `apiUrl` is not an endpoint
 /// URL.
 pub fn parse_jmap_session(json: &str) -> Result<Found, DiscoverFault> {
-    let session: Session = serde_json::from_str(json)
-        .ok()
-        .ok_or(DiscoverFault::Unreadable)?;
+    let session: Session = serde_json::from_str(json).map_err(DiscoverFault::unparsed)?;
     if !session.capabilities.contains_key(CORE) {
         return Err(DiscoverFault::Unreadable);
     }
-    let url = EndpointUrl::parse(&session.api_url)
-        .ok()
-        .ok_or(DiscoverFault::Unreadable)?;
+    let url = EndpointUrl::parse(&session.api_url).map_err(DiscoverFault::unparsed)?;
     let tls = if url.origin().scheme == base_url::UrlScheme::Https {
         Tls::Implicit
     } else {
@@ -198,7 +192,7 @@ pub fn parse_jmap_session(json: &str) -> Result<Found, DiscoverFault> {
         tls,
         login: LoginName(session.username),
     };
-    endpoint.check().ok().ok_or(DiscoverFault::NoServers)?;
+    endpoint.check().map_err(DiscoverFault::bad_endpoint)?;
     let has = |name: &str| session.capabilities.contains_key(name);
     let send = has(SUBMISSION);
     let claims = [
