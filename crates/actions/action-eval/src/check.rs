@@ -21,6 +21,7 @@ use account_core::AppName;
 use action_core::tool_schema;
 use action_manifest::ValidManifest;
 use action_manifest::parse;
+use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 
 /// How serious a finding is.
@@ -65,17 +66,15 @@ impl CheckReport {
     /// The report as lines: `ok`, `note` or `FAIL`, the file and the words.
     #[must_use]
     pub fn render(&self) -> String {
-        self.findings
-            .iter()
-            .map(|f| {
-                let word = match f.level {
-                    Level::Pass => "ok  ",
-                    Level::Note => "note",
-                    Level::Fail => "FAIL",
-                };
-                format!("{word} {}: {}\n", f.file.display(), f.what)
-            })
-            .collect()
+        self.findings.iter().fold(String::new(), |mut out, f| {
+            let word = match f.level {
+                Level::Pass => "ok  ",
+                Level::Note => "note",
+                Level::Fail => "FAIL",
+            };
+            let _ = writeln!(out, "{word} {}: {}", f.file.display(), f.what);
+            out
+        })
     }
 
     pub(crate) fn push(&mut self, level: Level, file: &Path, what: impl Into<String>) {
@@ -144,11 +143,16 @@ pub(crate) fn walk(root: &Path, dir: &Path, found: &mut Found) -> Result<(), Che
             .parent()
             .and_then(Path::file_name)
             .is_some_and(|d| d == "intents");
+        #[expect(
+            clippy::case_sensitive_file_extension_comparisons,
+            reason = "manifest file names are lowercase by convention; a `.TOML` file is not one"
+        )]
+        let is_toml = name.ends_with(".toml");
         if name.ends_with(".ui.toml") {
             found.ui.push(relative);
         } else if name.ends_with(".desktop") || name.ends_with(".desktop.in") {
             found.desktops.push(relative);
-        } else if name.ends_with(".intents.toml") || (in_intents && name.ends_with(".toml")) {
+        } else if name.ends_with(".intents.toml") || (in_intents && is_toml) {
             found.manifests.push(relative);
         }
     }
@@ -181,6 +185,11 @@ pub(crate) fn read(root: &Path, relative: &Path) -> Result<String, CheckError> {
 }
 
 /// Checks the app whose repository is `root`.
+///
+/// # Errors
+///
+/// Fails with [`CheckError`] when a directory or manifest file of the repository cannot be
+/// read.
 pub fn check_app(root: &Path) -> Result<CheckReport, CheckError> {
     let mut found = Found::default();
     walk(root, root, &mut found)?;

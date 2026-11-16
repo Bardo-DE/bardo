@@ -79,6 +79,10 @@ pub struct UiFault(#[from] toml::de::Error);
 
 impl UiFile {
     /// Reads the file.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`UiFault`] when `text` is not a valid ui commands file.
     pub fn parse(text: &str) -> Result<Self, UiFault> {
         Ok(toml::from_str(text)?)
     }

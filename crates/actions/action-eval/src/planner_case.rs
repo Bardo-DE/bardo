@@ -122,6 +122,11 @@ fn io(path: &Path, e: &std::io::Error) -> PlannerCaseError {
 }
 
 /// Every case of `dir` with its cassette, in file-name order. No directory is no cases.
+///
+/// # Errors
+///
+/// Fails with [`PlannerCaseError`] when the directory, a file or a case's cassette cannot be
+/// read, a file is not a case, or a case has no reason or nothing to expect.
 pub fn load_planner_cases(dir: &Path) -> Result<Vec<PlannerCase>, PlannerCaseError> {
     if !dir.is_dir() {
         return Ok(Vec::new());

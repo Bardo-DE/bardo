@@ -20,7 +20,7 @@ use permission_core::DenyCode;
 use provenance::{
     AgentRef, Effect, EntityId, EntityKey, Integrity, Label, Labelled, MessageText, Source,
 };
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 /// What an inbound message left the receiver's planner: words it may read, or a handle.
 #[derive(Debug, Clone)]
@@ -66,7 +66,7 @@ fn trusted_by(app: &AppName) -> Label {
     Label {
         integrity: Integrity::Trusted,
         confidentiality: provenance::Confidentiality::Public,
-        classes: Default::default(),
+        classes: BTreeSet::default(),
         sources: [Source::App(app.clone())].into(),
     }
 }
@@ -145,12 +145,7 @@ impl<'a, S: Rig> Player<'a, S> {
         }
     }
 
-    fn param_value(
-        &self,
-        ty: &ParamType,
-        app: &AppName,
-        text: String,
-    ) -> Option<(Value, HandleValue)> {
+    fn param_value(ty: &ParamType, app: &AppName, text: String) -> Option<(Value, HandleValue)> {
         match ty {
             ParamType::Text { .. } => Some((Value::Text(text.clone()), HandleValue::Text(text))),
             ParamType::Url => Some((Value::Url(text.clone()), HandleValue::Text(text))),
@@ -201,8 +196,7 @@ impl<'a, S: Rig> Player<'a, S> {
             .source(from)
             .ok_or(Fault("an argument whose source the world lacks"))?;
         let (plain, held) = match ty {
-            Some(ty) => self
-                .param_value(ty, &call.app, text)
+            Some(ty) => Self::param_value(ty, &call.app, text)
                 .ok_or(Fault("an argument whose words do not fit its type"))?,
             None => (Value::Text(text.clone()), HandleValue::Text(text)),
         };

@@ -42,7 +42,9 @@ pub(crate) fn state_of<S: Seams>(router: &Router<S>) -> MutexGuard<'_, RouterSta
 }
 
 fn name(text: &str) -> Result<AppName, SetupFault> {
-    AppName::parse(text).map_err(|_| SetupFault("a fixture app name"))
+    AppName::parse(text)
+        .ok()
+        .ok_or(SetupFault("a fixture app name"))
 }
 
 /// The connection of the companion daemon.
@@ -110,9 +112,14 @@ fn put_world<S: Seams<Link = FakeLink>>(world: &WorldFixture, router: &Router<S>
     }
 }
 
-/// Builds a fixture world in a fresh router's fakes without a case: the apps' data, the person's
-/// standing consent when the fixture grants it, and the conversation's mode. A planner that is
+/// Builds a fixture world in a fresh router's fakes without a case.
+///
+/// It sets up the apps' data, the person's standing consent when the fixture grants it, and the conversation's mode. A planner that is
 /// not scripted (a live one) then plays in the router; no session, turn or policy is made here.
+///
+/// # Errors
+///
+/// Fails with [`SetupFault`] when a fixture app name or grant id is not valid.
 pub fn install_fixture<S: Seams<Link = FakeLink, Grants = MemoryGrants>>(
     router: &Router<S>,
     world: &WorldFixture,
@@ -157,7 +164,8 @@ fn grant_consent<S: Seams<Grants = MemoryGrants>>(
                 n += 1;
                 router.seams.grants().record(Grant {
                     id: GrantId::parse(&format!("g-eval-{n}"))
-                        .map_err(|_| SetupFault("a grant id"))?,
+                        .ok()
+                        .ok_or(SetupFault("a grant id"))?,
                     key: ActionGrantKey {
                         caller: GrantCaller::Companion,
                         owner: app.clone(),

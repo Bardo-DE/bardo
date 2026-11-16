@@ -3,7 +3,6 @@
 //! the thread parks until the future's waker says it can be polled again. The caller keeps a
 //! runtime entered when the future needs timers.
 
-use std::future::Future;
 use std::pin::pin;
 use std::sync::Arc;
 use std::task::{Context, Poll, Wake, Waker};

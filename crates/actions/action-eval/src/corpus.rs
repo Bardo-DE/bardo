@@ -59,6 +59,11 @@ fn sorted(dir: &Path, extension: Option<&str>) -> Result<Vec<PathBuf>, CorpusErr
 }
 
 /// Reads every case of one directory, in file-name order.
+///
+/// # Errors
+///
+/// Fails with [`CorpusError`] when the directory or a file cannot be read, a file is not a
+/// case, or a case has no reason or no planner step.
 pub fn load_corpus(dir: &Path) -> Result<Vec<Case>, CorpusError> {
     sorted(dir, Some("toml"))?
         .into_iter()
@@ -77,6 +82,11 @@ pub fn load_corpus(dir: &Path) -> Result<Vec<Case>, CorpusError> {
 }
 
 /// Reads every subdirectory of `root` and checks that case ids are unique across all of them.
+///
+/// # Errors
+///
+/// Fails with [`CorpusError`] when a directory or file cannot be read or is not a case, a case
+/// is incomplete, or two cases share an id.
 pub fn load_all(root: &Path) -> Result<Vec<Case>, CorpusError> {
     let mut all = Vec::new();
     let mut seen = BTreeSet::new();

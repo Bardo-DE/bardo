@@ -21,9 +21,10 @@ use permission_core::{ActionMatch, TaskPolicy, TaskPolicyState};
 use provenance::{Effect, SpaceId, TaskId, UnixSeconds};
 use serde::{Deserialize, Serialize};
 
-/// What a harness can run cases over: a router whose apps, sheet, consent store and event log
-/// are the fakes (so a case can set its world up and read what happened), and whose reviewer can
-/// forget between cases. The reviewer, the writer and the clock are free: the gate's are
+/// What a harness can run cases over: a router over the fakes.
+///
+/// Its apps, sheet, consent store and event log are the fakes (so a case can set its world up
+/// and read what happened), and its reviewer can forget between cases. The reviewer, the writer and the clock are free: the gate's are
 /// scripted, a live run's are the real cascade and the real writer over inferd.
 pub trait Rig:
     Seams<Link = FakeLink, Confirm = ScriptedConfirmer, Grants = MemoryGrants, Sink = RecordingSink>
@@ -67,9 +68,15 @@ pub struct Harness<S: Rig = FakeSeams> {
     pub router: Router<S>,
 }
 
-/// A policy that covers everything an app declares, up to destructive, in `space`: the widest
-/// the writer could ever produce. It never covers an untrusted sink argument: `covers` refuses
+/// A policy that covers everything an app declares, up to destructive, in `space`.
+///
+/// It is the widest the writer could ever produce. It never covers an untrusted sink argument: `covers` refuses
 /// those whatever the policy says.
+///
+/// # Panics
+///
+/// Panics only if the fixed rationale text stopped obeying the label grammar, which the tests
+/// would catch.
 #[must_use]
 pub fn maximal_policy(space: SpaceId, task: TaskId) -> TaskPolicy {
     let apps = [
@@ -113,6 +120,11 @@ impl Harness {
     /// A harness over `config`: the fake router, whose reviewer allows everything. `run_case`
     /// gives each case's session the maximal policy itself; [`Harness::maximal_writer`] is the
     /// same policy as a writer's result, for a test that wants the derivation path.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`FakeError`] when a shipped manifest or the shipped policy set does not
+    /// load, or the fixture Space id is malformed.
     pub fn new(config: AgentConfig) -> Result<Self, FakeError> {
         Ok(Self::over(fake_router(config)?))
     }
@@ -156,16 +168,19 @@ pub(crate) enum Moment {
     Stepped,
 }
 
-/// Runs one case: installs its world in the fakes, plays the person's turns and the scripted
-/// steps through the router, and reports how each ended. A confirmation is answered with a
+/// Runs one case and reports how each of its steps ended.
+///
+/// It installs the case's world in the fakes and plays the person's turns and the scripted steps
+/// through the router. A confirmation is answered with a
 /// dismissal, so a call that asks never goes through.
 pub fn run_case<S: Rig>(case: &Case, harness: &Harness<S>) -> CaseResult {
     play(case, harness, PolicyMode::Maximal, &mut |_| ())
 }
 
-/// [`run_case`] with a policy `mode` and a record of what happened: the person's turns, each
-/// step as planned, every audit record and sheet it caused, and the model exchanges `drain`
-/// hands over once the world is built and again after each step (a live run drains its tap, so
+/// [`run_case`] with a policy `mode` and a record of what happened.
+///
+/// The record holds the person's turns, each step as planned, every audit record and sheet it
+/// caused, and the model exchanges `drain` hands over once the world is built and again after each step (a live run drains its tap, so
 /// each exchange lands on the step that asked for it). The result is the one `run_case` gives.
 pub fn run_case_traced<S: Rig>(
     case: &Case,

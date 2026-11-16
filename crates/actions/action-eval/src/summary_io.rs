@@ -26,6 +26,11 @@ fn git(repo: &Path, args: &[&str]) -> Result<String, SummaryError> {
 }
 
 /// The short commit of the checkout `repo` is in, with `-dirty` when tracked files have changes.
+///
+/// # Errors
+///
+/// Fails with [`SummaryError::Commit`] when `git` cannot be run in `repo` or answers with a
+/// failure.
 pub fn short_commit(repo: &Path) -> Result<String, SummaryError> {
     let sha = git(repo, &["rev-parse", "--short", "HEAD"])?;
     let changes = git(repo, &["status", "--porcelain", "--untracked-files=no"])?;
@@ -38,6 +43,10 @@ pub fn short_commit(repo: &Path) -> Result<String, SummaryError> {
 
 /// The numbers of `metrics`, stamped with `date` (`YYYY-MM-DD`), the commit `repo` is at and
 /// the `engine` that answered.
+///
+/// # Errors
+///
+/// Fails with [`SummaryError::Commit`] when the commit of `repo` cannot be read.
 pub fn stamp_summary(
     engine: &str,
     metrics: AttackMetrics,
@@ -53,6 +62,11 @@ pub fn stamp_summary(
 }
 
 /// Writes the summary into `dir` (made if it is not there) and returns the path.
+///
+/// # Errors
+///
+/// Fails with [`SummaryError`] when the summary's file name or JSON cannot be made, or the
+/// directory or file cannot be written.
 pub fn write_summary(summary: &AttackSummary, dir: &Path) -> Result<PathBuf, SummaryError> {
     let io = |path: &Path, e: std::io::Error| SummaryError::Io {
         path: path.to_owned(),
@@ -65,6 +79,10 @@ pub fn write_summary(summary: &AttackSummary, dir: &Path) -> Result<PathBuf, Sum
 }
 
 /// Reads a summary back.
+///
+/// # Errors
+///
+/// Fails with [`SummaryError`] when the file cannot be read or is not a summary.
 pub fn read_summary(path: &Path) -> Result<AttackSummary, SummaryError> {
     let text = std::fs::read_to_string(path).map_err(|e| SummaryError::Io {
         path: path.to_owned(),

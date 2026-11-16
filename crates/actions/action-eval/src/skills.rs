@@ -70,6 +70,10 @@ fn read_manifests(
 }
 
 /// Checks the skills and manifests under `dirs`, with the manifests of `manifest_dirs` as well.
+///
+/// # Errors
+///
+/// Fails with [`CheckError`] when a directory of `dirs` cannot be walked.
 pub fn check_skills(
     dirs: &[PathBuf],
     manifest_dirs: &[PathBuf],

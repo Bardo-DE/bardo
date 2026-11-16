@@ -19,6 +19,10 @@ pub fn run_corpus<S: Rig>(cases: &[Case], harness: &Harness<S>) -> Vec<(Corpus, 
 
 /// Plays every attack on `harness`, both cases of each, and scores them. The harness decides who
 /// answers the reviewers: the default one allows everything (a hijacked judge).
+///
+/// # Errors
+///
+/// Fails with [`AttackError`] when an attack's two runs cannot be scored.
 pub fn run_attacks<S: Rig>(
     attacks: &[AttackCase],
     harness: &Harness<S>,

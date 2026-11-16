@@ -12,6 +12,11 @@ fn io(path: &Path, e: &std::io::Error) -> AttackError {
 }
 
 /// Every attack of `dir`, in file-name order, each checked. No directory is no attacks.
+///
+/// # Errors
+///
+/// Fails with [`AttackError`] when the directory or a file cannot be read, a file is not an
+/// attack or fails its checks, or two attacks share an id.
 pub fn load_attacks(dir: &Path) -> Result<Vec<AttackCase>, AttackError> {
     if !dir.is_dir() {
         return Ok(Vec::new());

@@ -10,6 +10,7 @@
 
 use action_core::{ExchangeAnswer, ModelExchange};
 use serde_json::{Value, json};
+use std::fmt::Write as _;
 
 /// The anchor: the first words of the first system message, kept short.
 const ANCHOR_CHARS: usize = 48;
@@ -80,6 +81,8 @@ fn entry(exchange: &ModelExchange) -> Value {
 pub fn cassette_from(exchanges: &[ModelExchange], build: &str) -> String {
     std::iter::once(header(build))
         .chain(exchanges.iter().map(entry))
-        .map(|line| format!("{line}\n"))
-        .collect()
+        .fold(String::new(), |mut out, line| {
+            let _ = writeln!(out, "{line}");
+            out
+        })
 }

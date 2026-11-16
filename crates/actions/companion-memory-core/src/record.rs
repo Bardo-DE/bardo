@@ -19,7 +19,9 @@ use provenance::{
 };
 use std::collections::BTreeSet;
 
-/// The header kind of a record: `docket.<what>`, almanac's `companion.message` and
+/// The header kind of a record.
+///
+/// It is `docket.<what>`, almanac's `companion.message` and
 /// `companion.episode` for the two typed bodies, `companion.session.<slug>` for a record of
 /// the companion's own sessions and `helpers.card`, `helpers.job` or `helpers.post` for the
 /// helpers' own.
