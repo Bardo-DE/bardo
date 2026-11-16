@@ -32,6 +32,11 @@ pub enum TreeEditError {
     Text(#[from] TextError),
 }
 
+/// `text` as a JSON string, quotes and escapes included.
+fn quoted(text: &str) -> String {
+    serde_json::to_string(text).expect("a string always serializes to JSON")
+}
+
 /// One step of the history: `removed` at `at` was replaced by `added`.
 #[derive(Debug, Clone)]
 struct Splice {
@@ -124,9 +129,7 @@ fn offset(at: u64) -> usize {
 fn literal(shape: Shape, typed: &str) -> Result<String, TreeEditError> {
     let trimmed = typed.trim();
     match shape {
-        Shape::String => serde_json::to_string(typed)
-            .ok()
-            .ok_or(TreeEditError::NotEditable),
+        Shape::String => Ok(quoted(typed)),
         Shape::Number => serde_json::from_str::<serde_json::Number>(trimmed)
             .map(|_| trimmed.to_owned())
             .ok()
@@ -143,9 +146,7 @@ fn literal(shape: Shape, typed: &str) -> Result<String, TreeEditError> {
                 | serde_json::Value::String(_),
             ) => Ok(trimmed.to_owned()),
             Ok(serde_json::Value::Array(_) | serde_json::Value::Object(_)) | Err(_) => {
-                serde_json::to_string(typed)
-                    .ok()
-                    .ok_or(TreeEditError::NotEditable)
+                Ok(quoted(typed))
             }
         },
         Shape::Object | Shape::Array | Shape::Unreadable => Err(TreeEditError::NotEditable),
@@ -273,9 +274,7 @@ impl TreeSession {
     pub fn rename_key(&mut self, path: &TreePath, name: &str) -> Result<(), TreeEditError> {
         let around = self.tree.around(path)?;
         let key = around.this.key.ok_or(TreeEditError::NotEditable)?;
-        let text = serde_json::to_string(name)
-            .ok()
-            .ok_or(TreeEditError::NotEditable)?;
+        let text = quoted(name);
         self.splice(bounds(&key), text.into_bytes())
     }
 
@@ -379,9 +378,7 @@ impl TreeSession {
         let mut added = separator;
         match &around.this.key {
             Some(key) => {
-                let name = serde_json::to_string(NEW_KEY)
-                    .ok()
-                    .ok_or(TreeEditError::NotEditable)?;
+                let name = quoted(NEW_KEY);
                 added.extend_from_slice(name.as_bytes());
                 added.extend(between(offset(key.end), offset(around.this.value.start)));
                 added.extend_from_slice(b"null");

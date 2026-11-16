@@ -7,6 +7,15 @@ use skrifa::string::StringId;
 use skrifa::{FontRef, MetadataProvider};
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
+/// What a panic said, when it said it in words.
+fn panic_text(payload: &(dyn std::any::Any + Send)) -> &str {
+    payload
+        .downcast_ref::<&str>()
+        .copied()
+        .or_else(|| payload.downcast_ref::<String>().map(String::as_str))
+        .unwrap_or("it panicked")
+}
+
 /// What a face says about itself.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Face {
@@ -49,11 +58,11 @@ pub(crate) fn read(bytes: &[u8]) -> Result<(Face, u32), FontError> {
     }
     // skrifa indexes into glyph data it has not fully checked, so a font that breaks it is
     // reported as damaged instead of taking the worker down.
-    let face = catch_unwind(AssertUnwindSafe(|| face_of(&font)))
-        .ok()
-        .ok_or_else(|| FontError::Malformed {
-            reason: "the font is damaged".to_owned(),
-        })?;
+    let face = catch_unwind(AssertUnwindSafe(|| face_of(&font))).map_err(|payload| {
+        FontError::Malformed {
+            reason: format!("the font is damaged: {}", panic_text(payload.as_ref())),
+        }
+    })?;
     Ok((face, faces))
 }
 

@@ -51,6 +51,15 @@ pub struct Workbook {
     sheet_count: u32,
 }
 
+/// What a panic said, when it said it in words.
+fn panic_text(payload: &(dyn std::any::Any + Send)) -> &str {
+    payload
+        .downcast_ref::<&str>()
+        .copied()
+        .or_else(|| payload.downcast_ref::<String>().map(String::as_str))
+        .unwrap_or("it panicked")
+}
+
 fn failed(error: impl std::fmt::Display) -> TextError {
     TextError::Workbook {
         reason: error.to_string(),
@@ -367,8 +376,12 @@ impl Workbook {
         let mut workbook = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
             open_workbook_auto_from_rs(Cursor::new(bytes))
         }))
-        .ok()
-        .ok_or_else(|| failed("the file is damaged"))?
+        .map_err(|payload| {
+            failed(format!(
+                "the file is damaged: {}",
+                panic_text(payload.as_ref())
+            ))
+        })?
         .map_err(failed)?;
         let names = workbook.sheet_names();
         let sheet_count = u32::try_from(names.len()).unwrap_or(u32::MAX);

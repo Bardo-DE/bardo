@@ -61,6 +61,9 @@ fn open_checked(src: &Input, budget: ByteLen) -> Result<ReadAtStream, ArchiveErr
         Ok(()) => Ok(file),
         Err(Fault::Large) => Err(ArchiveError::OverBudget { allowed: budget }),
         Err(Fault::Broken(reason)) => Err(ArchiveError::malformed(FORMAT, reason)),
+        Err(Fault::Unreadable { reason, why }) => {
+            Err(ArchiveError::malformed(FORMAT, format!("{reason}: {why}")))
+        }
     }
 }
 

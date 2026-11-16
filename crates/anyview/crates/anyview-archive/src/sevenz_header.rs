@@ -48,12 +48,29 @@ const LZMA2: &[u8] = &[0x21];
 const COPY: &[u8] = &[0x00];
 
 /// Why a header is refused.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum Fault {
     /// It asks for more than a listing may spend.
     Large,
     /// It does not hold together.
     Broken(&'static str),
+    /// It cannot be read or unpacked, and why.
+    Unreadable {
+        /// What was being done.
+        reason: &'static str,
+        /// The error that stopped it.
+        why: String,
+    },
+}
+
+impl Fault {
+    /// `reason` as the thing that failed, with the `why` that stopped it.
+    fn because(reason: &'static str, why: &impl std::fmt::Display) -> Self {
+        Fault::Unreadable {
+            reason,
+            why: why.to_string(),
+        }
+    }
 }
 
 type Checked<T> = Result<T, Fault>;
@@ -107,13 +124,11 @@ pub(crate) fn check(file: &mut ReadAtStream, len: u64, budget: u64) -> Checked<(
 /// `size` bytes at `at`; the caller has held `size` against the file's length and a limit.
 fn read_at(file: &mut ReadAtStream, at: u64, size: u64) -> Checked<Vec<u8>> {
     file.seek(SeekFrom::Start(at))
-        .ok()
-        .ok_or(Fault::Broken("the header cannot be reached"))?;
+        .map_err(|e| Fault::because("the header cannot be reached", &e))?;
     let mut bytes = Vec::new();
     file.take(size)
         .read_to_end(&mut bytes)
-        .ok()
-        .ok_or(Fault::Broken("the header cannot be read"))?;
+        .map_err(|e| Fault::because("the header cannot be read", &e))?;
     if bytes.len() as u64 != size {
         return Err(Fault::Broken("the header is cut short"));
     }
@@ -159,8 +174,7 @@ fn unpack_header(
             let (props, dictionary) = lzma_props(&coder.props)?;
             Box::new(
                 LzmaReader::new_with_props(raw.as_slice(), unpacked, props, dictionary, None)
-                    .ok()
-                    .ok_or(Fault::Broken("the encoded header does not unpack"))?,
+                    .map_err(|e| Fault::because("the encoded header does not unpack", &e))?,
             )
         }
         id if id == LZMA2 => {
@@ -172,8 +186,7 @@ fn unpack_header(
     reader
         .take(unpacked)
         .read_to_end(&mut out)
-        .ok()
-        .ok_or(Fault::Broken("the encoded header does not unpack"))?;
+        .map_err(|e| Fault::because("the encoded header does not unpack", &e))?;
     if out.len() as u64 != unpacked {
         return Err(Fault::Broken("the encoded header is cut short"));
     }
@@ -194,9 +207,8 @@ impl<'a> Cursor<'a> {
     }
 
     fn take(&mut self, count: u64) -> Checked<&'a [u8]> {
-        let count = usize::try_from(count)
-            .ok()
-            .ok_or(Fault::Broken("the header ends early"))?;
+        let count =
+            usize::try_from(count).map_err(|e| Fault::because("the header ends early", &e))?;
         if count > self.0.len() {
             return Err(Fault::Broken("the header ends early"));
         }

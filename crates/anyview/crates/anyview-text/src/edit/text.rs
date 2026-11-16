@@ -23,6 +23,9 @@ pub enum EditRefusal {
     /// no text): saving it back would change more than the person typed.
     #[error("the file is not UTF-8 text")]
     NotUtf8,
+    /// The file has bytes that are not UTF-8 text.
+    #[error("the file has bytes that are not UTF-8 text")]
+    InvalidUtf8(#[source] std::str::Utf8Error),
     /// The file is larger than [`EDIT_BYTES`].
     #[error("the file is too large to edit")]
     TooLarge,
@@ -82,9 +85,7 @@ impl EditText {
             bytes = bytes.split_off(usize::from(detected.mark));
         }
         // The detector looked at the bytes before a mark too, but not past it.
-        std::str::from_utf8(&bytes)
-            .ok()
-            .ok_or(EditRefusal::NotUtf8)?;
+        std::str::from_utf8(&bytes).map_err(EditRefusal::InvalidUtf8)?;
         Ok(EditText { bytes, bom })
     }
 
