@@ -25,7 +25,10 @@ fn app() -> AppId {
 }
 
 fn need() -> Need {
-    Need::Llm(LlmNeed::new(Default::default(), Tokens(1)))
+    Need::Llm(LlmNeed::new(
+        std::collections::BTreeSet::default(),
+        Tokens(1),
+    ))
 }
 
 fn served() -> ServedBy {
@@ -111,6 +114,10 @@ struct Broker {
 impl SessionHost for Broker {
     type Session = FakeInferSession;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open(
         &self,
         app: &AppId,

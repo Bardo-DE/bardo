@@ -30,7 +30,10 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 fn llm() -> Need {
-    Need::Llm(LlmNeed::new(Default::default(), Tokens(8_000)))
+    Need::Llm(LlmNeed::new(
+        std::collections::BTreeSet::default(),
+        Tokens(8_000),
+    ))
 }
 
 fn served() -> ServedBy {

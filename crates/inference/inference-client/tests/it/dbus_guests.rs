@@ -110,14 +110,14 @@ fn candidate_row(node: &str, name: &str, needs_approval: bool) -> (String, Detai
 
 #[zbus::interface(name = "org.bardo.Inference1")]
 impl FakeInferd {
-    async fn guests(&self) -> fdo::Result<Vec<(String, Details)>> {
+    fn guests(&self) -> fdo::Result<Vec<(String, Details)>> {
         match self.script.denied {
             Some(why) => Err(fdo::Error::AccessDenied(why.to_owned())),
             None => Ok(self.script.guests.clone()),
         }
     }
 
-    async fn answer_guest(&self, node: String, answer: String) -> Result<(), Refused> {
+    fn answer_guest(&self, node: String, answer: String) -> Result<(), Refused> {
         if let Some((name, words)) = self.script.refuse_answer {
             let words = words.to_owned();
             return Err(match name {
@@ -134,24 +134,24 @@ impl FakeInferd {
         Ok(())
     }
 
-    async fn forget_guest(&self, node: String) {
+    fn forget_guest(&self, node: String) {
         self.asked.lock().expect("lock").forgets.push(node);
     }
 
-    async fn candidates(&self) -> Vec<(String, Details)> {
+    fn candidates(&self) -> Vec<(String, Details)> {
         self.script.candidates.clone()
     }
 
-    async fn places(&self) -> Vec<(String, Details)> {
+    fn places(&self) -> Vec<(String, Details)> {
         self.script.places.clone()
     }
 
-    async fn add_tailnet_computer(&self, node: String) -> String {
+    fn add_tailnet_computer(&self, node: String) -> String {
         self.asked.lock().expect("lock").added_nodes.push(node);
         "computer:studio".to_owned()
     }
 
-    async fn add_computer(&self, name: String, models: Vec<(String, Details)>) -> String {
+    fn add_computer(&self, name: String, models: Vec<(String, Details)>) -> String {
         let models = models
             .into_iter()
             .map(|(id, details)| {
@@ -174,7 +174,7 @@ impl FakeInferd {
         place
     }
 
-    async fn remove_computer(&self, name: String) {
+    fn remove_computer(&self, name: String) {
         self.asked.lock().expect("lock").removed.push(name);
     }
 

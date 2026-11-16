@@ -115,7 +115,7 @@ impl FakeInferd {
 
 #[zbus::interface(name = "org.bardo.Inference1")]
 impl FakeInferd {
-    async fn prepare(
+    fn prepare(
         &self,
         need: NeedArg,
         class: String,
@@ -138,7 +138,7 @@ impl FakeInferd {
         Ok(self.prepare.lock().expect("lock").clone())
     }
 
-    async fn open(
+    fn open(
         &self,
         need: NeedArg,
         class: String,
@@ -239,14 +239,14 @@ async fn read_some(stream: &UnixStream, buffer: &mut Vec<u8>, seen: &Mutex<Seen>
     match result {
         Ok((bytes, fds)) if !bytes.is_empty() => {
             buffer.extend(bytes);
-            fds.into_iter().for_each(|fd| {
+            for fd in fds {
                 // The descriptor shares the sender's offset, which is at the end.
                 let mut file = std::fs::File::from(fd);
                 let mut text = Vec::new();
                 let _ = std::io::Seek::rewind(&mut file);
                 let _ = std::io::Read::read_to_end(&mut file, &mut text);
                 seen.lock().expect("lock").attachments.push(text);
-            });
+            }
             true
         }
         _ => false,

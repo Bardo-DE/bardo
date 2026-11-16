@@ -139,6 +139,10 @@ struct Warmer {
 impl SessionHost for Warmer {
     type Session = FakeInferSession;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open(
         &self,
         _: &AppId,
@@ -150,6 +154,10 @@ impl SessionHost for Warmer {
         Err(TransportError::Unreachable)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn prepare(
         &self,
         app: &AppId,

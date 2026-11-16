@@ -32,7 +32,6 @@ use account_match::Need;
 use account_tailscale::NodeId;
 use inference_core::{ComputerName, InferSession, OpenOptions, PlaceId, PlaceRow, Readiness};
 use inference_tailnet::{ComputerCandidate, GuestAnswer, GuestRow};
-use std::future::Future;
 
 /// Carries requests to inferd.
 pub trait Transport: Send + Sync {
@@ -52,10 +51,12 @@ pub trait Transport: Send + Sync {
     ) -> impl Future<Output = Result<Self::Session, TransportError>> + Send;
 
     /// Warms the engine inferd would pick for `need`, `class` and `tier` (no request, no
-    /// microphone) and answers how ready it is (`Inference1.Prepare`). The wait is the caller's
-    /// next `open`. A model that is not yet there is `Loadable` or `Downloadable`, one that
-    /// cannot be served is `Unavailable`; any other refusal (no grant, denied, a spend cap, a
-    /// class that may not leave the machine) is `TransportError::Denied` with its slug.
+    /// microphone) and answers how ready it is (`Inference1.Prepare`).
+    ///
+    /// The wait is the caller's next `open`. A model that is not yet there is `Loadable` or
+    /// `Downloadable`, one that cannot be served is `Unavailable`; any other refusal (no grant,
+    /// denied, a spend cap, a class that may not leave the machine) is `TransportError::Denied`
+    /// with its slug.
     ///
     /// The default is `Unreachable`, so a transport that has no inferd (and every implementor
     /// outside this crate) compiles and degrades as it does when inferd is not running.

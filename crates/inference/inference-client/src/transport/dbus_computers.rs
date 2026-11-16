@@ -29,6 +29,10 @@ impl DbusTransport {
 
     /// `Inference1.Guests` row by row: a row that is malformed is in `skipped`, the rest are
     /// `rows` (`Transport::guests` gives the rows alone).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TransportError`] when inferd cannot be reached or refuses the call.
     pub async fn list_guests(&self) -> Result<Rows<GuestRow>, TransportError> {
         let rows = self
             .inference_proxy()
@@ -60,8 +64,14 @@ impl DbusTransport {
     }
 
     /// `Inference1.LocalEngines` row by row, each as a typed [`LocalEngine`]: which engine kinds
-    /// inferd knows and whether each has a program here. A malformed row is in `skipped`. Only
-    /// Settings, the shell and the companion may ask; anyone else is `Denied`.
+    /// inferd knows and whether each has a program here.
+    ///
+    /// A malformed row is in `skipped`. Only Settings, the shell and the companion may ask; anyone
+    /// else is `Denied`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TransportError`] when inferd cannot be reached or the caller is `Denied`.
     pub async fn list_local_engines(&self) -> Result<Rows<LocalEngine>, TransportError> {
         let rows = self
             .inference_proxy()
@@ -78,6 +88,10 @@ impl DbusTransport {
 
     /// `Inference1.PointEngine`: counts the install of `engine` the person already has in
     /// `folder`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TransportError`] when inferd cannot be reached or refuses the folder.
     pub async fn point_engine(&self, engine: &str, folder: &str) -> Result<(), TransportError> {
         self.inference_proxy()
             .await?
@@ -86,10 +100,15 @@ impl DbusTransport {
             .map_err(|e| bus_error(&e))
     }
 
-    /// `Inference1.Running` row by row, each as a typed [`RunningModel`]: the models this
-    /// computer runs itself and what each engine is doing. A malformed row is in `skipped`. Only
-    /// Settings may ask; anyone else is `Denied`. `RunningChanged` (`InferenceProxy`) says when
-    /// to ask again.
+    /// `Inference1.Running` row by row, each as a typed [`RunningModel`]: the models this computer
+    /// runs itself and what each engine is doing.
+    ///
+    /// A malformed row is in `skipped`. Only Settings may ask; anyone else is `Denied`.
+    /// `RunningChanged` (`InferenceProxy`) says when to ask again.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TransportError`] when inferd cannot be reached or the caller is `Denied`.
     pub async fn list_running(&self) -> Result<Rows<RunningModel>, TransportError> {
         let rows = self
             .inference_proxy()
@@ -106,6 +125,11 @@ impl DbusTransport {
 
     /// `Inference1.Start`: starts the engine of `model` (`account/model`) and waits until it
     /// answers. Only Settings may call; a refusal carries plain words.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TransportError`] when inferd cannot be reached, the caller is refused or the engine
+    /// does not answer.
     pub async fn start_model(&self, model: &str) -> Result<(), TransportError> {
         self.inference_proxy()
             .await?
@@ -116,6 +140,10 @@ impl DbusTransport {
 
     /// `Inference1.Stop`: stops the engine of `model` (`account/model`); a model already stopped
     /// is not an error. Only Settings may call.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TransportError`] when inferd cannot be reached or the caller is refused.
     pub async fn stop_model(&self, model: &str) -> Result<(), TransportError> {
         self.inference_proxy()
             .await?
@@ -126,6 +154,10 @@ impl DbusTransport {
 
     /// `Inference1.Candidates` row by row: a row that is malformed is in `skipped`, the rest are
     /// `rows` (`Transport::candidates` gives the rows alone).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TransportError`] when inferd cannot be reached or refuses the call.
     pub async fn list_candidates(&self) -> Result<Rows<ComputerCandidate>, TransportError> {
         let rows = self
             .inference_proxy()
@@ -226,7 +258,8 @@ mod computers {
 
     fn place_of(text: &str) -> Result<PlaceId, TransportError> {
         PlaceId::parse(text)
-            .map_err(|_| TransportError::Malformed(format!("a place id was expected: {text:?}")))
+            .ok()
+            .ok_or_else(|| TransportError::Malformed(format!("a place id was expected: {text:?}")))
     }
 }
 
@@ -257,7 +290,9 @@ fn text(details: &Details, key: &str) -> Option<String> {
 fn guest_row((id, details): (String, Details)) -> Result<GuestRow, TransportError> {
     let bad = |what: &str| TransportError::Malformed(format!("Guests row {id:?}: {what}"));
     Ok(GuestRow::new(
-        NodeId::parse(&id).map_err(|_| bad("not a node id"))?,
+        NodeId::parse(&id)
+            .ok()
+            .ok_or_else(|| bad("not a node id"))?,
         text(&details, GUEST_KEY_NAME).ok_or_else(|| bad("no name"))?,
         text(&details, GUEST_KEY_STATE)
             .and_then(|slug| RowState::from_slug(&slug))
@@ -283,7 +318,9 @@ fn candidate_row((id, details): (String, Details)) -> Result<ComputerCandidate, 
         .and_then(|value| bool::try_from(value).ok())
         .ok_or_else(|| bad("no needs_approval"))?;
     Ok(ComputerCandidate::new(
-        NodeId::parse(&id).map_err(|_| bad("not a node id"))?,
+        NodeId::parse(&id)
+            .ok()
+            .ok_or_else(|| bad("not a node id"))?,
         text(&details, CANDIDATE_KEY_NAME).ok_or_else(|| bad("no name"))?,
         models
             .into_iter()

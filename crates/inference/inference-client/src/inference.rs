@@ -21,16 +21,26 @@ pub struct Inference<T> {
 impl Inference<crate::transport::DbusTransport> {
     /// Connects over the session bus. inferd is found, and started by bus activation, at the
     /// first call. No session bus is `TransportError::Unreachable`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ClientError`] when there is no session bus.
     pub async fn connect() -> Result<Self, ClientError> {
         crate::transport::DbusTransport::session()
             .await
             .map(|transport| Self { transport })
-            .map_err(|_| TransportError::Unreachable.into())
+            .ok()
+            .ok_or_else(|| TransportError::Unreachable.into())
     }
 
-    /// The computers that ask to use this computer's models, from now on: a question the person
-    /// is to answer, and every change to the answers. Subscribe before reading
-    /// [`Inference::guests`], so no change falls between the two.
+    /// The computers that ask to use this computer's models, from now on: a question the person is
+    /// to answer, and every change to the answers.
+    ///
+    /// Subscribe before reading [`Inference::guests`], so no change falls between the two.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ClientError`] when inferd cannot be reached or refuses the subscription.
     pub async fn watch_guests(&self) -> Result<crate::GuestChanges, ClientError> {
         Ok(
             crate::GuestChanges::watch(self.transport.connection(), self.transport.inference())
@@ -47,6 +57,10 @@ impl<T: Transport> Inference<T> {
 
     /// Opens a streaming session with inferd: write `ClientFrame`s, read `InferEvent`s. The
     /// route is chosen once, so the session is pinned to one model.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ClientError`] when inferd cannot be reached or refuses the session.
     pub async fn session(
         &self,
         need: &Need,
@@ -58,6 +72,10 @@ impl<T: Transport> Inference<T> {
 
     /// [`Inference::session`] with the options of `Open`: the caller's `traceparent`, so a span
     /// started here continues in inferd.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ClientError`] when inferd cannot be reached or refuses the session.
     pub async fn session_with(
         &self,
         need: &Need,
@@ -71,6 +89,10 @@ impl<T: Transport> Inference<T> {
     /// Warms the engine inferd would route `need` to and says how ready it is
     /// ([`Transport::prepare`]): a hold that is about to begin asks first, so the model is
     /// loading while the person starts to talk.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ClientError`] when inferd cannot be reached or refuses the request.
     pub async fn prepare(
         &self,
         need: &Need,
@@ -83,20 +105,36 @@ impl<T: Transport> Inference<T> {
 
     /// The places the assistant could run, one row each ([`Transport::places`]). Only Settings,
     /// the shell and the companion may ask.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ClientError`] when inferd cannot be reached or the caller may not ask.
     pub async fn places(&self) -> Result<Vec<inference_core::PlaceRow>, ClientError> {
         Ok(self.transport.places().await?)
     }
 
     /// The computers that asked to use this computer's models, or were answered, one row each
-    /// ([`Transport::guests`]). Only Settings and the shell may ask; a link with no inferd on a
-    /// bus is `TransportError::Unsupported`.
+    /// ([`Transport::guests`]).
+    ///
+    /// Only Settings and the shell may ask; a link with no inferd on a bus is
+    /// `TransportError::Unsupported`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ClientError`] when inferd cannot be reached or the caller may not ask.
     pub async fn guests(&self) -> Result<Vec<GuestRow>, ClientError> {
         Ok(self.transport.guests().await?)
     }
 
-    /// The person's answer about the computer `node`: let it use this computer's models, or keep
-    /// it out ([`Transport::answer_guest`]). The shell may answer a computer that is asking;
-    /// Settings may answer any computer of the person's.
+    /// The person's answer about the computer `node`: let it use this computer's models, or keep it
+    /// out ([`Transport::answer_guest`]).
+    ///
+    /// The shell may answer a computer that is asking; Settings may answer any computer of the
+    /// person's.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ClientError`] when inferd cannot be reached or the caller may not answer.
     pub async fn answer_guest(
         &self,
         node: &NodeId,
@@ -107,18 +145,30 @@ impl<T: Transport> Inference<T> {
 
     /// Forgets the answer about `node` and any question it has waiting, so it is asked about
     /// again ([`Transport::forget_guest`]). Settings only.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ClientError`] when inferd cannot be reached or the caller may not forget.
     pub async fn forget_guest(&self, node: &NodeId) -> Result<(), ClientError> {
         Ok(self.transport.forget_guest(node).await?)
     }
 
     /// The person's own computers on their Tailscale network that lend their models and are not
     /// added yet ([`Transport::candidates`]). Settings only.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ClientError`] when inferd cannot be reached or the caller may not ask.
     pub async fn candidates(&self) -> Result<Vec<ComputerCandidate>, ClientError> {
         Ok(self.transport.candidates().await?)
     }
 
     /// Adds the candidate `node` as one of the person's own computers and answers its place
     /// ([`Transport::add_tailnet_computer`]). Settings only.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ClientError`] when inferd cannot be reached or refuses to add the computer.
     pub async fn add_tailnet_computer(
         &self,
         node: &NodeId,
@@ -128,6 +178,10 @@ impl<T: Transport> Inference<T> {
 
     /// Adds a computer of the person's own by hand and answers its place
     /// ([`Transport::add_computer`]). Settings only.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ClientError`] when inferd cannot be reached or refuses to add the computer.
     pub async fn add_computer(
         &self,
         computer: &crate::NewComputer,
@@ -136,6 +190,10 @@ impl<T: Transport> Inference<T> {
     }
 
     /// Removes a computer that was added ([`Transport::remove_computer`]). Settings only.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ClientError`] when inferd cannot be reached or refuses to remove the computer.
     pub async fn remove_computer(
         &self,
         name: &inference_core::ComputerName,
@@ -143,9 +201,15 @@ impl<T: Transport> Inference<T> {
         Ok(self.transport.remove_computer(name).await?)
     }
 
+    /// Sets the models Automatic chooses among for a helper in a slot.
+    ///
     /// Sets the models Automatic chooses among for the helper `helper` in `slot`
     /// ([`Transport::set_helper_pool`]); each must be a model inferd knows for the slot, and an
     /// empty list takes the helper off Automatic for it. Settings and the shell may call.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ClientError`] when inferd cannot be reached or refuses the pool.
     pub async fn set_helper_pool(
         &self,
         slot: inference_core::Slot,
@@ -157,6 +221,10 @@ impl<T: Transport> Inference<T> {
 
     /// Runs one AI request to its end on a fresh session and returns the reply, dropping the
     /// deltas; a refusal is an error the app shows.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ClientError`] when inferd cannot be reached or refuses the request.
     pub async fn infer(
         &self,
         need: &Need,

@@ -21,6 +21,10 @@ use tokio::sync::Notify;
 pub struct Route(pub Result<RouteDecision, InferRefusal>);
 
 impl Router for Route {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn route(&self, _spec: &SessionSpec) -> Result<RouteDecision, InferRefusal> {
         self.0.clone()
     }

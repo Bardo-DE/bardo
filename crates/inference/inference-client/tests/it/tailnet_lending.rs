@@ -46,6 +46,10 @@ impl FakeUnits {
 }
 
 impl UnitManager for FakeUnits {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn reload(&self) -> Result<(), UnitFailure> {
         self.calls.lock().expect("calls").push("reload".to_owned());
         match self.fail {
@@ -54,6 +58,10 @@ impl UnitManager for FakeUnits {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn restart(&self, unit: &'static str) -> Result<(), UnitFailure> {
         self.calls
             .lock()
@@ -343,13 +351,13 @@ fn lookup<'a>(vars: &'a [(&'a str, &'a str)]) -> impl Fn(&str) -> Option<OsStrin
 
 #[test]
 fn the_environment_names_the_persons_folder_and_where_the_shipped_file_is() {
+    // (variables, the drop-in's folder, the shipped file)
+    type Row<'a> = (Vec<(&'a str, &'a str)>, Option<&'a str>, Option<PathBuf>);
     let s = Fixture::new();
     let data = s.root.to_str().expect("utf-8");
     fs::create_dir_all(s.root.join("bardo/inference")).expect("dir");
     fs::write(s.root.join("bardo/inference/tailnet.conf"), SHIPPED).expect("file");
 
-    // (variables, the drop-in's folder, the shipped file)
-    type Row<'a> = (Vec<(&'a str, &'a str)>, Option<&'a str>, Option<PathBuf>);
     let rows: [Row; 6] = [
         (
             vec![("HOME", "/home/ada"), ("XDG_DATA_DIRS", data)],
@@ -427,7 +435,7 @@ mod session_bus {
 
     #[zbus::interface(name = "org.freedesktop.systemd1.Manager")]
     impl Manager {
-        async fn reload(&self) {
+        fn reload(&self) {
             self.calls.lock().expect("calls").push("Reload".to_owned());
         }
 

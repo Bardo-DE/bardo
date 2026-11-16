@@ -129,6 +129,10 @@ impl DbusTransport {
 impl DbusTransport {
     /// `Inference1.Places` row by row: a row that is malformed is in `skipped`, the rest are
     /// `rows` (`Transport::places` gives the rows alone).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TransportError`] when inferd cannot be reached or refuses the call.
     pub async fn list_places(&self) -> Result<Rows<PlaceRow>, TransportError> {
         let proxy = self
             .inference()
@@ -147,7 +151,9 @@ fn place_row((id, details): (String, Details)) -> Result<PlaceRow, TransportErro
     let text = |key: &str| -> Option<String> {
         String::try_from(details.get(key)?.try_clone().ok()?).ok()
     };
-    let place = PlaceId::parse(&id).map_err(|_| bad("not a place id"))?;
+    let place = PlaceId::parse(&id)
+        .ok()
+        .ok_or_else(|| bad("not a place id"))?;
     let kind = text(PLACE_KEY_KIND)
         .and_then(|slug| PlaceKind::from_slug(&slug))
         .ok_or_else(|| bad("no kind"))?;
@@ -182,9 +188,13 @@ fn place_row((id, details): (String, Details)) -> Result<PlaceRow, TransportErro
                     id: id.clone(),
                     name: name.clone(),
                 });
-            let placed =
-                PlaceModel::new(ModelId::parse(&model).map_err(|_| bad("a model id"))?, name)
-                    .with_takes(takes);
+            let placed = PlaceModel::new(
+                ModelId::parse(&model)
+                    .ok()
+                    .ok_or_else(|| bad("a model id"))?,
+                name,
+            )
+            .with_takes(takes);
             Ok(match engine {
                 Some(engine) => placed.with_engine(engine),
                 None => placed,

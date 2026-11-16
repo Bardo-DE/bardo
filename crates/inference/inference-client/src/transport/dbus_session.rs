@@ -21,6 +21,10 @@ impl DbusSession {
 
     /// Writes `frame` with `attachments` (memfds) riding on it as `SCM_RIGHTS`. See
     /// [`FramedSession::send_with`]: exactly as many as the frame names, and not cancel safe.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SessionError`] when the frame or its attachments cannot be written.
     pub async fn send_with(
         &mut self,
         frame: ClientFrame,

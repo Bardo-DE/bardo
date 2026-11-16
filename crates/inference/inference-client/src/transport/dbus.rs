@@ -47,6 +47,10 @@ impl DbusTransport {
 
     /// Over a new connection to the session bus (`DBUS_SESSION_BUS_ADDRESS` or the runtime
     /// directory's socket, as the bus library resolves it).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TransportError`] when the session bus cannot be reached.
     pub async fn session() -> Result<Self, TransportError> {
         BusConnection::session()
             .await

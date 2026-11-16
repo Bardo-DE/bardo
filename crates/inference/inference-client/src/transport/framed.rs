@@ -94,7 +94,8 @@ impl FramedSession {
         self.stream
             .write_all(&bytes[sent..])
             .await
-            .map_err(|_| SessionError::Closed)
+            .ok()
+            .ok_or(SessionError::Closed)
     }
 
     /// The first write: the fds travel with its first byte, so it must carry at least one.
@@ -117,7 +118,8 @@ impl FramedSession {
                 .map_err(std::io::Error::from)
             })
             .await
-            .map_err(|_| SessionError::Closed)
+            .ok()
+            .ok_or(SessionError::Closed)
     }
 }
 

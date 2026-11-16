@@ -21,6 +21,10 @@ struct Scripted(Mutex<Option<FakeInferSession>>);
 impl Transport for Scripted {
     type Session = FakeInferSession;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open_with(
         &self,
         _need: &Need,
@@ -37,7 +41,10 @@ impl Transport for Scripted {
 }
 
 fn need() -> Need {
-    Need::Llm(LlmNeed::new(Default::default(), Tokens(1)))
+    Need::Llm(LlmNeed::new(
+        std::collections::BTreeSet::default(),
+        Tokens(1),
+    ))
 }
 
 fn served() -> ServedBy {

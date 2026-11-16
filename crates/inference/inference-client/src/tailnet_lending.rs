@@ -1,3 +1,5 @@
+//! Letting the person's other computers use this computer's models.
+//!
 //! Letting the person's other computers use this computer's models: the one thing the Settings
 //! switch "Let my other computers use this computer's models" does besides setting
 //! `ai.tailnet.serve`. inferd's service is shut off from every network address but its own; the
@@ -31,7 +33,6 @@
 use base_fs::atomic::AtomicWrite;
 use base_xdg::Xdg;
 use std::ffi::OsString;
-use std::future::Future;
 use std::io;
 use std::path::{Path, PathBuf};
 
@@ -178,13 +179,20 @@ impl<M: UnitManager> TailnetLending<M> {
         }
     }
 
-    /// Writes the shipped file as the drop-in (replacing a different one), reads the unit
-    /// files again and restarts inferd. Done twice it leaves the same file; it still reloads
-    /// and restarts, so an earlier try that stopped after the write is finished. The file is
-    /// written with small blocking calls.
+    /// Writes the shipped file as the drop-in (replacing a different one), reads the unit files
+    /// again and restarts inferd.
+    ///
+    /// Done twice it leaves the same file; it still reloads and restarts, so an earlier try that
+    /// stopped after the write is finished. The file is written with small blocking calls.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LendingError`] when the drop-in cannot be written or the unit manager fails to
+    /// reload or restart inferd.
     pub async fn enable(&self) -> Result<(), LendingError> {
-        let bytes =
-            std::fs::read(self.config.shipped()).map_err(|_| LendingError::ShippedFileMissing)?;
+        let bytes = std::fs::read(self.config.shipped())
+            .ok()
+            .ok_or(LendingError::ShippedFileMissing)?;
         write_world_readable(&self.config.drop_in(), &bytes)
             .map_err(LendingError::CouldNotWrite)?;
         self.apply().await
@@ -192,6 +200,11 @@ impl<M: UnitManager> TailnetLending<M> {
 
     /// Takes the drop-in away if it is there, reads the unit files again and restarts inferd.
     /// Idempotent, as `enable` is. It never sets `ai.tailnet.serve`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LendingError`] when the drop-in cannot be removed or the unit manager fails to
+    /// reload or restart inferd.
     pub async fn disable(&self) -> Result<(), LendingError> {
         let drop_in = self.config.drop_in();
         match std::fs::remove_file(&drop_in) {
@@ -281,6 +294,10 @@ mod session {
 
         /// The manager over a new connection to the session bus
         /// (`DBUS_SESSION_BUS_ADDRESS` or the runtime directory's socket).
+        ///
+        /// # Errors
+        ///
+        /// Returns a [`UnitFailure`] when the session bus cannot be reached.
         pub async fn session() -> Result<Self, UnitFailure> {
             BusConnection::session()
                 .await
@@ -300,6 +317,10 @@ mod session {
         }
     }
 
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "used as a `map_err` function, which hands the error over by value"
+    )]
     fn failure(error: zbus::Error) -> UnitFailure {
         UnitFailure(error.to_string())
     }
@@ -333,7 +354,8 @@ mod session {
             };
             tokio::time::timeout(JOB_WAIT, wait)
                 .await
-                .map_err(|_| UnitFailure("the restart did not finish in time".to_owned()))?
+                .ok()
+                .ok_or_else(|| UnitFailure("the restart did not finish in time".to_owned()))?
         }
     }
 }
