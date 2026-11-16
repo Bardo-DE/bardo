@@ -31,8 +31,8 @@ pub(crate) fn start(
     if existing.is_empty() {
         return (JoinSet::new(), Watching::Off);
     }
-    let places = existing.iter().cloned().map(Place::Folder).collect();
-    let mut touches = match Debounced::start(places, EventFilter::ClosedAfterWrite, SETTLE) {
+    let places: Vec<Place> = existing.iter().cloned().map(Place::Folder).collect();
+    let mut touches = match Debounced::start(&places, EventFilter::ClosedAfterWrite, SETTLE) {
         Ok(touches) => touches,
         Err(error) => return (JoinSet::new(), Watching::Failed(error.to_string())),
     };

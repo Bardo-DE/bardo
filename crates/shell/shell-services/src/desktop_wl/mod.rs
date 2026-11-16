@@ -1,6 +1,8 @@
-//! The standard-protocol arm of the compositor service: the desktop client's state (ext
-//! toplevel list, wlr toplevel management, ext workspace) projected into the windows and
-//! workspaces the shell draws, and the shell's commands as wire requests.
+//! The standard-protocol arm of the compositor service.
+//!
+//! The desktop client's state (ext toplevel list, wlr toplevel management, ext workspace) is
+//! projected into the windows and workspaces the shell draws, and the shell's commands become
+//! wire requests.
 //!
 //! The wire client is `desktop-client`; this module holds bardo-shell's part: recency (the protocols
 //! give none), apps, Spaces and the commands' mapping. The thread starts in `thread`, which

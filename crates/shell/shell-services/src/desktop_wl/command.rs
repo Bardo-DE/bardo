@@ -54,6 +54,10 @@ pub fn desktop_of(command: &WlCommand, state: &DesktopState) -> Option<DesktopCo
 
 /// The wire requests that carry `command`, in order. Activating a minimised window restores
 /// it first; showing a Space is the workspace request and the commit that applies it.
+///
+/// # Errors
+/// A [`Refusal`] when the Wlr arm cannot carry `command`, or when it names a window or Space the
+/// state does not have.
 pub fn wire_of(command: &DesktopCommand, state: &DesktopState) -> Result<Vec<Wire>, Refusal> {
     if !supports(DesktopBackend::Wlr, command) {
         return Err(Refusal::Unsupported);
@@ -126,11 +130,12 @@ fn switch(state: &DesktopState, space: &SpaceId) -> Result<Vec<Wire>, Refusal> {
         .workspaces()
         .find(|w| &space_id(w) == space)
         .ok_or_else(|| Refusal::UnknownSpace(space.clone()))?;
-    match workspace.abilities.contains(&WorkspaceAbility::Activate) {
-        true => Ok(vec![
+    if workspace.abilities.contains(&WorkspaceAbility::Activate) {
+        Ok(vec![
             Wire::ActivateWorkspace(workspace.key),
             Wire::CommitWorkspaces,
-        ]),
-        false => Err(Refusal::Unsupported),
+        ])
+    } else {
+        Err(Refusal::Unsupported)
     }
 }

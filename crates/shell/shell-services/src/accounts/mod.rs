@@ -1,3 +1,5 @@
+//! accountd's sign-in-again notices, as the shell hears them.
+//!
 //! accountd (`org.bardo.Accounts1`), as the shell hears it: when an account needs the person to
 //! sign in again, bardo-shell says so in a notification with a "Sign in again" button, and takes the
 //! notice back when the account is well again (design/31 §4.4, PLAN §2.8).

@@ -58,12 +58,12 @@ pub(crate) struct ReadReactions<S> {
 /// Read `pipe` until the writer closes it, at most `limit` bytes, within [`READ_DEADLINE`].
 pub(crate) fn read_whole<S: 'static>(
     handle: &LoopHandle<'static, S>,
-    reactions: ReadReactions<S>,
+    reactions: &ReadReactions<S>,
     pipe: File,
     id: ReadId,
     limit: ReadLimit,
 ) -> Result<Reading, ErrorKind> {
-    let ReadReactions { ended, timed_out } = reactions;
+    let &ReadReactions { ended, timed_out } = reactions;
     let mut bytes = Vec::new();
     let source = Generic::new(pipe, Interest::READ, Mode::Level);
     let pipe = handle
@@ -78,7 +78,7 @@ pub(crate) fn read_whole<S: 'static>(
         })
         .map_err(|error| kind_of(error.error))?;
     let deadline = handle
-        .insert_source(Timer::from_duration(READ_DEADLINE), move |_, _, state| {
+        .insert_source(Timer::from_duration(READ_DEADLINE), move |_, (), state| {
             timed_out(state, id);
             TimeoutAction::Drop
         })
@@ -88,7 +88,8 @@ pub(crate) fn read_whole<S: 'static>(
 
 /// One read's worth (the pipe is readable, so this does not block): `Some` once it has ended.
 fn step_read(pipe: &mut impl Read, bytes: &mut Vec<u8>, limit: ReadLimit) -> Option<ReadEnd> {
-    let mut chunk = [0_u8; 1 << 16];
+    // A level-triggered source comes back for what is left, so a small chunk loses nothing.
+    let mut chunk = [0_u8; 1 << 14];
     match pipe.read(&mut chunk) {
         Ok(0) => Some(ReadEnd::Whole(std::mem::take(bytes))),
         Ok(n) => {
@@ -123,7 +124,7 @@ pub(crate) fn write_whole<S: 'static>(
         .map_err(|error| kind_of(error.error))?;
     let watch = handle.clone();
     handle
-        .insert_source(Timer::from_duration(WRITE_DEADLINE), move |_, _, _| {
+        .insert_source(Timer::from_duration(WRITE_DEADLINE), move |_, (), _| {
             // A no-op when the write already ended: the token is versioned.
             watch.remove(pipe);
             TimeoutAction::Drop

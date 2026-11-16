@@ -95,6 +95,10 @@ enum FlatpakScope {
 
 fn flatpak_scope(proc_root: &Path, pid: u32) -> FlatpakScope {
     let dir = proc_root.join(pid.to_string());
+    #[expect(
+        clippy::case_sensitive_file_extension_comparisons,
+        reason = "`.scope` is a systemd unit suffix, always lower case, not a file extension"
+    )]
     let in_flatpak_scope = std::fs::read_to_string(dir.join("cgroup")).is_ok_and(|text| {
         text.lines()
             .filter_map(|line| line.rsplit('/').next())
@@ -116,6 +120,10 @@ mod tests {
 
     use super::{unknown, verified};
 
+    #[expect(
+        clippy::unnecessary_wraps,
+        reason = "the shape of `MenuNameOf`, which the daemon's real function fills"
+    )]
     fn name_of(app: &MenuApp) -> Option<MenuName> {
         Some(MenuName(format!("org.bardo.AppMenu.{}", app.0)))
     }

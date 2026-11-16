@@ -64,12 +64,22 @@ async fn asked(
     call: impl FnOnce(oneshot::Sender<fdo::Result<()>>) -> Call,
 ) -> fdo::Result<()> {
     let (answer, answered) = oneshot::channel();
-    calls
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "a send fails only because the sheet's receiver is gone; the message says so"
+    )]
+    let sent = calls
         .send(call(answer))
-        .map_err(|_| fdo::Error::Failed("the sheet has stopped".to_owned()))?;
-    answered
+        .map_err(|_| fdo::Error::Failed("the sheet has stopped".to_owned()));
+    sent?;
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "a receive fails only because the sheet dropped the answer; the message says so"
+    )]
+    let received = answered
         .await
-        .map_err(|_| fdo::Error::Failed("the sheet has stopped".to_owned()))?
+        .map_err(|_| fdo::Error::Failed("the sheet has stopped".to_owned()));
+    received?
 }
 
 #[interface(name = "org.bardo.AccountsSheet1")]
@@ -77,10 +87,12 @@ impl SheetObject {
     async fn open(
         &self,
         handle: String,
-        _parent_window: String,
+        parent_window: String,
         view: String,
         #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<()> {
+        // The sheet is the shell's own window: a parent window handle names nothing it needs.
+        let _ = parent_window;
         let opener = from_service(&self.peers, &header).await?;
         let (handle, view) = (handle_of(&handle)?, view_of(&view)?);
         asked(&self.calls, |answer| Call::Open {

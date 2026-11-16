@@ -24,11 +24,11 @@ use super::{subjects, toplevels, workspaces};
 /// The thread's body: follow the compositor until every `Control` is dropped or the connection
 /// ends, then publish empty values.
 pub(super) fn run(
-    connection: Connection,
+    connection: &Connection,
     publish: Publish,
     commands: UnboundedReceiver<WlCommand>,
 ) {
-    let client = match DesktopClient::new(&connection) {
+    let client = match DesktopClient::new(connection) {
         Ok(client) => client,
         Err(error) => {
             eprintln!("bardo-shell: desktop_wl: {error}; toplevels and workspaces stay empty");
@@ -86,9 +86,9 @@ impl Wlr {
 
     /// Carry out `command`; one the protocols cannot carry, or that names something gone, is
     /// dropped (the published state is the answer).
-    fn execute(&mut self, command: WlCommand) {
+    fn execute(&mut self, command: &WlCommand) {
         let state = self.client.state();
-        let wire = desktop_of(&command, state)
+        let wire = desktop_of(command, state)
             .ok_or(Refusal::Unsupported)
             .and_then(|command| wire_of(&command, state));
         match wire {
@@ -129,7 +129,7 @@ fn follow(mut wlr: Wlr, commands: UnboundedReceiver<WlCommand>) {
     let (to_loop, from_forwarder) = channel::channel();
     let forwarder = match std::thread::Builder::new()
         .name("desktop_wl-commands".to_owned())
-        .spawn(move || forward_commands(commands, to_loop))
+        .spawn(move || forward_commands(commands, &to_loop))
     {
         Ok(forwarder) => forwarder,
         Err(error) => {
@@ -161,9 +161,9 @@ fn drive(
         })
         .map_err(|error| error.error)?;
     handle
-        .insert_source(commands, move |event, _, wlr: &mut Wlr| match event {
+        .insert_source(commands, move |event, (), wlr: &mut Wlr| match event {
             channel::Event::Msg(command) => {
-                wlr.execute(command);
+                wlr.execute(&command);
                 wlr.sync();
             }
             channel::Event::Closed => signal.stop(),

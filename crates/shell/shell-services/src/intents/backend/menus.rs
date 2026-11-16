@@ -17,6 +17,10 @@ use crate::app_menu::{Activated, MenuAgent, MenuFault};
 const SHELL_APP: &str = "org.bardo.Shell";
 
 /// What `ask` is, for the router's `Classify`. Only an activation has a class.
+///
+/// # Errors
+/// [`AppRefusal::Unsupported`] for a listing, and the refusal for the app's own fault when the
+/// menu item cannot be classified.
 pub async fn classify<T: Transport>(
     agent: &MenuAgent<T>,
     ask: MenuAsk,
@@ -31,6 +35,9 @@ pub async fn classify<T: Transport>(
 }
 
 /// What `ask` does, given the class the router gated it on.
+///
+/// # Errors
+/// An [`AppRefusal`] when the app's menu cannot be read or activated, or the app cannot be named.
 pub async fn perform<T: Transport>(
     agent: &MenuAgent<T>,
     ask: MenuAsk,
@@ -40,6 +47,10 @@ pub async fn perform<T: Transport>(
     match ask {
         MenuAsk::List { window } => {
             let listed = agent.list(window.as_deref()).await.map_err(refusal)?;
+            #[expect(
+                clippy::map_err_ignore,
+                reason = "refusals are in fixed words, never the app's text the parse error would quote"
+            )]
             let source = AppName::parse(&listed.app.0)
                 .or_else(|_| AppName::parse(SHELL_APP))
                 .map_err(|_| failed("the app cannot be named"))?;

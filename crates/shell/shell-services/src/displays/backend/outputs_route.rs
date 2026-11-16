@@ -56,6 +56,9 @@ impl OutputsRoute {
     }
 
     /// Every output the compositor reports now; none without output management.
+    ///
+    /// # Errors
+    /// [`ServiceError::Outputs`] when the roundtrip to the compositor fails.
     pub fn heads(&mut self) -> Result<Vec<Head>, ServiceError> {
         match self {
             OutputsRoute::Wlr(outputs) => {

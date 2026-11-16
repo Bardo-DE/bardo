@@ -18,6 +18,8 @@ pub struct IconTheme(pub String);
 /// closest size it has when a theme has nothing this large.
 const MAX_SIZE: u16 = 256;
 
+/// The icon theme GTK's settings name, else `hicolor`.
+///
 /// The theme GTK's settings name (`gtk-icon-theme-name` in `gtk-3.0/settings.ini` under the
 /// config directory), else `hicolor`. Every lookup falls back to the `hicolor` theme anyway
 /// whenever the chosen theme is not installed (`freedesktop_icons::lookup`'s own step).
@@ -51,6 +53,8 @@ fn theme_named(settings: &str) -> Option<IconTheme> {
     })
 }
 
+/// `icon` (a name or an absolute path) as a file.
+///
 /// `icon` (a name or an absolute path) as a file, the largest size up to [`MAX_SIZE`] px,
 /// preferring an SVG over a PNG/XPM of the same or a smaller size. An absolute path is the entry's
 /// own word for where its icon is, and is used when the file there is a regular file with an image
@@ -104,6 +108,8 @@ fn raster_lookup(icon: &str, theme: &IconTheme) -> Option<PathBuf> {
         .find()
 }
 
+/// The directory a theme lookup falls back to for a pixmap.
+///
 /// The directory a theme lookup falls back to for a pixmap, after every theme
 /// (`freedesktop_icons`'s own hard-coded last resort, mirrored here so a caller can decide
 /// whether an icon came from a theme or this fallback without re-deriving it).

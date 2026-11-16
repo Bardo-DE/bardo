@@ -139,14 +139,19 @@ impl WireState {
                 };
                 offer.receive(mime, writer.as_fd());
                 drop(writer);
-                self.conn.flush().map_err(|_| ErrorKind::BrokenPipe)?;
+                #[expect(
+                    clippy::map_err_ignore,
+                    reason = "only the ErrorKind of a failed flush is ever printed, and a dead connection is a broken pipe"
+                )]
+                let flushed = self.conn.flush().map_err(|_| ErrorKind::BrokenPipe);
+                flushed?;
                 let reactions = ReadReactions {
                     ended: WireState::read_ended,
                     timed_out: WireState::read_timed_out,
                 };
                 read_whole(
                     &self.handle,
-                    reactions,
+                    &reactions,
                     File::from(OwnedFd::from(reader)),
                     id,
                     limit,
@@ -166,12 +171,12 @@ impl WireState {
     }
 
     /// Offer `content` as the selection (an entry chosen in the launcher).
-    pub(crate) fn offer_back(&mut self, content: ClipContent) {
+    pub(crate) fn offer_back(&mut self, content: &ClipContent) {
         let Binding::Bound { manager, device } = &self.binding else {
             return;
         };
         let source = manager.source(&self.qh);
-        let bytes: Arc<[u8]> = match &content {
+        let bytes: Arc<[u8]> = match content {
             ClipContent::Text(text) => {
                 for mime in TEXT_OFFERS {
                     source.offer(mime);

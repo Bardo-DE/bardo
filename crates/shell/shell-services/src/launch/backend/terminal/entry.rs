@@ -63,9 +63,10 @@ pub(super) fn read(text: &str, programs: &[PathBuf]) -> Option<Entry> {
 /// `programs`).
 pub(super) fn is_found(program: &str, programs: &[PathBuf]) -> bool {
     let path = Path::new(program);
-    match path.is_absolute() {
-        true => is_executable(path),
-        false => programs.iter().any(|dir| is_executable(&dir.join(program))),
+    if path.is_absolute() {
+        is_executable(path)
+    } else {
+        programs.iter().any(|dir| is_executable(&dir.join(program)))
     }
 }
 

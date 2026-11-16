@@ -8,7 +8,7 @@ use tokio::sync::mpsc::UnboundedReceiver;
 /// Hand every command to the loop; once the loop has stopped, drop them.
 pub(crate) fn forward_commands(
     mut commands: UnboundedReceiver<WlCommand>,
-    to_loop: channel::Sender<WlCommand>,
+    to_loop: &channel::Sender<WlCommand>,
 ) {
     while let Some(command) = commands.blocking_recv() {
         let _dropped_after_the_loop_stopped = to_loop.send(command);

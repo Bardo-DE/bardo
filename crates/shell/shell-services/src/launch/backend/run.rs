@@ -99,7 +99,7 @@ async fn handle(
             launch_one(rt, setup, outcomes, terminal, request, attempt).await;
         }
         LaunchCommand::ShowInFiles(app_id) => {
-            show_in_files(&setup.session, &outcomes.apps, &app_id).await
+            show_in_files(&setup.session, &outcomes.apps, &app_id).await;
         }
         LaunchCommand::ForceQuit(app_id) => force_quit(&outcomes.tx, &app_id).await,
         LaunchCommand::Open(request) => super::open::open(setup, request).await,
@@ -150,7 +150,7 @@ async fn launch_one(
         return;
     }
     let manager = user_manager(setup.runtime.as_deref());
-    spawn_scope(rt, outcomes, &app, terminal, &request, attempt, manager).await;
+    spawn_scope(rt, outcomes, &app, terminal, &request, attempt, manager);
 }
 
 /// Why an activation did not happen.
@@ -177,7 +177,7 @@ async fn activate_over_dbus(
     }
 }
 
-async fn spawn_scope(
+fn spawn_scope(
     rt: &Handle,
     outcomes: &Outcomes,
     app: &App,
@@ -271,11 +271,11 @@ fn spawn_argv(
     token: Option<&str>,
     own_process_group: bool,
 ) -> std::io::Result<tokio::process::Child> {
-    let (program, args) = argv.split_first().ok_or_else(|| {
+    let (program, rest) = argv.split_first().ok_or_else(|| {
         std::io::Error::new(std::io::ErrorKind::InvalidInput, "empty argument vector")
     })?;
     let mut command = tokio::process::Command::new(program);
-    command.args(args);
+    command.args(rest);
     if let Some(token) = token {
         command.env("XDG_ACTIVATION_TOKEN", token);
         command.env("DESKTOP_STARTUP_ID", token);

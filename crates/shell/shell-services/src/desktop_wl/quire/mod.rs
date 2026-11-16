@@ -1,7 +1,8 @@
-//! The desktop's own compositor as `desktop_wl`'s Quire arm: apps, windows and Spaces from
-//! `bardo_desktop_v1` mapped into the shell's [`shell_model::desktop::DesktopView`], the shell's
-//! commands as Quire requests, the shell protocol's notes in the shell's words, and the
-//! connection the compositor hands the shell.
+//! The desktop's own compositor as `desktop_wl`'s Quire arm.
+//!
+//! Apps, windows and Spaces from `bardo_desktop_v1` are mapped into the shell's
+//! [`shell_model::desktop::DesktopView`], the shell's commands into Quire requests, the shell
+//! protocol's notes into the shell's words, and the connection the compositor hands the shell.
 //!
 //! The pieces, lowest first: `handout` (the seam that yields the handed connection),
 //! `surfaces` (which registered surface plays which role), `view` and `command` (pure

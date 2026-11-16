@@ -25,6 +25,11 @@ const MAX_LABEL: usize = 128;
 /// The most cursor modes taken.
 const MAX_MODES: usize = 8;
 
+/// The picker's loop has stopped: what a closed channel to it, either way, comes to for the caller.
+fn stopped<E>(_closed: E) -> fdo::Error {
+    fdo::Error::Failed("the picker has stopped".to_owned())
+}
+
 /// What the loop is asked.
 #[derive(Debug)]
 pub(super) enum Call {
@@ -95,11 +100,10 @@ impl PickerObject {
             .ok_or_else(|| fdo::Error::InvalidArgs("a malformed ask".to_owned()))?
             .remembering(Remembered::from_wire(remembered));
         let (answer, answered) = oneshot::channel();
-        let stopped = || fdo::Error::Failed("the picker has stopped".to_owned());
         self.calls
             .send(Call::Sources(SourceCall { ask, answer }))
-            .map_err(|_| stopped())?;
-        let reply = answered.await.map_err(|_| stopped())??;
+            .map_err(stopped)?;
+        let reply = answered.await.map_err(stopped)??;
         Ok((reply.sources, reply.cursor))
     }
 
@@ -115,18 +119,20 @@ impl PickerObject {
             app_label: app_label.chars().take(MAX_LABEL).collect(),
         };
         let (answer, answered) = oneshot::channel();
-        let stopped = || fdo::Error::Failed("the picker has stopped".to_owned());
         self.calls
             .send(Call::Color(ColorCall { ask, answer }))
-            .map_err(|_| stopped())?;
-        let reply = answered.await.map_err(|_| stopped())??;
+            .map_err(stopped)?;
+        let reply = answered.await.map_err(stopped)??;
         Ok(color_wire(reply))
     }
 
     /// A yes-or-no question about an app, as the portal's Access backend asks it: the answer is
     /// 0 when the person pressed the yes button, 1 the no button, 2 when the sheet went away
     /// without an answer. The texts are cleaned and cut by [`PermissionAsk::from_wire`].
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "the portal's AccessDialog method has this many arguments on the wire"
+    )]
     async fn ask_permission(
         &self,
         app_label: String,
@@ -147,11 +153,10 @@ impl PickerObject {
             &deny_label,
         );
         let (answer, answered) = oneshot::channel();
-        let stopped = || fdo::Error::Failed("the picker has stopped".to_owned());
         self.calls
             .send(Call::Permission(PermissionCall { ask, answer }))
-            .map_err(|_| stopped())?;
-        let outcome = answered.await.map_err(|_| stopped())??;
+            .map_err(stopped)?;
+        let outcome = answered.await.map_err(stopped)??;
         Ok(outcome.wire())
     }
 }

@@ -48,6 +48,10 @@ fn caller(header: &Header<'_>) -> fdo::Result<BusPeer> {
 }
 
 impl Saver {
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "a closed channel only hands the call back or says nothing; `stopped` says the service is gone"
+    )]
     async fn ask(&self, msg: InhibitMsg) -> fdo::Result<InhibitReply> {
         let (reply, answer) = oneshot::channel();
         self.calls

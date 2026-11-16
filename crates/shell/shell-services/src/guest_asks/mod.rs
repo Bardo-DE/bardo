@@ -1,8 +1,9 @@
-//! inferd (`org.bardo.Inference1`), as the shell hears it: when another of the person's computers
-//! asks to borrow this computer's models, inferd says so and the shell asks "Let <name> use this
-//! computer's models?" in a notification with Allow and Deny. A press is given to inferd as
-//! `AnswerGuest`. The notification is taken back when the question is answered, here or in
-//! Settings.
+//! inferd (`org.bardo.Inference1`), as the shell hears it.
+//!
+//! When another of the person's computers asks to borrow this computer's models, inferd says so
+//! and the shell asks "Let <name> use this computer's models?" in a notification with Allow and
+//! Deny. A press is given to inferd as `AnswerGuest`. The notification is taken back when the
+//! question is answered, here or in Settings.
 //!
 //! The service subscribes to `GuestAsks` and `GuestsChanged`, then reads `Guests` once for the
 //! questions already waiting, and again whenever `org.bardo.Inference1` gets a new owner. Without

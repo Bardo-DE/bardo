@@ -45,12 +45,12 @@ impl Dispatch<WlRegistry, GlobalListContents> for Probe {
 
 /// The thread's body.
 pub(super) fn run(
-    endpoint: WaylandRoute,
+    endpoint: &WaylandRoute,
     publish: Publish,
     commands: UnboundedReceiver<WlCommand>,
 ) {
-    match open(&endpoint) {
-        Ok(connection) => follow(connection, publish, commands),
+    match open(endpoint) {
+        Ok(connection) => follow(&connection, publish, commands),
         Err(refusal) => {
             eprintln!("bardo-shell: windows: {refusal}; toplevels and workspaces stay empty");
             park_commands(commands);

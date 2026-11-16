@@ -90,7 +90,7 @@ impl Live {
                             self.apply(GuestAsksEvent::Asked(ask), &proxy).await;
                         }
                     }
-                    _ => {
+                    GuestChange::Changed => {
                         self.reread(&proxy).await;
                     }
                 },

@@ -17,6 +17,9 @@ pub enum NameState {
 
 /// `name`'s state on `connection`'s bus: `NameHasOwner`, then `ListActivatableNames`. Starts
 /// nothing.
+///
+/// # Errors
+/// The bus error when `name` is not a valid bus name or either call fails.
 pub async fn name_state(connection: &Connection, name: &str) -> zbus::Result<NameState> {
     let dbus = DBusProxy::new(connection).await?;
     if dbus.name_has_owner(BusName::try_from(name)?).await? {

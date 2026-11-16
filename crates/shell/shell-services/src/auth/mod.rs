@@ -1,3 +1,5 @@
+//! The password check behind bardo-shell's own lock screen (design/20 §1.9).
+//!
 //! The password check behind bardo-shell's own lock screen (design/20 §1.9). The lock surface sends the
 //! typed secret ([`AuthCommand::Submit`]); the service runs it through an `Authenticator` off the
 //! UI thread, counts failures through the pure `gate` machine (one check at a time; no lockout),
@@ -36,6 +38,8 @@ use crate::service::{Service, ServiceIo};
 
 pub use backend::{PamHelper, pam};
 
+/// The lock screen's password check as a [`Service`].
+///
 /// The lock screen's password check as a [`Service`], through `env`'s `Authenticator` (PAM
 /// through `bardo-shell auth-check` in the daemon, a `FakeAuthenticator` in every test), the account
 /// read from `env`'s accounts database, system bus and home. Idle until the first `Submit`: nothing is checked, and

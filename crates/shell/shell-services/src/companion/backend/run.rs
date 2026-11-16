@@ -392,7 +392,7 @@ impl Live {
                     let _ = events.send(CompanionEvent::Mode(changed));
                 }
                 Ok(other) => {
-                    eprintln!("bardo-shell: companion: switching {session} to {mode:?}: {other:?}")
+                    eprintln!("bardo-shell: companion: switching {session} to {mode:?}: {other:?}");
                 }
                 Err(silent) => eprintln!("bardo-shell: companion: {silent}"),
             }
@@ -681,9 +681,10 @@ impl Live {
         let events = self.events.clone();
         self.on_bus("reading the journal", move |connection| async move {
             let rows = intents::journal(&connection).await?;
-            events
-                .send(CompanionEvent::Journal(rows))
-                .map_err(|_| CallError::Absent("channel closed"))
+            if events.send(CompanionEvent::Journal(rows)).is_err() {
+                return Err(CallError::Absent("channel closed"));
+            }
+            Ok(())
         });
     }
 }

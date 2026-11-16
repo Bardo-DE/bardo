@@ -107,12 +107,12 @@ impl Debounced {
     /// stderr; none that can be is an error. Needs a Tokio runtime (the watcher's callback sends
     /// into an unbounded channel; nothing here blocks it).
     pub(crate) fn start(
-        places: Vec<Place>,
+        places: &[Place],
         filter: EventFilter,
         quiet: Duration,
     ) -> Result<Debounced, ServiceError> {
-        let (signal, signals) = mpsc::unbounded_channel::<()>();
-        let wanted = places.clone();
+        let (wake, signals) = mpsc::unbounded_channel::<()>();
+        let wanted = places.to_vec();
         let mut watcher =
             notify::recommended_watcher(move |res: notify::Result<notify::Event>| {
                 if let Ok(event) = res
@@ -123,7 +123,7 @@ impl Debounced {
                         .any(|path| wanted.iter().any(|place| place.covers(path)))
                 {
                     // A dropped signal means the watching task ended: nobody is left to re-read for.
-                    let _ = signal.send(());
+                    let _ = wake.send(());
                 }
             })?;
         let mut watched = 0_usize;
@@ -151,7 +151,7 @@ impl Debounced {
             source,
         })?;
         Debounced::start(
-            vec![Place::File(dir.join(name))],
+            &[Place::File(dir.join(name))],
             EventFilter::AnyChange,
             OWN_FILE_QUIET,
         )
@@ -163,7 +163,7 @@ impl Debounced {
         self.signals.recv().await?;
         loop {
             match tokio::time::timeout(self.quiet, self.signals.recv()).await {
-                Ok(Some(())) => continue,
+                Ok(Some(())) => {}
                 Ok(None) | Err(_) => return Some(()),
             }
         }

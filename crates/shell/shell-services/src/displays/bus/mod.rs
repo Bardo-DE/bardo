@@ -1,7 +1,8 @@
-//! bardo-shell serves each display's brightness on the session bus, so Settings can show a slider
-//! per display and follow the keys and the control centre: `org.bardo.Displays1` at
-//! `/org/bardo/Displays1`, a small interface over what the displays service already routes
-//! (logind for built-in panels, DDC/CI for monitors).
+//! bardo-shell serves each display's brightness on the session bus.
+//!
+//! Settings shows a slider per display and follows the keys and the control centre:
+//! `org.bardo.Displays1` at `/org/bardo/Displays1`, a small interface over what the displays
+//! service already routes (logind for built-in panels, DDC/CI for monitors).
 //!
 //! - `Brightness() -> a(su)`: every output whose brightness can be read, with its percentage
 //!   (0 to 100); an output with nothing to read is not listed.

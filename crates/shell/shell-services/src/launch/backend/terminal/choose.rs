@@ -9,7 +9,7 @@
 //! the first entry in the `TerminalEmulator` category.
 
 use std::collections::BTreeSet;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use base_fs::{ReadCap, read_text_capped};
 

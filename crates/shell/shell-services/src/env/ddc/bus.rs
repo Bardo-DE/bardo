@@ -1,5 +1,6 @@
-//! The seam between the DDC worker and the wire: [`DdcBus`], implemented over `/dev/i2c-N`
-//! ([`super::I2cBuses`]) and by a fake in the tests.
+//! The seam between the DDC worker and the wire.
+//!
+//! [`DdcBus`] is implemented over `/dev/i2c-N` ([`super::I2cBuses`]) and by a fake in the tests.
 
 use shell_model::displays::ddc::Endpoint;
 use shell_model::displays::ddc::vcp::{Feature, Level};
@@ -19,13 +20,23 @@ pub enum DdcError {
     Unknown(DdcId),
 }
 
-/// Every DDC transaction the worker makes: the kernel's buses ([`super::I2cBuses`]) or made-up
-/// monitors in a file ([`super::FileBus`], the dev scripts'). Blocking: each call is a
-/// bus transaction of tens of milliseconds, and only the worker thread calls them (one at a
-/// time, which is also what the bus needs).
+/// Every DDC transaction the worker makes.
+///
+/// The kernel's buses ([`super::I2cBuses`]) or made-up monitors in a file ([`super::FileBus`],
+/// the dev scripts'). Blocking: each call is a bus transaction of tens of milliseconds, and only
+/// the worker thread calls them (one at a time, which is also what the bus needs).
 pub trait DdcBus: Send + Sync + std::fmt::Debug {
     /// The displays that answer now. Re-probing replaces what an earlier probe found.
     fn probe(&self) -> Vec<Endpoint>;
+    /// The current value of `feature` on display `id`.
+    ///
+    /// # Errors
+    /// [`DdcError`] when the bus fails, the display's answer is not a reply (or says
+    /// "unsupported"), or `id` is not a display the bus has.
     fn read(&self, id: DdcId, feature: Feature) -> Result<Level, DdcError>;
+    /// Set `feature` on display `id` to `value`.
+    ///
+    /// # Errors
+    /// [`DdcError`] when the bus fails, the display refuses, or `id` is not a display the bus has.
     fn write(&self, id: DdcId, feature: Feature, value: u16) -> Result<(), DdcError>;
 }

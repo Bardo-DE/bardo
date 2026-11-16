@@ -1,3 +1,5 @@
+//! The menus of the apps the bar follows, read from each app's own name.
+//!
 //! The menus of the apps the bar follows. An app that serves `com.canonical.dbusmenu` at
 //! `org.bardo.AppMenu.<app_id>` (quire design/27 §5.2 rule a) has its menu read, followed
 //! (`LayoutUpdated`, `ItemsPropertiesUpdated`) and published; a click, and `AboutToShow` when a

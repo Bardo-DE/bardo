@@ -91,6 +91,11 @@ impl<T: Transport> MenuAgent<T> {
     /// What `item` of the window asked for would be, as the router gates it
     /// (`shell.menu.activate` is `per_call = "classified"`): its effect for a row the shell does
     /// itself, a delegation to the verified app's own action, otherwise `Destructive`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`MenuFault`] when there is no such window, menu or item, or the app's menu
+    /// could not be read.
     pub async fn classify(&self, window: Option<&str>, item: &str) -> Result<CallClass, MenuFault> {
         self.resolve(window, item).await.map(|r| r.class())
     }
@@ -100,6 +105,11 @@ impl<T: Transport> MenuAgent<T> {
     /// again, and a call that is no longer that is `MenuFault::Changed`, except `Destructive`,
     /// the declared effect, which is always accepted. A verified app's own action is not done
     /// here: it is handed back as the call to make next, which the router gates on its own.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`MenuFault`] when there is no such window, menu or item, the item is not
+    /// runnable or is no longer what `classified` said, or the app's menu could not be read.
     pub async fn activate(
         &self,
         window: Option<&str>,

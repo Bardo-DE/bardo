@@ -1,8 +1,9 @@
-//! How long the shell waits on a peer. Every await on a program outside bardo-shell (an app, a system
-//! daemon, the compositor) is bounded by one of these, so a peer that stops answering costs one
-//! failed step and never wedges the loop that asked.
+//! How long the shell waits on a peer.
+//!
+//! Every await on a program outside bardo-shell (an app, a system daemon, the compositor) is
+//! bounded by one of these, so a peer that stops answering costs one failed step and never wedges
+//! the loop that asked.
 
-use std::future::Future;
 use std::time::Duration;
 
 use crate::error::ServiceError;
@@ -36,6 +37,9 @@ pub const PLAYER_CALL: Duration = Duration::from_secs(3);
 pub const COMPANION_CALL: Duration = Duration::from_secs(10);
 
 /// Await `work` for at most `limit`; `what` names it in the error.
+///
+/// # Errors
+/// [`ServiceError::TimedOut`] naming `what` when `work` has not finished within `limit`.
 #[expect(
     clippy::map_err_ignore,
     reason = "the elapsed-timer error carries nothing; `what` names the call that timed out"
@@ -52,6 +56,10 @@ pub async fn within<T>(
 
 /// [`within`] for a bus call: a call that answered with an error is the bus error, one that did
 /// not answer is [`ServiceError::TimedOut`].
+///
+/// # Errors
+/// [`ServiceError::Bus`] when the call answered with an error, [`ServiceError::TimedOut`] naming
+/// `what` when it did not answer within `limit`.
 pub async fn call<T>(
     limit: Duration,
     what: &'static str,

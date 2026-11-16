@@ -1,6 +1,7 @@
 //! bardo-shell's own idle service: the dim, the displays off, the lock at screen off and the idle
-//! suspend (the user's pick). Owning idle is how bardo-shell knows why it
-//! locked ([`shell_model::locker::LockCause`]), which the lock grace (`session.lock_grace_s`,
+//! suspend (the user's pick).
+//!
+//! Owning idle is how bardo-shell knows why it locked ([`shell_model::locker::LockCause`]), which the lock grace (`session.lock_grace_s`,
 //! `grace_verdict`) needs.
 //!
 //! **Passive until the daemon's first [`IdleCommand`]**, and `Off` (nothing held, nothing

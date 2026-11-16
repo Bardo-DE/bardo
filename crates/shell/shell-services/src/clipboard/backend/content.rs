@@ -34,7 +34,9 @@ pub(crate) fn content_of(pick: &MimePick, bytes: Vec<u8>) -> Result<ClipContent,
 }
 
 fn text_of(bytes: Vec<u8>) -> Result<ClipText, Skipped> {
-    let text = String::from_utf8(bytes).map_err(|_| Skipped::Empty)?;
+    let Ok(text) = String::from_utf8(bytes) else {
+        return Err(Skipped::Empty);
+    };
     if text.trim().is_empty() {
         return Err(Skipped::Empty);
     }

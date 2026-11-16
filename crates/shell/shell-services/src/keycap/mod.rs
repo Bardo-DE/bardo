@@ -1,6 +1,8 @@
-//! keycap, the Mac keyboard daemon: bardo-shell tells it which profile the focused window wants and
-//! the person's `key-remap.toml`, learns from it whether it runs and holds the keyboards, and tells
-//! the person when that needs them (`shell_model::keycap::attention`).
+//! keycap, the Mac keyboard daemon, as bardo-shell talks to it.
+//!
+//! bardo-shell tells it which profile the focused window wants and the person's `key-remap.toml`,
+//! learns from it whether it runs and holds the keyboards, and tells the person when that needs
+//! them (`shell_model::keycap::attention`).
 //!
 //! The socket (`/run/bardo/key-remap/key-remap.sock`, `Env::keycap_socket`) is held by a thread of its own,
 //! started by `run`: it reconnects with a growing wait and starts each connection with the focus

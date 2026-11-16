@@ -4,9 +4,11 @@ use account_core::SpaceId;
 use desktop_client::quire::{RevealOutput, ShellEvent};
 use shell_model::desktop::{Consent, DisplayTrial, OverviewNote, ShellNote, SwitcherNote};
 
-/// `event` in the shell's words. `None` for what is state the desktop client keeps and a
-/// consumer reads from `DesktopState::quire` (one overview slot, one Space slot), and for an
-/// event this build does not know.
+/// `event` in the shell's words.
+///
+/// `None` for what is state the desktop client keeps and a consumer reads from
+/// `DesktopState::quire` (one overview slot, one Space slot), and for an event this build does
+/// not know.
 #[must_use]
 pub fn note_of(event: &ShellEvent) -> Option<ShellNote> {
     Some(match event {

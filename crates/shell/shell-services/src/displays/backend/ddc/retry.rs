@@ -82,16 +82,16 @@ mod tests {
 
     #[test]
     fn a_dropped_write_is_repeated_until_the_monitor_reports_it() {
-        let cases: &[(usize, Result<(), ()>, u16)] = &[
-            (0, Ok(()), 18),
-            (1, Ok(()), 18),
-            (2, Ok(()), 18),
-            (3, Err(()), 20),
+        let cases: &[(usize, bool, u16)] = &[
+            (0, true, 18),
+            (1, true, 18),
+            (2, true, 18),
+            (3, false, 20),
         ];
         for &(drop_writes, want, left_at) in cases {
             let fake = bus(0, drop_writes);
             let result = write_verified(&fake, DdcId(5), Feature::SpeakerVolume, 18);
-            assert_eq!(result.map_err(|_| ()), want, "{drop_writes} dropped");
+            assert_eq!(result.is_ok(), want, "{drop_writes} dropped");
             let now = fake
                 .0
                 .lock()

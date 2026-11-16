@@ -13,31 +13,30 @@ use crate::env::ddc::{FakeBus, FakeState};
 /// One MA270U-like display on bus 5 that answers brightness and volume only.
 fn bus() -> FakeBus {
     let bus = FakeBus::default();
-    {
-        let mut state = bus
-            .0
-            .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner);
-        *state = FakeState {
-            endpoints: vec![Endpoint {
-                id: DdcId(5),
-                connector: Some(OutputName("HDMI-A-2".to_owned())),
-                product: "BenQ MA270U".to_owned(),
-            }],
-            ..FakeState::default()
-        };
-        state.values.insert(
-            (DdcId(5), Feature::Brightness),
-            Level {
-                value: 49,
-                max: 100,
-            },
-        );
-        state.values.insert(
-            (DdcId(5), Feature::SpeakerVolume),
-            Level { value: 20, max: 50 },
-        );
-    }
+    let mut state = bus
+        .0
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
+    *state = FakeState {
+        endpoints: vec![Endpoint {
+            id: DdcId(5),
+            connector: Some(OutputName("HDMI-A-2".to_owned())),
+            product: "BenQ MA270U".to_owned(),
+        }],
+        ..FakeState::default()
+    };
+    state.values.insert(
+        (DdcId(5), Feature::Brightness),
+        Level {
+            value: 49,
+            max: 100,
+        },
+    );
+    state.values.insert(
+        (DdcId(5), Feature::SpeakerVolume),
+        Level { value: 20, max: 50 },
+    );
+    drop(state);
     bus
 }
 
@@ -50,7 +49,7 @@ fn start(
 ) {
     let (jobs, rx) = mpsc::channel();
     let (tx, displays) = watch::channel(Vec::new());
-    let thread = std::thread::spawn(move || run(std::sync::Arc::new(bus), rx, tx));
+    let thread = std::thread::spawn(move || run(std::sync::Arc::new(bus), &rx, tx));
     (jobs, displays, thread)
 }
 
@@ -87,7 +86,7 @@ fn a_probe_publishes_what_answers_and_nothing_else() {
     );
     assert_eq!(controls.gain, None);
     // Two answered reads, and three tries at each of the seven the display does not have.
-    let reads = fake.0.lock().map(|s| s.reads).unwrap_or(0);
+    let reads = fake.0.lock().map_or(0, |s| s.reads);
     assert_eq!(reads, 2 + 7 * retry::ATTEMPTS);
 }
 

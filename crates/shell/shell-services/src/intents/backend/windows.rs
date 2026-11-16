@@ -23,6 +23,10 @@ pub(super) fn perform(
     let wl = links.toplevels.borrow().clone();
     match plan(ask, &wl).map_err(refusal)? {
         WindowAnswer::Listing(text) => {
+            #[expect(
+                clippy::map_err_ignore,
+                reason = "refusals are in fixed words; the shipped constant name always parses"
+            )]
             let app = AppName::parse(SHELL_APP).map_err(|_| failed("the shell cannot be named"))?;
             let label = Label::untrusted(Source::App(app), DataClass::Screen, inv.space.clone());
             Ok(outcome(
@@ -32,6 +36,10 @@ pub(super) fn perform(
         }
         WindowAnswer::Commands(commands) => {
             for command in commands {
+                #[expect(
+                    clippy::map_err_ignore,
+                    reason = "refusals are in fixed words; the send error only hands the command back"
+                )]
                 links
                     .wl
                     .send(command)

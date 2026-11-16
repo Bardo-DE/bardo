@@ -1,6 +1,7 @@
-//! The program behind each window's app, as the compositor established it
-//! (`bardo_desktop_app_v1.subject`), projected for the windows' published state. Only the Quire
-//! arm has any: the standard protocols say nothing of the program behind a window.
+//! The program behind each window's app, as the compositor established it.
+//!
+//! This is `bardo_desktop_app_v1.subject`, projected for the windows' published state. Only the
+//! Quire arm has any: the standard protocols say nothing of the program behind a window.
 
 use desktop_client::DesktopState;
 use shell_model::windows::Subjects;

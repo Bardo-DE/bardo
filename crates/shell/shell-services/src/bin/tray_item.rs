@@ -168,9 +168,11 @@ impl Menu {
     fn get_layout(
         &self,
         parent_id: i32,
-        _recursion_depth: i32,
-        _property_names: Vec<String>,
+        recursion_depth: i32,
+        property_names: Vec<String>,
     ) -> zbus::fdo::Result<(u32, Node)> {
+        // Only the root, whole, is served: the depth and the names asked for change nothing.
+        let _ = (recursion_depth, property_names);
         if parent_id != 0 {
             return Err(zbus::fdo::Error::InvalidArgs(format!(
                 "only the root is served, not {parent_id}"
@@ -187,10 +189,11 @@ impl Menu {
         &self,
         id: i32,
         event_id: &str,
-        _data: Value<'_>,
-        _timestamp: u32,
+        data: Value<'_>,
+        timestamp: u32,
         #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
     ) {
+        let _ = (data, timestamp);
         self.log.line(&format!("Event {id} {event_id}"));
         if id == REFRESH && event_id == "clicked" {
             *self

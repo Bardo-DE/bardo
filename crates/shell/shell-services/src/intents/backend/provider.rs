@@ -32,6 +32,10 @@ const MANIFEST: &str = include_str!("../../../../dist/intents/org.bardo.Shell.to
 const CALL_WAIT: Duration = Duration::from_secs(4);
 
 /// The shell's manifest, parsed and validated; an error is a bug in the shipped file.
+///
+/// # Errors
+/// [`ManifestFault::Parse`] when the shipped file is not TOML of the manifest's shape,
+/// [`ManifestFault::Invalid`] when it breaks a rule of the vocabulary.
 pub fn manifest() -> Result<ValidManifest, ManifestFault> {
     let parsed: Manifest = toml::from_str(MANIFEST)?;
     Ok(validate(parsed)?)
@@ -66,7 +70,7 @@ impl ShellProvider {
         let (reply, answer) = oneshot::channel();
         self.calls
             .send(ShellCall { action, reply })
-            .map_err(|_| ShellFault::Failed("the shell is shutting down".to_owned()))?;
+            .map_err(|e| ShellFault::Failed(format!("the shell is shutting down: {e}")))?;
         match tokio::time::timeout(CALL_WAIT, answer).await {
             Ok(Ok(result)) => result,
             Ok(Err(_)) => Err(ShellFault::Failed("the shell did not answer".to_owned())),
@@ -121,6 +125,10 @@ impl IntentProvider for ShellProvider {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the provider trait's method is async; this one has nothing to wait on"
+    )]
     async fn dry_run(&self, inv: Invocation) -> Result<Preview, AppRefusal> {
         if menu_ask_of(&inv)?.is_some() || window_ask_of(&inv)?.is_some() {
             return Ok(Preview::None);
@@ -131,19 +139,35 @@ impl IntentProvider for ShellProvider {
     async fn undo(&self, token: UndoToken, actor: Actor) -> Result<(), UndoFault> {
         let _ = actor;
         let action = undo_of(&token)?;
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "any failure of the undo's action means the same: what it undid is gone"
+        )]
         self.done(action).await.map_err(|_| UndoFault::Gone)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the provider trait's method is async; this one has nothing to wait on"
+    )]
     async fn search(&self, text: &str) -> Vec<Hit> {
         let _ = text;
         Vec::new()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the provider trait's method is async; this one has nothing to wait on"
+    )]
     async fn preview(&self, id: &EntityId) -> Preview {
         let _ = id;
         Preview::None
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the provider trait's method is async; this one has nothing to wait on"
+    )]
     async fn suggest(&self, ask: SuggestAsk) -> Vec<EntityRef> {
         let _ = ask;
         Vec::new()

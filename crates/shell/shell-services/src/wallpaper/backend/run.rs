@@ -56,7 +56,7 @@ pub(crate) async fn run(
     // Held for `run`'s whole life: dropping the watch stops it. The file may not exist until a
     // person writes it, so the watch starts on whichever folder above it is there.
     let mut reload = Debounced::start(
-        vec![Place::Appearing(config_path(&places.config))],
+        &[Place::Appearing(config_path(&places.config))],
         EventFilter::AnyChange,
         SOURCE_QUIET,
     )

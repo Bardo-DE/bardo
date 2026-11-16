@@ -32,7 +32,7 @@ fn main() {
         std::process::exit(2);
     };
     if !bus.to_string_lossy().starts_with("unix:") {
-        eprintln!("tray_host: not a bus address: {bus:?}");
+        eprintln!("tray_host: not a bus address: {}", bus.display());
         std::process::exit(2);
     }
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));

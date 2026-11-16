@@ -57,7 +57,7 @@ struct Worker {
 
 /// Serve `jobs` until every sender is gone, then write whatever is still pending (a restore
 /// sent just before shutdown still reaches the monitor). Blocking: run it on its own thread.
-pub fn run(bus: Arc<dyn DdcBus>, jobs: Receiver<DdcJob>, tx: watch::Sender<Vec<DdcDisplay>>) {
+pub fn run(bus: Arc<dyn DdcBus>, jobs: &Receiver<DdcJob>, tx: watch::Sender<Vec<DdcDisplay>>) {
     let mut worker = Worker {
         bus,
         displays: Vec::new(),
@@ -71,6 +71,10 @@ pub fn run(bus: Arc<dyn DdcBus>, jobs: Receiver<DdcJob>, tx: watch::Sender<Vec<D
         let now = worker.now();
         let next = match worker.debounce.next_due() {
             Some(due) => jobs.recv_timeout(Duration::from_millis(due.since(now))),
+            #[expect(
+                clippy::map_err_ignore,
+                reason = "a closed channel has no cause beyond every sender being gone"
+            )]
             None => jobs.recv().map_err(|_| RecvTimeoutError::Disconnected),
         };
         match next {

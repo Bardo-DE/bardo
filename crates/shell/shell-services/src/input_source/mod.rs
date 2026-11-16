@@ -1,5 +1,6 @@
-//! Next Input Source (the Mac's Control-Space) on the session bus. The running input-method
-//! framework is looked for when the action fires, never assumed: fcitx5's
+//! Next Input Source (the Mac's Control-Space) on the session bus.
+//!
+//! The running input-method framework is looked for when the action fires, never assumed: fcitx5's
 //! `org.fcitx.Fcitx.Controller1` is switched to the entry after the current one in its current
 //! group ([`shell_model::input_source::next_of`]). IBus keeps its own bus, found through an address
 //! file (or `IBUS_ADDRESS`, read at the edge as [`crate::env::IbusRoute`]); its active engines are

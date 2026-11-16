@@ -94,10 +94,11 @@ fn handle_update(
     // Only an app the badges hold is remembered with its sender, so this table is as bounded as
     // the badges are.
     if let Some(app) = updated {
-        match tx.borrow().apps.contains_key(&app) {
-            true => senders.insert(app, sender),
-            false => senders.remove(&app),
-        };
+        if tx.borrow().apps.contains_key(&app) {
+            senders.insert(app, sender);
+        } else {
+            senders.remove(&app);
+        }
     }
 }
 
@@ -160,10 +161,16 @@ fn urgency_of(urgent: bool) -> Urgency {
     }
 }
 
-/// `progress` 0..1 as thousandths; a negative or NaN value floors to zero the same way the
-/// round-then-cast already does (`step`'s `apply` still clamps the top end).
+/// `progress` 0..1 as thousandths; a negative or NaN value floors to zero (`step`'s `apply`
+/// clamps the top end again).
 fn permille_of(progress: f64) -> Permille {
-    Permille((progress * 1000.0).round() as u32)
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "clamped to 0..=1000 just before; a NaN casts to 0"
+    )]
+    let thousandths = (progress * 1000.0).round().clamp(0.0, 1000.0) as u32;
+    Permille(thousandths)
 }
 
 /// Clears every app the departing connection last published, when its unique name is truly

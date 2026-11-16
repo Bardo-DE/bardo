@@ -130,7 +130,7 @@ async fn session(
                     run_connect(connection, tx, internal_tx, tracked, address);
                 }
                 Some(BluetoothCommand::Disconnect(address)) => {
-                    run_disconnect(connection, tracked, address);
+                    run_disconnect(connection, tracked, &address);
                 }
                 Some(BluetoothCommand::Refresh) => {
                     if let Some(object_manager) = &live.object_manager {
@@ -261,7 +261,7 @@ async fn seed(
         .cloned()
         .collect();
     for path in gone {
-        remove_device(tx, tracked, path);
+        remove_device(tx, tracked, &path);
     }
 }
 
@@ -322,7 +322,7 @@ fn handle_removed(
     let has = |iface: &str| interfaces.iter().any(|i| i.as_str() == iface);
 
     if has(DEVICE_IFACE) {
-        remove_device(tx, tracked, path);
+        remove_device(tx, tracked, &path);
         return;
     }
     if has(BATTERY_IFACE) {
@@ -347,10 +347,10 @@ fn handle_removed(
 fn remove_device(
     tx: &Published<Bluetooth, BluetoothEvent>,
     tracked: &mut Tracked,
-    path: OwnedObjectPath,
+    path: &OwnedObjectPath,
 ) {
-    tracked.stop_device(&path);
-    if let Some(address) = tracked.address_of(&path) {
+    tracked.stop_device(path);
+    if let Some(address) = tracked.address_of(path) {
         tracked.device_path.remove(&address);
         tx.feed(BluetoothEvent::DeviceRemoved(address));
     }

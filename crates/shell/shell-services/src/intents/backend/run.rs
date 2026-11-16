@@ -156,7 +156,7 @@ impl Live {
     fn carry_out(&mut self, effect: IntentsEffect) {
         match effect {
             IntentsEffect::Sheet(SheetEffect::Respond(serial, reply)) => {
-                self.respond(serial, reply)
+                self.respond(serial, reply);
             }
             IntentsEffect::Sheet(SheetEffect::Expire { serial, after }) => {
                 let wait = Duration::from_secs(u64::from(after.0));
@@ -267,7 +267,7 @@ impl Live {
                 )));
             }
             Inner::Resumed(Err(why)) => {
-                eprintln!("bardo-shell: intents: resuming the terminal: {why}")
+                eprintln!("bardo-shell: intents: resuming the terminal: {why}");
             }
             Inner::LimitUndone(id, Ok(())) => {
                 self.feed(IntentsEvent::Sheet(SheetEvent::LimitUndone(id)));

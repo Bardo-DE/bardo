@@ -10,6 +10,8 @@ use crate::env::Env;
 use crate::error::ServiceError;
 use crate::service::{Service, ServiceIo};
 
+/// The bar clock as a [`Service`].
+///
 /// The bar clock as a [`Service`]: publishes the wall clock's local time now, then at every
 /// minute boundary (the system clock reads the zone afresh, so a time-zone change shows at the
 /// next minute, or at once on `Refresh`).

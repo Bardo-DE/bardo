@@ -30,6 +30,10 @@ pub(super) struct Served {
 impl<T: Transport> MenuAgent<T> {
     /// The menus of the window asked for (the focused one when `window` is `None`): the app's own
     /// when it serves them, and the shell's rows. An app with no menu has the shell's rows alone.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`MenuFault`] when there is no such window, or the app's menu could not be read.
     pub async fn list(&self, window: Option<&str>) -> Result<MenuListed, MenuFault> {
         let target = self.target(window)?;
         let served = self.serve(&target.app).await?;

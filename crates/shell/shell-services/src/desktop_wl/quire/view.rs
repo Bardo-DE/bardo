@@ -103,7 +103,7 @@ fn place(quire: &Quire, place: SpacePlace) -> SpacePlaceView {
             .and_then(space_id)
             .map_or(SpacePlaceView::Unknown, SpacePlaceView::On),
         SpacePlace::AllSpaces => SpacePlaceView::AllSpaces,
-        _ => SpacePlaceView::Unknown,
+        SpacePlace::Unknown => SpacePlaceView::Unknown,
     }
 }
 

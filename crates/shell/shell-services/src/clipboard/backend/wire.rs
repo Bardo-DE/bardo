@@ -46,7 +46,7 @@ impl Follow for WireState {
     const UNFOLLOWED: &'static str = "history is not following the clipboard";
 
     /// Bind the data-control manager on the first seat, and report the protocol.
-    fn bind(images: ImageCap, setup: Setup<WireState>) -> WireState {
+    fn bind(start: ImageCap, setup: Setup<WireState>) -> WireState {
         let Setup {
             conn,
             globals,
@@ -68,13 +68,13 @@ impl Follow for WireState {
             Binding::Bound { manager, .. } => manager.protocol(),
             Binding::Unsupported => ClipProtocol::Unsupported,
         }));
-        WireState::new(conn, qh, handle, signal, binding, images, tell)
+        WireState::new(conn, qh, handle, signal, binding, start, tell)
     }
 
     fn order(&mut self, order: Order) {
         match order {
             Order::Images(cap) => self.images = cap,
-            Order::Offer(content) => self.offer_back(content),
+            Order::Offer(content) => self.offer_back(&content),
         }
     }
 

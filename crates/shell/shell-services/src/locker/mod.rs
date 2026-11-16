@@ -1,5 +1,6 @@
-//! The lock screen: bardo-shell's own, on layer-shell-host's `ext-session-lock-v1` surfaces (design/20
-//! §1.9). bardo-shell locks on its own Lock action (the launcher row, the power menu, `bardo-shell lock`), on
+//! The lock screen: bardo-shell's own, on layer-shell-host's `ext-session-lock-v1` surfaces.
+//!
+//! See design/20 §1.9. bardo-shell locks on its own Lock action (the launcher row, the power menu, `bardo-shell lock`), on
 //! logind's `Lock` for this session, and before sleep on `PrepareForSleep(true)`, holding a
 //! logind delay inhibitor until the lock reports locked or `SLEEP_HOLD_MS` runs out. Never a
 //! second lock while one holds.

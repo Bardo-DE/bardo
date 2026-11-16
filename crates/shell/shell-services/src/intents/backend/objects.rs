@@ -96,7 +96,7 @@ impl ConfirmObject {
             calls: self.calls.clone(),
         };
         connection.object_server().at(path.as_str(), object).await?;
-        let asked = Call::Asked {
+        let message = Call::Asked {
             serial,
             request: Box::new(parsed),
             asker: Asker {
@@ -105,8 +105,8 @@ impl ConfirmObject {
             },
         };
         self.calls
-            .send(asked)
-            .map_err(|_| fdo::Error::Failed("the sheet has stopped".to_owned()))?;
+            .send(message)
+            .map_err(|e| fdo::Error::Failed(format!("the sheet has stopped: {e}")))?;
         Ok(path)
     }
 
@@ -115,18 +115,18 @@ impl ConfirmObject {
         let id = ConfirmId::parse(&id).map_err(|e| fdo::Error::InvalidArgs(e.to_string()))?;
         self.calls
             .send(Call::Cancel(id))
-            .map_err(|_| fdo::Error::Failed("the sheet has stopped".to_owned()))
+            .map_err(|e| fdo::Error::Failed(format!("the sheet has stopped: {e}")))
     }
 }
 
 #[zbus::interface(name = "org.bardo.Intents1.Request")]
 impl RequestObject {
-    async fn close(&self, #[zbus(header)] header: Header<'_>) -> fdo::Result<()> {
+    fn close(&self, #[zbus(header)] header: Header<'_>) -> fdo::Result<()> {
         match header.sender() {
             Some(sender) if sender.as_str() == self.asker.as_str() => self
                 .calls
                 .send(Call::Closed(self.serial))
-                .map_err(|_| fdo::Error::Failed("the sheet has stopped".to_owned())),
+                .map_err(|e| fdo::Error::Failed(format!("the sheet has stopped: {e}"))),
             Some(_) | None => Err(fdo::Error::AccessDenied(
                 "only the asker closes its request".to_owned(),
             )),

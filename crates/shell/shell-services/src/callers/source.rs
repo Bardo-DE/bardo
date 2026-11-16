@@ -13,6 +13,8 @@ use zbus::Connection;
 /// table. The probe runs on tokio's blocking pool.
 pub type Peers = BusPeers<RealProc, ManagerLink<RealProc>>;
 
+/// What gives a service the [`Peers`] of the connection it serves on.
+///
 /// What gives a service the [`Peers`] of the connection it serves on. The shell's is
 /// [`DesktopCallers`]; a test brings its own, which keeps the peers it hands out so that it can
 /// make its stand-ins whoever it needs, whenever it needs.

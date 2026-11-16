@@ -104,7 +104,7 @@ fn watch_dirs(config: &Path, dirs: &[PathBuf]) -> Result<Debounced, ServiceError
     {
         places.push(Place::Tree(parent.to_owned()));
     }
-    Debounced::start(places, EventFilter::ClosedAfterWrite, RESCAN_QUIET)
+    Debounced::start(&places, EventFilter::ClosedAfterWrite, RESCAN_QUIET)
 }
 
 #[cfg(test)]

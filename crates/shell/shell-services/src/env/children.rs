@@ -30,6 +30,9 @@ pub struct Start {
 pub trait Children: Send + Sync + fmt::Debug {
     /// Start `start`, reaping it in the background; the error is why it could not start (the
     /// program missing from `PATH` is `ErrorKind::NotFound`).
+    ///
+    /// # Errors
+    /// The I/O error from starting the child.
     fn detach(&self, start: &Start) -> io::Result<()>;
 }
 

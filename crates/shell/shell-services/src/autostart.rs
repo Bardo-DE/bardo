@@ -78,15 +78,20 @@ pub fn with_mark(entry: &str) -> Option<String> {
 pub fn login_of(dirs: &Dirs, app: &AppId) -> Login {
     match std::fs::read_to_string(file_of(dirs, app)) {
         Ok(text) if is_marked(&text) => Login::OurEntry,
-        Ok(_) => Login::OthersEntry,
-        // An unreadable file is somebody's: it is there, and not ours to remove.
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => Login::Off,
-        Err(_) => Login::OthersEntry,
+        // A file without our mark is somebody's, and so is an unreadable one: it is there, and not
+        // ours to remove.
+        Ok(_) | Err(_) => Login::OthersEntry,
     }
 }
 
 /// Start `app` at login: copy its desktop entry at `entry` into the autostart folder. An entry
 /// already there, ours or not, stays as it is.
+///
+/// # Errors
+///
+/// Returns a [`ServiceError`] when `entry` cannot be read or has no `[Desktop Entry]` group, or
+/// the autostart folder or file cannot be written.
 pub fn turn_on(dirs: &Dirs, app: &AppId, entry: &Path) -> Result<(), ServiceError> {
     if login_of(dirs, app).is_on() {
         return Ok(());
@@ -106,6 +111,10 @@ pub fn turn_on(dirs: &Dirs, app: &AppId, entry: &Path) -> Result<(), ServiceErro
 }
 
 /// Stop starting `app` at login: remove the entry when bardo-shell wrote it, and only then.
+///
+/// # Errors
+///
+/// Returns a [`ServiceError`] when the entry bardo-shell wrote cannot be removed.
 pub fn turn_off(dirs: &Dirs, app: &AppId) -> Result<(), ServiceError> {
     match login_of(dirs, app) {
         Login::OurEntry => {

@@ -19,11 +19,11 @@ use super::wl_state::WlState;
 impl Dispatch<WlRegistry, GlobalListContents> for WlState {
     fn event(
         state: &mut Self,
-        registry: &WlRegistry,
+        proxy: &WlRegistry,
         event: wl_registry::Event,
         _: &GlobalListContents,
         _: &Connection,
-        qh: &QueueHandle<Self>,
+        qhandle: &QueueHandle<Self>,
     ) {
         match event {
             wl_registry::Event::Global {
@@ -31,7 +31,7 @@ impl Dispatch<WlRegistry, GlobalListContents> for WlState {
                 interface,
                 version,
             } if interface == WlOutput::interface().name => {
-                let output = registry.bind::<WlOutput, _, _>(name, version.min(4), qh, ());
+                let output = proxy.bind::<WlOutput, _, _>(name, version.min(4), qhandle, ());
                 state.add_screen(name, output);
             }
             wl_registry::Event::GlobalRemove { name } => state.remove_screen(name),
@@ -45,13 +45,13 @@ impl Dispatch<ExtIdleNotificationV1, u64> for WlState {
         state: &mut Self,
         _: &ExtIdleNotificationV1,
         event: ext_idle_notification_v1::Event,
-        id: &u64,
+        data: &u64,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         match event {
-            ext_idle_notification_v1::Event::Idled => state.idled(*id),
-            ext_idle_notification_v1::Event::Resumed => state.resumed(*id),
+            ext_idle_notification_v1::Event::Idled => state.idled(*data),
+            ext_idle_notification_v1::Event::Resumed => state.resumed(*data),
             _ => {}
         }
     }
@@ -60,14 +60,14 @@ impl Dispatch<ExtIdleNotificationV1, u64> for WlState {
 impl Dispatch<ZwlrOutputPowerV1, ()> for WlState {
     fn event(
         state: &mut Self,
-        control: &ZwlrOutputPowerV1,
+        proxy: &ZwlrOutputPowerV1,
         event: zwlr_output_power_v1::Event,
-        _: &(),
+        &(): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if let zwlr_output_power_v1::Event::Failed = event {
-            state.power_failed(control);
+            state.power_failed(proxy);
         }
     }
 }

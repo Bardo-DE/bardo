@@ -64,14 +64,14 @@ impl SignalSenders {
         match check(peers, header, claims).await {
             Ok(admitted) => Some(admitted),
             Err(refused) => {
-                self.refuse(sender, claims, &refused);
+                self.refuse(sender, claims, refused);
                 None
             }
         }
     }
 
     /// Say that `sender` was refused and remember it, so that it is not said again.
-    fn refuse<T>(&mut self, sender: Option<&str>, claims: &[Claim<T>], refused: &Refused) {
+    fn refuse<T>(&mut self, sender: Option<&str>, claims: &[Claim<T>], refused: Refused) {
         log_refusal(sender, claims, refused);
         if let Some(name) = sender {
             self.refused.remember(name);

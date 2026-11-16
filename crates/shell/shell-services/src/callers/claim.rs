@@ -62,7 +62,7 @@ pub(crate) async fn admit<T: Copy>(
         log_refusal(
             header.sender().map(zbus::names::UniqueName::as_str),
             claims,
-            &refused,
+            refused,
         );
         access_denied(refused)
     })
@@ -80,14 +80,15 @@ pub(crate) async fn check<T: Copy>(
     let standing = peers.require(sender, &need).await?;
     let claim = claim_held(&standing, claims).ok_or(Refused::NotAllowed)?;
     let owner = peers.owner_of(claim.name, &claim.requirements()).await?;
-    match Some(owner.as_str()) == sender {
-        true => Ok((owner, claim.tag)),
-        false => Err(Refused::NotAllowed),
+    if Some(owner.as_str()) == sender {
+        Ok((owner, claim.tag))
+    } else {
+        Err(Refused::NotAllowed)
     }
 }
 
 /// Say in the journal that `sender` was refused, and for which roles.
-pub(crate) fn log_refusal<T>(sender: Option<&str>, claims: &[Claim<T>], refused: &Refused) {
+pub(crate) fn log_refusal<T>(sender: Option<&str>, claims: &[Claim<T>], refused: Refused) {
     let wanted: Vec<&str> = claims.iter().map(|claim| claim.role.as_str()).collect();
     eprintln!("bardo-shell: callers: {sender:?} refused for {wanted:?}: {refused}");
 }

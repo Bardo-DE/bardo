@@ -37,6 +37,8 @@ pub fn service(exists: impl Fn(&Path) -> bool) -> PamService {
     PamService(name.to_owned())
 }
 
+/// Runs `pam_authenticate` then `pam_acct_mgmt` for `attempt` under `service`.
+///
 /// Run `pam_authenticate` then `pam_acct_mgmt` for `attempt` under `service`, answering the
 /// first hidden prompt with the secret and any later prompt with a conversation error.
 /// Blocking, and it may take seconds (`pam_unix` delays a failure by about 2 s).

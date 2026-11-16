@@ -92,7 +92,7 @@ pub(crate) async fn run(
         inhibitors: Inhibitors::default(),
         logind_idle: LogindIdle::Free,
     };
-    live.follow_lock(&lock.borrow_and_update());
+    live.follow_lock(*lock.borrow_and_update());
     live.follow_power(&battery.borrow_and_update());
     let mut poll = tokio::time::interval(Duration::from_secs(POLL_S));
     poll.set_missed_tick_behavior(MissedTickBehavior::Delay);
@@ -107,8 +107,8 @@ pub(crate) async fn run(
             Some(call) = from_bus.recv() => live.bus_call(call).await,
             Ok(()) = lock.changed() => {
                 let seen = *lock.borrow_and_update();
-                live.follow_lock(&seen);
-                live.feed_lock(&seen).await;
+                live.follow_lock(seen);
+                live.feed_lock(seen).await;
             }
             Ok(()) = battery.changed() => {
                 let battery = battery.borrow_and_update().clone();
@@ -309,7 +309,7 @@ impl Live {
     }
 
     /// Keep the lock and the power in the state while passive (no effects then).
-    fn follow_lock(&mut self, lock: &Lock) {
+    fn follow_lock(&mut self, lock: Lock) {
         self.state.lock = seen_of(lock);
     }
 
@@ -317,7 +317,7 @@ impl Live {
         self.state.power = power_source(battery);
     }
 
-    async fn feed_lock(&mut self, lock: &Lock) {
+    async fn feed_lock(&mut self, lock: Lock) {
         self.feed(IdleEvent::Lock(seen_of(lock))).await;
     }
 
@@ -401,7 +401,7 @@ fn resolved(config: IdleConfig, reach: &Reach) -> shell_model::idle::IdlePolicy 
 }
 
 /// The lock as idle reads it: `Locking` counts as locked.
-fn seen_of(lock: &Lock) -> LockSeen {
+fn seen_of(lock: Lock) -> LockSeen {
     let locked = match lock.phase {
         LockPhase::Unlocked => false,
         LockPhase::Locking | LockPhase::Locked => true,

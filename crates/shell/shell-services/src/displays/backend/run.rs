@@ -220,7 +220,7 @@ impl Service {
             return;
         };
         for failure in failures {
-            self.warn(failure);
+            self.warn(&failure);
         }
         self.publish(DisplaysEvent::Outputs(outputs));
         self.publish(DisplaysEvent::Backlights(backlights));
@@ -231,7 +231,7 @@ impl Service {
             BrightnessAction::Ddc(write) => self.write(write),
             BrightnessAction::Backlight { name, value } => {
                 if let Err(error) = backlight::set(&self.paths.system, &name, value).await {
-                    self.warn(format!("backlight {}: {error}", name.0));
+                    self.warn(&format!("backlight {}: {error}", name.0));
                 }
                 let backlights = backlight::read_all(&self.paths.backlight);
                 self.publish(DisplaysEvent::Backlights(backlights));
@@ -260,9 +260,10 @@ impl Service {
             return;
         }
         if let Some(ddc) = &self.ddc {
-            let job = match probe_needed(&self.tx.borrow()) {
-                true => DdcJob::Probe,
-                false => DdcJob::Reread(Feature::Brightness),
+            let job = if probe_needed(&self.tx.borrow()) {
+                DdcJob::Probe
+            } else {
+                DdcJob::Reread(Feature::Brightness)
             };
             let _ = ddc.jobs.send(job);
         }
@@ -318,8 +319,8 @@ impl Service {
     }
 
     /// Log `message` the first time it is seen.
-    fn warn(&mut self, message: String) {
-        if self.warned.insert(message.clone()) {
+    fn warn(&mut self, message: &str) {
+        if self.warned.insert(message.to_owned()) {
             eprintln!("bardo-shell: displays: {message}");
         }
     }

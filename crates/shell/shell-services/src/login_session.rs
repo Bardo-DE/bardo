@@ -1,5 +1,7 @@
-//! Which logind session this process belongs to, found one way for every service that needs it
-//! (the session's power actions, the locker, idle's hint): by pid (bardo-shell started from the session
+//! Which logind session this process belongs to.
+//!
+//! Found one way for every service that needs it (the session's power actions, the locker, idle's
+//! hint): by pid (bardo-shell started from the session
 //! script), else by the `XDG_SESSION_ID` the process edge read, else the user's display session
 //! (bardo-shell as a systemd user service, which logind places in no session).
 

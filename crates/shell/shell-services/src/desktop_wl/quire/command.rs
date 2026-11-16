@@ -15,6 +15,14 @@ use crate::desktop_wl::command::find_window;
 
 /// The wire requests that carry `command`, in order. Activating a minimised window restores it
 /// first; a minimise target names the dock's surface on the window's output.
+///
+/// # Errors
+/// A [`Refusal`] when `command` names a window, app or Space the state does not have, or a
+/// minimise target on an output with no dock surface.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one flat exhaustive match over every command, so a new command is a compile error here"
+)]
 pub fn quire_wire_of(
     command: &DesktopCommand,
     state: &DesktopState,

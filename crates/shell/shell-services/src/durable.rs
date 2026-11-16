@@ -1,7 +1,9 @@
 //! Writing a state file so that a crash, a full disk or a power cut leaves the old contents or the
-//! new, never half of either: the one writer is `base_fs::write_atomic`, and what this module adds
-//! is the folder made first and the file named in the error. A new file is private to its owner,
-//! a file that exists keeps its permissions, and a symbolic link in the file's place is written
+//! new.
+//!
+//! Never half of either: the one writer is `base_fs::write_atomic`, and what this module adds is
+//! the folder made first and the file named in the error. A new file is private to its owner, a
+//! file that exists keeps its permissions, and a symbolic link in the file's place is written
 //! through.
 //!
 //! A file that fails to read back is not overwritten by the next save without a trace:
@@ -16,6 +18,9 @@ use base_time::{Clock, SystemClock};
 use crate::error::ServiceError;
 
 /// Replace the file at `path` (its folder created) with `bytes`, durably and atomically.
+///
+/// # Errors
+/// The I/O error from creating the folder or from the atomic write.
 pub fn write(path: &Path, bytes: &[u8], new_file: NewFileMode) -> io::Result<()> {
     if let Some(folder) = path
         .parent()
@@ -27,6 +32,9 @@ pub fn write(path: &Path, bytes: &[u8], new_file: NewFileMode) -> io::Result<()>
 }
 
 /// [`write`], naming the file in the error.
+///
+/// # Errors
+/// [`ServiceError::Io`] with `path` and the error from [`write`].
 pub fn write_file(path: &Path, bytes: &[u8], new_file: NewFileMode) -> Result<(), ServiceError> {
     write(path, bytes, new_file).map_err(|source| ServiceError::Io {
         path: path.to_path_buf(),
@@ -109,8 +117,7 @@ mod tests {
         write(&link, b"new", NewFileMode::OwnerOnly).unwrap_or_else(|e| panic!("{e}"));
         assert!(
             std::fs::symlink_metadata(&link)
-                .map(|m| m.file_type().is_symlink())
-                .unwrap_or(false),
+                .is_ok_and(|m| m.file_type().is_symlink()),
             "the link is still a link"
         );
         assert_eq!(std::fs::read(&real).unwrap_or_default(), b"new");

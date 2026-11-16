@@ -68,6 +68,10 @@ impl Bus {
     /// A new connection to this bus, once: no waiting for a bus that is not up yet. For a caller
     /// that has its own way to ask again; every service that runs for the session uses
     /// [`Bus::connect_waiting`].
+    ///
+    /// # Errors
+    /// [`ConnectError::NoBus`] when the bus is absent by choice, [`ConnectError::Refused`] when
+    /// it is there and refuses the connection.
     pub async fn try_connect(&self) -> Result<Connection, ConnectError> {
         self.open().await.map_err(|error| match error {
             OpenError::Absent => ConnectError::NoBus(self.kind),
@@ -78,6 +82,9 @@ impl Bus {
     /// A new connection to this bus, waiting for the bus to come up when it is not there yet (a
     /// system bus restarting, a session bus a late desktop starts). A bus that is absent by
     /// choice is [`ConnectError::NoBus`] at once; `Refused` never comes out of this one.
+    ///
+    /// # Errors
+    /// [`ConnectError::NoBus`] when the bus is absent by choice.
     pub async fn connect_waiting(&self) -> Result<Connection, ConnectError> {
         let mut backoff = Backoff::default();
         loop {

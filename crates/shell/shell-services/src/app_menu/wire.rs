@@ -85,6 +85,10 @@ pub(crate) async fn read_layout(
     if reply.body().data().len() > MAX_LAYOUT_BYTES {
         return Err(WireError::TooLarge);
     }
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "WireError is Clone and Eq and says only that the reply is no layout; the app's own text is not kept"
+    )]
     let (_revision, root): (u32, WireNode) = reply
         .body()
         .deserialize()
@@ -99,7 +103,7 @@ fn children_of(node: WireNode, depth: usize, budget: &mut usize) -> Result<Vec<N
     };
     node.children
         .into_iter()
-        .filter_map(node_of)
+        .filter_map(|child| node_of(&child))
         .map(|child| {
             *budget = budget.checked_sub(1).ok_or(WireError::TooLarge)?;
             Ok(Node {
@@ -120,8 +124,8 @@ fn unwrapped(value: &OwnedValue) -> Option<Value<'static>> {
     Some(value)
 }
 
-fn node_of(child: OwnedValue) -> Option<WireNode> {
-    WireNode::try_from(unwrapped(&child)?).ok()
+fn node_of(child: &OwnedValue) -> Option<WireNode> {
+    WireNode::try_from(unwrapped(child)?).ok()
 }
 
 fn get<T: TryFrom<OwnedValue>>(props: &HashMap<String, OwnedValue>, key: &str) -> Option<T> {
@@ -221,21 +225,18 @@ mod tests {
 
     #[interface(name = "com.canonical.dbusmenu")]
     impl HungMenu {
-        async fn get_layout(&self, _parent: i32, _depth: i32, _names: Vec<String>) -> (u32, i32) {
+        async fn get_layout(&self, parent: i32, depth: i32, names: Vec<String>) -> (u32, i32) {
+            let _ = (parent, depth, names);
             std::future::pending().await
         }
 
-        async fn event(
-            &self,
-            _id: i32,
-            _kind: String,
-            _data: zbus::zvariant::OwnedValue,
-            _at: u32,
-        ) {
-            std::future::pending().await
+        async fn event(&self, id: i32, kind: String, data: zbus::zvariant::OwnedValue, at: u32) {
+            let _ = (id, kind, data, at);
+            std::future::pending::<()>().await;
         }
 
-        async fn about_to_show(&self, _id: i32) -> bool {
+        async fn about_to_show(&self, id: i32) -> bool {
+            let _ = id;
             std::future::pending().await
         }
     }

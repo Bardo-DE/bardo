@@ -60,6 +60,9 @@ pub enum WaylandUnreached {
 
 impl WaylandRoute {
     /// A new connection by this route.
+    ///
+    /// # Errors
+    /// [`WaylandUnreached`] when the socket cannot be reached or the Wayland handshake fails.
     pub fn connect(&self) -> Result<Connection, WaylandUnreached> {
         Ok(match self {
             WaylandRoute::Environment => Connection::connect_to_env()?,

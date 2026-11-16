@@ -23,6 +23,8 @@ const KEYBOARD_PROFILE_KEY: &str = "X-Keycap-Profile";
 /// The desktop entry key listing the desktop file names an app had before.
 const RENAMED_FROM_KEY: &str = "X-Flatpak-RenamedFrom";
 
+/// One loaded `.desktop` file as an [`App`], or `None`.
+///
 /// One loaded `.desktop` file as an [`App`], its id the entry's desktop id without the suffix
 /// (`kde/foo.desktop` is `kde-foo`, [`ui_helpers::DesktopId`]'s rule); `None` for a
 /// non-Application type, an entry without `Name`/`Exec`, or one whose
@@ -115,7 +117,7 @@ fn keyboard_profile(entry: &DesktopGroup, path: &Path) -> Option<ProfileName> {
             eprintln!(
                 "bardo-shell: apps: {}: {KEYBOARD_PROFILE_KEY} {value:?} ignored: {error}",
                 path.display()
-            )
+            );
         })
         .ok()
 }

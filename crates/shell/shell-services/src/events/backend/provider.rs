@@ -17,8 +17,9 @@ pub struct ProviderRead {
     pub problems: Vec<EventsError>,
 }
 
-/// `.ics` files and directories of them. A file is one calendar, named by its stem. A directory
-/// is one calendar when it holds `*.ics` files directly (a vdir collection: one event per file),
+/// `.ics` files and directories of them.
+///
+/// A file is one calendar, named by its stem. A directory is one calendar when it holds `*.ics` files directly (a vdir collection: one event per file),
 /// and each subdirectory that does is one more (vdirsyncer's `~/.calendars/<collection>/`),
 /// named by the directory.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -48,9 +49,11 @@ impl IcsProvider {
     }
 }
 
-/// The provider `sources` names: `Off` has no places, `Places` an ICS provider over them
-/// (a missing one is a problem the reader reports), and `Auto` an ICS provider over the
-/// [`auto_places`] that `exists` (none when there are none).
+/// The provider `sources` names.
+///
+/// `Off` has no places, `Places` an ICS provider over them (a missing one is a problem the reader
+/// reports), and `Auto` an ICS provider over the [`auto_places`] that `exists` (none when there
+/// are none).
 pub fn provider_for(
     sources: &EventSources,
     env: &AutoEnv,

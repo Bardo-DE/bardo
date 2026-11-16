@@ -1,5 +1,6 @@
-//! Notifications (design/20 §1.6, design/13 §13.3.6): an `org.freedesktop.Notifications` server
-//! on the session bus, the live banners, and the history grouped by app, kept in
+//! Notifications (design/20 §1.6, design/13 §13.3.6): an `org.freedesktop.Notifications` server.
+//!
+//! It serves the session bus, the live banners, and the history grouped by app, kept in
 //! `$XDG_STATE_HOME/bardo/shell/notifications.json`.
 //!
 //! **It never fights another daemon.** The service asks for the name only while the daemon's
@@ -59,7 +60,7 @@ impl Service for NotificationsService {
 
     fn run(
         env: &Env,
-        answers: Answers,
+        deps: Answers,
         io: ServiceIo<Self>,
     ) -> impl Future<Output = Result<(), ServiceError>> + Send + 'static {
         let bus = env.buses.session.clone();
@@ -67,7 +68,7 @@ impl Service for NotificationsService {
         let clock = std::sync::Arc::clone(&env.clock);
         let images = ImageDirs::new(env.dirs.notification_image_dirs());
         async move {
-            backend::run(bus, file, clock, images, answers, io.state, io.commands).await;
+            backend::run(bus, file, clock, images, deps, io.state, io.commands).await;
             Ok(())
         }
     }

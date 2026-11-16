@@ -9,6 +9,8 @@ use super::entry::parse_entry;
 use super::icon_roots::IconRoots;
 use super::icons::IconTheme;
 
+/// Every desktop entry under `dirs`, in precedence order with each id once.
+///
 /// Every entry under `dirs` (the applications folders, [`Dirs::applications`](crate::env::Dirs)),
 /// in precedence order with each id once, icons resolved in `theme` (an absolute `Icon=` only
 /// inside `roots`), with the desktop's current locales. A folder that does not exist, or a

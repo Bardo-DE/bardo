@@ -1,6 +1,7 @@
-//! Everything a service reaches outside the process, chosen once at the edge: the daemon builds
-//! [`Env::from_process`], a test builds its own. No service reads an environment variable or
-//! other ambient state to decide where to connect.
+//! Everything a service reaches outside the process, chosen once at the edge.
+//!
+//! The daemon builds [`Env::from_process`], a test builds its own. No service reads an
+//! environment variable or other ambient state to decide where to connect.
 
 mod authenticator;
 mod bus_name;
@@ -97,9 +98,10 @@ pub struct Env {
     pub release_bin: Option<PathBuf>,
 }
 
-/// Whether the services that serve a well-known bus name (`org.bardo.Outputs1`, the accounts
-/// sheet, the seat at intentd) claim it when they start. A test's `start` never does, so it
-/// cannot take a name from the person's running shell.
+/// Whether the services that serve a well-known bus name claim it when they start.
+///
+/// The names are `org.bardo.Outputs1`, the accounts sheet, the seat at intentd. A test's `start`
+/// never claims one, so it cannot take a name from the person's running shell.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum NameClaims {
     /// Claim the names at start.

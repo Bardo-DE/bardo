@@ -10,6 +10,7 @@ use shell_model::launch::{
 use super::{LaunchLinks, LaunchService, monotonic_now};
 use crate::Control;
 use crate::NotificationsService;
+use crate::notifications::Answers;
 use crate::service::spawn;
 
 fn index_with(id: &str, exec: &str) -> AppIndex {
@@ -51,7 +52,7 @@ async fn a_launch_runs_in_a_real_systemd_scope_and_exits() {
     let scratch = shell_testkit::TempDir::new("launch-scope");
     let mut env = crate::env::Env::isolated(scratch.path());
     env.dirs.runtime = std::env::var_os("XDG_RUNTIME_DIR").map(std::path::PathBuf::from);
-    let notifications = spawn::<NotificationsService>(&rt, &env, Default::default()).control;
+    let notifications = spawn::<NotificationsService>(&rt, &env, Answers::default()).control;
     let launch = spawn::<LaunchService>(
         &rt,
         &env,
@@ -118,7 +119,7 @@ async fn opening_with_no_session_records_the_opener_and_starts_nothing() {
     let mut env = crate::env::Env::isolated(scratch.path());
     env.children = std::sync::Arc::<RecordedChildren>::clone(&children);
     let rt = tokio::runtime::Handle::current();
-    let notifications = spawn::<NotificationsService>(&rt, &env, Default::default()).control;
+    let notifications = spawn::<NotificationsService>(&rt, &env, Answers::default()).control;
     let links = LaunchLinks {
         apps: apps_rx,
         notifications,
@@ -179,7 +180,7 @@ fn start_over_scratch(
     let rt = tokio::runtime::Handle::current();
     let scratch = shell_testkit::TempDir::new("launch-timing");
     let env = crate::env::Env::isolated(scratch.path());
-    let notifications = spawn::<NotificationsService>(&rt, &env, Default::default()).control;
+    let notifications = spawn::<NotificationsService>(&rt, &env, Answers::default()).control;
     let launch = spawn::<LaunchService>(
         &rt,
         &env,

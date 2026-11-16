@@ -515,8 +515,7 @@ mod tests {
         write_light(dir.path(), &warm()).unwrap_or_else(|e| panic!("{e}"));
         assert!(
             std::fs::symlink_metadata(dir.path().join(SETTINGS))
-                .map(|m| m.file_type().is_symlink())
-                .unwrap_or(false),
+                .is_ok_and(|m| m.file_type().is_symlink()),
             "the link is still a link"
         );
         let text = std::fs::read_to_string(&real).unwrap_or_default();

@@ -1,5 +1,6 @@
-//! Night Shift: casement's software night light, asked for by the person. casement warms the
-//! screen from `[night_light]` in `~/.config/compositor/settings.toml`; this service reads that
+//! Night Shift: casement's software night light, asked for by the person.
+//!
+//! casement warms the screen from `[night_light]` in `~/.config/compositor/settings.toml`; this service reads that
 //! table and writes it when the person turns Night Shift on until tomorrow, turns it off or
 //! moves the warmth, and keeps the manual turn-on's end in `night-shift.json` in the state
 //! directory so a restart does not leave the screen warm all day. Everything else in casement's
@@ -35,14 +36,14 @@ impl Service for NightShiftService {
 
     fn run(
         env: &Env,
-        displays: watch::Receiver<Displays>,
+        deps: watch::Receiver<Displays>,
         io: ServiceIo<Self>,
     ) -> impl Future<Output = Result<(), ServiceError>> + Send + 'static {
         let casement = env.dirs.config.join("bardo").join("compositor");
         let state = env.dirs.sill_state();
         let clock = std::sync::Arc::clone(&env.clock);
         async move {
-            backend::run(casement, state, clock, displays, io).await;
+            backend::run(casement, state, clock, deps, io).await;
             Ok(())
         }
     }

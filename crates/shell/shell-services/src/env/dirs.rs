@@ -70,7 +70,7 @@ impl Dirs {
             data_dirs: xdg.data_dirs(),
             applications: xdg.applications_dirs(),
             config_dirs: Xdg::process().config_dirs(),
-            program_dirs: absolute_dirs(std::env::var_os("PATH")),
+            program_dirs: absolute_dirs(std::env::var_os("PATH").as_ref()),
             state: dirs::state_dir().unwrap_or_else(|| home.join(".local/state")),
             cache: dirs::cache_dir().unwrap_or_else(|| home.join(".cache")),
             runtime: dirs::runtime_dir(),
@@ -191,8 +191,8 @@ fn app_stores_in(opts: &[PathBuf], snap: &Path) -> Vec<PathBuf> {
 }
 
 /// The absolute directories a colon-separated list (`raw`) names, in order.
-fn absolute_dirs(raw: Option<OsString>) -> Vec<PathBuf> {
-    raw.iter()
+fn absolute_dirs(raw: Option<&OsString>) -> Vec<PathBuf> {
+    raw.into_iter()
         .flat_map(std::env::split_paths)
         .filter(|dir| dir.is_absolute())
         .collect()

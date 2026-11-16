@@ -34,7 +34,7 @@ impl Dispatch<WlSeat, ()> for WireState {
         _: &mut Self,
         _: &WlSeat,
         _: <WlSeat as Proxy>::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

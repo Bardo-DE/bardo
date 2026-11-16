@@ -20,9 +20,11 @@ pub struct WindowsLinks {
     pub desktop: watch::Sender<DesktopView>,
 }
 
-/// The compositor's toplevels and workspaces as a [`Service`], on a thread of its own (started
-/// by `run`) with its own Wayland connection to `env`'s compositor: the compositor's globals
-/// pick the arm that follows it, and publish after every dispatch.
+/// The compositor's toplevels and workspaces as a [`Service`].
+///
+/// It runs on a thread of its own (started by `run`) with its own Wayland connection to `env`'s
+/// compositor: the compositor's globals pick the arm that follows it, and it publishes after
+/// every dispatch.
 #[derive(Debug)]
 pub enum WindowsService {}
 
@@ -43,7 +45,7 @@ impl Service for WindowsService {
         let started = std::thread::Builder::new()
             .name("windows".to_owned())
             .spawn(move || {
-                thread::run(route, Publish::new(state, deps.desktop), commands);
+                thread::run(&route, Publish::new(state, deps.desktop), commands);
                 let _waited_for_or_not = done.send(());
             });
         // The run lasts as long as the thread: a run that ended at once would be taken for a
@@ -65,7 +67,7 @@ mod tests {
     use shell_testkit::TempDir;
     use tokio::sync::watch;
 
-    use super::{WindowsLinks, WindowsService};
+    use super::{WindowModel, WindowsLinks, WindowsService};
     use crate::env::Env;
     use crate::service::{Handle, Service};
 
@@ -75,7 +77,7 @@ mod tests {
     async fn the_run_lasts_as_long_as_its_thread() {
         let scratch = TempDir::new("windows-run");
         let env = Env::isolated(scratch.path());
-        let (handle, io) = Handle::<WindowsService>::channel(Default::default());
+        let (handle, io) = Handle::<WindowsService>::channel(WindowModel::default());
         let links = WindowsLinks {
             desktop: watch::Sender::new(DesktopView::default()),
         };

@@ -14,6 +14,8 @@ use crate::env::Env;
 use crate::error::ServiceError;
 use crate::service::{Service, ServiceIo};
 
+/// `LauncherEntry` badges as a [`Service`].
+///
 /// `LauncherEntry` badges as a [`Service`]: follows `LauncherEntry.Update` on the session bus and
 /// senders leaving it (`NameOwnerChanged` clears their apps' badges). Without a session bus the
 /// state stays at `Badges::default()`.

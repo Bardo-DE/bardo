@@ -16,9 +16,10 @@ use shell_model::windows::{Sizing, Toplevel, Toplevels};
 use super::ids::space_id;
 use super::workspaces::{group_of, ordered};
 
-/// The view of `state`, windows in the recency order of `recency` (the projected
-/// [`Toplevels`], most recently activated first): each window is its [`Toplevel`] in the
-/// desktop's vocabulary, so the wire's flags are read once, in `toplevels`.
+/// The view of `state`, windows in the recency order of `recency`.
+///
+/// `recency` is the projected [`Toplevels`], most recently activated first: each window is its
+/// [`Toplevel`] in the desktop's vocabulary, so the wire's flags are read once, in `toplevels`.
 pub fn desktop_view(state: &DesktopState, recency: &Toplevels) -> DesktopView {
     let windows: Vec<WindowView> = recency.windows.iter().map(window).collect();
     DesktopView {

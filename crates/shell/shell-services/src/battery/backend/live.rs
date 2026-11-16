@@ -54,7 +54,7 @@ async fn session(
 
     let mut presence = device.receive_is_present_changed().await;
     let mut level = device.receive_percentage_changed().await;
-    let mut charge = device.receive_state_changed().await;
+    let mut state = device.receive_state_changed().await;
     let mut to_empty = device.receive_time_to_empty_changed().await;
     let mut to_full = device.receive_time_to_full_changed().await;
 
@@ -70,7 +70,7 @@ async fn session(
                     tx.feed(BatteryEvent::Level(percent_of(value)));
                 }
             }
-            Some(change) = next(&mut charge) => {
+            Some(change) = next(&mut state) => {
                 if let Ok(value) = change.get().await {
                     tx.feed(BatteryEvent::Charge(charge_of(value)));
                 }
@@ -123,11 +123,17 @@ fn presence_of(is_present: bool) -> Presence {
 }
 
 fn percent_of(percentage: f64) -> Percent {
-    Percent(percentage.round() as u16)
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "UPower reports 0..=100; a float cast saturates and maps NaN to 0"
+    )]
+    let whole = percentage.round() as u16;
+    Percent(whole)
 }
 
 fn seconds_of(value: i64) -> Seconds {
-    Seconds(value.max(0) as u64)
+    Seconds(u64::try_from(value).unwrap_or(0))
 }
 
 fn charge_of(state: BatteryState) -> Charge {

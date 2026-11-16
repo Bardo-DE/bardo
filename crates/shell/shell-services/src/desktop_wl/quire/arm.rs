@@ -102,6 +102,10 @@ impl<D: Desktop, S: NoteSink> QuireArm<D, S> {
 
     /// Carry out `command`. A picture of an output that cannot be asked for is answered as
     /// failed at once, so whoever waits for it is not left waiting.
+    ///
+    /// # Errors
+    /// [`ArmError::Refused`] when the command names something the desktop does not have,
+    /// [`ArmError::Send`] when the client refuses a request.
     pub fn execute(&mut self, command: &DesktopCommand) -> Result<(), Failed<D>> {
         let sent = self.send_all(command);
         if sent.is_err() {
@@ -167,6 +171,9 @@ impl<D: Desktop, S: NoteSink> QuireArm<D, S> {
 
     /// Tell the compositor that `surface` (already registered with the client as `key`) is the
     /// shell's `role` on `output`, and remember it for the commands that name a surface.
+    ///
+    /// # Errors
+    /// [`ArmError::Send`] when the client refuses the role request; nothing is remembered then.
     pub fn assign(
         &mut self,
         role: ShellRole,

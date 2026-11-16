@@ -1,6 +1,7 @@
-//! The dock's pinned apps, the `[[dock]]` rows of `~/.config/bardo/shell/layout.toml` (design/28 §5.6:
-//! membership and order are data in the program's layout file). The old `dock.json` is read once
-//! into it and left in place.
+//! The dock's pinned apps, the `[[dock]]` rows of `~/.config/bardo/shell/layout.toml`.
+//!
+//! Membership and order are data in the program's layout file (design/28 §5.6). The old
+//! `dock.json` is read once into it and left in place.
 
 mod backend;
 
@@ -12,8 +13,9 @@ use crate::env::Env;
 use crate::error::ServiceError;
 use crate::service::{Service, ServiceIo};
 
-/// The dock pins as a [`Service`]: loaded at once, then every [`PinEvent`] sent to the control
-/// applied and the file written atomically after each; an external edit (another process, a
+/// The dock pins as a [`Service`].
+///
+/// Loaded at once, then every [`PinEvent`] sent to the control applied and the file written atomically after each; an external edit (another process, a
 /// text editor) is picked up through a 30 ms debounced directory watch and published as if it
 /// were a `Replaced` event. A fresh account's dock does not exist: once the installed apps are
 /// known the dock starts with the desktop's own (`shell_model::seed::first_dock`), once.
@@ -33,12 +35,12 @@ impl Service for PinsService {
 
     fn run(
         env: &Env,
-        apps: watch::Receiver<AppIndex>,
+        deps: watch::Receiver<AppIndex>,
         io: ServiceIo<Self>,
     ) -> impl Future<Output = Result<(), ServiceError>> + Send + 'static {
         let dir = env.dirs.sill_config();
         async move {
-            backend::run(dir, io.state, io.commands, apps).await;
+            backend::run(dir, io.state, io.commands, deps).await;
             Ok(())
         }
     }

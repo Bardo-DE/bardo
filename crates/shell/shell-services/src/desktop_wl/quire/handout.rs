@@ -1,6 +1,7 @@
-//! The connection the compositor hands the shell: `org.bardo.Compositor1.Connect("shell")`
-//! returns a connected Wayland socket on which the privileged globals (`bardo_shell_v1`) are
-//! offered. They are never on the session's socket.
+//! The connection the compositor hands the shell.
+//!
+//! `org.bardo.Compositor1.Connect("shell")` returns a connected Wayland socket on which the
+//! privileged globals (`bardo_shell_v1`) are offered. They are never on the session's socket.
 //!
 //! [`Handout`] is the seam: [`ZbusHandout`] calls the compositor over the session bus,
 //! the tests bring their own.
@@ -64,9 +65,11 @@ impl Handout for ZbusHandout {
     }
 }
 
-/// The shell's connection from the compositor on `bus`, or `None` when there is no session bus
-/// or no compositor of ours owns the name (the session is then another desktop's or a test, and the
-/// shell connects through the environment). Any other failure goes to stderr once.
+/// The shell's connection from the compositor on `bus`, or `None` without a session bus or ours.
+///
+/// `None` also when no compositor of ours owns the name (the session is then another desktop's
+/// or a test, and the shell connects through the environment). Any other failure goes to stderr
+/// once.
 pub async fn shell_connection(bus: &Bus) -> Option<OwnedFd> {
     let connection = match bus.try_connect().await {
         Ok(connection) => connection,

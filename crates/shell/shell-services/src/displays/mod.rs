@@ -32,9 +32,11 @@ use crate::env::Env;
 use crate::error::ServiceError;
 use crate::service::{Service, ServiceIo};
 
-/// The displays as a [`Service`], following the volume service (its `Deps`) for the
-/// monitor-speaker path and talking DDC on `env`'s buses. Until the first `Policy` command it does
-/// nothing at all: no bus probe, no output query, no file.
+/// The displays as a [`Service`].
+///
+/// It follows the volume service (its `Deps`) for the monitor-speaker path and talks DDC on
+/// `env`'s buses. Until the first `Policy` command it does nothing at all: no bus probe, no
+/// output query, no file.
 #[derive(Debug)]
 pub enum DisplaysService {}
 

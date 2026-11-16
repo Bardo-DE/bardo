@@ -1,3 +1,5 @@
+//! bardo-shell serves the screen-sharing picker.
+//!
 //! bardo-shell serves the screen-sharing picker: `org.bardo.Shell1.PickCaptureSource`, which transom (the
 //! portal backend) calls with what an app asked to share and which returns what the person picked;
 //! and the questions beside it (`PickColor`, `AskPermission`).
@@ -47,6 +49,8 @@ use crate::error::ServiceError;
 use crate::seat::SeatView;
 use crate::service::{Service, ServiceIo};
 
+/// What the capture-pick service reads.
+///
 /// What the service reads: the seat to export on, the displays to list as screens, the desktop's
 /// windows to list as windows, the installed apps that give a program its name, and where the
 /// compositor's answers go.

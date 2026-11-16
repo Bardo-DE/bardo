@@ -94,7 +94,7 @@ pub(crate) async fn run(
                 Some(command) => live.command(command).await,
                 None => break,
             },
-            Some(check) = finished.recv() => live.finished(check),
+            Some(check) = finished.recv() => live.finished(&check),
         }
     }
 }
@@ -141,14 +141,11 @@ impl Live {
     /// surfaces unlock through their one path. Ignored while a check runs (the
     /// person is already typing; their own verdict stands).
     fn grace(&mut self) {
-        match self.checks.checking {
-            true => {}
-            false => {
-                let (checking, _) = step(self.checks, GateIn::Submit);
-                let (next, out) = step(checking, GateIn::Verdict(Outcome::Accepted));
-                self.checks = next;
-                self.publish_out(&out, &Verdict::plain(Outcome::Accepted));
-            }
+        if !self.checks.checking {
+            let (checking, _) = step(self.checks, GateIn::Submit);
+            let (next, out) = step(checking, GateIn::Verdict(Outcome::Accepted));
+            self.checks = next;
+            self.publish_out(&out, &Verdict::plain(Outcome::Accepted));
         }
     }
 
@@ -172,16 +169,15 @@ impl Live {
             FakeVerdict::Accept => Outcome::Accepted,
             FakeVerdict::Refuse => Outcome::Refused,
         };
-        match self.checks.checking {
-            true => self.round = Round(self.round.0 + 1),
-            false => {
-                let (next, out) = step(self.checks, GateIn::Submit);
-                self.checks = next;
-                if !out.contains(&GateOut::Check) {
-                    return;
-                }
-                self.publish_out(&out, &Verdict::plain(Outcome::Refused));
+        if self.checks.checking {
+            self.round = Round(self.round.0 + 1);
+        } else {
+            let (next, out) = step(self.checks, GateIn::Submit);
+            self.checks = next;
+            if !out.contains(&GateOut::Check) {
+                return;
             }
+            self.publish_out(&out, &Verdict::plain(Outcome::Refused));
         }
         let (round, done) = (self.round, self.done.clone());
         self.rt.spawn(async move {
@@ -193,7 +189,7 @@ impl Live {
         });
     }
 
-    fn finished(&mut self, check: Finished) {
+    fn finished(&mut self, check: &Finished) {
         if check.round != self.round {
             return;
         }

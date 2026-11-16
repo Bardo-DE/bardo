@@ -99,11 +99,11 @@ mod tests {
         }
     }
 
-    fn entry(login: &str, gecos: &str) -> Option<Entry> {
-        Some(Entry {
+    fn entry(login: &str, gecos: &str) -> Entry {
+        Entry {
             login: login.to_owned(),
             gecos: gecos.to_owned(),
-        })
+        }
     }
 
     #[test]
@@ -111,28 +111,28 @@ mod tests {
         let cases = [
             (
                 "a name and room details",
-                entry("ada", "Ada Lovelace,,,"),
+                Some(entry("ada", "Ada Lovelace,,,")),
                 person(1000, "ada", "Ada Lovelace"),
             ),
             (
                 "padded",
-                entry("ada", "  Ada Lovelace  ,room"),
+                Some(entry("ada", "  Ada Lovelace  ,room")),
                 person(1000, "ada", "Ada Lovelace"),
             ),
             (
                 "an empty comment",
-                entry("bob", ""),
+                Some(entry("bob", "")),
                 person(1000, "bob", "bob"),
             ),
             (
                 "only commas",
-                entry("bob", ",,,"),
+                Some(entry("bob", ",,,")),
                 person(1000, "bob", "bob"),
             ),
             ("no entry", None, person(1000, "fallback", "fallback")),
             (
                 "an entry without a login",
-                entry("", "Nobody"),
+                Some(entry("", "Nobody")),
                 person(1000, "fallback", "fallback"),
             ),
         ];

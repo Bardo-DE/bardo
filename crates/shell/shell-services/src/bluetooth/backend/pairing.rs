@@ -53,8 +53,8 @@ pub(crate) fn run_connect(
     });
 }
 
-pub(crate) fn run_disconnect(connection: &Connection, tracked: &Tracked, address: BtAddress) {
-    let Some(path) = tracked.device_path.get(&address).cloned() else {
+pub(crate) fn run_disconnect(connection: &Connection, tracked: &Tracked, address: &BtAddress) {
+    let Some(path) = tracked.device_path.get(address).cloned() else {
         return;
     };
     let connection = connection.clone();

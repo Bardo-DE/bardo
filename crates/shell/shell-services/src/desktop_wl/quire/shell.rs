@@ -76,11 +76,17 @@ impl ShellArm {
     }
 
     /// Carry out `command` on the arm's thread.
+    ///
+    /// # Errors
+    /// [`ShellGone`] when the arm's thread has stopped.
     pub fn command(&self, command: DesktopCommand) -> Result<(), ShellGone> {
         self.call(ShellCall::Command(command))
     }
 
     /// Register a surface of the host with the arm.
+    ///
+    /// # Errors
+    /// [`ShellGone`] when the arm's thread has stopped.
     pub fn register(
         &self,
         role: ShellRole,
@@ -94,6 +100,10 @@ impl ShellArm {
         })
     }
 
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "the send error only hands the call back; `ShellGone` says the thread has stopped"
+    )]
     fn call(&self, call: ShellCall) -> Result<(), ShellGone> {
         self.calls.send(call).map_err(|_| ShellGone)
     }
@@ -101,6 +111,10 @@ impl ShellArm {
 
 /// Start the arm on the connection `surface` lives on: the shell host's, which the surface
 /// came from.
+///
+/// # Errors
+/// [`SpawnError::Connection`] when the surface's connection is gone, [`SpawnError::Thread`] when
+/// the thread cannot be made.
 pub fn spawn_shell_arm(surface: &WlSurface) -> Result<ShellArm, SpawnError> {
     let connection = surface
         .backend()
@@ -111,7 +125,7 @@ pub fn spawn_shell_arm(surface: &WlSurface) -> Result<ShellArm, SpawnError> {
     let (calls, from_callers) = channel::channel();
     std::thread::Builder::new()
         .name("desktop_quire".to_owned())
-        .spawn(move || run(connection, notes_tx, from_callers))?;
+        .spawn(move || run(&connection, notes_tx, from_callers))?;
     Ok(ShellArm {
         notes: Some(notes),
         calls,
@@ -192,11 +206,11 @@ impl Following {
 }
 
 fn run(
-    connection: Connection,
+    connection: &Connection,
     notes: mpsc::UnboundedSender<ShellNote>,
     calls: channel::Channel<ShellCall>,
 ) {
-    let client = match DesktopClient::with_config(&connection, DesktopConfig::holding_shell()) {
+    let client = match DesktopClient::with_config(connection, DesktopConfig::holding_shell()) {
         Ok(client) => client,
         Err(error) => {
             eprintln!("bardo-shell: desktop_quire: {error}; the shell protocol is not followed");
@@ -253,7 +267,7 @@ fn drive(
     handle
         .insert_source(
             calls,
-            move |event, _, following: &mut Following| match event {
+            move |event, (), following: &mut Following| match event {
                 channel::Event::Msg(call) => following.call(call),
                 channel::Event::Closed => signal.stop(),
             },

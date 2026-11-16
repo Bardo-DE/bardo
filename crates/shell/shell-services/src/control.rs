@@ -28,6 +28,13 @@ impl<C> Control<C> {
     }
 
     /// Queue `command`; `ServiceError::Gone` once the service has stopped.
+    ///
+    /// # Errors
+    /// [`ServiceError::Gone`] when the service's receiver has been dropped.
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "the send error only hands the command back; `Gone` says all there is to say"
+    )]
     pub fn send(&self, command: C) -> Result<(), ServiceError> {
         self.tx.send(command).map_err(|_| ServiceError::Gone)
     }

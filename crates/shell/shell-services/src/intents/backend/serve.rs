@@ -94,6 +94,6 @@ fn docket_trouble(error: ServeError) -> ClaimError {
     match error {
         ServeError::Taken(name) => ClaimError::NameTaken(name),
         ServeError::Bus(zbus::Error::NameTaken) => ClaimError::NameTaken(CONFIRM_BUS.to_owned()),
-        other => ClaimError::Refused(other.to_string()),
+        ServeError::Bus(other) => ClaimError::Refused(other.to_string()),
     }
 }

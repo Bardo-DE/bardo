@@ -62,7 +62,7 @@ impl DisplaysObject {
         }
         self.control
             .send(DisplaysCommand::SetBrightness { output, level })
-            .map_err(|_| fdo::Error::Failed("the displays have stopped".to_owned()))
+            .map_err(|error| fdo::Error::Failed(format!("the displays have stopped: {error}")))
     }
 
     /// The list again, when any level changed.

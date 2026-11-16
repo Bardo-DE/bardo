@@ -44,7 +44,7 @@ pub(crate) async fn run(
     let mut sources = loop {
         match commands.recv().await {
             Some(EventsCommand::Sources(sources)) => break sources,
-            Some(EventsCommand::Refresh) => continue,
+            Some(EventsCommand::Refresh) => {}
             None => return,
         }
     };
@@ -82,7 +82,7 @@ async fn follow(
         Plan::Off | Plan::NoCalendars => Vec::new(),
     };
     let mut touches = Debounced::start(
-        watched.iter().map(|path| Place::at(path)).collect(),
+        &watched.iter().map(|path| Place::at(path)).collect::<Vec<_>>(),
         EventFilter::AnyChange,
         CALENDAR_QUIET,
     )
