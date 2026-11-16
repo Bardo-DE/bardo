@@ -1,6 +1,6 @@
 use super::*;
 use crate::fixtures::{claim, storage};
-use crate::offer::{Offer, Provenance, Subject};
+use crate::offer::{Provenance, Subject};
 use crate::{Access, Delta, StorageScope};
 
 fn poll() -> crate::Capability {

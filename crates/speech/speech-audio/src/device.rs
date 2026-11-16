@@ -2,7 +2,6 @@
 
 use crate::node::AudioNode;
 use serde::{Deserialize, Serialize};
-use std::future::Future;
 
 /// The capture format: 16 kHz mono S16, converted by `PipeWire`'s adapter.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

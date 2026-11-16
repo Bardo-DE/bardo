@@ -7,8 +7,8 @@ use compositor_core::input::DbusCall;
 
 /// Sends `call` through `state.seams.shell_calls` within the frame the binding fired in. A
 /// failure is logged and degrades; it never stops the loop.
-pub(super) fn call_binding(state: &mut State, call: DbusCall) {
-    if let Err(error) = state.seams.shell_calls.call(&call) {
+pub(super) fn call_binding(state: &mut State, call: &DbusCall) {
+    if let Err(error) = state.seams.shell_calls.call(call) {
         tracing::warn!(%error, method = %call.method, "a binding's call was not sent");
     }
     for failed in state.seams.shell_calls.failures() {

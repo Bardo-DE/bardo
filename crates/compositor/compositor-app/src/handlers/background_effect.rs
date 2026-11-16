@@ -14,13 +14,13 @@ impl ExtBackgroundEffectHandler for State {
         let events = on_blur_region(
             &mut self.wl.background_effect,
             &wl_surface,
-            region_rects(&region),
+            &region_rects(&region),
         );
         core_loop::feed(self, events);
     }
 
     fn unset_blur_region(&mut self, wl_surface: WlSurface) {
-        let events = on_blur_region(&mut self.wl.background_effect, &wl_surface, Vec::new());
+        let events = on_blur_region(&mut self.wl.background_effect, &wl_surface, &[]);
         core_loop::feed(self, events);
     }
 }

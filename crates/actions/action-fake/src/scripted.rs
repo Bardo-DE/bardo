@@ -262,6 +262,10 @@ impl FakeMemory {
 }
 
 impl MemoryLink for FakeMemory {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn ask(&self, request: MemoryRequest) -> Result<MemoryReply, LinkFault> {
         with(&self.requests, |r| r.push(request));
         Ok(with(&self.replies, VecDeque::pop_front).unwrap_or(MemoryReply::Ok))
@@ -298,6 +302,10 @@ impl ScriptedWriter {
 }
 
 impl PolicyWriter for ScriptedWriter {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn derive(
         &self,
         task: &TaskId,
@@ -341,6 +349,10 @@ impl ScriptedReader {
 }
 
 impl Reader for ScriptedReader {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn extract(
         &self,
         session: &SessionId,

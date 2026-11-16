@@ -76,7 +76,7 @@ pub fn spawn_hits(
             };
             let home = base_xdg::Xdg::process().home().map(Path::to_path_buf);
             let effect = corner_effect(&binding.action, home.as_deref());
-            act(effect, hit.output, &doing).await;
+            act(effect, hit.output, &doing);
         }
     });
 }
@@ -84,7 +84,7 @@ pub fn spawn_hits(
 /// Carry out `effect` on `output`: hand an action to the host with the corner's output as its
 /// origin; the launcher's path for an activation; spawn a detached child process for `Run` (a
 /// custom command). What cannot be done is logged.
-async fn act(effect: CornerEffect, output: OutputId, doing: &Doing) {
+fn act(effect: CornerEffect, output: OutputId, doing: &Doing) {
     let Doing {
         host,
         links,

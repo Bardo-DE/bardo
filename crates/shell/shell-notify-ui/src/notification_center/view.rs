@@ -16,7 +16,7 @@ use shell_ui_kit::widgets::widgets_css;
 pub const NOTIFICATION_CENTER_CSS: &str = include_str!("style.css");
 
 /// The center on `output`.
-pub(super) fn notification_center(output: OutputInfo) -> Element {
+pub(super) fn notification_center(output: &OutputInfo) -> Element {
     rsx! {
         SurfaceRoot {
             output: output.clone(),

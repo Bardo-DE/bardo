@@ -33,11 +33,12 @@ pub enum Asking {
 }
 
 impl Asking {
-    /// `Something` when `question` is there.
-    fn of<T>(question: Option<T>) -> Asking {
-        match question {
-            Some(_) => Asking::Something,
-            None => Asking::Nothing,
+    /// `Something` when a question is `asked`.
+    fn of(asked: bool) -> Asking {
+        if asked {
+            Asking::Something
+        } else {
+            Asking::Nothing
         }
     }
 
@@ -58,14 +59,14 @@ impl Asking {
         } else {
             Asking::Nothing
         };
-        let intents = Asking::of(sheet_view(&services.intents.state.borrow().sheets));
-        let polkit = Asking::of(services.polkit_agent.state.borrow().current.as_ref());
-        let accounts = Asking::of(services.accounts_sheet.state.borrow().current());
-        let trial = Asking::of(links.display_trial.latest());
+        let intents = Asking::of(sheet_view(&services.intents.state.borrow().sheets).is_some());
+        let polkit = Asking::of(services.polkit_agent.state.borrow().current.is_some());
+        let accounts = Asking::of(services.accounts_sheet.state.borrow().current().is_some());
+        let trial = Asking::of(links.display_trial.latest().is_some());
         intents
             .or(polkit)
-            .or(Asking::of(capture.asking.as_ref()))
-            .or(Asking::of(capture.permission.as_ref()))
+            .or(Asking::of(capture.asking.is_some()))
+            .or(Asking::of(capture.permission.is_some()))
             .or(consent)
             .or(accounts)
             .or(trial)
@@ -117,13 +118,13 @@ impl SheetLatch {
 
 /// Tell the host to look at the questions again whenever one of the sources changes, until the
 /// host is gone.
-pub fn spawn_follower(rt: &Handle, services: &Services, links: &Links, host: HostHandle<ShellMsg>) {
-    nudge(rt, services.intents.state.clone(), &host);
-    nudge(rt, services.polkit_agent.state.clone(), &host);
-    nudge(rt, services.capture.state.clone(), &host);
-    nudge(rt, services.voice.state.clone(), &host);
-    nudge(rt, services.accounts_sheet.state.clone(), &host);
-    nudge(rt, links.display_trial.subscribe(), &host);
+pub fn spawn_follower(rt: &Handle, services: &Services, links: &Links, host: &HostHandle<ShellMsg>) {
+    nudge(rt, services.intents.state.clone(), host);
+    nudge(rt, services.polkit_agent.state.clone(), host);
+    nudge(rt, services.capture.state.clone(), host);
+    nudge(rt, services.voice.state.clone(), host);
+    nudge(rt, services.accounts_sheet.state.clone(), host);
+    nudge(rt, links.display_trial.subscribe(), host);
 }
 
 /// Send `ShellMsg::Sheets` each time `source` changes.

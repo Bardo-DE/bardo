@@ -7,8 +7,8 @@ use compositor_core::{OutputKey, OutputName};
 
 /// Drives `output` with `ramp`: the tty backend loads it on the output's CRTC; the headless
 /// backend remembers it so a test reads it back. A failure is logged and degrades.
-pub(super) fn set_gamma(state: &mut State, output: OutputKey, ramp: GammaRamp) {
-    let Some(name) = name_of(state, &output) else {
+pub(super) fn set_gamma(state: &mut State, output: &OutputKey, ramp: GammaRamp) {
+    let Some(name) = name_of(state, output) else {
         return;
     };
     match &mut state.backend {

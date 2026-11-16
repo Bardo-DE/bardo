@@ -44,12 +44,12 @@ impl RealCaptureGpu {
 
     /// The renderer, or an error while a frame is being drawn with it.
     fn renderer(&self) -> Result<RefMut<'_, GlesRenderer>, BackendError> {
-        self.renderer.try_borrow_mut().map_err(|_| busy())
+        self.renderer.try_borrow_mut().ok().ok_or_else(busy)
     }
 
     /// The scene images, or an error while they are in use.
     fn store(&self) -> Result<RefMut<'_, SceneStore>, BackendError> {
-        self.scenes.try_borrow_mut().map_err(|_| busy())
+        self.scenes.try_borrow_mut().ok().ok_or_else(busy)
     }
 }
 

@@ -113,7 +113,7 @@ fn records_and_lists() {
     ];
     for (label, text, want) in CASES {
         assert_eq!(
-            record().check(&json(text)).map_err(|_| ()),
+            record().check(&json(text)).ok().ok_or(()),
             *want,
             "{label}"
         );

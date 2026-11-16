@@ -161,7 +161,7 @@ impl XdgShellHandler for State {
     }
 
     fn new_popup(&mut self, surface: PopupSurface, positioner: PositionerState) {
-        popups::new_popup(self, surface, positioner);
+        popups::new_popup(self, &surface, positioner);
     }
 
     fn move_request(&mut self, surface: ToplevelSurface, _seat: WlSeat, serial: Serial) {
@@ -194,7 +194,7 @@ impl XdgShellHandler for State {
     }
 
     fn grab(&mut self, surface: PopupSurface, seat: WlSeat, serial: Serial) {
-        popups::grab(self, surface, seat, serial);
+        popups::grab(self, &surface, seat, serial);
     }
 
     fn maximize_request(&mut self, surface: ToplevelSurface) {
@@ -262,7 +262,7 @@ impl XdgShellHandler for State {
         positioner: PositionerState,
         token: u32,
     ) {
-        popups::reposition(self, surface, positioner, token);
+        popups::reposition(self, &surface, positioner, token);
     }
 
     fn toplevel_destroyed(&mut self, surface: ToplevelSurface) {

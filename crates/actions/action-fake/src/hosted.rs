@@ -5,7 +5,6 @@
 use action_core::{AppRefusal, Invocation, Outcome, Preview, UndoFault};
 use action_vocab::UndoToken;
 use provenance::Actor;
-use std::future::Future;
 use std::pin::Pin;
 
 /// A boxed future, as a hosted app answers.

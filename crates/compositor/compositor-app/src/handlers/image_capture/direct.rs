@@ -112,5 +112,5 @@ pub(in crate::handlers) fn window(
 fn held(buffer: &WlBuffer) -> Result<Dmabuf, BackendError> {
     get_dmabuf(buffer)
         .cloned()
-        .map_err(|_| BackendError::NoFrame)
+        .ok().ok_or(BackendError::NoFrame)
 }

@@ -65,7 +65,7 @@ pub(super) fn on(state: &State, frame: &OutputFrame) -> BTreeMap<WindowId, Closi
         model.windows().contains_key(id)
     })
     .filter_map(|(id, kept)| {
-        let body = state.render.bodies.get(id)?;
+        let body = state.render.bodies.get(*id)?;
         Some((id, ClosingFrame::new(kept.style).with_body(body.clone())))
     })
     .map(|(id, closing)| (*id, closing))

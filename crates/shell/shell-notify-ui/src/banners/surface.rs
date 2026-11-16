@@ -47,6 +47,6 @@ impl Surface for Banners {
     }
 
     fn root(output: OutputInfo, (): ()) -> Element {
-        banners(output)
+        banners(&output)
     }
 }

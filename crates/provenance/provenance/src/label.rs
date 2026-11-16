@@ -245,7 +245,6 @@ impl ReaderKey {
 mod tests {
     use super::*;
     use crate::consent::{ConfirmId, ConfirmReceipt, InputProof, Witness, declassify, endorse};
-    use account_core::AppName;
     use base_time::UnixSeconds;
     use proptest::prelude::*;
 

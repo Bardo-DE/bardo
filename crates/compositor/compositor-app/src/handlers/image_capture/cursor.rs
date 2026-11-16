@@ -80,7 +80,7 @@ pub(super) fn new_session(state: &mut State, session: CursorSession) {
         return;
     };
     match consent::admit(state, &client, Power::Screen) {
-        Admission::Go => start(state, session, output),
+        Admission::Go => start(state, session, &output),
         Admission::Hold => {
             if let Some(key) = consent::key_of(&client) {
                 state.wl.image_capture.cursors.park(key, session, output);
@@ -97,7 +97,7 @@ pub(in crate::handlers) fn resolved(state: &mut State, client: ClientKey, outcom
     match outcome {
         PowerOutcome::Allowed => {
             for held in parked {
-                start(state, held.session, held.output);
+                start(state, held.session, &held.output);
             }
         }
         PowerOutcome::Denied | PowerOutcome::Revoked => {
@@ -108,12 +108,12 @@ pub(in crate::handlers) fn resolved(state: &mut State, client: ClientKey, outcom
 }
 
 /// Holds `session`, which watches `output`, and tells it where the cursor is.
-fn start(state: &mut State, session: CursorSession, output: OutputKey) {
+fn start(state: &mut State, session: CursorSession, output: &OutputKey) {
     let id = state.wl.image_capture.cursors.hold(session, output.clone());
     if let Some(hold) = state.wl.image_capture.cursors.get(id) {
         hold.session.user_data().insert_if_missing_threadsafe(|| id);
     }
-    sync(state, &output);
+    sync(state, output);
 }
 
 /// The client destroyed a cursor session.

@@ -39,6 +39,11 @@ const XKB_OFFSET: u32 = 8;
 /// let special: InputEvent<VirtualInput> = InputEvent::Special(());
 /// assert_eq!(input_kind_of(&special, extent), None);
 /// ```
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "`whole` clamps the value to the target type range just before the cast"
+)]
 pub fn input_kind_of<B: InputBackend>(
     event: &InputEvent<B>,
     extent: LogicalRect,
@@ -147,6 +152,10 @@ fn whole(value: f64, low: f64, high: f64) -> f64 {
 }
 
 /// A length in logical pixels as sub-pixels.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "`whole` clamps the value to the target type range just before the cast"
+)]
 fn sub_px(value: f64) -> SubPx {
     SubPx(whole(
         value * SUB_PER_LOGICAL,
@@ -169,6 +178,10 @@ fn placed<B: InputBackend, E: AbsolutePositionEvent<B>>(
 ) -> LogicalPoint {
     let span = |side: u32| i32::try_from(side).unwrap_or(i32::MAX);
     let place = |origin: i32, at: f64| {
+        #[expect(
+            clippy::cast_possible_truncation,
+            reason = "`whole` clamps the value to the target type range just before the cast"
+        )]
         let whole = whole(at, f64::from(i32::MIN), f64::from(i32::MAX)) as i32;
         origin.saturating_add(whole)
     };
@@ -194,6 +207,10 @@ fn ended<B: InputBackend, E: GestureEndEvent<B>>(event: &E) -> bool {
 
 /// One scroll frame. A continuous source (fingers, a trackpoint) that reports a zero amount has
 /// stopped; a wheel's frame always runs.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "`whole` clamps the value to the target type range just before the cast"
+)]
 fn axis_frame<B: InputBackend, E: PointerAxisEvent<B>>(event: &E) -> AxisFrame {
     let (px_x, px_y) = (event.amount(Axis::Horizontal), event.amount(Axis::Vertical));
     let detents = |axis| {

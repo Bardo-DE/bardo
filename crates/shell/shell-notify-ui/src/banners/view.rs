@@ -43,7 +43,7 @@ pub const BANNER_VARS: [&str; 1] = ["--shell-banner-room"];
 const STACK_MAX: usize = 3;
 
 /// The column on `output`.
-pub(super) fn banners(output: OutputInfo) -> Element {
+pub(super) fn banners(output: &OutputInfo) -> Element {
     rsx! {
         SurfaceRoot {
             output: output.clone(),
@@ -66,9 +66,9 @@ fn ColumnView(output: layer_shell_host::OutputId) -> Element {
     let column = use_column(BannerParams::default(), control, link.clone());
     let live = use_service_part::<NotificationsService, _>(|notes| notes.live.clone());
     let shows = use_watch(link.subscribe());
-    use_follow_stack(column, live, shows, output, STACK_MAX);
-    use_map_while_showing(column);
-    use_keyboard_asks(column, &link);
+    use_follow_stack(&column, live, shows, output, STACK_MAX);
+    use_map_while_showing(&column);
+    use_keyboard_asks(&column, &link);
     let deck = (column.deck)();
     let shapes: Vec<CardShape> = deck
         .drawn()
@@ -85,7 +85,7 @@ fn ColumnView(output: layer_shell_host::OutputId) -> Element {
     let banners: Vec<shell_kit::notifications::banner_stack::Banner> = deck
         .listed()
         .into_iter()
-        .filter_map(|entry| banner(column, &notes, entry))
+        .filter_map(|entry| banner(&column, &notes, entry))
         .collect();
     let style = format!("--shell-banner-room:{ROOM}px;");
     rsx! {
@@ -110,10 +110,12 @@ fn ColumnView(output: layer_shell_host::OutputId) -> Element {
 
 /// One listed card as quire's banner.
 fn banner(
-    column: Column,
+    column: &Column,
     notes: &Notifications,
     entry: &Entry,
 ) -> Option<shell_kit::notifications::banner_stack::Banner> {
+    // The handlers below outlive this call, so they hold their own copy of the column.
+    let column = *column;
     let id = entry.card.newest()?;
     let note = note_of(notes, id, &column)?;
     let key = entry.key;
@@ -154,12 +156,13 @@ fn note_of(
 
 /// Feed the deck the stack whenever the banners, the link or the cap change.
 fn use_follow_stack(
-    column: Column,
+    column: &Column,
     live: ReadSignal<Notifications>,
     shows: ReadSignal<shell_ui_kit::links::BannerOutput>,
     output: layer_shell_host::OutputId,
     max: usize,
 ) {
+    let column = *column;
     use_effect(use_reactive!(|max| {
         let banners = live.read().banners.clone();
         let cards = if shows.read().shows_on(output) {
@@ -174,7 +177,8 @@ fn use_follow_stack(
 
 /// Follow the link's keyboard events: `bardo-shell focus-latest` choosing the banners, and the
 /// compositor taking the keyboard away.
-fn use_keyboard_asks(column: Column, link: &BannerLink) {
+fn use_keyboard_asks(column: &Column, link: &BannerLink) {
+    let column = *column;
     let keys = use_watch(link.subscribe_keys());
     let mut heard = use_hook(|| CopyValue::new(keys.peek().serial));
     use_effect(move || {
@@ -208,7 +212,8 @@ fn use_regions(regions: Regions) {
 
 /// Map the surface once a card is drawn; unmap it once none is (the stack has played the last
 /// one out and said so).
-fn use_map_while_showing(column: Column) {
+fn use_map_while_showing(column: &Column) {
+    let column = *column;
     use_follow_visibility(move || {
         if column.deck.read().showing() {
             Visibility::Shown

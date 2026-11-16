@@ -90,7 +90,7 @@ fn layer_bounds(state: &State, kind: &PopupKind, root: &WlSurface) -> PopupBound
 }
 
 /// A popup was created: it gets a key and is placed.
-pub(crate) fn new_popup(state: &mut State, surface: PopupSurface, positioner: PositionerState) {
+pub(crate) fn new_popup(state: &mut State, surface: &PopupSurface, positioner: PositionerState) {
     // A client past its cap is cut (CASC-03); no popup is made for the one it asked for.
     if let Some(client) = surface.wl_surface().client() {
         let held =
@@ -100,22 +100,22 @@ pub(crate) fn new_popup(state: &mut State, surface: PopupSurface, positioner: Po
         }
     }
     let key = state.wl.xdg_shell.mint_popup();
-    let bounds = bounds_of(state, &surface);
-    let events = on_new_popup(&mut state.wl.xdg_shell, &surface, &positioner, key, bounds);
+    let bounds = bounds_of(state, surface);
+    let events = on_new_popup(&mut state.wl.xdg_shell, surface, &positioner, key, bounds);
     core_loop::feed(state, events);
 }
 
 /// A popup asked to be repositioned.
 pub(super) fn reposition(
     state: &mut State,
-    surface: PopupSurface,
+    surface: &PopupSurface,
     positioner: PositionerState,
     token: u32,
 ) {
-    let bounds = bounds_of(state, &surface);
+    let bounds = bounds_of(state, surface);
     let events = on_reposition(
         &mut state.wl.xdg_shell,
-        &surface,
+        surface,
         &positioner,
         token,
         bounds,
@@ -135,10 +135,10 @@ fn is_shell(surface: &WlSurface) -> bool {
 /// A popup asked for an explicit grab: if the serial answers a press (or the shell asks), it
 /// takes the seat's keyboard and pointer (a menu), and a popup whose grab is refused is
 /// dismissed.
-pub(super) fn grab(state: &mut State, surface: PopupSurface, _seat: WlSeat, serial: Serial) {
+pub(super) fn grab(state: &mut State, surface: &PopupSurface, _seat: WlSeat, serial: Serial) {
     let proven = is_shell(surface.wl_surface())
         || state.grab_serial_proves(surface.wl_surface(), serial_of(serial));
-    let events = on_popup_grab(&mut state.wl.xdg_shell, &surface, serial_of(serial));
+    let events = on_popup_grab(&mut state.wl.xdg_shell, surface, serial_of(serial));
     core_loop::feed(state, events);
     if !proven {
         surface.send_popup_done();

@@ -140,18 +140,18 @@ fn apply(state: &mut State, effect: Effect) {
         Effect::Relayout(cause) => core_loop::relayout(state, &cause),
         // P1-Z's effects: the model emits none of them until the fill lanes land, so these arms
         // are not reached before then.
-        Effect::CallBinding(call) => call::call_binding(state, call),
+        Effect::CallBinding(call) => call::call_binding(state, &call),
         Effect::Spawn(argv) => spawn::spawn_program(state, argv),
-        Effect::SetGamma(output, ramp) => gamma::set_gamma(state, output, ramp),
+        Effect::SetGamma(output, ramp) => gamma::set_gamma(state, &output, ramp),
         Effect::PersistSpaces => publish::persist_spaces(state),
         Effect::PublishWorkspaces => publish::publish_workspaces(state),
         Effect::PublishToplevel(window) => publish::publish_toplevel(state, window),
         // P2-Z's effects: the model emits none of them until P2-Q1, and a shell note only when
         // the shell's protocol is advertised (P2-Q2), so these arms are not reached before then.
-        Effect::Desktop(note) => desktop::publish(state, note),
-        Effect::Shell(note) => shell::note(state, note),
+        Effect::Desktop(note) => desktop::publish(state, &note),
+        Effect::Shell(note) => shell::note(state, &note),
         // P3-QU: force quit stops an app's processes by its connections' credentials.
-        Effect::Terminate(stop) => quit::terminate(state, stop),
+        Effect::Terminate(stop) => quit::terminate(state, &stop),
         // Per-app consent (`handlers/consent.rs`): the question to the person, taking it back,
         // and how a use of a power came out (replay, denial or the end of the use).
         Effect::AskPermission {
@@ -179,7 +179,7 @@ fn apply(state: &mut State, effect: Effect) {
 
 /// Tells the shell something the edge saw and the model did not (the real modifier keys): the
 /// same path an `Effect::Shell` takes.
-pub fn shell_note(state: &mut State, note: ShellNote) {
+pub fn shell_note(state: &mut State, note: &ShellNote) {
     shell::note(state, note);
 }
 

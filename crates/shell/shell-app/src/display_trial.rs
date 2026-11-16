@@ -21,13 +21,13 @@ use crate::outgoing::Outgoing;
 ///
 /// let link = DisplayTrialLink::new(SheetLink::new());
 /// let trial = DisplayTrial { trial: TrialId::new(1), seconds: 15 };
-/// apply(&link, ShellNote::DisplaysTrial(trial));
+/// apply(&link, &ShellNote::DisplaysTrial(trial));
 /// assert_eq!(link.latest().map(|run| run.trial), Some(trial));
-/// apply(&link, ShellNote::DisplaysTrialEnd(TrialId::new(1)));
+/// apply(&link, &ShellNote::DisplaysTrialEnd(TrialId::new(1)));
 /// assert_eq!(link.latest(), None);
 /// ```
-pub fn apply(link: &DisplayTrialLink, note: ShellNote) {
-    match note {
+pub fn apply(link: &DisplayTrialLink, note: &ShellNote) {
+    match *note {
         ShellNote::DisplaysTrial(trial) => link.begin(trial),
         ShellNote::DisplaysTrialEnd(trial) => link.end(trial),
         _ => {}
@@ -72,24 +72,24 @@ mod tests {
     #[test]
     fn the_notes_open_restart_and_close_the_question() {
         let link = DisplayTrialLink::new(SheetLink::new());
-        apply(&link, ShellNote::DisplaysTrial(trial(1)));
+        apply(&link, &ShellNote::DisplaysTrial(trial(1)));
         let first = link.latest().expect("open");
-        apply(&link, ShellNote::DisplaysTrial(trial(1)));
+        apply(&link, &ShellNote::DisplaysTrial(trial(1)));
         let again = link.latest().expect("open");
         assert_ne!(
             first.serial, again.serial,
             "a restart is told from the first send"
         );
-        apply(&link, ShellNote::DisplaysTrialEnd(TrialId::new(2)));
+        apply(&link, &ShellNote::DisplaysTrialEnd(TrialId::new(2)));
         assert!(link.latest().is_some(), "another trial's end leaves it");
-        apply(&link, ShellNote::DisplaysTrialEnd(TrialId::new(1)));
+        apply(&link, &ShellNote::DisplaysTrialEnd(TrialId::new(1)));
         assert_eq!(link.latest(), None);
     }
 
     #[test]
     fn a_note_of_another_kind_leaves_the_question_alone() {
         let link = DisplayTrialLink::new(SheetLink::new());
-        apply(&link, ShellNote::Killed);
+        apply(&link, &ShellNote::Killed);
         assert_eq!(link.latest(), None);
     }
 

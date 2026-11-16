@@ -139,7 +139,6 @@ pub fn watchdog_period(usec: Option<&str>, pid: Option<&str>, own_pid: u32) -> O
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::time::Duration;
 
     #[test]
     fn datagrams_are_the_lines_systemd_reads() {

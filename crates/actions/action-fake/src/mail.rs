@@ -235,6 +235,10 @@ impl IntentProvider for FakeMail {
         &self.manifest
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn perform(&self, inv: Invocation) -> Result<Outcome, AppRefusal> {
         let keys = Self::keys(&inv.target);
         let space = self.space.clone();
@@ -367,6 +371,10 @@ impl IntentProvider for FakeMail {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn dry_run(&self, inv: Invocation) -> Result<Preview, AppRefusal> {
         let app = self.app.clone();
         let space = self.space.clone();
@@ -396,6 +404,10 @@ impl IntentProvider for FakeMail {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn undo(&self, token: UndoToken, _actor: Actor) -> Result<(), UndoFault> {
         self.edit(|s| match s.undo.remove(token.as_str()) {
             None => Err(UndoFault::Gone),
@@ -420,6 +432,10 @@ impl IntentProvider for FakeMail {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn search(&self, text: &str) -> Vec<Hit> {
         let (app, space) = (self.app.clone(), self.space.clone());
         self.edit(|s| {
@@ -436,6 +452,10 @@ impl IntentProvider for FakeMail {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn preview(&self, id: &EntityId) -> Preview {
         let space = self.space.clone();
         self.edit(|s| match s.threads.get(id.key.as_str()) {
@@ -458,6 +478,10 @@ impl IntentProvider for FakeMail {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn suggest(&self, ask: SuggestAsk) -> Vec<action_vocab::EntityRef> {
         let app = self.app.clone();
         let own = app_label(&app);

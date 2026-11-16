@@ -37,6 +37,6 @@ impl Surface for NotificationCenter {
     }
 
     fn root(output: OutputInfo, (): ()) -> Element {
-        notification_center(output)
+        notification_center(&output)
     }
 }

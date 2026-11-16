@@ -93,7 +93,7 @@ impl StyleKeeper {
 
     /// Re-read both files and the look, and publish them.
     pub fn reload(&self) {
-        self.replace(self.loaded());
+        self.replace(&self.loaded());
     }
 
     /// Look for the look again and publish it, keeping the person's two sheets as they are.
@@ -102,7 +102,7 @@ impl StyleKeeper {
         let mut next = self.styles.borrow().clone();
         next.look = style;
         next.homes.look = home;
-        self.replace(next);
+        self.replace(&next);
     }
 
     fn loaded(&self) -> Styles {
@@ -116,7 +116,7 @@ impl StyleKeeper {
             Sheet::Desktop => next.desktop = text,
             Sheet::App => next.app = text,
         }
-        self.replace(next);
+        self.replace(&next);
     }
 
     /// `event`'s change, published, if it is a watched style (`ShellMsg::Style`), a reason to look
@@ -144,20 +144,20 @@ impl StyleKeeper {
 
     /// Publish `next` when it differs: a change is logged for what the reach rule cut from it,
     /// and gives the guard its fresh try (`StylesGuard::changed`).
-    fn replace(&self, next: Styles) {
+    fn replace(&self, next: &Styles) {
         let changed = self.styles.send_if_modified(|now| {
-            if *now == next {
+            if *now == *next {
                 return false;
             }
-            now.clone_from(&next);
+            now.clone_from(next);
             true
         });
         if !changed {
             return;
         }
-        report_dropped(&next);
+        report_dropped(next);
         self.guard
-            .send_modify(|guard| *guard = guard.as_ref().map(|old| old.changed(&next)));
+            .send_modify(|guard| *guard = guard.as_ref().map(|old| old.changed(next)));
     }
 }
 

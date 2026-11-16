@@ -297,7 +297,7 @@ fn spawn_followers(
 ) {
     crate::lock::spawn_follower(runtime.handle(), services, host.clone());
     crate::idle_dim::spawn_follower(runtime.handle(), services, host.clone());
-    crate::sheet_latch::spawn_follower(runtime.handle(), services, links, host.clone());
+    crate::sheet_latch::spawn_follower(runtime.handle(), services, links, host);
     settings::spawn_watch(runtime, store, host.clone());
     crate::outgoing::spawn_all(runtime.handle(), links, host);
     crate::empty_trash::spawn_follower(runtime.handle(), &links.empty_trash);

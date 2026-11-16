@@ -12,7 +12,6 @@ use caller_identity_dbus::caller_identity_linux::RealProc;
 use caller_identity_dbus::{BusPeers, ManagerLink, UnitSource, WhoError};
 use compositor_core::policy::ConnectionRole;
 use std::fmt::Debug;
-use std::future::Future;
 use std::pin::Pin;
 use zbus::fdo;
 

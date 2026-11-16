@@ -6,7 +6,7 @@ use compositor_core::desktop::DesktopNote;
 use compositor_wayland::quire::desktop::{self, DesktopView};
 
 /// Sends every bound desktop manager the object `note` names as it now is.
-pub(super) fn publish(state: &mut State, note: DesktopNote) {
+pub(super) fn publish(state: &mut State, note: &DesktopNote) {
     let view = DesktopView {
         model: &state.core.model,
         outputs: &state.wl.output.outputs,
@@ -21,6 +21,6 @@ pub(super) fn publish(state: &mut State, note: DesktopNote) {
     log(desktop::apply_note(
         &mut state.wl.quire_desktop,
         &view,
-        &note,
+        note,
     ));
 }

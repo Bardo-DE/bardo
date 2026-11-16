@@ -81,7 +81,7 @@ impl WinitBackend {
     /// # Errors
     ///
     /// Returns [`BackendError`] when the window or its GLES renderer cannot be created.
-    pub fn start(requested: VirtualOutputSpec) -> Result<WinitBackend, BackendError> {
+    pub fn start(requested: &VirtualOutputSpec) -> Result<WinitBackend, BackendError> {
         let scale = f64::from(requested.scale.0) / 120.0;
         let logical = LogicalSize::new(
             f64::from(requested.mode.size.w) / scale,
@@ -93,7 +93,7 @@ impl WinitBackend {
             .with_visible(true);
         let (graphics, events) =
             winit::init_from_attributes::<GlesRenderer>(attributes).map_err(BackendError::from)?;
-        let output = spec_of_window(&requested, &graphics);
+        let output = spec_of_window(requested, &graphics);
         let announce = Some(ConnectorEvent::Plugged(facts_of(&output)));
         Ok(WinitBackend {
             tracker: Box::new(tracker_of(&output)),

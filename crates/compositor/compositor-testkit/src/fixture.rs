@@ -143,6 +143,10 @@ struct Tally {
 
 impl Fixture {
     /// casement as `spec` describes it, pumped until it is quiet: outputs plugged, no client.
+    ///
+    /// # Errors
+    ///
+    /// [`FixtureError`] when the compositor cannot be started.
     pub fn start(spec: FixtureSpec) -> Result<Fixture, FixtureError> {
         Fixture::start_on(spec, BackendChoice::Headless, None)
     }
@@ -153,6 +157,10 @@ impl Fixture {
     /// space store and ack policy apply. The helpers that plug virtual outputs and inject
     /// virtual input are headless only: a tty seat's outputs come from its KMS fake and its
     /// input from its [`FakeInputFeed`](crate::fakes::FakeInputFeed).
+    ///
+    /// # Errors
+    ///
+    /// [`FixtureError`] when the compositor cannot be started over `seams`.
     pub fn start_tty(spec: FixtureSpec, seams: TtySeams) -> Result<Fixture, FixtureError> {
         Fixture::start_on(spec, BackendChoice::Tty, Some(seams))
     }
@@ -210,7 +218,7 @@ impl Fixture {
             Some(tty) => seams.with_tty(tty),
             None => seams,
         };
-        let mut state = State::with_seams(config, seams, &mut display, &handle)?;
+        let mut state = State::with_seams(&config, seams, &mut display, &handle)?;
         state.lenient_acks = spec.lenient_acks;
         if kept_privacy {
             // What the root does before it takes the first client in.
@@ -294,7 +302,8 @@ impl Fixture {
     /// desktop service the table trusts ([`trusted_standing`]), so what it uses is not asked
     /// about; [`Fixture::connect_via_ask`] connects one that is.
     pub fn connect(&mut self, role: ConnectionRole) -> ClientId {
-        self.join(role.clone(), arriving_standing(&role), None)
+        let standing = arriving_standing(&role);
+        self.join(role, standing, None)
     }
 
     /// A new client of `role`, whose program is taken to be `standing` when it is given.
@@ -323,6 +332,10 @@ impl Fixture {
 
     /// Client `id` hangs up (its end of the socket closes), and the fixture pumps so the
     /// compositor sees it go.
+    ///
+    /// # Panics
+    ///
+    /// If `id` is not a client of this fixture.
     pub fn disconnect(&mut self, id: ClientId) {
         self.servers.remove(&id);
         let gone = self.clients.remove(&id);
@@ -337,6 +350,10 @@ impl Fixture {
     }
 
     /// Client `id`.
+    ///
+    /// # Panics
+    ///
+    /// If `id` is not a client of this fixture, or its connection was lost.
     pub fn client(&mut self, id: ClientId) -> &mut TestClient {
         self.clients
             .get_mut(&id)
@@ -345,6 +362,10 @@ impl Fixture {
 
     /// Dispatches the server and every client at the current instant until nothing moves; whether
     /// anything moved at all.
+    ///
+    /// # Panics
+    ///
+    /// If the event loop fails to dispatch.
     pub fn pump(&mut self) -> bool {
         let mut moved = false;
         for _ in 0..ROUND_BOUND {
@@ -562,6 +583,10 @@ impl Fixture {
     }
 
     /// The tty backend, on a fixture started with [`start_tty`](Fixture::start_tty).
+    ///
+    /// # Panics
+    ///
+    /// If the fixture runs the headless backend.
     pub fn tty(&self) -> &TtyBackend {
         match &self.state.backend {
             BackendKind::Tty(tty) => tty,

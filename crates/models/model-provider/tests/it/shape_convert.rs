@@ -553,6 +553,11 @@ fn shape() -> impl Strategy<Value = Shape> {
 }
 
 /// A canonical value of `shape`, chosen by `pick`.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "the range of a generated integer shape is small and positive"
+)]
 fn sample(shape: &Shape, pick: &mut impl FnMut(usize) -> usize) -> serde_json::Value {
     use serde_json::{Value, json};
     match shape {

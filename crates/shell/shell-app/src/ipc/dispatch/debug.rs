@@ -71,32 +71,32 @@ fn run_probe(ctx: &mut HostCtx<ShellMsg>, reach: &Reach, request: DebugRequest) 
     match request {
         DebugRequest::Stats => Response::Stats(stats::collect(ctx, reach.outputs)),
         DebugRequest::Pointer { surface, at } => {
-            inject::inject(ctx, surface, Injection::Pointer(at))
+            inject::inject(ctx, &surface, Injection::Pointer(at))
         }
-        DebugRequest::Leave { surface } => inject::inject(ctx, surface, Injection::Leave),
+        DebugRequest::Leave { surface } => inject::inject(ctx, &surface, Injection::Leave),
         DebugRequest::Capture { surface, path } => {
-            inject::inject(ctx, surface, Injection::Capture(path))
+            inject::inject(ctx, &surface, Injection::Capture(path))
         }
         DebugRequest::Click {
             surface,
             at,
             button,
-        } => inject::inject(ctx, surface, Injection::Click(at, button)),
+        } => inject::inject(ctx, &surface, Injection::Click(at, button)),
         DebugRequest::PointerPress {
             surface,
             at,
             button,
-        } => inject::inject(ctx, surface, Injection::Press(at, button)),
+        } => inject::inject(ctx, &surface, Injection::Press(at, button)),
         DebugRequest::PointerRelease {
             surface,
             at,
             button,
-        } => inject::inject(ctx, surface, Injection::Release(at, button)),
+        } => inject::inject(ctx, &surface, Injection::Release(at, button)),
         DebugRequest::Key {
             surface,
             key,
             action,
-        } => inject::inject(ctx, surface, Injection::Key(key, action)),
+        } => inject::inject(ctx, &surface, Injection::Key(key, action)),
         DebugRequest::Osd {
             topic,
             percent,

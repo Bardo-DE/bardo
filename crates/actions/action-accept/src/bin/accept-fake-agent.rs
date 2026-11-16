@@ -108,7 +108,7 @@ impl Bridge {
         };
         bridge.ask(
             "initialize",
-            json!({"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "fake-agent", "version": "1"}}),
+            &json!({"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "fake-agent", "version": "1"}}),
         )?;
         line(
             &mut bridge.stdin,
@@ -117,7 +117,7 @@ impl Bridge {
         Some(bridge)
     }
 
-    fn ask(&mut self, method: &str, params: Value) -> Option<Value> {
+    fn ask(&mut self, method: &str, params: &Value) -> Option<Value> {
         self.next += 1;
         let id = self.next;
         line(
@@ -137,7 +137,7 @@ impl Bridge {
     }
 
     fn call(&mut self, tool: &str, arguments: &Value) -> String {
-        match self.ask("tools/call", json!({"name": tool, "arguments": arguments})) {
+        match self.ask("tools/call", &json!({"name": tool, "arguments": arguments})) {
             None => format!("{tool}: no answer"),
             Some(v) if v["result"]["isError"] == json!(true) => format!("{tool}: failed"),
             Some(v) if v.get("error").is_some() => format!("{tool}: error"),
@@ -146,7 +146,7 @@ impl Bridge {
     }
 
     fn tools(&mut self) -> usize {
-        self.ask("tools/list", json!({}))
+        self.ask("tools/list", &json!({}))
             .and_then(|v| v["result"]["tools"].as_array().map(Vec::len))
             .unwrap_or(0)
     }

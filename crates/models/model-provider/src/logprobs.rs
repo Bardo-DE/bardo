@@ -30,6 +30,10 @@ pub struct Logprob(pub i32);
 impl Logprob {
     /// `None` for NaN. A `-inf` and anything below `i32::MIN` millionths become [`Logprob::NEVER`].
     #[must_use]
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "the cast saturates, which is the clamp meant"
+    )]
     pub fn from_nats(nats: f64) -> Option<Self> {
         if nats.is_nan() {
             return None;
@@ -106,6 +110,11 @@ impl FirstTokenLogprobs {
 
 fn largest_remainder(mass: &[f64], total: f64) -> Vec<Permille> {
     let exact: Vec<f64> = mass.iter().map(|m| m / total * 1000.0).collect();
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "each exact share is mass / total * 1000, so within 0..=1000"
+    )]
     let mut shares: Vec<u16> = exact.iter().map(|e| *e as u16).collect();
     let mut order: Vec<usize> = (0..exact.len()).collect();
     // Biggest remainder first; equal remainders keep declared order (the sort is stable).

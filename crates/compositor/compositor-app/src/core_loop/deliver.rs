@@ -115,6 +115,10 @@ fn px(sub: SubPx) -> f64 {
 }
 
 /// A logical position as global sub-pixels.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a pointer position or scroll step in logical pixels is far inside the i32 range, and the cast saturates"
+)]
 fn sub_of(at: (f64, f64)) -> SubPoint {
     let sub = |v: f64| {
         SubPx(
@@ -130,6 +134,10 @@ fn sub_of(at: (f64, f64)) -> SubPoint {
 }
 
 /// Where the seat's pointer is.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a pointer position or scroll step in logical pixels is far inside the i32 range, and the cast saturates"
+)]
 pub(super) fn pointer_at(seat: &Seat<State>) -> Option<(i32, i32)> {
     let pointer: PointerHandle<State> = seat.get_pointer()?;
     let at = pointer.current_location();
@@ -427,7 +435,7 @@ fn tell_shell_modifiers(state: &mut State, seat: &Seat<State>) {
     let mods = seat.get_keyboard().map_or(HeldMods::NONE, |keyboard| {
         held_mods(&keyboard.modifier_state())
     });
-    exec::shell_note(state, ShellNote::Modifiers(mods));
+    exec::shell_note(state, &ShellNote::Modifiers(mods));
 }
 
 /// A binding's action. A desktop command is the model's; a D-Bus call and a program go out
@@ -488,6 +496,10 @@ fn clamp(state: &State, at: (f64, f64)) -> Option<(f64, f64)> {
     Some((at.0.clamp(left, right - 1.0), at.1.clamp(top, bottom - 1.0)))
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a pointer position or scroll step in logical pixels is far inside the i32 range, and the cast saturates"
+)]
 fn logical(at: (f64, f64)) -> LogicalPoint {
     LogicalPoint {
         x: at.0.floor() as i32,

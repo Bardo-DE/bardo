@@ -3,7 +3,6 @@
 use inference_core::{
     ClientFrame, InferEvent, InferReply, InferRequest, InferSession, SessionError,
 };
-use std::future::Future;
 use std::time::Duration;
 
 /// How long each stage of an inferd exchange may take before it is given up. An exchange that
@@ -41,7 +40,7 @@ pub(crate) async fn within<T>(
 ) -> Result<T, TimedOut> {
     tokio::time::timeout(limit, work)
         .await
-        .map_err(|_| TimedOut)
+        .ok().ok_or(TimedOut)
 }
 
 /// Why a turn did not finish.

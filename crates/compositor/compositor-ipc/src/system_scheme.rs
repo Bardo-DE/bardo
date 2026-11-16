@@ -27,7 +27,6 @@
 //! ```
 
 use crate::stop_on_drop::StopOnDrop;
-use std::future::Future;
 use std::ops::ControlFlow;
 use std::pin::Pin;
 use tokio::sync::oneshot;

@@ -59,6 +59,10 @@ fn open_it_is_quires_full_height_panel_at_the_right_edge() {
     );
     assert_eq!(h.count("[*|data-layer=click-away]"), 1);
     let column = h.rect(&format!("#{PANEL_ID}")).expect("the column");
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "PANEL_PADDING is a small constant, exact in f32"
+    )]
     let pad = PANEL_PADDING as f32;
     assert!(
         (column.size.height.0 + 2.0 * pad - panel.size.height.0).abs() < 0.5

@@ -120,7 +120,7 @@ impl RealWriteback {
     }
 
     /// Frees the job's buffer.
-    fn release(&self, job: Job) {
+    fn release(&self, job: &Job) {
         if let Err(error) = self.fd.destroy_framebuffer(job.framebuffer) {
             tracing::warn!(%error, "a writeback framebuffer was not freed");
         }
@@ -156,7 +156,7 @@ impl Writeback for RealWriteback {
                 Ok(())
             }
             Err(error) => {
-                self.release(job);
+                self.release(&job);
                 Err(error)
             }
         }
@@ -174,7 +174,7 @@ impl Writeback for RealWriteback {
         if let Err(error) = self.commit(job.connector, None, None) {
             tracing::warn!(%error, "the writeback connector was not detached");
         }
-        self.release(job);
+        self.release(&job);
         let bytes = read?;
         Ok(RawCapture::new(
             PhysicalSize {

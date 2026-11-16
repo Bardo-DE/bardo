@@ -18,6 +18,10 @@ const NO_LIMITS: SizeLimits = SizeLimits {
 };
 
 /// A grab of `spec` begins with the pointer where it is.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a pointer position in logical pixels is far inside the i32 range, and the cast saturates"
+)]
 pub(crate) fn start(state: &mut State, spec: GrabSpec) {
     let at = state
         .wl

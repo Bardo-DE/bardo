@@ -197,7 +197,7 @@ async fn files_move_and_undo() {
 }
 
 fn review_request() -> action_review::ReviewRequest {
-    use provenance::{Integrity, SpaceId};
+    use provenance::Integrity;
     action_review::ReviewRequest {
         space: SpaceId::parse("work").expect("space"),
         strictness: Strictness::Default,

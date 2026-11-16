@@ -32,10 +32,10 @@ use shell_ui_kit::root::SurfaceRoot;
 pub const SCREENSHOT_THUMB_CSS: &str = include_str!("style.css");
 
 /// The thumbnail on `output`.
-pub(super) fn screenshot_thumb(output: OutputInfo) -> Element {
+pub(super) fn screenshot_thumb(output: &OutputInfo) -> Element {
     let file = use_settings()();
     let environment = use_appearance()();
-    let look = use_active_look(&output);
+    let look = use_active_look(output);
     let params = ThumbParams::default();
     let ghost = GhostLook::of(&environment, look);
     rsx! {

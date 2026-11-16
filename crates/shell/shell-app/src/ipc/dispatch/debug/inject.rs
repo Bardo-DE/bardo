@@ -27,7 +27,7 @@ pub enum Injection {
 
 /// Find `surface` by layer-shell-host's own naming (`HostCtx::surface_named`, unconditional: it needs
 /// neither `debug` nor layer-shell-host's `debug-inject`) and deliver `injection` to it.
-pub fn inject(ctx: &mut HostCtx<ShellMsg>, surface: SurfaceName, injection: Injection) -> Response {
+pub fn inject(ctx: &mut HostCtx<ShellMsg>, surface: &SurfaceName, injection: Injection) -> Response {
     let Some(id) = ctx.surface_named(&layer_shell_host::SurfaceName(surface.0.clone())) else {
         return failed(
             FailureKind::UnknownSurface,

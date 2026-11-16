@@ -78,15 +78,15 @@ pub(crate) struct Bodies {
 
 impl Bodies {
     /// The image kept for `window`.
-    pub(crate) fn get(&self, window: &WindowId) -> Option<&ClosingBody> {
+    pub(crate) fn get(&self, window: WindowId) -> Option<&ClosingBody> {
         self.kept
             .iter()
-            .find(|(id, _)| id == window)
+            .find(|(id, _)| *id == window)
             .map(|(_, body)| body)
     }
 
     /// Whether an image is kept for `window`.
-    fn has_image(&self, window: &WindowId) -> bool {
+    fn has_image(&self, window: WindowId) -> bool {
         self.get(window).is_some()
     }
 
@@ -150,7 +150,7 @@ pub(super) fn take(state: &mut State, window: WindowId) {
     let style = state
         .render
         .closing
-        .get(&window)
+        .get(window)
         .map(|Kept { style, .. }| *style);
     let Some((size, scale)) = content_and_scale(state, window) else {
         return;
@@ -159,7 +159,7 @@ pub(super) fn take(state: &mut State, window: WindowId) {
         framed: style.is_some(),
         size,
         units: scale.numerator(),
-        imaged: state.render.bodies.has_image(&window),
+        imaged: state.render.bodies.has_image(window),
     };
     let (BodyChoice::Take, Some(style)) = (verdict(facts), style) else {
         return;
@@ -229,7 +229,6 @@ pub(crate) fn before_destroy(state: &mut State, window: WindowId) {
 mod tests {
     use super::*;
     use compositor_core::geometry::PhysicalSize;
-    use ui_core::geometry::scale::Scale;
 
     fn facts(framed: bool, (w, h): (u32, u32), imaged: bool) -> Facts {
         Facts {
@@ -291,8 +290,8 @@ mod tests {
         }
         assert_eq!(dropped, vec![WindowId(0)]);
         assert_eq!(bodies.len(), MAX_KEPT);
-        assert!(bodies.get(&WindowId(0)).is_none());
-        assert!(bodies.get(&WindowId(1)).is_some());
+        assert!(bodies.get(WindowId(0)).is_none());
+        assert!(bodies.get(WindowId(1)).is_some());
     }
 
     #[test]
@@ -302,7 +301,7 @@ mod tests {
         let dropped = bodies.admit(WindowId(1), body(2, 2));
         assert!(dropped.is_empty());
         assert_eq!(bodies.len(), 1);
-        assert_eq!(bodies.get(&WindowId(1)), Some(&body(2, 2)));
+        assert_eq!(bodies.get(WindowId(1)), Some(&body(2, 2)));
     }
 
     #[test]
@@ -314,6 +313,6 @@ mod tests {
         // 1 is fading, 2 is back in the model, 3 has left the scene (its fade is over).
         bodies.release_finished(|id| *id == WindowId(2), |id| *id != WindowId(3));
         assert_eq!(bodies.len(), 1);
-        assert!(bodies.get(&WindowId(1)).is_some());
+        assert!(bodies.get(WindowId(1)).is_some());
     }
 }

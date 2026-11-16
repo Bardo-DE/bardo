@@ -138,6 +138,7 @@ pub(crate) fn int_range(min: i64, max: i64) -> Option<Pat> {
 }
 
 /// The unsigned integers in `lo..=hi` (`lo <= hi`), split by digit count.
+#[expect(clippy::cast_possible_truncation, reason = "the digit count of an i128 is at most 39")]
 fn unsigned(lo: i128, hi: i128) -> Pat {
     let lengths = digits(lo).len()..=digits(hi).len();
     let parts = lengths
@@ -147,6 +148,10 @@ fn unsigned(lo: i128, hi: i128) -> Pat {
             } else {
                 10_i128.pow(len as u32 - 1)
             };
+            #[expect(
+                clippy::cast_possible_truncation,
+                reason = "the digit count of an i128 is at most 39"
+            )]
             let ceil = 10_i128.pow(len as u32) - 1;
             (lo.max(floor), hi.min(ceil))
         })
@@ -160,6 +165,7 @@ fn digits(n: i128) -> Vec<u8> {
 }
 
 /// Numbers with the digit strings `lo..=hi` of one length.
+#[expect(clippy::cast_possible_truncation, reason = "the digit count of an i128 is at most 39")]
 fn same_length(lo: &[u8], hi: &[u8]) -> Pat {
     let (Some((&l0, lrest)), Some((&h0, hrest))) = (lo.split_first(), hi.split_first()) else {
         return Pat::Seq(Vec::new());

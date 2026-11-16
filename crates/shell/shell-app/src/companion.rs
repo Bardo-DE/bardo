@@ -57,8 +57,8 @@ pub fn dispatch(reach: &Reach, request: CompanionRequest) -> Response {
 }
 
 /// Carry out one launcher effect of a summon on the host thread.
-pub fn apply(outputs: &Outputs, services: &Services, launcher: &LauncherLink, out: SummonOut) {
-    match out {
+pub fn apply(outputs: &Outputs, services: &Services, launcher: &LauncherLink, out: &SummonOut) {
+    match *out {
         SummonOut::OpenLauncher { mode, .. } => {
             if let Some(output) = outputs.open_on::<Launcher>(services) {
                 launcher.open_in(output, String::new(), mode);

@@ -45,6 +45,11 @@ pub fn window_spec(
 }
 
 /// The host's scale factor in 120ths, at least 1; a factor that is not a positive number is 1.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "clamped to 1..=u32::MAX just before the cast"
+)]
 fn scale_of(factor: f64) -> Scale {
     Some(factor)
         .filter(|f| f.is_finite() && *f > 0.0)

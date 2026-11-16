@@ -15,7 +15,7 @@ use rustix::process::{Pid, RawPid, Signal, getpid, kill_process};
 use std::collections::BTreeSet;
 
 /// Signals the processes of `stop`'s connections.
-pub(super) fn terminate(state: &mut State, stop: Termination) {
+pub(super) fn terminate(state: &mut State, stop: &Termination) {
     let signal = match stop.signal {
         StopSignal::Term => Signal::TERM,
         StopSignal::Kill => Signal::KILL,
@@ -27,7 +27,7 @@ pub(super) fn terminate(state: &mut State, stop: Termination) {
     let reached = state
         .processes
         .signal(&stop.clients, signal, own, satellite);
-    let x11: BTreeSet<RawPid> = x11_pids_of(state, &stop, satellite)
+    let x11: BTreeSet<RawPid> = x11_pids_of(state, stop, satellite)
         .difference(&reached)
         .copied()
         .collect();

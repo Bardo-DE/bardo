@@ -28,12 +28,20 @@ pub struct FakePlayback {
 }
 
 impl CaptureStream for FakeCapture {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn next(&mut self) -> Option<Vec<i16>> {
         self.frames.pop_front()
     }
 }
 
 impl PlaybackStream for FakePlayback {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn write(&mut self, samples: &[i16]) -> Result<(), DeviceError> {
         self.written += samples.len();
         Ok(())
@@ -45,10 +53,18 @@ impl AudioDevice for FakeAudioDevice {
     type Capture = FakeCapture;
     type Playback = FakePlayback;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn sources(&self) -> Vec<AudioNode> {
         self.nodes.clone()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open_capture(
         &self,
         node: &AudioNode,
@@ -62,6 +78,10 @@ impl AudioDevice for FakeAudioDevice {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open_playback(&self, _format: PlaybackFormat) -> Result<FakePlayback, DeviceError> {
         Ok(FakePlayback::default())
     }

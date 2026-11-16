@@ -29,7 +29,7 @@ pub enum Send {
 }
 
 /// The latch and the wish after `lock` and `auth`, and how to send the wish.
-pub fn follow(latch: Latch, lock: &Lock, auth: &Auth) -> (Latch, LockWish, Send) {
+pub fn follow(latch: Latch, lock: Lock, auth: &Auth) -> (Latch, LockWish, Send) {
     let latch = match (latch, lock.phase, &auth.phase) {
         (_, LockPhase::Locked, AuthPhase::Accepted) => Latch::Unlocking,
         (Latch::Unlocking, LockPhase::Unlocked | LockPhase::Locking, _) => Latch::Free,
@@ -60,7 +60,7 @@ mod tests {
             phase: auth,
             ..Auth::default()
         };
-        follow(latch, &lock, &auth)
+        follow(latch, lock, &auth)
     }
 
     #[test]

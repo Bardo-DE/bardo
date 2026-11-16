@@ -43,6 +43,6 @@ impl Surface for ScreenshotThumb {
     }
 
     fn root(output: OutputInfo, (): ()) -> Element {
-        screenshot_thumb(output)
+        screenshot_thumb(&output)
     }
 }

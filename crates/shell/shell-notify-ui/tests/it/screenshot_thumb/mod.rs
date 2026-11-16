@@ -311,6 +311,11 @@ fn the_picture_is_the_preview_file_at_its_own_shape() {
     let image = running.harness.rect(".ds-shot-image").expect("the picture");
     let painted = running.harness.render().expect("a paint");
     let inside = |x: u32, y: u32| {
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "pixel coordinates in the test are small and positive"
+        )]
         let px = |v: f32| v.round() as u32;
         (px(image.origin.x.0) + 4..px(image.origin.x.0 + image.size.width.0) - 4).contains(&x)
             && (px(image.origin.y.0) + 4..px(image.origin.y.0 + image.size.height.0) - 4)

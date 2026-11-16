@@ -1,6 +1,5 @@
 //! Retry classification, `next_wait` and `Retrying`.
 
-use std::future::Future;
 use std::ops::ControlFlow;
 use std::pin::pin;
 use std::sync::Mutex;

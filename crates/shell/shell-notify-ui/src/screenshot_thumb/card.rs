@@ -15,7 +15,6 @@ use shell_kit::thumbs::shot_thumbnail::ThumbAction;
 use shell_model::screenshots::ShotId;
 use ui_components::motion::swipe::SwipeMetrics;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 
 use super::ghost::GhostLook;
 use super::io::Thumb;
@@ -25,6 +24,10 @@ use super::step::{ThumbExit, ThumbIn};
 
 /// One screenshot's card, `shown` or playing its exit.
 #[component]
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "THUMB_WIDTH is a small pixel constant, exact in f32"
+)]
 pub(super) fn ThumbCard(
     id: ShotId,
     picture: ThumbPicture,

@@ -2,7 +2,6 @@
 
 use crate::doc::ClassTag;
 use crate::vector::{EmbedRole, EmbedderCard, Urgency, Vector};
-use std::future::Future;
 
 /// Whether trying again can help.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

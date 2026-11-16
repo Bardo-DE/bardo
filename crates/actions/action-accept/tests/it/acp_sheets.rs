@@ -49,7 +49,7 @@ const FORWARD: &str = "forward the Lisbon receipts to accounting";
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn the_editor_sees_the_sheet_as_a_permission_request_and_its_allow_once_performs_the_call() {
     let world = World::start_acp(&binaries(), Consent::Standing, FLOW_A).await;
-    let mut editor = editor_of(&world).await;
+    let mut editor = editor_of(&world);
     let id = session(&mut editor).await;
     let mut offered = Vec::new();
     let reply = editor
@@ -71,7 +71,7 @@ async fn the_editor_sees_the_sheet_as_a_permission_request_and_its_allow_once_pe
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn the_editors_reject_on_the_sheet_refuses_the_call() {
     let world = World::start_acp(&binaries(), Consent::Standing, FLOW_A).await;
-    let mut editor = editor_of(&world).await;
+    let mut editor = editor_of(&world);
     let id = session(&mut editor).await;
     let mut offered = Vec::new();
     let reply = editor
@@ -95,7 +95,7 @@ async fn the_editors_reject_on_the_sheet_refuses_the_call() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn a_sheet_asked_while_the_router_records_a_turn_reaches_the_editor_and_the_turn_goes_on() {
     let world = World::start_acp(&binaries(), Consent::Standing, ACP_WIDENS).await;
-    let mut editor = editor_of(&world).await;
+    let mut editor = editor_of(&world);
     let id = session(&mut editor).await;
     let mut offered = Vec::new();
     let one = editor

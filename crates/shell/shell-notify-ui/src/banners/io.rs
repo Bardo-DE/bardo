@@ -10,7 +10,7 @@ use std::collections::BTreeMap;
 use std::time::Duration;
 use ui_components::base::time::clock::sleep;
 
-use dioxus::core::{Runtime, ScopeId, Task, current_scope_id};
+use dioxus::core::{Runtime, Task, current_scope_id};
 use dioxus::prelude::*;
 use layer_shell_host::{KeyboardMode, SurfaceHandle};
 use shell_kit::notifications::parts::Hover;

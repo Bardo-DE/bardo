@@ -6,7 +6,6 @@ use crate::fuse::RrfK;
 use crate::vector::{EmbedderCard, Urgency, Vector};
 use memory_core::IndexView;
 use memory_core::Integrity;
-use std::future::Future;
 
 /// One search.
 #[derive(Debug, Clone, PartialEq, Eq)]

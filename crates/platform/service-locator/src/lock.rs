@@ -105,6 +105,7 @@ pub fn take(path: &Path) -> Result<Held, Error> {
 /// Open the lock file, creating it owner-only. On Unix a symlink at the path is refused rather than
 /// followed, and a file this user does not own is not used.
 #[cfg(unix)]
+#[expect(clippy::cast_possible_wrap, reason = "O_NOFOLLOW is a small flag bit, far below i32::MAX")]
 fn open_lock(path: &Path) -> Result<std::fs::File, Error> {
     use std::os::unix::fs::{MetadataExt as _, OpenOptionsExt as _};
     let file = std::fs::OpenOptions::new()

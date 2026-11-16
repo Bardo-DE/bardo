@@ -48,12 +48,12 @@ where
     D: Serialize + Clone,
 {
     if let Some(file) = file {
-        let text = serde_json::to_string_pretty(&after).map_err(|_| SaveFailed)?;
+        let text = serde_json::to_string_pretty(&after).ok().ok_or(SaveFailed)?;
         let file = file.clone();
         tokio::task::spawn_blocking(move || file.write(&text))
             .await
-            .map_err(|_| SaveFailed)?
-            .map_err(|_| SaveFailed)?;
+            .ok().ok_or(SaveFailed)?
+            .ok().ok_or(SaveFailed)?;
     }
     let before = std::mem::replace(held, after.clone());
     Ok(Committed { before, after })

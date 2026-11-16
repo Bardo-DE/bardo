@@ -20,7 +20,6 @@ use compositor_ipc::system_scheme::SchemeWatch;
 use compositor_layout::{Scheme, Theme, Transparency, reduced_stand_in, scheme_of};
 use compositor_render::{BlurFinish, Rgba8};
 use smithay::reexports::calloop::channel::{self, Event as ChannelEvent};
-use std::future::Future;
 use std::ops::ControlFlow;
 use std::path::Path;
 use std::pin::Pin;

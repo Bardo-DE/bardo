@@ -38,8 +38,8 @@ impl WordsModel {
                 charge: None,
             },
             ServedBy {
-                account: AccountId::parse("local").map_err(|_| malformed("account"))?,
-                model: ModelId::parse("words").map_err(|_| malformed("model"))?,
+                account: AccountId::parse("local").ok().ok_or_else(|| malformed("account"))?,
+                model: ModelId::parse("words").ok().ok_or_else(|| malformed("model"))?,
                 locality: Locality::OnDevice,
             },
         ))))
@@ -54,6 +54,10 @@ pub struct WordsSession {
 }
 
 impl InferSession for WordsSession {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn send(&mut self, frame: ClientFrame) -> Result<(), SessionError> {
         match frame {
             ClientFrame::Request(InferRequest::Chat(_)) => {
@@ -64,6 +68,10 @@ impl InferSession for WordsSession {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn next(&mut self) -> Result<InferEvent, SessionError> {
         if std::mem::take(&mut self.asked) {
             self.model.reply()
@@ -76,6 +84,10 @@ impl InferSession for WordsSession {
 impl Transport for WordsModel {
     type Session = WordsSession;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open_with(
         &self,
         _need: &Need,

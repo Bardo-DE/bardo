@@ -42,6 +42,7 @@ fn big_nav(items: usize) -> String {
 }
 
 #[test]
+#[expect(clippy::cast_possible_truncation, reason = "ITEMS is a small constant")]
 fn a_package_of_tens_of_thousands_of_items_is_read_in_linear_time() {
     const ITEMS: usize = 60_000;
     let dir = tempfile::tempdir().unwrap();

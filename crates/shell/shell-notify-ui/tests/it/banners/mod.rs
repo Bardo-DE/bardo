@@ -338,6 +338,7 @@ fn a_link_in_the_body_keeps_its_press() {
 }
 
 #[test]
+#[expect(clippy::cast_possible_truncation, reason = "a test list index is tiny")]
 fn one_apps_banners_group_into_one_card_and_five_apps_make_three() {
     let mut running = start(file());
     show(

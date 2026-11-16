@@ -99,7 +99,7 @@ impl AtomicWrite {
     }
 
     fn publish(
-        &self,
+        self,
         target: &Path,
         fill: impl FnOnce(&mut std::fs::File) -> io::Result<()>,
     ) -> io::Result<()> {
@@ -111,7 +111,7 @@ impl AtomicWrite {
     }
 
     fn stage_resolved(
-        &self,
+        self,
         target: &Path,
         fill: impl FnOnce(&mut std::fs::File) -> io::Result<()>,
     ) -> io::Result<PathBuf> {

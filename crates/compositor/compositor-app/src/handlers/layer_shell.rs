@@ -108,7 +108,7 @@ impl WlrLayerShellHandler for State {
         let events = layer_shell::on_layer_popup(&mut self.wl.layer_shell, &parent, &popup);
         // Placed by its positioner inside the output, as the popups of windows are.
         let positioner = popup.with_pending_state(|state| state.positioner);
-        popups::new_popup(self, popup.clone(), positioner);
+        popups::new_popup(self, &popup, positioner);
         if let Err(error) = popup.send_configure() {
             tracing::warn!(%error, "a layer popup could not be configured");
         }

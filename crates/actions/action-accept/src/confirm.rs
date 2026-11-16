@@ -152,6 +152,11 @@ fn answer_of(verdict: SheetChoice, request: &ConfirmRequest) -> ConfirmAnswer {
 
 #[zbus::interface(name = "org.bardo.Confirm1")]
 impl ConfirmObject {
+    #[expect(
+        clippy::unused_async,
+        clippy::unused_async_trait_impl,
+        reason = "a `zbus::interface` method is async so the bus runs it on its executor"
+    )]
     async fn confirm(
         &self,
         request: String,
@@ -208,6 +213,10 @@ impl ConfirmObject {
         Ok(object)
     }
 
+    #[expect(
+        clippy::unused_async,
+        reason = "a `zbus::interface` method is async so the bus runs it on its executor"
+    )]
     async fn cancel(&self, id: String) {
         self.sheet.edit(|i| i.cancelled.push(id));
     }

@@ -31,7 +31,7 @@ pub fn parse_shot(text: &str) -> Result<ShotArea, IpcError> {
     match text.split_once(':') {
         None if text == "output" => Ok(ShotArea::Output(None)),
         Some(("output", name)) => Ok(ShotArea::Output(Some(
-            OutputName::parse(name).map_err(|_| bad())?,
+            OutputName::parse(name).ok().ok_or_else(bad)?,
         ))),
         Some(("region", numbers)) => {
             let parts: Vec<&str> = numbers.split(',').collect();
@@ -49,7 +49,7 @@ pub fn parse_shot(text: &str) -> Result<ShotArea, IpcError> {
         Some(("window", id)) => id
             .parse()
             .map(|id| ShotArea::Window(WindowId(id)))
-            .map_err(|_| bad()),
+            .ok().ok_or_else(bad),
         _ => Err(bad()),
     }
 }

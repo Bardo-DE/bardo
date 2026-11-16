@@ -373,7 +373,8 @@ impl Allocator for FixedUdmabuf {
         )?;
         rustix::fs::ftruncate(&fd, size as u64)?;
         rustix::fs::fcntl_add_seals(&fd, SealFlags::SHRINK)?;
+        let stride = u32::try_from(stride).ok().ok_or(io::ErrorKind::InvalidData)?;
         self.udmabuf
-            .create_buffer_from_memfd(&fd, 0, size, fourcc, width, height, stride as u32)
+            .create_buffer_from_memfd(&fd, 0, size, fourcc, width, height, stride)
     }
 }

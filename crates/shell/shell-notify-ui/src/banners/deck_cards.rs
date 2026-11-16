@@ -24,7 +24,7 @@ pub(super) fn follow(
     let mut entries: Vec<Entry> = staying
         .into_iter()
         .map(|e| match cards.iter().find(|c| c.app == e.card.app) {
-            Some(card) if !e.leaving() => refresh(e, card.clone(), now, p),
+            Some(card) if !e.leaving() => refresh(&e, card.clone(), now, p),
             _ => e,
         })
         .collect();
@@ -46,7 +46,7 @@ pub(super) fn follow(
 }
 
 /// A drawn card with `card`'s content; a newer notification starts a shown card's hold again.
-fn refresh(e: Entry, card: Card, now: Stamp, p: &BannerParams) -> Entry {
+fn refresh(e: &Entry, card: Card, now: Stamp, p: &BannerParams) -> Entry {
     let newer = card.newest() != e.card.newest();
     let banner = match (newer, e.banner) {
         (true, Banner::Shown { .. }) => {
@@ -60,5 +60,5 @@ fn refresh(e: Entry, card: Card, now: Stamp, p: &BannerParams) -> Entry {
         (true, Banner::Shown { .. }) => step(banner, BannerIn::HoverIn, now, card.life, p).0,
         (_, banner) => banner,
     };
-    Entry { card, banner, ..e }
+    Entry { card, banner, ..*e }
 }

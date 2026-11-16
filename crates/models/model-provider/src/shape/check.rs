@@ -10,7 +10,7 @@ use crate::{FieldName, JsonText, Shape, ShapeFault, ShapeKind};
 
 impl Shape {
     pub(crate) fn check_json(&self, json: &JsonText) -> Result<(), ShapeFault> {
-        let value: Value = serde_json::from_str(json.as_str()).map_err(|_| ShapeFault::NotJson)?;
+        let value: Value = serde_json::from_str(json.as_str()).ok().ok_or(ShapeFault::NotJson)?;
         self.check_value(&value, &root())
     }
 

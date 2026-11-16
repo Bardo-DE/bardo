@@ -19,7 +19,6 @@ pub mod wallpaper;
 
 pub use follow::follow;
 
-use std::future::Future;
 
 use shell_settings::ShellFile;
 use tokio::sync::watch::error::RecvError;

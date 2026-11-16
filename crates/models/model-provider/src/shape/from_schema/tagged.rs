@@ -100,8 +100,8 @@ pub(super) fn tagged(node: &mut Node, key: &str, items: &[Value]) -> Found<Shape
         })
         .collect::<Found<Vec<_>>>()?;
     Ok(Shape::Tagged {
-        tag: FieldName::new(tag).map_err(|_| bad(node))?,
-        content: FieldName::new(content).map_err(|_| bad(node))?,
+        tag: FieldName::new(tag).ok().ok_or_else(|| bad(node))?,
+        content: FieldName::new(content).ok().ok_or_else(|| bad(node))?,
         variants,
     })
 }

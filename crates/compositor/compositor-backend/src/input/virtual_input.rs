@@ -85,14 +85,14 @@ impl VirtualInput {
             return;
         };
         let stamp = EventStamp { device, at };
-        let event = self.event_of(stamp, kind);
+        let event = self.event_of(stamp, &kind);
         self.queue.push_back(event);
     }
 
     /// `kind` as smithay's event, stamped.
     #[cfg(any(feature = "testing", feature = "debug-inject"))]
-    fn event_of(&mut self, stamp: EventStamp, kind: InputKind) -> VirtualInputEvent {
-        match kind {
+    fn event_of(&mut self, stamp: EventStamp, kind: &InputKind) -> VirtualInputEvent {
+        match *kind {
             InputKind::Key { code, edge } => {
                 let key = (stamp.device.id, code);
                 match edge {

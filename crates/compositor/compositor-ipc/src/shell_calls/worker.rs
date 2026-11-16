@@ -6,7 +6,6 @@
 
 use super::{FailedCall, ShellCallError};
 use compositor_core::input::DbusCall;
-use std::future::Future;
 use std::sync::{Arc, mpsc};
 use std::time::Duration;
 use tokio::sync::Semaphore;

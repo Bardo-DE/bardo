@@ -223,7 +223,7 @@ pub fn fake_router_reading<
     log: L,
     reader: Rd,
 ) -> Result<Reading<R, W, K, L, C, Rd>, FakeError> {
-    let space = SpaceId::parse("work").map_err(|_| FakeError::Space)?;
+    let space = SpaceId::parse("work").ok().ok_or(FakeError::Space)?;
     let mail = mail_manifest().map_err(FakeError::Manifest)?;
     let files = files_manifest().map_err(FakeError::Manifest)?;
     let menu = menu_manifest().map_err(FakeError::Manifest)?;

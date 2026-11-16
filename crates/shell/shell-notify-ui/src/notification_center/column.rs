@@ -7,7 +7,6 @@
 
 use dioxus::prelude::*;
 use layer_shell_host::OutputId;
-use ui_components::motion::epoch::Epoch;
 use ui_components::prelude::*;
 
 use super::contents::Contents;
@@ -41,6 +40,10 @@ pub(super) fn Column(output: OutputId) -> Element {
 /// motion (the widgets' own remount already would; the stamp also covers a host that keeps them
 /// mounted across an opening).
 #[component]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "the epoch only has to change between wakes, so wrapping at u32 is harmless"
+)]
 fn Opened(output: OutputId, opening: Opening, shown: bool, on_hidden: EventHandler<()>) -> Element {
     let ctx = use_center_ctx();
     let (resolved, tokens) = use_notification_tokens();

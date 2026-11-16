@@ -203,7 +203,7 @@ impl Shape {
         schema: &SchemaText,
         limits: SchemaLimits,
     ) -> Result<Shape, SchemaRefusal> {
-        let value: Value = serde_json::from_str(schema.0.as_str()).map_err(|_| SchemaRefusal {
+        let value: Value = serde_json::from_str(schema.0.as_str()).ok().ok_or_else(|| SchemaRefusal {
             at: SchemaPath(String::new()),
             why: Refused::NotJson,
         })?;
@@ -381,7 +381,7 @@ fn object(node: &mut Node) -> Found<Shape> {
         .map(|(name, schema)| {
             let name_ok = FieldName::new(name.clone());
             let child = node.child(schema, &["properties", name])?;
-            let name = name_ok.map_err(|_| child.refuse(Refused::BadName))?;
+            let name = name_ok.ok().ok_or_else(|| child.refuse(Refused::BadName))?;
             let shape = read(child)?;
             let shape = match shape {
                 optional @ Shape::Optional(_) => optional,

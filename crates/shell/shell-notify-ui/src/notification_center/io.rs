@@ -34,7 +34,7 @@ impl CenterPhase {
 
     /// The panel's exit has settled (its `on_hidden`): unmap.
     pub fn settled(&self) {
-        drive(self.phase, self.surface.clone(), PhaseInput::ExitSettled);
+        drive(self.phase, self.surface.as_ref(), PhaseInput::ExitSettled);
     }
 }
 
@@ -51,13 +51,13 @@ pub(super) fn use_phase(output: OutputId) -> CenterPhase {
         } else {
             PhaseInput::NotWanted
         };
-        drive(phase, follow.clone(), input);
+        drive(phase, follow.as_ref(), input);
     });
     CenterPhase { phase, surface }
 }
 
 /// `input` through the machine.
-fn drive(mut phase: Signal<Phase>, surface: Option<SurfaceHandle>, input: PhaseInput) {
+fn drive(mut phase: Signal<Phase>, surface: Option<&SurfaceHandle>, input: PhaseInput) {
     let (next, out) = step_phase(*phase.peek(), input);
     if next != *phase.peek() {
         phase.set(next);
@@ -72,7 +72,7 @@ fn drive(mut phase: Signal<Phase>, surface: Option<SurfaceHandle>, input: PhaseI
         "notification_center.visible={}",
         visibility == Visibility::Shown
     );
-    if let Some(surface) = &surface {
+    if let Some(surface) = surface {
         surface.set_visibility(visibility);
     }
 }

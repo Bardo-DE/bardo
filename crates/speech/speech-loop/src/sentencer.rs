@@ -53,7 +53,7 @@ fn split(text: &str) -> Vec<String> {
         .collect()
 }
 
-fn cap(piece: String) -> Vec<String> {
+fn cap(piece: &str) -> Vec<String> {
     let chars: Vec<char> = piece.chars().collect();
     let mut out = Vec::new();
     let mut start = 0;
@@ -99,7 +99,7 @@ fn fits(a: &str, b: &str) -> bool {
 
 /// The pieces of `text`, in order.
 pub fn sentences(text: &str) -> Vec<Sentence> {
-    let pieces: Vec<String> = split(text).into_iter().flat_map(cap).collect();
+    let pieces: Vec<String> = split(text).iter().flat_map(|piece| cap(piece)).collect();
     let mut out: Vec<String> = Vec::new();
     for piece in pieces {
         match out.last_mut() {

@@ -22,7 +22,7 @@ role = "shell"
 "#;
 
 fn check(cgroup: &str, image: FixtureImage<'_>) -> ShellCheck<FixtureProc> {
-    let proc = FixtureProc::new().process(FixtureProcess {
+    let proc = FixtureProc::new().process(&FixtureProcess {
         pid: Pid::new(PID).unwrap(),
         cgroup: &format!("0::{cgroup}\n"),
         image,

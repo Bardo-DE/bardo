@@ -9,8 +9,8 @@ use desktop_protocols::server::bardo_shell_v1::bardo_shell_v1::Shown;
 
 /// Carries out one note for the shell. Also the way the edge reports the real modifier keys
 /// (`ShellNote::Modifiers`), which no model transition makes.
-pub(super) fn note(state: &mut State, note: ShellNote) {
-    match &note {
+pub(super) fn note(state: &mut State, note: &ShellNote) {
+    match note {
         // Mission Control is global (as the Mac's with a Space row on every display): every
         // output is up while it is not closed. The outputs are told first, then the state.
         ShellNote::Overview(overview) => {
@@ -81,5 +81,5 @@ pub(super) fn note(state: &mut State, note: ShellNote) {
         }
         _ => {}
     }
-    log(shell::apply_note(&mut state.wl.quire_shell, &note));
+    log(shell::apply_note(&mut state.wl.quire_shell, note));
 }

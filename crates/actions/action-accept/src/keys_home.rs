@@ -88,7 +88,7 @@ pub fn check_dir(dir: &Path) -> Result<PathBuf, HomeFault> {
     if !dir.is_absolute() {
         return Err(HomeFault::NotAbsolute(dir.to_owned()));
     }
-    let meta = meta_of(dir).map_err(|_| HomeFault::NotADirectory(dir.to_owned()))?;
+    let meta = meta_of(dir).ok().ok_or_else(|| HomeFault::NotADirectory(dir.to_owned()))?;
     if !meta.is_dir() {
         return Err(HomeFault::NotADirectory(dir.to_owned()));
     }
@@ -113,12 +113,12 @@ impl KeysHome {
         let keys = real.join(KEYS_FILE);
         let empty = || HomeFault::Empty(dir.to_owned());
         // Metadata only: the harness never opens the key file.
-        let meta = std::fs::symlink_metadata(&keys).map_err(|_| empty())?;
+        let meta = std::fs::symlink_metadata(&keys).ok().ok_or_else(empty)?;
         if !meta.is_file() {
             return Err(HomeFault::NotAFile(keys));
         }
         tight(&keys, &meta)?;
-        std::fs::metadata(real.join(REGISTRY)).map_err(|_| empty())?;
+        std::fs::metadata(real.join(REGISTRY)).ok().ok_or_else(empty)?;
         Ok(Self(real))
     }
 

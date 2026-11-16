@@ -21,7 +21,7 @@ pub fn collect(ctx: &mut HostCtx<ShellMsg>, outputs: &Outputs) -> Vec<SurfaceSta
     let locks = lock_surfaces(ctx, outputs);
     ids.into_iter()
         .chain(locks)
-        .filter_map(|(name, id)| Some(wire_stats(name, ctx.take_stats(id)?)))
+        .filter_map(|(name, id)| Some(wire_stats(name, &ctx.take_stats(id)?)))
         .collect()
 }
 
@@ -50,7 +50,7 @@ fn row_surfaces(surfaces: &OutputSurfaces) -> Vec<(String, SurfaceId)> {
         .collect()
 }
 
-fn wire_stats(name: String, stats: layer_shell_host::FrameStats) -> SurfaceStats {
+fn wire_stats(name: String, stats: &layer_shell_host::FrameStats) -> SurfaceStats {
     SurfaceStats {
         surface: SurfaceName(name),
         frames: stats.counters.frames,

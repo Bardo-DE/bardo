@@ -46,6 +46,7 @@ struct Ghost {
 }
 
 /// The icon surface's size: the ghost at its tallest.
+#[expect(clippy::cast_possible_wrap, reason = "the ghost sizes are small constants")]
 pub fn ghost_size() -> Size {
     let inner = GHOST_WIDTH - 2 * GHOST_MAT;
     Size {

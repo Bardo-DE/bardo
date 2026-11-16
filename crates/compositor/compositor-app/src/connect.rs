@@ -65,7 +65,7 @@ pub fn answer(state: &mut State, ask: ConnectAsk) -> ConnectReply {
         return answer_end(state, end, &ask.caller.role);
     }
     if let Some(lease) = ask.lease {
-        return answer_lease(state, lease, ask.owner, &ask.caller.role);
+        return answer_lease(state, &lease, ask.owner, &ask.caller.role);
     }
     if let Some(focus) = ask.focus_lease {
         return answer_focus_lease(state, focus, ask.owner.as_deref(), &ask.caller.role);
@@ -218,7 +218,7 @@ fn agent_only(caller: &RoleName) -> Result<(), ConnectRefusal> {
 /// lease again.
 pub fn answer_lease(
     state: &mut State,
-    ask: LeaseAsk,
+    ask: &LeaseAsk,
     owner: Option<String>,
     caller: &RoleName,
 ) -> ConnectReply {

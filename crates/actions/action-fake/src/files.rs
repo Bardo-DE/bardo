@@ -132,6 +132,10 @@ impl IntentProvider for FakeFiles {
         &self.manifest
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn perform(&self, inv: Invocation) -> Result<Outcome, AppRefusal> {
         let keys = Self::keys(&inv.target);
         let (app, space) = (self.app.clone(), self.space.clone());
@@ -189,7 +193,7 @@ impl IntentProvider for FakeFiles {
                 }
                 s.next += 1;
                 let token = UndoToken::parse(&format!("files-undo-{}", s.next))
-                    .map_err(|_| AppRefusal::Busy)?;
+                    .ok().ok_or(AppRefusal::Busy)?;
                 s.undo.insert(token.as_str().to_owned(), undo);
                 Ok(outcome(
                     Some(format!("Moved {} files", keys.len())),
@@ -212,6 +216,10 @@ impl IntentProvider for FakeFiles {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn dry_run(&self, inv: Invocation) -> Result<Preview, AppRefusal> {
         let keys = Self::keys(&inv.target);
         self.edit(|s| match inv.action.as_str() {
@@ -231,6 +239,10 @@ impl IntentProvider for FakeFiles {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn undo(&self, token: UndoToken, _actor: Actor) -> Result<(), UndoFault> {
         self.edit(|s| match s.undo.remove(token.as_str()) {
             None => Err(UndoFault::Gone),
@@ -243,11 +255,19 @@ impl IntentProvider for FakeFiles {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn search(&self, _text: &str) -> Vec<Hit> {
         // Files are not indexed by this fixture: the router asks the index, not the app.
         vec![]
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn preview(&self, id: &EntityId) -> Preview {
         self.edit(|s| {
             match s
@@ -261,6 +281,10 @@ impl IntentProvider for FakeFiles {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn suggest(&self, _ask: SuggestAsk) -> Vec<action_vocab::EntityRef> {
         vec![]
     }

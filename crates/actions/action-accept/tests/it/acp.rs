@@ -37,8 +37,8 @@ pub(crate) fn prompt(id: &str, text: &str) -> Value {
 
 const BIN: &str = env!("CARGO_BIN_EXE_accept-acp");
 
-pub(crate) async fn editor_of(world: &World) -> AcpEditor {
-    AcpEditor::start(world, std::path::Path::new(BIN)).await
+pub(crate) fn editor_of(world: &World) -> AcpEditor {
+    AcpEditor::start(world, std::path::Path::new(BIN))
 }
 
 pub(crate) fn titles(updates: &[Value]) -> Vec<String> {
@@ -69,7 +69,7 @@ pub(crate) fn words(updates: &[Value]) -> Vec<String> {
 async fn one_session_initialize_new_prompt_a_permission_round_and_done() {
     let world = World::start_acp(&binaries(), Consent::Standing, FLOW_A).await;
     world.sheet.will(SheetChoice::Once);
-    let mut editor = editor_of(&world).await;
+    let mut editor = editor_of(&world);
     let id = session(&mut editor).await;
     let reply = editor
         .request(
@@ -104,7 +104,7 @@ async fn one_session_initialize_new_prompt_a_permission_round_and_done() {
 async fn an_editors_reject_means_the_app_never_runs_the_call() {
     let world = World::start_acp(&binaries(), Consent::Standing, FLOW_A).await;
     world.sheet.will(SheetChoice::Once);
-    let mut editor = editor_of(&world).await;
+    let mut editor = editor_of(&world);
     let id = session(&mut editor).await;
     let reply = editor
         .request(
@@ -136,7 +136,7 @@ async fn an_editors_reject_means_the_app_never_runs_the_call() {
 async fn two_turns(restart: bool) -> (Vec<Value>, Vec<String>, Vec<String>) {
     let world = World::start_acp(&binaries(), Consent::Standing, ACP_TWO_TURNS).await;
     world.sheet.will(SheetChoice::Once);
-    let mut editor = editor_of(&world).await;
+    let mut editor = editor_of(&world);
     let id = session(&mut editor).await;
     let one = editor
         .request(
@@ -148,7 +148,7 @@ async fn two_turns(restart: bool) -> (Vec<Value>, Vec<String>, Vec<String>) {
     assert_eq!(one["result"]["stopReason"], "end_turn", "{one}");
     let mut editor = if restart {
         drop(editor);
-        let mut fresh = editor_of(&world).await;
+        let mut fresh = editor_of(&world);
         let init = json!({"protocolVersion": 1, "clientCapabilities": {}});
         fresh.request("initialize", init, &mut |_| None).await;
         let loaded = fresh

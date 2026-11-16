@@ -2,7 +2,6 @@
 
 use crate::device::{AudioDevice, DeviceError, Snapshot};
 use futures_util::future::{Either, select};
-use std::future::Future;
 use std::pin::pin;
 
 /// How long one enumeration may take before the device is called absent.

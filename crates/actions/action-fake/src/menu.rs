@@ -141,6 +141,10 @@ impl IntentProvider for FakeMenu {
         self.perform_classified(inv, None, None).await
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn perform_classified(
         &self,
         inv: Invocation,
@@ -182,7 +186,7 @@ impl IntentProvider for FakeMenu {
                     action: ActionRef {
                         app: app_name(),
                         name: provenance::ActionName::parse(&action)
-                            .map_err(|_| AppRefusal::Unsupported)?,
+                            .ok().ok_or(AppRefusal::Unsupported)?,
                     },
                     target: TargetValue::Nothing,
                     args: BTreeMap::default(),
@@ -193,31 +197,55 @@ impl IntentProvider for FakeMenu {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn classify(&self, inv: Invocation) -> Result<CallClass, AppRefusal> {
         let item = Self::item_of(&inv).ok_or(AppRefusal::Unsupported)?;
         if let Ok(mut seen) = self.classified.lock() {
             seen.push(item.clone());
         }
         let how = self.script_of(&item).ok_or(AppRefusal::Unsupported)?;
-        how.classify.map_err(|_| AppRefusal::Unsupported)
+        how.classify.ok().ok_or(AppRefusal::Unsupported)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn dry_run(&self, _: Invocation) -> Result<Preview, AppRefusal> {
         Err(AppRefusal::Unsupported)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn undo(&self, _: UndoToken, _: Actor) -> Result<(), UndoFault> {
         Err(UndoFault::Gone)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn search(&self, _: &str) -> Vec<Hit> {
         vec![]
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn preview(&self, _: &EntityId) -> Preview {
         Preview::None
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn suggest(&self, _: SuggestAsk) -> Vec<action_vocab::EntityRef> {
         vec![]
     }

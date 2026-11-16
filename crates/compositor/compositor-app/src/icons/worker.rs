@@ -89,7 +89,7 @@ impl Worker {
             *self = Running::start().map_or(Worker::Broken, Worker::Running);
         }
         match self {
-            Worker::Running(running) => running.jobs.send(job).map_err(|_| Refused),
+            Worker::Running(running) => running.jobs.send(job).ok().ok_or(Refused),
             Worker::Idle | Worker::Broken => Err(Refused),
         }
     }

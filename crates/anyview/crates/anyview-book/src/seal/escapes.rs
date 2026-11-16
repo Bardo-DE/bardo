@@ -34,13 +34,13 @@ fn one(after: &str) -> (Option<char>, usize) {
         .count();
     if digits > 0 {
         let code = u32::from_str_radix(&after[..digits], 16).unwrap_or(0);
-        return match char::from_u32(code).filter(is_name_char) {
+        return match char::from_u32(code).filter(|c| is_name_char(*c)) {
             Some(c) => (Some(c), digits + closing_space(&after[digits..])),
             None => (None, digits),
         };
     }
     match after.chars().next() {
-        Some(c) if is_name_char(&c) => (Some(c), c.len_utf8()),
+        Some(c) if is_name_char(c) => (Some(c), c.len_utf8()),
         Some(c) => (None, c.len_utf8()),
         None => (None, 0),
     }
@@ -56,8 +56,8 @@ fn closing_space(after: &str) -> usize {
     }
 }
 
-fn is_name_char(c: &char) -> bool {
-    c.is_ascii_alphanumeric() || *c == '-' || *c == '_'
+fn is_name_char(c: char) -> bool {
+    c.is_ascii_alphanumeric() || c == '-' || c == '_'
 }
 
 #[cfg(test)]

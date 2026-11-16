@@ -81,10 +81,18 @@ impl LiveModule for PrivacyModule {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn describe(&self) -> LiveSchema {
         self.schema()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn get(&self, key: &KeyPath) -> Result<toml::Value, LiveError> {
         listed(&self.board.rows())
             .into_iter()
@@ -93,6 +101,10 @@ impl LiveModule for PrivacyModule {
             .ok_or_else(|| LiveError::UnknownKey(key.0.clone()))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn snapshot(&self) -> Result<Snapshot, LiveError> {
         let keys = listed(&self.board.rows());
         let values = keys
@@ -106,6 +118,10 @@ impl LiveModule for PrivacyModule {
         Ok(Snapshot { schema, values })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn set(&self, key: &KeyPath, value: toml::Value) -> Result<(), LiveError> {
         let rows = self.board.rows();
         let found = listed(&rows)

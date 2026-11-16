@@ -79,6 +79,10 @@ fn number(word: &str) -> Option<f64> {
 }
 
 /// A logical-pixel position: a number rounded to the nearest pixel (halves away from zero).
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "the cast saturates, and an injected pixel count is small"
+)]
 fn pixels(word: &str) -> Option<i32> {
     number(word).map(|value| value.round() as i32)
 }
@@ -175,6 +179,10 @@ fn axis(words: &[&str]) -> Option<InjectLine> {
 }
 
 fn wheel(horizontal: f64, vertical: f64) -> AxisFrame {
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "the cast saturates, and an injected pixel count is small"
+    )]
     let scaled = |value: f64, per_pixel: i32| (value * f64::from(per_pixel)).round() as i32;
     AxisFrame {
         source: AxisSource::Wheel,

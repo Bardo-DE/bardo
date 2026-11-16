@@ -82,7 +82,7 @@ pub fn host_companion(router: &std::sync::Arc<action_router::Router<FakeSeams>>)
         .companion
         .0
         .set(Box::new(move |inv| match weak.upgrade() {
-            Some(router) => router.companion_perform(inv),
+            Some(router) => router.companion_perform(&inv),
             None => Err(AppRefusal::Unsupported),
         }));
 }
@@ -204,7 +204,7 @@ impl AppLink for FakeLink {
         self.menu
             .classify(inv)
             .await
-            .map_err(|_| action_vocab::ClassifyFault::Refused)
+            .ok().ok_or(action_vocab::ClassifyFault::Refused)
     }
 
     async fn perform_classified(
@@ -277,6 +277,10 @@ impl AppLink for FakeLink {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn running(&self, app: &AppName) -> bool {
         let how = self
             .answering
@@ -286,6 +290,10 @@ impl AppLink for FakeLink {
         !matches!(how, Some(Answering::Stopped | Answering::Absent))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn context(&self, app: &AppName) -> Result<ContextSnapshot, LinkFault> {
         // The fakes have no windows of their own (ds answers context in a real app): a test
         // sets one with `show_window`.

@@ -85,6 +85,10 @@ pub struct Session {
 }
 
 impl InferSession for Session {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn send(&mut self, frame: ClientFrame) -> Result<(), SessionError> {
         self.sent.lock().expect("lock").push(frame);
         Ok(())
@@ -102,6 +106,10 @@ impl InferSession for Session {
 impl Transport for Scripted {
     type Session = Session;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open_with(
         &self,
         need: &Need,

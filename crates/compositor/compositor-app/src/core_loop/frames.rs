@@ -360,6 +360,10 @@ fn mods_of(seat: &Seat<State>) -> HeldMods {
 }
 
 /// Where the pointer is, in whole logical pixels.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a pointer position in logical pixels is far inside the i32 range, and the cast saturates"
+)]
 fn pointer_point(seat: &Seat<State>) -> LogicalPoint {
     seat.get_pointer()
         .map_or(LogicalPoint { x: 0, y: 0 }, |pointer| {
@@ -399,7 +403,7 @@ fn carry_out(
 mod tests {
     use super::*;
     use account_core::SpaceId;
-    use compositor_core::geometry::{LogicalPoint, LogicalSize};
+    use compositor_core::geometry::LogicalSize;
     use compositor_core::window::Restore;
     use desktop_protocols::vocab::TileZone;
 
