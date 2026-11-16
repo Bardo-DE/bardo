@@ -30,16 +30,36 @@ pub trait ProcFs: Send + Sync {
     /// Where `/proc` is mounted: the system's, or a fixture's.
     fn proc_root(&self) -> &Path;
     /// The bytes of the file `path`, failing with `InvalidData` over `cap` bytes.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of the read, or `InvalidData` when the file is over `cap` bytes.
     fn read_capped(&self, path: &Path, cap: u64) -> io::Result<Vec<u8>>;
     /// Where the link `path` points.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of the read.
     fn read_link(&self, path: &Path) -> io::Result<PathBuf>;
     /// The trust of `path`, looking at a final link or through it as `follow` says.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of the lookup.
     fn trust_of(&self, path: &Path, follow: Follow) -> io::Result<FileTrust>;
     /// The entries of the directory `path`, as paths.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of the read.
     fn list_dir(&self, path: &Path) -> io::Result<Vec<PathBuf>>;
     /// Only with feature `dev-rows`: what the path `path` itself is (a final link is not
     /// followed), who owns it and its permission bits. The default refuses, so a view that does
     /// not know cannot load a developer file.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of the lookup; the default returns `Unsupported`.
     #[cfg(feature = "dev-rows")]
     fn info_of(&self, _path: &Path) -> io::Result<NodeInfo> {
         Err(io::Error::from(io::ErrorKind::Unsupported))

@@ -78,11 +78,19 @@ pub enum OfferedFault {
 
 impl Offered {
     /// Reads the text of `offered.toml`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`OfferedFault::Damaged`] when `text` is not a valid record.
     pub fn parse(text: &str) -> Result<Self, OfferedFault> {
         toml::from_str(text).map_err(|_| OfferedFault::Damaged)
     }
 
     /// The record as the text kept in `offered.toml`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`OfferedFault::Damaged`] when the record cannot be written as TOML.
     pub fn render(&self) -> Result<String, OfferedFault> {
         toml::to_string(self).map_err(|_| OfferedFault::Damaged)
     }

@@ -73,6 +73,10 @@ impl RoutineDraft {
     }
 
     /// The form to send, or the first thing missing from it. A time that is missed is skipped.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`RoutineFault`] naming what is missing or not valid in the routine.
     pub fn form(&self) -> Result<RoutineForm, RoutineFault> {
         let goal = self.goal.trim();
         if goal.is_empty() {

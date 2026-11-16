@@ -31,6 +31,11 @@ pub enum WindowAnswer {
 }
 
 /// The answer to `ask` against `wl`.
+///
+/// # Errors
+///
+/// Returns a [`WindowFault`] when the window the ask names is not there or the ask cannot be
+/// carried out.
 pub fn plan(ask: &WindowAsk, wl: &WindowModel) -> Result<WindowAnswer, WindowFault> {
     let toplevels = &wl.toplevels;
     let own = |item: OwnItem, app_id: &str| own_commands(item, app_id, toplevels);

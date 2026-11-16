@@ -74,12 +74,24 @@ pub struct FloorText {
 pub trait PrivacyStore: Debug {
     /// The book's text, or none when there is no book yet. A book that cannot be read is an
     /// error; the caller sets it aside.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`StoreError`] when the book exists but cannot be read.
     fn read_book(&mut self) -> Result<Option<String>, StoreError>;
 
     /// Keeps the damaged book under another name, so nothing is lost and a new book can start.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`StoreError`] when the book cannot be renamed.
     fn set_book_aside(&mut self, at: UnixSeconds) -> Result<(), StoreError>;
 
     /// Replaces the book with `text`, atomically.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`StoreError`] when the book cannot be written.
     fn write_book(&mut self, text: &str) -> Result<(), StoreError>;
 
     /// Every floor file there is, the main one first and then the drop-ins by name. A file
@@ -200,6 +212,11 @@ pub struct BookSink {
 
 impl BookSink {
     /// Replaces the book with `text`, atomically; the file is the person's alone.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`StoreError`] when the private folder cannot be made or the file cannot be
+    /// written.
     pub fn write(&self, text: &str) -> Result<(), StoreError> {
         self.private_folder()?;
         write_atomic(&self.book, text.as_bytes(), NewFileMode::OwnerOnly)?;

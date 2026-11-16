@@ -28,12 +28,20 @@ pub trait Backend: Send + Sync + 'static {
 
     /// Makes the device `spec` describes. Nothing in `spec` came from a client without passing the
     /// ceiling first.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`BackendError`] when the device cannot be created.
     fn create(&self, spec: &DeviceSpec) -> Result<Self::Device, BackendError>;
 }
 
 /// A device that exists. Dropping it destroys it.
 pub trait Device: Send + 'static {
     /// Writes `events` in order.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`BackendError`] when the events cannot be written.
     fn write(&mut self, events: &[Event]) -> Result<(), BackendError>;
 
     /// Gives up the device as its descriptor: it lives as long as the descriptor does.

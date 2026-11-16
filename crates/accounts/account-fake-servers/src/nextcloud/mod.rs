@@ -56,6 +56,10 @@ pub struct FakeNextcloud {
 impl FakeNextcloud {
     /// Binds a Nextcloud with one user, over plain HTTP on loopback (Nextcloud's URLs are
     /// absolute, so a Unix socket will not do).
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the loopback listener cannot be bound.
     pub async fn bind(user: &str) -> io::Result<Self> {
         let listener = Listener::bind(&Bind::Port(0), "nextcloud").await?;
         let port = crate::net::port_of(listener.address());
@@ -84,6 +88,10 @@ impl FakeNextcloud {
     }
 
     /// Binds and serves on a task.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the loopback listener cannot be bound.
     pub async fn start(user: &str) -> io::Result<Running<NextcloudHandle>> {
         let fake = Self::bind(user).await?;
         let handle = fake.handle();
@@ -134,6 +142,10 @@ impl NextcloudHandle {
     }
 
     /// Creates or replaces a file under the user's files, `rel` like `docs/a.txt`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the parent folder does not exist.
     pub fn put_file(&self, rel: &str, body: &[u8]) {
         let mut state = lock(&self.shared.state);
         let path = format!("/remote.php/dav/files/{}/{rel}", state.user);
@@ -144,6 +156,10 @@ impl NextcloudHandle {
     }
 
     /// Makes a folder under the user's files.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the parent folder does not exist or the folder is not new.
     pub fn mkdir(&self, rel: &str) {
         let mut state = lock(&self.shared.state);
         let path = format!("/remote.php/dav/files/{}/{rel}", state.user);
@@ -162,6 +178,10 @@ impl NextcloudHandle {
 
     /// Puts an item (an event, a task, a contact) into a collection (`personal`, `tasks`,
     /// `contacts`).
+    ///
+    /// # Panics
+    ///
+    /// Panics if the collection does not exist.
     pub fn put_item(&self, collection: &str, name: &str, body: &str) {
         let mut state = lock(&self.shared.state);
         let user = state.user.clone();
@@ -191,6 +211,10 @@ impl NextcloudHandle {
 
     /// Makes a calendar of `component` (`VEVENT`, `VTODO`) called `name` in the URL, shown as
     /// `displayname` in `color` (`#0082c9FF`).
+    ///
+    /// # Panics
+    ///
+    /// Panics if the calendar home does not exist or the calendar is not new.
     pub fn add_calendar(&self, name: &str, component: &str, displayname: &str, color: &str) {
         let path = self.collection_path(name);
         let mut state = lock(&self.shared.state);
@@ -209,6 +233,10 @@ impl NextcloudHandle {
 
     /// Makes an address book called `name` in the URL (a calendar may have the same name),
     /// shown as `displayname`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the address book home does not exist or the book is not new.
     pub fn add_addressbook(&self, name: &str, displayname: &str) {
         let mut state = lock(&self.shared.state);
         let path = format!("/remote.php/dav/addressbooks/users/{}/{name}", state.user);
@@ -226,6 +254,10 @@ impl NextcloudHandle {
     }
 
     /// Puts a contact into the address book `book` (made by [`Self::add_addressbook`]).
+    ///
+    /// # Panics
+    ///
+    /// Panics if the address book does not exist.
     pub fn put_book_item(&self, book: &str, name: &str, body: &str) {
         let mut state = lock(&self.shared.state);
         let path = format!(

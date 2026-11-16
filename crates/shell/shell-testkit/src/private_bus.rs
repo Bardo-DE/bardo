@@ -23,6 +23,10 @@ impl PrivateBus {
     /// Start one. Without a `dbus-daemon` there is no bus to test against and the answer is
     /// `None`, announced on stderr so the skip is visible; a test never falls back to the real
     /// session bus.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the started bus has no stdout or its address cannot be read.
     #[must_use]
     pub fn start() -> Option<PrivateBus> {
         let spawned = Command::new("dbus-daemon")

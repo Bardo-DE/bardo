@@ -66,6 +66,11 @@ impl Pending {
     }
 
     /// A place for one identification of a connection from `uid`, held until the ticket drops.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Crowded::User`] when `uid` already holds its share of identifications, and another
+    /// [`Crowded`] when the daemon-wide cap is reached.
     pub fn enter(&self, uid: Uid) -> Result<Ticket, Crowded> {
         let mut counts = self.counts();
         if counts.0.count(uid) >= self.caps.per_user {

@@ -77,10 +77,19 @@ pub enum IdentifyError {
 pub trait Authority: Send + Sync + 'static {
     /// Identifies the peer of `conn`. It may take for ever: the peer controls what its own
     /// `/proc` entries and image file wait on, so the daemon calls it on a thread of its own.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`IdentifyError`] when the peer's credentials, its pidfd or its `/proc` entries
+    /// cannot be read.
     fn identify(&self, conn: &OwnedFd) -> Result<Caller, IdentifyError>;
 
     /// The user the kernel names for the peer of `conn`, from the socket alone: no `/proc` read, so
     /// it cannot wait on the peer. The daemon counts a connection by this before it identifies it.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IdentifyError::Peer`] when the socket's peer credentials cannot be read.
     fn peer_uid(&self, conn: &OwnedFd) -> Result<Uid, IdentifyError> {
         socket_peercred(conn)
             .map(|cred| Uid::new(cred.uid.as_raw()))

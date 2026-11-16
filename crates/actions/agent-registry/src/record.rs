@@ -61,12 +61,21 @@ pub const FILES: &str = "files";
 
 impl Record {
     /// The record as the text kept in `installed.toml`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the TOML serialisation error when the record cannot be written.
     pub fn render(&self) -> Result<String, toml::ser::Error> {
         toml::to_string(self)
     }
 
     /// Reads the text of `installed.toml`; a record that names a program outside its directory, or
     /// a name or digest that is not one, is damaged.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RecordFault::Damaged`] when the text is not a record, or names a program outside
+    /// its directory, or a name or digest that is not valid.
     pub fn parse(text: &str) -> Result<Self, RecordFault> {
         let record: Self = toml::from_str(text).map_err(|_| RecordFault::Damaged)?;
         let named = Slug::parse(&record.id).is_ok() && Slug::parse(&record.version).is_ok();

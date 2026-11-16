@@ -8,6 +8,10 @@ use image::codecs::png::PngEncoder;
 use image::{ExtendedColorType, ImageEncoder};
 
 /// `picture` as PNG bytes, straight alpha kept.
+///
+/// # Errors
+///
+/// Returns an [`ImageError`] when the picture cannot be encoded.
 pub fn encode_png(picture: &Rgba8) -> Result<Vec<u8>, ImageError> {
     let size = picture.size();
     let mut out = Vec::new();

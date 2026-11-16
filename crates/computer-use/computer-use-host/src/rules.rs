@@ -27,6 +27,10 @@ pub fn parse_rules(text: &str) -> Result<Rules, RulesError> {
 }
 
 /// The rules the program ships.
+///
+/// # Panics
+///
+/// Panics if the shipped rules file does not parse; a test holds it to parsing.
 #[must_use]
 pub fn shipped_rules() -> Rules {
     parse_rules(SHIPPED_RULES).expect("the shipped screen rules read (a test holds them to it)")

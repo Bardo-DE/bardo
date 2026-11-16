@@ -43,6 +43,10 @@ fn checked(size: PixelSize, bytes: &[u8]) -> Result<(), ImageError> {
 
 impl Rgba8 {
     /// A picture of `size` made of `bytes`, or why they do not fit.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`ImageError`] when `bytes` is not the length `size` needs.
     pub fn new(size: PixelSize, bytes: Vec<u8>) -> Result<Self, ImageError> {
         checked(size, &bytes)?;
         Ok(Rgba8 { size, bytes })
@@ -115,6 +119,10 @@ impl PremultipliedRgba8 {
     }
 
     /// A premultiplied picture of `size` made of `bytes`, or why they do not fit.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`ImageError`] when `bytes` is not the length `size` needs.
     pub fn new(size: PixelSize, bytes: Vec<u8>) -> Result<Self, ImageError> {
         checked(size, &bytes)?;
         Ok(PremultipliedRgba8 { size, bytes })

@@ -67,6 +67,10 @@ pub struct ToolSpec {
 }
 
 /// The tool name of an action of an app.
+///
+/// # Errors
+///
+/// Returns [`ToolFault::TooLong`] when the name would be longer than 64 characters.
 pub fn tool_name(app: &account_core::AppName, action: &ActionDecl) -> Result<ToolName, ToolFault> {
     let name = format!(
         "{}__{}",

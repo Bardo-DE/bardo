@@ -59,6 +59,10 @@ impl OpenSheets {
     ///
     /// No `Refusal` says "you have one open already" (each is about the account or the person), so
     /// the method answers the bus's own error and no sheet or Request object is made.
+    ///
+    /// # Errors
+    ///
+    /// Returns `LimitsExceeded` while `app` already has a `kind` sheet open.
     pub fn claim(&self, app: &AppId, kind: SheetKind) -> Result<SheetClaim, fdo::Error> {
         let key = (app.clone(), kind);
         if self
@@ -142,12 +146,21 @@ impl RequestObjects {
     }
 
     /// A claim on a `kind` sheet for `app` ([`OpenSheets::claim`]).
+    ///
+    /// # Errors
+    ///
+    /// Returns `LimitsExceeded` while `app` already has a `kind` sheet open.
     pub fn claim(&self, app: &AppId, kind: SheetKind) -> Result<SheetClaim, fdo::Error> {
         self.open.claim(app, kind)
     }
 
     /// The path of the Request object for a sheet `sender` starts: its `handle_token` if the
     /// options name one, else one minted here.
+    ///
+    /// # Errors
+    ///
+    /// Returns `InvalidArgs` when the `handle_token` option is not a valid path segment, and
+    /// `Failed` when the path cannot be built.
     pub fn path(
         &self,
         sender: &UniqueName<'_>,
@@ -181,6 +194,11 @@ impl RequestObjects {
 
     /// Registers the object at `path` for the sheet `sender` asked for, then runs `run` in a task
     /// that answers it with a `kind` response. Returns the path.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Failed` when the connection's name-owner watch or the Request object cannot be set
+    /// up.
     pub async fn start(
         &self,
         sender: UniqueName<'static>,

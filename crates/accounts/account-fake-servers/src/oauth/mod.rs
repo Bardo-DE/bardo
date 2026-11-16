@@ -161,6 +161,10 @@ pub struct FakeIssuer {
 
 impl FakeIssuer {
     /// Binds on loopback (an issuer's redirects are absolute URLs, so a Unix socket will not do).
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the loopback listener cannot be bound.
     pub async fn bind() -> io::Result<Self> {
         let listener = Listener::bind(&Bind::Port(0), "oauth").await?;
         let port = crate::net::port_of(listener.address());
@@ -198,6 +202,10 @@ impl FakeIssuer {
     }
 
     /// Binds and serves on a task.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the loopback listener cannot be bound.
     pub async fn start() -> io::Result<Running<IssuerHandle>> {
         let fake = Self::bind().await?;
         let handle = fake.handle();
@@ -213,6 +221,10 @@ impl IssuerHandle {
     }
 
     /// The endpoints, as a client registration pointing at this issuer would carry them.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the issuer's base URL is not a valid URL, which a loopback address never is.
     #[must_use]
     pub fn endpoints(&self) -> IssuerEndpoints {
         let url = |path: &str| {

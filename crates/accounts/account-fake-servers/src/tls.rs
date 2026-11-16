@@ -16,12 +16,20 @@ const LEAF_PEM: &str = include_str!("../fixtures/leaf.pem");
 const LEAF_KEY: &str = include_str!("../fixtures/leaf.key");
 
 /// The DER of the scratch CA, for a client that builds its own root store.
+///
+/// # Panics
+///
+/// Panics if the bundled CA fixture is not a certificate.
 #[must_use]
 pub fn ca_der() -> CertificateDer<'static> {
     CertificateDer::from_pem_slice(CA_PEM.as_bytes()).expect("fixtures/ca.pem holds a certificate")
 }
 
 /// What a fake serves TLS with.
+///
+/// # Panics
+///
+/// Panics if a bundled TLS fixture is not valid or the leaf does not match its key.
 #[must_use]
 pub fn acceptor() -> TlsAcceptor {
     let chain = CertificateDer::pem_slice_iter(LEAF_PEM.as_bytes())
@@ -39,6 +47,10 @@ pub fn acceptor() -> TlsAcceptor {
 }
 
 /// A client config trusting only the scratch CA.
+///
+/// # Panics
+///
+/// Panics if the bundled scratch CA is not a usable root.
 #[must_use]
 pub fn client_config() -> Arc<ClientConfig> {
     let mut roots = RootCertStore::empty();
@@ -61,6 +73,10 @@ pub fn connector() -> TlsConnector {
 }
 
 /// The name the leaf certificate answers to in tests.
+///
+/// # Panics
+///
+/// Panics only if `localhost` stopped being a valid server name.
 #[must_use]
 pub fn server_name() -> ServerName<'static> {
     ServerName::try_from("localhost").expect("localhost is a valid name")

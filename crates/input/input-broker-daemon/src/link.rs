@@ -90,6 +90,10 @@ fn map_errno(e: Errno) -> SendError {
 }
 
 /// Sends `reply`; never blocks.
+///
+/// # Errors
+///
+/// Returns a [`SendError`] when the reply cannot be encoded or the socket would block.
 pub fn send_reply(conn: &OwnedFd, reply: &Reply) -> Result<(), SendError> {
     let bytes = encode_reply(reply)?;
     send(conn, &bytes, SendFlags::DONTWAIT | SendFlags::NOSIGNAL)
@@ -98,6 +102,10 @@ pub fn send_reply(conn: &OwnedFd, reply: &Reply) -> Result<(), SendError> {
 }
 
 /// Sends `reply` with `device` riding along as a descriptor; never blocks.
+///
+/// # Errors
+///
+/// Returns a [`SendError`] when the reply cannot be encoded or the socket would block.
 pub fn send_reply_with_fd(
     conn: &OwnedFd,
     reply: &Reply,
@@ -121,6 +129,10 @@ pub fn send_reply_with_fd(
 }
 
 /// Sets how long `Inbox::next` may wait; `None` waits for ever.
+///
+/// # Errors
+///
+/// Returns the `Errno` of the failed `setsockopt` call.
 pub fn set_receive_timeout(conn: &OwnedFd, timeout: Option<Duration>) -> Result<(), Errno> {
     set_socket_timeout(conn, Timeout::Recv, timeout)
 }

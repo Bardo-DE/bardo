@@ -40,6 +40,10 @@ impl TableFiles {
     /// units win. Any file that is not root-only (the file or a directory above it is writable by
     /// anyone else), is unreadable, or is not a table, fails the whole load: the caller then runs
     /// with [`Table::empty`], where nobody is a service.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LoadError`] when a file is not root-only, cannot be read, or is not a table.
     pub fn load<P: ProcFs>(&self, fs: &P) -> Result<Table, LoadError> {
         let mut table = read_table(fs, &self.main)?;
         for path in self.drop_in_files(fs)? {

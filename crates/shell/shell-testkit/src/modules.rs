@@ -6,6 +6,10 @@ use std::path::{Path, PathBuf};
 /// Fails when a `*.rs` file in the crate's `tests/it` is not declared by `mod <name>;` in
 /// `main.rs`, or a directory with a `mod.rs` is declared by no file there. Pass
 /// `env!("CARGO_MANIFEST_DIR")`.
+///
+/// # Panics
+///
+/// Panics, naming the files, when a module is not declared.
 pub fn assert_all_modules_included(manifest_dir: &str) {
     let dir = Path::new(manifest_dir).join("tests").join("it");
     let main = read(&dir.join("main.rs"));

@@ -249,6 +249,11 @@ impl<P: Transport> PlannerModel<P> {
 
     /// One planner step as the loop's single output: calls, a read, a question, an end, or
     /// words when the model only spoke.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PlanFault`] when no model answers, the reply cannot be read, or the model wrote
+    /// a call as words.
     pub async fn plan(&self, view: &PlannerView) -> Result<ModelOutput, PlanFault> {
         let reply = self.converse(view).await?;
         Ok(match (reply.said, reply.then) {
@@ -258,6 +263,10 @@ impl<P: Transport> PlannerModel<P> {
     }
 
     /// A chat turn and how it was routed: the reasons, doors and stages inferd announced.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PlanFault`] when no model is chosen or reachable, or its reply is unusable.
     pub async fn chat_routed(
         &self,
         request: ChatRequest,

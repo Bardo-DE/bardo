@@ -89,6 +89,10 @@ impl FakeServer for MediaServer {
 impl super::GoogleHandle {
     /// Starts a second origin that serves the picked items' bytes at `/dl/<id>` and wants the
     /// account's bearer, and points the picked items' `baseUrl`s at it.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the second loopback listener cannot be bound.
     pub async fn serve_media(&self) -> io::Result<Running<MediaOrigin>> {
         let listener = Listener::bind(&Bind::Port(0), "google-media").await?;
         let base = format!(

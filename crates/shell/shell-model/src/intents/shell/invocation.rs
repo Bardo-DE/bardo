@@ -20,6 +20,11 @@ use crate::windows::Step;
 /// A name the shell does not declare is `Unsupported`; a parameter that is missing, of the wrong
 /// type or outside its options is `NeedsParam` or `Failed` with words that name it, never with the
 /// argument's own text.
+///
+/// # Errors
+///
+/// Returns an [`AppRefusal`] when the action is not one of the shell's, or a parameter is missing,
+/// of the wrong type or outside its options.
 pub fn action_of(invocation: &Invocation) -> Result<ShellAction, AppRefusal> {
     match invocation.action.as_str() {
         "shell.launcher.open" => Ok(ShellAction::LauncherOpen {
@@ -70,6 +75,10 @@ fn undo_token(action: &ShellAction) -> Option<UndoToken> {
 }
 
 /// The action that undoes what `token` was minted for; a token that is none of ours is `Gone`.
+///
+/// # Errors
+///
+/// Returns [`UndoFault::Gone`] when the token is none of ours.
 pub fn undo_of(token: &UndoToken) -> Result<ShellAction, UndoFault> {
     let text = token.as_str();
     if let Some(app) = text.strip_prefix(UNPIN) {

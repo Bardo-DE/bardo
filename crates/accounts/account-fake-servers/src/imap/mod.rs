@@ -57,6 +57,10 @@ pub struct FakeImap {
 
 impl FakeImap {
     /// Binds a server with this security, accepting `accounts`, holding `inbox`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the listener cannot be bound at `bind`.
     pub async fn bind(
         bind: &Bind,
         tls: Tls,
@@ -80,6 +84,10 @@ impl FakeImap {
     }
 
     /// Binds and serves on a task.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the listener cannot be bound at `bind`.
     pub async fn start(
         bind: &Bind,
         tls: Tls,

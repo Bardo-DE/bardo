@@ -209,6 +209,11 @@ where
 
     /// Withdraws one of `caller`'s own grants; `UnknownGrant` when `caller` holds none of that
     /// id.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Refusal::UnknownGrant`] when `caller` holds no grant with that id, and
+    /// [`Refusal::Unavailable`] when the registry cannot be saved.
     pub async fn revoke(&self, caller: &AppId, grant: &GrantId) -> Result<(), Refusal> {
         self.grants_domain().revoke(caller, grant).await
     }
@@ -237,6 +242,11 @@ where
     /// launcher (inferd). It never crosses a process. A key that is missing or unreadable (or
     /// filed as another kind of credential) means signing in again (`NeedsReauth`); a store that
     /// is locked or unreachable is `Unavailable`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Refusal::NeedsReauth`] when the key is missing, unreadable or filed as another
+    /// kind of credential, and [`Refusal::Unavailable`] when the store is locked or unreachable.
     pub async fn api_key(&self, account: &AccountId) -> Result<SecretText, Refusal> {
         self.accounts().api_key(account).await
     }
@@ -247,6 +257,10 @@ where
     }
 
     /// The key of the own server `account`, which needs no permit.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Refusal`] when the account is not an own server or its key cannot be read.
     pub async fn own_server_key(&self, account: &AccountId) -> Result<SecretText, Refusal> {
         self.accounts().own_server_key(account).await
     }
@@ -264,6 +278,11 @@ where
     }
 
     /// The key behind an allow grant of kind `Llm`, read once; an allow-once grant is spent.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Refusal`] when the grant is unknown, is not of kind `Llm`, or its key cannot be
+    /// read.
     pub async fn release_key(&self, grant: &GrantId) -> Result<SecretText, Refusal> {
         self.grants_domain().release_key(grant).await
     }
@@ -356,6 +375,12 @@ where
 
     /// Records what the agent says of its own sign-in. Returns whether the account's state
     /// changed (a repeat of the same word changes nothing and writes nothing).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`AgentFault::UnknownAccount`] when no account has the id,
+    /// [`AgentFault::NotAnAgent`] when it is not an agent that signs itself in, and
+    /// [`AgentFault::Unavailable`] when the registry cannot be saved.
     pub async fn set_agent_state(
         &self,
         account: &AccountId,
@@ -395,6 +420,12 @@ where
     ///
     /// An `offline` report with no models keeps the models the account had, so a stopped runtime
     /// still lists what it ran and comes back as it was. An `ok` report replaces them.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LocalFault`] when the provider is unknown or not a local runtime, the state is
+    /// not `ok` or `offline`, a claim is not one a runtime may make, or the registry cannot be
+    /// saved.
     pub async fn report_local(
         &self,
         provider: &ProviderId,
@@ -408,6 +439,10 @@ where
     /// effort, then wipes its secrets, grants, toggles and row, and audits `Removed`. The
     /// provider's answer never stops the wipe. It answers what the provider said, or `None` when
     /// the provider could not be asked (no credential, unreachable, refused).
+    ///
+    /// # Errors
+    ///
+    /// Returns the [`SecretsError`] of the store when the account's secrets cannot be wiped.
     pub async fn remove_with_revoke(
         &self,
         id: &AccountId,
@@ -419,6 +454,11 @@ where
     /// account's toggles applied). A refresh token the provider rotated while it looked is read
     /// back from a session opened afterwards (`renewed`) and stored, so the next sign-in
     /// check does not present a token the issuer has since replaced.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Refusal`] when the account is unknown, cannot be reached, or its record cannot
+    /// be saved.
     pub async fn rediscover(&self, id: &AccountId) -> Result<Vec<Claim>, Refusal> {
         self.accounts().rediscover(id).await
     }
@@ -427,6 +467,10 @@ where
     /// effective capabilities follow (a kind turned off reads `Absent { TurnedOff }`; turned on
     /// again it reads as its provider file declares it until the next discovery refreshes it).
     /// A switch that changes the kind is audited (`ServiceToggled`).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Refusal`] when the account is unknown or the change cannot be saved.
     pub async fn set_toggle(
         &self,
         id: &AccountId,
@@ -472,6 +516,10 @@ where
 
     /// Withdraws any grant, whoever holds it (Settings' "Revoke"). `UnknownGrant` when none has
     /// that id.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Refusal::UnknownGrant`] when no grant has that id.
     pub async fn revoke_grant(&self, grant: &GrantId) -> Result<(), Refusal> {
         self.grants_domain().revoke_grant(grant).await
     }
@@ -484,6 +532,10 @@ where
 
     /// [`AccountService::set_state`] saying why when the state could not be saved
     /// (`Unavailable`), for a host that logs it.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Refusal::Unavailable`] when the state could not be saved.
     pub async fn try_set_state(
         &self,
         id: &AccountId,
@@ -497,6 +549,10 @@ where
     /// again. A host that reads a key itself, as inferd does, calls this once the read has
     /// succeeded. `UnknownGrant` when the grant is no longer held: the answer is decided on the
     /// registry as it is now, so of two uses of a `Once` grant racing, one is refused.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Refusal::UnknownGrant`] when the grant is no longer held.
     pub async fn spend_once(&self, caller: &AppId, grant: &GrantId) -> Result<(), Refusal> {
         self.grants_domain().spend_once(caller, grant).await
     }
@@ -511,6 +567,10 @@ where
     /// Removes an account and everything filed for it: its provider is asked to stop honouring
     /// the credential first (best effort, `remove_with_revoke` says what it answered), then the
     /// secrets, grants, toggles and the registry row go.
+    ///
+    /// # Errors
+    ///
+    /// Returns the [`SecretsError`] of the store when the account's secrets cannot be wiped.
     pub async fn remove_account(&self, id: &AccountId) -> Result<(), SecretsError> {
         self.accounts().remove_with_revoke(id).await.map(|_| ())
     }
@@ -518,6 +578,11 @@ where
     /// What the relay for `OpenAuthenticated` is told: checks that `caller` holds the grant and
     /// that `endpoint` is one of the account's for the grant's kind, then reads what the relay
     /// presents. The transport makes the descriptor and runs the relay.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Refusal`] when `caller` does not hold the grant, the endpoint is not one of the
+    /// account's for the grant's kind, or the credential cannot be read.
     pub async fn open_authenticated(
         &self,
         caller: &AppId,
@@ -533,6 +598,11 @@ where
     /// `origin` is one its account's provider file declares for the grant's kind, then plans a
     /// relay that adds no credential. The audit line names the origin, never a link's path (a
     /// pre-authenticated URL carries its secret there).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Refusal`] when `caller` does not hold the grant or `origin` is not one the
+    /// account's provider file declares for the grant's kind.
     pub async fn open_linked(
         &self,
         caller: &AppId,

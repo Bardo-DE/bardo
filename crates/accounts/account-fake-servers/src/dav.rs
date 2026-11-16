@@ -188,6 +188,11 @@ impl Tree {
     }
 
     /// Makes a calendar or address book at `path` (its parent must exist).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`PutError::Exists`] if `path` is taken and [`PutError::NoParent`] if its parent
+    /// does not exist.
     pub fn make_collection(&mut self, path: &str, kind: Kind) -> Result<(), PutError> {
         if self.nodes.contains_key(path) {
             return Err(PutError::Exists);
@@ -236,6 +241,10 @@ impl Tree {
 
     /// Creates or replaces the item at `path` (its parent collection must exist); whether it was
     /// created (not replaced).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`PutError::NoParent`] if the parent collection does not exist or is an item.
     pub fn put(&mut self, path: &str, body: &[u8]) -> Result<bool, PutError> {
         let parent = self.nodes.get(parent_of(path)).ok_or(PutError::NoParent)?;
         if parent.kind == Kind::Item {
@@ -252,6 +261,11 @@ impl Tree {
     }
 
     /// Makes a collection (inside a files folder it is a files folder).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`PutError::Exists`] if `path` is taken and [`PutError::NoParent`] if its parent
+    /// does not exist.
     pub fn mkcol(&mut self, path: &str) -> Result<(), PutError> {
         if self.nodes.contains_key(path) {
             return Err(PutError::Exists);

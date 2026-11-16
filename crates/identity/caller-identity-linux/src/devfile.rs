@@ -41,6 +41,12 @@ impl TableFiles {
     /// by root, and not writable by group or others; it is read within [`crate::TABLE_FILE_CAP`]
     /// bytes. Any other state fails the whole load, and the caller then has no developer rows.
     /// Merge the result after the shipped table: `shipped.merge(rows)`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LoadError`] when the file is missing or unreadable, is not a plain file, is not
+    /// owned by `person` or root, is writable by group or others, is over the size cap or is not a
+    /// table.
     pub fn load_dev<P: ProcFs>(fs: &P, path: &Path, person: Uid) -> Result<Table, LoadError> {
         let info = fs.info_of(path).map_err(|e| unreadable(path, e))?;
         if info.kind != NodeKind::File {

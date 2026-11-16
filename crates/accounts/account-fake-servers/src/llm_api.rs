@@ -90,6 +90,10 @@ pub struct FakeLlmApi {
 
 impl FakeLlmApi {
     /// Binds on loopback a company that wants its key presented as `auth`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the loopback listener cannot be bound.
     pub async fn bind(auth: Auth) -> io::Result<Self> {
         let listener = Listener::bind(&Bind::Port(0), "llm-api").await?;
         let port = crate::net::port_of(listener.address());
@@ -112,6 +116,10 @@ impl FakeLlmApi {
     }
 
     /// Binds and serves on a task.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the loopback listener cannot be bound.
     pub async fn start(auth: Auth) -> io::Result<Running<LlmApiHandle>> {
         let fake = Self::bind(auth).await?;
         let handle = fake.handle();

@@ -9,7 +9,7 @@ use image::ImageFormat;
 pub(crate) enum Codec {
     /// A format the `image` crate decodes.
     Image(ImageFormat),
-    /// OpenEXR or Radiance HDR: floating point pictures that are tone mapped to 8 bits.
+    /// `OpenEXR` or Radiance HDR: floating point pictures that are tone mapped to 8 bits.
     HighRange(ImageFormat),
     /// A Photoshop document's flattened composite.
     Psd,

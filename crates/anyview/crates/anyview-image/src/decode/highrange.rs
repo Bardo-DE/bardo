@@ -1,4 +1,4 @@
-//! OpenEXR and Radiance HDR: scene-linear floating point pictures shown as 8-bit sRGB.
+//! `OpenEXR` and Radiance HDR: scene-linear floating point pictures shown as 8-bit sRGB.
 //!
 //! **Tone mapping.** A channel `c` (linear, at least 0) goes through the extended Reinhard curve
 //! `c * (1 + c / w^2) / (1 + c)`, where `w` is the largest value in the picture, never below 1. A

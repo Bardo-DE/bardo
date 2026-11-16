@@ -38,6 +38,10 @@ pub struct FakePop3 {
 
 impl FakePop3 {
     /// Binds a server with this security, accepting `accounts`, holding `maildrop`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the listener cannot be bound at `bind`.
     pub async fn bind(
         bind: &Bind,
         tls: Tls,
@@ -61,6 +65,10 @@ impl FakePop3 {
     }
 
     /// Binds and serves on a task.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the listener cannot be bound at `bind`.
     pub async fn start(
         bind: &Bind,
         tls: Tls,

@@ -94,6 +94,10 @@ where
     }
 
     /// Serves until idle for [`Settings::idle`], then returns.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`DaemonError`] when serving fails.
     pub fn run(&self) -> Result<(), DaemonError> {
         let slots = Slots::new();
         let pending = Pending::new(self.settings.pending);

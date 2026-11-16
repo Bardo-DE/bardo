@@ -341,6 +341,10 @@ pub struct FakeLocalApi {
 
 impl FakeLocalApi {
     /// Serves on `dir/tailscaled.sock` (a scratch directory), starting as `daemon`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the socket cannot be bound in `dir`.
     pub async fn start(dir: &Path, daemon: Daemon) -> io::Result<Self> {
         let (news, _) = broadcast::channel(256);
         let shared = Arc::new(Shared {
@@ -376,6 +380,10 @@ impl FakeLocalApi {
     }
 
     /// Answers again, on the same path.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the socket cannot be bound again at its path.
     pub async fn restart(&self) -> io::Result<()> {
         self.stop();
         // A stale socket file is what a killed daemon leaves; the new one replaces it.

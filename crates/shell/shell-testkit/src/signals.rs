@@ -27,6 +27,10 @@ pub struct Signals {
 
 impl Signals {
     /// Listen on `connection` from now on.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the match rule or the subscription is refused.
     pub async fn listen(connection: &zbus::Connection) -> Signals {
         let rule = MatchRule::builder()
             .msg_type(MessageType::Signal)

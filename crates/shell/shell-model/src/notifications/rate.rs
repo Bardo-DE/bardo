@@ -69,6 +69,10 @@ impl Allowance {
 
     /// One notification taken at `now`: the allowance after it, or the allowance unchanged when
     /// the caller has none left.
+    ///
+    /// # Errors
+    ///
+    /// Returns the allowance unchanged as the error when the caller has none left.
     pub fn take(self, now: UnixMs) -> Result<Allowance, Allowance> {
         let held = self.refilled(now);
         match held.tokens.checked_sub(1) {

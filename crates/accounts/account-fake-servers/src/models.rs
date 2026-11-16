@@ -114,11 +114,19 @@ pub struct FakeModels {
 impl FakeModels {
     /// Binds a server of this wire holding `models`; `key` (`OpenAI` wire) is the bearer token it
     /// requires.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the loopback listener cannot be bound.
     pub async fn bind(wire: Wire, models: Vec<ModelDef>, key: Option<&str>) -> io::Result<Self> {
         Self::bind_on(&Bind::Port(0), wire, models, key).await
     }
 
     /// `bind`, at `bind` (`Bind::Port` to come back where a stopped server was).
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the listener cannot be bound at `bind`.
     pub async fn bind_on(
         bind: &Bind,
         wire: Wire,
@@ -149,6 +157,10 @@ impl FakeModels {
     }
 
     /// Binds and serves on a task.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the loopback listener cannot be bound.
     pub async fn start(
         wire: Wire,
         models: Vec<ModelDef>,

@@ -35,6 +35,10 @@ pub struct FakeDav {
 
 impl FakeDav {
     /// Binds a server accepting `user` and `password`, over plain HTTP on loopback.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the loopback listener cannot be bound.
     pub async fn bind(user: &str, password: &str) -> io::Result<Self> {
         let listener = Listener::bind(&Bind::Port(0), "dav").await?;
         let port = crate::net::port_of(listener.address());
@@ -63,6 +67,10 @@ impl FakeDav {
     }
 
     /// Binds and serves on a task.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the loopback listener cannot be bound.
     pub async fn start(user: &str, password: &str) -> io::Result<Running<DavHandle>> {
         let fake = Self::bind(user, password).await?;
         let handle = fake.handle();
@@ -78,6 +86,10 @@ impl DavHandle {
     }
 
     /// Creates or replaces a file under `/dav/files/`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the parent folder does not exist.
     pub fn put_file(&self, rel: &str, body: &[u8]) {
         lock(&self.shared.tree)
             .put(&format!("/dav/files/{rel}"), body)
@@ -85,6 +97,10 @@ impl DavHandle {
     }
 
     /// Makes a folder under `/dav/files/`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the parent folder does not exist or the folder is not new.
     pub fn mkdir(&self, rel: &str) {
         lock(&self.shared.tree)
             .mkcol(&format!("/dav/files/{rel}"))

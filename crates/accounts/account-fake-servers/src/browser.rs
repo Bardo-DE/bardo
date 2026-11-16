@@ -17,6 +17,11 @@ pub struct Visit {
 }
 
 /// An `http://` loopback URL as the address and the request target.
+///
+/// # Errors
+///
+/// Returns an `InvalidInput` error if `url` is not an `http://` URL with a loopback host and a
+/// port.
 pub fn split_loopback(url: &str) -> io::Result<(FakeAddress, String)> {
     let bad = || {
         io::Error::new(
@@ -39,6 +44,11 @@ pub fn split_loopback(url: &str) -> io::Result<(FakeAddress, String)> {
 
 /// Opens `authorize_url`; when the issuer answers with a redirect, opens that too (the app's
 /// loopback redirect), and returns what both said.
+///
+/// # Errors
+///
+/// Returns the I/O error if either request fails to connect, send or read, or if a URL is not a
+/// loopback `http://` one.
 pub async fn follow(authorize_url: &str) -> io::Result<Visit> {
     let (address, target) = split_loopback(authorize_url)?;
     let first = send(&address, Scheme::Http, &Request::new("GET", &target)).await?;

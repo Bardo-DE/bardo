@@ -54,6 +54,10 @@ pub fn encode_request(request: &HelperRequest) -> Vec<u8> {
 }
 
 /// The child's side of [`encode_request`]: exactly three NUL-terminated UTF-8 fields.
+///
+/// # Errors
+///
+/// Returns a [`ProtocolError`] when `bytes` is not exactly three NUL-terminated UTF-8 fields.
 pub fn decode_request(bytes: &[u8]) -> Result<HelperRequest, ProtocolError> {
     let body = bytes.strip_suffix(&[0]).ok_or(ProtocolError::Fields)?;
     let mut fields = body.split(|byte| *byte == 0);
@@ -95,6 +99,10 @@ fn one_line(text: &str) -> String {
 }
 
 /// One line of the child's stdout (its newline already stripped).
+///
+/// # Errors
+///
+/// Returns [`ProtocolError::Line`] when the line is not one the child writes.
 pub fn parse_line(line: &str) -> Result<HelperLine, ProtocolError> {
     let unknown = || ProtocolError::Line(line.to_owned());
     match line.split_once(' ') {

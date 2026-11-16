@@ -10,6 +10,10 @@ use crate::apps::{App, AppIcon, ExecArgs, ExecError, Terminal, expand_exec};
 ///
 /// It has the terminal wrapper (`terminal`, e.g. `["foot", "-e"]`) in front of `Exec` when the
 /// entry has `Terminal=true`, and the request's action's `Exec` when it names one.
+///
+/// # Errors
+///
+/// Returns an [`ExecError`] when the `Exec` line cannot be expanded.
 pub fn launch_argv(
     app: &App,
     request: &LaunchRequest,
@@ -70,6 +74,10 @@ fn icon_arg(icon: &AppIcon) -> String {
 /// what porter reads back to learn which app a process is (`identity_of`) is the same name.
 ///
 /// The id is escaped as a unit name component (`systemd-escape`); an empty id has no scope.
+///
+/// # Errors
+///
+/// Returns a [`CoreError`] when the app id is empty or cannot be escaped as a unit name component.
 pub fn scope_unit(app: &AppId, nonce: u32) -> Result<ScopeUnit, CoreError> {
     ScopeName::new(Some("bardo"), &app.0, &nonce.to_string())
         .map(|name| ScopeUnit(name.to_string()))

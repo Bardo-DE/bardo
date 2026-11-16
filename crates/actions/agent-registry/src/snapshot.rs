@@ -77,6 +77,11 @@ pub struct SnapshotFault(String);
 
 impl Snapshot {
     /// Reads the snapshot's JSON.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SnapshotFault`] carrying the parser's message when `text` is not a valid
+    /// snapshot.
     pub fn parse(text: &str) -> Result<Self, SnapshotFault> {
         serde_json::from_str(text).map_err(|e| SnapshotFault(e.to_string()))
     }

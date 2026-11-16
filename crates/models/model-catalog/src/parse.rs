@@ -64,6 +64,11 @@ pub enum CatalogError {
 /// `check::capabilities`) and an engine's subset stays inside its model's sets. What an entry
 /// needs of its engines (a GPU estimate, weights the engine reads) is `engine_spec::check_entry`,
 /// which the caller runs next.
+///
+/// # Errors
+///
+/// Returns a [`CatalogError`] when `text` is not a valid entry file, or its declared inputs,
+/// outputs, detail tables or engine subsets disagree.
 pub fn parse_entry(text: &str) -> Result<ModelEntry, CatalogError> {
     let file: EntryFile = toml::from_str(text).map_err(|e| CatalogError::Toml(e.to_string()))?;
     match (&file.serving, &file.locality, file.engines.is_empty()) {

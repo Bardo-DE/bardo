@@ -2,7 +2,7 @@
 //!
 //! A PSD is a 26-byte header, then three length-prefixed sections that are skipped (the colour
 //! mode data, the image resources, the layer and mask information), then the composite: a
-//! compression word and the channels as planes, raw or PackBits. A PSB (version 2) is the same
+//! compression word and the channels as planes, raw or PackBits. A `PSB` (version 2) is the same
 //! with an eight-byte length for the layer section and four-byte row lengths in the RLE table.
 //!
 //! The `psd` crate indexes the layer section before it reads the composite and panics on files
@@ -43,7 +43,7 @@ fn colour_channels(mode: u64) -> Result<usize, Gap> {
     }
 }
 
-/// Unpacks one PackBits row into `out`, which it must fill exactly.
+/// Unpacks one `PackBits` row into `out`, which it must fill exactly.
 fn unpack_bits(source: &[u8], out: &mut [u8]) -> bool {
     let (mut from, mut to) = (0_usize, 0_usize);
     while to < out.len() {

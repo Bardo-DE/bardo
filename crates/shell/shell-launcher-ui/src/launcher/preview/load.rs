@@ -60,6 +60,10 @@ pub enum Peeking {
 /// needs to hold a look open.
 pub trait Look: Send + Sync + 'static {
     /// The peek of the file at `path`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PreviewFault`] when the file cannot be read or peeked.
     fn at(&self, path: &Path) -> Result<Arc<AnyPeeked>, PreviewFault>;
 }
 

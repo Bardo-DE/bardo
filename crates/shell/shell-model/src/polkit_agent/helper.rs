@@ -90,6 +90,10 @@ pub enum HelperLine {
 pub struct UnknownLine(pub String);
 
 /// `line` (its newline stripped; the text after the word kept as sent, trailing space and all).
+///
+/// # Errors
+///
+/// Returns [`UnknownLine`] when `line` does not start with a word the helper writes.
 pub fn parse_helper_line(line: &str) -> Result<HelperLine, UnknownLine> {
     type Make = fn(String) -> HelperLine;
     let worded: [(&str, Make); 4] = [

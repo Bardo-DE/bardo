@@ -50,6 +50,10 @@ pub enum RunError {
 }
 
 /// Runs the service on the socket systemd passed in, until it has been idle for a minute.
+///
+/// # Errors
+///
+/// Returns a [`RunError`] when no socket was passed in or the service fails.
 pub fn run() -> Result<(), RunError> {
     let listener = activation::listener()?;
     let context = Context {

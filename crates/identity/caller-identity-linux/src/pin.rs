@@ -67,6 +67,10 @@ pub(crate) fn open_pidfd(pid: Pid) -> Result<OwnedFd, PinError> {
 impl Pinned {
     /// Holds process `pid`, whose effective user the caller already knows (the bus states it):
     /// the pidfd is opened by number, so the pin is [`Pin::Reopened`] and nothing firmer.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PinError`] when the process is gone or its pidfd cannot be opened.
     pub fn from_pid_with_uid(pid: Pid, uid: Uid) -> Result<Pinned, PinError> {
         let fd = open_pidfd(pid)?;
         Ok(Pinned {
@@ -80,6 +84,11 @@ impl Pinned {
     /// Holds process `pid` and reads its effective user from `/proc/<pid>/status` after the
     /// pidfd is open. A process that exits meanwhile is [`PinError::PeerGone`]. The pin is
     /// [`Pin::Reopened`].
+    ///
+    /// # Errors
+    ///
+    /// Returns [`PinError::PeerGone`] when the process exits meanwhile, and another [`PinError`]
+    /// when its pidfd cannot be opened or its status cannot be read.
     pub fn from_pid(pid: Pid) -> Result<Pinned, PinError> {
         let fd = open_pidfd(pid)?;
         let status = proc_text(&format!("/proc/{pid}/status")).map_err(PinError::Proc)?;
@@ -98,6 +107,11 @@ impl Pinned {
 
     /// Holds the process behind `fd`, a pidfd the kernel or the bus made at connect time. The
     /// descriptor must be a pidfd of `pid` (its fdinfo says so), or it is [`PinError::Mismatch`].
+    ///
+    /// # Errors
+    ///
+    /// Returns [`PinError::Mismatch`] when `fd` is not a pidfd of `pid`, and [`PinError::Proc`]
+    /// when its fdinfo cannot be read.
     pub fn from_fd(fd: OwnedFd, pid: Pid, uid: Uid) -> Result<Pinned, PinError> {
         let info =
             proc_text(&format!("/proc/self/fdinfo/{}", fd.as_raw_fd())).map_err(PinError::Proc)?;

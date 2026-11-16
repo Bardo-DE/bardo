@@ -65,6 +65,11 @@ pub struct ConfigError(pub String);
 impl CuadConfig {
     /// Reads a configuration from TOML text; a missing file is the caller's decision, a
     /// malformed one is an error here.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ConfigError`] carrying the parser's message when `text` is not a valid
+    /// configuration.
     pub fn from_toml(text: &str) -> Result<Self, ConfigError> {
         toml::from_str(text).map_err(|e| ConfigError(e.to_string()))
     }

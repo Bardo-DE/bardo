@@ -69,6 +69,10 @@ pub enum Conn {
 
 impl Listener {
     /// Binds as `bind` says; `name` names the socket file for `Bind::Socket`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the TCP port or the socket file cannot be bound.
     pub async fn bind(bind: &Bind, name: &str) -> io::Result<Self> {
         match bind {
             Bind::Port(port) => {
@@ -99,6 +103,10 @@ impl Listener {
     }
 
     /// The next connection.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if accepting a connection fails.
     pub async fn accept(&self) -> io::Result<(Conn, Peer)> {
         match &self.kind {
             Kind::Tcp(l) => {
@@ -118,6 +126,10 @@ impl Listener {
 }
 
 /// Connects to a fake.
+///
+/// # Errors
+///
+/// Returns the I/O error if the fake cannot be connected to.
 pub async fn dial(address: &FakeAddress) -> io::Result<Conn> {
     match address {
         FakeAddress::Loopback(port) => {
@@ -146,6 +158,10 @@ fn no_unix_socket(path: &std::path::Path) -> io::Error {
 
 /// The port of a loopback address; a Unix socket has none, so the caller named the wrong
 /// kind of bind.
+///
+/// # Panics
+///
+/// Panics if `address` is a Unix socket.
 #[must_use]
 pub fn port_of(address: &FakeAddress) -> u16 {
     match address {

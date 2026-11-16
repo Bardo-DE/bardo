@@ -6,6 +6,11 @@ use computer_use_bus::{ControlRefusal, CuaCaller, CuaMember, permits};
 /// otherwise), and computer use is on for `Start` (`Disabled` otherwise).
 ///
 /// The caller check comes first, so a stranger learns nothing about the setting.
+///
+/// # Errors
+///
+/// Returns [`ControlRefusal::NotPermitted`] when `caller` may not call `member`, and
+/// [`ControlRefusal::Disabled`] when `member` is `Start` and computer use is off.
 pub fn guard(caller: CuaCaller, member: CuaMember, enabled: bool) -> Result<(), ControlRefusal> {
     if !permits(caller, member) {
         Err(ControlRefusal::NotPermitted)

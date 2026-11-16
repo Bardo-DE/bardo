@@ -8,6 +8,10 @@ pub const CONFIG_CAP: ReadCap = ReadCap::mib(4);
 
 /// The text of a config file: `None` when there is no such file (a fresh install), an error for
 /// any other failure to read it, so a file that cannot be read is never taken for an empty one.
+///
+/// # Errors
+///
+/// Returns a [`ReadError`] when the file exists but cannot be read, is too large or is not text.
 pub fn read_config(path: &Path) -> Result<Option<String>, ReadError> {
     match read_text_capped(path, CONFIG_CAP) {
         Ok(text) => Ok(Some(text)),

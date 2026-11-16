@@ -40,7 +40,7 @@ pub struct ImagePeek {
 }
 
 /// The peek of every raster image: PNG (including APNG), JPEG, GIF, WebP, BMP, TIFF, ICO, TGA, QOI,
-/// OpenEXR, Radiance HDR, Photoshop, ICNS, JPEG XL and (with the `avif` feature) AVIF.
+/// `OpenEXR`, Radiance HDR, Photoshop, ICNS, JPEG XL and (with the `avif` feature) AVIF.
 ///
 /// An animation peeks as its first frame.
 #[derive(Debug, Clone, Copy)]

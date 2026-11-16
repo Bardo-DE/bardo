@@ -11,6 +11,10 @@ pub const WALK_MAX: usize = 32;
 
 /// The trust of the directories above `path`, root first, stopping at the first one that is not
 /// root-only. `Err(InvalidData)` for a path deeper than [`WALK_MAX`].
+///
+/// # Errors
+///
+/// Returns `InvalidData` for a path deeper than [`WALK_MAX`], and the I/O error of a failed look.
 pub fn dirs_trust<P: ProcFs + ?Sized>(fs: &P, path: &Path) -> io::Result<FileTrust> {
     let mut above: Vec<&Path> = path.ancestors().skip(1).collect();
     if above.len() > WALK_MAX {
@@ -28,6 +32,10 @@ pub fn dirs_trust<P: ProcFs + ?Sized>(fs: &P, path: &Path) -> io::Result<FileTru
 
 /// The trust of `path` itself and of every directory above it: the weaker of the two. Either
 /// look failing fails the whole (`Err(InvalidData)` for a path deeper than [`WALK_MAX`]).
+///
+/// # Errors
+///
+/// Returns `InvalidData` for a path deeper than [`WALK_MAX`], and the I/O error of a failed look.
 pub fn path_trust<P: ProcFs + ?Sized>(fs: &P, path: &Path) -> io::Result<FileTrust> {
     let file = fs.trust_of(path, Follow::No)?;
     Ok(dirs_trust(fs, path)?.weaker(file))

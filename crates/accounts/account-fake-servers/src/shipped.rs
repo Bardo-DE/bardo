@@ -20,6 +20,10 @@ pub fn google() -> ProviderSpec {
 ///
 /// The ids are `anthropic`, `google-ai`, `moonshot`, `openai`, `openrouter`, and
 /// `openai-compatible`, which names no server: the sign-in asks for one.
+///
+/// # Panics
+///
+/// Panics if `id` is not one of the shipped AI providers, or the shipped file does not parse.
 #[must_use]
 pub fn ai(id: &str) -> ProviderSpec {
     let text = match id {
@@ -35,6 +39,10 @@ pub fn ai(id: &str) -> ProviderSpec {
 }
 
 /// A provider file's text; panics on a bad file (the shipped files are tested elsewhere).
+///
+/// # Panics
+///
+/// Panics if `text` is not a valid provider file.
 #[must_use]
 pub fn parse(text: &str) -> ProviderSpec {
     parse_provider(text).unwrap_or_else(|e| panic!("provider file: {e}"))

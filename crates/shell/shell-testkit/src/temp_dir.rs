@@ -10,6 +10,10 @@ pub struct TempDir(PathBuf);
 
 impl TempDir {
     /// A new empty folder named after `name`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the folder cannot be created.
     pub fn new(name: &str) -> TempDir {
         static NEXT: AtomicU32 = AtomicU32::new(0);
         let n = NEXT.fetch_add(1, Ordering::Relaxed);

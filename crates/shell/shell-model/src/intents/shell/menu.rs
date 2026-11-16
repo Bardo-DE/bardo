@@ -20,6 +20,10 @@ pub enum MenuAsk {
 }
 
 /// The menu ask `invocation` is, `None` when it is another action of the shell.
+///
+/// # Errors
+///
+/// Returns an [`AppRefusal`] when a parameter of the menu action is missing or of the wrong type.
 pub fn menu_ask_of(invocation: &Invocation) -> Result<Option<MenuAsk>, AppRefusal> {
     let window = || text(invocation, "window");
     match invocation.action.as_str() {

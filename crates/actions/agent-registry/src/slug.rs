@@ -11,6 +11,11 @@ pub struct SlugRefused(String);
 
 impl Slug {
     /// Checks `text`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SlugRefused`] when `text` is empty, longer than 64 bytes, starts with a dot or
+    /// holds a character a slug does not allow.
     pub fn parse(text: &str) -> Result<Self, SlugRefused> {
         let fine = !text.is_empty()
             && text.len() <= 64

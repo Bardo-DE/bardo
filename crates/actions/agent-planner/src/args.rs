@@ -31,6 +31,11 @@ pub fn planner_label() -> Label {
 }
 
 /// Reads one tool call's JSON arguments, every value labelled as the planner's own.
+///
+/// # Errors
+///
+/// Returns an [`ArgsFault`] when `json` is not an object or an argument does not fit the tool's
+/// declaration.
 pub fn read_call(tool: &CatalogueTool, json: &Json) -> Result<ReadCall, ArgsFault> {
     let object = json.as_object().ok_or(ArgsFault::NotAnObject)?;
     let (target, args) = args_from_json(&tool.decl, Some(object), &planner_label())?;

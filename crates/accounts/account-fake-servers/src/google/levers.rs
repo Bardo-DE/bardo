@@ -37,6 +37,10 @@ impl GoogleHandle {
 
     /// Creates or replaces the file at `path` below the app data folder (folders on the way are
     /// made), as another device of the same account would.
+    ///
+    /// # Panics
+    ///
+    /// Panics if a folder on the path is a file.
     pub fn drive_put_file(&self, path: &str, bytes: &[u8]) {
         let names = names_of(path);
         let mut state = lock(&self.shared.state);
@@ -74,6 +78,10 @@ impl GoogleHandle {
     }
 
     /// Moves or renames the item at `from` to the path `to` (the folders on the way are made).
+    ///
+    /// # Panics
+    ///
+    /// Panics if a folder on the target path is a file.
     pub fn drive_move(&self, from: &str, to: &str) {
         let target = names_of(to);
         let mut state = lock(&self.shared.state);
@@ -92,6 +100,10 @@ impl GoogleHandle {
 
     /// Creates or replaces the file at `path` below My Drive (folders on the way are made), as
     /// another device of the same account would.
+    ///
+    /// # Panics
+    ///
+    /// Panics if a folder on the path is a file.
     pub fn my_drive_put_file(&self, path: &str, bytes: &[u8]) {
         let names = names_of(path);
         let mut state = lock(&self.shared.state);
@@ -113,6 +125,10 @@ impl GoogleHandle {
     }
 
     /// Makes the folders on `path` below My Drive.
+    ///
+    /// # Panics
+    ///
+    /// Panics if a folder on the path is a file.
     pub fn my_drive_folder(&self, path: &str) {
         lock(&self.shared.state)
             .drive
@@ -162,6 +178,10 @@ impl GoogleHandle {
 
     /// Moves or renames the item at `from` below My Drive to `to` (the folders on the way are
     /// made).
+    ///
+    /// # Panics
+    ///
+    /// Panics if a folder on the target path is a file.
     pub fn my_drive_move(&self, from: &str, to: &str) {
         let target = names_of(to);
         let mut state = lock(&self.shared.state);

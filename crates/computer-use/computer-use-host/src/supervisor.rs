@@ -18,6 +18,10 @@ use std::sync::Arc;
 use tokio::sync::{broadcast, mpsc};
 
 /// The id of the `n`th run cuad starts: `r-<n>`.
+///
+/// # Panics
+///
+/// Panics only if `r-` followed by digits stopped being a valid run id.
 #[must_use]
 pub fn mint_run_id(n: u64) -> RunId {
     RunId::parse(&format!("r-{n}")).expect("`r-` and digits are an id")
@@ -275,6 +279,11 @@ impl<S: Seams> Supervisor<S> {
     }
 
     /// Starts a run for `task` (`guard` first; one run per window; the mode must be supported).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ControlRefusal`] when the caller may not start a run, computer use is off for
+    /// the app or the window, the mode is not supported, or the window already has a run.
     pub async fn start(
         &self,
         caller: CuaCaller,
@@ -392,6 +401,11 @@ impl<S: Seams> Supervisor<S> {
     }
 
     /// A control call on one run: cancel, pause, resume, take over, hand back.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ControlRefusal`] when the caller may not make the call, the run is unknown, or
+    /// the call does not apply to the run's phase.
     pub async fn control(
         &self,
         caller: CuaCaller,
@@ -408,6 +422,11 @@ impl<S: Seams> Supervisor<S> {
     }
 
     /// The shell's answer to a question the model asked.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ControlRefusal`] when the caller may not answer, the run is unknown, or it is
+    /// not waiting on `question`.
     pub async fn answer(
         &self,
         caller: CuaCaller,
@@ -426,6 +445,10 @@ impl<S: Seams> Supervisor<S> {
     }
 
     /// Every run is cancelled (the kill chord and the control centre).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ControlRefusal`] when the caller may not stop runs.
     pub async fn stop_all(&self, caller: CuaCaller) -> Result<(), ControlRefusal> {
         guard(caller, CuaMember::StopAll, self.settings().enabled)?;
         let state = self.shared.state();

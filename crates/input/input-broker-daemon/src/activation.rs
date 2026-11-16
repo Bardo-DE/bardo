@@ -17,6 +17,11 @@ pub enum ActivationError {
 
 /// Takes the first socket systemd passed in, checking it is a `SOCK_SEQPACKET` `AF_UNIX` socket and
 /// marking it close-on-exec.
+///
+/// # Errors
+///
+/// Returns an [`ActivationError`] when systemd passed no socket or the socket is not a
+/// `SOCK_SEQPACKET` `AF_UNIX` one.
 pub fn listener() -> Result<OwnedFd, ActivationError> {
     ListenFd::from_env()
         .take_custom::<OwnedFd>(

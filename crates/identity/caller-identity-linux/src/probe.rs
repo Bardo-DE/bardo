@@ -78,6 +78,11 @@ impl<P: ProcFs> Prober<P> {
     /// The facts of `who`, with `unit` as the unit manager's account of its unit (the bus crate
     /// supplies it). No judging. The process is checked still alive at the end: a process that
     /// left while its files were read is [`ProbeError::PeerGone`].
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ProbeError`] when a file of the process cannot be read, the read budget runs
+    /// out, or the process left meanwhile.
     pub fn probe(&self, who: &Pinned, unit: Option<UnitFacts>) -> Result<Facts, ProbeError> {
         let mut budget = Budget(PROBE_MAX_READS);
         let dir = self.fs.proc_root().join(who.pid().get().to_string());

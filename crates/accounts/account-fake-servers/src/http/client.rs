@@ -16,6 +16,10 @@ pub enum Scheme {
 }
 
 /// Sends one request to a fake and reads the whole response (the test's minimal client).
+///
+/// # Errors
+///
+/// Returns the I/O error if the connection, the TLS handshake, the write or the read fails.
 pub async fn send(
     address: &FakeAddress,
     scheme: Scheme,
@@ -68,6 +72,10 @@ async fn exchange<S: AsyncRead + AsyncWrite + Unpin>(
 }
 
 /// A plain-HTTP GET (the test's minimal client).
+///
+/// # Errors
+///
+/// Returns the I/O error if the connection, the write or the read fails.
 pub async fn get(address: &FakeAddress, target: &str) -> io::Result<Response> {
     send(address, Scheme::Http, &Request::new("GET", target)).await
 }
@@ -107,6 +115,10 @@ impl Hit {
 }
 
 /// A plain-HTTP form POST (the test's minimal client).
+///
+/// # Errors
+///
+/// Returns the I/O error if the connection, the write or the read fails.
 pub async fn post_form(
     address: &FakeAddress,
     target: &str,

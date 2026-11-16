@@ -21,6 +21,11 @@ impl Pinned {
     /// option the pin is [`Pin::Reopened`]: the pid from `SO_PEERCRED`, a pidfd opened at once,
     /// and `SO_PEERCRED` read again to check it still names that process and user. That closes
     /// everything except "the connecting process died and its pid was reused before we looked".
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PinError`] when the peer's credentials cannot be read, its pidfd cannot be
+    /// opened, or the process behind the pid is not the one that connected.
     pub fn of_stream(stream: &impl AsFd) -> Result<Pinned, PinError> {
         let first = socket_peercred(stream).map_err(|e| PinError::Credentials(e.into()))?;
         let pid = u32::try_from(first.pid.as_raw_pid())

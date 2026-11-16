@@ -65,6 +65,10 @@ pub struct FakeAutoconfig {
 
 impl FakeAutoconfig {
     /// Binds a server with no routes, on loopback.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the loopback listener cannot be bound.
     pub async fn bind() -> io::Result<Self> {
         let listener = Listener::bind(&Bind::Port(0), "autoconfig").await?;
         let port = crate::net::port_of(listener.address());
@@ -86,6 +90,10 @@ impl FakeAutoconfig {
     }
 
     /// Binds and serves on a task.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the loopback listener cannot be bound.
     pub async fn start() -> io::Result<Running<AutoconfigHandle>> {
         let fake = Self::bind().await?;
         let handle = fake.handle();

@@ -114,6 +114,11 @@ impl<'a, B: Backend, A: Admission> Session<'a, B, A> {
     }
 
     /// Acts on one request at `now`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Refused`] with the reason and a note when the request is not allowed: a refused
+    /// creation, an unknown device or a policy the caller fails.
     pub fn handle(&mut self, now: Millis, request: Request) -> Handled {
         match request {
             Request::Create(create) => self.create(now, &create),

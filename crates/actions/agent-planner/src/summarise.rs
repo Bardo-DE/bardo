@@ -51,6 +51,11 @@ pub enum SummariseFault {
 
 /// The model's words as a summary: without the marks that reorder or hide words, not a call written
 /// as words, and passing `SummaryText::parse` against the handles the planner held.
+///
+/// # Errors
+///
+/// Returns a [`SummariseFault`] when the words contain a call written as words or do not pass
+/// `SummaryText::parse` against `held`.
 pub fn summary_text(
     words: &str,
     held: &[action_vocab::Handle],

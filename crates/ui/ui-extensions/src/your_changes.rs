@@ -118,6 +118,11 @@ impl YourChanges {
     /// the Extension's `file-icons/` as `<icon name>.<ext>`, replacing the earlier one, and writes
     /// the Extension's `extension.toml` if it is not there yet. Each file is written whole or not
     /// at all. The Extension first appears in the next scan.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ChangeError`] when the name is not valid, `picture` is not a readable `.svg` or
+    /// `.png` of an allowed size, or a file cannot be written.
     pub fn set(&self, icon: &IconName, picture: &Path) -> Result<(), ChangeError> {
         let name = checked_name(icon.specific())?;
         let format = Format::of(picture).ok_or_else(|| not_a_picture(picture))?;
@@ -135,6 +140,10 @@ impl YourChanges {
 
     /// Takes the change for the type `icon` names away, so it has the chosen pack's picture or
     /// the standard one again. A type with no change is left as it is.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ChangeError`] when the name is not valid or a picture cannot be removed.
     pub fn clear(&self, icon: &IconName) -> Result<(), ChangeError> {
         let name = checked_name(icon.specific())?;
         let dir = self.pictures();
@@ -145,6 +154,10 @@ impl YourChanges {
     }
 
     /// The icon names that have a change, sorted.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ChangeError`] when the pictures folder cannot be read.
     pub fn changed(&self) -> Result<Vec<String>, ChangeError> {
         let dir = self.pictures();
         let entries = match fs::read_dir(&dir) {

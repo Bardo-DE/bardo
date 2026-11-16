@@ -118,6 +118,11 @@ pub enum Decoded {
 
 /// The picture or animation in the file `src` points at, whose type `sniffed` established.
 /// Blocking: reads and decodes the whole file.
+///
+/// # Errors
+///
+/// Returns an [`ImageError`] when the file cannot be read or is not a picture the viewer can
+/// decode.
 pub fn decode(src: impl Into<Input>, sniffed: &Sniffed) -> Result<Decoded, ImageError> {
     let bytes = file_bytes(&src.into())?;
     decode_bytes(&bytes, sniffed)
@@ -129,6 +134,11 @@ pub fn decode(src: impl Into<Input>, sniffed: &Sniffed) -> Result<Decoded, Image
 /// photo stored sideways with EXIF orientation 6 comes back upright, so the GPU layer draws the
 /// pixels as given and never needs the EXIF tag. SVG is drawn at its own size, enlarged or reduced
 /// into the 1024 to 4096 pixel range of its long edge.
+///
+/// # Errors
+///
+/// Returns an [`ImageError`] when the type has no decoder here, the bytes are not a valid picture
+/// of that type, or the picture is too large to decode.
 pub fn decode_bytes(bytes: &[u8], sniffed: &Sniffed) -> Result<Decoded, ImageError> {
     let ceiling = Ceiling::VIEW;
     match codec_for(sniffed)? {
@@ -167,6 +177,10 @@ pub fn decode_bytes(bytes: &[u8], sniffed: &Sniffed) -> Result<Decoded, ImageErr
 ///
 /// `None` when the format's size is not read that way (ICNS, JPEG XL and SVG, whose size comes from
 /// decoding or drawing them) or the file declares more pixels than a decode accepts.
+///
+/// # Errors
+///
+/// Returns an [`ImageError`] when the file cannot be read or its header is not valid.
 pub fn declared_size(
     src: impl Into<Input>,
     sniffed: &Sniffed,
@@ -214,6 +228,10 @@ fn animated(frames: Vec<Frame>, plays: Plays) -> Result<Decoded, ImageError> {
 
 /// The file's bytes, for a caller that decodes them with [`decode_bytes`] and reads the file's
 /// facts from the same bytes rather than reading the file twice.
+///
+/// # Errors
+///
+/// Returns [`ImageError::Read`] when the file cannot be read.
 pub fn file_bytes(src: &Input) -> Result<Vec<u8>, ImageError> {
     src.bytes()
         .read_range(0..src.bytes().len().0)

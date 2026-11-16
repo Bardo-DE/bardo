@@ -22,6 +22,11 @@ pub struct RoleText(String);
 
 impl RoleText {
     /// A role from `text`, trimmed.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RoleFault::Empty`] when `text` is only whitespace and [`RoleFault::TooLong`] when
+    /// it is longer than the limit.
     pub fn parse(text: &str) -> Result<Self, RoleFault> {
         let text = text.trim();
         if text.is_empty() {

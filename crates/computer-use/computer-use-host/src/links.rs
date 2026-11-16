@@ -96,6 +96,10 @@ fn things_of(ctx: &RecordContext) -> Result<Vec<(ThingView, ThingRole)>, RecordE
 /// serde form and whose kind tag is its slug, by the actor `Companion { session, role: Cua }`.
 ///
 /// Pure. A step's effect is the record's own; every other record is a `Read`.
+///
+/// # Errors
+///
+/// Returns a [`RecordError`] when the record's kind tag or its JSON is not valid.
 pub fn record_of(ctx: &RecordContext, record: &CuaRecord) -> Result<Record, RecordError> {
     let kind = KindTag::parse(&record.kind()).map_err(|e| RecordError::Kind(e.to_string()))?;
     let json = serde_json::to_string(record).map_err(|e| RecordError::Json(e.to_string()))?;

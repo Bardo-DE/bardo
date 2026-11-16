@@ -99,6 +99,10 @@ pub fn unfold(text: &str) -> Vec<String> {
 
 /// Every `VEVENT` in `text`. A `VEVENT` missing `UID` or `DTSTART` is skipped, not an error.
 /// Several `VCALENDAR`s one after another (a concatenated export) are read in turn.
+///
+/// # Errors
+///
+/// Returns an [`IcsError`] when `text` is not a calendar that can be read.
 pub fn parse_ics(text: &str) -> Result<Vec<IcsEvent>, IcsError> {
     let lines = unfold(text);
     let opens_calendar = lines

@@ -114,6 +114,11 @@ impl Locator {
     /// Records that the person confirmed `values` (key to value): all of them are checked first,
     /// then the store is written atomically (a temp file, synced, renamed). The caller serialises
     /// calls. Refused when there is no store or a pair is not a confirmable setting.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ConfirmError`] when there is no store, a pair is not a confirmable setting, or
+    /// the store cannot be written.
     pub fn confirm(&self, values: &BTreeMap<String, String>) -> Result<(), ConfirmError> {
         let file = self
             .confirmations

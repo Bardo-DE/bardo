@@ -171,6 +171,10 @@ impl<S: AsyncRead + AsyncWrite + Unpin> Lines<S> {
     }
 
     /// The next line without its line end; `None` at the end of the stream.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of the underlying read.
     pub async fn read_line(&mut self) -> io::Result<Option<String>> {
         let mut line = String::new();
         match self.inner.read_line(&mut line).await? {
@@ -180,6 +184,11 @@ impl<S: AsyncRead + AsyncWrite + Unpin> Lines<S> {
     }
 
     /// Exactly `n` bytes (an IMAP literal).
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of the underlying read, including an unexpected end of stream before
+    /// `n` bytes.
     pub async fn read_exact(&mut self, n: usize) -> io::Result<Vec<u8>> {
         let mut buf = vec![0; n];
         self.inner.read_exact(&mut buf).await?;
@@ -187,11 +196,19 @@ impl<S: AsyncRead + AsyncWrite + Unpin> Lines<S> {
     }
 
     /// Writes `text` and a CRLF.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of the underlying write.
     pub async fn send(&mut self, text: &str) -> io::Result<()> {
         self.send_raw(&format!("{text}\r\n")).await
     }
 
     /// Writes `text` as it is.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of the underlying write or flush.
     pub async fn send_raw(&mut self, text: &str) -> io::Result<()> {
         self.inner.get_mut().write_all(text.as_bytes()).await?;
         self.inner.get_mut().flush().await
@@ -216,6 +233,10 @@ pub struct MailHandle {
 
 impl MailHandle {
     /// Where the server listens.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the handle was made for a server that was never bound, which has no address.
     #[must_use]
     pub fn address(&self) -> &account_fake::FakeAddress {
         self.address

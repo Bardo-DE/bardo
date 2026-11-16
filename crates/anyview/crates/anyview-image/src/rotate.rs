@@ -105,6 +105,10 @@ fn segment_of(tiff: &[u8]) -> Result<Vec<u8>, ImageError> {
 /// Only the orientation entry of the EXIF block changes (the segment is added when the file has
 /// none, and the entry when the block has none); every byte outside that segment is the same. A
 /// `QuarterTurn::None` returns the file unchanged.
+///
+/// # Errors
+///
+/// Returns an [`ImageError`] when `file` is not a JPEG that can be read or rewritten.
 pub fn rotate_jpeg(file: &[u8], turn: QuarterTurn) -> Result<Vec<u8>, ImageError> {
     if turn == QuarterTurn::None {
         return Ok(file.to_vec());
@@ -114,6 +118,10 @@ pub fn rotate_jpeg(file: &[u8], turn: QuarterTurn) -> Result<Vec<u8>, ImageError
 
 /// `file`, a JPEG, displayed mirrored across `axis` on top of whatever orientation it already
 /// has, with the same promise as [`rotate_jpeg`]: only the orientation entry changes.
+///
+/// # Errors
+///
+/// Returns an [`ImageError`] when `file` is not a JPEG that can be read or rewritten.
 pub fn flip_jpeg(file: &[u8], axis: Axis) -> Result<Vec<u8>, ImageError> {
     reoriented(file, |now| now.flipped(axis))
 }

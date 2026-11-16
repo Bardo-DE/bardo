@@ -27,6 +27,11 @@ impl UnitDir {
     /// Makes the directory hold exactly `units` among the routine units: a file whose text is
     /// already right is left alone, and a routine unit that is not wanted any more is removed.
     /// Returns the names that were written or removed, so the caller can tell systemd.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the directory cannot be read or a unit file cannot be written or
+    /// removed.
     pub fn install(&self, units: &[UnitFile]) -> std::io::Result<Vec<String>> {
         let mut changed = Vec::new();
         for unit in units {

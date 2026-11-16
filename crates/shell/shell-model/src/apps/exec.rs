@@ -46,6 +46,10 @@ enum Piece {
 }
 
 /// `exec` as `argv`, with `args` substituted.
+///
+/// # Errors
+///
+/// Returns an [`ExecError`] when `exec` cannot be tokenised or a field code cannot be expanded.
 pub fn expand_exec(exec: &str, args: &ExecArgs) -> Result<Vec<String>, ExecError> {
     let mut argv = Vec::new();
     for token in tokenize(exec)? {

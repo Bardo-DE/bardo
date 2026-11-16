@@ -37,6 +37,10 @@ impl Sha256Hex {
     }
 
     /// A digest the registry or a record wrote.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`DigestRefused`] when `text` is not 64 hexadecimal digits.
     pub fn parse(text: &str) -> Result<Self, DigestRefused> {
         let text = text.trim().to_ascii_lowercase();
         if text.len() == 64 && text.bytes().all(|b| b.is_ascii_hexdigit()) {

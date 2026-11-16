@@ -137,6 +137,10 @@ pub struct FakeGoogle {
 
 impl FakeGoogle {
     /// Binds APIs that accept every access token `issuer` has minted and not revoked.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the loopback listener cannot be bound.
     pub async fn bind(issuer: &IssuerHandle) -> io::Result<Self> {
         let listener = Listener::bind(&Bind::Port(0), "google").await?;
         let port = crate::net::port_of(listener.address());
@@ -159,6 +163,10 @@ impl FakeGoogle {
     /// Binds APIs that accept `Authorization: Bearer <token>` as it is (and any more a test adds
     /// with [`GoogleHandle::accept_bearer`]): what accountd's relay adds in a bus test. There is
     /// no issuer, so no scope is checked.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the loopback listener cannot be bound.
     pub async fn bind_fixed(token: &str) -> io::Result<Self> {
         let listener = Listener::bind(&Bind::Port(0), "google").await?;
         let port = crate::net::port_of(listener.address());
@@ -180,6 +188,10 @@ impl FakeGoogle {
     }
 
     /// [`FakeGoogle::bind_fixed`], serving on a task.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the loopback listener cannot be bound.
     pub async fn start_fixed(token: &str) -> io::Result<Running<GoogleHandle>> {
         let fake = Self::bind_fixed(token).await?;
         let handle = fake.handle();
@@ -194,6 +206,10 @@ impl FakeGoogle {
     }
 
     /// Binds and serves on a task.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the loopback listener cannot be bound.
     pub async fn start(issuer: &IssuerHandle) -> io::Result<Running<GoogleHandle>> {
         let fake = Self::bind(issuer).await?;
         let handle = fake.handle();
@@ -382,6 +398,10 @@ pub struct Google {
 
 impl Google {
     /// Starts both, the issuer requiring `secret` at its token endpoint.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if either the issuer or the APIs cannot bind a loopback listener.
     pub async fn start(secret: &str) -> io::Result<Self> {
         let issuer = FakeIssuer::start().await?;
         issuer.set_style(Style::Google);

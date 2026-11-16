@@ -37,6 +37,11 @@ pub fn listing(
 /// `arguments` by their declared types, labels each one `Untrusted` from `client` and makes the
 /// request as `Origin::Mcp`. An argument that does not fit its declaration is refused here, before
 /// anything is asked of the router.
+///
+/// # Errors
+///
+/// Returns a [`ToolFault`] when the tool is unknown or off the menu, or an argument does not fit
+/// its declaration.
 pub fn prepare(
     registry: &[ValidManifest],
     tool: &str,

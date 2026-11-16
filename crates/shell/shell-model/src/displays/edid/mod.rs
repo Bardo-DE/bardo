@@ -71,6 +71,11 @@ pub enum EdidError {
 const HEADER: [u8; 8] = [0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00];
 
 /// Parse the base block at the start of `bytes` (a sysfs `edid` file, 128 bytes per block).
+///
+/// # Errors
+///
+/// Returns an [`EdidError`] when `bytes` is too short, has no valid header or checksum, or is not
+/// an EDID base block.
 pub fn parse(bytes: &[u8]) -> Result<Edid, EdidError> {
     let block: &[u8; 128] = bytes
         .get(..128)

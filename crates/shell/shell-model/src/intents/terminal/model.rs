@@ -61,6 +61,10 @@ fn capitalised(text: &str) -> String {
 
 /// `app:action` (`org.bardo.Shell:shell.dock.pin`), the way a person names a grant on the command
 /// line; the other way round is [`grant_name`].
+///
+/// # Errors
+///
+/// Returns a [`GrantError`] when `text` is not `app:action` or either part is not a valid name.
 pub fn parse_grant(text: &str) -> Result<ActionRef, GrantError> {
     let (app, action) = text
         .split_once(':')

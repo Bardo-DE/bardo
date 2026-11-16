@@ -27,6 +27,10 @@ pub struct FakeSmtp {
 
 impl FakeSmtp {
     /// Binds a server with this security, accepting `accounts`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the listener cannot be bound at `bind`.
     pub async fn bind(bind: &Bind, tls: Tls, accounts: Accounts) -> io::Result<Self> {
         let listener = Listener::bind(bind, "smtp").await?;
         let ctx = MailCtx::new(accounts, tls, listener.address().clone());
@@ -39,6 +43,10 @@ impl FakeSmtp {
     }
 
     /// Binds and serves on a task.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error if the listener cannot be bound at `bind`.
     pub async fn start(
         bind: &Bind,
         tls: Tls,

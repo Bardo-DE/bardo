@@ -84,6 +84,11 @@ impl WindowAsk {
 
 /// The window or workspace ask `invocation` is, `None` when it is another action of the shell
 /// (`shell.workspace.switch` with only a direction is one).
+///
+/// # Errors
+///
+/// Returns an [`AppRefusal`] when a parameter of the window or workspace action is missing or of
+/// the wrong type.
 pub fn window_ask_of(invocation: &Invocation) -> Result<Option<WindowAsk>, AppRefusal> {
     let ask = match invocation.action.as_str() {
         "shell.window.list" => WindowAsk::List,

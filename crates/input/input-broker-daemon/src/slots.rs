@@ -73,6 +73,10 @@ impl Slots {
     }
 
     /// A slot in `bucket`, held until the returned token drops.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`NoSlot`] when `bucket` has no slot left.
     pub fn take(&self, bucket: Bucket) -> Result<Slot, NoSlot> {
         let mut counts = self.counts();
         match bucket {

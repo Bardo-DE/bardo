@@ -53,6 +53,10 @@ pub enum Refusal {
 /// Decides, for one connection, which kinds the caller may ask for.
 pub trait Admission {
     /// Whether the caller may have a device of `kind` now.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Refusal`] when the caller may not have a device of `kind` now.
     fn admit(&self, kind: Kind) -> Result<(), Refusal>;
 }
 
@@ -86,6 +90,11 @@ impl Admission for AllowKinds {
 }
 
 /// Whether `caller` may have a device of `kind` while `seat`'s user is active.
+///
+/// # Errors
+///
+/// Returns a [`Refusal`] when `caller` is not the daemon that makes `kind` or the active user is
+/// not the one `seat` names.
 pub fn authorise(kind: Kind, caller: &Caller, seat: ActiveUid) -> Result<(), Refusal> {
     let (role, cgroup) = match kind.maker() {
         Maker::PadDaemon => (PAD_DAEMON, PAD_CGROUP),

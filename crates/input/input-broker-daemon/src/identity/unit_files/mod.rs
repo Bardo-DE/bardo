@@ -151,6 +151,11 @@ fn resolved<P: ProcFs>(fs: &P, dir: &Path) -> Option<PathBuf> {
 }
 
 /// The unit facts for the process `pid` in `cgroup`, read through `fs`.
+///
+/// # Errors
+///
+/// Returns [`NotUnit::NoUnit`] when the process is not in a service unit, and another [`NotUnit`]
+/// when its unit file cannot be read.
 pub fn facts<P: ProcFs>(fs: &P, pid: Pid, cgroup: &CgroupPath) -> Result<UnitFacts, NotUnit> {
     let name = cgroup.unit_leaf().ok_or(NotUnit::NoUnit)?;
     if !name.as_str().ends_with(".service") {

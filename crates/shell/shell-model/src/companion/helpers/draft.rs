@@ -105,6 +105,10 @@ impl Draft {
     }
 
     /// The form to send, or the first thing missing from it: a name, what it is for, an app.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SaveFault`] naming what is missing: the name, what the helper is for, or an app.
     pub fn form(&self) -> Result<HelperForm, SaveFault> {
         let name = HelperName::parse(&self.name).map_err(|fault| match fault {
             HelperTextFault::Empty => SaveFault::NoName,
