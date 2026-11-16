@@ -17,7 +17,7 @@ fail() { echo "FAIL $1: $2"; failed=1; }
 PORTAL=(gdbus call --session --dest org.freedesktop.portal.Desktop --object-path /org/freedesktop/portal/desktop)
 start_chain
 trap stop_chain EXIT
-conf="$XDG_CONFIG_HOME/quire"
+conf="$XDG_CONFIG_HOME/bardo"
 mkdir -p "$conf"
 printf '[appearance]\ntheme = "dark"\naccent = "green"\n' > "$conf/appearance.toml"
 read_key() { "${PORTAL[@]}" --method org.freedesktop.portal.Settings.Read org.freedesktop.appearance "$1"; }

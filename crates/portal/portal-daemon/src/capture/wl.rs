@@ -584,7 +584,7 @@ fn pixel_format(format: wl_shm::Format) -> Option<PixelFormat> {
 /// An anonymous file of `len` bytes in memory: no name in any directory, so there is nothing for
 /// another process to find, squat on or open, and nothing to clean up.
 fn scratch_file(len: usize) -> Result<File, CaptureError> {
-    let fd = rustix::fs::memfd_create("transom-frame", rustix::fs::MemfdFlags::CLOEXEC)
+    let fd = rustix::fs::memfd_create("bardo-portal-frame", rustix::fs::MemfdFlags::CLOEXEC)
         .map_err(broken)?;
     let file = File::from(fd);
     file.set_len(len as u64).map_err(broken)?;

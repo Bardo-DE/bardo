@@ -138,7 +138,7 @@ fn the_report_line_names_the_level_and_nothing_else_is_one() {
         "bardo-sandbox-enter: landlock=",
         "bardo-sandbox-enter: landlock=partial",
         "bardo-sandbox-enter: landlock=full extra",
-        "xbulkhead-enter: landlock=full",
+        "xbardo-sandbox-enter: landlock=full",
     ] {
         assert_eq!(LandlockLevel::from_report_line(other), None, "{other:?}");
     }
@@ -157,7 +157,7 @@ fn landlocked(net: AgentNet) -> AgentRun {
             abs("/work/cfg/settings.json"),
             abs("/home/u/.claude/settings.json"),
         ))
-        .with_landlock(abs("/opt/bulkhead/bardo-sandbox-enter"))
+        .with_landlock(abs("/opt/bardo/bardo-sandbox-enter"))
 }
 
 fn has(args: &[String], seq: &[&str]) -> bool {
@@ -168,8 +168,8 @@ fn has(args: &[String], seq: &[&str]) -> bool {
 #[test]
 fn the_exec_stage_starts_the_agent_and_its_plan_names_what_bubblewrap_mounts() {
     let bind = EndpointBind::new(
-        abs("/opt/bulkhead/bardo-sandbox-forward"),
-        abs("/run/user/1000/bulkhead/ep.sock"),
+        abs("/opt/bardo/bardo-sandbox-forward"),
+        abs("/run/user/1000/bardo/sandbox/ep.sock"),
         40123,
     );
     let modes = [
@@ -184,7 +184,7 @@ fn the_exec_stage_starts_the_agent_and_its_plan_names_what_bubblewrap_mounts() {
         assert!(
             has(
                 &args,
-                &["--ro-bind", "/opt/bulkhead/bardo-sandbox-enter", INSIDE_ENTER]
+                &["--ro-bind", "/opt/bardo/bardo-sandbox-enter", INSIDE_ENTER]
             ),
             "{name}: stage bound read-only"
         );

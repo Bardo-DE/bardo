@@ -13,7 +13,7 @@ const TABLE: &str = r#"
 app  = "org.bardo.Shell"
 unit = "bardo-shell.service"
 exe  = [
-  "/opt/bardo/releases/*/bin/sill",
+  "/opt/bardo/releases/*/bin/bardo-shell",
   "/opt/bardo/current/bin/bardo-shell",
   "/usr/local/bin/bardo-shell",
   "/usr/bin/bardo-shell",
@@ -108,7 +108,7 @@ fn only_the_trusted_unit_under_the_users_manager_claims_the_shell() {
         ),
         (
             "a scope",
-            format!("{MANAGER_1000}/app.slice/app-sill-1.scope"),
+            format!("{MANAGER_1000}/app.slice/app-bardo-shell-1.scope"),
             Claim::Other,
         ),
         (

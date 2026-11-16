@@ -1,4 +1,4 @@
-//! The `transom` binary: parse nothing, build the real seams, serve until killed. A build with the
+//! The `bardo-portal` binary: parse nothing, build the real seams, serve until killed. A build with the
 //! `debug` feature also reads `BARDO_PORTAL_DEV_CALLERS`, the person's own rows file.
 
 use std::path::PathBuf;
@@ -29,6 +29,7 @@ async fn main() -> ExitCode {
             return ExitCode::FAILURE;
         }
     };
+    move_pre_bardo_folders();
     let parts = Parts::real(
         FileStore::new(state_file()),
         DesktopAppearance::at(appearance_file()),
@@ -91,15 +92,41 @@ fn with_person_rows(shipped: Table) -> Result<Table, String> {
     Ok(shipped)
 }
 
-/// Where restore tokens are kept: `$XDG_STATE_HOME/transom/restore`, or under `$HOME/.local/state`.
-/// The only place the environment is read; the libraries take the path.
-fn state_file() -> PathBuf {
+/// Where the portal keeps its state: `$XDG_STATE_HOME/bardo/portal`, or under `$HOME/.local/state`.
+/// The only place the environment is read for it; the libraries take the path.
+fn state_dir() -> PathBuf {
     let base = std::env::var_os("XDG_STATE_HOME")
         .map(PathBuf::from)
         .filter(|p| p.is_absolute())
         .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".local/state")))
         .unwrap_or_else(|| PathBuf::from("."));
-    base.join("transom").join("restore")
+    base.join("bardo").join("portal")
+}
+
+/// Where restore tokens are kept: `restore` in the state folder.
+fn state_file() -> PathBuf {
+    state_dir().join("restore")
+}
+
+/// Temporary: delete with the old-folders crate in the release after everyone has started once.
+///
+/// Moves the portal's pre-bardo state folder (`$XDG_STATE_HOME/transom`) to `state_dir()`, before
+/// anything is read.
+fn move_pre_bardo_folders() {
+    let new = state_dir();
+    let Some(base) = new.parent().and_then(|bardo| bardo.parent()) else {
+        return;
+    };
+    let old = base.join("transom");
+    match old_folders::move_once(&old, &new) {
+        Ok(moved) if moved.moved > 0 => {
+            tracing::info!(from = %old.display(), to = %new.display(), entries = moved.moved, "moved the pre-bardo state folder");
+        }
+        Ok(_) => {}
+        Err(error) => {
+            tracing::warn!(%error, from = %old.display(), "could not move the pre-bardo state folder");
+        }
+    }
 }
 
 /// Where an app's own name is found: the desktop entries in the data directories (the person's, the
@@ -150,7 +177,7 @@ fn appearance_file() -> PathBuf {
         .filter(|p| p.is_absolute())
         .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".config")))
         .unwrap_or_else(|| PathBuf::from("."));
-    base.join("quire").join("appearance.toml")
+    base.join("bardo").join("appearance.toml")
 }
 
 /// Screenshots: the compositor the session's own display names (found the way Wayland clients

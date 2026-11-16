@@ -1,6 +1,6 @@
 # Architecture
 
-transom is the quire desktop's portal backend. `xdg-desktop-portal` (a separate process) asks it
+bardo-portal is the Bardo desktop's portal backend. `xdg-desktop-portal` (a separate process) asks it
 over the session bus; it answers with the `org.freedesktop.impl.portal.*` interfaces. It serves
 Screenshot, ScreenCast, RemoteDesktop, Settings, Inhibit and Access. The file chooser stays with the GTK
 backend (see `dist/bardo-portals.conf`).
@@ -10,20 +10,20 @@ backend (see `dist/bardo-portals.conf`).
 | Crate | Purpose | I/O |
 | --- | --- | --- |
 | `portal-core` | the screen-cast session machine (`step`), restore tokens and book, the source choice, the inhibit book, the layout of a picture of all outputs, when a held picture is sent again (`pacing`), the settings values and their wire numbers | none |
-| `transom` | the six D-Bus interfaces (zbus), the seams and their real and fake implementations, `serve`, the binary | D-Bus, Wayland, PipeWire, files |
+| `bardo-portal` | the six D-Bus interfaces (zbus), the seams and their real and fake implementations, `serve`, the binary | D-Bus, Wayland, PipeWire, files |
 
 `portal-core` depends on `thiserror` only. It reaches no zbus, tokio, pipewire, wayland, image
 or tracing (row T1 of `scripts/check-boundary.sh`) and reads no clock, environment or file (T5).
 
-Inside `transom` only these modules name the heavy crates: `capture/` the Wayland crates (T2),
+Inside `bardo-portal` only these modules name the heavy crates: `capture/` the Wayland crates (T2),
 `screencast/pipewire.rs` the PipeWire crate (T3), `screenshot.rs` the image encoder (T4); only
 `main.rs` reads the environment (T6).
 
 ## 2. Layout
 
 ```
-crates/transom-core/src/{lib, screencast, restore, devices, choice, inhibit, layout, pacing, settings_values}.rs
-crates/transom/src/{lib, main, error, link, peers, table, dev_rows (feature debug), shell, names, fsread, random, chooser, screenshot, settings, access, keeper}.rs
+crates/bardo-portal-core/src/{lib, screencast, restore, devices, choice, inhibit, layout, pacing, settings_values}.rs
+crates/bardo-portal/src/{lib, main, error, link, peers, table, dev_rows (feature debug), shell, names, fsread, random, chooser, screenshot, settings, access, keeper}.rs
                    screenshot/{layout, color, service}.rs
                    remote_desktop/{mod, book, sessions, object, consent, eis}.rs
                    inhibit/{mod, hub, effect}.rs
@@ -42,12 +42,12 @@ scripts/check-boundary.sh
 | `capture::CaptureSource` | `ExtCapture` | `FakeCapture` | P2-T2 |
 | `screencast::stream::FrameSink` | `PipewireSink` | `FakeSink` | P2-T2 |
 | `screencast::restore::RestoreStore` | `FileStore` | `MemoryStore` | P2-T2 |
-| `screenshot::OutputLayout` | `LiveLayout` (asks the compositor at each screenshot) | `FixedLayout` | transom-shot |
-| `screenshot::ColorPicker` | `ShellColorPicker` (`org.bardo.Shell1.PickColor`) | `FakeColorPicker` | transom-shot |
+| `screenshot::OutputLayout` | `LiveLayout` (asks the compositor at each screenshot) | `FixedLayout` | bardo-portal-shot |
+| `screenshot::ColorPicker` | `ShellColorPicker` (`org.bardo.Shell1.PickColor`) | `FakeColorPicker` | bardo-portal-shot |
 | `chooser::Chooser` | `ShellChooser` (calls the shell's picker) | `FakeChooser` | P2-T2 (chooser client) |
 | `link::BusLink` | the connection that owns the portal's name and the `peers::Peers` that tell callers apart, both attached by `serve` | (none: tests use `serve_on` on a private bus and `Peers::introduce`) | PORTAL-01, 03, 10 |
 | `settings::AppearanceSource` | `DesktopAppearance` | (none: tests bring their own source) | P2-T1 |
-| `access::Asker` | `ShellAsker` (`org.bardo.Shell1.AskPermission`) | `FakeAsker` | transom-access |
+| `access::Asker` | `ShellAsker` (`org.bardo.Shell1.AskPermission`) | `FakeAsker` | bardo-portal-access |
 | `access::Asker` (remote control) | `ShellAsker` (its own `AskPermission` question naming the input, built by `remote_control_question`) | `FakeAsker` | P2-T3 |
 | `remote_desktop::EisHandout` | `CasementEis` (`org.bardo.Compositor1.ConnectEis` and `EndEis`) | `FakeEis` | P2-T3 |
 | `capture::PortalLine` | `CasementLine` (`org.bardo.Compositor1.Connect("portal")`: a Wayland connection of the portal's own, trusted for the screen and the windows; casement limits how often a caller may ask, so a capture job, `capture::Job`, asks once and runs every step on that connection) | `FakeLine` | NEW-FA-2 |
@@ -217,10 +217,10 @@ by it, as for tokens. Settings (detent) and the first-time picker (sill) are the
 
 Single windows come from the compositor's `ext_foreign_toplevel_image_capture_source_manager_v1`
 with `ext_image_copy_capture_manager_v1`. The compositor sizes frames at logical size times scale
-and sends one only when the window changed; transom does not poll.
+and sends one only when the window changed; bardo-portal does not poll.
 
 ## 6. The jailed chain
 
-`dev/up.sh` starts a private bus, PipeWire, WirePlumber, transom and `xdg-desktop-portal` inside
+`dev/up.sh` starts a private bus, PipeWire, WirePlumber, bardo-portal and `xdg-desktop-portal` inside
 the desktop harness's jail, with `dist/bardo.portal` found through `XDG_DESKTOP_PORTAL_DIR`.
 `dev/accept/*.sh` drive it. Unit tests never need it.

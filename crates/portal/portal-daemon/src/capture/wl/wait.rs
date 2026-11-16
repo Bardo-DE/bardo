@@ -62,7 +62,7 @@ impl Watchdog {
         let canceller = Canceller::new(fd);
         let (disarm, armed) = mpsc::channel::<()>();
         std::thread::Builder::new()
-            .name("transom-watchdog".to_owned())
+            .name("bardo-portal-watchdog".to_owned())
             .spawn(move || {
                 if armed.recv_timeout(deadline) == Err(mpsc::RecvTimeoutError::Timeout) {
                     canceller.cancel();

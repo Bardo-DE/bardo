@@ -43,7 +43,7 @@ session.stream(cancelled, &Request::Cancel, |id, frame| /* ... */)?;  // a strea
 For a layout of one folder per plugin, with a vocabulary owned by several crates:
 
 ```rust,ignore
-let search = Search::new("quire", user, system, 1)
+let search = Search::new("bardo", user, system, 1)
     .with_layout(Layout::Folders { dir: "extensions", manifest: "extension.toml" });
 let scanned = bayonet::scan::<Raw>(&search);            // knows no capability word
 let typed = scanned.candidates.into_iter()

@@ -8,7 +8,7 @@ for _d in "${BARDO_PORTAL_DESKTOP:-}" "$_transom_root/../desktop" "$HOME/desktop
 done
 if [ -z "$_transom_desktop" ]; then
   echo "dev/lib/jail.sh: the desktop harness (harness/lib/jail.sh) was not found" >&2
-  echo "fix: check out the desktop repository beside transom, or set BARDO_PORTAL_DESKTOP" >&2
+  echo "fix: check out the desktop repository beside bardo-portal, or set BARDO_PORTAL_DESKTOP" >&2
   exit 3
 fi
 # shellcheck source=/dev/null

@@ -1,8 +1,8 @@
-# transom
+# bardo-portal
 
-The desktop portal backend for the quire desktop: screenshots, screen sharing (PipeWire, outputs
+The desktop portal backend for the Bardo desktop: screenshots, screen sharing (PipeWire, outputs
 and single windows, restore tokens), remote desktop, settings and the "keep the screen on" inhibit,
-served to apps through `xdg-desktop-portal` as the `quire` portal implementation.
+served to apps through `xdg-desktop-portal` as the `bardo` portal implementation.
 
 It runs as its own process and talks to the compositor (casement) through the standard Wayland
 image-capture protocols, so it works with any compositor that offers them. The file chooser stays
@@ -21,8 +21,8 @@ the shell, for a jail or a checkout that has no `/etc/bardo/desktop-callers.toml
 
 ## Installing
 
-`scripts/install.sh [--prefix DIR] [--destdir DIR] [--bin-dir DIR] [--no-build]` builds transom and installs the
-binary (`libexec/transom`), `bardo-portal.service`, the D-Bus activation file and `bardo.portal`. The portal choice
+`scripts/install.sh [--prefix DIR] [--destdir DIR] [--bin-dir DIR] [--no-build]` builds bardo-portal and installs the
+binary (`libexec/bardo-portal`), `bardo-portal.service`, the D-Bus activation file and `bardo.portal`. The portal choice
 (`dist/bardo-portals.conf`) is an example; the desktop ships the one it uses. The session must set
-`XDG_CURRENT_DESKTOP=bardo` so the portal file's `UseIn=bardo` matches. The first portal call starts transom by
+`XDG_CURRENT_DESKTOP=bardo` so the portal file's `UseIn=bardo` matches. The first portal call starts bardo-portal by
 D-Bus activation; nothing is enabled under the home directory.

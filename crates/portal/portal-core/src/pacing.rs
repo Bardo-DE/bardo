@@ -4,7 +4,7 @@
 //! pictures to keep coming. The stream therefore keeps the newest picture and sends it again to
 //! fill the gap. A picture that has just arrived goes out at once; only a picture that was
 //! already sent waits for its turn. These functions decide; the stream that does the sending
-//! lives in `transom`.
+//! lives in `bardo-portal`.
 
 const NANOS_PER_SECOND: u64 = 1_000_000_000;
 

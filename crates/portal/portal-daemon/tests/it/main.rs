@@ -1,4 +1,4 @@
-//! transom's tests: one binary. Everything here runs on fakes; nothing opens a PipeWire daemon or
+//! bardo-portal's tests: one binary. Everything here runs on fakes; nothing opens a PipeWire daemon or
 //! a compositor, and the one module that needs a bus (`shell_bus`) starts a private one and skips,
 //! saying so, without a `dbus-daemon`. The jailed chain's checks live in `dev/accept/`.
 

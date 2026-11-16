@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Starts the jailed portal chain: a private bus, pipewire, wireplumber, transom and
+# Starts the jailed portal chain: a private bus, pipewire, wireplumber, bardo-portal and
 # xdg-desktop-portal, all inside the jail's scratch. Prints the run's env file on stdout; source
 # it to talk to the chain. Calls require_jail first.
 #
@@ -7,9 +7,9 @@
 #
 # With --env, joins the headless compositor session that file describes (the capture checks need
 # one); without, there is no compositor and only the Settings and Inhibit checks can run.
-# Needs BARDO_PORTAL_BIN (the built transom binary). BARDO_PORTAL_DEV_CALLERS (a rows file naming the
-# stand-ins for the portal frontend and the shell; transom built with --features debug) is passed on
-# to transom; see dev/lib/chain.sh.
+# Needs BARDO_PORTAL_BIN (the built bardo-portal binary). BARDO_PORTAL_DEV_CALLERS (a rows file naming the
+# stand-ins for the portal frontend and the shell; bardo-portal built with --features debug) is passed on
+# to bardo-portal; see dev/lib/chain.sh.
 #
 # Owner: P2-Z-tr (skeleton). Exit codes: 0 up, 1 the chain did not come up, 2 outside the jail,
 # 3 a tool is missing.

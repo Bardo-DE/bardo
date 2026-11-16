@@ -1,6 +1,6 @@
 [package]
 name = "portal-daemon"
-description = "The quire desktop portal backend: Screenshot, ScreenCast, RemoteDesktop, Settings and Inhibit served on the session bus for xdg-desktop-portal."
+description = "The Bardo desktop portal backend: Screenshot, ScreenCast, RemoteDesktop, Settings and Inhibit served on the session bus for xdg-desktop-portal."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -12,7 +12,7 @@ publish = false
 name = "portal_daemon"
 
 [[bin]]
-name = "transom"
+name = "bardo-portal"
 path = "src/main.rs"
 
 [features]
@@ -23,6 +23,7 @@ debug = ["caller-identity-dbus/dev-rows"]
 
 [dependencies]
 portal-core = {path = "../portal-core"}
+old-folders = {path = "../../platform/old-folders"}
 thiserror = {version = "2"}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 caller-identity-dbus = {default-features = false, features = ["tokio", "desktop"], path = "../../identity/caller-identity-dbus"}

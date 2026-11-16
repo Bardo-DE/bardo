@@ -127,9 +127,9 @@ impl Scratch {
         self.root.path().join(format!("system{n}"))
     }
 
-    /// Writes `<data>/quire/extensions/<folder>/extension.toml`, and returns the folder.
+    /// Writes `<data>/bardo/extensions/<folder>/extension.toml`, and returns the folder.
     fn extension(&self, data: PathBuf, folder: &str, manifest: &str) -> PathBuf {
-        let dir = data.join("quire").join("extensions").join(folder);
+        let dir = data.join("bardo").join("extensions").join(folder);
         fs::create_dir_all(&dir).unwrap();
         fs::write(dir.join("extension.toml"), manifest).unwrap();
         dir
@@ -142,7 +142,7 @@ impl Scratch {
 }
 
 fn search<'a>(user: &'a Path, system: &'a [PathBuf]) -> Search<'a> {
-    Search::new("quire", user, system, 1).with_layout(Layout::Folders {
+    Search::new("bardo", user, system, 1).with_layout(Layout::Folders {
         dir: "extensions",
         manifest: "extension.toml",
     })
@@ -178,7 +178,7 @@ fn extensions_are_found_in_folders_named_for_their_id() {
     let slate = s.extension(s.system(0), id, &text(id, "", ICONS));
     fs::write(slate.join("paper.png"), "png").unwrap();
     // A folder with no manifest is not an Extension; a folder named for another id is rejected.
-    fs::create_dir_all(s.user().join("quire/extensions/notes")).unwrap();
+    fs::create_dir_all(s.user().join("bardo/extensions/notes")).unwrap();
     let wrong = s.extension(
         s.user(),
         "org.example.Other",

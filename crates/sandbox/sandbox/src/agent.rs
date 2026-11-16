@@ -19,7 +19,7 @@ use crate::profile::Profile;
 use crate::sandbox::{Argv, EnvVar};
 
 /// Where the forwarder and its socket appear inside the sandbox.
-pub const INSIDE_FORWARDER: &str = "/run/bulkhead/forward";
+pub const INSIDE_FORWARDER: &str = "/run/bardo/sandbox/forward";
 /// The socket's path inside the sandbox.
 pub const INSIDE_SOCKET: &str = "/run/bardo/sandbox/ep.sock";
 

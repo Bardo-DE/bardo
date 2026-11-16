@@ -105,7 +105,7 @@ impl PipewireSink {
         let (commands, inbox) = pw::channel::channel::<Command>();
         let latest = Latest::default();
         let thread = std::thread::Builder::new()
-            .name("transom-pipewire".to_owned())
+            .name("bardo-portal-pipewire".to_owned())
             .spawn({
                 let latest = Arc::clone(&latest);
                 move || run(size, &ready_tx, inbox, latest)
@@ -226,7 +226,7 @@ fn serve(
     let core = context.connect_rc(None).map_err(failed)?;
     let stream = StreamRc::new(
         core,
-        "transom screen share",
+        "bardo-portal screen share",
         properties! {
             *pw::keys::MEDIA_CLASS => "Video/Source",
             *pw::keys::MEDIA_TYPE => "Video",
@@ -317,7 +317,7 @@ fn serve(
 /// it stops a share being found by name.
 fn share_node_name() -> String {
     let unique = crate::random::hex::<6>().unwrap_or_else(|| std::process::id().to_string());
-    format!("transom-share-{unique}")
+    format!("bardo-portal-share-{unique}")
 }
 
 /// The process step: if the picture is due (new, or old enough to repeat) and a buffer is free,

@@ -1,4 +1,4 @@
-//! The portal's questions to the shell, on a private bus: transom's real clients against a
+//! The portal's questions to the shell, on a private bus: bardo-portal's real clients against a
 //! stand-in shell that applies the owner check the real shell applies (a question is answered only
 //! when its sender is the connection that owns the portal's name). Each side's own tests were green
 //! while the pair was broken, because the client asked from a second connection of its own. The

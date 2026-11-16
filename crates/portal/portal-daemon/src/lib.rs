@@ -1,4 +1,4 @@
-//! The quire desktop's portal backend: the D-Bus services `xdg-desktop-portal` forwards to.
+//! The Bardo desktop's portal backend: the D-Bus services `xdg-desktop-portal` forwards to.
 //!
 //! The pure decisions live in `portal-core`; this crate holds the I/O around them, each behind
 //! a seam so tests run on a private bus with fakes:

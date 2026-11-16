@@ -2,7 +2,7 @@
 # Acceptance script 'inhibit': an Inhibit request is held while its request object lives and released when it is closed.
 # Needs BARDO_PORTAL_BIN. No compositor. The login manager is not in the jail, so the effect on the
 # session is not checked here (the unit tests check it against a fake); this checks the request
-# object transom exports at the handle.
+# object bardo-portal exports at the handle.
 # Prints PASS or FAIL per step. Calls require_jail first. Owner: P2-T1.
 #   exit 0 all steps passed, 1 a step failed, 2 not runnable (outside the jail), 3 a tool is missing.
 set -euo pipefail

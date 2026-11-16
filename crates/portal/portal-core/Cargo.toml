@@ -1,6 +1,6 @@
 [package]
 name = "portal-core"
-description = "The pure part of the quire desktop portal backend: the screen-cast session machine, restore tokens, the source choice, the inhibit book and the settings values. No D-Bus, no PipeWire, no Wayland."
+description = "The pure part of the Bardo desktop portal backend: the screen-cast session machine, restore tokens, the source choice, the inhibit book and the settings values. No D-Bus, no PipeWire, no Wayland."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

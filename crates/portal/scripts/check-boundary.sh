@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# transom's boundary rows, mechanically. ARCHITECTURE.md section 1 is the table; this is its
+# bardo-portal's boundary rows, mechanically. ARCHITECTURE.md section 1 is the table; this is its
 # mechanical form. Rows:
 #   T1 portal-core reaches no zbus, tokio, pipewire, wayland, image or tracing
 #   T2 only portal-daemon/src/capture/ names the wayland crates
-#   T3 only portal-daemon/src/screencast/pipewire.rs names the pipewire crate (a path through transom's own `pipewire` module, `self::pipewire::` or `screencast::pipewire::`, is not the crate)
+#   T3 only portal-daemon/src/screencast/pipewire.rs names the pipewire crate (a path through bardo-portal's own `pipewire` module, `self::pipewire::` or `screencast::pipewire::`, is not the crate)
 #   T4 only portal-daemon/src/screenshot.rs (P2-T1) names the image crate
 #   T5 no clock, no environment read and no file I/O in portal-core
 #   T6 the environment is read only in portal-daemon/src/main.rs

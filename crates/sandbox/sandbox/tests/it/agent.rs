@@ -81,8 +81,8 @@ fn host_mode_shares_the_network_and_binds_back_only_the_resolver_files() {
 #[test]
 fn endpoint_only_starts_the_forwarder_first_and_binds_one_socket() {
     let bind = EndpointBind::new(
-        abs("/opt/bulkhead/bardo-sandbox-forward"),
-        abs("/run/user/1000/bulkhead/ep.sock"),
+        abs("/opt/bardo/bardo-sandbox-forward"),
+        abs("/run/user/1000/bardo/sandbox/ep.sock"),
         40123,
     );
     let args = agent_bwrap_args(&run(AgentNet::Endpoint(bind), Vec::new()), &Profile::bare());
@@ -91,13 +91,13 @@ fn endpoint_only_starts_the_forwarder_first_and_binds_one_socket() {
         &args,
         &[
             "--ro-bind",
-            "/opt/bulkhead/bardo-sandbox-forward",
+            "/opt/bardo/bardo-sandbox-forward",
             INSIDE_FORWARDER
         ]
     ));
     assert!(has(
         &args,
-        &["--bind", "/run/user/1000/bulkhead/ep.sock", INSIDE_SOCKET]
+        &["--bind", "/run/user/1000/bardo/sandbox/ep.sock", INSIDE_SOCKET]
     ));
     let tail: Vec<&str> = args
         .iter()

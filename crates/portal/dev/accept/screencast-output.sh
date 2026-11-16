@@ -52,7 +52,7 @@ fi
 
 # The test client is a host program whose id no desktop entry of root's registers, so it is not
 # shown to be what its id says (NEW-PI-2): no restore token is issued, and a token it makes up
-# does not skip the sheet. The proven path is covered by transom's own tests, since the jail
+# does not skip the sheet. The proven path is covered by bardo-portal's own tests, since the jail
 # cannot hold a root-owned desktop entry.
 token=$(cast_field token)
 if [ -z "$token" ]; then step PASS "4 an unproven app got no restore token"; else step FAIL "4 an unproven app was given a restore token"; status=1; fi

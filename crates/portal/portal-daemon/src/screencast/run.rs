@@ -130,7 +130,7 @@ fn open_one(
     let state = Arc::new(RunFlag::running());
     let mut pump = Pump::new(capture, sink, cursor);
     let thread = std::thread::Builder::new()
-        .name("transom-share".to_owned())
+        .name("bardo-portal-share".to_owned())
         .spawn({
             let state = Arc::clone(&state);
             move || {

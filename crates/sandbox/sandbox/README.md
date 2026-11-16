@@ -1,4 +1,4 @@
-# bulkhead
+# sandbox
 
 Run a command, or a long-running agent process, confined by
 [bubblewrap](https://github.com/containers/bubblewrap). Killing a job kills the whole sandbox,
@@ -67,7 +67,7 @@ refused, a bad working directory), `Shell` refuses and says why.
 ## Ubuntu 24.04 and later: AppArmor
 
 Ubuntu sets `kernel.apparmor_restrict_unprivileged_userns=1`, so an unprivileged `bwrap` cannot
-make a user namespace and no sandbox is created. bulkhead reads that setting and reports
+make a user namespace and no sandbox is created. the sandbox reads that setting and reports
 `CannotSandbox::RestrictedByAppArmor` instead of the general "kernel refuses" reason. It still
 fails closed. Two ways out; pick one.
 

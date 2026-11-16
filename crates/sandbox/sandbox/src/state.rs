@@ -15,7 +15,7 @@ pub enum CannotSandbox {
     /// The program is there but AppArmor (Ubuntu 24.04 and later) blocks user namespaces for it.
     #[error(
         "AppArmor blocks the sandbox: allow user namespaces for bubblewrap with an AppArmor \
-         profile (see the bulkhead README), or set kernel.apparmor_restrict_unprivileged_userns to 0"
+         profile (see the sandbox README), or set kernel.apparmor_restrict_unprivileged_userns to 0"
     )]
     RestrictedByAppArmor,
     /// This platform has no sandbox backend.

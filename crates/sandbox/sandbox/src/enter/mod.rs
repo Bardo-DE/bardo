@@ -19,7 +19,7 @@ pub(crate) use build::plan_for;
 pub use plan::{EnterFault, EnterPlan, LandlockLevel, NetRule};
 
 /// Where the exec stage appears inside the sandbox.
-pub const INSIDE_ENTER: &str = "/run/bulkhead/enter";
+pub const INSIDE_ENTER: &str = "/run/bardo/sandbox/enter";
 
 #[cfg(all(target_os = "linux", feature = "landlock"))]
 pub use apply::apply;
@@ -56,6 +56,6 @@ pub fn enter_main(name: &str) -> std::process::ExitCode {
 /// `landlock` feature.
 #[cfg(not(all(target_os = "linux", feature = "landlock")))]
 pub fn enter_main(name: &str) -> std::process::ExitCode {
-    eprintln!("{name} needs Linux and bulkhead's `landlock` feature");
+    eprintln!("{name} needs Linux and the sandbox crate's `landlock` feature");
     std::process::ExitCode::from(2)
 }

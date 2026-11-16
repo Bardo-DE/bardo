@@ -1,4 +1,4 @@
-//! The pure part of transom, the quire desktop's portal backend.
+//! The pure part of bardo-portal, the Bardo desktop's portal backend.
 //!
 //! Everything here is a value or a function of values, so it can be used (and tested) without a
 //! bus, a PipeWire daemon or a compositor:
