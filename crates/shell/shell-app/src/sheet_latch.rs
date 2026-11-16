@@ -118,7 +118,12 @@ impl SheetLatch {
 
 /// Tell the host to look at the questions again whenever one of the sources changes, until the
 /// host is gone.
-pub fn spawn_follower(rt: &Handle, services: &Services, links: &Links, host: &HostHandle<ShellMsg>) {
+pub fn spawn_follower(
+    rt: &Handle,
+    services: &Services,
+    links: &Links,
+    host: &HostHandle<ShellMsg>,
+) {
     nudge(rt, services.intents.state.clone(), host);
     nudge(rt, services.polkit_agent.state.clone(), host);
     nudge(rt, services.capture.state.clone(), host);
@@ -151,6 +156,10 @@ mod tests {
     use crate::outputs::Outputs;
     use shell_ui_kit::links::SheetOutput;
 
+    #[expect(
+        clippy::unnecessary_wraps,
+        reason = "a test helper that builds the `Option` or `Result` a table row holds, so its callers read as rows"
+    )]
     fn on(name: &str) -> Option<OutputName> {
         Some(OutputName(name.to_owned()))
     }

@@ -310,8 +310,11 @@ impl ExportMem for SoftPixman {
         self.inner.can_read_texture(texture)
     }
 
-    fn map_texture<'a>(&mut self, mapping: &'a PixmanMapping) -> Result<&'a [u8], PixmanError> {
-        self.inner.map_texture(mapping)
+    fn map_texture<'a>(
+        &mut self,
+        texture_mapping: &'a PixmanMapping,
+    ) -> Result<&'a [u8], PixmanError> {
+        self.inner.map_texture(texture_mapping)
     }
 }
 
@@ -373,7 +376,9 @@ impl Allocator for FixedUdmabuf {
         )?;
         rustix::fs::ftruncate(&fd, size as u64)?;
         rustix::fs::fcntl_add_seals(&fd, SealFlags::SHRINK)?;
-        let stride = u32::try_from(stride).ok().ok_or(io::ErrorKind::InvalidData)?;
+        let stride = u32::try_from(stride)
+            .ok()
+            .ok_or(io::ErrorKind::InvalidData)?;
         self.udmabuf
             .create_buffer_from_memfd(&fd, 0, size, fourcc, width, height, stride)
     }

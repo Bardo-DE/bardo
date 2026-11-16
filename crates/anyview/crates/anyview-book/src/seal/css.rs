@@ -102,7 +102,6 @@ fn skip_call(css: &str, from: usize) -> usize {
                 chars.next();
             }
             (Some(open), c) if c == open => quote = None,
-            (Some(_), _) => {}
             (None, '"' | '\'') => quote = Some(c),
             (None, '(') => depth += 1,
             (None, ')') => {
@@ -111,7 +110,7 @@ fn skip_call(css: &str, from: usize) -> usize {
                     return from + offset + 1;
                 }
             }
-            (None, _) => {}
+            (Some(_) | None, _) => {}
         }
     }
     css.len()
@@ -163,7 +162,6 @@ pub(super) mod tests {
 
     #[test]
     fn a_stylesheet_keeps_its_rules_and_loses_what_would_reach_out() {
-        let files = Files(HashMap::from([("css/bg.png", "data:image/png;base64,AA")]));
         // name, css, sealed
         const CASES: &[(&str, &str, &str)] = &[
             ("plain rules", "p { color: red }", "p { color: red }"),
@@ -260,6 +258,8 @@ pub(super) mod tests {
                 "a::after{content:'\\3c /style>'}",
             ),
         ];
+
+        let files = Files(HashMap::from([("css/bg.png", "data:image/png;base64,AA")]));
         for (name, css, want) in CASES {
             assert_eq!(seal_css(css, "css/", &files), *want, "{name}");
         }

@@ -166,9 +166,9 @@ fn anthropic_node(mut map: Map<String, Value>) -> Map<String, Value> {
     if is_object_node(&map) {
         map.insert("additionalProperties".into(), Value::Bool(false));
     }
-    ANTHROPIC_STRIPPED.iter().for_each(|k| {
+    for k in ANTHROPIC_STRIPPED {
         map.remove(*k);
-    });
+    }
     map
 }
 

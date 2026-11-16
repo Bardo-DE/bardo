@@ -42,8 +42,8 @@ impl Policy for NotificationsBridge {
         policy_of(&file.notifications, *self.focus.borrow())
     }
 
-    fn command(policy: NotificationsPolicy) -> NotificationsCommand {
-        NotificationsCommand::Policy(policy)
+    fn command(out: NotificationsPolicy) -> NotificationsCommand {
+        NotificationsCommand::Policy(out)
     }
 
     fn changed(&mut self) -> impl Future<Output = Result<(), RecvError>> + Send {

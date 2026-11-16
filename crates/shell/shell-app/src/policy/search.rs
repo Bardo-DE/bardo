@@ -37,8 +37,8 @@ impl Policy for SearchBridge {
         search_policy_of(&file.launcher)
     }
 
-    fn command(policy: LauncherPolicy) -> SearchCommand {
-        SearchCommand::Policy(policy)
+    fn command(out: LauncherPolicy) -> SearchCommand {
+        SearchCommand::Policy(out)
     }
 }
 

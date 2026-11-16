@@ -431,7 +431,7 @@ fn channels(ramp: &GammaRamp, size: usize) -> [Vec<u16>; 3] {
     match ramp {
         GammaRamp::Table(table) => [table.red(), table.green(), table.blue()]
             .map(|channel| (0..size).map(|step| sample(channel, step)).collect()),
-        _ => [(); 3].map(|()| (0..size).map(line).collect()),
+        GammaRamp::Identity => [(); 3].map(|()| (0..size).map(line).collect()),
     }
 }
 
@@ -506,7 +506,7 @@ fn connector_facts(
     let status = match info.state() {
         connector::State::Connected => ConnectorStatus::Connected,
         connector::State::Disconnected => ConnectorStatus::Disconnected,
-        _ => ConnectorStatus::Unknown,
+        connector::State::Unknown => ConnectorStatus::Unknown,
     };
     let (w, h) = info.size().unwrap_or((0, 0));
     let edid = property(device, handle, "EDID")
@@ -543,7 +543,7 @@ fn planes(device: &DrmDevice, crtcs: &[crtc::Handle]) -> Result<Vec<PlaneFacts>,
             let kind = match plane.type_ {
                 PlaneType::Primary => PlaneKind::Primary,
                 PlaneType::Cursor => PlaneKind::Cursor,
-                _ => PlaneKind::Overlay,
+                PlaneType::Overlay => PlaneKind::Overlay,
             };
             let formats = plane
                 .formats

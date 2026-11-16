@@ -46,6 +46,7 @@ impl FakeFiles {
     }
 
     /// Adds a file at `path` with `content`.
+    #[must_use]
     pub fn with_file(self, key: &str, path: &str, content: &str) -> Self {
         self.add_file(key, path, content);
         self
@@ -193,7 +194,8 @@ impl IntentProvider for FakeFiles {
                 }
                 s.next += 1;
                 let token = UndoToken::parse(&format!("files-undo-{}", s.next))
-                    .ok().ok_or(AppRefusal::Busy)?;
+                    .ok()
+                    .ok_or(AppRefusal::Busy)?;
                 s.undo.insert(token.as_str().to_owned(), undo);
                 Ok(outcome(
                     Some(format!("Moved {} files", keys.len())),
@@ -202,10 +204,10 @@ impl IntentProvider for FakeFiles {
                 ))
             }
             "files.file.delete" => {
-                keys.iter().for_each(|k| {
+                for k in &keys {
                     s.files.remove(k);
                     s.content.remove(k);
-                });
+                }
                 Ok(outcome(
                     Some(format!("Deleted {} files", keys.len())),
                     Undoable::No,
@@ -247,9 +249,9 @@ impl IntentProvider for FakeFiles {
         self.edit(|s| match s.undo.remove(token.as_str()) {
             None => Err(UndoFault::Gone),
             Some(back) => {
-                back.into_iter().for_each(|(k, from)| {
+                for (k, from) in back {
                     s.files.insert(k, from);
-                });
+                }
                 Ok(())
             }
         })

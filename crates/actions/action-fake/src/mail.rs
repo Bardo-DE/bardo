@@ -104,12 +104,14 @@ impl FakeMail {
     }
 
     /// Adds a thread.
+    #[must_use]
     pub fn with_thread(self, thread: MailThread) -> Self {
         self.add_thread(thread);
         self
     }
 
     /// Adds a contact.
+    #[must_use]
     pub fn with_contact(self, contact: MailContact) -> Self {
         self.add_contact(contact);
         self
@@ -239,6 +241,10 @@ impl IntentProvider for FakeMail {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "one arm per action of the fake mail app, as the real provider has"
+    )]
     async fn perform(&self, inv: Invocation) -> Result<Outcome, AppRefusal> {
         let keys = Self::keys(&inv.target);
         let space = self.space.clone();
@@ -358,9 +364,9 @@ impl IntentProvider for FakeMail {
                 ))
             }
             "mail.thread.delete" => {
-                keys.iter().for_each(|k| {
+                for k in &keys {
                     s.threads.remove(k);
-                });
+                }
                 Ok(outcome(
                     Some(format!("Deleted {} threads", keys.len())),
                     Undoable::No,
@@ -412,9 +418,9 @@ impl IntentProvider for FakeMail {
         self.edit(|s| match s.undo.remove(token.as_str()) {
             None => Err(UndoFault::Gone),
             Some(UndoStep::Unarchive(keys)) => {
-                keys.iter().for_each(|k| {
+                for k in &keys {
                     s.archived.remove(k);
-                });
+                }
                 Ok(())
             }
             Some(UndoStep::Unsend(serial)) => {

@@ -58,7 +58,8 @@ fn capture(
     let buffer = frame.buffer();
     let size = buffer_size(&buffer).ok_or(CaptureFailure::BufferMismatch)?;
     let request = image_capture::on_frame_request(&mut state.wl.image_capture.book, id, size)
-        .ok().ok_or(CaptureFailure::OutputGone)?;
+        .ok()
+        .ok_or(CaptureFailure::OutputGone)?;
     let wanted = constraints_of(state, &request.output).ok_or(CaptureFailure::OutputGone)?;
     // The mode changed since the session announced its constraints: announce the new ones and
     // fail this frame (the client allocates again).
@@ -119,7 +120,7 @@ pub(in crate::handlers) fn last_shown(
     let size = match &presented.pixels {
         FramePixels::Rgba(frame) => frame.size,
         FramePixels::Resident(size) => *size,
-        _ => return Err(CaptureFailure::Renderer),
+        FramePixels::Dummy => return Err(CaptureFailure::Renderer),
     };
     Ok(Some(Shown {
         at: presented.at,
@@ -249,7 +250,7 @@ fn presented<'a>(
     match &state.backend {
         BackendKind::Headless(backend) => Ok(backend.last_frame(&name)),
         BackendKind::Tty(tty) => Ok(tty.last_frame(&name)),
-        _ => Err(CaptureFailure::Renderer),
+        BackendKind::Winit(_) => Err(CaptureFailure::Renderer),
     }
 }
 

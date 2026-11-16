@@ -33,14 +33,26 @@ fn surface(name: &str) -> SurfaceName {
     SurfaceName(name.to_owned())
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "a test helper that builds the `Option` or `Result` a table row holds, so its callers read as rows"
+)]
 fn debug(request: DebugRequest) -> Option<Request> {
     Some(Request::Debug(request))
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "a test helper that builds the `Option` or `Result` a table row holds, so its callers read as rows"
+)]
 fn doing(action: ShellAction) -> Option<Request> {
     Some(Request::Do(Ask::of(action)))
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "a test helper that builds the `Option` or `Result` a table row holds, so its callers read as rows"
+)]
 fn status(request: StatusRequest) -> Option<Request> {
     Some(Request::Status(request))
 }
@@ -100,6 +112,10 @@ fn action_of(key: &str, label: &str) -> Action {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of command lines and the request each must send"
+)]
 fn every_command_line_sends_its_request() {
     let (click, press, release) = (pointer(click), pointer(press), pointer(release));
     let brightness = |l| Some(Request::Display(DisplayRequest::Brightness(l)));

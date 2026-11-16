@@ -133,7 +133,8 @@ fn damaged_grants_are_never_written_over<S: GrantStore>(path: &Path, open: &impl
     for text in ["{", "{\"not\": \"a list\"}", "[{\"id\": 3}]"] {
         // The store is open before the file is damaged: a store may refuse to open a damaged
         // file, which its own tests cover.
-        std::fs::remove_file(path).ok();
+        // The file may not be there yet; a failure to remove it shows in the next steps.
+        let _ = std::fs::remove_file(path);
         let store = open(path);
         std::fs::write(path, text).expect("write");
         // A new decision does not replace the file: it may hold every grant the person gave.

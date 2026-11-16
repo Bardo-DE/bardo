@@ -56,7 +56,9 @@ impl FixedClock {
             sky.timers = waiting;
             due.into_iter().map(|(_, flag)| flag).collect()
         };
-        due.iter().for_each(|flag| flag.raise());
+        for flag in &due {
+            flag.raise();
+        }
     }
 
     /// Moves the instant `now` reports forward by `by`. Timers are not touched (`advance`

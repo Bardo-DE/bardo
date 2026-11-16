@@ -37,7 +37,7 @@ impl Outgoing for WindowMenuLink {
         self.subscribe_picks()
     }
 
-    fn commands(picked: &WindowMenuPicked) -> Vec<DesktopCommand> {
-        vec![command_of(picked)]
+    fn commands(sent: &WindowMenuPicked) -> Vec<DesktopCommand> {
+        vec![command_of(sent)]
     }
 }

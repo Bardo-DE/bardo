@@ -44,6 +44,10 @@ fn results(ids: &[&str]) -> Message {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of message orders and what each must be"
+)]
 fn orders() {
     let cases: Vec<(&str, Vec<Message>, Result<(), SequenceFault>)> = vec![
         ("empty", vec![], Ok(())),

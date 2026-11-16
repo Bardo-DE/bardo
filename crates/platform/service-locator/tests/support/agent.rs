@@ -53,7 +53,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                         let _ = writeln!(client, "stopping");
                         return Ok(());
                     }
-                    "" => continue, // knocked and left
+                    "" => {} // knocked and left
                     _ => {
                         let _ = writeln!(client, "{}", std::process::id());
                     }

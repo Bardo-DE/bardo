@@ -83,9 +83,9 @@ fn every_actor() -> Vec<Actor> {
 
 #[test]
 fn actors_round_trip_and_pin_their_json() {
-    every_actor().iter().for_each(|a| {
+    for a in &every_actor() {
         round_trip(a);
-    });
+    }
     let cua = Actor::Companion {
         session: SessionId::parse("s-1").expect("id"),
         role: AgentRole::Cua { run: run() },
@@ -156,6 +156,10 @@ fn execute_ranks_at_least_as_high_as_outbound_and_destructive() {
 /// client named `acp:<program>`; those records stay `Mcp`.
 #[test]
 fn records_written_before_execute_and_acp_still_read() {
+    const OLD_ACP: &str = r#"{"kind":"mcp","v":{"client":"acp:claude-code"}}"#;
+    const OLD_KINDS: &str =
+        r#"["user","companion","cua","mcp","cli","app","third_party","system","unknown"]"#;
+
     const EFFECTS: &str = r#"["read","undoable_write","outbound","destructive"]"#;
     let effects: Vec<Effect> = serde_json::from_str(EFFECTS).expect("old effects read");
     assert_eq!(
@@ -167,12 +171,9 @@ fn records_written_before_execute_and_acp_still_read() {
             Effect::Destructive
         ]
     );
-    const OLD_ACP: &str = r#"{"kind":"mcp","v":{"client":"acp:claude-code"}}"#;
     let old: Actor = serde_json::from_str(OLD_ACP).expect("old agent actor reads");
     assert_eq!(old.kind(), ActorKind::Mcp);
     assert_eq!(round_trip(&old), OLD_ACP);
-    const OLD_KINDS: &str =
-        r#"["user","companion","cua","mcp","cli","app","third_party","system","unknown"]"#;
     let kinds: Vec<ActorKind> = serde_json::from_str(OLD_KINDS).expect("old kinds read");
     assert_eq!(kinds.len(), 9);
 }

@@ -69,7 +69,8 @@ mod tests {
     #[test]
     fn the_folders_follow_the_xdg_defaults() {
         // name, variables, want
-        let cases: [(&str, &[(&str, &str)], Vec<&str>); 4] = [
+        type Case<'a> = (&'a str, &'a [(&'a str, &'a str)], Vec<&'a str>);
+        let cases: [Case<'_>; 4] = [
             (
                 "both unset",
                 &[("HOME", "/h")],
@@ -116,7 +117,8 @@ mod tests {
     #[test]
     fn the_config_folder_follows_the_xdg_defaults() {
         // name, variables, want
-        let cases: [(&str, &[(&str, &str)], Option<&str>); 4] = [
+        type Case<'a> = (&'a str, &'a [(&'a str, &'a str)], Option<&'a str>);
+        let cases: [Case<'_>; 4] = [
             (
                 "set",
                 &[("XDG_CONFIG_HOME", "/c"), ("HOME", "/h")],

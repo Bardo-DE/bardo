@@ -234,6 +234,10 @@ type KeyCase = (
 );
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of key presses and what the deck does"
+)]
 fn the_keyboard_table() {
     use DeckOut::{FocusCard, ReleaseKeyboard, Send, TakeKeyboard};
     use KeysIn::{Asked, Dismissed, Lost, Moved};

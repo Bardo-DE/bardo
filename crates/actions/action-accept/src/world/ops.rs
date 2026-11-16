@@ -2,6 +2,7 @@
 
 use super::{Cgroup, World, env_of, place};
 use action_testbus::Reaped;
+use std::fmt::Write as _;
 use std::path::Path;
 use std::process::{Command, Stdio};
 
@@ -127,14 +128,12 @@ impl World {
 
     /// Every daemon's standard error, for a failing test to print.
     pub fn logs(&self) -> String {
-        self.daemons
-            .iter()
-            .map(|(name, _)| {
-                let text =
-                    std::fs::read_to_string(self.dir.path().join(format!("logs/{name}.log")))
-                        .unwrap_or_default();
-                format!("---- {name}\n{text}")
-            })
-            .collect()
+        let mut out = String::new();
+        for (name, _) in &self.daemons {
+            let text = std::fs::read_to_string(self.dir.path().join(format!("logs/{name}.log")))
+                .unwrap_or_default();
+            let _ = write!(out, "---- {name}\n{text}");
+        }
+        out
     }
 }

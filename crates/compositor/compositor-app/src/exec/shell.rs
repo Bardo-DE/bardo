@@ -36,7 +36,7 @@ pub(super) fn note(state: &mut State, note: &ShellNote) {
         ShellNote::DropTargetNew { output, over } => {
             let over = match over {
                 desktop_protocols::vocab::Shown::Shown => Shown::Shown,
-                _ => Shown::Hidden,
+                desktop_protocols::vocab::Shown::Hidden => Shown::Hidden,
             };
             shell_space::send_drop_target_new(
                 &state.wl.quire_shell,

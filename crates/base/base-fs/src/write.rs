@@ -94,14 +94,14 @@ pub(crate) fn stage(
         .filter(|_| keep_mode)
         .filter(std::fs::Metadata::is_file)
         .map(|meta| meta.permissions());
-    let (staged, mut file) = create_staging(target, new_file)?;
-    let written = fill(&mut file)
+    let (staged, mut staging_file) = create_staging(target, new_file)?;
+    let written = fill(&mut staging_file)
         .and_then(|()| match kept {
-            Some(permissions) => file.set_permissions(permissions),
+            Some(permissions) => staging_file.set_permissions(permissions),
             None => Ok(()),
         })
-        .and_then(|()| sync_file(&file));
-    drop(file);
+        .and_then(|()| sync_file(&staging_file));
+    drop(staging_file);
     match written {
         Ok(()) => Ok(staged),
         Err(error) => {
@@ -158,7 +158,7 @@ fn create_staging(target: &Path, new_file: NewFileMode) -> io::Result<(PathBuf, 
         let staged = staging_beside(target);
         match open_new(&staged, new_file) {
             Ok(file) => return Ok((staged, file)),
-            Err(error) if error.kind() == io::ErrorKind::AlreadyExists => continue,
+            Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {}
             Err(error) => return Err(error),
         }
     }

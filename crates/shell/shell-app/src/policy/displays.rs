@@ -32,8 +32,8 @@ impl Policy for DisplaysBridge {
         policy_from(&file.display)
     }
 
-    fn command(policy: DisplayPolicy) -> DisplaysCommand {
-        DisplaysCommand::Policy(policy)
+    fn command(out: DisplayPolicy) -> DisplaysCommand {
+        DisplaysCommand::Policy(out)
     }
 }
 

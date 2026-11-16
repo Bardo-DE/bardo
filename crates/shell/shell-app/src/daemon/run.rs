@@ -38,6 +38,10 @@ const BLOCKING_THREADS: usize = 48;
 
 /// Run the daemon until `quit` or a fatal host error, on the seams `args` make.
 #[must_use]
+#[expect(
+    clippy::too_many_lines,
+    reason = "the start-up sequence of the shell: each step needs the ones before it"
+)]
 pub fn run(args: &crate::run_args::RunArgs) -> ExitCode {
     super::hardening::forbid_core_files();
     let (agent, door) = match take_door() {
@@ -173,7 +177,7 @@ pub fn run(args: &crate::run_args::RunArgs) -> ExitCode {
     let locker = services.locker.state.clone();
     let mut shell = Shell {
         outputs: Outputs::default(),
-        shell_lock: crate::lock::ShellLock::default(),
+        lock: crate::lock::ShellLock::default(),
         services,
         settings_feed,
         store,

@@ -24,6 +24,10 @@ pub(super) fn openness(progress: PageMilli) -> Fraction {
 
 /// The windows follow the fingers: when a vertical swipe is down, motion is snapped to the
 /// spread at its progress. Nothing otherwise.
+#[expect(
+    clippy::default_trait_access,
+    reason = "compositor-app has no dependency on ui-style, so `MotionLevel` cannot be named here"
+)]
 pub(super) fn follow(state: &mut State) {
     let Some(progress) = state.core.model.overview_progress() else {
         return;

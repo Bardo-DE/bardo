@@ -187,6 +187,10 @@ fn stop(cause: UtteranceEnd) -> (UtteranceState, Vec<UtteranceEffect>) {
 
 /// One transition. Total and pure.
 #[must_use]
+#[expect(
+    clippy::too_many_lines,
+    reason = "the utterance state machine: one arm per (state, event) pair"
+)]
 pub fn utterance_step(
     state: UtteranceState,
     event: UtteranceEvent,
@@ -286,10 +290,7 @@ pub fn utterance_step(
             S::Idle,
             vec![ended(UtteranceEnd::Heard { text, served }), E::Zeroize],
         ),
-        (S::Finishing, V::Finished(_)) => {
-            (S::Idle, vec![ended(UtteranceEnd::NothingHeard), E::Zeroize])
-        }
-        (S::Finishing, V::EndpointNoSpeech) => {
+        (S::Finishing, V::Finished(_) | V::EndpointNoSpeech) => {
             (S::Idle, vec![ended(UtteranceEnd::NothingHeard), E::Zeroize])
         }
         (_, V::Cancel(cause)) if active => stop(UtteranceEnd::Cancelled(cause)),

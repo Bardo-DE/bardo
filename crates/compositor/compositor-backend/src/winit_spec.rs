@@ -60,10 +60,10 @@ fn scale_of(factor: f64) -> Scale {
 
 /// A window's size in our words (a negative side is none).
 pub(crate) fn physical_of(size: Size<i32, Physical>) -> PhysicalSize {
-    let side = |n: i32| u32::try_from(n).unwrap_or(0);
+    let unsigned = |n: i32| u32::try_from(n).unwrap_or(0);
     PhysicalSize {
-        w: side(size.w),
-        h: side(size.h),
+        w: unsigned(size.w),
+        h: unsigned(size.h),
     }
 }
 

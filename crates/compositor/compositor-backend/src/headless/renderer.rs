@@ -409,9 +409,9 @@ where
     <R as RendererSuper>::TextureId: 'static,
 {
     let mut framebuffer = renderer.bind(target).map_err(renderer_fault)?;
-    let rendered = render_output(renderer, &mut framebuffer, tracker, elements, age.0)
+    let painted = render_output(renderer, &mut framebuffer, tracker, elements, age.0)
         .map_err(BackendError::from)?;
-    if rendered.damage.is_empty() {
+    if painted.damage.is_empty() {
         return Ok(Drawn::Unchanged);
     }
     let region = Rectangle::from_size(buffer_size(size)?);
@@ -419,7 +419,7 @@ where
         .copy_framebuffer(&framebuffer, region, Fourcc::Abgr8888)
         .map_err(renderer_fault)?;
     let bytes = renderer.map_texture(&mapping).map_err(renderer_fault)?;
-    Ok(Drawn::Pixels(rows_top_down(bytes, size), rendered.damage))
+    Ok(Drawn::Pixels(rows_top_down(bytes, size), painted.damage))
 }
 
 /// `bytes` as `size` rows of RGBA, top row first. The rows of a read-back come top first on

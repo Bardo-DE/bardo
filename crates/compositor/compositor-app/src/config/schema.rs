@@ -6,7 +6,7 @@ use super::sections::{
     PointerSection, SpacesSection, TouchpadSection, WindowsSection, XwaylandSection,
 };
 use std::path::Path;
-use ui_settings::schema::{AppId, FilePath, Schema, SettingsSchema};
+use ui_settings::schema::{AppId, FilePath, ForeignTables, Schema, SettingsSchema};
 
 /// The schema's version: bumped when a key's meaning changes, never for a new key.
 const VERSION: u16 = 1;
@@ -19,7 +19,7 @@ pub fn schema() -> Schema {
         app: AppId("compositor".to_owned()),
         file: FilePath("compositor/settings.toml".to_owned()),
         version: VERSION,
-        foreign: Default::default(),
+        foreign: ForeignTables::default(),
         key: [
             WindowsSection::schema(),
             SpacesSection::schema(),

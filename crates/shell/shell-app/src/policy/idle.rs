@@ -99,8 +99,8 @@ impl Policy for IdleBridge {
         }
     }
 
-    fn command(config: IdleConfig) -> IdleCommand {
-        IdleCommand::Configure(config)
+    fn command(out: IdleConfig) -> IdleCommand {
+        IdleCommand::Configure(out)
     }
 }
 

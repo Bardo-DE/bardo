@@ -46,7 +46,7 @@ fn step(state: &mut State, input: DwellInput) {
         ),
         DwellOutcome::Cancel => exec::exec(state, vec![Effect::CancelTimer(TimerKey::LightDwell)]),
         DwellOutcome::Show(on) => show(state, on),
-        _ => {}
+        DwellOutcome::Nothing => {}
     }
 }
 

@@ -1,6 +1,9 @@
 //! Shared by the acceptance scenarios: where the daemon binaries are, the cassettes the model
 //! plays, and a failure that prints the daemons' logs.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each scenario file of the one test binary uses some of these helpers, not all"
+)]
 
 use action_accept::world::{Binaries, Cassette, World};
 

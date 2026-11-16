@@ -136,6 +136,10 @@ mod tests {
             .map(|binding| binding.action.clone())
     }
 
+    #[expect(
+        clippy::unnecessary_wraps,
+        reason = "a test helper that builds the `Option` or `Result` a table row holds, so its callers read as rows"
+    )]
     fn launcher() -> Option<BindingAction> {
         Some(BindingAction::Spawn(Argv(
             ["bardo-shell", "launcher", "toggle"]

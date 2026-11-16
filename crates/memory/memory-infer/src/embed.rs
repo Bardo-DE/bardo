@@ -89,12 +89,14 @@ impl<T: Transport> InferdEmbedder<T> {
                 .open(&need_for(&self.card), class, Tier::Fast),
         )
         .await
-        .ok().ok_or(EmbedError::Unavailable)?
+        .ok()
+        .ok_or(EmbedError::Unavailable)?
         .map_err(transport_failure)?;
         let request = request_for(&self.card, class, texts, role, urgency);
         let reply = turn(&mut session, request, self.deadlines.turn)
             .await
-            .ok().ok_or(EmbedError::Unavailable)?;
+            .ok()
+            .ok_or(EmbedError::Unavailable)?;
         vectors_of(reply, texts.len(), &self.card)
     }
 }
@@ -138,6 +140,10 @@ fn fatal(why: impl Into<String>) -> EmbedError {
 }
 
 /// Why inferd would not run the request.
+#[expect(
+    clippy::match_same_arms,
+    reason = "the wildcard stands for reasons porter adds later (the enum is non-exhaustive); the named arms are the known ones"
+)]
 pub(crate) fn refusal(why: InferRefusal) -> EmbedError {
     match why {
         InferRefusal::Unavailable => EmbedError::Unavailable,
@@ -152,6 +158,10 @@ pub(crate) fn refusal(why: InferRefusal) -> EmbedError {
 }
 
 /// Why the model call failed.
+#[expect(
+    clippy::match_same_arms,
+    reason = "the wildcard stands for failures porter adds later (the enum is non-exhaustive); the named arms are the known ones"
+)]
 pub(crate) fn model_failure(why: ModelError) -> EmbedError {
     match why {
         ModelError::Unreachable | ModelError::NotReady => EmbedError::Unavailable,

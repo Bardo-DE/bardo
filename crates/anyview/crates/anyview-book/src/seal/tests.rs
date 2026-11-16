@@ -17,6 +17,10 @@ fn sealed(html: &str) -> Chapter {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of hostile inputs and what each must become"
+)]
 fn what_would_run_or_load_does_not_survive() {
     // name, html, text that must be absent
     const CASES: &[(&str, &str, &str)] = &[

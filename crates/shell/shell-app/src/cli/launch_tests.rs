@@ -22,6 +22,10 @@ fn timing() -> LaunchTiming {
     }
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "a test helper that builds the `Option` or `Result` a table row holds, so its callers read as rows"
+)]
 fn failure(kind: FailureKind) -> Result<Response, ClientError> {
     Ok(Response::Failed(Failure {
         kind,

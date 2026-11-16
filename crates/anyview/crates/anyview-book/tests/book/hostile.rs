@@ -6,6 +6,7 @@ use crate::support;
 
 use anyview_book::{BookError, Epub};
 use anyview_core::SectionIndex;
+use std::fmt::Write as _;
 use std::time::{Duration, Instant};
 use support::write_zip;
 
@@ -19,14 +20,15 @@ const CONTAINER: &str = r#"<?xml version="1.0"?>
 
 /// A package of `items` chapters in reading order, with the manifest's navigation document.
 fn big_package(items: usize) -> String {
-    let manifest: String = (0..items)
-        .map(|n| {
-            format!("<item id=\"c{n}\" href=\"c{n}.xhtml\" media-type=\"application/xhtml+xml\"/>")
-        })
-        .collect();
-    let spine: String = (0..items)
-        .map(|n| format!("<itemref idref=\"c{n}\"/>"))
-        .collect();
+    let mut manifest = String::new();
+    let mut spine = String::new();
+    for n in 0..items {
+        let _ = write!(
+            manifest,
+            "<item id=\"c{n}\" href=\"c{n}.xhtml\" media-type=\"application/xhtml+xml\"/>"
+        );
+        let _ = write!(spine, "<itemref idref=\"c{n}\"/>");
+    }
     format!(
         "<package xmlns=\"http://www.idpf.org/2007/opf\"><metadata/><manifest>\
          <item id=\"nav\" href=\"nav.xhtml\" media-type=\"application/xhtml+xml\" properties=\"nav\"/>\
@@ -35,9 +37,10 @@ fn big_package(items: usize) -> String {
 }
 
 fn big_nav(items: usize) -> String {
-    let entries: String = (0..items)
-        .map(|n| format!("<li><a href=\"c{n}.xhtml\">Chapter {n}</a></li>"))
-        .collect();
+    let mut entries = String::new();
+    for n in 0..items {
+        let _ = write!(entries, "<li><a href=\"c{n}.xhtml\">Chapter {n}</a></li>");
+    }
     format!("<html><body><nav><ol>{entries}</ol></nav></body></html>")
 }
 
@@ -129,10 +132,10 @@ fn parts_nested_past_the_parsers_stack_are_refused_on_a_small_stack() {
 
 /// One chapter that links `sheet` `links` times, in a package of one chapter.
 fn linking_book(dir: &std::path::Path, sheets: &[(&str, Vec<u8>)], links: &[&str]) -> Epub {
-    let head: String = links
-        .iter()
-        .map(|href| format!("<link rel=\"stylesheet\" href=\"{href}\"/>"))
-        .collect();
+    let mut head = String::new();
+    for href in links {
+        let _ = write!(head, "<link rel=\"stylesheet\" href=\"{href}\"/>");
+    }
     let chapter = format!("<html><head>{head}</head><body><p>x</p></body></html>");
     let package = big_package(1);
     let mut entries: Vec<(&str, &[u8])> = vec![

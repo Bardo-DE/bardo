@@ -193,7 +193,7 @@ impl ConfirmObject {
                         caller,
                         path,
                         reply,
-                    })
+                    });
                 });
                 self.sheet.held.notify_one();
                 return Ok(object);

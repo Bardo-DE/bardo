@@ -222,8 +222,7 @@ fn gesture<D>(words: &[&str], update: impl Fn(&[&str]) -> Option<D>) -> Option<G
         }),
         ["end"] => Some(GestureStep::End(false)),
         ["cancel"] => Some(GestureStep::End(true)),
-        ["update", tail @ ..] => update(tail).map(GestureStep::Update),
-        tail => update(tail).map(GestureStep::Update),
+        tail => update(tail.strip_prefix(&["update"]).unwrap_or(tail)).map(GestureStep::Update),
     }
 }
 

@@ -113,7 +113,7 @@ impl Hooks {
         }
         let asked = self.captures.try_iter().count() > 0;
         if asked && self.writeback_raw.is_some() {
-            self.request(tty);
+            Self::request(tty);
         }
         if let (Some(path), Some(done)) = (&self.writeback_raw, tty.take_writeback()) {
             match done {
@@ -131,7 +131,7 @@ impl Hooks {
     }
 
     /// Queues the job `SIGHUP` asked for.
-    fn request(&self, tty: &mut TtyBackend) {
+    fn request(tty: &mut TtyBackend) {
         match tty.request_writeback() {
             Ok(()) => {}
             Err(error @ (WritebackError::Busy | WritebackError::SeatLent)) => {
@@ -155,7 +155,9 @@ impl SignalHandler for Edge {
     fn paused(&mut self) {
         match self.link.paused(self.wait) {
             SleepSettled::Done | SleepSettled::Gone => {}
-            _ => tracing::warn!("the session was paused but the devices were not let go in time"),
+            SleepSettled::TimedOut => {
+                tracing::warn!("the session was paused but the devices were not let go in time")
+            }
         }
     }
 

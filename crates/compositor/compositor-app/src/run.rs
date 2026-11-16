@@ -298,6 +298,10 @@ fn attach_reload(handle: &smithay::reexports::calloop::LoopHandle<'static, State
 /// Starts the compositor, listens for clients, and runs the event loop: a turn dispatches
 /// what is ready, drains queued input into the model, reads the nested window if there is
 /// one, answers the debug object, and flushes every client.
+#[expect(
+    clippy::too_many_lines,
+    reason = "the start-up sequence of the compositor: each step needs the ones before it"
+)]
 fn serve(config: RunConfig) -> Result<(), RunError> {
     let RunConfig {
         start,
@@ -319,7 +323,7 @@ fn serve(config: RunConfig) -> Result<(), RunError> {
     let system_dir = start.system_dir.clone();
     let tty_mode = start.tty.clone();
     let xwayland_config = start.xwayland.clone();
-    let mut state = State::new(start, &mut display, &handle)?;
+    let mut state = State::new(&start, &mut display, &handle)?;
     state.seams.notify = Box::new(SocketNotify::new(notify));
     // The run's own spawner is the one that may use scopes; a seam a test injected is kept.
     if scopes.is_some() {
@@ -380,7 +384,7 @@ fn serve(config: RunConfig) -> Result<(), RunError> {
     // The vkms test mode has no logind: its pause and return are signals instead.
     let _sleep = match &tty_mode {
         cli::TtyMode::Seat => crate::suspend::attach(&mut state, sleep_bus),
-        _ => None,
+        cli::TtyMode::Direct(_) => None,
     };
     let mut hooks = TestHooks::attach(&mut state, &tty_mode)?;
     core_loop::announce_outputs(&mut state);

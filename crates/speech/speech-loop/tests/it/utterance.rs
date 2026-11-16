@@ -43,6 +43,10 @@ type Row = (
 );
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of utterance states and events, one row per case"
+)]
 fn utterance_table() {
     let tail = HeardTail {
         text: HeardText("hel".into()),

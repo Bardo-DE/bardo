@@ -75,6 +75,10 @@ fn restore_call(session: &provenance::SessionId, point: i64, plan: &str) -> Call
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a test that builds one long scenario, read top to bottom"
+)]
 async fn a_turn_saves_a_point_and_the_person_restores_it_after_the_plan_and_the_sheet() {
     if !git_is_here() {
         return;

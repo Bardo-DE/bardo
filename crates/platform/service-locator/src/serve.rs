@@ -31,7 +31,10 @@ pub type Stream = interprocess::local_socket::Stream;
 /// socket.
 #[cfg(unix)]
 pub fn into_fd(stream: Stream) -> std::io::Result<std::os::fd::OwnedFd> {
-    #[allow(unreachable_patterns)]
+    #[allow(
+        unreachable_patterns,
+        reason = "the other `Stream` variants exist only on other platforms; where they do not, the wildcard is unreachable"
+    )]
     match stream {
         Stream::UdSocket(socket) => Ok(socket.inner().try_clone()?.into()),
         _ => Err(std::io::Error::new(

@@ -37,8 +37,8 @@ impl Policy for ClipboardBridge {
         clip_policy_of(&file.launcher)
     }
 
-    fn command(policy: ClipPolicy) -> ClipboardCommand {
-        ClipboardCommand::Policy(policy)
+    fn command(out: ClipPolicy) -> ClipboardCommand {
+        ClipboardCommand::Policy(out)
     }
 }
 

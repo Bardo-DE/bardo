@@ -118,7 +118,8 @@ mod tests {
 
     /// A fixed source preferring the portal's `color-scheme` `code`.
     fn fixed(code: u32) -> SystemPrefsSource {
-        let mut source = SystemPrefsSource::Fixed(Default::default());
+        let mut source =
+            SystemPrefsSource::Fixed(ui_style::appearance::system::SystemPrefs::default());
         if let SystemPrefsSource::Fixed(prefs) = &mut source {
             prefs.scheme = scheme_from_portal(code);
         }

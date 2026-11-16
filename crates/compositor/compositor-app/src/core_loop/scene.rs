@@ -218,6 +218,10 @@ pub(super) enum Hit {
 /// dock an edge reveal raised, full-screen windows, top layers, the other windows by stacking (the
 /// sampled frame's, top first), bottom then background layers; each root is preceded by its
 /// popups. Each with where its top-left is in global logical pixels.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one pass that builds the hit-test stack layer by layer"
+)]
 pub(super) fn stack(state: &State) -> Vec<(Hit, Candidate)> {
     let model = &state.core.model;
     let book = &state.render.textures;

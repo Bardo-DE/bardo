@@ -8,6 +8,7 @@
 
 use crate::shape::pattern::{Syntax, gbnf_literal, int_range};
 use crate::{Shape, ShapeFault};
+use std::fmt::Write as _;
 
 const UNROLL_MAX: u32 = 256;
 
@@ -36,11 +37,10 @@ impl Shape {
     pub(crate) fn gbnf_text(&self) -> Result<String, ShapeFault> {
         let mut rules = Rules::default();
         let root = rules.expr(self)?;
-        let body: String = rules
-            .defs
-            .iter()
-            .map(|(name, expr)| format!("{name} ::= {expr}\n"))
-            .collect();
+        let mut body = String::new();
+        for (name, expr) in &rules.defs {
+            let _ = writeln!(body, "{name} ::= {expr}");
+        }
         Ok(format!("root ::= {root}\n{PRELUDE}{body}"))
     }
 }

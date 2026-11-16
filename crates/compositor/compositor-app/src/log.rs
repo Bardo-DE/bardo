@@ -32,12 +32,9 @@ mod tests {
     struct Capture(Arc<Mutex<Vec<u8>>>);
 
     impl std::io::Write for Capture {
-        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
-            self.0
-                .lock()
-                .expect("not poisoned")
-                .extend_from_slice(bytes);
-            Ok(bytes.len())
+        fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+            self.0.lock().expect("not poisoned").extend_from_slice(buf);
+            Ok(buf.len())
         }
 
         fn flush(&mut self) -> std::io::Result<()> {

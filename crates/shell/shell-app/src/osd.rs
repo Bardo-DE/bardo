@@ -40,16 +40,16 @@ pub fn osd_outputs(
         .iter()
         .filter_map(|info| Some((OutputName(info.name.clone()?), info.id)))
         .collect();
-    let names: Vec<OutputName> = named.iter().map(|(name, _)| name.clone()).collect();
+    let all_names: Vec<OutputName> = named.iter().map(|(name, _)| name.clone()).collect();
     let id_of = |name: &OutputName| named.iter().find(|(n, _)| n == name).map(|(_, id)| *id);
     match kind {
-        OsdKind::Volume => targets(KeysTarget::PointerOutput, focus, &names)
+        OsdKind::Volume => targets(KeysTarget::PointerOutput, focus, &all_names)
             .into_iter()
             .filter_map(id_of)
             .chain(outputs.first().map(|info| info.id))
             .take(1)
             .collect(),
-        OsdKind::Brightness => targets(keys, focus, &names)
+        OsdKind::Brightness => targets(keys, focus, &all_names)
             .into_iter()
             .filter(|name| level.is_some() || displays.brightness(&displays.target(name)).is_some())
             .filter_map(id_of)

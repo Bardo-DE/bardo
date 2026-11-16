@@ -21,7 +21,8 @@ pub fn chord(reach: &Reach, step: SwitcherStep) -> Response {
 pub fn ask(reach: &Reach, ask: SwitcherAsk) -> Response {
     match reach.outputs.open_on::<Switcher>(reach.services) {
         Some(output) => {
-            reach.links.switcher.ask(output, ask);
+            // The serial tells a caller which ask answered; this one only wants it asked.
+            let _ = reach.links.switcher.ask(output, ask);
             Response::Done
         }
         None => unsupported("no output has a switcher surface"),

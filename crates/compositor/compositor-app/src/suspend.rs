@@ -21,7 +21,9 @@ impl SleepHandler for Linked {
     fn starting(&mut self) {
         match self.0.paused(LET_GO_WITHIN) {
             SleepSettled::Done | SleepSettled::Gone => {}
-            _ => tracing::warn!("the displays were not given back before the sleep"),
+            SleepSettled::TimedOut => {
+                tracing::warn!("the displays were not given back before the sleep")
+            }
         }
     }
 

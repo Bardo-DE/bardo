@@ -98,7 +98,10 @@ pub(crate) fn connect(at: &Address) -> Result<Option<Stream>, Error> {
 /// (`SO_PEERCRED`) before anything is sent. Linux only: other Unixes keep the directory check.
 #[cfg(target_os = "linux")]
 fn same_owner(stream: &Stream, endpoint: &Endpoint) -> Result<(), Error> {
-    #[allow(unreachable_patterns)]
+    #[allow(
+        unreachable_patterns,
+        reason = "the other `Stream` variants exist only on other platforms; where they do not, the wildcard is unreachable"
+    )]
     match stream {
         Stream::UdSocket(socket) => {
             let peer = rustix::net::sockopt::socket_peercred(socket.inner()).map_err(|e| {

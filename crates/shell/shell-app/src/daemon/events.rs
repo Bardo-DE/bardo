@@ -39,7 +39,7 @@ use shell_ui_kit::shell_motion::shell_motion;
 #[derive(Debug)]
 pub struct Shell {
     pub outputs: Outputs,
-    pub shell_lock: crate::lock::ShellLock,
+    pub lock: crate::lock::ShellLock,
     pub services: Services,
     pub settings_feed: SettingsFeed,
     /// The settings file's store.
@@ -146,7 +146,7 @@ pub fn handle(shell: &mut Shell, ctx: &mut HostCtx<ShellMsg>, event: HostEvent<S
 /// the person's own command would be. None while the lock screen is up (palmrest drops them then
 /// too).
 fn palmrest_ask(shell: &mut Shell, ctx: &mut HostCtx<ShellMsg>, ask: &PalmrestAction) {
-    if shell.shell_lock.id.is_some() {
+    if shell.lock.id.is_some() {
         return;
     }
     match palmrest::plan(ask) {
@@ -213,7 +213,7 @@ fn reached<T>(
 fn apply_lock(shell: &mut Shell, ctx: &mut HostCtx<ShellMsg>, wish: crate::lock::LockWish) {
     let Shell {
         outputs,
-        shell_lock,
+        lock,
         services,
         settings_feed,
         links,
@@ -222,7 +222,7 @@ fn apply_lock(shell: &mut Shell, ctx: &mut HostCtx<ShellMsg>, wish: crate::lock:
     } = shell;
     crate::lock::apply(
         ctx,
-        shell_lock,
+        lock,
         wish,
         || surfaces::lock_factory(services, settings_feed, links, &settings.borrow()),
         &links.lock,
@@ -238,7 +238,7 @@ fn apply_lock(shell: &mut Shell, ctx: &mut HostCtx<ShellMsg>, wish: crate::lock:
 fn host_event(shell: &mut Shell, ctx: &mut HostCtx<ShellMsg>, event: HostEvent<ShellMsg>) {
     crate::lock::on_host_event(
         ctx,
-        &mut shell.shell_lock,
+        &mut shell.lock,
         &event,
         &shell.links.lock,
         &shell.services,
@@ -366,6 +366,10 @@ fn rescan_displays(services: &Services, event: &HostEvent<ShellMsg>) {
 /// The host event handler: outputs come and go, surfaces closed by the compositor are noted for
 /// respawning, and a settled settings change resizes the bar. The events that need the services
 /// or the lock's state are answered by [`handle`] and [`host_event`].
+#[expect(
+    clippy::match_same_arms,
+    reason = "each of these events is ignored for its own reason, given in the comment on its arm"
+)]
 fn on_event(ctx: &mut HostCtx<ShellMsg>, outputs: &mut Outputs, event: HostEvent<ShellMsg>) {
     match event {
         HostEvent::Started

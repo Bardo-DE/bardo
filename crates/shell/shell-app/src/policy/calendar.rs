@@ -28,8 +28,8 @@ impl Policy for CalendarBridge {
         sources_of(file, &self.home)
     }
 
-    fn command(sources: EventSources) -> EventsCommand {
-        EventsCommand::Sources(sources)
+    fn command(out: EventSources) -> EventsCommand {
+        EventsCommand::Sources(out)
     }
 }
 

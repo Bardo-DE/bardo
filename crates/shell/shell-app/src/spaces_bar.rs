@@ -119,8 +119,8 @@ impl Outgoing for SpacesBarLink {
         self.subscribe_picks()
     }
 
-    fn commands(picked: &SpacesBarPicked) -> Vec<DesktopCommand> {
-        commands_of(&picked.item)
+    fn commands(sent: &SpacesBarPicked) -> Vec<DesktopCommand> {
+        commands_of(&sent.item)
     }
 }
 

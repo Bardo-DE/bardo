@@ -14,7 +14,9 @@ pub(super) fn set_gamma(state: &mut State, output: &OutputKey, ramp: GammaRamp) 
     match &mut state.backend {
         BackendKind::Headless(backend) => backend.set_gamma(&name, ramp),
         BackendKind::Tty(tty) => load(tty, &name, &ramp),
-        _ => tracing::debug!(output = %name.as_str(), "this backend has no gamma to drive"),
+        BackendKind::Winit(_) => {
+            tracing::debug!(output = %name.as_str(), "this backend has no gamma to drive")
+        }
     }
 }
 

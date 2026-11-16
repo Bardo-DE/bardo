@@ -104,8 +104,8 @@ pub fn spawn_look_watch(
     if let WatchState::Blind { reason } = file.state() {
         eprintln!("bardo-shell: watching the extensions list: {reason}");
     }
-    let (touched, mut touches) = mpsc::unbounded_channel();
-    let watcher = watch_folders(search, touched);
+    let (signal, mut touches) = mpsc::unbounded_channel();
+    let watcher = watch_folders(search, signal);
     runtime.spawn(async move {
         // Dropping the watcher ends the folder watch; it lives as long as this task.
         let _folders = watcher;

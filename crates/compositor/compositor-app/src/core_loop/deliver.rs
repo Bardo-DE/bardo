@@ -406,9 +406,8 @@ fn deliver_key(state: &mut State, seat: &Seat<State>, key: KeyDelivery) {
             state.wl.seat.taken = std::mem::take(&mut state.wl.seat.taken).take_key(key.code);
             carry_out(state, &action);
         }
-        Ok(Some(None)) => {}
         Ok(None) if key.edge == PressEdge::Press => remember_key_press(state, seat, &key),
-        Ok(None) => {}
+        Ok(Some(None) | None) => {}
         Err(fault) => tracing::warn!(%fault, "a key delivery failed"),
     }
     tell_shell_modifiers(state, seat);
@@ -788,6 +787,8 @@ fn deliver_press(
     event: &InputEvent,
     window: compositor_core::WindowId,
 ) -> bool {
+    use compositor_core::focus::PressRoute as Route;
+
     let mods = seat.get_keyboard().map_or(HeldMods::NONE, |keyboard| {
         held_mods(&keyboard.modifier_state())
     });
@@ -803,7 +804,6 @@ fn deliver_press(
         _ => None,
     });
     exec::exec(state, effects);
-    use compositor_core::focus::PressRoute as Route;
     !matches!(
         route,
         Some(Route::ActivateRaiseSwallow | Route::SwallowWithBell | Route::MoveWithoutActivation)

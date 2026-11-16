@@ -147,7 +147,7 @@ impl Layer {
     ) -> Result<Vec<PhysicalRect>, BackendError> {
         let elements = source.gles(renderer);
         let mut framebuffer = renderer.bind(&mut self.texture)?;
-        let rendered = render_output(
+        let painted = render_output(
             renderer,
             &mut framebuffer,
             &mut self.tracker,
@@ -155,7 +155,7 @@ impl Layer {
             self.age,
         )?;
         self.age = 1;
-        Ok(rendered.damage)
+        Ok(painted.damage)
     }
 }
 

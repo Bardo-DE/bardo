@@ -30,8 +30,8 @@ impl Policy for ScreenshotsBridge {
         policy_of(file, &self.home)
     }
 
-    fn command(policy: ShotPolicy) -> ShotCommand {
-        ShotCommand::Configure(policy)
+    fn command(out: ShotPolicy) -> ShotCommand {
+        ShotCommand::Configure(out)
     }
 }
 #[cfg(test)]

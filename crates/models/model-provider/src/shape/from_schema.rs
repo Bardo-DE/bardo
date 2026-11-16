@@ -136,9 +136,9 @@ impl Node {
             return Err(refuse(Refused::TooDeep));
         }
         let mut map = map.clone();
-        ANNOTATIONS.iter().for_each(|k| {
+        for k in ANNOTATIONS {
             map.remove(*k);
-        });
+        }
         Ok(Node {
             map,
             at,
@@ -203,10 +203,12 @@ impl Shape {
         schema: &SchemaText,
         limits: SchemaLimits,
     ) -> Result<Shape, SchemaRefusal> {
-        let value: Value = serde_json::from_str(schema.0.as_str()).ok().ok_or_else(|| SchemaRefusal {
-            at: SchemaPath(String::new()),
-            why: Refused::NotJson,
-        })?;
+        let value: Value = serde_json::from_str(schema.0.as_str())
+            .ok()
+            .ok_or_else(|| SchemaRefusal {
+                at: SchemaPath(String::new()),
+                why: Refused::NotJson,
+            })?;
         read(Node::open(&value, String::new(), limits.depth.0, limits)?)
     }
 }

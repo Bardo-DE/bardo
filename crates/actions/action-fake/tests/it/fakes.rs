@@ -213,7 +213,7 @@ fn review_request() -> action_review::ReviewRequest {
             lasting: Lasting::No,
         },
         labels: ArgLabels {
-            per_arg: Default::default(),
+            per_arg: std::collections::BTreeMap::default(),
             planner: Integrity::Trusted,
             saw: SessionSaw {
                 private: false,
@@ -266,6 +266,8 @@ async fn the_scripted_reviewer_counts_its_calls_and_follows_its_queue() {
 
 #[tokio::test]
 async fn the_scripted_confirmer_pops_in_order_and_records_requests() {
+    use action_core::Confirmer;
+
     let receipt = |n: &str| provenance::ConfirmReceipt {
         id: ConfirmId::parse(n).expect("id"),
         input: provenance::InputProof::SheetFallback,
@@ -293,7 +295,7 @@ async fn the_scripted_confirmer_pops_in_order_and_records_requests() {
         why: vec![],
         taint: TaintNote::Clean,
         offer: ConfirmOffer::OnceOnly,
-        always: Default::default(),
+        always: permission_core::AlwaysOffer::default(),
         limits: SheetLimits::default(),
         gesture: Gesture::Press,
         anchor: Anchor::Centre,
@@ -302,7 +304,6 @@ async fn the_scripted_confirmer_pops_in_order_and_records_requests() {
         helper: None,
         brief: None,
     };
-    use action_core::Confirmer;
     assert!(matches!(
         confirmer.confirm(request("c-1")).await,
         ConfirmAnswer::Allowed { .. }

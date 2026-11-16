@@ -120,7 +120,7 @@ pub fn press_in(events: &[Event], stamp_of: impl Fn(&InputEvent) -> Stamp) -> Op
 pub fn cause_of(feed: FeedKind, press: Option<Press>, now: Stamp) -> (KeyCause, Stamp) {
     let within = |window: Duration| press.filter(|press| now.within(press.at, window));
     match (feed, within(DIRECT_WINDOW), within(REQUEST_WINDOW)) {
-        (FeedKind::Structural, _, _) => (KeyCause::Other, Stamp::NONE),
+        (FeedKind::Structural, _, _) | (FeedKind::Plain, None, _) => (KeyCause::Other, Stamp::NONE),
         (FeedKind::Request, _, press) => (KeyCause::Request, press.map_or(Stamp::NONE, |p| p.at)),
         (
             FeedKind::Plain,
@@ -138,7 +138,6 @@ pub fn cause_of(feed: FeedKind, press: Option<Press>, now: Stamp) -> (KeyCause, 
             }),
             _,
         ) => (KeyCause::Pointer, at),
-        (FeedKind::Plain, None, _) => (KeyCause::Other, Stamp::NONE),
     }
 }
 

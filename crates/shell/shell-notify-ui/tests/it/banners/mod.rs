@@ -194,7 +194,9 @@ fn a_banner_slides_in_holds_and_times_out() {
     assert_eq!(h.count("#banner-1"), 1, "the whole card's id");
     // The hold starts once the card has risen, a `FRAME_SLACK` after it was shown.
     let leaves = shown + FRAME_SLACK + Duration::from_millis(HOLD_MS);
-    let before = leaves - running.harness.now() - Duration::from_millis(1);
+    let before = leaves
+        .saturating_sub(running.harness.now())
+        .saturating_sub(Duration::from_millis(1));
     running.harness.advance(before);
     assert_eq!(
         leaving(&running),

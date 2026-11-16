@@ -32,7 +32,7 @@ impl Outgoing for ForceQuitLink {
         self.subscribe_asked()
     }
 
-    fn commands(asked: &ForceQuitAsked) -> Vec<DesktopCommand> {
-        vec![command_of(asked)]
+    fn commands(sent: &ForceQuitAsked) -> Vec<DesktopCommand> {
+        vec![command_of(sent)]
     }
 }

@@ -10,7 +10,7 @@
 //! output's surface is mapped at once when the service is dimming ([`crate::daemon::surfaces`]
 //! calls [`apply`] after spawning).
 
-use layer_shell_host::{HostCtx, HostHandle, Visibility};
+use layer_shell_host::{HostCtx, HostHandle};
 use shell_model::idle::DimShown;
 use shell_overlays::IdleDim;
 use shell_overlays::idle_dim::visibility_of;
@@ -23,7 +23,7 @@ use crate::outputs::Outputs;
 
 /// Map every dim surface while `dim` dims, and unmap them all when it clears.
 pub fn apply(ctx: &mut HostCtx<ShellMsg>, outputs: &Outputs, dim: DimShown) {
-    let visibility: Visibility = visibility_of(dim);
+    let visibility = visibility_of(dim);
     for surface in outputs
         .outputs
         .iter()

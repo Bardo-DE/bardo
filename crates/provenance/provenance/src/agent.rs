@@ -37,8 +37,9 @@ impl AgentRef {
             Actor::User { .. } => Some(AgentRef::User),
             Actor::Companion { role, .. } => Some(match role {
                 AgentRole::Planner | AgentRole::Reader => AgentRef::Companion,
-                AgentRole::Worker { task } => AgentRef::Worker { task: task.clone() },
-                AgentRole::Helper { task, .. } => AgentRef::Worker { task: task.clone() },
+                AgentRole::Worker { task } | AgentRole::Helper { task, .. } => {
+                    AgentRef::Worker { task: task.clone() }
+                }
                 AgentRole::Cua { run } => AgentRef::Cua { run: run.clone() },
             }),
             Actor::Mcp { .. }

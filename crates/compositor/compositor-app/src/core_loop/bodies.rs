@@ -240,9 +240,9 @@ mod tests {
     }
 
     fn body(id: u64, side: u32) -> ClosingBody {
-        let size = PhysicalSize { w: side, h: side };
+        let extent = PhysicalSize { w: side, h: side };
         let bytes = vec![0; (side * side * 4) as usize];
-        ClosingBody::from_rgba(id, size, &bytes, (0, Scale(120))).expect("a body")
+        ClosingBody::from_rgba(id, extent, &bytes, (0, Scale(120))).expect("a body")
     }
 
     #[test]

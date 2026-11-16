@@ -814,7 +814,7 @@ impl TtyBackend {
             match item {
                 FedInput::Appeared(device) => self.present.appeared(device.id, device.class),
                 FedInput::Gone(id) => self.present.gone(*id),
-                _ => {}
+                FedInput::Event(_) => {}
             }
         }
         fed

@@ -53,6 +53,10 @@ fn need() -> Need {
     Need::Llm(LlmNeed::new(BTreeSet::from([LlmFeature::Chat]), CONTEXT))
 }
 
+#[expect(
+    clippy::match_same_arms,
+    reason = "the wildcard stands for reasons porter adds later (the enum is non-exhaustive); the named arms are the known ones"
+)]
 fn refusal(why: InferRefusal) -> ConsolidateError {
     match why {
         InferRefusal::Unavailable
@@ -66,6 +70,10 @@ fn refusal(why: InferRefusal) -> ConsolidateError {
     }
 }
 
+#[expect(
+    clippy::match_same_arms,
+    reason = "the wildcard stands for failures porter adds later (the enum is non-exhaustive); the named arms are the known ones"
+)]
 fn failure(why: ModelError) -> ConsolidateError {
     match why {
         ModelError::RateLimited(_) => ConsolidateError::Busy,
@@ -99,8 +107,10 @@ impl<T: Transport> Consolidator for InferdConsolidator<T> {
             self.transport.open(&need(), class, Tier::Balanced),
         )
         .await
-        .ok().ok_or(ConsolidateError::Unavailable)?
-        .ok().ok_or(ConsolidateError::Unavailable)?;
+        .ok()
+        .ok_or(ConsolidateError::Unavailable)?
+        .ok()
+        .ok_or(ConsolidateError::Unavailable)?;
         let request = InferRequest::Task(TaskRequest::new(
             Task::Extract,
             render_prompt(&input),
@@ -109,7 +119,8 @@ impl<T: Transport> Consolidator for InferdConsolidator<T> {
         ));
         match turn(&mut session, request, self.deadlines.turn)
             .await
-            .ok().ok_or(ConsolidateError::Unavailable)?
+            .ok()
+            .ok_or(ConsolidateError::Unavailable)?
         {
             InferReply::Chat(reply) => parse_draft(&reply.text, &input),
             InferReply::Refused(why) => Err(refusal(why)),

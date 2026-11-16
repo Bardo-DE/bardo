@@ -210,12 +210,12 @@ impl State {
     /// Returns [`StartError`] when the settings, the globals, the backend or the clock cannot be
     /// started.
     pub fn new(
-        config: StartConfig,
+        config: &StartConfig,
         display: &mut Display<State>,
         event_loop: &LoopHandle<'static, State>,
     ) -> Result<State, StartError> {
         let seams = Seams::real(config.state_home.as_ref(), &config.system_dir);
-        State::with_seams(&config, seams, display, event_loop)
+        State::with_seams(config, seams, display, event_loop)
     }
 
     /// The same with these seams (the test kit injects its fakes here).
@@ -223,6 +223,10 @@ impl State {
     /// # Errors
     ///
     /// Returns [`StartError`] when the globals, the backend or the clock cannot be started.
+    #[expect(
+        clippy::too_many_lines,
+        reason = "one struct literal of every global and part of the state, in start-up order"
+    )]
     pub fn with_seams(
         config: &StartConfig,
         mut seams: Seams,

@@ -85,10 +85,10 @@ pub fn spawn_follower(rt: &Handle, services: &Services, host: HostHandle<ShellMs
         let mut latch = Latch::default();
         let mut sent = None;
         loop {
-            let (next, wish, send) = follow(latch, *lock.borrow_and_update(), &auth.borrow_and_update());
+            let (next, wish, how) = follow(latch, *lock.borrow_and_update(), &auth.borrow_and_update());
             latch = next;
             if sent != Some(wish) {
-                let settled = match send {
+                let settled = match how {
                     Send::Now => Changed::No,
                     Send::AfterBackstop => {
                         tokio::select! {

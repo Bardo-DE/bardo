@@ -116,6 +116,10 @@ mod tests {
     use crate::cli::{self, Command};
     use std::path::PathBuf;
 
+    #[expect(
+        clippy::unnecessary_wraps,
+        reason = "a test helper that builds the `Option` or `Result` a table row holds, so its callers read as rows"
+    )]
     fn at(dir: &str) -> Option<StateDirs> {
         Some(StateDirs::at(PathBuf::from(dir)))
     }

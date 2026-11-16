@@ -74,7 +74,7 @@ impl std::fmt::Debug for ShellSeat {
         f.debug_struct("ShellSeat")
             .field("linked", &self.link.is_some())
             .field("running", &self.arm.is_some())
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 

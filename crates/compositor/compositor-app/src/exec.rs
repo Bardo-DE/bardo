@@ -335,7 +335,7 @@ fn apply_output(state: &mut State, output: &OutputKey, config: &OutputConfig) {
             None
         }
         compositor_backend::BackendKind::Tty(tty) => lit_on_tty(tty, &facts.name, config, now),
-        _ => None,
+        compositor_backend::BackendKind::Winit(_) => None,
     };
     // A display that refused the mode asked for is lit at another: everything below, and the
     // model after it, go by the mode it is really at.

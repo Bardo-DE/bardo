@@ -281,7 +281,6 @@ fn shown(card: Card, input: ThumbIn, params: ThumbParams) -> (ThumbState, Vec<Th
             card.leave(ShotLeave::Kept, ThumbExit::Card)
         }
         (ThumbIn::PointerEnter, Pointer::Away) => resumed(Pointer::Over, keys_held),
-        (ThumbIn::PointerLeave, Pointer::Over) => resumed(Pointer::Away, keys_held),
         (ThumbIn::DragStarted(dragged), Pointer::Away | Pointer::Over) if dragged == id => {
             resumed(Pointer::Dragging, keys_held)
         }
@@ -291,7 +290,9 @@ fn shown(card: Card, input: ThumbIn, params: ThumbParams) -> (ThumbState, Vec<Th
             DragEnd::Cancelled | DragEnd::Refused => resumed(Pointer::Away, keys_held),
         },
         // The drag of a shot since replaced: over, whatever became of it, so the hold resumes.
-        (ThumbIn::DragEnded(..), Pointer::Dragging) => resumed(Pointer::Away, keys_held),
+        (ThumbIn::PointerLeave, Pointer::Over) | (ThumbIn::DragEnded(..), Pointer::Dragging) => {
+            resumed(Pointer::Away, keys_held)
+        }
         (ThumbIn::Click, Pointer::Away | Pointer::Over) => {
             card.leave(ShotLeave::Opened, ThumbExit::Card)
         }

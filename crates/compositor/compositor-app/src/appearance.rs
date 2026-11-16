@@ -91,7 +91,7 @@ fn stored_in(home: Option<&Path>) -> Stored {
 pub fn blur_finish(transparency: Transparency, scheme: Scheme) -> BlurFinish {
     match transparency {
         Transparency::Reduced => BlurFinish::Solid(Rgba8::from(reduced_stand_in(scheme))),
-        _ => BlurFinish::Frosted,
+        Transparency::System => BlurFinish::Frosted,
     }
 }
 
@@ -105,6 +105,10 @@ pub fn blur_finish(transparency: Transparency, scheme: Scheme) -> BlurFinish {
 /// assert_eq!(system_source(None), SystemPrefsSource::Portal);
 /// ```
 #[must_use]
+#[expect(
+    clippy::default_trait_access,
+    reason = "compositor-app has no dependency on ui-style, so `SystemPrefs` cannot be named here"
+)]
 pub fn system_source(home: Option<&Path>) -> SystemPrefsSource {
     match home {
         None => SystemPrefsSource::Portal,
@@ -126,7 +130,7 @@ pub fn resolve(theme: Theme, system: Scheme) -> Scheme {
     match theme {
         Theme::System => system,
         Theme::Dark => Scheme::Dark,
-        _ => Scheme::Light,
+        Theme::Light => Scheme::Light,
     }
 }
 
@@ -417,6 +421,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::default_trait_access,
+        reason = "compositor-app has no dependency on ui-style, so `SystemPrefs` cannot be named here"
+    )]
     fn a_stand_in_home_never_reaches_a_bus() {
         let jail = Path::new("/nonexistent/casement-jail");
         assert_eq!(

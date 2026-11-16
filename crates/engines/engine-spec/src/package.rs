@@ -27,8 +27,7 @@ impl PackageManager {
     #[must_use]
     pub fn install_args(self) -> &'static [&'static str] {
         match self {
-            Self::Apt => &["install", "-y"],
-            Self::Dnf => &["install", "-y"],
+            Self::Apt | Self::Dnf => &["install", "-y"],
             Self::Pacman => &["-S", "--noconfirm", "--needed"],
         }
     }

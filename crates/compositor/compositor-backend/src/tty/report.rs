@@ -13,6 +13,7 @@ use super::{SeatState, TtyBackend};
 use compositor_core::OutputName;
 use compositor_core::output::Mode;
 use compositor_core::time::Mono;
+use std::fmt::Write as _;
 use std::time::Duration;
 
 /// How often the report is written.
@@ -82,7 +83,7 @@ impl KmsReport {
         let seat = match self.seat {
             SeatState::Held => "held",
             SeatState::Gone => "gone",
-            _ => "lent",
+            SeatState::Lent => "lent",
         };
         let outputs: Vec<String> = self.outputs.iter().map(output_json).collect();
         format!(
@@ -115,7 +116,9 @@ fn json_string(text: &str) -> String {
         match c {
             '"' => out.push_str("\\\""),
             '\\' => out.push_str("\\\\"),
-            c if u32::from(c) < 0x20 => out.push_str(&format!("\\u{:04x}", u32::from(c))),
+            c if u32::from(c) < 0x20 => {
+                let _ = write!(out, "\\u{:04x}", u32::from(c));
+            }
             c => out.push(c),
         }
     }

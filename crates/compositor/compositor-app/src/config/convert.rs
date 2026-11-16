@@ -246,7 +246,7 @@ pub(super) fn gpu_doc(core: &GpuSettings) -> GpuSection {
     GpuSection {
         render: match &core.render {
             GpuChoice::ByPath(id) => id.as_str().to_owned(),
-            _ => AUTO.to_owned(),
+            GpuChoice::Auto => AUTO.to_owned(),
         },
     }
 }

@@ -10,7 +10,9 @@ use crate::{FieldName, JsonText, Shape, ShapeFault, ShapeKind};
 
 impl Shape {
     pub(crate) fn check_json(&self, json: &JsonText) -> Result<(), ShapeFault> {
-        let value: Value = serde_json::from_str(json.as_str()).ok().ok_or(ShapeFault::NotJson)?;
+        let value: Value = serde_json::from_str(json.as_str())
+            .ok()
+            .ok_or(ShapeFault::NotJson)?;
         self.check_value(&value, &root())
     }
 
@@ -21,9 +23,8 @@ impl Shape {
         };
         match (self, value) {
             (Shape::Optional(_), Value::Null) => Ok(()),
-            (Shape::Optional(inner), _) => inner.check_value(value, at),
             (Shape::OrHandle(_), Value::Object(map)) if is_handle(map) => Ok(()),
-            (Shape::OrHandle(inner), _) => inner.check_value(value, at),
+            (Shape::Optional(inner) | Shape::OrHandle(inner), _) => inner.check_value(value, at),
             (Shape::Choice(choices), Value::String(text)) => choices
                 .iter()
                 .any(|c| &c.0 == text)

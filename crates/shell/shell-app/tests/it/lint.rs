@@ -463,7 +463,7 @@ fn switcher_states() -> Vec<(&'static str, String)> {
     });
     switcher.harness.advance(Duration::from_millis(40));
     let hidden = switcher.harness.html();
-    switcher
+    let _ = switcher
         .link
         .ask(fake::output().id, SwitcherAsk::Chord(Dir::Next));
     switcher.harness.advance(Duration::from_millis(260));

@@ -46,7 +46,10 @@ struct Ghost {
 }
 
 /// The icon surface's size: the ghost at its tallest.
-#[expect(clippy::cast_possible_wrap, reason = "the ghost sizes are small constants")]
+#[expect(
+    clippy::cast_possible_wrap,
+    reason = "the ghost sizes are small constants"
+)]
 pub fn ghost_size() -> Size {
     let inner = GHOST_WIDTH - 2 * GHOST_MAT;
     Size {
@@ -70,7 +73,8 @@ pub fn ghost_icon(picture: &ThumbPicture, look: GhostLook) -> DragIcon {
 
 /// The icon document: a transparent Toast root holding the ghost.
 fn ghost_root(ghost: Ghost) -> Element {
-    ui_blitz::provide_host();
+    // Called for the document host it provides to this component, not for the handle.
+    let _ = ui_blitz::provide_host();
     let look = ghost.look;
     rsx! {
         Ds {

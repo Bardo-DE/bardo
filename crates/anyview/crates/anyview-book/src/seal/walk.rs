@@ -10,6 +10,7 @@ use super::entities::{decode, escape};
 use super::tokens::{Token, tokens};
 use crate::zip_path::{directory_of, resolve};
 use std::collections::{HashMap, HashSet};
+use std::fmt::Write as _;
 
 /// The most elements left open at once. Past it a tag is dropped and its text kept, so a chapter
 /// of unclosed tags cannot make a page of millions of levels.
@@ -49,7 +50,7 @@ pub(super) fn seal(html: &str, directory: &str, assets: &dyn Assets) -> Chapter 
         sealer.token(token);
     }
     while let Some(name) = sealer.open.pop() {
-        sealer.body.push_str(&format!("</{name}>"));
+        let _ = write!(sealer.body, "</{name}>");
     }
     Chapter {
         styles: sealer.styles,
@@ -126,7 +127,7 @@ impl Sealer<'_> {
         {
             while let Some(open) = self.open.pop() {
                 self.forget(open);
-                self.body.push_str(&format!("</{open}>"));
+                let _ = write!(self.body, "</{open}>");
                 if open == name {
                     break;
                 }
@@ -173,8 +174,7 @@ impl Sealer<'_> {
                 _ => None,
             };
             if let Some(value) = written {
-                self.body
-                    .push_str(&format!(" {key}=\"{}\"", escape(&value)));
+                let _ = write!(self.body, " {key}=\"{}\"", escape(&value));
             }
         }
     }
@@ -187,8 +187,7 @@ impl Sealer<'_> {
             .and_then(|entry| self.assets.data_url(&entry));
         match data {
             Some(data) => {
-                self.body
-                    .push_str(&format!("<img src=\"{}\"", escape(&data)));
+                let _ = write!(self.body, "<img src=\"{}\"", escape(&data));
                 self.attributes("img", attributes);
                 self.body.push('>');
             }
@@ -208,10 +207,11 @@ impl Sealer<'_> {
             .and_then(|href| resolve(self.directory, &href))
             .and_then(|entry| self.assets.data_url(&entry));
         if let Some(data) = data {
-            self.body.push_str(&format!(
+            let _ = write!(
+                self.body,
                 "<img src=\"{}\" style=\"max-width:100%\">",
                 escape(&data)
-            ));
+            );
         }
     }
 

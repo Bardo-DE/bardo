@@ -218,10 +218,18 @@ mod tests {
         desktop: Desktop::Ours,
     };
 
+    #[expect(
+        clippy::unnecessary_wraps,
+        reason = "a test helper that builds the `Option` or `Result` a table row holds, so its callers read as rows"
+    )]
     fn itself(command: DesktopCommand) -> Option<BindingAction> {
         Some(BindingAction::Desktop(command))
     }
 
+    #[expect(
+        clippy::unnecessary_wraps,
+        reason = "a test helper that builds the `Option` or `Result` a table row holds, so its callers read as rows"
+    )]
     fn shell(verb: ShellVerb) -> Option<BindingAction> {
         Some(spawn_of(verb))
     }
@@ -256,13 +264,12 @@ mod tests {
         use key_remap_client::Handler;
         for action in StandardAction::all() {
             let want = match shell_action(action) {
-                None => None,
                 Some(BindingAction::Desktop(_)) => Some(Handler::Compositor),
                 Some(BindingAction::Spawn(argv)) => {
-                    let args: Vec<&str> = argv.0.iter().skip(1).map(String::as_str).collect();
-                    ShellVerb::parse(&args).map(Handler::Shell)
+                    let words: Vec<&str> = argv.0.iter().skip(1).map(String::as_str).collect();
+                    ShellVerb::parse(&words).map(Handler::Shell)
                 }
-                Some(_) => None,
+                None | Some(_) => None,
             };
             assert_eq!(key_remap_client::handler(action), want, "{}", action.slug());
         }

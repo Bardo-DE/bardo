@@ -50,8 +50,8 @@ impl Outgoing for DisplayTrialLink {
         self.subscribe_answers()
     }
 
-    fn commands(answered: &TrialAnswered) -> Vec<DesktopCommand> {
-        vec![command_of(answered)]
+    fn commands(sent: &TrialAnswered) -> Vec<DesktopCommand> {
+        vec![command_of(sent)]
     }
 }
 

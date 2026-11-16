@@ -42,7 +42,7 @@ pub(super) fn drain(state: &mut State) -> usize {
             TtyNote::Connector(event) => connector(state, event),
             TtyNote::Session(SessionNote::Activated) => remodeset(state),
             TtyNote::Reinit(name) => reapply(state, &name),
-            _ => {}
+            TtyNote::Session(_) => {}
         }
     }
     count + input(state)
@@ -115,7 +115,7 @@ fn input(state: &mut State) -> usize {
                 let event = with_scroll_factor(state, event);
                 feed(state, vec![Event::Input(event)]);
             }
-            _ => {}
+            FedInput::Gone(_) => {}
         }
     }
     count
@@ -159,7 +159,9 @@ fn configure(state: &mut State, device: &FedDevice) {
                 "a device took the settings in part"
             );
         }
-        _ => tracing::debug!(device = device.name.0, "a device did not take the settings"),
+        Applied::Refused => {
+            tracing::debug!(device = device.name.0, "a device did not take the settings")
+        }
     }
 }
 
@@ -179,7 +181,9 @@ pub(crate) fn reconfigure_pointers(state: &mut State, pointer: &PointerSettings)
                     "a device took the new settings in part"
                 );
             }
-            _ => tracing::debug!(device = device.0, "a device did not take the new settings"),
+            Applied::Refused => {
+                tracing::debug!(device = device.0, "a device did not take the new settings")
+            }
         }
     }
 }

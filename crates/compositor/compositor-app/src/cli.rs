@@ -212,6 +212,7 @@ pub enum CliError {
 ///
 /// Returns [`CliError`] when a flag is unknown, lacks its value or has a value that is not one of
 /// the words it takes.
+#[expect(clippy::too_many_lines, reason = "one arm per command-line flag")]
 pub fn parse_args(args: &[String]) -> Result<Command, CliError> {
     let mut config = StartConfig {
         backend: BackendChoice::Headless,

@@ -12,6 +12,7 @@ use compositor_core::geometry::{LogicalPoint, PhysicalSize};
 use compositor_core::output::{EdidFacts, EdidSerial, Mode};
 use compositor_core::time::Millihertz;
 use desktop_protocols::vocab::Transform;
+use std::fmt::Write as _;
 use ui_core::geometry::scale::Scale;
 
 /// One virtual output.
@@ -136,16 +137,16 @@ impl VirtualOutputSpec {
             self.position.y
         );
         if self.transform != Transform::Normal {
-            text.push_str(&format!(":transform={}", transform_word(self.transform)));
+            let _ = write!(text, ":transform={}", transform_word(self.transform));
         }
         if self.gpu != GpuId(0) {
-            text.push_str(&format!(":gpu={}", self.gpu.0));
+            let _ = write!(text, ":gpu={}", self.gpu.0);
         }
         if self.vrr {
             text.push_str(":vrr=capable");
         }
         if let EdidSource::Recorded(fixture) = &self.edid {
-            text.push_str(&format!(":edid={}", fixture.0));
+            let _ = write!(text, ":edid={}", fixture.0);
         }
         text
     }

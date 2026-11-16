@@ -85,9 +85,9 @@ fn window_constraints(state: &State, window: WindowId) -> Option<BufferConstrain
     }
     let (content, scale) = content_and_scale(state, window)?;
     let size = window_capture_size(content, scale);
-    let side = |n: u32| i32::try_from(n).ok().filter(|n| *n > 0);
+    let positive = |n: u32| i32::try_from(n).ok().filter(|n| *n > 0);
     Some(BufferConstraints {
-        size: Size::from((side(size.w)?, side(size.h)?)),
+        size: Size::from((positive(size.w)?, positive(size.h)?)),
         shm: vec![Format::Argb8888, Format::Xrgb8888],
         dma: super::image_capture::dma_offer_of(state),
     })

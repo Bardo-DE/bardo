@@ -70,7 +70,7 @@ impl AcceptMail {
         Label::untrusted(Source::Mail, DataClass::Mail, self.space.clone())
     }
 
-    fn labelled(&self, text: &str, label: &Label) -> Labelled<String> {
+    fn labelled(text: &str, label: &Label) -> Labelled<String> {
         Labelled {
             value: text.to_owned(),
             label: label.clone(),
@@ -80,8 +80,8 @@ impl AcceptMail {
     fn entity_ref(&self, id: EntityId, title: &str, sub: &str, label: &Label) -> EntityRef {
         EntityRef {
             id,
-            title: self.labelled(title, label),
-            subtitle: self.labelled(sub, label),
+            title: Self::labelled(title, label),
+            subtitle: Self::labelled(sub, label),
         }
     }
 
@@ -262,14 +262,15 @@ impl IntentProvider for AcceptMail {
                     .find(|c| c.key == to)
                     .map_or(to.clone(), |c| c.address.to_owned());
                 // A typed address is the person's or the planner's words, not the app's.
-                let label = match contacts().iter().any(|c| c.key == to) {
-                    true => self.own(),
-                    false => self.theirs(),
+                let label = if contacts().iter().any(|c| c.key == to) {
+                    self.own()
+                } else {
+                    self.theirs()
                 };
                 Ok(Preview::Message {
-                    to: vec![self.labelled(&address, &label)],
-                    subject: self.labelled("(subject)", &self.own()),
-                    body: self.labelled("(body)", &self.own()),
+                    to: vec![Self::labelled(&address, &label)],
+                    subject: Self::labelled("(subject)", &self.own()),
+                    body: Self::labelled("(body)", &self.own()),
                 })
             }
             _ => Ok(Preview::None),
@@ -313,10 +314,10 @@ impl IntentProvider for AcceptMail {
             .iter()
             .find(|t| t.key == id.key.as_str())
             .map_or(Preview::None, |t| Preview::Thread {
-                subject: self.labelled(t.subject, &label),
+                subject: Self::labelled(t.subject, &label),
                 messages: vec![MessageSnip {
-                    from: self.labelled(t.from, &label),
-                    snippet: self.labelled(t.body, &label),
+                    from: Self::labelled(t.from, &label),
+                    snippet: Self::labelled(t.body, &label),
                     at: UnixSeconds(0),
                 }],
             })

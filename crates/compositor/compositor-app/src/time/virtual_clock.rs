@@ -239,18 +239,18 @@ impl EventSource for VirtualTimerSource {
     fn register(
         &mut self,
         _poll: &mut Poll,
-        factory: &mut TokenFactory,
+        token_factory: &mut TokenFactory,
     ) -> smithay::reexports::calloop::Result<()> {
-        self.token = Some(factory.token());
+        self.token = Some(token_factory.token());
         Ok(())
     }
 
     fn reregister(
         &mut self,
         poll: &mut Poll,
-        factory: &mut TokenFactory,
+        token_factory: &mut TokenFactory,
     ) -> smithay::reexports::calloop::Result<()> {
-        self.register(poll, factory)
+        self.register(poll, token_factory)
     }
 
     fn unregister(&mut self, _poll: &mut Poll) -> smithay::reexports::calloop::Result<()> {

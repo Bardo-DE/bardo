@@ -352,6 +352,10 @@ fn send_frame_callbacks(root: &WlSurface, now: Mono) -> u64 {
 
 /// Arranges the model again, retargets motion from the last arrangement and asks clients
 /// whose size must change for it (a configure each).
+#[expect(
+    clippy::default_trait_access,
+    reason = "compositor-app has no dependency on ui-style, so `MotionLevel` cannot be named here"
+)]
 pub(crate) fn relayout(state: &mut State, cause: &Cause) {
     let now = state.clock.now();
     let spec = spec_of_framed(&state.core.model, &frames::reserves(state));

@@ -33,8 +33,11 @@ fn state(phase: SpeechPhase, queue: &[&str], mic_open: bool) -> SpeechState {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of speech states and events, one row per case"
+)]
 fn speech_table() {
-    let long_text = "First sentence here. Second sentence here.";
     type Row = (
         &'static str,
         SpeechState,
@@ -42,6 +45,8 @@ fn speech_table() {
         SpeechState,
         Vec<SpeechEffect>,
     );
+
+    let long_text = "First sentence here. Second sentence here.";
     let rows: Vec<Row> = vec![
         (
             "speak while quiet starts synthesis",

@@ -97,7 +97,7 @@ pub(super) fn released(state: &mut State) {
             let (ask, outcome) = match target.landing {
                 Landing::Space(space) => (WindowAsk::ToSpace(space), DragOutcome::DroppedOnSpace),
                 // `NewSpace` (the enum grows).
-                _ => (
+                Landing::NewSpace => (
                     WindowAsk::ToNewSpace(target.output),
                     DragOutcome::DroppedOnNew,
                 ),
@@ -191,6 +191,10 @@ fn shown_space_at(
 }
 
 /// The dragged `window`'s slot is `top_left` now (and the front-most): motion carries it there.
+#[expect(
+    clippy::default_trait_access,
+    reason = "compositor-app has no dependency on ui-style, so `MotionLevel` cannot be named here"
+)]
 fn follow(state: &mut State, window: WindowId, top_left: LogicalPoint) {
     let now = state.clock.now();
     let mut next = state.core.arrangement.clone();
@@ -223,12 +227,12 @@ fn tell(state: &mut State, before: Option<&Over>, now: Option<&Over>) {
     if let Some(left) = before {
         let kept = now.filter(|over| over.output == left.output);
         match (&left.landing, kept.map(|over| &over.landing)) {
-            (Landing::Space(_), Some(Landing::Space(_))) => {}
+            (Landing::Space(_), Some(Landing::Space(_)))
+            | (Landing::NewSpace, Some(Landing::NewSpace)) => {}
             (Landing::Space(_), _) => notes.push(Effect::Shell(ShellNote::DropTarget {
                 output: left.output.clone(),
                 space: None,
             })),
-            (Landing::NewSpace, Some(Landing::NewSpace)) => {}
             (_, _) => notes.push(Effect::Shell(ShellNote::DropTargetNew {
                 output: left.output.clone(),
                 over: Shown::Hidden,
@@ -241,7 +245,7 @@ fn tell(state: &mut State, before: Option<&Over>, now: Option<&Over>) {
                 output: over.output.clone(),
                 space: Some(space.clone()),
             },
-            _ => ShellNote::DropTargetNew {
+            Landing::NewSpace => ShellNote::DropTargetNew {
                 output: over.output.clone(),
                 over: Shown::Shown,
             },

@@ -213,22 +213,19 @@ impl Scratch {
     ///
     /// Returns the I/O error of creating the directories.
     pub fn made(keep_in: Option<&Path>) -> std::io::Result<Self> {
-        match keep_in {
-            Some(root) => {
-                std::fs::create_dir_all(root)?;
-                let dir = tempfile::Builder::new().prefix("world-").tempdir_in(root)?;
-                Ok(Self {
-                    path: dir.keep(),
-                    _owned: None,
-                })
-            }
-            None => {
-                let dir = tempfile::tempdir()?;
-                Ok(Self {
-                    path: dir.path().to_owned(),
-                    _owned: Some(dir),
-                })
-            }
+        if let Some(root) = keep_in {
+            std::fs::create_dir_all(root)?;
+            let dir = tempfile::Builder::new().prefix("world-").tempdir_in(root)?;
+            Ok(Self {
+                path: dir.keep(),
+                _owned: None,
+            })
+        } else {
+            let dir = tempfile::tempdir()?;
+            Ok(Self {
+                path: dir.path().to_owned(),
+                _owned: Some(dir),
+            })
         }
     }
 

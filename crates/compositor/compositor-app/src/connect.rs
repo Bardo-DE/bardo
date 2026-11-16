@@ -105,7 +105,7 @@ fn refusal_of(why: RefuseWhy) -> ConnectRefusal {
     match why {
         RefuseWhy::UnknownUnit => ConnectRefusal::UnknownUnit,
         RefuseWhy::RoleNotAllowed => ConnectRefusal::RoleNotAllowed,
-        _ => {
+        RefuseWhy::NoSocket => {
             tracing::warn!("a socket pair for a handed-out connection could not be made");
             ConnectRefusal::Unavailable
         }
@@ -285,7 +285,7 @@ pub fn answer_focus_lease(
         return ConnectReply::Refused(match why {
             LeaseFocusRefusal::Locked => ConnectRefusal::ScreenLocked,
             LeaseFocusRefusal::Minimised => ConnectRefusal::InTheDock,
-            _ => ConnectRefusal::NoSuchLease,
+            LeaseFocusRefusal::NoLease => ConnectRefusal::NoSuchLease,
         });
     }
     feed(state, vec![Event::LeaseFocus { lease }]);

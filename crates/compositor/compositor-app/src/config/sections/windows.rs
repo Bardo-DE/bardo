@@ -10,6 +10,10 @@ use ui_settings::schema::Page;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "compositor/settings.toml", domain = "windows", page = Page::Appearance)]
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "one bool per `windows.*` row of the settings file; the rows are the fields"
+)]
 pub struct WindowsSection {
     /// `windows.minimise_effect`.
     #[settings(

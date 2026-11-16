@@ -300,7 +300,7 @@ fn raw_image(
             // source; `fitted` then scales it to the drawn size.
             Ok(read.drawn(&view))
         }
-        _ => Err(CaptureFailure::Renderer),
+        CursorDraw::Hidden => Err(CaptureFailure::Renderer),
     }
 }
 

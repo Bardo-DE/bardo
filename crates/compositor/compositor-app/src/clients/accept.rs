@@ -184,17 +184,17 @@ mod tests {
         fn register(
             &mut self,
             poll: &mut Poll,
-            tokens: &mut TokenFactory,
+            token_factory: &mut TokenFactory,
         ) -> smithay::reexports::calloop::Result<()> {
-            self.ready.register(poll, tokens)
+            self.ready.register(poll, token_factory)
         }
 
         fn reregister(
             &mut self,
             poll: &mut Poll,
-            tokens: &mut TokenFactory,
+            token_factory: &mut TokenFactory,
         ) -> smithay::reexports::calloop::Result<()> {
-            self.ready.reregister(poll, tokens)
+            self.ready.reregister(poll, token_factory)
         }
 
         fn unregister(&mut self, poll: &mut Poll) -> smithay::reexports::calloop::Result<()> {

@@ -40,7 +40,9 @@ impl ConsentHandler for State {
 /// are smithay's own dispatch: it holds what a waiting client created and `settle_served` tells
 /// it the answer.
 pub(crate) fn resolved(state: &mut State, client: ClientKey, power: Power, outcome: PowerOutcome) {
-    state.wl.clients.ledger().resolve(client, power, outcome);
+    // The word the ledger returns is what each protocol below settles by `outcome`; only the
+    // recorded row is wanted here.
+    let _ = state.wl.clients.ledger().resolve(client, power, outcome);
     settle_served(state, client, power, outcome);
     match power {
         Power::Screen => {

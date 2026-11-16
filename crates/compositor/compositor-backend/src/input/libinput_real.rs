@@ -232,7 +232,7 @@ impl InputFeed for RealInputFeed {
         let device = &mut known.device;
         let profile = match settings.accel {
             AccelProfile::Flat => libinput::AccelProfile::Flat,
-            _ => libinput::AccelProfile::Adaptive,
+            AccelProfile::Adaptive => libinput::AccelProfile::Adaptive,
         };
         let skipped: Vec<DeviceSetting> = [
             skipped(

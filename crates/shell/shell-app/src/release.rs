@@ -233,9 +233,6 @@ mod tests {
 
     #[test]
     fn the_update_service_is_found_beside_this_program_else_where_it_is_exported() {
-        let beside = PathBuf::from("/opt/bardo/releases/1/bin/bardo-updater");
-        let exported = PathBuf::from(EXPORTED);
-        let dir = PathBuf::from("/opt/bardo/releases/1/bin");
         // (case, the release's program folder, the programs that exist, the one found)
         type Case<'a> = (
             &'a str,
@@ -243,6 +240,10 @@ mod tests {
             Vec<&'a PathBuf>,
             Option<&'a PathBuf>,
         );
+
+        let beside = PathBuf::from("/opt/bardo/releases/1/bin/bardo-updater");
+        let exported = PathBuf::from(EXPORTED);
+        let dir = PathBuf::from("/opt/bardo/releases/1/bin");
         let cases: [Case<'_>; 5] = [
             (
                 "beside",

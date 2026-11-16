@@ -125,9 +125,9 @@ fn spec(path: String, power: Power, label: &str, kind: KeyKind, default: toml::V
             .into_iter()
             .collect(),
         ),
-        unavailable: Default::default(),
-        groups: Default::default(),
-        places: Default::default(),
+        unavailable: std::collections::BTreeMap::default(),
+        groups: std::collections::BTreeMap::default(),
+        places: std::collections::BTreeMap::default(),
         note: None,
         agent: AgentSetting::HandsOff,
         control: None,

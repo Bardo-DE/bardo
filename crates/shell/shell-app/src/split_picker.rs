@@ -66,8 +66,8 @@ impl Outgoing for SplitPickerLink {
         self.subscribe_answers()
     }
 
-    fn commands(answered: &SplitAnswered) -> Vec<DesktopCommand> {
-        vec![command_of(answered)]
+    fn commands(sent: &SplitAnswered) -> Vec<DesktopCommand> {
+        vec![command_of(sent)]
     }
 }
 

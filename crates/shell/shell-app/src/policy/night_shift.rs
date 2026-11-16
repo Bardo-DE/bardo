@@ -20,8 +20,8 @@ impl Policy for NightShiftBridge {
         file.display.night_warmth
     }
 
-    fn command(mode: NightWarmthMode) -> NightShiftCommand {
-        NightShiftCommand::Backend(mode)
+    fn command(out: NightWarmthMode) -> NightShiftCommand {
+        NightShiftCommand::Backend(out)
     }
 }
 

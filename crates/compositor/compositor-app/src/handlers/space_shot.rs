@@ -103,13 +103,12 @@ fn constraints_of(state: &State, shot: &SpaceShot) -> Option<BufferConstraints> 
 /// destroys it or its Space stops showing.
 pub(super) fn new_session(state: &mut State, session: Session, source: SpaceSourceId) {
     let shots = &mut state.wl.quire_shell.shots;
-    match shots.book.on_session(source) {
-        Some(id) => {
-            session.user_data().insert_if_missing_threadsafe(|| id);
-            shots.hold(id, session);
-        }
+    if let Some(id) = shots.book.on_session(source) {
+        session.user_data().insert_if_missing_threadsafe(|| id);
+        shots.hold(id, session);
+    } else {
         // Dropping the session tells its client `stopped`.
-        None => tracing::warn!("a capture session on a Space source that is gone"),
+        tracing::warn!("a capture session on a Space source that is gone");
     }
 }
 

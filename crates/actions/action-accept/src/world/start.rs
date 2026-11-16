@@ -70,6 +70,10 @@ impl World {
     /// # Panics
     ///
     /// Panics when the scratch root, its directories or the runtime link cannot be made.
+    #[expect(
+        clippy::too_many_lines,
+        reason = "a start-up sequence: each step needs the daemons started before it"
+    )]
     pub async fn start_model(
         binaries: &Binaries,
         consent: Consent,

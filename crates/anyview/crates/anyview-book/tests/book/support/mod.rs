@@ -1,7 +1,10 @@
 //! Tiny books built in memory with the zip crate, written into a scratch directory.
 
 // Helpers in an integration test crate are not `#[test]` functions, so clippy.toml does not cover them.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test file of the one binary uses some of these helpers, not all"
+)]
 
 use anyview_core::{FilePath, Input};
 use anyview_fs::OnDisk;

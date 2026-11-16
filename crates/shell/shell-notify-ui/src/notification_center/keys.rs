@@ -38,7 +38,7 @@ pub fn step_keys(
     let focus = focus.zip(last).map(|(at, last)| at.min(last));
     match (key, focus, last) {
         (CenterKey::Escape, _, _) => (focus, vec![CenterOut::Close]),
-        (_, _, None) => (None, Vec::new()),
+        (_, _, None) | (CenterKey::Return | CenterKey::Delete, None, Some(_)) => (None, Vec::new()),
         (CenterKey::Down, None, Some(_)) => (Some(0), Vec::new()),
         (CenterKey::Up, None, Some(last)) => (Some(last), Vec::new()),
         (CenterKey::Down, Some(at), Some(last)) => (Some((at + 1).min(last)), Vec::new()),
@@ -48,7 +48,6 @@ pub fn step_keys(
             let after = last.checked_sub(1).map(|left| at.min(left));
             (after, vec![CenterOut::Dismiss(at)])
         }
-        (CenterKey::Return | CenterKey::Delete, None, Some(_)) => (None, Vec::new()),
     }
 }
 

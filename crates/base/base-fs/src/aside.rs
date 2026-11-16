@@ -28,7 +28,7 @@ fn rename_aside(path: &Path, at: UnixSeconds) -> io::Result<PathBuf> {
     let name = path
         .file_name()
         .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "the path has no file name"))?;
-    let free = (0u32..)
+    let free = (0..=u32::MAX)
         .map(|n| {
             let mut aside = OsString::from(name);
             aside.push(format!(".bad-{}", at.0));

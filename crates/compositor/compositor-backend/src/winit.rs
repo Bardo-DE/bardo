@@ -168,7 +168,7 @@ impl WinitBackend {
             }
             WinitEvent::Input(raw) => turn.fed.extend(self.converted(&raw, context)),
             WinitEvent::Redraw => self.granted = true,
-            _ => {}
+            WinitEvent::Focus(true) => {}
         }
     }
 
@@ -209,7 +209,7 @@ impl WinitBackend {
         let damage = {
             let (renderer, mut framebuffer) = self.graphics.bind().map_err(BackendError::from)?;
             let elements = source.gles(renderer);
-            let rendered = render_output(
+            let painted = render_output(
                 renderer,
                 &mut framebuffer,
                 &mut self.tracker,
@@ -217,7 +217,7 @@ impl WinitBackend {
                 age,
             )
             .map_err(BackendError::from)?;
-            rendered.damage.iter().map(smithay_rect).collect::<Vec<_>>()
+            painted.damage.iter().map(smithay_rect).collect::<Vec<_>>()
         };
         self.graphics
             .submit(Some(&damage))

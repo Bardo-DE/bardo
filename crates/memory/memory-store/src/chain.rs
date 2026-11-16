@@ -5,8 +5,10 @@ use memory_core::{Break, ChainReport, Checkpoint, Count, EventBody, Head, Seq};
 use memory_seal::SubKey;
 
 /// Whether an entry still has its body.
-// `Present` is the stored body as it is; boxing it would complicate every match for no saving.
-#[allow(clippy::large_enum_variant)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "`Present` is the stored body as it is; boxing it would complicate every match for no saving"
+)]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum BodyState {
     /// The body.

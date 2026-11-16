@@ -144,7 +144,7 @@ impl Launcher {
             "Companion1.Ask to answer",
             self.companion.ask(
                 &serde_json::to_string(&ask).expect("json"),
-                &Default::default(),
+                &std::collections::HashMap::default(),
             ),
         )
         .await

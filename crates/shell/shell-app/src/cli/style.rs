@@ -5,6 +5,7 @@
 //! the daemon, which loads the file whatever this says. The exit code is non-zero only for text
 //! that is not well-formed CSS.
 
+use std::fmt::Write as _;
 use std::io::ErrorKind;
 use std::path::PathBuf;
 use std::process::ExitCode;
@@ -106,11 +107,10 @@ pub fn main(action: &StyleAction) -> ExitCode {
         Ok(bytes) => match String::from_utf8(bytes) {
             Ok(css) => {
                 let report = check(&css);
-                let text: String = report
-                    .lines(&name)
-                    .iter()
-                    .map(|line| format!("{line}\n"))
-                    .collect();
+                let mut text = String::new();
+                for line in report.lines(&name) {
+                    let _ = writeln!(text, "{line}");
+                }
                 match stdout::print(&text) {
                     Emitted::Failed(_) => ExitCode::FAILURE,
                     Emitted::Done | Emitted::ReaderGone => report.exit_code(),

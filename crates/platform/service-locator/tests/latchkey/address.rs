@@ -123,6 +123,10 @@ fn windows_names_the_pipe_after_the_user() {
 /// Every input the crate must refuse, and the few it must take. One row per case, each with its
 /// why-comment; a failure names the row.
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of refused names, one case per rule"
+)]
 fn what_is_refused() {
     /// What a row expects: taken, refused with a message naming each word, or refused as too long.
     enum Want {
