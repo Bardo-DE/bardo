@@ -111,6 +111,15 @@ pub enum DaemonFault {
     /// looser than the administrator meant.
     #[error("{0}")]
     Floor(String),
+    /// A background duty ended while the daemon was serving: the daemon looks healthy to its
+    /// callers but that work has stopped, so it exits and the unit restarts it.
+    #[error("background duty `{duty}` stopped: {why}")]
+    Duty {
+        /// Which duty.
+        duty: &'static str,
+        /// Why it ended: its panic message, or that it returned.
+        why: String,
+    },
 }
 
 /// What a daemon starts from: the files it reads, found through the environment.
@@ -219,8 +228,44 @@ impl Setup {
 /// A daemon that is serving.
 #[derive(Debug)]
 pub struct Running {
-    tasks: Vec<tokio::task::JoinHandle<()>>,
+    tasks: Duties,
     session: BusConnection,
+}
+
+/// The daemon's background duties, each under a name. None is meant to end while the daemon runs.
+#[derive(Debug, Default)]
+struct Duties {
+    set: tokio::task::JoinSet<()>,
+    names: std::collections::HashMap<tokio::task::Id, &'static str>,
+}
+
+impl Duties {
+    fn spawn(&mut self, name: &'static str, duty: impl Future<Output = ()> + Send + 'static) {
+        let id = self.set.spawn(duty).id();
+        self.names.insert(id, name);
+    }
+
+    /// Waits for the first duty to end, however it ends, and says which and why. With no duty
+    /// left it never finishes.
+    async fn first_ended(&mut self) -> DaemonFault {
+        match self.set.join_next_with_id().await {
+            None => std::future::pending().await,
+            Some(Ok((id, ()))) => self.fault(id, "it returned".into()),
+            Some(Err(error)) => {
+                let why = if error.is_panic() {
+                    format!("it panicked: {error}")
+                } else {
+                    format!("it was cancelled: {error}")
+                };
+                self.fault(error.id(), why)
+            }
+        }
+    }
+
+    fn fault(&mut self, id: tokio::task::Id, why: String) -> DaemonFault {
+        let duty = self.names.remove(&id).unwrap_or("unknown");
+        DaemonFault::Duty { duty, why }
+    }
 }
 
 impl Running {
@@ -229,11 +274,14 @@ impl Running {
         closed(&self.session).await;
     }
 
+    /// Waits until a background duty ends, which it should never do: says which and why.
+    pub async fn duty_ended(&mut self) -> DaemonFault {
+        self.tasks.first_ended().await
+    }
+
     /// Stops serving: the background tasks end and the connection closes, so the name is free.
-    pub async fn stop(self) {
-        for task in &self.tasks {
-            task.abort();
-        }
+    pub async fn stop(mut self) {
+        self.tasks.set.abort_all();
         let _ = self.session.close().await;
     }
 }
@@ -385,36 +433,43 @@ pub async fn start(
     )
     .await
     .map_err(DaemonFault::Serve)?;
-    let mut tasks = Vec::new();
+    let mut tasks = Duties::default();
     let followed = router.clone();
-    tasks.push(tokio::spawn(async move {
+    let blind = matches!(watched.state(), WatchState::Blind { .. });
+    tasks.spawn("settings", async move {
         while let Some(loaded) = apply_next(&followed, &mut watched).await {
             acp.set(loaded.value.acp);
             acp.set_agents(loaded.value.agents);
         }
-    }));
+        // A watch that could not start was announced at startup: its settings stay as first
+        // read, which is no failure. A live watch that ends is one.
+        if blind {
+            std::future::pending::<()>().await;
+        }
+    });
     let live = LiveReach::none();
-    tasks.push(tokio::spawn(follow_reach(
-        router.clone(),
-        session.clone(),
-        data_dirs.clone(),
-        live.clone(),
-    )));
-    tasks.push(tokio::spawn(pump(
-        router.clone(),
-        session.clone(),
-        data_dirs,
-        signals,
-        live,
-    )));
-    tasks.push(tokio::spawn(
+    tasks.spawn(
+        "reach",
+        follow_reach(
+            router.clone(),
+            session.clone(),
+            data_dirs.clone(),
+            live.clone(),
+        ),
+    );
+    tasks.spawn(
+        "signals",
+        pump(router.clone(), session.clone(), data_dirs, signals, live),
+    );
+    tasks.spawn(
+        "spaces",
         SpaceKeeper::new(router.clone(), false, SPACES_RETRY).run(session.clone()),
-    ));
-    tasks.push(tokio::spawn(prune_checkpoints(router.clone())));
-    tasks.push(tokio::spawn(follow_policies(router.clone(), permissions)));
+    );
+    tasks.spawn("checkpoints", prune_checkpoints(router.clone()));
+    tasks.spawn("policies", follow_policies(router.clone(), permissions));
     let queue = router.clone();
     let mut audit = AuditLog::over(memory_client::DbusTransport::new(session.clone()));
-    tasks.push(tokio::spawn(async move {
+    tasks.spawn("audit", async move {
         loop {
             tokio::time::sleep(audit_every).await;
             let report = audit
@@ -422,13 +477,13 @@ pub async fn start(
                 .await;
             count_lost(&queue, report.lost);
         }
-    }));
+    });
     if let Some(system) = system {
         // Subscribed before `start` returns: a logout after that is never missed.
         match watch_logind(system).await {
             Ok(logouts) => {
                 let router = router.clone();
-                tasks.push(tokio::spawn(logouts.end_terminals(router, login)));
+                tasks.spawn("logind", logouts.end_terminals(router, login));
             }
             Err(why) => eprintln!("intentd: not watching logind: {why}"),
         }
@@ -549,7 +604,47 @@ pub async fn run_with(
     if system.is_none() {
         eprintln!("intentd: no system bus: the terminal's grants end only when intentd does");
     }
-    let running = start(&session, system.as_ref(), setup).await?;
-    running.closed().await;
-    Ok(())
+    let mut running = start(&session, system.as_ref(), setup).await?;
+    tokio::select! {
+        () = closed(&session) => {
+            running.stop().await;
+            Ok(())
+        }
+        fault = running.duty_ended() => {
+            eprintln!("intentd: {fault}: exiting so the unit restarts the daemon");
+            running.stop().await;
+            Err(fault)
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A duty that panics ends the wait with an error that names it.
+    #[tokio::test]
+    async fn a_panicking_duty_is_named() {
+        let mut duties = Duties::default();
+        duties.spawn("quiet", std::future::pending());
+        duties.spawn("broken", async { panic!("boom") });
+        let fault = duties.first_ended().await;
+        assert!(
+            matches!(&fault, DaemonFault::Duty { duty: "broken", why } if why.contains("boom")),
+            "{fault:?}"
+        );
+    }
+
+    /// A duty that returns, which none should, is named too.
+    #[tokio::test]
+    async fn a_duty_that_returns_is_named() {
+        let mut duties = Duties::default();
+        duties.spawn("quiet", std::future::pending());
+        duties.spawn("done", async {});
+        let fault = duties.first_ended().await;
+        assert!(
+            matches!(&fault, DaemonFault::Duty { duty: "done", .. }),
+            "{fault:?}"
+        );
+    }
 }

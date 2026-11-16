@@ -71,6 +71,42 @@ pub enum StartError {
     /// The session bus refused something.
     #[error("session bus: {0}")]
     Bus(#[from] zbus::Error),
+    /// A background duty ended while the daemon was serving: it exits, so the unit restarts it,
+    /// rather than look healthy with that work stopped.
+    #[error("background duty `{duty}` stopped: {why}")]
+    Duty {
+        /// Which duty.
+        duty: &'static str,
+        /// Why it ended: its panic message, or that it returned.
+        why: String,
+    },
+}
+
+/// The daemon's background duties, each under a name. None is meant to end while the daemon runs.
+#[derive(Debug, Default)]
+struct Duties {
+    set: tokio::task::JoinSet<()>,
+    names: std::collections::HashMap<tokio::task::Id, &'static str>,
+}
+
+impl Duties {
+    fn spawn(&mut self, name: &'static str, duty: impl Future<Output = ()> + Send + 'static) {
+        let id = self.set.spawn(duty).id();
+        self.names.insert(id, name);
+    }
+
+    /// Waits for the first duty to end, however it ends, and says which and why. With no duty
+    /// left it never finishes.
+    async fn first_ended(&mut self) -> StartError {
+        let (id, why) = match self.set.join_next_with_id().await {
+            None => std::future::pending().await,
+            Some(Ok((id, ()))) => (id, "it returned".to_owned()),
+            Some(Err(error)) if error.is_panic() => (error.id(), format!("it panicked: {error}")),
+            Some(Err(error)) => (error.id(), format!("it was cancelled: {error}")),
+        };
+        let duty = self.names.remove(&id).unwrap_or("unknown");
+        StartError::Duty { duty, why }
+    }
 }
 
 /// The retention sweep runs this often (and once a minute after the daemon starts).
@@ -188,19 +224,29 @@ async fn run(
     // The keyring says when it locks or unlocks; no timer asks.
     let changes = LockChanges::on(&connection).await?;
     daemon.attach(connection);
+    let mut duties = Duties::default();
     let watcher = daemon.clone();
-    tokio::spawn(async move { watcher.follow_keyring(changes).await });
+    duties.spawn(
+        "keyring",
+        async move { watcher.follow_keyring(changes).await },
+    );
     let following = daemon.clone();
-    tokio::spawn(async move {
+    let blind = matches!(watched.state(), WatchState::Blind { .. });
+    duties.spawn("settings", async move {
         while apply_next(following.service(), &mut watched)
             .await
             .is_some()
         {}
+        // A watch that could not start was announced at startup and is no failure; a live one
+        // that ends is.
+        if blind {
+            std::future::pending::<()>().await;
+        }
     });
     let removed = daemon.clone();
-    tokio::spawn(async move { removed.follow_spaces(spaces).await });
+    duties.spawn("spaces", async move { removed.follow_spaces(spaces).await });
     let consolidator = daemon.clone();
-    tokio::spawn(async move {
+    duties.spawn("consolidation", async move {
         tokio::time::sleep(FIRST_CONSOLIDATION).await;
         loop {
             // The setting is read afresh each night, so turning it off takes effect tonight.
@@ -215,7 +261,7 @@ async fn run(
         }
     });
     let sweeper = daemon.clone();
-    tokio::spawn(async move {
+    duties.spawn("sweep", async move {
         tokio::time::sleep(FIRST_SWEEP).await;
         loop {
             for (space, swept) in sweeper.sweep_all().await {
@@ -226,8 +272,9 @@ async fn run(
             tokio::time::sleep(SWEEP_EVERY).await;
         }
     });
-    std::future::pending::<()>().await;
-    Ok(())
+    let fault = duties.first_ended().await;
+    eprintln!("memoryd: {fault}: exiting so the unit restarts the daemon");
+    Err(fault)
 }
 
 /// Starts the daemon over the environment `env` reads (the process environment in the binary, a
@@ -235,9 +282,6 @@ async fn run(
 /// comes before the runtime builds its workers), then the daemon.
 pub fn start(env: Env<'_>) -> Result<(), StartError> {
     let dirs = dirs_from(env)?;
-    for line in crate::pre_bardo::move_pre_bardo_folders(&env) {
-        eprintln!("{line}");
-    }
     let selection = select(env(KEYS_VAR).as_deref(), TestKeys::THIS_BUILD);
     let key_dir = selection.writable_dir();
     let (keys, said) = AnyKeys::from_selection(selection)?;
@@ -294,6 +338,32 @@ pub fn start(env: Env<'_>) -> Result<(), StartError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// A duty that panics ends the wait with an error that names it.
+    #[tokio::test]
+    async fn a_panicking_duty_is_named() {
+        let mut duties = Duties::default();
+        duties.spawn("quiet", std::future::pending());
+        duties.spawn("broken", async { panic!("boom") });
+        let fault = duties.first_ended().await;
+        assert!(
+            matches!(&fault, StartError::Duty { duty: "broken", why } if why.contains("boom")),
+            "{fault:?}"
+        );
+    }
+
+    /// A duty that returns, which none should, is named too.
+    #[tokio::test]
+    async fn a_duty_that_returns_is_named() {
+        let mut duties = Duties::default();
+        duties.spawn("quiet", std::future::pending());
+        duties.spawn("done", async {});
+        let fault = duties.first_ended().await;
+        assert!(
+            matches!(&fault, StartError::Duty { duty: "done", .. }),
+            "{fault:?}"
+        );
+    }
 
     /// Only a `test-proc-root` build reads the variable, and an empty value is no file.
     #[test]
