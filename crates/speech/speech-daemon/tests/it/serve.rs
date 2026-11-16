@@ -17,7 +17,7 @@ use inference_core::{
     ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest, LangPick, ModelError,
     Readiness, RequestKind, TranscribeMode,
 };
-use speech_audio::{DeviceError, NodeKind};
+use speech_audio::NodeKind;
 use speech_daemon::VoiceProxy;
 use speech_wire::{
     CancelCause, HeardText, MicState, UtteranceEnd, VoiceEvent, VoiceFault, VoiceRefusal, VoiceUse,
@@ -107,7 +107,7 @@ async fn a_denied_microphone_ends_the_utterance_failed() {
     let mut options = Options::new(ScriptedInfer::new(vec![]));
     options.device = ScriptedDevice::new(
         vec![node(2, NodeKind::Source, "Audio/Source")],
-        OnOpen::Fails(DeviceError::Denied),
+        OnOpen::Denied,
     );
     let world = world(options).await;
     let mut ended = ended_stream(&world.shell).await;

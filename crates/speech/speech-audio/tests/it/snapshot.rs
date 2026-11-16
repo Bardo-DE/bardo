@@ -43,7 +43,7 @@ impl AudioDevice for Silent {
 async fn an_enumeration_that_never_answers_ends_in_a_timeout_when_the_budget_fires() {
     let device = Silent(FakeAudioDevice::default());
     let fired = snapshot_before(&device, std::future::ready(())).await;
-    assert_eq!(fired, Err(DeviceError::TimedOut));
+    assert!(matches!(fired, Err(DeviceError::TimedOut)));
 }
 
 #[tokio::test]

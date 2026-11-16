@@ -24,13 +24,13 @@ async fn the_fake_device_never_opens_a_monitor_and_plays_scripted_frames() {
         frames: vec![vec![1, 2, 3], vec![4]],
     };
     let nodes = device.sources().await;
-    assert_eq!(
+    assert!(matches!(
         device
             .open_capture(&nodes[0], CaptureFormat { rate: 16_000 })
             .await
             .map(|_| ()),
         Err(DeviceError::Denied)
-    );
+    ));
     let chosen = choose_capture(&nodes, None, None).expect("a source").node;
     let mut capture = device
         .open_capture(chosen, CaptureFormat { rate: 16_000 })

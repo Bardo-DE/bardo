@@ -18,7 +18,7 @@ pub struct PlaybackFormat {
 }
 
 /// Why the device failed.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum DeviceError {
     /// No physical source.
     #[error("no microphone")]
@@ -32,6 +32,9 @@ pub enum DeviceError {
     /// The system did not answer in time.
     #[error("timed out")]
     TimedOut,
+    /// The devices could not be listed.
+    #[error("could not list the audio devices")]
+    Listing(#[source] Box<dyn std::error::Error + Send + Sync>),
 }
 
 /// What one enumeration found.

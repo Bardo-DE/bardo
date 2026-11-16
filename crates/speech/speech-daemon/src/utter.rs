@@ -43,9 +43,10 @@ pub(crate) fn fault_of(error: DeviceError) -> VoiceFault {
     tracing::warn!(?error, "microphone fault");
     match error {
         DeviceError::Denied => VoiceFault::MicDenied,
-        DeviceError::NoSource | DeviceError::Closed | DeviceError::TimedOut => {
-            VoiceFault::MicUnavailable
-        }
+        DeviceError::NoSource
+        | DeviceError::Closed
+        | DeviceError::TimedOut
+        | DeviceError::Listing(_) => VoiceFault::MicUnavailable,
     }
 }
 

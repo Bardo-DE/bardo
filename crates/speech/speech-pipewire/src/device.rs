@@ -33,9 +33,8 @@ impl AudioDevice for PipeWireDevice {
     async fn snapshot(&self) -> Result<Snapshot, DeviceError> {
         let listed = tokio::task::spawn_blocking(|| list_nodes(SNAPSHOT_BUDGET))
             .await
-            .ok()
-            .ok_or(DeviceError::Closed)?;
-        let (sources, defaults) = listed.ok().ok_or(DeviceError::TimedOut)?;
+            .map_err(|error| DeviceError::Listing(Box::new(error)))?;
+        let (sources, defaults) = listed.map_err(|error| DeviceError::Listing(Box::new(error)))?;
         Ok(Snapshot {
             sources,
             default: defaults.name().map(str::to_owned),

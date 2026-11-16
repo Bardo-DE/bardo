@@ -34,7 +34,8 @@ fn pcm_bytes(samples: &[i16]) -> Vec<u8> {
     samples.iter().flat_map(|s| s.to_le_bytes()).collect()
 }
 
-fn engine_gone<E>(_: E) -> VoiceFault {
+fn engine_gone<E: std::fmt::Display>(error: E) -> VoiceFault {
+    tracing::warn!(error = %error, "the speech engine is gone");
     VoiceFault::Engine(ModelError::Unreachable)
 }
 
@@ -51,8 +52,7 @@ pub async fn dictate<D: AudioDevice, T: Transport>(
 ) -> Result<Dictated, VoiceFault> {
     let found = snapshot_before(device, tokio::time::sleep(SNAPSHOT_BUDGET))
         .await
-        .ok()
-        .ok_or(VoiceFault::MicUnavailable)?;
+        .map_err(crate::utter::fault_of)?;
     let node = choose_capture(&found.sources, found.default.as_deref(), input)
         .map(|chosen| chosen.node.clone())
         .ok_or(VoiceFault::MicUnavailable)?;

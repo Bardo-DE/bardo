@@ -59,7 +59,7 @@ impl Hand {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum OnOpen {
     Works,
-    Fails(DeviceError),
+    Denied,
 }
 
 #[derive(Debug, Clone)]
@@ -177,8 +177,8 @@ impl AudioDevice for ScriptedDevice {
         if node.kind != NodeKind::Source {
             return Err(DeviceError::Denied);
         }
-        if let OnOpen::Fails(error) = self.on_open {
-            return Err(error);
+        if self.on_open == OnOpen::Denied {
+            return Err(DeviceError::Denied);
         }
         let (tx, rx) = mpsc::unbounded_channel();
         *self.feed.lock().expect("feed") = Some(tx);

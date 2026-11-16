@@ -105,8 +105,13 @@ impl Handle {
         make: impl FnOnce(Reply<T>) -> Command,
     ) -> Result<T, VoiceError> {
         let (reply, answer) = oneshot::channel();
-        let gone = || VoiceError::Gone("voiced is stopping".to_owned());
-        self.tx.send(make(reply)).await.ok().ok_or_else(gone)?;
-        answer.await.ok().ok_or_else(gone)
+        let gone = |error: &dyn std::fmt::Display| {
+            VoiceError::Gone(format!("voiced is stopping: {error}"))
+        };
+        self.tx
+            .send(make(reply))
+            .await
+            .map_err(|error| gone(&error))?;
+        answer.await.map_err(|error| gone(&error))
     }
 }
