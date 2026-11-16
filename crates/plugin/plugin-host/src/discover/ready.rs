@@ -45,11 +45,12 @@ fn check<P: Provides>(
     if let Some(folder) = folder {
         confined::<P>(folder, path, reach)?;
     }
-    let meta = fs::metadata(path)
-        .ok()
-        .ok_or_else(|| ManifestError::FileMissing {
+    let meta = fs::metadata(path).map_err(|error| match error.kind() {
+        std::io::ErrorKind::NotFound => ManifestError::FileMissing {
             path: path.to_path_buf(),
-        })?;
+        },
+        kind => ManifestError::Unreadable { kind },
+    })?;
     let runnable = meta.is_file() && is_executable(&meta);
     match role {
         PathRole::Executable if !runnable => Err(ManifestError::NotExecutable {

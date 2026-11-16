@@ -138,7 +138,11 @@ impl<W: Protocol> Process<W> {
             Some(stdin) => stdin.write_all(&bytes).and_then(|()| stdin.flush()),
             None => Err(std::io::ErrorKind::BrokenPipe.into()),
         };
-        written.ok().ok_or_else(|| self.crashed())
+        // A write that fails means the plugin is gone; how it ended is what `crashed` reports.
+        if written.is_err() {
+            return Err(self.crashed());
+        }
+        Ok(())
     }
 
     /// Waits at most `wait` for the next message. Stderr is read meanwhile and logged.
