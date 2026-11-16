@@ -160,6 +160,81 @@ fn source(at: &str, raw: &Raw, dir: Option<&AgentsDir>) -> Result<Source, Config
     }
 }
 
+/// The plain variables an entry sets: none may be a key, a base URL, a reserved name or hold a
+/// control character.
+fn plain_variables(
+    at: &str,
+    set: &[(String, String)],
+    key_env: Option<&EnvName>,
+    base_url_env: Option<&EnvName>,
+) -> Result<Vec<(EnvName, String)>, ConfigFault> {
+    set.iter()
+        .map(|(k, v)| {
+            let name = EnvName::parse(k)
+                .ok()
+                .ok_or_else(|| bad(at, "not an environment variable name"))?;
+            let fine = !forbidden(k)
+                && Some(&name) != key_env
+                && Some(&name) != base_url_env
+                && !v.chars().any(char::is_control);
+            if fine {
+                Ok((name, v.clone()))
+            } else {
+                Err(bad(
+                    at,
+                    "a `set` variable may not be a key, a base URL, PATH, HOME or a loader switch",
+                ))
+            }
+        })
+        .collect()
+}
+
+/// What the route requires of the network mode, and what network makes sense for it.
+fn check_network(at: &str, route: Route, network: NetworkMode) -> Result<(), ConfigFault> {
+    match (route, network) {
+        (Route::Endpoint, NetworkMode::None | NetworkMode::Allowlist) => {
+            return Err(bad(
+                at,
+                "the endpoint route needs endpoint_only (or host) network",
+            ));
+        }
+        (Route::Handoff, NetworkMode::None | NetworkMode::EndpointOnly) => {
+            return Err(bad(
+                at,
+                "a handed-off key is for a program that reaches its provider: network allowlist or host",
+            ));
+        }
+        (_, NetworkMode::EndpointOnly) if route != Route::Endpoint => {
+            return Err(bad(at, "endpoint_only is for the endpoint route"));
+        }
+        (
+            _,
+            NetworkMode::None
+            | NetworkMode::EndpointOnly
+            | NetworkMode::Allowlist
+            | NetworkMode::Host,
+        ) => {}
+    }
+    Ok(())
+}
+
+/// What the route requires an entry to name.
+fn check_route_needs(at: &str, route: Route, raw: &Raw) -> Result<(), ConfigFault> {
+    if route == Route::Endpoint && (raw.base_url_env.is_none() || raw.key_env.is_none()) {
+        return Err(bad(at, "the endpoint route needs base_url_env and key_env"));
+    }
+    if route == Route::Endpoint && raw.endpoint.is_none() {
+        return Err(bad(
+            at,
+            "the endpoint route needs an [agent.endpoint] table",
+        ));
+    }
+    if route == Route::Handoff && raw.key_env.is_none() {
+        return Err(bad(at, "the handoff route needs key_env"));
+    }
+    Ok(())
+}
+
 pub(super) fn check(raw: Raw, dir: Option<&AgentsDir>) -> Result<Entry, ConfigFault> {
     let at = raw.program.clone();
     let name = ProgramName::parse(&raw.program)
@@ -187,72 +262,14 @@ pub(super) fn check(raw: Raw, dir: Option<&AgentsDir>) -> Result<Entry, ConfigFa
     let label = label(&at, raw.label.clone())?;
     let key_env = env(&at, raw.key_env.as_ref())?;
     let base_url_env = env(&at, raw.base_url_env.as_ref())?;
-    let set = src
-        .set
-        .iter()
-        .map(|(k, v)| {
-            let name = EnvName::parse(k)
-                .ok()
-                .ok_or_else(|| bad(&at, "not an environment variable name"))?;
-            let fine = !forbidden(k)
-                && Some(&name) != key_env.as_ref()
-                && Some(&name) != base_url_env.as_ref()
-                && !v.chars().any(char::is_control);
-            if fine {
-                Ok((name, v.clone()))
-            } else {
-                Err(bad(
-                    &at,
-                    "a `set` variable may not be a key, a base URL, PATH, HOME or a loader switch",
-                ))
-            }
-        })
-        .collect::<Result<Vec<_>, _>>()?;
-    // The route decides what the entry must say, and what network makes sense.
-    match (route, raw.network) {
-        (Route::Endpoint, NetworkMode::None | NetworkMode::Allowlist) => {
-            return Err(bad(
-                &at,
-                "the endpoint route needs endpoint_only (or host) network",
-            ));
-        }
-        (Route::Handoff, NetworkMode::None | NetworkMode::EndpointOnly) => {
-            return Err(bad(
-                &at,
-                "a handed-off key is for a program that reaches its provider: network allowlist or host",
-            ));
-        }
-        (_, NetworkMode::EndpointOnly) if route != Route::Endpoint => {
-            return Err(bad(&at, "endpoint_only is for the endpoint route"));
-        }
-        (
-            _,
-            NetworkMode::None
-            | NetworkMode::EndpointOnly
-            | NetworkMode::Allowlist
-            | NetworkMode::Host,
-        ) => {}
-    }
+    let set = plain_variables(&at, &src.set, key_env.as_ref(), base_url_env.as_ref())?;
+    check_network(&at, route, raw.network)?;
     let reach = match raw.network {
         NetworkMode::Allowlist => Some(Reach::new(&at, &raw.allow, &raw.deny, &raw.ports)?),
         _ if raw.allow.is_empty() && raw.deny.is_empty() && raw.ports.is_empty() => None,
         _ => return Err(bad(&at, "allow, deny and ports go with network allowlist")),
     };
-    if route == Route::Endpoint && (raw.base_url_env.is_none() || raw.key_env.is_none()) {
-        return Err(bad(
-            &at,
-            "the endpoint route needs base_url_env and key_env",
-        ));
-    }
-    if route == Route::Endpoint && raw.endpoint.is_none() {
-        return Err(bad(
-            &at,
-            "the endpoint route needs an [agent.endpoint] table",
-        ));
-    }
-    if route == Route::Handoff && raw.key_env.is_none() {
-        return Err(bad(&at, "the handoff route needs key_env"));
-    }
+    check_route_needs(&at, route, &raw)?;
     Ok(Entry {
         name,
         program,

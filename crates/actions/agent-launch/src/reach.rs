@@ -49,6 +49,11 @@ fn fault(program: &str, why: &'static str) -> ConfigFault {
 
 impl Reach {
     /// The lists of `program`. `extra_ports` are reachable besides 443 and 80.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ConfigFault`] when an `allow` or `deny` entry is not a usable site, an extra
+    /// port is not 1 to 65535, or the allow list is empty.
     pub fn new(
         program: &str,
         allow: &[String],

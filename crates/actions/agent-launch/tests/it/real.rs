@@ -6,10 +6,10 @@ use agent_launch::{BwrapProcs, Proc, Procs, StdioWire};
 use sandbox::{AgentNet, AgentRun, Argv, BwrapSandbox, Detected, EnvVar};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt};
 
-fn bwrap() -> Option<BwrapSandbox> {
+fn bwrap() -> BwrapSandbox {
     let path = std::env::var("PATH").unwrap_or_default();
     match Detected::probe(&path) {
-        Detected::Bwrap(found) => Some(found),
+        Detected::Bwrap(found) => found,
         Detected::Missing(why) => {
             panic!("bwrap is a required test tool (install bubblewrap): {why}")
         }
@@ -26,7 +26,7 @@ fn var(name: &str, value: &str) -> EnvVar {
 #[tokio::test]
 #[ignore = "starts a real sandbox in the person's systemd user session (cgroup limits); run on a real login with --ignored"]
 async fn a_confined_process_speaks_lines_over_its_stdio_with_exactly_the_environment_given() {
-    let Some(sandbox) = bwrap() else { return };
+    let sandbox = bwrap();
     let root = tempfile::tempdir().expect("scratch");
     let cwd = root.path().join("work/app");
     std::fs::create_dir_all(&cwd).expect("cwd");

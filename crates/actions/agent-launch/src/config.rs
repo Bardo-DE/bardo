@@ -305,11 +305,21 @@ pub struct AgentsFile {
 impl AgentsFile {
     /// Reads the text of `agents.toml`. Any wrong entry refuses the whole file: a half-read
     /// list of what may run is worse than none.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ConfigFault`] when `text` is not valid TOML for the file, an entry is wrong, an
+    /// `allow` or `deny` entry is not a usable site, or a program is listed twice.
     pub fn parse(text: &str) -> Result<Self, ConfigFault> {
         Self::parse_in(text, None)
     }
 
     /// Like `parse`, with the agents directory a registry agent is installed in.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ConfigFault`] as `parse` does; an entry that needs a registry install is checked
+    /// against `dir`.
     pub fn parse_in(text: &str, dir: Option<&AgentsDir>) -> Result<Self, ConfigFault> {
         let file: File =
             toml::from_str(text).map_err(|e| ConfigFault::Syntax(e.message().to_owned()))?;

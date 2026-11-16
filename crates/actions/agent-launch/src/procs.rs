@@ -159,11 +159,11 @@ impl ConnectTo<Client> for StdioWire {
     }
 }
 
-fn refused(fault: StartFault) -> ProcFault {
+fn refused(fault: &StartFault) -> ProcFault {
     match fault {
         StartFault::Cannot(_) => ProcFault::NoSandbox,
         StartFault::InheritedFds | StartFault::FilterFile => ProcFault::Refused,
-        _ => ProcFault::Spawn,
+        StartFault::Spawn(_) => ProcFault::Spawn,
     }
 }
 
@@ -188,7 +188,7 @@ impl Procs for BwrapProcs {
         let mut command = Command::from(
             self.sandbox
                 .agent_command(run, Some(&file))
-                .map_err(refused)?,
+                .map_err(|fault| refused(&fault))?,
         );
         command
             .stdin(Stdio::piped())
@@ -237,6 +237,12 @@ impl BwrapProcs {
     /// The command line that runs `run` confined, as `start` would, without starting it. The
     /// filter file it names is written to `filter_dir` and stays there: it is small, private to
     /// the user and goes with the runtime directory.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ProcFault`] when the syscall filter cannot be written or the sandbox refuses the
+    /// run: [`ProcFault::NoSandbox`] when it cannot confine the command, [`ProcFault::Refused`] for
+    /// a leaked descriptor or a missing filter file, and [`ProcFault::Spawn`] otherwise.
     pub fn command_line(&self, run: &AgentRun) -> Result<CommandLine, ProcFault> {
         let file = self.filter_path().ok_or(ProcFault::Spawn)?;
         self.sandbox
@@ -246,7 +252,7 @@ impl BwrapProcs {
         let command = self
             .sandbox
             .agent_command(run, Some(&file))
-            .map_err(refused)?;
+            .map_err(|fault| refused(&fault))?;
         let text = |s: &std::ffi::OsStr| s.to_string_lossy().into_owned();
         Ok(CommandLine {
             program: text(command.get_program()),

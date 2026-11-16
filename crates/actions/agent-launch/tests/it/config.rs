@@ -277,7 +277,7 @@ fn installed_agy(root: &std::path::Path) -> agent_registry::dirs::AgentsDir {
         version: "1.3.0".to_owned(),
         command: "agy".to_owned(),
         args: vec!["--uid=".to_owned()],
-        env: Default::default(),
+        env: std::collections::BTreeMap::default(),
         digest: None,
         check: Check::FirstUse,
     };

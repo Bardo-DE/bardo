@@ -69,6 +69,11 @@ impl DbusAccounts {
     /// Connects over `connection`, which accountd must know as the agent launcher. The request
     /// and revocation streams are subscribed before anything is registered or issued, so none
     /// is missed.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`AccountFault`] when the bus cannot subscribe to the launcher's request and
+    /// revocation streams, or does not reach the agents interface.
     pub async fn connect(connection: &BusConnection) -> Result<Self, AccountFault> {
         let launcher = Bus::over(connection.clone()).launcher();
         let requests = launcher.requests().await.map_err(|e| fault(&e))?;

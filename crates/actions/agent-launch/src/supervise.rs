@@ -90,6 +90,11 @@ impl<A: Accounts + 'static, P: Proc, L: LoginRunner + 'static> Supervisor<A, P, 
     }
 
     /// Registers the programs. A program another launcher holds is a fault, and none is taken.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`AccountFault`] when porter is unreachable, refuses, or fails; this includes a
+    /// program another launcher already holds.
     pub async fn register(&self) -> Result<(), crate::accounts::AccountFault> {
         self.accounts.register(&self.file.programs()).await
     }
@@ -102,7 +107,8 @@ impl<A: Accounts + 'static, P: Proc, L: LoginRunner + 'static> Supervisor<A, P, 
         };
         match heard {
             Heard::Revoked(id) => {
-                self.registry.kill(&id);
+                // Nothing to do when no process holds the credential any more.
+                let _ = self.registry.kill(&id);
             }
             Heard::Ask(ask) => self.start(ask),
         }
