@@ -137,11 +137,12 @@ fn plan_of(action: &ActionRef, targets: &[EntityId]) -> String {
     }))
 }
 
-/// The trace of a live run: one step for each call the planner made, in order. A step's audit is
-/// the records since the step before (the writer's policy, the reviews, the sheet, the call's
-/// own record); its plan is the call as made, without its arguments (those are in the model
-/// exchange); it ended `Ran` when the call was done and `Refused` when it was not. The judgement
-/// starts `Met` and is set by whoever scores the run.
+/// The trace of a live run: one step for each call the planner made, in order.
+///
+/// A step's audit is the records since the step before (the writer's policy, the reviews, the
+/// sheet, the call's own record); its plan is the call as made, without its arguments (those are in
+/// the model exchange); it ended `Ran` when the call was done and `Refused` when it was not. The
+/// judgement starts `Met` and is set by whoever scores the run.
 #[must_use]
 pub fn live_trace(case: &Case, run: LiveRun) -> CaseTrace {
     let LiveRun {

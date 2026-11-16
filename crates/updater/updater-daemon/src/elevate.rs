@@ -1,5 +1,7 @@
-//! Running the privileged helpers through `pkexec`: one installs a staged release, one goes back to the
-//! previous release (and asks for the administrator's password), one keeps the root-side health record.
+//! Running the privileged helpers through `pkexec`.
+//!
+//! One installs a staged release, one goes back to the previous release (and asks for the
+//! administrator's password), one keeps the root-side health record.
 
 use crate::config::Config;
 use crate::report::Report;

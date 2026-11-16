@@ -3,9 +3,10 @@
 use crate::item::{BaseVersion, RemoteId, RemoteVersion};
 use serde::{Deserialize, Serialize};
 
-/// A write whose base is not the replica's current version. The journal keeps it as an object
-/// `{item, base, local, remote}` (the local side is the journal's own) and the owning app
-/// resolves it by its dataset's rule.
+/// A write whose base is not the replica's current version.
+///
+/// The journal keeps it as an object `{item, base, local, remote}` (the local side is the journal's
+/// own) and the owning app resolves it by its dataset's rule.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Conflict {
     /// The item.

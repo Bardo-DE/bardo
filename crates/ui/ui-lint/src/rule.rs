@@ -145,11 +145,12 @@ pub enum Profile {
     Details,
 }
 
-/// One offence a consumer has decided to live with, and why: every offence of `rule` whose
-/// selector is exactly `selector` is suppressed. The reason is for the reviewer; `assert_clean`
-/// prints how many offences each exception swallowed, and fails on one that swallowed none: the
-/// offence it excused has gone (or its selector was mistyped), and left in place it would
-/// silently excuse the next offence on that selector.
+/// One offence a consumer has decided to live with, and why.
+///
+/// Every offence of `rule` whose selector is exactly `selector` is suppressed. The reason is for
+/// the reviewer; `assert_clean` prints how many offences each exception swallowed, and fails on one
+/// that swallowed none: the offence it excused has gone (or its selector was mistyped), and left in
+/// place it would silently excuse the next offence on that selector.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Exception {
     /// The rule it silences.

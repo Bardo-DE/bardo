@@ -12,9 +12,11 @@ use crate::layout::current_version;
 use crate::state::StateStore;
 use std::path::Path;
 
-/// Records the version `root/current` names as confirmed. Does nothing when no release is
-/// installed under the root (a computer not updated by bardo-updater). Returns whether a release is installed.
-/// Already confirmed means nothing is written.
+/// Records the version `root/current` names as confirmed.
+///
+/// Does nothing when no release is installed under the root (a computer not updated by
+/// bardo-updater). Returns whether a release is installed. Already confirmed means nothing is
+/// written.
 ///
 /// # Errors
 ///

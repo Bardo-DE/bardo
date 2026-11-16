@@ -41,9 +41,10 @@ fn endpoint(family: Family, hop: &Hop, login: &LoginName) -> Option<ServiceEndpo
     endpoint.check().ok().map(|()| endpoint)
 }
 
-/// The servers a person typed for an IMAP or POP3 account (`incoming`): that protocol and SMTP at
-/// the hosts, ports and securities given, both logged in as the typed login name, or as the
-/// address when there is none.
+/// The servers a person typed for an IMAP or POP3 account (`incoming`).
+///
+/// That protocol and SMTP at the hosts, ports and securities given, both logged in as the typed
+/// login name, or as the address when there is none.
 ///
 /// # Errors
 ///
@@ -113,9 +114,11 @@ fn tls_of_scheme(url: &EndpointUrl) -> Option<Tls> {
     }
 }
 
-/// The servers a provider file with `discovery = "fixed"` names: one endpoint per capability row
-/// that has a URL, its family and TLS from the row and its scheme, logged in as the address. The
-/// claims are the file's, once each (an SMTP row repeats its IMAP row's mail capability).
+/// The servers a provider file with `discovery = "fixed"` names.
+///
+/// One endpoint per capability row that has a URL, its family and TLS from the row and its scheme,
+/// logged in as the address. The claims are the file's, once each (an SMTP row repeats its IMAP
+/// row's mail capability).
 ///
 /// # Errors
 ///

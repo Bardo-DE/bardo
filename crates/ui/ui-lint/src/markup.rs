@@ -34,9 +34,11 @@ pub fn markup(html: &str, consumer_css: &str, config: &LintConfig) -> Vec<Offenc
     config.partition(every_offence(html, consumer_css)).0
 }
 
-/// Every warning in `html` that none of `config.exceptions` covers: [`Rule::UnnamedControl`]
-/// and [`Rule::ThreeDots`] (design/27 section 7, H0). [`markup`] never returns these, so a
-/// consumer asserting `markup(..).is_empty()` is unmoved until a rule turns Strict.
+/// Every warning in `html` that none of `config.exceptions` covers: [`Rule::UnnamedControl`] and
+/// [`Rule::ThreeDots`] (design/27 section 7, H0).
+///
+/// [`markup`] never returns these, so a consumer asserting `markup(..).is_empty()` is unmoved until
+/// a rule turns Strict.
 #[must_use]
 pub fn markup_warnings(html: &str, config: &LintConfig) -> Vec<Offence> {
     config.partition(markup_hig::offences(html)).0

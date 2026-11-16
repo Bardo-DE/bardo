@@ -5,12 +5,14 @@ use crate::path::BundlePath;
 use serde::Deserialize;
 use std::path::Path;
 
-/// The only places a release may put a link. Each folder is listed by name: there are no wildcards,
-/// and a link may sit anywhere below a listed folder but never in a folder beside it. The folder of
-/// polkit actions is deliberately not here: an action can let a program run as root with no password
-/// for the person at the keyboard, so a release may never add one. The desktop ships none; bardo-updater's own
-/// comes from `scripts/install.sh`, and anything else would have to be named, file by file, in the exact
-/// list of system files (`system.rs`).
+/// The only places a release may put a link.
+///
+/// Each folder is listed by name: there are no wildcards, and a link may sit anywhere below a
+/// listed folder but never in a folder beside it. The folder of polkit actions is deliberately not
+/// here: an action can let a program run as root with no password for the person at the keyboard,
+/// so a release may never add one. The desktop ships none; bardo-updater's own comes from
+/// `scripts/install.sh`, and anything else would have to be named, file by file, in the exact list
+/// of system files (`system.rs`).
 pub const ALLOWED_LINK_DIRS: [&str; 8] = [
     "/usr/share/wayland-sessions",
     "/usr/share/xdg-desktop-portal",

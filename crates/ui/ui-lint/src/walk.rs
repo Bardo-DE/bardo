@@ -1,9 +1,10 @@
-//! Turning a flat token stream (from [`super::tokenize::tokens`], whitespace and comments
-//! still in it) into rules and their declarations, one pass, by tracking `{`/`}` depth — the
-//! same shape as `mailo`'s old `component_rules`, but over tokens instead of characters.
-//! Whitespace stays in deliberately: it is the only way to tell `.a.b` (one compound selector)
-//! from `.a .b` (a descendant combinator), and [`super::text::render`] needs it to reproduce a
-//! selector's own text for an offence's excerpt.
+//! Turning a flat token stream into rules and their declarations, in one pass.
+//!
+//! The stream is from [`super::tokenize::tokens`], whitespace and comments still in it; the pass
+//! tracks `{`/`}` depth, the same shape as `mailo`'s old `component_rules`, but over tokens instead
+//! of characters. Whitespace stays in deliberately: it is the only way to tell `.a.b` (one compound
+//! selector) from `.a .b` (a descendant combinator), and [`super::text::render`] needs it to
+//! reproduce a selector's own text for an offence's excerpt.
 
 use super::kind;
 use super::rule::{Offence, Rule};
@@ -21,9 +22,10 @@ pub struct Decl {
     pub value: Vec<Located>,
 }
 
-/// One qualified rule or at-rule-as-declarations block (`@font-face { ... }`), flattened out of
-/// whatever `@media`/`@supports` nesting held it, with one `@keyframes` step counted as its own
-/// rule (its "selector" is `0%`, `from`, `to`, ...).
+/// One qualified rule or at-rule-as-declarations block (`@font-face { ... }`).
+///
+/// It is flattened out of whatever `@media`/`@supports` nesting held it, with one `@keyframes` step
+/// counted as its own rule (its "selector" is `0%`, `from`, `to`, ...).
 #[derive(Debug)]
 pub struct CollectedRule {
     /// The selector (or at-rule name), rendered for offence text.

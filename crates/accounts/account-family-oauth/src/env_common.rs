@@ -23,8 +23,10 @@ pub(crate) fn clock_of<C: ClockSource + 'static>(clock: C) -> Clock {
 pub type Random = Arc<dyn Fn() -> Option<([u8; 32], [u8; 16])> + Send + Sync>;
 
 /// The two clients files a daemon's families read: the shipped one and the person's own, which
-/// Settings writes while the daemon runs. They are read again for every sign-in and every token,
-/// so a client id set in Settings is used by the next sign-in without a restart.
+/// Settings writes while the daemon runs.
+///
+/// They are read again for every sign-in and every token, so a client id set in Settings is used by
+/// the next sign-in without a restart.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ClientFiles {
     /// The shipped file (`/usr/share/bardo/accounts/clients.toml`).

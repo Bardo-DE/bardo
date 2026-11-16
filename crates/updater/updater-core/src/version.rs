@@ -37,8 +37,10 @@ pub enum Offer {
 }
 
 /// Decides whether `found` is offered, given the version installed and the newest version that was
-/// rolled back. A refused version stays refused, and so does everything older than it, until a
-/// newer one is published.
+/// rolled back.
+///
+/// A refused version stays refused, and so does everything older than it, until a newer one is
+/// published.
 #[must_use]
 pub fn offer(installed: &Version, found: &Version, refused: Option<&Version>) -> Offer {
     if standing(installed, found) != Standing::Newer {

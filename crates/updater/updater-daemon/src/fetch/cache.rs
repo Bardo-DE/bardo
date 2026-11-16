@@ -5,9 +5,11 @@ use semver::Version;
 use std::io;
 use std::path::Path;
 
-/// Removes every version folder in `cache` except `keep`: earlier downloads that were superseded, or
-/// that never finished, would otherwise pile up (a bundle is hundreds of megabytes). Anything in the
-/// cache that is not a folder named like a version is left alone.
+/// Removes every version folder in `cache` except `keep`.
+///
+/// Earlier downloads that were superseded, or that never finished, would otherwise pile up (a
+/// bundle is hundreds of megabytes). Anything in the cache that is not a folder named like a
+/// version is left alone.
 ///
 /// # Errors
 ///

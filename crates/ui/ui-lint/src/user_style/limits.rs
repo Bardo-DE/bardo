@@ -12,9 +12,11 @@ pub const MAX_SHADOW_BLUR_TOTAL_PX: f32 = 80.0;
 /// The size of one `em` or `rem`, in CSS pixels, when a length is converted to pixels.
 pub const EM_PX: f32 = 16.0;
 
-/// The attribute that marks a surface root (`ui_components::selectors::SURFACE_ATTRIBUTE`; a test keeps the
-/// two equal). Any blur on a rule that targets one is noted, whatever its radius, because it
-/// covers a whole window.
+/// The attribute that marks a surface root (`ui_components::selectors::SURFACE_ATTRIBUTE`; a test
+/// keeps the two equal).
+///
+/// Any blur on a rule that targets one is noted, whatever its radius, because it covers a whole
+/// window.
 pub const SURFACE_ATTRIBUTE: &str = "data-surface";
 
 /// The public parts that are spinners: an animation that never stops is their job, so it earns

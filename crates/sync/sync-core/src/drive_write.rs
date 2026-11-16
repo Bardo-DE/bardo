@@ -49,9 +49,10 @@ pub enum UploadTo {
     Replace(RemoteId),
 }
 
-/// A drive's upload session in flight: its address. The address takes bytes with no sign-in,
-/// so it is a credential of its own: stored owner-only, and never shown or logged (its `Debug`
-/// says nothing of it).
+/// A drive's upload session in flight: its address.
+///
+/// The address takes bytes with no sign-in, so it is a credential of its own: stored owner-only,
+/// and never shown or logged (its `Debug` says nothing of it).
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct Session(String);

@@ -1,6 +1,8 @@
-//! The wire word of a closed set: the name serde gives a unit variant, so an enum that is sent as
-//! one word on a bus, in a file or on a command line derives `Serialize` and `Deserialize` with
-//! `#[serde(rename_all = "snake_case")]` and writes the table of words once, in the derive.
+//! The wire word of a closed set: the name serde gives a unit variant.
+//!
+//! An enum that is sent as one word on a bus, in a file or on a command line derives `Serialize`
+//! and `Deserialize` with `#[serde(rename_all = "snake_case")]` and writes the table of words once,
+//! in the derive.
 //!
 //! ```
 //! use base_ids::word::{from_word, word};

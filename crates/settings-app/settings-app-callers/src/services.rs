@@ -15,17 +15,20 @@ pub const MEMORY_BUS: &str = "org.bardo.Memory1";
 /// The compositor: the Privacy list of which program may use which power, served as a live
 /// settings module.
 pub const COMPOSITOR_BUS: &str = "org.bardo.Compositor1";
-/// The screen-sharing portal (transom): the apps it lets share the screen without asking again,
-/// and the call that takes one back. The name is the portal backend's own; the interface Settings
-/// calls on it is `org.bardo.Portal1`.
+/// The screen-sharing portal (transom).
+///
+/// It holds the apps it lets share the screen without asking again, and the call that takes one
+/// back. The name is the portal backend's own; the interface Settings calls on it is
+/// `org.bardo.Portal1`.
 pub const PORTAL_BUS: &str = "org.freedesktop.impl.portal.desktop.bardo";
 
 /// The shell (bardo-shell): each display's brightness, which Settings lists and sets.
 pub const DISPLAYS_BUS: &str = "org.bardo.Displays1";
 
-/// The proof a service's owner must show. All eight run as units, so the unit manager confirms the
-/// unit: a process that merely sits in the right cgroup, or runs the right image from a unit the
-/// person can edit, does not pass.
+/// The proof a service's owner must show.
+///
+/// All eight run as units, so the unit manager confirms the unit: a process that merely sits in the
+/// right cgroup, or runs the right image from a unit the person can edit, does not pass.
 pub const SERVICE_PROOF: Proof = Proof::Full;
 
 /// The role the owner of `name` must hold; none for a name that is not one of the eight (such a

@@ -1,7 +1,8 @@
-//! Finding a generic DAV server from the name a person typed: `.well-known/caldav` and
-//! `.well-known/carddav` on a bare server, or the address itself when it names a path, and a
-//! PROPFIND with the password at each to see that it is accepted (account-dav-proto's walk to the
-//! principal).
+//! Finding a generic DAV server from the name a person typed.
+//!
+//! That is `.well-known/caldav` and `.well-known/carddav` on a bare server, or the address itself
+//! when it names a path, and a `PROPFIND` with the password at each to see that it is accepted
+//! (account-dav-proto's walk to the principal).
 
 use crate::{Error, bodiless, web};
 use account_capability::{AbsentReason, CapabilityKind, Claim, Offer, Provenance, Subject};

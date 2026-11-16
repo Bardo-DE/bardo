@@ -1,7 +1,9 @@
-//! What an HTTP status the replica did not expect means to the contract, written once for the
-//! replicas that speak HTTP: a read that failed ([`ReplicaError`]) or a write that was refused
-//! ([`PutRefused`]). The statuses every server answers alike are here; a vendor's own reasons
-//! (a throttle spelled as a `403`, a locked item) stay in that vendor's crate, on top of these.
+//! What an HTTP status the replica did not expect means to the contract.
+//!
+//! It is written once for the replicas that speak HTTP: a read that failed ([`ReplicaError`]) or a
+//! write that was refused ([`PutRefused`]). The statuses every server answers alike are here; a
+//! vendor's own reasons (a throttle spelled as a `403`, a locked item) stay in that vendor's crate,
+//! on top of these.
 
 use crate::refusal::{PutRefused, ReplicaError, RetryAfter};
 use account_http::http::Response;

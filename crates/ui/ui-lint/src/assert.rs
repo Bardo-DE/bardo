@@ -7,10 +7,12 @@ use super::severity;
 use super::stylesheet::every_offence;
 use crate::rule::Offence;
 
-/// Panic, listing every offence with its line and column, unless `css` is clean once
-/// `config.exceptions` are applied and every exception suppressed at least one offence. An
-/// exception that suppressed nothing is stale, and a stale exception is a failure. It prints what
-/// each exception suppressed (to stderr on success, in the panic otherwise).
+/// Panics, listing every offence with its line and column, unless `css` is clean.
+///
+/// Clean means that once `config.exceptions` are applied nothing is left and every exception
+/// suppressed at least one offence. An exception that suppressed nothing is stale, and a stale
+/// exception is a failure. It prints what each exception suppressed (to stderr on success, in the
+/// panic otherwise).
 ///
 /// Warnings ([`super::Severity::Warning`]) never fail it: they are printed to stderr, and an
 /// exception that suppresses only a warning is not stale.

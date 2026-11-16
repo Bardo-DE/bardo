@@ -71,9 +71,11 @@ async fn next<S: Stream + Unpin>(stream: &mut S) -> Option<S::Item> {
     std::future::poll_fn(|cx| Pin::new(&mut *stream).poll_next(cx)).await
 }
 
-/// Whether a signal really came from the notification server: its sender is the connection that owns
-/// the server's well-known name. A signal from any other connection is nobody's word, so a forged
-/// `ActionInvoked` opens nothing. Either side unknown means no.
+/// Whether a signal really came from the notification server: its sender is the connection that
+/// owns the server's well-known name.
+///
+/// A signal from any other connection is nobody's word, so a forged `ActionInvoked` opens nothing.
+/// Either side unknown means no.
 #[must_use]
 pub fn is_from_owner(sender: Option<&str>, owner: Option<&str>) -> bool {
     matches!((sender, owner), (Some(sender), Some(owner)) if sender == owner)

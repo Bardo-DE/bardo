@@ -17,9 +17,10 @@ use ui_style::kit::Kits;
 
 pub use note::{ParseFault, UserStyleNote, UserStyleNoteKind};
 
-/// The notes on `css`, in source order: parse errors first among equals, then the rest. `kits`
-/// say which tokens, classes and attributes are the design system's public surface. Report only:
-/// the caller loads the text whatever this returns.
+/// The notes on `css`, in source order: parse errors first among equals, then the rest.
+///
+/// `kits` say which tokens, classes and attributes are the design system's public surface. Report
+/// only: the caller loads the text whatever this returns.
 #[must_use]
 pub fn user_stylesheet(css: &str, kits: &Kits) -> Vec<UserStyleNote> {
     user_stylesheet_with(css, kits, &[])

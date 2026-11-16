@@ -8,10 +8,11 @@ use base_ids::Bytes;
 use base_time::UnixSeconds;
 use std::collections::BTreeSet;
 
-/// The changes a full listing implies against the journal, as the feed would have said them:
-/// an upsert for every listed item the journal does not hold at that version, a tombstone for
-/// every journal item the listing no longer has. An item whose version is the journal's is
-/// not mentioned, so applying the result re-uploads and re-fetches nothing known.
+/// The changes a full listing implies against the journal, as the feed would have said them.
+///
+/// That is an upsert for every listed item the journal does not hold at that version, a tombstone
+/// for every journal item the listing no longer has. An item whose version is the journal's is not
+/// mentioned, so applying the result re-uploads and re-fetches nothing known.
 #[must_use]
 pub fn reconcile(known: &[JournalItem], listing: &[RemoteItem], now: UnixSeconds) -> Vec<Change> {
     let at_version = |item: &RemoteItem| {
@@ -58,9 +59,10 @@ pub struct MassDelete {
 }
 
 /// Whether `changes` (what a full listing implies) would discard all of a non-empty journal, or
-/// more than [`MASS_DELETE_FLOOR`] items and more than half of it. An empty or failed listing
-/// from a server that is in trouble looks exactly like that, and acting on it would wipe the
-/// local mirror, so the caller halts for confirmation instead.
+/// more than [`MASS_DELETE_FLOOR`] items and more than half of it.
+///
+/// An empty or failed listing from a server that is in trouble looks exactly like that, and acting
+/// on it would wipe the local mirror, so the caller halts for confirmation instead.
 #[must_use]
 pub fn mass_delete(known: &[JournalItem], changes: &[Change]) -> Option<MassDelete> {
     // Only settled items are discarded by a deletion; a pending one becomes a conflict instead.

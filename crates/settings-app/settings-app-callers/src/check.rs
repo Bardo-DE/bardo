@@ -8,8 +8,10 @@ use std::sync::Arc;
 use ui_settings::live::{OwnerAnswer, OwnerCheck, SenderName, Verdict};
 
 /// Whether the owner of a service's bus name holds the role of that service, at the proof a unit
-/// gives. A name that is not one of the eight services, an owner that cannot be identified and an
-/// owner that holds another role are all a refusal.
+/// gives.
+///
+/// A name that is not one of the eight services, an owner that cannot be identified and an owner
+/// that holds another role are all a refusal.
 #[derive(Clone)]
 pub struct RoleCheck {
     peers: Arc<BusPeers>,

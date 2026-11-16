@@ -17,11 +17,13 @@ pub enum Health {
     Restored,
 }
 
-/// Looks at the marker the last install left and acts on it: moves it on, clears it, or rolls back
-/// (through `elevate`) when the first session on the new release never confirmed. `here` is the
-/// login this start belongs to: a restart inside the login the marker was last set in changes nothing.
-/// A release that is rolled back is remembered as refused, so the next check does not offer it again;
-/// so is one whose rollback failed (the marker stays, so the next start tries again).
+/// Looks at the marker the last install left and acts on it.
+///
+/// It moves the marker on, clears it, or rolls back (through `elevate`) when the first session on
+/// the new release never confirmed. `here` is the login this start belongs to: a restart inside the
+/// login the marker was last set in changes nothing. A release that is rolled back is remembered as
+/// refused, so the next check does not offer it again; so is one whose rollback failed (the marker
+/// stays, so the next start tries again).
 pub fn on_start(
     layout: &Layout,
     store: &StateStore,

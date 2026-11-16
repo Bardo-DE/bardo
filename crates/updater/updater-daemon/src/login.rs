@@ -9,9 +9,11 @@ pub use updater_root::helper::BOOT_ID_PATH;
 /// The variable the session manager sets to the login session's number.
 pub const SESSION_VARIABLE: &str = "XDG_SESSION_ID";
 
-/// Reads the login: `var` looks up an environment variable and `read` reads a text file (the seams,
-/// so tests need neither the real environment nor `/proc`). A part that is missing, unreadable or
-/// blank is left unknown.
+/// Reads the login.
+///
+/// `var` looks up an environment variable and `read` reads a text file (the seams, so tests need
+/// neither the real environment nor `/proc`). A part that is missing, unreadable or blank is left
+/// unknown.
 pub fn here(
     var: impl Fn(&str) -> Option<OsString>,
     read: impl Fn(&Path) -> io::Result<String>,

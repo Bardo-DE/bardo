@@ -122,9 +122,11 @@ impl Confirmations {
     }
 }
 
-/// `loaded` with each value looser than the shipped default that `confirmed` does not hold put
-/// back to the shipped value, and reported as [`Why::NotConfirmed`]. A value that is not looser
-/// needs nothing; a confirmation for a value the file no longer has is not used.
+/// `loaded` with each unconfirmed loosened value put back to the shipped value.
+///
+/// Each value looser than the shipped default that `confirmed` does not hold is put back, and
+/// reported as [`Why::NotConfirmed`]. A value that is not looser needs nothing; a confirmation for
+/// a value the file no longer has is not used.
 #[must_use]
 pub fn gate(loaded: Loaded, confirmed: &Confirmations) -> Loaded {
     let shipped = MemorySettings::default();

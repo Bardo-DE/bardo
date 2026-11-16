@@ -23,9 +23,11 @@ pub enum LangSet {
     Listed(BTreeSet<Lang>),
 }
 
-/// The direction-specific half of [`SpeechCaps`]. In a catalog file it sits flat in the
-/// `speech` table, with the direction written as `dir = "in"` or `dir = "out"`; this is the one
-/// internally tagged enum, because `dir` is the key the spec fixed.
+/// The direction-specific half of [`SpeechCaps`].
+///
+/// In a catalog file it sits flat in the `speech` table, with the direction written as `dir = "in"`
+/// or `dir = "out"`; this is the one internally tagged enum, because `dir` is the key the spec
+/// fixed.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "dir", rename_all = "snake_case")]
 pub enum SpeechIo {

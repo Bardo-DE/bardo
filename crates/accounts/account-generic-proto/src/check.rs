@@ -23,9 +23,10 @@ pub fn plan(credential: &Credential, endpoints: &[ServiceEndpoint]) -> Option<Re
     plan_at(credential, incoming(endpoints)?)
 }
 
-/// The relay plan that tries `credential` at `endpoint`, a mail server (IMAP, POP3 or SMTP: the
-/// relay says `EHLO` or `CAPABILITY` and authenticates before its first write). `None` when
-/// there is nothing to try (a token).
+/// The relay plan that tries `credential` at `endpoint`, a mail server.
+///
+/// The server speaks IMAP, POP3 or SMTP: the relay says `EHLO` or `CAPABILITY` and authenticates
+/// before its first write. `None` when there is nothing to try (a token).
 #[must_use]
 pub fn plan_at(credential: &Credential, endpoint: &ServiceEndpoint) -> Option<RelayPlan> {
     let Credential::Password(password) = credential else {

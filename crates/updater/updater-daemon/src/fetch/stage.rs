@@ -132,9 +132,11 @@ fn one_connection(
 }
 
 /// Saves the verified description and downloads the bundle into `dir`, calling `progress` with the
-/// bytes so far and the total expected. The bundle is written as `<name>.part` and renamed once its
-/// size and digest match, so a file under its real name is always complete. A `.part` file already
-/// there is continued, not started again.
+/// bytes so far and the total expected.
+///
+/// The bundle is written as `<name>.part` and renamed once its size and digest match, so a file
+/// under its real name is always complete. A `.part` file already there is continued, not started
+/// again.
 ///
 /// # Errors
 ///

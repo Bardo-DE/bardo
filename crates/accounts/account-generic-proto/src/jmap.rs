@@ -1,7 +1,8 @@
-//! A JMAP server a person typed by hand: the session resource at the URL they gave, fetched with
-//! the account's credential (HTTP Basic for a password, a bearer for an API token). A refusal is
-//! the credential's; what is not a session is unreadable. The relay presents the stored secret
-//! the same way.
+//! A JMAP server a person typed by hand.
+//!
+//! The session resource is at the URL they gave, fetched with the account's credential (HTTP Basic
+//! for a password, a bearer for an API token). A refusal is the credential's; what is not a session
+//! is unreadable. The relay presents the stored secret the same way.
 
 use crate::{Error, bodiless};
 use account_core::{EndpointUrl, LoginName, ServiceEndpoint};

@@ -24,10 +24,12 @@ pub fn is_id(text: &str) -> bool {
         })
 }
 
-/// The text-newtype items every validated string shares, for a tuple struct `Name(String)` (or
-/// `Name(Box<str>)`) whose `parse(&str) -> Result<Self, $error>` holds the rule: `as_str`,
-/// `TryFrom<String>` (so serde's `try_from = "String"` runs `parse`), `From<Name> for String`
-/// and `Display`. The one place those four are written.
+/// The text-newtype items every validated string shares.
+///
+/// They are for a tuple struct `Name(String)` (or `Name(Box<str>)`) whose `parse(&str) ->
+/// Result<Self, $error>` holds the rule: `as_str`, `TryFrom<String>` (so serde's `try_from =
+/// "String"` runs `parse`), `From<Name> for String` and `Display`. The one place those four are
+/// written.
 #[macro_export]
 macro_rules! string_newtype {
     ($name:ident, $error:ty) => {
@@ -59,9 +61,11 @@ macro_rules! string_newtype {
     };
 }
 
-/// Declares an id type in the one slug grammar ([`is_id`]): a `String` newtype whose `parse` is
-/// the only way in, whose serde form is its text, and whose `Display` writes the text. The
-/// field is private to the module that declares it, and the caller depends on `serde`.
+/// Declares an id type in the one slug grammar ([`is_id`]).
+///
+/// It is a `String` newtype whose `parse` is the only way in, whose serde form is its text, and
+/// whose `Display` writes the text. The field is private to the module that declares it, and the
+/// caller depends on `serde`.
 #[macro_export]
 macro_rules! slug_id {
     ($(#[$doc:meta])* $name:ident, $what:literal) => {
