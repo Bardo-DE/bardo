@@ -1,6 +1,8 @@
-//! The local model an attached engine is: the catalogue's entry for the id (so its codec, tool
-//! and reasoning parser, limits and sampling are the catalogue's, through the same bridge as any
-//! engine), a card that says where the data goes, and a spec no supervisor is given.
+//! The local model an attached engine is.
+//!
+//! The catalogue's entry for the id (so its codec, tool and reasoning parser, limits and sampling
+//! are the catalogue's, through the same bridge as any engine), a card that says where the data
+//! goes, and a spec no supervisor is given.
 
 use super::config::{Attached, AttachedError};
 use super::target::Target;
@@ -25,6 +27,10 @@ pub fn engine_id(id: &str) -> EngineId {
 
 /// The local model of `attached`, over `entries` (the catalogue). `sockets` is where an engine's
 /// socket would go; it is used only when the attachment names no socket of its own.
+///
+/// # Errors
+/// `AttachedError` when the catalogue has no entry for the attached id, or the entry has no OpenAI-
+/// compatible chat engine.
 pub fn local_model(
     attached: &Attached,
     entries: &[ModelEntry],
@@ -97,10 +103,12 @@ pub fn local_model(
     });
     let nothing =
         EnginePaths::new(PathBuf::new()).with_program(profile.kind, ProgramPath(PathBuf::new()));
-    let unit = command(entry, &profile, &nothing, &socket).map_err(|_| no_chat())?;
+    let unit = command(entry, &profile, &nothing, &socket)
+        .ok()
+        .ok_or_else(no_chat)?;
     Ok(LocalModel {
         card: ModelCard {
-            account: AccountId::parse(LOCAL_ACCOUNT).map_err(|_| no_chat())?,
+            account: AccountId::parse(LOCAL_ACCOUNT).ok().ok_or_else(no_chat)?,
             model: attached.id.clone(),
             locality: attached.place.locality(),
             billing: Billing::Free,

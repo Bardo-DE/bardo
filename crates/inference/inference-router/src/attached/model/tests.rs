@@ -6,7 +6,6 @@ use account_capability::Locality;
 use account_capability::ModelId;
 use account_capability::Subject;
 use base_testkit::Scratch;
-use model_openai_compat::Flavor;
 
 fn attached(id: &str, place: Place) -> Attached {
     Attached {

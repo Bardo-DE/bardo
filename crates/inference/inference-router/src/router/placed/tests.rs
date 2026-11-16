@@ -4,9 +4,7 @@ use account_capability::{Capability, LlmCap, LlmFeature, LlmWire};
 use account_core::AccountId;
 use account_match::{DimsNeed, EmbedNeed, LlmNeed};
 use base_ids::Tokens;
-use inference_core::{
-    AutoPolicy, LicenceClass, ModelCard, Permit, PlaceKind, Policy, Readiness, SwapCost,
-};
+use inference_core::{LicenceClass, ModelCard, Permit, PlaceKind, Readiness, SwapCost};
 
 fn llm_cap() -> Capability {
     Capability::Llm(LlmCap {

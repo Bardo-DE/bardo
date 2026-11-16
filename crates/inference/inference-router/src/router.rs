@@ -1,6 +1,7 @@
 //! Who answers a session: the models that meet the need, minus what the policy forbids, then
-//! `inference_core::route` (this computer first, the user's tier choice, cost). Pure over the list
-//! of models and their readiness; the engines and the clock are somebody else's.
+//! `inference_core::route` (this computer first, the user's tier choice, cost).
+//!
+//! Pure over the list of models and their readiness; the engines and the clock are somebody else's.
 //!
 //! Consent is not routing's: each model carries a [`Permit`] its caller decided. A model on this
 //! computer is `Granted` (the data does not leave the machine, and the class's floor already
@@ -134,6 +135,9 @@ pub fn slots_of(card: &ModelCard) -> Vec<Slot> {
 }
 
 /// Only `Screen` data may enter a computer-use session: the frames are the screen.
+///
+/// # Errors
+/// `InferRefusal::Unsupported` for any class but `Screen`.
 pub fn check_class(class: DataClass) -> Result<(), InferRefusal> {
     match class {
         DataClass::Screen => Ok(()),
@@ -157,14 +161,18 @@ pub fn fits(need: &Need, card: &ModelCard) -> bool {
         .any(|capability| matches(need, &CoreOffer::Present(capability.clone())) == Match::Fits)
 }
 
-/// The model to run for a session of this need, class and tier, and its readiness; or why none
-/// may. A computer-use need with any class but `Screen` is `Unsupported`, as the session
-/// machine would answer it later.
+/// The model to run for a session of this need, class and tier, and its readiness; or why none may.
+///
+/// A computer-use need with any class but `Screen` is `Unsupported`, as the session machine would
+/// answer it later.
 ///
 /// The person's pick for the kind and tier decides how: a named model is served or refused
 /// (never replaced), "auto" is `inference_core::pick`, and an empty row is the catalogue's own
 /// choice (`route`). A session's text slot never reaches here empty: [`chosen_for`] refuses it
 /// first, since there is no default planner.
+///
+/// # Errors
+/// `PickRefusal` when no listed model may serve `need` under the policy and the person's picks.
 pub fn choose(
     need: &Need,
     class: DataClass,
@@ -273,10 +281,15 @@ pub enum Unchosen {
     CatalogueChoice,
 }
 
-/// Whether `need` may be routed at `tier` under the person's `tiers`: a language need whose
-/// text slot is unset at that tier is `NoModelChosen` when `unchosen` is `Refuse`. "auto" is a
-/// choice; only an empty row is not. Every other need, and a pin (which does not consult the
-/// person's picks), is not asked.
+/// Whether `need` may be routed at `tier` under the person's `tiers`.
+///
+/// A language need whose text slot is unset at that tier is `NoModelChosen` when `unchosen` is
+/// `Refuse`. "auto" is a choice; only an empty row is not. Every other need, and a pin (which does
+/// not consult the person's picks), is not asked.
+///
+/// # Errors
+/// `PickRefusal` (`NoModelChosen`) when `unchosen` is `Refuse` and the text slot is unset at
+/// `tier`.
 pub fn chosen_for(
     need: &Need,
     tier: Tier,

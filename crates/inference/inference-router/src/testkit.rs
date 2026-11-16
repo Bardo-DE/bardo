@@ -1,6 +1,7 @@
-//! Helpers for tests of this crate and of the ones built on it (feature `testing`): the catalog
-//! entries the tests use, the local models they make, a model of an account that is not on this
-//! computer, and the catalog stoker ships.
+//! Helpers for tests of this crate and of the ones built on it (feature `testing`).
+//!
+//! The catalog entries the tests use, the local models they make, a model of an account that is not
+//! on this computer, and the catalog stoker ships.
 
 pub mod entries;
 
@@ -13,6 +14,9 @@ static NEXT: AtomicU32 = AtomicU32::new(0);
 
 /// The three test models (`tiny-chat`, `tiny-embed`, `tiny-cua`), with engine programs
 /// configured and the weights directories created under `scratch`.
+///
+/// # Panics
+/// when an embedded test entry does not parse or a weights directory cannot be created.
 #[must_use]
 pub fn models(scratch: &Path) -> Vec<LocalModel> {
     let entries: Vec<_> = [entries::chat(), entries::embed(), entries::cua()]
@@ -36,6 +40,9 @@ pub fn models(scratch: &Path) -> Vec<LocalModel> {
 }
 
 /// A model of an account that is not on this computer, for routing tests that must not reach it.
+///
+/// # Panics
+/// never: the fixed ids are valid.
 #[must_use]
 pub fn cloud_card() -> inference_core::ModelCard {
     use account_capability::ModelId;
@@ -60,10 +67,15 @@ pub fn cloud_card() -> inference_core::ModelCard {
 /// The catalog files stoker ships in this tree, embedded by `build.rs`.
 const SHIPPED_CATALOG: &[(&str, &str)] = include!(concat!(env!("OUT_DIR"), "/stoker_catalog.rs"));
 
-/// The catalog stoker ships, in this tree, as a directory a test can read: the
-/// files the build embedded, written once per content hash under the system temp directory. A test reads
-/// what the build fetched, never a checkout that happens to sit elsewhere, and needs no
-/// cargo or sources where it runs.
+/// The catalog stoker ships, in this tree, as a directory a test can read: the files the build
+/// embedded, written once per content hash under the system temp directory.
+///
+/// A test reads what the build fetched, never a checkout that happens to sit elsewhere, and needs
+/// no cargo or sources where it runs.
+///
+/// # Panics
+/// when the build embedded no catalog, or the directory cannot be written under the system temp
+/// directory.
 pub fn pinned_stoker_catalog() -> PathBuf {
     assert!(
         !SHIPPED_CATALOG.is_empty(),

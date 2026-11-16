@@ -59,8 +59,9 @@ fn modalities(listed: &Listed) -> (BTreeSet<Modality>, BTreeSet<Modality>) {
     (takes, gives)
 }
 
-/// The planner's catalogue: every listed model, in the slots its capabilities put it in. A model
-/// is in the `text` slot only when it meets the session's language `need` (its features and
+/// The planner's catalogue: every listed model, in the slots its capabilities put it in.
+///
+/// A model is in the `text` slot only when it meets the session's language `need` (its features and
 /// context), as routing has always required.
 #[must_use]
 pub fn catalogue_of(listed: &[Listed], need: &Need) -> Vec<CatalogueModel> {
@@ -99,8 +100,9 @@ pub fn catalogue_of(listed: &[Listed], need: &Need) -> Vec<CatalogueModel> {
         .collect()
 }
 
-/// The providers the person's accounts reach: what accountd's `Verdicts` listed for the app. A
-/// hosted model whose account says `ask` or `denied` is still listed, and `admit` refuses it by
+/// The providers the person's accounts reach: what accountd's `Verdicts` listed for the app.
+///
+/// A hosted model whose account says `ask` or `denied` is still listed, and `admit` refuses it by
 /// its verdict (`NeedsGrant`, `Denied`), so the planner can say why instead of "nothing".
 #[must_use]
 pub fn granted_of(listed: &[Listed]) -> Vec<ProviderId> {
@@ -114,7 +116,13 @@ pub fn granted_of(listed: &[Listed]) -> Vec<ProviderId> {
 }
 
 /// The pipeline for a request of `shape` under the person's settings and these models.
-#[allow(clippy::too_many_arguments)]
+///
+/// # Errors
+/// `Refusal` when no pipeline of the person's picks and the granted models can answer `shape`.
+#[allow(
+    clippy::too_many_arguments,
+    reason = "the request's shape, the person's settings and the models are separate facts of one plan"
+)]
 pub fn plan(
     shape: &RequestShape,
     need: &Need,
@@ -140,6 +148,9 @@ pub fn plan(
 
 /// The route of a language session: a text-only request, so a one-stage plan whose only stage is
 /// the answer.
+///
+/// # Errors
+/// `PickRefusal` when no model may answer a text-only request under the policy and picks.
 pub fn decide_text(
     need: &Need,
     class: DataClass,

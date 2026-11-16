@@ -1,6 +1,7 @@
 //! What the session server leans on, as traits the daemon fills: who answers (the route), the
-//! engines behind it, the model turn itself and the audit trail. Async seams return
-//! `impl Future + Send`, as everywhere in porter; none needs `dyn`.
+//! engines behind it, the model turn itself and the audit trail.
+//!
+//! Async seams return `impl Future + Send`, as everywhere in porter; none needs `dyn`.
 
 use crate::carried::Carried;
 use crate::session::{HeardAudio, RouteDecision, Routing, SessionSpec};
@@ -8,7 +9,6 @@ use inference_core::{
     AudioFrame, ChatRequest, InferEvent, InferRefusal, InferReply, InferRequest, ModelRef,
     PickRefusal, Why,
 };
-use std::future::Future;
 use std::os::fd::OwnedFd;
 
 /// Decides who answers a session: policy, grants, spend and readiness. One call per session;

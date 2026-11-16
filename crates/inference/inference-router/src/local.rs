@@ -1,6 +1,8 @@
-//! The models this computer can run: one [`LocalModel`] per catalog entry that a configured
-//! engine can serve, with its card (what routing sees), the supervisor's spec (how to start its
-//! engine) and the socket its engine listens on.
+//! The models this computer can run.
+//!
+//! One [`LocalModel`] per catalog entry that a configured engine can serve, with its card (what
+//! routing sees), the supervisor's spec (how to start its engine) and the socket its engine listens
+//! on.
 //!
 //! How long a conversation and a reply may be is the catalogue's and the person's (`window`): the
 //! window an engine starts with, and the longest reply a model may write.
@@ -82,6 +84,10 @@ pub struct EngineConfig {
 
 impl EngineConfig {
     /// The attached engines the file names, each past the checks the file alone allows.
+    ///
+    /// # Errors
+    /// `AttachedError` for the first attached engine the file names that fails the checks of the
+    /// file alone.
     pub fn attached(&self) -> Result<Vec<Attached>, AttachedError> {
         self.attached
             .iter()
@@ -279,9 +285,11 @@ pub(crate) fn flavor_of(kind: EngineKind) -> Option<Flavor> {
     }
 }
 
-/// The models `entries` make on this computer: those with a capability, and an engine profile
-/// whose program is configured. The first such profile of an entry is the one used.
-/// `sockets` is the directory the engines' sockets go in (`$XDG_RUNTIME_DIR/bardo/inference`).
+/// The models `entries` make on this computer: those with a capability, and an engine profile whose
+/// program is configured.
+///
+/// The first such profile of an entry is the one used. `sockets` is the directory the engines'
+/// sockets go in (`$XDG_RUNTIME_DIR/bardo/inference`).
 #[must_use]
 pub fn build(entries: &[ModelEntry], engines: &EngineConfig, sockets: &Path) -> Vec<LocalModel> {
     entries

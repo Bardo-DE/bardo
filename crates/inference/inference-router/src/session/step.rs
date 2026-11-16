@@ -15,11 +15,15 @@ use inference_core::{
 ///
 /// The fd server feeds it the route's decision, the engine's readiness, the client's frames and
 /// the running turn's events, and carries out what comes back; the machine never waits.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one match over the machine's (phase, input) table; each arm is short"
+)]
 #[must_use]
 pub fn step(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<SessionOut>) {
     match (phase, input) {
         (Phase::Closed, _) => (Phase::Closed, vec![]),
-        (phase, SessionIn::Closed) => close(phase),
+        (phase, SessionIn::Closed) => close(&phase),
         (phase @ Phase::Hearing { .. }, input) => hearing(spec, phase, input),
         (
             waiting @ Phase::Waiting { queued: None, .. },
@@ -35,7 +39,7 @@ pub fn step(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<S
         (Phase::Opened, SessionIn::Routed(Ok(decision))) => {
             let why = why_event(&decision);
             let wait = waiting_event(decision.readiness);
-            let want = SessionOut::Want(model_of(&decision.served));
+            let engine_want = SessionOut::Want(model_of(&decision.served));
             let answer = decision.answer_note();
             (
                 Phase::Waiting {
@@ -43,7 +47,7 @@ pub fn step(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<S
                     answer,
                     queued: None,
                 },
-                why.into_iter().chain(wait).chain([want]).collect(),
+                why.into_iter().chain(wait).chain([engine_want]).collect(),
             )
         }
         (phase @ Phase::Waiting { .. }, SessionIn::EngineProgress(readiness)) => {
@@ -185,9 +189,9 @@ fn pinned(phase: &Phase) -> Option<&ServedBy> {
 }
 
 /// End of file or an explicit close: drop the running turn, give the engine back.
-fn close(phase: Phase) -> (Phase, Vec<SessionOut>) {
+fn close(phase: &Phase) -> (Phase, Vec<SessionOut>) {
     let drop_turn = matches!(phase, Phase::InTurn { .. }).then_some(SessionOut::DropTurn);
-    let release = pinned(&phase).map(model_of).map(SessionOut::Release);
+    let release = pinned(phase).map(model_of).map(SessionOut::Release);
     (
         Phase::Closed,
         drop_turn.into_iter().chain(release).collect(),

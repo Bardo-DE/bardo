@@ -59,6 +59,10 @@ impl KeyFile {
     /// The token in the file now. It is opened once and looked at through that handle, so the
     /// file that was checked is the file that is read; a symlink is followed to the file it names
     /// (and that file is checked).
+    ///
+    /// # Errors
+    /// `KeyFileProblem` when the file is missing, cannot be read, is not a regular file private to
+    /// the person, or is not usable text.
     pub fn read(&self) -> Result<SecretText, KeyFileProblem> {
         let mut file = std::fs::File::open(&self.0).map_err(|e| match e.kind() {
             std::io::ErrorKind::NotFound => KeyFileProblem::Missing,
@@ -82,7 +86,9 @@ impl KeyFile {
             .take(LONGEST + 1)
             .read_to_end(&mut bytes)
             .map_err(|e| KeyFileProblem::Unreadable(e.kind()))?;
-        let text = String::from_utf8(bytes).map_err(|_| KeyFileProblem::Unusable)?;
+        let text = String::from_utf8(bytes)
+            .ok()
+            .ok_or(KeyFileProblem::Unusable)?;
         let token = text.trim();
         let fits = !token.is_empty()
             && u64::try_from(token.len()).is_ok_and(|len| len <= LONGEST)

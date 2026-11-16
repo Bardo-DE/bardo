@@ -1,8 +1,10 @@
-//! Routing inside a set of places. A caller that names the places a session may run (docket's
-//! `places` option) is routed in them and nowhere else: each place in the caller's order is tried
-//! with the usual rules (the floor, local-only, consent, spend, the person's picks), the first one
-//! that can serve wins, and when none can the answer names one reason and, if a place outside the
-//! set could have served, the kind of place it would take.
+//! Routing inside a set of places.
+//!
+//! A caller that names the places a session may run (docket's `places` option) is routed in them
+//! and nowhere else: each place in the caller's order is tried with the usual rules (the floor,
+//! local-only, consent, spend, the person's picks), the first one that can serve wins, and when
+//! none can the answer names one reason and, if a place outside the set could have served, the kind
+//! of place it would take.
 //!
 //! Pure over the list of models with the place each is at and whether it can serve now; the
 //! engines build that list.
@@ -200,6 +202,9 @@ fn attempt(
 }
 
 /// The model to run for `need` inside `allowed`, and the place it is at; or why none may.
+///
+/// # Errors
+/// `Unplaced` when no allowed place has a model that may serve `need`.
 pub fn choose_in(
     need: &Need,
     class: DataClass,

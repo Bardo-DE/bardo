@@ -1,6 +1,8 @@
-//! Engines the person already runs: `[engines.attached."<catalog id>"]` in `inferd.toml` names an
-//! engine (vLLM on a lab machine, reached through an SSH tunnel to a local Unix socket, or on a
-//! loopback port) that is used and never started, stopped, evicted or killed.
+//! Engines the person already runs.
+//!
+//! `[engines.attached."<catalog id>"]` in `inferd.toml` names an engine (vLLM on a lab machine,
+//! reached through an SSH tunnel to a local Unix socket, or on a loopback port) that is used and
+//! never started, stopped, evicted or killed.
 //!
 //! ```toml
 //! [engines.attached."qwen3-32b"]
@@ -35,6 +37,10 @@ pub use not_ready::NotReady;
 pub use target::Target;
 
 /// The models of the attached engines `attached` names, over the catalogue's `entries`.
+///
+/// # Errors
+/// `AttachedError` for the first attached engine that does not name a usable catalogue entry or
+/// engine.
 pub fn models(
     attached: &[Attached],
     entries: &[model_catalog::ModelEntry],

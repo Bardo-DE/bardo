@@ -195,7 +195,8 @@ fn diagnostics_forget_the_last_start_when_a_new_one_begins() {
         diagnostics.tail(&id).0,
         vec!["said this".to_owned(), "and half".to_owned()]
     );
-    diagnostics.begin(&id);
+    // The buffer for the new process's output is not needed here.
+    let _ = diagnostics.begin(&id);
     assert_eq!(diagnostics.refusal(&id), None);
     assert_eq!(diagnostics.tail(&id), Tail::default());
 }

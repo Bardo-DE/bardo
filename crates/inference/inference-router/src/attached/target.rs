@@ -49,6 +49,9 @@ impl Target {
 
     /// The endpoint of one connect: the key file is read now (so a token that was rotated is the
     /// one sent), and a file that is refused is why there is no endpoint.
+    ///
+    /// # Errors
+    /// `KeyFileProblem` when the key file cannot be read.
     pub fn endpoint(&self, base: &str, timeouts: Timeouts) -> Result<HttpEndpoint, KeyFileProblem> {
         let auth = match (&self.key, &self.reach) {
             // Plain http on this machine's loopback: the key goes only because it is opted in, and

@@ -2,6 +2,8 @@
 //! computer-use model on vLLM. Not the shipped ones: the shipped files are read by `catalog`'s own
 //! tests.
 
+use std::fmt::Write as _;
+
 const SAMPLING: &str = r#"sampling = { reasoning_on = { temperature = 600, top_p = { kind = "off" }, top_k = { kind = "off" }, min_p = { kind = "off" }, repeat_penalty = { kind = "off" }, seed = { kind = "off" } }, reasoning_off = { temperature = 0, top_p = { kind = "off" }, top_k = { kind = "off" }, min_p = { kind = "off" }, repeat_penalty = { kind = "off" }, seed = { kind = "off" } }, reasoning_default = "off" }"#;
 
 #[must_use]
@@ -77,12 +79,14 @@ weights = {{ kind = "hf_snapshot" }}
 /// writes no sampling, as the shipped hosted entries do.
 #[must_use]
 pub fn hosted(id: &str, label: &str, family: &str, reaches: &[(&str, &str, &str)]) -> String {
-    let reach = reaches
-        .iter()
-        .map(|(provider, model, wire)| {
-            format!("  {{ provider = \"{provider}\", model = \"{model}\", wire = \"{wire}\" }},\n")
-        })
-        .collect::<String>();
+    let mut reach = String::new();
+    for (provider, model, wire) in reaches {
+        // Writing to a `String` cannot fail.
+        let _ = writeln!(
+            reach,
+            "  {{ provider = \"{provider}\", model = \"{model}\", wire = \"{wire}\" }},"
+        );
+    }
     format!(
         r#"id = "{id}"
 label = "{label}"
@@ -174,9 +178,10 @@ pub const ATTACHED: &str = "qwen3.5-35b-a3b-fp8";
 /// request names and `/v1/models` lists.
 pub const SERVED: &str = "lab-qwen";
 
-/// The shipped entry of an attached engine (a vendored copy of stoker's
-/// `catalog/qwen3.5-35b-a3b-fp8.toml` in `tests/fixtures`, so a plain clone builds: serving
-/// attached, locality on-device, no engine profile), with the served name `SERVED`.
+/// The shipped entry of an attached engine, with the served name `SERVED`.
+///
+/// It is a vendored copy of stoker's `catalog/qwen3.5-35b-a3b-fp8.toml` in `tests/fixtures`, so a
+/// plain clone builds: serving attached, locality on-device, no engine profile.
 #[must_use]
 pub fn attached() -> String {
     include_str!("../../fixtures/qwen3.5-35b-a3b-fp8.toml").replace(

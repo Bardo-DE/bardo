@@ -1,7 +1,9 @@
-//! The model catalog as porter sees it: stoker's `catalog/*.toml` files, read from the system
-//! and user directories, become `Claim`s at `Provenance::Curated` for the `local` provider
-//! (`Discovery::Supervised`). The parsing and the merge are stoker's `model-catalog`; this module
-//! reads the directories and maps an entry's capabilities to porter's vocabulary.
+//! The model catalog as porter sees it.
+//!
+//! Stoker's `catalog/*.toml` files, read from the system and user directories, become `Claim`s at
+//! `Provenance::Curated` for the `local` provider (`Discovery::Supervised`). The parsing and the
+//! merge are stoker's `model-catalog`; this module reads the directories and maps an entry's
+//! capabilities to porter's vocabulary.
 //!
 //! An entry that gives vectors makes a claim from its `vector_out` table (the vector length, the
 //! batch and input limits, the query and document prefixes). inferd keeps no override of its own: the catalog is
@@ -68,6 +70,9 @@ pub enum EntryError {
 
 /// One entry's text as an entry: stoker's parser, then the checks of the engines the entry names
 /// (a vLLM line needs a GPU estimate, a llama-server line GGUF weights).
+///
+/// # Errors
+/// `EntryError` when the text is not a valid entry, or an engine it names fails its checks.
 pub fn parse_entry_text(text: &str) -> Result<ModelEntry, EntryError> {
     let entry = parse_entry(text)?;
     check_entry(&entry)?;
@@ -113,9 +118,10 @@ fn read_dir(dir: &Path) -> (Vec<ModelEntry>, Vec<Skipped>) {
     (entries, skipped)
 }
 
-/// The claims the catalog makes for the local account: one per model and capability of an entry
-/// that runs on this computer, at the provenance the catalog gives (`Curated`); a hosted entry is
-/// not the local account's.
+/// The claims the catalog makes for the local account.
+///
+/// One per model and capability of an entry that runs on this computer, at the provenance the
+/// catalog gives (`Curated`); a hosted entry is not the local account's.
 pub fn local_claims(dirs: &CatalogDirs) -> Vec<Claim> {
     read_catalog(dirs)
         .entries
@@ -145,9 +151,10 @@ pub fn claims_of(entry: &ModelEntry) -> Vec<Claim> {
         .collect()
 }
 
-/// What the entry's capabilities make of it: a language model, a computer-use model, an
-/// embedding model, a speech model. A model with both audio tables keeps the transcription
-/// side only (its slots say the rest).
+/// What the entry's capabilities make of it: a language model, a computer-use model, an embedding
+/// model, a speech model.
+///
+/// A model with both audio tables keeps the transcription side only (its slots say the rest).
 pub fn capabilities_of(entry: &ModelEntry) -> Vec<Capability> {
     let c = &entry.capabilities;
     let takes = |modality| c.inputs.contains(modality);

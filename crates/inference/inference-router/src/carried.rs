@@ -1,7 +1,9 @@
-//! What a turn's request carried, which its reply does not say: how many frames went to the
-//! model and how much audio. The audit entry records both ("a frame was sent", "audio was sent":
-//! never the frame, the audio or its text), so the loop keeps a [`Tally`] of the turn in flight
-//! and hands the sink a [`Carried`] when the turn ends, however it ends.
+//! What a turn's request carried, which its reply does not say: how many frames went to the model
+//! and how much audio.
+//!
+//! The audit entry records both ("a frame was sent", "audio was sent": never the frame, the audio
+//! or its text), so the loop keeps a [`Tally`] of the turn in flight and hands the sink a
+//! [`Carried`] when the turn ends, however it ends.
 
 use crate::audio::audio_ms;
 use base_ids::Count;

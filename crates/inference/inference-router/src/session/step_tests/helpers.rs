@@ -84,7 +84,7 @@ pub(super) fn routed() -> SessionOut {
 
 pub(super) fn llm_spec(class: DataClass) -> SessionSpec {
     SessionSpec {
-        need: Need::Llm(LlmNeed::new(Default::default(), Tokens(1))),
+        need: Need::Llm(LlmNeed::new(std::collections::BTreeSet::new(), Tokens(1))),
         class,
         tier: Tier::Balanced,
         usage: account_core::consent::Usage::Interactive,

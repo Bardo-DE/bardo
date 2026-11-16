@@ -40,6 +40,10 @@ fn declined() -> Declined {
     }
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "the transition table: one short row per (phase, input)"
+)]
 pub(super) fn rows() -> Vec<Row> {
     let failed = |e| done(InferReply::Failed(e));
     vec![

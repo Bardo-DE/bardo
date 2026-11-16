@@ -72,10 +72,11 @@ pub fn choose_window(
     }
 }
 
-/// The most a reply may write: what the model supports (`max_output_max`, or the served
-/// `max_output` when the catalogue states none), or the person's own length when it is less.
-/// Never more than half the window, so a prompt still has room. A window of zero (not known)
-/// bounds nothing.
+/// The most a reply may write.
+///
+/// What the model supports (`max_output_max`, or the served `max_output` when the catalogue states
+/// none), or the person's own length when it is less. Never more than half the window, so a prompt
+/// still has room. A window of zero (not known) bounds nothing.
 #[must_use]
 pub fn reply_ceiling(text: &TextOut, lengths: Lengths, window: Option<Tokens>) -> Tokens {
     let supported = text
@@ -90,9 +91,10 @@ pub fn reply_ceiling(text: &TextOut, lengths: Lengths, window: Option<Tokens>) -
 }
 
 /// The memory an engine line gives itself out of a card of `total`, when its `args` say
-/// (`--gpu-memory-utilization 0.75`, or `=0.75`): vLLM takes that share of the whole card and
-/// fits its weights and window inside it, so a window past it does not start. None when the
-/// line says nothing, or says a share that is not one.
+/// (`--gpu-memory-utilization 0.75`, or `=0.75`).
+///
+/// VLLM takes that share of the whole card and fits its weights and window inside it, so a window
+/// past it does not start. None when the line says nothing, or says a share that is not one.
 #[must_use]
 pub fn share_of(args: &[EngineArg], total: MiB) -> Option<MiB> {
     let said = args.iter().enumerate().find_map(|(at, arg)| {
@@ -107,7 +109,13 @@ pub fn share_of(args: &[EngineArg], total: MiB) -> Option<MiB> {
         .ok()
         .filter(|share| *share > 0.0 && *share <= 1.0)?;
     // A share of at most one of a card's MiB fits a u32.
-    Some(MiB((f64::from(total.0) * share) as u32))
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "the share is in (0, 1], so the product is between 0 and `total`, which fits a u32"
+    )]
+    let given = (f64::from(total.0) * share) as u32;
+    Some(MiB(given))
 }
 
 impl LocalModel {

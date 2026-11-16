@@ -7,8 +7,8 @@ use account_core::consent::Usage;
 use inference_core::{
     AttachIndex, Base64Bytes, ChatMessage, ChatRequest, CuaBegin, CuaStepRequest, FrameImage,
     FrameLayout, ImagePart, ImageSource, LangPick, MediaType, Role, ServedBy, SpeakReply,
-    SpeakRequest, StepIndex, ToolCallId, ToolResultPart, ToolStatus, TranscribeBegin,
-    TranscribeMode, TranscribeReply, WindowGeometry,
+    SpeakRequest, StepIndex, ToolCallId, ToolStatus, TranscribeBegin, TranscribeMode,
+    TranscribeReply, WindowGeometry,
 };
 
 fn served() -> ServedBy {

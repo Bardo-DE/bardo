@@ -77,17 +77,17 @@ fn check(trace: &str, before: &Phase, after: &Phase, out: &[SessionOut]) {
     assert!(audits <= finishes, "{trace}: an audit with no Finished");
 }
 
-fn walk(spec: &SessionSpec, phase: Phase, depth: usize, trace: &str, routed_sent: usize) {
+fn walk(spec: &SessionSpec, phase: &Phase, depth: usize, trace: &str, routed_sent: usize) {
     if depth == 0 {
         return;
     }
     for input in inputs() {
         let trace = format!("{trace} > {input:?}");
         let (after, out) = step(spec, phase.clone(), input);
-        check(&trace, &phase, &after, &out);
+        check(&trace, phase, &after, &out);
         let sent = routed_sent + out.iter().filter(|o| is_routed(o)).count();
         assert!(sent <= 1, "{trace}: Routed went out twice");
-        walk(spec, after, depth - 1, &trace, sent);
+        walk(spec, &after, depth - 1, &trace, sent);
     }
 }
 
@@ -95,7 +95,7 @@ fn walk(spec: &SessionSpec, phase: Phase, depth: usize, trace: &str, routed_sent
 fn no_short_sequence_breaks_the_machine() {
     walk(
         &llm_spec(DataClass::Mail),
-        Phase::Opened,
+        &Phase::Opened,
         DEPTH,
         "opened",
         0,
@@ -112,7 +112,7 @@ fn nor_does_one_that_starts_mid_session() {
         queued_chat(None),
     ];
     for phase in starts {
-        walk(&spec, phase, DEPTH - 1, "mid", 0);
+        walk(&spec, &phase, DEPTH - 1, "mid", 0);
     }
     let _ = InferRequest::Chat;
 }

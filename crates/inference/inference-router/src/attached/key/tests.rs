@@ -1,5 +1,4 @@
 use super::*;
-use base_secret::SecretText;
 use base_testkit::Scratch;
 use std::os::unix::fs::PermissionsExt;
 

@@ -3,7 +3,6 @@ use account_capability::ModelId;
 use account_core::AccountId;
 use engine_spec::ProgramPath;
 use engine_supervisor::{GpuAccess, Network, Sandbox, UnitSpec};
-use model_catalog::MiB;
 use std::path::PathBuf;
 
 fn id(name: &str) -> EngineId {
@@ -29,6 +28,10 @@ fn spec(name: &str, need: u32) -> EngineSpec {
     }
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "used as a lookup that returns an `Option`, and `.expect` in the rows"
+)]
 fn model(name: &str) -> Option<ModelRef> {
     Some(ModelRef {
         account: AccountId::parse("local").expect("id"),

@@ -4,6 +4,10 @@ use super::helpers::*;
 use account_core::DataClass;
 use inference_core::{ClientFrame, InferEvent, InferReply, ModelError, RequestKind};
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "the transition table: one short row per (phase, input)"
+)]
 pub(super) fn rows() -> Vec<Row> {
     let text = || SessionOut::Emit(InferEvent::TextDelta("hi".into()));
     let failed = |e| done(InferReply::Failed(e));

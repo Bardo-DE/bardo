@@ -1,6 +1,8 @@
-//! Why an engine did not start, and what is known about it: the typed [`Cause`] a waiter is told,
-//! the bounded tail of the engine's standard error, the check of an engine's socket path before
-//! anything is spawned, and the line sink inferd's log goes through.
+//! Why an engine did not start, and what is known about it.
+//!
+//! The typed [`Cause`] a waiter is told, the bounded tail of the engine's standard error, the check
+//! of an engine's socket path before anything is spawned, and the line sink inferd's log goes
+//! through.
 //!
 //! A start that fails is a failure with a cause (the exit status, the last line the engine said,
 //! the path that cannot be used), never a silent `NotReady` until a client gives up. Engine
@@ -305,9 +307,14 @@ impl fmt::Display for Cause {
     }
 }
 
-/// Looks at `path` before an engine is spawned on it: a path too long to bind is refused, a
-/// socket left by an earlier run is removed, anything else there is refused and kept (a symlink
-/// is not a socket, and is not followed).
+/// Looks at `path` before an engine is spawned on it.
+///
+/// A path too long to bind is refused, a socket left by an earlier run is removed, anything else
+/// there is refused and kept (a symlink is not a socket, and is not followed).
+///
+/// # Errors
+/// `Cause` when the path is too long to bind, is taken by anything but a socket, or the old socket
+/// cannot be removed.
 pub fn clear_socket(path: &Path) -> Result<(), Cause> {
     let len = path.as_os_str().as_bytes().len();
     if len >= SUN_PATH {

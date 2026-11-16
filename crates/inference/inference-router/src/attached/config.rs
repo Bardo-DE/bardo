@@ -1,7 +1,8 @@
-//! `[engines.attached."<catalog id>"]`: what the file says of an engine the person already runs,
-//! and the checks that need nothing but the file (the target is a Unix socket or a loopback
-//! address, the data's place is named). The catalogue and the file system are asked later
-//! (`model`, `key`).
+//! `[engines.attached."<catalog id>"]`.
+//!
+//! What the file says of an engine the person already runs, and the checks that need nothing but
+//! the file (the target is a Unix socket or a loopback address, the data's place is named). The
+//! catalogue and the file system are asked later (`model`, `key`).
 
 use crate::startup::SUN_PATH;
 use account_capability::Locality;
@@ -221,10 +222,16 @@ pub enum AttachedError {
 
 impl AttachedEntry {
     /// The entry named `name` as the checks of the file alone see it.
+    ///
+    /// # Errors
+    /// `AttachedError` when the id or computer name is invalid, the place is missing, the target is
+    /// not exactly one valid socket or loopback address, or the key file path is relative.
     pub fn check(&self, name: &str) -> Result<Attached, AttachedError> {
-        let id = ModelId::parse(name).map_err(|_| AttachedError::BadId {
-            id: name.to_owned(),
-        })?;
+        let id = ModelId::parse(name)
+            .ok()
+            .ok_or_else(|| AttachedError::BadId {
+                id: name.to_owned(),
+            })?;
         let here = || name.to_owned();
         let place = self
             .place
@@ -241,17 +248,16 @@ impl AttachedEntry {
                 path: key.display().to_string(),
             });
         }
-        let computer = match &self.computer {
-            None => None,
-            Some(text) => {
-                Some(
-                    ComputerName::parse(text).map_err(|_| AttachedError::BadComputer {
+        let computer =
+            match &self.computer {
+                None => None,
+                Some(text) => Some(ComputerName::parse(text).ok().ok_or_else(|| {
+                    AttachedError::BadComputer {
                         id: here(),
                         name: text.clone(),
-                    })?,
-                )
-            }
-        };
+                    }
+                })?),
+            };
         Ok(Attached {
             id,
             reach,
@@ -280,6 +286,9 @@ fn socket_reach(name: &str, socket: &Path) -> Result<Reach, AttachedError> {
 }
 
 /// `http://<loopback host>:<port>`, a trailing slash allowed, nothing else.
+///
+/// # Errors
+/// `AttachedError` when `url` is not `http://` plus a loopback address and a non-zero port.
 pub fn url_reach(name: &str, url: &str) -> Result<Reach, AttachedError> {
     let bad = || AttachedError::BadUrl {
         id: name.to_owned(),
@@ -296,7 +305,7 @@ pub fn url_reach(name: &str, url: &str) -> Result<Reach, AttachedError> {
         return Err(bad());
     }
     let (host, port) = authority.rsplit_once(':').ok_or_else(bad)?;
-    let port: u16 = port.parse().map_err(|_| bad())?;
+    let port: u16 = port.parse().ok().ok_or_else(bad)?;
     if port == 0 {
         return Err(bad());
     }

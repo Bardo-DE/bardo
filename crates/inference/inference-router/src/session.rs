@@ -1,6 +1,8 @@
-//! One `Open` fd as a pure machine: the states of a session and what each event does to it
-//! (models §4.2, with the audio rules of voice §3.4). `step` takes the state and one input and
-//! returns the next state and the effects the fd server carries out; it never waits.
+//! One `Open` fd as a pure machine: the states of a session and what each event does to it (models
+//! §4.2, with the audio rules of voice §3.4).
+//!
+//! `step` takes the state and one input and returns the next state and the effects the fd server
+//! carries out; it never waits.
 //!
 //! The types, the `fits` table and `step` are built; the tables are in `session/step_tests`.
 //!
@@ -142,9 +144,11 @@ pub enum AudioCursor {
 /// longer utterance fails the turn (`Unreadable`) instead of growing the daemon's memory.
 pub const MAX_HEARD_MS: u32 = 60_000;
 
-/// The person's voice, buffered by a language session until the chat it belongs to arrives: what
-/// a pipeline's `Hear` stage reads. It lives in the machine's state and in the turn that runs it,
-/// and is dropped with them (inferd keeps no audio after a turn).
+/// The person's voice, buffered by a language session until the chat it belongs to arrives: what a
+/// pipeline's `Hear` stage reads.
+///
+/// It lives in the machine's state and in the turn that runs it, and is dropped with them (inferd
+/// keeps no audio after a turn).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct HeardAudio {
     /// How the audio is to be heard (rate, language, mode).
@@ -280,15 +284,16 @@ pub enum SessionOut {
     Audit(InferReply),
 }
 
-/// Whether a request of this kind fits the need the session was opened with: chat and tasks
-/// need a language model, embeddings an embedding model, computer-use steps a computer-use
-/// model, transcription a speech model with `Stt`, speaking one with `Tts`.
+/// Whether a request of this kind fits the need the session was opened with.
+///
+/// Chat and tasks need a language model, embeddings an embedding model, computer-use steps a
+/// computer-use model, transcription a speech model with `Stt`, speaking one with `Tts`.
 #[must_use]
 pub fn fits(need: &Need, kind: RequestKind) -> bool {
     match (need, kind) {
-        (Need::Llm(_), RequestKind::Chat | RequestKind::Task) => true,
-        (Need::Embeddings(_), RequestKind::Embed) => true,
-        (Need::ComputerUse(_), RequestKind::CuaBegin | RequestKind::CuaStep) => true,
+        (Need::Llm(_), RequestKind::Chat | RequestKind::Task)
+        | (Need::Embeddings(_), RequestKind::Embed)
+        | (Need::ComputerUse(_), RequestKind::CuaBegin | RequestKind::CuaStep) => true,
         (Need::Speech(speech), RequestKind::Transcribe) => speech.modes.contains(&SpeechMode::Stt),
         (Need::Speech(speech), RequestKind::Speak) => speech.modes.contains(&SpeechMode::Tts),
         _ => false,
@@ -310,7 +315,7 @@ mod tests {
     use base_ids::Tokens;
 
     fn llm() -> Need {
-        Need::Llm(LlmNeed::new(Default::default(), Tokens(1)))
+        Need::Llm(LlmNeed::new(std::collections::BTreeSet::new(), Tokens(1)))
     }
 
     fn speech(modes: &[SpeechMode]) -> Need {
@@ -325,7 +330,10 @@ mod tests {
             ("llm", llm(), vec![Chat, Task]),
             (
                 "embeddings",
-                Need::Embeddings(EmbedNeed::new(DimsNeed::Any, Default::default())),
+                Need::Embeddings(EmbedNeed::new(
+                    DimsNeed::Any,
+                    std::collections::BTreeSet::new(),
+                )),
                 vec![Embed],
             ),
             (

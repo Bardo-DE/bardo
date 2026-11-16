@@ -1,8 +1,9 @@
-//! What loading a model now would take, from stoker's pure `budget`: the router's input
-//! `SwapCost`. Nothing here starts or stops anything; it asks the question "if I wanted this
-//! engine now, whom would the supervisor unload?" and says which of those answers is a swap Automatic
-//! may make. `budget` never names an engine that is in a turn, and the answer says what each
-//! victim is doing so the router can check that again.
+//! What loading a model now would take, from stoker's pure `budget`: the router's input `SwapCost`.
+//!
+//! Nothing here starts or stops anything; it asks the question "if I wanted this engine now, whom
+//! would the supervisor unload?" and says which of those answers is a swap Automatic may make.
+//! `budget` never names an engine that is in a turn, and the answer says what each victim is doing
+//! so the router can check that again.
 
 use engine_supervisor::{
     BudgetVerdict, EngineId, EngineSpec, EngineState, GpuMemory, MonoMs, budget,
@@ -57,10 +58,11 @@ pub fn running_of<'a>(
         .collect()
 }
 
-/// The cost of loading `want` now. `model_of` names an engine's model for a victim;
-/// `cold_start_estimate_s` is the catalogue's estimate. Before the GPU has been observed nothing
-/// is known to be in the way, so the answer is `Fits` (the supervisor decides again when asked
-/// to start the engine).
+/// The cost of loading `want` now.
+///
+/// `model_of` names an engine's model for a victim; `cold_start_estimate_s` is the catalogue's
+/// estimate. Before the GPU has been observed nothing is known to be in the way, so the answer is
+/// `Fits` (the supervisor decides again when asked to start the engine).
 pub fn swap_cost(
     want: &EngineSpec,
     running: &Running,

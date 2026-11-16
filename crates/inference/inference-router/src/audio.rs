@@ -1,14 +1,14 @@
-//! The audio rules every `Transcribe` turn obeys: which frame may follow which
-//! ([`check_audio`]), how long audio is ([`audio_ms`]) and where a turn reads its frames from
-//! ([`AudioIn`]). The session machine and the audit tally use them; the speech runners that connect
-//! a turn to a speech engine are the daemon's.
+//! The audio rules every `Transcribe` turn obeys.
+//!
+//! Which frame may follow which ([`check_audio`]), how long audio is ([`audio_ms`]) and where a
+//! turn reads its frames from ([`AudioIn`]). The session machine and the audit tally use them; the
+//! speech runners that connect a turn to a speech engine are the daemon's.
 //!
 //! Nothing keeps audio after a turn: frames live in the buffer of the running engine call and
 //! are dropped with it, on `Cancel` too.
 
 use crate::session::AudioCursor;
 use inference_core::{AudioFrame, AudioRate, ModelError};
-use std::future::Future;
 
 /// The longest audio one frame may carry, in milliseconds.
 pub const MAX_FRAME_MS: u32 = 1_000;
@@ -18,6 +18,10 @@ const BYTES_PER_SAMPLE: usize = 2;
 
 /// The next audio cursor after `frame`, or why the frame is refused: it must start where the
 /// last one ended, hold whole samples, be non-empty and carry at most one second.
+///
+/// # Errors
+/// `ModelError::Unreadable` when the cursor is not expecting a frame, or the frame is empty,
+/// misaligned, out of order or longer than one second.
 pub fn check_audio(
     cursor: AudioCursor,
     rate: AudioRate,
