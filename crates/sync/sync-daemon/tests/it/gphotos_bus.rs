@@ -199,8 +199,14 @@ async fn the_picker_starts_a_session_polls_it_imports_what_was_picked_and_delete
         "{session:?}"
     );
     assert_eq!(session.poll_every, std::time::Duration::from_secs(1));
-    assert_eq!(picker.poll(&session.id).await, Ok(PickerState::Waiting));
-    assert_eq!(picker.import(&session.id).await, Err(PickerError::NotYet));
+    assert_eq!(
+        picker.poll(&session.id).await.expect("poll"),
+        PickerState::Waiting
+    );
+    assert!(matches!(
+        picker.import(&session.id).await,
+        Err(PickerError::NotYet)
+    ));
     assert!(
         !rig.paths.photos_picked_dir(&rig.account).exists(),
         "nothing is touched before the person is done"
@@ -232,7 +238,10 @@ async fn the_picker_starts_a_session_polls_it_imports_what_was_picked_and_delete
             },
         ],
     ));
-    assert_eq!(picker.poll(&session.id).await, Ok(PickerState::Picked));
+    assert_eq!(
+        picker.poll(&session.id).await.expect("poll"),
+        PickerState::Picked
+    );
     let imported = picker.import(&session.id).await.expect("import");
 
     let dir = rig
@@ -272,10 +281,10 @@ async fn the_picker_starts_a_session_polls_it_imports_what_was_picked_and_delete
     let sessions = rig.google.picker_sessions();
     assert_eq!(sessions.len(), 1);
     assert!(sessions[0].deleted);
-    assert_eq!(
+    assert!(matches!(
         picker.poll(&session.id).await,
         Err(PickerError::Refused(404))
-    );
+    ));
 
     // Photos were fetched as bytes (`=d`), the video as video bytes (`=dv`), with the picker's
     // own bearer.
@@ -373,7 +382,7 @@ async fn picked_bytes_on_an_origin_the_provider_file_does_not_list_are_refused_a
     let session = picker.start().await.expect("session");
     pick_two(&rig, session.id.as_str());
     let refused = picker.import(&session.id).await.expect_err("refused");
-    assert_eq!(refused, PickerError::Unreached);
+    assert!(matches!(refused, PickerError::Unreached(_)), "{refused:?}");
     // Nothing reached the unlisted origin; nothing of the person's library was written.
     assert!(rig.media.as_ref().expect("media origin").hits().is_empty());
     let dir = rig

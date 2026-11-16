@@ -6,7 +6,7 @@
 //! ask for hidden (completed and cleared) ones. Tasks are converted to `VTODO`s by
 //! [`super::task`] and arrive with their bytes.
 
-use super::super::graph::encode;
+use super::super::graph::{encode, unreadable_body};
 use super::super::{Feed, FeedChange, Page, PimSource};
 use super::task::{self, Task, TaskList};
 use super::{Api, TaskCursor, id_in, list_all, read_error, segment_of};
@@ -84,7 +84,7 @@ impl<T: GrantsLink + 'static> PimSource for GoogleTasksSource<T> {
             .map(|list| {
                 let url = format!("{}/lists/{}/", self.api.base(), encode(&list.id));
                 Ok(Found {
-                    url: WebUrl::parse(&url).ok().ok_or(DiscoverError::Unreadable)?,
+                    url: WebUrl::parse(&url).map_err(DiscoverError::Address)?,
                     segment: segment_of(&list.id),
                     displayname: list.title.filter(|t| !t.is_empty()),
                     color: None,
@@ -166,9 +166,8 @@ impl<T: GrantsLink + 'static> Feed for GoogleTasksFeed<T> {
         if response.status().as_u16() != 200 {
             return Err(read_error(&response, self.clock.now()));
         }
-        let listing: TasksPage = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or(ReplicaError::Transient(RetryAfter(30)))?;
+        let listing: TasksPage =
+            serde_json::from_slice(response.body()).map_err(|error| unreadable_body(&error))?;
         // `updated` is always `YYYY-MM-DDTHH:MM:SS.sssZ`, which orders as text.
         let newest = listing
             .items
@@ -218,9 +217,8 @@ impl<T: GrantsLink + 'static> Feed for GoogleTasksFeed<T> {
         if response.status().as_u16() != 200 {
             return Err(read_error(&response, self.clock.now()));
         }
-        let task: Task = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or(ReplicaError::Transient(RetryAfter(30)))?;
+        let task: Task =
+            serde_json::from_slice(response.body()).map_err(|error| unreadable_body(&error))?;
         if task.is_deleted() {
             Err(ReplicaError::Gone)
         } else {

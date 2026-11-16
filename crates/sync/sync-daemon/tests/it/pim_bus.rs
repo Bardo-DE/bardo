@@ -9,6 +9,7 @@ use crate::common;
 use account_callers::{Caller, CallerRole};
 use account_capability::StorageScope;
 use account_capability::{CapabilityKind, Claim, Offer, Provenance, Subject};
+use account_client::{GrantsError, LinkError};
 use account_core::{
     Account, AccountLabel, AccountState, AuthKind, Credential, DataClass, EndpointUrl, Family,
     LoginName, Restriction, SecretKey, SecretPurpose, SecretText, ServiceEndpoint, SpaceScope, Tls,
@@ -134,7 +135,9 @@ impl PimGrants for Switch {
         if self.up.load(Ordering::Relaxed) {
             self.inner.granted(kind).await
         } else {
-            Err(AccountdUnavailable)
+            Err(AccountdUnavailable(GrantsError::Link(
+                LinkError::Unreachable,
+            )))
         }
     }
 }

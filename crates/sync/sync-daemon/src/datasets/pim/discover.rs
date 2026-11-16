@@ -25,7 +25,7 @@ pub struct Found {
 }
 
 /// Why the collections could not be read.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum DiscoverError {
     /// The server could not be reached.
     #[error("the server could not be reached")]
@@ -39,6 +39,12 @@ pub enum DiscoverError {
     /// The answer was not a multistatus, or an href was not a URL.
     #[error("the server's answer could not be read")]
     Unreadable,
+    /// The answer was not JSON of the shape the API sends.
+    #[error("the server's answer is not the JSON expected")]
+    Json(#[source] serde_json::Error),
+    /// An address is not a web URL.
+    #[error("an address is not a web URL")]
+    Address(#[source] base_ids::IdError),
 }
 
 fn home_of(kind: PimKind) -> Home {
@@ -93,9 +99,7 @@ pub async fn discover<H: Http>(
         .collections
         .into_iter()
         .map(|collection| {
-            let url = WebUrl::parse(&collection.url.to_string())
-                .ok()
-                .ok_or(DiscoverError::Unreadable)?;
+            let url = WebUrl::parse(&collection.url.to_string()).map_err(DiscoverError::Address)?;
             Ok(Found {
                 segment: segment_of(&url),
                 displayname: collection.display_name,

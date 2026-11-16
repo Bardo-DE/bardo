@@ -197,8 +197,7 @@ impl<T: GrantsLink> StorageGrants for ClientStorageGrants<T> {
                 .accounts
                 .find(&need, kind.class(), Usage::Background)
                 .await
-                .ok()
-                .ok_or(AccountdUnavailable)?;
+                .map_err(AccountdUnavailable)?;
             match found {
                 Found::One(one) => candidates.push(one),
                 Found::Several(several) => candidates.extend(several),

@@ -14,6 +14,13 @@ fn corrupt(what: &str, value: &str) -> JournalError {
     JournalError::Corrupt(format!("{what} `{value}` is not one this syncd knows"))
 }
 
+/// `corrupt`, with the reader's own words for why `value` was refused.
+fn unreadable(what: &str, value: &str, cause: &serde_json::Error) -> JournalError {
+    JournalError::Corrupt(format!(
+        "{what} `{value}` is not one this syncd knows: {cause}"
+    ))
+}
+
 fn slug_of<T: serde::Serialize>(value: &T) -> String {
     serde_json::to_value(value)
         .ok()
@@ -23,8 +30,7 @@ fn slug_of<T: serde::Serialize>(value: &T) -> String {
 
 fn from_slug<T: serde::de::DeserializeOwned>(what: &str, text: &str) -> Result<T, JournalError> {
     serde_json::from_value(serde_json::Value::String(text.to_owned()))
-        .ok()
-        .ok_or_else(|| corrupt(what, text))
+        .map_err(|cause| unreadable(what, text, &cause))
 }
 
 fn base_text(base: &BaseVersion) -> Option<&str> {
@@ -218,8 +224,7 @@ pub(super) fn conflicts(connection: &Connection) -> Result<Vec<StoredConflict>, 
     rows.map(|row| {
         let (number, item, base, remote, local, local_hash, at) = row?;
         let remote: RemoteSide = serde_json::from_str(&remote)
-            .ok()
-            .ok_or_else(|| corrupt("conflict side", &remote))?;
+            .map_err(|cause| unreadable("conflict side", &remote, &cause))?;
         Ok(StoredConflict {
             number: Some(number),
             conflict: Conflict {

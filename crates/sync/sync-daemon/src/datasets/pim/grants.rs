@@ -8,7 +8,7 @@
 
 use super::PimKind;
 use account_capability::{Access, Delta};
-use account_client::{Found, Grants, GrantsLink};
+use account_client::{Found, Grants, GrantsError, GrantsLink};
 use account_core::Candidate;
 use account_core::consent::Usage;
 use account_match::Need;
@@ -41,9 +41,9 @@ pub trait PimGrants: Send + Sync {
 }
 
 /// accountd could not be asked.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("accountd could not be asked")]
-pub struct AccountdUnavailable;
+pub struct AccountdUnavailable(#[source] pub GrantsError);
 
 /// [`PimGrants`] over an accountd connection.
 #[derive(Debug)]
@@ -65,8 +65,7 @@ impl<T: GrantsLink> PimGrants for ClientGrants<T> {
             .accounts
             .find(&need_of(kind), kind.class(), Usage::Background)
             .await
-            .ok()
-            .ok_or(AccountdUnavailable)?;
+            .map_err(AccountdUnavailable)?;
         let mut candidates = match found {
             Found::One(one) => vec![one],
             Found::Several(several) => several,

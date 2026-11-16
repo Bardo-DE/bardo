@@ -339,11 +339,9 @@ impl Hub {
             entry.confirming.clone()
         };
         let (reply, answer) = oneshot::channel();
-        queue
-            .send(Confirm { reply })
-            .await
-            .ok()
-            .ok_or(ConfirmError::NoSuchDataset)?;
+        if queue.send(Confirm { reply }).await.is_err() {
+            return Err(ConfirmError::NoSuchDataset);
+        }
         answer.await.unwrap_or(Err(ConfirmError::NoSuchDataset))
     }
 
@@ -375,11 +373,9 @@ impl Hub {
             entry.settling.clone()
         };
         let (reply, answer) = oneshot::channel();
-        queue
-            .send(Settle { number, how, reply })
-            .await
-            .ok()
-            .ok_or(SettleError::NoSuchDataset)?;
+        if queue.send(Settle { number, how, reply }).await.is_err() {
+            return Err(SettleError::NoSuchDataset);
+        }
         answer.await.unwrap_or(Err(SettleError::NoSuchDataset))
     }
 

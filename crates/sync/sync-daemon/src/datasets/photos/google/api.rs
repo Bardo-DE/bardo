@@ -4,7 +4,7 @@
 
 use account_http::http::request::Builder;
 use account_http::http::{Method, Response, StatusCode};
-use account_http::{HeaderText, Http, request};
+use account_http::{HeaderText, Http, HttpError, request};
 use base_time::UnixSeconds;
 use base_url::WebUrl;
 use serde::Deserialize;
@@ -24,11 +24,17 @@ pub struct AlbumId(pub String);
 pub struct MediaId(pub String);
 
 /// Why a call did not give what it was for.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum ApiError {
     /// No answer.
     #[error("the Photos API was not reached")]
-    Unreached,
+    Unreached(#[source] HttpError),
+    /// The address of the call is not a web URL.
+    #[error("the address of the call is not a web URL")]
+    Address(#[source] base_ids::IdError),
+    /// The request would not build, so it was never sent.
+    #[error("the request could not be built")]
+    Request(#[source] account_http::http::Error),
     /// An HTTP status that was not a success, and the seconds `Retry-After` named.
     #[error("the Photos API answered {status}")]
     Refused {
@@ -40,6 +46,12 @@ pub enum ApiError {
     /// An answer that was not the shape it should be.
     #[error("the Photos API answered something unreadable")]
     Unreadable,
+    /// An answer that was not JSON of the shape it should be.
+    #[error("the Photos API answered JSON that is not the expected shape")]
+    Json(#[source] serde_json::Error),
+    /// An upload token that is not text.
+    #[error("the Photos API answered an upload token that is not text")]
+    Token(#[source] std::string::FromUtf8Error),
     /// The call went through and the item failed (an unsupported format, a bad token).
     #[error("the item was refused: {message}")]
     ItemFailed {
@@ -124,22 +136,16 @@ impl<H: Http> PhotosApi<H> {
     }
 
     fn request(&self, path: &str) -> Result<Builder, ApiError> {
-        let url = WebUrl::parse(&format!("{}/v1/{path}", self.origin))
-            .ok()
-            .ok_or(ApiError::Unreadable)?;
+        let url =
+            WebUrl::parse(&format!("{}/v1/{path}", self.origin)).map_err(ApiError::Address)?;
         Ok(request(Method::POST, &url).header("Accept", "application/json"))
     }
 
     /// Sends the request `request` builds with `body`. A request that would not build is never
     /// sent, which is no answer, as a client that refuses it is.
     async fn send(&self, request: Builder, body: Vec<u8>) -> Result<Response<Vec<u8>>, ApiError> {
-        let request = request.body(body).ok().ok_or(ApiError::Unreached)?;
-        let response = self
-            .http
-            .send(request)
-            .await
-            .ok()
-            .ok_or(ApiError::Unreached)?;
+        let request = request.body(body).map_err(ApiError::Request)?;
+        let response = self.http.send(request).await.map_err(ApiError::Unreached)?;
         match response.status() {
             StatusCode::OK => Ok(response),
             _ => Err(refused(&response, self.clock.now())),
@@ -161,9 +167,7 @@ impl<H: Http> PhotosApi<H> {
             .header("X-Goog-Upload-Protocol", "raw")
             .header("X-Goog-Upload-File-Name", name);
         let response = self.send(request, bytes).await?;
-        let token = String::from_utf8(response.into_body())
-            .ok()
-            .ok_or(ApiError::Unreadable)?;
+        let token = String::from_utf8(response.into_body()).map_err(ApiError::Token)?;
         let token = token.trim();
         if token.is_empty() {
             Err(ApiError::Unreadable)
@@ -184,9 +188,7 @@ impl<H: Http> PhotosApi<H> {
             .request("albums")?
             .header("Content-Type", "application/json");
         let response = self.send(request, body.into_bytes()).await?;
-        let album: Album = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or(ApiError::Unreadable)?;
+        let album: Album = serde_json::from_slice(response.body()).map_err(ApiError::Json)?;
         Ok(AlbumId(album.id))
     }
 
@@ -212,9 +214,7 @@ impl<H: Http> PhotosApi<H> {
             .request("mediaItems:batchCreate")?
             .header("Content-Type", "application/json");
         let response = self.send(request, body.to_string().into_bytes()).await?;
-        let created: Created = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or(ApiError::Unreadable)?;
+        let created: Created = serde_json::from_slice(response.body()).map_err(ApiError::Json)?;
         let result = created
             .results
             .into_iter()

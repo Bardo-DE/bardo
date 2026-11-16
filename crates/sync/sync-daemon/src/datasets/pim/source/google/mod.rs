@@ -69,9 +69,7 @@ impl<T: GrantsLink> Api<T> {
         grant: GrantId,
         endpoint: EndpointUrl,
     ) -> Result<Self, DiscoverError> {
-        let base = WebUrl::try_from(&endpoint)
-            .ok()
-            .ok_or(DiscoverError::Unreadable)?;
+        let base = WebUrl::try_from(&endpoint).map_err(DiscoverError::Address)?;
         Ok(Self {
             base: base.as_str().trim_end_matches('/').to_owned(),
             http: pim_http(accounts, grant, endpoint),
@@ -160,9 +158,8 @@ pub(super) async fn list_all<T: GrantsLink, I: DeserializeOwned>(
             401 | 403 => return Err(DiscoverError::Unauthorized),
             other => return Err(DiscoverError::Status(other)),
         }
-        let page: Listing<I> = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or(DiscoverError::Unreadable)?;
+        let page: Listing<I> =
+            serde_json::from_slice(response.body()).map_err(DiscoverError::Json)?;
         all.extend(page.items);
         match page.next.filter(|next| !next.is_empty()) {
             Some(next) => token = Some(next),

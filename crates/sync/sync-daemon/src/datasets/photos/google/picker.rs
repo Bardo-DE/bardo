@@ -15,7 +15,7 @@
 use crate::datasets::photos::cas;
 use account_http::http::request::Builder;
 use account_http::http::{Method, Response};
-use account_http::{Http, request};
+use account_http::{Http, HttpError, request};
 use base_url::WebUrl;
 use serde::Deserialize;
 use std::fmt::Write as _;
@@ -94,17 +94,26 @@ pub struct Imported {
 }
 
 /// Why a Picker call did not give what it was for.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum PickerError {
     /// No answer.
     #[error("the Picker API was not reached")]
-    Unreached,
+    Unreached(#[source] HttpError),
+    /// The address of the call is not a web URL.
+    #[error("the address of the call is not a web URL")]
+    Address(#[source] base_ids::IdError),
+    /// The request would not build, so it was never sent.
+    #[error("the request could not be built")]
+    Request(#[source] account_http::http::Error),
     /// An HTTP status that was not a success.
     #[error("the Picker API answered {0}")]
     Refused(u16),
     /// An answer that was not the shape it should be.
     #[error("the Picker API answered something unreadable")]
     Unreadable,
+    /// An answer that was not JSON of the shape it should be.
+    #[error("the Picker API answered JSON that is not the expected shape")]
+    Json(#[source] serde_json::Error),
     /// The person has not finished picking.
     #[error("the person has not finished picking")]
     NotYet,
@@ -224,9 +233,7 @@ impl<H: Http> PhotosPicker<H> {
     }
 
     fn url(&self, path: &str) -> Result<WebUrl, PickerError> {
-        WebUrl::parse(&format!("{}/v1/{path}", self.origin))
-            .ok()
-            .ok_or(PickerError::Unreadable)
+        WebUrl::parse(&format!("{}/v1/{path}", self.origin)).map_err(PickerError::Address)
     }
 
     /// Sends the request `request` builds with `body`. A request that would not build is never
@@ -239,14 +246,12 @@ impl<H: Http> PhotosPicker<H> {
         let request = request
             .header("Accept", "application/json")
             .body(body)
-            .ok()
-            .ok_or(PickerError::Unreached)?;
+            .map_err(PickerError::Request)?;
         let response = self
             .http
             .send(request)
             .await
-            .ok()
-            .ok_or(PickerError::Unreached)?;
+            .map_err(PickerError::Unreached)?;
         match response.status().as_u16() {
             200 => Ok(response),
             status => Err(PickerError::Refused(status)),
@@ -263,9 +268,8 @@ impl<H: Http> PhotosPicker<H> {
         let request = request(Method::POST, &self.url("sessions")?)
             .header("Content-Type", "application/json");
         let response = self.send(request, b"{}".to_vec()).await?;
-        let wire: SessionWire = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or(PickerError::Unreadable)?;
+        let wire: SessionWire =
+            serde_json::from_slice(response.body()).map_err(PickerError::Json)?;
         let id = SessionId::parse(&wire.id).ok_or(PickerError::BadSession)?;
         let polling = wire.polling;
         Ok(PickerSession {
@@ -293,9 +297,8 @@ impl<H: Http> PhotosPicker<H> {
     pub async fn poll(&self, session: &SessionId) -> Result<PickerState, PickerError> {
         let request = request(Method::GET, &self.url(&format!("sessions/{session}"))?);
         let response = self.send(request, Vec::new()).await?;
-        let wire: SessionWire = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or(PickerError::Unreadable)?;
+        let wire: SessionWire =
+            serde_json::from_slice(response.body()).map_err(PickerError::Json)?;
         Ok(if wire.set {
             PickerState::Picked
         } else {
@@ -328,9 +331,8 @@ impl<H: Http> PhotosPicker<H> {
             let response = self
                 .send(request(Method::GET, &self.url(&path)?), Vec::new())
                 .await?;
-            let list: ListWire = serde_json::from_slice(response.body())
-                .ok()
-                .ok_or(PickerError::Unreadable)?;
+            let list: ListWire =
+                serde_json::from_slice(response.body()).map_err(PickerError::Json)?;
             for item in list.items {
                 let Some(file) = item.file else { continue };
                 let suffix = match item.kind.as_deref() {
@@ -338,8 +340,7 @@ impl<H: Http> PhotosPicker<H> {
                     _ => "=d",
                 };
                 let url = WebUrl::parse(&format!("{}{suffix}", file.base))
-                    .ok()
-                    .ok_or(PickerError::Unreadable)?;
+                    .map_err(PickerError::Address)?;
                 let bytes = self
                     .send(request(Method::GET, &url), Vec::new())
                     .await?

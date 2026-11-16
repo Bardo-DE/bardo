@@ -4,6 +4,7 @@
 
 use crate::common::bus::PrivateBus;
 use crate::common::hosted::host;
+use account_client::{GrantsError, LinkError};
 use account_core::Candidate;
 use account_fake::cloud_provider;
 use account_secrets::MemorySecrets;
@@ -30,7 +31,9 @@ impl PimGrants for Flaky {
     )]
     async fn granted(&self, _kind: PimKind) -> Result<Vec<Candidate>, AccountdUnavailable> {
         if self.down.load(Ordering::SeqCst) {
-            Err(AccountdUnavailable)
+            Err(AccountdUnavailable(GrantsError::Link(
+                LinkError::Unreachable,
+            )))
         } else {
             Ok(Vec::new())
         }

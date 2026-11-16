@@ -16,11 +16,11 @@ use std::sync::Arc;
 use sync_core::Clock;
 
 /// Why a replica could not be built.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum BuildError {
     /// The endpoint is not a web URL, or the folder makes it not one.
     #[error("the endpoint and folder do not make a web URL")]
-    NotWeb,
+    NotWeb(#[source] base_ids::IdError),
 }
 
 /// The replica of `folder` (a path under the endpoint, `Photos/Originals`) of the account the
@@ -38,14 +38,13 @@ pub fn webdav_replica<T: GrantsLink>(
     clock: Clock,
     nonce: &str,
 ) -> Result<WebDavReplica<RelayHttp<RelayDial<T>>>, BuildError> {
-    let base = WebUrl::try_from(&endpoint).ok().ok_or(BuildError::NotWeb)?;
+    let base = WebUrl::try_from(&endpoint).map_err(BuildError::NotWeb)?;
     let url = WebUrl::parse(&format!(
         "{}/{}/",
         base.as_str().trim_end_matches('/'),
         folder.trim_matches('/')
     ))
-    .ok()
-    .ok_or(BuildError::NotWeb)?;
+    .map_err(BuildError::NotWeb)?;
     let dial = RelayDial::authenticated(accounts, grant, endpoint);
     Ok(WebDavReplica::new(
         RelayHttp::new(dial, RelayLimits::default()),

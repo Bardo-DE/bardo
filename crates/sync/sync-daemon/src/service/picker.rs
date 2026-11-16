@@ -209,9 +209,18 @@ fn refused(error: PickerError) -> RefusedError {
     match error {
         PickerError::NotYet => RefusedError::picker_not_yet(),
         PickerError::Refused(404) => RefusedError::picker_no_such_session(),
-        PickerError::Unreached => RefusedError::of(Refusal::Unavailable),
+        PickerError::Unreached(_) => RefusedError::of(Refusal::Unavailable),
         PickerError::BadSession => RefusedError::invalid("the session id is not a plain token"),
-        other => RefusedError::failed(other),
+        other => RefusedError::failed(with_cause(&other)),
+    }
+}
+
+/// The text of `error` and of what caused it, for a wire error that holds only text.
+#[cfg(feature = "photos-picker")]
+fn with_cause(error: &PickerError) -> String {
+    match std::error::Error::source(error) {
+        Some(cause) => format!("{error}: {cause}"),
+        None => error.to_string(),
     }
 }
 

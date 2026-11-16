@@ -55,7 +55,12 @@ pub struct UploadReplica<H> {
 )]
 fn refusal(error: ApiError) -> PutRefused {
     match error {
-        ApiError::Unreached | ApiError::Unreadable => PutRefused::Transient(RetryAfter(30)),
+        ApiError::Unreached(_)
+        | ApiError::Address(_)
+        | ApiError::Request(_)
+        | ApiError::Unreadable
+        | ApiError::Json(_)
+        | ApiError::Token(_) => PutRefused::Transient(RetryAfter(30)),
         ApiError::Refused {
             status,
             retry_after,

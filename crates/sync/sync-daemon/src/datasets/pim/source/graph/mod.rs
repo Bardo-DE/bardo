@@ -80,9 +80,7 @@ impl<T: GrantsLink> GraphCalendarSource<T> {
         endpoint: EndpointUrl,
         clock: Clock,
     ) -> Result<Self, DiscoverError> {
-        let base = WebUrl::try_from(&endpoint)
-            .ok()
-            .ok_or(DiscoverError::Unreadable)?;
+        let base = WebUrl::try_from(&endpoint).map_err(DiscoverError::Address)?;
         Ok(Self {
             http: Arc::new(pim_http(accounts, grant, endpoint)),
             base,
@@ -170,12 +168,33 @@ pub(super) fn unreached(_: HttpError) -> ReplicaError {
     ReplicaError::Transient(RetryAfter(30))
 }
 
+/// The replica's answer for a reply whose body is not the JSON expected: try again later, with
+/// where the reader stopped said in the log (never the text, which can be the person's).
+pub(super) fn unreadable_body(error: &serde_json::Error) -> ReplicaError {
+    eprintln!(
+        "syncd: an answer is not the JSON expected ({:?} at line {} column {})",
+        error.classify(),
+        error.line(),
+        error.column()
+    );
+    ReplicaError::Transient(RetryAfter(30))
+}
+
+/// The replica's answer for an item that cannot be written out: it is not offered, with why said
+/// in the log.
+pub(super) fn unconverted(error: &dyn std::fmt::Display) -> ReplicaError {
+    eprintln!("syncd: an item could not be written out: {error}");
+    ReplicaError::Gone
+}
+
 pub(super) async fn get<H: Http>(
     http: &H,
     url: &str,
     prefer: Option<&str>,
 ) -> Result<Response<Vec<u8>>, HttpError> {
-    let url = WebUrl::parse(url).ok().ok_or(HttpError::Unreachable)?;
+    let Ok(url) = WebUrl::parse(url) else {
+        return Err(HttpError::Unreachable);
+    };
     let mut builder = request(Method::GET, &url).header("Accept", "application/json");
     if let Some(prefer) = prefer {
         builder = builder.header("Prefer", prefer);
@@ -206,13 +225,12 @@ impl<T: GrantsLink + 'static> PimSource for GraphCalendarSource<T> {
                 401 | 403 => return Err(DiscoverError::Unauthorized),
                 other => return Err(DiscoverError::Status(other)),
             }
-            let page: CalendarPage = serde_json::from_slice(response.body())
-                .ok()
-                .ok_or(DiscoverError::Unreadable)?;
+            let page: CalendarPage =
+                serde_json::from_slice(response.body()).map_err(DiscoverError::Json)?;
             for calendar in &page.value {
                 let own = format!("{base}/v1.0/me/calendars/{}/", encode(&calendar.id));
                 found.push(Found {
-                    url: WebUrl::parse(&own).ok().ok_or(DiscoverError::Unreadable)?,
+                    url: WebUrl::parse(&own).map_err(DiscoverError::Address)?,
                     segment: segment_of(&calendar.id),
                     displayname: calendar.name.clone().filter(|n| !n.is_empty()),
                     color: color_of(calendar),
@@ -303,9 +321,8 @@ impl<T: GrantsLink + 'static> Feed for GraphCalendarFeed<T> {
             (410, true) => return Err(ReplicaError::AnchorExpired),
             _ => return Err(read_error(&response, self.clock.now())),
         }
-        let page: EventPage = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or(ReplicaError::Transient(RetryAfter(30)))?;
+        let page: EventPage =
+            serde_json::from_slice(response.body()).map_err(|error| unreadable_body(&error))?;
         let (next, more) = match (page.next, page.delta) {
             (Some(next), _) => (next, More::More),
             (None, Some(delta)) => (delta, More::Done),
@@ -339,13 +356,11 @@ impl<T: GrantsLink + 'static> Feed for GraphCalendarFeed<T> {
         if response.status().as_u16() != 200 {
             return Err(read_error(&response, self.clock.now()));
         }
-        let event: Event = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or(ReplicaError::Transient(RetryAfter(30)))?;
+        let event: Event =
+            serde_json::from_slice(response.body()).map_err(|error| unreadable_body(&error))?;
         convert::to_ics(&event)
             .map(String::into_bytes)
-            .ok()
-            .ok_or(ReplicaError::Gone)
+            .map_err(|error| unconverted(&error))
     }
 }
 

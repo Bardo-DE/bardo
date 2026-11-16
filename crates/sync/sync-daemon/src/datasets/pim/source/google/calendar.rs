@@ -6,7 +6,7 @@
 //! must ask for them. Events are converted to iCalendar by [`super::event`] and arrive with
 //! their bytes, so the engine's fetch costs no request.
 
-use super::super::graph::name_of;
+use super::super::graph::{name_of, unconverted, unreadable_body};
 use super::super::{Feed, FeedChange, Page, PimSource};
 use super::event::{self, Event};
 use super::{Api, SyncCursor, id_in, list_all, read_error, segment_of};
@@ -108,7 +108,7 @@ impl<T: GrantsLink + 'static> PimSource for GoogleCalendarSource<T> {
                     super::super::graph::encode(&calendar.id)
                 );
                 Ok(Found {
-                    url: WebUrl::parse(&url).ok().ok_or(DiscoverError::Unreadable)?,
+                    url: WebUrl::parse(&url).map_err(DiscoverError::Address)?,
                     segment: segment_of(&calendar.id),
                     displayname: calendar
                         .summary_override
@@ -195,9 +195,8 @@ impl<T: GrantsLink + 'static> Feed for GoogleCalendarFeed<T> {
             (410, true) => return Err(ReplicaError::AnchorExpired),
             _ => return Err(read_error(&response, self.clock.now())),
         }
-        let listing: EventsPage = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or(ReplicaError::Transient(RetryAfter(30)))?;
+        let listing: EventsPage =
+            serde_json::from_slice(response.body()).map_err(|error| unreadable_body(&error))?;
         let (next, more) = match (listing.next_page, listing.next_sync) {
             (Some(page), _) if !page.is_empty() => (SyncCursor::Paging { page, sync }, More::More),
             (_, Some(token)) if !token.is_empty() => (SyncCursor::Synced(token), More::Done),
@@ -234,16 +233,14 @@ impl<T: GrantsLink + 'static> Feed for GoogleCalendarFeed<T> {
         if response.status().as_u16() != 200 {
             return Err(read_error(&response, self.clock.now()));
         }
-        let event: Event = serde_json::from_slice(response.body())
-            .ok()
-            .ok_or(ReplicaError::Transient(RetryAfter(30)))?;
+        let event: Event =
+            serde_json::from_slice(response.body()).map_err(|error| unreadable_body(&error))?;
         if event.is_cancelled() {
             Err(ReplicaError::Gone)
         } else {
             event::to_ics(&event)
                 .map(String::into_bytes)
-                .ok()
-                .ok_or(ReplicaError::Gone)
+                .map_err(|error| unconverted(&error))
         }
     }
 }
