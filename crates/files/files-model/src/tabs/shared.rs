@@ -55,9 +55,9 @@ pub(super) fn vacated(slot: &mut Browser) -> Browser {
 
 impl Tabs {
     /// Every tab takes on `undo` as what Undo would take back.
-    pub(super) fn undoable(mut self, undo: Option<Summary>) -> Tabs {
+    pub(super) fn undoable(mut self, undo: Option<&Summary>) -> Tabs {
         for tab in std::iter::once(&mut self.front).chain(self.others.iter_mut()) {
-            tab.browser.undo.clone_from(&undo);
+            tab.browser.undo = undo.cloned();
         }
         self
     }

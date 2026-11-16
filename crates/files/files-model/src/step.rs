@@ -30,7 +30,7 @@ impl Browser {
             effects.push(Effect::Look(item));
         }
         // The preview pane follows the selection the same way.
-        let (next, asked) = next.previewing(previewing);
+        let (next, asked) = next.previewing(previewing.as_ref());
         effects.extend(asked);
         (next, effects)
     }
@@ -50,6 +50,10 @@ impl Browser {
             Input::Listed(at, result) if at == self.location => self.listed(result),
             Input::Changed(at, change) if at == self.location => self.changed(change),
             Input::PrefsLoaded(at, prefs) if at == self.location => self.with_prefs(prefs),
+            #[expect(
+                clippy::match_same_arms,
+                reason = "a report for a folder no longer shown is dropped; the editing arm above holds input back for a different reason"
+            )]
             Input::Listed(..) | Input::Changed(..) | Input::PrefsLoaded(..) => (self, Vec::new()),
             Input::Reveal { folder, names } => self.revealing(folder, names),
             Input::Go(to) => self.go(to),
@@ -60,7 +64,7 @@ impl Browser {
             Input::InfoRead(item, result) => self.info_read(item, result),
             Input::CloseInfo => self.close_info(),
             Input::TogglePreview => self.toggle_pane(),
-            Input::DetailsRead(item, result) => self.details_read(item, result),
+            Input::DetailsRead(item, result) => self.details_read(&item, result),
             Input::Back => self.go_back(),
             Input::Forward => self.go_forward(),
             Input::Enclosing => self.go_enclosing(),

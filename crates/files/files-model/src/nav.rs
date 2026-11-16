@@ -1,6 +1,8 @@
 //! Going places and opening things.
 
-use files_core::Location;
+use std::collections::HashMap;
+
+use files_core::{FolderPrefs, Location};
 
 use crate::browser::Browser;
 use crate::effect::{Effect, OpenTarget};
@@ -29,7 +31,7 @@ impl Browser {
             selection: Selection::default(),
             typeselect: TypeSelect::default(),
             rename: Rename::Idle,
-            prefs: Default::default(),
+            prefs: FolderPrefs::default(),
             show_hidden: self.show_hidden,
             reveal: Vec::new(),
             work: self.work,
@@ -45,7 +47,7 @@ impl Browser {
             chooser: false,
             volumes: self.volumes,
             clouds: self.clouds,
-            cloud: Default::default(),
+            cloud: HashMap::default(),
             opening: Vec::new(),
             show_pane: self.show_pane,
             details: None,

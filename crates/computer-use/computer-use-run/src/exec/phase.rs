@@ -4,7 +4,6 @@ use crate::machine::acquire::{AcquirePhase, AcquireWhy};
 use crate::seams::Clock;
 use provenance::RunId;
 use std::fmt;
-use std::future::Future;
 use std::pin::pin;
 use std::task::Poll;
 use std::time::Duration;

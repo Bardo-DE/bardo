@@ -145,11 +145,8 @@ pub(super) fn fit_of(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_core::AppName;
     use base_ids::Px;
-    use computer_use_desktop::{
-        GlobalCoord, GlobalRect, Pid, ToplevelIdent, WindowTitle, WorkspaceRef,
-    };
+    use computer_use_desktop::{GlobalCoord, WindowTitle, WorkspaceRef};
     use std::collections::BTreeSet;
 
     fn window(state: &[ToplevelState]) -> ToplevelInfo {

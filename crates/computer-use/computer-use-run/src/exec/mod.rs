@@ -180,6 +180,7 @@ impl<'a, S: Seams> Exec<'a, S> {
     /// The same executor telling the model these short hints about the desktop when its session
     /// opens (the shortcut line of [`crate::shortcut_hint`], for one). The caller builds them
     /// once from what it knows of the desktop; nothing here reads an environment.
+    #[must_use]
     pub fn with_hints(self, hints: Vec<String>) -> Self {
         Self { hints, ..self }
     }

@@ -243,8 +243,8 @@ pub(super) fn settling(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp) {
         Settle::Waiting { wake } => enter(run, fx, RunPhase::Settling(n, Settle::Waiting { wake })),
         Settle::Quiet | Settle::TimedOut => {
             let want = match run.track.settle {
-                SettleWatch::Damage { .. } => FrameWant::AfterDamage,
-                SettleWatch::Change {
+                SettleWatch::Damage { .. }
+                | SettleWatch::Change {
                     latest: Some(_), ..
                 } => FrameWant::AfterDamage,
                 SettleWatch::Change { latest: None, .. } | SettleWatch::Idle => FrameWant::Now,
@@ -275,7 +275,7 @@ pub(super) fn checked(
                 }) => Said { summary, extracted },
                 _ => Said::of(CuaOutcome::Done),
             };
-            finish(run, fx, CuaOutcome::Done, said);
+            finish(run, fx, CuaOutcome::Done, &said);
         }
         crate::machine::input::CheckResult::Fail => {
             run.pending.actions.clear();

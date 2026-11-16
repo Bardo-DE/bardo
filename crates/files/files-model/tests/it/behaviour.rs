@@ -19,8 +19,10 @@ fn first() -> Behaviour {
 }
 
 fn ordered(entries: &[Entry], sort: Sort, folders_first: bool) -> Vec<String> {
-    let mut prefs = FolderPrefs::default();
-    prefs.sort = sort;
+    let prefs = FolderPrefs {
+        sort,
+        ..FolderPrefs::default()
+    };
     let behaviour = Behaviour {
         folders_first,
         ..Behaviour::default()

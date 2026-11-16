@@ -7,7 +7,6 @@ use inference_core::{
     CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, ModelError, ServedBy, TokenUsage,
 };
 use serde::{Deserialize, Serialize};
-use std::future::Future;
 
 /// What a model says while a step is still being decided.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -77,6 +76,10 @@ impl From<CuaStepFailure> for CuaModelError {
                 | ModelError::Refused
                 | ModelError::ContextOverflow => CuaModelError::Fatal,
                 // A failure this build does not know is never retried.
+                #[expect(
+                    clippy::match_same_arms,
+                    reason = "the catch-all for variants this build does not know shares the body of the known fatal ones only by choice"
+                )]
                 _ => CuaModelError::Fatal,
             },
         }

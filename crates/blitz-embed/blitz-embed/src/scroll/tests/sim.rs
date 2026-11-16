@@ -91,6 +91,11 @@ impl Sim {
 
     /// A steady stroke of `speed` px/s (offset space) for `ms`, one Changed per frame.
     pub(super) fn stroke(&mut self, speed: f64, ms: u32) {
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "a few hundred frames, non-negative"
+        )]
         let frames = (f64::from(ms) / 1000.0 / FRAME).round() as u32;
         for _ in 0..frames {
             self.t += FRAME;

@@ -16,6 +16,7 @@ use computer_use_action::{
 };
 use computer_use_parse::{DropReason, bounded, chord_from_words};
 use serde_json::Value;
+use std::collections::BTreeSet;
 
 use crate::args::{Args, Verdict, field, point, signed, string, xy};
 
@@ -124,7 +125,7 @@ fn action(verb: &str, args: &Args) -> Verdict<CuaAction<ImageSpace>> {
                 Button::Left
             },
             count,
-            mods: Default::default(),
+            mods: BTreeSet::default(),
         })
     };
     match verb {
@@ -141,7 +142,7 @@ fn action(verb: &str, args: &Args) -> Verdict<CuaAction<ImageSpace>> {
             text: bounded(TypedText::new(string(args, "text")?))?,
         }),
         "wait" => Ok(CuaAction::Wait {
-            for_ms: WaitMs::new(WAIT_MS).map_err(|_| DropReason::BadNumber)?,
+            for_ms: WaitMs::new(WAIT_MS).ok().ok_or(DropReason::BadNumber)?,
         }),
         "screenshot" => Ok(CuaAction::Observe),
         _ => Err(DropReason::UnsupportedVerb),

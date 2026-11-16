@@ -134,6 +134,10 @@ fn effects_that_talk_to_a_neighbour_have_a_deadline_and_the_ones_that_wait_on_th
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of effect classifications, one row each"
+)]
 fn classify_effect_table() {
     use WindowClass::{MailCompose, Ordinary, Payments, Terminal};
     struct Row {
@@ -437,7 +441,10 @@ fn observation(tree: A11ySnapshot, masked: usize) -> Observation {
     let regions = (0..masked)
         .map(|i| computer_use_capture::MaskRegion {
             rect: Rect {
-                origin: Point::new(Coord(i as u32), Coord(0)),
+                origin: Point::new(
+                    Coord(u32::try_from(i).expect("a test mask count fits u32")),
+                    Coord(0),
+                ),
                 size: Size::new(Coord(5), Coord(5)),
             },
             why: computer_use_capture::MaskReason::PasswordField,

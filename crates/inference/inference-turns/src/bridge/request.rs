@@ -64,7 +64,7 @@ pub fn embed_turns(
     request: &pi::EmbedRequest,
 ) -> Result<Vec<sp::EmbedTurn>, BridgeError> {
     let embed = model.embed().ok_or(BridgeError::Unsupported)?;
-    embed_turns_for(&model.name, embed, request)
+    Ok(embed_turns_for(&model.name, embed, request))
 }
 
 #[cfg(test)]

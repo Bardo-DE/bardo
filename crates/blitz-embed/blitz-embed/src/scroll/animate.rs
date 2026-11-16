@@ -78,7 +78,7 @@ pub fn flight_velocity(f: &Flight, now: Elapsed, physics: &Physics) -> f64 {
 
 /// The fingers lifted from a tracking gesture (`at`), or it was cancelled (`None`).
 pub fn release_track(
-    track: Track,
+    track: &Track,
     at: Option<SampleTime>,
     now: Elapsed,
     g: &Geom,
@@ -92,7 +92,7 @@ pub fn release_track(
     };
     let v0 = physics.fling(released);
     let latch = track.latch;
-    let raw = raw_for(&track, g, physics);
+    let raw = raw_for(track, g, physics);
     if let Some((edge, s0)) = stretch_of(raw, g) {
         let rebound = Rebound {
             latch,
@@ -188,7 +188,7 @@ pub fn frame(
         Engine::Spring(s) => spring_frame(s, now, g),
         Engine::Tracking(t) => match t.lift {
             Some(lift) if since(lift.t0, now) >= physics.lift_grace => {
-                release_track(t, Some(lift.at), now, g, physics)
+                release_track(&t, Some(lift.at), now, g, physics)
             }
             _ => (Engine::Tracking(t), Vec::new()),
         },

@@ -13,12 +13,20 @@ impl DeviceGrid {
 
     /// The snapped extent of `length` starting at `start`: the difference of its snapped ends,
     /// so adjacent boxes share an edge exactly.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "layout px are f32 in Blitz; the snapped extent is a small length"
+    )]
     pub(super) fn span(self, start: f64, length: f32) -> f32 {
         (self.snap(start + f64::from(length)) - self.snap(start)) as f32
     }
 
     /// A border width in whole device pixels, never below one when there is a border at all:
     /// the CSS rule for snapping a border width, kept whatever phase the box's edge lands on.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "layout px are f32 in Blitz; a border width in device px is tiny"
+    )]
     pub(super) fn line(self, width: f32) -> f32 {
         if width <= 0.0 {
             return 0.0;

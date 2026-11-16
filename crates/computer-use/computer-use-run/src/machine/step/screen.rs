@@ -46,7 +46,7 @@ pub(super) fn stage(run: &mut Run, fx: &mut Vec<RunEffect>, n: StepIndex) {
     };
     match verdict {
         ScreenVerdict::Clear => clear(run, fx, n, text),
-        suspicious => flagged(run, fx, n, &suspicious),
+        suspicious @ ScreenVerdict::Suspicious { .. } => flagged(run, fx, n, &suspicious),
     }
 }
 

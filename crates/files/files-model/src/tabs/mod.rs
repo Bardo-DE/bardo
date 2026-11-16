@@ -59,7 +59,7 @@ impl Tabs {
 
     /// The same tabs, each knowing the person's home folder, which `~` means in Go to Folder.
     #[must_use]
-    pub fn with_home(self, home: FolderPath) -> Tabs {
+    pub fn with_home(self, home: &FolderPath) -> Tabs {
         let Tabs {
             front,
             others,
@@ -225,7 +225,7 @@ impl Tabs {
             next,
         };
         if shared != after {
-            tabs = tabs.sharing(tab, after);
+            tabs = tabs.sharing(tab, &after);
         }
         (tabs, Tabbed::all(tab, effects))
     }
@@ -262,7 +262,7 @@ impl Tabs {
             at,
             next,
         } = self;
-        let (browser, effects) = front.browser.opened_like(location);
+        let (browser, effects) = front.browser.opened_like(&location);
         let id = TabId(next);
         others.insert(at.min(others.len()), front);
         let tabs = Tabs {
@@ -341,7 +341,7 @@ impl Tabs {
     }
 
     /// Every tab but `from` takes on what the tabs share (the clipboard and what can be undone).
-    fn sharing(mut self, from: TabId, shared: Shared) -> Tabs {
+    fn sharing(mut self, from: TabId, shared: &Shared) -> Tabs {
         for tab in std::iter::once(&mut self.front).chain(self.others.iter_mut()) {
             if tab.id != from {
                 shared.put(&mut tab.browser);

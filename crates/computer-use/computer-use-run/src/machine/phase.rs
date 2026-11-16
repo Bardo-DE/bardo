@@ -126,14 +126,14 @@ mod tests {
 
     #[test]
     fn every_phase_has_its_slug_and_only_the_working_ones_count_as_active() {
-        let n = StepIndex(2);
-        let confirm = ConfirmId::parse("c-1").unwrap();
         struct Row {
             phase: RunPhase,
             slug: RunStateSlug,
             step: Option<StepIndex>,
             active: bool,
         }
+        let n = StepIndex(2);
+        let confirm = ConfirmId::parse("c-1").unwrap();
         let rows = [
             Row {
                 phase: RunPhase::Granting,

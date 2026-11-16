@@ -8,6 +8,7 @@ use crate::machine::finish::{finish_plain, finish_stalled};
 use crate::machine::ops::screen_label;
 use crate::machine::phase::RunPhase;
 use crate::machine::run::Run;
+use crate::machine::track::CaptureTries;
 use crate::observation::{CursorObs, Observation};
 use crate::progress::Look;
 use crate::stall::{Repeats, Stall};
@@ -15,7 +16,7 @@ use base_ids::Count;
 use computer_use_action::ActionClass;
 use computer_use_bus::{ActionOutcome, ActionResult, FrameNote};
 use computer_use_bus::{CuaOutcome, CuaRecord, FailReason, RunBudgetKind};
-use computer_use_capture::{FrameDigest, FrameWant, digest};
+use computer_use_capture::{FrameWant, digest};
 
 /// Whether one of the actions ended as done and sent input.
 fn input_ran(prev: &[ActionOutcome]) -> bool {
@@ -39,7 +40,7 @@ pub(super) fn observed(run: &mut Run, fx: &mut Vec<RunEffect>, mut obs: Observat
     {
         obs.cursor = before.cursor;
     }
-    let frame_digest: FrameDigest = digest(&obs.frame.pixels);
+    let frame_digest = digest(&obs.frame.pixels);
     run.frames = run.frames.seen(frame_digest);
     let look = Look::of(frame_digest, &obs.tree);
     // Only an input that ran says what it did: a look after a refusal or a model failure keeps
@@ -98,7 +99,6 @@ pub(super) fn capture_failed(
     let RunPhase::Observing(_) = run.phase else {
         return;
     };
-    use crate::machine::track::CaptureTries;
     match (error, run.track.capture) {
         (computer_use_capture::CaptureError::SourceGone, _) => {
             finish_plain(run, fx, CuaOutcome::Failed(FailReason::WindowGone));

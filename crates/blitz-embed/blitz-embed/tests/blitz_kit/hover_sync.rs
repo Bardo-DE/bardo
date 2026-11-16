@@ -10,12 +10,13 @@ use crate::support;
 
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::sync::Arc;
 
 use blitz_dom::{BaseDocument, DocGuard, DocGuardMut, Document, EventDriver, EventHandler, NodeId};
 use blitz_embed::hover::{LastMove, Repaired, Shift, remember, repair};
 use blitz_traits::events::{
     BlitzPointerEvent, BlitzPointerId, DomEvent, DomEventData, EventState, MouseEventButton,
-    MouseEventButtons, PointerCoords, PointerDetails, UiEvent,
+    MouseEventButtons, Point, PointerCoords, PointerDetails, UiEvent,
 };
 use keyboard_types::Modifiers;
 
@@ -83,8 +84,8 @@ fn move_to(x: f32, y: f32) -> UiEvent {
         buttons: MouseEventButtons::None,
         mods: Modifiers::empty(),
         details: PointerDetails::default(),
-        element: Default::default(),
-        active_pointers: Default::default(),
+        element: Point::default(),
+        active_pointers: Arc::default(),
     })
 }
 

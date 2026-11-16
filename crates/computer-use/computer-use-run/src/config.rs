@@ -52,6 +52,10 @@ pub const WAIT_TOTAL: Ms = Ms(600_000);
 pub const TREE_MAX_NODES: NodeBudget = NodeBudget(400);
 
 /// Every proposed value of computer use in one place.
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "one field per boolean `cua.*` settings key; they are independent switches"
+)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CuaConfig {
     /// `cua.enabled`: off until the person turns it on, and then still needs the per-app

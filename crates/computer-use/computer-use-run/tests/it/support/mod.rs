@@ -1,4 +1,7 @@
-#![allow(dead_code)] // each test binary uses a subset of the shared builders
+#![allow(
+    dead_code,
+    reason = "each test binary uses a subset of the shared builders"
+)]
 //! Builders for driving the run machine: tasks, observations, replies and a small harness that
 //! feeds inputs one at a time and keeps the effects of the last one.
 

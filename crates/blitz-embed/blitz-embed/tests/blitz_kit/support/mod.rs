@@ -1,6 +1,9 @@
 //! A bare Blitz document built by hand: no HTML parser, no Dioxus, no host.
 
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test binary uses a different subset of these helpers"
+)]
 
 use blitz_dom::{
     Attribute, BaseDocument, DocumentConfig, FontContext, LocalName, Namespace, NodeId, QualName,
@@ -26,6 +29,11 @@ pub fn page_with(
     scale: f32,
     fonts: Option<FontContext>,
 ) -> (BaseDocument, NodeId) {
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "rounded product of a page size and a positive scale, far below u32::MAX"
+    )]
     let viewport = Viewport::new(
         (f64::from(width) * f64::from(scale)).round() as u32,
         (f64::from(height) * f64::from(scale)).round() as u32,

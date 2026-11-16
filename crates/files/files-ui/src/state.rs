@@ -131,7 +131,7 @@ pub(crate) fn use_browse(launch: &Launch) -> Browse {
         let (first, effects) = Tabs::new(launch.start.clone());
         let first = first.with_behaviour(launch.preferences.borrow().behaviour);
         let first = match &launch.home {
-            Some(home) => first.with_home(home.clone()),
+            Some(home) => first.with_home(home),
             None => first,
         };
         let (carrier, inbox) = Edge::new(launch.seams.clone());

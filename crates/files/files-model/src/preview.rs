@@ -98,10 +98,10 @@ impl Browser {
 
     /// The answer to [`Effect::ReadDetails`]. One for an item the pane is not about is ignored,
     /// and so is a failure: the pane then shows what the row already says.
-    pub(crate) fn details_read(self, item: ItemRef, result: Result<Info, ListFailure>) -> Stepped {
+    pub(crate) fn details_read(self, item: &ItemRef, result: Result<Info, ListFailure>) -> Stepped {
         let current = self.previewed_item();
         match result {
-            Ok(info) if current.as_ref() == Some(&item) => (
+            Ok(info) if current.as_ref() == Some(item) => (
                 Browser {
                     details: Some(info),
                     ..self
@@ -115,9 +115,9 @@ impl Browser {
     /// Brings the pane's asks in line with the selection: when the item it shows is not the one
     /// it showed (`before`), the facts of the old one go and the preview and facts of the new one
     /// are asked for.
-    pub(crate) fn previewing(self, before: Option<ItemRef>) -> Stepped {
+    pub(crate) fn previewing(self, before: Option<&ItemRef>) -> Stepped {
         let now = self.previewed_item();
-        if now == before {
+        if now.as_ref() == before {
             return (self, Vec::new());
         }
         let effects = now

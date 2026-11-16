@@ -26,14 +26,19 @@ impl Extent {
 
     /// The bounding box of `self` through the affine map `[a, b, c, d, e, f]` (kurbo's
     /// coefficient order).
-    fn through(self, [a, b, c, d, e, f]: [f64; 6]) -> Extent {
+    fn through(self, [scale_x, skew_y, skew_x, scale_y, move_x, move_y]: [f64; 6]) -> Extent {
         let corners = [
             (self.x0, self.y0),
             (self.x1, self.y0),
             (self.x0, self.y1),
             (self.x1, self.y1),
         ]
-        .map(|(x, y)| (a * x + c * y + e, b * x + d * y + f));
+        .map(|(x, y)| {
+            (
+                scale_x * x + skew_x * y + move_x,
+                skew_y * x + scale_y * y + move_y,
+            )
+        });
         let fold = |pick: fn(&(f64, f64)) -> f64, join: fn(f64, f64) -> f64, start: f64| {
             corners.iter().map(pick).fold(start, join)
         };
@@ -62,6 +67,10 @@ pub(super) fn settle(doc: &mut BaseDocument, id: NodeId, grid: DeviceGrid) -> Ex
     };
     children.extend(node.before());
     children.extend(node.after());
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "Blitz's set_transform takes an f32 scale; a display scale is small"
+    )]
     let transform = node
         .set_transform(grid.0 as f32)
         .map(|t| whole_translation(t.as_coeffs(), node));
@@ -80,24 +89,32 @@ pub(super) fn settle(doc: &mut BaseDocument, id: NodeId, grid: DeviceGrid) -> Ex
     };
     let slot = node.scrollable_overflow_mut();
     (slot.x0, slot.y0, slot.x1, slot.y1) = (overflow.x0, overflow.y0, overflow.x1, overflow.y1);
-    let [a, b, c, d, e, f] = transform.unwrap_or([1.0, 0.0, 0.0, 1.0, 0.0, 0.0]);
+    let [scale_x, skew_y, skew_x, scale_y, move_x, move_y] =
+        transform.unwrap_or([1.0, 0.0, 0.0, 1.0, 0.0, 0.0]);
     let (dx, dy) = (
         f64::from(layout.location.x) * scale,
         f64::from(layout.location.y) * scale,
     );
-    overflow.through([a, b, c, d, e + dx, f + dy])
+    overflow.through([scale_x, skew_y, skew_x, scale_y, move_x + dx, move_y + dy])
 }
 
 /// A pure translation (`coeffs` of the node's transform) moved to whole device pixels and
 /// written back to the node; any other transform (a scale, a rotation, a motion part-way
 /// through) is left as it is. Returns the transform now in force.
 fn whole_translation(coeffs: [f64; 6], node: &mut Node) -> [f64; 6] {
-    let [a, b, c, d, e, f] = coeffs;
-    if (a, b, c, d) != (1.0, 0.0, 0.0, 1.0) {
+    let [scale_x, skew_y, skew_x, scale_y, move_x, move_y] = coeffs;
+    if (scale_x, skew_y, skew_x, scale_y) != (1.0, 0.0, 0.0, 1.0) {
         return coeffs;
     }
     if let Some(slot) = node.transform_mut().as_deref_mut() {
-        *slot = slot.with_translation((e.round(), f.round()).into());
+        *slot = slot.with_translation((move_x.round(), move_y.round()).into());
     }
-    [a, b, c, d, e.round(), f.round()]
+    [
+        scale_x,
+        skew_y,
+        skew_x,
+        scale_y,
+        move_x.round(),
+        move_y.round(),
+    ]
 }

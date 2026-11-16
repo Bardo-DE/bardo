@@ -118,10 +118,8 @@ impl Selection {
         };
         let current = self.cursor.as_ref().and_then(|c| position(rows, c));
         let target = match (direction, current) {
-            (Direction::Home, _) => 0,
-            (Direction::End, _) => last,
-            (Direction::Down, None) => 0,
-            (Direction::Up, None) => last,
+            (Direction::Home, _) | (Direction::Down, None) => 0,
+            (Direction::End, _) | (Direction::Up, None) => last,
             (Direction::Down, Some(at)) => (at + 1).min(last),
             (Direction::Up, Some(at)) => at.saturating_sub(1),
         };

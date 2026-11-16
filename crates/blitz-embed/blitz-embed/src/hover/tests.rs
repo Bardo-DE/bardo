@@ -1,9 +1,11 @@
 use blitz_dom::NodeId;
 use blitz_traits::events::{
     BlitzPointerEvent, BlitzPointerId, BlitzWheelDelta, BlitzWheelEvent, MouseEventButton,
-    MouseEventButtons, PointerCoords, PointerDetails, UiEvent,
+    MouseEventButtons, Point, PointerCoords, PointerDetails, UiEvent,
 };
 use keyboard_types::Modifiers;
+
+use std::sync::Arc;
 
 use super::*;
 use crate::units::{Bounds, PagePoint};
@@ -11,6 +13,10 @@ use crate::units::{Bounds, PagePoint};
 const AT: PagePoint = PagePoint { x: 50.0, y: 20.0 };
 
 fn coords(at: PagePoint) -> PointerCoords {
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "test coordinates are small whole numbers, exact in f32"
+    )]
     let (x, y) = (at.x as f32, at.y as f32);
     PointerCoords {
         page_x: x,
@@ -36,8 +42,8 @@ fn pointer(
         buttons,
         mods: Modifiers::empty(),
         details: PointerDetails::default(),
-        element: Default::default(),
-        active_pointers: Default::default(),
+        element: Point::default(),
+        active_pointers: Arc::default(),
     }
 }
 
@@ -225,7 +231,7 @@ fn moves_presses_and_releases_are_remembered_as_moves_and_other_events_are_not()
         coords: coords(PagePoint { x: 0.0, y: 0.0 }),
         buttons: MouseEventButtons::None,
         mods,
-        element: Default::default(),
+        element: Point::default(),
     });
     let held = MouseEventButtons::Secondary;
     let main = MouseEventButton::Main;

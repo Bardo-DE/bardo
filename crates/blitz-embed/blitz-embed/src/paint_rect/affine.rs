@@ -66,14 +66,13 @@ impl Affine2 {
     #[must_use]
     pub fn from_device(coeffs: [f64; 6], scale: f64) -> Affine2 {
         let scale = if scale > 0.0 { scale } else { 1.0 };
-        let [a, b, c, d, e, f] = coeffs;
         Affine2 {
-            a,
-            b,
-            c,
-            d,
-            e: e / scale,
-            f: f / scale,
+            a: coeffs[0],
+            b: coeffs[1],
+            c: coeffs[2],
+            d: coeffs[3],
+            e: coeffs[4] / scale,
+            f: coeffs[5] / scale,
         }
     }
 

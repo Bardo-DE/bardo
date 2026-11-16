@@ -6,13 +6,14 @@ use files_model::{Effect, Input};
 use crate::common::*;
 
 fn descending_icons() -> FolderPrefs {
-    let mut prefs = FolderPrefs::default();
-    prefs.view = ViewMode::Icons;
-    prefs.sort = Sort {
-        key: SortKey::Name,
-        order: SortOrder::Descending,
-    };
-    prefs
+    FolderPrefs {
+        view: ViewMode::Icons,
+        sort: Sort {
+            key: SortKey::Name,
+            order: SortOrder::Descending,
+        },
+        ..FolderPrefs::default()
+    }
 }
 
 #[test]
@@ -42,8 +43,10 @@ fn changing_the_view_or_sort_saves_it_for_the_folder() {
         order: SortOrder::Descending,
     };
     let (browser, effects) = browser.step(Input::SetView(ViewMode::Icons), at(0));
-    let mut want = FolderPrefs::default();
-    want.view = ViewMode::Icons;
+    let mut want = FolderPrefs {
+        view: ViewMode::Icons,
+        ..FolderPrefs::default()
+    };
     assert_eq!(effects, vec![Effect::SavePrefs(home(), want)]);
     let (browser, effects) = browser.step(Input::SetSort(descending), at(0));
     want.sort = descending;

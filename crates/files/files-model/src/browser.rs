@@ -21,6 +21,10 @@ use crate::typeselect::TypeSelect;
 
 /// The state of one browser: a location, the way back to it, what it holds and what the person is
 /// doing with it. Change it only with [`Browser::step`].
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "independent on/off states of one window (hidden files, Quick Look, chooser, pane); no combination is meaningless"
+)]
 #[derive(Debug, Clone, PartialEq)]
 pub struct Browser {
     pub(crate) location: Location,
@@ -254,7 +258,7 @@ impl Browser {
     /// A new browser at `location` for a new tab: it knows what this one knows of the person's
     /// home, the disks, hidden files, how the window behaves, what was copied and what can be undone, and starts with
     /// nothing else.
-    pub(crate) fn opened_like(&self, location: Location) -> (Browser, Vec<Effect>) {
+    pub(crate) fn opened_like(&self, location: &Location) -> (Browser, Vec<Effect>) {
         let (browser, _) = Browser::new(location.clone());
         let browser = Browser {
             home: self.home.clone(),
@@ -267,7 +271,7 @@ impl Browser {
             undo: self.undo.clone(),
             ..browser
         };
-        let effects = Browser::entering(&location);
+        let effects = Browser::entering(location);
         (browser, effects)
     }
 

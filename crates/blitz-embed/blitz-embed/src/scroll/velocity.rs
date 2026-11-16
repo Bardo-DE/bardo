@@ -76,6 +76,10 @@ fn slope(points: &[(f64, f64)]) -> f64 {
     if points.len() < MIN_SAMPLES {
         return 0.0;
     }
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "a handful of samples, far below 2^52"
+    )]
     let n = points.len() as f64;
     let t_mean = points.iter().map(|(t, _)| t).sum::<f64>() / n;
     let x_mean = points.iter().map(|(_, x)| x).sum::<f64>() / n;
@@ -104,6 +108,11 @@ mod tests {
     /// A steady `speed` px/s stroke sampled at 120 Hz for `ms`.
     fn stroke(speed: f64, ms: f64) -> (Samples, SampleTime) {
         let mut samples = Samples::default();
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "a test stroke of a few hundred frames, non-negative"
+        )]
         let frames = (ms / 1000.0 * 120.0).round() as u32;
         for i in 0..=frames {
             let t = f64::from(i) / 120.0;

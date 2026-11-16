@@ -25,7 +25,7 @@ use computer_use_capture::{FrameWant, Settle};
 use computer_use_desktop::{ConsentGuard, Ms, Stamp, Suspend};
 use computer_use_seat_input::SeatError;
 use inference_core::StepIndex;
-use provenance::{Label, Labelled};
+use provenance::Labelled;
 
 pub(super) fn authorise(
     run: &mut Run,
@@ -141,9 +141,9 @@ pub(super) fn conclude(run: &mut Run, fx: &mut Vec<RunEffect>, n: StepIndex) {
     let said = Said { summary, extracted };
     match (outcome, run.task.success.clone()) {
         (FinishOutcome::Failed | FinishOutcome::Infeasible, _) => {
-            finish(run, fx, CuaOutcome::Failed(FailReason::Infeasible), said);
+            finish(run, fx, CuaOutcome::Failed(FailReason::Infeasible), &said);
         }
-        (FinishOutcome::Done, SuccessCheck::ModelSays) => finish(run, fx, CuaOutcome::Done, said),
+        (FinishOutcome::Done, SuccessCheck::ModelSays) => finish(run, fx, CuaOutcome::Done, &said),
         (FinishOutcome::Done, SuccessCheck::TreeHas(selector) | SuccessCheck::Both(selector)) => {
             enter(run, fx, RunPhase::Verifying(n));
             fx.push(RunEffect::VerifyTree(selector));
@@ -151,7 +151,7 @@ pub(super) fn conclude(run: &mut Run, fx: &mut Vec<RunEffect>, n: StepIndex) {
     }
 }
 
-pub(super) fn ask(run: &mut Run, fx: &mut Vec<RunEffect>, n: StepIndex, head: TargetedAction) {
+pub(super) fn ask(run: &mut Run, fx: &mut Vec<RunEffect>, n: StepIndex, head: &TargetedAction) {
     let CuaAction::Ask { question, choices } = &head.action else {
         return;
     };
@@ -177,7 +177,7 @@ pub(super) fn raise(
     // question, then the model's own).
     let id = QuestionId(u64::from(n.0).max(run.track.last_question.saturating_add(1)));
     run.track.last_question = id.0;
-    let label: Label = screen_label(run);
+    let label = screen_label(run);
     let body = AskBody {
         question: Labelled::new(question.to_owned(), label.clone()),
         choices: choices

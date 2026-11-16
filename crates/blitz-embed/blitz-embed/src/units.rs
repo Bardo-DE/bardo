@@ -60,7 +60,13 @@ impl Scale120 {
     /// The nearest 120th to a device-pixels-per-logical-pixel `factor` (`1.5` is `180`).
     #[must_use]
     pub fn from_factor(factor: f64) -> Scale120 {
-        Scale120((factor * 120.0).round().max(0.0) as u32)
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "clamped non-negative; `as` saturates and a display scale is small"
+        )]
+        let twentieths = (factor * 120.0).round().max(0.0) as u32;
+        Scale120(twentieths)
     }
 
     /// Device pixels per logical pixel, for the one place arithmetic needs a float (sizing a

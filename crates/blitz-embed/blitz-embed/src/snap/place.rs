@@ -20,7 +20,15 @@ pub(super) fn place(doc: &mut BaseDocument, id: NodeId, parent: Origin, grid: De
         at.y + f64::from(exact.size.height),
     );
     let mut snapped = exact;
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "layout px are f32 in Blitz; the offset from the parent is small"
+    )]
     snapped.location.x = (grid.snap(at.x) - grid.snap(parent.x)) as f32;
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "layout px are f32 in Blitz; the offset from the parent is small"
+    )]
     snapped.location.y = (grid.snap(at.y) - grid.snap(parent.y)) as f32;
     snapped.size.width = grid.span(at.x, exact.size.width);
     snapped.size.height = grid.span(at.y, exact.size.height);

@@ -105,6 +105,10 @@ fn phrase(family: Family) -> Cause {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of phrase families, one row each; splitting it would hide the corpus"
+)]
 fn every_phrase_family_is_found_in_the_shape_the_corpus_uses() {
     use Family::*;
     let rows = [

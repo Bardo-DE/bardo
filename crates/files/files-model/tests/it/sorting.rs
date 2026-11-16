@@ -15,8 +15,10 @@ fn sort(key: SortKey, order: SortOrder) -> Sort {
 }
 
 fn order(entries: &[Entry], sort: Sort) -> Vec<String> {
-    let mut prefs = FolderPrefs::default();
-    prefs.sort = sort;
+    let prefs = FolderPrefs {
+        sort,
+        ..FolderPrefs::default()
+    };
     arrange(entries, &prefs, true, Behaviour::default())
         .into_iter()
         .map(|at| entries[at].name.display().into_owned())

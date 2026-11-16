@@ -24,7 +24,7 @@ pub(crate) fn summary(text: &str) -> Summary {
 /// What a report says about an outcome the model did not write itself. Machine text, short.
 pub(crate) fn said_of(outcome: CuaOutcome) -> &'static str {
     match outcome {
-        CuaOutcome::Done => "",
+        CuaOutcome::Done | CuaOutcome::Cancelled(CancelledBy::User | CancelledBy::Planner) => "",
         CuaOutcome::Failed(FailReason::WindowGone) => "The window went away.",
         CuaOutcome::Failed(FailReason::Model) => {
             "The on-screen model isn't available. You can choose one in Settings."
@@ -53,7 +53,6 @@ pub(crate) fn said_of(outcome: CuaOutcome) -> &'static str {
             "Stopped: the screen showed text that looked like instructions for the assistant."
         }
         CuaOutcome::Cancelled(CancelledBy::KillSwitch) => "Stopped by the kill switch.",
-        CuaOutcome::Cancelled(CancelledBy::User | CancelledBy::Planner) => "",
         CuaOutcome::BudgetOut(RunBudgetKind::Steps) => "Ran out of steps.",
         CuaOutcome::BudgetOut(RunBudgetKind::Active) => "Ran out of time.",
         CuaOutcome::BudgetOut(RunBudgetKind::Stall) => "The screen stopped changing.",
@@ -84,7 +83,7 @@ impl Said {
 /// Ends the run with `outcome`: stops whatever it waits on, lets the window go, and says so on
 /// the bus, in the log and to the requester (the report goes out before the record, so the
 /// record can name the message that carried it).
-pub(crate) fn finish(run: &mut Run, fx: &mut Vec<RunEffect>, outcome: CuaOutcome, said: Said) {
+pub(crate) fn finish(run: &mut Run, fx: &mut Vec<RunEffect>, outcome: CuaOutcome, said: &Said) {
     match run.phase {
         RunPhase::Thinking(_) => fx.push(RunEffect::CancelModel),
         RunPhase::Settling(..) => fx.push(RunEffect::CancelSettle),
@@ -123,12 +122,12 @@ pub(crate) fn finish_stalled(run: &mut Run, fx: &mut Vec<RunEffect>) {
         summary: summary(&stall_words(&run.track.tried)),
         extracted: Vec::new(),
     };
-    finish(run, fx, CuaOutcome::BudgetOut(RunBudgetKind::Stall), said);
+    finish(run, fx, CuaOutcome::BudgetOut(RunBudgetKind::Stall), &said);
 }
 
 /// Ends the run with `outcome` and the machine's own words.
 pub(crate) fn finish_plain(run: &mut Run, fx: &mut Vec<RunEffect>, outcome: CuaOutcome) {
-    finish(run, fx, outcome, Said::of(outcome));
+    finish(run, fx, outcome, &Said::of(outcome));
 }
 
 /// Ends the run blocked because a step of taking the window failed; the words name the step.
@@ -137,7 +136,7 @@ pub(crate) fn finish_acquire(run: &mut Run, fx: &mut Vec<RunEffect>, failure: &A
         summary: summary(failure.words()),
         extracted: Vec::new(),
     };
-    finish(run, fx, CuaOutcome::Blocked(BlockedOn::LeaseRefused), said);
+    finish(run, fx, CuaOutcome::Blocked(BlockedOn::LeaseRefused), &said);
 }
 
 /// Ends the run blocked because the question about the app was never answered.
@@ -146,7 +145,12 @@ pub(crate) fn finish_unanswered(run: &mut Run, fx: &mut Vec<RunEffect>) {
         summary: summary("Nobody answered the question about using this app, so the run stopped."),
         extracted: Vec::new(),
     };
-    finish(run, fx, CuaOutcome::Blocked(BlockedOn::ConsentDenied), said);
+    finish(
+        run,
+        fx,
+        CuaOutcome::Blocked(BlockedOn::ConsentDenied),
+        &said,
+    );
 }
 
 /// Ends the run blocked because its task names an app and no window: opening an app is not
@@ -157,5 +161,5 @@ pub(crate) fn finish_no_window(run: &mut Run, fx: &mut Vec<RunEffect>) {
         summary: summary("That app has no open window, and opening apps is not available yet."),
         extracted: Vec::new(),
     };
-    finish(run, fx, outcome, said);
+    finish(run, fx, outcome, &said);
 }

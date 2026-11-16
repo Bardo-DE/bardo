@@ -208,7 +208,7 @@ fn a_page_key_moves_by_the_page_rule_in_up_to_200_ms() {
         let trace = sim.run(1.0);
         let (done, _) = *trace
             .iter()
-            .find(|(_, x)| *x == distance)
+            .find(|(_, x)| (*x - distance).abs() < 1e-9)
             .unwrap_or_else(|| panic!("{name}: never reaches {distance}: {trace:?}"));
         let by = (distance / 1000.0).min(0.2) + FRAME;
         assert!(done <= by, "{name}: done at {done}, wanted by {by}");

@@ -1,8 +1,8 @@
 //! Changing files: new folder, Trash, copy and paste, drops, undo, and the workers' reports.
 
 use files_core::{
-    Answer, FileName, Finish, ItemRef, Location, OpEvent, OpKind, OpPlan, Resolution, Split,
-    Transfer, TrashedItem, keep_both,
+    Answer, FileName, Finish, ItemRef, Location, OpEvent, OpKind, OpPlan, Progress, Resolution,
+    Split, Transfer, TrashedItem, keep_both,
 };
 
 use crate::browser::Browser;
@@ -295,7 +295,7 @@ impl Browser {
                 Browser {
                     work: Work::Running {
                         summary,
-                        progress: Default::default(),
+                        progress: Progress::default(),
                     },
                     ..self
                 },

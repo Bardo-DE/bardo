@@ -17,6 +17,7 @@ use computer_use_action::{
 };
 use computer_use_parse::{DropReason, bounded, chord_from_words};
 use serde_json::Value;
+use std::collections::BTreeSet;
 
 use crate::args::{Args, Verdict, field, number, point, string, xy};
 
@@ -37,7 +38,7 @@ fn click(args: &Args, button: Button, count: ClickCount) -> Verdict<CuaAction<Gr
         at: at(args, "x", "y")?,
         button,
         count,
-        mods: Default::default(),
+        mods: BTreeSet::default(),
     })
 }
 

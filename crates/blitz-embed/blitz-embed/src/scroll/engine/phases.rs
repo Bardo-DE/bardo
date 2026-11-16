@@ -25,7 +25,7 @@ pub(super) fn may_begin(engine: Engine, now: Elapsed, physics: &Physics) -> Engi
 }
 
 pub(super) fn began(
-    engine: Engine,
+    engine: &Engine,
     latched: Latched,
     dir: Dir,
     kinetic: Kinetic,
@@ -33,7 +33,7 @@ pub(super) fn began(
     g: &Geom,
     physics: &Physics,
 ) -> (Engine, Vec<ScrollOut>) {
-    let carried = match &engine {
+    let carried = match engine {
         Engine::Momentum(f) => Some((f.latch, animate::flight_velocity(f, now, physics))),
         Engine::Pending(p) => p.last.map(|latch| (latch, p.carry)),
         _ => None,
@@ -136,7 +136,7 @@ pub(super) fn lifted(
     match engine {
         Engine::Tracking(track) => {
             let at = at.filter(|_| !track.tail);
-            animate::release_track(track, at, now, g, physics)
+            animate::release_track(&track, at, now, g, physics)
         }
         Engine::Pending(Pending {
             last: Some(latch), ..

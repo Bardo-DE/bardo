@@ -298,7 +298,7 @@ fn a_fast_lift_glides_further_than_its_speed_says_and_a_slow_one_does_not() {
             gained >= plain * times * 0.99,
             "{name}: {gained} vs {plain}"
         );
-        if times == 1.0 {
+        if (times - 1.0).abs() < f64::EPSILON {
             assert!((gained - plain).abs() < 1.0, "{name}: {gained} vs {plain}");
         }
     }

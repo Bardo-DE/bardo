@@ -36,6 +36,10 @@ pub enum KeptMark {
 }
 
 /// What the context menu offers for the selection in a cloud drive.
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "one independent yes/no per menu item"
+)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct CloudMenu {
     /// Download Now.
@@ -89,12 +93,12 @@ impl Browser {
                 .iter()
                 .any(|(name, _)| test(self.cloud.get(name)))
         };
-        let kept = |item: &Option<&CloudItem>| item.is_some_and(|i| i.kept);
+        let kept = |item: Option<&CloudItem>| item.is_some_and(|i| i.kept);
         let items: Vec<Option<&CloudItem>> =
             real.iter().map(|(name, _)| self.cloud.get(name)).collect();
-        let kept_mark = if items.is_empty() || !items.iter().any(kept) {
+        let kept_mark = if items.is_empty() || !items.iter().copied().any(kept) {
             KeptMark::Nothing
-        } else if items.iter().all(kept) {
+        } else if items.iter().copied().all(kept) {
             KeptMark::All
         } else {
             KeptMark::Partly

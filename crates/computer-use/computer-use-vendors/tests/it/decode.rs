@@ -9,6 +9,7 @@ use computer_use_parse::{DropReason, InSpace, Parsed};
 use computer_use_vendors::{WireCodec, WireError};
 use model_provider::{JsonText, SafetySignal, ToolCall, ToolCallId, ToolName};
 use proptest::prelude::*;
+use std::collections::BTreeSet;
 
 fn call(name: &str, input: &str) -> ToolCall {
     ToolCall {
@@ -250,7 +251,7 @@ fn openai_decodes_the_actions_of_a_computer_call() {
             at: point(405, 157),
             button: Button::Left,
             count: ClickCount::One,
-            mods: Default::default()
+            mods: BTreeSet::default()
         }
     );
     let CuaAction::Scroll {

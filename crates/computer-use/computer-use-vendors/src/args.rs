@@ -17,6 +17,11 @@ pub(crate) fn object(input: &str) -> Option<Args> {
 }
 
 /// A whole number that fits `u32`: a JSON integer, or a float with nothing after the point.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "the float is checked whole and within 0..=u32::MAX just before the cast"
+)]
 pub(crate) fn whole(value: &Value) -> Verdict<u32> {
     let n = value
         .as_u64()
@@ -27,10 +32,14 @@ pub(crate) fn whole(value: &Value) -> Verdict<u32> {
                 .map(|f| f as u64)
         })
         .ok_or(DropReason::BadNumber)?;
-    u32::try_from(n).map_err(|_| DropReason::BadNumber)
+    u32::try_from(n).ok().ok_or(DropReason::BadNumber)
 }
 
 /// A signed whole number, for scroll distances.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "the float is checked whole and within 1e9 just before the cast"
+)]
 pub(crate) fn signed(value: &Value) -> Verdict<i64> {
     value
         .as_i64()
