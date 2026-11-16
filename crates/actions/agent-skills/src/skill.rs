@@ -2,7 +2,7 @@
 
 use crate::fault::SkillFault;
 use account_core::AppName;
-use action_core::{SkillCard, SkillId, SkillText};
+use action_core::{SkillCard, SkillId, SkillIdError, SkillText};
 use action_vocab::ActionRef;
 use provenance::{ActionName, EntityKind, Source};
 use serde::Deserialize;
@@ -100,24 +100,22 @@ impl Skill {
 }
 
 fn use_ref(text: &str) -> Result<ActionRef, SkillFault> {
-    let bad = || SkillFault::BadUse(text.to_owned());
-    let (app, name) = text.split_once(':').ok_or_else(bad)?;
+    let bad = |source| SkillFault::BadUse(text.to_owned(), source);
+    let (app, name) = text
+        .split_once(':')
+        .ok_or_else(|| SkillFault::UseNoColon(text.to_owned()))?;
     Ok(ActionRef {
-        app: AppName::parse(app).ok().ok_or_else(bad)?,
-        name: ActionName::parse(name).ok().ok_or_else(bad)?,
+        app: AppName::parse(app).map_err(bad)?,
+        name: ActionName::parse(name).map_err(bad)?,
     })
 }
 
 fn kind(text: &str) -> Result<EntityKind, SkillFault> {
-    EntityKind::parse(text)
-        .ok()
-        .ok_or_else(|| SkillFault::BadKind(text.to_owned()))
+    EntityKind::parse(text).map_err(|source| SkillFault::BadKind(text.to_owned(), source))
 }
 
 fn id(text: &str) -> Result<SkillId, SkillFault> {
-    SkillId::parse(text)
-        .ok()
-        .ok_or_else(|| SkillFault::BadId(text.to_owned()))
+    SkillId::parse(text).map_err(|SkillIdError| SkillFault::BadId(text.to_owned()))
 }
 
 /// What `skill.toml` says, checked.

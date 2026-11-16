@@ -73,8 +73,8 @@ fn skill_toml_table() {
             | (Err(SkillFault::Vocab(_)), Err("vocab"))
             | (Err(SkillFault::BadId(_)), Err("bad id"))
             | (Err(SkillFault::Toml(_)), Err("toml"))
-            | (Err(SkillFault::BadUse(_)), Err("bad use"))
-            | (Err(SkillFault::BadKind(_)), Err("bad kind")) => {}
+            | (Err(SkillFault::BadUse(..) | SkillFault::UseNoColon(_)), Err("bad use"))
+            | (Err(SkillFault::BadKind(..)), Err("bad kind")) => {}
             _ => panic!("{text}\n=> {got:?}, wanted {want:?}"),
         }
     }

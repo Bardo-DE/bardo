@@ -34,10 +34,13 @@ pub enum SkillFault {
     },
     /// An entry of `uses` is not `<app>:<action>`.
     #[error("uses entry {0:?} is not <app>:<action>")]
-    BadUse(String),
+    BadUse(String, #[source] account_core::CoreError),
+    /// An entry of `uses` has no `:` between the app and the action.
+    #[error("uses entry {0:?} has no `:` between the app and the action")]
+    UseNoColon(String),
     /// A `when.kinds` entry is not an entity kind.
     #[error("when.kinds entry {0:?} is not an entity kind")]
-    BadKind(String),
+    BadKind(String, #[source] account_core::CoreError),
     /// `SKILL.md` has no front matter.
     #[error("SKILL.md has no `---` front matter")]
     NoFrontMatter,
