@@ -107,7 +107,8 @@ pub(crate) fn list_nodes(budget: Duration) -> Result<(Vec<AudioNode>, DefaultSou
     timer
         .update_timer(Some(budget), None)
         .into_result()
-        .map_err(|_| pw::Error::CreationFailed)?;
+        .ok()
+        .ok_or(pw::Error::CreationFailed)?;
     mainloop.run();
     if round.get() < 2 {
         return Err(pw::Error::CreationFailed);

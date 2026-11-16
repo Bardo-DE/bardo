@@ -112,26 +112,40 @@ fn request(
 ) -> Result<LauncherRequest, Malformed> {
     Ok(LauncherRequest {
         kind,
-        request: LoginRequestId::parse(request).map_err(|_| Malformed::Id)?,
-        account: AccountId::parse(account).map_err(|_| Malformed::Id)?,
-        program: AgentProgram::parse(program).map_err(|_| Malformed::Id)?,
+        request: LoginRequestId::parse(request).ok().ok_or(Malformed::Id)?,
+        account: AccountId::parse(account).ok().ok_or(Malformed::Id)?,
+        program: AgentProgram::parse(program).ok().ok_or(Malformed::Id)?,
     })
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a stream `map` callback, which is handed the signal by value"
+)]
 fn login(signal: AgentLoginRequested) -> Result<LauncherRequest, Malformed> {
-    let args = signal.args().map_err(|_| Malformed::Signal)?;
+    let args = signal.args().ok().ok_or(Malformed::Signal)?;
     request(AskKind::Login, &args.request, &args.account, &args.program)
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a stream `map` callback, which is handed the signal by value"
+)]
 fn logout(signal: AgentLogoutRequested) -> Result<LauncherRequest, Malformed> {
-    let args = signal.args().map_err(|_| Malformed::Signal)?;
+    let args = signal.args().ok().ok_or(Malformed::Signal)?;
     request(AskKind::Logout, &args.request, &args.account, &args.program)
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a stream `map` callback, which is handed the signal by value"
+)]
 fn revoked(signal: ProcessCredentialRevoked) -> Result<Revoked, Malformed> {
-    let args = signal.args().map_err(|_| Malformed::Signal)?;
+    let args = signal.args().ok().ok_or(Malformed::Signal)?;
     Ok(Revoked {
-        id: ProcessCredentialId::parse(&args.id).map_err(|_| Malformed::Id)?,
+        id: ProcessCredentialId::parse(&args.id)
+            .ok()
+            .ok_or(Malformed::Id)?,
         reason: from_word::<CredentialEnd>(&args.reason).ok_or(Malformed::Signal)?,
     })
 }
@@ -156,6 +170,11 @@ impl Launcher {
     /// registered a program, and ends at [`Launcher::end_session`] or when the connection
     /// leaves the bus. A session another connection holds is [`LauncherFault::SessionTaken`];
     /// beginning one this connection holds is a no-op.
+    ///
+    /// # Errors
+    ///
+    /// [`LauncherError`] when the session is taken, this connection registered no program, or the
+    /// call fails.
     pub async fn begin_session(&self, session: &SessionToken) -> Result<(), LauncherError> {
         self.bus
             .launcher_proxy()
@@ -169,6 +188,10 @@ impl Launcher {
     /// the process credentials under them (`CredentialEnd::SessionClosed`), telling this
     /// connection of each in [`Launcher::revocations`] so the launcher can end the processes. A
     /// session that is not open for this connection is [`LauncherFault::UnknownSession`].
+    ///
+    /// # Errors
+    ///
+    /// [`LauncherError`] when the session is not open for this connection, or the call fails.
     pub async fn end_session(&self, session: &SessionToken) -> Result<(), LauncherError> {
         self.bus
             .launcher_proxy()
@@ -184,6 +207,11 @@ impl Launcher {
     /// the chosen account and its permit; a person who closes the sheet or refuses is
     /// [`LauncherError::Refused`] (`Dismissed`, `Denied`). The program must be one this
     /// connection registered.
+    ///
+    /// # Errors
+    ///
+    /// [`LauncherError`] when the person refuses or closes the sheet, the program was not
+    /// registered by this connection, or the call fails.
     pub async fn request_agent_key(
         &self,
         program: &AgentProgram,
@@ -215,7 +243,10 @@ impl Launcher {
         abandon.0 = listener.closer(Some(path.clone()));
         let (code, results) = listener.response(&path).await.map_err(sheet_error)?;
         abandon.answered();
-        match reply_of(SheetKind::Choose, code, results).map_err(|_| malformed(Malformed::Reply))? {
+        match reply_of(SheetKind::Choose, code, results)
+            .ok()
+            .ok_or(malformed(Malformed::Reply))?
+        {
             AccountsReply::Chosen(candidate) => Ok(candidate),
             AccountsReply::Refused(refusal) => Err(LauncherError::Refused(refusal)),
             _ => Err(malformed(Malformed::Reply)),
@@ -232,6 +263,11 @@ impl Launcher {
     /// For an agent that cannot be pointed at inferd (P4, the metered route, needs none of this).
     /// The key is outside porter's meter and the child can read its own key: see the module
     /// documentation of [`crate::credential`] for the launcher's duties.
+    ///
+    /// # Errors
+    ///
+    /// [`LauncherError`] when no key can be issued for the account, the program was not registered
+    /// by this connection, or the call fails.
     pub async fn issue_credential(
         &self,
         permit: &GrantId,
@@ -244,13 +280,19 @@ impl Launcher {
             .issue_process_credential(permit.as_str(), program.as_str())
             .await
             .map_err(|e| launcher_error(&e))?;
-        let id = ProcessCredentialId::parse(&id).map_err(|_| malformed(Malformed::Id))?;
+        let id = ProcessCredentialId::parse(&id)
+            .ok()
+            .ok_or(malformed(Malformed::Id))?;
         Ok(ProcessCredential::new(id, handle.into()))
     }
 
     /// Ends a credential this connection was issued, because the process that held it exited or
     /// was killed: accountd forgets it. Not for a credential accountd
     /// ended itself (that is [`LauncherFault::UnknownCredential`]).
+    ///
+    /// # Errors
+    ///
+    /// [`LauncherError`] when the credential is unknown to accountd, or the call fails.
     pub async fn revoke_credential(&self, id: &ProcessCredentialId) -> Result<(), LauncherError> {
         self.bus
             .launcher_proxy()
@@ -263,6 +305,10 @@ impl Launcher {
     /// What accountd tells this connection when it ends a credential itself (the permit was
     /// revoked, the account removed): the launcher must end that process. Subscribe before
     /// issuing, so none is missed.
+    ///
+    /// # Errors
+    ///
+    /// [`LauncherError`] when subscribing to the signals fails.
     pub async fn revocations(&self) -> Result<Changes<Revoked>, LauncherError> {
         let stream = self
             .bus
@@ -278,6 +324,10 @@ impl Launcher {
     /// another live connection holds is [`LauncherFault::AlreadyRegistered`] and none of the list
     /// is taken; registering a program this connection holds is a no-op, and a later call adds
     /// more.
+    ///
+    /// # Errors
+    ///
+    /// [`LauncherError`] when another live connection holds one of the programs, or the call fails.
     pub async fn register(&self, programs: &[AgentProgram]) -> Result<(), LauncherError> {
         let names: Vec<&str> = programs.iter().map(AgentProgram::as_str).collect();
         self.bus
@@ -290,6 +340,10 @@ impl Launcher {
 
     /// The requests accountd sends this connection. Subscribe before registering, so none is
     /// missed.
+    ///
+    /// # Errors
+    ///
+    /// [`LauncherError`] when subscribing to the signals fails.
     pub async fn requests(&self) -> Result<Changes<LauncherRequest>, LauncherError> {
         let proxy = self.bus.launcher_proxy().await?;
         let logins = proxy
@@ -304,6 +358,10 @@ impl Launcher {
     }
 
     /// Reports what became of a login request. Only the connection that was sent it may.
+    ///
+    /// # Errors
+    ///
+    /// [`LauncherError`] when this connection was not sent the request, or the call fails.
     pub async fn report_login(
         &self,
         request: &LoginRequestId,
@@ -319,6 +377,10 @@ impl Launcher {
     }
 
     /// Reports what became of a logout request; `Ready` means the agent is signed out.
+    ///
+    /// # Errors
+    ///
+    /// [`LauncherError`] when this connection was not sent the request, or the call fails.
     pub async fn report_logout(
         &self,
         request: &LoginRequestId,

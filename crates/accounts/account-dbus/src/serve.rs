@@ -19,17 +19,19 @@ pub struct Call<'a> {
     pub connection: &'a Connection,
 }
 
-/// The type no object is ever registered over. Each interface's server trait is implemented for
-/// it by `#[bus_interface]` so that the interface's introspection can be written without a
-/// daemon; its methods never answer.
+/// The type no object is ever registered over.
+///
+/// Each interface's server trait is implemented for it by `#[bus_interface]` so that the
+/// interface's introspection can be written without a daemon; its methods never answer.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct Unserved;
 
-/// The introspection document of one object: the interfaces it serves, in one `<node>`. Each
-/// interface writes its own element (`<Name>Served::<Unserved>::introspect`); a document is only
-/// the list of them, in the order the object serves them, and the file under `dbus/` that holds
-/// the result. A group lists its own documents (`accounts::ACCOUNTS`), so nothing here knows the
-/// interfaces.
+/// The introspection document of one object: the interfaces it serves, in one `<node>`.
+///
+/// Each interface writes its own element (`<Name>Served::<Unserved>::introspect`); a document is
+/// only the list of them, in the order the object serves them, and the file under `dbus/` that
+/// holds the result. A group lists its own documents (`accounts::ACCOUNTS`), so nothing here knows
+/// the interfaces.
 #[derive(Debug, Clone, Copy)]
 pub struct Document {
     /// The file under `dbus/` that holds it.

@@ -33,6 +33,10 @@ pub fn to_text<T: serde::Serialize>(value: &T) -> String {
 }
 
 /// The value the JSON text `text` carries, or why it is not one.
+///
+/// # Errors
+///
+/// [`CoreError`] when `text` is not JSON, or not JSON of type `T`.
 pub fn from_text<T: serde::de::DeserializeOwned>(text: &str) -> Result<T, CoreError> {
     serde_json::from_str(text).map_err(|e| bad(&format!("grants: {e}")))
 }

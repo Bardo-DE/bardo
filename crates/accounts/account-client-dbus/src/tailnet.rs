@@ -45,6 +45,10 @@ impl Tailnet {
     /// The other computers on the person's network, none for this one, in accountd's order. The
     /// list is empty with no Tailscale account, or one that is not working: the account's own
     /// state says why.
+    ///
+    /// # Errors
+    ///
+    /// [`LinkError`] when the call to accountd fails or a row of its reply is malformed.
     pub async fn machines(&self) -> Result<Vec<Machine>, LinkError> {
         self.bus
             .tailnet_proxy()
@@ -53,13 +57,21 @@ impl Tailnet {
             .await
             .map_err(|e| link_error(&e))?
             .iter()
-            .map(|row| machine_from_dbus(row).map_err(|_| LinkError::Malformed(Malformed::Row)))
+            .map(|row| {
+                machine_from_dbus(row)
+                    .ok()
+                    .ok_or(LinkError::Malformed(Malformed::Row))
+            })
             .collect()
     }
 
     /// The changes to the list, from now on: one item each time the list changed, with nothing in
     /// it; read the list again. It subscribes, then reads the list once so accountd counts this
     /// connection among those it tells.
+    ///
+    /// # Errors
+    ///
+    /// [`LinkError`] when subscribing or the first read of the list fails.
     pub async fn watch(&self) -> Result<Changes<()>, LinkError> {
         let proxy = self.bus.tailnet_proxy().await?;
         let stream = proxy.receive_changed().await.map_err(|e| link_error(&e))?;

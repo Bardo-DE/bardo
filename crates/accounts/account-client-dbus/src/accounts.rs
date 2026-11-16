@@ -26,7 +26,6 @@ use account_wire::{AccountsReply, ParentWindow};
 use base_ids::word::from_word;
 use futures_util::StreamExt;
 use futures_util::stream::select;
-use std::future::Future;
 
 impl AccountsLink for Bus {
     async fn add(
@@ -110,7 +109,9 @@ impl Bus {
         abandon.0 = listener.closer(Some(path.clone()));
         let (code, results) = listener.response(&path).await.map_err(sheet_error)?;
         abandon.answered();
-        reply_of(kind, code, results).map_err(|_| LinkError::Malformed(Malformed::Reply).into())
+        reply_of(kind, code, results)
+            .ok()
+            .ok_or_else(|| LinkError::Malformed(Malformed::Reply).into())
     }
 }
 
@@ -118,8 +119,7 @@ impl Bus {
 fn wire(window: &ParentWindow) -> String {
     match window {
         ParentWindow::Handle(handle) => handle.clone(),
-        // No parent, and a parent this build does not know, is no parent.
-        _ => String::new(),
+        ParentWindow::Unparented => String::new(),
     }
 }
 
@@ -127,7 +127,7 @@ fn wire(window: &ParentWindow) -> String {
 fn hint_text(hint: &ProviderHint) -> String {
     match hint {
         ProviderHint::Provider(id) => id.as_str().to_owned(),
-        _ => String::new(),
+        ProviderHint::Any => String::new(),
     }
 }
 
@@ -227,8 +227,10 @@ impl AccountWatch for Bus {
         let reason = proxy.reauth_reason().await.map_err(read)?;
         let malformed = |what| LinkError::Malformed(what);
         Ok(AccountView::new(
-            AccountId::parse(&id).map_err(|_| malformed(Malformed::Id))?,
-            ProviderId::parse(&provider).map_err(|_| malformed(Malformed::Id))?,
+            AccountId::parse(&id).ok().ok_or(malformed(Malformed::Id))?,
+            ProviderId::parse(&provider)
+                .ok()
+                .ok_or(malformed(Malformed::Id))?,
             AccountLabel(label),
             from_word::<AccountState>(&state).ok_or(malformed(Malformed::Row))?,
             match reason.as_str() {
@@ -264,7 +266,7 @@ impl AccountWatch for Bus {
             .await
             .map_err(|e| link_error(&e))?
             .map(|signal: AccountAdded| {
-                let args = signal.args().map_err(|_| Malformed::Signal)?;
+                let args = signal.args().ok().ok_or(Malformed::Signal)?;
                 account_ref(args.account.as_str()).map(AccountChange::Added)
             });
         let removed = manager
@@ -272,7 +274,7 @@ impl AccountWatch for Bus {
             .await
             .map_err(|e| link_error(&e))?
             .map(|signal: AccountRemoved| {
-                let args = signal.args().map_err(|_| Malformed::Signal)?;
+                let args = signal.args().ok().ok_or(Malformed::Signal)?;
                 account_ref(args.account.as_str()).map(AccountChange::Removed)
             });
         // A change of any account's state is a `PropertiesChanged` of its object, sent to the shell

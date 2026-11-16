@@ -45,10 +45,11 @@ pub const DRIVE_KEY_LOCAL: &str = "local";
 
 /// An item's state ([`ItemState`], `s`).
 pub const ITEM_KEY_STATE: &str = "state";
-/// Whether the person keeps it downloaded (`b`): true while it is kept, whatever else it is
-/// doing (a kept file that is uploading is `uploading` and kept). Keeping a folder keeps
-/// everything in it, also what is added to it later, so every item under a kept folder reads
-/// true.
+/// Whether the person keeps it downloaded (`b`): true while it is kept, whatever else it is doing
+/// (a kept file that is uploading is `uploading` and kept).
+///
+/// Keeping a folder keeps everything in it, also what is added to it later, so every item under a
+/// kept folder reads true.
 pub const ITEM_KEY_KEPT: &str = "kept";
 /// How far a transfer is, 0 to 1 (`d`), while the state is `downloading` or `uploading`. A
 /// folder's is the share of the bytes moving under it that have moved, so a caller never sums
@@ -102,9 +103,10 @@ impl DriveState {
     }
 }
 
-/// Where one file or folder stands. A folder's is its own: `downloading` or `uploading` while any
-/// item under it is, `downloaded` when everything under it is, else `cloud`, and `conflict` or
-/// `error` when any item under it is.
+/// Where one file or folder stands.
+///
+/// A folder's is its own: `downloading` or `uploading` while any item under it is, `downloaded`
+/// when everything under it is, else `cloud`, and `conflict` or `error` when any item under it is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]

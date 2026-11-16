@@ -1,4 +1,6 @@
-//! The portal shape of a sheet method (`Choose`, `AddAccount`, `Reauthenticate`): the method
+//! The portal shape of a sheet method (`Choose`, `AddAccount`, `Reauthenticate`).
+//!
+//! The method
 //! returns a Request object's path at once, and the object's `Response(response, results)`
 //! signal carries the answer when the person has finished with the sheet.
 //!
@@ -184,14 +186,18 @@ fn take_text(results: &mut Details, key: &str) -> Result<String, CoreError> {
     let value = results
         .remove(key)
         .ok_or_else(|| bad(&format!("the results hold no `{key}`")))?;
-    String::try_from(value).map_err(|_| bad(&format!("`{key}` is not a string")))
+    String::try_from(value)
+        .ok()
+        .ok_or_else(|| bad(&format!("`{key}` is not a string")))
 }
 
 fn take_path(results: &mut Details, key: &str) -> Result<OwnedObjectPath, CoreError> {
     let value = results
         .remove(key)
         .ok_or_else(|| bad(&format!("the results hold no `{key}`")))?;
-    OwnedObjectPath::try_from(value).map_err(|_| bad(&format!("`{key}` is not an object path")))
+    OwnedObjectPath::try_from(value)
+        .ok()
+        .ok_or_else(|| bad(&format!("`{key}` is not an object path")))
 }
 
 fn chosen(mut results: Details) -> Result<AccountsReply, CoreError> {
@@ -205,7 +211,9 @@ fn added(mut results: Details) -> Result<AccountsReply, CoreError> {
     let id = AccountId::parse(&take_text(&mut results, ACCOUNT_KEY)?)?;
     let already = match results.remove(ALREADY_KEY) {
         None => false,
-        Some(value) => bool::try_from(value).map_err(|_| bad("`already_added` is not a bool"))?,
+        Some(value) => bool::try_from(value)
+            .ok()
+            .ok_or(bad("`already_added` is not a bool"))?,
     };
     match (account_path(&id) == path.as_str(), already) {
         (true, false) => Ok(AccountsReply::Added(id)),
@@ -223,6 +231,10 @@ fn refusal_in(mut results: Details) -> Result<AccountsReply, CoreError> {
 
 /// The reply a `Response` carries for a `kind` sheet, or why it is not one porter's daemons
 /// send: an undefined code, or results that do not hold what the code promises.
+///
+/// # Errors
+///
+/// [`CoreError`] when the code is not defined or the results do not hold what the code promises.
 pub fn reply_of(kind: SheetKind, code: u32, results: Details) -> Result<AccountsReply, CoreError> {
     match (ResponseCode::from_wire(code), kind) {
         (Some(ResponseCode::Cancelled), _) => Ok(AccountsReply::Refused(Refusal::Dismissed)),

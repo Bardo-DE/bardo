@@ -33,9 +33,11 @@ use std::os::unix::fs::FileExt;
 use zeroize::Zeroizing;
 
 /// A credential issued to this launcher for one process: its id, and the sealed memfd that holds
-/// the key, read position at the start. The launcher passes the descriptor to the child as an
-/// inherited one, or reads the key from it ([`ProcessCredential::read_key`]); a plain `read`
-/// moves the position every holder of the descriptor shares, so this reads with `pread`.
+/// the key, read position at the start.
+///
+/// The launcher passes the descriptor to the child as an inherited one, or reads the key from it
+/// ([`ProcessCredential::read_key`]); a plain `read` moves the position every holder of the
+/// descriptor shares, so this reads with `pread`.
 #[derive(Debug)]
 pub struct ProcessCredential {
     id: ProcessCredentialId,
@@ -127,6 +129,10 @@ impl ProcessCredential {
     }
 
     /// The key's text, read without moving the shared position.
+    ///
+    /// # Errors
+    ///
+    /// [`ChildKeyError`] when the key cannot be read from its file or is not text.
     pub fn read_key(&self) -> Result<SecretText, ChildKeyError> {
         let file = self
             .key
@@ -138,10 +144,16 @@ impl ProcessCredential {
         // `SecretText` wipes its own copy; the buffer is wiped when `bytes` drops.
         std::str::from_utf8(&bytes)
             .map(SecretText::new)
-            .map_err(|_| ChildKeyError::NotText)
+            .ok()
+            .ok_or(ChildKeyError::NotText)
     }
 
     /// What to give the child whose key variable is `key_env` (`AgentCap.key_env`), by `delivery`.
+    ///
+    /// # Errors
+    ///
+    /// [`ChildKeyError`] when the key cannot be read, or the variable name is too long to take a
+    /// `_FILE` suffix.
     pub fn child_key(
         &self,
         key_env: &EnvName,
@@ -154,7 +166,8 @@ impl ProcessCredential {
             }),
             Delivery::File { child_fd } => {
                 let var = EnvName::parse(&format!("{}_FILE", key_env.as_str()))
-                    .map_err(|_| ChildKeyError::NoFileVariable(key_env.as_str().to_owned()))?;
+                    .ok()
+                    .ok_or_else(|| ChildKeyError::NoFileVariable(key_env.as_str().to_owned()))?;
                 let copy = self
                     .key
                     .as_fd()
@@ -225,7 +238,7 @@ mod tests {
                 assert_eq!(var.as_str(), "ANTHROPIC_API_KEY");
                 assert_eq!(value.expose(), "sk-test-0123");
             }
-            other => panic!("{other:?}"),
+            other @ ChildKey::File { .. } => panic!("{other:?}"),
         }
         match credential
             .child_key(&var, Delivery::File { child_fd: 9 })
@@ -242,7 +255,7 @@ mod tests {
                 );
                 assert_eq!(again.read_key().expect("read").expose(), "sk-test-0123");
             }
-            other => panic!("{other:?}"),
+            other @ ChildKey::Value { .. } => panic!("{other:?}"),
         }
     }
 

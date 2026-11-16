@@ -11,6 +11,10 @@ use serde::Serialize;
 use serde::de::DeserializeOwned;
 
 /// `body` in an envelope, as the text of an `s` argument.
+///
+/// # Errors
+///
+/// The [`serde_json::Error`] when `body` cannot be written as JSON.
 pub fn seal<T: Serialize>(body: &T) -> Result<String, serde_json::Error> {
     serde_json::to_string(&Envelope {
         vocab: VoiceVocab::CURRENT,
@@ -18,7 +22,9 @@ pub fn seal<T: Serialize>(body: &T) -> Result<String, serde_json::Error> {
     })
 }
 
-/// The longest frame body either end accepts or writes: 1 MiB. The largest real event is a
+/// The longest frame body either end accepts or writes: 1 MiB.
+///
+/// The largest real event is a
 /// transcript of a few kilobytes, so this is generous, and it bounds what a reader buffers
 /// before it can tell a corrupt length from a slow writer.
 pub const MAX_FRAME: u32 = 1 << 20;
@@ -38,6 +44,10 @@ pub enum FrameError {
 }
 
 /// One frame of the event fd, refused when its body is over [`MAX_FRAME`].
+///
+/// # Errors
+///
+/// [`FrameError`] when `body` cannot be written as JSON or its text is too long for a frame.
 pub fn frame<T: Serialize>(body: &T) -> Result<Vec<u8>, FrameError> {
     let json = seal(body)?;
     let len = u32::try_from(json.len())

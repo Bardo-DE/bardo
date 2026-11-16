@@ -33,8 +33,9 @@ impl AudioDevice for PipeWireDevice {
     async fn snapshot(&self) -> Result<Snapshot, DeviceError> {
         let listed = tokio::task::spawn_blocking(|| list_nodes(SNAPSHOT_BUDGET))
             .await
-            .map_err(|_| DeviceError::Closed)?;
-        let (sources, defaults) = listed.map_err(|_| DeviceError::TimedOut)?;
+            .ok()
+            .ok_or(DeviceError::Closed)?;
+        let (sources, defaults) = listed.ok().ok_or(DeviceError::TimedOut)?;
         Ok(Snapshot {
             sources,
             default: defaults.name().map(str::to_owned),
@@ -66,7 +67,7 @@ impl AudioDevice for PipeWireDevice {
             frames: Arc::clone(&frames),
         };
         std::thread::spawn(move || {
-            let _ = run_capture(target, rate, data, quit_rx);
+            let _ = run_capture(&target, rate, data, quit_rx);
         });
         let capture = PipeWireCapture { frames, quit };
         started(started_rx).await?;

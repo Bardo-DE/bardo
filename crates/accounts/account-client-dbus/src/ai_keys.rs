@@ -38,7 +38,7 @@ fn malformed(what: Malformed) -> AiKeysError {
 fn wire(window: &ParentWindow) -> String {
     match window {
         ParentWindow::Handle(handle) => handle.clone(),
-        _ => String::new(),
+        ParentWindow::Unparented => String::new(),
     }
 }
 
@@ -68,6 +68,11 @@ impl AiKeys {
     /// Shows the person accountd's consent sheet for this app's use of one of their AI keys, for
     /// data of `class` used as `usage` says, over `window`. The permit it answers is the person's
     /// yes, within the scope they chose.
+    ///
+    /// # Errors
+    ///
+    /// [`AiKeysError`] when the sheet cannot be shown, the person refuses it, or the reply is
+    /// malformed.
     pub async fn request_key(
         &self,
         class: DataClass,
@@ -99,7 +104,10 @@ impl AiKeys {
         abandon.0 = listener.closer(Some(path.clone()));
         let (code, results) = listener.response(&path).await.map_err(sheet_error)?;
         abandon.answered();
-        match reply_of(SheetKind::Choose, code, results).map_err(|_| malformed(Malformed::Reply))? {
+        match reply_of(SheetKind::Choose, code, results)
+            .ok()
+            .ok_or(malformed(Malformed::Reply))?
+        {
             // The answer is the chosen key; its `grant` is the permit's id.
             AccountsReply::Chosen(candidate) => Ok(candidate.grant),
             AccountsReply::Refused(refusal) => Err(AiKeysError::Refused(refusal)),

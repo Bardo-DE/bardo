@@ -59,6 +59,10 @@ fn text(details: &Details, key: &str) -> Option<String> {
 
 /// The identity a row carries, or why it is not one. A key a newer accountd adds is ignored; the
 /// address, the provider and the kind must be there.
+///
+/// # Errors
+///
+/// [`CoreError`] when a required field is missing or a value is malformed.
 pub fn identity_from_dbus(row: &(String, Details)) -> Result<Identity, CoreError> {
     let (id, details) = row;
     let address = text(details, IDENTITY_KEY_ADDRESS).ok_or_else(|| bad("identity: no address"))?;

@@ -76,12 +76,22 @@ fn failure(why: &str) -> BusError {
 impl Sheet {
     /// Starts listening for accountd's sheets, under a token of its own. Call this before the
     /// sheet method. The same as [`Sheet::subscribe_on`] with [`ServiceRoot::Accounts`].
+    ///
+    /// # Errors
+    ///
+    /// [`BusError`] when the connection has no unique name, or the match rule or the name-owner
+    /// watch cannot be set up.
     pub async fn subscribe(connection: &BusConnection) -> Result<Self, BusError> {
         Self::subscribe_on(connection, ServiceRoot::Accounts).await
     }
 
     /// Starts listening for the sheets of `service`, under
     /// a token of its own. Call this before the sheet method.
+    ///
+    /// # Errors
+    ///
+    /// [`BusError`] when the connection has no unique name, or the match rule or the name-owner
+    /// watch cannot be set up.
     pub async fn subscribe_on(
         connection: &BusConnection,
         service: ServiceRoot,
@@ -137,6 +147,11 @@ impl Sheet {
 
     /// Waits for the `Response` of the Request object at `path`, the path the sheet method
     /// returned.
+    ///
+    /// # Errors
+    ///
+    /// [`SheetError`] when the daemon leaves the bus, a signal at the path is unreadable, or the
+    /// bus refuses a step.
     pub async fn response(&mut self, path: &ObjectPath<'_>) -> Result<(u32, Details), SheetError> {
         let owner = self.owner().await?;
         loop {
@@ -145,11 +160,10 @@ impl Sheet {
                 Step::Message(message) if from_owner(&message, &owner, path) => {
                     return response_in(&message).ok_or(SheetError::Unreadable);
                 }
-                Step::Message(_) => {}
                 Step::OwnerChanged { left } if left == owner.as_str() => {
                     return Err(SheetError::Gone);
                 }
-                Step::OwnerChanged { .. } => {}
+                Step::Message(_) | Step::OwnerChanged { .. } => {}
                 Step::Ended => return Err(SheetError::Gone),
             }
         }
@@ -234,6 +248,8 @@ impl Closer {
     }
 }
 
+/// A guard that closes the sheet if the call is dropped before the answer is in.
+///
 /// Armed with the sheet's [`Closer`] before the call that makes the sheet; disarmed (`.0 = None`,
 /// or [`Abandon::answered`]) once the answer is in. Dropped armed, it closes the sheet on the
 /// runtime if there is one, so an abandoned request leaves no sheet on the screen.

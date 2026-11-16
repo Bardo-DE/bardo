@@ -51,7 +51,8 @@ fn read_key(fd: account_dbus::zvariant::OwnedFd) -> Result<SecretText, AiAccount
     std::fs::File::from(owned)
         .take(KEY_LIMIT + 1)
         .read_to_string(&mut text)
-        .map_err(|_| malformed(Malformed::Descriptor))?;
+        .ok()
+        .ok_or(malformed(Malformed::Descriptor))?;
     if u64::try_from(text.len()).map_or(true, |len| len > KEY_LIMIT) {
         return Err(malformed(Malformed::Descriptor));
     }
@@ -75,6 +76,10 @@ impl Bus {
 impl AiAccounts {
     /// What the permits say for `app` on each account that serves language models, for data of
     /// `class` used as `usage` says.
+    ///
+    /// # Errors
+    ///
+    /// [`AiAccountsError`] when the call to accountd fails or its reply is malformed.
     pub async fn verdicts(
         &self,
         app: &AppId,
@@ -92,12 +97,17 @@ impl AiAccounts {
             .await
             .map_err(|e| ai_accounts_error(&e))?
             .into_iter()
-            .map(|row| verdict_from_dbus(row).map_err(|_| malformed(Malformed::Row)))
+            .map(|row| verdict_from_dbus(row).ok().ok_or(malformed(Malformed::Row)))
             .collect()
     }
 
     /// The key behind the allow permit `grant` of the language-model kind, read once; an
     /// allow-once permit is spent by a read that succeeded. Hold it for one request and drop it.
+    ///
+    /// # Errors
+    ///
+    /// [`AiAccountsError`] when the call fails, the permit is not an allow permit of this app for a
+    /// language-model account, or the key cannot be read.
     pub async fn key(&self, grant: &GrantId) -> Result<SecretText, AiAccountsError> {
         read_key(
             self.bus
@@ -111,6 +121,10 @@ impl AiAccounts {
 
     /// The AI accounts (the services, the programs on this computer and the assistants), for the
     /// rows the broker adds to them.
+    ///
+    /// # Errors
+    ///
+    /// [`AiAccountsError`] when the call to accountd fails or a row of its reply is malformed.
     pub async fn accounts(&self) -> Result<Vec<AiAccountRow>, AiAccountsError> {
         self.bus
             .broker()
@@ -119,11 +133,19 @@ impl AiAccounts {
             .await
             .map_err(|e| ai_accounts_error(&e))?
             .into_iter()
-            .map(|row| ai_account_from_dbus(row).map_err(|_| malformed(Malformed::Row)))
+            .map(|row| {
+                ai_account_from_dbus(row)
+                    .ok()
+                    .ok_or(malformed(Malformed::Row))
+            })
             .collect()
     }
 
     /// The accounts that are servers of the person's own.
+    ///
+    /// # Errors
+    ///
+    /// [`AiAccountsError`] when the call to accountd fails or a row of its reply is malformed.
     pub async fn servers(&self) -> Result<Vec<OwnServerRow>, AiAccountsError> {
         self.bus
             .broker()
@@ -132,12 +154,21 @@ impl AiAccounts {
             .await
             .map_err(|e| ai_accounts_error(&e))?
             .into_iter()
-            .map(|row| own_server_from_dbus(row).map_err(|_| malformed(Malformed::Row)))
+            .map(|row| {
+                own_server_from_dbus(row)
+                    .ok()
+                    .ok_or(malformed(Malformed::Row))
+            })
             .collect()
     }
 
     /// The key of the own server `account`, for the one request that asks it for its models. It
     /// needs no permit.
+    ///
+    /// # Errors
+    ///
+    /// [`AiAccountsError`] when the call fails, `account` is not an own server, or the key cannot
+    /// be read.
     pub async fn server_key(&self, account: &AccountId) -> Result<SecretText, AiAccountsError> {
         read_key(
             self.bus
@@ -151,14 +182,19 @@ impl AiAccounts {
 
     /// Reports a probed local runtime as the account of `provider`, its models as `claims`, in
     /// `state` (`Ok` or `Offline`); the account's id.
+    ///
+    /// # Errors
+    ///
+    /// [`AiAccountsError`] when the claims cannot be written as JSON or the call to accountd fails.
     pub async fn report_local(
         &self,
         provider: &ProviderId,
         claims: &[Claim],
         state: AccountState,
     ) -> Result<AccountId, AiAccountsError> {
-        let claims =
-            serde_json::to_string(claims).map_err(|_| AiAccountsError::Link(LinkError::Invalid))?;
+        let claims = serde_json::to_string(claims)
+            .ok()
+            .ok_or(AiAccountsError::Link(LinkError::Invalid))?;
         let id = self
             .bus
             .broker()
@@ -166,12 +202,16 @@ impl AiAccounts {
             .report_local(provider.as_str(), &claims, word_of(&state))
             .await
             .map_err(|e| ai_accounts_error(&e))?;
-        AccountId::parse(&id).map_err(|_| malformed(Malformed::Id))
+        AccountId::parse(&id).ok().ok_or(malformed(Malformed::Id))
     }
 
     /// "An AI account, a permit or a switch changed", from now on; each item says only that
     /// something moved, and the listener asks again. Subscribe before the first look, so a change
     /// between the look and the subscription is not missed.
+    ///
+    /// # Errors
+    ///
+    /// [`AiAccountsError`] when the subscription to accountd's change signals fails.
     pub async fn changes(&self) -> Result<Changes<()>, AiAccountsError> {
         let stream = self
             .bus

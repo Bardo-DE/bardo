@@ -30,6 +30,10 @@ pub fn candidate_to_dbus(candidate: &Candidate) -> CandidateArg {
 }
 
 /// The candidate a D-Bus value carries, or why it is not one.
+///
+/// # Errors
+///
+/// [`CoreError`] when the value is not a candidate: a field is missing or has the wrong type.
 pub fn candidate_from_dbus(arg: CandidateArg) -> Result<Candidate, CoreError> {
     let (path, label, details) = arg;
     let mut fields = from_vardict(&details)?;

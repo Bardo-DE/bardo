@@ -102,8 +102,12 @@ pub fn to_vardict(fields: &Map<String, Json>) -> std::collections::HashMap<Strin
 }
 
 /// A vardict as the record it carries.
-pub fn from_vardict(
-    details: &std::collections::HashMap<String, OwnedValue>,
+///
+/// # Errors
+///
+/// [`CoreError`] when a value of the vardict has no JSON form.
+pub fn from_vardict<S: std::hash::BuildHasher>(
+    details: &std::collections::HashMap<String, OwnedValue, S>,
 ) -> Result<Map<String, Json>, CoreError> {
     details
         .iter()

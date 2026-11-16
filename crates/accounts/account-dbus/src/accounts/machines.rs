@@ -81,6 +81,10 @@ fn get<T: TryFrom<OwnedValue>>(details: &Details, key: &str) -> Option<T> {
 
 /// The machine a row carries, or why it is not one. A key a newer accountd adds is ignored; the
 /// name, the network name and the owner must be there.
+///
+/// # Errors
+///
+/// [`CoreError`] when a required field is missing or a value is malformed.
 pub fn machine_from_dbus(row: &(String, Details)) -> Result<Machine, CoreError> {
     let (node, details) = row;
     let text = |key: &str| get::<String>(details, key);

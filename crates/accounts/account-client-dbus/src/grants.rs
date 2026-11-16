@@ -42,7 +42,7 @@ fn of_sheet(error: AccountsError) -> GrantsError {
         AccountsError::Busy => GrantsError::Busy,
         AccountsError::Link(link) => GrantsError::Link(link),
         // A reason an add-account sheet gives and a grant sheet does not.
-        _ => malformed(Malformed::Reply),
+        AccountsError::AlreadyAdded(_) => malformed(Malformed::Reply),
     }
 }
 
@@ -50,8 +50,7 @@ fn of_sheet(error: AccountsError) -> GrantsError {
 fn wire(window: &ParentWindow) -> String {
     match window {
         ParentWindow::Handle(handle) => handle.clone(),
-        // No parent, and a parent this build does not know, is no parent.
-        _ => String::new(),
+        ParentWindow::Unparented => String::new(),
     }
 }
 
@@ -68,7 +67,11 @@ impl GrantsLink for Bus {
             .await
             .map_err(|e| grants_error(&e))?
             .into_iter()
-            .map(|row| candidate_from_dbus(row).map_err(|_| malformed(Malformed::Row)))
+            .map(|row| {
+                candidate_from_dbus(row)
+                    .ok()
+                    .ok_or(malformed(Malformed::Row))
+            })
             .collect()
     }
 
@@ -94,7 +97,7 @@ impl GrantsLink for Bus {
             .grants()
             .await
             .map_err(|e| grants_error(&e))?;
-        from_text(&text).map_err(|_| malformed(Malformed::Row))
+        from_text(&text).ok().ok_or(malformed(Malformed::Row))
     }
 
     async fn request_grant(
@@ -141,7 +144,7 @@ impl GrantsLink for Bus {
             .await
             .map_err(|e| grants_error(&e))?;
         let rows: Vec<(Account, String)> =
-            from_text(&text).map_err(|_| malformed(Malformed::Row))?;
+            from_text(&text).ok().ok_or(malformed(Malformed::Row))?;
         Ok(rows
             .into_iter()
             .map(|(account, label)| {

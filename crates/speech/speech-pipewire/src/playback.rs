@@ -151,7 +151,7 @@ impl PlaybackStream for PipeWirePlayback {
             tokio::pin!(waiting);
             waiting.as_mut().enable();
             {
-                let mut ring = self.shared.ring.lock().map_err(|_| DeviceError::Closed)?;
+                let mut ring = self.shared.ring.lock().ok().ok_or(DeviceError::Closed)?;
                 if ring.samples.len() < PLAYBACK_AHEAD {
                     ring.samples.extend(samples.iter().copied());
                     return Ok(());

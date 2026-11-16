@@ -20,6 +20,11 @@ pub enum Destination {
 
 impl Destination {
     /// A proxy of type `P` over `connection`, sent here.
+    ///
+    /// # Errors
+    ///
+    /// The error of building the proxy: the bus refuses the destination or the proxy cannot be
+    /// made.
     pub async fn proxy<P>(&self, connection: &BusConnection) -> zbus::Result<P>
     where
         P: From<zbus::Proxy<'static>> + Defaults,
@@ -28,6 +33,10 @@ impl Destination {
     }
 
     /// `builder`, sent here: unchanged for the well-known name, which is its default.
+    ///
+    /// # Errors
+    ///
+    /// The error of setting the destination on `builder`, when the owner is not a valid bus name.
     pub fn aim<'a, P>(&self, builder: Builder<'a, P>) -> zbus::Result<Builder<'a, P>> {
         match self {
             Destination::WellKnown => Ok(builder),

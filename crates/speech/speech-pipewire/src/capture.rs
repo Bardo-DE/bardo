@@ -60,7 +60,7 @@ impl Drop for CaptureData {
 }
 
 pub(crate) fn run_capture(
-    target: String,
+    target: &str,
     rate: u32,
     data: CaptureData,
     quit: pw::channel::Receiver<()>,
@@ -78,7 +78,7 @@ pub(crate) fn run_capture(
         *pw::keys::NODE_LATENCY => latency.as_str(),
     };
     // `target.object`: the physical source by name (the key's constant needs a newer feature).
-    props.insert("target.object", target.as_str());
+    props.insert("target.object", target);
     let stream = pw::stream::StreamBox::new(&core, "bardo-voiced-capture", props)?;
     let _listener = stream
         .add_local_listener_with_user_data(data)

@@ -67,26 +67,38 @@ fn record(id: &str, details: &Details) -> Result<DesktopSpaceRecord, SpacesError
         .and_then(|v| i64::try_from(v).ok())
         .ok_or_else(|| malformed(Malformed::Row))?;
     Ok(DesktopSpaceRecord {
-        id: DesktopSpace::parse(id).map_err(|_| malformed(Malformed::Id))?,
+        id: DesktopSpace::parse(id)
+            .ok()
+            .ok_or(malformed(Malformed::Id))?,
         name: SpaceName::parse(&text(details, SPACE_KEY_NAME)?)
-            .map_err(|_| malformed(Malformed::Row))?,
+            .ok()
+            .ok_or(malformed(Malformed::Row))?,
         look: SpaceLook::parse(&text(details, SPACE_KEY_LOOK)?)
-            .map_err(|_| malformed(Malformed::Row))?,
+            .ok()
+            .ok_or(malformed(Malformed::Row))?,
         created: UnixSeconds(created),
     })
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a stream `map` callback, which is handed the signal by value"
+)]
 fn change(signal: SpaceChanged) -> Result<(DesktopSpace, SpaceChange), Malformed> {
-    let args = signal.args().map_err(|_| Malformed::Signal)?;
+    let args = signal.args().ok().ok_or(Malformed::Signal)?;
     let what = from_word::<SpaceChange>(args.what).ok_or(Malformed::Signal)?;
     Ok((
-        DesktopSpace::parse(args.id).map_err(|_| Malformed::Id)?,
+        DesktopSpace::parse(args.id).ok().ok_or(Malformed::Id)?,
         what,
     ))
 }
 
 impl Spaces {
     /// Every desktop-wide Space, in the order they were made.
+    ///
+    /// # Errors
+    ///
+    /// [`SpacesError`] when the call to accountd fails or a row of its reply is malformed.
     pub async fn list(&self) -> Result<Vec<DesktopSpaceRecord>, SpacesError> {
         self.bus
             .spaces_proxy()
@@ -101,6 +113,11 @@ impl Spaces {
 
     /// Makes a desktop-wide Space and answers its id, which a rename keeps. accountd lets an app
     /// make only a few a minute (ten); more is [`SpacesError::TooMany`].
+    ///
+    /// # Errors
+    ///
+    /// [`SpacesError::TooMany`] when this app made too many Spaces lately, or another
+    /// [`SpacesError`] when the call fails.
     pub async fn create(
         &self,
         name: &SpaceName,
@@ -113,11 +130,17 @@ impl Spaces {
             .create(name.as_str(), look.as_str())
             .await
             .map_err(|e| spaces_error(&e))?;
-        DesktopSpace::parse(&id).map_err(|_| malformed(Malformed::Id))
+        DesktopSpace::parse(&id)
+            .ok()
+            .ok_or(malformed(Malformed::Id))
     }
 
     /// Registers a Space whose id the caller minted (the compositor, per workspace); one already
     /// registered is left as it is. Only the compositor, Settings and the shell may.
+    ///
+    /// # Errors
+    ///
+    /// [`SpacesError`] when the caller may not register Spaces or the call fails.
     pub async fn register(
         &self,
         id: &DesktopSpace,
@@ -133,6 +156,10 @@ impl Spaces {
     }
 
     /// Renames a Space. Only Settings and the shell may.
+    ///
+    /// # Errors
+    ///
+    /// [`SpacesError`] when the caller may not rename Spaces or the call fails.
     pub async fn rename(&self, id: &DesktopSpace, name: &SpaceName) -> Result<(), SpacesError> {
         self.bus
             .spaces_proxy()
@@ -143,6 +170,10 @@ impl Spaces {
     }
 
     /// Gives a Space a new look. Only Settings and the shell may.
+    ///
+    /// # Errors
+    ///
+    /// [`SpacesError`] when the caller may not change a Space's look or the call fails.
     pub async fn set_look(&self, id: &DesktopSpace, look: &SpaceLook) -> Result<(), SpacesError> {
         self.bus
             .spaces_proxy()
@@ -153,6 +184,10 @@ impl Spaces {
     }
 
     /// Removes a Space. Only Settings and the shell may.
+    ///
+    /// # Errors
+    ///
+    /// [`SpacesError`] when the caller may not remove Spaces or the call fails.
     pub async fn remove(&self, id: &DesktopSpace) -> Result<(), SpacesError> {
         self.bus
             .spaces_proxy()
@@ -164,6 +199,10 @@ impl Spaces {
 
     /// The changes to the Spaces, from now on: which Space, and what became of it. It subscribes,
     /// then calls `List` once so accountd counts this connection among those it tells.
+    ///
+    /// # Errors
+    ///
+    /// [`SpacesError`] when subscribing or the first `List` call fails.
     pub async fn watch(&self) -> Result<Changes<(DesktopSpace, SpaceChange)>, SpacesError> {
         let proxy = self.bus.spaces_proxy().await?;
         let stream = proxy
