@@ -48,7 +48,7 @@ pub fn encode_touch(t: &RawTouch) -> [u8; 8] {
     [
         (x & 0xff) as u8,
         ((x >> 8) as u8 & 0x0f) | (((y & 0x0f) as u8) << 4),
-        (y >> 4) as u8,
+        u8::try_from(y >> 4).unwrap_or_default(),
         t.major,
         t.minor,
         (t.size & 0x3f) | ((id & 0x03) << 6),

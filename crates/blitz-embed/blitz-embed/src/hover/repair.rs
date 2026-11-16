@@ -58,10 +58,9 @@ fn at_page(event: &BlitzPointerEvent, scroll: (f64, f64)) -> BlitzPointerEvent {
         clippy::cast_possible_truncation,
         reason = "a viewport scroll offset is far inside f32's range, and f32 is Blitz's coordinate type"
     )]
-    {
-        moved.coords.page_x = moved.coords.client_x + scroll.0 as f32;
-        moved.coords.page_y = moved.coords.client_y + scroll.1 as f32;
-    }
+    let (scroll_x, scroll_y) = (scroll.0 as f32, scroll.1 as f32);
+    moved.coords.page_x = moved.coords.client_x + scroll_x;
+    moved.coords.page_y = moved.coords.client_y + scroll_y;
     moved
 }
 
