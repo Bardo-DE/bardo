@@ -37,8 +37,18 @@ pub enum WorkdirFault {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Workdir(AbsPath);
 
+/// A folder that cannot be looked at is not one the session may use; what the file system said
+/// goes to the log.
+fn not_folder(error: std::io::Error) -> WorkdirFault {
+    tracing::debug!(%error, "the folder cannot be looked at");
+    WorkdirFault::NotFolder
+}
+
 fn abs(path: &Path) -> Result<AbsPath, WorkdirFault> {
-    AbsPath::try_from(path).ok().ok_or(WorkdirFault::NotFolder)
+    AbsPath::try_from(path).map_err(|error| {
+        tracing::debug!(%error, "the folder is not an absolute path");
+        WorkdirFault::NotFolder
+    })
 }
 
 impl Workdir {
@@ -87,9 +97,7 @@ impl Workdir {
         if !scope.covers(asked) {
             return Err(WorkdirFault::Outside);
         }
-        let real_scope = std::fs::canonicalize(scope.as_str())
-            .ok()
-            .ok_or(WorkdirFault::NotFolder)?;
+        let real_scope = std::fs::canonicalize(scope.as_str()).map_err(not_folder)?;
         let below = asked
             .as_str()
             .strip_prefix(scope.as_str())
@@ -97,23 +105,18 @@ impl Workdir {
         let mut at: PathBuf = real_scope.clone();
         for part in below.split('/').filter(|p| !p.is_empty()) {
             at.push(part);
-            let meta = std::fs::symlink_metadata(&at)
-                .ok()
-                .ok_or(WorkdirFault::NotFolder)?;
+            let meta = std::fs::symlink_metadata(&at).map_err(not_folder)?;
             if meta.file_type().is_symlink() {
                 return Err(WorkdirFault::Link);
             }
         }
-        let looked = std::fs::symlink_metadata(&at)
-            .ok()
-            .ok_or(WorkdirFault::NotFolder)?;
+        let looked = std::fs::symlink_metadata(&at).map_err(not_folder)?;
         if !looked.is_dir() {
             return Err(WorkdirFault::NotFolder);
         }
         let opened = std::fs::File::open(&at)
             .and_then(|f| f.metadata())
-            .ok()
-            .ok_or(WorkdirFault::NotFolder)?;
+            .map_err(not_folder)?;
         if !same_directory(&looked, &opened) {
             return Err(WorkdirFault::Moved);
         }

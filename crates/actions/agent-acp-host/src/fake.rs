@@ -267,7 +267,10 @@ impl Files for FakeFiles {
             if at.covers(path) {
                 let rest = &path.as_str()[at.as_str().len()..];
                 let joined = format!("{}{rest}", to.as_str());
-                return AbsPath::parse(&joined).ok().ok_or(FileFault::Refused);
+                return AbsPath::parse(&joined).map_err(|error| {
+                    tracing::debug!(%error, "the linked path is not absolute");
+                    FileFault::Refused
+                });
             }
         }
         Ok(path.clone())

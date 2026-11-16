@@ -127,8 +127,10 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
         self.court
             .hand(session, RunsIn::Terminal, Some(agent))
             .await
-            .ok()
-            .ok_or(BackendFault::Unavailable)?;
+            .map_err(|error| {
+                tracing::debug!(%error, "the router would not hand the session over");
+                BackendFault::Unavailable
+            })?;
         self.pending = None;
         self.running = None;
         self.backend.close().await;

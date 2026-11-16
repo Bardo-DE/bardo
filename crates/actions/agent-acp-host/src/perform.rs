@@ -162,8 +162,7 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
             .map_err(file_failed)?;
         inner.next += 1;
         let token = UndoToken::parse(&format!("u-{}", inner.next))
-            .ok()
-            .ok_or_else(|| failed("no undo token"))?;
+            .map_err(|error| failed(&format!("no undo token: {error}")))?;
         inner.undo.push((
             token.clone(),
             UndoNote {
@@ -261,6 +260,9 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
             Some(text) => inner.files.write(&note.path, &within, text).map(|_| ()),
             None => inner.files.remove(&note.path, &within),
         };
-        done.ok().ok_or(UndoFault::Gone)
+        done.map_err(|error| {
+            tracing::debug!(%error, "the undo could not be applied");
+            UndoFault::Gone
+        })
     }
 }

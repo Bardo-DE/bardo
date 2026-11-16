@@ -14,7 +14,8 @@
 use crate::provider::{AppLog, Message, Sending, words_match};
 use account_core::{AppName, DataClass};
 use action_core::{
-    AppRefusal, Follow, Hit, Invocation, Outcome, Preview, SuggestAsk, UndoFault, Undoable,
+    AppRefusal, FailText, Follow, Hit, Invocation, Outcome, Preview, SuggestAsk, UndoFault,
+    Undoable,
 };
 use action_manifest::{ArgSink, ResultShape, TargetKind, ValidManifest};
 use action_provider::IntentProvider;
@@ -324,9 +325,11 @@ impl AcceptThings {
             actor: inv.actor.clone(),
             state: Sending::Held,
         };
-        let token = UndoToken::parse(&self.log.hold(message))
-            .ok()
-            .ok_or(AppRefusal::Busy)?;
+        let token = UndoToken::parse(&self.log.hold(message)).map_err(|error| {
+            AppRefusal::Failed(FailText(format!(
+                "the held message has no undo token: {error}"
+            )))
+        })?;
         let said = format!("Held {} for the undo window", inv.action.as_str());
         Ok(Self::done(&said, None, Undoable::Yes(token)))
     }

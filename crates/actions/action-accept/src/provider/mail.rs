@@ -3,8 +3,8 @@
 use super::{AppLog, Focus, Message, Sending, contacts, threads, words_match};
 use account_core::{AppName, DataClass};
 use action_core::{
-    AppRefusal, Follow, Hit, Invocation, MessageSnip, Outcome, Preview, SuggestAsk, UndoFault,
-    Undoable,
+    AppRefusal, FailText, Follow, Hit, Invocation, MessageSnip, Outcome, Preview, SuggestAsk,
+    UndoFault, Undoable,
 };
 use action_manifest::ValidManifest;
 use action_provider::IntentProvider;
@@ -132,7 +132,11 @@ impl AcceptMail {
         };
         let said = format!("Held {} for the undo window", inv.action.as_str());
         let token = self.log.hold(message);
-        let token = UndoToken::parse(&token).ok().ok_or(AppRefusal::Busy)?;
+        let token = UndoToken::parse(&token).map_err(|error| {
+            AppRefusal::Failed(FailText(format!(
+                "the held message has no undo token: {error}"
+            )))
+        })?;
         Ok(Self::done(&said, None, Undoable::Yes(token)))
     }
 }

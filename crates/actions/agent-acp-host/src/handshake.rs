@@ -280,10 +280,10 @@ impl<X: Seams> AcpBackend<X> {
         if offer.current.as_deref() == Some(wanted.as_str()) {
             return Ok(());
         }
-        let message = offer
-            .switch(&agent, &wanted)
-            .ok()
-            .ok_or(BackendFault::ModelRefused)?;
+        let message = offer.switch(&agent, &wanted).map_err(|error| {
+            tracing::debug!(%error, "the model switch could not be encoded");
+            BackendFault::ModelRefused
+        })?;
         let sent = live.link.ask(message);
         match self.answered(sent).await? {
             Ok(_) => {

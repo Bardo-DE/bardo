@@ -25,7 +25,7 @@ pub const KEYS_FILE: &str = "accountd.keys";
 const REGISTRY: &str = "state/bardo/accounts/registry.json";
 
 /// Why a directory cannot be the home.
-#[derive(Debug, thiserror::Error, PartialEq, Eq)]
+#[derive(Debug, thiserror::Error)]
 pub enum HomeFault {
     /// The path is not absolute.
     #[error("--keys-home {0} is not an absolute path")]
@@ -48,10 +48,10 @@ pub enum HomeFault {
     #[error(
         "{0} does not hold the cloud key yet. Fill it once, in your own terminal (the key is typed at accountd's own prompt, echo off):\n  dev/live/cloud-key.sh {0} <accountd built with --features test-keys>\nthen run again."
     )]
-    Empty(PathBuf),
+    Empty(PathBuf, #[source] std::io::Error),
     /// The directory could not be read.
-    #[error("{0}: {1}")]
-    Io(PathBuf, String),
+    #[error("could not read {0}")]
+    Io(PathBuf, #[source] std::io::Error),
 }
 
 /// A checked home that holds the cloud key.
@@ -59,7 +59,7 @@ pub enum HomeFault {
 pub struct KeysHome(PathBuf);
 
 fn meta_of(path: &Path) -> Result<std::fs::Metadata, HomeFault> {
-    std::fs::symlink_metadata(path).map_err(|e| HomeFault::Io(path.to_owned(), e.to_string()))
+    std::fs::symlink_metadata(path).map_err(|e| HomeFault::Io(path.to_owned(), e))
 }
 
 fn tight(path: &Path, meta: &std::fs::Metadata) -> Result<(), HomeFault> {
@@ -88,15 +88,12 @@ pub fn check_dir(dir: &Path) -> Result<PathBuf, HomeFault> {
     if !dir.is_absolute() {
         return Err(HomeFault::NotAbsolute(dir.to_owned()));
     }
-    let meta = meta_of(dir)
-        .ok()
-        .ok_or_else(|| HomeFault::NotADirectory(dir.to_owned()))?;
+    let meta = meta_of(dir)?;
     if !meta.is_dir() {
         return Err(HomeFault::NotADirectory(dir.to_owned()));
     }
     tight(dir, &meta)?;
-    let real =
-        std::fs::canonicalize(dir).map_err(|e| HomeFault::Io(dir.to_owned(), e.to_string()))?;
+    let real = std::fs::canonicalize(dir).map_err(|e| HomeFault::Io(dir.to_owned(), e))?;
     match git_root(&real) {
         Some(root) => Err(HomeFault::InsideGit(dir.to_owned(), root)),
         None => Ok(real),
@@ -113,16 +110,14 @@ impl KeysHome {
     pub fn open(dir: &Path) -> Result<Self, HomeFault> {
         let real = check_dir(dir)?;
         let keys = real.join(KEYS_FILE);
-        let empty = || HomeFault::Empty(dir.to_owned());
+        let empty = |source| HomeFault::Empty(dir.to_owned(), source);
         // Metadata only: the harness never opens the key file.
-        let meta = std::fs::symlink_metadata(&keys).ok().ok_or_else(empty)?;
+        let meta = std::fs::symlink_metadata(&keys).map_err(empty)?;
         if !meta.is_file() {
             return Err(HomeFault::NotAFile(keys));
         }
         tight(&keys, &meta)?;
-        std::fs::metadata(real.join(REGISTRY))
-            .ok()
-            .ok_or_else(empty)?;
+        std::fs::metadata(real.join(REGISTRY)).map_err(empty)?;
         Ok(Self(real))
     }
 

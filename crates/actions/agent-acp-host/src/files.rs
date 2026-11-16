@@ -61,8 +61,14 @@ pub trait Files: Send {
     /// Returns a [`WorkdirFault`] when either path cannot be resolved or `asked` is not a folder
     /// the rules allow inside `scope`.
     fn workdir(&self, scope: &AbsPath, asked: &AbsPath) -> Result<Workdir, WorkdirFault> {
-        let real_scope = self.real(scope).ok().ok_or(WorkdirFault::NotFolder)?;
-        let real = self.real(asked).ok().ok_or(WorkdirFault::NotFolder)?;
+        let real_scope = self.real(scope).map_err(|error| {
+            tracing::debug!(%error, "the session's folder cannot be resolved");
+            WorkdirFault::NotFolder
+        })?;
+        let real = self.real(asked).map_err(|error| {
+            tracing::debug!(%error, "the working folder cannot be resolved");
+            WorkdirFault::NotFolder
+        })?;
         Workdir::from_resolved(&real_scope, real, None)
     }
 
@@ -186,10 +192,15 @@ fn open_for_read(path: &str) -> std::io::Result<File> {
 #[cfg(unix)]
 fn still_inside(file: &File, within: &AbsPath) -> Result<(), FileFault> {
     use std::os::fd::AsRawFd;
-    let target = std::fs::read_link(format!("/proc/self/fd/{}", file.as_raw_fd()))
-        .ok()
-        .ok_or(FileFault::Moved)?;
-    let target = abs(&target).ok().ok_or(FileFault::Moved)?;
+    let target =
+        std::fs::read_link(format!("/proc/self/fd/{}", file.as_raw_fd())).map_err(|error| {
+            tracing::debug!(%error, "the open file's path cannot be read");
+            FileFault::Moved
+        })?;
+    let target = abs(&target).map_err(|error| {
+        tracing::debug!(%error, "the open file's path is not absolute text");
+        FileFault::Moved
+    })?;
     if within.covers(&target) {
         Ok(())
     } else {
@@ -212,7 +223,10 @@ fn read_text(file: &mut File) -> Result<String, FileFault> {
     if bytes.len() > MAX_READ {
         return Err(FileFault::TooBig);
     }
-    String::from_utf8(bytes).ok().ok_or(FileFault::NotText)
+    String::from_utf8(bytes).map_err(|error| {
+        tracing::debug!(%error, "the file is not utf-8");
+        FileFault::NotText
+    })
 }
 
 impl Files for OsFiles {

@@ -6,7 +6,7 @@
 //! the same number waits for that one task: the backend's pull is cancel-safe (see `Court`), and a
 //! second router call would put a second sheet in front of the person.
 
-use action_client::{Intents, Transport};
+use action_client::{ClientError, Intents, Transport};
 use action_core::{CallRefusal, ContextKeep, Keep, TurnEnd, TurnIn, TurnVia};
 use action_vocab::{Origin, TurnId};
 use action_wire::SessionOpen;
@@ -24,6 +24,12 @@ use tokio::sync::Notify;
 struct Flight {
     done: Mutex<Option<Ruled>>,
     wake: Notify,
+}
+
+/// The router's refusal, with what it said in the log.
+fn refused(error: ClientError) -> CourtFault {
+    tracing::debug!(%error, "the router refused the call");
+    CourtFault::Refused
 }
 
 fn locked<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
@@ -115,8 +121,7 @@ impl<T: Transport + 'static> Court for IntentsCourt<T> {
                 acts_for: None,
             })
             .await
-            .ok()
-            .ok_or(CourtFault::Refused)?;
+            .map_err(refused)?;
         Ok(opened.session)
     }
 
@@ -131,8 +136,7 @@ impl<T: Transport + 'static> Court for IntentsCourt<T> {
         self.intents
             .session_turn(session.clone(), said)
             .await
-            .ok()
-            .ok_or(CourtFault::Refused)
+            .map_err(refused)
     }
 
     async fn turn_ended(&mut self, session: &SessionId, turn: TurnId, how: TurnEnd) {
@@ -170,7 +174,6 @@ impl<T: Transport + 'static> Court for IntentsCourt<T> {
         self.intents
             .checkpoint_handover(session.clone(), to, agent)
             .await
-            .ok()
-            .ok_or(CourtFault::Refused)
+            .map_err(refused)
     }
 }

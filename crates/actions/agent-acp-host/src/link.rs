@@ -186,7 +186,10 @@ impl Link {
                 tracing::debug!(%error, "the agent connection ended with an error");
             }
         });
-        let cx = up_rx.await.ok().ok_or(Gone)?;
+        let cx = up_rx.await.map_err(|error| {
+            tracing::debug!(%error, "the connection ended before it was up");
+            Gone
+        })?;
         Ok(Self { cx, rx, tx, task })
     }
 
@@ -228,16 +231,20 @@ impl Link {
                     .await
                     .map_err(|_| Error::internal_error())
             })
-            .ok()
-            .ok_or(Gone)
+            .map_err(|error| {
+                tracing::debug!(%error, "the prompt could not be sent");
+                Gone
+            })
     }
 
     /// Sends `session/cancel` for the agent's `session`.
     pub(super) fn cancel(&self, session: &SessionId) -> Result<(), Gone> {
         self.cx
             .send_notification(CancelNotification::new(session.clone()))
-            .ok()
-            .ok_or(Gone)
+            .map_err(|error| {
+                tracing::debug!(%error, "the cancel could not be sent");
+                Gone
+            })
     }
 
     /// Waits for the answer to `sent`, which is either the agent's result or the error it answered

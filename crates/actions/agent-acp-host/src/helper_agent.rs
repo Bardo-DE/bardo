@@ -224,8 +224,10 @@ impl<H: Hosts> HelperAgent<H> {
         link.host
             .hand_to_terminal(&away.session, away.agent.clone())
             .await
-            .ok()
-            .ok_or(HandFault::Busy)?;
+            .map_err(|error| {
+                tracing::debug!(%error, "the router would not hand the session to a terminal");
+                HandFault::Busy
+            })?;
         self.link = None;
         self.resume = Some(away.agent.session.to_string());
         self.away = Some(away.clone());

@@ -186,26 +186,26 @@ fn a_bad_choice_or_an_unlisted_agent_writes_nothing() {
         model: Pick::Set(model.to_owned()),
         way: Pick::Keep,
     };
-    assert_eq!(
+    assert!(matches!(
         edit_agent_choice(FILE, "antigravity", &bad("two words")),
         Err(ChoiceFault::BadModel)
-    );
-    assert_eq!(
+    ));
+    assert!(matches!(
         edit_agent_choice(FILE, "nobody", &bad("ok")),
         Err(ChoiceFault::NoSuchAgent)
-    );
-    assert_eq!(
+    ));
+    assert!(matches!(
         edit_agent_choice("[[", "a", &bad("ok")),
-        Err(ChoiceFault::Unreadable)
-    );
+        Err(ChoiceFault::Syntax(_))
+    ));
     let way = AgentChoice {
         model: Pick::Keep,
         way: Pick::Set("a b".to_owned()),
     };
-    assert_eq!(
+    assert!(matches!(
         edit_agent_choice(FILE, "antigravity", &way),
         Err(ChoiceFault::BadWay)
-    );
+    ));
 }
 
 #[test]
@@ -261,14 +261,14 @@ fn who_keeps_the_history_is_read_with_the_profile_as_default_and_edited_in_place
     let out = edit_agent_rewind(&text, "claude-code", Rewind::Docket).expect("edit");
     assert_eq!(read(&out, "claude-code"), Some(kept_by_docket));
 
-    assert_eq!(
+    assert!(matches!(
         edit_agent_rewind(&text, "nobody", Rewind::Agent),
         Err(ChoiceFault::NoSuchAgent)
-    );
-    assert_eq!(
+    ));
+    assert!(matches!(
         edit_agent_rewind("[[", "a", Rewind::Agent),
-        Err(ChoiceFault::Unreadable)
-    );
+        Err(ChoiceFault::Syntax(_))
+    ));
 
     let path = tmp.path().join("agents.toml");
     std::fs::write(&path, &text).expect("file");
@@ -312,30 +312,39 @@ fn an_agent_from_the_registry_is_added_after_the_others_and_taken_out_again() {
 
 #[test]
 fn a_listed_name_an_odd_name_or_an_unlisted_agent_writes_nothing() {
-    assert_eq!(
+    assert!(matches!(
         edit_agent_add(FILE, &agy("antigravity")),
         Err(AddFault::Listed)
-    );
-    assert_eq!(
+    ));
+    assert!(matches!(
         edit_agent_add(FILE, &agy("two words")),
         Err(AddFault::BadName)
-    );
+    ));
     let mut odd = agy("agy");
     odd.version = "1.3.0\nmodel = \"x\"".to_owned();
-    assert_eq!(edit_agent_add(FILE, &odd), Err(AddFault::BadName));
+    assert!(matches!(edit_agent_add(FILE, &odd), Err(AddFault::BadName)));
     let mut unnamed = agy("agy");
     unnamed.label = "  ".to_owned();
-    assert_eq!(edit_agent_add(FILE, &unnamed), Err(AddFault::BadLabel));
-    assert_eq!(edit_agent_add("[[", &agy("agy")), Err(AddFault::Unreadable));
-    assert_eq!(
+    assert!(matches!(
+        edit_agent_add(FILE, &unnamed),
+        Err(AddFault::BadLabel)
+    ));
+    assert!(matches!(
+        edit_agent_add("[[", &agy("agy")),
+        Err(AddFault::Syntax(_))
+    ));
+    assert!(matches!(
         edit_agent_add("agent = 1", &agy("agy")),
         Err(AddFault::Unreadable)
-    );
-    assert_eq!(
+    ));
+    assert!(matches!(
         edit_agent_remove(FILE, "nobody"),
         Err(ChoiceFault::NoSuchAgent)
-    );
-    assert_eq!(edit_agent_remove("", "agy"), Err(ChoiceFault::NoSuchAgent));
+    ));
+    assert!(matches!(
+        edit_agent_remove("", "agy"),
+        Err(ChoiceFault::NoSuchAgent)
+    ));
 }
 
 #[test]
@@ -352,8 +361,8 @@ fn the_first_agent_makes_the_file_and_the_last_one_out_leaves_it_valid() {
             .get("agy")
             .is_none()
     );
-    assert_eq!(
+    assert!(matches!(
         write_agent_remove(&tmp.path().join("none.toml"), "agy"),
-        Err(ChoiceFault::Io)
-    );
+        Err(ChoiceFault::Io(_))
+    ));
 }

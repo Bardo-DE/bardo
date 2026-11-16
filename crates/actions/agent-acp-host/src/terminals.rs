@@ -162,9 +162,9 @@ impl<S: Sandbox> Terminals<S> {
         asked: &CreateTerminalRequest,
     ) -> Result<CreateTerminalResponse, Error> {
         let cwd = match &asked.cwd {
-            Some(path) => AbsPath::parse(&path.to_string_lossy())
-                .ok()
-                .ok_or_else(|| fault::invalid("the working directory must be absolute"))?,
+            Some(path) => AbsPath::parse(&path.to_string_lossy()).map_err(|error| {
+                fault::invalid(&format!("the working directory must be absolute: {error}"))
+            })?,
             None => scope.clone(),
         };
         if !scope.covers(&cwd) {

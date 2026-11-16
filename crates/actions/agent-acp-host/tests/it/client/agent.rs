@@ -306,9 +306,7 @@ pub async fn over_socket(path: &str, line: &Value) -> Result<Value, Value> {
         .read_line(&mut back)
         .await
         .map_err(unreachable)?;
-    serde_json::from_str(back.trim())
-        .ok()
-        .ok_or_else(|| json!("unreachable"))
+    serde_json::from_str(back.trim()).map_err(|error| json!(format!("unreachable: {error}")))
 }
 
 /// An agent playing `turns`, one script per prompt, and the client's end of the pipe.
