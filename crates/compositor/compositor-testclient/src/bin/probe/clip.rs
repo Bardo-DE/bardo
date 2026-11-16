@@ -195,12 +195,12 @@ impl Dispatch<WlDataSource, SourceText> for ClientState {
         _: &mut Self,
         _: &WlDataSource,
         event: wl_data_source::Event,
-        sends: &SourceText,
+        data: &SourceText,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if let wl_data_source::Event::Send { fd, .. } = event {
-            let _ = File::from(fd).write_all(sends.0.as_bytes());
+            let _ = File::from(fd).write_all(data.0.as_bytes());
         }
     }
 }

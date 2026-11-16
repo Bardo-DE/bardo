@@ -55,7 +55,7 @@ fn a_parametric_description_becomes_ready() {
     let creator = manager.creator(fixture.client(id));
     let description = describe(
         fixture.client(id),
-        creator,
+        &creator,
         Primaries::DisplayP3,
         TransferFunction::Gamma22,
     );
@@ -127,7 +127,7 @@ fn a_clients_own_description_has_no_information() {
     let creator = manager.creator(fixture.client(id));
     let description = describe(
         fixture.client(id),
-        creator,
+        &creator,
         Primaries::Srgb,
         TransferFunction::Gamma22,
     );
@@ -151,7 +151,7 @@ fn a_surface_is_tagged_and_untagged() {
     let creator = manager.creator(client);
     let description = describe(
         client,
-        creator,
+        &creator,
         Primaries::DisplayP3,
         TransferFunction::Gamma22,
     );
@@ -180,7 +180,7 @@ fn another_intent_is_a_protocol_error() {
     let manager = ColorManagement::bind(client, 2);
     let object = manager.surface(client, &surface);
     let creator = manager.creator(client);
-    let description = describe(client, creator, Primaries::Srgb, TransferFunction::Gamma22);
+    let description = describe(client, &creator, Primaries::Srgb, TransferFunction::Gamma22);
     fixture.pump();
     object.set_image_description(&description, RenderIntent::Saturation);
     fixture.pump();

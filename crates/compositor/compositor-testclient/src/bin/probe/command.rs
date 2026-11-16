@@ -173,18 +173,20 @@ fn size(text: &str) -> Result<Size, String> {
 }
 
 fn pattern(text: &str) -> Result<Pattern, String> {
-    let bad = || format!("not a pattern: {text}");
+    let bad = |why: &dyn std::fmt::Display| format!("not a pattern: {text} ({why})");
     match text.split_once(':') {
         None if text == "gradient" => Ok(Pattern::Gradient),
         None if text == "coordinates" => Ok(Pattern::CoordinateEncoding),
         Some(("checker", n)) => n
             .parse()
             .map(|cell| Pattern::Checker { cell })
-            .map_err(|_| bad()),
+            .map_err(|e| bad(&e)),
         Some(("solid", hex)) => u32::from_str_radix(hex, 16)
             .map(|rgb| Pattern::Solid(0xff00_0000 | rgb))
-            .map_err(|_| bad()),
-        _ => Err(bad()),
+            .map_err(|e| bad(&e)),
+        _ => Err(bad(
+            &"expected gradient, coordinates, checker:N or solid:HEX",
+        )),
     }
 }
 
@@ -248,9 +250,14 @@ fn anchor(text: &str) -> Result<Anchor, String> {
 }
 
 fn point(text: &str) -> Result<(i32, i32), String> {
-    let bad = || format!("not a point (X,Y): {text}");
-    let (x, y) = text.split_once(',').ok_or_else(bad)?;
-    Ok((x.parse().map_err(|_| bad())?, y.parse().map_err(|_| bad())?))
+    let bad = |why: &dyn std::fmt::Display| format!("not a point (X,Y): {text} ({why})");
+    let (x, y) = text
+        .split_once(',')
+        .ok_or_else(|| bad(&"no comma between X and Y"))?;
+    Ok((
+        x.parse().map_err(|e| bad(&e))?,
+        y.parse().map_err(|e| bad(&e))?,
+    ))
 }
 
 fn shell_role(text: &str) -> Result<ShellRole, String> {
@@ -346,20 +353,22 @@ pub(crate) fn parse(line: &str) -> Result<Command, String> {
             _ => Err("shell-role needs ROLE and LAYER".to_owned()),
         },
         "minimise-target" => match words.bare.as_slice() {
-            [toplevel, x, y, w, h] => {
+            [toplevel, left, top, width, height] => {
                 let bad = |what: &str, text: &str| format!("not a {what}: {text}");
-                let number =
-                    |what: &str, text: &str| text.parse::<i32>().map_err(|_| bad(what, text));
+                let number = |what: &str, text: &str| {
+                    text.parse::<i32>()
+                        .map_err(|e| format!("{} ({e})", bad(what, text)))
+                };
                 let extent = |what: &str, text: &str| match text.parse::<u32>() {
                     Ok(n @ 1..) => Ok(n),
                     _ => Err(bad(what, text)),
                 };
                 Ok(Command::MinimiseTarget(
                     (*toplevel).to_owned(),
-                    (number("x", x)?, number("y", y)?),
+                    (number("x", left)?, number("y", top)?),
                     Size {
-                        w: extent("width", w)?,
-                        h: extent("height", h)?,
+                        w: extent("width", width)?,
+                        h: extent("height", height)?,
                     },
                 ))
             }

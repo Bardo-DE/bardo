@@ -22,12 +22,12 @@ impl Dispatch<WlOutput, u32> for Capturing {
         state: &mut Self,
         _: &WlOutput,
         event: wl_output::Event,
-        global: &u32,
+        data: &u32,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if let wl_output::Event::Name { name } = event
-            && let Some(entry) = state.outputs.iter_mut().find(|o| o.global == *global)
+            && let Some(entry) = state.outputs.iter_mut().find(|o| o.global == *data)
         {
             entry.name = Some(name);
         }

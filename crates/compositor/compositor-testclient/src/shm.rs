@@ -145,12 +145,12 @@ impl Dispatch<WlBuffer, Plain> for ClientState {
         _: &mut Self,
         _: &WlBuffer,
         event: wl_buffer::Event,
-        plain: &Plain,
+        data: &Plain,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if matches!(event, wl_buffer::Event::Release) {
-            plain.0.store(true, Ordering::SeqCst);
+            data.0.store(true, Ordering::SeqCst);
         }
     }
 }

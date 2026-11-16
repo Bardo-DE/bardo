@@ -66,7 +66,7 @@ fn raw<T: Into<u32>>(value: WEnum<T>) -> u32 {
 }
 
 /// The rows of R, G, B, A of `pending`'s buffer as the file holds it now.
-fn read(pending: Pending) -> Option<WindowFrame> {
+fn read(pending: &Pending) -> Option<WindowFrame> {
     let length = usize::try_from(u64::from(pending.stride) * u64::from(pending.height)).ok()?;
     let mut bytes = vec![0_u8; length];
     pending.file.read_exact_at(&mut bytes, 0).ok()?;
@@ -126,7 +126,7 @@ impl Dispatch<ExtImageCopyCaptureFrameV1, ()> for Wire {
                     state
                         .buffer
                         .take()
-                        .and_then(read)
+                        .and_then(|pending| read(&pending))
                         .ok_or(CaptureFailure::Unknown),
                 );
             }

@@ -77,7 +77,8 @@ fn missing(kind: &str, name: &str) -> String {
 impl Window {
     /// Acks the newest configure and shows a buffer of `size` drawn for this window's scale.
     fn draw(&mut self, client: &mut TestClient, viewporter: &Viewporter, size: Size) {
-        self.top.ack_latest();
+        // No configure yet means nothing to ack; the buffer is still shown.
+        let _ = self.top.ack_latest();
         let buffer = shm_buffer(client, physical(self.dpi.buffer(size)), self.pattern);
         match self.dpi {
             Dpi::One => {}
@@ -374,7 +375,8 @@ impl Surfaces {
             if log.0 > popup.handled {
                 let first = popup.handled == 0;
                 popup.handled = log.0;
-                popup.popup.ack_latest();
+                // The log shows a configure arrived, so the ack finds its serial.
+                let _ = popup.popup.ack_latest();
                 let buffer = shm_buffer(client, physical(popup.size), CHROME);
                 popup.popup.show(&buffer);
                 popup.buffer = Some(buffer);
@@ -391,7 +393,8 @@ impl Surfaces {
                 layer.closed = true;
                 notes.push(format!("layer-closed {name}"));
             } else if let (Some(configure), None) = (layer.layer.configure(), &layer.buffer) {
-                layer.layer.ack(client);
+                // `configure()` matched above, so there is a configure to ack.
+                let _ = layer.layer.ack(client);
                 let size = Size {
                     w: configure.width.max(layer.size.w),
                     h: configure.height.max(layer.size.h),
@@ -407,7 +410,8 @@ impl Surfaces {
         }
         for (name, lock) in &mut self.locks {
             if let (Some((_, w, h)), None) = (lock.cover.configure(), &lock.buffer) {
-                lock.cover.ack(client);
+                // `configure()` matched above, so there is a configure to ack.
+                let _ = lock.cover.ack(client);
                 let size = Size { w, h };
                 let buffer = shm_buffer(client, physical(size), Pattern::Solid(0xff10_1030));
                 lock.cover.show(client, &buffer);

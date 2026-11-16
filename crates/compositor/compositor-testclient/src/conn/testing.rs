@@ -6,7 +6,7 @@ use std::os::unix::net::UnixStream;
 
 /// One message: header and `payload`.
 pub(super) fn message(object: u32, opcode: u16, payload: &[u8]) -> Vec<u8> {
-    let size = (wire::HEADER + payload.len()) as u32;
+    let size = u32::try_from(wire::HEADER + payload.len()).unwrap_or(u32::MAX);
     let mut bytes = Vec::new();
     bytes.extend(object.to_ne_bytes());
     bytes.extend(((size << 16) | u32::from(opcode)).to_ne_bytes());
@@ -17,7 +17,7 @@ pub(super) fn message(object: u32, opcode: u16, payload: &[u8]) -> Vec<u8> {
 /// A string argument: length with its NUL, the bytes, padding.
 pub(super) fn string(text: &str) -> Vec<u8> {
     let mut bytes = Vec::new();
-    bytes.extend(((text.len() + 1) as u32).to_ne_bytes());
+    bytes.extend((u32::try_from(text.len() + 1).unwrap_or(u32::MAX)).to_ne_bytes());
     bytes.extend(text.as_bytes());
     bytes.push(0);
     while !bytes.len().is_multiple_of(4) {

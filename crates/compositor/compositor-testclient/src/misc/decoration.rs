@@ -82,7 +82,7 @@ impl Dispatch<ZxdgToplevelDecorationV1, ModeLog> for Host {
         _: &mut Self,
         _: &ZxdgToplevelDecorationV1,
         event: zxdg_toplevel_decoration_v1::Event,
-        modes: &ModeLog,
+        data: &ModeLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -90,7 +90,7 @@ impl Dispatch<ZxdgToplevelDecorationV1, ModeLog> for Host {
             mode: WEnum::Value(mode),
         } = event
         {
-            modes.with(|seen| seen.push(mode));
+            data.with(|seen| seen.push(mode));
         }
     }
 }

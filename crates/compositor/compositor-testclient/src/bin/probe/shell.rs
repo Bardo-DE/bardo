@@ -83,9 +83,9 @@ where
     I: Proxy + 'static,
     State: Dispatch<I, ()>,
 {
-    globals.bind(qh, versions, ()).map_err(|_| {
+    globals.bind(qh, versions, ()).map_err(|e| {
         Failure::Probe(format!(
-            "the compositor does not advertise {}",
+            "the compositor does not advertise {}: {e}",
             I::interface().name
         ))
     })
@@ -136,14 +136,20 @@ fn buffer(bound: &Bound, width: u32, height: u32) -> Result<(WlBuffer, File), Fa
     let file = File::from(fd);
     file.write_all_at(&bytes, 0)
         .map_err(|e| Failure::Probe(e.to_string()))?;
+    let wire = |n: u64| {
+        i32::try_from(n).map_err(|e| Failure::Probe(format!("buffer size {n} on the wire: {e}")))
+    };
+    let stride = width
+        .checked_mul(4)
+        .ok_or_else(|| Failure::Probe(format!("a buffer {width} pixels wide has no stride")))?;
     let pool = bound
         .shm
-        .create_pool(file.as_fd(), bytes.len() as i32, &bound.qh, ());
+        .create_pool(file.as_fd(), wire(bytes.len() as u64)?, &bound.qh, ());
     let buffer = pool.create_buffer(
         0,
-        width as i32,
-        height as i32,
-        (width * 4) as i32,
+        wire(u64::from(width))?,
+        wire(u64::from(height))?,
+        wire(u64::from(stride))?,
         Format::Argb8888,
         &bound.qh,
         (),
@@ -353,14 +359,14 @@ ignore_events! {
 impl Dispatch<XdgWmBase, ()> for State {
     fn event(
         _: &mut Self,
-        base: &XdgWmBase,
+        proxy: &XdgWmBase,
         event: xdg_wm_base::Event,
         (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if let xdg_wm_base::Event::Ping { serial } = event {
-            base.pong(serial);
+            proxy.pong(serial);
         }
     }
 }
@@ -368,14 +374,14 @@ impl Dispatch<XdgWmBase, ()> for State {
 impl Dispatch<XdgSurface, ()> for State {
     fn event(
         state: &mut Self,
-        surface: &XdgSurface,
+        proxy: &XdgSurface,
         event: xdg_surface::Event,
         (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if let xdg_surface::Event::Configure { serial } = event {
-            surface.ack_configure(serial);
+            proxy.ack_configure(serial);
             state.configured.get_or_insert((0, 0));
             state.acked = true;
         }
@@ -397,7 +403,10 @@ impl Dispatch<XdgToplevel, ()> for State {
                 height,
                 states,
             } => {
-                state.configured = Some((width.max(0) as u32, height.max(0) as u32));
+                state.configured = Some((
+                    u32::try_from(width).unwrap_or(0),
+                    u32::try_from(height).unwrap_or(0),
+                ));
                 state.states = states_of(&states);
             }
             xdg_toplevel::Event::Close => state.closed = true,
@@ -409,7 +418,7 @@ impl Dispatch<XdgToplevel, ()> for State {
 impl Dispatch<ZwlrLayerSurfaceV1, ()> for State {
     fn event(
         state: &mut Self,
-        surface: &ZwlrLayerSurfaceV1,
+        proxy: &ZwlrLayerSurfaceV1,
         event: zwlr_layer_surface_v1::Event,
         (): &(),
         _: &Connection,
@@ -421,7 +430,7 @@ impl Dispatch<ZwlrLayerSurfaceV1, ()> for State {
                 width,
                 height,
             } => {
-                surface.ack_configure(serial);
+                proxy.ack_configure(serial);
                 state.configured = Some((width, height));
                 state.acked = true;
             }

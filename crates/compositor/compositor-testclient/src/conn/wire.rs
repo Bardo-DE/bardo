@@ -73,9 +73,9 @@ pub(super) fn decode(desc: &MessageDesc, payload: &[u8]) -> Result<Vec<Arg>, Mal
     let mut args = Vec::with_capacity(desc.signature.len());
     for kind in desc.signature {
         args.push(match kind {
-            ArgumentType::Int => Arg::Int(cursor.word()? as i32),
+            ArgumentType::Int => Arg::Int(i32::from_ne_bytes(cursor.word()?.to_ne_bytes())),
             ArgumentType::Uint => Arg::Uint(cursor.word()?),
-            ArgumentType::Fixed => Arg::Fixed(cursor.word()? as i32),
+            ArgumentType::Fixed => Arg::Fixed(i32::from_ne_bytes(cursor.word()?.to_ne_bytes())),
             ArgumentType::Str(_) => Arg::Str(cursor.string()?),
             ArgumentType::Object(_) => Arg::Object(cursor.word()?),
             ArgumentType::NewId => Arg::NewId(cursor.word()?),
