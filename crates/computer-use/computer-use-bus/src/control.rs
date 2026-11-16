@@ -96,10 +96,12 @@ impl CuaMember {
     ];
 }
 
-/// Whether `caller` may call `member`. `Start` is the router's and the planner's; stopping,
-/// pausing, resuming and taking over are the router's, the planner's and the shell's; `Answer`
-/// is the shell's alone (a question is for the person); `Runs` is open. A confirmation never
-/// comes through here: it is the router's, answered through `Confirm1`.
+/// Whether `caller` may call `member`.
+///
+/// `Start` is the router's and the planner's; stopping, pausing, resuming and taking over are the
+/// router's, the planner's and the shell's; `Answer` is the shell's alone (a question is for the
+/// person); `Runs` is open. A confirmation never comes through here: it is the router's, answered
+/// through `Confirm1`.
 #[must_use]
 pub fn permits(caller: CuaCaller, member: CuaMember) -> bool {
     use CuaCaller::{Companion, Router, Shell};

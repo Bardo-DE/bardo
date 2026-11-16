@@ -1,6 +1,9 @@
 //! A private session bus for one test: a `dbus-daemon` made from a scratch config in a scratch
 //! directory, with nothing from the environment. The person's real bus is never named.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test binary uses a subset of the shared bus helpers"
+)]
 
 use std::io::{BufRead, BufReader};
 use std::path::Path;

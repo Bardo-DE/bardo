@@ -85,12 +85,18 @@ enum Answering {
     Told(Arc<Identity>),
 }
 
-/// Serves `org.bardo.ComputerUse1` (`Manager` at `/org/bardo/ComputerUse1`, a `Run` per live run at
-/// `/org/bardo/ComputerUse1/run/<id>`) and `org.bardo.IntentProvider1` as `org.bardo.ComputerUse` on
-/// `connection`. Each caller's role is its process's, named by `table` (`computer-use-callers.toml`) over
+/// Serves cuad's two interfaces on `connection`, naming callers by `table`.
+///
+/// They are `org.bardo.ComputerUse1` (`Manager` at `/org/bardo/ComputerUse1`, a `Run` per live run at
+/// `/org/bardo/ComputerUse1/run/<id>`) and `org.bardo.IntentProvider1` as `org.bardo.ComputerUse`. Each caller's role is its process's, named by `table` (`computer-use-callers.toml`) over
 /// the system's `/proc`, never a bus name it owns; the provider answers intentd's unit alone.
 /// Returns once the names are ours; the connection keeps serving until the returned guard is
 /// dropped.
+///
+/// # Errors
+///
+/// Returns [`ServeError::Bus`] when an object cannot be served on `connection` or the bus name
+/// cannot be taken (it is already owned).
 pub async fn serve_on<S: Seams>(
     connection: &zbus::Connection,
     supervisor: Arc<Supervisor<S>>,
@@ -101,8 +107,15 @@ pub async fn serve_on<S: Seams>(
 }
 
 /// [`serve_on`] with callers named by `who`, the provider answering the process `who` names as
-/// intentd: the daemon's way in, where `who` reads the system's `/proc` (or a test build's
-/// fixture tree, which the provider must read too, or intentd is a stranger to it).
+/// intentd.
+///
+/// This is the daemon's way in, where `who` reads the system's `/proc` (or a test build's fixture
+/// tree, which the provider must read too, or intentd is a stranger to it).
+///
+/// # Errors
+///
+/// Returns [`ServeError::Bus`] when an object cannot be served on `connection` or the bus name
+/// cannot be taken (it is already owned).
 pub async fn serve_on_as<S: Seams>(
     connection: &zbus::Connection,
     supervisor: Arc<Supervisor<S>>,
@@ -120,6 +133,11 @@ pub async fn serve_on_as<S: Seams>(
 
 /// [`serve_on`] with callers named by `who` (a test's fixture proc root and introductions), which
 /// also says who the provider takes for intentd.
+///
+/// # Errors
+///
+/// Returns [`ServeError::Bus`] when an object cannot be served on `connection` or the bus name
+/// cannot be taken (it is already owned).
 pub async fn serve_on_with<S: Seams>(
     connection: &zbus::Connection,
     supervisor: Arc<Supervisor<S>>,
@@ -203,6 +221,11 @@ async fn serve_as<S: Seams>(
 
 /// Serves cuad on the session bus until the bus goes away, naming callers by `table` (the
 /// caller reads `computer-use-callers.toml`, with [`crate::read_callers`], from its own environment).
+///
+/// # Errors
+///
+/// Returns [`ServeError::Bus`] when the session bus cannot be reached, an object cannot be
+/// served or the bus name cannot be taken.
 pub async fn serve<S: Seams>(
     supervisor: Supervisor<S>,
     table: CallerTable,

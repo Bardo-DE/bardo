@@ -41,6 +41,10 @@ pub fn shipped() -> CallerTable {
 }
 
 /// The table of this machine: `/etc/bardo/computer-use-callers.toml` with the person's file over it.
+///
+/// # Errors
+///
+/// Returns the [`CallerFileError`] when a callers file exists but cannot be read or parsed.
 pub fn read(env: &impl Fn(&str) -> Option<String>) -> Result<CallerTable, CallerFileError> {
     #[cfg(feature = "fixture-callers")]
     if let Some(system) = env(SYSTEM_CALLERS_VAR) {

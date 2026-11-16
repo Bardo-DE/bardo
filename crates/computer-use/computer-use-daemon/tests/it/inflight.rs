@@ -18,6 +18,10 @@ struct Mute {
 }
 
 impl CuaModel for Mute {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "CuaModel declares `begin` async; this stub has nothing to await"
+    )]
     async fn begin(&mut self, _begin: CuaBegin) -> Result<(), CuaModelError> {
         self.begun += 1;
         Ok(())

@@ -118,9 +118,9 @@ async fn say<S: Seams>(
                         emit_to_shell(connection, who, &path, "AskUser", &(question.0, body)).await;
                     }
                 }
-                // The run's end is told with its `RunEnd`, once the report is out. A signal
-                // this build does not know has no bus member, so it is not relayed.
-                _ => {}
+                // The run's end is told with its `RunEnd`, once the report is out, so the
+                // signal has no bus member of its own.
+                CuaSignal::Finished(_) => {}
             }
         }
         SupervisorEvent::Ended(run, end) => {

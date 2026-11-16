@@ -94,9 +94,17 @@ fn load_rules() -> Result<Rules, Fatal> {
 }
 
 /// Runs the daemon for the command line `args` (without the program name), reading the
-/// environment through `env`. It connects to the session bus, tries the compositor (no
-/// compositor is not a failure: the backend reads `none`), serves `org.bardo.ComputerUse1` and
-/// `org.bardo.ComputerUse`, and returns when the bus goes away or it is sent SIGTERM.
+/// environment through `env`.
+///
+/// It connects to the session bus, tries the compositor (no compositor is not a failure: the
+/// backend reads `none`), serves `org.bardo.ComputerUse1` and `org.bardo.ComputerUse`, and
+/// returns when the bus goes away or it is sent SIGTERM.
+///
+/// # Errors
+///
+/// Returns [`Fatal`] when the configuration, rules or callers table cannot be used, the session
+/// bus or a named compositor cannot be reached, the bus names cannot be taken, or the SIGTERM
+/// handler cannot be installed.
 pub async fn run(
     args: &[String],
     env: impl Fn(&str) -> Option<String> + Copy,

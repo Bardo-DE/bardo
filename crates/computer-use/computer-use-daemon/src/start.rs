@@ -98,8 +98,10 @@ pub(crate) async fn task_for<S: Seams>(
     let allows = supervisor.apps();
     let (target, app) = match (&request.window, &request.app) {
         (Some(ident), _) => {
+            // The listing failure was reported above; to the caller the window is just unknown.
             let window = windows
-                .map_err(|_| ControlRefusal::WindowUnknown)?
+                .ok()
+                .ok_or(ControlRefusal::WindowUnknown)?
                 .into_iter()
                 .find(|w| &w.ident == ident)
                 .ok_or(ControlRefusal::WindowUnknown)?;
@@ -108,20 +110,19 @@ pub(crate) async fn task_for<S: Seams>(
         (None, Some(app)) => {
             // A desktop that cannot list its windows cannot say the app is not open.
             let open = windows.as_deref().ok();
-            match open.and_then(|windows| window_of_app(windows, app)) {
-                Some(window) => (TaskTarget::Window(window.ident.clone()), app.clone()),
-                None => {
-                    if let Some(windows) = open
-                        && !open_apps(windows).contains(app)
-                    {
-                        return Err(choose_app(windows, &allows));
-                    }
-                    (TaskTarget::App(app.clone()), app.clone())
+            if let Some(window) = open.and_then(|windows| window_of_app(windows, app)) {
+                (TaskTarget::Window(window.ident.clone()), app.clone())
+            } else {
+                if let Some(windows) = open
+                    && !open_apps(windows).contains(app)
+                {
+                    return Err(choose_app(windows, &allows));
                 }
+                (TaskTarget::App(app.clone()), app.clone())
             }
         }
         (None, None) => {
-            let windows = windows.map_err(|_| ControlRefusal::BadTask)?;
+            let windows = windows.ok().ok_or(ControlRefusal::BadTask)?;
             let focused = windows
                 .iter()
                 .find(|w| usable(w) && w.state.contains(&ToplevelState::Activated));

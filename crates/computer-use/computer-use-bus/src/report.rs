@@ -60,8 +60,9 @@ fn clipped(text: &str) -> MessageText {
     MessageText::new(&text[..end])
 }
 
-/// The draft of a report: the summary, then one `name: value` line per extracted value, in
-/// order. A text longer than a message may hold is cut at a character boundary; more values than
+/// The draft of a report: the summary, then one `name: value` line per extracted value, in order.
+///
+/// A text longer than a message may hold is cut at a character boundary; more values than
 /// a message may hold are dropped from the end; a report with nothing to say still carries one
 /// short line, so it is never an empty message. Pure.
 pub fn report_draft(

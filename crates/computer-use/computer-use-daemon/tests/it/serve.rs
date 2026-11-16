@@ -139,6 +139,10 @@ fn refusal_name(error: &zbus::Error) -> String {
 }
 
 #[tokio::test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario from start to end on the bus; the steps read in order"
+)]
 async fn the_planner_starts_a_run_the_shell_answers_it_and_the_end_is_told_on_the_bus() {
     let fx = fixture(vec![reply(ask()), reply(click()), reply(finish())]).await;
     let planner = named(&fx, Who::Planner).await;

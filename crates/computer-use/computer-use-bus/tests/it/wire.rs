@@ -6,13 +6,12 @@ use account_core::{AccountId, AppName, DataClass};
 use action_core::CallRefusal;
 use action_gate_wire::EffectBasis;
 use base_ids::Count;
-use base_time::UnixSeconds;
 use computer_use_action::{
     Button, ClickCount, Coord, CuaAction, DeviceSize, Point, Summary, Target, WindowSpace,
 };
 use computer_use_action::{RunMode, WindowClass};
 use computer_use_bus::*;
-use computer_use_desktop::{BackendKind, Digest32, Ms, Stamp, ToplevelIdent, WindowTitle};
+use computer_use_desktop::{BackendKind, Digest32, Stamp, ToplevelIdent, WindowTitle};
 use computer_use_types::{FrameDigest, InputOrigin, InputReceipt, SeatError, TextPath};
 use inference_core::{ChargeTotal, ServedBy, StepIndex};
 use provenance::{
@@ -75,6 +74,10 @@ fn round_trip<T: Serialize + DeserializeOwned + PartialEq + std::fmt::Debug>(val
     json
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of one sample per record kind; splitting it would only scatter the list"
+)]
 fn every_record() -> Vec<(CuaRecord, &'static str)> {
     let step = StepIndex(3);
     vec![
@@ -361,7 +364,6 @@ fn the_report_of_a_finished_run_is_a_report_message_whatever_the_outcome() {
             "{outcome:?}"
         );
     }
-    let _unused = (Ms(0), UnixSeconds(0));
 }
 
 #[test]

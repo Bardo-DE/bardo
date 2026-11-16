@@ -30,9 +30,15 @@ pub enum ProviderError {
     Invalid(ManifestError),
 }
 
-/// The provider's manifest for a setting: `computeruse.run.start` is `Hidden` from agents while
-/// computer use is off, `Offered` once it is on. The per-app consent is asked by the router at
-/// the first use either way.
+/// The provider's manifest for a setting.
+///
+/// `computeruse.run.start` is `Hidden` from agents while computer use is off, `Offered` once it
+/// is on. The per-app consent is asked by the router at the first use either way.
+///
+/// # Errors
+///
+/// Returns [`ProviderError`] when the shipped manifest does not parse or does not validate (a
+/// bug: a test reads it).
 pub fn manifest_for(enabled: bool) -> Result<ValidManifest, ProviderError> {
     let mut manifest: Manifest =
         toml::from_str(MANIFEST).map_err(|e| ProviderError::Parse(e.to_string()))?;
@@ -115,6 +121,10 @@ pub struct CuaProvider {
 impl CuaProvider {
     /// A provider whose action is offered or hidden by `enabled`. It starts nothing (`perform`
     /// is `Unsupported`); the daemon builds one with [`CuaProvider::starting`].
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ProviderError`] when the shipped manifest does not parse or validate.
     pub fn new(enabled: bool) -> Result<Self, ProviderError> {
         Ok(Self {
             manifest: manifest_for(enabled)?,
@@ -126,6 +136,10 @@ impl CuaProvider {
     /// A provider whose `perform` hands each start to whoever reads the returned queues, and
     /// whose `suggest` asks them which apps are open (the daemon turns the starts into runs and
     /// answers the questions through its supervisor).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ProviderError`] when the shipped manifest does not parse or validate.
     pub fn starting(enabled: bool) -> Result<(Self, ProviderQueues), ProviderError> {
         let (starts, start_queue) = mpsc::unbounded_channel();
         let (open_apps, app_queue) = mpsc::unbounded_channel();
@@ -195,7 +209,11 @@ fn start_of(
         Some(Labelled {
             value: Value::Entity(entity),
             ..
-        }) => Some(ToplevelIdent::parse(entity.key.as_str()).map_err(|_| needs("window"))?),
+        }) => Some(
+            ToplevelIdent::parse(entity.key.as_str())
+                .ok()
+                .ok_or_else(|| needs("window"))?,
+        ),
         _ => None,
     };
     let app = match param(inv, "app").map(|p| &p.value) {
@@ -203,7 +221,7 @@ fn start_of(
         Some(Value::Entity(entity)) => Some(entity.key.as_str()),
         _ => None,
     }
-    .map(|id| AppName::parse(id).map_err(|_| needs("app")))
+    .map(|id| AppName::parse(id).ok().ok_or_else(|| needs("app")))
     .transpose()?;
     let mode = match param(inv, "mode").map(|p| &p.value) {
         Some(Value::Choice(choice)) => {
@@ -242,7 +260,7 @@ fn records_of(json: &str) -> Vec<CuaRecord> {
 }
 
 /// An open app as a choice for the `app` parameter: its id, which is also what to pass back.
-fn app_option(app: AppName) -> Option<EntityRef> {
+fn app_option(app: &AppName) -> Option<EntityRef> {
     let id = EntityId {
         app: AppName::parse("org.bardo.ComputerUse").ok()?,
         kind: EntityKind::parse("desktop.app").ok()?,
@@ -268,7 +286,7 @@ fn refusal_of(refused: StartRefusal) -> AppRefusal {
         StartRefusal::Control { words, .. } => AppRefusal::Failed(FailText(words.to_owned())),
         StartRefusal::NeedsApp(apps) => AppRefusal::NeedsParam {
             param: ParamName::parse("app").expect("a parameter name"),
-            options: apps.into_iter().filter_map(app_option).collect(),
+            options: apps.iter().filter_map(app_option).collect(),
         },
     }
 }
@@ -282,10 +300,13 @@ impl IntentProvider for CuaProvider {
         let starts = self.starts.as_ref().ok_or(AppRefusal::Unsupported)?;
         let (start, answer) = start_of(&inv)?;
         let label = start.goal.label.clone();
-        starts.send(start).map_err(|_| AppRefusal::Busy)?;
+        if starts.send(start).is_err() {
+            return Err(AppRefusal::Busy);
+        }
         let id = answer
             .await
-            .map_err(|_| AppRefusal::Busy)?
+            .ok()
+            .ok_or(AppRefusal::Busy)?
             .map_err(refusal_of)?;
         // The run's id is cuad's own word; its report arrives as a message.
         Ok(Outcome {
@@ -303,21 +324,37 @@ impl IntentProvider for CuaProvider {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "IntentProvider declares this method async; cuad has nothing to await here"
+    )]
     async fn dry_run(&self, inv: Invocation) -> Result<Preview, AppRefusal> {
         let _ = inv;
         Err(AppRefusal::Unsupported)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "IntentProvider declares this method async; cuad has nothing to await here"
+    )]
     async fn undo(&self, token: UndoToken, actor: Actor) -> Result<(), UndoFault> {
         let _ = (token, actor);
         Err(UndoFault::Gone)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "IntentProvider declares this method async; cuad has nothing to await here"
+    )]
     async fn search(&self, text: &str) -> Vec<Hit> {
         let _ = text;
         Vec::new()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "IntentProvider declares this method async; cuad has nothing to await here"
+    )]
     async fn preview(&self, id: &EntityId) -> Preview {
         let _ = id;
         Preview::None
@@ -339,7 +376,7 @@ impl IntentProvider for CuaProvider {
             .unwrap_or_default()
             .into_iter()
             .filter(|app| app.as_str().to_lowercase().contains(&typed))
-            .filter_map(app_option)
+            .filter_map(|app| app_option(&app))
             .collect()
     }
 }

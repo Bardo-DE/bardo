@@ -33,11 +33,7 @@ pub(crate) fn enveloped<T: Serialize>(body: T) -> fdo::Result<String> {
 
 /// Who is calling: the process behind the header's sender decides.
 async fn caller_of(who: &impl Callers, header: &Header<'_>) -> CuaCaller {
-    callers::caller_of(
-        who,
-        header.sender().map(zbus::names::UniqueName::as_str),
-    )
-    .await
+    callers::caller_of(who, header.sender().map(zbus::names::UniqueName::as_str)).await
 }
 
 fn object_path(run: &RunId) -> OwnedObjectPath {
@@ -91,7 +87,7 @@ impl<S: Seams, K: Callers> ManagerObject<S, K> {
         Ok(object_path(&id))
     }
 
-    async fn runs(&self) -> Vec<OwnedObjectPath> {
+    fn runs(&self) -> Vec<OwnedObjectPath> {
         self.supervisor.runs().iter().map(object_path).collect()
     }
 
@@ -101,12 +97,12 @@ impl<S: Seams, K: Callers> ManagerObject<S, K> {
     }
 
     #[zbus(property)]
-    async fn backend(&self) -> String {
+    fn backend(&self) -> String {
         backend_wire(self.supervisor.desktop().backend())
     }
 
     #[zbus(property)]
-    async fn modes(&self) -> HashMap<String, String> {
+    fn modes(&self) -> HashMap<String, String> {
         // No backend, no mode: the property is empty rather than promising what is not there.
         if self.supervisor.desktop().backend().is_none() {
             return HashMap::new();
@@ -198,27 +194,27 @@ impl<S: Seams, K: Callers> RunObject<S, K> {
 
     // The `RunId` slug; the path spelling of it is lossy (`-` and `.` become `_`).
     #[zbus(property)]
-    async fn id(&self) -> String {
+    fn id(&self) -> String {
         self.id.as_str().to_owned()
     }
 
     #[zbus(property)]
-    async fn state(&self) -> fdo::Result<String> {
+    fn state(&self) -> fdo::Result<String> {
         Ok(slug_of(&self.view()?.phase.slug()).unwrap_or_default())
     }
 
     #[zbus(property)]
-    async fn step(&self) -> fdo::Result<u32> {
+    fn step(&self) -> fdo::Result<u32> {
         Ok(self.view()?.phase.step().map_or(0, |n| n.0))
     }
 
     #[zbus(property)]
-    async fn goal(&self) -> fdo::Result<String> {
+    fn goal(&self) -> fdo::Result<String> {
         Ok(self.view()?.task.goal.value)
     }
 
     #[zbus(property)]
-    async fn window(&self) -> fdo::Result<String> {
+    fn window(&self) -> fdo::Result<String> {
         let view = self.view()?;
         enveloped(WindowBody {
             app: view.task.app,
@@ -227,12 +223,12 @@ impl<S: Seams, K: Callers> RunObject<S, K> {
     }
 
     #[zbus(property)]
-    async fn mode(&self) -> fdo::Result<String> {
+    fn mode(&self) -> fdo::Result<String> {
         Ok(slug_of(&self.view()?.task.mode).unwrap_or_default())
     }
 
     #[zbus(property)]
-    async fn budget(&self) -> fdo::Result<String> {
+    fn budget(&self) -> fdo::Result<String> {
         enveloped(self.view()?.budget)
     }
 
@@ -278,6 +274,10 @@ mod tests {
     struct NoCallers;
 
     impl Callers for NoCallers {
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the Callers trait declares this method async; this stub has nothing to await"
+        )]
         async fn caller_of(&self, _: &str) -> Option<Caller> {
             None
         }
