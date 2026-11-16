@@ -1,7 +1,7 @@
 //! `GitStore` as a `CheckpointStore`: take, list, plan, apply and forget points.
 
 use crate::files::{delete, stay_inside};
-use crate::git::{GitStore, strings};
+use crate::git::{GitStore, failed, log_cause, strings};
 use crate::names::{INDEX, RESTORE, ref_name, session_prefix};
 use crate::parse::{count_paths, held_points, named, object_id};
 use action_checkpoint::{
@@ -34,14 +34,20 @@ fn authorship(at: i64) -> Vec<(String, String)> {
     ]
 }
 
+/// A failure once files are being written leaves the folder part-way, whatever it was; the
+/// command that failed has told the log already.
+fn part_way(fault: StoreFault) -> StoreFault {
+    tracing::warn!(%fault, "the restore stopped part-way");
+    StoreFault::Partial
+}
+
 /// A blocking file job that failed to run or ran into a link or an error.
 async fn blocking<T: Send + 'static>(
     job: impl FnOnce() -> Result<T, StoreFault> + Send + 'static,
 ) -> Result<T, StoreFault> {
     tokio::task::spawn_blocking(job)
         .await
-        .ok()
-        .ok_or(StoreFault::Failed)?
+        .map_err(|error| failed("a file job did not finish", &error))?
 }
 
 impl GitStore {
@@ -86,8 +92,7 @@ impl GitStore {
             let args = strings(&["checkout-index", "-f", "-z", "--stdin"]);
             self.ok_with(root, args, &env, Some(names))
                 .await
-                .ok()
-                .ok_or(StoreFault::Partial)?;
+                .map_err(part_way)?;
         }
         Ok(())
     }
@@ -117,8 +122,7 @@ impl CheckpointStore for GitStore {
         }
         self.ok(&root, &["add", "-A", "--", "."], &env).await?;
         let tree = object_id(&self.ok(&root, &["write-tree"], &env).await?)
-            .ok()
-            .ok_or(StoreFault::Failed)?;
+            .map_err(|error| failed("write-tree printed no tree id", &error))?;
         let message = format!("docket restore point {} of {}", id.0, session.as_str());
         let args = vec![
             "commit-tree".to_owned(),
@@ -127,7 +131,8 @@ impl CheckpointStore for GitStore {
             message,
         ];
         let made = self.ok_with(&root, args, &authorship(at.0), None).await?;
-        let commit = object_id(&made).ok().ok_or(StoreFault::Failed)?;
+        let commit =
+            object_id(&made).map_err(|error| failed("commit-tree printed no commit id", &error))?;
         // Create-only: the all-zero old value means "the ref must not exist yet".
         let args = vec![
             "update-ref".to_owned(),
@@ -176,8 +181,7 @@ impl CheckpointStore for GitStore {
         blocking(move || {
             let refs: Vec<&WorkPath> = check_paths.iter().collect();
             stay_inside(&check_root, &refs)
-                .ok()
-                .ok_or(StoreFault::Failed)
+                .map_err(|error| failed("a path of the restore is not safe to write", &error))
         })
         .await?;
         // Write first, delete last: the files the restore brings back are staged in a private
@@ -187,7 +191,13 @@ impl CheckpointStore for GitStore {
         self.write_back(&ask.root, &ask.session, &tree, &wanted)
             .await?;
         let (delete_root, gone) = (folder, plan.removed.clone());
-        blocking(move || delete(&delete_root, &gone).ok().ok_or(StoreFault::Partial)).await?;
+        blocking(move || {
+            delete(&delete_root, &gone).map_err(|error| {
+                log_cause("the files of the restore could not be deleted", &error);
+                StoreFault::Partial
+            })
+        })
+        .await?;
         Ok(plan)
     }
 

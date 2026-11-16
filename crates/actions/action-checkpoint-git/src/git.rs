@@ -190,8 +190,7 @@ impl GitStore {
         let folder = PathBuf::from(root.path().as_str());
         let inside = tokio::task::spawn_blocking(move || inside_repository(&folder))
             .await
-            .ok()
-            .ok_or(StoreFault::Failed)?;
+            .map_err(|error| failed("the folder check did not finish", &error))?;
         if !inside {
             return Err(StoreFault::NoHistory);
         }
@@ -299,7 +298,8 @@ impl GitStore {
             spec,
         ];
         match self.exec(root, args, &[], None).await {
-            Ok(out) if out.succeeded() => object_id(&out.stdout).ok().ok_or(StoreFault::Failed),
+            Ok(out) if out.succeeded() => object_id(&out.stdout)
+                .map_err(|error| failed("rev-parse printed no object id", &error)),
             Ok(_) => Err(StoreFault::NoSuchPoint),
             Err(fault) => {
                 self.tell("rev-parse".to_owned(), fault.into());
@@ -321,7 +321,7 @@ impl GitStore {
             tree.to_owned(),
         ];
         let out = self.ok_with(root, args, &[], None).await?;
-        tree_listing(&out).ok().ok_or(StoreFault::Failed)
+        tree_listing(&out).map_err(|error| failed("ls-tree printed an unreadable listing", &error))
     }
 
     /// The files of the folder as they are now, read through the session's plan index. Nothing
@@ -335,8 +335,27 @@ impl GitStore {
         self.drop_ignored(root, &env).await?;
         self.ok(root, &["add", "-A", "--", "."], &env).await?;
         let out = self.ok(root, &["ls-files", "-s", "-z"], &env).await?;
-        staged_listing(&out).ok().ok_or(StoreFault::Failed)
+        staged_listing(&out)
+            .map_err(|error| failed("ls-files printed an unreadable listing", &error))
     }
+}
+
+/// Writes `error` and its causes to the log, one line, under `what`.
+pub(crate) fn log_cause(what: &str, error: &dyn std::error::Error) {
+    let mut text = error.to_string();
+    let mut next = error.source();
+    while let Some(cause) = next {
+        text.push_str(": ");
+        text.push_str(&cause.to_string());
+        next = cause.source();
+    }
+    tracing::warn!(error = %text, "{what}");
+}
+
+/// [`log_cause`], then the failure the store reports for it.
+pub(crate) fn failed(what: &str, error: &dyn std::error::Error) -> StoreFault {
+    log_cause(what, error);
+    StoreFault::Failed
 }
 
 /// Standard error as text, whatever bytes it holds.

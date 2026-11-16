@@ -108,11 +108,10 @@ impl GitOut {
 async fn read_bounded<R: AsyncRead + Unpin>(pipe: &mut R, max: usize) -> Result<Vec<u8>, GitFault> {
     let cap = u64::try_from(max).unwrap_or(u64::MAX).saturating_add(1);
     let mut out = Vec::new();
-    pipe.take(cap)
-        .read_to_end(&mut out)
-        .await
-        .ok()
-        .ok_or(GitFault::Io)?;
+    pipe.take(cap).read_to_end(&mut out).await.map_err(|why| {
+        tracing::warn!(error = %why, "git's output could not be read");
+        GitFault::Io
+    })?;
     if out.len() > max {
         return Err(GitFault::TooMuchOutput);
     }
@@ -123,7 +122,10 @@ async fn read_bounded<R: AsyncRead + Unpin>(pipe: &mut R, max: usize) -> Result<
 async fn read_tail<R: AsyncRead + Unpin>(pipe: &mut R) -> Result<Vec<u8>, GitFault> {
     let (mut tail, mut chunk) = (Vec::new(), [0u8; 1024]);
     loop {
-        let n = pipe.read(&mut chunk).await.ok().ok_or(GitFault::Io)?;
+        let n = pipe.read(&mut chunk).await.map_err(|why| {
+            tracing::warn!(error = %why, "git's errors could not be read");
+            GitFault::Io
+        })?;
         if n == 0 {
             return Ok(tail);
         }

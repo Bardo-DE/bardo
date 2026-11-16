@@ -6,14 +6,14 @@ use std::io::ErrorKind;
 use std::path::Path;
 
 /// A path that would reach outside the folder, or a folder that could not be looked at.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub(crate) enum Unsafe {
     /// A folder on the way to the file is a link.
     #[error("a folder on the way is a link")]
     Link,
     /// A folder on the way could not be read.
     #[error("a folder on the way could not be read")]
-    Unreadable,
+    Unreadable(#[source] std::io::Error),
 }
 
 /// Fails if any folder between `root` and a file of `paths` is a link: git would refuse to write
@@ -29,7 +29,7 @@ pub(crate) fn stay_inside(root: &Path, paths: &[&WorkPath]) -> Result<(), Unsafe
                 Ok(_) => {}
                 // Nothing here yet, so nothing below it either.
                 Err(why) if why.kind() == ErrorKind::NotFound => break,
-                Err(_) => return Err(Unsafe::Unreadable),
+                Err(why) => return Err(Unsafe::Unreadable(why)),
             }
         }
     }

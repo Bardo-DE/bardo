@@ -1,7 +1,7 @@
 //! Reading what git prints. Pure.
 
 use action_checkpoint::{EntryId, Saved, TreeId, TreeListing};
-use action_core::{CheckpointId, WorkPath};
+use action_core::{CheckpointId, WorkPath, WorkPathError};
 use base_time::UnixSeconds;
 use provenance::SessionId;
 use std::collections::BTreeMap;
@@ -13,15 +13,24 @@ const NESTED_REPOSITORY: &str = "160000";
 
 /// Output that is not what the command prints.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[error("git printed something unexpected")]
-pub(crate) struct Unexpected;
+pub(crate) enum Unexpected {
+    /// A line or a value is not in the form the command prints.
+    #[error("git printed something unexpected")]
+    Shape,
+    /// The output is not text.
+    #[error("git printed something that is not text")]
+    Text(#[source] std::str::Utf8Error),
+    /// A listed path is not a path inside the folder.
+    #[error("git listed a path that is not inside the folder")]
+    Path(#[source] WorkPathError),
+}
 
 fn lines(stdout: &[u8]) -> impl Iterator<Item = &[u8]> {
     stdout.split(|b| *b == 0).filter(|line| !line.is_empty())
 }
 
 fn text(bytes: &[u8]) -> Result<&str, Unexpected> {
-    std::str::from_utf8(bytes).ok().ok_or(Unexpected)
+    std::str::from_utf8(bytes).map_err(Unexpected::Text)
 }
 
 /// The number of paths in a NUL-separated listing.
@@ -35,12 +44,12 @@ pub(crate) fn staged_listing(stdout: &[u8]) -> Result<TreeListing, Unexpected> {
     let mut files = BTreeMap::new();
     for line in lines(stdout) {
         let line = text(line)?;
-        let (head, path) = line.split_once('\t').ok_or(Unexpected)?;
+        let (head, path) = line.split_once('\t').ok_or(Unexpected::Shape)?;
         let mut fields = head.split(' ');
         let (Some(mode), Some(oid), Some(_stage), None) =
             (fields.next(), fields.next(), fields.next(), fields.next())
         else {
-            return Err(Unexpected);
+            return Err(Unexpected::Shape);
         };
         add(&mut files, mode, oid, path)?;
     }
@@ -52,12 +61,12 @@ pub(crate) fn tree_listing(stdout: &[u8]) -> Result<TreeListing, Unexpected> {
     let mut files = BTreeMap::new();
     for line in lines(stdout) {
         let line = text(line)?;
-        let (head, path) = line.split_once('\t').ok_or(Unexpected)?;
+        let (head, path) = line.split_once('\t').ok_or(Unexpected::Shape)?;
         let mut fields = head.split(' ');
         let (Some(mode), Some(_kind), Some(oid), None) =
             (fields.next(), fields.next(), fields.next(), fields.next())
         else {
-            return Err(Unexpected);
+            return Err(Unexpected::Shape);
         };
         add(&mut files, mode, oid, path)?;
     }
@@ -73,7 +82,7 @@ fn add(
     if mode == NESTED_REPOSITORY {
         return Ok(());
     }
-    let path = WorkPath::parse(path).ok().ok_or(Unexpected)?;
+    let path = WorkPath::parse(path).map_err(Unexpected::Path)?;
     files.insert(path, EntryId::new(format!("{mode}:{oid}")));
     Ok(())
 }
@@ -101,7 +110,7 @@ pub(crate) fn held_points(session: &SessionId, stdout: &[u8]) -> Vec<Saved> {
 pub(crate) fn object_id(stdout: &[u8]) -> Result<String, Unexpected> {
     let first = text(stdout)?.lines().next().map_or("", str::trim);
     if first.is_empty() || !first.bytes().all(|b| b.is_ascii_hexdigit()) {
-        return Err(Unexpected);
+        return Err(Unexpected::Shape);
     }
     Ok(first.to_owned())
 }
