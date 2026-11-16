@@ -3,12 +3,11 @@
 //! after connecting and when the file changes. The host watches no files, so a change is found by
 //! looking at the file's size and modification time every [`LOOK_EVERY`].
 
-use std::ffi::OsString;
-use std::fs::OpenOptions;
-use std::io::Read;
-use std::os::unix::fs::OpenOptionsExt;
 use std::path::PathBuf;
 use std::time::{Duration, SystemTime};
+
+use base_fs::{ReadCap, ReadError, read_text_capped};
+use base_xdg::Xdg;
 
 use mouse_gestures_proto::USER_CONFIG_MAX_BYTES;
 
@@ -20,16 +19,8 @@ const FILE: &str = "bardo/mouse-gestures/gestures.toml";
 
 /// Where the file is: `$XDG_CONFIG_HOME/bardo/mouse-gestures/gestures.toml`, else
 /// `~/.config/bardo/mouse-gestures/gestures.toml`; none when neither variable is set.
-pub(crate) fn path(lookup: impl Fn(&str) -> Option<OsString>) -> Option<PathBuf> {
-    let base = lookup("XDG_CONFIG_HOME")
-        .filter(|v| !v.is_empty())
-        .map(PathBuf::from)
-        .or_else(|| {
-            lookup("HOME")
-                .filter(|v| !v.is_empty())
-                .map(|home| PathBuf::from(home).join(".config"))
-        })?;
-    Some(base.join(FILE))
+pub(crate) fn path(xdg: &Xdg<impl Fn(&str) -> Option<String>>) -> Option<PathBuf> {
+    Some(xdg.config_home().ok()?.join(FILE))
 }
 
 /// How the file looked: what a later look is compared with.
@@ -57,31 +48,11 @@ pub(crate) fn stamp(path: &std::path::Path) -> Stamp {
 /// file, or when it cannot be used: not a regular file, larger than the bound, not text. Opened
 /// without blocking, so a named pipe put in its place is refused instead of waited for.
 pub(crate) fn read(path: &std::path::Path) -> String {
-    let Ok(file) = OpenOptions::new()
-        .read(true)
-        .custom_flags(rustix::fs::OFlags::NONBLOCK.bits() as i32)
-        .open(path)
-    else {
-        return String::new();
-    };
-    if !file.metadata().is_ok_and(|meta| meta.is_file()) {
-        eprintln!(
-            "shell-host: {} is not a regular file; ignoring it",
-            path.display()
-        );
-        return String::new();
-    }
-    let mut bytes = Vec::new();
-    let read = file
-        .take(USER_CONFIG_MAX_BYTES as u64 + 1)
-        .read_to_end(&mut bytes);
-    match (read, String::from_utf8(bytes)) {
-        (Ok(_), Ok(text)) if text.len() <= USER_CONFIG_MAX_BYTES => text,
-        _ => {
-            eprintln!(
-                "shell-host: {} is unreadable, not text, or over {USER_CONFIG_MAX_BYTES} bytes; ignoring it",
-                path.display()
-            );
+    match read_text_capped(path, ReadCap::bytes(USER_CONFIG_MAX_BYTES as u64)) {
+        Ok(text) => text,
+        Err(ReadError::NotFound { .. }) => String::new(),
+        Err(error) => {
+            eprintln!("shell-host: {error}; ignoring it");
             String::new()
         }
     }
@@ -91,12 +62,12 @@ pub(crate) fn read(path: &std::path::Path) -> String {
 mod tests {
     use super::*;
 
-    fn lookup<'a>(vars: &'a [(&'a str, &'a str)]) -> impl Fn(&str) -> Option<OsString> + 'a {
-        move |k| {
+    fn lookup<'a>(vars: &'a [(&'a str, &'a str)]) -> Xdg<impl Fn(&str) -> Option<String> + 'a> {
+        Xdg::new(move |k| {
             vars.iter()
                 .find(|(name, _)| *name == k)
-                .map(|(_, v)| OsString::from(v))
-        }
+                .map(|(_, v)| (*v).to_owned())
+        })
     }
 
     /// A case's name, its environment and the file it should come to.
@@ -123,7 +94,7 @@ mod tests {
             ("neither", &[], None),
         ];
         for (name, vars, want) in cases {
-            assert_eq!(path(lookup(vars)), want.map(PathBuf::from), "{name}");
+            assert_eq!(path(&lookup(vars)), want.map(PathBuf::from), "{name}");
         }
     }
 

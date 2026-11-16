@@ -2,6 +2,7 @@
 
 use crate::config::{SCHEMA_FILE_NAME, Schema};
 use crate::error::Error;
+use base_fs::NewFileMode;
 use std::path::Path;
 
 /// Writes `mouse-gestures.settings.toml` into `dir`, creating it, by a temporary file and a rename
@@ -18,9 +19,12 @@ pub(super) fn write_schema(dir: &Path) -> Result<(), Error> {
 fn write_to(dir: &Path) -> std::io::Result<std::path::PathBuf> {
     std::fs::create_dir_all(dir)?;
     let target = dir.join(SCHEMA_FILE_NAME);
-    let temp = dir.join(format!(".{SCHEMA_FILE_NAME}.part"));
-    std::fs::write(&temp, Schema::palmrest().to_toml())?;
-    std::fs::rename(&temp, &target)?;
+    base_fs::write_atomic(
+        &target,
+        Schema::palmrest().to_toml().as_bytes(),
+        NewFileMode::Umask,
+    )
+    .map_err(|error| error.source)?;
     Ok(target)
 }
 

@@ -9,6 +9,8 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-fs = { path = "../../base/base-fs" }
+base-xdg = { path = "../../base/base-xdg" }
 # Wayland
 smithay-client-toolkit = { workspace = true, features = ["calloop", "xkbcommon"] }
 wayland-client = { workspace = true }

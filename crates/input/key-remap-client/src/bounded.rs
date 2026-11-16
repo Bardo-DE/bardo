@@ -1,9 +1,9 @@
-//! A text file read safely, through chordkit's bounded reader (regular files only, opened without
+//! A text file read safely, through the base crate's bounded reader (regular files only, opened without
 //! blocking, at most a named number of bytes, UTF-8). The files are the person's own, in a
 //! directory they can write, so a named pipe put in the file's place must not hang a program's
 //! start-up and a huge file must not fill its memory.
 
-use keymap_fs::{ByteLimit, ReadError};
+use base_fs::{ReadCap, ReadError};
 use std::path::Path;
 
 /// What reading a text file came to.
@@ -21,9 +21,9 @@ pub enum FileText {
 /// regular file is followed (a dotfile manager's); anything that is not a regular file, a file
 /// over the limit and one that is not UTF-8 text are `Unusable`.
 pub fn read_text(path: &Path, max_bytes: u64) -> FileText {
-    match keymap_fs::read_text(path, ByteLimit::new(max_bytes)) {
+    match base_fs::read_text_capped(path, ReadCap::bytes(max_bytes)) {
         Ok(text) => FileText::Text(text),
-        Err(ReadError::Missing) => FileText::Missing,
+        Err(ReadError::NotFound { .. }) => FileText::Missing,
         Err(why) => FileText::Unusable(why.to_string()),
     }
 }

@@ -4,7 +4,8 @@
 //! start it moves to `bardo/mouse-gestures` once, before the config is read. The unit's own folder
 //! (`/etc`, from `ConfigurationDirectory=`) belongs to systemd and is moved by the installer.
 
-use std::path::{Path, PathBuf};
+use base_xdg::Xdg;
+use std::path::PathBuf;
 
 /// Temporary: delete with the old-folders crate in the release after everyone has started once.
 ///
@@ -35,14 +36,7 @@ pub fn move_pre_bardo_folders(lookup: impl Fn(&str) -> Option<String>) {
 }
 
 fn config_home(lookup: &impl Fn(&str) -> Option<String>) -> Option<PathBuf> {
-    lookup("XDG_CONFIG_HOME")
-        .filter(|s| !s.is_empty())
-        .map(PathBuf::from)
-        .or_else(|| {
-            lookup("HOME")
-                .filter(|s| !s.is_empty())
-                .map(|home| Path::new(&home).join(".config"))
-        })
+    Xdg::new(lookup).config_home().ok()
 }
 
 #[cfg(test)]

@@ -30,6 +30,7 @@ use rustix::net::{
 };
 use rustix::process::{PidfdFlags, pidfd_open};
 
+use base_xdg::Xdg;
 use mouse_gestures_proto::{Compat, MAX_PACKET, ToDaemon, ToHost, compat, decode, encode};
 
 use crate::lock::machine::LockState as HostLock;
@@ -113,8 +114,7 @@ impl Palmrest {
     /// The client for the daemon's socket and the person's settings file; unconnected, first
     /// attempt due.
     pub(crate) fn system() -> Palmrest {
-        let settings = user_config::path(|key| std::env::var_os(key))
-            .map(|path| Settings { path, told: None });
+        let settings = user_config::path(&Xdg::process()).map(|path| Settings { path, told: None });
         Palmrest {
             settings,
             ..Palmrest::at(Some(PathBuf::from(SOCKET)))

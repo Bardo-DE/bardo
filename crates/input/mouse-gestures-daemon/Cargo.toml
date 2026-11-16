@@ -9,6 +9,8 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
+base-xdg = { path = "../../base/base-xdg" }
+base-fs = { path = "../../base/base-fs" }
 mouse-gestures-proto = { path = "../mouse-gestures-proto" }
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }

@@ -1,6 +1,7 @@
 //! `KeycapSource`: this desktop's `keymap::KeymapSource`.
 
 use crate::{fallback, fetch, system, watch};
+use base_xdg::Xdg;
 use key_remap_proto::{CONFIG_DIR, KEYMAP_FILE, KeymapProblem, SOCKET_PATH};
 use keymap::{
     ChangeCallback, Desktop, Keymap, KeymapSource, Overrides, Platform, SourceError, Watch,
@@ -74,9 +75,9 @@ impl KeycapSource {
         let non_empty = |name: &str| lookup(name).filter(|value| !value.is_empty());
         let config =
             non_empty("BARDO_KEY_REMAP_CONFIG_DIR").unwrap_or_else(|| CONFIG_DIR.to_owned());
-        let person = non_empty("XDG_CONFIG_HOME")
-            .map(PathBuf::from)
-            .or_else(|| non_empty("HOME").map(|home| Path::new(&home).join(".config")))
+        let person = Xdg::new(&lookup)
+            .config_home()
+            .ok()
             .map(|dir| dir.join("bardo/key-remap").join(KEYMAP_FILE))
             .unwrap_or_default();
         KeycapSource::new(

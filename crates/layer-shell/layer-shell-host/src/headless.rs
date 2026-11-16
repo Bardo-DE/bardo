@@ -14,6 +14,7 @@ use std::path::{Path, PathBuf};
 
 use anyrender::render_to_buffer;
 use anyrender_vello_cpu::VelloCpuImageRenderer;
+use base_xdg::Xdg;
 use blitz_dom::{Document, DocumentConfig, FontContext};
 use blitz_paint::paint_scene;
 use blitz_traits::shell::{ColorScheme, Viewport};
@@ -178,8 +179,9 @@ pub fn bundled_faces() -> FontFaces {
 }
 
 fn home_dir() -> PathBuf {
-    std::env::var_os("HOME")
-        .map(PathBuf::from)
+    Xdg::process()
+        .home()
+        .map(Path::to_path_buf)
         .unwrap_or_default()
 }
 

@@ -2,10 +2,14 @@
 
 use std::path::PathBuf;
 
+use base_fs::{ReadCap, ReadError, read_text_capped};
 use keymap::{Keymap, KeymapSource, Platform, SourceError};
-use keymap_fs::{ReadError, SETTINGS_FILE_LIMIT, read_text};
 
 use crate::parse::parse_kdeglobals;
+
+/// The most of a desktop's shortcut settings file that is read: 4 MiB, far above any real one
+/// (kdeglobals and a dconf dump are tens of KiB) and small enough to hold in memory at once.
+const SETTINGS_FILE_LIMIT: ReadCap = ReadCap::mib(4);
 
 /// Reads the user's KDE shortcut choices from one kdeglobals file. A missing file means the
 /// person changed nothing, so the keymap is KDE's conventions as they are.
@@ -23,9 +27,9 @@ impl KdeSource {
 
 impl KeymapSource for KdeSource {
     fn load(&self, platform: Platform) -> Result<Keymap, SourceError> {
-        let text = match read_text(&self.path, SETTINGS_FILE_LIMIT) {
+        let text = match read_text_capped(&self.path, SETTINGS_FILE_LIMIT) {
             Ok(text) => text,
-            Err(ReadError::Missing) => String::new(),
+            Err(ReadError::NotFound { .. }) => String::new(),
             Err(error) => {
                 return Err(SourceError::Read {
                     place: self.path.display().to_string(),

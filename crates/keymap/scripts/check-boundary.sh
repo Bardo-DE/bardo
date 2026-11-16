@@ -4,7 +4,7 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
-EFFECTS="tokio async-std smol futures zbus zvariant notify rustix libc nix mio evdev toml serde_json plist keymap-fs"
+EFFECTS="tokio async-std smol futures zbus zvariant notify rustix libc nix mio evdev toml serde_json plist base-fs"
 RULES=(
   "chordkit: $EFFECTS"
   "keymap-macos: $EFFECTS"

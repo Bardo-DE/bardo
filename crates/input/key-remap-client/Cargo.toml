@@ -12,7 +12,8 @@ repository.workspace = true
 key-remap-proto = { path = "../key-remap-proto" }
 # std has no SOCK_SEQPACKET sockets, which the protocol uses; rustix has them without unsafe.
 keymap = {path = "../../keymap/keymap"}
-keymap-fs = {path = "../../keymap/keymap-fs"}
+base-fs = { path = "../../base/base-fs" }
+base-xdg = { path = "../../base/base-xdg" }
 rustix = {version = "1", features = ["event", "fs", "net", "time", "process"]}
 shell-verbs = {path = "../../wayland/shell-verbs"}
 

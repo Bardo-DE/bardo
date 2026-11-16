@@ -10,7 +10,7 @@ repository.workspace = true
 
 [dependencies]
 keymap = {path = "../keymap"}
-keymap-fs = {path = "../keymap-fs"}
+base-fs = { path = "../../base/base-fs" }
 
 [lints]
 workspace = true

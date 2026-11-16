@@ -4,10 +4,8 @@
 
 use super::file::{Config, parse};
 use super::lenient::Warning;
-use rustix::fs::OFlags;
-use std::fs::OpenOptions;
-use std::io::{self, Read};
-use std::os::unix::fs::OpenOptionsExt;
+use base_fs::{ReadCap, read_text_capped};
+use base_xdg::Xdg;
 use std::path::{Path, PathBuf};
 
 /// The file name the Settings app writes.
@@ -22,14 +20,7 @@ pub fn config_dir(lookup: impl Fn(&str) -> Option<String>) -> Option<PathBuf> {
     if let Some(dir) = first_directory(lookup("CONFIGURATION_DIRECTORY")) {
         return Some(dir);
     }
-    let base = lookup("XDG_CONFIG_HOME")
-        .filter(|s| !s.is_empty())
-        .map(PathBuf::from)
-        .or_else(|| {
-            lookup("HOME")
-                .filter(|s| !s.is_empty())
-                .map(|h| Path::new(&h).join(".config"))
-        })?;
+    let base = Xdg::new(&lookup).config_home().ok()?;
     Some(base.join("bardo/mouse-gestures"))
 }
 
@@ -60,7 +51,7 @@ pub fn load(dir: Option<&Path>) -> Loaded {
     let found = dir.map(|d| d.join(FILE_NAME)).filter(|p| p.exists());
     let (config, text, warnings) = match &found {
         None => (Config::default(), String::new(), Vec::new()),
-        Some(p) => match read_regular(p) {
+        Some(p) => match read_text_capped(p, ReadCap::bytes(FILE_MAX_BYTES)) {
             Ok(text) => match parse(&text) {
                 Ok((config, warnings)) => (config, text, warnings),
                 Err(e) => (
@@ -88,31 +79,6 @@ pub fn load(dir: Option<&Path>) -> Loaded {
         source: found,
         warnings,
     }
-}
-
-/// The text of a regular file of at most `FILE_MAX_BYTES`. Opened without blocking, so a named
-/// pipe put in its place is refused instead of waiting for a writer for ever; a symbolic link to
-/// a regular file (a dotfile manager's) is followed.
-fn read_regular(path: &Path) -> io::Result<String> {
-    let file = OpenOptions::new()
-        .read(true)
-        .custom_flags(OFlags::NONBLOCK.bits() as i32)
-        .open(path)?;
-    if !file.metadata()?.is_file() {
-        return Err(io::Error::new(
-            io::ErrorKind::InvalidInput,
-            "not a regular file",
-        ));
-    }
-    let mut text = String::new();
-    file.take(FILE_MAX_BYTES + 1).read_to_string(&mut text)?;
-    if text.len() as u64 > FILE_MAX_BYTES {
-        return Err(io::Error::new(
-            io::ErrorKind::InvalidData,
-            format!("larger than {FILE_MAX_BYTES} bytes"),
-        ));
-    }
-    Ok(text)
 }
 
 fn whole_file(p: &Path, problem: String) -> Warning {

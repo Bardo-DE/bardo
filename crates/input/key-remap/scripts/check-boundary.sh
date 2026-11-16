@@ -55,9 +55,9 @@ EDGES=(
   # share; the safe input-linux handles and rustix reads, nothing of bardo-key-remap's own.
   "key-remap-evdev: input-linux rustix thiserror"
   # key-remap-client: what an app links to read the desktop keymap. The protocol, chordkit's pure core
-  # and its bounded file reader (keymap-fs), and rustix for the SOCK_SEQPACKET socket std
+  # and the base bounded file reader and XDG folders (base-fs, base-xdg), and rustix for the SOCK_SEQPACKET socket std
   # lacks; no runtime, no file watcher. shell-verbs names the shell's verbs in the handled table.
-  "key-remap-client: keymap keymap-fs key-remap-proto rustix shell-verbs"
+  "key-remap-client: base-fs base-xdg keymap key-remap-proto rustix shell-verbs"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"
