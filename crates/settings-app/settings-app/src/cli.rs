@@ -61,6 +61,13 @@ pub enum Run {
 
 impl Cli {
     /// The rows file `--dev-callers` named; none in a build without the option.
+    #[cfg_attr(
+        not(feature = "dev-callers"),
+        expect(
+            clippy::unused_self,
+            reason = "the option exists only with the feature; the call is the same in both builds"
+        )
+    )]
     pub fn dev_callers(&self) -> Option<&Path> {
         #[cfg(feature = "dev-callers")]
         {

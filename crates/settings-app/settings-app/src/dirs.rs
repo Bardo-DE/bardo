@@ -1,57 +1,66 @@
 //! Where the schemas and the settings are, read from the environment once, here at the edge.
 
 use settings_app_files::{CacheHome, ConfigHome, DataHome, StateHome};
-use std::ffi::OsString;
+use std::ffi::OsStr;
 use std::path::PathBuf;
 
 /// `xdg` when it is a usable path, else `home` (itself usable) with `under_home` below it: the
 /// XDG rule, written once in `base_xdg` and applied through `ui_settings::xdg`, so
 /// `XDG_CONFIG_HOME=` in a unit file is not "the working directory".
-fn base_from(xdg: Option<OsString>, home: Option<OsString>, under_home: &str) -> Option<PathBuf> {
-    ui_settings::xdg::base_dir(xdg.as_deref(), home.as_deref(), under_home)
+fn base_from(xdg: Option<&OsStr>, home: Option<&OsStr>, under_home: &str) -> Option<PathBuf> {
+    ui_settings::xdg::base_dir(xdg, home, under_home)
 }
 
 /// `$XDG_CONFIG_HOME`, else `$HOME/.config`.
-fn config_home_from(xdg: Option<OsString>, home: Option<OsString>) -> Option<ConfigHome> {
+fn config_home_from(xdg: Option<&OsStr>, home: Option<&OsStr>) -> Option<ConfigHome> {
     base_from(xdg, home, ".config").map(ConfigHome)
 }
 
 /// The person's config home, `None` when neither variable is usable.
 pub fn config_home() -> Option<ConfigHome> {
     config_home_from(
-        std::env::var_os("XDG_CONFIG_HOME"),
-        std::env::var_os("HOME"),
+        std::env::var_os("XDG_CONFIG_HOME").as_deref(),
+        std::env::var_os("HOME").as_deref(),
     )
 }
 
 /// `$XDG_STATE_HOME`, else `$HOME/.local/state`.
-fn state_home_from(xdg: Option<OsString>, home: Option<OsString>) -> Option<StateHome> {
+fn state_home_from(xdg: Option<&OsStr>, home: Option<&OsStr>) -> Option<StateHome> {
     base_from(xdg, home, ".local/state").map(StateHome)
 }
 
 /// The person's state home, `None` when neither variable is usable.
 pub fn state_home() -> Option<StateHome> {
-    state_home_from(std::env::var_os("XDG_STATE_HOME"), std::env::var_os("HOME"))
+    state_home_from(
+        std::env::var_os("XDG_STATE_HOME").as_deref(),
+        std::env::var_os("HOME").as_deref(),
+    )
 }
 
 /// `$XDG_DATA_HOME`, else `$HOME/.local/share`.
-fn data_home_from(xdg: Option<OsString>, home: Option<OsString>) -> Option<DataHome> {
+fn data_home_from(xdg: Option<&OsStr>, home: Option<&OsStr>) -> Option<DataHome> {
     base_from(xdg, home, ".local/share").map(DataHome)
 }
 
 /// The person's data home, `None` when neither variable is usable.
 pub fn data_home() -> Option<DataHome> {
-    data_home_from(std::env::var_os("XDG_DATA_HOME"), std::env::var_os("HOME"))
+    data_home_from(
+        std::env::var_os("XDG_DATA_HOME").as_deref(),
+        std::env::var_os("HOME").as_deref(),
+    )
 }
 
 /// `$XDG_CACHE_HOME`, else `$HOME/.cache`.
-fn cache_home_from(xdg: Option<OsString>, home: Option<OsString>) -> Option<CacheHome> {
+fn cache_home_from(xdg: Option<&OsStr>, home: Option<&OsStr>) -> Option<CacheHome> {
     base_from(xdg, home, ".cache").map(CacheHome)
 }
 
 /// The person's cache home, `None` when neither variable is usable.
 pub fn cache_home() -> Option<CacheHome> {
-    cache_home_from(std::env::var_os("XDG_CACHE_HOME"), std::env::var_os("HOME"))
+    cache_home_from(
+        std::env::var_os("XDG_CACHE_HOME").as_deref(),
+        std::env::var_os("HOME").as_deref(),
+    )
 }
 
 /// `dirs` without a directory already listed, in order: `$XDG_DATA_HOME` is often also in
@@ -95,13 +104,13 @@ const STORE_EXPORTS: [&str; 2] = [
 /// The `applications` folders of the desktop entries: the data home's, each of the data
 /// directories' (`/usr/local/share:/usr/share` when the variable is unset), then Flatpak's user
 /// install and the stores' exports, in the order of precedence.
-fn application_dirs_from(data_home: Option<DataHome>, data_dirs: Option<OsString>) -> Vec<PathBuf> {
+fn application_dirs_from(data_home: Option<&DataHome>, data_dirs: Option<&OsStr>) -> Vec<PathBuf> {
     let shares = data_home
-        .iter()
+        .into_iter()
         .map(|home| home.0.clone())
-        .chain(ui_settings::xdg::search_dirs(data_dirs.as_deref()));
+        .chain(ui_settings::xdg::search_dirs(data_dirs));
     let exports = data_home
-        .iter()
+        .into_iter()
         .map(|home| home.0.join("flatpak/exports/share/applications"))
         .chain(STORE_EXPORTS.map(PathBuf::from));
     unique(
@@ -115,23 +124,29 @@ fn application_dirs_from(data_home: Option<DataHome>, data_dirs: Option<OsString
 /// The system's data directories (`$XDG_DATA_DIRS`, `/usr/local/share:/usr/share` when it is
 /// unset), absolute ones only and without the person's own data home, which is looked at
 /// separately: where installed Extensions and apps' published style parts are.
-fn system_data_dirs_from(data_home: Option<DataHome>, data_dirs: Option<OsString>) -> Vec<PathBuf> {
+fn system_data_dirs_from(data_home: Option<&DataHome>, data_dirs: Option<&OsStr>) -> Vec<PathBuf> {
     unique(
-        ui_settings::xdg::search_dirs(data_dirs.as_deref())
+        ui_settings::xdg::search_dirs(data_dirs)
             .into_iter()
-            .filter(|dir| data_home.as_ref().is_none_or(|home| *dir != home.0))
+            .filter(|dir| data_home.is_none_or(|home| *dir != home.0))
             .collect(),
     )
 }
 
 /// The system's data directories, at the edge.
 pub fn system_data_dirs() -> Vec<PathBuf> {
-    system_data_dirs_from(data_home(), std::env::var_os("XDG_DATA_DIRS"))
+    system_data_dirs_from(
+        data_home().as_ref(),
+        std::env::var_os("XDG_DATA_DIRS").as_deref(),
+    )
 }
 
 /// The folders desktop entries are read from, at the edge.
 pub fn application_dirs() -> Vec<PathBuf> {
-    application_dirs_from(data_home(), std::env::var_os("XDG_DATA_DIRS"))
+    application_dirs_from(
+        data_home().as_ref(),
+        std::env::var_os("XDG_DATA_DIRS").as_deref(),
+    )
 }
 
 #[cfg(test)]
@@ -141,17 +156,13 @@ mod tests {
         intent_dirs_beside, state_home_from, system_data_dirs_from, unique,
     };
     use settings_app_files::DataHome;
-    use std::ffi::OsString;
+    use std::ffi::OsStr;
     use std::path::PathBuf;
 
-    type Home = fn(Option<OsString>, Option<OsString>) -> Option<PathBuf>;
+    type Home = fn(Option<&OsStr>, Option<&OsStr>) -> Option<PathBuf>;
 
     #[test]
     fn the_xdg_variable_wins_over_home() {
-        let config: Home = |xdg, home| config_home_from(xdg, home).map(|h| h.0);
-        let state: Home = |xdg, home| state_home_from(xdg, home).map(|h| h.0);
-        let data: Home = |xdg, home| data_home_from(xdg, home).map(|h| h.0);
-        let cache: Home = |xdg, home| cache_home_from(xdg, home).map(|h| h.0);
         // `(directory, XDG variable, HOME, the home)`.
         type Case<'a> = (
             &'a str,
@@ -160,6 +171,10 @@ mod tests {
             Option<&'a str>,
             Option<&'a str>,
         );
+        let config: Home = |xdg, home| config_home_from(xdg, home).map(|h| h.0);
+        let state: Home = |xdg, home| state_home_from(xdg, home).map(|h| h.0);
+        let data: Home = |xdg, home| data_home_from(xdg, home).map(|h| h.0);
+        let cache: Home = |xdg, home| cache_home_from(xdg, home).map(|h| h.0);
         let cases: &[Case] = &[
             (
                 "config",
@@ -235,7 +250,7 @@ mod tests {
             ("config", config, None, Some("home"), None),
         ];
         for (name, function, xdg, home, want) in cases {
-            let got = function(xdg.map(OsString::from), home.map(OsString::from));
+            let got = function(xdg.map(OsStr::new), home.map(OsStr::new));
             assert_eq!(got, want.map(PathBuf::from), "{name} {xdg:?} {home:?}");
         }
     }
@@ -269,7 +284,7 @@ mod tests {
     fn desktop_entries_are_looked_for_in_the_data_home_then_the_data_directories_then_the_stores() {
         let home = Some(DataHome(PathBuf::from("/home/ada/.local/share")));
         let dirs =
-            |value: Option<&str>| application_dirs_from(home.clone(), value.map(OsString::from));
+            |value: Option<&str>| application_dirs_from(home.as_ref(), value.map(OsStr::new));
         let paths = |list: &[&str]| list.iter().map(PathBuf::from).collect::<Vec<_>>();
         assert_eq!(
             dirs(Some("/opt/share:/usr/share")),
@@ -296,7 +311,7 @@ mod tests {
             "a relative directory is not the working directory"
         );
         assert_eq!(
-            application_dirs_from(None, Some(OsString::from("/usr/share"))),
+            application_dirs_from(None, Some(OsStr::new("/usr/share"))),
             paths(&[
                 "/usr/share/applications",
                 "/var/lib/flatpak/exports/share/applications",
@@ -310,7 +325,7 @@ mod tests {
     fn the_system_data_directories_leave_out_the_data_home_and_the_relative_ones() {
         let home = Some(DataHome(PathBuf::from("/home/ada/.local/share")));
         let dirs =
-            |value: Option<&str>| system_data_dirs_from(home.clone(), value.map(OsString::from));
+            |value: Option<&str>| system_data_dirs_from(home.as_ref(), value.map(OsStr::new));
         let paths = |list: &[&str]| list.iter().map(PathBuf::from).collect::<Vec<_>>();
         assert_eq!(
             dirs(Some(

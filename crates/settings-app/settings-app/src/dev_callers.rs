@@ -25,6 +25,10 @@ pub fn take_up(path: Option<&Path>) -> Result<(), ExitCode> {
 
 /// A build without the feature has no option, so there is never a file to take up.
 #[cfg(not(feature = "dev-callers"))]
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "the same signature as the feature build, whose rows file can fail to load"
+)]
 pub fn take_up(_path: Option<&Path>) -> Result<(), ExitCode> {
     Ok(())
 }
