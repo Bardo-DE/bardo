@@ -235,15 +235,15 @@ impl CaseTrace {
         case: &Case,
         result: &CaseResult,
         (setup, installed): (Vec<ModelExchange>, usize),
-        records: Vec<AuditRecord>,
-        sheets: Vec<ConfirmRequest>,
+        records: &[AuditRecord],
+        sheets: &[ConfirmRequest],
         cuts: Vec<Cut>,
     ) -> Self {
         let first = installed.min(records.len());
         let mut steps = Vec::new();
         let (mut from_record, mut from_sheet) = (first, 0);
         let slice = |all: &[AuditRecord], a: usize, b: usize| all.get(a..b).unwrap_or(&[]).to_vec();
-        let setup_audit = slice(&records, 0, first);
+        let setup_audit = slice(records, 0, first);
         let played = case.expanded();
         for (cut, ending) in cuts.into_iter().zip(&result.steps) {
             let plan = played.get(steps.len()).map(plan_line).unwrap_or_default();
@@ -251,7 +251,7 @@ impl CaseTrace {
             let sheet_to = cut.sheets.min(sheets.len());
             steps.push(StepTrace {
                 plan,
-                audit: slice(&records, from_record, upto.max(from_record)),
+                audit: slice(records, from_record, upto.max(from_record)),
                 sheets: sheets
                     .get(from_sheet..sheet_to.max(from_sheet))
                     .unwrap_or(&[])

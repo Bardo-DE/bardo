@@ -7,7 +7,7 @@ use std::time::Duration;
 use zbus::proxy::CacheProperties;
 
 const CHECK_LIMIT: Duration = Duration::from_secs(300);
-const WORK_LIMIT: Duration = Duration::from_secs(2 * 60 * 60);
+const WORK_LIMIT: Duration = Duration::from_hours(2);
 
 /// The daemon's object, as a caller sees it.
 #[zbus::proxy(

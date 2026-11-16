@@ -45,6 +45,7 @@ fn result(
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "one table of judgements, a row each")]
 fn judgement_table() {
     let denied = StepEnding::Refused(CallRefusal::Denied(DenyCode::NeedsUser));
     let cases: Vec<(&str, Expect, CaseResult, Judgement)> = vec![

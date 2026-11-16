@@ -61,14 +61,14 @@ fn WhereApp() -> Element {
 
 #[test]
 fn the_resets_where_scope_applies_and_a_lone_class_outranks_it() {
+    const BLUE: [u8; 3] = [20, 20, 230];
+    const RED: [u8; 3] = [230, 20, 20];
     let mut harness = Harness::new(
         WhereApp,
         HarnessConfig::new(VIEW).with_clock(Clock::Virtual),
     );
     let frame = harness.render().expect("renders");
     keep(&frame, "where-probe");
-    const BLUE: [u8; 3] = [20, 20, 230];
-    const RED: [u8; 3] = [230, 20, 20];
     // The reset applies through `:where(.ds) button`: the plain button inherits the column's
     // blue and 30 px (a user-agent button is black at about 13 px).
     let plain = rect(&harness, ".probe-plain");
@@ -143,7 +143,9 @@ fn run(frame: &RgbaImage, (x, y): (i64, i64), (dx, dy): (i64, i64), by: u8) -> i
         (Ok(px), Ok(py)) => distance(frame.get_pixel(px, py).0, GROUND) > by,
         _ => false,
     };
-    let count = (1..)
+    // No run is longer than the frame is wide or tall.
+    let longest = i64::from(frame.width().max(frame.height()));
+    let count = (1..=longest)
         .map(|n| (x + dx * n, y + dy * n))
         .take_while(|&at| stands_out(at))
         .count();

@@ -433,12 +433,12 @@ fn recording_tees_events_and_replays_identically() {
         ["first", "second"],
         "the caller still sees every event"
     );
-    let recorded = lines.0.lock().unwrap().clone();
-    assert_eq!(recorded, cassette().interactions);
+    let captured = lines.0.lock().unwrap().clone();
+    assert_eq!(captured, cassette().interactions);
     // Written and read back through the file format, then replayed strictly.
     let file = Cassette {
         header: header(),
-        interactions: recorded,
+        interactions: captured,
     };
     let replay = ReplayProvider::new(
         Cassette::from_jsonl(&file.to_jsonl()).unwrap(),

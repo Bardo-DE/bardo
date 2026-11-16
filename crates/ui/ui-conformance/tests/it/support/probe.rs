@@ -45,7 +45,9 @@ pub fn centred(harness: &Harness, pill: &str, part: &str) -> Rect {
 /// Keep `frame` in the test's scratch directory, for review.
 pub fn keep(frame: &RgbaImage, name: &str) {
     let path = std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join(format!("{name}.png"));
-    frame.save(&path).ok();
+    if let Err(error) = frame.save(&path) {
+        eprintln!("could not keep {name} for review: {error}");
+    }
 }
 
 /// A layout coordinate as the index of the frame pixel it falls in: cut down to a whole pixel,

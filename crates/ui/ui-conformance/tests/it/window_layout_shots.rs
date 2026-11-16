@@ -79,6 +79,10 @@ fn look() -> SpaceLook {
     non_snake_case,
     reason = "a Dioxus component function is named in CamelCase"
 )]
+#[expect(
+    clippy::too_many_lines,
+    reason = "the page lists every control the layout shots frame, as markup"
+)]
 fn Page() -> Element {
     let theme = if DARK.with(Cell::get) {
         Theme::Dark

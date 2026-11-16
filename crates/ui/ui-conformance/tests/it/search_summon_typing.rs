@@ -116,7 +116,8 @@ fn typed(harness: &mut Harness) -> String {
 #[test]
 fn keys_typed_after_the_focus_land_in_order_at_any_pace() {
     // How each key is followed: at once, a frame later, a few milliseconds later.
-    let paces: [(&str, fn(&mut Harness)); 3] = [
+    type Pace = (&'static str, fn(&mut Harness));
+    let paces: [Pace; 3] = [
         ("at once", |_| {}),
         ("a frame apart", |harness| {
             harness.step_frame();

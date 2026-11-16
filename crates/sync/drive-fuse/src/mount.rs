@@ -136,7 +136,7 @@ impl Mounter {
         config.mount_options = vec![
             match access {
                 Access::ReadWrite => MountOption::RW,
-                _ => MountOption::RO,
+                Access::ReadOnly => MountOption::RO,
             },
             MountOption::NoSuid,
             MountOption::NoDev,

@@ -22,7 +22,10 @@ fn ms(n: u64) -> Duration {
 }
 
 /// Writes every gesture it hears into `.log`.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Listener() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     use_gestures(move |gesture| {
@@ -74,7 +77,10 @@ fn a_pinch_and_a_scroll_arrive_in_order_with_their_phases() {
 }
 
 /// A 100 px square that follows the pointer once pressed; `.log` lists what it heard.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Handle() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let hold = use_pointer_capture(move |pointer: CapturedPointer| {
@@ -92,8 +98,8 @@ fn Handle() -> Element {
                 style: "width:100px; height:100px",
                 onmounted: move |event| hold.on_mounted(event),
                 onpointerdown: move |_| {
-                    let held = hold.begin();
-                    log.with_mut(|log| log.push(match held {
+                    let grip = hold.begin();
+                    log.with_mut(|log| log.push(match grip {
                         PointerHold::Captured => "captured".to_owned(),
                         PointerHold::Local => "local".to_owned(),
                     }));

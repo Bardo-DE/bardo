@@ -16,11 +16,14 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut shown = use_signal(|| true);
     let mut saved = use_signal(Vec::<PaneSize>::new);
-    let mut saves = use_signal(|| 0usize);
+    let mut save_count = use_signal(|| 0usize);
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
             div { style: "height:180px",
@@ -30,13 +33,13 @@ fn Page() -> Element {
                     on_shown: move |(_, next)| shown.set(next),
                     on_resized: move |sizes| {
                         saved.set(sizes);
-                        saves += 1;
+                        save_count += 1;
                     },
                     p { "Content" }
                 }
             }
             p { class: "shown", "{shown_word(shown())}" }
-            p { class: "saves", "{saves()}" }
+            p { class: "saves", "{save_count()}" }
             p { class: "saved", "{saved():?}" }
         }
     }

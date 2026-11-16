@@ -9,7 +9,7 @@ use probe::{pixel, rect};
 use std::time::Duration;
 use ui_blitz::FocusFallback;
 use ui_components::components::menus::palette::palette_group::{PaletteGroup, PaletteRow};
-use ui_components::focus::request::{FocusRequest, use_focus_request};
+use ui_components::focus::request::use_focus_request;
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
 use ui_components::style::icon::url::IconUrl;
@@ -75,7 +75,7 @@ fn Panel(selection: Selection, give_back: GiveBack) -> Element {
     let mut row = use_signal(|| None::<Rect>);
     let mut actions = use_signal(|| false);
     let mut chosen = use_signal(|| 0usize);
-    let focus: FocusRequest = use_focus_request();
+    let focus = use_focus_request();
     let selected = match selection {
         Selection::Own => None,
         Selection::Followed | Selection::Pinned => Some(chosen()),

@@ -72,7 +72,8 @@ fn page_of(count: usize, with_extra: Extra, editing: Editing) -> Element {
                 tabindex: "0",
                 style: "padding:24px; width:260px",
                 onkeydown: move |event: KeyboardEvent| {
-                    spaces.on_key(SwitchChord::Primary, &event);
+                    // The switch reaches the page through `arrived`; the answer only repeats it.
+                    let _ = spaces.on_key(SwitchChord::Primary, &event);
                 },
                 SpaceHead { handle: spaces }
                 p { class: "place", {place()} }

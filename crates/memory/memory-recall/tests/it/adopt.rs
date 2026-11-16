@@ -403,6 +403,10 @@ async fn another_failure_still_fails_the_batch() {
         fn card(&self) -> &EmbedderCard {
             self.0.card()
         }
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async; this implementation has nothing to wait for"
+        )]
         async fn embed(
             &self,
             _: &[String],

@@ -22,7 +22,6 @@ fn fading(motion: Motion) -> Harness {
     thread_local! {
         static MOTION: std::cell::Cell<Motion> = const { std::cell::Cell::new(Motion::Standard) };
     }
-    MOTION.with(|cell| cell.set(motion));
     #[expect(
         non_snake_case,
         reason = "a Dioxus component function is named in CamelCase"
@@ -35,6 +34,7 @@ fn fading(motion: Motion) -> Harness {
             }
         }
     }
+    MOTION.with(|cell| cell.set(motion));
     Harness::new(Fading, HarnessConfig::new(VIEW).with_clock(Clock::Virtual))
 }
 

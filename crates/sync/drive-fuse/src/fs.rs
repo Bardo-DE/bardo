@@ -69,7 +69,7 @@ pub fn errno_of(error: ReadError) -> Errno {
 
 /// The errno a refused change answers.
 #[must_use]
-pub fn write_errno(error: WriteError) -> Errno {
+pub fn write_errno(error: &WriteError) -> Errno {
     match error {
         WriteError::ReadOnly => Errno::EROFS,
         WriteError::NotAllowed => Errno::EPERM,
@@ -79,8 +79,8 @@ pub fn write_errno(error: WriteError) -> Errno {
         WriteError::NotEmpty => Errno::ENOTEMPTY,
         WriteError::Folder => Errno::EISDIR,
         WriteError::NotFolder => Errno::ENOTDIR,
-        WriteError::Read(error) => errno_of(error),
-        _ => Errno::EIO,
+        WriteError::Read(error) => errno_of(*error),
+        WriteError::Cache(_) => Errno::EIO,
     }
 }
 
@@ -278,7 +278,7 @@ impl DriveFs {
                 self.drive
                     .open_write(&id, truncate)
                     .await
-                    .map_err(write_errno)?,
+                    .map_err(|error| write_errno(&error))?,
             )
         } else {
             self.drive.open_file(&id).map_err(errno_of)?;
@@ -298,7 +298,10 @@ impl DriveFs {
             return Err(Errno::EPERM);
         }
         let (folder, name) = self.named(parent, name)?;
-        let (id, write) = self.drive.create(&folder, name).map_err(write_errno)?;
+        let (id, write) = self
+            .drive
+            .create(&folder, name)
+            .map_err(|error| write_errno(&error))?;
         let fh = self.handle(id.clone(), Some(write));
         match self.attr_of(&id) {
             Ok(attr) => Ok((attr, fh)),
@@ -325,7 +328,10 @@ impl DriveFs {
     /// As [`DriveFs::create`].
     pub fn mkdir(&self, parent: u64, name: &OsStr) -> Result<Attr, Errno> {
         let (folder, name) = self.named(parent, name)?;
-        let id = self.drive.make_folder(&folder, name).map_err(write_errno)?;
+        let id = self
+            .drive
+            .make_folder(&folder, name)
+            .map_err(|error| write_errno(&error))?;
         self.attr_of(&id)
     }
 
@@ -340,7 +346,7 @@ impl DriveFs {
             .drive
             .write(write, offset, data)
             .await
-            .map_err(write_errno)?;
+            .map_err(|error| write_errno(&error))?;
         Ok(u32::try_from(n).unwrap_or(u32::MAX))
     }
 
@@ -369,13 +375,15 @@ impl DriveFs {
                 Some(write) => self.drive.truncate(write, size).await,
                 None => self.drive.set_len(&id, size).await,
             }
-            .map_err(write_errno)?;
+            .map_err(|error| write_errno(&error))?;
         }
         if let Some(at) = modified {
             let secs = at
                 .duration_since(UNIX_EPOCH)
                 .map_or(0, |d| i64::try_from(d.as_secs()).unwrap_or(i64::MAX));
-            self.drive.set_modified(&id, secs).map_err(write_errno)?;
+            self.drive
+                .set_modified(&id, secs)
+                .map_err(|error| write_errno(&error))?;
         }
         self.attr_of(&id)
     }
@@ -408,7 +416,7 @@ impl DriveFs {
         self.drive
             .rename(&id, &folder, new_name)
             .await
-            .map_err(write_errno)
+            .map_err(|error| write_errno(&error))
     }
 
     /// Removes the file `name` in `parent`: to the drive's recycle bin.
@@ -417,7 +425,7 @@ impl DriveFs {
     /// `EISDIR` for a folder, `ENOENT` when it is not there.
     pub fn unlink(&self, parent: u64, name: &OsStr) -> Result<(), Errno> {
         let id = self.child(parent, name)?;
-        self.drive.remove(&id).map_err(write_errno)
+        self.drive.remove(&id).map_err(|error| write_errno(&error))
     }
 
     /// Removes the empty folder `name` in `parent`: to the drive's recycle bin.
@@ -426,7 +434,9 @@ impl DriveFs {
     /// `ENOTEMPTY` when it is not empty, `ENOTDIR` for a file.
     pub fn rmdir(&self, parent: u64, name: &OsStr) -> Result<(), Errno> {
         let id = self.child(parent, name)?;
-        self.drive.remove_folder(&id).map_err(write_errno)
+        self.drive
+            .remove_folder(&id)
+            .map_err(|error| write_errno(&error))
     }
 
     /// Makes what was written through `fh` durable here (it is not sent any sooner).
@@ -435,7 +445,7 @@ impl DriveFs {
     /// `EBADF` for a handle not open, `EIO` when the cache could not be written.
     pub fn fsync(&self, fh: u64) -> Result<(), Errno> {
         let id = self.target(fh)?;
-        self.drive.sync(&id).map_err(write_errno)
+        self.drive.sync(&id).map_err(|error| write_errno(&error))
     }
 
     /// `size` bytes of the file open as `fh` from `offset`, waiting for them when they are not

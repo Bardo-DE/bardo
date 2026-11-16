@@ -27,12 +27,18 @@ fn titled(title: &'static str) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Long() -> Element {
     titled(LONG)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Short() -> Element {
     titled("Inbox.png")
 }
@@ -65,6 +71,10 @@ fn a_title_too_long_for_the_titlebar_ends_in_an_ellipsis_in_the_middle() {
         LONG.starts_with(head) && !head.is_empty(),
         "the start stays: {shown:?}"
     );
+    #[expect(
+        clippy::case_sensitive_file_extension_comparisons,
+        reason = "the fixture spells its own extension in lower case"
+    )]
     assert!(
         LONG.ends_with(tail) && tail.ends_with(".png"),
         "the end and the extension stay: {shown:?}"

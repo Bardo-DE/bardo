@@ -109,6 +109,10 @@ impl Embedder for FakeEmbedder {
         &self.card
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to wait for"
+    )]
     async fn embed(
         &self,
         texts: &[String],

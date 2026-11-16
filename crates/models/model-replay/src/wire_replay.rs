@@ -112,7 +112,7 @@ fn finish(status: HttpStatus, end: WireEnd) -> Result<HttpStatus, HttpError> {
 }
 
 fn deliver<K: BodySink>(
-    reply: WireReply,
+    reply: &WireReply,
     ex: &Exchange,
     plan: ChunkPlan,
     sink: &mut K,
@@ -143,7 +143,7 @@ impl Transport for ReplayTransport {
         sink: &mut K,
     ) -> impl Future<Output = Result<HttpStatus, HttpError>> + Send {
         let result = match self.pick(&request_of(ex)) {
-            Ok(reply) => deliver(reply, ex, self.plan, sink),
+            Ok(reply) => deliver(&reply, ex, self.plan, sink),
             Err(_) => Err(HttpError::ReplayMiss),
         };
         std::future::ready(result)

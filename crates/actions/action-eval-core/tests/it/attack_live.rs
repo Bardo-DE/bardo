@@ -46,12 +46,24 @@ body = { kind = "mail_body", v = "t1" }
 "#;
 
 /// What the apps' manifests say, for the actions these tests use: the reads read, the rest act.
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "passed as the `Fn(&ActionRef) -> Option<Effect>` the scoring takes"
+)]
 fn effect_of(action: &ActionRef) -> Option<Effect> {
+    #[expect(
+        clippy::case_sensitive_file_extension_comparisons,
+        reason = "the last part of an action name, not a file name"
+    )]
     let read = action.name.to_string().ends_with(".read");
     Some(if read { Effect::Read } else { Effect::Outbound })
 }
 
 /// The label a sheet gives an action.
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "passed as the `Fn(&ActionRef) -> Option<String>` the sheet labelling takes"
+)]
 fn label_of(action: &ActionRef) -> Option<String> {
     Some(action.name.to_string())
 }

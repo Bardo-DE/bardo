@@ -62,12 +62,12 @@ impl Machine for Hold {
         input: HoldIn,
         at: Stamp,
         params: &HoldParams,
-        lock: &Lock,
+        cx: &Lock,
     ) -> (Hold, Vec<HoldOut>) {
         let held = Hold::Held {
             until: at.after(Ms(params.hold_ms)),
         };
-        match (self, input, lock) {
+        match (self, input, cx) {
             (_, HoldIn::Press, _) => (held, vec![HoldOut::Pressed]),
             (Hold::Held { until }, HoldIn::Tick, Lock::Free) if at >= until => {
                 (Hold::Idle, vec![HoldOut::Released])

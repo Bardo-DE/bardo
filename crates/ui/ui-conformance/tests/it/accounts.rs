@@ -57,7 +57,10 @@ fn provider(key: &str, label: &str) -> ProviderEntry {
     ProviderEntry::new(ProviderKey(key.to_owned()), label, MarkProvider::Imap)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Stage(body: Element) -> Element {
     rsx! {
         Ds { sheet: Some(ui_shell::stylesheet()), appearance: Appearance::default(), material: Material::Sheet,
@@ -68,7 +71,10 @@ fn Stage(body: Element) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn SignIn() -> Element {
     Stage(rsx! {
         SignInForm {
@@ -88,7 +94,10 @@ fn SignIn() -> Element {
     })
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn HostTitled() -> Element {
     Stage(rsx! {
         ProviderList {
@@ -104,7 +113,10 @@ fn HostTitled() -> Element {
     })
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn ConsentInWindow() -> Element {
     Stage(rsx! {
         ConsentBody {
@@ -117,7 +129,10 @@ fn ConsentInWindow() -> Element {
     })
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Consent() -> Element {
     Stage(rsx! {
         ConsentAlert {
@@ -130,7 +145,10 @@ fn Consent() -> Element {
     })
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn ConsentSession() -> Element {
     Stage(rsx! {
         ConsentAlert {
@@ -144,7 +162,10 @@ fn ConsentSession() -> Element {
     })
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Providers() -> Element {
     Stage(rsx! {
         ProviderList {
@@ -159,7 +180,10 @@ fn Providers() -> Element {
     })
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Review() -> Element {
     let names = ["Mail", "Calendar"];
     let services: Vec<ServiceLine> = SERVICES()
@@ -189,7 +213,10 @@ fn Review() -> Element {
     })
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Browser() -> Element {
     Stage(rsx! {
         BrowserWait {
@@ -206,7 +233,10 @@ fn Browser() -> Element {
     })
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Failed() -> Element {
     Stage(rsx! {
         SignInFailed {
@@ -219,7 +249,10 @@ fn Failed() -> Element {
     })
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn FailedNoRetry() -> Element {
     Stage(rsx! {
         SignInFailed {
@@ -236,7 +269,10 @@ fn FailedNoRetry() -> Element {
     })
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Working() -> Element {
     Stage(rsx! {
         SignInWorking { provider: "Fastmail", on_cancel: move |()| LOG.write().push("cancel".to_owned()) }
@@ -337,7 +373,7 @@ fn what_is_typed_reaches_the_host_and_a_password_never_reaches_the_markup() {
     assert_eq!(address, FieldText::Plain("ada@example.org".to_owned()));
     match secret {
         FieldText::Secret(text) => assert_eq!(text.reveal(), SECRET, "the host hears the password"),
-        other => panic!("the password field reports {other:?}"),
+        FieldText::Plain(other) => panic!("the password field reports {other:?}"),
     }
     assert!(
         !harness.html().contains(SECRET),
@@ -644,17 +680,26 @@ fn helper(phase: HelperPhase) -> Element {
     })
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn HelperAsking() -> Element {
     helper(HelperPhase::Ask)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn HelperInstalling() -> Element {
     helper(HelperPhase::Installing)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn HelperFailed() -> Element {
     helper(HelperPhase::Failed {
         reason: "The network is down.".to_owned(),

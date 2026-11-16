@@ -186,6 +186,10 @@ pub(super) fn tag_end(html: &str, start: usize) -> Option<usize> {
     let mut quote: Option<u8> = None;
     while index < bytes.len() {
         let byte = bytes[index];
+        #[expect(
+            clippy::match_same_arms,
+            reason = "inside a quote and outside one both pass the byte on, for different reasons"
+        )]
         match quote {
             Some(q) if byte == q => quote = None,
             Some(_) => {}

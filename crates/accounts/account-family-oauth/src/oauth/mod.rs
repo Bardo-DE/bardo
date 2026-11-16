@@ -67,7 +67,7 @@ impl<R: std::fmt::Debug, H> std::fmt::Debug for OAuthProvider<R, H> {
             .field("rules", &self.rules)
             .field("spec", &self.spec.id)
             .field("env", &self.env)
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 
@@ -113,6 +113,10 @@ impl<R: BrowserIssuer, H: Http + 'static> Provider for OAuthProvider<R, H> {
         Ok(found)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to wait for"
+    )]
     async fn open(
         &self,
         account: &AccountId,

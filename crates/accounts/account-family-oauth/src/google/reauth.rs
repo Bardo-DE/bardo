@@ -30,10 +30,10 @@ mod tests {
     #[test]
     fn a_refusal_is_the_seven_day_rule_only_for_a_client_in_testing_and_old_enough() {
         const DAY: i64 = 86_400;
-        let now = UnixSeconds(100 * DAY);
-        let at = |days_ago: i64| Some(UnixSeconds(now.0 - days_ago * DAY));
         const T: bool = true;
         const V: bool = false;
+        let now = UnixSeconds(100 * DAY);
+        let at = |days_ago: i64| Some(UnixSeconds(now.0 - days_ago * DAY));
         let seven = Some(ReauthReason::TestingAppExpired);
         let cases = [
             ("testing, a week old", T, at(7), seven),

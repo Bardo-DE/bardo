@@ -188,6 +188,12 @@ fn PressApp() -> Element {
 
 #[test]
 fn a_right_click_reports_a_secondary_press() {
+    // (button, what the handler heard)
+    const CASES: &[(PointerButton, &str)] = &[
+        (PointerButton::Secondary, "Secondary"),
+        (PointerButton::Primary, "Primary"),
+        (PointerButton::Middle, "Middle"),
+    ];
     let mut harness = Harness::new(
         PressApp,
         HarnessConfig::new(VIEW).with_clock(Clock::Virtual),
@@ -195,12 +201,6 @@ fn a_right_click_reports_a_secondary_press() {
     let seen = |harness: &Harness| harness.text_of(".seen").unwrap_or_default();
     assert_eq!(harness.attr(".ds-button", "id").as_deref(), Some("tray-0"));
     let icon = centre(&harness, "#tray-0");
-    // (button, what the handler heard)
-    const CASES: &[(PointerButton, &str)] = &[
-        (PointerButton::Secondary, "Secondary"),
-        (PointerButton::Primary, "Primary"),
-        (PointerButton::Middle, "Middle"),
-    ];
     for &(button, want) in CASES {
         harness.send(Input::press(icon, button));
         assert_eq!(seen(&harness), want, "{button:?} on the icon button");

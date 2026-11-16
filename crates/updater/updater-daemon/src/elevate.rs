@@ -15,7 +15,7 @@ use updater_root::apply::ExitCode;
 
 /// How long a helper run may take before the service stops waiting: an install of a large bundle takes
 /// minutes, and a password prompt waits for a person.
-pub const HELPER_PATIENCE: Duration = Duration::from_secs(30 * 60);
+pub const HELPER_PATIENCE: Duration = Duration::from_mins(30);
 /// How often the service looks whether the helper has finished.
 const POLL: Duration = Duration::from_millis(100);
 /// The most of the helper's output kept; the rest is read and dropped so it never blocks on a full pipe.
@@ -106,7 +106,7 @@ struct Finished {
     err: String,
 }
 
-fn failure(why: impl ToString) -> ApplyFailure {
+fn failure(why: &impl ToString) -> ApplyFailure {
     ApplyFailure {
         code: None,
         detail: why.to_string(),
@@ -164,16 +164,18 @@ impl Pkexec {
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             .spawn()
-            .map_err(failure)?;
+            .map_err(|error| failure(&error))?;
         let out = drain(child.stdout.take());
         let err = drain(child.stderr.take());
-        let Some(status) = wait_within(&mut child, self.patience).map_err(failure)? else {
+        let Some(status) =
+            wait_within(&mut child, self.patience).map_err(|error| failure(&error))?
+        else {
             // The helper may be a root process we cannot signal; stop waiting either way.
             let _ = child.kill();
             std::thread::spawn(move || {
                 let _ = child.wait();
             });
-            return Err(failure("the update helper did not finish in time"));
+            return Err(failure(&"the update helper did not finish in time"));
         };
         Ok(Finished {
             status,

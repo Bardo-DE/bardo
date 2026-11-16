@@ -17,6 +17,10 @@ const VIEW: Viewport = Viewport {
 };
 
 #[derive(Clone, Copy)]
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "one flag per axis of the combinations the tests walk; a state machine would hide which axis a case varies"
+)]
 struct Setup {
     top_hit: bool,
     clear_first: bool,

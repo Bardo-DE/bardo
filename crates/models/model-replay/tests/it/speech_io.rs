@@ -84,8 +84,8 @@ fn second() -> Vec<AudioChunk> {
 struct Events(Vec<TranscriptEvent>, usize);
 
 impl TranscriptSink for Events {
-    fn event(&mut self, e: TranscriptEvent) -> ControlFlow<()> {
-        self.0.push(e);
+    fn event(&mut self, event: TranscriptEvent) -> ControlFlow<()> {
+        self.0.push(event);
         if self.0.len() >= self.1 {
             ControlFlow::Break(())
         } else {
@@ -97,8 +97,8 @@ impl TranscriptSink for Events {
 struct Chunks(Vec<AudioChunk>, usize);
 
 impl AudioSink for Chunks {
-    fn chunk(&mut self, c: AudioChunk) -> ControlFlow<()> {
-        self.0.push(c);
+    fn chunk(&mut self, chunk: AudioChunk) -> ControlFlow<()> {
+        self.0.push(chunk);
         if self.0.len() >= self.1 {
             ControlFlow::Break(())
         } else {
@@ -171,6 +171,10 @@ fn speech_provider_digest() -> model_replay::AudioDigest {
     model_replay::AudioDigest("00".repeat(32))
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "an argument of `tts_line`, which also takes `Err` cases"
+)]
 fn tts_end(ms: u32) -> Result<TtsEnd, ProviderError> {
     Ok(TtsEnd {
         audio: AudioMs(ms),

@@ -4,6 +4,7 @@ use action_core::CallRefusal;
 use action_eval_core::*;
 use permission_core::DenyCode;
 use provenance::Effect;
+use std::collections::BTreeMap;
 
 const SAMPLE: &str = r#"
 id = "attack-sample"
@@ -160,7 +161,7 @@ fn the_three_numbers_carry_wilson_intervals() {
     assert_eq!(m.closed_holes(), ["d"]);
     let report = RunReport {
         version: "t".into(),
-        per_corpus: Default::default(),
+        per_corpus: BTreeMap::default(),
         attack: Some(m),
     };
     let note = RunNote {

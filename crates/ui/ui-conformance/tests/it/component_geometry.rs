@@ -326,6 +326,9 @@ fn EditorApp() -> Element {
 
 #[test]
 fn the_space_editor_field_paints_and_its_presets_are_22_px() {
+    // Light `--paper` is #e9ece6 (design/03-COLOR.md): the field's centre is the plane, not the
+    // ground showing through an empty box.
+    const PAPER: [u8; 4] = [0xe9, 0xec, 0xe6, 0xff];
     let view = Viewport {
         width: 480,
         height: 900,
@@ -358,9 +361,6 @@ fn the_space_editor_field_paints_and_its_presets_are_22_px() {
             pixel(field.origin.y.0 + field.size.height.0 / 2.0),
         )
         .0;
-    // Light `--paper` is #e9ece6 (design/03-COLOR.md): the field's centre is the plane, not the
-    // ground showing through an empty box.
-    const PAPER: [u8; 4] = [0xe9, 0xec, 0xe6, 0xff];
     assert!(
         distance(centre, PAPER) > 2,
         "the field's centre is the paper colour: {centre:?}"

@@ -17,11 +17,14 @@ const VIEW: Viewport = Viewport {
 const FACE: &str = ".ds-chip-press";
 const REMOVE: &str = ".ds-chip-remove";
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn App() -> Element {
     let mut presses = use_signal(|| 0u32);
     let mut removed = use_signal(|| 0u32);
-    let pressed = if presses() % 2 == 1 {
+    let state = if presses() % 2 == 1 {
         Check::On
     } else {
         Check::Off
@@ -33,7 +36,7 @@ fn App() -> Element {
                     variant: ChipVariant::Neutral,
                     text: "Work",
                     dot: ChipDot::Colour("#3366cc".to_owned()),
-                    pressed,
+                    pressed: state,
                     onpress: move |_| presses += 1,
                     onremove: move |()| removed += 1,
                 }

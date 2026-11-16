@@ -553,9 +553,9 @@ impl<P, C: SpeechCassetteSink> RecordingSpeech<P, C> {
         Self { inner, sink }
     }
 
-    fn write(&self, line: SpeechInteraction) -> Result<(), ProviderError> {
+    fn write(&self, line: &SpeechInteraction) -> Result<(), ProviderError> {
         self.sink
-            .write(&line)
+            .write(line)
             .ok()
             .ok_or_else(|| ProviderError::Unreadable("the cassette sink refused the write".into()))
     }
@@ -624,7 +624,7 @@ impl<P: SpeechToText, C: SpeechCassetteSink> SpeechToText for RecordingSpeech<P,
             .inner
             .transcribe(request, &mut source, &mut events)
             .await;
-        self.write(SpeechInteraction::Stt {
+        self.write(&SpeechInteraction::Stt {
             request: SttPrint::of(request, &source.seen),
             events: events.seen,
             end: end.clone(),
@@ -648,7 +648,7 @@ impl<P: TextToSpeech, C: SpeechCassetteSink> TextToSpeech for RecordingSpeech<P,
             seen: Vec::new(),
         };
         let end = self.inner.speak(request, &mut tee).await;
-        self.write(SpeechInteraction::Tts {
+        self.write(&SpeechInteraction::Tts {
             request: TtsPrint::of(request),
             audio: AudioPrint::of(&tee.seen),
             end: end.clone(),

@@ -34,13 +34,17 @@ fn a_complete_honest_bundle_passes() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of the ways a bundle can lie, a row each"
+)]
 fn every_way_a_bundle_can_lie_is_caught() {
-    let release = release();
     type Case = (
         &'static str,
         fn(&mut Audit<'_>) -> Result<(), AuditError>,
         fn(&AuditError) -> bool,
     );
+    let release = release();
     let table: Vec<Case> = vec![
         (
             "extra file",

@@ -118,6 +118,10 @@ impl BrowserIssuer for Standard {
         ))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to wait for"
+    )]
     async fn discover<H: Http + 'static>(
         &self,
         session: &OAuthSession<Self, H>,

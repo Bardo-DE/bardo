@@ -49,6 +49,7 @@ impl MemoryReplica {
 
     /// The same replica with room for `limit` bytes: a write that would pass it is refused
     /// `PutRefused::Quota`, and `quota` reports it as the total.
+    #[must_use]
     pub fn with_limit(self, limit: Bytes) -> Self {
         Self {
             limit: Some(limit),
@@ -130,6 +131,10 @@ impl State {
 }
 
 impl Replica for MemoryReplica {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to wait for"
+    )]
     async fn changes(&self, from: Cursor) -> Result<ChangePage, ReplicaError> {
         let state = self.state();
         match from {
@@ -151,6 +156,10 @@ impl Replica for MemoryReplica {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to wait for"
+    )]
     async fn fetch(&self, item: &RemoteId, range: ByteRange) -> Result<Blob, ReplicaError> {
         let state = self.state();
         let (_, Blob(bytes)) = state.live.get(item).ok_or(ReplicaError::Gone)?;
@@ -172,6 +181,10 @@ impl Replica for MemoryReplica {
         Ok(Blob(slice.to_vec()))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to wait for"
+    )]
     async fn put(
         &self,
         item: PutItem,
@@ -219,6 +232,10 @@ impl Replica for MemoryReplica {
         Ok((id, version))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to wait for"
+    )]
     async fn remove(
         &self,
         item: &RemoteId,
@@ -238,6 +255,10 @@ impl Replica for MemoryReplica {
         Ok(version)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to wait for"
+    )]
     async fn quota(&self) -> Result<Quota, ReplicaError> {
         Ok(Quota {
             used: Bytes(self.state().used()),

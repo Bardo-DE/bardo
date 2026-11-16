@@ -261,8 +261,10 @@ impl<R: BrowserIssuer, H: Http + 'static> Flow for BrowserFlow<R, H> {
     async fn resume(
         &mut self,
         browser: Browser,
-        _input: account_sheet::SignInInput,
+        input: account_sheet::SignInInput,
     ) -> Move<Browser> {
+        // The browser drives the flow; nothing the person types is read.
+        let _ = input;
         self.await_browser(browser).await.unwrap_or_else(Move::Fail)
     }
 }
@@ -272,8 +274,7 @@ pub(crate) fn exchange_fault(fault: ExchangeFault) -> SignInFault {
     match fault {
         ExchangeFault::Refused => SignInFault::Refused,
         ExchangeFault::Unreachable => SignInFault::Unreachable,
-        // unreadable, and a fault a later account-oauth adds
-        _ => SignInFault::Unreadable,
+        ExchangeFault::Unreadable => SignInFault::Unreadable,
     }
 }
 

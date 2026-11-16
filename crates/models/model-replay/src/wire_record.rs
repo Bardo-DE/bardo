@@ -120,7 +120,7 @@ fn body_of(kind: BodyKind, framing: Framing, bytes: &[u8]) -> WireBody {
 
 /// `Reset` when the connection failed after the head, `Cut` when the caller stopped reading,
 /// `Complete` otherwise (a `Rejected` answer is a complete reply with a failing head).
-fn end_of(result: &Result<HttpStatus, HttpError>, consumer: Consumer) -> WireEnd {
+fn end_of(result: Result<HttpStatus, HttpError>, consumer: Consumer) -> WireEnd {
     match (result, consumer) {
         (Ok(_) | Err(HttpError::Rejected), Consumer::Reading) => WireEnd::Complete,
         (Ok(_) | Err(HttpError::Rejected), Consumer::Stopped) => WireEnd::Cut,
@@ -147,7 +147,7 @@ impl<T: Transport, S: WireSink> Transport for RecordingTransport<T, S> {
                 reply: WireReply {
                     head: head_print(head),
                     body: body_of(head.body, ex.framing, &tee.bytes),
-                    end: end_of(&result, tee.consumer),
+                    end: end_of(result, tee.consumer),
                 },
             };
             self.sink.write(&recorded).ok().ok_or(HttpError::Broken)?;

@@ -22,7 +22,10 @@ fn plain(c: char) -> Chord {
     Chord::new(ChordModifiers::empty(), ChordKey::Char(c))
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut shortcut = use_signal(|| Some(plain('j')));
     let mut log = use_signal(String::new);
@@ -42,7 +45,7 @@ fn Page() -> Element {
                     match recorded {
                         ShortcutRecorded::Chord(chord) => shortcut.set(Some(chord)),
                         ShortcutRecorded::Cleared => shortcut.set(None),
-                        _ => {}
+                        ShortcutRecorded::Cancelled => {}
                     }
                 },
             }

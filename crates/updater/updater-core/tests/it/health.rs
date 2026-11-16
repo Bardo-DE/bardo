@@ -16,12 +16,12 @@ fn login(boot: &str, session: &str) -> LoginSession {
 
 /// A marker at `version`, `stage`, last set in `set_in` (None for a marker written before the
 /// login was recorded).
-fn pending(version: &str, stage: PendingStage, set_in: Option<LoginSession>) -> Option<Pending> {
-    Some(Pending {
+fn pending(version: &str, stage: PendingStage, set_in: Option<LoginSession>) -> Pending {
+    Pending {
         version: v(version),
         stage,
         session: set_in,
-    })
+    }
 }
 
 /// name, current, pending marker, confirmed, whether a previous release exists, the login this
@@ -37,6 +37,10 @@ type Row<'a> = (
 );
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of start-up cases, a row each"
+)]
 fn the_start_up_decision_table() {
     use PendingStage::{AwaitingFirstLogin as First, FirstLoginSeen as Seen};
     use Restore::{Impossible, Possible};
@@ -53,7 +57,7 @@ fn the_start_up_decision_table() {
         (
             "first start after install, in a later login",
             Some("0.2.0"),
-            pending("0.2.0", First, Some(login("b1", "3"))),
+            Some(pending("0.2.0", First, Some(login("b1", "3")))),
             None,
             Possible,
             login("b1", "4"),
@@ -62,7 +66,7 @@ fn the_start_up_decision_table() {
         (
             "first start after install, after a reboot",
             Some("0.2.0"),
-            pending("0.2.0", First, Some(login("b1", "3"))),
+            Some(pending("0.2.0", First, Some(login("b1", "3")))),
             None,
             Possible,
             login("b2", "3"),
@@ -71,7 +75,7 @@ fn the_start_up_decision_table() {
         (
             "daemon restarted in the session that installed",
             Some("0.2.0"),
-            pending("0.2.0", First, Some(login("b1", "3"))),
+            Some(pending("0.2.0", First, Some(login("b1", "3")))),
             None,
             Possible,
             login("b1", "3"),
@@ -80,7 +84,7 @@ fn the_start_up_decision_table() {
         (
             "marker from before the login was recorded, first start",
             Some("0.2.0"),
-            pending("0.2.0", First, None),
+            Some(pending("0.2.0", First, None)),
             None,
             Possible,
             login("b1", "3"),
@@ -89,7 +93,7 @@ fn the_start_up_decision_table() {
         (
             "second login, never confirmed",
             Some("0.2.0"),
-            pending("0.2.0", Seen, Some(login("b1", "4"))),
+            Some(pending("0.2.0", Seen, Some(login("b1", "4")))),
             None,
             Possible,
             login("b1", "5"),
@@ -98,7 +102,7 @@ fn the_start_up_decision_table() {
         (
             "second login, never confirmed, nothing to restore",
             Some("0.2.0"),
-            pending("0.2.0", Seen, Some(login("b1", "4"))),
+            Some(pending("0.2.0", Seen, Some(login("b1", "4")))),
             None,
             Impossible,
             login("b1", "5"),
@@ -107,7 +111,7 @@ fn the_start_up_decision_table() {
         (
             "daemon restarted in the first login, not confirmed yet",
             Some("0.2.0"),
-            pending("0.2.0", Seen, Some(login("b1", "4"))),
+            Some(pending("0.2.0", Seen, Some(login("b1", "4")))),
             None,
             Possible,
             login("b1", "4"),
@@ -116,7 +120,7 @@ fn the_start_up_decision_table() {
         (
             "daemon restarted in the first login, nothing to restore",
             Some("0.2.0"),
-            pending("0.2.0", Seen, Some(login("b1", "4"))),
+            Some(pending("0.2.0", Seen, Some(login("b1", "4")))),
             None,
             Impossible,
             login("b1", "4"),
@@ -125,7 +129,7 @@ fn the_start_up_decision_table() {
         (
             "same session number after a reboot is another login",
             Some("0.2.0"),
-            pending("0.2.0", Seen, Some(login("b1", "4"))),
+            Some(pending("0.2.0", Seen, Some(login("b1", "4")))),
             None,
             Possible,
             login("b2", "4"),
@@ -134,7 +138,7 @@ fn the_start_up_decision_table() {
         (
             "no session numbers, same boot: cannot tell, so wait",
             Some("0.2.0"),
-            pending("0.2.0", Seen, Some(login("b1", ""))),
+            Some(pending("0.2.0", Seen, Some(login("b1", "")))),
             None,
             Possible,
             login("b1", ""),
@@ -143,7 +147,7 @@ fn the_start_up_decision_table() {
         (
             "no session numbers, another boot",
             Some("0.2.0"),
-            pending("0.2.0", Seen, Some(login("b1", ""))),
+            Some(pending("0.2.0", Seen, Some(login("b1", "")))),
             None,
             Possible,
             login("b2", ""),
@@ -152,7 +156,7 @@ fn the_start_up_decision_table() {
         (
             "boot unknown: the same login is not provable",
             Some("0.2.0"),
-            pending("0.2.0", Seen, Some(login("", "4"))),
+            Some(pending("0.2.0", Seen, Some(login("", "4")))),
             None,
             Possible,
             login("", "4"),
@@ -161,7 +165,7 @@ fn the_start_up_decision_table() {
         (
             "marker from before the login was recorded, second start",
             Some("0.2.0"),
-            pending("0.2.0", Seen, None),
+            Some(pending("0.2.0", Seen, None)),
             None,
             Possible,
             login("b1", "4"),
@@ -170,7 +174,7 @@ fn the_start_up_decision_table() {
         (
             "confirmed in the first session",
             Some("0.2.0"),
-            pending("0.2.0", Seen, Some(login("b1", "4"))),
+            Some(pending("0.2.0", Seen, Some(login("b1", "4")))),
             Some("0.2.0"),
             Possible,
             login("b1", "5"),
@@ -179,7 +183,7 @@ fn the_start_up_decision_table() {
         (
             "confirmed before the first start",
             Some("0.2.0"),
-            pending("0.2.0", First, Some(login("b1", "3"))),
+            Some(pending("0.2.0", First, Some(login("b1", "3")))),
             Some("0.2.0"),
             Possible,
             login("b1", "4"),
@@ -188,7 +192,7 @@ fn the_start_up_decision_table() {
         (
             "confirmed, in the same login",
             Some("0.2.0"),
-            pending("0.2.0", Seen, Some(login("b1", "4"))),
+            Some(pending("0.2.0", Seen, Some(login("b1", "4")))),
             Some("0.2.0"),
             Possible,
             login("b1", "4"),
@@ -197,7 +201,7 @@ fn the_start_up_decision_table() {
         (
             "an older version was confirmed",
             Some("0.2.0"),
-            pending("0.2.0", Seen, Some(login("b1", "4"))),
+            Some(pending("0.2.0", Seen, Some(login("b1", "4")))),
             Some("0.1.0"),
             Possible,
             login("b1", "5"),
@@ -206,7 +210,7 @@ fn the_start_up_decision_table() {
         (
             "marker for another version (someone switched by hand)",
             Some("0.1.0"),
-            pending("0.2.0", Seen, Some(login("b1", "4"))),
+            Some(pending("0.2.0", Seen, Some(login("b1", "4")))),
             None,
             Possible,
             login("b1", "4"),
@@ -215,7 +219,7 @@ fn the_start_up_decision_table() {
         (
             "nothing installed",
             None,
-            pending("0.2.0", First, Some(login("b1", "3"))),
+            Some(pending("0.2.0", First, Some(login("b1", "3")))),
             None,
             Impossible,
             login("b1", "4"),

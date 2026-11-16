@@ -45,7 +45,7 @@ pub(crate) fn fault(status: u16) -> ProviderError {
 pub(crate) fn failure(failure: Failure) -> ProviderError {
     match failure {
         Failure::Status(status) => fault(status),
-        _ => ProviderError::Unreadable,
+        Failure::Unreadable => ProviderError::Unreadable,
     }
 }
 

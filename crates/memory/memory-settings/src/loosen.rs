@@ -92,7 +92,7 @@ pub(crate) fn shipped_text(key: &str) -> Option<String> {
     let text = match key {
         AT_REST => match shipped.at_rest {
             VaultKind::Plain => "plain".to_owned(),
-            _ => "sealed".to_owned(),
+            VaultKind::Sealed => "sealed".to_owned(),
         },
         APPLY => match shipped.apply {
             ConsolidateApply::Auto => "auto".to_owned(),

@@ -46,7 +46,7 @@ fn select(harness: &mut Harness, selection: bool) {
 }
 
 /// The luminance of a pixel, 0 to 255.
-fn luma(pixel: &image::Rgba<u8>) -> i32 {
+fn luma(pixel: image::Rgba<u8>) -> i32 {
     let [r, g, b, _] = pixel.0;
     (299 * i32::from(r) + 587 * i32::from(g) + 114 * i32::from(b)) / 1000
 }
@@ -63,10 +63,10 @@ fn ink_against_ground(harness: &mut Harness) -> i32 {
         x0 + pixel(rect.size.width.0),
         y0 + pixel(rect.size.height.0),
     );
-    let ground = luma(image.get_pixel(x0.saturating_sub(2), y0.saturating_sub(2)));
+    let ground = luma(*image.get_pixel(x0.saturating_sub(2), y0.saturating_sub(2)));
     let image = &image;
     (x0..x1)
-        .flat_map(|x| (y0..y1).map(move |y| luma(image.get_pixel(x, y)) - ground))
+        .flat_map(|x| (y0..y1).map(move |y| luma(*image.get_pixel(x, y)) - ground))
         .max_by_key(|delta| delta.abs())
         .unwrap_or(0)
 }

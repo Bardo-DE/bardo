@@ -32,6 +32,10 @@ fn refused(name: &str, mutate: Mutate, expect: Expect) {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of hostile releases, a row each"
+)]
 fn hostile_and_broken_releases_are_refused_for_the_right_reason() {
     let table: Vec<(&str, Mutate, Expect)> = vec![
         (

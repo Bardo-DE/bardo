@@ -153,6 +153,10 @@ fn a_name_is_cut_from_the_middle_to_its_room_and_keeps_its_extension() {
     let harness = harness();
     let shown = harness.text_of(".ds-name-text").expect("a name");
     assert_eq!(shown.chars().count(), 14, "{shown}");
+    #[expect(
+        clippy::case_sensitive_file_extension_comparisons,
+        reason = "the fixture spells its own extension in lower case"
+    )]
     assert!(shown.contains('…') && shown.ends_with(".png"), "{shown}");
     assert_eq!(
         harness.attr(".ds-name-text", "aria-label").as_deref(),

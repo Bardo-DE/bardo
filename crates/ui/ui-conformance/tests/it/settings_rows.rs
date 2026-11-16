@@ -120,7 +120,7 @@ struct SideProps {
     size: SidebarSize,
 }
 
-fn side_app(props: SideProps) -> Element {
+fn side_app(props: &SideProps) -> Element {
     let mut here = use_signal(|| "a");
     let items: Vec<ListItem<&'static str>> = [
         ("a", "Inbox", RowLeading::Icon(Icon::Inbox)),
@@ -155,17 +155,17 @@ fn side_app(props: SideProps) -> Element {
 }
 
 fn small() -> Element {
-    side_app(SideProps {
+    side_app(&SideProps {
         size: SidebarSize::Small,
     })
 }
 fn medium() -> Element {
-    side_app(SideProps {
+    side_app(&SideProps {
         size: SidebarSize::Medium,
     })
 }
 fn large() -> Element {
-    side_app(SideProps {
+    side_app(&SideProps {
         size: SidebarSize::Large,
     })
 }

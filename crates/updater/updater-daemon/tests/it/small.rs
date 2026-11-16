@@ -282,7 +282,7 @@ fn the_state_file_round_trips_and_is_replaced_whole() {
     std::fs::write(dir.path().join("deep/state.toml"), "this is not toml [").expect("garble");
     assert_eq!(
         store.load(),
-        Default::default(),
+        updater_daemon::state::UserState::default(),
         "a damaged memory is an empty one"
     );
 }

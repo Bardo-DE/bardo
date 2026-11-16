@@ -98,11 +98,13 @@ impl<H: Http> OAuthEnv<H> {
     }
 
     /// With this clock.
+    #[must_use]
     pub fn with_clock(self, clock: Clock) -> Self {
         Self { clock, ..self }
     }
 
     /// With this randomness.
+    #[must_use]
     pub fn with_random(self, random: Random) -> Self {
         Self { random, ..self }
     }
@@ -158,6 +160,10 @@ mod tests {
     struct Nowhere;
 
     impl Http for Nowhere {
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async; this implementation has nothing to wait for"
+        )]
         async fn send(&self, _: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
             Err(HttpError::Unreachable)
         }
