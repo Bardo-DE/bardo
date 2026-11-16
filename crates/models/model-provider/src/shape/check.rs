@@ -10,9 +10,12 @@ use crate::{FieldName, JsonText, Shape, ShapeFault, ShapeKind};
 
 impl Shape {
     pub(crate) fn check_json(&self, json: &JsonText) -> Result<(), ShapeFault> {
-        let value: Value = serde_json::from_str(json.as_str())
-            .ok()
-            .ok_or(ShapeFault::NotJson)?;
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "a shape fault never carries the reply: the model's text may be untrusted"
+        )]
+        let parsed = serde_json::from_str(json.as_str()).map_err(|_| ShapeFault::NotJson);
+        let value: Value = parsed?;
         self.check_value(&value, &root())
     }
 

@@ -3,8 +3,8 @@
 use core::marker::PhantomData;
 
 use model_provider::{
-    Extract, JsonText, Message, OutputShape, Part, Role, SchemaDialect, Shape, ShapeFault,
-    StopReason, ToolCall, ToolChoice, ToolName, ToolSpec, TurnEnd, TurnRequest,
+    Extract, JsonError, JsonText, Message, OutputShape, Part, Role, SchemaDialect, Shape,
+    ShapeFault, StopReason, ToolCall, ToolChoice, ToolName, ToolSpec, TurnEnd, TurnRequest,
 };
 
 use crate::ExtractMode;
@@ -198,9 +198,9 @@ impl Machine {
             ExtractMode::Native(OutputShape::Choice(_) | OutputShape::Regex(_)) => {
                 bare_value(shape, text)
             }
-            ExtractMode::Native(_) | ExtractMode::Prompted => JsonText::new(unfenced(text))
-                .ok()
-                .ok_or(ShapeFault::NotJson),
+            ExtractMode::Native(_) | ExtractMode::Prompted => {
+                not_json(JsonText::new(unfenced(text)))
+            }
         }
     }
 }
@@ -233,7 +233,16 @@ fn bare_value(shape: &Shape, text: &str) -> Result<JsonText, ShapeFault> {
         Shape::Choice(_) => serde_json::Value::String(text.to_owned()).to_string(),
         _ => text.to_owned(),
     };
-    JsonText::new(json).ok().ok_or(ShapeFault::NotJson)
+    not_json(JsonText::new(json))
+}
+
+/// A reply that is not JSON, as a fault that names no part of it.
+#[expect(
+    clippy::map_err_ignore,
+    reason = "a shape fault never carries the reply: the model's text may be untrusted"
+)]
+fn not_json(parsed: Result<JsonText, JsonError>) -> Result<JsonText, ShapeFault> {
+    parsed.map_err(|_| ShapeFault::NotJson)
 }
 
 /// `text` without one surrounding Markdown code fence, which models add to a JSON reply.

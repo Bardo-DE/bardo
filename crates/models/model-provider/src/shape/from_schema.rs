@@ -27,13 +27,14 @@
 //! is a `SchemaRefusal`.
 
 use core::fmt;
+use std::sync::Arc;
 
 use serde_json::{Map, Value};
 
 mod tagged;
 use tagged::tagged;
 
-use crate::{CharCount, ChoiceText, Count, Field, FieldName, SchemaText, Shape};
+use crate::{CharCount, ChoiceText, Count, Field, FieldName, IdentError, SchemaText, Shape};
 
 /// What a schema may leave open, and how deep it may nest. Settings the daemon reads: no default
 /// lives here.
@@ -92,13 +93,26 @@ pub enum Refused {
     TooDeep,
 }
 
-/// A schema the vocabulary cannot say, and where.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+/// A schema the vocabulary cannot say, and where. Two refusals are equal when they refuse the
+/// same place for the same reason (the error behind one, when there is one, is not compared).
+#[derive(Debug, Clone, thiserror::Error)]
 #[error("{at}: {why}")]
 pub struct SchemaRefusal {
     pub at: SchemaPath,
     pub why: Refused,
+    /// The error that made this refusal, when another one did (a text that is not JSON, a
+    /// property name that is not one).
+    #[source]
+    pub cause: Option<Arc<dyn std::error::Error + Send + Sync>>,
 }
+
+impl PartialEq for SchemaRefusal {
+    fn eq(&self, other: &Self) -> bool {
+        self.at == other.at && self.why == other.why
+    }
+}
+
+impl Eq for SchemaRefusal {}
 
 const ANNOTATIONS: &[&str] = &[
     "title",
@@ -151,6 +165,7 @@ impl Node {
         SchemaRefusal {
             at: SchemaPath(self.at.clone()),
             why,
+            cause: None,
         }
     }
 
@@ -203,11 +218,11 @@ impl Shape {
         schema: &SchemaText,
         limits: SchemaLimits,
     ) -> Result<Shape, SchemaRefusal> {
-        let value: Value = serde_json::from_str(schema.0.as_str())
-            .ok()
-            .ok_or_else(|| SchemaRefusal {
+        let value: Value =
+            serde_json::from_str(schema.0.as_str()).map_err(|error| SchemaRefusal {
                 at: SchemaPath(String::new()),
                 why: Refused::NotJson,
+                cause: Some(Arc::new(error)),
             })?;
         read(Node::open(&value, String::new(), limits.depth.0, limits)?)
     }
@@ -383,7 +398,7 @@ fn object(node: &mut Node) -> Found<Shape> {
         .map(|(name, schema)| {
             let name_ok = FieldName::new(name.clone());
             let child = node.child(schema, &["properties", name])?;
-            let name = name_ok.ok().ok_or_else(|| child.refuse(Refused::BadName))?;
+            let name = name_ok.map_err(|IdentError| child.refuse(Refused::BadName))?;
             let shape = read(child)?;
             let shape = match shape {
                 optional @ Shape::Optional(_) => optional,

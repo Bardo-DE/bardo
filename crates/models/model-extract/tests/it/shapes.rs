@@ -9,11 +9,14 @@ impl Extract for Verdict {
         Shape::Choice(vec![ChoiceText("allow".into()), ChoiceText("deny".into())])
     }
 
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "a shape fault never carries the reply: the model's text may be untrusted"
+    )]
     fn read(json: &JsonText) -> Result<Self, ShapeFault> {
         serde_json::from_str(json.as_str())
-            .ok()
             .map(Verdict)
-            .ok_or(ShapeFault::NotJson)
+            .map_err(|_| ShapeFault::NotJson)
     }
 }
 
