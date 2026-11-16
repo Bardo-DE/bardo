@@ -10,9 +10,9 @@ use action_gate::brief_sheet::is_brief_confirm;
 use action_gate::call::{CallEvent, CallState};
 use action_gate::driven::{Next, Run};
 use action_gate::prepared::{Prepared, grants_for};
-use action_vocab::{UndoId};
-use base_time::Clock as _;
+use action_vocab::UndoId;
 use agent_session::{CallOpen, SessionEntry};
+use base_time::Clock as _;
 use provenance::{Actor, AgentRole, SessionId};
 
 /// A ledger checkpoint is written when the session has made a multiple of this many calls.

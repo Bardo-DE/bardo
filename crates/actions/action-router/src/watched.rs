@@ -24,9 +24,9 @@ use action_context::state::{SessionKind, SessionRecord};
 use action_context::wal::Wal;
 use action_core::Rewind;
 use action_vocab::{CallRequest, CallerRole, TurnId, Workspace};
-use base_time::Clock as _;
 use action_wire::{CallerId, IntentsReply, IntentsRequest, WireRefusal};
 use agent_session::{BackendKind, Opening, SessionEntry};
+use base_time::Clock as _;
 use companion_model::{WatchOwner, WatchedAgent, Watching};
 use provenance::{Actor, AgentRef, SessionId, SpaceId, TaskId};
 

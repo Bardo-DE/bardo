@@ -21,9 +21,9 @@ use action_gate::prepared::grant_state;
 use action_gate_wire::{CuaAsk, GateAnswer};
 use action_manifest::{AgentReach, Lasting};
 use action_vocab::{Clock, Depth, LabelText, Origin};
-use base_time::Clock as _;
 use action_wire::{GrantAnswer, GrantAsk, IntentsReply};
 use base_ids::Count;
+use base_time::Clock as _;
 use permission_core::{
     ActionGrantKey, AskReason, GrantCaller, GrantTarget, Impact, Level, LimitCall, SessionSaw,
     SinkIntegrity,
