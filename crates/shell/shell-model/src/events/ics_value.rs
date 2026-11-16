@@ -7,14 +7,32 @@ use super::ics::IcsTime;
 use super::ics_line::ContentLine;
 
 /// Why an iCalendar value could not be read.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub(super) enum ValueError {
     #[error("not a date: {0:?}")]
     Date(String),
+    #[error("not a date: {value:?}")]
+    DateField {
+        value: String,
+        #[source]
+        source: Box<dyn std::error::Error + Send + Sync>,
+    },
     #[error("not a date-time: {0:?}")]
     DateTime(String),
+    #[error("not a date-time: {value:?}")]
+    DateTimeField {
+        value: String,
+        #[source]
+        source: Box<dyn std::error::Error + Send + Sync>,
+    },
     #[error("not a duration: {0:?}")]
     Duration(String),
+    #[error("not a duration: {value:?}")]
+    DurationNumber {
+        value: String,
+        #[source]
+        source: std::num::ParseIntError,
+    },
     #[error("{value:?}: {error}")]
     Zone { value: String, error: String },
 }
@@ -79,17 +97,24 @@ pub(super) fn parse_date(value: &str) -> Result<Date, ValueError> {
     if value.len() != 8 {
         return Err(bad());
     }
-    let year = i16::try_from(digits(0, 4)?).ok().ok_or_else(bad)?;
-    let month = i8::try_from(digits(4, 6)?).ok().ok_or_else(bad)?;
-    let day = i8::try_from(digits(6, 8)?).ok().ok_or_else(bad)?;
-    Date::new(year, month, day).ok().ok_or_else(bad)
+    let field = |source: Box<dyn std::error::Error + Send + Sync>| ValueError::DateField {
+        value: value.to_owned(),
+        source,
+    };
+    let year = i16::try_from(digits(0, 4)?).map_err(|e| field(Box::new(e)))?;
+    let month = i8::try_from(digits(4, 6)?).map_err(|e| field(Box::new(e)))?;
+    let day = i8::try_from(digits(6, 8)?).map_err(|e| field(Box::new(e)))?;
+    Date::new(year, month, day).map_err(|e| field(Box::new(e)))
 }
 
 /// `20260927T090000` (a leap second read as :59).
 pub(super) fn parse_date_time(value: &str) -> Result<DateTime, ValueError> {
     let bad = || ValueError::DateTime(value.to_owned());
     let (day, clock) = value.split_once(['T', 't']).ok_or_else(bad)?;
-    let date = parse_date(day).ok().ok_or_else(bad)?;
+    let date = parse_date(day).map_err(|e| ValueError::DateTimeField {
+        value: value.to_owned(),
+        source: Box::new(e),
+    })?;
     let part = |from: usize| -> Result<i8, ValueError> {
         clock
             .get(from..from + 2)
@@ -100,9 +125,12 @@ pub(super) fn parse_date_time(value: &str) -> Result<DateTime, ValueError> {
     if clock.len() != 6 {
         return Err(bad());
     }
-    let time = Time::new(part(0)?, part(2)?, part(4)?.min(59), 0)
-        .ok()
-        .ok_or_else(bad)?;
+    let time = Time::new(part(0)?, part(2)?, part(4)?.min(59), 0).map_err(|e| {
+        ValueError::DateTimeField {
+            value: value.to_owned(),
+            source: Box::new(e),
+        }
+    })?;
     Ok(date.to_datetime(time))
 }
 
@@ -140,7 +168,12 @@ pub(super) fn parse_duration(value: &str) -> Result<i64, ValueError> {
             ('S', Clock::Time) => 1,
             _ => return Err(bad()),
         };
-        let count: i64 = number.parse().ok().ok_or_else(bad)?;
+        let count: i64 = number
+            .parse()
+            .map_err(|source| ValueError::DurationNumber {
+                value: value.to_owned(),
+                source,
+            })?;
         total = total.saturating_add(count.saturating_mul(unit));
         number.clear();
     }

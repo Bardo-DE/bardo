@@ -32,7 +32,7 @@ pub enum ProtocolError {
     #[error("the request is not three NUL-terminated fields")]
     Fields,
     #[error("a field is not UTF-8")]
-    Encoding,
+    Encoding(#[source] std::str::Utf8Error),
     #[error("an unknown line: {0:?}")]
     Line(String),
 }
@@ -69,8 +69,7 @@ pub fn decode_request(bytes: &[u8]) -> Result<HelperRequest, ProtocolError> {
     let text = |field: &[u8]| {
         std::str::from_utf8(field)
             .map(str::to_owned)
-            .ok()
-            .ok_or(ProtocolError::Encoding)
+            .map_err(ProtocolError::Encoding)
     };
     Ok(HelperRequest {
         service: PamService(text(service)?),
@@ -202,7 +201,10 @@ mod tests {
         let bad: [(&[u8], ProtocolError); 3] = [
             (b"bardo-shell\0ada\0", ProtocolError::Fields),
             (b"bardo-shell\0ada\0pw", ProtocolError::Fields),
-            (b"bardo-shell\0\xff\0pw\0", ProtocolError::Encoding),
+            (
+                b"bardo-shell\0\xff\0pw\0",
+                ProtocolError::Encoding(std::str::from_utf8(b"\xff").expect_err("not UTF-8")),
+            ),
         ];
         for (bytes, want) in bad {
             assert_eq!(decode_request(bytes), Err(want), "{bytes:?}");
