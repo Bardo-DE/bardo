@@ -58,8 +58,8 @@ parse_flags() {
   tree=${tree%/}
 }
 
-# unit_source NAME: the unit file of the crate directory NAME (casement, sill) in this tree.
-unit_source() { echo "$tree/crates/$1/dist/$1.service"; }
+# unit_source DOMAIN UNIT: the unit file UNIT.service shipped in crates/DOMAIN/dist.
+unit_source() { echo "$tree/crates/$1/dist/$2.service"; }
 
 # files: "MODE SOURCE DEST" per line, DEST without the destdir. The desktop entry's SOURCE is
 # rendered (Exec filled in) by render_entry; the others are copied as they are.
@@ -69,13 +69,13 @@ files() {
   echo "644 $SRC/desktop-session.target $sysconfdir/systemd/user/desktop-session.target"
   # Root-held, so the portal frontend's unit proves Full to the portal backend: it throws away the loader variables.
   echo "644 $SRC/xdg-desktop-portal.service.d/10-quire.conf $sysconfdir/systemd/user/xdg-desktop-portal.service.d/10-quire.conf"
-  echo "644 $(unit_source casement) $sysconfdir/systemd/user/casement.service"
-  echo "644 $(unit_source sill) $sysconfdir/systemd/user/sill.service"
+  echo "644 $(unit_source compositor casement) $sysconfdir/systemd/user/casement.service"
+  echo "644 $(unit_source shell sill) $sysconfdir/systemd/user/sill.service"
   echo "644 $SRC/sill-casement.desktop $sessions_dir/sill-casement.desktop"
   # quire's look Extensions (Editorial), picked under Settings > Look; every quire app finds them in <data dir>/quire/extensions.
   local f
-  for f in "$tree"/crates/quire/extensions/*/*; do
-    [ -f "$f" ] && echo "644 $f $prefix/share/quire/extensions/${f#"$tree"/crates/quire/extensions/}"
+  for f in "$tree"/crates/ui/extensions/*/*; do
+    [ -f "$f" ] && echo "644 $f $prefix/share/quire/extensions/${f#"$tree"/crates/ui/extensions/}"
   done
 }
 

@@ -9,7 +9,7 @@
 # With no PART, every part in install order. PREFIX (default /usr/local) and BARDO_TREE (default the parent of
 # packaging/) come from the environment. The tree is one cargo workspace: every program is built by one
 # `cargo build --release -p ...` at its root into <tree>/target (or $CARGO_TARGET_DIR), and each part's own installer
-# (crates/<part>/scripts/install.sh, or install/system.sh) is run with --no-build to place what was built, so nothing
+# (crates/<domain>/scripts/install.sh, or install/system.sh) is run with --no-build to place what was built, so nothing
 # builds as root.
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
@@ -33,17 +33,17 @@ install_part() {
   local c=$tree/crates p=$prefix d=$desktop
   case $1 in
     callers) sudo "$d/install/system.sh" callers ;;
-    porter) sudo env CARGO_TARGET_DIR="$target" "$c/porter/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
-    steward) sudo env CARGO_TARGET_DIR="$target" "$c/steward/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
-    ferry) sudo env CARGO_TARGET_DIR="$target" "$c/ferry/scripts/install.sh" --prefix "$p" --no-build ;;
-    stoker) "$c/stoker/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
-    almanac) "$c/almanac/scripts/install.sh" --prefix "$p" --no-build ;;
-    docket) "$c/docket/scripts/install.sh" --prefix "$p" --no-build ;;
-    cua) "$c/cua/scripts/install.sh" --prefix "$p" --no-build ;;
-    detent) sudo env PREFIX="$p" DETENT_BIN="$target/release/detent" "$c/detent/scripts/install.sh" ;;
-    casement) sudo env CARGO_TARGET_DIR="$target" "$c/casement/scripts/install.sh" --prefix "$p" --locked --no-build ;;
-    sill) "$c/sill/dist/install.sh" --no-build ;;
-    transom) sudo env CARGO_TARGET_DIR="$target" "$c/transom/scripts/install.sh" --prefix "$p" --no-build ;;
+    porter) sudo env CARGO_TARGET_DIR="$target" "$c/accounts/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
+    steward) sudo env CARGO_TARGET_DIR="$target" "$c/inference/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
+    ferry) sudo env CARGO_TARGET_DIR="$target" "$c/sync/scripts/install.sh" --prefix "$p" --no-build ;;
+    stoker) "$c/models/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
+    almanac) "$c/memory/scripts/install.sh" --prefix "$p" --no-build ;;
+    docket) "$c/actions/scripts/install.sh" --prefix "$p" --no-build ;;
+    cua) "$c/computer-use/scripts/install.sh" --prefix "$p" --no-build ;;
+    detent) sudo env PREFIX="$p" DETENT_BIN="$target/release/detent" "$c/settings-app/scripts/install.sh" ;;
+    casement) sudo env CARGO_TARGET_DIR="$target" "$c/compositor/scripts/install.sh" --prefix "$p" --locked --no-build ;;
+    sill) "$c/shell/dist/install.sh" --no-build ;;
+    transom) sudo env CARGO_TARGET_DIR="$target" "$c/portal/scripts/install.sh" --prefix "$p" --no-build ;;
     turnstile | keycap | palmrest) sudo env CARGO_TARGET_DIR="$target" "$d/install/system.sh" "$1" --prefix "$p" --tree "$tree" ;;
     # Its installer builds as you and asks for sudo itself only when the prefix is not yours.
     files) FILES_PREFIX=$p "$c/files/dist/install.sh" --no-build ;;

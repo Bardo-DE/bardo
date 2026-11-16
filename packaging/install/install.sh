@@ -29,8 +29,9 @@ step "1/3 checks"
 for tool in casement sill; do
   command -v "$tool" >/dev/null || note "WARNING: $tool is not on PATH; the session cannot start without it"
 done
-for name in casement sill; do
-  [ -f "$(unit_source "$name")" ] || note "WARNING: $(unit_source "$name") is missing; the session needs $name.service and cannot start $name without it (pass --tree if this is not the bardo tree's packaging folder)"
+for pair in compositor:casement shell:sill; do
+  name=${pair#*:}
+  [ -f "$(unit_source "${pair%%:*}" "$name")" ] || note "WARNING: $(unit_source "${pair%%:*}" "$name") is missing; the session needs $name.service and cannot start $name without it (pass --tree if this is not the bardo tree's packaging folder)"
   # A copy in the person's own folder wins over the installed one and is not trusted by the account service.
   if [ -z "$destdir" ] && [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$name.service" ]; then
     note "WARNING: ${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$name.service hides the installed unit and is not trusted by the account service; remove it"

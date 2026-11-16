@@ -67,21 +67,21 @@ files() {
       echo "644 $DIST/desktop-callers.toml /etc/quire/desktop-callers.toml" ;;
     turnstile)
       echo "755 $turnstile_bin $prefix/bin/turnstile"
-      echo "644 $tree/crates/turnstile/dist/turnstile.socket $vendor_units/turnstile.socket"
-      echo "644 $tree/crates/turnstile/dist/turnstile.service $vendor_units/turnstile.service"
-      echo "644 $tree/crates/turnstile/dist/72-turnstile.rules /etc/udev/rules.d/72-turnstile.rules"
-      echo "644 $tree/crates/turnstile/dist/turnstile-modules.conf /etc/modules-load.d/turnstile.conf" ;;
+      echo "644 $tree/crates/input/input-broker/dist/turnstile.socket $vendor_units/turnstile.socket"
+      echo "644 $tree/crates/input/input-broker/dist/turnstile.service $vendor_units/turnstile.service"
+      echo "644 $tree/crates/input/input-broker/dist/72-turnstile.rules /etc/udev/rules.d/72-turnstile.rules"
+      echo "644 $tree/crates/input/input-broker/dist/turnstile-modules.conf /etc/modules-load.d/turnstile.conf" ;;
     keycap)
       echo "755 $keycap_bin $prefix/bin/keycap"
-      echo "644 $tree/crates/keycap/dist/keycap.service $vendor_units/keycap.service"
-      echo "644 $tree/crates/keycap/dist/keycap.polkit.rules /etc/polkit-1/rules.d/keycap.polkit.rules"
+      echo "644 $tree/crates/input/key-remap/dist/keycap.service $vendor_units/keycap.service"
+      echo "644 $tree/crates/input/key-remap/dist/keycap.polkit.rules /etc/polkit-1/rules.d/keycap.polkit.rules"
       echo "644 $DIST/keycap.toml /usr/lib/keycap/keycap.toml" ;;
     palmrest)
       # No module list: the input service's turnstile.conf loads uinput. No rule for /dev/uinput either.
       echo "755 $palmrest_bin $prefix/bin/palmrest"
-      echo "644 $tree/crates/palmrest/dist/palmrest.service $vendor_units/palmrest.service"
-      echo "644 $tree/crates/palmrest/dist/70-palmrest.rules /etc/udev/rules.d/70-palmrest.rules"
-      echo "644 $tree/crates/palmrest/dist/99-palmrest.conf /etc/modprobe.d/99-palmrest.conf" ;;
+      echo "644 $tree/crates/input/mouse-gestures/dist/palmrest.service $vendor_units/palmrest.service"
+      echo "644 $tree/crates/input/mouse-gestures/dist/70-palmrest.rules /etc/udev/rules.d/70-palmrest.rules"
+      echo "644 $tree/crates/input/mouse-gestures/dist/99-palmrest.conf /etc/modprobe.d/99-palmrest.conf" ;;
   esac
 }
 
