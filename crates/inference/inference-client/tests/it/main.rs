@@ -7,8 +7,6 @@ mod common;
 mod dbus_guests;
 mod dbus_open;
 mod dbus_served;
-#[cfg(feature = "engines")]
-mod engines;
 mod in_process_session;
 mod prepare;
 mod session_shape;

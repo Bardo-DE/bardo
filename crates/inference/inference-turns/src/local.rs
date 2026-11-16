@@ -46,8 +46,7 @@ impl sp::Sleeper for TokioSleep {
     }
 }
 
-/// Three attempts, a quarter of a second doubling to four seconds (inference-bridge's, shared with
-/// inference-client's in-process engines).
+/// Three attempts, a quarter of a second doubling to four seconds (inference-bridge's).
 pub const RETRY: sp::RetryPolicy = inference_bridge::ENGINE_RETRY;
 
 /// An engine on a local socket answers its first byte after the prompt is read, which for an

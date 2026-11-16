@@ -1,5 +1,5 @@
 //! Where inference sessions come from for an app that hosts them itself: the [`SessionHost`] a
-//! carrier takes ([`super::Brokered`], or `engines::EngineHost`), and the
+//! carrier takes ([`super::Brokered`]), and the
 //! [`NoBroker`] an app that hosts no inference names.
 
 use crate::error::TransportError;

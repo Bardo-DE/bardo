@@ -1,5 +1,5 @@
 //! The carrier for an app that hosts its inference itself: the sessions come from a
-//! [`SessionHost`] the app gives (`engines::EngineHost`, or its own), opened for the app the host
+//! [`SessionHost`] the app gives (its own), opened for the app the host
 //! names.
 
 use super::Transport;

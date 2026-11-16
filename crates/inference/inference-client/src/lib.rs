@@ -13,18 +13,13 @@
 //!
 //! Features: none is on by default. `dbus` is the bus carrier (Linux), with the session `Open`
 //! returns as frames over a Unix stream socket with descriptors riding on them, so it pulls in
-//! the runtime. `engines` is [`engines::EngineHost`], a `SessionHost` that routes need -> engine
-//! over a table the app gives and drives the OpenAI-compatible engines it points at (Ollama,
-//! llama.cpp, LM Studio, vLLM, a company's API), with keys from a `KeySource` the app implements;
-//! it brings stoker's HTTP client with TLS. `lending` is `TailnetLending`, which installs and
+//! the runtime. `lending` is `TailnetLending`, which installs and
 //! takes away the drop-in that lets the person's other computers reach inferd (the Settings
 //! switch "Let my other computers use this computer's models"), through a `UnitManager` the
 //! caller gives (`SessionUnits` with `dbus`). It never sets `ai.tailnet.serve`; the caller does,
 //! after `enable` answers `Ok`.
 
 mod computers;
-#[cfg(feature = "engines")]
-pub mod engines;
 mod error;
 #[cfg(feature = "dbus")]
 mod guests;
@@ -42,9 +37,6 @@ pub use inference::Inference;
 pub use inference_core::{
     ComputerName, InferSession, OpenOptions, PlaceId, SessionError, Traceparent,
 };
-/// What an [`engines::EngineHost`] is built from, from inference-core.
-#[cfg(feature = "engines")]
-pub use inference_core::{InferRefusal, Policy, Slot};
 #[cfg(all(feature = "lending", feature = "dbus"))]
 pub use tailnet_lending::SessionUnits;
 #[cfg(feature = "lending")]

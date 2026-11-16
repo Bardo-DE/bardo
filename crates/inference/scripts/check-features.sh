@@ -30,7 +30,6 @@ BUILDS=(
   "inference-client (no features) :: -p inference-client --no-default-features"
   "inference-client (dbus: inferd's tests, docket, almanac) :: -p inference-client --no-default-features --features dbus"
   "inference-client (dbus,lending: the Settings app) :: -p inference-client --no-default-features --features dbus,lending"
-  "inference-client (engines) :: -p inference-client --features engines"
 )
 
 logs="${CARGO_TARGET_DIR:-target}/check-features"

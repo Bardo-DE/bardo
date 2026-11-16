@@ -19,13 +19,6 @@ base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
 inference-core = {path = "../inference-core"}
-inference-bridge = {path = "../inference-bridge", optional = true}
-# `engines`: the turn the daemon runs (`run_chat`) and the clock its retries wait on.
-inference-turns = {path = "../inference-turns", optional = true}
-model-http = {optional = true, features = ["client", "tls"], path = "../../models/model-http"}
-model-openai-compat = {optional = true, path = "../../models/model-openai-compat"}
-model-provider = {optional = true, path = "../../models/model-provider"}
-model-wire = {optional = true, path = "../../models/model-wire"}
 account-callers = {optional = true, path = "../../accounts/account-callers"}
 account-dbus = {optional = true, path = "../../accounts/account-dbus"}
 inference-dbus = {path = "../inference-dbus", optional = true}
@@ -42,7 +35,6 @@ zbus = {version = "5.19", default-features = false, features = ["tokio"], option
 base-testkit = {path = "../../base/base-testkit"}
 ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
 computer-use-action = {path = "../../computer-use/computer-use-action"}
-account-fake-servers = {path = "../../accounts/account-fake-servers"}
 # The scripted inference session the session tests play (`porter_infer::testing`).
 inference-core = {path = "../inference-core", features = ["testing"]}
 account-dbus = {path = "../../accounts/account-dbus"}
@@ -62,15 +54,6 @@ account-tailscale = {features = ["io"], path = "../../accounts/account-tailscale
 [features]
 # No feature is on by default: a consumer names the ones it uses.
 default = []
-# Inference with no inferd: `EngineHost`, a `SessionHost` that routes need -> engine over a table
-# the app gives and drives the OpenAI-compatible engines it points at (Ollama, llama.cpp, LM
-# Studio, vLLM, a company's API), with keys from a `KeySource` the app implements. Off by
-# default: it brings stoker's HTTP client with TLS (hyper, rustls) and a runtime, which neither
-# an app that talks to inferd needs.
-engines = [
-  "dep:tokio", "dep:serde_json", "dep:inference-bridge", "dep:inference-turns", "dep:model-http",
-  "dep:model-openai-compat", "dep:model-provider", "dep:model-wire",
-]
 # `TailnetLending`: installs and takes away the drop-in that lets the person's other computers
 # reach inferd (the Settings switch "Let my other computers use this computer's models"), with the
 # manager of the person's units injected. Off by default: it brings base-fs (std only). With
