@@ -48,6 +48,10 @@ pub enum Polled {
 }
 
 /// The request that starts a flow at `server`.
+///
+/// # Errors
+/// [`Error::Unreadable`] when `server` has no login flow address or the request cannot be built;
+/// [`Error::Insecure`] when it is plain `http` to another computer.
 pub fn start_request(server: &EndpointUrl) -> Result<Request<Vec<u8>>, Error> {
     let url = web(&crate::paths::login_flow(server).ok_or(Error::Unreadable)?)?;
     Request::builder()
@@ -56,11 +60,15 @@ pub fn start_request(server: &EndpointUrl) -> Result<Request<Vec<u8>>, Error> {
         .header(USER_AGENT, "Porter")
         .header(ACCEPT, "application/json")
         .body(Vec::new())
-        .map_err(|_| Error::Unreadable)
+        .ok()
+        .ok_or(Error::Unreadable)
 }
 
-/// What the server named for the flow. A server without Login Flow v2 (before Nextcloud 16), or
-/// not a Nextcloud at all, is `Unreadable`.
+/// What the server named for the flow.
+///
+/// # Errors
+/// [`Error::Unreadable`] for a server without Login Flow v2 (before Nextcloud 16), or not a
+/// Nextcloud at all.
 pub fn started(response: &Response<Vec<u8>>) -> Result<Started, Error> {
     match response.status() {
         StatusCode::OK => started_body(response.body()).ok_or(Error::Unreadable),
@@ -79,6 +87,10 @@ fn started_body(body: &[u8]) -> Option<Started> {
 }
 
 /// The poll's `POST`, the token as its form body.
+///
+/// # Errors
+/// [`Error::Unreadable`] when the poll address is not an address or the request cannot be built;
+/// [`Error::Insecure`] when it is plain `http` to another computer.
 pub fn poll_request(started: &Started) -> Result<Request<Vec<u8>>, Error> {
     let url = web(&started.poll)?;
     Request::builder()
@@ -87,7 +99,8 @@ pub fn poll_request(started: &Started) -> Result<Request<Vec<u8>>, Error> {
         .header(USER_AGENT, "Porter")
         .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
         .body(format!("token={}", started.token.expose()).into_bytes())
-        .map_err(|_| Error::Unreadable)
+        .ok()
+        .ok_or(Error::Unreadable)
 }
 
 /// What one poll's `response` came to.

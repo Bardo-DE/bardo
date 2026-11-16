@@ -16,6 +16,10 @@ pub enum Revoked {
 }
 
 /// The revoke request, with the app password's `authorization`.
+///
+/// # Errors
+/// [`Error::Unreadable`] when `server` has no app password address or the request cannot be
+/// built; [`Error::Insecure`] when it is plain `http` to another computer.
 pub fn request(
     server: &EndpointUrl,
     authorization: HeaderValue,
@@ -27,12 +31,18 @@ pub fn request(
         .header("OCS-APIRequest", "true")
         .header(ACCEPT, "application/json")
         .body(Vec::new())
-        .map_err(|_| Error::Unreadable)?;
+        .ok()
+        .ok_or(Error::Unreadable)?;
     Ok(authorized(request, authorization))
 }
 
-/// What the `response` to the revoke came to. A server that already refuses the password has
-/// nothing left to revoke.
+/// What the `response` to the revoke came to.
+///
+/// A server that already refuses the password has nothing left to revoke.
+///
+/// # Errors
+/// [`Error::Unreachable`] for a server failure (5xx); [`Error::Unreadable`] for any other status,
+/// or a 404 from a server with no security settings address.
 pub fn revoked(server: &EndpointUrl, response: &Response<Vec<u8>>) -> Result<Revoked, Error> {
     match response.status().as_u16() {
         200..=299 | 401 | 403 => Ok(Revoked::Done),

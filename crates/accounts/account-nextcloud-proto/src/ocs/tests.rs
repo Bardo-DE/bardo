@@ -1,8 +1,6 @@
 //! Nextcloud's capabilities answer, from recorded-shape fixtures.
 
 use super::*;
-use account_capability::Capability;
-use account_capability::CapabilityKind;
 
 fn offers(claims: &[Claim]) -> Vec<(CapabilityKind, bool)> {
     claims

@@ -12,6 +12,10 @@ use http::{HeaderValue, Method, Request, Response};
 use serde_json::{Map, Value};
 
 /// The capabilities request, with the account's `authorization`.
+///
+/// # Errors
+/// [`Error::Unreadable`] when `server` has no capabilities address or the request cannot be built;
+/// [`Error::Insecure`] when it is plain `http` to another computer.
 pub fn request(
     server: &EndpointUrl,
     authorization: HeaderValue,
@@ -23,17 +27,24 @@ pub fn request(
         .header("OCS-APIRequest", "true")
         .header(ACCEPT, "application/json")
         .body(Vec::new())
-        .map_err(|_| Error::Unreadable)?;
+        .ok()
+        .ok_or(Error::Unreadable)?;
     Ok(authorized(request, authorization))
 }
 
 /// What the capabilities `response` says the account can do, or why it says nothing.
+///
+/// # Errors
+/// The [`judged`] error for a reply that is not a success, else [`Error::Unreadable`] as
+/// [`parse_capabilities`].
 pub fn capabilities(response: &Response<Vec<u8>>) -> Result<Vec<Claim>, Error> {
     let response = judged(response)?;
     parse_capabilities(&String::from_utf8_lossy(response.body()))
 }
 
-/// What a Nextcloud's OCS capabilities answer says the account can do: files and quota always;
+/// What a Nextcloud's OCS capabilities answer says the account can do.
+///
+/// Files and quota always;
 /// calendar, contacts, tasks and notes when their apps are on the server (an app that is not
 /// there is `Absent { NotOnServer }`).
 ///
@@ -41,8 +52,12 @@ pub fn capabilities(response: &Response<Vec<u8>>) -> Result<Vec<Claim>, Error> {
 /// app's own key (`calendar`, `contacts`) marks them present; tasks need the `tasks` key or the
 /// calendar app (which keeps VTODO), notes need the `notes` key. Chunked upload is present when
 /// `dav.chunking` is advertised.
+///
+/// # Errors
+/// [`Error::Unreadable`] when `json` is not JSON, or is not an OCS answer with a success status
+/// and a capabilities object.
 pub fn parse_capabilities(json: &str) -> Result<Vec<Claim>, Error> {
-    let root: Value = serde_json::from_str(json).map_err(|_| Error::Unreadable)?;
+    let root: Value = serde_json::from_str(json).ok().ok_or(Error::Unreadable)?;
     let ocs = root.get("ocs").ok_or(Error::Unreadable)?;
     let status = ocs
         .pointer("/meta/statuscode")

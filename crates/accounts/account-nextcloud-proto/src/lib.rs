@@ -42,10 +42,12 @@ pub enum Error {
 
 /// `url` as a web URL: `https`, or `http` to this computer.
 pub(crate) fn web(url: &EndpointUrl) -> Result<WebUrl, Error> {
-    WebUrl::try_from(url).map_err(|_| match url.origin().scheme {
-        UrlScheme::Http => Error::Insecure,
-        _ => Error::Unreadable,
-    })
+    WebUrl::try_from(url)
+        .ok()
+        .ok_or_else(|| match url.origin().scheme {
+            UrlScheme::Http => Error::Insecure,
+            _ => Error::Unreadable,
+        })
 }
 
 /// `request` with `authorization` as its `Authorization` header.
@@ -57,8 +59,11 @@ pub(crate) fn authorized(
     request
 }
 
-/// A reply that is a login refusal (401, 403), a server failure (5xx), another failure, or a
-/// success (2xx), which is returned.
+/// The reply when it is a success (2xx), else why it is not.
+///
+/// # Errors
+/// [`Error::Refused`] for a login refusal (401, 403), [`Error::Unreachable`] for a server failure
+/// (5xx), [`Error::Unreadable`] for any other status.
 pub fn judged(response: &Response<Vec<u8>>) -> Result<&Response<Vec<u8>>, Error> {
     match response.status().as_u16() {
         401 | 403 => Err(Error::Refused),
@@ -68,7 +73,9 @@ pub fn judged(response: &Response<Vec<u8>>) -> Result<&Response<Vec<u8>>, Error>
     }
 }
 
-/// What the account's endpoints are, from what was found: the files root always; the calendar
+/// What the account's endpoints are, from what was found.
+///
+/// The files root always; the calendar
 /// and task home when the server offers either, the address book home for contacts, the Notes
 /// API for notes. `calendars` and `books` are the homes the DAV walk named, else the
 /// conventional paths. `None` when an endpoint cannot be made.
