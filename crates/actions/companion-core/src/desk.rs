@@ -13,7 +13,7 @@ use base_ids::Count;
 use companion_model::helper::{
     Board, BoardEffect, BoardEvent, CardDraft, Ceiling, GoalOrigin, GoalText, HelperBudget,
     HelperCard, HelperKind, HelperModel, HelperName, HelperState, JobFault, JobId, JobRefusal,
-    JobStatus, Launch, NewJob, ReachFault, Role, reach_policy,
+    JobStatus, Launch, NewJob, Role, reach_policy,
 };
 use companion_model::routine::{JobEnd, Missed, Schedule};
 use companion_wire::{HelperForm, RoutineForm, WhenForm, line_of};
@@ -83,15 +83,15 @@ pub fn helper_form(
     ceiling: Ceiling,
     space: SpaceId,
 ) -> Result<HelperForm, Refusal> {
-    let (Ok(name), Ok(role)) = (HelperName::parse(name), Role::parse(role)) else {
-        return Err(Refusal::BadNameOrRole);
-    };
+    let name = HelperName::parse(name).map_err(Refusal::BadNameOrRole)?;
+    let role = Role::parse(role).map_err(Refusal::BadNameOrRole)?;
     let apps = apps
         .iter()
         .map(|app| {
-            AppName::parse(app)
-                .ok()
-                .ok_or_else(|| Refusal::Reach(ReachFault::NoSuchApp(app.clone())))
+            AppName::parse(app).map_err(|fault| Refusal::BadAppName {
+                app: app.clone(),
+                fault,
+            })
         })
         .collect::<Result<Vec<AppName>, Refusal>>()?;
     Ok(HelperForm {

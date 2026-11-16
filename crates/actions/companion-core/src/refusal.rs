@@ -2,7 +2,9 @@
 //! told are made once, at the edge that serves them (companiond today, the view crate later); a
 //! decision here never carries words.
 
-use companion_model::helper::{GoalFault, HandFault, HelperName, JobFault, JobRefusal, ReachFault};
+use companion_model::helper::{
+    GoalFault, HandFault, HelperName, HelperTextFault, JobFault, JobRefusal, ReachFault,
+};
 use companion_model::routine::ScheduleFault;
 
 /// What a request to the helper's app was for.
@@ -40,7 +42,14 @@ pub enum Refusal {
     /// Too many proposed routines wait for an answer.
     TooManyWaiting,
     /// The proposed name, or what it is for, is empty or too long.
-    BadNameOrRole,
+    BadNameOrRole(HelperTextFault),
+    /// An app the person named is not an app name.
+    BadAppName {
+        /// The app as named.
+        app: String,
+        /// Why it is not a name.
+        fault: account_core::CoreError,
+    },
     /// The board made no helper.
     HelperNotMade,
     /// The session is not a conversation with a helper.

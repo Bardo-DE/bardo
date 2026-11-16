@@ -30,7 +30,8 @@ pub(crate) fn sentence(refusal: &Refusal) -> String {
         Refusal::TooManyWaiting => {
             "Too many routines are waiting for an answer. Answer some first.".to_owned()
         }
-        Refusal::BadNameOrRole => "The name or what it is for is empty or too long.".to_owned(),
+        Refusal::BadNameOrRole(_) => "The name or what it is for is empty or too long.".to_owned(),
+        Refusal::BadAppName { app, .. } => format!("There is no app called {app}."),
         Refusal::HelperNotMade => "The helper could not be made.".to_owned(),
         Refusal::NotAConversation => "That is not a conversation with a helper.".to_owned(),
         Refusal::RunsItsOwnApp(name) => {

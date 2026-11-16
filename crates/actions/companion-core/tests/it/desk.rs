@@ -4,7 +4,7 @@ use companion_core::{
     PROPOSED_STEPS, PlannerJob, Refusal, RoutineWho, RoutineWish, helper_form, person_job,
     planner_job, routine_wish,
 };
-use companion_model::helper::{Board, Ceiling, GoalOrigin, JobRefusal, ReachFault};
+use companion_model::helper::{Board, Ceiling, GoalOrigin, JobRefusal};
 use provenance::{HelperId, SpaceId, TaskId};
 
 fn space() -> SpaceId {
@@ -63,15 +63,13 @@ fn a_proposed_helper_is_a_form_of_its_own_planner_with_the_steps_it_is_proposed_
 
 #[test]
 fn a_proposed_helper_with_a_bad_name_or_app_is_refused() {
-    assert_eq!(
+    assert!(matches!(
         helper_form("", "Reads the mail", &[], Ceiling::Look, space()),
-        Err(Refusal::BadNameOrRole)
-    );
+        Err(Refusal::BadNameOrRole(_))
+    ));
     let bad = ["Not An App".to_owned()];
-    assert_eq!(
+    assert!(matches!(
         helper_form("Inbox", "Reads the mail", &bad, Ceiling::Look, space()),
-        Err(Refusal::Reach(ReachFault::NoSuchApp(
-            "Not An App".to_owned()
-        )))
-    );
+        Err(Refusal::BadAppName { app, .. }) if app == "Not An App"
+    ));
 }
