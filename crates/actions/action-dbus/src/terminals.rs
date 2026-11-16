@@ -36,15 +36,27 @@ pub struct CompanionTerminalsSkeleton;
 
 #[zbus::interface(name = "org.bardo.Companion1.Terminals")]
 impl CompanionTerminalsSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn sessions(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn bring_back(&self, session: String) -> fdo::Result<String> {
         let _ = (session,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn recognise(&self, seen: String) -> fdo::Result<String> {
         let _ = (seen,);
         Err(crate::introspect::frozen())

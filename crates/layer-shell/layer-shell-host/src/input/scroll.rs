@@ -20,6 +20,7 @@ use crate::input::palmrest::route::{Route, route};
 use crate::input::pointer::{self, PointerPos};
 use crate::region::Px;
 use crate::scroll::source::AxisSource;
+use crate::scroll::suppress::Suppress;
 use crate::scroll::surface::{Moved, PalmScroll};
 use crate::scroll::tuning::Tuning;
 use crate::scroll::wheel::{WheelContext, wheel_event};
@@ -215,7 +216,7 @@ impl HostState {
         let now = self.now();
         let Route { fingers, scroll } = route(&message);
         if let Some(fingers) = fingers {
-            self.suppress = self.suppress.fingers(fingers, now);
+            self.suppress = Suppress::fingers(fingers, now);
         }
         if let Some(event) = scroll {
             self.palm_scroll(event, now);

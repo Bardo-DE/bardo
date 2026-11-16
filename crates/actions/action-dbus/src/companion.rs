@@ -52,35 +52,63 @@ pub struct CompanionSkeleton;
 
 #[zbus::interface(name = "org.bardo.Companion1")]
 impl CompanionSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn prepare(&self, options: Details) -> fdo::Result<()> {
         let _ = (options,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn open(&self, open: String) -> fdo::Result<String> {
         let _ = (open,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn ask(&self, ask: String, options: Details) -> fdo::Result<OwnedObjectPath> {
         let _ = (ask, options);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn close(&self, session: String) -> fdo::Result<()> {
         let _ = (session,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn told(&self, agent: String, space: String, turn: String) -> fdo::Result<()> {
         let _ = (agent, space, turn);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn roster(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn front(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }

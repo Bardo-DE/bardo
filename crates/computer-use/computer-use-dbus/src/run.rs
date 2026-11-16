@@ -93,62 +93,114 @@ pub struct RunSkeleton;
 
 #[zbus::interface(name = "org.bardo.ComputerUse1.Run")]
 impl RunSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn cancel(&self) -> fdo::Result<()> {
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn pause(&self) -> fdo::Result<()> {
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn resume(&self) -> fdo::Result<()> {
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn answer(&self, question: u64, answer: String) -> fdo::Result<()> {
         let _ = (question, answer);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn take_over(&self) -> fdo::Result<()> {
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn hand_back(&self) -> fdo::Result<()> {
         Err(crate::introspect::frozen())
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn id(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn state(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn step(&self) -> fdo::Result<u32> {
         Err(crate::introspect::frozen())
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn goal(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn window(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn mode(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn budget(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }

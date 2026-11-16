@@ -43,11 +43,19 @@ pub struct CompanionAnswerSkeleton;
 
 #[zbus::interface(name = "org.bardo.Companion1.Answer")]
 impl CompanionAnswerSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn act(&self, action: String) -> fdo::Result<OwnedObjectPath> {
         let _ = (action,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn cancel(&self) -> fdo::Result<()> {
         Err(crate::introspect::frozen())
     }
@@ -56,16 +64,28 @@ impl CompanionAnswerSkeleton {
     async fn updated(emitter: &SignalEmitter<'_>, view: &str) -> zbus::Result<()>;
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn routing(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn session(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn view(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }

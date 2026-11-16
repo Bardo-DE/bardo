@@ -24,6 +24,10 @@ pub struct RegistrySkeleton;
 
 #[zbus::interface(name = "org.bardo.Intents1.Registry")]
 impl RegistrySkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn manifests(&self) -> fdo::Result<Vec<(String, String)>> {
         Err(crate::introspect::frozen())
     }

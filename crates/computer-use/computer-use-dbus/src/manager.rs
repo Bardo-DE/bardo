@@ -51,30 +51,54 @@ pub struct ManagerSkeleton;
 #[zbus::interface(name = "org.bardo.ComputerUse1.Manager")]
 impl ManagerSkeleton {
     #[zbus(out_args("run"))]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn start(&self, task: String) -> fdo::Result<OwnedObjectPath> {
         let _ = task;
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn runs(&self) -> fdo::Result<Vec<OwnedObjectPath>> {
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn stop_all(&self) -> fdo::Result<()> {
         Err(crate::introspect::frozen())
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn backend(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn modes(&self) -> fdo::Result<HashMap<String, String>> {
         Err(crate::introspect::frozen())
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn sight_note(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }

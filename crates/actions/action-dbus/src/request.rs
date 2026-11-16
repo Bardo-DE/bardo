@@ -30,10 +30,18 @@ pub struct RequestSkeleton;
 
 #[zbus::interface(name = "org.bardo.Intents1.Request")]
 impl RequestSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn close(&self) -> fdo::Result<()> {
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn proceed(&self) -> fdo::Result<()> {
         Err(crate::introspect::frozen())
     }

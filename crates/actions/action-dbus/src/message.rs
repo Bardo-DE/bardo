@@ -28,11 +28,19 @@ pub struct MessageSkeleton;
 
 #[zbus::interface(name = "org.bardo.Intents1.Message")]
 impl MessageSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn send(&self, session: String, draft: String, options: Details) -> fdo::Result<String> {
         let _ = (session, draft, options);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn inbox(&self, ask: String) -> fdo::Result<String> {
         let _ = (ask,);
         Err(crate::introspect::frozen())

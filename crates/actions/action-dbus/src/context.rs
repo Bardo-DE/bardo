@@ -19,6 +19,10 @@ pub struct ContextSkeleton;
 
 #[zbus::interface(name = "org.bardo.Intents1.Context")]
 impl ContextSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn current(&self, session: String, app: String) -> fdo::Result<String> {
         let _ = (session, app);
         Err(crate::introspect::frozen())

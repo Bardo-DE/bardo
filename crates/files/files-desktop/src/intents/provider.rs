@@ -132,32 +132,33 @@ fn items_words(count: usize, one: &str, many: &str) -> String {
 impl Shape<'_> {
     fn outcome(&self, ask: &Ask, reply: Reply) -> Result<Outcome, AppRefusal> {
         match (ask, reply) {
-            (Ask::Open(_), Reply::Done) => Ok(self.said("Showed it in Files", None)),
+            (Ask::Open(_), Reply::Done) => Ok(Self::said("Showed it in Files", None)),
             (Ask::Trash(items), Reply::Done) => {
                 let words = items_words(
                     items.len(),
                     "Moved 1 item to the Trash",
                     "Moved {n} items to the Trash",
                 );
-                Ok(self.said(&words, self.undo(OpKind::Trash, items.len())))
+                Ok(Self::said(&words, Self::undo(OpKind::Trash, items.len())))
             }
-            (Ask::NewFolder { .. }, Reply::Done) => {
-                Ok(self.said("Made a folder", self.undo(OpKind::NewFolder, 1)))
-            }
+            (Ask::NewFolder { .. }, Reply::Done) => Ok(Self::said(
+                "Made a folder",
+                Self::undo(OpKind::NewFolder, 1),
+            )),
             (Ask::Copy { sources, .. }, Reply::Done) => {
                 let words = items_words(sources.len(), "Copying 1 item", "Copying {n} items");
-                Ok(self.said(&words, self.undo(OpKind::Copy, sources.len())))
+                Ok(Self::said(&words, Self::undo(OpKind::Copy, sources.len())))
             }
             (Ask::Move { sources, .. }, Reply::Done) => {
                 let words = items_words(sources.len(), "Moving 1 item", "Moving {n} items");
-                Ok(self.said(&words, self.undo(OpKind::Move, sources.len())))
+                Ok(Self::said(&words, Self::undo(OpKind::Move, sources.len())))
             }
             (Ask::EmptyTrash, Reply::Done) => {
-                Ok(self.said("Asked whether to empty the Trash", None))
+                Ok(Self::said("Asked whether to empty the Trash", None))
             }
             (Ask::Selection, Reply::Items(paths)) => Ok(self.read(lines(&paths))),
             (Ask::CurrentFolder, Reply::Place(place)) => Ok(self.read(place_text(&place))),
-            (Ask::Undo(_), Reply::Done) => Ok(self.said("Undone", None)),
+            (Ask::Undo(_), Reply::Done) => Ok(Self::said("Undone", None)),
             (
                 Ask::Open(_)
                 | Ask::Trash(_)
@@ -187,7 +188,7 @@ impl Shape<'_> {
         }
     }
 
-    fn said(&self, words: &str, undo: Option<UndoToken>) -> Outcome {
+    fn said(words: &str, undo: Option<UndoToken>) -> Outcome {
         Outcome {
             value: None,
             said: LabelText::parse(words).ok(),
@@ -198,7 +199,7 @@ impl Shape<'_> {
     }
 
     /// The token that takes back the change just queued.
-    fn undo(&self, kind: OpKind, count: usize) -> Option<UndoToken> {
+    fn undo(kind: OpKind, count: usize) -> Option<UndoToken> {
         let token = Undoing { kind, count }.token()?;
         UndoToken::parse(&token).ok()
     }

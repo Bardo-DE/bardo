@@ -23,11 +23,19 @@ pub struct ConfirmSkeleton;
 
 #[zbus::interface(name = "org.bardo.Confirm1")]
 impl ConfirmSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn confirm(&self, request: String) -> fdo::Result<OwnedObjectPath> {
         let _ = (request,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn cancel(&self, id: String) -> fdo::Result<()> {
         let _ = (id,);
         Err(crate::introspect::frozen())

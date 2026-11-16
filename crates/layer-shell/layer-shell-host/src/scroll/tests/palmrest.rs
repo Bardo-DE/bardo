@@ -120,7 +120,7 @@ impl Host {
         for message in messages {
             let routed = route(&message);
             if let Some(fingers) = routed.fingers {
-                self.suppress = self.suppress.fingers(fingers, self.now);
+                self.suppress = Suppress::fingers(fingers, self.now);
             }
             if let Some(event) = routed.scroll {
                 self.scroll

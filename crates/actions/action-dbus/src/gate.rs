@@ -25,11 +25,19 @@ pub struct GateSkeleton;
 
 #[zbus::interface(name = "org.bardo.Intents1.Gate")]
 impl GateSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn grant(&self, ask: String) -> fdo::Result<OwnedObjectPath> {
         let _ = ask;
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn check(&self, ask: String, options: Details) -> fdo::Result<OwnedObjectPath> {
         let _ = (ask, options);
         Err(crate::introspect::frozen())

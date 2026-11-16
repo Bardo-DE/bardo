@@ -58,38 +58,70 @@ pub struct ControlSkeleton;
 
 #[zbus::interface(name = "org.bardo.Intents1.Control")]
 impl ControlSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn halt(&self, scope: String, cause: String) -> fdo::Result<()> {
         let _ = (scope, cause);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn resume(&self, scope: String) -> fdo::Result<()> {
         let _ = (scope,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn state(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn journal(&self, filter: String) -> fdo::Result<String> {
         let _ = (filter,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn terminal_grants(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn revoke_terminal_grant(&self, action: String) -> fdo::Result<()> {
         let _ = (action,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn standing_grants(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn revoke_standing_grant(&self, id: String) -> fdo::Result<()> {
         let _ = (id,);
         Err(crate::introspect::frozen())

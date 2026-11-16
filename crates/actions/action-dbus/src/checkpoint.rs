@@ -51,26 +51,46 @@ pub struct CheckpointSkeleton;
 
 #[zbus::interface(name = "org.bardo.Intents1.Checkpoint")]
 impl CheckpointSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn list(&self, session: String) -> fdo::Result<String> {
         let _ = (session,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn plan(&self, session: String, point: u32) -> fdo::Result<String> {
         let _ = (session, point);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn watch(&self, workspace: String, label: String, rewind: String) -> fdo::Result<String> {
         let _ = (workspace, label, rewind);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn mark(&self, session: String) -> fdo::Result<u64> {
         let _ = (session,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn watch_agent(
         &self,
         workspace: String,
@@ -82,11 +102,19 @@ impl CheckpointSkeleton {
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn handover(&self, session: String, to: String, agent: String) -> fdo::Result<String> {
         let _ = (session, to, agent);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn watched(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }

@@ -42,6 +42,10 @@ pub struct RunSkeleton;
 
 #[zbus::interface(name = "org.bardo.Intents1.Run")]
 impl RunSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn perform(
         &self,
         call: String,
@@ -53,26 +57,46 @@ impl RunSkeleton {
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn dry_run(&self, call: String, session: String) -> fdo::Result<String> {
         let _ = (call, session);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn preview(&self, entity: String) -> fdo::Result<String> {
         let _ = (entity,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn suggest(&self, ask: String) -> fdo::Result<String> {
         let _ = (ask,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn undo(&self, entry: u64) -> fdo::Result<OwnedObjectPath> {
         let _ = (entry,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn undo_all(&self, scope: String) -> fdo::Result<OwnedObjectPath> {
         let _ = (scope,);
         Err(crate::introspect::frozen())

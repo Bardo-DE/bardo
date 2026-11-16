@@ -21,7 +21,7 @@ pub(crate) struct Suppress {
 impl Suppress {
     /// palmrest reported its fingers `down` or up at `now` (`Touches`, or a scroll phase:
     /// `MayBegin` / Began / Changed are down, Ended / Cancelled are up).
-    pub(crate) fn fingers(self, down: bool, now: Elapsed) -> Suppress {
+    pub(crate) fn fingers(down: bool, now: Elapsed) -> Suppress {
         Suppress {
             fingers_down: Some(down),
             lifted: (!down).then_some(now),
@@ -69,8 +69,8 @@ mod tests {
     #[test]
     fn the_window_of_11_3_14() {
         let quiet = Suppress::default();
-        let down = quiet.fingers(true, at(0));
-        let up = down.fingers(false, at(1000));
+        let down = Suppress::fingers(true, at(0));
+        let up = Suppress::fingers(false, at(1000));
         // name, state, suppressible source, driven, now, delivered
         let cases = [
             ("never touched", quiet, true, false, at(0), true),

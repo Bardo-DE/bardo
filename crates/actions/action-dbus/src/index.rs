@@ -22,11 +22,19 @@ pub struct IndexSkeleton;
 
 #[zbus::interface(name = "org.bardo.Intents1.Index")]
 impl IndexSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn push(&self, batch: String) -> fdo::Result<()> {
         let _ = (batch,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn reset(&self, epoch: u64) -> fdo::Result<()> {
         let _ = (epoch,);
         Err(crate::introspect::frozen())

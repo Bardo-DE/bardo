@@ -109,109 +109,197 @@ pub struct CompanionHelpers2Skeleton;
 
 #[zbus::interface(name = "org.bardo.Companion1.Helpers2")]
 impl CompanionHelpers2Skeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn list(&self, after: u64) -> fdo::Result<String> {
         let _ = (after,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn card(&self, helper: String) -> fdo::Result<String> {
         let _ = (helper,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn create(&self, form: String) -> fdo::Result<String> {
         let _ = (form,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn edit(&self, helper: String, form: String) -> fdo::Result<String> {
         let _ = (helper, form);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn pause(&self, helper: String) -> fdo::Result<()> {
         let _ = (helper,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn resume(&self, helper: String) -> fdo::Result<()> {
         let _ = (helper,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn remove(&self, helper: String) -> fdo::Result<()> {
         let _ = (helper,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn post_job(&self, helper: String, goal: String, things: String) -> fdo::Result<String> {
         let _ = (helper, goal, things);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn sign_in(&self, helper: String, way: String) -> fdo::Result<String> {
         let _ = (helper, way);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn sign_out(&self, helper: String) -> fdo::Result<String> {
         let _ = (helper,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn routines(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn routine_card(&self, routine: String) -> fdo::Result<String> {
         let _ = (routine,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn add_routine(&self, form: String) -> fdo::Result<String> {
         let _ = (form,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn pause_routine(&self, routine: String) -> fdo::Result<()> {
         let _ = (routine,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn resume_routine(&self, routine: String) -> fdo::Result<()> {
         let _ = (routine,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn remove_routine(&self, routine: String) -> fdo::Result<()> {
         let _ = (routine,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn routine_proposals(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn accept_routine_proposal(&self, id: String) -> fdo::Result<String> {
         let _ = (id,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn decline_routine_proposal(&self, id: String) -> fdo::Result<()> {
         let _ = (id,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn open_in_terminal(&self, helper: String) -> fdo::Result<String> {
         let _ = (helper,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn bring_back(&self, helper: String) -> fdo::Result<String> {
         let _ = (helper,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn say(&self, session: String, turn: u64, text: String) -> fdo::Result<String> {
         let _ = (session, turn, text);
         Err(crate::introspect::frozen())

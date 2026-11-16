@@ -55,50 +55,90 @@ pub struct IntentProviderSkeleton;
 
 #[zbus::interface(name = "org.bardo.IntentProvider1")]
 impl IntentProviderSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn perform(&self, invocation: String, options: Details) -> fdo::Result<String> {
         let _ = (invocation, options);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn classify(&self, invocation: String, options: Details) -> fdo::Result<String> {
         let _ = (invocation, options);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn dry_run(&self, invocation: String, options: Details) -> fdo::Result<String> {
         let _ = (invocation, options);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn undo(&self, token: String, actor: String) -> fdo::Result<String> {
         let _ = (token, actor);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn context(&self) -> fdo::Result<String> {
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn summon(&self, serial: u64, origin: String) -> fdo::Result<String> {
         let _ = (serial, origin);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn search(&self, text: String, generation: u64) -> fdo::Result<String> {
         let _ = (text, generation);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn preview(&self, entity: String) -> fdo::Result<String> {
         let _ = (entity,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn suggest(&self, ask: String) -> fdo::Result<String> {
         let _ = (ask,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn resolve(&self, keys: String) -> fdo::Result<String> {
         let _ = (keys,);
         Err(crate::introspect::frozen())

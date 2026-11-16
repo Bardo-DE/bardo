@@ -28,11 +28,19 @@ pub struct SearchSkeleton;
 
 #[zbus::interface(name = "org.bardo.Intents1.Search")]
 impl SearchSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn query(&self, text: String, scope: String, generation: u64) -> fdo::Result<String> {
         let _ = (text, scope, generation);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn cancel(&self, generation: u64) -> fdo::Result<()> {
         let _ = (generation,);
         Err(crate::introspect::frozen())

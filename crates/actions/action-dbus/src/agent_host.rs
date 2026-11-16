@@ -34,21 +34,37 @@ pub struct AgentHostSkeleton;
 
 #[zbus::interface(name = "org.bardo.AgentHost1")]
 impl AgentHostSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn hand_over(&self, handover: String) -> fdo::Result<String> {
         let _ = (handover,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn wait(&self, turn: String) -> fdo::Result<String> {
         let _ = (turn,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn apps_begin(&self, ask: String) -> fdo::Result<String> {
         let _ = (ask,);
         Err(crate::introspect::frozen())
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn apps_wait(&self, call: String) -> fdo::Result<String> {
         let _ = (call,);
         Err(crate::introspect::frozen())

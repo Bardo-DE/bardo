@@ -20,6 +20,10 @@ pub struct ReaderSkeleton;
 
 #[zbus::interface(name = "org.bardo.Reader1")]
 impl ReaderSkeleton {
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self` whether or not it reads it"
+    )]
     fn extract(&self, session: String, ask: String, options: Details) -> fdo::Result<String> {
         let _ = (session, ask, options);
         Err(crate::introspect::frozen())
