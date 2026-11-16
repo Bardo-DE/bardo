@@ -30,6 +30,7 @@ memory-client = {default-features = false, features = ["dbus"], path = "../../me
 wayland-client = { workspace = true }
 rustix = {version = "1.1", default-features = false, features = ["std", "fs"]}
 thiserror = { workspace = true }
+tracing = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 

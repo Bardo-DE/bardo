@@ -139,10 +139,16 @@ impl<T: Transport> CuaModel for InferdCuaModel<T> {
         session
             .send(ClientFrame::Request(InferRequest::CuaBegin(begin)))
             .await
-            .ok()
-            .ok_or(CuaModelError::Fatal)?;
+            .map_err(|error| {
+                tracing::warn!(%error, "could not send the begin frame to the model");
+                CuaModelError::Fatal
+            })?;
         loop {
-            match session.next().await.ok().ok_or(CuaModelError::Fatal)? {
+            let event = session.next().await.map_err(|error| {
+                tracing::warn!(%error, "the model session broke before it began");
+                CuaModelError::Fatal
+            })?;
+            match event {
                 InferEvent::Routed(served) => self.served = Some(served),
                 InferEvent::Declined(declined) => self.note_declined(&declined),
                 InferEvent::Finished(InferReply::CuaStep(ack)) if is_ack(&ack) => break,
@@ -169,7 +175,10 @@ impl<T: Transport> CuaModel for InferdCuaModel<T> {
             size: frame.0.size,
             stride: frame.0.stride,
         };
-        let fd = frame_fd(&frame).ok().ok_or(CuaModelError::Fatal)?;
+        let fd = frame_fd(&frame).map_err(|error| {
+            tracing::warn!(%error, "could not make a descriptor of the frame");
+            CuaModelError::Fatal
+        })?;
         self.usage = None;
         let sent = session
             .send_attached(
@@ -260,7 +269,8 @@ impl<T: Transport> InferdCuaModel<T> {
     }
 
     /// The session broke: it is gone, and so is the history the model was pinned to.
-    fn lost(&mut self, _error: SessionError) -> CuaModelError {
+    fn lost(&mut self, error: SessionError) -> CuaModelError {
+        tracing::warn!(%error, "the model session broke");
         self.session = None;
         CuaModelError::Fatal
     }

@@ -263,8 +263,10 @@ impl<P: Provider + 'static> CuaModel for ProviderModel<P> {
             &self.plan.profile.rule,
             self.plan.profile.space,
         )
-        .ok()
-        .ok_or(CuaModelError::Fatal)?;
+        .map_err(|error| {
+            tracing::warn!(%error, "could not map the window to the model's frame");
+            CuaModelError::Fatal
+        })?;
         let pixels = &frame.0;
         let raw = RawFrame {
             pixels: &pixels.data,
@@ -272,9 +274,10 @@ impl<P: Provider + 'static> CuaModel for ProviderModel<P> {
             stride: pixels.stride,
             format: pixels.format,
         };
-        let prepared = prepare(raw, &map, Encoding::Png)
-            .ok()
-            .ok_or(CuaModelError::Fatal)?;
+        let prepared = prepare(raw, &map, Encoding::Png).map_err(|error| {
+            tracing::warn!(%error, "could not prepare the frame for the model");
+            CuaModelError::Fatal
+        })?;
         let image = ImageInput {
             media: prepared.media,
             bytes: ImageBytes(prepared.bytes),

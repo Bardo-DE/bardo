@@ -95,9 +95,10 @@ fn url_of(target: &HttpTarget, path: &str) -> Result<Url, HttpError> {
         HttpTarget::Tls { host, port } => ("https", authority(&host.0, port.0), HttpError::Tls),
         HttpTarget::Unix(_) => ("http", "localhost".to_owned(), HttpError::Connect),
     };
-    Url::parse(&format!("{scheme}://{authority}{path}"))
-        .ok()
-        .ok_or(wrong)
+    Url::parse(&format!("{scheme}://{authority}{path}")).map_err(|error| {
+        tracing::warn!(%error, "the engine's address is not a URL");
+        wrong
+    })
 }
 
 /// `host:port`, with a bare IPv6 address in brackets.

@@ -319,7 +319,10 @@ impl CuaModel for ScriptModel {
         _sink: &mut impl StepSink,
     ) -> Result<CuaStepReply, CuaModelError> {
         let next = self.moves.pop_front().ok_or(CuaModelError::Fatal)?;
-        let action = next.resolve(&self.stage).ok().ok_or(CuaModelError::Fatal)?;
+        let action = next.resolve(&self.stage).map_err(|error| {
+            tracing::warn!(%error, "a scripted move names something that is not on the screen");
+            CuaModelError::Fatal
+        })?;
         Ok(CuaStepReply::new(vec![action]))
     }
 
