@@ -66,7 +66,8 @@ impl<T: GrantsLink> PimGrants for ClientGrants<T> {
             .accounts
             .find(&need_of(kind), kind.class(), Usage::Background)
             .await
-            .map_err(|_| AccountdUnavailable)?;
+            .ok()
+            .ok_or(AccountdUnavailable)?;
         let mut candidates = match found {
             Found::One(one) => vec![one],
             Found::Several(several) => several,

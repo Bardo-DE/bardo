@@ -190,7 +190,7 @@ impl StreamDecoder {
     fn fragment(&mut self, position: usize, call: &Value) -> Result<Vec<TurnEvent>, CodecError> {
         let wire = match call.get("index") {
             None | Some(Value::Null) => {
-                u32::try_from(position).map_err(|_| CodecError::Unreadable)?
+                u32::try_from(position).ok().ok_or(CodecError::Unreadable)?
             }
             Some(index) => index
                 .as_u64()
@@ -311,7 +311,9 @@ impl ChatDecoder for StreamDecoder {
         if frame == "[DONE]" {
             return self.marker();
         }
-        let value: Value = serde_json::from_str(frame).map_err(|_| CodecError::Unreadable)?;
+        let value: Value = serde_json::from_str(frame)
+            .ok()
+            .ok_or(CodecError::Unreadable)?;
         if !value.is_object() {
             return Err(CodecError::Unreadable);
         }

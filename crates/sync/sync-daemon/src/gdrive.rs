@@ -33,7 +33,7 @@ pub fn gdrive_replica<T: GrantsLink>(
     folder: &str,
     clock: Clock,
 ) -> Result<GdriveReplica<RelayHttp<RelayDial<T>>>, BuildError> {
-    let base = WebUrl::try_from(&endpoint).map_err(|_| BuildError::NotWeb)?;
+    let base = WebUrl::try_from(&endpoint).ok().ok_or(BuildError::NotWeb)?;
     let dial = RelayDial::authenticated(accounts, grant, endpoint);
     Ok(GdriveReplica::new(
         RelayHttp::new(dial, RelayLimits::default()),

@@ -99,7 +99,7 @@ impl Pending {
             self.id = Some(id);
         }
         if let Some(name) = fragment.name.filter(|_| self.name.is_none()) {
-            self.name = Some(ToolName::new(name).map_err(|_| CodecError::Unreadable)?);
+            self.name = Some(ToolName::new(name).ok().ok_or(CodecError::Unreadable)?);
         }
         if let (Opened::No, Some(name)) = (self.opened, &self.name) {
             let id = self

@@ -29,7 +29,8 @@ impl Offload {
             #[cfg(feature = "tokio")]
             Offload::Tokio => tokio::task::spawn_blocking(work)
                 .await
-                .map_err(|_| Cancelled),
+                .ok()
+                .ok_or(Cancelled),
         }
     }
 }

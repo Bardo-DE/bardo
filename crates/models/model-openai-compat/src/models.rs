@@ -30,7 +30,9 @@ pub(crate) fn describe(flavor: Flavor) -> Exchange {
 /// then uses the catalog's context for that model. When only one of the two sizes is reported
 /// both take it.
 pub(crate) fn parse_models(body: &[u8]) -> Result<Vec<ModelInfo>, CodecError> {
-    let value: Value = serde_json::from_slice(body).map_err(|_| CodecError::Unreadable)?;
+    let value: Value = serde_json::from_slice(body)
+        .ok()
+        .ok_or(CodecError::Unreadable)?;
     match value.get("data").and_then(Value::as_array) {
         Some(entries) => entries.iter().map(entry).collect(),
         None => props(&value).map(|info| vec![info]),

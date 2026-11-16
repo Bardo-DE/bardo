@@ -23,7 +23,8 @@ fn slug_of<T: serde::Serialize>(value: &T) -> String {
 
 fn from_slug<T: serde::de::DeserializeOwned>(what: &str, text: &str) -> Result<T, JournalError> {
     serde_json::from_value(serde_json::Value::String(text.to_owned()))
-        .map_err(|_| corrupt(what, text))
+        .ok()
+        .ok_or_else(|| corrupt(what, text))
 }
 
 fn base_text(base: &BaseVersion) -> Option<&str> {
@@ -216,8 +217,9 @@ pub(super) fn conflicts(connection: &Connection) -> Result<Vec<StoredConflict>, 
     })?;
     rows.map(|row| {
         let (number, item, base, remote, local, local_hash, at) = row?;
-        let remote: RemoteSide =
-            serde_json::from_str(&remote).map_err(|_| corrupt("conflict side", &remote))?;
+        let remote: RemoteSide = serde_json::from_str(&remote)
+            .ok()
+            .ok_or_else(|| corrupt("conflict side", &remote))?;
         Ok(StoredConflict {
             number: Some(number),
             conflict: Conflict {

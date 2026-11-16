@@ -72,7 +72,9 @@ impl<T: GrantsLink + 'static> PimSource for DavSource<T> {
     type Feed = DavFeed<T>;
 
     async fn collections(&self, kind: PimKind) -> Result<Vec<Found>, DiscoverError> {
-        let web = WebUrl::try_from(&self.endpoint).map_err(|_| DiscoverError::Unreadable)?;
+        let web = WebUrl::try_from(&self.endpoint)
+            .ok()
+            .ok_or(DiscoverError::Unreadable)?;
         let http = pim_http(
             Arc::clone(&self.accounts),
             self.grant.clone(),

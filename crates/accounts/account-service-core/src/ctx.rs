@@ -337,7 +337,8 @@ impl<E: Ports> Ctx<E> {
         self.store
             .save(&after.persisted())
             .await
-            .map_err(|_| Refusal::Unavailable)?;
+            .ok()
+            .ok_or(Refusal::Unavailable)?;
         let listeners: Vec<Told> = self
             .committed
             .lock()

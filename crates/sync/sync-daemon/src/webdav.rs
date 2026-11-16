@@ -38,13 +38,14 @@ pub fn webdav_replica<T: GrantsLink>(
     clock: Clock,
     nonce: &str,
 ) -> Result<WebDavReplica<RelayHttp<RelayDial<T>>>, BuildError> {
-    let base = WebUrl::try_from(&endpoint).map_err(|_| BuildError::NotWeb)?;
+    let base = WebUrl::try_from(&endpoint).ok().ok_or(BuildError::NotWeb)?;
     let url = WebUrl::parse(&format!(
         "{}/{}/",
         base.as_str().trim_end_matches('/'),
         folder.trim_matches('/')
     ))
-    .map_err(|_| BuildError::NotWeb)?;
+    .ok()
+    .ok_or(BuildError::NotWeb)?;
     let dial = RelayDial::authenticated(accounts, grant, endpoint);
     Ok(WebDavReplica::new(
         RelayHttp::new(dial, RelayLimits::default()),

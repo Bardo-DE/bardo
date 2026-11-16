@@ -51,7 +51,8 @@ pub async fn dictate<D: AudioDevice, T: Transport>(
 ) -> Result<Dictated, VoiceFault> {
     let found = snapshot_before(device, tokio::time::sleep(SNAPSHOT_BUDGET))
         .await
-        .map_err(|_| VoiceFault::MicUnavailable)?;
+        .ok()
+        .ok_or(VoiceFault::MicUnavailable)?;
     let node = choose_capture(&found.sources, found.default.as_deref(), input)
         .map(|chosen| chosen.node.clone())
         .ok_or(VoiceFault::MicUnavailable)?;

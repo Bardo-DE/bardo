@@ -84,7 +84,7 @@ impl<T: GrantsLink + 'static> PimSource for GooglePeopleSource<T> {
         debug_assert_eq!(kind, PimKind::Contacts, "this source reads contacts");
         let url = format!("{}/people/me/connections/", self.api.base());
         Ok(vec![Found {
-            url: WebUrl::parse(&url).map_err(|_| DiscoverError::Unreadable)?,
+            url: WebUrl::parse(&url).ok().ok_or(DiscoverError::Unreadable)?,
             segment: "google".to_owned(),
             displayname: Some(NAME.to_owned()),
             color: None,
@@ -163,7 +163,8 @@ impl<T: GrantsLink + 'static> Feed for GooglePeopleFeed<T> {
             _ => return Err(read_error(&response, self.clock.now())),
         }
         let listing: Connections = serde_json::from_slice(response.body())
-            .map_err(|_| ReplicaError::Transient(RetryAfter(30)))?;
+            .ok()
+            .ok_or(ReplicaError::Transient(RetryAfter(30)))?;
         let (next, more) = match (listing.next_page, listing.next_sync) {
             (Some(page), _) if !page.is_empty() => (SyncCursor::Paging { page, sync }, More::More),
             (_, Some(token)) if !token.is_empty() => (SyncCursor::Synced(token), More::Done),
@@ -205,7 +206,8 @@ impl<T: GrantsLink + 'static> Feed for GooglePeopleFeed<T> {
             return Err(read_error(&response, self.clock.now()));
         }
         let person: Person = serde_json::from_slice(response.body())
-            .map_err(|_| ReplicaError::Transient(RetryAfter(30)))?;
+            .ok()
+            .ok_or(ReplicaError::Transient(RetryAfter(30)))?;
         if person.is_deleted() {
             Err(ReplicaError::Gone)
         } else {

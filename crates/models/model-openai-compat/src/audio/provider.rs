@@ -183,8 +183,10 @@ impl<T: UploadTransport> SpeechToText for OpenAiTranscription<T> {
             };
             let mut reply = Whole::default();
             let sent = self.client.upload(&up, &mut reply).await;
-            decode_transcription(&reply.into_body(sent)?).map_err(|_| {
-                ProviderError::Unreadable("the transcription is not the documented JSON".into())
+            decode_transcription(&reply.into_body(sent)?).map_err(|e| {
+                ProviderError::Unreadable(format!(
+                    "the transcription is not the documented JSON: {e}"
+                ))
             })?
         };
         let audio = length(&chunks);

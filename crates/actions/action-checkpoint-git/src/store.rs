@@ -40,7 +40,8 @@ async fn blocking<T: Send + 'static>(
 ) -> Result<T, StoreFault> {
     tokio::task::spawn_blocking(job)
         .await
-        .map_err(|_| StoreFault::Failed)?
+        .ok()
+        .ok_or(StoreFault::Failed)?
 }
 
 impl GitStore {
@@ -85,7 +86,8 @@ impl GitStore {
             let args = strings(&["checkout-index", "-f", "-z", "--stdin"]);
             self.ok_with(root, args, &env, Some(names))
                 .await
-                .map_err(|_| StoreFault::Partial)?;
+                .ok()
+                .ok_or(StoreFault::Partial)?;
         }
         Ok(())
     }
@@ -115,7 +117,8 @@ impl CheckpointStore for GitStore {
         }
         self.ok(&root, &["add", "-A", "--", "."], &env).await?;
         let tree = object_id(&self.ok(&root, &["write-tree"], &env).await?)
-            .map_err(|_| StoreFault::Failed)?;
+            .ok()
+            .ok_or(StoreFault::Failed)?;
         let message = format!("docket restore point {} of {}", id.0, session.as_str());
         let args = vec![
             "commit-tree".to_owned(),
@@ -124,7 +127,7 @@ impl CheckpointStore for GitStore {
             message,
         ];
         let made = self.ok_with(&root, args, &authorship(at.0), None).await?;
-        let commit = object_id(&made).map_err(|_| StoreFault::Failed)?;
+        let commit = object_id(&made).ok().ok_or(StoreFault::Failed)?;
         // Create-only: the all-zero old value means "the ref must not exist yet".
         let args = vec![
             "update-ref".to_owned(),
@@ -172,7 +175,9 @@ impl CheckpointStore for GitStore {
         let (check_root, check_paths) = (folder.clone(), everything);
         blocking(move || {
             let refs: Vec<&WorkPath> = check_paths.iter().collect();
-            stay_inside(&check_root, &refs).map_err(|_| StoreFault::Failed)
+            stay_inside(&check_root, &refs)
+                .ok()
+                .ok_or(StoreFault::Failed)
         })
         .await?;
         // Write first, delete last: the files the restore brings back are staged in a private
@@ -182,7 +187,7 @@ impl CheckpointStore for GitStore {
         self.write_back(&ask.root, &ask.session, &tree, &wanted)
             .await?;
         let (delete_root, gone) = (folder, plan.removed.clone());
-        blocking(move || delete(&delete_root, &gone).map_err(|_| StoreFault::Partial)).await?;
+        blocking(move || delete(&delete_root, &gone).ok().ok_or(StoreFault::Partial)).await?;
         Ok(plan)
     }
 

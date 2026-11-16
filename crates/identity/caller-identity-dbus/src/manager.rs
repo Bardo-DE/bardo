@@ -59,7 +59,8 @@ impl<P: ProcFs> ManagerLink<P> {
         );
         let reply = bounded(call)
             .await
-            .map_err(|_| UnitError::Timeout)?
+            .ok()
+            .ok_or(UnitError::Timeout)?
             .map_err(UnitError::Bus)?;
         reply.body().deserialize().map_err(UnitError::Bus)
     }
@@ -80,7 +81,8 @@ impl<P: ProcFs> ManagerLink<P> {
         let interface = InterfaceName::try_from(interface).map_err(|e| UnitError::Bus(e.into()))?;
         bounded(proxy.get_all(interface))
             .await
-            .map_err(|_| UnitError::Timeout)?
+            .ok()
+            .ok_or(UnitError::Timeout)?
             .map_err(|e| UnitError::Bus(e.into()))
             .map(Props)
     }

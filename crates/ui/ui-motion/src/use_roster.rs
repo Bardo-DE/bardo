@@ -132,7 +132,8 @@ impl<K: Clone + PartialEq + 'static> Roster<K> {
             .state()
             .try_peek()
             .map(|state| state.clone())
-            .map_err(|_| StayError::Unmounted)?;
+            .ok()
+            .ok_or(StayError::Unmounted)?;
         let (_, stayed) = held.stay(&key);
         self.machine.send(RosterIn::Stay(key));
         stayed

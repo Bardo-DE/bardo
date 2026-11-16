@@ -194,7 +194,9 @@ fn wav_file(format: AudioFormat, pcm: &[u8]) -> Result<Vec<u8>, AudioCodecError>
         PcmFormat::F32Le => (3_u16, 32_u16),
     };
     let width = u32::from(bits / 8);
-    let data = u32::try_from(pcm.len()).map_err(|_| AudioCodecError::UnsupportedFormat)?;
+    let data = u32::try_from(pcm.len())
+        .ok()
+        .ok_or(AudioCodecError::UnsupportedFormat)?;
     let riff = data
         .checked_add(36)
         .ok_or(AudioCodecError::UnsupportedFormat)?;

@@ -164,7 +164,8 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
         let standing = self
             .standing(sender, ask_units)
             .await
-            .map_err(|_| Refused::Unknown)?;
+            .ok()
+            .ok_or(Refused::Unknown)?;
         standing.holds(need).cloned()
     }
 
@@ -239,13 +240,14 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
 
     /// The unique name that owns `name` on the bus.
     pub(crate) async fn owner_name(&self, name: &str) -> Result<String, WhoError> {
-        let name = BusName::try_from(name).map_err(|_| WhoError::BadName)?;
+        let name = BusName::try_from(name).ok().ok_or(WhoError::BadName)?;
         let bus = DBusProxy::new(&self.connection)
             .await
             .map_err(WhoError::Bus)?;
         let owner = bounded(bus.get_name_owner(name))
             .await
-            .map_err(|_| WhoError::Timeout)?
+            .ok()
+            .ok_or(WhoError::Timeout)?
             .map_err(bus_error)?;
         Ok(owner.as_str().to_owned())
     }
@@ -259,7 +261,8 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
             .offload
             .run(move || prober.probe(&who, None))
             .await
-            .map_err(|_| WhoError::Offload)?;
+            .ok()
+            .ok_or(WhoError::Offload)?;
         let facts = match probed {
             Ok(mut facts) => {
                 if let (SandboxFacts::Native, Some(snap)) = (&facts.sandbox, label) {
@@ -279,7 +282,8 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
     ) -> Result<ConnectionCredentials, WhoError> {
         bounded(bus.get_connection_credentials(name.clone()))
             .await
-            .map_err(|_| WhoError::Timeout)?
+            .ok()
+            .ok_or(WhoError::Timeout)?
             .map_err(bus_error)
     }
 
@@ -289,7 +293,7 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
     /// opened by the reported pid at once and the bus is asked again: the same pid and user
     /// must still be behind the connection (`Reopened`).
     async fn pin_of(&self, sender: &str) -> Result<(Pinned, Option<SandboxFacts>), WhoError> {
-        let name = BusName::try_from(sender).map_err(|_| WhoError::BadName)?;
+        let name = BusName::try_from(sender).ok().ok_or(WhoError::BadName)?;
         let bus = DBusProxy::new(&self.connection)
             .await
             .map_err(WhoError::Bus)?;
@@ -309,7 +313,8 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
             .process_fd()
             .map(|fd| fd.as_fd().try_clone_to_owned())
             .transpose()
-            .map_err(|_| WhoError::NoCredentials)?;
+            .ok()
+            .ok_or(WhoError::NoCredentials)?;
         let held = if let Some(fd) = offered {
             Pinned::from_fd(fd, pid, uid)?
         } else {

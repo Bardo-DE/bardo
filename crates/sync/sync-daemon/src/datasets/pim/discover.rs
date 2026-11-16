@@ -94,7 +94,8 @@ pub async fn discover<H: Http>(
         .into_iter()
         .map(|collection| {
             let url = WebUrl::parse(&collection.url.to_string())
-                .map_err(|_| DiscoverError::Unreadable)?;
+                .ok()
+                .ok_or(DiscoverError::Unreadable)?;
             Ok(Found {
                 segment: segment_of(&url),
                 displayname: collection.display_name,

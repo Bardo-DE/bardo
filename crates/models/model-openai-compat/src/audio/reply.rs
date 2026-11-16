@@ -184,7 +184,7 @@ impl<K: AudioSink> BodySink for Pcm<'_, K> {
 pub(super) fn listed_models(body: &[u8]) -> Result<Vec<ModelName>, ProviderError> {
     let unreadable =
         || ProviderError::Unreadable("the model list is not the documented JSON".into());
-    let value: Value = serde_json::from_slice(body).map_err(|_| unreadable())?;
+    let value: Value = serde_json::from_slice(body).ok().ok_or_else(unreadable)?;
     let entries = value
         .get("data")
         .and_then(Value::as_array)
@@ -207,7 +207,7 @@ pub(super) fn listed_models(body: &[u8]) -> Result<Vec<ModelName>, ProviderError
 pub(super) fn listed_voices(body: &[u8]) -> Result<Vec<VoiceId>, ProviderError> {
     let unreadable =
         || ProviderError::Unreadable("the voice list is not the documented JSON".into());
-    let value: Value = serde_json::from_slice(body).map_err(|_| unreadable())?;
+    let value: Value = serde_json::from_slice(body).ok().ok_or_else(unreadable)?;
     let names = match &value {
         Value::Array(names) => names,
         other => other

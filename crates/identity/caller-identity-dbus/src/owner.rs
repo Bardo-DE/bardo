@@ -41,9 +41,11 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
         name: &str,
         need: &[Requirement],
     ) -> Result<OwnedUniqueName, Refused> {
-        let owner = self.owner_name(name).await.map_err(|_| Refused::Unknown)?;
+        let owner = self.owner_name(name).await.ok().ok_or(Refused::Unknown)?;
         self.require(Some(&owner), need).await?;
-        OwnedUniqueName::try_from(owner).map_err(|_| Refused::Unknown)
+        OwnedUniqueName::try_from(owner)
+            .ok()
+            .ok_or(Refused::Unknown)
     }
 
     /// Subscribes to changes of the owner of `name`. Call it before [`BusPeers::owner_of`].
@@ -57,7 +59,8 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
             .map_err(WhoError::Bus)?;
         let stream = bounded(bus.receive_name_owner_changed_with_args(&[(0, name)]))
             .await
-            .map_err(|_| WhoError::Timeout)?
+            .ok()
+            .ok_or(WhoError::Timeout)?
             .map_err(WhoError::Bus)?;
         Ok(OwnerWatch { stream })
     }

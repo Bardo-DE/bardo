@@ -84,7 +84,7 @@ impl<T: GrantsLink + 'static> PimSource for GoogleTasksSource<T> {
             .map(|list| {
                 let url = format!("{}/lists/{}/", self.api.base(), encode(&list.id));
                 Ok(Found {
-                    url: WebUrl::parse(&url).map_err(|_| DiscoverError::Unreadable)?,
+                    url: WebUrl::parse(&url).ok().ok_or(DiscoverError::Unreadable)?,
                     segment: segment_of(&list.id),
                     displayname: list.title.filter(|t| !t.is_empty()),
                     color: None,
@@ -167,7 +167,8 @@ impl<T: GrantsLink + 'static> Feed for GoogleTasksFeed<T> {
             return Err(read_error(&response, self.clock.now()));
         }
         let listing: TasksPage = serde_json::from_slice(response.body())
-            .map_err(|_| ReplicaError::Transient(RetryAfter(30)))?;
+            .ok()
+            .ok_or(ReplicaError::Transient(RetryAfter(30)))?;
         // `updated` is always `YYYY-MM-DDTHH:MM:SS.sssZ`, which orders as text.
         let newest = listing
             .items
@@ -218,7 +219,8 @@ impl<T: GrantsLink + 'static> Feed for GoogleTasksFeed<T> {
             return Err(read_error(&response, self.clock.now()));
         }
         let task: Task = serde_json::from_slice(response.body())
-            .map_err(|_| ReplicaError::Transient(RetryAfter(30)))?;
+            .ok()
+            .ok_or(ReplicaError::Transient(RetryAfter(30)))?;
         if task.is_deleted() {
             Err(ReplicaError::Gone)
         } else {

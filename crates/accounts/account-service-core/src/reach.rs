@@ -70,10 +70,12 @@ pub fn declared_endpoint(
         .find(|e| bare && e.url.origin().scheme == dialled.scheme && names(e))
         .ok_or(Refusal::EndpointNotGranted)?;
     let endpoint = ServiceEndpoint {
-        url: EndpointUrl::parse(&dialled.to_string()).map_err(|_| Refusal::EndpointNotGranted)?,
+        url: EndpointUrl::parse(&dialled.to_string())
+            .ok()
+            .ok_or(Refusal::EndpointNotGranted)?,
         ..home.clone()
     };
-    endpoint.check().map_err(|_| Refusal::EndpointNotGranted)?;
+    endpoint.check().ok().ok_or(Refusal::EndpointNotGranted)?;
     Ok(endpoint)
 }
 

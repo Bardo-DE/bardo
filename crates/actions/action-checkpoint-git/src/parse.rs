@@ -21,7 +21,7 @@ fn lines(stdout: &[u8]) -> impl Iterator<Item = &[u8]> {
 }
 
 fn text(bytes: &[u8]) -> Result<&str, Unexpected> {
-    std::str::from_utf8(bytes).map_err(|_| Unexpected)
+    std::str::from_utf8(bytes).ok().ok_or(Unexpected)
 }
 
 /// The number of paths in a NUL-separated listing.
@@ -73,7 +73,7 @@ fn add(
     if mode == NESTED_REPOSITORY {
         return Ok(());
     }
-    let path = WorkPath::parse(path).map_err(|_| Unexpected)?;
+    let path = WorkPath::parse(path).ok().ok_or(Unexpected)?;
     files.insert(path, EntryId::new(format!("{mode}:{oid}")));
     Ok(())
 }

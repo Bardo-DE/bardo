@@ -106,7 +106,7 @@ impl Handle {
     ) -> Result<T, VoiceError> {
         let (reply, answer) = oneshot::channel();
         let gone = || VoiceError::Gone("voiced is stopping".to_owned());
-        self.tx.send(make(reply)).await.map_err(|_| gone())?;
-        answer.await.map_err(|_| gone())
+        self.tx.send(make(reply)).await.ok().ok_or_else(gone)?;
+        answer.await.ok().ok_or_else(gone)
     }
 }

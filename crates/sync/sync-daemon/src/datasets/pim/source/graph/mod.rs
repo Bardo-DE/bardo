@@ -80,7 +80,9 @@ impl<T: GrantsLink> GraphCalendarSource<T> {
         endpoint: EndpointUrl,
         clock: Clock,
     ) -> Result<Self, DiscoverError> {
-        let base = WebUrl::try_from(&endpoint).map_err(|_| DiscoverError::Unreadable)?;
+        let base = WebUrl::try_from(&endpoint)
+            .ok()
+            .ok_or(DiscoverError::Unreadable)?;
         Ok(Self {
             http: Arc::new(pim_http(accounts, grant, endpoint)),
             base,
@@ -173,7 +175,7 @@ pub(super) async fn get<H: Http>(
     url: &str,
     prefer: Option<&str>,
 ) -> Result<Response<Vec<u8>>, HttpError> {
-    let url = WebUrl::parse(url).map_err(|_| HttpError::Unreachable)?;
+    let url = WebUrl::parse(url).ok().ok_or(HttpError::Unreachable)?;
     let mut builder = request(Method::GET, &url).header("Accept", "application/json");
     if let Some(prefer) = prefer {
         builder = builder.header("Prefer", prefer);
@@ -204,12 +206,13 @@ impl<T: GrantsLink + 'static> PimSource for GraphCalendarSource<T> {
                 401 | 403 => return Err(DiscoverError::Unauthorized),
                 other => return Err(DiscoverError::Status(other)),
             }
-            let page: CalendarPage =
-                serde_json::from_slice(response.body()).map_err(|_| DiscoverError::Unreadable)?;
+            let page: CalendarPage = serde_json::from_slice(response.body())
+                .ok()
+                .ok_or(DiscoverError::Unreadable)?;
             for calendar in &page.value {
                 let own = format!("{base}/v1.0/me/calendars/{}/", encode(&calendar.id));
                 found.push(Found {
-                    url: WebUrl::parse(&own).map_err(|_| DiscoverError::Unreadable)?,
+                    url: WebUrl::parse(&own).ok().ok_or(DiscoverError::Unreadable)?,
                     segment: segment_of(&calendar.id),
                     displayname: calendar.name.clone().filter(|n| !n.is_empty()),
                     color: color_of(calendar),
@@ -301,7 +304,8 @@ impl<T: GrantsLink + 'static> Feed for GraphCalendarFeed<T> {
             _ => return Err(read_error(&response, self.clock.now())),
         }
         let page: EventPage = serde_json::from_slice(response.body())
-            .map_err(|_| ReplicaError::Transient(RetryAfter(30)))?;
+            .ok()
+            .ok_or(ReplicaError::Transient(RetryAfter(30)))?;
         let (next, more) = match (page.next, page.delta) {
             (Some(next), _) => (next, More::More),
             (None, Some(delta)) => (delta, More::Done),
@@ -336,10 +340,12 @@ impl<T: GrantsLink + 'static> Feed for GraphCalendarFeed<T> {
             return Err(read_error(&response, self.clock.now()));
         }
         let event: Event = serde_json::from_slice(response.body())
-            .map_err(|_| ReplicaError::Transient(RetryAfter(30)))?;
+            .ok()
+            .ok_or(ReplicaError::Transient(RetryAfter(30)))?;
         convert::to_ics(&event)
             .map(String::into_bytes)
-            .map_err(|_| ReplicaError::Gone)
+            .ok()
+            .ok_or(ReplicaError::Gone)
     }
 }
 

@@ -344,7 +344,8 @@ impl Hub {
         queue
             .send(Confirm { reply })
             .await
-            .map_err(|_| ConfirmError::NoSuchDataset)?;
+            .ok()
+            .ok_or(ConfirmError::NoSuchDataset)?;
         answer.await.unwrap_or(Err(ConfirmError::NoSuchDataset))
     }
 
@@ -379,7 +380,8 @@ impl Hub {
         queue
             .send(Settle { number, how, reply })
             .await
-            .map_err(|_| SettleError::NoSuchDataset)?;
+            .ok()
+            .ok_or(SettleError::NoSuchDataset)?;
         answer.await.unwrap_or(Err(SettleError::NoSuchDataset))
     }
 

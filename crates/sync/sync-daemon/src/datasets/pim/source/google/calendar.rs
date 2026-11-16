@@ -108,7 +108,7 @@ impl<T: GrantsLink + 'static> PimSource for GoogleCalendarSource<T> {
                     super::super::graph::encode(&calendar.id)
                 );
                 Ok(Found {
-                    url: WebUrl::parse(&url).map_err(|_| DiscoverError::Unreadable)?,
+                    url: WebUrl::parse(&url).ok().ok_or(DiscoverError::Unreadable)?,
                     segment: segment_of(&calendar.id),
                     displayname: calendar
                         .summary_override
@@ -196,7 +196,8 @@ impl<T: GrantsLink + 'static> Feed for GoogleCalendarFeed<T> {
             _ => return Err(read_error(&response, self.clock.now())),
         }
         let listing: EventsPage = serde_json::from_slice(response.body())
-            .map_err(|_| ReplicaError::Transient(RetryAfter(30)))?;
+            .ok()
+            .ok_or(ReplicaError::Transient(RetryAfter(30)))?;
         let (next, more) = match (listing.next_page, listing.next_sync) {
             (Some(page), _) if !page.is_empty() => (SyncCursor::Paging { page, sync }, More::More),
             (_, Some(token)) if !token.is_empty() => (SyncCursor::Synced(token), More::Done),
@@ -234,13 +235,15 @@ impl<T: GrantsLink + 'static> Feed for GoogleCalendarFeed<T> {
             return Err(read_error(&response, self.clock.now()));
         }
         let event: Event = serde_json::from_slice(response.body())
-            .map_err(|_| ReplicaError::Transient(RetryAfter(30)))?;
+            .ok()
+            .ok_or(ReplicaError::Transient(RetryAfter(30)))?;
         if event.is_cancelled() {
             Err(ReplicaError::Gone)
         } else {
             event::to_ics(&event)
                 .map(String::into_bytes)
-                .map_err(|_| ReplicaError::Gone)
+                .ok()
+                .ok_or(ReplicaError::Gone)
         }
     }
 }

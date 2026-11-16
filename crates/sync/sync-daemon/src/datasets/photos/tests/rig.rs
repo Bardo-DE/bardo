@@ -32,7 +32,8 @@ impl Dial for TcpDial {
     async fn dial(&self) -> Result<TcpStream, HttpError> {
         let stream = TcpStream::connect(("127.0.0.1", self.0))
             .await
-            .map_err(|_| HttpError::Unreachable)?;
+            .ok()
+            .ok_or(HttpError::Unreachable)?;
         // A request written in two parts must not wait for the server's delayed
         // acknowledgement: that is 40 ms a request on loopback.
         let _ = stream.set_nodelay(true);

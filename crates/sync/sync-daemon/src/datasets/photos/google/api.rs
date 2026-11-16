@@ -125,19 +125,21 @@ impl<H: Http> PhotosApi<H> {
 
     fn request(&self, path: &str) -> Result<Builder, ApiError> {
         let url = WebUrl::parse(&format!("{}/v1/{path}", self.origin))
-            .map_err(|_| ApiError::Unreadable)?;
+            .ok()
+            .ok_or(ApiError::Unreadable)?;
         Ok(request(Method::POST, &url).header("Accept", "application/json"))
     }
 
     /// Sends the request `request` builds with `body`. A request that would not build is never
     /// sent, which is no answer, as a client that refuses it is.
     async fn send(&self, request: Builder, body: Vec<u8>) -> Result<Response<Vec<u8>>, ApiError> {
-        let request = request.body(body).map_err(|_| ApiError::Unreached)?;
+        let request = request.body(body).ok().ok_or(ApiError::Unreached)?;
         let response = self
             .http
             .send(request)
             .await
-            .map_err(|_| ApiError::Unreached)?;
+            .ok()
+            .ok_or(ApiError::Unreached)?;
         match response.status() {
             StatusCode::OK => Ok(response),
             _ => Err(refused(&response, self.clock.now())),
@@ -159,7 +161,9 @@ impl<H: Http> PhotosApi<H> {
             .header("X-Goog-Upload-Protocol", "raw")
             .header("X-Goog-Upload-File-Name", name);
         let response = self.send(request, bytes).await?;
-        let token = String::from_utf8(response.into_body()).map_err(|_| ApiError::Unreadable)?;
+        let token = String::from_utf8(response.into_body())
+            .ok()
+            .ok_or(ApiError::Unreadable)?;
         let token = token.trim();
         if token.is_empty() {
             Err(ApiError::Unreadable)
@@ -180,8 +184,9 @@ impl<H: Http> PhotosApi<H> {
             .request("albums")?
             .header("Content-Type", "application/json");
         let response = self.send(request, body.into_bytes()).await?;
-        let album: Album =
-            serde_json::from_slice(response.body()).map_err(|_| ApiError::Unreadable)?;
+        let album: Album = serde_json::from_slice(response.body())
+            .ok()
+            .ok_or(ApiError::Unreadable)?;
         Ok(AlbumId(album.id))
     }
 
@@ -207,8 +212,9 @@ impl<H: Http> PhotosApi<H> {
             .request("mediaItems:batchCreate")?
             .header("Content-Type", "application/json");
         let response = self.send(request, body.to_string().into_bytes()).await?;
-        let created: Created =
-            serde_json::from_slice(response.body()).map_err(|_| ApiError::Unreadable)?;
+        let created: Created = serde_json::from_slice(response.body())
+            .ok()
+            .ok_or(ApiError::Unreadable)?;
         let result = created
             .results
             .into_iter()

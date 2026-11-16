@@ -55,7 +55,7 @@ pub fn picker_http<T: GrantsLink + 'static>(
     grant: GrantId,
     endpoint: EndpointUrl,
 ) -> Result<PickerHttp<T>, BuildError> {
-    let base = WebUrl::try_from(&endpoint).map_err(|_| BuildError::NotWeb)?;
+    let base = WebUrl::try_from(&endpoint).ok().ok_or(BuildError::NotWeb)?;
     let fallback = endpoint.clone();
     let home = RelayHttp::new(
         RelayDial::authenticated(Arc::clone(&accounts), grant.clone(), endpoint),

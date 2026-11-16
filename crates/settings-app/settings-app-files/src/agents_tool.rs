@@ -91,7 +91,8 @@ impl AgentsTool {
             .command(&["list"])
             .stderr(Stdio::piped())
             .output()
-            .map_err(|_| String::new())?;
+            .ok()
+            .ok_or_else(String::new)?;
         if !out.status.success() {
             return Err(reason_of(&String::from_utf8_lossy(&out.stderr)));
         }
@@ -114,7 +115,8 @@ impl AgentsTool {
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             .spawn()
-            .map_err(|_| String::new())?;
+            .ok()
+            .ok_or_else(String::new)?;
         let mut said = String::new();
         if let Some(stdout) = child.stdout.take() {
             let mut lines = BufReader::new(stdout);

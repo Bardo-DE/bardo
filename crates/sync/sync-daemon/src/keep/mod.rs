@@ -253,10 +253,7 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
         class: SyncClass,
         on: bool,
     ) -> Result<(), SwitchError> {
-        let snapshot = self
-            .snapshot()
-            .await
-            .map_err(|_| SwitchError::Unreachable)?;
+        let snapshot = self.snapshot().await.ok().ok_or(SwitchError::Unreachable)?;
         let row = snapshot
             .account(account)
             .ok_or(SwitchError::UnknownAccount)?;
@@ -302,10 +299,7 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
     /// drive, the person does not give the drive ([`SwitchError::NotGiven`]), or the grant cannot
     /// be changed.
     pub async fn show_in_files(&self, account: &AccountId, on: bool) -> Result<(), SwitchError> {
-        let snapshot = self
-            .snapshot()
-            .await
-            .map_err(|_| SwitchError::Unreachable)?;
+        let snapshot = self.snapshot().await.ok().ok_or(SwitchError::Unreachable)?;
         let row = snapshot
             .account(account)
             .ok_or(SwitchError::UnknownAccount)?;
@@ -350,10 +344,7 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
     /// Returns a [`SwitchError`] when accountd is unreachable, the account is unknown or has no
     /// drive to keep, or the setting cannot be saved.
     pub async fn keep_everything(&self, account: &AccountId, on: bool) -> Result<(), SwitchError> {
-        let snapshot = self
-            .snapshot()
-            .await
-            .map_err(|_| SwitchError::Unreachable)?;
+        let snapshot = self.snapshot().await.ok().ok_or(SwitchError::Unreachable)?;
         snapshot
             .account(account)
             .ok_or(SwitchError::UnknownAccount)?;
@@ -430,10 +421,7 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
     /// Returns a [`RemoveError`] when accountd is unreachable, the account is unknown, or its files
     /// or grants cannot be dealt with; the account is then left and its drive starts again.
     pub async fn remove(&self, account: &AccountId) -> Result<Vec<Kept>, RemoveError> {
-        let snapshot = self
-            .snapshot()
-            .await
-            .map_err(|_| RemoveError::Unreachable)?;
+        let snapshot = self.snapshot().await.ok().ok_or(RemoveError::Unreachable)?;
         snapshot.account(account).ok_or(RemoveError::Unknown)?;
         let dir = drive_dir(account).ok_or(RemoveError::Unknown)?;
         let failed = |why: RemoveError| {
@@ -452,7 +440,8 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
             self.grants
                 .revoke(&grant.id)
                 .await
-                .map_err(|_| failed(RemoveError::Grants))?;
+                .ok()
+                .ok_or_else(|| failed(RemoveError::Grants))?;
         }
         self.drives.forget(dir.as_str());
         Ok(kept)

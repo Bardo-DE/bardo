@@ -38,7 +38,8 @@ impl SystemManager {
         }
         let connection = bounded(Connection::system())
             .await
-            .map_err(|_| UnitError::Timeout)?
+            .ok()
+            .ok_or(UnitError::Timeout)?
             .map_err(UnitError::Bus)?;
         *self
             .connection
@@ -61,11 +62,13 @@ impl SystemManager {
         let name = BusName::try_from(SYSTEMD).map_err(|e| UnitError::Bus(e.into()))?;
         let owner = bounded(bus.get_name_owner(name))
             .await
-            .map_err(|_| UnitError::Timeout)?
+            .ok()
+            .ok_or(UnitError::Timeout)?
             .map_err(|e| UnitError::Bus(e.into()))?;
         let owner_pid = bounded(bus.get_connection_unix_process_id(owner.clone().into()))
             .await
-            .map_err(|_| UnitError::Timeout)?
+            .ok()
+            .ok_or(UnitError::Timeout)?
             .map_err(|e| UnitError::Bus(e.into()))?;
         if owner_pid != 1 {
             return Err(UnitError::Malformed(
@@ -85,8 +88,10 @@ impl SystemManager {
         );
         let path: OwnedObjectPath = bounded(call)
             .await
-            .map_err(|_| UnitError::Timeout)?
-            .map_err(|_| UnitError::NotLoaded)?
+            .ok()
+            .ok_or(UnitError::Timeout)?
+            .ok()
+            .ok_or(UnitError::NotLoaded)?
             .body()
             .deserialize()
             .map_err(UnitError::Bus)?;
@@ -120,7 +125,8 @@ async fn property(
         InterfaceName::from_static_str(interface).map_err(|e| UnitError::Bus(e.into()))?;
     let value = bounded(properties.get(interface, name))
         .await
-        .map_err(|_| UnitError::Timeout)?
+        .ok()
+        .ok_or(UnitError::Timeout)?
         .map_err(|e| UnitError::Bus(e.into()))?;
     Ok(Value::from(value))
 }

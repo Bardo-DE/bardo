@@ -72,7 +72,8 @@ fn tools(
                 parameters,
             } => {
                 let schema: Value = serde_json::from_str(parameters.0.as_str())
-                    .map_err(|_| CodecError::UnsupportedShape)?;
+                    .ok()
+                    .ok_or(CodecError::UnsupportedShape)?;
                 Ok(json!({
                     "type": "function",
                     "function": {

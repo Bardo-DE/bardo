@@ -110,7 +110,8 @@ fn json_shape(body: &mut Map<String, Value>, output: &OutputShape) -> Result<(),
         OutputShape::Free => {}
         OutputShape::JsonSchema(schema) => {
             let schema: Value = serde_json::from_str(schema.0.as_str())
-                .map_err(|_| CodecError::UnsupportedShape)?;
+                .ok()
+                .ok_or(CodecError::UnsupportedShape)?;
             body.insert(
                 "response_format".into(),
                 json!({

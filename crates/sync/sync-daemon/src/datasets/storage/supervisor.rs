@@ -650,7 +650,7 @@ where
         let wiring = &self.wiring;
         let (upload, picker) =
             google_photos_endpoints(candidate).ok_or("no Google Photos endpoint")?;
-        let base = |url: &EndpointUrl| WebUrl::try_from(url).map_err(|_| "not a web endpoint");
+        let base = |url: &EndpointUrl| WebUrl::try_from(url).ok().ok_or("not a web endpoint");
         let upload = match upload {
             Some(endpoint) => Some(self.start_google_upload(account, candidate, endpoint)?),
             None => None,
@@ -679,7 +679,7 @@ where
         upload: &account_core::ServiceEndpoint,
     ) -> Result<(DatasetName, JoinHandle<()>), String> {
         let wiring = &self.wiring;
-        let base = |url: &EndpointUrl| WebUrl::try_from(url).map_err(|_| "not a web endpoint");
+        let base = |url: &EndpointUrl| WebUrl::try_from(url).ok().ok_or("not a web endpoint");
         let api = PhotosApi::new(
             library_http(
                 Arc::clone(&wiring.accounts),

@@ -266,7 +266,8 @@ impl ServerDraft {
             KeyField::File(path) => {
                 let text = SecretText::new(
                     read(path)
-                        .map_err(|_| ServerFault::KeyFileUnreadable)?
+                        .ok()
+                        .ok_or(ServerFault::KeyFileUnreadable)?
                         .trim(),
                 );
                 if text.expose().is_empty() {

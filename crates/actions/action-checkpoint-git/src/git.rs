@@ -189,7 +189,8 @@ impl GitStore {
         let folder = PathBuf::from(root.path().as_str());
         let inside = tokio::task::spawn_blocking(move || inside_repository(&folder))
             .await
-            .map_err(|_| StoreFault::Failed)?;
+            .ok()
+            .ok_or(StoreFault::Failed)?;
         if !inside {
             return Err(StoreFault::NoHistory);
         }
@@ -297,7 +298,7 @@ impl GitStore {
             spec,
         ];
         match self.exec(root, args, &[], None).await {
-            Ok(out) if out.succeeded() => object_id(&out.stdout).map_err(|_| StoreFault::Failed),
+            Ok(out) if out.succeeded() => object_id(&out.stdout).ok().ok_or(StoreFault::Failed),
             Ok(_) => Err(StoreFault::NoSuchPoint),
             Err(fault) => {
                 self.tell("rev-parse".to_owned(), fault.into());
@@ -319,7 +320,7 @@ impl GitStore {
             tree.to_owned(),
         ];
         let out = self.ok_with(root, args, &[], None).await?;
-        tree_listing(&out).map_err(|_| StoreFault::Failed)
+        tree_listing(&out).ok().ok_or(StoreFault::Failed)
     }
 
     /// The files of the folder as they are now, read through the session's plan index. Nothing
@@ -333,7 +334,7 @@ impl GitStore {
         self.drop_ignored(root, &env).await?;
         self.ok(root, &["add", "-A", "--", "."], &env).await?;
         let out = self.ok(root, &["ls-files", "-s", "-z"], &env).await?;
-        staged_listing(&out).map_err(|_| StoreFault::Failed)
+        staged_listing(&out).ok().ok_or(StoreFault::Failed)
     }
 }
 
