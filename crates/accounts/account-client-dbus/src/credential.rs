@@ -301,6 +301,9 @@ mod tests {
         rustix::io::write(&memfd, &[0xff_u8, 0xfe]).expect("written");
         let credential =
             ProcessCredential::new(ProcessCredentialId::parse("cred-3").expect("id"), memfd);
-        assert!(matches!(credential.read_key(), Err(ChildKeyError::NotText(_))));
+        assert!(matches!(
+            credential.read_key(),
+            Err(ChildKeyError::NotText(_))
+        ));
     }
 }
