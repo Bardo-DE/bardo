@@ -178,8 +178,8 @@ pub enum RecordError {
     #[error("the install record cannot be read or written: {0}")]
     Io(std::io::ErrorKind),
     /// The file is not a record.
-    #[error("the install record is not readable")]
-    Malformed,
+    #[error("the install record is not readable: {0}")]
+    Malformed(String),
 }
 
 impl Record {
@@ -189,9 +189,7 @@ impl Record {
     /// See [`RecordError`].
     pub fn read(path: &Path) -> Result<Self, RecordError> {
         let text = std::fs::read(path).map_err(|e| RecordError::Io(e.kind()))?;
-        serde_json::from_slice(&text)
-            .ok()
-            .ok_or(RecordError::Malformed)
+        serde_json::from_slice(&text).map_err(|e| RecordError::Malformed(e.to_string()))
     }
 
     /// Writes the record at `path`, whole (`base_fs`'s atomic write).
@@ -199,9 +197,8 @@ impl Record {
     /// # Errors
     /// See [`RecordError`].
     pub fn write(&self, path: &Path) -> Result<(), RecordError> {
-        let text = serde_json::to_vec_pretty(self)
-            .ok()
-            .ok_or(RecordError::Malformed)?;
+        let text =
+            serde_json::to_vec_pretty(self).map_err(|e| RecordError::Malformed(e.to_string()))?;
         AtomicWrite::SHARED
             .write(path, &text)
             .map_err(|e| RecordError::Io(e.kind()))
@@ -258,7 +255,10 @@ mod tests {
             Err(RecordError::Io(std::io::ErrorKind::NotFound))
         );
         std::fs::write(&path, "[]").expect("write");
-        assert_eq!(Record::read(&path), Err(RecordError::Malformed));
+        assert!(matches!(
+            Record::read(&path),
+            Err(RecordError::Malformed(_))
+        ));
     }
 
     #[test]

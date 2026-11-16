@@ -57,7 +57,10 @@ impl Verifier {
         let changed = Verdict::Changed(engine);
         let row = self.manifest.row_in_dir(engine, &name).ok_or(changed)?;
         let dir = self.roots.dir(scope, row);
-        let record = Record::read(&dir.record()).ok().ok_or(changed)?;
+        // A record that cannot be read is a changed install: the verdict is the answer.
+        let Ok(record) = Record::read(&dir.record()) else {
+            return Err(changed);
+        };
         let matches = record.engine == engine_spec::engine(engine).disk_word()
             && record.version == row.version
             && record.backend == row.backend.slug();
