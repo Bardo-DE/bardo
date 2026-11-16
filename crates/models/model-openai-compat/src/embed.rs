@@ -32,9 +32,10 @@ pub(crate) fn encode(flavor: Flavor, turn: &EmbedTurn) -> Exchange {
 /// The vectors in `index` order (the reply's position when it gives none). A hole, a repeated
 /// index, a non-numeric element or a missing `data` is unreadable.
 pub(crate) fn decode(served: ModelName, body: &[u8]) -> Result<EmbedEnd, CodecError> {
-    let value: Value = serde_json::from_slice(body)
-        .ok()
-        .ok_or(CodecError::Unreadable)?;
+    let value: Value = serde_json::from_slice(body).map_err(|error| {
+        tracing::debug!(%error, "the embedding reply is not json");
+        CodecError::Unreadable
+    })?;
     let data = value
         .get("data")
         .and_then(Value::as_array)

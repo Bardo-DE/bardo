@@ -36,10 +36,10 @@ fn the_speech_request_is_the_documented_body() {
             "response_format":"pcm","stream":true})
     );
     // A format the endpoint does not stream.
-    assert_eq!(
+    assert!(matches!(
         encode_speech_request(&tts(S16_16K)),
         Err(AudioCodecError::UnsupportedFormat)
-    );
+    ));
 }
 
 fn stt(lang: LangChoice) -> SttRequest {
@@ -163,13 +163,13 @@ fn a_float_file_says_so_a_partial_sample_is_cut_and_mixed_formats_are_refused() 
         &[0, 0, 0x80, 0x3f],
         "the two stray bytes are not a sample"
     );
-    assert_eq!(
+    assert!(matches!(
         encode_transcription(
             &stt(LangChoice::Auto),
             &[chunk(S16_16K, 0, vec![0, 0]), chunk(float, 1, vec![0; 4])]
         ),
         Err(AudioCodecError::MixedFormats)
-    );
+    ));
     // No audio is an empty but valid file.
     let empty = encode_transcription(&stt(LangChoice::Auto), &[]).unwrap();
     assert_eq!(parts(&empty).1.len(), 44);

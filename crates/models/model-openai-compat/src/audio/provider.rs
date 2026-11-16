@@ -85,6 +85,7 @@ fn codec_error(error: AudioCodecError) -> ProviderError {
         AudioCodecError::UnsupportedFormat => "this server cannot take the audio format".into(),
         AudioCodecError::MixedFormats => "the audio chunks do not share one format".into(),
         AudioCodecError::Unreadable => "the response is not the documented JSON".into(),
+        AudioCodecError::TooLong(source) => format!("the audio is too long to send: {source}"),
     })
 }
 

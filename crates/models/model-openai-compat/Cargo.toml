@@ -15,6 +15,7 @@ model-wire = {path = "../model-wire"}
 speech-provider = {path = "../../speech/speech-provider"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
+tracing = { workspace = true }
 serde_json = { workspace = true, features = ["raw_value"] }
 rust_decimal = { workspace = true, features = ["std", "serde"] }
 log = { workspace = true }

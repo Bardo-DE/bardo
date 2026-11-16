@@ -71,9 +71,11 @@ fn tools(
                 description,
                 parameters,
             } => {
-                let schema: Value = serde_json::from_str(parameters.0.as_str())
-                    .ok()
-                    .ok_or(CodecError::UnsupportedShape)?;
+                let schema: Value =
+                    serde_json::from_str(parameters.0.as_str()).map_err(|error| {
+                        tracing::debug!(%error, "a tool or output schema is not json");
+                        CodecError::UnsupportedShape
+                    })?;
                 Ok(json!({
                     "type": "function",
                     "function": {

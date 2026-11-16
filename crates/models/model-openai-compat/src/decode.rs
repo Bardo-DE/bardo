@@ -189,9 +189,10 @@ impl StreamDecoder {
 
     fn fragment(&mut self, position: usize, call: &Value) -> Result<Vec<TurnEvent>, CodecError> {
         let wire = match call.get("index") {
-            None | Some(Value::Null) => {
-                u32::try_from(position).ok().ok_or(CodecError::Unreadable)?
-            }
+            None | Some(Value::Null) => u32::try_from(position).map_err(|error| {
+                tracing::debug!(%error, "a tool call sits past the first u32::MAX");
+                CodecError::Unreadable
+            })?,
             Some(index) => index
                 .as_u64()
                 .and_then(|n| u32::try_from(n).ok())
@@ -311,9 +312,10 @@ impl ChatDecoder for StreamDecoder {
         if frame == "[DONE]" {
             return self.marker();
         }
-        let value: Value = serde_json::from_str(frame)
-            .ok()
-            .ok_or(CodecError::Unreadable)?;
+        let value: Value = serde_json::from_str(frame).map_err(|error| {
+            tracing::debug!(%error, "a stream frame is not json");
+            CodecError::Unreadable
+        })?;
         if !value.is_object() {
             return Err(CodecError::Unreadable);
         }

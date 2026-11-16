@@ -9,7 +9,7 @@ use speech_provider::{
 use crate::RequestJson;
 
 /// Why a speech request cannot be encoded or a response cannot be read.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum AudioCodecError {
     #[error("this server cannot make or take the requested audio format")]
     UnsupportedFormat,
@@ -17,6 +17,9 @@ pub enum AudioCodecError {
     MixedFormats,
     #[error("the response is not the JSON the endpoint documents")]
     Unreadable,
+    /// More audio than a WAV file's length field can hold.
+    #[error("the audio is longer than a wav file holds")]
+    TooLong(#[source] std::num::TryFromIntError),
 }
 
 /// What Kokoro-FastAPI streams for `response_format = "pcm"`: 24 kHz signed 16-bit mono.
@@ -194,9 +197,7 @@ fn wav_file(format: AudioFormat, pcm: &[u8]) -> Result<Vec<u8>, AudioCodecError>
         PcmFormat::F32Le => (3_u16, 32_u16),
     };
     let width = u32::from(bits / 8);
-    let data = u32::try_from(pcm.len())
-        .ok()
-        .ok_or(AudioCodecError::UnsupportedFormat)?;
+    let data = u32::try_from(pcm.len()).map_err(AudioCodecError::TooLong)?;
     let riff = data
         .checked_add(36)
         .ok_or(AudioCodecError::UnsupportedFormat)?;
