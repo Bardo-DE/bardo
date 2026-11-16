@@ -28,7 +28,9 @@ pub(crate) async fn build(
     cancel: &CancelToken,
 ) -> Result<(), InstallError> {
     let Delivery::Python(env) = row.delivery else {
-        return Err(InstallError::Environment);
+        return Err(InstallError::Environment(
+            "the row does not deliver a Python environment".to_owned(),
+        ));
     };
     let files = Installer::download(fetcher, dir, row, meter, cancel).await?;
     let (tree, partial) = (dir.tree(), dir.partial());
@@ -39,8 +41,11 @@ pub(crate) async fn build(
         for made in [&uv, &python] {
             std::fs::create_dir_all(made).map_err(|e| InstallError::Disk(e.kind()))?;
         }
-        let [uv_archive, python_archive] = &*files else {
-            return Err(InstallError::Environment);
+        let [uv_archive, python_archive] = &files[..] else {
+            return Err(InstallError::Environment(format!(
+                "expected the uv and python archives, found {} files",
+                files.len()
+            )));
         };
         unpack(uv_archive, &uv)?;
         unpack(python_archive, &python)?;
@@ -102,9 +107,7 @@ pub(crate) async fn build(
         record.seal = pinned.to_owned();
         record.entries = entry_digests(&tree_done, package)?;
         record.venv_seal = Some(seal_of(&tree_done.join("venv"))?.as_hex().to_owned());
-        record
-            .write(&record_at)
-            .map_err(|_| InstallError::Disk(std::io::ErrorKind::Other))
+        record.write(&record_at).map_err(InstallError::from)
     })
     .await
 }
@@ -140,7 +143,7 @@ async fn run(
         .stderr(Stdio::null())
         .kill_on_drop(true)
         .spawn()
-        .map_err(|_| InstallError::Environment)?;
+        .map_err(|why| InstallError::Environment(format!("uv could not be started: {why}")))?;
     let mut tick = tokio::time::interval(TICK);
     loop {
         let ended = tokio::select! {
@@ -150,7 +153,14 @@ async fn run(
         };
         match ended {
             Ended::Exited(Ok(status)) if status.success() => return Ok(()),
-            Ended::Exited(_) => return Err(InstallError::Environment),
+            Ended::Exited(Ok(status)) => {
+                return Err(InstallError::Environment(format!("uv ended with {status}")));
+            }
+            Ended::Exited(Err(why)) => {
+                return Err(InstallError::Environment(format!(
+                    "uv could not be waited for: {why}"
+                )));
+            }
             Ended::Stopped => {
                 let _killed = child.kill().await;
                 return Err(InstallError::Cancelled);

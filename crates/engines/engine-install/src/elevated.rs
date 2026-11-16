@@ -66,8 +66,12 @@ pub async fn install_for_everyone(
         .stderr(Stdio::null())
         .kill_on_drop(true)
         .spawn()
-        .map_err(|_| Failure::Other)?;
+        .map_err(|why| {
+            eprintln!("bardo-engines: the install helper could not be started: {why}");
+            Failure::Other
+        })?;
     let (Some(stdout), mut stdin) = (child.stdout.take(), child.stdin.take()) else {
+        eprintln!("bardo-engines: the install helper has no output to read");
         return Err(Failure::Other);
     };
     let mut lines = BufReader::new(stdout).lines();
@@ -100,13 +104,19 @@ pub async fn install_for_everyone(
             }
         }
     }
-    let status = child.wait().await.map_err(|_| Failure::Other)?;
+    let status = child.wait().await.map_err(|why| {
+        eprintln!("bardo-engines: the install helper could not be waited for: {why}");
+        Failure::Other
+    })?;
     match last {
         Some(Report::Done) => Ok(()),
         Some(Report::Failed(why)) => Err(why),
         _ => match status.code() {
             Some(code) if NOT_AUTHORISED.contains(&code) => Err(Failure::Declined),
-            _ => Err(Failure::Other),
+            code => {
+                eprintln!("bardo-engines: the install helper ended without a report ({code:?})");
+                Err(Failure::Other)
+            }
         },
     }
 }

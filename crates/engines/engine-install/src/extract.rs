@@ -13,8 +13,8 @@ use tar::{Archive, Entry, EntryType};
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum ExtractError {
     /// The archive could not be read: missing, not gzip, not tar, or cut short.
-    #[error("the archive could not be unpacked")]
-    Failed,
+    #[error("the archive could not be unpacked: {0}")]
+    Failed(String),
     /// An entry would land outside the directory, or is a kind of file an engine never ships (a
     /// device or a pipe). Nothing after it is unpacked; what came before it stays, inside.
     #[error("the archive has an entry that is not allowed: {0}")]
@@ -29,7 +29,7 @@ pub enum ExtractError {
 fn of_io(error: &std::io::Error) -> ExtractError {
     use std::io::ErrorKind::{InvalidData, InvalidInput, UnexpectedEof};
     match error.kind() {
-        InvalidData | InvalidInput | UnexpectedEof => ExtractError::Failed,
+        InvalidData | InvalidInput | UnexpectedEof => ExtractError::Failed(error.to_string()),
         kind => ExtractError::Disk(kind),
     }
 }
@@ -41,12 +41,15 @@ fn of_io(error: &std::io::Error) -> ExtractError {
 /// # Errors
 /// See [`ExtractError`].
 pub fn unpack(archive: &Path, into: &Path) -> Result<(), ExtractError> {
-    let file = std::fs::File::open(archive).map_err(|_| ExtractError::Failed)?;
+    let file = std::fs::File::open(archive).map_err(|e| ExtractError::Failed(e.to_string()))?;
     let mut archive = Archive::new(MultiGzDecoder::new(BufReader::new(file)));
     archive.set_preserve_ownerships(false);
     archive.set_preserve_permissions(false);
     archive.set_unpack_xattrs(false);
-    for entry in archive.entries().map_err(|_| ExtractError::Failed)? {
+    for entry in archive
+        .entries()
+        .map_err(|e| ExtractError::Failed(e.to_string()))?
+    {
         let mut entry = entry.map_err(|e| of_io(&e))?;
         place(&mut entry, into)?;
     }
@@ -55,7 +58,10 @@ pub fn unpack(archive: &Path, into: &Path) -> Result<(), ExtractError> {
 
 /// Writes one entry under `into`, or refuses it.
 fn place<R: std::io::Read>(entry: &mut Entry<'_, R>, into: &Path) -> Result<(), ExtractError> {
-    let named = entry.path().map_err(|_| ExtractError::Failed)?.into_owned();
+    let named = entry
+        .path()
+        .map_err(|e| ExtractError::Failed(e.to_string()))?
+        .into_owned();
     let refused = || ExtractError::Refused(named.display().to_string());
     let kind = entry.header().entry_type();
     if matches!(
@@ -84,7 +90,7 @@ fn place<R: std::io::Read>(entry: &mut Entry<'_, R>, into: &Path) -> Result<(), 
         EntryType::Symlink => {
             let target = entry
                 .link_name()
-                .map_err(|_| ExtractError::Failed)?
+                .map_err(|e| ExtractError::Failed(e.to_string()))?
                 .ok_or_else(refused)?;
             if !points_inside(&relative, &target) {
                 return Err(refused());
@@ -93,7 +99,7 @@ fn place<R: std::io::Read>(entry: &mut Entry<'_, R>, into: &Path) -> Result<(), 
         EntryType::Link => {
             let source = entry
                 .link_name()
-                .map_err(|_| ExtractError::Failed)?
+                .map_err(|e| ExtractError::Failed(e.to_string()))?
                 .ok_or_else(refused)?;
             let source = stripped(&source).ok_or_else(refused)?.ok_or_else(refused)?;
             no_link_on_the_way(into, &source).ok_or_else(refused)?;
@@ -306,13 +312,16 @@ mod tests {
         );
         assert!(!into.join("top").exists());
         assert_eq!(
-            unpack(&dir.path().join("gone.tar.gz"), &into),
-            Err(ExtractError::Failed)
+            unpack(&dir.path().join("gone.tar.gz"), &into).map_err(
+                |e| matches!(&e, ExtractError::Failed(why) if why.contains("No such file"))
+            ),
+            Err(true)
         );
         std::fs::write(dir.path().join("plain"), "not gzip").expect("plain");
         assert_eq!(
-            unpack(&dir.path().join("plain"), &into),
-            Err(ExtractError::Failed)
+            unpack(&dir.path().join("plain"), &into)
+                .map_err(|e| matches!(e, ExtractError::Failed(_))),
+            Err(true)
         );
     }
 

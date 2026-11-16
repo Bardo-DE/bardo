@@ -8,7 +8,7 @@ use crate::progress::{CancelToken, Meter};
 use crate::pyenv;
 use crate::space::require_space;
 use engine_manifest::{Delivery, Failure, Row};
-use engine_probe::{InstallDir, Record, Roots, Scope, SealError, seal_of};
+use engine_probe::{InstallDir, Record, RecordError, Roots, Scope, SealError, seal_of};
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 
@@ -38,9 +38,12 @@ pub enum InstallError {
     /// The disk refused.
     #[error("the disk refused the install: {0}")]
     Disk(std::io::ErrorKind),
-    /// The Python environment could not be built.
-    #[error("the environment could not be built")]
-    Environment,
+    /// The install record could not be written.
+    #[error(transparent)]
+    Record(#[from] RecordError),
+    /// The Python environment could not be built; the text is what went wrong.
+    #[error("the environment could not be built: {0}")]
+    Environment(String),
     /// A stop was asked for.
     #[error("a stop was asked for")]
     Cancelled,
@@ -67,7 +70,8 @@ impl InstallError {
             | Self::Extract(_)
             | Self::Seal(_)
             | Self::Disk(_)
-            | Self::Environment => Failure::Other,
+            | Self::Record(_)
+            | Self::Environment(_) => Failure::Other,
         }
     }
 
@@ -76,7 +80,7 @@ impl InstallError {
         matches!(
             self,
             Self::Cancelled
-                | Self::Environment
+                | Self::Environment(_)
                 | Self::Fetch(FetchError::Network(_) | FetchError::Cancelled)
         )
     }
@@ -92,7 +96,11 @@ pub(crate) async fn blocking<T: Send + 'static>(
 ) -> Result<T, InstallError> {
     tokio::task::spawn_blocking(work)
         .await
-        .unwrap_or(Err(InstallError::Environment))
+        .unwrap_or_else(|why| {
+            Err(InstallError::Environment(format!(
+                "the install step did not finish: {why}"
+            )))
+        })
 }
 
 /// Installs rows under a set of roots.
