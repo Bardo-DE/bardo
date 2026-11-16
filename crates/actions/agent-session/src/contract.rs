@@ -93,6 +93,10 @@ async fn whole_turn<H: Harness>(h: &mut H) -> (Vec<Shape>, usize) {
 
 /// A turn's events are `Started`, `Ended` (the same call), `Words`, and the end last; the call ran
 /// once; the backend then takes another turn; and a second turn while one answers is `Busy`.
+///
+/// # Panics
+///
+/// Panics when the backend breaks the rule, which is how the test fails.
 pub async fn runs_a_turn<H: Harness>(h: &mut H) {
     let (shapes, ran) = whole_turn(h).await;
     let call = match shapes.first() {
@@ -125,6 +129,10 @@ pub async fn runs_a_turn<H: Harness>(h: &mut H) {
 
 /// A stop between a call's announcement and the pull after it means the call never runs: the
 /// turn ends `Cancelled` and no `Ended` follows.
+///
+/// # Panics
+///
+/// Panics when the backend breaks the rule, which is how the test fails.
 pub async fn a_stop_before_the_next_pull_stops_the_call<H: Harness>(h: &mut H) {
     let mut backend = h.backend().await;
     backend.turn(h.turn(1)).await.expect("turn");
@@ -147,6 +155,10 @@ pub async fn a_stop_before_the_next_pull_stops_the_call<H: Harness>(h: &mut H) {
 
 /// A call does not run until the pull after the one that returned its announcement, however long
 /// the reader takes.
+///
+/// # Panics
+///
+/// Panics when the backend breaks the rule, which is how the test fails.
 pub async fn a_call_waits_for_the_pull_after_its_announcement<H: Harness>(h: &mut H) {
     let mut backend = h.backend().await;
     backend.turn(h.turn(1)).await.expect("turn");
@@ -162,6 +174,10 @@ pub async fn a_call_waits_for_the_pull_after_its_announcement<H: Harness>(h: &mu
 
 /// Dropping a pull before it is ready loses no event and repeats none: the same turn pulled with
 /// every pull given up on first, once, ends with the same events and the same effect.
+///
+/// # Panics
+///
+/// Panics when the backend breaks the rule, which is how the test fails.
 pub async fn a_dropped_pull_loses_and_repeats_nothing<H: Harness>(h: &mut H) {
     let (whole, ran) = whole_turn(h).await;
 
