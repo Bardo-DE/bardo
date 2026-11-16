@@ -17,6 +17,10 @@ use crate::{HostArgs, HostError, Recognizer, Session};
 /// The socket is bound inside a fresh directory only the owner can enter, set to 0600 there and
 /// then renamed onto `path`, so no other user can connect between the bind and the chmod, and the
 /// stale file is replaced in one step.
+///
+/// # Errors
+/// [`HostError::Bind`] when `path` is some other kind of file or the socket cannot be created,
+/// restricted or moved into place.
 pub fn bind_private(path: &Path) -> Result<UnixListener, HostError> {
     if std::fs::symlink_metadata(path).is_ok_and(|meta| !meta.file_type().is_socket()) {
         return Err(HostError::Bind);
@@ -34,7 +38,8 @@ pub fn bind_private(path: &Path) -> Result<UnixListener, HostError> {
     DirBuilder::new()
         .mode(0o700)
         .create(&staging)
-        .map_err(|_| HostError::Bind)?;
+        .ok()
+        .ok_or(HostError::Bind)?;
     let staged = staging.join("s");
     let bound = bind_staged(&staged, path);
     let _ = std::fs::remove_dir_all(&staging);
@@ -42,14 +47,18 @@ pub fn bind_private(path: &Path) -> Result<UnixListener, HostError> {
 }
 
 fn bind_staged(staged: &Path, path: &Path) -> Result<UnixListener, HostError> {
-    let listener = UnixListener::bind(staged).map_err(|_| HostError::Bind)?;
+    let listener = UnixListener::bind(staged).ok().ok_or(HostError::Bind)?;
     std::fs::set_permissions(staged, std::fs::Permissions::from_mode(0o600))
-        .map_err(|_| HostError::Bind)?;
-    std::fs::rename(staged, path).map_err(|_| HostError::Bind)?;
+        .ok()
+        .ok_or(HostError::Bind)?;
+    std::fs::rename(staged, path).ok().ok_or(HostError::Bind)?;
     Ok(listener)
 }
 
 /// Binds `args.socket` and serves `recognizer` until the process is stopped.
+///
+/// # Errors
+/// [`HostError::Bind`] when the socket cannot be bound.
 pub fn serve_with<R: Recognizer>(args: &HostArgs, recognizer: &mut R) -> Result<(), HostError> {
     let listener = bind_private(&args.socket)?;
     serve_listener(&listener, recognizer)
@@ -57,6 +66,10 @@ pub fn serve_with<R: Recognizer>(args: &HostArgs, recognizer: &mut R) -> Result<
 
 /// Serves connections one after another: one utterance at a time across the whole process. A
 /// connection that fails ends that connection only.
+///
+/// # Errors
+/// None today: a failing connection is dropped and the next one served, so it returns only when
+/// the listener stops accepting.
 pub fn serve_listener<R: Recognizer>(
     listener: &UnixListener,
     recognizer: &mut R,
@@ -70,6 +83,10 @@ pub fn serve_listener<R: Recognizer>(
 }
 
 /// Serves one connection until the peer closes it.
+///
+/// # Errors
+/// The [`io::Error`] that ended the connection: a read or write failure, a truncated frame, or a
+/// frame over the size cap.
 pub fn serve_connection<R: Recognizer, S: Read + Write>(
     recognizer: &mut R,
     stream: &mut S,

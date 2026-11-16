@@ -147,14 +147,14 @@ fn read_all(bytes: &[u8]) -> Vec<HostOut> {
 }
 
 /// Runs `raw` through a connection served on a thread and returns the replies and the recognizer.
-fn run_raw(raw: Vec<u8>, rec: Scripted) -> (Vec<HostOut>, Scripted) {
+fn run_raw(raw: &[u8], rec: Scripted) -> (Vec<HostOut>, Scripted) {
     let (mut client, mut server) = UnixStream::pair().expect("socket pair");
     let host = std::thread::spawn(move || {
         let mut rec = rec;
         let _ = serve_connection(&mut rec, &mut server);
         rec
     });
-    client.write_all(&raw).expect("write");
+    client.write_all(raw).expect("write");
     client
         .shutdown(std::net::Shutdown::Write)
         .expect("half close");
@@ -166,7 +166,7 @@ fn run_raw(raw: Vec<u8>, rec: Scripted) -> (Vec<HostOut>, Scripted) {
 }
 
 fn run(messages: &[HostIn], rec: Scripted) -> (Vec<HostOut>, Scripted) {
-    run_raw(frames(messages), rec)
+    run_raw(&frames(messages), rec)
 }
 
 fn bad_request(out: &HostOut) -> bool {
@@ -363,10 +363,14 @@ fn a_connection_closed_mid_utterance_drops_it() {
 fn a_frame_that_is_not_a_host_message_is_refused_and_the_connection_goes_on() {
     let mut raw = frames(&[hello()]);
     let junk = br#"{"kind":"nonsense"}"#;
-    raw.extend_from_slice(&(junk.len() as u32).to_be_bytes());
+    raw.extend_from_slice(
+        &u32::try_from(junk.len())
+            .expect("a short frame")
+            .to_be_bytes(),
+    );
     raw.extend_from_slice(junk);
     raw.extend(frames(&[HostIn::Begin(request()), HostIn::End]));
-    let (out, _) = run_raw(raw, Scripted::default());
+    let (out, _) = run_raw(&raw, Scripted::default());
     assert!(bad_request(&out[1]));
     assert!(matches!(out[2], HostOut::Done(_)));
 }
@@ -377,7 +381,7 @@ fn an_oversize_frame_ends_the_connection_before_its_body_is_read() {
     raw.extend_from_slice(&((1u32 << 20) + 1).to_be_bytes());
     // Messages after the bad header are never served.
     raw.extend(frames(&[HostIn::Begin(request()), HostIn::End]));
-    let (out, rec) = run_raw(raw, Scripted::default());
+    let (out, rec) = run_raw(&raw, Scripted::default());
     assert_eq!(out.len(), 1);
     assert!(!rec.calls.contains(&"begin"));
 }

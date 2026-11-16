@@ -77,9 +77,9 @@ impl Read for Pipe {
 }
 
 impl Write for Pipe {
-    fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
-        self.output.extend_from_slice(bytes);
-        Ok(bytes.len())
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        self.output.extend_from_slice(buf);
+        Ok(buf.len())
     }
     fn flush(&mut self) -> io::Result<()> {
         Ok(())
