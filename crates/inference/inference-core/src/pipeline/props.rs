@@ -63,7 +63,7 @@ fn picks() -> impl Strategy<Value = SlotPicks> {
                     let pick = match named? {
                         Some(name) => Pick::Named(super::tests::mref(name)),
                         None => Pick::Auto {
-                            mode: Default::default(),
+                            mode: crate::AutoMode::default(),
                             pool: names.iter().map(|name| super::tests::mref(name)).collect(),
                         },
                     };
@@ -120,7 +120,6 @@ proptest! {
         describe in any::<bool>(),
     ) {
         let shape = shape(class, &inputs, if speech { Answer::Speech } else { Answer::Text });
-        let describe = describe;
         let once = plan_pipeline(&shape, &picks, &catalogue, &granted, rules(&policy, describe));
         let again = plan_pipeline(&shape, &picks, &catalogue, &granted, rules(&policy, describe));
         prop_assert_eq!(&once, &again);

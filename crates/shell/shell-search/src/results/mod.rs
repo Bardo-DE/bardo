@@ -1,6 +1,7 @@
-//! The launcher's search: providers run off the UI thread, batches merge into one ranked list,
-//! stale generations are dropped, and every activation is counted in
-//! `$XDG_STATE_HOME/bardo/shell/frecency.json`.
+//! The launcher's search.
+//!
+//! Providers run off the UI thread, batches merge into one ranked list, stale generations are
+//! dropped, and every activation is counted in `$XDG_STATE_HOME/bardo/shell/frecency.json`.
 //!
 //! Each [`SearchCommand::Query`] begins a generation (`Cancel::begin`, so every older query
 //! reads as cancelled) and runs every provider on its own blocking task; their batches merge
@@ -63,9 +64,11 @@ impl fmt::Debug for Sources {
     }
 }
 
-/// The services the daemon's search reads and sends to: the ones its providers query, and the
-/// ones a chosen row's activation goes to (windows are focused and closed through `wl`; the
-/// launcher surface starts apps itself, with an activation token).
+/// The services the daemon's search reads and sends to.
+///
+/// The ones its providers query, and the ones a chosen row's activation goes to (windows are
+/// focused and closed through `wl`; the launcher surface starts apps itself, with an activation
+/// token).
 #[derive(Debug, Clone)]
 pub struct ResultsLinks {
     pub apps: watch::Receiver<AppIndex>,
@@ -79,8 +82,12 @@ pub struct ResultsLinks {
     pub wl: Control<WlCommand>,
 }
 
-/// The launcher's search as a [`Service`]: its providers queried in parallel on the blocking
-/// pool, its history loaded from bardo-shell's folder of `env`'s state directory. Tracker (the files
+/// The launcher's search as a [`Service`].
+///
+/// Its providers queried in parallel on the blocking pool, its history loaded from bardo-shell's
+/// folder of `env`'s state directory.
+///
+/// Tracker (the files
 /// index) is reached on `env`'s session bus; the rates cache and
 /// the files provider's home are `env`'s directories.
 #[derive(Debug)]

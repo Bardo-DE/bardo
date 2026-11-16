@@ -36,11 +36,11 @@ fn corner_key(path: &str) -> KeySpec {
         page: Page::Dock,
         section: Section("Hot Corners".to_owned()),
         exposure: Exposure::Advanced,
-        labels: Default::default(),
-        agent: Default::default(),
-        unavailable: Default::default(),
-        groups: Default::default(),
-        places: Default::default(),
+        labels: ui_settings::schema::WordLabels::default(),
+        agent: ui_settings::schema::AgentSetting::default(),
+        unavailable: std::collections::BTreeMap::default(),
+        groups: std::collections::BTreeMap::default(),
+        places: std::collections::BTreeMap::default(),
         note: None,
     }
 }
@@ -56,7 +56,7 @@ fn shell_schema() -> Schema {
         pages: Vec::new(),
         app: AppId("shell".to_owned()),
         file: FilePath(FILE.to_owned()),
-        foreign: Default::default(),
+        foreign: ui_settings::schema::ForeignTables::default(),
         version: 1,
         key: keys,
     }

@@ -50,8 +50,10 @@ impl Places {
         let get = |name: &str| (*env)(name);
         let data = get("XDG_DATA_HOME")
             .filter(|v| !v.is_empty())
-            .map(PathBuf::from)
-            .unwrap_or_else(|| PathBuf::from(get("HOME").unwrap_or_default()).join(".local/share"))
+            .map_or_else(
+                || PathBuf::from(get("HOME").unwrap_or_default()).join(".local/share"),
+                PathBuf::from,
+            )
             .join("bardo")
             .join("actions");
         Self {

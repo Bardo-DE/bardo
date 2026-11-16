@@ -65,6 +65,10 @@ pub struct Nonce(pub [u8; NONCE_LEN]);
 
 impl Nonce {
     /// A random nonce.
+    ///
+    /// # Errors
+    ///
+    /// The [`getrandom::Error`] when the system gives no random bytes.
     pub fn random() -> Result<Self, getrandom::Error> {
         let mut bytes = [0u8; NONCE_LEN];
         getrandom::fill(&mut bytes)?;
@@ -73,6 +77,10 @@ impl Nonce {
 }
 
 /// Seals `plain` for the file `aad` names.
+///
+/// # Errors
+///
+/// [`SealError::TooLarge`] when `plain` is too large to seal.
 pub fn seal(key: &SubKey, aad: &Aad, plain: &[u8], nonce: Nonce) -> Result<Vec<u8>, SealError> {
     let cipher = XChaCha20Poly1305::new(key.expose().into());
     let payload = Payload {
@@ -81,7 +89,8 @@ pub fn seal(key: &SubKey, aad: &Aad, plain: &[u8], nonce: Nonce) -> Result<Vec<u
     };
     let ciphertext = cipher
         .encrypt(XNonce::from_slice(&nonce.0), payload)
-        .map_err(|_| SealError::TooLarge)?;
+        .ok()
+        .ok_or(SealError::TooLarge)?;
     let mut out = Vec::with_capacity(HEADER_LEN + ciphertext.len());
     out.extend_from_slice(MAGIC);
     out.push(VERSION);
@@ -91,6 +100,11 @@ pub fn seal(key: &SubKey, aad: &Aad, plain: &[u8], nonce: Nonce) -> Result<Vec<u
 }
 
 /// Opens bytes made by [`seal`] with the same key and associated data.
+///
+/// # Errors
+///
+/// [`SealError`] when `sealed` is truncated, has the wrong magic or an unknown version, or fails to
+/// open under `key` and `aad`.
 pub fn unseal(key: &SubKey, aad: &Aad, sealed: &[u8]) -> Result<Vec<u8>, SealError> {
     let Some(rest) = sealed.strip_prefix(MAGIC.as_slice()) else {
         return Err(if sealed.len() < MAGIC.len() && MAGIC.starts_with(sealed) {
@@ -117,5 +131,6 @@ pub fn unseal(key: &SubKey, aad: &Aad, sealed: &[u8]) -> Result<Vec<u8>, SealErr
                 aad: aad.as_bytes(),
             },
         )
-        .map_err(|_| SealError::Unauthentic)
+        .ok()
+        .ok_or(SealError::Unauthentic)
 }

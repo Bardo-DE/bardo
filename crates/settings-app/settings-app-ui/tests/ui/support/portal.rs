@@ -35,11 +35,11 @@ struct Portal {
 
 #[zbus::interface(name = "org.bardo.Portal1")]
 impl Portal {
-    async fn list_grants(&self) -> Vec<Row> {
+    fn list_grants(&self) -> Vec<Row> {
         self.rows.lock().expect("rows").clone()
     }
 
-    async fn revoke(&self, app_id: String) -> fdo::Result<u32> {
+    fn revoke(&self, app_id: String) -> fdo::Result<u32> {
         if self.refuse.swap(false, Ordering::SeqCst) {
             return Err(fdo::Error::Failed("not changed".to_owned()));
         }
@@ -50,7 +50,7 @@ impl Portal {
         Ok(u32::try_from(before - rows.len()).unwrap_or(u32::MAX))
     }
 
-    async fn allow(&self, app_id: String, _screens: String, _input: u32) -> fdo::Result<()> {
+    fn allow(&self, app_id: String, _screens: String, _input: u32) -> fdo::Result<()> {
         if self.refuse.swap(false, Ordering::SeqCst) {
             return Err(fdo::Error::Failed("not changed".to_owned()));
         }

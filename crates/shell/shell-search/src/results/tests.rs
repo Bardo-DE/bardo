@@ -34,7 +34,7 @@ async fn until(rx: &mut watch::Receiver<Results>, ready: impl FnMut(&Results) ->
     match found {
         Ok(Ok(value)) => value,
         Ok(Err(e)) => panic!("{e}"),
-        Err(_) => panic!("timed out; last {:?}", titles(&rx.borrow())),
+        Err(elapsed) => panic!("{elapsed}; last {:?}", titles(&rx.borrow())),
     }
 }
 

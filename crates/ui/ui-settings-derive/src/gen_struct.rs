@@ -9,6 +9,10 @@ use syn::spanned::Spanned;
 use crate::attrs::{EndsAttr, FieldAttrs, FootnoteAttr, container_attrs, field_attrs};
 use crate::shape::{Shape, shape_of};
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one arm for each attribute key (or field kind), each reading its own value"
+)]
 pub(crate) fn expand(input: &syn::DeriveInput, data: &syn::DataStruct) -> syn::Result<TokenStream> {
     let syn::Fields::Named(fields) = &data.fields else {
         return Err(syn::Error::new(

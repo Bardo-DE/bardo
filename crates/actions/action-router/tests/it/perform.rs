@@ -57,6 +57,10 @@ fn calls(router: &action_router::Router<action_fake::FakeSeams>) -> Vec<AuditRec
         .collect()
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "a reviewer's answer is a `Result`, and other tests make it an error"
+)]
 fn deny() -> Result<ReviewVerdict, ReviewError> {
     Ok(ReviewVerdict::Deny {
         why: ReviewReason {
@@ -673,9 +677,9 @@ async fn the_roster_shows_a_tasks_spend_and_what_is_left() {
     router.note_turn_usage(&s.session, &report);
     let budget = router.agent_config().budget;
     let st = router.state.lock().expect("lock");
-    let roster =
+    let listing =
         action_context::tasks::roster_with_totals(&st.tasks, &st.sessions, &budget, &space("work"));
-    let used = roster
+    let used = listing
         .entries
         .iter()
         .find_map(|line| match &line.detail {
@@ -781,6 +785,8 @@ async fn an_undoable_act_is_journalled_under_its_actor_and_can_be_undone() {
 
 #[tokio::test]
 async fn undo_all_stops_at_the_first_conflict() {
+    use action_provider::IntentProvider;
+
     let router = router();
     let s = ready(&router).await;
     for key in ["t1", "t2"] {
@@ -793,7 +799,6 @@ async fn undo_all_stops_at_the_first_conflict() {
         let st = router.state.lock().expect("lock");
         st.journal.entries().last().expect("entry").clone()
     };
-    use action_provider::IntentProvider;
     router
         .seams
         .link

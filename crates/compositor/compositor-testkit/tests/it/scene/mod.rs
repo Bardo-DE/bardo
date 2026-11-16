@@ -70,7 +70,7 @@ fn the_base_scenes_match_their_pixman_goldens() {
             };
             match compare(&golden, &actual, &env.out_dir, env.bless) {
                 GoldenOutcome::Match | GoldenOutcome::Blessed => None,
-                outcome => Some(format!("{name}: {outcome:?}")),
+                outcome @ GoldenOutcome::Differs { .. } => Some(format!("{name}: {outcome:?}")),
             }
         })
         .collect();

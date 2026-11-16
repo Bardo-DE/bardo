@@ -1,8 +1,9 @@
-//! The fake logind (`org.freedesktop.login1` subset on a private bus, the `fake-logind`
-//! binary): Manager `Inhibit` (a pipe fd), `PrepareForSleep`, `ListSessions`, `GetSession`;
-//! Session `TakeControl`, `ReleaseControl`, `TakeDevice`, `ReleaseDevice`,
-//! `PauseDeviceComplete`, `SetIdleHint` and the `Lock`, `Unlock`, `PauseDevice`, `ResumeDevice`
-//! signals; Seat `SwitchTo`. One file per object: [`manager`], [`session`], [`seat`].
+//! The fake logind (`org.freedesktop.login1` subset on a private bus, the `fake-logind` binary).
+//!
+//! Manager `Inhibit` (a pipe fd), `PrepareForSleep`, `ListSessions`, `GetSession`; Session
+//! `TakeControl`, `ReleaseControl`, `TakeDevice`, `ReleaseDevice`, `PauseDeviceComplete`,
+//! `SetIdleHint` and the `Lock`, `Unlock`, `PauseDevice`, `ResumeDevice` signals; Seat `SwitchTo`.
+//! One file per object: [`manager`], [`session`], [`seat`].
 //!
 //! The server only ever connects to the address it is given: a [`PrivateBus`] in a test, the
 //! jail's private bus in a scenario. It never touches the system bus.

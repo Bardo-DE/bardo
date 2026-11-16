@@ -1,5 +1,9 @@
-//! The file-index seam: Tracker 3 and a walk under the home directory are two implementations
-//! behind [`FileIndex`], and a test's fake index is a third. Each
+//! The file-index seam.
+//!
+//! Tracker 3 and a walk under the home directory are two implementations behind [`FileIndex`], and
+//! a test's fake index is a third.
+//!
+//! Each
 //! answers one [`FileAsk`] within its
 //! budget; the provider ranks the hits itself (`hits.rs`), so every backend ranks alike.
 

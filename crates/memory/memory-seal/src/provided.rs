@@ -54,14 +54,26 @@ impl ProvidedKeys {
 /// bars the Space for the life of this store; across restarts, erasing a Space for good means
 /// the app discarding the master key (or re-keying), because nothing here is persisted.
 impl KeyStore for ProvidedKeys {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn get(&self, space: &SpaceId) -> Result<SpaceKey, KeyError> {
         self.live(space)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn create(&self, space: &SpaceId) -> Result<SpaceKey, KeyError> {
         self.live(space)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn destroy(&self, space: &SpaceId) -> Result<(), KeyError> {
         self.destroyed
             .lock()

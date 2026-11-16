@@ -54,7 +54,7 @@ async fn spoken(router: &mut Router<FakeSeams>) -> SessionId {
         "tidy the digest and forward it to accounting",
     )
     .await;
-    grant_mail_to(router, zed(), "work");
+    grant_mail_to(router, &zed(), "work");
     ask(
         router,
         &companion(),

@@ -33,6 +33,10 @@ impl Embedder for NoEmbedder {
         &self.card
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn embed(
         &self,
         _texts: &[String],
@@ -48,6 +52,10 @@ impl Embedder for NoEmbedder {
 pub struct NoConsolidator;
 
 impl Consolidator for NoConsolidator {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn draft(&self, _input: ConsolidationInput) -> Result<Draft, ConsolidateError> {
         Err(ConsolidateError::Unavailable)
     }

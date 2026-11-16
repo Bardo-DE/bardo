@@ -13,11 +13,19 @@ use std::time::Duration;
 
 /// Runs `ops` against `fixture`, checking the five oracles after each; the first failure's
 /// description.
+///
+/// # Errors
+///
+/// [`FuzzFailure`] when the run cannot start, an operation fails, or an invariant breaks after one.
 pub fn run_ops(fixture: &mut Fixture, ops: &[FuzzOp]) -> Result<(), FuzzFailure> {
     run_on(fixture, ops)
 }
 
 /// [`run_ops`] on any host (the runner's own tests use a hand-played compositor).
+///
+/// # Errors
+///
+/// [`FuzzFailure`] when the run cannot start, an operation fails, or an invariant breaks after one.
 pub fn run_on<H: FuzzHost>(host: &mut H, ops: &[FuzzOp]) -> Result<(), FuzzFailure> {
     let mut run = Run::start(host)?;
     for (step, op) in ops.iter().enumerate() {
@@ -63,7 +71,8 @@ impl<'h, H: FuzzHost> Run<'h, H> {
             FuzzOp::Advance(ms) => {
                 let by = Duration::from_millis(u64::from(*ms));
                 catch_unwind(AssertUnwindSafe(|| self.host.advance(by)))
-                    .map_err(|_| FuzzFailure::Panicked(PanicSite::Advance))
+                    .ok()
+                    .ok_or(FuzzFailure::Panicked(PanicSite::Advance))
             }
             FuzzOp::Request {
                 role,
@@ -75,7 +84,8 @@ impl<'h, H: FuzzHost> Run<'h, H> {
                     let id = self.fuzzer(role);
                     self.send(id, *object, request);
                 }))
-                .map_err(|_| FuzzFailure::Panicked(PanicSite::Request))?;
+                .ok()
+                .ok_or(FuzzFailure::Panicked(PanicSite::Request))?;
                 oracles::alive_pump(self.host)
             }
         }

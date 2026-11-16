@@ -190,6 +190,8 @@ fn a_vendor_wire_reads_the_safety_signals_and_the_other_dialects_do_not() {
 
 #[test]
 fn a_frame_budget_is_the_prompt_limit_less_the_current_frame() {
+    const CUT: &[(u8, u16, u8)] = &[(3, 3, 2), (3, 8, 3), (3, 1, 0), (0, 3, 0), (1, 3, 1)];
+
     const ROWS: &[(u16, u8)] = &[
         (0, 0),
         (1, 0),
@@ -208,7 +210,6 @@ fn a_frame_budget_is_the_prompt_limit_less_the_current_frame() {
         );
     }
     // The configured default of three, cut to what the model takes.
-    const CUT: &[(u8, u16, u8)] = &[(3, 3, 2), (3, 8, 3), (3, 1, 0), (0, 3, 0), (1, 3, 1)];
     for (wanted, per_prompt, history) in CUT {
         assert_eq!(
             FrameBudget(*wanted).at_most(ImageCount(*per_prompt)),

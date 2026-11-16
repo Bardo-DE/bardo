@@ -21,7 +21,7 @@ pub(super) fn ShortcutCell(row: ShortcutRow, drive: EventHandler<ShortcutsInput>
             onrecord: move |recorded: ShortcutRecorded| match recorded {
                 ShortcutRecorded::Chord(chord) => drive.call(ShortcutsInput::Set(action, chord)),
                 ShortcutRecorded::Cleared => drive.call(ShortcutsInput::Clear(action)),
-                _ => {}
+                ShortcutRecorded::Cancelled => {}
             },
         }
     }

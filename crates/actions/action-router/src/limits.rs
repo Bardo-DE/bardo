@@ -78,10 +78,18 @@ impl<S: Seams> Router<S> {
         let from = reach_of(choice_arg(inv, "reach").as_deref())
             .ok_or_else(|| failed("that is not a kind of change"))?;
         let app = text_arg(inv, "app")
-            .map(|t| AppName::parse(&t).map_err(|_| failed("that is not an app name")))
+            .map(|t| {
+                AppName::parse(&t)
+                    .ok()
+                    .ok_or_else(|| failed("that is not an app name"))
+            })
             .transpose()?;
         let action = text_arg(inv, "action")
-            .map(|t| ActionName::parse(&t).map_err(|_| failed("that is not an action name")))
+            .map(|t| {
+                ActionName::parse(&t)
+                    .ok()
+                    .ok_or_else(|| failed("that is not an action name"))
+            })
             .transpose()?;
         let scope = match (app, action) {
             (None, None) => LimitScope::Everything,

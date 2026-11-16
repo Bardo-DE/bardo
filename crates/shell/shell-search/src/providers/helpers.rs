@@ -1,7 +1,8 @@
-//! The helpers the person keeps, as rows: one per helper with its name, one line of what it is
-//! doing and, when it needs the person, a Waiting badge on the right; and the row that starts a
-//! new one. Only the Helpers filter (`Scope::Only`) lists them, which is what the panel's
-//! companion mode asks when Tab reaches it.
+//! The helpers the person keeps, as rows.
+//!
+//! One per helper with its name, one line of what it is doing and, when it needs the person, a
+//! Waiting badge on the right; and the row that starts a new one. Only the Helpers filter
+//! (`Scope::Only`) lists them, which is what the panel's companion mode asks when Tab reaches it.
 //!
 //! The card is the preview pane's, not a row's: what Enter does on a helper is nothing, and its
 //! actions are pause or resume and remove (which asks first).

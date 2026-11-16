@@ -36,7 +36,7 @@ impl Ctx {
 
     /// A point of the dialect's space. A grid point past the grid's top is refused, never
     /// clamped.
-    pub(crate) fn point<S: CoordSpace>(&self, x: u32, y: u32) -> Result<Point<S>, DropReason> {
+    pub(crate) fn point<S: CoordSpace>(self, x: u32, y: u32) -> Result<Point<S>, DropReason> {
         match self.grid_max {
             Some(max) if x > max || y > max => Err(DropReason::OutOfFrame),
             _ => Ok(Point::new(Coord(x), Coord(y))),
@@ -48,7 +48,7 @@ impl Ctx {
 pub(crate) trait Dialect {
     fn collect<S: CoordSpace>(
         &self,
-        ctx: &Ctx,
+        ctx: Ctx,
         limits: ParseLimits,
     ) -> Result<Collected<S>, ParseError>;
 }
@@ -62,10 +62,10 @@ pub(crate) fn in_space(
     let ctx = Ctx::new(space);
     match space {
         ModelSpace::Image => dialect
-            .collect(&ctx, limits)
+            .collect(ctx, limits)
             .map(|c| c.parsed(InSpace::Image)),
         ModelSpace::Grid(max) => dialect
-            .collect(&ctx, limits)
+            .collect(ctx, limits)
             .map(|c| c.parsed(|actions| InSpace::Grid(max, actions))),
     }
 }
@@ -151,6 +151,10 @@ impl<S: CoordSpace> Batch<S> {
 impl<S: CoordSpace> Batch<S> {
     /// The batch as a [`Parsed`], for a decoder outside this crate (the vendor wires): the same
     /// rule as the parsers, so a reply with no verb at all is `NoAction`.
+    ///
+    /// # Errors
+    ///
+    /// [`ParseError`] when no action was collected or the collected ones break the limits.
     pub fn into_parsed(
         self,
         thought: Option<String>,
@@ -161,6 +165,11 @@ impl<S: CoordSpace> Batch<S> {
 }
 
 /// A bounded text refused for its content: too long stays `TooLong`, the rest is a bad argument.
+///
+/// # Errors
+///
+/// [`DropReason::TooLong`] when the text is too long; [`DropReason::BadArgument`] for any other
+/// fault in it.
 pub fn bounded<T>(result: Result<T, TextError>) -> Result<T, DropReason> {
     result.map_err(|e| match e {
         TextError::TooLong { .. } => DropReason::TooLong,

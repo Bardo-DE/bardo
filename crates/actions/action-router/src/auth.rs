@@ -8,6 +8,10 @@ use CallerRole::{
 };
 
 /// The roles that may call `member`.
+#[expect(
+    clippy::match_same_arms,
+    reason = "each member's roles are set out with the reason it has them, and two members happen to share a set"
+)]
 fn roles(member: Member) -> &'static [CallerRole] {
     match member {
         Member::Manifests => &CallerRole::ALL,
@@ -90,8 +94,12 @@ pub fn permits(role: CallerRole, member: Member) -> bool {
     roles(member).contains(&role)
 }
 
-/// The role `roles` acts in when it calls `member`: the first of its roles that may make the
-/// call, or `App` for a name with no role of its own that may use the app-level members. None
+/// The role `roles` acts in when it calls `member`.
+///
+/// The first of its roles that may make the call, or `App` for a name with no role of its own that
+/// may use the app-level members.
+///
+/// None
 /// when no role of the caller may make the call.
 #[must_use]
 pub fn acting_role(

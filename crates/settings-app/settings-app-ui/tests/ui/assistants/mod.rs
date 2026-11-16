@@ -123,7 +123,7 @@ fn computers_with_models(name: &str, own: Vec<Own>) -> Computers {
         own,
         vec![],
         vec![],
-        Some(Inferd::new(Verdict::Allow).on_slots()),
+        Some(&Inferd::new(Verdict::Allow).on_slots()),
     )
 }
 
@@ -144,7 +144,7 @@ fn build(
     own: Vec<Own>,
     lenders: Vec<Lender>,
     askers: Vec<Asker>,
-    models: Option<Inferd>,
+    models: Option<&Inferd>,
 ) -> Computers {
     let rt = tokio::runtime::Builder::new_multi_thread()
         .worker_threads(2)
@@ -152,7 +152,7 @@ fn build(
         .build()
         .expect("a runtime for the fake daemon");
     let bus = PrivateBus::start(name);
-    let fake = rt.block_on(serve_with(&bus, own, lenders, askers, models.as_ref()));
+    let fake = rt.block_on(serve_with(&bus, own, lenders, askers, models));
     let sandbox = Sandbox::new(name).on_bus(&bus.address);
     if let Some(text) = file {
         sandbox.write(SETTINGS, text);

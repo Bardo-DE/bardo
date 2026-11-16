@@ -137,7 +137,7 @@ fn tighten(
     session: &provenance::SessionId,
     pairs: &[(&str, Value)],
 ) -> Result<Outcome, AppRefusal> {
-    router.companion_perform(Invocation {
+    router.companion_perform(&Invocation {
         call: CallId(1),
         action: provenance::ActionName::parse("companion.limit.add").expect("action"),
         target: TargetValue::Nothing,

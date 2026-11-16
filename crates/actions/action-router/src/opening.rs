@@ -86,6 +86,10 @@ impl<S: Seams> Router<S> {
 
     /// Opens a session for `opener`: the one body of `.Session.Open`, which the hosted
     /// `org.bardo.Companion` provider also uses to start a worker.
+    #[expect(
+        clippy::too_many_lines,
+        reason = "one sequence of steps over shared locals, in the order the rules apply; the parts have no use apart"
+    )]
     pub(crate) fn open_session(&self, opener: &AppName, open: SessionOpen) -> IntentsReply {
         let now = self.seams.clock().now();
         let mut st = self.locked();

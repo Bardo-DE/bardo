@@ -45,7 +45,8 @@ fn desk(limits: Option<((i32, i32), (i32, i32))>) -> Desk {
     }
     top.commit_bare();
     fixture.pump();
-    top.ack_latest();
+    // the serial acked is not needed.
+    let _ = top.ack_latest();
     let buffer = compositor_testclient::shm_buffer(
         fixture.client(id),
         compositor_core::geometry::PhysicalSize { w: 400, h: 300 },
@@ -303,7 +304,8 @@ fn dragged_by_the_titlebar(output: &str) {
     top.commit_bare();
     fixture.pump();
     assert_eq!(decoration.newest(), Some(Mode::ServerSide));
-    top.ack_latest();
+    // the serial acked is not needed.
+    let _ = top.ack_latest();
     let buffer = compositor_testclient::shm_buffer(
         fixture.client(id),
         compositor_core::geometry::PhysicalSize { w: 400, h: 300 },
@@ -331,7 +333,8 @@ fn dragged_by_the_titlebar(output: &str) {
     let mut draw = |fixture: &mut Fixture| {
         if top.configures().len() > acked {
             acked = top.configures().len();
-            top.ack_latest();
+            // the serial acked is not needed.
+            let _ = top.ack_latest();
         }
         top.show(&buffer);
         fixture.pump();

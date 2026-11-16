@@ -1,6 +1,9 @@
 //! A router over the fakes and the helpers every behaviour test uses: callers, sessions,
 //! labelled handles and the calls of the fixture mail app.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "builders shared by the tests; a test file uses only some of them"
+)]
 
 use account_core::{AppId, AppName, Isolation};
 use action_context::state::SessionRecord;
@@ -210,11 +213,11 @@ pub fn give_policy(router: &Router<FakeSeams>, session: &SessionId, policy: Task
 
 /// Standing consent: the companion may use Mail's classes in `in_space`, always.
 pub fn grant_mail(router: &Router<FakeSeams>, in_space: &str) {
-    grant_mail_to(router, GrantCaller::Companion, in_space);
+    grant_mail_to(router, &GrantCaller::Companion, in_space);
 }
 
 /// Standing consent: `caller` may use Mail's classes in `in_space`, always.
-pub fn grant_mail_to(router: &Router<FakeSeams>, caller: GrantCaller, in_space: &str) {
+pub fn grant_mail_to(router: &Router<FakeSeams>, caller: &GrantCaller, in_space: &str) {
     use account_core::consent::{Decision, Grant, Usage};
     use action_router::GrantStore;
     for (n, class) in [DataClass::Mail, DataClass::Contacts]

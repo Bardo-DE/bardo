@@ -1,5 +1,8 @@
-//! "Search the web for …": one row, last, for any typed text while `launcher.web_search` is on,
-//! opening the search engine's address with `{query}` replaced by the percent-encoded text.
+//! A "Search the web for …" row.
+//!
+//! One row, last, for any typed text while `launcher.web_search` is on, opening the search engine's
+//! address with `{query}` replaced by the percent-encoded text.
+//!
 //! Suggestions from the engine are later and off.
 //!
 //! The row's id is fixed (`web:search`), never the query, so frecency counts the fallback's
@@ -90,6 +93,11 @@ impl Provider for WebProvider {
 
 /// `template` with `{query}` replaced by `text`, percent-encoded (RFC 3986 unreserved kept,
 /// space as `%20`).
+///
+/// # Errors
+///
+/// [`TemplateFault::NoPlaceholder`] when `template` has no place for the query;
+/// [`TemplateFault::NotWeb`] when it is not an `http` or `https` address.
 pub fn search_url(template: &str, text: &str) -> Result<String, TemplateFault> {
     if !template.contains(QUERY_PLACEHOLDER) {
         return Err(TemplateFault::NoPlaceholder);
@@ -103,6 +111,10 @@ pub fn search_url(template: &str, text: &str) -> Result<String, TemplateFault> {
 
 /// The row for `text` with `template` (title `Search the web for “text”`, subtitle the
 /// engine's host, subject `Subject::Web`, glyph `search`, one action “Search the web” on ⌘B).
+///
+/// # Errors
+///
+/// [`TemplateFault`] when `template` is not a web address with a place for the query.
 pub fn web_item(text: &str, template: &str) -> Result<Item, TemplateFault> {
     let url = search_url(template, text)?;
     let engine = host_of(template);

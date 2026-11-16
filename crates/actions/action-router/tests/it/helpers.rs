@@ -450,10 +450,10 @@ async fn a_job_for_a_helper_is_allowed_only_when_a_planner_that_read_nothing_unt
     };
 
     // A clean planner's own words are an instruction.
-    router.companion_perform(post(planners())).unwrap();
+    router.companion_perform(&post(planners())).unwrap();
     // Words from a handle (mail, say) never are, even from a clean planner...
     let refused = router
-        .companion_perform(post(words_of(Source::Mail)))
+        .companion_perform(&post(words_of(Source::Mail)))
         .expect_err("data is not an instruction");
     assert_eq!(
         refused,
@@ -473,7 +473,7 @@ async fn a_job_for_a_helper_is_allowed_only_when_a_planner_that_read_nothing_unt
         .saw
         .untrusted = true;
     assert!(matches!(
-        router.companion_perform(post(planners())),
+        router.companion_perform(&post(planners())),
         Err(AppRefusal::Failed(_))
     ));
 }
@@ -494,14 +494,14 @@ async fn a_helper_proposed_by_a_tainted_planner_has_no_name_and_no_role_to_take(
         )
     };
     router
-        .companion_perform(propose(planners(), planners()))
+        .companion_perform(&propose(planners(), planners()))
         .unwrap();
     for (name, role) in [
         (words_of(Source::Mail), planners()),
         (planners(), words_of(Source::Mail)),
     ] {
         assert!(matches!(
-            router.companion_perform(propose(name, role)),
+            router.companion_perform(&propose(name, role)),
             Err(AppRefusal::Failed(_))
         ));
     }
@@ -523,12 +523,12 @@ async fn a_routine_may_be_proposed_after_reading_untrusted_text_because_the_pers
         )
     };
     router
-        .companion_perform(propose(planner_actor(&front.session)))
+        .companion_perform(&propose(planner_actor(&front.session)))
         .unwrap();
     // Only a planner of the companion can ask at all.
     assert_eq!(
         router
-            .companion_perform(propose(Actor::Cli))
+            .companion_perform(&propose(Actor::Cli))
             .expect_err("not a planner"),
         AppRefusal::Unsupported
     );
@@ -549,7 +549,7 @@ async fn only_the_companions_own_planners_can_call_the_helper_actions() {
     );
     assert_eq!(
         router
-            .companion_perform(not_a_planner)
+            .companion_perform(&not_a_planner)
             .expect_err("not a planner"),
         AppRefusal::Unsupported
     );
@@ -566,7 +566,7 @@ async fn only_the_companions_own_planners_can_call_the_helper_actions() {
                         name: provenance::ActionName::parse(name).expect("action"),
                     },
                     target: TargetValue::Nothing,
-                    args: Default::default(),
+                    args: std::collections::BTreeMap::default(),
                     origin: Origin::Mcp,
                 },
                 session: None,
@@ -662,7 +662,7 @@ async fn handing_a_job_on_is_inside_every_helpers_reach() {
             name: provenance::ActionName::parse(HELPER_POST_JOB).expect("action"),
         },
         target: TargetValue::Nothing,
-        args: Default::default(),
+        args: std::collections::BTreeMap::default(),
         origin: Origin::Companion,
     };
     for (name, value) in [

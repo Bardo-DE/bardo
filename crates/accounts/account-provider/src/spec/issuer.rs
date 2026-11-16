@@ -241,6 +241,11 @@ const ISSUERS: &str = include_str!("../../issuers.toml");
 
 impl Issuer {
     /// What this issuer publishes (`issuers.toml`).
+    ///
+    /// # Panics
+    ///
+    /// If the built-in `issuers.toml` does not parse or has no row for the issuer, which the
+    /// crate's own tests rule out.
     pub fn data(self) -> &'static IssuerData {
         static TABLE: OnceLock<BTreeMap<Issuer, IssuerData>> = OnceLock::new();
         TABLE
@@ -420,9 +425,10 @@ mod tests {
 
     #[test]
     fn a_grant_is_refreshed_with_its_own_kinds_scopes_only() {
+        type Case = (CapabilityKind, Family, &'static [&'static str]);
+
         const MAIL: &str = "https://mail.google.com/";
         let data = Issuer::Google.data();
-        type Case = (CapabilityKind, Family, &'static [&'static str]);
         let cases: &[Case] = &[
             (
                 K::Calendar,

@@ -33,7 +33,7 @@ pub async fn fake_service(sheets: ScriptedSheets) -> FakeService {
                 access: SecretText::new("access"),
                 refresh: SecretText::new("refresh"),
                 expires_at: NOW,
-                granted: Default::default(),
+                granted: account_core::GrantedScopes::default(),
             },
         ),
     ];

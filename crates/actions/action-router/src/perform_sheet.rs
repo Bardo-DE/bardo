@@ -24,7 +24,7 @@ impl<S: Seams> Router<S> {
             action_manifest::DryRun::Preview => {
                 self.seams
                     .link()
-                    .dry_run(&p.request.action.app, self.invocation(p))
+                    .dry_run(&p.request.action.app, Self::invocation(p))
                     .await
             }
         };
@@ -37,7 +37,7 @@ impl<S: Seams> Router<S> {
         }
     }
 
-    pub(crate) fn invocation(&self, p: &Prepared) -> Invocation {
+    pub(crate) fn invocation(p: &Prepared) -> Invocation {
         Invocation {
             call: p.id,
             action: p.decl.name.clone(),

@@ -20,10 +20,10 @@ pub(super) fn spec(
         page: Page::Accounts,
         section: Section(section.to_owned()),
         exposure: Exposure::Basic,
-        labels: Default::default(),
-        unavailable: Default::default(),
-        groups: Default::default(),
-        places: Default::default(),
+        labels: ui_settings::schema::WordLabels::default(),
+        unavailable: std::collections::BTreeMap::default(),
+        groups: std::collections::BTreeMap::default(),
+        places: std::collections::BTreeMap::default(),
         note: None,
         agent: AgentSetting::HandsOff,
     }
@@ -38,6 +38,10 @@ pub(super) fn action(name: &str, weight: ActionWeight) -> KeyKind {
     }
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario (or table of cases) read top to bottom; splitting it would scatter what a reader checks together"
+)]
 pub(super) fn rows_of(held: &Held) -> Vec<KeySpec> {
     let id = &held.id;
     let section = held.label.as_str();

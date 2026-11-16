@@ -86,6 +86,10 @@ pub fn hardware_notes(facts: &HardwareFacts) -> Vec<HardwareNote> {
 mod tests {
     use super::*;
 
+    #[expect(
+        clippy::unnecessary_wraps,
+        reason = "the cases of the table hold `Option`s, and other cases expect `None`"
+    )]
     fn memory(free: u64, one_more: u64) -> Option<MemoryFacts> {
         Some(MemoryFacts {
             free: Bytes(free),

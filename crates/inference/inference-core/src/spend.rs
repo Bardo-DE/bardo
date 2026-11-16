@@ -53,8 +53,11 @@ pub enum SpendVerdict {
     Stop,
 }
 
-/// What a scope has been charged: the sum of the charges providers reported, and how many turns
-/// reported none. Only a reported charge ever counts toward a cap; a turn with none is counted
+/// What a scope has been charged.
+///
+/// The sum of the charges providers reported, and how many turns reported none.
+///
+/// Only a reported charge ever counts toward a cap; a turn with none is counted
 /// here and nowhere else.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ChargeTotal {

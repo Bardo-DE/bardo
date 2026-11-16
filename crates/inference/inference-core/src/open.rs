@@ -9,8 +9,11 @@ use account_core::consent::Usage;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
-/// The options of `Inference1.Open`, `Prepare` and `Availability` (the `options` dictionary on the
-/// bus, the first frame's options on the socket). Today one key is reserved; an unknown key is
+/// The options of `Inference1.Open`, `Prepare` and `Availability`.
+///
+/// They are the `options` dictionary on the bus and the first frame's options on the socket.
+///
+/// Today one key is reserved; an unknown key is
 /// ignored by inferd, so a newer client works with an older daemon.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct OpenOptions {

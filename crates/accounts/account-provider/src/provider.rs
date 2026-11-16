@@ -52,6 +52,11 @@ pub trait Provider: Send + Sync {
 
     /// Begins signing an account in (a new one, or an existing one again). The host drives the
     /// returned conversation; nothing is stored until it ends in `Done`.
+    ///
+    /// # Errors
+    ///
+    /// [`ProviderError`] when the provider cannot begin the sign-in (for example, no client is set
+    /// for its issuer).
     fn sign_in(&self, start: SignInStart) -> Result<Self::SignIn, ProviderError>;
 
     /// Whether a new account can be signed in now. Asked each time the add list is drawn, so a

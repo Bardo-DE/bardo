@@ -6,7 +6,7 @@ use dioxus::prelude::*;
 use settings_app_model::PictureTile;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::prelude::*;
-use ui_components::style::icon::render::{IconPx};
+use ui_components::style::icon::render::IconPx;
 
 /// The side of the glyph shown while the current picture's small picture is not made.
 const GLYPH: u8 = 32;

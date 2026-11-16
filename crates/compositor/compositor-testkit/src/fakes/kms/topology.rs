@@ -36,6 +36,11 @@ pub enum KmsFixtureError {
 }
 
 /// The recorded topology in `path` (JSON of `KmsResources`).
+///
+/// # Errors
+///
+/// [`KmsFixtureError::Io`] when `path` cannot be read; [`KmsFixtureError::Parse`] when its text is
+/// not a topology.
 pub fn load_fixture(path: &Path) -> Result<KmsResources, KmsFixtureError> {
     let text = std::fs::read_to_string(path).map_err(|source| KmsFixtureError::Io {
         path: path.to_owned(),

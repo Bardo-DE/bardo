@@ -11,8 +11,11 @@ use std::fmt;
 
 use super::DomainName;
 
-/// One allowed origin, as the file writes it: `host`, `*.suffix` (any host under the suffix, not
-/// the suffix itself) or either with `:port`. Without a port only the scheme's default is allowed
+/// One allowed origin, as the file writes it.
+///
+/// `host`, `*.suffix` (any host under the suffix, not the suffix itself) or either with `:port`.
+///
+/// Without a port only the scheme's default is allowed
 /// (443 for `https`), so a port is always a deliberate line in the file. A wildcard names at
 /// least two labels after the `*.` (`*.com` is refused).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -30,6 +33,11 @@ enum LinkedHost {
 
 impl LinkedOrigin {
     /// The pattern written as `text`, or why it is not one.
+    ///
+    /// # Errors
+    ///
+    /// [`CoreError::MalformedId`] when `text` is not a host with an optional port, or the port is
+    /// not a number.
     pub fn parse(text: &str) -> Result<Self, CoreError> {
         let bad = || CoreError::MalformedId {
             what: "linked origin",
@@ -49,13 +57,13 @@ impl LinkedOrigin {
         };
         let host = match host.strip_prefix("*.") {
             Some(suffix) => {
-                let name = DomainName::parse(suffix).map_err(|_| bad())?;
+                let name = DomainName::parse(suffix).ok().ok_or_else(|| bad())?;
                 if !name.as_str().contains('.') {
                     return Err(bad());
                 }
                 LinkedHost::Under(name)
             }
-            None => LinkedHost::Exactly(DomainName::parse(host).map_err(|_| bad())?),
+            None => LinkedHost::Exactly(DomainName::parse(host).ok().ok_or_else(|| bad())?),
         };
         Ok(Self { host, port })
     }
@@ -65,9 +73,8 @@ impl LinkedOrigin {
     #[must_use]
     pub fn allows(&self, origin: &Origin) -> bool {
         let port = self.port.unwrap_or(origin.scheme.default_port());
-        let host = match DomainName::parse(&origin.host) {
-            Ok(host) => host,
-            Err(_) => return false,
+        let Ok(host) = DomainName::parse(&origin.host) else {
+            return false;
         };
         let host_ok = match &self.host {
             LinkedHost::Exactly(name) => host == *name,
@@ -103,9 +110,12 @@ impl From<LinkedOrigin> for String {
     }
 }
 
-/// One origin a service hands out links to that DO need the account's bearer (Google Photos'
-/// picked items on `lh3.googleusercontent.com`), as the file writes it: an exact `host` or
-/// `host:port`. Never a wildcard: the daemon adds the account's credential to what it dials, so
+/// One origin a service hands out links to that need the account's bearer.
+///
+/// Google Photos' picked items on `lh3.googleusercontent.com` are one, as the file writes it: an
+/// exact `host` or `host:port`.
+///
+/// Never a wildcard: the daemon adds the account's credential to what it dials, so
 /// every host is named. The scheme is the home endpoint's (a relay never goes to a less secure
 /// scheme than the service it belongs to; for a real service that is `https`).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -114,6 +124,10 @@ pub struct AuthOrigin(LinkedOrigin);
 
 impl AuthOrigin {
     /// The origin written as `text`, or why it is not one (a wildcard is not).
+    ///
+    /// # Errors
+    ///
+    /// [`CoreError::MalformedId`] when `text` holds a wildcard or is not a valid origin.
     pub fn parse(text: &str) -> Result<Self, CoreError> {
         if text.contains('*') {
             return Err(CoreError::MalformedId {

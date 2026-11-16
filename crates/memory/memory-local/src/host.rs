@@ -28,6 +28,10 @@ pub enum LocalError {
 
 /// The service over `backend`, with every Space in the root's `spaces.toml` registered (none
 /// when the file is new). No Space opens, and no key is asked for, until the first request.
+///
+/// # Errors
+///
+/// [`LocalError`] when the spaces file cannot be read or does not parse.
 pub fn open<Clk: Clock, E: Embedder, C: Consolidator>(
     backend: LocalBackend<Clk, E, C>,
     rules: RuleSet,
@@ -46,6 +50,10 @@ pub fn open<Clk: Clock, E: Embedder, C: Consolidator>(
 }
 
 /// Writes `spaces.toml` from what the service knows (call after creating a Space).
+///
+/// # Errors
+///
+/// [`LocalError`] when the spaces cannot be written as text or the file cannot be written.
 pub fn save_spaces<B: Backend>(
     dirs: &memory_core::Dirs,
     service: &MemoryService<B>,
@@ -60,6 +68,11 @@ pub fn save_spaces<B: Backend>(
 }
 
 /// Registers a new Space (created now, with a fresh replica id) and saves `spaces.toml`.
+///
+/// # Errors
+///
+/// [`LocalError::Exists`] when the space is already there; another [`LocalError`] when the space
+/// cannot be made.
 pub fn create_space<Clk: Clock, E: Embedder, C: Consolidator>(
     service: &MemoryService<LocalBackend<Clk, E, C>>,
     id: SpaceId,

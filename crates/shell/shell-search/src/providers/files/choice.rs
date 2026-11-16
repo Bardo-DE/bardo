@@ -43,7 +43,7 @@ pub struct Detected {
 pub fn pick(detected: &Detected) -> Option<IndexKind> {
     [IndexKind::Tracker, IndexKind::Fd, IndexKind::Plocate]
         .into_iter()
-        .find(|kind| usable(detected, *kind) == Presence::Present)
+        .find(|kind| usable(*detected, *kind) == Presence::Present)
 }
 
 /// What this machine has. Blocking (a bus call, `PATH` lookups): the
@@ -60,7 +60,7 @@ pub fn detect(session: &Bus) -> Detected {
 }
 
 /// Whether `kind` may be asked on this machine.
-fn usable(detected: &Detected, kind: IndexKind) -> Presence {
+fn usable(detected: Detected, kind: IndexKind) -> Presence {
     match kind {
         IndexKind::Tracker => match detected.tracker {
             IndexState::Running => Presence::Present,

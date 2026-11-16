@@ -34,7 +34,9 @@ pub enum TierChoice {
     Other,
 }
 
-/// Whether the app may use a model, in routing's own words. The broker says it: a model that
+/// Whether the app may use a model, in routing's own words.
+///
+/// The broker says it: a model that
 /// needs nobody's leave (on this computer, attached by the person, configured by the app) is
 /// `Granted` with no grant behind it, and a hosted model's consent is mapped here at the edge
 /// that read it.
@@ -78,11 +80,16 @@ pub struct Chosen {
     pub spend: SpendVerdict,
 }
 
-/// The candidates the hard rules leave, or the typed refusal for the first rule that left none:
+/// The candidates the hard rules leave, or the typed refusal for the first rule that left none.
+///
 /// `ai.local_only` (`Unavailable`), the data class's floor (`RequiresCloud`), the app's consent
 /// (`NeedsGrant` when one could be asked, else `Denied`), the spend caps (`OverBudget`). These
-/// rules live here and nowhere else: [`route`] and `pick` both go through it, so neither can
-/// admit what the other would refuse. Pure; the order of the input is kept.
+/// rules live here and nowhere else: [`route`] and `pick` both go through it, so neither can admit
+/// what the other would refuse. Pure; the order of the input is kept.
+///
+/// # Errors
+///
+/// [`InferRefusal`] when no candidate is reachable or the policy admits none of them.
 pub fn admit<'a>(
     ask: RouteAsk,
     candidates: impl IntoIterator<Item = &'a RouteCandidate>,
@@ -128,6 +135,10 @@ pub fn admit<'a>(
 }
 
 /// The model to run for `ask`, or why none may.
+///
+/// # Errors
+///
+/// [`InferRefusal`] when no candidate is admitted.
 pub fn route(
     ask: RouteAsk,
     candidates: &[RouteCandidate],

@@ -285,9 +285,9 @@ async fn a_final_report_ends_the_senders_task() {
         st.tasks.get(&worker.task).expect("task").state,
         TaskState::Ended(ReportStatus::Failed)
     );
-    let roster = action_context::tasks::roster_of(&st.tasks, &space("work"));
+    let listing = action_context::tasks::roster_of(&st.tasks, &space("work"));
     assert!(
-        roster
+        listing
             .entries
             .iter()
             .any(|l| l.state == RosterState::Failed)

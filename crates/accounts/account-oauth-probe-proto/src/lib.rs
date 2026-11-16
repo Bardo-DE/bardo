@@ -27,10 +27,16 @@ pub enum Failure {
 }
 
 /// A JSON `GET` of `url` with `token` as the bearer. The header is marked sensitive.
+///
+/// # Errors
+///
+/// [`Failure::Unreadable`] when `url` or `token` is not usable in a request, or the request cannot
+/// be built.
 pub fn bearer_get(url: &str, token: &str) -> Result<Request<Vec<u8>>, Failure> {
-    let url = WebUrl::parse(url).map_err(|_| Failure::Unreadable)?;
-    let mut bearer =
-        HeaderValue::from_str(&format!("Bearer {token}")).map_err(|_| Failure::Unreadable)?;
+    let url = WebUrl::parse(url).ok().ok_or(Failure::Unreadable)?;
+    let mut bearer = HeaderValue::from_str(&format!("Bearer {token}"))
+        .ok()
+        .ok_or(Failure::Unreadable)?;
     bearer.set_sensitive(true);
     Request::builder()
         .method(Method::GET)
@@ -38,7 +44,8 @@ pub fn bearer_get(url: &str, token: &str) -> Result<Request<Vec<u8>>, Failure> {
         .header(ACCEPT, "application/json")
         .header(AUTHORIZATION, bearer)
         .body(Vec::new())
-        .map_err(|_| Failure::Unreadable)
+        .ok()
+        .ok_or(Failure::Unreadable)
 }
 
 #[cfg(test)]

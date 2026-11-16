@@ -1,11 +1,11 @@
 use super::*;
 use account_capability::Billing;
 use account_capability::ModelId;
-use account_capability::{Capability, CuaBatching, CuaCap, CuaEnv, LlmCap, LlmFeature, LlmWire};
+use account_capability::{CuaBatching, CuaCap, CuaEnv, LlmCap, LlmWire};
 use account_core::AccountId;
 use account_match::{CuaNeed, LlmNeed};
 use base_ids::{Px, Tokens};
-use inference_core::{AutoMode, AutoRow, Declined, DeclinedBecause, TierRow};
+use inference_core::{AutoMode, AutoRow, TierRow};
 
 fn llm_cap() -> Capability {
     Capability::Llm(LlmCap {
@@ -91,10 +91,17 @@ fn pick(
     .map_err(|r| r.refusal)
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of routes; each row is a short need and its expected decision"
+)]
 #[test]
 fn the_route_table() {
     let ready = Readiness::Ready;
-    #[allow(clippy::type_complexity)]
+    #[allow(
+        clippy::type_complexity,
+        reason = "one table of (name, need, the route inputs, the expected decision)"
+    )]
     let cases: Vec<(
         &str,
         Need,
@@ -285,7 +292,10 @@ fn needs_map_to_the_picker_kinds() {
         (need(), Some(Slot::Text)),
         (cua_need(), Some(Slot::ComputerUse)),
         (
-            Need::Embeddings(EmbedNeed::new(DimsNeed::Any, Default::default())),
+            Need::Embeddings(EmbedNeed::new(
+                DimsNeed::Any,
+                std::collections::BTreeSet::new(),
+            )),
             Some(Slot::Embeddings),
         ),
         (speech(&[SpeechMode::Stt]), Some(Slot::VoiceIn)),
@@ -464,7 +474,7 @@ fn a_text_only_model_named_for_computer_use_is_refused_by_name() {
             Readiness::Ready,
         ),
     ];
-    let tiers = TierMap::default().naming(Slot::ComputerUse, named("blind"));
+    let tiers = TierMap::default().naming(Slot::ComputerUse, &named("blind"));
     let ask = |tiers: &TierMap| {
         choose(
             &cua_need(),
@@ -484,7 +494,7 @@ fn a_text_only_model_named_for_computer_use_is_refused_by_name() {
             because: DeclinedBecause::CannotSeeScreen,
         })
     );
-    let served = ask(&TierMap::default().naming(Slot::ComputerUse, named("sighted")))
+    let served = ask(&TierMap::default().naming(Slot::ComputerUse, &named("sighted")))
         .expect("a model that reads images is served");
     assert_eq!(served.chosen.model.as_str(), "sighted");
 }

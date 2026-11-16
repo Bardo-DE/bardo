@@ -50,7 +50,6 @@ fn titles(provider: &AppsProvider, text: &str) -> Vec<String> {
 
 #[test]
 fn a_query_table_matches_the_fixture_tree() {
-    let provider = provider();
     const CASES: &[(&str, &[&str])] = &[
         ("firefox", &["Firefox (home)"]),
         ("rich", &["Rich App"]),
@@ -61,6 +60,8 @@ fn a_query_table_matches_the_fixture_tree() {
         ("only-home", &[]), // the id (a hyphen, no space) is not matched, only names/keywords
         ("no such application anywhere", &[]),
     ];
+
+    let provider = provider();
     for &(text, want) in CASES {
         assert_eq!(titles(&provider, text), want, "{text:?}");
     }

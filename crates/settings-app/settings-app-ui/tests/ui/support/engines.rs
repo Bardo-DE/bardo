@@ -47,7 +47,7 @@ struct Inference(Arc<State>);
 
 #[zbus::interface(name = "org.bardo.Inference1")]
 impl Inference {
-    async fn local_engines(&self) -> Vec<(String, Details)> {
+    fn local_engines(&self) -> Vec<(String, Details)> {
         vec![
             row(
                 "llama_cpp",

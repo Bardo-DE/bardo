@@ -67,11 +67,11 @@ impl Control {
 #[zbus::interface(name = "org.bardo.Memory1.Control")]
 impl Control {
     #[zbus(property)]
-    async fn confinement(&self) -> String {
+    fn confinement(&self) -> String {
         self.confinement.to_owned()
     }
 
-    async fn pending_settings(&self) -> Vec<(String, String, String)> {
+    fn pending_settings(&self) -> Vec<(String, String, String)> {
         let mut state = self.state.lock().expect("state");
         state.reads += 1;
         SHIPPED
@@ -85,7 +85,7 @@ impl Control {
             .collect()
     }
 
-    async fn confirm_settings(&self, values: HashMap<String, String>) -> Result<(), Refusal> {
+    fn confirm_settings(&self, values: HashMap<String, String>) -> Result<(), Refusal> {
         let mut state = self.state.lock().expect("state");
         match state.refuse.take() {
             Some("NotAllowed") => return Err(Refusal::NotAllowed(String::new())),

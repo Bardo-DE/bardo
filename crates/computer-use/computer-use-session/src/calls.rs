@@ -69,7 +69,7 @@ fn definitions(tools: &[ToolSpec]) -> String {
                 })
                 .to_string(),
             ),
-            _ => None,
+            ToolSpec::Native(_) => None,
         })
         .collect::<Vec<String>>()
         .join("\n")

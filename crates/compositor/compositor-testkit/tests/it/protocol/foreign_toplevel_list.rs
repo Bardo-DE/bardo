@@ -32,7 +32,8 @@ fn windows_are_listed_and_closed() {
     top.set_app_id("org.example.Mail");
     top.commit_bare();
     fixture.pump();
-    top.ack_latest();
+    // the serial acked is not needed.
+    let _ = top.ack_latest();
     let buffer = shm_buffer(
         fixture.client(owner),
         PhysicalSize { w: 320, h: 200 },

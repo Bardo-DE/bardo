@@ -69,6 +69,11 @@ impl Fixture {
 
     /// A shot of `target`, from the last presented frame. A window is cut out of the frame of
     /// the output it is on (the frame it is drawn in, not a render of it alone).
+    ///
+    /// # Panics
+    ///
+    /// If the output is drawn by the dummy renderer, keeps its frame on the GPU, or has presented
+    /// no frame yet.
     pub fn shot(&mut self, target: ShotTarget) -> image::RgbaImage {
         let (output, region) = self.shot_region(target);
         let frame = match self.last_pixels(&output) {

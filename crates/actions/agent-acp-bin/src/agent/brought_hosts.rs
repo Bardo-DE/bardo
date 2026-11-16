@@ -52,6 +52,10 @@ impl<A: Accounts + 'static> Hosts for BroughtHosts<A> {
     type Seams = Hosting<A>;
     type Desk = EditorDesk;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn host(&mut self, start: Start) -> AgentHost<Hosting<A>, EditorDesk> {
         let mut backend = self.live.backend(&self.program, EdgeMenu::Everything);
         if let Some(id) = &start.resume {
@@ -86,7 +90,7 @@ impl<A: Accounts + 'static> Hosts for BroughtHosts<A> {
                 .entry(&self.program)
                 .and_then(|entry| entry.label.clone()),
             cwd: Some(self.cwd.clone()),
-            rewind: Default::default(),
+            rewind: action_core::Rewind::default(),
         }
     }
 }

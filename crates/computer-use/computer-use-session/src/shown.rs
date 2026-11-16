@@ -120,7 +120,7 @@ fn shown_names(profile: ActionProfile, canonical: &str) -> Vec<String> {
     }
 }
 
-/// One line of the action description (`* \`verb\`: what it does`) as the profile shows it; a
+/// One line of the action description (``* `verb`: what it does``) as the profile shows it; a
 /// line that is no verb's stays.
 fn shown_lines(profile: ActionProfile, line: &str) -> Vec<String> {
     let Some((canonical, said)) = line

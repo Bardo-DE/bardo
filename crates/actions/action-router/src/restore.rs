@@ -67,6 +67,11 @@ impl<S: Seams> Router<S> {
     /// log's or higher, handles come back as labels, a call that never ended ends interrupted
     /// and is not run again, and the budget's wall clock starts now. A session whose log has a
     /// gap or an unreadable entry comes back closed, for display, tainted.
+    ///
+    /// # Errors
+    ///
+    /// [`RestoreFault`] when the session cannot be restored: it is unknown to the log or its log
+    /// cannot be read.
     pub async fn restore_session(&self, id: &SessionId) -> Result<Restored, RestoreFault> {
         self.restore_for(id, None).await
     }
@@ -133,6 +138,10 @@ impl<S: Seams> Router<S> {
     /// them (a restart begins counting again, and a new session must not take the name of an old
     /// one). The daemon calls it once at start. The sessions come back for a listing; each is
     /// restored when a request names it (`restore_session`).
+    ///
+    /// # Errors
+    ///
+    /// [`LogFault`] when the log cannot list its sessions.
     pub async fn adopt_sessions(&self) -> Result<Vec<SessionId>, LogFault> {
         let ids = self.seams.log().sessions().await?;
         let top = ids.iter().map(|i| number_of(i.as_str())).max().unwrap_or(0);
@@ -183,6 +192,10 @@ async fn read_pages<L: SessionLog>(
 }
 
 /// The session a request names, if it names one.
+#[expect(
+    clippy::match_same_arms,
+    reason = "the explicit arm lists the requests known to name no session, so a new request must be classified; the wildcard is for an unknown kind"
+)]
 pub(crate) fn named_session(request: &IntentsRequest) -> Option<&SessionId> {
     use IntentsRequest as R;
     match request {
@@ -243,6 +256,10 @@ mod tests {
     struct Endless;
 
     impl SessionLog for Endless {
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async; this implementation has nothing to await"
+        )]
         async fn append(
             &self,
             _session: &SessionId,
@@ -252,6 +269,10 @@ mod tests {
             Ok(Appended { seq })
         }
 
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async; this implementation has nothing to await"
+        )]
         async fn page(
             &self,
             _session: &SessionId,
@@ -264,6 +285,10 @@ mod tests {
             })
         }
 
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async; this implementation has nothing to await"
+        )]
         async fn sessions(&self) -> Result<Vec<SessionId>, LogFault> {
             Ok(Vec::new())
         }

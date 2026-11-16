@@ -1,6 +1,7 @@
-//! `org.freedesktop.login1.Manager` (P1-F2): `Inhibit`, `ListSessions`, `GetSession`,
-//! `GetSessionByPID`, `GetSeat`; the `PrepareForSleep` signal is sent through
-//! [`FakeLogind::prepare_for_sleep`](super::FakeLogind::prepare_for_sleep).
+//! `org.freedesktop.login1.Manager` (P1-F2).
+//!
+//! `Inhibit`, `ListSessions`, `GetSession`, `GetSessionByPID`, `GetSeat`; the `PrepareForSleep`
+//! signal is sent through [`FakeLogind::prepare_for_sleep`](super::FakeLogind::prepare_for_sleep).
 
 use super::log::Recorder;
 use super::{SEAT_PATH, SESSION_ID, SESSION_PATH, inhibit, object_path};
@@ -32,6 +33,10 @@ fn failed(error: impl std::fmt::Display) -> fdo::Error {
 impl Manager {
     /// `Inhibit(what, who, why, mode)`: the write end of a pipe; closing it releases the
     /// inhibitor (the fake records both). Every mode counts as a delay inhibitor.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "zbus hands each method argument over as an owned value"
+    )]
     fn inhibit(
         &self,
         what: String,
@@ -46,6 +51,10 @@ impl Manager {
     }
 
     /// `ListSessions()`: the one session, as `(id, uid, user, seat, path)`.
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self`, though this fake keeps no state"
+    )]
     fn list_sessions(&self) -> fdo::Result<Vec<SessionRow>> {
         let uid = rustix::process::getuid().as_raw();
         Ok(vec![(
@@ -58,6 +67,14 @@ impl Manager {
     }
 
     /// `GetSession(id)`: the one session, by its id or by `auto`.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "zbus hands each method argument over as an owned value"
+    )]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self`, though this fake keeps no state"
+    )]
     fn get_session(&self, id: String) -> fdo::Result<OwnedObjectPath> {
         match id.as_str() {
             SESSION_ID | "auto" => object_path(SESSION_PATH),
@@ -66,12 +83,24 @@ impl Manager {
     }
 
     /// `GetSessionByPID(pid)`: the one session, whatever the process.
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self`, though this fake keeps no state"
+    )]
     fn get_session_by_pid(&self, pid: u32) -> fdo::Result<OwnedObjectPath> {
         let _ = pid;
         object_path(SESSION_PATH)
     }
 
     /// `GetSeat(id)`: the one seat.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "zbus hands each method argument over as an owned value"
+    )]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self`, though this fake keeps no state"
+    )]
     fn get_seat(&self, id: String) -> fdo::Result<OwnedObjectPath> {
         match id.as_str() {
             super::SEAT_ID => object_path(SEAT_PATH),

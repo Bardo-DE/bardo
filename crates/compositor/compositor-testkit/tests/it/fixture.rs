@@ -69,7 +69,7 @@ fn chopping_an_advance_differently_changes_nothing() {
         (frames, fixture.scene())
     };
     let whole = run(&[6000]);
-    assert_eq!(run(&[1; 6000]), whole);
+    assert_eq!(run(&vec![1; 6000]), whole);
     assert_eq!(run(&[7, 993, 2500, 1, 1499, 1000]), whole);
 }
 

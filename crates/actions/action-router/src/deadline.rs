@@ -2,7 +2,7 @@
 //! `after`, so a hung model costs its stage's time and no more. The pure `action-review` crate
 //! owns no timer; this is where the time limit is enforced.
 
-use std::future::{poll_fn};
+use std::future::poll_fn;
 use std::pin::pin;
 use std::task::Poll;
 

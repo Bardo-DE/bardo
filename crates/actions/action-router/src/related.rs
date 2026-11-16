@@ -33,8 +33,8 @@ fn asked<'a>(manifest: &'a Manifest, p: &Prepared) -> Option<(&'a EntityDecl, &'
 }
 
 /// Whether `value` names things of `kind`, no more than `many` allows.
-fn conforms(value: &Option<Labelled<Value>>, kind: &EntityKind, many: Cardinality) -> bool {
-    let things = match value.as_ref().map(|v| &v.value) {
+fn conforms(value: Option<&Labelled<Value>>, kind: &EntityKind, many: Cardinality) -> bool {
+    let things = match value.map(|v| &v.value) {
         None => return true,
         Some(Value::Entity(e)) => std::slice::from_ref(e),
         Some(Value::Entities(es)) => es.as_slice(),
@@ -64,7 +64,7 @@ impl<S: Seams> Router<S> {
         let Some((_, relation)) = asked(manifest, p) else {
             return Ok(outcome);
         };
-        if !conforms(&outcome.value, &relation.to, relation.many) {
+        if !conforms(outcome.value.as_ref(), &relation.to, relation.many) {
             return Err(AppRefusal::Unsupported);
         }
         let class = st

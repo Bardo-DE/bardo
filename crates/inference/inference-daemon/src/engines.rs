@@ -1252,7 +1252,7 @@ impl inference_router::seams::Router for SessionRouter {
 /// names its own model; the map as it is for any other request or session.
 pub(crate) fn named_tiers(tiers: &TierMap, need: &Need, named: Option<&ModelRef>) -> TierMap {
     match (need, named) {
-        (Need::Llm(_), Some(model)) => tiers.naming(Slot::Text, model.clone()),
+        (Need::Llm(_), Some(model)) => tiers.naming(Slot::Text, model),
         _ => tiers.clone(),
     }
 }

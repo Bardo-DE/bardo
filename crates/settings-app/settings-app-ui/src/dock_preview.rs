@@ -19,6 +19,10 @@ const DEFAULT_PX: i64 = 48;
 const SIDES: (i64, i64) = (8, 128);
 
 /// The side of a tile for `value`: a whole or a fractional number, kept within [`SIDES`].
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a float past i64 saturates, and the clamp to the tile sides follows"
+)]
 fn tile_px(value: &toml::Value) -> i64 {
     let side = value
         .as_integer()

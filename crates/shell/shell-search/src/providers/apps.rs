@@ -1,6 +1,7 @@
-//! Installed applications, ranked by name, generic name and keywords with frecency; a matching
-//! desktop action (`[Desktop Action ...]`) surfaces as its own row too, so typing "private
-//! window" finds Firefox's action directly, not just Firefox itself.
+//! Installed applications, ranked by name, generic name and keywords with frecency.
+//!
+//! A matching desktop action (`[Desktop Action ...]`) surfaces as its own row too, so typing
+//! "private window" finds Firefox's action directly, not just Firefox itself.
 
 use std::sync::{Arc, Mutex};
 
@@ -26,8 +27,9 @@ const ACTION_JOINER: char = '\u{1}';
 /// `KMail` and ranks under `KMail`, as Spotlight lists an app before its actions.
 const ACTION_WEIGHT: u32 = 850;
 
-/// Rows for every listed app matching the query, and one row per matching desktop action; the
-/// app row's own `actions` menu (Ctrl+K / Alt+K) lists every desktop action regardless of
+/// Rows for every listed app matching the query, and one row per matching desktop action.
+///
+/// The app row's own `actions` menu (Ctrl+K / Alt+K) lists every desktop action regardless of
 /// whether it matched on its own.
 #[derive(Debug)]
 pub struct AppsProvider {
@@ -283,6 +285,15 @@ mod tests {
 
     #[test]
     fn a_query_table_matches_name_generic_name_and_keywords() {
+        const CASES: &[(&str, &[&str])] = &[
+            ("fire", &["Firefox"]),
+            ("browser", &["Firefox"]),
+            ("internet", &["Firefox"]),
+            ("files", &["Files"]),
+            ("term", &["Terminal"]),
+            ("zzz", &[]),
+        ];
+
         let apps = vec![
             app_with("org.mozilla.firefox", "Firefox", |a| {
                 a.generic_name = "Web Browser".to_owned();
@@ -294,14 +305,6 @@ mod tests {
             app_with("foot", "Terminal", |_| {}),
         ];
         let provider = provider(apps);
-        const CASES: &[(&str, &[&str])] = &[
-            ("fire", &["Firefox"]),
-            ("browser", &["Firefox"]),
-            ("internet", &["Firefox"]),
-            ("files", &["Files"]),
-            ("term", &["Terminal"]),
-            ("zzz", &[]),
-        ];
         for &(text, want) in CASES {
             assert_eq!(titles(&provider, text), want, "{text:?}");
         }
@@ -350,7 +353,8 @@ mod tests {
         let provider = provider(vec![app_with("foot", "Foot", |_| {})]);
         let cancel = Cancel::new();
         let query = Query::begin("foot", &cancel);
-        cancel.begin(); // a newer keystroke overtakes `query` before it runs
+        // the new generation is not needed, only that the old one is stale.
+        let _ = cancel.begin(); // a newer keystroke overtakes `query` before it runs
         let mut sink = VecSink::default();
         provider.query(&query, &mut sink);
         assert!(sink.0.is_empty());

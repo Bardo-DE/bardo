@@ -65,7 +65,9 @@ impl Provider for ClipboardProvider {
     }
 }
 
-/// `history`'s entries as rows for `needle`, best first (newest first among equals). A text
+/// `history`'s entries as rows for `needle`, best first (newest first among equals).
+///
+/// A text
 /// row's title is its first line, trimmed to 80 characters; its subtitle its age and length
 /// ("2 min ago · 1,204 characters"); an image row's title "Image", its subtitle its size and
 /// type. Every row's subject is `Subject::Clip` with an excerpt, never the whole text.

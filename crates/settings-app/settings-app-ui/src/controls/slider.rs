@@ -10,7 +10,7 @@ use ui_components::style::tokens::control_size::ControlSize;
 /// a hundredth of a fractional one.
 fn key_step(range: &Range) -> Fraction {
     let span = range.max.saturating_sub(range.min).max(1);
-    Fraction((1000 / span.min(1000)).max(1) as u16)
+    Fraction(u16::try_from((1000 / span.min(1000)).max(1)).unwrap_or(1))
 }
 
 /// A slider over `range`, with the words at its two ends when the schema gives them. Every move is sent, but only a move to another value: a whole range

@@ -1,6 +1,9 @@
-//! The fakes: what stands in for the session, udev, logind, KMS, scanout, libinput's
-//! configuration, the Spaces file, sill's D-Bus methods, the service manager's notifications, the account service's Spaces, the process table, the callers of the
-//! bus, the accessibility-root checker and palmrest inside the jail.
+//! The fakes.
+//!
+//! What stands in for the session, udev, logind, KMS, scanout, libinput's configuration, the Spaces
+//! file, sill's D-Bus methods, the service manager's notifications, the account service's Spaces,
+//! the process table, the callers of the bus, the accessibility-root checker and palmrest inside
+//! the jail.
 
 mod a11y;
 pub mod callers;

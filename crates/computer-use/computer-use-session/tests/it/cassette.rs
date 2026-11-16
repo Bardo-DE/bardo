@@ -66,7 +66,7 @@ impl WireSink for &Written {
     }
 }
 
-fn chunk(delta: Value, finish: Option<&str>) -> String {
+fn chunk(delta: &Value, finish: Option<&str>) -> String {
     format!(
         "data: {}\n\n",
         json!({"id":"c","choices":[{"index":0,"delta":delta,"finish_reason":finish}]})
@@ -84,18 +84,18 @@ fn usage_and_done() -> String {
 fn tool_stream(thought: &str, arguments: &str) -> String {
     let (head, tail) = arguments.split_at(arguments.len() / 2);
     [
-        chunk(json!({"role":"assistant","content":""}), None),
-        chunk(json!({"reasoning_content": thought}), None),
+        chunk(&json!({"role":"assistant","content":""}), None),
+        chunk(&json!({"reasoning_content": thought}), None),
         chunk(
-            json!({"tool_calls":[{"index":0,"id":"call_1","type":"function",
+            &json!({"tool_calls":[{"index":0,"id":"call_1","type":"function",
                 "function":{"name":"computer_use","arguments":head}}]}),
             None,
         ),
         chunk(
-            json!({"tool_calls":[{"index":0,"function":{"arguments":tail}}]}),
+            &json!({"tool_calls":[{"index":0,"function":{"arguments":tail}}]}),
             None,
         ),
-        chunk(json!({}), Some("tool_calls")),
+        chunk(&json!({}), Some("tool_calls")),
         usage_and_done(),
     ]
     .concat()
@@ -109,9 +109,9 @@ fn text_stream(text: &str) -> String {
         .map_or(0, |(i, _)| i);
     let (head, tail) = text.split_at(mid);
     [
-        chunk(json!({"role":"assistant","content":head}), None),
-        chunk(json!({"content":tail}), None),
-        chunk(json!({}), Some("stop")),
+        chunk(&json!({"role":"assistant","content":head}), None),
+        chunk(&json!({"content":tail}), None),
+        chunk(&json!({}), Some("stop")),
         usage_and_done(),
     ]
     .concat()
@@ -163,7 +163,11 @@ fn run<T: Transport>(
 ) -> Result<Vec<Step>, ProviderError> {
     let mut steps = Vec::new();
     for (n, tag) in frames.iter().enumerate() {
-        let mut request: TurnRequest = session.request(&obs(n as u32), map, frame(tag));
+        let mut request: TurnRequest = session.request(
+            &obs(u32::try_from(n).expect("a test has few steps")),
+            map,
+            frame(tag),
+        );
         loop {
             let mut sink = TranscriptSink::new();
             let end = block_on(driver.turn(&request, &mut sink))?;
@@ -317,14 +321,14 @@ fn qwen_in_pixel_space_repairs_once_over_the_wire() {
         body_of(&cassette.exchanges[0]),
         body_of(&cassette.exchanges[1]),
     );
-    let (a, b) = (
+    let (before, after) = (
         first["messages"].as_array().unwrap(),
         repair["messages"].as_array().unwrap(),
     );
-    assert_eq!(&b[..a.len()], &**a);
-    assert_eq!(b.len(), a.len() + 1);
+    assert_eq!(&after[..before.len()], &**before);
+    assert_eq!(after.len(), before.len() + 1);
     assert!(
-        b[a.len()]["content"]
+        after[before.len()]["content"]
             .as_str()
             .unwrap()
             .contains("computer_use")

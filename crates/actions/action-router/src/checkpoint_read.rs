@@ -26,12 +26,12 @@ pub(crate) fn was_saved(notes: &[CheckpointNote], id: CheckpointId) -> bool {
     notes.iter().any(|note| match &note.event {
         CheckpointEvent::Taken(taken) => *taken == id,
         CheckpointEvent::Restored { safety, .. } => *safety == id,
-        _ => false,
+        CheckpointEvent::Skipped(_) => false,
     })
 }
 
 /// A store's refusal as the wire tells it.
-pub(crate) fn fault_of(fault: StoreFault) -> CheckpointFault {
+pub(crate) fn fault_of(fault: &StoreFault) -> CheckpointFault {
     match fault {
         StoreFault::NoHistory => CheckpointFault::NoHistory,
         StoreFault::NoSuchPoint => CheckpointFault::NoSuchPoint,
@@ -149,7 +149,7 @@ impl<S: Seams> Router<S> {
             Ok(plan) => Ok(plan),
             // The log names it and the store does not hold it: it was cleared.
             Err(StoreFault::NoSuchPoint) => Err(CheckpointFault::Gone),
-            Err(other) => Err(fault_of(other)),
+            Err(other) => Err(fault_of(&other)),
         }
     }
 }

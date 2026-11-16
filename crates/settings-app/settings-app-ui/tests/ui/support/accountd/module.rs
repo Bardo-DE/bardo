@@ -4,11 +4,19 @@ use super::rows::{action, rows_of, spec};
 use super::*;
 
 impl LiveModule for Accountd {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn permit(&self, _caller: &Caller, _access: Access) -> Verdict {
         *self.calls.lock().expect("calls") += 1;
         self.policy
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn describe(&self) -> LiveSchema {
         let mut key: Vec<KeySpec> = self
             .accounts
@@ -50,6 +58,10 @@ impl LiveModule for Accountd {
         LiveSchema { version: 1, key }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn get(&self, key: &KeyPath) -> Result<toml::Value, LiveError> {
         let path = key.0.as_str();
         if path == "accounts.clients.microsoft" {
@@ -83,6 +95,10 @@ impl LiveModule for Accountd {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn set(&self, key: &KeyPath, value: toml::Value) -> Result<(), LiveError> {
         self.sets
             .lock()

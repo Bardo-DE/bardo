@@ -63,10 +63,18 @@ impl MemoryKeys {
 }
 
 impl KeyStore for MemoryKeys {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn get(&self, space: &SpaceId) -> Result<SpaceKey, KeyError> {
         self.unlocked(|keys| keys.get(space).cloned().ok_or(KeyError::Missing))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn create(&self, space: &SpaceId) -> Result<SpaceKey, KeyError> {
         self.unlocked(|keys| {
             if keys.contains_key(space) {
@@ -78,6 +86,10 @@ impl KeyStore for MemoryKeys {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn destroy(&self, space: &SpaceId) -> Result<(), KeyError> {
         self.unlocked(|keys| keys.remove(space).map(drop).ok_or(KeyError::Missing))
     }

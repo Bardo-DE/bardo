@@ -47,6 +47,10 @@ impl GpuTopology {
     /// only) and B (NVIDIA-like, driving `HDMI-A-1`, importing ARGB8888 and XRGB8888), both
     /// pixman, taking each other's buffers as `cross` says: "display on A, client buffers
     /// from B". A renders; B's tranche holds the one format A does not, ARGB8888.
+    ///
+    /// # Errors
+    ///
+    /// [`CoreError`] when one of the fixed output names is rejected.
     pub fn pair(cross: CrossSupport) -> Result<GpuTopology, CoreError> {
         let panel = OutputName::parse("eDP-1")?;
         let hdmi = OutputName::parse("HDMI-A-1")?;
@@ -74,6 +78,10 @@ impl GpuTopology {
 
     /// What detection reports for this topology: the facts `SysRenderNodes` reads back from the
     /// tree `FabricatedSysRoot` writes, in node order. The first GPU is the firmware's.
+    ///
+    /// # Errors
+    ///
+    /// [`CoreError`] when a GPU's identifiers are not valid.
     pub fn facts(&self) -> Result<Vec<GpuFacts>, CoreError> {
         self.gpus
             .iter()
@@ -170,6 +178,10 @@ impl SoftGpu {
     }
 
     /// This GPU's fabricated PCI address, `0000:<id + 1>:00.0`.
+    ///
+    /// # Errors
+    ///
+    /// [`CoreError`] when the derived PCI path is not a valid identifier.
     pub fn by_path(&self) -> Result<ByPathId, CoreError> {
         ByPathId::parse(&format!("0000:{:02x}:00.0", self.id.0 + 1))
     }

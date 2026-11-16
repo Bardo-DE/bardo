@@ -85,6 +85,10 @@ fn resolve(scratch: &Procs, pid: u32) -> Option<(String, Isolation, CallerRole)>
         .map(|c| (c.app.name.to_string(), c.app.isolation, c.role))
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "the cases of the table hold `Option`s, and other cases expect `None`"
+)]
 fn got(
     name: &str,
     isolation: Isolation,

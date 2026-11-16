@@ -92,6 +92,11 @@ impl ClientEntry {
 }
 
 /// The clients one file's text declares, or why it is refused.
+///
+/// # Errors
+///
+/// [`ClientsFileError::Syntax`] when `text` is not a clients file; [`ClientsFileError::Duplicate`]
+/// when an issuer and channel pair is declared twice.
 pub fn parse_clients(text: &str) -> Result<ClientsFile, ClientsFileError> {
     let file: ClientsFile =
         toml::from_str(text).map_err(|e| ClientsFileError::Syntax(e.to_string()))?;

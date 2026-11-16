@@ -1,4 +1,6 @@
-//! `org.bardo.Confirm1` served by the bardo-agent-acp process, under its own bus name. intentd hands a
+//! `org.bardo.Confirm1` served by the bardo-agent-acp process, under its own bus name.
+//!
+//! intentd hands a
 //! sheet for a call in an editor's session here instead of to sill (`ConfirmRequest::editor`,
 //! trusted only while this name plays the `editor` role); the sheet waits on the [`EditorDesk`],
 //! the server shows it to the editor as an ACP permission request, and the editor's choice comes

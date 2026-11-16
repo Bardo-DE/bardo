@@ -19,8 +19,12 @@ use std::path::Path;
 /// The schema number stored in `PRAGMA user_version`.
 pub const SCHEMA_VERSION: u32 = 1;
 
-/// The tables of `events.db` (`SQLCipher`; `PRAGMA secure_delete=ON`, `journal_mode=WAL`, and
-/// `wal_checkpoint(TRUNCATE)` after an erase). Bodies and `things` rows are the erasable part;
+/// The tables of `events.db`.
+///
+/// It is `SQLCipher`, with `PRAGMA secure_delete=ON`, `journal_mode=WAL`, and
+/// `wal_checkpoint(TRUNCATE)` after an erase.
+///
+/// Bodies and `things` rows are the erasable part;
 /// `events` is the chain.
 pub const SCHEMA_V1: &str = "
 CREATE TABLE meta(format INTEGER NOT NULL, replica BLOB NOT NULL);
@@ -58,6 +62,10 @@ impl SqliteLog {
     /// Opens (or creates) the log at `path`, keyed with `key`; a wrong key is
     /// [`LogError::Locked`]. A new file gets a random replica and a genesis bound to no Space;
     /// use [`SqliteLog::open_for`] to name them.
+    ///
+    /// # Errors
+    ///
+    /// [`LogError`] when the file cannot be opened with `key` or a replica id cannot be made.
     pub fn open(path: &Path, key: &DbKey) -> Result<Self, LogError> {
         let space = SpaceId::parse(UNBOUND_SPACE).map_err(|e| LogError::Sqlite(e.to_string()))?;
         let replica = SpaceKey::generate().map_err(|e| LogError::Sqlite(e.to_string()))?;
@@ -70,6 +78,11 @@ impl SqliteLog {
     /// own replica and genesis; the two arguments only seed a new one. `digest_key` is the
     /// Space's [`memory_seal::Purpose::Digest`] subkey: `append` uses it to check that a body
     /// matches its header's digest.
+    ///
+    /// # Errors
+    ///
+    /// [`LogError`] when the file cannot be opened with `key` or its tables cannot be read or
+    /// created.
     pub fn open_for(
         path: &Path,
         key: &DbKey,
@@ -162,6 +175,10 @@ impl SqliteLog {
 
     /// The audit: reads every retained entry and verifies the chain from the checkpoint, the
     /// present bodies against their keyed digests with `digest_key`.
+    ///
+    /// # Errors
+    ///
+    /// [`LogError`] when the checkpoint or the entries cannot be read.
     pub fn audit(&self, digest_key: &SubKey) -> Result<ChainReport, LogError> {
         let from = self.checkpoint()?;
         let entries = self.scan(Seq(from.cut.0 + 1))?;

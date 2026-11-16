@@ -25,7 +25,8 @@ fn opening(page: &str) -> Opening {
 }
 
 fn install(sandbox: &Sandbox) {
-    install_look(&sandbox.data_home().0, PAPER, "Paper", "Warm paper");
+    // the folder installed is not needed.
+    let _ = install_look(&sandbox.data_home().0, PAPER, "Paper", "Warm paper");
 }
 
 /// Opens the Look menu and returns the names of its items, in order.
@@ -59,7 +60,8 @@ fn menu_items(harness: &mut Harness, button: &str) -> Vec<String> {
 fn an_installed_look_is_in_the_look_menu_after_standard_and_on_the_extensions_page() {
     let sandbox = Sandbox::new("extensions-listed");
     install(&sandbox);
-    install_torn_look(&sandbox.data_home().0, "org.example.Torn", "Torn");
+    // the folder installed is not needed.
+    let _ = install_torn_look(&sandbox.data_home().0, "org.example.Torn", "Torn");
 
     let mut harness = sandbox.harness(opening("appearance"));
     assert_eq!(look_menu(&mut harness), ["Standard", "Paper"]);
@@ -161,7 +163,8 @@ fn a_stored_look_nothing_has_is_kept_and_shown_as_unavailable() {
 fn an_extension_target_opens_the_extensions_page_with_its_row_marked() {
     let sandbox = Sandbox::new("extensions-target");
     install(&sandbox);
-    install_look(
+    // the folder installed is not needed.
+    let _ = install_look(
         &sandbox.data_home().0,
         "org.example.Slate",
         "Slate",
@@ -181,7 +184,8 @@ fn an_extension_target_opens_the_extensions_page_with_its_row_marked() {
 #[test]
 fn an_installed_file_icons_set_is_in_the_file_icons_menu_after_standard() {
     let sandbox = Sandbox::new("extensions-file-icons");
-    install_file_icons(
+    // the folder installed is not needed.
+    let _ = install_file_icons(
         &sandbox.data_home().0,
         "org.example.Dots",
         "Dots",
@@ -203,7 +207,8 @@ fn an_installed_file_icons_set_is_in_the_file_icons_menu_after_standard() {
 fn your_changes_is_not_in_the_menu_and_has_a_switch_only_while_it_holds_nothing() {
     for (holds_changes, switches) in [(false, 1), (true, 0)] {
         let sandbox = Sandbox::new("extensions-your-changes");
-        install_your_changes(&sandbox.data_home().0, holds_changes);
+        // the folder installed is not needed.
+        let _ = install_your_changes(&sandbox.data_home().0, holds_changes);
         let mut harness = sandbox.harness(opening("appearance"));
         assert_eq!(menu_items(&mut harness, ICONS_MENU), ["Standard"]);
         drop(harness);

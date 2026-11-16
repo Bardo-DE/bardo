@@ -21,13 +21,13 @@ pub(crate) struct Table {
 }
 
 impl Table {
-    pub(crate) fn with(mut self, method: Method, url: &str, response: Response<Vec<u8>>) -> Self {
+    pub(crate) fn with(mut self, method: &Method, url: &str, response: Response<Vec<u8>>) -> Self {
         self.answers.insert(format!("{method} {url}"), response);
         self
     }
 
     pub(crate) fn get(self, url: &str, response: Response<Vec<u8>>) -> Self {
-        self.with(Method::GET, url, response)
+        self.with(&Method::GET, url, response)
     }
 
     pub(crate) fn seen(&self) -> Vec<String> {
@@ -36,6 +36,10 @@ impl Table {
 }
 
 impl Http for Table {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn send(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
         let key = format!("{} {}", request.method(), request.uri());
         self.seen.lock().expect("seen").push(key.clone());

@@ -4,10 +4,18 @@ use super::data::{ROWS, SLOT_ROWS};
 use super::*;
 
 impl LiveModule for Inferd {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn permit(&self, _caller: &Caller, _access: Access) -> Verdict {
         self.policy
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn describe(&self) -> LiveSchema {
         LiveSchema {
             version: 1,
@@ -28,6 +36,10 @@ impl LiveModule for Inferd {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn get(&self, key: &KeyPath) -> Result<toml::Value, LiveError> {
         if key.0 == POOL_KEY {
             let pool = self.pool.lock().expect("pool").clone();

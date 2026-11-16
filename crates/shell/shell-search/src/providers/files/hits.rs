@@ -96,7 +96,7 @@ fn file_item(
 ) -> Option<Item> {
     let id = ItemId(hit.path.to_string_lossy().into_owned());
     let used = frecency.score(&ItemKey::of(ProviderKind::Files, &id), now);
-    let Score(matched) = rank_text(needle, &hit.name, used, weights, matcher)?;
+    let Score(fit) = rank_text(needle, &hit.name, used, weights, matcher)?;
     let folder = hit.path.parent().unwrap_or(&hit.path);
     let facts = FileFacts {
         path: hit.path.clone(),
@@ -109,7 +109,7 @@ fn file_item(
         title: hit.name.clone(),
         subtitle: tilde(folder, home),
         icon: IconRef::Glyph(glyph_of(&hit.mime).to_owned()),
-        score: Score(matched + recency_boost(hit.modified, now)),
+        score: Score(fit + recency_boost(hit.modified, now)),
         actions: row_actions(&facts),
         subject: Subject::File(facts),
     })

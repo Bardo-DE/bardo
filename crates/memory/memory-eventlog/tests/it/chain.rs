@@ -70,7 +70,7 @@ fn chain_verifies_after_append() {
             assert_eq!(erased, Count(0));
             assert_eq!(log.head().expect("head"), head);
         }
-        other => panic!("{other:?}"),
+        other @ ChainReport::Broken { .. } => panic!("{other:?}"),
     }
     let empty = new_log();
     assert!(matches!(verify(&empty), ChainReport::Intact { head, .. } if head.seq == Seq(0)));
@@ -149,7 +149,7 @@ fn prune_prefix_leaves_checkpoint() {
     let mut log = filled();
     let before = match verify(&log) {
         ChainReport::Intact { head, .. } => head,
-        other => panic!("{other:?}"),
+        other @ ChainReport::Broken { .. } => panic!("{other:?}"),
     };
     let checkpoint = log.prune_before(Seq(2)).expect("prune");
     assert_eq!(checkpoint.cut, Seq(2));

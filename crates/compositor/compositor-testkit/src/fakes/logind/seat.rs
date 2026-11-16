@@ -25,16 +25,28 @@ impl Seat {
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self`, though this fake keeps no state"
+    )]
     fn id(&self) -> String {
         SEAT_ID.to_owned()
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self`, though this fake keeps no state"
+    )]
     fn active_session(&self) -> fdo::Result<(String, OwnedObjectPath)> {
         Ok((SESSION_ID.to_owned(), object_path(SESSION_PATH)?))
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self`, though this fake keeps no state"
+    )]
     fn can_graphical(&self) -> bool {
         true
     }

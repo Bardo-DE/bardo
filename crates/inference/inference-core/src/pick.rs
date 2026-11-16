@@ -320,6 +320,10 @@ pub struct PickPolicy<'a> {
 }
 
 /// The model to run for `ask` under the person's `pick`, or why none may.
+///
+/// # Errors
+///
+/// [`PickRefusal`] when no candidate is usable under the pick and the policy.
 pub fn pick(
     ask: RouteAsk,
     pick: &Pick,
@@ -413,8 +417,8 @@ fn eligible(candidate: &PickCandidate, rules: PickPolicy<'_>) -> bool {
     );
     let open_licence = candidate.licence != LicenceClass::NonCommercial;
     let swap_allowed = match (&candidate.swap, rules.auto.allow_evict) {
-        (SwapCost::Resident | SwapCost::Fits { .. }, _) => true,
-        (
+        (SwapCost::Resident | SwapCost::Fits { .. }, _)
+        | (
             SwapCost::Evicts {
                 load: EngineLoad::Idle,
                 ..

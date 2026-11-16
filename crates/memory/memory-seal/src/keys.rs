@@ -16,6 +16,10 @@ impl SpaceKey {
     }
 
     /// A fresh random key.
+    ///
+    /// # Errors
+    ///
+    /// The [`getrandom::Error`] when the system gives no random bytes.
     pub fn generate() -> Result<Self, getrandom::Error> {
         let mut bytes = [0u8; 32];
         getrandom::fill(&mut bytes)?;

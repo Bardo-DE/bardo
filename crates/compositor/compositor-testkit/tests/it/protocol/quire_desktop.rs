@@ -256,6 +256,10 @@ fn an_agent_connection_is_refused_management() {
 /// The shell's requests reach the model the way the window's own requests do, and every change
 /// comes back as an event.
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario (or table of cases) read top to bottom; splitting it would scatter what a reader checks together"
+)]
 fn the_shells_requests_reach_the_model() {
     let (mut fixture, _public, tops) = mapped(2);
     let (shell, mut watch) = watched(&mut fixture, ConnectionRole::Shell);

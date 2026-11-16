@@ -19,6 +19,7 @@ use compositor_testclient::surface::toplevel::{Pings, State, Toplevel, WmBase, b
 use compositor_testclient::{ClientError, ClientState, Pattern, shm_buffer};
 use compositor_testkit::{ClientId, Env, Fixture, FixtureSpec, TestOrigin};
 use desktop_protocols::vocab::PressEdge;
+use std::fmt::Write as _;
 use std::path::PathBuf;
 use std::time::Duration;
 
@@ -215,15 +216,15 @@ pub(crate) fn lines_of(fixture: &mut Fixture, id: ClientId, prefixes: &[&str]) -
                 .any(|prefix| line.object.starts_with(prefix))
                 && line.event != "wm_capabilities"
         })
-        .map(|line| {
+        .fold(String::new(), |mut out, line| {
             let args = match (line.object.starts_with("xdg_surface#"), line.event.as_str()) {
                 // Serials come from one counter the whole test process shares.
                 (true, "configure") | (false, "ping") => "<serial>".to_owned(),
                 _ => line.args.join(", "),
             };
-            format!("{}.{}({args})\n", line.object, line.event)
+            let _ = write!(out, "{}.{}({args})\n", line.object, line.event);
+            out
         })
-        .collect()
 }
 
 /// The transcript text of a client's xdg flow ([`lines_of`] over the `xdg_*` objects).
@@ -485,7 +486,8 @@ fn what_a_client_declares_reaches_the_model() {
     top.set_limits((200, 100), (800, 600));
     top.commit_bare();
     fixture.pump();
-    top.ack_latest();
+    // the serial acked is not needed.
+    let _ = top.ack_latest();
     let buffer = shm_buffer(
         fixture.client(id),
         PhysicalSize { w: 400, h: 300 },

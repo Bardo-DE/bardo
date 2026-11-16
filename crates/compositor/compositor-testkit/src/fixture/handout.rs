@@ -21,6 +21,14 @@ impl Fixture {
     /// would be told.
     /// The compositor's handle on the client is not kept, so helpers that need it
     /// (`toplevel_of`) are for [`Fixture::connect`]'s clients.
+    ///
+    /// # Errors
+    ///
+    /// [`ConnectRefusal`] when the compositor refuses `caller` the connection.
+    ///
+    /// # Panics
+    ///
+    /// If the client end cannot be made non-blocking or the test client cannot connect over it.
     pub fn connect_through_handout(
         &mut self,
         caller: &Proven,
@@ -47,6 +55,10 @@ impl Fixture {
     /// `caller` asking for a remote EIS socket (`ConnectEis`'s decision,
     /// `compositor_app::connect::answer`) for portal session `session` with the `devices` bit set.
     /// Granted, the client end of the socket; refused, the reason the D-Bus caller is told.
+    ///
+    /// # Errors
+    ///
+    /// [`ConnectRefusal`] when the compositor refuses `caller` the session.
     pub fn connect_remote_eis(
         &mut self,
         caller: &Proven,
@@ -65,6 +77,10 @@ impl Fixture {
 
     /// The same, asked from the bus connection `owner` (its unique name): its sockets go when
     /// that connection does ([`Fixture::portal_left`]).
+    ///
+    /// # Errors
+    ///
+    /// [`ConnectRefusal`] when the compositor refuses `caller` the session.
     pub fn connect_remote_eis_from(
         &mut self,
         caller: &Proven,
@@ -95,6 +111,10 @@ impl Fixture {
     /// its facts runs on a thread, and the connection is inserted when the look is done (or its
     /// deadline passes). Returns the client end and how many connections the session holds more
     /// than before, once the look has had its time.
+    ///
+    /// # Panics
+    ///
+    /// If the socket pair cannot be made or the looks cannot join the event loop.
     pub fn public_arrival(&mut self) -> (UnixStream, usize) {
         let (server, client) = UnixStream::pair().expect("a socket pair");
         if matches!(self.state.probes, Probes::Off) {
@@ -117,6 +137,10 @@ impl Fixture {
     /// `caller` asking to end portal session `session`'s remote sockets (`EndEis`'s decision,
     /// `compositor_app::connect::answer`). Granted, nothing; refused, the reason the D-Bus caller is
     /// told.
+    ///
+    /// # Errors
+    ///
+    /// [`ConnectRefusal`] when the compositor refuses `caller` to end the session.
     pub fn end_remote_eis(&mut self, caller: &Proven, session: u64) -> Result<(), ConnectRefusal> {
         match connect::answer(
             &mut self.state,
@@ -132,6 +156,10 @@ impl Fixture {
     /// (`LeaseWindow`'s decision, `compositor_app::connect::answer`) with the `devices` bit set.
     /// Granted, the lease's number and the client end of its input socket; refused, the reason
     /// the D-Bus caller is told.
+    ///
+    /// # Errors
+    ///
+    /// [`ConnectRefusal`] when the compositor refuses `caller` the lease.
     pub fn lease_window(
         &mut self,
         caller: &Proven,
@@ -150,6 +178,10 @@ impl Fixture {
 
     /// `caller` asking that the window `lease` holds take the key (`FocusLease`'s decision).
     /// Granted, nothing; refused, the reason the D-Bus caller is told.
+    ///
+    /// # Errors
+    ///
+    /// [`ConnectRefusal`] when the compositor refuses `caller` to focus the lease.
     pub fn focus_lease(&mut self, caller: &Proven, lease: u64) -> Result<(), ConnectRefusal> {
         match connect::answer(
             &mut self.state,
@@ -166,6 +198,10 @@ impl Fixture {
 
     /// `caller` asking to end `lease` (`EndLease`'s decision). Granted, nothing; refused, the
     /// reason the D-Bus caller is told.
+    ///
+    /// # Errors
+    ///
+    /// [`ConnectRefusal`] when the compositor refuses `caller` to end the lease.
     pub fn end_lease(&mut self, caller: &Proven, lease: u64) -> Result<(), ConnectRefusal> {
         match connect::answer(
             &mut self.state,

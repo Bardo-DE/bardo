@@ -3,6 +3,7 @@
 use compositor_core::geometry::PhysicalSize;
 use compositor_testclient::surface::subsurface::{Compositor, Subcompositor};
 use compositor_testclient::{Pattern, shm_buffer};
+use std::fmt::Write as _;
 
 use compositor_core::policy::ConnectionRole;
 use compositor_testclient::TestClient;
@@ -37,8 +38,16 @@ fn check(name: &str, client: &TestClient, skip: &[&str]) {
                 .iter()
                 .any(|iface| line.object.starts_with(&format!("{iface}#")))
         })
-        .map(|line| format!("{}.{}({})\n", line.object, line.event, line.args.join(", ")))
-        .collect();
+        .fold(String::new(), |mut out, line| {
+            let _ = write!(
+                out,
+                "{}.{}({})\n",
+                line.object,
+                line.event,
+                line.args.join(", ")
+            );
+            out
+        });
     let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("tests/golden/transcripts")
         .join(name);

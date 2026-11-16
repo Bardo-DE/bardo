@@ -35,6 +35,10 @@ fn shown(standing: &Standing) -> Option<(String, Isolation, CallerRole)> {
     caller_of(standing, &table()).map(|c| (c.app.name.to_string(), c.app.isolation, c.role))
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "the cases of the table hold `Option`s, and other cases expect `None`"
+)]
 fn want(
     app: &str,
     isolation: Isolation,

@@ -204,7 +204,8 @@ impl AppLink for FakeLink {
         self.menu
             .classify(inv)
             .await
-            .ok().ok_or(action_vocab::ClassifyFault::Refused)
+            .ok()
+            .ok_or(action_vocab::ClassifyFault::Refused)
     }
 
     async fn perform_classified(

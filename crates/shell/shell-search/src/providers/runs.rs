@@ -1,5 +1,8 @@
-//! The computer-use runs as rows: what each was asked, where it stands and the controls its
-//! state offers. A search lists the runs still going; asked alone (the Runs filter) it lists every
+//! The computer-use runs as rows.
+//!
+//! What each was asked, where it stands and the controls its state offers.
+//!
+//! A search lists the runs still going; asked alone (the Runs filter) it lists every
 //! run cuad still holds, the ended ones too.
 //!
 //! Enter on a run is "Watch" where there is a window to watch, and nothing else: stopping or

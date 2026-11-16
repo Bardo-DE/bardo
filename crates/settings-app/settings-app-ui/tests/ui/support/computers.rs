@@ -106,7 +106,7 @@ impl Inference {
 
 #[zbus::interface(name = "org.bardo.Inference1")]
 impl Inference {
-    async fn places(&self) -> Vec<(String, Details)> {
+    fn places(&self) -> Vec<(String, Details)> {
         let state = self.state.lock().expect("state");
         let this: Details = [
             (PLACE_KEY_KIND, owned(Value::from("this_computer"))),
@@ -144,7 +144,7 @@ impl Inference {
         rows
     }
 
-    async fn candidates(&self) -> Vec<(String, Details)> {
+    fn candidates(&self) -> Vec<(String, Details)> {
         let state = self.state.lock().expect("state");
         state
             .lenders
@@ -244,7 +244,7 @@ impl Inference {
         Ok(format!("computer:{name}"))
     }
 
-    async fn guests(&self) -> Vec<(String, Details)> {
+    fn guests(&self) -> Vec<(String, Details)> {
         let state = self.state.lock().expect("state");
         state
             .askers

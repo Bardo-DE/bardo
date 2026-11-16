@@ -150,7 +150,9 @@ impl<S: Seams> Router<S> {
             let Some(record) = st.sessions.get_mut(id) else {
                 return refuse(WireRefusal::NoSuchSession);
             };
-            labels.iter().for_each(|l| absorb(record, l));
+            for l in &labels {
+                absorb(record, l);
+            }
         };
         let value = match self
             .seams

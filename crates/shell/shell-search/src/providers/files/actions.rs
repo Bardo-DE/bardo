@@ -1,7 +1,9 @@
-//! A file row's actions: the list the viewer and the launcher share (`anyview_core::actions_for`),
-//! the ones that appear in the launcher (`reach`), each with its keys (`shortcut`), and what
-//! choosing it does. The launcher carries out the actions it can; one it cannot yet (Open With,
-//! Share, Rename...) is left off the row, not drawn dead.
+//! A file row's actions.
+//!
+//! The list the viewer and the launcher share (`anyview_core::actions_for`), the ones that appear
+//! in the launcher (`reach`), each with its keys (`shortcut`), and what choosing it does. The
+//! launcher carries out the actions it can; one it cannot yet (Open With, Share, Rename...) is left
+//! off the row, not drawn dead.
 //!
 //! [`carried`] is the one match on [`FileAction`] here: it says, for each, whether the launcher
 //! does it and what it asks for, so the row's menu and `Provider::activate` cannot disagree.
@@ -141,8 +143,8 @@ fn keys_of(action: FileAction) -> ActionKeys {
 mod tests {
     use std::path::PathBuf;
 
-    use anyview_core::{shortcut};
-    use shell_launcher::{UnixTime};
+    use anyview_core::shortcut;
+    use shell_launcher::UnixTime;
     use ui_core::vocab::Shortcut;
 
     use super::*;

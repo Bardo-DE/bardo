@@ -38,6 +38,10 @@ impl CallerTomlError {
 }
 
 /// The table in TOML text: `[[caller]]` rows of `app`, optional `unit` and `role`.
+///
+/// # Errors
+///
+/// [`CallerTomlError`] when `text` is not TOML or does not hold a caller table.
 pub fn table_from_toml(text: &str) -> Result<CallerTable, CallerTomlError> {
     toml::from_str(text).map_err(|e| CallerTomlError {
         message: e.to_string(),
@@ -45,6 +49,11 @@ pub fn table_from_toml(text: &str) -> Result<CallerTable, CallerTomlError> {
 }
 
 /// The table in the file `path`; a file that is not there is an empty table.
+///
+/// # Errors
+///
+/// [`CallerFileError`] when the file cannot be read (any reason but being absent) or its text is
+/// not a caller table.
 pub fn table_from_file(path: &Path) -> Result<CallerTable, CallerFileError> {
     let failed = |message: String| CallerFileError {
         path: path.to_owned(),
@@ -57,9 +66,15 @@ pub fn table_from_file(path: &Path) -> Result<CallerTable, CallerFileError> {
     }
 }
 
-/// The system's file with the user's laid over it (the user's rows win). A file that does not
+/// The system's file with the user's laid over it (the user's rows win).
+///
+/// A file that does not
 /// parse is an error, not an empty table: a daemon that dropped a bad user file would grant
 /// less or more than it was told.
+///
+/// # Errors
+///
+/// [`CallerFileError`] when either file cannot be read or does not parse.
 pub fn load_callers(system: &Path, user: &Path) -> Result<CallerTable, CallerFileError> {
     Ok(CallerTable::layered(
         table_from_file(system)?,

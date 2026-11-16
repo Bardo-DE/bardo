@@ -32,11 +32,19 @@ impl Units {
 }
 
 impl UnitManager for Units {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn reload(&self) -> Result<(), UnitFailure> {
         self.note("reload".to_owned());
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn restart(&self, unit: &'static str) -> Result<(), UnitFailure> {
         self.note(format!("restart {unit}"));
         if self.refuse_restart.load(Ordering::SeqCst) {

@@ -14,14 +14,24 @@ use serde::de::DeserializeOwned;
 use serde_json::{Value, json};
 
 /// A wire word (`files`, `interactive`, `fast`, ...) read as `T`.
+///
+/// # Errors
+///
+/// A message naming `text` when it is not one of the words `T` accepts.
 pub fn word<T: DeserializeOwned>(text: &str) -> Result<T, String> {
     serde_json::from_value(Value::String(text.to_owned()))
-        .map_err(|_| format!("`{text}` is not one of the words"))
+        .ok()
+        .ok_or_else(|| format!("`{text}` is not one of the words"))
 }
 
-/// The need a command line names: a preset (`mail`, `storage`, `calendar`, `contacts`,
-/// `notes`, `llm`), each asking for the least that is useful, or a JSON `Need` (account-match's
-/// serde form, `{"kind":"storage","v":{...}}`).
+/// The need a command line names.
+///
+/// A preset (`mail`, `storage`, `calendar`, `contacts`, `notes`, `llm`), each asking for the least
+/// that is useful, or a JSON `Need` (account-match's serde form, `{"kind":"storage","v":{...}}`).
+///
+/// # Errors
+///
+/// A message when `text` is not a JSON `Need` or one of the presets.
 pub fn parse_need(text: &str) -> Result<Need, String> {
     if text.trim_start().starts_with('{') {
         return serde_json::from_str(text).map_err(|e| format!("not a Need: {e}"));
@@ -38,7 +48,10 @@ pub fn parse_need(text: &str) -> Result<Need, String> {
         "calendar" => Need::Calendar(pim()),
         "contacts" => Need::Contacts(pim()),
         "notes" => Need::Notes(NotesNeed::new(Access::Read, Delta::None)),
-        "llm" => Need::Llm(LlmNeed::new(Default::default(), Tokens(1_000))),
+        "llm" => Need::Llm(LlmNeed::new(
+            std::collections::BTreeSet::default(),
+            Tokens(1_000),
+        )),
         other => {
             return Err(format!(
                 "`{other}` is not a need (mail, storage, calendar, contacts, notes, llm, or JSON)"
@@ -87,8 +100,11 @@ fn chat(prompt: &str, open: &Open) -> InferRequest {
     )
 }
 
-/// Opens the session (`{"result":"opened"}`) and, with a prompt, runs one turn: one
-/// `{"event":..}` line per event until `Finished`. A refusal is a `{"result":"error",..}` line.
+/// Opens the session (`{"result":"opened"}`) and, with a prompt, runs one turn.
+///
+/// One `{"event":..}` line per event until `Finished`.
+///
+/// A refusal is a `{"result":"error",..}` line.
 /// True when it did what it was asked.
 pub async fn open(connection: &zbus::Connection, open: Open, emit: &mut impl FnMut(Value)) -> bool {
     let inference = Inference::over(DbusTransport::over(connection.clone()));

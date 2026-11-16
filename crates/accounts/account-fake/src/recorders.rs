@@ -51,10 +51,18 @@ impl MemoryStore {
 }
 
 impl RegistryStore for MemoryStore {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn load(&self) -> Result<Persisted, StoreError> {
         Ok(lock(&self.kept).clone().unwrap_or_else(Persisted::empty))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn save(&self, state: &Persisted) -> Result<(), StoreError> {
         if *lock(&self.refusing) {
             return Err(StoreError::Unavailable);

@@ -155,13 +155,20 @@ pub trait GrantStore: Send + Sync {
     }
 }
 
-/// The seam to a session's durable record when there is none: every entry is accepted and
-/// nothing is kept, so a session cannot be restored. What an app that hosts its own agent
+/// The seam to a session's durable record when there is none.
+///
+/// Every entry is accepted and nothing is kept, so a session cannot be restored.
+///
+/// What an app that hosts its own agent
 /// without memory runs with; the daemon passes `companion-memory`'s log over almanac.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct NoLog;
 
 impl SessionLog for NoLog {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn append(
         &self,
         _session: &SessionId,
@@ -171,6 +178,10 @@ impl SessionLog for NoLog {
         Ok(Appended { seq })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn page(
         &self,
         _session: &SessionId,
@@ -183,6 +194,10 @@ impl SessionLog for NoLog {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn sessions(&self) -> Result<Vec<SessionId>, LogFault> {
         Ok(Vec::new())
     }

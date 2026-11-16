@@ -186,6 +186,10 @@ pub enum Refusal {
 }
 
 /// What an empty row does: what `route` has always chosen among the models that can answer.
+///
+/// # Errors
+///
+/// [`PickRefusal`] when no candidate is usable under the policy.
 pub fn default_choice(
     ask: RouteAsk,
     candidates: &[PickCandidate],
@@ -302,6 +306,10 @@ fn names_another(picks: &SlotPicks, slot: Slot, model: &ModelRef) -> bool {
 /// * The classes join: the text stage receives the audio's class (`Voice`) beside the request's.
 ///
 /// `granted` is the providers the person granted to inferd; the planner discovers none.
+///
+/// # Errors
+///
+/// [`Refusal`] when the request cannot be planned under the picks, the catalogue and the rules.
 pub fn plan_pipeline(
     shape: &RequestShape,
     picks: &SlotPicks,
@@ -347,7 +355,7 @@ pub fn plan_pipeline(
     let answering_ref = answering.model_ref();
     let takes = |modality| answering.takes.contains(&modality);
     let mut before = Vec::new();
-    if hears && !(takes(Modality::Audio) && !names_another(picks, Slot::VoiceIn, &answering_ref)) {
+    if hears && (!takes(Modality::Audio) || names_another(picks, Slot::VoiceIn, &answering_ref)) {
         let audio = ClassSet(BTreeSet::from([DataClass::Voice, shape.class]));
         before.push(stage(StageRole::Hear, Slot::VoiceIn, &audio)?);
     }

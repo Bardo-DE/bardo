@@ -42,8 +42,12 @@ impl std::fmt::Display for ModelRef {
     }
 }
 
-/// The account a coding agent is chosen under: the text slot's word `agent/<program>` names an
-/// outside agent the assistant hands the conversation to, not a model inferd runs. Only the text
+/// The account a coding agent is chosen under.
+///
+/// The text slot's word `agent/<program>` names an outside agent the assistant hands the
+/// conversation to, not a model inferd runs.
+///
+/// Only the text
 /// slot takes it, and Automatic never routes to it.
 pub const AGENT_ACCOUNT: &str = "agent";
 
@@ -103,8 +107,11 @@ pub struct AutoRow {
     pub mode: AutoMode,
 }
 
-/// The models Automatic may choose among for a kind, at every tier: settings
-/// `ai.auto.pool.<kind>` = a list of `<account>/<model>`. Automatic is a mode the person opts
+/// The models Automatic may choose among for a kind, at every tier.
+///
+/// Settings `ai.auto.pool.<kind>` = a list of `<account>/<model>`.
+///
+/// Automatic is a mode the person opts
 /// into, and choosing it is also choosing this pool; an empty pool is nothing chosen.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct PoolRow {
@@ -157,7 +164,7 @@ impl TierMap {
     /// map had for `kind` give way, so a session's own model is a named choice like the
     /// person's, never overridden and never replaced by a fallback.
     #[must_use]
-    pub fn naming(&self, kind: Slot, model: ModelRef) -> Self {
+    pub fn naming(&self, kind: Slot, model: &ModelRef) -> Self {
         let named = [Tier::Fast, Tier::Balanced, Tier::Best]
             .into_iter()
             .map(|tier| TierRow {
@@ -271,6 +278,11 @@ impl TierMap {
     /// (those that did not show they can make a valid tool call). A named model stays whatever
     /// `failed` says. When the pick serving `kind` at `tier` is Automatic over a pool and every
     /// model of it failed, the answer is [`InferRefusal::NoModelUsesApps`].
+    ///
+    /// # Errors
+    ///
+    /// [`InferRefusal`] when every model the pick would use for `kind` at `tier` has already
+    /// failed.
     pub fn for_tools(
         &self,
         kind: Slot,
@@ -388,8 +400,12 @@ pub struct PickerRow {
     pub chosen_for: BTreeSet<Tier>,
 }
 
-/// The plain list for `kind`: models of that kind only, this computer first, then ready before
-/// loadable before downloadable, then the order the cards came in (the catalog's order). No
+/// The plain list for `kind`.
+///
+/// Models of that kind only, this computer first, then ready before loadable before downloadable,
+/// then the order the cards came in (the catalog's order).
+///
+/// No
 /// ranking by quality; a non-commercial row is listed and never mapped to a tier by itself.
 #[must_use]
 pub fn picker_rows(kind: Slot, cards: &[PickerInput], map: &TierMap) -> Vec<PickerRow> {
@@ -845,7 +861,7 @@ mod tests {
     fn naming_makes_a_sessions_own_model_the_named_choice_at_every_tier() {
         let (a, b) = (model("local", "a"), model("local", "b"));
         let auto = TierMap::automatic(Slot::Text, vec![a.clone()]);
-        let named = auto.naming(Slot::Text, b.clone());
+        let named = auto.naming(Slot::Text, &b);
         for tier in [Tier::Fast, Tier::Balanced, Tier::Best] {
             assert_eq!(named.pick(Slot::Text, tier), Some(Pick::Named(b.clone())));
         }
@@ -861,7 +877,7 @@ mod tests {
             tier: Tier::Fast,
             model: a.clone(),
         });
-        let named = mixed.naming(Slot::Text, b.clone());
+        let named = mixed.naming(Slot::Text, &b);
         assert_eq!(named.pick(Slot::Text, Tier::Fast), Some(Pick::Named(b)));
         assert_eq!(
             named.pick(Slot::Embeddings, Tier::Fast),

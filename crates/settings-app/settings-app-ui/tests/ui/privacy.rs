@@ -41,9 +41,10 @@ struct World {
 
 /// The page, with the compositor listing `rows` in memory; none when `rows` is `None`.
 fn world(name: &str, rows: Option<Vec<Row>>) -> World {
-    let fake = Compositor::holding(rows.clone().unwrap_or_default());
+    let listed = rows.is_some();
+    let fake = Compositor::holding(rows.unwrap_or_default());
     let modules = FakeModules::new();
-    if rows.is_some() {
+    if listed {
         modules.host(&Daemon::compositor(), fake.clone());
     }
     let sandbox = Sandbox::new(name).with_modules(modules);

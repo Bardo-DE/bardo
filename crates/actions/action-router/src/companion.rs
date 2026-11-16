@@ -54,7 +54,9 @@ fn companion() -> CallerId {
 }
 
 fn text_arg(inv: &Invocation, param: &str) -> Result<String, AppRefusal> {
-    let name = ParamName::parse(param).map_err(|_| AppRefusal::Unsupported)?;
+    let name = ParamName::parse(param)
+        .ok()
+        .ok_or(AppRefusal::Unsupported)?;
     match inv.args.get(&name).map(|a| &a.value) {
         Some(Value::Text(t)) if !t.is_empty() => Ok(t.clone()),
         Some(Value::Text(_)) | None => Err(AppRefusal::NeedsParam {
@@ -92,7 +94,7 @@ fn nothing_back(words: &str) -> Outcome {
     }
 }
 
-fn refused_send(why: IntentsReply) -> AppRefusal {
+fn refused_send(why: &IntentsReply) -> AppRefusal {
     match why {
         IntentsReply::Refused(WireRefusal::Send(SendRefusal::NoRecipient)) => {
             failed("there is no such task")
@@ -105,15 +107,20 @@ fn refused_send(why: IntentsReply) -> AppRefusal {
 impl<S: Seams> Router<S> {
     /// Performs `companion.task.start` or `companion.task.message` for the hosted
     /// `org.bardo.Companion` provider. Anything else is unsupported.
-    pub fn companion_perform(&self, inv: Invocation) -> Result<Outcome, AppRefusal> {
+    ///
+    /// # Errors
+    ///
+    /// [`AppRefusal::Unsupported`] for any other action; otherwise the refusal of the action that
+    /// was run.
+    pub fn companion_perform(&self, inv: &Invocation) -> Result<Outcome, AppRefusal> {
         match inv.action.as_str() {
-            "companion.task.start" => self.task_start(&inv),
-            "companion.task.message" => self.task_message(&inv),
-            crate::skills::SKILL_LOAD => self.skill_load(&inv),
-            LIMIT_ADD => self.limit_add(&inv),
-            HELPER_POST_JOB => self.helper_post_job(&inv),
-            HELPER_PROPOSE => self.helper_propose(&inv),
-            ROUTINE_PROPOSE => Self::routine_propose(&inv),
+            "companion.task.start" => self.task_start(inv),
+            "companion.task.message" => self.task_message(inv),
+            crate::skills::SKILL_LOAD => self.skill_load(inv),
+            LIMIT_ADD => self.limit_add(inv),
+            HELPER_POST_JOB => self.helper_post_job(inv),
+            HELPER_PROPOSE => self.helper_propose(inv),
+            ROUTINE_PROPOSE => Self::routine_propose(inv),
             _ => Err(AppRefusal::Unsupported),
         }
     }
@@ -127,7 +134,7 @@ impl<S: Seams> Router<S> {
         inv: &Invocation,
         session: &SessionId,
         param: &str,
-        why: JobRefusal,
+        why: &JobRefusal,
     ) -> Result<String, AppRefusal> {
         let text = text_arg(inv, param)?;
         let written_by_a_clean_planner = self
@@ -137,7 +144,11 @@ impl<S: Seams> Router<S> {
             .is_some_and(|record| !record.saw.untrusted)
             && inv
                 .args
-                .get(&ParamName::parse(param).map_err(|_| AppRefusal::Unsupported)?)
+                .get(
+                    &ParamName::parse(param)
+                        .ok()
+                        .ok_or(AppRefusal::Unsupported)?,
+                )
                 .is_some_and(|arg| {
                     arg.label.sources.iter().all(|source| {
                         matches!(source, Source::Model(ModelRole::Planner) | Source::User)
@@ -177,7 +188,7 @@ impl<S: Seams> Router<S> {
         if self.in_confirmed_brief(inv, session) {
             return Ok(GoalOrigin::ConfirmedBrief);
         }
-        self.clean_words(inv, session, "goal", JobRefusal::UntrustedGoal)
+        self.clean_words(inv, session, "goal", &JobRefusal::UntrustedGoal)
             .map(|_| GoalOrigin::Planner {
                 saw_untrusted: false,
             })
@@ -203,8 +214,8 @@ impl<S: Seams> Router<S> {
     fn helper_propose(&self, inv: &Invocation) -> Result<Outcome, AppRefusal> {
         let session = spawner(inv)?;
         let untrusted = JobRefusal::UntrustedGoal;
-        self.clean_words(inv, session, "name", untrusted.clone())?;
-        self.clean_words(inv, session, "role", untrusted)?;
+        self.clean_words(inv, session, "name", &untrusted)?;
+        self.clean_words(inv, session, "role", &untrusted)?;
         text_arg(inv, "apps")?;
         Ok(nothing_back("Proposed a helper"))
     }
@@ -220,6 +231,10 @@ impl<S: Seams> Router<S> {
         Ok(nothing_back("Proposed a routine"))
     }
 
+    #[expect(
+        clippy::too_many_lines,
+        reason = "one sequence of steps over shared locals, in the order the rules apply; the parts have no use apart"
+    )]
     fn task_start(&self, inv: &Invocation) -> Result<Outcome, AppRefusal> {
         let session = spawner(inv)?;
         // A task does its own goal: only the person's assistant hands out work, so a worker
@@ -233,7 +248,9 @@ impl<S: Seams> Router<S> {
         ) {
             return Err(AppRefusal::Unsupported);
         }
-        let start = TaskStart::from_args(&inv.args).map_err(|_| failed("the goal is missing"))?;
+        let start = TaskStart::from_args(&inv.args)
+            .ok()
+            .ok_or_else(|| failed("the goal is missing"))?;
         let (parent, worker) = {
             let mut st = self.locked();
             let parent = st
@@ -242,7 +259,9 @@ impl<S: Seams> Router<S> {
                 .map(|r| r.task.clone())
                 .ok_or_else(|| failed("the session is gone"))?;
             let n = st.mint();
-            let worker = TaskId::parse(&format!("t-{n}")).map_err(|_| failed("no task id"))?;
+            let worker = TaskId::parse(&format!("t-{n}"))
+                .ok()
+                .ok_or_else(|| failed("no task id"))?;
             (parent, worker)
         };
         let opened = self.open_session(
@@ -302,7 +321,7 @@ impl<S: Seams> Router<S> {
             },
         );
         if !matches!(sent, IntentsReply::Delivered(_)) {
-            return Err(refused_send(sent));
+            return Err(refused_send(&sent));
         }
         self.seams.sink().append(AuditRecord::TaskStarted {
             at: self.seams.clock().now(),
@@ -324,11 +343,13 @@ impl<S: Seams> Router<S> {
                 .ok_or_else(|| failed("the session is gone"))?;
             record
                 .know([thing.clone()])
-                .map_err(|_| failed("too many things are held"))?;
+                .ok()
+                .ok_or_else(|| failed("too many things are held"))?;
             record
                 .handles
                 .try_mint_entity(thing, app_label(&name()))
-                .map_err(|_| failed("too many things are held"))?
+                .ok()
+                .ok_or_else(|| failed("too many things are held"))?
         };
         let answer = BTreeMap::from([
             (param("handle"), Value::Handle(handle)),
@@ -388,7 +409,7 @@ impl<S: Seams> Router<S> {
                 undo: Undoable::No,
                 follow: action_core::Follow::Nothing,
             }),
-            other => Err(refused_send(other)),
+            other => Err(refused_send(&other)),
         }
     }
 }

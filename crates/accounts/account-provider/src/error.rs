@@ -56,9 +56,8 @@ impl From<ProviderError> for account_sheet::SignInFault {
             ProviderError::Unauthorized => SignInFault::Refused,
             ProviderError::Forbidden => SignInFault::Forbidden,
             ProviderError::Unreachable => SignInFault::Unreachable,
-            ProviderError::Unreadable => SignInFault::Unreadable,
-            // a variant a newer porter adds: the sign-in ends as unreadable
-            _ => SignInFault::Unreadable,
+            // access that was not given ends as unreadable, as does any variant a newer porter adds
+            ProviderError::Unreadable | ProviderError::NeedsConsent => SignInFault::Unreadable,
         }
     }
 }

@@ -32,6 +32,10 @@ fn open_policy() -> Policy {
     }
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "the expected answer of a case is a `Result`, and other cases are refusals"
+)]
 fn picked(name: &str) -> Result<AccountId, InferRefusal> {
     Ok(AccountId::parse(name).expect("id"))
 }
@@ -44,6 +48,10 @@ struct Case {
     expected: Result<AccountId, InferRefusal>,
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario (or table of cases) read top to bottom; splitting it would scatter what a reader checks together"
+)]
 fn cases() -> Vec<Case> {
     let tier_other = RouteCandidate {
         tier: TierChoice::Other,

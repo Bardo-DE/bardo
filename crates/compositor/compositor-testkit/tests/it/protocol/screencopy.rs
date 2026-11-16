@@ -539,10 +539,11 @@ fn a_client_with_copies_held_for_the_answer_is_cut_at_the_cap() {
 fn pile_one(fixture: &mut Fixture, copy: &mut ScreenCopy) -> Result<(), Cut> {
     settle_or_cut(fixture, copy)?;
     copy.capture("HEADLESS-1", CopyArea::Output, CursorMode::Hidden)
-        .map_err(|_| Cut)?;
+        .ok()
+        .ok_or(Cut)?;
     settle_or_cut(fixture, copy)?;
     let offer = *copy.offers().first().ok_or(Cut)?;
-    copy.copy(offer, CopyKind::Plain).map_err(|_| Cut)?;
+    copy.copy(offer, CopyKind::Plain).ok().ok_or(Cut)?;
     settle_or_cut(fixture, copy)
 }
 
@@ -554,7 +555,7 @@ struct Cut;
 fn settle_or_cut(fixture: &mut Fixture, copy: &mut ScreenCopy) -> Result<(), Cut> {
     for _ in 0..100 {
         let compositor = fixture.pump();
-        let client = copy.pump().map_err(|_| Cut)?;
+        let client = copy.pump().ok().ok_or(Cut)?;
         if !(compositor || client) {
             return Ok(());
         }

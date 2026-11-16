@@ -28,6 +28,10 @@ fn thumbnail_of(tile: &PictureTile, smalls: &Smalls) -> Thumbnail {
 }
 
 /// The height of all of the grid's rows, so the grid never needs a scroll area of its own.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "a count of rows of tiles, far below the integers f32 holds exactly"
+)]
 fn height_of(tiles: usize) -> f32 {
     tiles.div_ceil(usize::from(COLUMNS)) as f32 * SIZE.pitch().0
 }

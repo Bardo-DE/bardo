@@ -1,5 +1,9 @@
-//! `agent-acp-callers.toml`: the one process bardo-agent-acp and bardo-agent answer when they serve
-//! `Confirm1` is intentd's unit. The shipped file is `dist/agent-acp-callers.toml`; the system's copy
+//! `agent-acp-callers.toml`.
+//!
+//! The one process bardo-agent-acp and bardo-agent answer when they serve `Confirm1` is intentd's
+//! unit.
+//!
+//! The shipped file is `dist/agent-acp-callers.toml`; the system's copy
 //! under `/etc/bardo` and the person's under their configuration directory are laid over each
 //! other (`action_dbus::callers::read_table`), and only the system's can give a fixed role.
 
@@ -21,11 +25,21 @@ pub fn shipped() -> CallerTable {
 }
 
 /// The table of this machine: `/etc/bardo/agent-acp-callers.toml` with the person's file over it.
+///
+/// # Errors
+///
+/// [`CallerFileError`] when the system's or the person's callers file cannot be read or does not
+/// parse.
 pub fn read(env: &impl Fn(&str) -> Option<String>) -> Result<CallerTable, CallerFileError> {
     read_table(FILE, env)
 }
 
 /// As [`read`], with the system's file at `system` (the acceptance harness's own system).
+///
+/// # Errors
+///
+/// [`CallerFileError`] when the system's or the person's callers file cannot be read or does not
+/// parse.
 pub fn read_at(
     system: &Path,
     env: &impl Fn(&str) -> Option<String>,

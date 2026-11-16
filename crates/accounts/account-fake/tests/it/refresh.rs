@@ -79,6 +79,10 @@ impl Provider for Rotating {
         self.inner.discover(account, presented).await
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open(
         &self,
         _account: &AccountId,
@@ -125,7 +129,7 @@ impl ProviderSession for RotatingSession {
             access: SecretText::new(format!("access-{n}")),
             refresh: SecretText::new(format!("refresh-{}", n + 1)),
             expires_at: expires,
-            granted: Default::default(),
+            granted: account_core::GrantedScopes::default(),
         });
         Ok(IssuedToken::new(
             TokenKind::Bearer,
@@ -163,7 +167,7 @@ async fn service() -> (Svc, Seen, Candidate) {
                 access: SecretText::new("access-0"),
                 refresh: SecretText::new("refresh"),
                 expires_at: NOW,
-                granted: Default::default(),
+                granted: account_core::GrantedScopes::default(),
             },
         )
         .await

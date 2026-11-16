@@ -7,10 +7,11 @@ use caller_identity_core::Standing;
 use caller_identity_dbus::{BusPeers, ManagerCheck};
 use zbus::Connection as BusConnection;
 
-/// Callers by process: peephole holds the process behind a sender (a pidfd), reads what `/proc`
-/// and the systemd manager say of it, and judges it against the table's service rows; the table
-/// then names the role. The table is porter's own (`callers.toml`), translated once when this is
-/// built (see `translate`).
+/// Callers by process.
+///
+/// Peephole holds the process behind a sender (a pidfd), reads what `/proc` and the systemd manager
+/// say of it, and judges it against the table's service rows; the table then names the role. The
+/// table is porter's own (`callers.toml`), translated once when this is built (see `translate`).
 #[derive(Debug)]
 pub struct ProcCallers {
     table: CallerTable,

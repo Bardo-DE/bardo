@@ -47,7 +47,9 @@ impl FakeWriteback {
     #[must_use]
     pub fn pattern(size: PhysicalSize) -> Vec<u8> {
         let len = (size.w as usize) * (size.h as usize) * 4;
-        (0..len).map(|n| (n % 251) as u8).collect()
+        (0..len)
+            .map(|n| u8::try_from(n % 251).unwrap_or_default())
+            .collect()
     }
 }
 

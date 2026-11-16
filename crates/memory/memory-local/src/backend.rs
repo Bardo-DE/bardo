@@ -201,6 +201,10 @@ impl<Clk: Clock, E: Embedder, C: Consolidator> Backend for LocalBackend<Clk, E, 
 
     /// An app hosting the service itself owns the whole store and has no desktop registry:
     /// every Space is its own.
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn is_listed(&self, _space: &SpaceId) -> Result<Listing, RegistryError> {
         Ok(Listing::Listed)
     }

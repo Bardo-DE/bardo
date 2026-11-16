@@ -122,8 +122,8 @@ impl<S: Seams> Router<S> {
             why,
             taint: TaintNote::Clean,
             offer: ConfirmOffer::OnceOnly,
-            always: Default::default(),
-            limits: Default::default(),
+            always: permission_core::AlwaysOffer::default(),
+            limits: action_core::SheetLimits::default(),
             gesture: Gesture::Press,
             anchor: Anchor::Centre,
             expires: self.agent_config().confirm_expiry,
@@ -269,6 +269,10 @@ impl<S: Seams> Router<S> {
     /// (`Progress(Confirming(id))`) before the sheet is drawn, and the router waits for its
     /// `Proceed` (the lease is suspended, so the run's own input is idle while the person
     /// answers): a requester that never proceeds, or withdraws, gets no sheet.
+    #[expect(
+        clippy::too_many_lines,
+        reason = "one sequence of steps over shared locals, in the order the rules apply; the parts have no use apart"
+    )]
     pub(crate) async fn gate_check(&self, ask: CuaAsk, watch: &Watch) -> IntentsReply {
         let now = self.seams.clock().now();
         // Whatever cuad claims, the screen is somebody else's words: the run's session takes in

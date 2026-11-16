@@ -18,15 +18,31 @@ use std::process::{Command, Stdio};
 struct Stand;
 
 impl Court for Stand {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open(&mut self, _open: OpenAgent) -> Result<SessionId, CourtFault> {
         Err(CourtFault::Unavailable)
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn turn(&mut self, _session: &SessionId, _text: &str) -> Result<TurnId, CourtFault> {
         Err(CourtFault::Unavailable)
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn call(&mut self, _session: &SessionId, _n: u64, _call: &AgentCall) -> Ruled {
         Ruled::Lost
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn registry(&mut self) -> Option<Vec<ValidManifest>> {
         action_fake::mail_manifest().ok().map(|m| vec![m])
     }

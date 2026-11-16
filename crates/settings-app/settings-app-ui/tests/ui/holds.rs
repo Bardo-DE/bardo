@@ -65,11 +65,11 @@ enum Trust {
 
 /// The Accounts page over the fakes, with `before` holds already on when the window opens.
 fn world(name: &str, before: &[(&str, u64, u64)]) -> World {
-    world_trusting(name, before, Trust::Everyone)
+    world_trusting(name, before, &Trust::Everyone)
 }
 
 /// The same, the window taking the services for what `trust` says.
-fn world_trusting(name: &str, before: &[(&str, u64, u64)], trust: Trust) -> World {
+fn world_trusting(name: &str, before: &[(&str, u64, u64)], trust: &Trust) -> World {
     let rt = tokio::runtime::Builder::new_multi_thread()
         .worker_threads(2)
         .enable_all()
@@ -103,8 +103,8 @@ fn world_trusting(name: &str, before: &[(&str, u64, u64)], trust: Trust) -> Worl
         Trust::AccountsOnly => {
             let watcher = rt.block_on(bus.connect());
             let peers = private_peers(&watcher);
-            let accountd = accounts.unique_name().expect("a unique name").to_string();
-            introduce_service(&peers, &accountd, &roles::ACCOUNTS);
+            let unique = accounts.unique_name().expect("a unique name").to_string();
+            introduce_service(&peers, &unique, &roles::ACCOUNTS);
             Vouch::of(RoleCheck::new(peers))
         }
     };
@@ -160,7 +160,7 @@ fn a_program_that_took_the_sync_name_is_not_listened_to_and_is_never_told_to_dis
     let mut w = world_trusting(
         "holds-squatter",
         &[("home/files", 5, 5)],
-        Trust::AccountsOnly,
+        &Trust::AccountsOnly,
     );
     // Time enough for a banner to show if the squatter's hold were believed.
     for _ in 0..60 {
@@ -236,7 +236,7 @@ fn a_server_that_lists_its_files_again_ends_the_hold_by_itself() {
 
 #[test]
 fn a_discard_goes_to_the_program_that_was_checked_even_when_the_name_changes_hands_after() {
-    let mut w = world_trusting("holds-handover", &[("home/files", 3, 4)], Trust::HandsOver);
+    let mut w = world_trusting("holds-handover", &[("home/files", 3, 4)], &Trust::HandsOver);
     settle(&mut w.harness, "the banner", |h| h.count(BANNER) == 1);
     w.handover.store(true, Ordering::SeqCst);
     click(&mut w.harness, REMOVE);

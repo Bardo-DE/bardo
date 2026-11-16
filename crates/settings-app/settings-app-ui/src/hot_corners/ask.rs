@@ -82,7 +82,7 @@ fn AskTitle(title: String, words: String) -> Element {
 }
 
 /// Choose is available once `made` holds what the form makes.
-fn ready<T>(made: &Option<T>) -> Availability {
+fn ready<T>(made: Option<&T>) -> Availability {
     match made {
         Some(_) => Availability::Enabled,
         None => Availability::Disabled,
@@ -122,7 +122,7 @@ fn CommandAsk(
             oninput: move |text: String| typed.set(text),
             onsubmit: move |_: String| choose.call(()),
         }
-        ChooseButtons { ready: ready(&does), back, choose }
+        ChooseButtons { ready: ready(does.as_ref()), back, choose }
     }
 }
 
@@ -143,12 +143,9 @@ fn SearchBox(label: String, query: Signal<String>) -> Element {
 }
 
 /// The state of the row of `own` in a list whose chosen row is `chosen`.
-fn row_state<T: PartialEq>(chosen: &Option<T>, own: &T) -> RowState {
+fn row_state<T: PartialEq>(chosen: Option<&T>, own: &T) -> RowState {
     RowState {
-        selection: match chosen {
-            Some(chosen) if chosen == own => true,
-            _ => false,
-        },
+        selection: chosen == Some(own),
         ..RowState::default()
     }
 }
@@ -178,7 +175,7 @@ fn ActionAsk(
         for action in &group.actions {
             let key = format!("{}|{}", action.app, action.action);
             let own = (action.app.clone(), action.action.clone());
-            let state = row_state(&picked, &own);
+            let state = row_state(picked.as_ref(), &own);
             items.push(ListItem::row(
                 key.clone(),
                 action.label.clone(),
@@ -222,7 +219,7 @@ fn ActionAsk(
         if !words.is_empty() {
             Label { text: words, role: LabelRole::Secondary, style: LabelStyle::Footnote }
         }
-        ChooseButtons { ready: ready(&picked), back, choose }
+        ChooseButtons { ready: ready(picked.as_ref()), back, choose }
     }
 }
 
@@ -251,7 +248,7 @@ fn OpenAsk(
                 .iter()
                 .map(|app| {
                     let id = app.id.clone();
-                    let state = row_state(&chosen_app, &app.id);
+                    let state = row_state(chosen_app.as_ref(), &app.id);
                     ListItem::row(
                         app.id.clone(),
                         app.name.clone(),
@@ -311,7 +308,7 @@ fn OpenAsk(
             }
         },
     };
-    let ready = ready(&shown.item());
+    let ready = ready(shown.item().as_ref());
     let choose = EventHandler::new(move |()| {
         if let Some(does) = form.peek().binding() {
             save.call(does);

@@ -54,8 +54,12 @@ pub enum ScoresError {
     NotAWhole(u32),
 }
 
-/// One share per declared option, in the declared order, adding up to exactly 1000 (the bridge
-/// settles rounding by the largest remainder, ties to the earlier option). Built only through
+/// One share per declared option, in the declared order.
+///
+/// The shares add up to exactly 1000 (the bridge settles rounding by the largest remainder, ties to
+/// the earlier option).
+///
+/// Built only through
 /// [`OptionScores::new`], also when read off the wire, so a value that exists is a whole.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(try_from = "Vec<OptionScore>", into = "Vec<OptionScore>")]
@@ -63,6 +67,11 @@ pub struct OptionScores(Vec<OptionScore>);
 
 impl OptionScores {
     /// The shares, checked: two or more, each at most 1000, adding up to 1000.
+    ///
+    /// # Errors
+    ///
+    /// [`ScoresError`] when fewer than two scores are given, a share is over a whole, or the shares
+    /// do not add up to a whole.
     pub fn new(scores: Vec<OptionScore>) -> Result<Self, ScoresError> {
         if scores.len() < 2 {
             return Err(ScoresError::TooFew);

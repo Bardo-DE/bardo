@@ -42,7 +42,8 @@ impl<'de> Deserialize<'de> for Base64Bytes {
         STANDARD
             .decode(text)
             .map(Base64Bytes)
-            .map_err(|_| serde::de::Error::custom(TextError::NotBase64))
+            .ok()
+            .ok_or_else(|| serde::de::Error::custom(TextError::NotBase64))
     }
 }
 
@@ -63,6 +64,10 @@ impl Traceparent {
     pub const KEY: &'static str = "traceparent";
 
     /// The header text, if it is a version 00 traceparent.
+    ///
+    /// # Errors
+    ///
+    /// [`TextError`] when `text` is not a trace header of the expected form.
     pub fn parse(text: &str) -> Result<Self, TextError> {
         let parts: Vec<&str> = text.split('-').collect();
         let hex = |s: &str, len: usize| {

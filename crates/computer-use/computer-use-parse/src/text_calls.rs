@@ -38,8 +38,11 @@ enum Kind {
     Structured,
 }
 
-/// The kind of each parameter of a tool, taken from its JSON schema: what a server's parser knows
-/// and a plain text reading does not. A parameter the schema does not name is read as structured
+/// The kind of each parameter of a tool, taken from its JSON schema.
+///
+/// What a server's parser knows and a plain text reading does not.
+///
+/// A parameter the schema does not name is read as structured
 /// when its text is a JSON array or object, else as a string.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct ParamKinds(BTreeMap<String, Kind>);
@@ -61,6 +64,10 @@ impl ParamKinds {
         ParamKinds(kinds)
     }
 
+    #[expect(
+        clippy::match_same_arms,
+        reason = "the declared kind and the sniffed look of a value are separate rules that happen to read it the same way"
+    )]
     fn value(&self, name: &str, raw: &str) -> Value {
         let text = || Value::String(raw.to_owned());
         let json = || serde_json::from_str::<Value>(raw).ok();
@@ -95,6 +102,11 @@ fn kind_of(declared: Option<&Value>) -> Kind {
 /// The calls after the last `</think>` of the answer are the step's, at most `limits.max_actions`
 /// of them. When there are none, the last call written anywhere in the thought or the answer is.
 /// No call is `NoAction`; the two texts together over `limits.max_input` bytes are `TooLarge`.
+///
+/// # Errors
+///
+/// [`ParseError::TooLarge`] when the answer and thought together pass the input limit; another
+/// [`ParseError`] when the calls cannot be read.
 pub fn read_calls(
     format: CallFormat,
     answer: &str,

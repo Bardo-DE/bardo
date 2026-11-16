@@ -108,18 +108,6 @@ async fn a_candidate_lists_the_endpoints_of_the_kind_that_fit() {
 
 #[tokio::test]
 async fn a_relay_may_dial_only_an_endpoint_the_account_holds_for_the_grants_kind() {
-    let sheets = ScriptedSheets::answering([Scripted::AllowFirst(GrantScope::Always)]);
-    let service = fake_service(sheets).await;
-    let me = app("org.bardo.Photos");
-    let storage = granted(choose(&service, &me, files(), DataClass::Files).await);
-    let open = |who: &AppId, grant: &GrantId, endpoint: &str| {
-        let endpoint = url(endpoint);
-        let who = who.clone();
-        let grant = grant.clone();
-        let service = &service;
-        async move { service.open_authenticated(&who, &grant, &endpoint).await }
-    };
-    let own = "https://cloud.invalid/remote.php/dav/files/ada/";
     const REFUSED: &[(&str, &str, Refusal)] = &[
         (
             "an address the app made up",
@@ -137,6 +125,19 @@ async fn a_relay_may_dial_only_an_endpoint_the_account_holds_for_the_grants_kind
             Refusal::EndpointNotGranted,
         ),
     ];
+
+    let sheets = ScriptedSheets::answering([Scripted::AllowFirst(GrantScope::Always)]);
+    let service = fake_service(sheets).await;
+    let me = app("org.bardo.Photos");
+    let storage = granted(choose(&service, &me, files(), DataClass::Files).await);
+    let open = |who: &AppId, grant: &GrantId, endpoint: &str| {
+        let endpoint = url(endpoint);
+        let who = who.clone();
+        let grant = grant.clone();
+        let service = &service;
+        async move { service.open_authenticated(&who, &grant, &endpoint).await }
+    };
+    let own = "https://cloud.invalid/remote.php/dav/files/ada/";
     for (name, endpoint, refusal) in REFUSED {
         assert_eq!(
             open(&me, &storage.grant, endpoint).await.err(),
@@ -213,6 +214,26 @@ async fn an_opened_relay_is_audited_with_its_grant_and_endpoint_and_a_refused_on
 
 #[tokio::test]
 async fn a_linked_relay_dials_only_an_origin_the_provider_file_declares_and_presents_nothing() {
+    const REFUSED: &[(&str, &str)] = &[
+        (
+            "an origin the file does not declare",
+            "https://evil.invalid",
+        ),
+        ("the account's own host", "https://cloud.invalid"),
+        ("the suffix itself", "https://cdn.cloud.invalid"),
+        (
+            "a host that only ends alike",
+            "https://evilcdn.cloud.invalid",
+        ),
+        (
+            "a declared host on another port",
+            "https://a.cdn.cloud.invalid:8443",
+        ),
+        ("a downgrade to plain http", "http://a.cdn.cloud.invalid"),
+        ("a link with a path", "https://a.cdn.cloud.invalid/up/s1"),
+        ("another scheme", "imaps://a.cdn.cloud.invalid"),
+    ];
+
     use account_core::RelayAuth;
 
     let audit = RecordingAudit::default();
@@ -244,25 +265,6 @@ async fn a_linked_relay_dials_only_an_origin_the_provider_file_declares_and_pres
     assert_eq!(plan.endpoint.family, Family::WebDav);
     assert_eq!(opened(audit.entries()), 1);
 
-    const REFUSED: &[(&str, &str)] = &[
-        (
-            "an origin the file does not declare",
-            "https://evil.invalid",
-        ),
-        ("the account's own host", "https://cloud.invalid"),
-        ("the suffix itself", "https://cdn.cloud.invalid"),
-        (
-            "a host that only ends alike",
-            "https://evilcdn.cloud.invalid",
-        ),
-        (
-            "a declared host on another port",
-            "https://a.cdn.cloud.invalid:8443",
-        ),
-        ("a downgrade to plain http", "http://a.cdn.cloud.invalid"),
-        ("a link with a path", "https://a.cdn.cloud.invalid/up/s1"),
-        ("another scheme", "imaps://a.cdn.cloud.invalid"),
-    ];
     for (name, origin) in REFUSED {
         assert_eq!(
             service
@@ -299,6 +301,24 @@ async fn a_linked_relay_dials_only_an_origin_the_provider_file_declares_and_pres
 #[tokio::test]
 async fn an_authenticated_relay_reaches_an_origin_the_file_lists_with_the_credential_and_no_other()
 {
+    const REFUSED: &[(&str, &str)] = &[
+        ("an origin the file does not list", "https://evil.invalid"),
+        (
+            "a host under the listed one",
+            "https://a.media.cloud.invalid",
+        ),
+        (
+            "a listed host on another port",
+            "https://media.cloud.invalid:8443",
+        ),
+        ("a downgrade to plain http", "http://media.cloud.invalid"),
+        ("a path on a listed host", "https://media.cloud.invalid/x"),
+        (
+            "a linked origin, which is credential-free",
+            "https://a.cdn.cloud.invalid",
+        ),
+    ];
+
     use account_core::RelayAuth;
 
     let audit = RecordingAudit::default();
@@ -322,23 +342,6 @@ async fn an_authenticated_relay_reaches_an_origin_the_file_lists_with_the_creden
         other => panic!("the credential goes with it, got {other:?}"),
     }
 
-    const REFUSED: &[(&str, &str)] = &[
-        ("an origin the file does not list", "https://evil.invalid"),
-        (
-            "a host under the listed one",
-            "https://a.media.cloud.invalid",
-        ),
-        (
-            "a listed host on another port",
-            "https://media.cloud.invalid:8443",
-        ),
-        ("a downgrade to plain http", "http://media.cloud.invalid"),
-        ("a path on a listed host", "https://media.cloud.invalid/x"),
-        (
-            "a linked origin, which is credential-free",
-            "https://a.cdn.cloud.invalid",
-        ),
-    ];
     for (name, origin) in REFUSED {
         assert_eq!(
             service

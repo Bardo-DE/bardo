@@ -105,7 +105,10 @@ impl<S: Seams> Router<S> {
     /// `Proceed` before the sheet is drawn, and a withdrawn request takes its sheet back. A
     /// `Run.Perform` tells `watch` how far the call is (`Reviewing`, `Previewing`,
     /// `Confirming(id)`, `Dispatched`) and waits for nothing.
-    #[allow(clippy::manual_async_fn)]
+    #[expect(
+        clippy::manual_async_fn,
+        reason = "the signature promises a `Send` future, which an `async fn` cannot say"
+    )]
     pub fn handle_watched(
         &self,
         caller: &CallerId,
@@ -126,6 +129,10 @@ impl<S: Seams> Router<S> {
         }
     }
 
+    #[expect(
+        clippy::too_many_lines,
+        reason = "the router's dispatch has one arm for each kind of request"
+    )]
     async fn answer(
         &self,
         caller: &CallerId,
@@ -138,7 +145,7 @@ impl<S: Seams> Router<S> {
             R::Manifests => self.manifests(),
             R::IndexPush(batch) => self.index_push(caller, batch),
             R::IndexReset { epoch } => self.index_reset(caller, epoch),
-            R::Search(ask) => self.search_query(role, ask),
+            R::Search(ask) => self.search_query(role, &ask),
             R::SearchCancel(_) => IntentsReply::Done,
             R::Perform {
                 call,
@@ -215,7 +222,7 @@ impl<S: Seams> Router<S> {
                     Err(why) => IntentsReply::Refused(why),
                 }
             }
-            R::SessionMode(ask) => self.session_mode(ask),
+            R::SessionMode(ask) => self.session_mode(&ask),
             R::SessionClose { session } => self.session_close(caller, role, &session),
             R::SessionTurnEnded { session, turn, .. } => {
                 self.session_turn_ended(caller, role, &session, turn)

@@ -401,7 +401,11 @@ fn earlier_steps_are_lines_and_typed_text_is_never_repeated() {
     .iter()
     .enumerate()
     {
-        let sent = s.request(&obs(step as u32), &m, frame("f"));
+        let sent = s.request(
+            &obs(u32::try_from(step).expect("a test has few steps")),
+            &m,
+            frame("f"),
+        );
         s.absorb_for(&sent, calls(&[input]), &m);
     }
     let lead = texts(&s.request(&obs(3), &m, frame("f")))[1].clone();
@@ -461,14 +465,17 @@ fn ui_tars_points_map_from_image_pixels() {
     assert_eq!(thought.as_deref(), Some("go."));
     let [
         CuaAction::Click {
-            at: computer_use_action::Target::Point(p),
+            at: computer_use_action::Target::Point(point),
             ..
         },
     ] = &*actions
     else {
         panic!("one click")
     };
-    assert_eq!((p.x, p.y), (Coord(WINDOW_W / 2), Coord(WINDOW_H / 4)));
+    assert_eq!(
+        (point.x, point.y),
+        (Coord(WINDOW_W / 2), Coord(WINDOW_H / 4))
+    );
 }
 
 #[test]

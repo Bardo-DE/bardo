@@ -49,7 +49,7 @@ impl Inference {
 
 #[zbus::interface(name = "org.bardo.Inference1")]
 impl Inference {
-    async fn running(&self) -> Vec<(String, Details)> {
+    fn running(&self) -> Vec<(String, Details)> {
         let rows = self.0.rows.lock().expect("rows");
         rows.iter().map(running_to_dbus).collect()
     }

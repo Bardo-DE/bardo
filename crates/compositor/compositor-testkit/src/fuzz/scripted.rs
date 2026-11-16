@@ -66,7 +66,7 @@ impl Scripted {
 }
 
 fn message(object: u32, opcode: u16, payload: &[u8]) -> Vec<u8> {
-    let size = (8 + payload.len()) as u32;
+    let size = u32::try_from(8 + payload.len()).expect("a scripted message is far below 4 GiB");
     let mut bytes = object.to_ne_bytes().to_vec();
     bytes.extend(((size << 16) | u32::from(opcode)).to_ne_bytes());
     bytes.extend(payload);
@@ -74,7 +74,10 @@ fn message(object: u32, opcode: u16, payload: &[u8]) -> Vec<u8> {
 }
 
 fn string(text: &str) -> Vec<u8> {
-    let mut bytes = ((text.len() + 1) as u32).to_ne_bytes().to_vec();
+    let mut bytes = u32::try_from(text.len() + 1)
+        .expect("a scripted string is far below 4 GiB")
+        .to_ne_bytes()
+        .to_vec();
     bytes.extend(text.as_bytes());
     bytes.push(0);
     while !bytes.len().is_multiple_of(4) {
@@ -92,7 +95,7 @@ fn word(bytes: &[u8], at: usize) -> u32 {
 impl Seat {
     /// Reads requests and answers them; true if anything was read.
     fn serve(&mut self, fault: Fault) -> bool {
-        let mut buffer = [0u8; 65536];
+        let mut buffer = vec![0u8; 65536];
         let n = match self.wire.read(&mut buffer) {
             Ok(n) if n > 0 => n,
             _ => return false,
@@ -124,7 +127,12 @@ impl Seat {
                     if sandboxed && *interface == "zwlr_layer_shell_v1" {
                         continue;
                     }
-                    reply.extend(global(self.registry, name as u32 + 1, interface, *version));
+                    reply.extend(global(
+                        self.registry,
+                        u32::try_from(name).expect("a scripted global name is small") + 1,
+                        interface,
+                        *version,
+                    ));
                 }
                 let leaks = fault == Fault::LeaksPrivileged
                     && !matches!(self.role, ConnectionRole::Shell | ConnectionRole::Agent);

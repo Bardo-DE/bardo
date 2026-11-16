@@ -170,13 +170,13 @@ fn start_syncing(
         .collect();
     let accountd = Accountd::new(Verdict::Allow, rows);
     let inferd = Accountd::on(ModuleId::Inferd, Verdict::Allow, spent);
-    let syncd = Accountd::on(ModuleId::Syncd, Verdict::Allow, mirrored).continuing_as();
+    let sync_module = Accountd::on(ModuleId::Syncd, Verdict::Allow, mirrored).continuing_as();
     let modules = FakeModules::new();
     for module in served {
         let fake = match module {
             ModuleId::Accountd => &accountd,
             ModuleId::Inferd => &inferd,
-            ModuleId::Syncd => &syncd,
+            ModuleId::Syncd => &sync_module,
         };
         fake.host_on(&modules);
     }
@@ -197,7 +197,7 @@ fn start_syncing(
     World {
         accountd,
         inferd,
-        syncd,
+        syncd: sync_module,
         sync1,
         harness,
         _rt: rt,
@@ -279,7 +279,17 @@ fn luminance(pixel: [u8; 3]) -> f64 {
 fn label_contrast(harness: &mut Harness, selector: &str) -> f64 {
     let rect = harness.rect(selector).expect("the button is laid out");
     let image = harness.render_over(Backdrop::Scheme).expect("a picture");
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "a laid-out rectangle in pixels is not negative and far below u32::MAX"
+    )]
     let (x0, y0) = (rect.origin.x.0 as u32, rect.origin.y.0 as u32);
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "a laid-out rectangle in pixels is not negative and far below u32::MAX"
+    )]
     let (w, h) = (rect.size.width.0 as u32, rect.size.height.0 as u32);
     let mut counts = std::collections::HashMap::new();
     let mut inside = Vec::new();

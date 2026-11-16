@@ -29,6 +29,10 @@ impl FabricatedSysRoot {
     /// let root = FabricatedSysRoot::build(&GpuTopology::single(), dir.path()).unwrap();
     /// assert_eq!(SysRenderNodes::new(root).nodes().len(), 1);
     /// ```
+    ///
+    /// # Errors
+    ///
+    /// The [`io::Error`] of the first directory or file that cannot be created under `dir`.
     pub fn build(topology: &GpuTopology, dir: &Path) -> Result<SysRoot, io::Error> {
         for (index, gpu) in topology.gpus.iter().enumerate() {
             let node = gpu.node();

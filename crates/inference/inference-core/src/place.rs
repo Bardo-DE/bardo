@@ -82,6 +82,10 @@ pub struct ComputerName(String);
 
 impl ComputerName {
     /// The name written as `text`, or why it is not one.
+    ///
+    /// # Errors
+    ///
+    /// [`CoreError::MalformedId`] when `text` is not a valid computer name.
     pub fn parse(text: &str) -> Result<Self, CoreError> {
         if is_id(text) {
             Ok(Self(text.to_owned()))
@@ -175,6 +179,10 @@ impl PlaceId {
     }
 
     /// The id written as `text`, or why it is not one.
+    ///
+    /// # Errors
+    ///
+    /// [`CoreError::MalformedId`] when `text` is not a valid place id.
     pub fn parse(text: &str) -> Result<Self, CoreError> {
         let bad = || CoreError::MalformedId {
             what: "place id",
@@ -186,12 +194,14 @@ impl PlaceId {
         if let Some(name) = text.strip_prefix(COMPUTER_PREFIX) {
             return ComputerName::parse(name)
                 .map(|name| Self::computer(&name))
-                .map_err(|_| bad());
+                .ok()
+                .ok_or_else(|| bad());
         }
         if let Some(account) = text.strip_prefix(ACCOUNT_PREFIX) {
             return AccountId::parse(account)
                 .map(|account| Self::account(&account))
-                .map_err(|_| bad());
+                .ok()
+                .ok_or_else(|| bad());
         }
         Err(bad())
     }
@@ -411,9 +421,10 @@ impl NoPlaceReason {
     }
 }
 
-/// What inferd answers when a request named the places it may run and none of them can serve it:
-/// the reason, and the kind of place outside the set that could have served it, if there is one
-/// (so the app can say "turn on a cloud account", not only "it cannot").
+/// What inferd answers when a request named the places it may run and none of them can serve it.
+///
+/// The reason, and the kind of place outside the set that could have served it, if there is one (so
+/// the app can say "turn on a cloud account", not only "it cannot").
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct PlaceRefusal {
     /// Why nothing allowed can serve.

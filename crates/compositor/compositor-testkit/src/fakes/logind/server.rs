@@ -35,6 +35,11 @@ impl FakeLogind {
     /// let logind = FakeLogind::serve(&bus.address).expect("serve");
     /// assert!(logind.calls().is_empty());
     /// ```
+    ///
+    /// # Errors
+    ///
+    /// [`LogindError`] when the runtime cannot be built or the fake cannot take its name on the bus
+    /// at `address`.
     pub fn serve(address: &str) -> Result<FakeLogind, LogindError> {
         let runtime = Builder::new_multi_thread()
             .worker_threads(1)
@@ -67,16 +72,28 @@ impl FakeLogind {
 
     /// Blocks until every inhibitor is released, for at most `timeout`; an error names what is
     /// still held.
+    ///
+    /// # Errors
+    ///
+    /// [`LogindError`] when an inhibitor is still held after `timeout`.
     pub fn wait_released(&self, timeout: Duration) -> Result<(), LogindError> {
         self.log.wait_released(timeout)
     }
 
     /// Emits the session's `Lock` signal.
+    ///
+    /// # Errors
+    ///
+    /// [`LogindError`] when the signal cannot be sent.
     pub fn lock(&self) -> Result<(), LogindError> {
         self.block_on(self.signals.lock())
     }
 
     /// Emits the session's `Unlock` signal.
+    ///
+    /// # Errors
+    ///
+    /// [`LogindError`] when the signal cannot be sent.
     pub fn unlock(&self) -> Result<(), LogindError> {
         self.block_on(self.signals.unlock())
     }
@@ -90,17 +107,29 @@ impl FakeLogind {
     /// logind.prepare_for_sleep(SleepPhase::Starting)?;
     /// # Ok(()) }
     /// ```
+    ///
+    /// # Errors
+    ///
+    /// [`LogindError`] when the signal cannot be sent.
     pub fn prepare_for_sleep(&self, phase: SleepPhase) -> Result<(), LogindError> {
         self.block_on(self.signals.prepare_for_sleep(phase))
     }
 
     /// Emits the session's `PauseDevice(major, minor, kind)` signal.
+    ///
+    /// # Errors
+    ///
+    /// [`LogindError`] when the signal cannot be sent.
     pub fn pause_device(&self, major: u32, minor: u32, kind: PauseKind) -> Result<(), LogindError> {
         self.block_on(self.signals.pause_device(major, minor, kind))
     }
 
     /// Emits the session's `ResumeDevice(major, minor, fd)` signal with a fresh fixture
     /// descriptor.
+    ///
+    /// # Errors
+    ///
+    /// [`LogindError`] when the fixture descriptor cannot be made or the signal cannot be sent.
     pub fn resume_device(&self, major: u32, minor: u32) -> Result<(), LogindError> {
         let (read, _write) = super::inhibit::pipe()?;
         self.block_on(self.signals.resume_device(major, minor, &read))

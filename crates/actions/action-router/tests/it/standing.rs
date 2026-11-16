@@ -80,6 +80,10 @@ pub(crate) fn used(router: &Router<FakeSeams>) -> usize {
         .count()
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "a reviewer's answer is a `Result`, and other tests make it an error"
+)]
 fn deny() -> Result<ReviewVerdict, ReviewError> {
     Ok(ReviewVerdict::Deny {
         why: ReviewReason {

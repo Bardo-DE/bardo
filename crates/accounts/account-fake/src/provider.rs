@@ -22,6 +22,11 @@ pub struct FakeProvider {
 
 impl FakeProvider {
     /// The provider the file text declares. Panics on a bad file: the files are this crate's.
+    ///
+    /// # Panics
+    ///
+    /// If `text` is not a valid provider file: the fake is built from fixed text in a test, so a
+    /// bad file is a mistake in the test.
     #[must_use]
     pub fn from_file(text: &str) -> Self {
         let spec = parse_provider(text).unwrap_or_else(|e| panic!("fake provider file: {e}"));
@@ -64,8 +69,11 @@ pub struct FakeSession {
     account: AccountId,
 }
 
-/// A sign-in that needs nothing from the person: `Start` signs in at once with a fixed
-/// password, and anything after it is a refusal. A real family asks, waits and reviews. Signing
+/// A sign-in that needs nothing from the person.
+///
+/// `Start` signs in at once with a fixed password, and anything after it is a refusal.
+///
+/// A real family asks, waits and reviews. Signing
 /// an account in again, or asking it for one more access, answers its servers as stored, as the
 /// same person would; one more access is first shown for review, as every family shows it, and
 /// signed in on `Confirm`.
@@ -93,6 +101,10 @@ impl FakeSignIn {
 }
 
 impl SignIn for FakeSignIn {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn next(&mut self, input: SignInInput) -> SignInStep {
         match input {
             SignInInput::Start if self.reviews => SignInStep::Review {
@@ -116,6 +128,10 @@ impl Provider for FakeProvider {
         &self.spec
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn discover(
         &self,
         _account: &Account,
@@ -133,6 +149,10 @@ impl Provider for FakeProvider {
             .collect())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open(
         &self,
         account: &AccountId,
@@ -175,6 +195,10 @@ impl Provider for FakeProvider {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn revoke(
         &self,
         _account: &Account,
@@ -185,6 +209,10 @@ impl Provider for FakeProvider {
 }
 
 impl ProviderSession for FakeSession {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn access_token(&self, audience: &Audience) -> Result<IssuedToken, ProviderError> {
         Ok(IssuedToken::new(
             TokenKind::Bearer,

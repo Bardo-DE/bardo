@@ -18,6 +18,10 @@ pub trait FuzzHost {
     /// Moves the clock.
     fn advance(&mut self, by: Duration);
     /// The model's invariants (oracle 4).
+    ///
+    /// # Errors
+    ///
+    /// [`InvariantBreak`] naming the first invariant the compositor no longer holds.
     fn invariants(&self) -> Result<(), InvariantBreak>;
 }
 

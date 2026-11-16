@@ -74,6 +74,10 @@ pub enum LiveFault {
 /// The editor's app, which the edge checks a stored session's opener against, is the bus name:
 /// the router records the opener and the editor's turns under the app behind the connection.
 /// `env` is the environment `main` hands in.
+///
+/// # Errors
+///
+/// [`LiveFault`] when the callers cannot be read or the service cannot be set up or served.
 pub async fn serve(
     trace: action_dbus::InferWatch,
     env: &impl Fn(&str) -> Option<String>,
@@ -103,7 +107,9 @@ async fn serve_on(
     seams: Callers,
     env: &impl Fn(&str) -> Option<String>,
 ) -> Result<(), LiveFault> {
-    let editor = AppName::parse(BUS_NAME).map_err(|_| LiveFault::App(BUS_NAME.to_owned()))?;
+    let editor = AppName::parse(BUS_NAME)
+        .ok()
+        .ok_or_else(|| LiveFault::App(BUS_NAME.to_owned()))?;
     let bus = |e: zbus::Error| LiveFault::Bus(e.to_string());
     let connection = action_dbus::session_connection(env).await.map_err(bus)?;
     // The sheets intentd hands this process for an editor's session wait on the desk the host
@@ -129,7 +135,9 @@ async fn serve_on(
         .map_err(bus)?;
     zbus_ready::serving(&connection).await.map_err(bus)?;
     connection.request_name(BUS_NAME).await.map_err(bus)?;
-    let shell = AppName::parse(SHELL).map_err(|_| LiveFault::App(SHELL.to_owned()))?;
+    let shell = AppName::parse(SHELL)
+        .ok()
+        .ok_or_else(|| LiveFault::App(SHELL.to_owned()))?;
     let companion = Companion::new(
         Intents::over(DbusTransport::new(connection.clone())),
         PlannerModel::new(action_dbus::inferd_transport(&connection, trace)),

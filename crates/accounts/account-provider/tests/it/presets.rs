@@ -52,6 +52,10 @@ type Case = (
 );
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario (or table of cases) read top to bottom; splitting it would scatter what a reader checks together"
+)]
 fn every_former_preset_address_and_mx_resolves_to_its_file() {
     use DomainMatch::{Domain, Mx};
     const CASES: &[Case] = &[

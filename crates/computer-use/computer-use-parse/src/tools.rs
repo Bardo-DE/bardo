@@ -49,7 +49,7 @@ pub(crate) type Verdict<T> = Result<T, DropReason>;
 impl Dialect for Tools<'_> {
     fn collect<S: CoordSpace>(
         &self,
-        ctx: &Ctx,
+        ctx: Ctx,
         limits: ParseLimits,
     ) -> Result<Collected<S>, ParseError> {
         let mut batch = Batch::new(limits);
@@ -71,7 +71,7 @@ impl Tools<'_> {
     fn one<S: CoordSpace>(
         &self,
         context: &ToolContext,
-        ctx: &Ctx,
+        ctx: Ctx,
         call: &ToolCall,
     ) -> (String, Verdict<CuaAction<S>>) {
         let name = call.name.as_str();
@@ -98,7 +98,7 @@ impl Tools<'_> {
 
 pub(crate) fn verb_action<S: CoordSpace>(
     verbs: &Verbs,
-    ctx: &Ctx,
+    ctx: Ctx,
     verb: &str,
     args: &Args,
 ) -> Verdict<CuaAction<S>> {
@@ -151,6 +151,11 @@ pub(crate) fn verb_action<S: CoordSpace>(
 
 /// A whole number: a JSON integer, or a float with nothing after the point; never negative.
 fn whole(value: &Value) -> Verdict<u32> {
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "the float is whole and not below zero; past u64 it saturates, and the u32 check below refuses it"
+    )]
     let n = value
         .as_u64()
         .or_else(|| {
@@ -160,13 +165,13 @@ fn whole(value: &Value) -> Verdict<u32> {
                 .map(|f| f as u64)
         })
         .ok_or(DropReason::BadNumber)?;
-    u32::try_from(n).map_err(|_| DropReason::BadNumber)
+    u32::try_from(n).ok().ok_or(DropReason::BadNumber)
 }
 
 /// A point by one prefix after another: `{prefix}coordinate: [x, y]`, else `{prefix}x` and
 /// `{prefix}y`. The first prefix that names anything decides.
 pub(crate) fn point<S: CoordSpace>(
-    ctx: &Ctx,
+    ctx: Ctx,
     args: &Args,
     prefixes: &[&str],
 ) -> Verdict<computer_use_action::Point<S>> {
@@ -246,7 +251,7 @@ pub(crate) enum Axis {
 /// optional); a half-given point is still refused.
 pub(crate) fn scroll<S: CoordSpace>(
     verbs: &Verbs,
-    ctx: &Ctx,
+    ctx: Ctx,
     args: &Args,
     axis: Axis,
 ) -> Verdict<CuaAction<S>> {
@@ -257,6 +262,10 @@ pub(crate) fn scroll<S: CoordSpace>(
     };
     match (args.get("pixels"), args.get("direction")) {
         (Some(pixels), _) => {
+            #[expect(
+                clippy::cast_possible_truncation,
+                reason = "a whole float past i64 saturates, and the u32 check on its magnitude refuses it"
+            )]
             let signed = pixels
                 .as_i64()
                 .or_else(|| {
@@ -266,8 +275,9 @@ pub(crate) fn scroll<S: CoordSpace>(
                         .map(|f| f as i64)
                 })
                 .ok_or(DropReason::BadNumber)?;
-            let magnitude =
-                u32::try_from(signed.unsigned_abs()).map_err(|_| DropReason::BadNumber)?;
+            let magnitude = u32::try_from(signed.unsigned_abs())
+                .ok()
+                .ok_or(DropReason::BadNumber)?;
             if magnitude == 0 {
                 return Err(DropReason::BadNumber);
             }
@@ -303,6 +313,11 @@ fn direction(word: &str) -> Verdict<ScrollDir> {
 }
 
 /// Seconds, whole or fractional, as a bounded wait.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "the milliseconds are finite, not below zero and not above `WaitMs::MAX` (a u32) when cast"
+)]
 fn seconds(value: &Value) -> Verdict<WaitMs> {
     let secs = value.as_f64().filter(|s| s.is_finite() && *s >= 0.0);
     let ms = secs.map(|s| (s * MS_PER_SECOND).round());

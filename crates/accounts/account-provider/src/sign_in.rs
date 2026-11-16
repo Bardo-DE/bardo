@@ -62,8 +62,12 @@ pub enum SignInMode {
     },
 }
 
-/// The address a sign-in is for, sent to the provider so its page opens on that person and asks
-/// nothing more than it must ("Continue as"). A hint, not a promise: the person may still pick
+/// The address a sign-in is for.
+///
+/// It is sent to the provider so its page opens on that person and asks nothing more than it must
+/// ("Continue as").
+///
+/// A hint, not a promise: the person may still pick
 /// another account.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct LoginHint(String);

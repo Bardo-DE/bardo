@@ -127,7 +127,7 @@ impl Service {
         self.touch();
         let reply = match self.helper_host().await {
             Ok(host) => Box::pin(host.ask(ask)).await,
-            Err(fault) => HelperHost::unavailable(&ask, fault),
+            Err(fault) => HelperHost::unavailable(&ask, &fault),
         };
         self.touch();
         reply
@@ -283,10 +283,11 @@ impl Active {
     }
 }
 
-/// What only the acceptance harness chooses, as bardo-agent-acp's `HarnessSeams` does: the `/proc` the
-/// callers are read from (a fixture tree), the system's callers file, and how the agents'
-/// sandboxes are bounded. The packaged program passes the defaults ([`run`]): the system's `/proc`
-/// and `/etc/bardo`, and a scope of the user manager.
+/// What only the acceptance harness chooses, as bardo-agent-acp's `HarnessSeams` does.
+///
+/// The `/proc` the callers are read from (a fixture tree), the system's callers file, and how the
+/// agents' sandboxes are bounded. The packaged program passes the defaults ([`run`]): the system's
+/// `/proc` and `/etc/bardo`, and a scope of the user manager.
 #[derive(Debug)]
 pub struct HarnessSeams {
     /// Where callers' processes are read: the system's `/proc`, or a fixture tree.
@@ -316,6 +317,10 @@ pub async fn run(
 }
 
 /// [`run`] with the seams the acceptance harness's main chooses.
+///
+/// # Errors
+///
+/// [`AgentFault`] when the bus cannot be reached or the service cannot be set up or served.
 pub async fn run_with(
     seams: HarnessSeams,
     env: impl Fn(&str) -> Option<String> + Send + Sync + 'static,

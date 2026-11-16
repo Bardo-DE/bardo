@@ -66,14 +66,19 @@ fn two_windows() -> (Fixture, [(ClientId, WindowId); 2], Kept) {
     (fixture, [placed[0], placed[1]], kept)
 }
 
+/// A size in pixels as the signed number a point takes; a window is far below the top.
+fn px(n: u32) -> i32 {
+    i32::try_from(n).unwrap_or(i32::MAX)
+}
+
 /// A point of `within`'s content (clear of its title bar and edges) that `outside` does not
 /// cover.
 fn uncovered(within: LogicalRect, outside: LogicalRect) -> LogicalPoint {
     let inset = 60;
     let (x0, y0) = (within.origin.x + inset, within.origin.y + inset);
     let (x1, y1) = (
-        within.origin.x + within.size.w as i32 - inset,
-        within.origin.y + within.size.h as i32 - inset,
+        within.origin.x + px(within.size.w) - inset,
+        within.origin.y + px(within.size.h) - inset,
     );
     [(x0, y1), (x1, y1), (x1, y0), (x0, y0)]
         .into_iter()
@@ -244,7 +249,7 @@ fn a_lease_cannot_drag_its_window_by_the_title_bar() {
     settle(&mut fixture);
     let rect = rect_of(&fixture, under);
     let bar = LogicalPoint {
-        x: rect.origin.x + rect.size.w as i32 / 2,
+        x: rect.origin.x + px(rect.size.w) / 2,
         y: rect.origin.y + 8,
     };
     send(&mut fixture, lease, InputKind::MotionTo { at: bar });
@@ -395,7 +400,7 @@ fn a_held_back_lease_press_leaves_the_persons_click_whole() {
     settle(&mut fixture);
     let rect = rect_of(&fixture, under);
     let bar = LogicalPoint {
-        x: rect.origin.x + rect.size.w as i32 / 2,
+        x: rect.origin.x + px(rect.size.w) / 2,
         y: rect.origin.y + 8,
     };
     send(&mut fixture, lease, InputKind::MotionTo { at: bar });
@@ -447,8 +452,8 @@ fn key_while_a_layer_holds_the_keyboard() -> (Fixture, ClientId, ClientId, Layer
         TestOrigin::Physical(DeviceClass::Pointer),
     );
     let middle = LogicalPoint {
-        x: rect.origin.x + rect.size.w as i32 / 2,
-        y: rect.origin.y + rect.size.h as i32 / 2,
+        x: rect.origin.x + px(rect.size.w) / 2,
+        y: rect.origin.y + px(rect.size.h) / 2,
     };
     fixture.input().pointer_to(mouse, middle);
     fixture.input().button(mouse, BTN_LEFT, PressEdge::Press);
@@ -548,8 +553,8 @@ fn click_while_a_sheet_covers_the_window() -> (Fixture, ClientId, ClientId, Laye
     );
     let rect = rect_of(&fixture, over);
     let middle = LogicalPoint {
-        x: rect.origin.x + rect.size.w as i32 / 2,
-        y: rect.origin.y + rect.size.h as i32 / 2,
+        x: rect.origin.x + px(rect.size.w) / 2,
+        y: rect.origin.y + px(rect.size.h) / 2,
     };
     click(&mut fixture, lease, middle);
     fixture.pump();
@@ -620,7 +625,8 @@ fn a_lease_reaches_the_dialog_its_window_opened_and_no_other_window_of_the_app()
     dialog.set_parent(Some(&parent));
     dialog.commit_bare();
     fixture.pump();
-    dialog.ack_latest();
+    // the serial acked is not needed.
+    let _ = dialog.ack_latest();
     let buffer = shm_buffer(
         fixture.client(id),
         PhysicalSize { w: 300, h: 200 },

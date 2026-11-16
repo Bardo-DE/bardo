@@ -74,7 +74,7 @@ impl wayland_client::Dispatch<BardoShellV1, ShellEar> for ClientState {
         _: &mut Self,
         _: &BardoShellV1,
         event: wire::Event,
-        ear: &ShellEar,
+        data: &ShellEar,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -88,7 +88,7 @@ impl wayland_client::Dispatch<BardoShellV1, ShellEar> for ClientState {
             } => {
                 let heard = vocab(power).zip(vocab(subject_kind)).zip(vocab(memory));
                 if let Some(((power, kind), memory)) = heard {
-                    ear.heard().asks.push(Asked {
+                    data.heard().asks.push(Asked {
                         ask,
                         power,
                         kind,
@@ -97,11 +97,11 @@ impl wayland_client::Dispatch<BardoShellV1, ShellEar> for ClientState {
                     });
                 }
             }
-            wire::Event::PermissionWithdraw { ask } => ear.heard().withdrawn.push(ask),
+            wire::Event::PermissionWithdraw { ask } => data.heard().withdrawn.push(ask),
             wire::Event::DisplaysTrial { trial, seconds } => {
-                ear.heard().trials.push((trial, seconds));
+                data.heard().trials.push((trial, seconds));
             }
-            wire::Event::DisplaysTrialEnd { trial } => ear.heard().trial_ends.push(trial),
+            wire::Event::DisplaysTrialEnd { trial } => data.heard().trial_ends.push(trial),
             _ => {}
         }
     }
@@ -203,13 +203,13 @@ pub(super) fn program(path: &str) -> Subject {
 }
 
 /// A book that has `verdict` on `power` for the program `path`.
-pub(super) fn book_with(path: &str, power: Power, verdict: Verdict) -> Box<Book> {
-    Box::new(Book::empty().with(Grant {
+pub(super) fn book_with(path: &str, power: Power, verdict: Verdict) -> Book {
+    Book::empty().with(Grant {
         power,
         subject: program(path),
         verdict,
         at: UnixSeconds(1),
-    }))
+    })
 }
 
 /// What the person has kept about `power` for the program `path`.
@@ -233,11 +233,11 @@ pub(super) fn asked_world() -> (Fixture, ScriptedShell, ClientId) {
 /// The person decided `verdict` on `power` for [`ASKED_PROGRAM`] after it connected (a book
 /// loaded under a client already there): its next use is answered at once, without a question.
 pub(super) fn decided(fixture: &mut Fixture, power: Power, verdict: Verdict) {
-    fixture.feed_events(vec![Event::BookLoaded(book_with(
+    fixture.feed_events(vec![Event::BookLoaded(Box::new(book_with(
         ASKED_PROGRAM,
         power,
         verdict,
-    ))]);
+    )))]);
 }
 
 /// How many events called `name` client `id` has received so far.
@@ -479,11 +479,11 @@ fn the_globals_of_a_power_refused_before_connecting_are_not_advertised() {
             fixture.pump();
             advertised(&mut fixture, free)
         };
-        fixture.feed_events(vec![Event::BookLoaded(book_with(
+        fixture.feed_events(vec![Event::BookLoaded(Box::new(book_with(
             ASKED_PROGRAM,
             power,
             Verdict::Deny,
-        ))]);
+        )))]);
         let refused = fixture.connect_via_ask();
         fixture.pump();
         let shown = advertised(&mut fixture, refused);
@@ -507,10 +507,10 @@ fn the_globals_of_a_power_refused_before_connecting_are_not_advertised() {
 fn a_refusal_that_arrives_later_hides_nothing() {
     let (mut fixture, _shell, client) = asked_world();
     let before = advertised(&mut fixture, client);
-    fixture.feed_events(vec![Event::BookLoaded(book_with(
+    fixture.feed_events(vec![Event::BookLoaded(Box::new(book_with(
         ASKED_PROGRAM,
         Power::Keys,
         Verdict::Deny,
-    ))]);
+    )))]);
     assert_eq!(advertised(&mut fixture, client), before);
 }

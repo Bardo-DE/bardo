@@ -21,6 +21,10 @@ impl Script {
 }
 
 impl MemoryLink for Script {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn ask(&self, _request: MemoryRequest) -> Result<MemoryReply, LinkFault> {
         self.0
             .lock()
@@ -44,6 +48,10 @@ fn three() -> QueuedSink {
     sink
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "the script holds `Result`s, as the link answers"
+)]
 fn invalid() -> Result<MemoryReply, LinkFault> {
     Ok(MemoryReply::Refused(Refusal::Invalid("no".into())))
 }

@@ -51,6 +51,10 @@ fn sub(x: i32, y: i32) -> SubPoint {
 }
 
 /// Each row: an event of the virtual backend and the kind it must read as.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario (or table of cases) read top to bottom; splitting it would scatter what a reader checks together"
+)]
 fn rows() -> Vec<(VirtualInputEvent, InputKind)> {
     let key = |edge| InputEvent::Keyboard {
         event: VirtualKey {

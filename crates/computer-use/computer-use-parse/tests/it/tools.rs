@@ -154,6 +154,10 @@ fn the_sign_of_a_scroll_is_what_the_models_are_told() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario (or table of cases) read top to bottom; splitting it would scatter what a reader checks together"
+)]
 fn qwen_drag_scroll_wait_and_conclusions() {
     let by = |dir, px| CuaAction::Scroll {
         at: at(5, 5),
@@ -417,7 +421,13 @@ fn grid_space_checks_the_top() {
             r#"{"action":"left_click","coordinate":[1001,10]}"#,
         ),
     ];
-    let p = computer_use_parse::parse_tool_calls(QWEN, space, &calls, Default::default()).unwrap();
+    let p = computer_use_parse::parse_tool_calls(
+        QWEN,
+        space,
+        &calls,
+        computer_use_parse::ParseLimits::default(),
+    )
+    .unwrap();
     assert_eq!(grid_actions(&p).len(), 1);
     assert_eq!(drops(&p), [("left_click", DropReason::OutOfFrame)]);
 }

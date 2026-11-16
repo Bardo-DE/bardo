@@ -14,6 +14,7 @@ use memory_core::{
     Skeleton, StepLine, StepOutcome, TopicPath, TrustFilter, UseCount, UserText, Validity,
 };
 use provenance::{Actor, AgentRef, Label, Source, UnixSeconds};
+use std::fmt::Write as _;
 
 pub(crate) fn entry(
     kind: &str,
@@ -208,7 +209,10 @@ async fn episodes_come_as_trusted_skeleton_lines_with_the_newest_event_of_each_a
 #[tokio::test]
 async fn the_primer_is_cut_to_two_hundred_lines() {
     let mut router = router();
-    let long: String = (0..300).map(|n| format!("- topic {n}\n")).collect();
+    let long = (0..300).fold(String::new(), |mut out, n| {
+        let _ = writeln!(out, "- topic {n}");
+        out
+    });
     router.seams.memory = FakeMemory::answering(vec![MemoryReply::Primer(long)]);
     let s = open(&router, "work", AgentRef::Companion).await;
     let RecallView::Primer(text) = recall(&router, &s.session, RecallAsk::Primer).await else {

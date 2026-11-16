@@ -278,6 +278,8 @@ impl SleepHandler for Record {
 /// it, while the real logind's signal that follows is heard.
 #[test]
 fn a_prepare_for_sleep_from_anyone_but_logind_is_not_acted_on() {
+    const STEP: Duration = Duration::from_millis(10);
+
     let bus = PrivateBus::start();
     let logind = FakeLogind::serve(&bus.address).expect("serve");
     let told = Arc::new(Mutex::new(Vec::new()));
@@ -312,7 +314,6 @@ fn a_prepare_for_sleep_from_anyone_but_logind_is_not_acted_on() {
         .prepare_for_sleep(SleepPhase::Resumed)
         .expect("logind's own signal");
     // Counted waits, not the clock: only casement/src/time/ reads one (boundary B8).
-    const STEP: Duration = Duration::from_millis(10);
     let heard = (0..IN_TIME.as_millis() / STEP.as_millis()).any(|_| {
         let heard = told
             .lock()

@@ -193,6 +193,10 @@ mod tests {
         UnixTime(NOW.0 - seconds)
     }
 
+    #[expect(
+        clippy::unnecessary_wraps,
+        reason = "the cases of the table hold `Option`s, and other cases expect `None`"
+    )]
     fn failed(seconds_ago: u64) -> Option<Attempt> {
         Some(Attempt {
             at: ago(seconds_ago),

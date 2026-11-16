@@ -204,8 +204,8 @@ impl Desk {
         let buffer = shm_buffer(
             fixture.client(shell),
             PhysicalSize {
-                w: MENU_BOX.2 as u32,
-                h: MENU_BOX.3 as u32,
+                w: u32::try_from(MENU_BOX.2).expect("the menu box is not negative"),
+                h: u32::try_from(MENU_BOX.3).expect("the menu box is not negative"),
             },
             Pattern::Solid(0xff40_4040),
         );
@@ -329,7 +329,7 @@ fn a_click_inside_a_toplevel_popup_reaches_the_popup() {
     let base = WmBase::bind(fixture.client(id), 7);
     let parent = map_toplevel(&mut fixture, id, &base, (400, 300));
     let mouse = pointer(&mut fixture);
-    let presses: BoundPointer = bind_pointer(fixture.client(id));
+    let presses = bind_pointer(fixture.client(id));
     fixture.pump();
     settle(&mut fixture);
     let window = windows(&fixture)[0];

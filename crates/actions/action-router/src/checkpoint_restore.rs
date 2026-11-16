@@ -42,14 +42,14 @@ fn app() -> Option<AppName> {
 }
 
 /// A refusal in the sheet's words (`4.6`): typed causes in, plain sentences out, no tool named.
-fn say(fault: CheckpointFault) -> AppRefusal {
+fn say(fault: &CheckpointFault) -> AppRefusal {
     let words = match fault {
         CheckpointFault::NoSuchPoint => "There is no such restore point.",
         CheckpointFault::Gone => "That restore point was cleared.",
         CheckpointFault::TurnRunning => "Wait for this turn to finish",
         CheckpointFault::PlanStale => "Files changed while you were deciding. Look again.",
         CheckpointFault::NoHistory => "This folder can't keep restore points.",
-        _ => "The restore could not be completed.",
+        CheckpointFault::Failed => "The restore could not be completed.",
     };
     AppRefusal::Failed(FailText(words.to_owned()))
 }
@@ -102,10 +102,13 @@ fn ask_of(inv: &Invocation) -> Result<Ask, AppRefusal> {
         return Err(missing("plan"));
     };
     Ok(Ask {
-        session: SessionId::parse(session).map_err(|_| say(CheckpointFault::NoSuchPoint))?,
+        session: SessionId::parse(session)
+            .ok()
+            .ok_or_else(|| say(&CheckpointFault::NoSuchPoint))?,
         point: u32::try_from(*point)
             .map(CheckpointId)
-            .map_err(|_| say(CheckpointFault::NoSuchPoint))?,
+            .ok()
+            .ok_or_else(|| say(&CheckpointFault::NoSuchPoint))?,
         digest: PlanDigest(plan.clone()),
     })
 }
@@ -167,12 +170,12 @@ impl<S: Seams> Router<S> {
         let record = st
             .sessions
             .get(session)
-            .ok_or_else(|| say(CheckpointFault::NoSuchPoint))?;
+            .ok_or_else(|| say(&CheckpointFault::NoSuchPoint))?;
         let root = record
             .cwd
             .as_ref()
             .and_then(|cwd| WorkRoot::of(cwd).ok())
-            .ok_or_else(|| say(CheckpointFault::NoHistory))?;
+            .ok_or_else(|| say(&CheckpointFault::NoHistory))?;
         Ok((root, record.checkpoints.clone()))
     }
 
@@ -182,19 +185,24 @@ impl<S: Seams> Router<S> {
         let stepping = self.locked().stepping.contains(session);
         match (self.turn_state(session), stepping) {
             (TurnState::Idle, false) => Ok(()),
-            _ => Err(say(CheckpointFault::TurnRunning)),
+            _ => Err(say(&CheckpointFault::TurnRunning)),
         }
     }
 
     /// `DryRun` of `checkpoints.restore`: the sheet's lines for the plan as the folder is now.
     /// A plan that is not the one the call carries is refused, so the sheet never shows one
     /// thing while another is confirmed.
+    ///
+    /// # Errors
+    ///
+    /// [`AppRefusal`] when the call is malformed, the session or point is unknown, or the plan
+    /// cannot be made or is not the one the call carries.
     pub async fn checkpoints_dry_run(&self, inv: Invocation) -> Result<Preview, AppRefusal> {
         let ask = ask_of(&inv)?;
         let (root, notes) = self.restore_target(&ask.session)?;
         self.restore_clear(&ask.session)?;
         if !crate::checkpoint_read::was_saved(&notes, ask.point) {
-            return Err(say(CheckpointFault::NoSuchPoint));
+            return Err(say(&CheckpointFault::NoSuchPoint));
         }
         let plan = self
             .seams
@@ -206,11 +214,11 @@ impl<S: Seams> Router<S> {
             })
             .await
             .map_err(|fault| match fault {
-                StoreFault::NoSuchPoint => say(CheckpointFault::Gone),
-                other => say(crate::checkpoint_read::fault_of(other)),
+                StoreFault::NoSuchPoint => say(&CheckpointFault::Gone),
+                other => say(&crate::checkpoint_read::fault_of(&other)),
             })?;
         if plan.digest != ask.digest {
-            return Err(say(CheckpointFault::PlanStale));
+            return Err(say(&CheckpointFault::PlanStale));
         }
         let provider = app().ok_or(AppRefusal::Unsupported)?;
         Ok(Preview::Facts(crate::checkpoint_sheet::restore_sheet(
@@ -220,27 +228,32 @@ impl<S: Seams> Router<S> {
 
     /// `Perform` of `checkpoints.restore`: saves the files as they are, writes the point's files
     /// back, and records the restore in the session's log.
+    ///
+    /// # Errors
+    ///
+    /// [`AppRefusal`] when the call is malformed, the session or point is unknown, a turn is
+    /// running, or the files cannot be written back.
     pub async fn checkpoints_perform(&self, inv: Invocation) -> Result<Outcome, AppRefusal> {
         let ask = ask_of(&inv)?;
         let (root, notes) = self.restore_target(&ask.session)?;
         let Some(_step) = self.begin_step(&ask.session) else {
-            return Err(say(CheckpointFault::TurnRunning));
+            return Err(say(&CheckpointFault::TurnRunning));
         };
         // The mark is taken first, so no turn's save starts while this checks the turn.
         if self.turn_state(&ask.session) == TurnState::Running {
-            return Err(say(CheckpointFault::TurnRunning));
+            return Err(say(&CheckpointFault::TurnRunning));
         }
         if !crate::checkpoint_read::was_saved(&notes, ask.point) {
-            return Err(say(CheckpointFault::NoSuchPoint));
+            return Err(say(&CheckpointFault::NoSuchPoint));
         }
         let cfg = self.agent_config();
         let store = self.seams.checkpoints();
         let held = store
             .held(&root, &ask.session)
             .await
-            .map_err(|fault| say(crate::checkpoint_read::fault_of(fault)))?;
+            .map_err(|fault| say(&crate::checkpoint_read::fault_of(&fault)))?;
         if !held.iter().any(|saved| saved.id == ask.point) {
-            return Err(say(CheckpointFault::Gone));
+            return Err(say(&CheckpointFault::Gone));
         }
         let safety = self.next_point(&ask.session, &held);
         store
@@ -252,7 +265,7 @@ impl<S: Seams> Router<S> {
                 max: SAFETY_FILES,
             })
             .await
-            .map_err(|fault| say(crate::checkpoint_read::fault_of(fault)))?;
+            .map_err(|fault| say(&crate::checkpoint_read::fault_of(&fault)))?;
         let applied = store
             .apply(ApplyAsk {
                 root: root.clone(),
@@ -276,7 +289,7 @@ impl<S: Seams> Router<S> {
                 ids: vec![safety],
             };
             let _ = store.drop_points(forget).await;
-            return Err(say(crate::checkpoint_read::fault_of(fault)));
+            return Err(say(&crate::checkpoint_read::fault_of(&fault)));
         }
         let turn = self
             .locked()

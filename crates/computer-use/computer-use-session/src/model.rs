@@ -46,8 +46,11 @@ pub use model_provider::RepairBudget;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct StepLines(pub u8);
 
-/// What a step's request says beyond the prompt: how the model samples and how long it may
-/// answer. `CuaProfile` is frozen and carries none of it, so the daemon sets it from the model's
+/// What a step's request says beyond the prompt.
+///
+/// How the model samples and how long it may answer.
+///
+/// `CuaProfile` is frozen and carries none of it, so the daemon sets it from the model's
 /// catalog entry with [`CuaSession::with_settings`](crate::CuaSession::with_settings); a session
 /// that is never given settings uses [`TurnSettings::default`].
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -159,17 +159,21 @@ pub fn root_held(path: &Path) -> bool {
     held_by(path, 0)
 }
 
-/// Whether `path` is a file only `uid` or root can have written: it, and every directory on its
-/// real path, belongs to `uid` or to root, and none is writable by its group or by anyone else.
+/// Whether `path` is a file only `uid` or root can have written.
+///
+/// It, and every directory on its real path, belongs to `uid` or to root, and none is writable by
+/// its group or by anyone else.
+///
 /// With `uid` 0 this is [`root_held`].
 #[must_use]
 pub fn held_by(path: &Path, uid: u32) -> bool {
     held_under(path, uid, Path::new("/"))
 }
 
-/// [`held_by`], looking at the directories from `below` down only: a program kept under a folder
-/// the caller vouches for (a test's own folder, whose parents are not the test's to say anything
-/// about). [`held_by`] is this from `/`.
+/// [`held_by`], looking at the directories from `below` down only.
+///
+/// A program kept under a folder the caller vouches for (a test's own folder, whose parents are not
+/// the test's to say anything about). [`held_by`] is this from `/`.
 #[must_use]
 pub fn held_under(path: &Path, uid: u32, below: &Path) -> bool {
     let Ok(real) = std::fs::canonicalize(path) else {

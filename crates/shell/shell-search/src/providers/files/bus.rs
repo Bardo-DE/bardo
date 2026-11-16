@@ -3,7 +3,6 @@
 //! into async code; with no runtime at all (an example, a plain test) a current-thread runtime is
 //! made for the one call.
 
-
 use tokio::runtime::{Builder, Handle};
 
 /// `future`'s output, or `None` when no runtime could run it.

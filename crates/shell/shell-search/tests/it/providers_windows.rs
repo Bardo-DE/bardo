@@ -59,7 +59,7 @@ fn workspace(key: u64, name: &str) -> Workspace {
         urgency: shell_model::units::Urgency::Calm,
         visibility: shell_model::units::Visibility::Shown,
         coordinates: Vec::new(),
-        capabilities: Default::default(),
+        capabilities: shell_model::windows::WorkspaceCaps::default(),
         pinned: false,
     }
 }
@@ -122,7 +122,6 @@ fn rows(provider: &WindowsProvider, text: &str) -> Vec<(String, String)> {
 
 #[test]
 fn a_query_table_matches_titles_and_app_names_against_a_fake_toplevel_list() {
-    let provider = provider();
     const CASES: &[(&str, &[(&str, &str)])] = &[
         ("inbox", &[("Inbox — Thunderbird", "Thunderbird — Mail")]),
         (
@@ -135,6 +134,8 @@ fn a_query_table_matches_titles_and_app_names_against_a_fake_toplevel_list() {
         ("terminal", &[("Terminal", "Terminal")]),
         ("no such window anywhere", &[]),
     ];
+
+    let provider = provider();
     for &(text, want) in CASES {
         let want: Vec<(String, String)> = want
             .iter()

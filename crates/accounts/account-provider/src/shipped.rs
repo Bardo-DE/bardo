@@ -9,6 +9,10 @@ pub const SHIPPED_FILES: &[(&str, &str)] = include!(concat!(env!("OUT_DIR"), "/s
 
 /// The shipped provider files, parsed. Every file parses (porter's `tests/shipped_files.rs`
 /// checks each one and that this list is the whole `providers/` directory).
+///
+/// # Panics
+///
+/// If a shipped provider file does not parse, which the crate's own tests rule out.
 #[must_use]
 pub fn shipped_specs() -> Vec<ProviderSpec> {
     SHIPPED_FILES

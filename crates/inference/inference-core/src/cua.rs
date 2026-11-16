@@ -131,7 +131,9 @@ impl CuaStepRequest {
     }
 }
 
-/// One message that reached a running computer-use task mid-run. A note is input, never
+/// One message that reached a running computer-use task mid-run.
+///
+/// A note is input, never
 /// authority (the rule of `provenance::Message`): computer-use-session fences an agent's note as untrusted
 /// text, and inferd only forwards it. `Debug` shows the length only.
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]

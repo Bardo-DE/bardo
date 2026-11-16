@@ -1,11 +1,18 @@
-//! Callers of `org.bardo.Compositor1` as the bus thread proved them: the app and the role of
-//! the caller-table row they matched. A test says who is calling instead of building a process
+//! Callers of `org.bardo.Compositor1` as the bus thread proved them.
+//!
+//! The app and the role of the caller-table row they matched.
+//!
+//! A test says who is calling instead of building a process
 //! table; the proof itself (the process, its image, its unit) is `compositor-ipc`'s tests.
 
 use compositor_ipc::dbus::Proven;
 use compositor_ipc::dbus::peer::{AppKey, RoleName, roles};
 
 /// The caller `app` holding `role`.
+///
+/// # Panics
+///
+/// If `app` is not an app key or `role` is not a role name.
 #[must_use]
 pub fn proven(app: &str, role: &str) -> Proven {
     Proven::new(
@@ -15,6 +22,10 @@ pub fn proven(app: &str, role: &str) -> Proven {
 }
 
 /// The shell (sill).
+///
+/// # Panics
+///
+/// Never in practice: the app key and role it builds are fixed valid literals.
 #[must_use]
 pub fn shell() -> Proven {
     Proven::new(
@@ -24,6 +35,10 @@ pub fn shell() -> Proven {
 }
 
 /// The agent tier (cuad).
+///
+/// # Panics
+///
+/// Never in practice: the app key and role it builds are fixed valid literals.
 #[must_use]
 pub fn agent_tier() -> Proven {
     Proven::new(
@@ -33,6 +48,10 @@ pub fn agent_tier() -> Proven {
 }
 
 /// The portal backend (transom).
+///
+/// # Panics
+///
+/// Never in practice: the app key and role it builds are fixed valid literals.
 #[must_use]
 pub fn portal() -> Proven {
     Proven::new(
@@ -42,6 +61,10 @@ pub fn portal() -> Proven {
 }
 
 /// Some other desktop program (a role that is no connection's).
+///
+/// # Panics
+///
+/// Never in practice: the app key and role it builds are fixed valid literals.
 #[must_use]
 pub fn companion() -> Proven {
     Proven::new(

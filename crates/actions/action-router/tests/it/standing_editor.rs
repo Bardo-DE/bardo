@@ -38,7 +38,7 @@ async fn editor_session(router: &Router<FakeSeams>, app: &str) -> SessionId {
     let opened = open_as(router, &who, "work", AgentRef::Companion).await;
     say_as(router, &who, &opened.session, "tidy my inbox").await;
     give_policy(router, &opened.session, wide_policy(&opened.task, "work"));
-    grant_mail_to(router, client(app), "work");
+    grant_mail_to(router, &client(app), "work");
     // The contact is shown to the planner of the newest session, which is this one.
     ask(
         router,

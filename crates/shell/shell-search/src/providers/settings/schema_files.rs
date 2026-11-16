@@ -5,8 +5,12 @@
 use std::fs;
 use std::path::PathBuf;
 
-/// Every `*.settings.toml` file directly under each of `dirs`, in directory order and then file
-/// name order within a directory, the order `ui_settings::schema::discover` reads them in. A
+/// Every `*.settings.toml` file directly under each of `dirs`.
+///
+/// They come in directory order and then file name order within a directory, the order
+/// `ui_settings::schema::discover` reads them in.
+///
+/// A
 /// directory that does not exist is skipped silently.
 pub fn schema_paths(dirs: &[PathBuf]) -> Vec<PathBuf> {
     let mut found = Vec::new();
@@ -31,9 +35,10 @@ pub fn schema_paths(dirs: &[PathBuf]) -> Vec<PathBuf> {
     found
 }
 
-/// A cheap stand-in for a schema directory's contents: file paths with their size and
-/// modification time, so a cache can tell "nothing changed" from "reparse" without reading and
-/// parsing every file on every query.
+/// A cheap stand-in for a schema directory's contents.
+///
+/// File paths with their size and modification time, so a cache can tell "nothing changed" from
+/// "reparse" without reading and parsing every file on every query.
 #[must_use]
 pub fn fingerprint(paths: &[PathBuf]) -> Vec<(PathBuf, u64, u64)> {
     paths
@@ -44,7 +49,7 @@ pub fn fingerprint(paths: &[PathBuf]) -> Vec<(PathBuf, u64, u64)> {
             let modified = meta
                 .and_then(|m| m.modified().ok())
                 .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
-                .map_or(0, |d| d.as_nanos() as u64);
+                .map_or(0, |d| u64::try_from(d.as_nanos()).unwrap_or(u64::MAX));
             (path.clone(), len, modified)
         })
         .collect()

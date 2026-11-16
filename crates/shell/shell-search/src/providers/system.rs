@@ -71,7 +71,7 @@ fn action_id(action: SessionAction) -> &'static str {
 
 /// The rows `session` allows: every action logind offers (asking for a password first counts),
 /// then Reload, which needs nothing of logind.
-fn rows(session: &Session) -> Vec<Row> {
+fn rows(session: Session) -> Vec<Row> {
     SessionAction::ALL
         .into_iter()
         .filter(|&action| matches!(session.offer(action), Offer::Available | Offer::NeedsAuth))
@@ -117,7 +117,7 @@ impl Provider for SystemProvider {
         let weights = RankWeights::DEFAULT;
         let mut matcher = matching::matcher();
         let session = *self.session.borrow();
-        let mut items: Vec<Item> = rows(&session)
+        let mut items: Vec<Item> = rows(session)
             .into_iter()
             .filter_map(|row| {
                 let score = std::iter::once(row.title)
@@ -184,7 +184,6 @@ mod tests {
 
     #[test]
     fn a_query_table_matches_titles_and_aliases() {
-        let provider = provider(Session::everything());
         const CASES: &[(&str, &[&str])] = &[
             (
                 "",
@@ -210,6 +209,8 @@ mod tests {
             ("refresh", &["Reload"]),
             ("zzz", &[]),
         ];
+
+        let provider = provider(Session::everything());
         for &(text, want) in CASES {
             let mut want = want.iter().map(|s| (*s).to_owned()).collect::<Vec<_>>();
             want.sort();
@@ -253,7 +254,8 @@ mod tests {
         let provider = provider(Session::everything());
         let cancel = Cancel::new();
         let query = Query::begin("lock", &cancel);
-        cancel.begin();
+        // the new generation is not needed, only that the old one is stale.
+        let _ = cancel.begin();
         let mut sink = VecSink::default();
         provider.query(&query, &mut sink);
         assert!(sink.0.is_empty());

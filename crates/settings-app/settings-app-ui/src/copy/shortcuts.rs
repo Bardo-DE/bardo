@@ -79,7 +79,7 @@ fn standard_name(action: StandardAction) -> String {
 pub(crate) fn action_name(action: &Action) -> String {
     match action {
         Action::Standard(standard) => standard_name(*standard),
-        other => other.id(),
+        other @ Action::App(_) => other.id(),
     }
 }
 

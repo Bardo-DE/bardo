@@ -203,7 +203,7 @@ async fn a_hidden_action_is_refused_without_asking() {
             kind: provenance::EntityKind::parse("memory.fact").expect("kind"),
             key: provenance::EntityKey::parse("f1").expect("key"),
         }]),
-        args: Default::default(),
+        args: std::collections::BTreeMap::default(),
         origin: Origin::Cli,
     };
     assert_eq!(
@@ -294,7 +294,7 @@ async fn a_standing_grant_never_covers_a_destructive_act_or_one_that_asks_every_
             kind: provenance::EntityKind::parse("files.file").expect("kind"),
             key: provenance::EntityKey::parse("f1").expect("key"),
         }]),
-        args: Default::default(),
+        args: std::collections::BTreeMap::default(),
         origin: Origin::Cli,
     };
     let mut router = router;
@@ -349,7 +349,7 @@ fn forget(key: &str) -> CallRequest {
             kind: provenance::EntityKind::parse("memory.fact").expect("kind"),
             key: provenance::EntityKey::parse(key).expect("key"),
         }]),
-        args: Default::default(),
+        args: std::collections::BTreeMap::default(),
         origin: Origin::Cli,
     }
 }

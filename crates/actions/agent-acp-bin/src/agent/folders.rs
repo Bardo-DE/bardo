@@ -48,11 +48,15 @@ pub fn folder(program: &ProgramName, places: &Places) -> Result<String, FolderFa
 /// never the home folder or a place of secrets.
 pub fn folder_under(group: &str, name: &str, places: &Places) -> Result<String, FolderFault> {
     let dir: PathBuf = places.data_dir().join(group).join(name);
-    std::fs::create_dir_all(&dir).map_err(|_| FolderFault::Make)?;
-    let real = std::fs::canonicalize(&dir).map_err(|_| FolderFault::Unfit)?;
+    std::fs::create_dir_all(&dir)
+        .ok()
+        .ok_or(FolderFault::Make)?;
+    let real = std::fs::canonicalize(&dir).ok().ok_or(FolderFault::Unfit)?;
     let text = real.to_str().ok_or(FolderFault::Unfit)?.to_owned();
-    let path = AbsPath::parse(&text).map_err(|_| FolderFault::Unfit)?;
-    Workdir::resolve(&path, &path, places.home()).map_err(|_| FolderFault::Unfit)?;
+    let path = AbsPath::parse(&text).ok().ok_or(FolderFault::Unfit)?;
+    Workdir::resolve(&path, &path, places.home())
+        .ok()
+        .ok_or(FolderFault::Unfit)?;
     Ok(text)
 }
 

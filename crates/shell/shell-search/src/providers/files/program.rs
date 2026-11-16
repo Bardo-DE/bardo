@@ -159,7 +159,8 @@ fn read_on_a_thread(child: &mut Child) -> Result<Receiver<Vec<u8>>, IndexFault> 
                 }
             }
         })
-        .map_err(|_| IndexFault::Failed)?;
+        .ok()
+        .ok_or(IndexFault::Failed)?;
     Ok(rx)
 }
 

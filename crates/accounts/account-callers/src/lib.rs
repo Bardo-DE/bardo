@@ -103,7 +103,9 @@ pub const SYSTEMD_MANAGER: &str = "org.freedesktop.systemd1.Manager";
 use account_core::{AppId, AppName, Isolation};
 use serde::{Deserialize, Serialize};
 
-/// What a caller may ask for, beyond what its consent allows. It grows as the desktop gains
+/// What a caller may ask for, beyond what its consent allows.
+///
+/// It grows as the desktop gains
 /// processes with a standing of their own, so a match outside porter needs a `_` arm (an
 /// unknown role is best treated as a plain app).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

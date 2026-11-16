@@ -1,13 +1,13 @@
-//! What a Graph token shows: who the account is, and which of its services answer. One small
+//! What a Graph token shows: who the account is, and which of its services answer.
+//!
+//! One small
 //! read per service; a 403 is the tenant refusing the permission (`Absent{TenantConsent}` at
 //! `Probed`, R13), a 404 is a service the account has none of.
 //!
 //! Requests carry no query string: each path answers with its default page.
 
 use crate::Failure;
-use account_capability::{
-    AbsentReason, Capability, CapabilityKind, Claim, Offer, Provenance, StorageCap, Subject,
-};
+use account_capability::{AbsentReason, Capability, Claim, Offer, Provenance, StorageCap, Subject};
 use http::Response;
 use serde::Deserialize;
 
@@ -17,8 +17,11 @@ pub const ME: &str = "/v1.0/me";
 /// The consumer domains of Microsoft accounts: no organisation, so no tenant to consent.
 const PERSONAL_DOMAINS: [&str; 4] = ["outlook.com", "hotmail.com", "live.com", "msn.com"];
 
-/// Whether `address` names a personal (consumer) Microsoft account rather than a work or school
-/// account in an organisation's tenant. The rule is mailo's (`is_personal_microsoft` in its
+/// Whether `address` names a personal Microsoft account.
+///
+/// A personal (consumer) account, rather than a work or school account in an organisation's tenant.
+///
+/// The rule is mailo's (`is_personal_microsoft` in its
 /// `presets.rs`): the four consumer domains are personal, anything else is a tenant's.
 #[must_use]
 pub fn is_personal(address: &str) -> bool {
@@ -45,9 +48,16 @@ struct Quota {
 
 /// The account's address from the `answer` to the read of [`ME`]: its mail address, else its
 /// user principal name.
+///
+/// # Errors
+///
+/// [`Failure::Status`] for a status that is not a success; [`Failure::Unreadable`] when the body is
+/// not the expected JSON or names no address.
 pub fn address(answer: &Response<Vec<u8>>) -> Result<String, Failure> {
     let me: Me = match answer.status().as_u16() {
-        200..=299 => serde_json::from_slice(answer.body()).map_err(|_| Failure::Unreadable)?,
+        200..=299 => serde_json::from_slice(answer.body())
+            .ok()
+            .ok_or(Failure::Unreadable)?,
         status => return Err(Failure::Status(status)),
     };
     [me.mail, me.user_principal_name]
@@ -74,12 +84,17 @@ pub fn settled(declared: &Capability, has_read: bool) -> Option<Claim> {
 
 /// What the `answer` to the read of the `declared` capability's service says about the account.
 /// Any status but a success, a 403 and a 404 is the caller's to report.
+///
+/// # Errors
+///
+/// [`Failure`] for a status that is neither a success, a 403 nor a 404, and for an answer that
+/// cannot be read.
 pub fn verdict(
     declared: &Capability,
     personal: bool,
     answer: &Response<Vec<u8>>,
 ) -> Result<Claim, Failure> {
-    let kind: CapabilityKind = declared.kind();
+    let kind = declared.kind();
     let absent = |reason| Offer::Absent { kind, reason };
     Ok(match answer.status().as_u16() {
         200..=299 => claim(

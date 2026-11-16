@@ -128,18 +128,17 @@ impl HelperHost {
             Ok(away) => away,
             Err(why) => return refused(why),
         };
-        match self
-            .live
-            .resume_run(&program, away.agent.session.as_str(), folder.as_deref())
+        if let Some(run) =
+            self.live
+                .resume_run(&program, away.agent.session.as_str(), folder.as_deref())
         {
-            Some(run) => ToTerminalOutcome::Ready(Box::new(TerminalHand {
+            ToTerminalOutcome::Ready(Box::new(TerminalHand {
                 run,
                 session: away.session,
-            })),
-            None => {
-                let _ = Box::pin(self.agents.bring_back(card)).await;
-                refused(HandFault::Failed)
-            }
+            }))
+        } else {
+            let _ = Box::pin(self.agents.bring_back(card)).await;
+            refused(HandFault::Failed)
         }
     }
 
@@ -281,10 +280,10 @@ impl HelperHost {
 
     /// The reply to `ask` when the host could not start: the setting is off, the list is missing
     /// or there is no sandbox (each told apart). A call that only ends something has nothing to end.
-    pub fn unavailable(ask: &AppsAsk, fault: AgentFault) -> AppsReply {
+    pub fn unavailable(ask: &AppsAsk, fault: &AgentFault) -> AppsReply {
         // The person is told one sentence; the cause is kept here, where it would be dropped.
         eprintln!("bardo-agent: the helpers' agents cannot be hosted: {fault}");
-        Self::failed(ask, Self::told(&fault))
+        Self::failed(ask, Self::told(fault))
     }
 
     /// What the person is told of a host that could not start.

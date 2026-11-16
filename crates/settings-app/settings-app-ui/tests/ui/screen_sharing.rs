@@ -80,7 +80,7 @@ struct World {
 }
 
 /// The Privacy page over a compositor listing one program, and a portal on the bus holding `apps`.
-fn world(name: &str, apps: Vec<Remembered>) -> World {
+fn world(name: &str, apps: &[Remembered]) -> World {
     let rt = tokio::runtime::Builder::new_multi_thread()
         .worker_threads(2)
         .enable_all()
@@ -93,7 +93,7 @@ fn world(name: &str, apps: Vec<Remembered>) -> World {
         &Daemon::compositor(),
         Compositor::holding(vec![Row::person("screen", "aaa", "/usr/bin/grim", "on")]),
     );
-    let portal = Some(rt.block_on(serve(&bus, &apps)));
+    let portal = Some(rt.block_on(serve(&bus, apps)));
     let vouch = Vouch::of(AnyOwner);
     let sandbox = Sandbox::new(name)
         .on_bus_vouched(&bus.address, vouch)
@@ -140,7 +140,7 @@ fn steady(w: &mut World) {
 
 #[test]
 fn the_apps_the_portal_remembers_are_named_by_the_id_it_proved_and_say_when_and_for_how_long() {
-    let mut w = world("screen-sharing-list", remembered());
+    let mut w = world("screen-sharing-list", &remembered());
     listed(&mut w);
     let html = w.harness.html();
     for text in [
@@ -172,7 +172,7 @@ fn the_apps_the_portal_remembers_are_named_by_the_id_it_proved_and_say_when_and_
 
 #[test]
 fn remove_takes_the_app_back_and_its_row_goes() {
-    let mut w = world("screen-sharing-remove", remembered());
+    let mut w = world("screen-sharing-remove", &remembered());
     steady(&mut w);
     let portal = w.portal.as_ref().expect("a portal");
     assert!(portal.revoked().is_empty());
@@ -192,7 +192,7 @@ fn remove_takes_the_app_back_and_its_row_goes() {
 
 #[test]
 fn a_refusal_is_told_in_plain_words_and_the_row_stays() {
-    let mut w = world("screen-sharing-refused", remembered());
+    let mut w = world("screen-sharing-refused", &remembered());
     steady(&mut w);
     w.portal.as_ref().expect("a portal").refuse_next();
     click(&mut w.harness, REMOVE_MEET);

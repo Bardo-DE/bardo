@@ -91,7 +91,7 @@ impl<S: Seams> Router<S> {
                 SessionEntry::Seat(HelperSeat { helper: h, place: SeatPlace::Conversation, .. })
                     if h == helper
             ),
-            _ => false,
+            Read::Unreadable(_) => false,
         })
     }
 }

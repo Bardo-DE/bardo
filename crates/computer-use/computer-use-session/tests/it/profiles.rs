@@ -473,14 +473,18 @@ fn replaying(history: u8) -> CuaSession {
 fn after(mut s: CuaSession, replies: &[String]) -> model_provider::TurnRequest {
     let m = map(grid());
     for (n, reply) in replies.iter().enumerate() {
-        let sent = s.request(&obs(n as u32), &m, frame(&format!("f{n}")));
+        let sent = s.request(
+            &obs(u32::try_from(n).expect("a test has few steps")),
+            &m,
+            frame(&format!("f{n}")),
+        );
         let outcome = s.absorb_for(&sent, said(reply), &m);
         assert!(
             matches!(outcome, StepOutcome::Actions { .. }),
             "{outcome:?}"
         );
     }
-    let next = replies.len() as u32;
+    let next = u32::try_from(replies.len()).expect("a test has few replies");
     s.request(&obs(next), &m, frame(&format!("f{next}")))
 }
 

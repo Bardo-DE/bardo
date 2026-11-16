@@ -16,6 +16,10 @@ use std::sync::{Arc, Mutex};
 struct Recording(Arc<Mutex<Vec<MemoryRequest>>>);
 
 impl Transport for Recording {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn call(&self, request: MemoryRequest) -> Result<MemoryReply, TransportError> {
         if let Ok(mut seen) = self.0.lock() {
             seen.push(request);

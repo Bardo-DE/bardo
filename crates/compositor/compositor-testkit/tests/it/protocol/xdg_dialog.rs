@@ -23,7 +23,8 @@ fn a_modal_dialog_is_stored_as_modal() {
     dialog.set_modal();
     sheet.commit_bare();
     fixture.pump();
-    sheet.ack_latest();
+    // the serial acked is not needed.
+    let _ = sheet.ack_latest();
     let buffer = shm_buffer(
         fixture.client(id),
         PhysicalSize { w: 300, h: 200 },
@@ -40,7 +41,8 @@ fn a_modal_dialog_is_stored_as_modal() {
     plain_dialog.unset_modal();
     plain.commit_bare();
     fixture.pump();
-    plain.ack_latest();
+    // the serial acked is not needed.
+    let _ = plain.ack_latest();
     plain.show(&buffer);
     fixture.pump();
 

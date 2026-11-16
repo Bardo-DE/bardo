@@ -45,26 +45,50 @@ impl<F: Files + 'static, S: Sandbox + 'static> IntentProvider for PerformerProvi
         &self.manifest
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn perform(&self, inv: Invocation) -> Result<Outcome, AppRefusal> {
         self.performer.perform(&inv)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn dry_run(&self, _inv: Invocation) -> Result<Preview, AppRefusal> {
         Err(AppRefusal::Unsupported)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn undo(&self, token: UndoToken, _actor: Actor) -> Result<(), UndoFault> {
         self.performer.undo(&token)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn search(&self, _text: &str) -> Vec<Hit> {
         Vec::new()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn preview(&self, _id: &EntityId) -> Preview {
         Preview::None
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn suggest(&self, _ask: SuggestAsk) -> Vec<EntityRef> {
         Vec::new()
     }

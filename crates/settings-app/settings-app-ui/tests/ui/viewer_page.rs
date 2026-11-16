@@ -37,11 +37,11 @@ fn key_in(
         page: Page::Viewer,
         section: Section(section.to_owned()),
         exposure,
-        labels: Default::default(),
-        agent: Default::default(),
-        unavailable: Default::default(),
-        groups: Default::default(),
-        places: Default::default(),
+        labels: ui_settings::schema::WordLabels::default(),
+        agent: ui_settings::schema::AgentSetting::default(),
+        unavailable: std::collections::BTreeMap::default(),
+        groups: std::collections::BTreeMap::default(),
+        places: std::collections::BTreeMap::default(),
         note: None,
     }
 }
@@ -61,7 +61,7 @@ fn anyview() -> Schema {
         pages: Vec::new(),
         app: AppId("anyview".to_owned()),
         file: FilePath(FILE.to_owned()),
-        foreign: Default::default(),
+        foreign: ui_settings::schema::ForeignTables::default(),
         version: 1,
         key: vec![
             key(

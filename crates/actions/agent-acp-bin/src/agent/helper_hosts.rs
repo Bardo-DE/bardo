@@ -64,6 +64,10 @@ impl<A: Accounts + 'static> Hosts for HelperHosts<A> {
     type Seams = Hosting<A>;
     type Desk = EditorDesk;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn host(&mut self, start: Start) -> AgentHost<Hosting<A>, EditorDesk> {
         let mut backend = self.live.backend(
             &self.program,
@@ -111,7 +115,7 @@ impl<A: Accounts + 'static> Hosts for HelperHosts<A> {
                 .entry(&self.program)
                 .and_then(|entry| entry.label.clone()),
             cwd: self.cwd.clone(),
-            rewind: Default::default(),
+            rewind: action_core::Rewind::default(),
         }
     }
 }

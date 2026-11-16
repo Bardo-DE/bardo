@@ -74,6 +74,10 @@ impl<S: Seams> Router<S> {
 
     /// `.Session.Recall`: memory's answer for this session's Space, every untrusted text a
     /// handle.
+    #[expect(
+        clippy::too_many_lines,
+        reason = "one sequence of steps over shared locals, in the order the rules apply; the parts have no use apart"
+    )]
     pub(crate) async fn session_recall(&self, id: &SessionId, ask: RecallAsk) -> IntentsReply {
         let Some(space) = self.locked().sessions.get(id).map(|r| r.space.clone()) else {
             return refuse(WireRefusal::NoSuchSession);

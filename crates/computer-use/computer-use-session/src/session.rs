@@ -263,7 +263,7 @@ impl CuaSession {
         };
         let parsed =
             dialect::spec(dialect).parse(map.space, context, &reply, ParseLimits::default());
-        let (fault, spent) = match parsed {
+        let (fault, last_error) = match parsed {
             Ok(Parsed {
                 thought,
                 actions,
@@ -281,7 +281,7 @@ impl CuaSession {
                     (Fault::Refused(reasons), None)
                 } else {
                     let thought = thought.or_else(|| answer::thought(&reply, self.profile.actions));
-                    self.remember(sent, &reply, lines);
+                    self.remember(sent, reply, lines);
                     return StepOutcome::Actions {
                         thought,
                         actions: mapped,
@@ -292,14 +292,14 @@ impl CuaSession {
             Err(error) if self.repairs_left.0 > 0 => (Fault::Unparsed(error), None),
             Err(error) => (Fault::Unparsed(error), Some(error)),
         };
-        match spent {
+        match last_error {
             None => {
                 self.repairs_left = RepairBudget(self.repairs_left.0.saturating_sub(1));
                 let repair = self.repair(sent, &reply, &fault);
                 StepOutcome::Repair(repair)
             }
             Some(error) => {
-                self.remember(sent, &reply, Vec::new());
+                self.remember(sent, reply, Vec::new());
                 StepOutcome::Unparseable(error)
             }
         }
@@ -327,7 +327,7 @@ impl CuaSession {
         request
     }
 
-    fn remember(&mut self, sent: &TurnRequest, reply: &TurnTranscript, actions: Vec<String>) {
+    fn remember(&mut self, sent: &TurnRequest, reply: TurnTranscript, actions: Vec<String>) {
         let wire = dialect::spec(self.profile.dialect).wire().is_some();
         let turn = HistoryTurn {
             number: self.taken,
@@ -335,11 +335,7 @@ impl CuaSession {
             reply: history::kept_reply(self.profile.dialect, self.profile.actions, &reply.text),
             frame: last_image(sent),
             user: if wire { step_message(sent) } else { Vec::new() },
-            calls: if wire {
-                reply.calls.clone()
-            } else {
-                Vec::new()
-            },
+            calls: if wire { reply.calls } else { Vec::new() },
         };
         history::push(
             &mut self.history,

@@ -82,6 +82,7 @@ impl ScriptedSheets {
 
     /// The same sheets, with one conversation per list: each opens, and its link reads the
     /// inputs of its list in order, then reports the sheet closed.
+    #[must_use]
     pub fn conversing(self, conversations: impl IntoIterator<Item = Vec<SheetInput>>) -> Self {
         Self {
             conversations: Mutex::new(conversations.into_iter().collect()),
@@ -103,11 +104,19 @@ pub struct ScriptedLink {
 }
 
 impl SheetLink for ScriptedLink {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn update(&mut self, view: SheetView) -> Result<(), SheetFault> {
         lock(&self.shown).push(view);
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn input(&mut self) -> Result<SheetInput, SheetFault> {
         self.inputs.pop_front().ok_or(SheetFault::Closed)
     }
@@ -123,6 +132,10 @@ fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
 impl Sheets for ScriptedSheets {
     type Link = ScriptedLink;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn conversation(&self, open: SheetOpen) -> Result<ScriptedLink, SheetFault> {
         let inputs = lock(&self.conversations)
             .pop_front()

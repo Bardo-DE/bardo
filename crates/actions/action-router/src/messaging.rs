@@ -109,7 +109,7 @@ impl<S: Seams> Router<S> {
             .max_by_key(action_context::session::age)
         else {
             return match to.agent {
-                AgentRef::User => self.deliver_to_address(&mut st, to, message),
+                AgentRef::User => self.deliver_to_address(&mut st, to, &message),
                 _ => send_refusal(SendRefusal::NoRecipient),
             };
         };
@@ -138,7 +138,7 @@ impl<S: Seams> Router<S> {
         &self,
         st: &mut RouterState,
         to: Address,
-        message: Message,
+        message: &Message,
     ) -> IntentsReply {
         st.inboxes.entry(to).or_default().push(message.clone());
         self.seams

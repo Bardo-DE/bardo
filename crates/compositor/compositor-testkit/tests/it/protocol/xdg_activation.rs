@@ -15,6 +15,10 @@ use std::time::Duration;
 
 /// A token from a recent press of the focused app activates; a stale or foreign one only marks attention.
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario (or table of cases) read top to bottom; splitting it would scatter what a reader checks together"
+)]
 fn activation_follows_the_a7_rule() {
     let (mut fixture, launcher) = boot();
     let app = fixture.connect(ConnectionRole::Public);
@@ -51,7 +55,8 @@ fn activation_follows_the_a7_rule() {
     app_activation.activate(&token, &first);
     first.commit_bare();
     fixture.pump();
-    first.ack_latest();
+    // the serial acked is not needed.
+    let _ = first.ack_latest();
     let buffer = shm_buffer(
         fixture.client(app),
         PhysicalSize { w: 300, h: 200 },
@@ -77,7 +82,8 @@ fn activation_follows_the_a7_rule() {
     app_activation.activate(&bare_token, &second);
     second.commit_bare();
     fixture.pump();
-    second.ack_latest();
+    // the serial acked is not needed.
+    let _ = second.ack_latest();
     second.show(&buffer);
     fixture.pump();
     assert_eq!(
@@ -102,7 +108,8 @@ fn activation_follows_the_a7_rule() {
     app_activation.activate(&old_token, &third);
     third.commit_bare();
     fixture.pump();
-    third.ack_latest();
+    // the serial acked is not needed.
+    let _ = third.ack_latest();
     third.show(&buffer);
     fixture.pump();
     let focused = fixture.model().focus().key;
@@ -129,7 +136,8 @@ fn activation_follows_the_a7_rule() {
     app_activation.activate(&launch_token, &fourth);
     fourth.commit_bare();
     fixture.pump();
-    fourth.ack_latest();
+    // the serial acked is not needed.
+    let _ = fourth.ack_latest();
     fourth.show(&buffer);
     fixture.pump();
     assert_eq!(

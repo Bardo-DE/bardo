@@ -353,7 +353,7 @@ impl Fixture {
     ///
     /// # Panics
     ///
-    /// If `id` is not a client of this fixture, or its connection was lost.
+    /// If `id` is not a client of this fixture.
     pub fn client(&mut self, id: ClientId) -> &mut TestClient {
         self.clients
             .get_mut(&id)
@@ -365,7 +365,8 @@ impl Fixture {
     ///
     /// # Panics
     ///
-    /// If the event loop fails to dispatch.
+    /// If the event loop fails to dispatch, or the server and clients keep answering each other
+    /// without going quiet.
     pub fn pump(&mut self) -> bool {
         let mut moved = false;
         for _ in 0..ROUND_BOUND {
@@ -389,6 +390,10 @@ impl Fixture {
             .expect("the event loop dispatches");
         display::flush(&self.display);
         let now = self.now();
+        #[expect(
+            clippy::unnecessary_fold,
+            reason = "every client must be pumped; `any` would stop at the first that moved"
+        )]
         let clients_moved = self
             .clients
             .values_mut()

@@ -148,6 +148,10 @@ fn supervised_discovery_is_a_plain_kind() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario (or table of cases) read top to bottom; splitting it would scatter what a reader checks together"
+)]
 fn provider_files_are_checked() {
     let oauth_with_issuer = r#"kind = "oauth_pkce"
 issuer = "microsoft""#;
@@ -418,7 +422,7 @@ fn a_bad_or_half_written_mark_face_refuses_the_file_and_names_the_field() {
     }
 }
 
-fn with_group(word: &str, text: String) -> String {
+fn with_group(word: &str, text: &str) -> String {
     text.replace(
         "mark = \"example\"\n",
         &format!("mark = \"example\"\ngroup = \"{word}\"\n"),
@@ -434,13 +438,13 @@ fn a_group_word_in_the_file_gives_the_spec_and_the_row_that_group() {
         ("intelligence", ProviderGroup::Intelligence),
         ("agent", ProviderGroup::Agent),
     ] {
-        let spec = parse_provider(&with_group(word, plain())).expect("parses");
+        let spec = parse_provider(&with_group(word, &plain())).expect("parses");
         assert_eq!(spec.group, Some(group), "{word}");
         assert_eq!(spec.group(), group, "{word}");
         assert_eq!(spec.sheet_row().group, Some(group), "{word}");
     }
     assert!(matches!(
-        parse_provider(&with_group("cloud", plain())),
+        parse_provider(&with_group("cloud", &plain())),
         Err(ProviderFileError::Syntax(message)) if message.contains("group") || message.contains("cloud")
     ));
 }

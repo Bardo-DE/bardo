@@ -94,10 +94,10 @@ fn spec(path: String, label: &str, kind: KeyKind) -> KeySpec {
         page: Page::Apps,
         section: Section("Screen".to_owned()),
         exposure: Exposure::Basic,
-        labels: Default::default(),
-        unavailable: Default::default(),
-        groups: Default::default(),
-        places: Default::default(),
+        labels: ui_settings::schema::WordLabels::default(),
+        unavailable: std::collections::BTreeMap::default(),
+        groups: std::collections::BTreeMap::default(),
+        places: std::collections::BTreeMap::default(),
         note: None,
         agent: AgentSetting::HandsOff,
     }
@@ -171,10 +171,18 @@ impl Compositor {
 }
 
 impl LiveModule for Compositor {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn permit(&self, _caller: &Caller, _access: Access) -> Verdict {
         Verdict::Allow
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn describe(&self) -> LiveSchema {
         LiveSchema {
             version: 1,
@@ -182,6 +190,14 @@ impl LiveModule for Compositor {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
+    #[expect(
+        clippy::case_sensitive_file_extension_comparisons,
+        reason = "`.forget` and `.none` end a settings key, they are not file extensions"
+    )]
     async fn get(&self, key: &KeyPath) -> Result<toml::Value, LiveError> {
         let rows = self.rows.lock().expect("rows");
         match rows.iter().find(|row| row.base() == key.0) {
@@ -193,6 +209,10 @@ impl LiveModule for Compositor {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn set(&self, key: &KeyPath, value: toml::Value) -> Result<(), LiveError> {
         let mut rows = self.rows.lock().expect("rows");
         if let Some(base) = key.0.strip_suffix(".forget") {

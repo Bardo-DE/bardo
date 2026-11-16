@@ -72,7 +72,7 @@ async fn entries(log: &MemoryLog, session: &SessionId) -> Vec<SessionEntry> {
         .into_iter()
         .map(|row| match row.read {
             Read::Entry(entry) => *entry,
-            other => panic!("not an entry: {other:?}"),
+            other @ Read::Unreadable(_) => panic!("not an entry: {other:?}"),
         })
         .collect()
 }

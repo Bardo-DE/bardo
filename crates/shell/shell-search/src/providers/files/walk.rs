@@ -1,7 +1,8 @@
-//! The fallback with no index: `fd` under the home directory (hidden files and `.gitignore`d
-//! trees skipped, as `fd` does by default), else `plocate` filtered to the home directory, each
-//! killed at the budget with whatever it printed by then. [`fd_args`], [`plocate_args`] and
-//! [`parse_paths`] are pure and table-tested.
+//! The fallback with no index.
+//!
+//! `fd` under the home directory (hidden files and `.gitignore`d trees skipped, as `fd` does by
+//! default), else `plocate` filtered to the home directory, each killed at the budget with whatever
+//! it printed by then. [`fd_args`], [`plocate_args`] and [`parse_paths`] are pure and table-tested.
 
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
@@ -32,7 +33,7 @@ impl FileIndex for WalkIndex {
             Walker::Plocate => ("plocate", plocate_args(ask)),
         };
         match run_within(program, &args, ask.budget, query) {
-            Ok(ran) => answer_of(ran, &ask.under, ask.limit),
+            Ok(ran) => answer_of(&ran, &ask.under, ask.limit),
             Err(fault) => FileAnswer::Unavailable(fault),
         }
     }
@@ -93,7 +94,7 @@ pub fn parse_paths(output: &str, under: &Path) -> Vec<PathBuf> {
 /// `limit`; `Partial` when it was killed at the budget. A program that exited badly still
 /// printed paths worth showing (`fd` exits 1 after a folder it may not read; `plocate` exits 1
 /// when nothing matched).
-fn answer_of(ran: Ran, under: &Path, limit: HitLimit) -> FileAnswer {
+fn answer_of(ran: &Ran, under: &Path, limit: HitLimit) -> FileAnswer {
     let hits = parse_paths(&ran.text, under)
         .into_iter()
         .filter_map(hit_at)

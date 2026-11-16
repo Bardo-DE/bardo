@@ -64,7 +64,7 @@ fn row(entry: &ClipEntry, needle: &Needle, matcher: &mut Matcher, now: UnixTime)
             },
         ),
     };
-    let matched = needle.score(&haystack, matcher)?;
+    let fit = needle.score(&haystack, matcher)?;
     let prefix = Prefix::of(needle.text(), &title);
     Some(Item {
         id: ItemId(entry.key.0.to_string()),
@@ -72,7 +72,7 @@ fn row(entry: &ClipEntry, needle: &Needle, matcher: &mut Matcher, now: UnixTime)
         subtitle: format!("{} \u{b7} {detail}", age(now, entry.copied)),
         title,
         icon: IconRef::None,
-        score: rank(matched, FrecencyScore::NONE, prefix, &RankWeights::DEFAULT),
+        score: rank(fit, FrecencyScore::NONE, prefix, &RankWeights::DEFAULT),
         actions: vec![Action {
             id: ActionId(FORGET_ACTION.to_owned()),
             label: "Forget".to_owned(),

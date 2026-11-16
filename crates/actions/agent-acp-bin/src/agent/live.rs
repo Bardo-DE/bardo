@@ -32,7 +32,10 @@ use std::sync::Arc;
 const MANIFEST: &str = include_str!("../../../manifests/org.bardo.AcpAgent.toml");
 
 /// The pseudo-app served, and what a backend for any program is made of.
-#[allow(missing_debug_implementations)]
+#[expect(
+    missing_debug_implementations,
+    reason = "its fields (a bus connection, hosts and seams) do not implement `Debug`"
+)]
 pub struct Live<A: Accounts + 'static> {
     file: Arc<AgentsFile>,
     accounts: Arc<A>,

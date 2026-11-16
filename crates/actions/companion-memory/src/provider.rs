@@ -80,7 +80,7 @@ fn own_label(space: &SpaceId) -> Label {
     }
 }
 
-fn unavailable(error: ClientError) -> AppRefusal {
+fn unavailable(error: &ClientError) -> AppRefusal {
     match error {
         ClientError::Transport(_) => failed("memory is not available"),
         ClientError::Refused(_) | ClientError::Unexpected => failed("memory said no"),
@@ -96,7 +96,7 @@ fn fact_entity(id: &memory_core::FactId) -> Option<EntityId> {
 }
 
 fn text_param(inv: &Invocation, name: &str) -> Result<String, AppRefusal> {
-    let param = ParamName::parse(name).map_err(|_| AppRefusal::Unsupported)?;
+    let param = ParamName::parse(name).ok().ok_or(AppRefusal::Unsupported)?;
     match inv.args.get(&param).map(|a| &a.value) {
         Some(Value::Text(t)) if !t.trim().is_empty() => Ok(t.clone()),
         Some(Value::Text(_)) | None => Err(AppRefusal::NeedsParam {
@@ -172,7 +172,7 @@ impl<T: Transport> MemoryProvider<T> {
                 over: RecallOver::Both,
             })
             .await
-            .map_err(unavailable)?;
+            .map_err(|e| unavailable(&e))?;
         Ok(found(&inv.space, hits))
     }
 
@@ -187,7 +187,7 @@ impl<T: Transport> MemoryProvider<T> {
                 limit: LIMIT,
             })
             .await
-            .map_err(unavailable)?;
+            .map_err(|e| unavailable(&e))?;
         let label = facts
             .iter()
             .fold(own_label(&inv.space), |acc, f| acc.join(&f.fact.label));
@@ -220,8 +220,12 @@ impl<T: Transport> MemoryProvider<T> {
     async fn propose(&self, inv: &Invocation) -> Result<Outcome, AppRefusal> {
         let text = text_param(inv, "text")?;
         let draft = FactDraft {
-            topic: TopicPath::parse(PROPOSAL_TOPIC).map_err(|_| AppRefusal::Unsupported)?,
-            text: FactText::parse(&text).map_err(|_| failed("that is not one short paragraph"))?,
+            topic: TopicPath::parse(PROPOSAL_TOPIC)
+                .ok()
+                .ok_or(AppRefusal::Unsupported)?,
+            text: FactText::parse(&text)
+                .ok()
+                .ok_or_else(|| failed("that is not one short paragraph"))?,
             links: Vec::new(),
             supersedes: Vec::new(),
             on_behalf: helper_job(&inv.actor),
@@ -230,7 +234,7 @@ impl<T: Transport> MemoryProvider<T> {
             .memory
             .propose(inv.space.clone(), draft)
             .await
-            .map_err(unavailable)?;
+            .map_err(|e| unavailable(&e))?;
         // The router cannot settle a fact (only the shell's own UI can), so a proposal has no
         // undo here: the person drops it from the pending list.
         let said = match state {
@@ -263,26 +267,46 @@ impl<T: Transport> IntentProvider for MemoryProvider<T> {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn dry_run(&self, inv: Invocation) -> Result<Preview, AppRefusal> {
         let _ = inv;
         Ok(Preview::None)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn undo(&self, token: UndoToken, actor: Actor) -> Result<(), UndoFault> {
         let _ = (token, actor);
         Err(UndoFault::Gone)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn search(&self, text: &str) -> Vec<Hit> {
         let _ = text;
         Vec::new()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn preview(&self, id: &EntityId) -> Preview {
         let _ = id;
         Preview::None
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn suggest(&self, ask: SuggestAsk) -> Vec<EntityRef> {
         let _ = ask;
         Vec::new()

@@ -214,6 +214,13 @@ fn a_user_row_can_still_add_a_plain_app_or_an_agent() {
 /// another unit or a row without one, though it may still lower one of its own rows.
 #[test]
 fn a_user_row_cannot_name_an_app_the_system_owns() {
+    type Case<'a> = (
+        &'a str,
+        CallerRow,
+        Option<(&'a str, CallerRole)>,
+        Option<(&'a str, CallerRole)>,
+    );
+
     let system = || {
         let mut system = table();
         system.callers.push(row(
@@ -224,12 +231,6 @@ fn a_user_row_cannot_name_an_app_the_system_owns() {
         system
     };
     // (case, the user's row, what bardo-actiond.service and helper.service resolve to after)
-    type Case<'a> = (
-        &'a str,
-        CallerRow,
-        Option<(&'a str, CallerRole)>,
-        Option<(&'a str, CallerRole)>,
-    );
     let intents = Some(("org.bardo.Intents", CallerRole::Agent));
     let cases: [Case; 4] = [
         (

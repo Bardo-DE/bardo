@@ -3,7 +3,9 @@
 use memory_core::Dirs;
 use std::path::{Path, PathBuf};
 
-/// The one directory an app hands to memory. Everything lives below it: `data/` (logs, files,
+/// The one directory an app hands to memory.
+///
+/// Everything lives below it: `data/` (logs, files,
 /// `spaces.toml`), `cache/` (rebuildable indexes), `config/` and `run/` (unused by the portable
 /// backend, kept so [`Dirs`] stays whole).
 #[derive(Debug, Clone, PartialEq, Eq)]

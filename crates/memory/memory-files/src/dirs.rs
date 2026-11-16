@@ -28,6 +28,10 @@ impl PlainDir {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as a `map_err` function, which hands the error over by value"
+)]
 fn io(err: std::io::Error) -> VaultError {
     VaultError::Io(err.to_string())
 }
@@ -47,7 +51,7 @@ impl PlainDir {
     }
 
     /// Every file under `dir` (relative to the root), depth first, unsorted.
-    fn walk(&self, dir: &Path, rel: &str, out: &mut Vec<VaultPath>) -> Result<(), VaultError> {
+    fn walk(dir: &Path, rel: &str, out: &mut Vec<VaultPath>) -> Result<(), VaultError> {
         let entries = match std::fs::read_dir(dir) {
             Ok(entries) => entries,
             Err(err) if err.kind() == ErrorKind::NotFound => return Ok(()),
@@ -64,7 +68,7 @@ impl PlainDir {
             let child = format!("{rel}/{name}");
             let kind = entry.file_type().map_err(io)?;
             if kind.is_dir() {
-                self.walk(&entry.path(), &child, out)?;
+                Self::walk(&entry.path(), &child, out)?;
             } else if kind.is_file() {
                 out.extend(VaultPath::parse(&child));
             }
@@ -75,6 +79,10 @@ impl PlainDir {
 
 /// Whether `name` is the staging file of a write in progress (`base_fs`'s `.<name>.<pid>.<n>.tmp`):
 /// not part of the vault, and never listed.
+#[expect(
+    clippy::case_sensitive_file_extension_comparisons,
+    reason = "`base_fs` writes its staging files with a lower-case `.tmp` suffix, and no other name is meant"
+)]
 fn is_staging(name: &str) -> bool {
     name.starts_with('.') && name.ends_with(".tmp")
 }
@@ -82,7 +90,7 @@ fn is_staging(name: &str) -> bool {
 impl Vault for PlainDir {
     fn list(&self, dir: &VaultPath) -> Result<Vec<VaultPath>, VaultError> {
         let mut out = Vec::new();
-        self.walk(&self.on_disk(dir), dir.as_str(), &mut out)?;
+        Self::walk(&self.on_disk(dir), dir.as_str(), &mut out)?;
         out.sort();
         Ok(out)
     }

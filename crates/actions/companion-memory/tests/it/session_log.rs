@@ -88,7 +88,7 @@ async fn all(log: &impl SessionLog, id: &SessionId, size: u32) -> Vec<SessionEnt
         for row in page.rows {
             match row.read {
                 Read::Entry(entry) => rows.push(*entry),
-                other => panic!("{other:?}"),
+                other @ Read::Unreadable(_) => panic!("{other:?}"),
             }
         }
         match page.next {
@@ -336,7 +336,7 @@ async fn reads<S: action_router::Seams>(
             kind: provenance::EntityKind::parse("mail.thread").expect("kind"),
             key: provenance::EntityKey::parse(thread).expect("key"),
         }]),
-        args: Default::default(),
+        args: std::collections::BTreeMap::default(),
         origin: Origin::Companion,
     };
     router

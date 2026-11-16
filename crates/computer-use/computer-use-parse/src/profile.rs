@@ -35,7 +35,7 @@ pub struct ToolContext {
 pub(crate) fn action<S: CoordSpace>(
     context: &ToolContext,
     verbs: &Verbs,
-    ctx: &Ctx,
+    ctx: Ctx,
     verb: &str,
     args: &Args,
 ) -> Option<Verdict<CuaAction<S>>> {
@@ -86,7 +86,7 @@ fn call_user<S: CoordSpace>(args: &Args) -> Verdict<CuaAction<S>> {
 /// there is no start, so the drag is dropped.
 fn drag_from_cursor<S: CoordSpace>(
     context: &ToolContext,
-    ctx: &Ctx,
+    ctx: Ctx,
     args: &Args,
 ) -> Verdict<CuaAction<S>> {
     let from = context.cursor.ok_or(DropReason::MissingArgument)?;
@@ -100,7 +100,7 @@ fn drag_from_cursor<S: CoordSpace>(
 /// A `scroll` whose `direction` names the axis: `vertical` when it says nothing.
 fn scroll_by_direction<S: CoordSpace>(
     verbs: &Verbs,
-    ctx: &Ctx,
+    ctx: Ctx,
     args: &Args,
 ) -> Verdict<CuaAction<S>> {
     let axis = match args.get("direction") {

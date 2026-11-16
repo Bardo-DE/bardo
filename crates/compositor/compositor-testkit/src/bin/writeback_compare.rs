@@ -17,7 +17,8 @@ use std::process::ExitCode;
 fn number<T: std::str::FromStr>(text: Option<&String>, what: &str) -> Result<T, String> {
     text.ok_or_else(|| format!("missing {what}"))?
         .parse()
-        .map_err(|_| format!("{what} is not a number"))
+        .ok()
+        .ok_or_else(|| format!("{what} is not a number"))
 }
 
 fn run(args: &[String]) -> Result<ExitCode, String> {

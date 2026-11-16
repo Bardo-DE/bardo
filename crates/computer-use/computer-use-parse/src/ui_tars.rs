@@ -31,7 +31,7 @@ pub(crate) struct UiTars<'a>(pub &'a str);
 impl Dialect for UiTars<'_> {
     fn collect<S: CoordSpace>(
         &self,
-        ctx: &Ctx,
+        ctx: Ctx,
         limits: ParseLimits,
     ) -> Result<Collected<S>, ParseError> {
         let text = self.0;
@@ -62,7 +62,7 @@ fn action_marker(text: &str) -> Option<usize> {
         .last()
 }
 
-fn action<S: CoordSpace>(ctx: &Ctx, call: &Call<'_>) -> Result<CuaAction<S>, DropReason> {
+fn action<S: CoordSpace>(ctx: Ctx, call: &Call<'_>) -> Result<CuaAction<S>, DropReason> {
     let point = |name: &[&str]| -> Result<_, DropReason> {
         let value = name
             .iter()
@@ -103,7 +103,7 @@ fn action<S: CoordSpace>(ctx: &Ctx, call: &Call<'_>) -> Result<CuaAction<S>, Dro
             by: ScrollBy::Notches(Notches(SCROLL_NOTCHES)),
         }),
         "wait" => Ok(CuaAction::Wait {
-            for_ms: WaitMs::new(WAIT_MS).map_err(|_| DropReason::BadNumber)?,
+            for_ms: WaitMs::new(WAIT_MS).ok().ok_or(DropReason::BadNumber)?,
         }),
         "finished" => Ok(CuaAction::Finish {
             outcome: FinishOutcome::Done,
@@ -158,6 +158,6 @@ fn numbers(value: &str) -> Result<Vec<u32>, DropReason> {
     untagged
         .split(|c: char| c.is_whitespace() || matches!(c, ',' | '(' | ')' | '[' | ']'))
         .filter(|word| !word.is_empty())
-        .map(|word| word.parse::<u32>().map_err(|_| DropReason::BadNumber))
+        .map(|word| word.parse::<u32>().ok().ok_or(DropReason::BadNumber))
         .collect()
 }

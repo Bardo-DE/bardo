@@ -1,4 +1,6 @@
-//! The helpers an editor sees, read from companiond's hub over the bus. [`BusHelpers`] keeps what
+//! The helpers an editor sees, read from companiond's hub over the bus.
+//!
+//! [`BusHelpers`] keeps what
 //! it last read (the list, each helper's jobs, the sentences the board told) and refreshes it when
 //! the daemon says something changed; [`LiveHelpers`] is it when the daemon answers and
 //! [`NoHelpers`] when it does not, so an editor without helpers works as it did before them.
@@ -26,7 +28,9 @@ const NOT_RECORDED: &str = "Your words could not be recorded, so nothing was sen
 /// What the person is told when the daemon that keeps the helpers does not answer a turn.
 const NOT_ANSWERED: &str = "The helper could not be reached.";
 
-/// Where the person's turn in a helper's conversation is recorded. The router takes it from the
+/// Where the person's turn in a helper's conversation is recorded.
+///
+/// The router takes it from the
 /// person's own surface only (the editor, here): a model cannot say what the person said, and the
 /// daemon that runs the helper's turn is not such a surface.
 pub trait Records: Send + Sync {
@@ -51,6 +55,10 @@ pub trait Records: Send + Sync {
 pub struct NoRecords;
 
 impl Records for NoRecords {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn record(
         &self,
         _session: &SessionId,
@@ -102,7 +110,8 @@ impl<T: IntentsTransport> Records for RouterRecords<T> {
         self.intents
             .session_turn(session.clone(), said)
             .await
-            .map_err(|_| HelperRefusal(NOT_RECORDED.to_owned()))
+            .ok()
+            .ok_or_else(|| HelperRefusal(NOT_RECORDED.to_owned()))
     }
 
     async fn ended(&self, session: &SessionId, turn: TurnId, end: TurnEnd) {
@@ -144,6 +153,10 @@ fn row_of(line: &HelperLine) -> Option<HelperRow> {
 
 impl<T: HelpersTransport> BusHelpers<T> {
     /// [`BusHelpers::connect_recording`] with no router: the helpers are shown, not spoken to.
+    ///
+    /// # Errors
+    ///
+    /// [`TransportError`] when the daemon does not answer.
     pub async fn connect(transport: T) -> Result<Self, TransportError> {
         Self::connect_recording(transport, NoRecords).await
     }
@@ -153,6 +166,10 @@ impl<T: HelpersTransport, R: Records> BusHelpers<T, R> {
     /// Subscribes to changes, then reads the helpers once; the person's words to a helper are
     /// recorded through `records`. An error means the daemon did not answer, and the editor goes
     /// on without helpers.
+    ///
+    /// # Errors
+    ///
+    /// [`TransportError`] when the daemon does not answer the subscription or the first read.
     pub async fn connect_recording(transport: T, records: R) -> Result<Self, TransportError> {
         let changes = transport.changes().await?;
         let mut helpers = Self {
@@ -209,6 +226,10 @@ impl<T: HelpersTransport, R: Records> Helpers for BusHelpers<T, R> {
         self.jobs.get(helper).cloned().unwrap_or_default()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open_job(&mut self, _helper: &HelperId) -> Result<SessionId, HelperRefusal> {
         Err(HelperRefusal(NO_JOBS_FROM_HERE.to_owned()))
     }

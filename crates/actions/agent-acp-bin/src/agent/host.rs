@@ -39,7 +39,10 @@ impl<A: Accounts + 'static> Seams for Hosting<A> {
 pub type Host<A> = AgentHost<Hosting<A>, EditorDesk>;
 
 /// Everything a host is built from.
-#[allow(missing_debug_implementations)]
+#[expect(
+    missing_debug_implementations,
+    reason = "its fields (a bus connection, hosts and seams) do not implement `Debug`"
+)]
 pub struct Wiring<A: Accounts + 'static> {
     /// The bus connection that plays `org.bardo.AcpAgent`: the host claims the name on it.
     pub bus: BusConnection,
@@ -75,7 +78,10 @@ pub struct Wiring<A: Accounts + 'static> {
 }
 
 /// A running host and the session it opened.
-#[allow(missing_debug_implementations)]
+#[expect(
+    missing_debug_implementations,
+    reason = "its fields (a bus connection, hosts and seams) do not implement `Debug`"
+)]
 pub struct Hosted<A: Accounts + 'static> {
     /// The host.
     pub host: Host<A>,
@@ -97,9 +103,16 @@ pub enum HostError {
     Open(HostFault),
 }
 
-/// Serves the pseudo-app on the bus, starts the program named `program`, and opens its session in
-/// `space` working in `cwd`. The error says why it failed, so a caller can tell a missing sign-in
+/// Serves the pseudo-app on the bus and starts the program named `program`.
+///
+/// Opens its session in `space` working in `cwd`.
+///
+/// The error says why it failed, so a caller can tell a missing sign-in
 /// from a broken setup.
+///
+/// # Errors
+///
+/// [`HostError`] when the program cannot be hosted: a missing sign-in or a broken setup.
 pub async fn host<A: Accounts + 'static>(
     wiring: Wiring<A>,
     program: ProgramName,
@@ -154,7 +167,7 @@ pub async fn open_on<A: Accounts + 'static>(
             started_from: None,
             label,
             cwd: Some(Workspace::parse(cwd).map_err(|e| HostError::Invalid(e.to_string()))?),
-            rewind: Default::default(),
+            rewind: action_core::Rewind::default(),
         })
         .await;
     if let (Some(dir), Some(id)) = (&live.agents, &installed_as) {

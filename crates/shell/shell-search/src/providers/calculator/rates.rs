@@ -1,4 +1,6 @@
-//! Currency rates for the calculator. Off by default (`launcher.currency = "off"`): nothing is
+//! Currency rates for the calculator.
+//!
+//! Off by default (`launcher.currency = "off"`): nothing is
 //! fetched and currency codes are not units. With `ecb`, the European Central Bank's daily
 //! reference rates (`eurofxref-daily.xml`, EUR based) are fetched at most once a day by `curl` into
 //! `$XDG_CACHE_HOME/bardo/shell/ecb-rates.xml`, off the keystroke path, and handed to fend through its
@@ -40,6 +42,11 @@ const ECB_MARKER: &str = "ecb.int/vocabulary";
 /// The rates in an ECB `eurofxref-daily.xml`: every `<Cube currency="USD" rate="1.0876"/>`,
 /// plus `EUR` at 1. A small attribute scan, not an XML parser (the file is three levels of
 /// one element).
+///
+/// # Errors
+///
+/// [`RatesFault::NotEcb`] when `xml` is not the ECB's daily rates; another [`RatesFault`] when it
+/// holds no usable rate.
 pub fn parse_ecb(xml: &str) -> Result<Rates, RatesFault> {
     if !xml.contains(ECB_MARKER) {
         return Err(RatesFault::NotEcb);
@@ -98,8 +105,10 @@ pub fn relative_to_euro(rates: &Rates, code: &str) -> Option<f64> {
 }
 
 /// Feeds `fend` a snapshot of `Rates` as its exchange-rate handler
-/// (`Context::set_exchange_rate_handler_v2`): `evaluate` builds one from the shared rates it
-/// was given for the one query, never touching the network itself.
+/// (`Context::set_exchange_rate_handler_v2`).
+///
+/// `evaluate` builds one from the shared rates it was given for the one query, never touching the
+/// network itself.
 #[derive(Debug, Clone)]
 pub struct ExchangeRates(Rates);
 

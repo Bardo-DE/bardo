@@ -83,6 +83,10 @@ impl FakeInferSession {
 }
 
 impl InferSession for FakeInferSession {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn send(&mut self, frame: ClientFrame) -> Result<(), SessionError> {
         self.sent.push(frame.clone());
         match frame {
@@ -126,6 +130,10 @@ impl InferSession for FakeInferSession {
         self.send(frame).await
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn next(&mut self) -> Result<InferEvent, SessionError> {
         self.ready.pop_front().ok_or(SessionError::Closed)
     }

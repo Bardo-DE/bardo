@@ -65,7 +65,7 @@ pub(crate) fn PageBody(
 }
 
 /// The pane that fills `pane`'s rows; `page` is the page it is on.
-fn mount(pane: LivePane, page: &PageModel, env: &Env, files: Signal<Files>) -> Element {
+fn mount(pane: LivePane, model: &PageModel, env: &Env, files: Signal<Files>) -> Element {
     match pane {
         LivePane::Accounts => rsx! { AccountsPane {} },
         LivePane::Privacy => rsx! { PrivacyPane {} },
@@ -80,7 +80,7 @@ fn mount(pane: LivePane, page: &PageModel, env: &Env, files: Signal<Files>) -> E
         LivePane::Extensions => rsx! { ExtensionsPane {} },
         LivePane::Assistants => rsx! { Assistants {} },
         LivePane::LocalRuntimes => rsx! { LocalRuntimes {} },
-        LivePane::DockPreview => rsx! { DockPreview { page: page.clone(), files } },
+        LivePane::DockPreview => rsx! { DockPreview { page: model.clone(), files } },
         LivePane::ModelPicker => rsx! { ModelPicker { reasons: show_reason(env, &files()) } },
     }
 }

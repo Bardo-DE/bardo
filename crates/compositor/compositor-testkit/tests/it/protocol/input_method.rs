@@ -50,12 +50,12 @@ fn asked_typing(decision: Option<Verdict>) -> (Typing, ScriptedShell) {
 }
 
 /// Whether the input method has been sent `event`.
-fn told(typing: &Typing, event: InputMethodEvent) -> bool {
+fn told(typing: &Typing, event: &InputMethodEvent) -> bool {
     typing
         .ime
         .method_events()
         .iter()
-        .any(|line| line.event == event)
+        .any(|line| line.event == *event)
 }
 
 /// The input method commits a string: whether the field hears it.
@@ -88,8 +88,8 @@ fn an_input_method_the_person_refused_is_never_activated() {
     typing.pump();
     typing.pump();
     assert!(shell.asked().is_empty(), "the book answers");
-    assert!(told(&typing, InputMethodEvent::Unavailable));
-    assert!(!told(&typing, InputMethodEvent::Activate));
+    assert!(told(&typing, &InputMethodEvent::Unavailable));
+    assert!(!told(&typing, &InputMethodEvent::Activate));
 }
 
 /// Asked, then allowed: the input method is activated for the field that was enabled while the
@@ -103,16 +103,16 @@ fn an_input_method_made_while_asked_is_released_when_allowed() {
     typing.pump();
     typing.pump();
     assert!(
-        !told(&typing, InputMethodEvent::Activate),
+        !told(&typing, &InputMethodEvent::Activate),
         "nothing while it waits"
     );
-    assert!(!told(&typing, InputMethodEvent::Unavailable));
+    assert!(!told(&typing, &InputMethodEvent::Unavailable));
 
     shell.answer(&mut typing.fixture, shell.only_ask(), Answer::Allow);
     typing.pump();
     typing.pump();
-    assert!(told(&typing, InputMethodEvent::Activate));
-    assert!(!told(&typing, InputMethodEvent::Unavailable));
+    assert!(told(&typing, &InputMethodEvent::Activate));
+    assert!(!told(&typing, &InputMethodEvent::Unavailable));
     assert!(commits_reach_the_field(&mut typing));
     assert_eq!(
         kept(&typing.fixture, ASKED_PROGRAM, Power::TypingHelp),
@@ -130,8 +130,8 @@ fn an_input_method_made_while_asked_is_unavailable_when_refused() {
     shell.answer(&mut typing.fixture, shell.only_ask(), Answer::Deny);
     typing.pump();
     typing.pump();
-    assert!(told(&typing, InputMethodEvent::Unavailable));
-    assert!(!told(&typing, InputMethodEvent::Activate));
+    assert!(told(&typing, &InputMethodEvent::Unavailable));
+    assert!(!told(&typing, &InputMethodEvent::Activate));
     assert!(!commits_reach_the_field(&mut typing));
     assert_eq!(
         kept(&typing.fixture, ASKED_PROGRAM, Power::TypingHelp),
@@ -147,11 +147,11 @@ fn an_input_method_the_person_switches_off_is_unavailable() {
     typing.ime.enable().expect("enable");
     typing.pump();
     typing.pump();
-    assert!(told(&typing, InputMethodEvent::Activate));
-    assert!(!told(&typing, InputMethodEvent::Unavailable));
+    assert!(told(&typing, &InputMethodEvent::Activate));
+    assert!(!told(&typing, &InputMethodEvent::Unavailable));
     decided(&mut typing.fixture, Power::TypingHelp, Verdict::Deny);
     typing.pump();
-    assert!(told(&typing, InputMethodEvent::Unavailable));
+    assert!(told(&typing, &InputMethodEvent::Unavailable));
 }
 
 /// A client that hangs up while its input method waits is forgotten, and an answer that comes

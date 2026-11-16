@@ -187,6 +187,10 @@ fn ends(meta: &syn::meta::ParseNestedMeta<'_>) -> syn::Result<EndsAttr> {
 }
 
 /// The parsed `#[settings(...)]` on one field's `attrs`.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one arm for each attribute key (or field kind), each reading its own value"
+)]
 pub(crate) fn field_attrs(fallback: Span, attrs: &[syn::Attribute]) -> syn::Result<FieldAttrs> {
     let mut label = None;
     let mut help = String::new();

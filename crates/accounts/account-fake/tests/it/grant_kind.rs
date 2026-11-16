@@ -130,7 +130,7 @@ async fn service() -> (Svc, Asked) {
                 access: SecretText::new("stale"),
                 refresh: SecretText::new("refresh"),
                 expires_at: UnixSeconds(0),
-                granted: Default::default(),
+                granted: account_core::GrantedScopes::default(),
             },
         )
         .await
@@ -205,7 +205,7 @@ async fn a_token_is_asked_for_as_far_as_the_storage_grant_reaches() {
                 access: SecretText::new("stale"),
                 refresh: SecretText::new("refresh"),
                 expires_at: UnixSeconds(0),
-                granted: Default::default(),
+                granted: account_core::GrantedScopes::default(),
             },
         )
         .await

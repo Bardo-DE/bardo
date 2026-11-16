@@ -108,7 +108,8 @@ impl<S: Seams> Router<S> {
         writer
             .append(self.seams.log(), id, &note)
             .await
-            .map_err(|_| CallRefusal::NotRecorded)?;
+            .ok()
+            .ok_or(CallRefusal::NotRecorded)?;
         if let Some(record) = self.locked().sessions.get_mut(id) {
             record.wal.tainted();
         }

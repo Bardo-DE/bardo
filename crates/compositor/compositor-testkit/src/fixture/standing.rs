@@ -18,6 +18,10 @@ use std::os::unix::net::UnixStream;
 use std::sync::Arc;
 
 /// The standing of the desktop's own shell: trusted with every power, never asked.
+///
+/// # Panics
+///
+/// Never in practice: the role it builds is a fixed valid literal.
 #[must_use]
 pub fn trusted_standing() -> ClientStanding {
     ClientStanding::Service {
@@ -27,6 +31,10 @@ pub fn trusted_standing() -> ClientStanding {
 }
 
 /// The standing of a program the system owns, at `path`: asked, and remembered by its path.
+///
+/// # Panics
+///
+/// If `path` is not an absolute path.
 #[must_use]
 pub fn program_standing(path: &str) -> ClientStanding {
     ClientStanding::Program {

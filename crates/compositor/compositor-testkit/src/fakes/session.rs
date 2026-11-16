@@ -233,7 +233,7 @@ impl TtySession for FakeSession {
     }
 
     fn switch_vt(&mut self, vt: VtNumber) -> Result<(), SessionFault> {
-        let vt = i32::try_from(vt.0).map_err(|_| SessionFault::Inactive)?;
+        let vt = i32::try_from(vt.0).ok().ok_or(SessionFault::Inactive)?;
         Session::change_vt(self, vt)
     }
 

@@ -120,7 +120,7 @@ fn a_stale_forged_or_foreign_serial_does_not_grab() {
     let other = desk.fixture.connect(ConnectionRole::Public);
     desk.fixture.pump();
     let other_base = WmBase::bind(desk.fixture.client(other), 7);
-    let _other_window = map_toplevel(&mut desk.fixture, other, &other_base, (200, 200));
+    let other_window = map_toplevel(&mut desk.fixture, other, &other_base, (200, 200));
     let surface = desk
         .fixture
         .client(other)
@@ -129,7 +129,7 @@ fn a_stale_forged_or_foreign_serial_does_not_grab() {
     let popup = Popup::of(
         desk.fixture.client(other),
         &other_base,
-        &_other_window,
+        &other_window,
         surface,
         PopupSpec::menu_at((5, 5)),
     );

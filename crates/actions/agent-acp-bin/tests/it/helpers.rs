@@ -45,7 +45,7 @@ fn done_job() -> JobLine {
         state: JobShown::Done,
         note: None,
         answer: Some("The second is best.".to_owned()),
-        from: Default::default(),
+        from: companion_wire::JobFrom::default(),
     }
 }
 
@@ -68,6 +68,10 @@ fn nobody<T>() -> Result<T, TransportError> {
 }
 
 impl HelpersTransport for Daemon {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn list(&self, after: u64) -> Result<HelpersView, TransportError> {
         let read = self.reads.fetch_add(1, Ordering::SeqCst);
         let told = match (read, after) {
@@ -84,13 +88,17 @@ impl HelpersTransport for Daemon {
         })
     }
 
-    async fn card(&self, helper_id: &HelperId) -> Result<HelperCardView, TransportError> {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
+    async fn card(&self, helper: &HelperId) -> Result<HelperCardView, TransportError> {
         let found = [line(1, "Research", Some("s-61")), line(2, "Garden", None)]
             .into_iter()
-            .find(|l| &l.id == helper_id)
+            .find(|l| &l.id == helper)
             .ok_or(TransportError::Closed)?;
         Ok(HelperCardView {
-            jobs: if found.id == helper(1) {
+            jobs: if found.id == self::helper(1) {
                 vec![done_job()]
             } else {
                 Vec::new()
@@ -100,19 +108,27 @@ impl HelpersTransport for Daemon {
             model: HelperModel::Unset,
             reach: Vec::new(),
             steps: Count(8),
-            kind: Default::default(),
-            login: Default::default(),
+            kind: companion_model::helper::HelperKind::default(),
+            login: companion_wire::LoginShown::default(),
             sign_in: Vec::new(),
             app_name: None,
-            runs_in: Default::default(),
-            handover: Default::default(),
+            runs_in: companion_model::RunsIn::default(),
+            handover: companion_wire::Handover::default(),
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn changes(&self) -> Result<Changes, TransportError> {
         Ok(Box::pin(stream::iter([()])))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn say(
         &self,
         session: &SessionId,
@@ -124,26 +140,50 @@ impl HelpersTransport for Daemon {
         )))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn create(&self, _: &HelperForm) -> Result<HelperReply, TransportError> {
         nobody()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn edit(&self, _: &HelperId, _: &HelperForm) -> Result<HelperReply, TransportError> {
         nobody()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn pause(&self, _: &HelperId) -> Result<(), TransportError> {
         nobody()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn resume(&self, _: &HelperId) -> Result<(), TransportError> {
         nobody()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn remove(&self, _: &HelperId) -> Result<(), TransportError> {
         nobody()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn post_job(
         &self,
         _: &HelperId,
@@ -153,46 +193,90 @@ impl HelpersTransport for Daemon {
         nobody()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn sign_in(&self, _: &HelperId, _: &str) -> Result<HelperReply, TransportError> {
         nobody()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn sign_out(&self, _: &HelperId) -> Result<HelperReply, TransportError> {
         nobody()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn routines(&self) -> Result<RoutinesView, TransportError> {
         nobody()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn routine_card(&self, _: RoutineId) -> Result<RoutineCardView, TransportError> {
         nobody()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn add_routine(&self, _: &RoutineForm) -> Result<RoutineReply, TransportError> {
         nobody()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn pause_routine(&self, _: RoutineId) -> Result<(), TransportError> {
         nobody()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn resume_routine(&self, _: RoutineId) -> Result<(), TransportError> {
         nobody()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn remove_routine(&self, _: RoutineId) -> Result<(), TransportError> {
         nobody()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn routine_proposals(&self) -> Result<Vec<RoutineProposal>, TransportError> {
         nobody()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn accept_routine_proposal(&self, _: ProposalId) -> Result<RoutineReply, TransportError> {
         nobody()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn decline_routine_proposal(&self, _: ProposalId) -> Result<(), TransportError> {
         nobody()
     }
@@ -241,6 +325,10 @@ async fn a_job_cannot_be_started_from_the_editor_and_the_refusal_is_in_plain_wor
 struct WrittenDown(std::sync::Arc<std::sync::Mutex<Vec<String>>>);
 
 impl Records for WrittenDown {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn record(&self, _: &SessionId, _: &UserTurn) -> Result<TurnId, HelperRefusal> {
         self.0.lock().expect("seen").push("record".to_owned());
         Ok(TurnId(7))

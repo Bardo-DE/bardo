@@ -1,7 +1,9 @@
-//! The soft GPU topology (11 §2.7, SP4 route 1, A3, A4): smithay's `GpuManager` over soft
-//! devices found on the jail's fabricated `/sys/dev/char/226:(128+n)` nodes, each a
-//! `compositor_backend::gpu::SoftPixman` with its own context, buffers from
-//! `compositor_backend::gpu::FixedUdmabuf`. The `GraphicsApi` and the fabricated sys tree are P1-D4's.
+//! The soft GPU topology (11 §2.7, SP4 route 1, A3, A4).
+//!
+//! Smithay's `GpuManager` over soft devices found on the jail's fabricated
+//! `/sys/dev/char/226:(128+n)` nodes, each a `compositor_backend::gpu::SoftPixman` with its own
+//! context, buffers from `compositor_backend::gpu::FixedUdmabuf`. The `GraphicsApi` and the
+//! fabricated sys tree are P1-D4's.
 
 mod fabricated;
 mod soft_api;

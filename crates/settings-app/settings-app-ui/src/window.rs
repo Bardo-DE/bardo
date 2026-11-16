@@ -5,7 +5,7 @@ use crate::files::{Edit, Files, store};
 use crate::memory_consent::use_memory_consent;
 use crate::page_view::PageView;
 use crate::person_card::PersonCard;
-use crate::sharing::use_sharing;
+use crate::sharing::{SharingSwitch, use_sharing};
 use crate::sidebar::sidebar_items;
 use crate::view::View;
 use dioxus::prelude::*;
@@ -40,7 +40,7 @@ pub fn Window(
     });
     let write_env = env.clone();
     let onedit = EventHandler::new(move |edit: Edit| {
-        if owner.owns(&edit) {
+        if SharingSwitch::owns(&edit) {
             owner.turned(edit);
         } else {
             store(&write_env, files, toasts, &edit);

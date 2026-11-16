@@ -45,6 +45,10 @@ impl Model for FakeModel {
         &self.card
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn chat(
         &self,
         request: &ChatRequest,
@@ -80,6 +84,10 @@ impl Model for FakeModel {
         ))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn task(
         &self,
         request: &TaskRequest,
@@ -102,6 +110,14 @@ impl Model for FakeModel {
         ))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "the length of a short test input, far below the integers f32 holds exactly"
+    )]
     async fn embed(&self, request: &EmbedRequest) -> Result<EmbedReply, TurnError> {
         let vectors = request
             .inputs

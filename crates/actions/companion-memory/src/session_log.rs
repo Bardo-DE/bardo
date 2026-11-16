@@ -84,8 +84,8 @@ impl<T: Transport, K: Clock> AlmanacSessionLog<T, K> {
     fn record(&self, session: &SessionId, kind: &str, json: &str) -> Result<Record, LogFault> {
         let body = EventBody::Area(AreaPayload {
             area: AreaTag::Companion,
-            kind: KindTag::parse(kind).map_err(|_| LogFault::Encode)?,
-            json: JsonText::parse(json).map_err(|_| LogFault::Encode)?,
+            kind: KindTag::parse(kind).ok().ok_or(LogFault::Encode)?,
+            json: JsonText::parse(json).ok().ok_or(LogFault::Encode)?,
             things: vec![(
                 ThingView {
                     thing: Self::thing(session)?,
@@ -109,13 +109,16 @@ impl<T: Transport, K: Clock> AlmanacSessionLog<T, K> {
     }
 
     fn query(
-        &self,
         session: &SessionId,
         after: Option<Cursor>,
         limit: u32,
     ) -> Result<EntriesQuery, LogFault> {
         Ok(EntriesQuery {
-            kinds: vec![KindPattern::parse(ENTRY_KINDS).map_err(|_| LogFault::Encode)?],
+            kinds: vec![
+                KindPattern::parse(ENTRY_KINDS)
+                    .ok()
+                    .ok_or(LogFault::Encode)?,
+            ],
             about: Some(Self::thing(session)?),
             after,
             limit: Count(limit),
@@ -129,7 +132,7 @@ impl<T: Transport, K: Clock> AlmanacSessionLog<T, K> {
         let mut count = 0u64;
         let mut last = None;
         loop {
-            let query = self.query(session, after, TAIL_PAGE)?;
+            let query = Self::query(session, after, TAIL_PAGE)?;
             let page = self
                 .memory
                 .entries(self.space.clone(), query)
@@ -183,7 +186,7 @@ fn stored_seq(json: &str) -> Option<Seq> {
 /// What a failed call to almanac means to the log: a store that will not remember is `Refused`;
 /// one that cannot answer (a lock, no daemon, a failing disk) is `Unavailable`. Either refuses
 /// the reveal an entry guards.
-fn fault_of(error: ClientError) -> LogFault {
+fn fault_of(error: &ClientError) -> LogFault {
     match error {
         ClientError::Refused(Refusal::SpaceLocked | Refusal::Unavailable | Refusal::Busy) => {
             LogFault::Unavailable
@@ -201,7 +204,7 @@ impl<T: Transport, K: Clock> SessionLog for AlmanacSessionLog<T, K> {
         seq: Seq,
         entry: &SessionEntry,
     ) -> Result<Appended, LogFault> {
-        let encoded = encode(seq, entry).map_err(|_| LogFault::Encode)?;
+        let encoded = encode(seq, entry).ok().ok_or(LogFault::Encode)?;
         let (next, last) = if let Some(next) = self.cached(session) {
             (next, None)
         } else {
@@ -228,7 +231,7 @@ impl<T: Transport, K: Clock> SessionLog for AlmanacSessionLog<T, K> {
             Err(error) => {
                 // Unknown whether it landed: the next append reads the end of the log again.
                 self.forget(session);
-                Err(fault_of(error))
+                Err(fault_of(&error))
             }
         }
     }
@@ -245,14 +248,13 @@ impl<T: Transport, K: Clock> SessionLog for AlmanacSessionLog<T, K> {
         // With the cursor of `start` the read resumes there; without one it counts from the
         // first row.
         let (mut after, mut place) = match (start, known) {
-            (0, _) => (None, 0),
+            (0, _) | (_, None) => (None, 0),
             (_, Some(cursor)) => (Some(cursor), start),
-            (_, None) => (None, 0),
         };
         let mut rows = Vec::new();
         let mut more = false;
         loop {
-            let query = self.query(session, after, want)?;
+            let query = Self::query(session, after, want)?;
             let page = self
                 .memory
                 .entries(self.space.clone(), query)
@@ -287,7 +289,11 @@ impl<T: Transport, K: Clock> SessionLog for AlmanacSessionLog<T, K> {
         let mut after = None;
         loop {
             let query = EntriesQuery {
-                kinds: vec![KindPattern::parse(OPENED_KIND).map_err(|_| LogFault::Encode)?],
+                kinds: vec![
+                    KindPattern::parse(OPENED_KIND)
+                        .ok()
+                        .ok_or(LogFault::Encode)?,
+                ],
                 about: None,
                 after,
                 limit: Count(TAIL_PAGE),

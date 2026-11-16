@@ -77,7 +77,7 @@ async fn service() -> Svc {
                 access: SecretText::new("stale"),
                 refresh: SecretText::new("refresh"),
                 expires_at: UnixSeconds(0),
-                granted: Default::default(),
+                granted: account_core::GrantedScopes::default(),
             },
         )
         .await

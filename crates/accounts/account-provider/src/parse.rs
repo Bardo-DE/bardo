@@ -8,6 +8,11 @@ use account_core::{AuthKind, Family};
 use base_ids::word::{from_word, word};
 
 /// The provider declared by one file's text, or why it is refused.
+///
+/// # Errors
+///
+/// [`ProviderFileError`] when `text` is not a provider file, or declares a provider that fails the
+/// checks on its parts.
 pub fn parse_provider(text: &str) -> Result<ProviderSpec, ProviderFileError> {
     let syntax = |e: &dyn std::fmt::Display| ProviderFileError::Syntax(e.to_string());
     let mut file: toml::Table = toml::from_str(text).map_err(|e| syntax(&e))?;

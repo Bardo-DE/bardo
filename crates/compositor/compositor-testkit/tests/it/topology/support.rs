@@ -33,7 +33,7 @@ impl TestBuffer {
         let dmabuf = UdmabufAllocator::new()?.create_buffer_from_memfd(
             &fd,
             0,
-            size as usize,
+            usize::try_from(size).expect("a fixture buffer fits in memory"),
             Fourcc::Argb8888,
             w,
             h,
@@ -96,8 +96,13 @@ pub fn pattern(x: u32, y: u32, frame: u32) -> u32 {
     0xff00_0000 | ((x & 0xff) << 16) | ((y & 0xff) << 8) | b
 }
 
+/// A pixel count as the signed number the geometry types take; a test size is far below the top.
+pub fn px(n: u32) -> i32 {
+    i32::try_from(n).unwrap_or(i32::MAX)
+}
+
 fn full<K>(w: u32, h: u32) -> Rectangle<i32, K> {
-    Rectangle::from_size(Size::from((w as i32, h as i32)))
+    Rectangle::from_size(Size::from((px(w), px(h))))
 }
 
 /// Renders `texture` over the whole of `out` through `renderer`, and waits.
@@ -112,7 +117,7 @@ where
     let mut frame = renderer
         .render(
             &mut target,
-            Size::<i32, Physical>::from((w as i32, h as i32)),
+            Size::<i32, Physical>::from((px(w), px(h))),
             Transform::Normal,
         )
         .map_err(|error| format!("render: {error:?}"))?;

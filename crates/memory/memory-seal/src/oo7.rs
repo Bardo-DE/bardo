@@ -53,10 +53,16 @@ async fn secret_of(item: &Item) -> Result<SpaceKey, KeyError> {
     let secret = item.secret().await.map_err(failure)?;
     <[u8; 32]>::try_from(secret.as_bytes())
         .map(SpaceKey::from_bytes)
-        .map_err(|_| KeyError::Store("the stored key is not 32 bytes".to_owned()))
+        .ok()
+        .ok_or_else(|| KeyError::Store("the stored key is not 32 bytes".to_owned()))
 }
 
 /// The Space's key in `keyring`.
+///
+/// # Errors
+///
+/// [`KeyError::Missing`] when the keyring holds no key for the Space; another [`KeyError`] when the
+/// keyring cannot be read.
 pub async fn get_in(keyring: &Keyring, space: &SpaceId) -> Result<SpaceKey, KeyError> {
     match found(keyring, space).await? {
         Some(item) => secret_of(&item).await,
@@ -65,6 +71,11 @@ pub async fn get_in(keyring: &Keyring, space: &SpaceId) -> Result<SpaceKey, KeyE
 }
 
 /// Files a fresh key for the Space in `keyring`; [`KeyError::Exists`] if one is there.
+///
+/// # Errors
+///
+/// [`KeyError::Exists`] when the keyring already holds a key for the Space; another [`KeyError`]
+/// when the key cannot be made or stored.
 pub async fn create_in(keyring: &Keyring, space: &SpaceId) -> Result<SpaceKey, KeyError> {
     if found(keyring, space).await?.is_some() {
         return Err(KeyError::Exists);
@@ -83,6 +94,11 @@ pub async fn create_in(keyring: &Keyring, space: &SpaceId) -> Result<SpaceKey, K
 }
 
 /// Deletes the Space's item from `keyring`; [`KeyError::Missing`] if there is none.
+///
+/// # Errors
+///
+/// [`KeyError::Missing`] when the keyring holds no key for the Space; another [`KeyError`] when it
+/// cannot be read or the key cannot be deleted.
 pub async fn destroy_in(keyring: &Keyring, space: &SpaceId) -> Result<(), KeyError> {
     match found(keyring, space).await? {
         Some(item) => item.delete().await.map_err(failure),

@@ -56,6 +56,12 @@ pub struct VerbText(String);
 impl VerbText {
     pub const MAX_CHARS: usize = 64;
 
+    /// The verb, if it fits.
+    ///
+    /// # Errors
+    ///
+    /// [`VerbTextError`] when the verb is longer than [`Self::MAX_CHARS`] or holds a control
+    /// character.
     pub fn new(verb: impl Into<String>) -> Result<Self, VerbTextError> {
         let verb = verb.into();
         if verb.chars().count() <= Self::MAX_CHARS && !verb.chars().any(char::is_control) {

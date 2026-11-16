@@ -177,7 +177,7 @@ pub(crate) fn observation_lines(
     // A model whose own replies are replayed has the goal in the first replayed message.
     let replayed = history::replays_own(dialect, actions) && !history.is_empty();
     // The text dialect's system prompt ends with the goal.
-    if !dialect::spec(dialect).is_text() && !(wire && !history.is_empty()) && !replayed {
+    if !dialect::spec(dialect).is_text() && (!wire || history.is_empty()) && !replayed {
         out.extend(goal_lines(task));
     }
     // The text dialect replays steps that have a frame as turns; the others list them all.

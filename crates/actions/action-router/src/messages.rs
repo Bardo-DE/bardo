@@ -11,6 +11,11 @@ use std::collections::BTreeMap;
 
 /// Checks a stamped message the way the router does before it delivers: well formed, and sent
 /// by the party the transport says. The person may send; only agents report.
+///
+/// # Errors
+///
+/// [`SendRefusal::Malformed`] when the message is not well formed; [`SendRefusal::SenderMismatch`]
+/// when `actor` is not the sender it names.
 pub fn check_stamped(message: &Message, actor: &Actor) -> Result<(), SendRefusal> {
     message.check().map_err(SendRefusal::Malformed)?;
     if message.sender_matches(actor) {
@@ -27,9 +32,15 @@ pub fn intake_label(receiver: &Label, message: &Message) -> Label {
     receiver.join(&message.label)
 }
 
-/// Builds the stamped message from a draft: the router supplies the id, the sender, the label
-/// (the join of the sender's and of every handle it resolved) and the time; `resolved` holds
-/// the text of each handle the draft names. A thread that is not given starts at this message.
+/// Builds the stamped message from a draft.
+///
+/// The router supplies the id, the sender, the label (the join of the sender's and of every handle
+/// it resolved) and the time; `resolved` holds the text of each handle the draft names. A thread
+/// that is not given starts at this message.
+///
+/// # Errors
+///
+/// [`SendRefusal`] when the draft is not well formed or names a handle that is not in `resolved`.
 pub fn assemble(
     draft: MessageDraft,
     id: MessageId,
@@ -41,7 +52,8 @@ pub fn assemble(
     let thread = match draft.thread {
         Some(thread) => thread,
         None => ThreadId::parse(id.as_str())
-            .map_err(|_| SendRefusal::Malformed(provenance::Fault::NoParts))?,
+            .ok()
+            .ok_or(SendRefusal::Malformed(provenance::Fault::NoParts))?,
     };
     let parts = draft
         .parts

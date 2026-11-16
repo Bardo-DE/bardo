@@ -90,6 +90,11 @@ pub enum WritebackError {
 /// let image = decode(&frame, &[3, 2, 1, 0]).expect("a frame");
 /// assert_eq!(image.get_pixel(0, 0).0, [1, 2, 3, 255]);
 /// ```
+///
+/// # Errors
+///
+/// [`WritebackError`] when the frame is empty, its pitch is smaller than a row, or `bytes` is
+/// shorter than the frame needs.
 pub fn decode(frame: &RawFrame, bytes: &[u8]) -> Result<RgbaImage, WritebackError> {
     if frame.width == 0 || frame.height == 0 {
         return Err(WritebackError::Empty);
@@ -137,6 +142,11 @@ pub fn tolerance(channel: u8, parts_per_million: u32) -> GoldenTier {
 
 /// Decodes `bytes` and compares the frame with the golden at `scene` (path without `.png`)
 /// under `tier`. A difference writes the frame and a diff image into `out_dir`.
+///
+/// # Errors
+///
+/// [`WritebackError`] when the frame cannot be decoded or the comparison cannot be written to
+/// `out_dir`.
 pub fn compare_raw(
     frame: &RawFrame,
     bytes: &[u8],

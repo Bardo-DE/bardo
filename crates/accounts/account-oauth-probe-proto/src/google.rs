@@ -1,4 +1,6 @@
-//! What a Google token shows: which of the account's services answer. One small read per service
+//! What a Google token shows: which of the account's services answer.
+//!
+//! One small read per service
 //! that has one; a service whose scope the person unticked is absent without asking, and Photos,
 //! which has no read that is not the person's whole library, is shown by the scope alone.
 //!
@@ -30,9 +32,11 @@ fn claim(offer: Offer, provenance: Provenance) -> Claim {
     }
 }
 
-/// The claim for `kind` that needs no read, when there is one: Mail without the restricted
-/// scope (this build cannot read mail), a service the person unticked (`covers` is false), and
-/// a kind with no cheap read (`has_read` is false), which the grant alone shows as `granted`.
+/// The claim for `kind` that needs no read, when there is one.
+///
+/// Mail without the restricted scope (this build cannot read mail), a service the person unticked
+/// (`covers` is false), and a kind with no cheap read (`has_read` is false), which the grant alone
+/// shows as `granted`.
 #[must_use]
 pub fn settled(
     kind: CapabilityKind,
@@ -59,6 +63,11 @@ pub fn settled(
 
 /// What the `answer` to the read of `kind`'s service says about the account at `address`. Any
 /// status but a success, a 403 and a 404 is the caller's to report.
+///
+/// # Errors
+///
+/// [`Failure`] for a status that is neither a success, a 403 nor a 404, and for an answer that
+/// cannot be read.
 pub fn verdict(
     kind: CapabilityKind,
     granted: &Capability,
@@ -93,12 +102,6 @@ mod tests {
 
     #[test]
     fn a_403_is_told_apart_by_what_google_wrote_and_who_asked() {
-        let body = |text: &str| -> Response<Vec<u8>> {
-            http::Response::builder()
-                .status(403)
-                .body(text.as_bytes().to_vec())
-                .expect("response")
-        };
         const CASES: &[(&str, &str, &str, AbsentReason)] = &[
             (
                 "api off",
@@ -131,6 +134,13 @@ mod tests {
                 AbsentReason::ProviderOffersNone,
             ),
         ];
+
+        let body = |text: &str| -> Response<Vec<u8>> {
+            http::Response::builder()
+                .status(403)
+                .body(text.as_bytes().to_vec())
+                .expect("response")
+        };
         for (name, text, address, want) in CASES {
             assert_eq!(refusal_reason(&body(text), address), *want, "{name}");
         }

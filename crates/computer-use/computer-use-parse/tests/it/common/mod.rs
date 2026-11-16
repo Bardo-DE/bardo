@@ -1,4 +1,7 @@
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "builders shared by the tests; a test file uses only some of them"
+)]
 //! Builders shared by the parser tests.
 
 use std::collections::BTreeSet;

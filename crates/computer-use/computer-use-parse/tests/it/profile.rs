@@ -38,7 +38,14 @@ fn read(profile: ActionProfile, cursor: Option<CursorAt>, arguments: &str) -> Pa
     let context = ToolContext { profile, cursor };
     let calls = [call("computer_use", arguments)];
     let space = ModelSpace::Grid(GridMax(999));
-    parse_tool_calls_with(QWEN, context, space, &calls, Default::default()).unwrap()
+    parse_tool_calls_with(
+        QWEN,
+        context,
+        space,
+        &calls,
+        computer_use_parse::ParseLimits::default(),
+    )
+    .unwrap()
 }
 
 fn ctrl_c() -> CuaAction<GridSpace> {
@@ -184,7 +191,14 @@ fn a_drag_after_a_move_in_the_same_reply_is_one_drag_from_where_the_move_ended()
         ),
     ];
     let space = ModelSpace::Grid(GridMax(999));
-    let p = parse_tool_calls_with(QWEN, context, space, &calls, Default::default()).unwrap();
+    let p = parse_tool_calls_with(
+        QWEN,
+        context,
+        space,
+        &calls,
+        computer_use_parse::ParseLimits::default(),
+    )
+    .unwrap();
     // The move the first drag starts from is part of that drag.
     assert_eq!(
         grid_actions(&p)[..],
@@ -259,13 +273,18 @@ fn an_entry_without_a_profile_parses_exactly_as_before() {
     // The default context is what `parse_tool_calls` uses: the same answer either way.
     let calls = [call("computer_use", drag)];
     let space = ModelSpace::Grid(GridMax(999));
-    let plain = computer_use_parse::parse_tool_calls(QWEN, space, &calls, Default::default());
+    let plain = computer_use_parse::parse_tool_calls(
+        QWEN,
+        space,
+        &calls,
+        computer_use_parse::ParseLimits::default(),
+    );
     let with = parse_tool_calls_with(
         QWEN,
         ToolContext::default(),
         space,
         &calls,
-        Default::default(),
+        computer_use_parse::ParseLimits::default(),
     );
     assert_eq!(plain, with);
 }

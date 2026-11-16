@@ -4,8 +4,8 @@ use crate::pick::SwapCost;
 use crate::policy::{ClassFloor, Floor};
 use crate::route::{Permit, RouteCandidate, TierChoice};
 use crate::spend::SpendVerdict;
+use account_capability::Billing;
 use account_capability::ModelId;
-use account_capability::{Billing};
 use account_core::AccountId;
 
 pub(super) fn mref(name: &str) -> ModelRef {
@@ -405,7 +405,7 @@ fn auto_follows_pick_and_names_a_reason() {
     let picks = SlotPicks(BTreeMap::from([(
         Slot::Text,
         Pick::Auto {
-            mode: Default::default(),
+            mode: crate::AutoMode::default(),
             pool: vec![mref("a"), mref("b")],
         },
     )]));

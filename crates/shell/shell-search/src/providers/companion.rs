@@ -1,5 +1,9 @@
-//! The companion's rows: "Ask the assistant" for what is typed, the answers it has made, and the
-//! journal's recent activity. Nothing shows while the service has no seat at the companion (no
+//! The companion's rows.
+//!
+//! "Ask the assistant" for what is typed, the answers it has made, and the journal's recent
+//! activity.
+//!
+//! Nothing shows while the service has no seat at the companion (no
 //! `org.bardo.Companion1` to ask), so a desktop without the companion has no such row.
 //!
 //! The Ask row is in every search; answers and activity show only when the filter is the
@@ -288,9 +292,7 @@ fn activity_row(entry: &action_core::UndoEntry, at: usize) -> Item {
 #[cfg(test)]
 mod tests {
     use action_core::{ContextKeep, Keep, UndoEntry, UndoScope};
-    use action_vocab::{
-        ActionRef, Args, CallRequest, LabelText, Origin, TargetValue, UndoId,
-    };
+    use action_vocab::{ActionRef, Args, CallRequest, LabelText, Origin, TargetValue, UndoId};
     use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, CardWire, FooterWire};
     use provenance::{ActionName, Actor, AppName, Effect, TaskId, UnixSeconds};
     use shell_launcher::{Cancel, VecSink};

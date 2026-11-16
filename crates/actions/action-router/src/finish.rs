@@ -102,6 +102,10 @@ fn present(
 
 impl<S: Seams> Router<S> {
     /// Ends a call that went through the gate: audit it, tally it, remember it.
+    #[expect(
+        clippy::too_many_lines,
+        reason = "one sequence of steps over shared locals, in the order the rules apply; the parts have no use apart"
+    )]
     pub(crate) async fn finish(
         &self,
         p: &Prepared,

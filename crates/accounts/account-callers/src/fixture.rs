@@ -88,7 +88,7 @@ impl ProcFs for DirProc {
                 io::Error::new(io::ErrorKind::InvalidData, "over the cap")
             }
             base_fs::ReadError::Io { source, .. } => source,
-            other => io::Error::other(other),
+            other @ base_fs::ReadError::NotText { .. } => io::Error::other(other),
         })
     }
 
@@ -145,6 +145,10 @@ impl DirUnits {
 }
 
 impl UnitSource for DirUnits {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn unit(&self, name: &UnitName) -> Result<UnitFacts, UnitError> {
         self.facts(name).ok_or(UnitError::NotLoaded)
     }

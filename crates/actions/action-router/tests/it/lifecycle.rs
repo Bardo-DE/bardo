@@ -36,6 +36,10 @@ fn halt(late: &Late) {
 
 struct HaltingReviewer(Late);
 impl Reviewer for HaltingReviewer {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn review(
         &self,
         _: Stage,
@@ -51,6 +55,10 @@ struct HaltingConfirmer {
     cancelled: Mutex<Vec<ConfirmId>>,
 }
 impl Confirmer for HaltingConfirmer {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn confirm(&self, request: ConfirmRequest) -> ConfirmAnswer {
         halt(&self.late);
         ConfirmAnswer::Allowed {
@@ -74,6 +82,10 @@ struct ChainLink {
     performed: AtomicU32,
 }
 impl AppLink for ChainLink {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn perform(
         &self,
         _: &account_core::AppName,
@@ -89,6 +101,10 @@ impl AppLink for ChainLink {
             follow: Follow::Next(call("mail.thread.read", &["t1"], vec![])),
         })
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn dry_run(
         &self,
         _: &account_core::AppName,
@@ -96,6 +112,10 @@ impl AppLink for ChainLink {
     ) -> Result<Preview, AppRefusal> {
         Ok(Preview::None)
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn undo(
         &self,
         _: &account_core::AppName,
@@ -104,12 +124,24 @@ impl AppLink for ChainLink {
     ) -> Result<(), UndoFault> {
         Err(UndoFault::AppUnavailable)
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn running(&self, _: &account_core::AppName) -> bool {
         true
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn context(&self, _: &account_core::AppName) -> Result<ContextSnapshot, LinkFault> {
         Err(LinkFault::Unavailable)
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn preview(
         &self,
         _: &account_core::AppName,
@@ -117,6 +149,10 @@ impl AppLink for ChainLink {
     ) -> Result<Preview, LinkFault> {
         Err(LinkFault::Unavailable)
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn suggest(
         &self,
         _: &account_core::AppName,
@@ -219,6 +255,9 @@ async fn rig(strictness: Strictness) -> (Arc<Router<Rig>>, SessionOpened) {
 }
 
 async fn open_in(router: &Router<Rig>) -> SessionOpened {
+    use account_core::consent::{Decision, Grant, GrantScope as Scope, Usage};
+    use action_router::GrantStore;
+
     let IntentsReply::SessionOpened(opened) = router
         .handle(
             &companion(),
@@ -242,8 +281,6 @@ async fn open_in(router: &Router<Rig>) -> SessionOpened {
         let record = st.sessions.get_mut(&opened.session).expect("session");
         record.policy = Some(wide_policy(&opened.task, "work"));
     };
-    use account_core::consent::{Decision, Grant, GrantScope as Scope, Usage};
-    use action_router::GrantStore;
     for (n, class) in [provenance::DataClass::Mail, provenance::DataClass::Contacts]
         .into_iter()
         .enumerate()

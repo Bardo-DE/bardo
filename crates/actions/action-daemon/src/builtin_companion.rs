@@ -40,7 +40,7 @@ impl CompanionPort {
     pub fn attach<S: Seams + 'static>(&self, router: &Arc<Router<S>>) {
         let weak: Weak<Router<S>> = Arc::downgrade(router);
         let _ = self.0.set(Box::new(move |inv| match weak.upgrade() {
-            Some(router) => router.companion_perform(inv),
+            Some(router) => router.companion_perform(&inv),
             None => Err(not_ready()),
         }));
     }
@@ -77,30 +77,54 @@ impl IntentProvider for CompanionProvider {
         &self.manifest
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn perform(&self, inv: Invocation) -> Result<Outcome, AppRefusal> {
         self.port.perform(inv)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn dry_run(&self, inv: Invocation) -> Result<Preview, AppRefusal> {
         let _ = inv;
         Ok(Preview::None)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn undo(&self, token: UndoToken, actor: Actor) -> Result<(), UndoFault> {
         let _ = (token, actor);
         Err(UndoFault::Gone)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn search(&self, text: &str) -> Vec<Hit> {
         let _ = text;
         Vec::new()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn preview(&self, id: &EntityId) -> Preview {
         let _ = id;
         Preview::None
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn suggest(&self, ask: SuggestAsk) -> Vec<EntityRef> {
         let _ = ask;
         Vec::new()

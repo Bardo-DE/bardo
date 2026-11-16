@@ -113,7 +113,7 @@ async fn a_dry_run_goes_through_the_same_gate_and_asks_nobody() {
             kind: provenance::EntityKind::parse("memory.fact").expect("kind"),
             key: provenance::EntityKey::parse("f1").expect("key"),
         }]),
-        args: Default::default(),
+        args: std::collections::BTreeMap::default(),
         origin: Origin::Cli,
     })
     .await;

@@ -3,7 +3,6 @@
 //! back into async code; with no runtime (a plain test) a current-thread runtime is made for the
 //! one wait.
 
-
 use tokio::runtime::{Builder, Handle};
 
 /// `future`'s output, or `None` when no runtime could run it.

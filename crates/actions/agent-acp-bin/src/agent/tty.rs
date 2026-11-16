@@ -8,6 +8,7 @@ use action_core::{ConfirmRequest, Shown, StepEnd};
 use agent_acp_server::always_words;
 use agent_session::{BackendEvent, CallEvent, SheetChoice};
 use permission_core::AlwaysOffer;
+use std::fmt::Write as _;
 
 /// A line for a sheet argument: somebody else's words are quoted with where they came from.
 fn shown(value: &Shown) -> String {
@@ -26,15 +27,11 @@ pub fn render(request: &ConfirmRequest) -> (String, bool) {
         request.app
     );
     for line in &request.lines {
-        out.push_str(&format!(
-            "\n    {}: {}",
-            line.label.as_str(),
-            shown(&line.value)
-        ));
+        let _ = write!(out, "\n    {}: {}", line.label.as_str(), shown(&line.value));
     }
     let offered = match &request.always {
         AlwaysOffer::Offered(scope) => {
-            out.push_str(&format!("\n  [a] {}", always_words("this", scope)));
+            let _ = write!(out, "\n  [a] {}", always_words("this", scope));
             true
         }
         AlwaysOffer::Withheld(_) => false,
@@ -46,9 +43,8 @@ pub fn render(request: &ConfirmRequest) -> (String, bool) {
 /// What the person typed, as a choice. "Always" where it was not offered is once.
 pub fn choice(typed: Option<&str>, always_offered: bool) -> SheetChoice {
     match typed.map(str::trim) {
-        Some("y") => SheetChoice::Once,
         Some("a") if always_offered => SheetChoice::Always,
-        Some("a") => SheetChoice::Once,
+        Some("y" | "a") => SheetChoice::Once,
         _ => SheetChoice::Refused,
     }
 }

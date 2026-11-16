@@ -103,12 +103,14 @@ pub(super) fn pick_items(word: &str, label: &str, gate: &Gate) -> Vec<MenuItem<S
     };
     match gate {
         Gate::Open => vec![item],
-        Gate::NeedsAccount => vec![item, info(&copy::gate_note(gate).unwrap_or_default())],
+        // A model that needs an account, or a coding agent while they are off: pickable, and
+        // picking asks to add the account or to turn them on.
+        Gate::NeedsAccount | Gate::TurnOn => {
+            vec![item, info(&copy::gate_note(gate).unwrap_or_default())]
+        }
         Gate::Blocked(reason) => vec![
             item.with_availability(Availability::Disabled),
             info(&copy::blocked_line(reason)),
         ],
-        // A coding agent while they are off: pickable, and picking asks to turn them on.
-        Gate::TurnOn => vec![item, info(&copy::gate_note(gate).unwrap_or_default())],
     }
 }

@@ -21,7 +21,7 @@ use smithay::backend::drm::DrmNode;
 use smithay::backend::renderer::multigpu::GpuManager;
 use smithay::backend::renderer::{ImportDma, ImportMem};
 use smithay::utils::Size;
-use support::{TestBuffer, draw};
+use support::{TestBuffer, draw, px};
 
 const SIZE: (u32, u32) = (256, 128);
 
@@ -118,7 +118,10 @@ fn format_steering_offers_the_render_gpus_formats_first() {
         "A renders XRGB8888; ARGB8888 only B offers, after a copy"
     );
     // Asking for a node detection does not know is an error, not an empty table.
-    let stray = RenderPlan::new(DrmNodeId::new(226, 150), Default::default());
+    let stray = RenderPlan::new(
+        DrmNodeId::new(226, 150),
+        std::collections::BTreeMap::default(),
+    );
     assert!(matches!(
         format_table(&mut source, &nodes, &stray),
         Err(GpuError::UnknownNode(_))
@@ -243,12 +246,7 @@ fn a_shm_client_renders_exactly_beside_a_foreign_gpu() {
     let mut renderer = gpu.renderer(&a, &a, Fourcc::Argb8888).expect("a renderer");
     let bytes = TestBuffer::shm_bytes(w, h, 5);
     let texture = renderer
-        .import_memory(
-            &bytes,
-            Fourcc::Argb8888,
-            Size::from((w as i32, h as i32)),
-            false,
-        )
+        .import_memory(&bytes, Fourcc::Argb8888, Size::from((px(w), px(h))), false)
         .expect("shm imports");
     draw(&mut renderer, &mut out, &texture).expect("the frame draws");
     drop(renderer);
@@ -292,12 +290,7 @@ fn unplugging_a_gpu_falls_back_to_shm() {
     // The next commit, as shm, renders exactly on A.
     let bytes = TestBuffer::shm_bytes(w, h, 2);
     let texture = renderer
-        .import_memory(
-            &bytes,
-            Fourcc::Argb8888,
-            Size::from((w as i32, h as i32)),
-            false,
-        )
+        .import_memory(&bytes, Fourcc::Argb8888, Size::from((px(w), px(h))), false)
         .expect("shm imports");
     draw(&mut renderer, &mut out, &texture).expect("draws");
     drop(renderer);

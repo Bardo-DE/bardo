@@ -1,7 +1,8 @@
-//! `org.freedesktop.login1.Session` (P1-F2): `TakeControl`, `ReleaseControl`, `Activate`,
-//! `SetIdleHint`, `TakeDevice`, `ReleaseDevice`, `PauseDeviceComplete` as recorders; the
-//! `Lock`, `Unlock`, `PauseDevice` and `ResumeDevice` signals are sent through
-//! [`FakeLogind`](super::FakeLogind).
+//! `org.freedesktop.login1.Session` (P1-F2).
+//!
+//! `TakeControl`, `ReleaseControl`, `Activate`, `SetIdleHint`, `TakeDevice`, `ReleaseDevice`,
+//! `PauseDeviceComplete` as recorders; the `Lock`, `Unlock`, `PauseDevice` and `ResumeDevice`
+//! signals are sent through [`FakeLogind`](super::FakeLogind).
 
 use super::log::Recorder;
 use super::{LogindCall, LogindError, SEAT_ID, SEAT_PATH, SESSION_ID, inhibit, object_path};
@@ -22,6 +23,10 @@ impl Session {
 
     /// What `TakeDevice(major, minor)` returns: a descriptor for a fixture device (the read end of a pipe
     /// whose write end is already closed), recorded.
+    ///
+    /// # Errors
+    ///
+    /// [`LogindError`] when the fixture descriptor cannot be made.
     pub fn open_device(&self, major: u32, minor: u32) -> Result<OwnedFd, LogindError> {
         let (read, _write) = inhibit::pipe()?;
         self.log.record(LogindCall::TakeDevice(major, minor));
@@ -77,36 +82,64 @@ impl Session {
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self`, though this fake keeps no state"
+    )]
     fn id(&self) -> String {
         SESSION_ID.to_owned()
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self`, though this fake keeps no state"
+    )]
     fn seat(&self) -> fdo::Result<(String, OwnedObjectPath)> {
         Ok((SEAT_ID.to_owned(), object_path(SEAT_PATH)?))
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self`, though this fake keeps no state"
+    )]
     fn active(&self) -> bool {
         true
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self`, though this fake keeps no state"
+    )]
     fn state(&self) -> String {
         "active".to_owned()
     }
 
     #[zbus(property, name = "Type")]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self`, though this fake keeps no state"
+    )]
     fn session_type(&self) -> String {
         "wayland".to_owned()
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self`, though this fake keeps no state"
+    )]
     fn class(&self) -> String {
         "user".to_owned()
     }
 
     #[zbus(property, name = "VTNr")]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus interface method takes `&self`, though this fake keeps no state"
+    )]
     fn vtnr(&self) -> u32 {
         1
     }

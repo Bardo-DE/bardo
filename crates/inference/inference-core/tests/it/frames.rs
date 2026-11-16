@@ -402,6 +402,11 @@ fn why_reached_and_stage_notes_keep_their_json() {
 
 #[test]
 fn a_stage_note_without_a_name_decodes_and_is_written_without_one() {
+    #[derive(serde::Deserialize)]
+    struct Old {
+        role: StageRole,
+    }
+
     let named = StageNote {
         role: StageRole::Answer,
         served: served(),
@@ -420,10 +425,6 @@ fn a_stage_note_without_a_name_decodes_and_is_written_without_one() {
     assert_eq!(serde_json::to_value(&note).expect("value"), old);
     assert!(!serde_json::to_string(&note).expect("json").contains("name"));
     // An old reader (no `name` field, unknown fields skipped) reads the new bytes.
-    #[derive(serde::Deserialize)]
-    struct Old {
-        role: StageRole,
-    }
     assert_eq!(
         serde_json::from_str::<Old>(&json).expect("old reader").role,
         StageRole::Answer

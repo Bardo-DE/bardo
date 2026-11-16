@@ -14,8 +14,12 @@ pub enum Asker {
     Helper(HelperId),
 }
 
-/// Whose Automatic pool a pick reads (`ai.auto.pool.<slot>` for the assistant,
-/// `ai.auto.pool.<slot>.helper.<id>` for a helper). A helper never reads the assistant's pool: a
+/// Whose Automatic pool a pick reads.
+///
+/// It is `ai.auto.pool.<slot>` for the assistant and `ai.auto.pool.<slot>.helper.<id>` for a
+/// helper.
+///
+/// A helper never reads the assistant's pool: a
 /// helper without a pool of its own has nothing to choose among.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]

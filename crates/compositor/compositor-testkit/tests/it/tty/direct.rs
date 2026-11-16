@@ -50,7 +50,8 @@ fn rig_with(writeback: Option<FakeWriteback>) -> Rig {
     opener.devices.insert(card.clone(), kms.clone());
     let mut session = DirectSession::new(|| {});
     let link = session.sleep_link().expect("the edge's end");
-    let fake = writeback.clone().unwrap_or_default();
+    let attached = writeback.is_some();
+    let fake = writeback.unwrap_or_default();
     let seams = TtySeams::new(
         Box::new(session),
         Box::new(FixedNode::new(card)),
@@ -58,9 +59,10 @@ fn rig_with(writeback: Option<FakeWriteback>) -> Rig {
         Box::new(NoGpus),
         GpuChoice::Auto,
     );
-    let seams = match writeback {
-        Some(_) => seams.with_writeback(Box::new(fake.clone())),
-        None => seams,
+    let seams = if attached {
+        seams.with_writeback(Box::new(fake.clone()))
+    } else {
+        seams
     };
     let mut backend = TtyBackend::start(seams).expect("start");
     let panel = SyntheticTopology::LaptopPanel.resources().connectors[0].clone();

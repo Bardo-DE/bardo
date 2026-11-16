@@ -116,9 +116,9 @@ mod tests {
         let mut out = Vec::new();
         let n = i32::try_from(cells.len()).unwrap_or(0);
         out.extend(n.to_ne_bytes());
-        cells
-            .iter()
-            .for_each(|(kind, _)| out.extend(kind.to_ne_bytes()));
+        for (kind, _) in cells {
+            out.extend(kind.to_ne_bytes());
+        }
         let mut end = -1i32;
         for (_, text) in cells {
             end += 1 + i32::try_from(text.len()).unwrap_or(0);

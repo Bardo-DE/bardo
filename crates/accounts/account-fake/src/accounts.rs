@@ -21,7 +21,7 @@ fn endpoint(family: Family, url: &str, tls: Tls, login: &str) -> ServiceEndpoint
 fn account(
     id: &str,
     label: &str,
-    provider: FakeProvider,
+    provider: &FakeProvider,
     endpoints: Vec<ServiceEndpoint>,
 ) -> Account {
     let spec = provider.spec();
@@ -66,7 +66,7 @@ pub fn storage_account() -> Account {
     account(
         "fake-storage",
         "ada@cloud.invalid",
-        cloud_provider(),
+        &cloud_provider(),
         endpoints,
     )
 }
@@ -88,7 +88,7 @@ pub fn mail_account() -> Account {
             "ada@mail.invalid",
         ),
     ];
-    account("fake-mail", "ada@mail.invalid", mail_provider(), endpoints)
+    account("fake-mail", "ada@mail.invalid", &mail_provider(), endpoints)
 }
 
 /// `fake-llm`: a local chat model, which has no endpoint.
@@ -97,7 +97,7 @@ pub fn llm_account() -> Account {
     account(
         "fake-llm",
         "Fake Runtime on this computer",
-        llm_provider(),
+        &llm_provider(),
         Vec::new(),
     )
 }

@@ -1,5 +1,8 @@
-//! The things apps index (mail, contacts, events), found through intentd's shadow index
-//! (`Intents1.Search`). The companion service holds the shell's seat at intentd, so a lookup is a
+//! The things apps index (mail, contacts, events).
+//!
+//! They are found through intentd's shadow index (`Intents1.Search`).
+//!
+//! The companion service holds the shell's seat at intentd, so a lookup is a
 //! command to it and its answer a state it publishes: `query` sends the ask under the query's
 //! generation and waits for the answer to that generation, or for a newer ask to replace it.
 //!

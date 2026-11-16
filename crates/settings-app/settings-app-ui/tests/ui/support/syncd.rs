@@ -149,7 +149,7 @@ impl Syncd {
         }
     }
 
-    async fn status(&self, dataset: &str) -> Details {
+    fn status(&self, dataset: &str) -> Details {
         let mut details = Details::new();
         if let Some(standing) = self.standing.lock().expect("standing").get(dataset) {
             let number = |count: u64| Value::from(count).try_to_owned().expect("a number");

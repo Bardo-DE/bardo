@@ -15,6 +15,7 @@ use compositor_testclient::surface::toplevel::{Toplevel, WmBase};
 use compositor_testclient::{Pattern, ShmBuffer, shm_buffer};
 use compositor_testkit::{ASKED_PROGRAM, ClientId, Fixture, FixtureSpec};
 use desktop_protocols::vocab::{Answer, Emphasis, Power};
+use std::fmt::Write as _;
 
 /// Maps a titled window of `app_id` (the buffer must outlive the window).
 pub(super) fn map_titled(
@@ -347,15 +348,15 @@ pub(crate) fn flow(
                 .iter()
                 .any(|prefix| line.object.starts_with(prefix))
         })
-        .map(|line| {
+        .fold(String::new(), |mut out, line| {
             let args = if masked.contains(&line.event.as_str()) {
                 format!("<{}>", line.event)
             } else {
                 line.args.join(", ")
             };
-            format!("{}.{}({args})\n", line.object, line.event)
-        })
-        .collect();
+            let _ = write!(out, "{}.{}({args})\n", line.object, line.event);
+            out
+        });
     normalised(&text)
 }
 

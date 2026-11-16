@@ -207,7 +207,7 @@ impl<S: Seams> Router<S> {
             decl.effect = c.used.min(decl.effect);
         }
         match &who.session {
-            None => Ok(self.prepare_person(id, who, request, decl, window, depth)),
+            None => Ok(Self::prepare_person(id, who, request, decl, window, depth)),
             Some(session) => {
                 let Some(record) = st.sessions.get(session) else {
                     return Err(early(decl.effect, CallRefusal::Halted(SpaceScope::Any)));
@@ -221,7 +221,14 @@ impl<S: Seams> Router<S> {
 
     /// A call an agent made: arguments labelled and checked, then consent, coverage, Cedar and
     /// the gate.
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "the gate's inputs are gathered once by the caller and handed over as they are"
+    )]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "one sequence of steps over shared locals, in the order the rules apply; the parts have no use apart"
+    )]
     fn prepare_agent(
         &self,
         st: &RouterState,
@@ -430,7 +437,6 @@ impl<S: Seams> Router<S> {
     /// A call the person made through their own surface: the arguments are checked, and
     /// nothing else stands between it and the app (the app's own alerts apply).
     fn prepare_person(
-        &self,
         id: CallId,
         who: &Who,
         request: CallRequest,

@@ -317,6 +317,10 @@ struct Held {
 impl Sheets for Held {
     type Link = ScriptedLink;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn conversation(&self, _open: SheetOpen) -> Result<ScriptedLink, SheetFault> {
         Err(SheetFault::Unavailable)
     }

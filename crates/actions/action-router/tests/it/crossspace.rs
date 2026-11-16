@@ -9,7 +9,7 @@ use action_manifest::TargetKind;
 use action_vocab::{CallRequest, CallerRole, Origin};
 use action_wire::{CallerId, IntentsReply, IntentsRequest, WireRefusal};
 use permission_policy::SpaceRelation;
-use provenance::{EntityId, EntityKey, EntityKind, SpaceId, SpaceScope, UnixSeconds};
+use provenance::{EntityId, EntityKey, EntityKind, SpaceScope, UnixSeconds};
 use std::collections::BTreeMap;
 
 fn mail_caller() -> CallerId {
@@ -120,7 +120,7 @@ fn the_relation_of_targets_to_the_session_is_pure_over_the_resolver() {
         (key("there"), SpaceScope::Only(space("home"))),
     ]));
     let on = TargetKind::One(provenance::EntityKind::parse("mail.thread").expect("kind"));
-    let work: SpaceId = space("work");
+    let work = space("work");
     let relation = |keys: &[&str], on: &TargetKind| {
         let targets: Vec<EntityId> = keys.iter().map(|k| entity("mail.thread", k)).collect();
         relation_of(&known, &work, on, &targets)

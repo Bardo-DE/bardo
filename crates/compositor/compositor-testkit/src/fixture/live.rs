@@ -26,6 +26,10 @@ impl Fixture {
     /// has seen it arrive. It arrives with the standing [`Fixture::connect`] gives a client of
     /// its role (a public one is a desktop service the table trusts), so what it uses is not
     /// asked about: a driven client such as wlcs tests the protocols, not the consent flow.
+    ///
+    /// # Panics
+    ///
+    /// If the socket pair cannot be made or set non-blocking, or the event loop fails to dispatch.
     pub fn adopt_socket(&mut self, role: ConnectionRole) -> (ClientId, OwnedFd) {
         let (server, client) = UnixStream::pair().expect("a socket pair for the adopted client");
         server
@@ -43,6 +47,10 @@ impl Fixture {
     /// Blocks up to `timeout` of real time for the compositor's event loop to have something
     /// to do (a client wrote), and does it. The virtual clock does not move: the caller
     /// advances it.
+    ///
+    /// # Panics
+    ///
+    /// If the event loop fails to dispatch.
     pub fn wait(&mut self, timeout: Duration) {
         self.event_loop
             .dispatch(Some(timeout), &mut self.state)
@@ -166,6 +174,10 @@ impl Fixture {
 
     /// Where the layout puts `window`'s content when casement frames it (the server-side
     /// decoration): the titlebar is reserved above it. The window must be arranged.
+    ///
+    /// # Panics
+    ///
+    /// If `window` is not arranged.
     pub fn framed_content_of(&self, window: WindowId) -> LogicalRect {
         let model = self.model();
         let frames = BTreeMap::from([(window, frame_metrics().titlebar)]);

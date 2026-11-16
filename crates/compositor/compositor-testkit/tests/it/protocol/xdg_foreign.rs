@@ -34,7 +34,8 @@ fn an_imported_parent_becomes_the_parent() {
         guest_foreign.import_parent_of(fixture.client(guest), &handle, &dialog);
     dialog.commit_bare();
     fixture.pump();
-    dialog.ack_latest();
+    // the serial acked is not needed.
+    let _ = dialog.ack_latest();
     let buffer = compositor_testclient::shm_buffer(
         fixture.client(guest),
         compositor_core::geometry::PhysicalSize { w: 300, h: 200 },

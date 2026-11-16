@@ -6,7 +6,7 @@ use std::time::{Duration, Instant};
 use zbus::fdo;
 
 /// How long the host keeps an agent's session open with nothing asked of it.
-const IDLE: Duration = Duration::from_secs(10 * 60);
+const IDLE: Duration = Duration::from_mins(10);
 
 /// How often the host looks at the clock for that.
 const WATCH: Duration = Duration::from_secs(20);

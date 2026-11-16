@@ -13,6 +13,10 @@ pub struct DomainName(String);
 
 impl DomainName {
     /// The name written as `text`, lower-cased, or why it is not one.
+    ///
+    /// # Errors
+    ///
+    /// [`CoreError::MalformedId`] when `text` is not a valid domain name.
     pub fn parse(text: &str) -> Result<Self, CoreError> {
         let name = text.strip_suffix('.').unwrap_or(text).to_ascii_lowercase();
         let label_ok = |label: &str| {

@@ -46,7 +46,7 @@ pub(crate) fn notes_of(rows: &[Logged]) -> Vec<CheckpointNote> {
 }
 
 /// Why a store could not save, as the list tells it.
-fn skip_of(fault: StoreFault) -> SkipReason {
+fn skip_of(fault: &StoreFault) -> SkipReason {
     match fault {
         StoreFault::NoHistory => SkipReason::NoHistory,
         StoreFault::TooLarge => SkipReason::TooLarge,
@@ -144,7 +144,7 @@ impl<S: Seams> Router<S> {
             Decision::Skip(why) => {
                 self.note_checkpoint(session, turn, CheckpointEvent::Skipped(why));
             }
-            _ => {}
+            Decision::Nothing => {}
         }
     }
 
@@ -159,7 +159,7 @@ impl<S: Seams> Router<S> {
             .await
         {
             Some(Ok(saved)) => CheckpointEvent::Taken(saved.id),
-            Some(Err(fault)) => CheckpointEvent::Skipped(skip_of(fault)),
+            Some(Err(fault)) => CheckpointEvent::Skipped(skip_of(&fault)),
             None => CheckpointEvent::Skipped(SkipReason::Failed),
         }
     }

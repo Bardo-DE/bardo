@@ -1,5 +1,7 @@
-//! Tracker 3 (localsearch's `org.freedesktop.Tracker3.Miner.Files` endpoint) over zbus: one
-//! SPARQL `Query` per ask, results read from the pipe the endpoint writes its cursor to.
+//! Tracker 3 (localsearch's `org.freedesktop.Tracker3.Miner.Files` endpoint) over zbus.
+//!
+//! One SPARQL `Query` per ask, results read from the pipe the endpoint writes its cursor to.
+//!
 //! [`sparql_for`] and [`escape_literal`] are pure and table-tested.
 //!
 //! The query matches `nfo:fileName` (and `fts:match` on the text when the miner indexes
@@ -133,7 +135,7 @@ async fn miner_state(session: &Bus) -> zbus::Result<IndexState> {
 
 /// `Endpoint.Query(sparql, the pipe's write end, {})`; the cursor arrives on the pipe.
 async fn ask_endpoint(session: &Bus, sparql: &str, writer: &PipeWriter) -> Result<(), IndexFault> {
-    let connection = session.try_connect().await.map_err(|_| IndexFault::NoBus)?;
+    let connection = session.try_connect().await.ok().ok_or(IndexFault::NoBus)?;
     let arguments: HashMap<&str, Value<'_>> = HashMap::new();
     connection
         .call_method(

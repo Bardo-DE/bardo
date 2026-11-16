@@ -68,7 +68,7 @@ fn turned_on(edit: &Edit) -> bool {
 
 impl SharingSwitch {
     /// Whether `edit` is the person turning this switch.
-    pub(crate) fn owns(&self, edit: &Edit) -> bool {
+    pub(crate) fn owns(edit: &Edit) -> bool {
         edit.entry.spec.path.0 == SHARING_KEY
     }
 

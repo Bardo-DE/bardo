@@ -130,6 +130,10 @@ struct ScriptedSignIn(Script);
 struct NoSession(Option<Credential>);
 
 impl SignIn for ScriptedSignIn {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn next(&mut self, input: SignInInput) -> SignInStep {
         let name = match &input {
             SignInInput::Start => "start",
@@ -169,6 +173,10 @@ impl Provider for ScriptedProvider {
         Ok(vec![])
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open(
         &self,
         _account: &AccountId,
@@ -198,6 +206,10 @@ impl Provider for ScriptedProvider {
             .unwrap_or(true)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn revoke(
         &self,
         account: &Account,
@@ -217,6 +229,10 @@ impl Provider for ScriptedProvider {
 }
 
 impl ProviderSession for NoSession {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn access_token(
         &self,
         _audience: &account_core::Audience,
@@ -274,6 +290,10 @@ impl Link {
 }
 
 impl SheetLink for Link {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn update(&mut self, view: SheetView) -> Result<(), SheetFault> {
         self.see(&view);
         Ok(())
@@ -295,6 +315,10 @@ impl Sheets for Reactive {
         self.consent.consent(ask, window).await
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn conversation(&self, open: SheetOpen) -> Result<Link, SheetFault> {
         let react = self
             .people

@@ -15,6 +15,10 @@ use crate::{ParseError, ParseLimits, Parsed};
 ///
 /// A reply without an `Action:` line is `NoAction`. A call that never closes is `Unterminated`,
 /// and reading beyond the batch limit drops the extra actions as `OverBatchLimit`.
+///
+/// # Errors
+///
+/// [`ParseError`] when `text` is larger than the limit or holds no action the dialect accepts.
 pub fn parse_text(
     dialect: TextDialect,
     space: ModelSpace,
@@ -34,6 +38,11 @@ pub fn parse_text(
 ///
 /// No calls is `NoAction`; the calls' names and arguments together over `limits.max_input` is
 /// `TooLarge`.
+///
+/// # Errors
+///
+/// [`ParseError`] when the calls are larger than the limit or none of them is an action the dialect
+/// accepts.
 pub fn parse_tool_calls(
     dialect: ToolDialect,
     space: ModelSpace,
@@ -43,9 +52,15 @@ pub fn parse_tool_calls(
     parse_tool_calls_with(dialect, ToolContext::default(), space, calls, limits)
 }
 
-/// [`parse_tool_calls`] for a model with an action profile and, when the step knows it, a
-/// cursor: the profile says how the model's calls differ from the convention, and a drag from
-/// the cursor is dropped as `MissingArgument` when there is none.
+/// [`parse_tool_calls`] for a model with an action profile and, when the step knows it, a cursor.
+///
+/// The profile says how the model's calls differ from the convention, and a drag from the cursor is
+/// dropped as `MissingArgument` when there is none.
+///
+/// # Errors
+///
+/// [`ParseError`] when the calls are larger than the limit or none of them is an action the dialect
+/// accepts.
 pub fn parse_tool_calls_with(
     dialect: ToolDialect,
     context: ToolContext,

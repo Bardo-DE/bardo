@@ -30,9 +30,16 @@ pub enum UdmabufBufferError {
     Client(#[from] compositor_testclient::ClientError),
 }
 
-/// Sends `client` a linear ARGB8888 `wl_buffer` over a dma-buf made from `source` with
-/// `zwp_linux_buffer_params_v1.create_immed`. The source's stride must be a multiple of 256 (a
+/// Sends `client` a linear ARGB8888 `wl_buffer` made from `source`.
+///
+/// The buffer is a dma-buf made with `zwp_linux_buffer_params_v1.create_immed`.
+///
+/// The source's stride must be a multiple of 256 (a
 /// width that is a multiple of 64 at four bytes a pixel).
+///
+/// # Errors
+///
+/// [`UdmabufBufferError`] when the buffer cannot be allocated or handed to the client.
 pub fn client_buffer(
     client: &mut TestClient,
     source: &UdmabufSource,

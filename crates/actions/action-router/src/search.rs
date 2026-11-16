@@ -120,8 +120,8 @@ impl<S: Seams> Router<S> {
     }
 
     /// `.Search.Query`: the hits of the index, best match first.
-    pub(crate) fn search_query(&self, role: CallerRole, ask: SearchAsk) -> IntentsReply {
-        IntentsReply::Hits(self.search_indexed(role, &ask))
+    pub(crate) fn search_query(&self, role: CallerRole, ask: &SearchAsk) -> IntentsReply {
+        IntentsReply::Hits(self.search_indexed(role, ask))
     }
 
     /// The hits of the index: pushed and shipped entries, best match first and newest first

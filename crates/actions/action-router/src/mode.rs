@@ -38,7 +38,7 @@ impl<S: Seams> Router<S> {
     /// `.Session.SetMode`: switches a conversation between Auto and Manual from the next step.
     /// Who may ask is the role table's (the shell and the control centre); a call already
     /// waiting on a sheet keeps its sheet.
-    pub(crate) fn session_mode(&self, ask: SessionModeAsk) -> IntentsReply {
+    pub(crate) fn session_mode(&self, ask: &SessionModeAsk) -> IntentsReply {
         if self.floor.holds_manual() {
             return IntentsReply::Refused(WireRefusal::Locked);
         }

@@ -58,6 +58,10 @@ pub trait ActionDialect: Sync {
     }
 
     /// Reads one reply.
+    ///
+    /// # Errors
+    ///
+    /// [`ParseError`] when the reply holds no action the dialect accepts or breaks the limits.
     fn parse(
         &self,
         space: ModelSpace,

@@ -1,5 +1,9 @@
-//! What the acceptance harness needs to run the agent host: its entry point with the seams only a
-//! harness chooses, and the pieces `agent-live` builds a host from in its own process. Behind the
+//! What the acceptance harness needs to run the agent host.
+//!
+//! Its entry point with the seams only a harness chooses, and the pieces `agent-live` builds a host
+//! from in its own process.
+//!
+//! Behind the
 //! `testing` feature; no packaged binary turns it on. The host itself is private to this crate.
 
 /// Hosting one agent session in the harness's process.
@@ -20,8 +24,11 @@ pub mod acp {
     use account_callers::ProcRoot;
     use std::path::PathBuf;
 
-    /// What only the acceptance harness's mains choose: the `/proc` callers are read from (a
-    /// fixture tree has each unit's main process in `<root>/units`) and the system's callers file.
+    /// What only the acceptance harness's mains choose.
+    ///
+    /// The `/proc` callers are read from (a fixture tree has each unit's main process in
+    /// `<root>/units`) and the system's callers file.
+    ///
     /// The packaged binary uses the system's `/proc` and `/etc/bardo`, and no environment variable
     /// can change either.
     #[derive(Debug, Clone)]
@@ -42,6 +49,10 @@ pub mod acp {
     }
 
     /// [`crate::serve`] with the seams the acceptance harness's mains choose.
+    ///
+    /// # Errors
+    ///
+    /// [`LiveFault`] when the service cannot be set up or served.
     pub async fn serve_with(
         trace: action_dbus::InferWatch,
         seams: HarnessSeams,

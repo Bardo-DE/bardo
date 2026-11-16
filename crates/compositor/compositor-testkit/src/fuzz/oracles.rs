@@ -38,7 +38,8 @@ pub(super) fn snapshot<H: FuzzHost>(host: &mut H, id: ClientId) -> Snapshot {
 pub(super) fn alive_pump<H: FuzzHost>(host: &mut H) -> Result<(), FuzzFailure> {
     catch_unwind(AssertUnwindSafe(|| host.pump()))
         .map(|_| ())
-        .map_err(|_| FuzzFailure::Panicked(PanicSite::Pump))
+        .ok()
+        .ok_or(FuzzFailure::Panicked(PanicSite::Pump))
 }
 
 /// Oracle 2 for one client: no protocol error, or a documented one.

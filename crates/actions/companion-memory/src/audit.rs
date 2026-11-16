@@ -124,7 +124,9 @@ impl AuditState {
     ) -> Report {
         let before = self.link;
         let batch = sink.drain();
-        batch.iter().for_each(|r| self.calls.learn(r));
+        for r in &batch {
+            self.calls.learn(r);
+        }
         let placed: Vec<(usize, SpaceId, AuditRecord)> = batch
             .into_iter()
             .enumerate()

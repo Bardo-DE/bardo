@@ -27,6 +27,10 @@ pub fn load_frecency(dir: &Path) -> Frecency {
 
 /// Write `frecency` to `dir` (created if needed) durably and for the person alone, so a crash
 /// never leaves half a file and the history is nobody else's to read.
+///
+/// # Errors
+///
+/// [`ServiceError`] when the file cannot be written.
 pub fn save_frecency(dir: &Path, frecency: &Frecency) -> Result<(), ServiceError> {
     durable::write_file(
         &dir.join(FILE_NAME),

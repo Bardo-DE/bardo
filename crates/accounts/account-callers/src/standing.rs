@@ -17,13 +17,13 @@ use caller_identity_core::{AppKey, Engine, Proof, Standing};
 /// - Every other program and every other `Unverified` process shows nothing.
 pub(super) fn identity_of(standing: &Standing) -> PeerIdentity {
     match standing {
-        Standing::Service { app, .. } => proven(app, Isolation::Unsandboxed),
         Standing::Sandboxed { app, engine } => match engine {
             Engine::Flatpak => proven(app, Isolation::Flatpak),
             Engine::Snap => proven(app, Isolation::Snap),
             _ => PeerIdentity::Unproven,
         },
-        Standing::Program {
+        Standing::Service { app, .. }
+        | Standing::Program {
             scope_app: Some(app),
             ..
         }

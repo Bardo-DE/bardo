@@ -66,7 +66,6 @@ fn a_selection_reaches_the_focused_client() {
     let _keyboard_b = Keyboard::bind(fixture.client(b)).expect("keyboard");
     let devices_a = DataDevice::bind(fixture.client(a), keyboard_a.seat(), None).expect("device");
     let _devices_b = DataDevice::bind(fixture.client(b), keyboard_a.seat(), None);
-    let _ = _devices_b;
     // A holds the keyboard and sets the clipboard.
     let _layer_a = map(&mut fixture, a, &focused(Layer::Top, "a"));
     devices_a.copy(fixture.client(a), "text/plain", 0);

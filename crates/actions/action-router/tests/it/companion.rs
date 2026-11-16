@@ -128,7 +128,7 @@ async fn starting_a_task_opens_a_child_session_holds_the_goal_as_a_handle_and_se
     give_policy(&router, &front.session, parent_policy.clone());
 
     let outcome = router
-        .companion_perform(start("Find the Lisbon receipts", &front.session))
+        .companion_perform(&start("Find the Lisbon receipts", &front.session))
         .expect("the task starts");
     let (task, worker_session) = started(&outcome);
     assert_eq!(outcome.undo, Undoable::No);
@@ -195,7 +195,7 @@ async fn a_child_of_a_task_with_no_policy_has_none() {
     let router = router();
     let front = open(&router, "work", AgentRef::Companion).await;
     let outcome = router
-        .companion_perform(start("Watch the build", &front.session))
+        .companion_perform(&start("Watch the build", &front.session))
         .expect("starts");
     let task = started_task(&outcome);
     let st = router.state.lock().expect("lock");
@@ -210,13 +210,13 @@ async fn only_a_companion_session_may_start_or_message_a_task() {
     let mut from_a_terminal = start("Do something", &front.session);
     from_a_terminal.actor = Actor::Cli;
     assert_eq!(
-        router.companion_perform(from_a_terminal).map(|_| ()),
+        router.companion_perform(&from_a_terminal).map(|_| ()),
         Err(AppRefusal::Unsupported)
     );
     let mut anything_else = start("x", &front.session);
     anything_else.action = provenance::ActionName::parse("companion.task.delete").expect("action");
     assert_eq!(
-        router.companion_perform(anything_else).map(|_| ()),
+        router.companion_perform(&anything_else).map(|_| ()),
         Err(AppRefusal::Unsupported)
     );
 }
@@ -227,7 +227,7 @@ async fn a_message_to_a_task_is_delivered_as_input_and_an_unknown_task_is_not_fo
     let front = open(&router, "work", AgentRef::Companion).await;
     let task = started_task(
         &router
-            .companion_perform(start("Find receipts", &front.session))
+            .companion_perform(&start("Find receipts", &front.session))
             .expect("starts"),
     );
     let say_more = |target: &str, text: &str| {
@@ -241,7 +241,7 @@ async fn a_message_to_a_task_is_delivered_as_input_and_an_unknown_task_is_not_fo
     };
 
     router
-        .companion_perform(say_more(task.as_str(), "Also the Porto ones"))
+        .companion_perform(&say_more(task.as_str(), "Also the Porto ones"))
         .expect("delivered");
     let inbox = worker_inbox(&router, &task).await;
     assert_eq!(inbox.len(), 2, "the goal, then this: {inbox:?}");
@@ -256,7 +256,7 @@ async fn a_message_to_a_task_is_delivered_as_input_and_an_unknown_task_is_not_fo
 
     assert_eq!(
         router
-            .companion_perform(say_more("t-nobody", "hello"))
+            .companion_perform(&say_more("t-nobody", "hello"))
             .map(|_| ()),
         Err(AppRefusal::NotFound(task_entity("t-nobody")))
     );
@@ -291,7 +291,7 @@ async fn a_started_task_comes_back_as_a_handle_of_kind_task_that_a_message_can_t
     let router = router();
     let front = open(&router, "work", AgentRef::Companion).await;
     let outcome = router
-        .companion_perform(start("Find receipts", &front.session))
+        .companion_perform(&start("Find receipts", &front.session))
         .expect("starts");
     let (task, _) = started(&outcome);
     let handle = started_handle(&outcome);
@@ -313,7 +313,7 @@ async fn a_started_task_comes_back_as_a_handle_of_kind_task_that_a_message_can_t
     };
     assert_eq!(thing, task_entity(task.as_str()));
     router
-        .companion_perform(invocation(
+        .companion_perform(&invocation(
             "companion.task.message",
             &front.session,
             TargetValue::Entities(vec![thing]),
@@ -329,7 +329,7 @@ async fn a_worker_may_not_start_a_task() {
     let router = router();
     let front = open(&router, "work", AgentRef::Companion).await;
     let outcome = router
-        .companion_perform(start("Find receipts", &front.session))
+        .companion_perform(&start("Find receipts", &front.session))
         .expect("starts");
     let (task, worker_session) = started(&outcome);
     let mut from_the_worker = start("Find receipts", &worker_session);
@@ -338,7 +338,7 @@ async fn a_worker_may_not_start_a_task() {
         role: AgentRole::Worker { task },
     };
     assert_eq!(
-        router.companion_perform(from_the_worker).map(|_| ()),
+        router.companion_perform(&from_the_worker).map(|_| ()),
         Err(AppRefusal::Unsupported)
     );
 }

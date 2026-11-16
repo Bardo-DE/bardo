@@ -45,6 +45,10 @@ pub struct FixtureSpec {
 impl FixtureSpec {
     /// One 1920x1080 output at 60 Hz and scale 1, pixman, one soft GPU, the default settings,
     /// every frame costing 4 ms.
+    ///
+    /// # Panics
+    ///
+    /// Never in practice: the output specs are fixed valid literals.
     #[must_use]
     pub fn desktop() -> FixtureSpec {
         FixtureSpec {
@@ -131,6 +135,10 @@ impl FixtureSpec {
     }
 
     /// The same, with these outputs.
+    ///
+    /// # Panics
+    ///
+    /// If one of `specs` is not an output spec.
     #[must_use]
     pub fn with_outputs(self, specs: &[&str]) -> FixtureSpec {
         FixtureSpec {

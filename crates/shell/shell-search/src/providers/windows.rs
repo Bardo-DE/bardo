@@ -222,7 +222,7 @@ mod tests {
             urgency: shell_model::units::Urgency::Calm,
             visibility: shell_model::units::Visibility::Shown,
             coordinates: Vec::new(),
-            capabilities: Default::default(),
+            capabilities: shell_model::windows::WorkspaceCaps::default(),
             pinned: false,
         }
     }
@@ -266,6 +266,14 @@ mod tests {
 
     #[test]
     fn a_query_table_matches_title_or_app_name() {
+        const CASES: &[(&str, &[&str])] = &[
+            ("inbox", &["Inbox — Thunderbird"]),
+            ("thunderbird", &["Inbox — Thunderbird"]),
+            ("firefox", &["Firefox"]), // empty title falls back to the app name
+            ("notes", &["notes.txt"]),
+            ("zzz", &[]),
+        ];
+
         let windows = vec![
             window(
                 1,
@@ -279,13 +287,6 @@ mod tests {
         let apps = vec![app("org.mozilla.firefox", "Firefox"), app("foot", "Foot")];
         let provider = provider(windows, apps);
 
-        const CASES: &[(&str, &[&str])] = &[
-            ("inbox", &["Inbox — Thunderbird"]),
-            ("thunderbird", &["Inbox — Thunderbird"]),
-            ("firefox", &["Firefox"]), // empty title falls back to the app name
-            ("notes", &["notes.txt"]),
-            ("zzz", &[]),
-        ];
         for &(text, want) in CASES {
             let got: Vec<String> = rows(&provider, text).into_iter().map(|(t, _)| t).collect();
             assert_eq!(got, want, "{text:?}");
@@ -336,7 +337,8 @@ mod tests {
         let provider = provider(vec![window(1, "term", "foot", vec![])], Vec::new());
         let cancel = Cancel::new();
         let query = Query::begin("term", &cancel);
-        cancel.begin();
+        // the new generation is not needed, only that the old one is stale.
+        let _ = cancel.begin();
         let mut sink = VecSink::default();
         provider.query(&query, &mut sink);
         assert!(sink.0.is_empty());

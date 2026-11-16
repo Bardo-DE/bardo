@@ -1,5 +1,8 @@
 //! Builders shared by the session tests. Each test file uses a subset.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "builders shared by the tests; a test file uses only some of them"
+)]
 
 use computer_use_action::{
     ActionProfile, Coord, CuaDialect, GridMax, ModelSpace, Scale120, Size, WindowSpace,

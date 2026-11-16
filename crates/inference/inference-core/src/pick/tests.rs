@@ -130,6 +130,10 @@ fn model_name(p: &Picked) -> String {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario (or table of cases) read top to bottom; splitting it would scatter what a reader checks together"
+)]
 fn automatic_table() {
     struct Case {
         name: &'static str,

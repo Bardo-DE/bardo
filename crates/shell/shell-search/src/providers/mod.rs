@@ -1,5 +1,9 @@
-//! The launcher providers: apps, calculator, settings, windows, system, files, clipboard, emoji,
-//! the web fallback, things, the companion, helpers, runs and memory. Each implements
+//! The launcher providers.
+//!
+//! Apps, calculator, settings, windows, system, files, clipboard, emoji, the web fallback, things,
+//! the companion, helpers, runs and memory.
+//!
+//! Each implements
 //! `shell_launcher::Provider`; they live here, not in the pure `shell-launcher`, because each reads
 //! a service or the system.
 

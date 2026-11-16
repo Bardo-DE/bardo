@@ -3,6 +3,7 @@
 use compositor_testclient::misc::fractional::{FractionalScale, preferred};
 use compositor_testclient::surface::subsurface::{Compositor, Surface};
 use compositor_testclient::surface::toplevel::WmBase;
+use std::fmt::Write as _;
 
 use compositor_core::OutputName;
 use compositor_core::geometry::PhysicalSize;
@@ -33,8 +34,16 @@ fn check(name: &str, client: &TestClient, skip: &[&str]) {
                 .iter()
                 .any(|iface| line.object.starts_with(&format!("{iface}#")))
         })
-        .map(|line| format!("{}.{}({})\n", line.object, line.event, line.args.join(", ")))
-        .collect();
+        .fold(String::new(), |mut out, line| {
+            let _ = write!(
+                out,
+                "{}.{}({})\n",
+                line.object,
+                line.event,
+                line.args.join(", ")
+            );
+            out
+        });
     let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("tests/golden/transcripts")
         .join(name);
@@ -104,7 +113,8 @@ fn a_scale_change_is_sent_again() {
     let top = base.toplevel_on(client, surface.surface.clone());
     top.commit_bare();
     fixture.pump();
-    top.ack_latest();
+    // the serial acked is not needed.
+    let _ = top.ack_latest();
     let buffer = shm_buffer(
         fixture.client(id),
         PhysicalSize { w: 300, h: 200 },

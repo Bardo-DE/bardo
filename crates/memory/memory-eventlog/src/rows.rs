@@ -14,6 +14,10 @@ pub(crate) const SELECT_ENTRY: &str = "SELECT e.seq, e.occurred, e.recorded, e.a
      FROM events e LEFT JOIN bodies b ON b.seq = e.seq";
 
 /// A rusqlite error as the log's: a wrong key (`NotADatabase`) is `Locked`, a full disk `Full`.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as a `map_err` function, which hands the error over by value"
+)]
 pub(crate) fn err(e: rusqlite::Error) -> LogError {
     use rusqlite::ErrorCode::{DiskFull, NotADatabase};
     match e.sqlite_error_code() {
@@ -32,7 +36,8 @@ pub(crate) fn to_sql(n: u64) -> i64 {
 pub(crate) fn seq(n: i64) -> Result<Seq, LogError> {
     u64::try_from(n)
         .map(Seq)
-        .map_err(|_| LogError::Corrupt { at: Seq(0) })
+        .ok()
+        .ok_or(LogError::Corrupt { at: Seq(0) })
 }
 
 pub(crate) fn array16(bytes: &[u8]) -> Option<[u8; 16]> {
@@ -130,7 +135,9 @@ impl Stored {
                 occurred: UnixSeconds(self.occurred),
                 recorded: UnixSeconds(self.recorded),
                 actor: serde_json::from_str(&self.actor).map_err(bad)?,
-                kind: KindTag::parse(&self.kind).map_err(|_| LogError::Corrupt { at })?,
+                kind: KindTag::parse(&self.kind)
+                    .ok()
+                    .ok_or(LogError::Corrupt { at })?,
                 effect: effect_of(self.effect).ok_or(LogError::Corrupt { at })?,
                 label: serde_json::from_str(&self.label).map_err(bad)?,
                 cause: serde_json::from_str(&self.cause).map_err(bad)?,

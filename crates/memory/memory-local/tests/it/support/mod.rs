@@ -1,6 +1,9 @@
 //! Shared setup: a root in a temp dir, a service over `LocalBackend`, the clients over it.
 //! No daemon, no bus, no wall clock (the stepped clock stands at a fixed instant).
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "builders shared by the tests; a test file uses only some of them"
+)]
 
 use memory_client::{InProcess, Memory};
 use memory_core::*;
