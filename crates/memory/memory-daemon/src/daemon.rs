@@ -406,8 +406,15 @@ impl<B: Backend, P: Peers> Daemon<B, P> {
     /// The registry's changes, until the stream ends: each removal is settled. The list is
     /// read after subscribing, so a removal in between is caught by [`Daemon::reconcile`].
     pub async fn follow_spaces(&self, spaces: account_client_dbus::Spaces) {
-        let Ok(mut changes) = spaces.watch().await else {
-            return;
+        // Without the spaces service there is nothing to follow: that is not a failure, so the
+        // duty stays idle instead of ending (an ended duty restarts the daemon). A subscription
+        // that later ends does end the duty, and the restart subscribes again.
+        let mut changes = match spaces.watch().await {
+            Ok(changes) => changes,
+            Err(why) => {
+                eprintln!("memoryd: spaces are not followed: {why}");
+                return std::future::pending().await;
+            }
         };
         if let Ok(listed) = spaces.list().await {
             let ids: Vec<DesktopSpace> = listed.into_iter().map(|record| record.id).collect();
