@@ -23,6 +23,14 @@ const DETAIL_FROM: u32 = 48;
 /// The plate's face over the whole canvas: one colour, the tonal shift across the plate at
 /// 135deg and the matte diffusion from above. Opaque; [`finish`] masks it.
 #[must_use]
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+)]
+#[expect(
+    clippy::many_single_char_names,
+    reason = "colour channels, plane coefficients and pixel coordinates are single letters by convention in this maths"
+)]
 pub fn plate_face(grid: PlateGrid, colour: Oklab, shift: Shift) -> Rgba32FImage {
     let side = grid.side as f32;
     let tonal = match shift {
@@ -58,6 +66,15 @@ fn tint(coverage: &Plane, colour: [f32; 3], alpha: f32) -> impl Fn(u32, u32) -> 
 /// The finished `flat` icon: `face` (ground plus symbol) with the bevel and rim, clipped to the
 /// squircle.
 #[must_use]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+)]
+#[expect(
+    clippy::many_single_char_names,
+    reason = "colour channels, plane coefficients and pixel coordinates are single letters by convention in this maths"
+)]
 pub fn finish(grid: PlateGrid, face: &Rgba32FImage, t: &Template) -> Rgba32FImage {
     let (c, a) = (grid.centre(), grid.half());
     let mask = superellipse(grid.canvas, (c, c), a, t.exponent);

@@ -125,7 +125,6 @@ const REMEMBERED: usize = 64;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use compositor_core::input::Origin;
 
     fn press(client: u64) -> PressRecord {
         PressRecord {

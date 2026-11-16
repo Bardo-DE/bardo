@@ -13,6 +13,10 @@ use action_wire::{IntentsReply, IntentsRequest};
 struct Down;
 
 impl Transport for Down {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this impl has nothing to wait for"
+    )]
     async fn call(&self, _: IntentsRequest) -> Result<IntentsReply, TransportError> {
         Err(TransportError::Closed)
     }
@@ -23,6 +27,10 @@ fn ended(end: ConfirmEnd) -> ConfirmAnswer {
 }
 
 #[tokio::test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of every way a run ends, one row each, with its fake router; splitting it would only scatter the table"
+)]
 async fn every_way_a_run_ends_has_its_code() {
     struct Row {
         what: &'static str,

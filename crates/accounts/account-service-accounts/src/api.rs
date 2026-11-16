@@ -16,7 +16,6 @@ use account_secrets::SecretsError;
 use account_service_core::Ports;
 use account_sheet::{EditServers, EditedServers};
 use account_wire::{AccountsReply, ParentWindow, Refusal};
-use std::future::Future;
 
 /// The accounts domain: how an account is made, signed in again, asked more of, rediscovered,
 /// switched and removed.

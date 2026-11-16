@@ -8,7 +8,6 @@ use crate::watch::{Boxed, Events, Said, Steering, Watched};
 use action_core::CallProgress;
 use action_router::{Flag, Queue, Router, Seams, Watch};
 use action_wire::{CallerId, IntentsReply, IntentsRequest};
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::task::Poll;

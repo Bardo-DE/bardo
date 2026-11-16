@@ -261,13 +261,9 @@ fn three_runs_that_do_not_finish_pause_the_routine_and_say_so_once() {
         if runs(&fx).is_empty() {
             break;
         }
-        book = posted(book, id, 10 + day as u64);
-        let (b, fx) = ended(
-            book,
-            10 + day as u64,
-            JobEnd::Failed(JobFault::NoAnswer),
-            now + 60,
-        );
+        let job = 10 + u64::try_from(day).expect("the loop's day is not negative");
+        book = posted(book, id, job);
+        let (b, fx) = ended(book, job, JobEnd::Failed(JobFault::NoAnswer), now + 60);
         book = b;
         said += says(&fx);
     }
@@ -288,15 +284,16 @@ fn a_run_that_finishes_ends_the_streak() {
     let mut book = book;
     let plan = [false, false, true, false, false];
     for (day, ok) in plan.into_iter().enumerate() {
-        let now = day as i64 * DAY + 8 * H;
+        let day = u64::try_from(day).expect("a day index of five is small");
+        let now = i64::try_from(day).expect("a day index of five is small") * DAY + 8 * H;
         book = tick(book, now).0;
-        book = posted(book, id, day as u64 + 1);
+        book = posted(book, id, day + 1);
         let end = if ok {
             JobEnd::Done
         } else {
             JobEnd::Failed(JobFault::Crashed)
         };
-        book = ended(book, day as u64 + 1, end, now + 60).0;
+        book = ended(book, day + 1, end, now + 60).0;
     }
     assert_eq!(
         book.routine(id).expect("routine").state,

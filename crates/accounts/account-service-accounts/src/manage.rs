@@ -239,13 +239,15 @@ impl<E: Ports> Accounts<'_, E> {
                 Ok((Vec::new(), (gone, dropped, off)))
             })
             .await
-            .map_err(|_| SecretsError::Unavailable)?;
+            .ok()
+            .ok_or(SecretsError::Unavailable)?;
         if let Err(why) = self.ctx.secrets().delete_account(id).await {
             let (accounts, grants, toggles) = taken.value;
             // Put back, unless another sign-in has made the id its own meanwhile. If that cannot
             // be saved either the account stays removed, and the secrets' failure is what the
             // caller is told.
-            self.ctx
+            let _ = self
+                .ctx
                 .transact(|registry| {
                     if registry.accounts.iter().all(|a| a.id != *id) {
                         registry.accounts.extend(accounts);
@@ -254,8 +256,7 @@ impl<E: Ports> Accounts<'_, E> {
                     }
                     Ok((Vec::new(), ()))
                 })
-                .await
-                .ok();
+                .await;
             return Err(why);
         }
         self.ctx.note(None, Some(id.clone()), AuditEvent::Removed);

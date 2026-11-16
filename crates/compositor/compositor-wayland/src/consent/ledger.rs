@@ -189,7 +189,10 @@ mod tests {
             ledger.begin(ME, Power::Screen),
             Begin::Settled(Admission::Hold)
         );
-        ledger.resolve(ME, Power::Screen, PowerOutcome::Allowed);
+        assert_eq!(
+            ledger.resolve(ME, Power::Screen, PowerOutcome::Allowed),
+            Word::Allowed
+        );
         assert_eq!(ledger.admission(ME, Power::Screen), Admission::Go);
         assert_eq!(ledger.admission(ME, Power::Keys), Admission::Refuse);
     }
@@ -197,8 +200,14 @@ mod tests {
     #[test]
     fn a_refusal_is_asked_again_and_a_revocation_is_a_refusal() {
         let ledger = Ledger::default();
-        ledger.resolve(ME, Power::Keys, PowerOutcome::Allowed);
-        ledger.resolve(ME, Power::Keys, PowerOutcome::Revoked);
+        assert_eq!(
+            ledger.resolve(ME, Power::Keys, PowerOutcome::Allowed),
+            Word::Allowed
+        );
+        assert_eq!(
+            ledger.resolve(ME, Power::Keys, PowerOutcome::Revoked),
+            Word::Refused
+        );
         assert_eq!(ledger.word(ME, Power::Keys), Some(Word::Refused));
         assert_eq!(ledger.begin(ME, Power::Keys), Begin::Fresh);
         assert_eq!(ledger.word(ME, Power::Keys), Some(Word::Waiting));
@@ -207,8 +216,8 @@ mod tests {
     #[test]
     fn a_disconnect_forgets_only_that_client() {
         let ledger = Ledger::default();
-        ledger.resolve(ME, Power::Lock, PowerOutcome::Allowed);
-        ledger.resolve(ClientKey(2), Power::Lock, PowerOutcome::Allowed);
+        let _ = ledger.resolve(ME, Power::Lock, PowerOutcome::Allowed);
+        let _ = ledger.resolve(ClientKey(2), Power::Lock, PowerOutcome::Allowed);
         ledger.forget(ME);
         assert_eq!(ledger.len(), 1);
         assert_eq!(ledger.word(ME, Power::Lock), None);

@@ -72,7 +72,7 @@ pub struct Report {
 }
 
 impl Report {
-    fn said(text: String) -> Self {
+    fn said(text: &str) -> Self {
         Self {
             stdout: format!("{text}\n"),
             stderr: String::new(),
@@ -114,6 +114,10 @@ pub fn needs_bus(words: &[String]) -> bool {
 pub struct NoBus;
 
 impl Transport for NoBus {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this impl has nothing to wait for"
+    )]
     async fn call(
         &self,
         _: action_wire::IntentsRequest,
@@ -196,11 +200,11 @@ pub async fn run_in<T: Transport>(
         Command::Help | Command::Version | Command::Complete(_)
     );
     match command(intents, &parsed, invocation.stdin, roots).await {
-        Ok(printed) if plain_text => Report::said(match &printed.json {
+        Ok(printed) if plain_text => Report::said(&match &printed.json {
             serde_json::Value::String(text) => text.clone(),
             other => other.to_string(),
         }),
-        Ok(printed) => Report::said(printed.text(style)),
+        Ok(printed) => Report::said(&printed.text(style)),
         Err(failure) => Report::failed(&failure, style),
     }
 }

@@ -49,7 +49,8 @@ impl<E: Ports> Accounts<'_, E> {
                 Ok((lines, Ok(changed)))
             })
             .await
-            .map_err(|_| AgentFault::Unavailable)?;
+            .ok()
+            .ok_or(AgentFault::Unavailable)?;
         written.value
     }
 }

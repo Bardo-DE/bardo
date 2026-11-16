@@ -1,7 +1,10 @@
 //! A desk: `bardo-do` over the fake router in this process, as the cli role, with a scratch
 //! world of two mail threads and one contact. The real bus and the real session are never
 //! touched.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test binary of the crate uses a subset of this shared desk"
+)]
 
 use account_core::{AppId, AppName, Isolation};
 use action_cli::{Invocation, Report, Stdin, Stdout, run};

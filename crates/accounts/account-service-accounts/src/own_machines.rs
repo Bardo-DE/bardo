@@ -4,7 +4,6 @@
 //! this computer may then be plain.
 
 use account_tailscale::Machine;
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 

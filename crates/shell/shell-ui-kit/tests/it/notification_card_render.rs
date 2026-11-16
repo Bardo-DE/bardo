@@ -25,7 +25,7 @@ struct Shown {
     place: CardPlace,
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a dioxus component is named in CamelCase")]
 fn Root(shown: Shown) -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Toast,

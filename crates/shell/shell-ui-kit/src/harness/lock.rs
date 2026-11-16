@@ -93,6 +93,7 @@ impl LockSetup {
     }
 
     /// Change the fake services before the surface sees them (a state the feeds do not carry).
+    #[must_use]
     pub fn services(mut self, change: impl FnOnce(&mut Services) + 'static) -> Self {
         self.services = Box::new(change);
         self

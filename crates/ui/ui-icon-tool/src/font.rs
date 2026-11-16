@@ -287,11 +287,19 @@ fn glyph(c: char) -> Option<&'static [u8; 7]> {
 
 /// Width in px of `text` at `scale` dots per font dot.
 #[must_use]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+)]
 pub fn text_width(text: &str, scale: u32) -> u32 {
     (text.chars().count() as u32 * ADVANCE).saturating_sub(1) * scale
 }
 
 /// Draws `text` with its top-left at (x, y), each font dot a `scale` x `scale` square.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+)]
 pub fn draw_text(
     img: &mut Rgba32FImage,
     text: &str,

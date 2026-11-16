@@ -11,7 +11,7 @@ fn agent_claim(program: &str) -> Claim {
             program: AgentProgram::parse(program).expect("program"),
             key_env: None,
             base_url_env: None,
-            protocols: Default::default(),
+            protocols: std::collections::BTreeSet::default(),
         }))),
         provenance: Provenance::Declared,
     }

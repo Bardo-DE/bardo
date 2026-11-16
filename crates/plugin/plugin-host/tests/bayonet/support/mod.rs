@@ -2,7 +2,10 @@
 //! directory, and the registry that finding them makes.
 
 // `shapes` is also read by the demo plugin, and each test file uses some of it.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "`shapes` is also read by the demo plugin, and each test file uses some of it"
+)]
 
 #[path = "../../../examples/shapes/mod.rs"]
 pub mod shapes;

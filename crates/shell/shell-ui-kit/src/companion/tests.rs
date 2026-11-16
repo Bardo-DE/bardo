@@ -2,14 +2,13 @@ use account_core::DataClass;
 use action_core::{BudgetKind, CallRefusal, ConfirmId, ContextKeep, Keep, Reveal, TimeRange};
 use action_manifest::{ParamDecl, ParamNeed};
 use action_vocab::{
-    ActionRef, Args, CardActionId, EntityRef, Handle, LabelText, ParamName, ParamType, StepId,
-    UndoId, Value,
+    ActionRef, Args, CardActionId, EntityRef, LabelText, ParamName, ParamType, StepId, UndoId,
+    Value,
 };
 use companion_wire::{
     AnswerBody, AnswerPhase, AnswerWire, CardWire, FooterWire, FormWire, NeedsYou, PlanStepWire,
     PlanWire, RefusalWire, StepWireState,
 };
-use jiff::tz::TimeZone;
 use permission_core::DenyCode;
 use provenance::{AppName, EntityId, EntityKey, EntityKind, Label, Labelled, TaskId, UnixSeconds};
 use shell_model::companion::RunState;
@@ -152,6 +151,7 @@ fn run_place_total() {
 
 #[test]
 fn answer_view_variants_total() {
+    type Case = (&'static str, AnswerBody, &'static str);
     let zone = TimeZone::UTC;
     let display = |h: Handle| (h.0 == 7).then(|| "the receipts".to_owned());
     let cx = cx(&zone, &display);
@@ -160,7 +160,6 @@ fn answer_view_variants_total() {
         from: UnixSeconds(1_790_000_000),
         to: UnixSeconds(1_790_003_600),
     };
-    type Case = (&'static str, AnswerBody, &'static str);
     let cases: Vec<Case> = vec![
         (
             "text",
@@ -307,13 +306,13 @@ fn an_outbound_card_is_never_primary_without_its_mark_and_a_destructive_one_neve
 
 #[test]
 fn plan_phases_follow_the_answer_and_the_steps() {
+    type Case = (&'static str, AnswerPhase, Vec<StepWireState>, PlanPhase);
     use provenance::Effect as E;
     let zone = TimeZone::UTC;
     let cx = cx(&zone, &none);
     let done = || StepWireState::Done {
         undo: Some(UndoId(3)),
     };
-    type Case = (&'static str, AnswerPhase, Vec<StepWireState>, PlanPhase);
     let confirm = AnswerPhase::NeedsYou(NeedsYou::Confirm(
         ConfirmId::parse("c-1").unwrap_or_else(|e| panic!("{e}")),
     ));

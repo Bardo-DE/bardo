@@ -8,7 +8,6 @@ use account_fake_servers::Daemon;
 use account_tailscale::NodeId;
 use base_testkit::GENEROUS;
 use inference_tailnet::{Config, Footing, Guests, Lending, Limits, Refusal, Visit, Visits, lend};
-use std::future::Future;
 use std::net::{IpAddr, SocketAddr};
 use std::pin::Pin;
 use std::sync::{Arc, Mutex};
@@ -69,8 +68,8 @@ struct Lender {
     recorder: Arc<Recorder>,
     port: u16,
     // Keeps the fake and the observer going.
-    _fake: super::common::Fake,
-    _observer: inference_tailnet::Observer,
+    fake: super::common::Fake,
+    observer: inference_tailnet::Observer,
 }
 
 async fn lender(name: &str, a: &Addresses, switched_on: bool, config: Config) -> Lender {
@@ -93,8 +92,8 @@ async fn lender(name: &str, a: &Addresses, switched_on: bool, config: Config) ->
         on,
         recorder,
         port,
-        _fake: fake,
-        _observer: observer,
+        fake,
+        observer,
     }
 }
 
@@ -108,7 +107,7 @@ async fn dropping_the_listeners_closes_every_one_of_them_and_the_connections_on_
     let l = listening_lender("dropped", &a).await;
     let held = connect_from(a.pi, at(a.me, l.port)).await.expect("connect");
     l.recorder.visits(1).await;
-    let (port, _fake, _observer) = (l.port, l._fake, l._observer);
+    let (port, _fake, _observer) = (l.port, l.fake, l.observer);
     drop(l.lending);
     // The address refuses, a moment after the listener is let go of, and the connection that
     // was being served is ended with it.
@@ -259,14 +258,14 @@ async fn tailscale_going_away_closes_the_listeners_and_coming_back_opens_them() 
     let l = lender("goes-away", &a, true, config(free_port())).await;
     let mut listening = l.lending.listening();
     wait(&mut listening, |now| !now.bound.is_empty(), "listening").await;
-    l._fake.stop();
+    l.fake.stop();
     wait(
         &mut listening,
         |now| now.bound.is_empty(),
         "listening to stop",
     )
     .await;
-    l._fake.restart().await.unwrap();
+    l.fake.restart().await.unwrap();
     wait(
         &mut listening,
         |now| !now.bound.is_empty(),

@@ -80,10 +80,10 @@ impl Outcome {
 
 impl Bound {
     /// A manager just bound: it has no objects and has been told nothing.
-    pub(super) fn new(manager: super::BardoDesktopManagerV1, manages: bool) -> Bound {
+    pub(super) fn new(manager: super::BardoDesktopManagerV1, may_manage: bool) -> Bound {
         Bound {
             manager,
-            manages,
+            manages: may_manage,
             apps: BTreeMap::new(),
             windows: BTreeMap::new(),
             spaces: BTreeMap::new(),

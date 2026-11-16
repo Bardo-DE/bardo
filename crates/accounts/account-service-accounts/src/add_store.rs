@@ -373,7 +373,8 @@ impl<E: Ports> Accounts<'_, E> {
                 .secrets()
                 .put(&key, credential)
                 .await
-                .map_err(|_| ())?;
+                .ok()
+                .ok_or_else(|| ())?;
         }
         self.ctx
             .transact(|registry| {

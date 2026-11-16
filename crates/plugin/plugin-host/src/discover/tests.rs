@@ -25,7 +25,7 @@ impl Dirs {
         vec![self.root.path().join("system")]
     }
 
-    fn write(&self, base: PathBuf, file: &str, text: &str) -> PathBuf {
+    fn write(base: &Path, file: &str, text: &str) -> PathBuf {
         let folder = base.join("host").join("plugins");
         fs::create_dir_all(&folder).unwrap();
         let path = folder.join(file);
@@ -58,9 +58,9 @@ fn manifest_for(id: &str, program: &Path) -> String {
 fn manifests_are_found_under_the_apps_folder_in_both_directories() {
     let dirs = Dirs::new();
     let run = program(&dirs, "run", 0o755);
-    dirs.write(dirs.user(), "mine.toml", &manifest_for("mine", &run));
-    dirs.write(
-        dirs.system()[0].clone(),
+    Dirs::write(&dirs.user(), "mine.toml", &manifest_for("mine", &run));
+    Dirs::write(
+        &dirs.system()[0],
         "theirs.toml",
         &manifest_for("theirs", &run),
     );
@@ -89,10 +89,10 @@ fn manifests_are_found_under_the_apps_folder_in_both_directories() {
 fn malformed_and_misnamed_manifests_are_rejected_without_hiding_the_good_ones() {
     let dirs = Dirs::new();
     let run = program(&dirs, "run", 0o755);
-    dirs.write(dirs.user(), "good.toml", &manifest_for("good", &run));
-    let bad = dirs.write(dirs.user(), "bad.toml", "id = \n");
-    let misnamed = dirs.write(dirs.user(), "other.toml", &manifest_for("not-other", &run));
-    dirs.write(dirs.user(), "notes.txt", "not a manifest, not read");
+    Dirs::write(&dirs.user(), "good.toml", &manifest_for("good", &run));
+    let bad = Dirs::write(&dirs.user(), "bad.toml", "id = \n");
+    let misnamed = Dirs::write(&dirs.user(), "other.toml", &manifest_for("not-other", &run));
+    Dirs::write(&dirs.user(), "notes.txt", "not a manifest, not read");
     let found = dirs.discover();
     assert_eq!(found.registry.installed().len(), 1);
     let rejected: Vec<_> = found
@@ -116,8 +116,8 @@ fn a_program_that_is_missing_or_not_executable_sets_the_plugin_aside() {
     let dirs = Dirs::new();
     let plain = program(&dirs, "plain", 0o644);
     let gone = dirs.root.path().join("gone");
-    dirs.write(dirs.user(), "plain.toml", &manifest_for("plain", &plain));
-    dirs.write(dirs.user(), "gone.toml", &manifest_for("gone", &gone));
+    Dirs::write(&dirs.user(), "plain.toml", &manifest_for("plain", &plain));
+    Dirs::write(&dirs.user(), "gone.toml", &manifest_for("gone", &gone));
     let found = dirs.discover();
     assert!(found.registry.installed().is_empty());
     let reasons: Vec<_> = found

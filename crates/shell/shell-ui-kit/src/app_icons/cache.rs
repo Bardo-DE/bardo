@@ -118,7 +118,7 @@ fn styled(key: &IconKey, source: &Path) -> PathBuf {
                 }
                 slots.insert(key.clone(), Slot::Pending);
                 let (key, source) = (key.clone(), source.to_owned());
-                runtime.spawn_blocking(move || make(key, source, dir));
+                runtime.spawn_blocking(move || make(&key, &source, &dir));
             }
             source.to_owned()
         }
@@ -127,20 +127,21 @@ fn styled(key: &IconKey, source: &Path) -> PathBuf {
 
 /// Make `key`'s raster from `source` into `dir` (or find it there, newer than its source),
 /// record it and wake every resolver.
-fn make(key: IconKey, source: PathBuf, dir: PathBuf) {
+fn make(key: &IconKey, source: &Path, dir: &Path) {
+    static MADE: AtomicU64 = AtomicU64::new(0);
     let name = key.file_name();
     let target = dir.join(&name);
-    let slot = if fresh(&target, &source) {
+    let slot = if fresh(&target, source) {
         Slot::Ready(target)
     } else {
         let recolour = Recolour {
             style: key.style,
-            tint: tint_of(&key),
+            tint: tint_of(key),
             scheme: key.scheme,
         };
-        match render(&source, key.px, recolour)
+        match render(source, key.px, recolour)
             .map_err(|e| e.to_string())
-            .and_then(|png| write_atomic(&dir, &name, &png).map_err(|e| e.to_string()))
+            .and_then(|png| write_atomic(dir, &name, &png).map_err(|e| e.to_string()))
         {
             Ok(path) => Slot::Ready(path),
             Err(why) => {
@@ -152,13 +153,12 @@ fn make(key: IconKey, source: PathBuf, dir: PathBuf) {
             }
         }
     };
-    slots().insert(key, slot);
-    static MADE: AtomicU64 = AtomicU64::new(0);
+    slots().insert(key.clone(), slot);
     if MADE
         .fetch_add(1, Ordering::Relaxed)
         .is_multiple_of(PRUNE_EVERY)
     {
-        prune(&dir, FILES_MAX);
+        prune(dir, FILES_MAX);
     }
     CACHE.done.send_modify(|generation| generation.0 += 1);
 }
@@ -206,7 +206,7 @@ mod tests {
             ..key.clone()
         };
         assert_eq!(styled(&other, &source), source, "not made: the source");
-        make(key.clone(), source.clone(), dir.join("cache"));
+        make(&key, &source, &dir.join("cache"));
         let shown = styled(&key, &source);
         assert_eq!(shown, dir.join("cache").join(key.file_name()));
         let raster = image::open(&shown)

@@ -53,11 +53,11 @@ fn into_file(
     to: &Path,
     fill: impl FnOnce(&mut std::fs::File) -> Result<(), FetchFault>,
 ) -> Result<(), FetchFault> {
-    let mut file = std::fs::File::create(to).map_err(|e| FetchFault(format!("{url}: {e}")))?;
+    let mut out = std::fs::File::create(to).map_err(|e| FetchFault(format!("{url}: {e}")))?;
     let done =
-        fill(&mut file).and_then(|()| file.flush().map_err(|e| FetchFault(format!("{url}: {e}"))));
+        fill(&mut out).and_then(|()| out.flush().map_err(|e| FetchFault(format!("{url}: {e}"))));
     if done.is_err() {
-        drop(file);
+        drop(out);
         let _ = std::fs::remove_file(to);
     }
     done

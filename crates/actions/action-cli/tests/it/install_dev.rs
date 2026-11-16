@@ -71,14 +71,14 @@ impl Jail {
         self.home().join(".local")
     }
 
-    fn script(&self) -> PathBuf {
+    fn script() -> PathBuf {
         Path::new(env!("CARGO_MANIFEST_DIR")).join("../dist/install-dev.sh")
     }
 
     fn run(&self, args: &[&str]) -> Output {
         let home = self.home();
         Command::new("bash")
-            .arg(self.script())
+            .arg(Self::script())
             .args(args)
             .env_clear()
             .env("PATH", "/usr/bin:/bin")
@@ -406,7 +406,7 @@ fn a_missing_binary_stops_the_install_before_anything_is_written() {
 
 #[test]
 fn the_script_never_calls_sudo_or_names_the_real_system() {
-    let text = std::fs::read_to_string(Jail::new().script()).expect("script");
+    let text = std::fs::read_to_string(Jail::script()).expect("script");
     for (n, line) in text.lines().enumerate() {
         let code = line.trim_start();
         // The one `sudo` is the line the script prints, indented inside its here-document.

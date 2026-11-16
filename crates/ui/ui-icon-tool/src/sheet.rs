@@ -60,6 +60,10 @@ fn paste(canvas: &mut Rgba32FImage, img: &Rgba32FImage, (x, y): (u32, u32)) {
 /// Lays the sheet out: title, then one row per subject with its name on the left and its
 /// cells to the right, each captioned underneath.
 #[must_use]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+)]
 pub fn build_sheet(sheet: &Sheet, style: &SheetStyle) -> Rgba32FImage {
     let text_h = DOT_ROWS * style.text_scale;
     let label_w = sheet
@@ -131,6 +135,10 @@ pub fn build_sheet(sheet: &Sheet, style: &SheetStyle) -> Rgba32FImage {
 
 /// Each size's render at 1:1, bottom-aligned, on the light (`#F1F3EE`) and then the dark
 /// (`#1D211B`) ground. `render(size)` returns a `size` x `size` image.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+)]
 pub fn strip(sizes: &[u32], render: impl Fn(u32) -> Rgba32FImage) -> Rgba32FImage {
     const PAD: u32 = 8;
     let grounds = [Srgb8::hex(0x00F1_F3EE), Srgb8::hex(0x001D_211B)];
@@ -160,6 +168,10 @@ mod tests {
     use super::*;
 
     #[test]
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+    )]
     fn sheet_grows_with_rows_and_columns() {
         let cell = || Cell {
             image: Rgba32FImage::from_pixel(64, 64, Rgba([1.0, 0.0, 0.0, 1.0])),

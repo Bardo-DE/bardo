@@ -43,6 +43,10 @@ fn joined(bars: WifiBars, reach: WifiReach) -> NetworkGlyph {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of network states and the glyph each must give, one row each"
+)]
 fn the_network_maps_to_the_wifi_glyph() {
     use Attempt::{Failed, Quiet, Running};
     use Connectivity::{Full, Limited, None, Portal, Unknown};
@@ -170,12 +174,12 @@ fn battery(level: u16, charge: Charge) -> Battery {
     }
 }
 
-fn state(level: u16, power: BatteryPower, low: u16) -> Option<BatteryState> {
-    Some(BatteryState {
+fn state(level: u16, power: BatteryPower, low: u16) -> BatteryState {
+    BatteryState {
         level: Fraction(level),
         power,
         low_at: LowAt(Fraction(low)),
-    })
+    }
 }
 
 #[test]
@@ -187,21 +191,33 @@ fn the_battery_maps_to_the_battery_glyph() {
         (
             "discharging",
             battery(64, Charge::Discharging),
-            state(640, OnBattery, 200),
+            Some(state(640, OnBattery, 200)),
         ),
-        ("empty", battery(0, Charge::Empty), state(0, OnBattery, 200)),
+        (
+            "empty",
+            battery(0, Charge::Empty),
+            Some(state(0, OnBattery, 200)),
+        ),
         (
             "unknown",
             battery(50, Charge::Unknown),
-            state(500, OnBattery, 200),
+            Some(state(500, OnBattery, 200)),
         ),
         (
             "charging",
             battery(30, Charge::Charging),
-            state(300, Charging, 200),
+            Some(state(300, Charging, 200)),
         ),
-        ("full", battery(100, Charge::Full), state(1000, Held, 200)),
-        ("held", battery(80, Charge::Idle), state(800, Held, 200)),
+        (
+            "full",
+            battery(100, Charge::Full),
+            Some(state(1000, Held, 200)),
+        ),
+        (
+            "held",
+            battery(80, Charge::Idle),
+            Some(state(800, Held, 200)),
+        ),
         ("absent", Battery::default(), None),
     ];
     for (name, b, want) in cases {
@@ -209,7 +225,7 @@ fn the_battery_maps_to_the_battery_glyph() {
     }
     assert_eq!(
         battery_glyph(&battery(64, Charge::Discharging), KeyPercent(35)),
-        state(640, OnBattery, 350),
+        Some(state(640, OnBattery, 350)),
         "the key sets the threshold"
     );
 }

@@ -14,6 +14,12 @@ impl PlateGrid {
     /// 08 2.2: at 48 px and up the plate is `plate` of the canvas, rounded; 32 and 24 keep a
     /// 1 px margin; 16 has a 15 px plate at the origin.
     #[must_use]
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_precision_loss,
+        clippy::cast_sign_loss,
+        reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+    )]
     pub fn for_canvas(canvas: u32, t: &Template) -> Self {
         match canvas {
             16 => Self {
@@ -39,12 +45,20 @@ impl PlateGrid {
 
     /// Half the plate side: the superellipse's `a`.
     #[must_use]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+    )]
     pub fn half(self) -> f32 {
         self.side as f32 / 2.0
     }
 
     /// The plate centre on both axes.
     #[must_use]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+    )]
     pub fn centre(self) -> f32 {
         self.origin as f32 + self.half()
     }
@@ -52,6 +66,10 @@ impl PlateGrid {
 
 /// Coverage of a Lamé superellipse `|x/a|^n + |y/a|^n <= 1` centred at (cx, cy), 4x4
 /// supersampled per pixel (08 2.1).
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+)]
 pub fn superellipse(canvas: u32, (cx, cy): (f32, f32), a: f32, n: f32) -> Plane {
     const SUB: u32 = 4;
     Plane::from_fn(canvas, canvas, |x, y| {

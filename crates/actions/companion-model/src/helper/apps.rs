@@ -12,7 +12,6 @@ use crate::hand::{AppSessionId, SeenCommand, WatchedAgent};
 use action_vocab::Workspace;
 use provenance::{HelperId, SessionId, TaskId};
 use serde::{Deserialize, Serialize};
-use std::future::Future;
 use std::pin::Pin;
 
 /// A boxed future the seam's methods return.

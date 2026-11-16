@@ -66,6 +66,10 @@ where
 }
 
 /// The surface a confined pointer stays on, as a focus.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a confined pointer's origin is a surface position, far inside the i32 range of the wire coordinates"
+)]
 pub(super) fn confined_focus(hold: &Hold<WlSurface>) -> Option<SurfaceAt> {
     match hold {
         Hold::Confined(surface, confine) => Some(SurfaceAt {
@@ -138,13 +142,13 @@ pub(super) fn settled<S: PartialEq>(
     over: Option<(&S, Point<f64, Logical>)>,
     wanted: Point<f64, Logical>,
 ) -> Option<Point<f64, Logical>> {
-    let origin_over = |held: &S| {
-        over.filter(|(surface, _)| *surface == held)
+    let origin_over = |locked: &S| {
+        over.filter(|(surface, _)| *surface == locked)
             .map(|(_, at)| at)
     };
     match hold {
         Hold::Free => Some(wanted),
-        Hold::Locked(held) => match origin_over(held) {
+        Hold::Locked(locked) => match origin_over(locked) {
             Some(_) => None,
             None => Some(wanted),
         },
@@ -158,8 +162,6 @@ pub(super) fn settled<S: PartialEq>(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use smithay::utils::Rectangle;
-    use smithay::wayland::compositor::RectangleKind;
 
     fn at(x: f64, y: f64) -> Point<f64, Logical> {
         Point::from((x, y))

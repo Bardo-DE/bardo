@@ -44,7 +44,10 @@ fn two_candidates_for_one_id_leave_one_installed_and_set_the_other_aside() {
     });
     // name, the candidates, the one installed (origin, protocol), the ones set aside (origin,
     // reason), and what the registry then serves for probe (kind asked, id serving it)
-    #[allow(clippy::type_complexity)]
+    #[expect(
+        clippy::type_complexity,
+        reason = "a table of cases, each a tuple of the scenario's parts; a struct would only rename them"
+    )]
     let cases: Vec<(
         &str,
         Vec<Candidate<Tool>>,

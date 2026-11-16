@@ -31,6 +31,10 @@ struct Seen {
 struct Views(VecDeque<AnswerWire>);
 
 impl Follow for Views {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this impl has nothing to wait for"
+    )]
     async fn next(&mut self) -> Result<Option<AnswerWire>, TransportError> {
         Ok(self.0.pop_front())
     }
@@ -64,11 +68,19 @@ impl CompanionTransport for Scripted {
             .map_err(|e| TransportError::Bus(e.to_string()))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this impl has nothing to wait for"
+    )]
     async fn ask(&self, ask: &AskWire) -> Result<Views, TransportError> {
         self.seen.lock().expect("lock").asked.push(ask.clone());
         Ok(Views(self.views.iter().cloned().collect()))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this impl has nothing to wait for"
+    )]
     async fn close(&self, session: &SessionId) -> Result<(), TransportError> {
         self.seen.lock().expect("lock").closed.push(session.clone());
         Ok(())

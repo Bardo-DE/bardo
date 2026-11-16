@@ -90,7 +90,7 @@ fn filters_admit_by_topic() {
 #[test]
 fn junk_is_an_error_not_a_panic() {
     decode::<ToDaemon>(b"{").unwrap_err();
-    decode::<ToDaemon>(&[b' '; MAX_PACKET + 1]).unwrap_err();
+    decode::<ToDaemon>(&vec![b' '; MAX_PACKET + 1]).unwrap_err();
 }
 
 #[test]

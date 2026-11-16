@@ -260,7 +260,6 @@ async fn search_prints_the_apps_things_and_context_prints_what_it_shows() {
 
 #[tokio::test]
 async fn completion_follows_the_installed_manifests() {
-    let desk = Desk::new();
     async fn complete(desk: &Desk, words: &[&str]) -> Vec<String> {
         let mut all = vec!["__complete"];
         all.extend_from_slice(words);
@@ -268,6 +267,7 @@ async fn completion_follows_the_installed_manifests() {
         assert_eq!(report.exit, Exit::Done, "{report:?}");
         report.stdout.lines().map(str::to_owned).collect()
     }
+    let desk = Desk::new();
     let top = complete(&desk, &[""]).await;
     for want in ["apps", "describe", "undo", "mail", "files", "memory"] {
         assert!(top.iter().any(|w| w == want), "{want} in {top:?}");

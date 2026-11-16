@@ -58,7 +58,9 @@ impl<E: Ports> Accounts<'_, E> {
         if spec.auth.kind != AuthKind::LocalRuntime {
             return Err(LocalFault::NotLocal);
         }
-        let id = AccountId::parse(provider.as_str()).map_err(|_| LocalFault::UnknownProvider)?;
+        let id = AccountId::parse(provider.as_str())
+            .ok()
+            .ok_or(LocalFault::UnknownProvider)?;
         self.ctx
             .transact(|registry| {
                 let capabilities = registry.effective_for(&id, &models);
@@ -84,7 +86,8 @@ impl<E: Ports> Accounts<'_, E> {
                 Ok((Vec::new(), ()))
             })
             .await
-            .map_err(|_| LocalFault::Unavailable)?;
+            .ok()
+            .ok_or(LocalFault::Unavailable)?;
         Ok(id)
     }
 }

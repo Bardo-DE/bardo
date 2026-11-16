@@ -138,7 +138,7 @@ impl<W: Protocol> Process<W> {
             Some(stdin) => stdin.write_all(&bytes).and_then(|()| stdin.flush()),
             None => Err(std::io::ErrorKind::BrokenPipe.into()),
         };
-        written.map_err(|_| self.crashed())
+        written.ok().ok_or_else(|| self.crashed())
     }
 
     /// Waits at most `wait` for the next message. Stderr is read meanwhile and logged.

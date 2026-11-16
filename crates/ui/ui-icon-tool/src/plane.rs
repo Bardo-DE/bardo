@@ -32,6 +32,11 @@ impl Plane {
 
     /// The value at (x, y); outside the plane it is 0.
     #[must_use]
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+    )]
     pub fn at(&self, x: i64, y: i64) -> f32 {
         if x < 0 || y < 0 || x >= i64::from(self.width) || y >= i64::from(self.height) {
             return 0.0;
@@ -49,6 +54,10 @@ impl Plane {
 
     /// Mean value: the covered fraction for a mask.
     #[must_use]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+    )]
     pub fn mean(&self) -> f32 {
         self.data.iter().sum::<f32>() / self.data.len().max(1) as f32
     }
@@ -65,6 +74,12 @@ impl Plane {
         })
     }
 
+    #[expect(
+        clippy::cast_possible_wrap,
+        clippy::cast_precision_loss,
+        clippy::cast_sign_loss,
+        reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+    )]
     fn box_pass(&self, r: usize, axis: Axis) -> Self {
         let (w, h) = (self.width as usize, self.height as usize);
         let (lines, len) = match axis {
@@ -107,6 +122,11 @@ enum Axis {
 
 /// Box radius whose three passes match a Gaussian of `sigma` (variance of a box of width
 /// 2r+1 is ((2r+1)^2 - 1) / 12; three of them add up).
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+)]
 fn box_radius(sigma: f32) -> usize {
     let width = (4.0 * sigma * sigma + 1.0).sqrt();
     ((width - 1.0) / 2.0).round().max(1.0) as usize
@@ -135,6 +155,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+    )]
     fn shift_moves_and_zero_fills() {
         let p = Plane::from_fn(4, 4, |x, _| x as f32);
         let s = p.shifted(1, 0);

@@ -113,16 +113,16 @@ mod tests {
 
     #[test]
     fn each_change_counts_on_and_names_its_outputs() {
-        let first = next(None, OsdKind::Volume, vec![ONE], None);
-        assert_eq!(first.serial, ChangeSerial(1));
-        let second = next(Some(&first), OsdKind::Volume, vec![ONE], None);
-        assert_eq!(second.serial, ChangeSerial(2), "the same key again");
         const CASES: &[(u64, OutputId, bool)] = &[
             (0, ONE, true),
             (1, ONE, true),
             (2, ONE, false),
             (0, TWO, false),
         ];
+        let first = next(None, OsdKind::Volume, vec![ONE], None);
+        assert_eq!(first.serial, ChangeSerial(1));
+        let second = next(Some(&first), OsdKind::Volume, vec![ONE], None);
+        assert_eq!(second.serial, ChangeSerial(2), "the same key again");
         for &(seen, output, want) in CASES {
             assert_eq!(
                 second.is_fresh_for(ChangeSerial(seen), output),

@@ -1,4 +1,7 @@
-#![allow(dead_code)] // each test binary uses a subset of the shared builders
+#![allow(
+    dead_code,
+    reason = "each test binary uses a subset of the shared builders"
+)]
 //! Hand-built snapshots that the fixture files must equal. Each is a small, honest tree of the
 //! kind of window the specs name; the JSON under `fixtures/a11y/` is their serde form.
 

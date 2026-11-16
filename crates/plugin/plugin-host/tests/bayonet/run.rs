@@ -28,9 +28,9 @@ fn failure(mode: &str, timeouts: Timeouts, payload_limit: u64) -> RunError<Cap> 
 
 #[test]
 fn a_plugin_that_fails_in_some_way_is_an_error_naming_it() {
+    type Check = fn(&RunError<Cap>) -> bool;
     let hello_fast = quick().with_hello(Duration::from_millis(300));
     // name, mode, timeouts, payload limit, a check on the error
-    type Check = fn(&RunError<Cap>) -> bool;
     let cases: Vec<(&str, &str, Timeouts, u64, Check)> = vec![
         (
             "never greets",

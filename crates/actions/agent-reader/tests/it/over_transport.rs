@@ -1,7 +1,7 @@
 //! One read over a transport that is not the bus: the data is fenced and classed, the model's
 //! failures are typed errors, and an answer is only ever a value that fits the ask.
 
-#[allow(dead_code)]
+#[allow(dead_code, reason = "the shared helper holds more than this test uses")]
 #[path = "../../../companion-daemon/tests/it/support/infer.rs"]
 mod infer;
 

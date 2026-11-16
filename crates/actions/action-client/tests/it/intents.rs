@@ -29,6 +29,10 @@ impl Scripted {
 }
 
 impl Transport for Scripted {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this impl has nothing to wait for"
+    )]
     async fn call(&self, request: IntentsRequest) -> Result<IntentsReply, TransportError> {
         self.seen.lock().expect("lock").push(request);
         self.replies
@@ -78,7 +82,7 @@ async fn the_gate_methods_send_their_ask_and_read_only_their_own_reply() {
     let grant = GrantAsk {
         app: AppName::parse("org.bardo.Mail").expect("app"),
         space: provenance::SpaceId::parse("work").expect("space"),
-        level: Default::default(),
+        level: permission_core::Level::default(),
         run: None,
     };
     assert_eq!(

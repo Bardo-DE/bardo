@@ -35,6 +35,10 @@ fn record() -> ValueSchema {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of replies and the value or error each must give, one row each"
+)]
 fn answers_table() {
     let among = ValueSchema::EntitiesAmong(vec![thread("t1"), thread("t2")]);
     let rows: Vec<(&str, &str, ValueSchema, Result<Value, ReaderError>)> = vec![

@@ -28,7 +28,6 @@ use bus::PrivateBus;
 use memoryd::FakeMemoryd;
 use permission_core::AskReason;
 use provenance::{Actor, ConfirmId, ConfirmReceipt, InputProof, SpaceScope, UnixSeconds};
-use std::path::Path;
 use std::process::Output;
 
 fn receipt() -> ConfirmReceipt {
@@ -107,9 +106,10 @@ impl Desk {
         let env = |key: &str| match key {
             "HOME" => Some(home.clone()),
             "XDG_DATA_HOME" => Some(data.display().to_string()),
-            "XDG_DATA_DIRS" => Some(dir.path().join("none").display().to_string()),
+            "XDG_DATA_DIRS" | "XDG_CONFIG_DIRS" => {
+                Some(dir.path().join("none").display().to_string())
+            }
             "XDG_CONFIG_HOME" => Some(dir.path().join("config").display().to_string()),
-            "XDG_CONFIG_DIRS" => Some(dir.path().join("none").display().to_string()),
             _ => None,
         };
         let mut setup = Setup::from_env(&env).expect("the shipped configuration and the manifests");
@@ -156,7 +156,7 @@ impl Desk {
     /// terminal's scope of the fake proc root.
     async fn quire(&self, words: &[&str]) -> Output {
         use tokio::io::AsyncWriteExt;
-        let scratch: &Path = self.dir.path();
+        let scratch = self.dir.path();
         let mut child = tokio::process::Command::new("sh")
             .args(["-c", "read _; exec \"$0\" \"$@\" </dev/null"])
             .arg(env!("CARGO_BIN_EXE_bardo-do"))

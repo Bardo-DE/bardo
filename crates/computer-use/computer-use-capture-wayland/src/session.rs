@@ -247,7 +247,7 @@ impl CaptureSession for WaylandSession {
         let logical = Size::new(Coord(raw.size.w), Coord(raw.size.h));
         let (pixels, regions, applied_by) = match self.masking {
             Masking::Cuad => {
-                let (pixels, regions) = apply_masks(raw, LOGICAL, hints);
+                let (pixels, regions) = apply_masks(&raw, LOGICAL, hints);
                 (pixels, regions, MaskWhere::Cuad)
             }
             // Already black where the compositor was told to; the hints are what was asked.

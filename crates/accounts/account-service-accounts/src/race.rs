@@ -1,7 +1,7 @@
 //! Two futures, the first one to finish wins and the other is dropped, with no runtime: what
 //! the sign-in driver waits on while a poll is in flight and the person may still act.
 
-use std::future::{Future, poll_fn};
+use std::future::poll_fn;
 use std::pin::pin;
 use std::task::Poll;
 

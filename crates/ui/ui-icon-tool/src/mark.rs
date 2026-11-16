@@ -103,6 +103,10 @@ fn segment(p: Pt, a: Pt, b: Pt) -> f32 {
 }
 
 /// Signed distance to a rounded box (Quilez), radii picked by quadrant.
+#[expect(
+    clippy::many_single_char_names,
+    reason = "colour channels, plane coefficients and pixel coordinates are single letters by convention in this maths"
+)]
 fn rect(p: Pt, at: Pt, size: Pt, corners: Corners) -> f32 {
     let c = Pt(at.0 + size.0 / 2.0, at.1 + size.1 / 2.0);
     let q = sub(p, c);
@@ -119,6 +123,10 @@ fn rect(p: Pt, at: Pt, size: Pt, corners: Corners) -> f32 {
 }
 
 /// Signed distance to a polygon (Quilez's winding-number form).
+#[expect(
+    clippy::many_single_char_names,
+    reason = "colour channels, plane coefficients and pixel coordinates are single letters by convention in this maths"
+)]
 fn polygon(p: Pt, v: &[Pt]) -> f32 {
     let n = v.len();
     let first = sub(p, v[0]);

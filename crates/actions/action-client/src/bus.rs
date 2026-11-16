@@ -23,7 +23,6 @@ use action_wire::{
 };
 use serde::Serialize;
 use serde::de::DeserializeOwned;
-use std::future::Future;
 use zbus::zvariant::OwnedObjectPath;
 
 type Reply = Result<IntentsReply, TransportError>;
@@ -202,6 +201,10 @@ pub(crate) async fn watch(
 }
 
 /// Sends `request` over `connection` and reads its one reply.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one arm per request kind, each a single bus call: the match is the table of the wire, and splitting it would only scatter the arms"
+)]
 pub(crate) async fn call(connection: &BusConnection, request: IntentsRequest) -> Reply {
     use IntentsRequest as Q;
     let c = connection;

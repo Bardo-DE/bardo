@@ -54,11 +54,19 @@ fn outside(d: f32, soft: f32) -> f32 {
     (0.5 + d / soft).clamp(0.0, 1.0)
 }
 
+#[expect(
+    clippy::many_single_char_names,
+    reason = "colour channels, plane coefficients and pixel coordinates are single letters by convention in this maths"
+)]
 fn rgba(c: Srgb8, a: f32) -> [f32; 4] {
     let [r, g, b] = c.unit();
     [r, g, b, a]
 }
 
+#[expect(
+    clippy::many_single_char_names,
+    reason = "colour channels, plane coefficients and pixel coordinates are single letters by convention in this maths"
+)]
 fn lab_rgba(c: Oklab, a: f32) -> [f32; 4] {
     let [r, g, b] = srgb(c);
     [r, g, b, a]
@@ -124,6 +132,10 @@ fn paint_layer(
 
 /// The layers alone on transparent, at one canvas size, in the given roles' colours.
 #[must_use]
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+)]
 pub fn emblem_object(spec: &Spec, r: &Roles, grid: PlateGrid) -> Rgba32FImage {
     let k = grid.side as f32 / 24.0;
     let emboss = if grid.canvas >= EMBOSS_FROM {
@@ -187,6 +199,12 @@ fill = "symbol"
 
     /// Every dialect draws the dot apart from its plate by lightness, at every size.
     #[test]
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_precision_loss,
+        clippy::cast_sign_loss,
+        reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+    )]
     fn a_dot_in_every_dialect() {
         let spec = parse_spec(DOT).expect("spec");
         let t = Template::default();

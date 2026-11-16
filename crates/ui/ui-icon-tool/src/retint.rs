@@ -30,6 +30,12 @@ fn lightness(img: &Rgba32FImage, x: u32, y: u32) -> f32 {
 }
 
 /// Least-squares plane `l = a + b x + c y` through the ring's pixels (x, y in 0..=1).
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss,
+    reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+)]
 fn ground_plane(img: &Rgba32FImage) -> [f32; 3] {
     let (w, h) = (img.width(), img.height());
     let ring = (RING * w.min(h) as f32).max(1.0) as u32;
@@ -82,6 +88,16 @@ fn solve3(m: [[f64; 3]; 3], v: [f64; 3]) -> [f64; 3] {
 
 /// `face` re-coloured into `roles`: the ground becomes the plate colour, what stands above it
 /// moves towards the symbol colour, what sinks below it towards a darker plate.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss,
+    reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+)]
+#[expect(
+    clippy::many_single_char_names,
+    reason = "colour channels, plane coefficients and pixel coordinates are single letters by convention in this maths"
+)]
 pub fn retint(face: &Rgba32FImage, roles: &Roles) -> Rgba32FImage {
     let [a, b, c] = ground_plane(face);
     let (w, h) = (face.width(), face.height());
@@ -123,6 +139,10 @@ mod tests {
     /// A ground with a strong left-to-right lightness ramp and a lighter square in the middle:
     /// after retinting, the ground is flat plate colour and the square is lighter than it.
     #[test]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+    )]
     fn ramp_is_flattened_and_the_symbol_kept() {
         let img = Rgba32FImage::from_fn(128, 128, |x, y| {
             let ramp = 0.45 + 0.3 * x as f32 / 128.0;

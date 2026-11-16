@@ -59,6 +59,7 @@ pub fn month_grid(
         FirstWeekday::Monday => Weekday::Monday,
         FirstWeekday::Sunday => Weekday::Sunday,
     };
+    #[expect(clippy::cast_possible_wrap, reason = "`i` is an index below 7")]
     let weekdays: [Weekday; 7] = std::array::from_fn(|i| head.wrapping_add(i as i64));
     let opening = first_of(month);
     let back = i64::from(opening.weekday().since(head));
@@ -84,6 +85,7 @@ fn first_of(month: MonthKey) -> Date {
 
 /// One row from `start`: its ISO week is the week of its Thursday, whatever the first weekday.
 fn week_of(start: Date, month: MonthKey, today: Date, busy: &[Date]) -> MonthWeek {
+    #[expect(clippy::cast_possible_wrap, reason = "`i` is an index below 7")]
     let dates: [Date; 7] = std::array::from_fn(|i| start.saturating_add((i as i64).days()));
     let thursday = dates
         .into_iter()

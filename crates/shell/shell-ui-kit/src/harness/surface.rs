@@ -132,42 +132,49 @@ impl<S: Surface> SurfaceHarness<S> {
 
 impl<S: Surface> SurfaceSetup<S> {
     /// An output other than [`fake::output`] (`DP-1`), as a second monitor's surface.
+    #[must_use]
     pub fn output(mut self, output: OutputInfo) -> Self {
         self.output = output;
         self
     }
 
     /// The settings file the surface reads.
+    #[must_use]
     pub fn settings(mut self, settings: ShellFile) -> Self {
         self.settings = settings;
         self
     }
 
     /// The person's desktop-wide `style.css` the surface starts with.
+    #[must_use]
     pub fn desktop_style(mut self, text: &str) -> Self {
         self.styles.desktop = UserStyle(text.to_owned());
         self
     }
 
     /// The person's `style.css` for the shell the surface starts with.
+    #[must_use]
     pub fn app_style(mut self, text: &str) -> Self {
         self.styles.app = UserStyle(text.to_owned());
         self
     }
 
     /// The crash guard the surface starts with (`StylesGuard::begin` on a scratch folder).
+    #[must_use]
     pub fn guard(mut self, guard: StylesGuard) -> Self {
         self.guard = Some(guard);
         self
     }
 
     /// A viewport other than the surface's layer size.
+    #[must_use]
     pub fn viewport(mut self, viewport: Viewport) -> Self {
         self.viewport = Some(viewport);
         self
     }
 
     /// An appearance other than the default one.
+    #[must_use]
     pub fn appearance(mut self, appearance: PinnedAppearance) -> Self {
         self.appearance = appearance;
         self
@@ -175,6 +182,7 @@ impl<S: Surface> SurfaceSetup<S> {
 
     /// Services other than [`fake::services`], and the senders behind them: for a test that
     /// answers a service itself (the launcher's search runner).
+    #[must_use]
     pub fn services(mut self, services: Services, feeds: fake::Feeds) -> Self {
         self.services = Some((services, feeds));
         self
@@ -182,6 +190,7 @@ impl<S: Surface> SurfaceSetup<S> {
 
     /// A hook run in the root before the surface's own, on every render: for the extra contexts
     /// (`use_context_provider`) and tasks (`use_hook` around `spawn`) a test gives it.
+    #[must_use]
     pub fn in_root(mut self, hook: impl Fn() + 'static) -> Self {
         self.root_hook = Some(Rc::new(hook));
         self
@@ -190,6 +199,7 @@ impl<S: Surface> SurfaceSetup<S> {
     /// Where the keyboard goes when the element that had it leaves the document. The harness
     /// hands it on to an ancestor, as a window of quire's own does; `BlitzDefault` is what a
     /// layer-shell-host surface has today, which wires no focus keeper.
+    #[must_use]
     pub fn focus(mut self, focus: FocusFallback) -> Self {
         self.focus = focus;
         self
@@ -197,6 +207,7 @@ impl<S: Surface> SurfaceSetup<S> {
 
     /// The folders the surface may read `file:` pictures from (none by default, as a surface with
     /// no roots reads none); a test that draws a fixture names the fixture's folder.
+    #[must_use]
     pub fn file_roots(mut self, roots: layer_shell_host::FileRoots) -> Self {
         self.file_roots = roots;
         self

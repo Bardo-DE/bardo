@@ -92,7 +92,10 @@ mod tests {
     fn a_client_holds_at_most_the_cap_and_the_rest_are_dropped() {
         let mut held = Held::default();
         for n in 0..HELD_REQUESTS {
-            let pushed = held.push(ClientKey(1), Req(n as u32, true));
+            let pushed = held.push(
+                ClientKey(1),
+                Req(u32::try_from(n).expect("the cap fits a u32"), true),
+            );
             assert!(matches!(pushed, Pushed::Kept));
         }
         assert!(matches!(

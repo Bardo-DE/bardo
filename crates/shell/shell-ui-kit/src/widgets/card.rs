@@ -5,7 +5,6 @@ use dioxus::prelude::*;
 use shell_kit::prelude::*;
 use shell_kit::widget::timeline::Timeline;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 
 use super::{
     CenterWidget, SIZE, calendar::CalendarProvider, up_next::UpNextProvider, use_widget_wake,
@@ -53,6 +52,10 @@ pub fn Card<P: WidgetProvider>(provider: P) -> Element {
 }
 
 /// `kind`'s card: the only match on the kind.
+#[expect(
+    clippy::missing_errors_doc,
+    reason = "`Element` is dioxus's `Result` alias; a component renders or returns `Ok`, and the caller is the dioxus runtime"
+)]
 pub fn card(kind: CenterWidget) -> Element {
     match kind {
         CenterWidget::Calendar => rsx! { Card { provider: CalendarProvider } },

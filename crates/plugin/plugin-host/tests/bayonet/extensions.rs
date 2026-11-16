@@ -26,7 +26,10 @@ struct Icons {
 
 #[derive(Deserialize)]
 struct Fields {
-    #[allow(dead_code)]
+    #[expect(
+        dead_code,
+        reason = "read by serde only: deserialising checks the field is a known word"
+    )]
     capability: Word,
     file: PathBuf,
 }
@@ -67,7 +70,10 @@ struct Player {
 
 #[derive(Deserialize)]
 struct PlayerFields {
-    #[allow(dead_code)]
+    #[expect(
+        dead_code,
+        reason = "read by serde only: deserialising checks the field is a known word"
+    )]
     capability: Word,
     library: PathBuf,
 }
@@ -128,7 +134,7 @@ impl Scratch {
     }
 
     /// Writes `<data>/bardo/extensions/<folder>/extension.toml`, and returns the folder.
-    fn extension(&self, data: PathBuf, folder: &str, manifest: &str) -> PathBuf {
+    fn extension(data: &Path, folder: &str, manifest: &str) -> PathBuf {
         let dir = data.join("bardo").join("extensions").join(folder);
         fs::create_dir_all(&dir).unwrap();
         fs::write(dir.join("extension.toml"), manifest).unwrap();
@@ -164,8 +170,8 @@ fn installed(found: &Discovery<Icons>) -> Vec<(String, Origin)> {
 #[test]
 fn extensions_are_found_in_folders_named_for_their_id() {
     let s = Scratch::new();
-    let folder = s.extension(
-        s.user(),
+    let folder = Scratch::extension(
+        &s.user(),
         "org.example.Paper",
         &text(
             "org.example.Paper",
@@ -175,12 +181,12 @@ fn extensions_are_found_in_folders_named_for_their_id() {
     );
     fs::write(folder.join("paper.png"), "png").unwrap();
     let id = "org.example.Slate";
-    let slate = s.extension(s.system(0), id, &text(id, "", ICONS));
+    let slate = Scratch::extension(&s.system(0), id, &text(id, "", ICONS));
     fs::write(slate.join("paper.png"), "png").unwrap();
     // A folder with no manifest is not an Extension; a folder named for another id is rejected.
     fs::create_dir_all(s.user().join("bardo/extensions/notes")).unwrap();
-    let wrong = s.extension(
-        s.user(),
+    let wrong = Scratch::extension(
+        &s.user(),
         "org.example.Other",
         &text("org.example.Nope", "", ICONS),
     );
@@ -222,7 +228,7 @@ fn a_path_that_leaves_the_folder_is_a_manifest_error() {
     ];
     for (n, (name, file)) in cases.iter().enumerate() {
         let id = format!("org.example.Case{n}");
-        s.extension(s.user(), &id, &text(&id, "", &entry(file)));
+        Scratch::extension(&s.user(), &id, &text(&id, "", &entry(file)));
         let found = s.folders(&[]);
         let error = &found.rejected[n].error;
         assert!(
@@ -235,7 +241,7 @@ fn a_path_that_leaves_the_folder_is_a_manifest_error() {
     // The program of a raw scan may not climb either.
     let id = "org.example.Prog";
     let program = "[program]\npath = \"../bin/run\"\n";
-    s.extension(s.system(0), id, &text(id, program, ICONS));
+    Scratch::extension(&s.system(0), id, &text(id, program, ICONS));
     let user = s.user();
     let system = [s.system(0)];
     let raw = scan::<Raw>(&search(&user, &system));
@@ -257,13 +263,13 @@ fn an_entry_that_reaches_anywhere_may_name_a_file_outside_its_folder_but_not_a_m
         )
     };
     let id = "org.example.Player";
-    s.extension(s.user(), id, &text(id, "", &entry(&outside)));
+    Scratch::extension(&s.user(), id, &text(id, "", &entry(&outside)));
     let user = s.user();
     let found = discover::<Player>(&search(&user, &[]));
     assert_eq!(installed_ids(&found.registry), [id]);
 
     let gone = s.root.path().join("libgone.so");
-    s.extension(s.user(), id, &text(id, "", &entry(&gone)));
+    Scratch::extension(&s.user(), id, &text(id, "", &entry(&gone)));
     let found = discover::<Player>(&search(&user, &[]));
     assert!(found.registry.installed().is_empty());
     assert!(matches!(
@@ -287,7 +293,7 @@ fn a_symlink_out_of_the_folder_sets_the_extension_aside() {
     let outside = s.root.path().join("outside.png");
     fs::write(&outside, "png").unwrap();
     let id = "org.example.Link";
-    let folder = s.extension(s.user(), id, &text(id, "", ICONS));
+    let folder = Scratch::extension(&s.user(), id, &text(id, "", ICONS));
     std::os::unix::fs::symlink(&outside, folder.join("paper.png")).unwrap();
 
     let found = s.folders(&[]);
@@ -314,7 +320,7 @@ fn of_one_id_the_person_wins_then_the_newer_version() {
         } else {
             format!("version = \"{version}\"")
         };
-        let folder = s.extension(data, id, &text(id, &extra, ICONS));
+        let folder = Scratch::extension(&data, id, &text(id, &extra, ICONS));
         fs::write(folder.join("paper.png"), "png").unwrap();
         folder
     };
@@ -354,19 +360,19 @@ fn raw_entries_become_the_owners_type_and_other_words_are_skipped() {
     let s = Scratch::new();
     let two = format!("{ICONS}[[provides]]\ncapability = \"look\"\nsheet = \"look.css\"\n");
     let id = "org.example.Both";
-    let both = s.extension(s.user(), id, &text(id, "", &two));
+    let both = Scratch::extension(&s.user(), id, &text(id, "", &two));
     fs::write(both.join("paper.png"), "png").unwrap();
     let id = "org.example.LookOnly";
-    s.extension(
-        s.user(),
+    Scratch::extension(
+        &s.user(),
         id,
         &text(id, "", "[[provides]]\ncapability = \"look\"\n"),
     );
     let id = "org.example.Missing";
-    s.extension(s.user(), id, &text(id, "", ICONS));
+    Scratch::extension(&s.user(), id, &text(id, "", ICONS));
     let id = "org.example.Bad";
-    s.extension(
-        s.user(),
+    Scratch::extension(
+        &s.user(),
         id,
         &text(id, "", "[[provides]]\ncapability = \"file_icons\"\n"),
     );
@@ -452,8 +458,8 @@ fn the_flat_layout_is_unchanged() {
     )
     .unwrap();
     // A folder-layout Extension beside it is not read by a flat search.
-    s.extension(
-        s.user(),
+    Scratch::extension(
+        &s.user(),
         "org.example.Paper",
         &text("org.example.Paper", "", ICONS),
     );

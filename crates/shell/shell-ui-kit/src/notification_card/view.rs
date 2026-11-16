@@ -15,7 +15,6 @@ use shell_model::notifications::{AppRef, Href, Notification, UnixMs};
 use shell_services::apps::{IconRoots, icon_theme, resolve_icon};
 use shell_services::env::Dirs;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::icon::url::IconUrl;
 
 use super::actions::card_actions;
@@ -49,7 +48,7 @@ pub(super) struct CardWiring {
 
 /// `note` as quire's card, standing for `count` notifications, drawn at `place`.
 pub(super) fn card(
-    note: Notification,
+    note: &Notification,
     count: usize,
     place: CardPlace,
     now: UnixMs,
@@ -68,7 +67,7 @@ pub(super) fn card(
                 summary: note.summary.clone(),
                 body: rich_body(&note.body),
                 count: group_count(count),
-                actions: card_actions(&note, on_press),
+                actions: card_actions(note, on_press),
                 on_close: move |_| on_press.call(CardPress::Close),
                 on_open: move |_| on_press.call(CardPress::Body),
                 on_link: move |href: String| on_press.call(CardPress::Link(Href::new(&href))),

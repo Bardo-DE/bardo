@@ -1,5 +1,5 @@
 use super::*;
-use account_core::{AccountLabel, AuthKind, Restriction};
+use account_core::{AccountLabel, Restriction};
 
 fn account(id: &str) -> Account {
     Account {
@@ -23,7 +23,6 @@ fn registry(ids: &[&str]) -> Registry {
 
 #[test]
 fn an_id_is_the_provider_and_the_label_as_a_slug_with_a_number_when_taken() {
-    let provider = ProviderId::parse("nextcloud").expect("id");
     const CASES: &[(&str, &[&str], &str)] = &[
         ("an address", &[], "nextcloud-ada-example.org"),
         ("a port and uppercase", &[], "nextcloud-ada-example.org"),
@@ -38,6 +37,7 @@ fn an_id_is_the_provider_and_the_label_as_a_slug_with_a_number_when_taken() {
             "nextcloud-ada-example.org-3",
         ),
     ];
+    let provider = ProviderId::parse("nextcloud").expect("id");
     let labels = [
         "Ada@Example.org",
         "ADA@example.org",

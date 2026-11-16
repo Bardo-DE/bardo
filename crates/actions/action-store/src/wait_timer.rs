@@ -2,7 +2,6 @@
 //! (and gone) when the sleep is dropped, so a wait that ends first leaves nothing behind.
 
 use futures_util::task::AtomicWaker;
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::{Arc, Condvar, Mutex, PoisonError};
 use std::task::{Context, Poll};

@@ -148,7 +148,7 @@ fn a_pruned_tree_says_how_many_nodes_are_not_shown() {
 #[test]
 fn pruning_keeps_every_kept_node_under_a_kept_parent_and_adds_up_the_dropped() {
     let mail = crate::support::quire_mail();
-    for budget in 1..=mail.nodes.len() as u32 {
+    for budget in 1..=u32::try_from(mail.nodes.len()).expect("a mail tree has few nodes") {
         let pruned = prune(&mail, NodeBudget(budget));
         assert!(pruned.nodes.len() <= budget as usize, "budget {budget}");
         for node in &pruned.nodes {

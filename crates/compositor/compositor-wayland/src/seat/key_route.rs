@@ -89,10 +89,11 @@ impl PastKeys {
 /// kernel keyboard, keycap's among them, goes through as before.
 fn press_route(origin: &Origin, device: DeviceId, facts: RouteFacts) -> bool {
     let protocol = device.0 >= VIRTUAL_KEYBOARD_DEVICE.0;
-    match (origin, facts.grabbed, facts.down) {
-        (Origin::Virtual(DeviceClass::Keyboard), true, true) if protocol => true,
-        _ => false,
-    }
+    protocol
+        && matches!(
+            (origin, facts.grabbed, facts.down),
+            (Origin::Virtual(DeviceClass::Keyboard), true, true)
+        )
 }
 
 /// Sends `delivery` to every keyboard the focused client bound.

@@ -208,7 +208,9 @@ pub async fn context<T: Transport>(
     word: &str,
 ) -> Result<Printed, Failure> {
     let app = apps.app(word)?;
-    let own = SessionId::parse("s-0").map_err(|_| Failure::usage("no session"))?;
+    let own = SessionId::parse("s-0")
+        .ok()
+        .ok_or_else(|| Failure::usage("no session"))?;
     let view = intents
         .context(own, app.app.clone())
         .await

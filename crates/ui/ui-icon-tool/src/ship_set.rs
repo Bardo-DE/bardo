@@ -61,9 +61,9 @@ fn tinted(path: &Path, tint: DsTint) -> Result<Rgba32FImage, IconsError> {
 /// The contact sheet from the exported files: the shipped (Colour) set, the Muted set, and the
 /// neutral Monochrome set tinted by `ui_components::style::icon::retint::retint` for the Work and Home Spaces.
 pub fn sheet(manifest_path: &Path, out_dir: &Path, sheet: &Path) -> Result<(), IconsError> {
+    type Load<'a> = Box<dyn Fn(&Path) -> Result<Rgba32FImage, IconsError> + 'a>;
     let m: Manifest = toml::from_str(&std::fs::read_to_string(manifest_path)?)?;
     let space = |preset: usize| DsTint::space(PRESETS[preset].dots);
-    type Load<'a> = Box<dyn Fn(&Path) -> Result<Rgba32FImage, IconsError> + 'a>;
     let rows: [(&str, Style, Load); 4] = [
         ("SHIPPED", Style::Colour, Box::new(|p: &Path| load(p))),
         ("MUTED 0.04", Style::Muted, Box::new(|p: &Path| load(p))),

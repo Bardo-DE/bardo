@@ -10,7 +10,6 @@ use action_dbus::{BusConnection, INTENTS_BUS, RequestProxy};
 use action_wire::IntentsReply;
 use futures_util::StreamExt;
 use futures_util::future::{Either, select};
-use std::future::Future;
 use zbus::fdo::DBusProxy;
 use zbus::message::Type;
 use zbus::zvariant::OwnedObjectPath;
@@ -75,10 +74,7 @@ impl Events for Signals {
                         return Err(TransportError::Closed);
                     }
                     Either::Right((Some(change), _)) => {
-                        let gone = change
-                            .args()
-                            .map(|a| a.new_owner().is_none())
-                            .unwrap_or(true);
+                        let gone = change.args().map_or(true, |a| a.new_owner().is_none());
                         if gone {
                             return Err(TransportError::Closed);
                         }
@@ -134,7 +130,8 @@ pub(crate) async fn watching(
         .get_name_owner(name)
         .await
         .map(|owner| owner.to_string())
-        .map_err(|_| TransportError::Closed)?;
+        .ok()
+        .ok_or(TransportError::Closed)?;
     let rule = MatchRule::builder()
         .msg_type(Type::Signal)
         .interface("org.bardo.Intents1.Request")

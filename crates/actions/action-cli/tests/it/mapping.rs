@@ -185,6 +185,10 @@ fn item(key: &str) -> EntityId {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of every declared type with its words and value, one row each"
+)]
 fn each_declared_type_maps_from_its_words() {
     let one = |name: &str, raw: &str| -> Value {
         let pairs: Vec<(&str, &str)> = if name == "title" {

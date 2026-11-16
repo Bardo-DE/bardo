@@ -5,7 +5,6 @@ use crate::mask::MaskRegion;
 use crate::settle::DamageAt;
 use computer_use_desktop::LeaseGrant;
 use serde::{Deserialize, Serialize};
-use std::future::Future;
 
 /// When a frame is wanted.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

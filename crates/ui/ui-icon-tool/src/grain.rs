@@ -10,6 +10,11 @@ pub const GRAIN_TILE: u32 = 128;
 
 /// The grey tile, 0..=1, exactly the prototype's sequence (`v = floor(rnd * 255)`).
 #[must_use]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+)]
 pub fn grain_tile() -> Plane {
     let mut seed: u64 = 7;
     let values = (0..GRAIN_TILE * GRAIN_TILE)

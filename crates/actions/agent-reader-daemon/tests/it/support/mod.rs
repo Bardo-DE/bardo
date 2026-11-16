@@ -1,4 +1,7 @@
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test binary of the crate uses a subset of the shared helpers"
+)]
 
 pub mod bus;
 

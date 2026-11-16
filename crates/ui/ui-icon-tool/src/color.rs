@@ -9,6 +9,10 @@ pub struct Srgb8 {
 impl Srgb8 {
     /// `0xRRGGBB` as in the docs' `#RRGGBB`.
     #[must_use]
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+    )]
     pub const fn hex(rgb: u32) -> Self {
         Self {
             r: (rgb >> 16) as u8,
@@ -54,6 +58,10 @@ pub fn linear_to_srgb(c: f32) -> f32 {
 }
 
 /// `OKLab` of an sRGB-encoded 0..=1 triple.
+#[expect(
+    clippy::many_single_char_names,
+    reason = "colour channels, plane coefficients and pixel coordinates are single letters by convention in this maths"
+)]
 pub fn oklab(rgb: [f32; 3]) -> Oklab {
     let [r, g, b] = rgb.map(srgb_to_linear);
     let l = 0.412_221_46 * r + 0.536_332_55 * g + 0.051_445_995 * b;
