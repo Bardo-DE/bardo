@@ -149,17 +149,19 @@ impl WindowHandle {
     }
 }
 
-/// The handle of the window the calling component renders in, the first window included: its
-/// owner can raise it ([`WindowHandle::focus`]) or close it. `None` outside a window `launch`
-/// runs (the harness, a snapshot), where there is no event loop to ask.
+/// The handle of the window the calling component renders in, the first window included: its owner
+/// can raise it ([`WindowHandle::focus`]) or close it.
+///
+/// `None` outside a window `launch` runs (the harness, a snapshot), where there is no event loop to
+/// ask.
 pub fn use_window_handle() -> Option<WindowHandle> {
     use_hook(try_consume_context::<WindowHandle>)
 }
 
-/// Open another window of this app, rendering `root` in a `VirtualDom` of its own. Call it from a
-/// component or a handler inside a window `launch` opened (or one this opened); anywhere else
-/// (the harness, a snapshot) there is no event loop to ask and it answers
-/// `None`.
+/// Open another window of this app, rendering `root` in a `VirtualDom` of its own.
+///
+/// Call it from a component or a handler inside a window `launch` opened (or one this opened);
+/// anywhere else (the harness, a snapshot) there is no event loop to ask and it answers `None`.
 pub fn open_window(spec: WindowSpec, root: fn() -> Element) -> Option<WindowHandle> {
     open(spec, Root::Plain(root))
 }
@@ -190,7 +192,10 @@ mod tests {
     #[derive(Clone)]
     struct Seen(Rc<RefCell<Option<WindowHandle>>>);
 
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Probe() -> Element {
         let seen = use_context::<Seen>();
         seen.0.replace(use_window_handle());

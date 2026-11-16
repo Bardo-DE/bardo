@@ -1,9 +1,11 @@
-//! The power menu (design/20 §1.8): one Overlay surface per output, kept warm and hidden like
-//! the launcher, that shows quire's `Alert` centred on its `Sheet` (it dims nothing): the
-//! question for the opening's action, then Log Out, Restart, Shut Down and Suspend as its buttons
-//! (the opening's first and the default, the ones logind does not offer left out) and Cancel.
-//! Keyboard `Exclusive`: Return presses the default button, Tab and Shift+Tab move between the
-//! buttons, Space presses the one under the keyboard, Escape cancels; a press outside the alert closes.
+//! The power menu (design/20 §1.8).
+//!
+//! One Overlay surface per output, kept warm and hidden like the launcher, that shows quire's
+//! `Alert` centred on its `Sheet` (it dims nothing): the question for the opening's action, then
+//! Log Out, Restart, Shut Down and Suspend as its buttons (the opening's first and the default, the
+//! ones logind does not offer left out) and Cancel. Keyboard `Exclusive`: Return presses the
+//! default button, Tab and Shift+Tab move between the buttons, Space presses the one under the
+//! keyboard, Escape cancels; a press outside the alert closes.
 //!
 //! Opened by `bardo-shell power-menu {open,toggle}`, the bar's app menu ("Shut Down…"), and the
 //! launcher's Log Out, Restart and Shut Down rows (the alert is about that row's action). All of them

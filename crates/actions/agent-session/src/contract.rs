@@ -1,7 +1,8 @@
 //! For tests: the rules every `SessionBackend` keeps, written once and run against each backend
-//! (the scripted `FakeBackend` here, the native backend in `agent-native`). A backend's test
-//! implements [`Harness`]; the functions below drive it with no executor of their own, so they
-//! run on whatever the caller's test runs on.
+//! (the scripted `FakeBackend` here, the native backend in `agent-native`).
+//!
+//! A backend's test implements [`Harness`]; the functions below drive it with no executor of their
+//! own, so they run on whatever the caller's test runs on.
 //!
 //! The turn they run makes one call and then says words: `Started`, `Ended`, `Words`, then
 //! `TurnEnd(Done)`.

@@ -12,10 +12,11 @@ pub fn many_words(count: usize) -> String {
     format!("{count} items")
 }
 
-/// The rows under a lone item's preview, in order: Kind, Size (a file) or Contents (a folder),
-/// Created (when the filesystem says), Modified, and Dimensions (what anyview reports of a
-/// picture). `entry` is the row, `info` the facts read for it when they have arrived, and `when`
-/// writes a date.
+/// The rows under a lone item's preview, in order.
+///
+/// Kind, Size (a file) or Contents (a folder), Created (when the filesystem says), Modified, and
+/// Dimensions (what anyview reports of a picture). `entry` is the row, `info` the facts read for it
+/// when they have arrived, and `when` writes a date.
 pub fn pane_rows(
     entry: &Entry,
     info: Option<&Info>,

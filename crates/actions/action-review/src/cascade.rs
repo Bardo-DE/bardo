@@ -21,9 +21,11 @@ pub enum Gate {
     Refuse(DenyCode),
 }
 
-/// The stages to run for a ruling. Only `AllowJudged` runs any: a low-impact call gets the
-/// quick judge; a high-impact one (outbound or destructive, a count above half the mass
-/// threshold, lasting memory) gets all three, the last from another model family.
+/// The stages to run for a ruling.
+///
+/// Only `AllowJudged` runs any: a low-impact call gets the quick judge; a high-impact one (outbound
+/// or destructive, a count above half the mass threshold, lasting memory) gets all three, the last
+/// from another model family.
 #[must_use]
 pub fn plan(ruling: &Ruling, impact: Impact) -> Vec<Stage> {
     match (ruling, impact) {

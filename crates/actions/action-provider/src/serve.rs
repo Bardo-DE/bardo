@@ -5,9 +5,10 @@ use crate::error::ServeError;
 use crate::provider::{ContextSource, IntentProvider, SummonTarget};
 
 /// Serves `org.bardo.IntentProvider1` for `provider` on the app's activatable bus name (the
-/// manifest's app) on the session bus, until the connection closes. The router calls it only
-/// after checking that the name's owner derives to the same `AppId`; every member but `Summon`
-/// refuses any caller that is not intentd.
+/// manifest's app) on the session bus, until the connection closes.
+///
+/// The router calls it only after checking that the name's owner derives to the same `AppId`; every
+/// member but `Summon` refuses any caller that is not intentd.
 pub async fn serve<P, C, S>(provider: P, context: C, summon: S) -> Result<(), ServeError>
 where
     P: IntentProvider + 'static,

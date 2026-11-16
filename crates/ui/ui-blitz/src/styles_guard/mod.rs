@@ -1,12 +1,14 @@
-//! The crash guard for styles (customization design section 7.4). A bad stylesheet can stop a
-//! program from starting, and a program that cannot start cannot show the switch that turns the
-//! style off. So before a window first loads styles the guard writes the fingerprint of the three
-//! sheets to `<state>/bardo/styles-guard/<program>` marked `starting`, and once the first frame
-//! has been drawn and the program has lived five seconds it marks the record `good`. If the last
-//! two starts with the same sheets never got there, the next start is without them: the app
-//! draws with `custom_styles: false` and shows `ui_components::prelude::StylesOffNotice`, whose button calls
-//! [`StylesGuard::turn_on_again`]. A change to any of the three sheets clears the guard
-//! ([`StylesGuard::changed`]), so the person can fix the style and try again.
+//! The crash guard for styles (customization design section 7.4).
+//!
+//! A bad stylesheet can stop a program from starting, and a program that cannot start cannot show
+//! the switch that turns the style off. So before a window first loads styles the guard writes the
+//! fingerprint of the three sheets to `<state>/bardo/styles-guard/<program>` marked `starting`, and
+//! once the first frame has been drawn and the program has lived five seconds it marks the record
+//! `good`. If the last two starts with the same sheets never got there, the next start is without
+//! them: the app draws with `custom_styles: false` and shows
+//! `ui_components::prelude::StylesOffNotice`, whose button calls [`StylesGuard::turn_on_again`]. A
+//! change to any of the three sheets clears the guard ([`StylesGuard::changed`]), so the person can
+//! fix the style and try again.
 //!
 //! The state directory is a parameter, never read from the environment here: an app passes
 //! `ConfigRoot::state_dir(AppName::QUIRE)`, a test passes a scratch directory. Writes are atomic
@@ -117,9 +119,11 @@ impl StylesGuard {
 }
 
 /// Mark `guard`'s start good once the window has drawn its first frame and the program has lived
-/// [`ALIVE_FOR`]. Call it once in the root component, passing the guard it currently holds; a new
-/// guard (after [`StylesGuard::changed`]) starts a new wait. The wait is a sleeping thread, so it
-/// needs no async runtime.
+/// [`ALIVE_FOR`].
+///
+/// Call it once in the root component, passing the guard it currently holds; a new guard (after
+/// [`StylesGuard::changed`]) starts a new wait. The wait is a sleeping thread, so it needs no async
+/// runtime.
 pub fn use_styles_guard(guard: StylesGuard) {
     use_effect(use_reactive!(|guard| {
         if guard.load() {

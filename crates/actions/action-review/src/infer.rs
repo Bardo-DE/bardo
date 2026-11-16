@@ -135,9 +135,11 @@ fn message(role: Role, text: String) -> ChatMessage {
 }
 
 /// The data class every reviewer request carries: `Prompt`, the person's own words and what a
-/// reviewer quotes of them. Under the proposed AI policy its floor is this computer
-/// (`ai.floor.prompt`), so a reviewer request is pinned on-device whatever the models are; a
-/// cloud model would be refused by inferd (`RequiresCloud`), never sent the words.
+/// reviewer quotes of them.
+///
+/// Under the proposed AI policy its floor is this computer (`ai.floor.prompt`), so a reviewer
+/// request is pinned on-device whatever the models are; a cloud model would be refused by inferd
+/// (`RequiresCloud`), never sent the words.
 pub const REVIEW_CLASS: DataClass = DataClass::Prompt;
 
 /// The chat request for one stage of one review.

@@ -195,8 +195,10 @@ pub fn rule_ids(file: &str) -> Vec<StandingGrantId> {
 const RULE_LINES: usize = 4;
 
 /// The generated rules `file` holds, each cut out of the file on its own, however the rest of the
-/// file reads. A rules file the loader rejects (a hand edit that does not parse) must not take
-/// the person's "never" with it: the loader keeps each of these that is good by itself.
+/// file reads.
+///
+/// A rules file the loader rejects (a hand edit that does not parse) must not take the person's
+/// "never" with it: the loader keeps each of these that is good by itself.
 #[must_use]
 pub fn generated_rules(file: &str) -> Vec<String> {
     let lines: Vec<&str> = file.lines().collect();

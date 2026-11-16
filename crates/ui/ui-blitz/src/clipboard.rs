@@ -1,6 +1,8 @@
-//! The system clipboard, for the app: `write_text` behind a "Copy address" item,
-//! `read_text` behind a paste. Copy and paste inside a text field need nothing from the app:
-//! Blitz handles Ctrl+C/X/V there through the same shell provider.
+//! The system clipboard, for the app: `write_text` behind a "Copy address" item, `read_text` behind
+//! a paste.
+//!
+//! Copy and paste inside a text field need nothing from the app: Blitz handles Ctrl+C/X/V there
+//! through the same shell provider.
 //!
 //! The clipboard is a [`Clipboard`], reached through a context every ui-blitz document
 //! provides: [`System`], the window's winit shell (blitz-shell's `clipboard` feature, over

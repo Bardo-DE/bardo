@@ -1,10 +1,12 @@
-//! The window seam (`ui_components::prelude::HostWindow`) over the winit window `launch` opens (FINDINGS "Window
-//! frame"). Moves, resizes, zoom and minimize are winit's own requests; close goes through
-//! blitz-shell's `request_window_close`, which drops the window and ends the event loop as the
-//! compositor's close does. The left half, right half and centre placements need a client that
-//! can read and set its own position: winit answers `outer_position` with `NotSupported` on
-//! Wayland and ignores `set_outer_position` there, so they are unsupported on Wayland and work
-//! on X11 (and wherever winit can place a window).
+//! The window seam (`ui_components::prelude::HostWindow`) over the winit window `launch` opens
+//! (FINDINGS "Window frame").
+//!
+//! Moves, resizes, zoom and minimize are winit's own requests; close goes through blitz-shell's
+//! `request_window_close`, which drops the window and ends the event loop as the compositor's close
+//! does. The left half, right half and centre placements need a client that can read and set its
+//! own position: winit answers `outer_position` with `NotSupported` on Wayland and ignores
+//! `set_outer_position` there, so they are unsupported on Wayland and work on X11 (and wherever
+//! winit can place a window).
 //!
 //! `launch` provides it as `ui_components::prelude::WindowHost` and refreshes the state on every resize and focus
 //! change. Another Blitz host (layer-shell-host's surfaces, through bardo-shell) provides its own

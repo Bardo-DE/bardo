@@ -55,11 +55,12 @@ impl Resolved {
     }
 }
 
-/// A component's on-demand reader of the tokens its own element sees: give [`Tokens::mounted`]
-/// to the element's `onmounted`, then read lengths and numbers in an event handler or a task (a
-/// hit test, a drag). Before the element mounts, or while the document is borrowed (during any
-/// render), a read is `None` and the caller keeps its shipped constant. A value render needs
-/// comes from [`use_resolved`].
+/// A component's on-demand reader of the tokens its own element sees.
+///
+/// Give [`Tokens::mounted`] to the element's `onmounted`, then read lengths and numbers in an event
+/// handler or a task (a hit test, a drag). Before the element mounts, or while the document is
+/// borrowed (during any render), a read is `None` and the caller keeps its shipped constant. A
+/// value render needs comes from [`use_resolved`].
 #[derive(Clone, Copy, PartialEq)]
 pub struct Tokens {
     element: Signal<Option<Rc<MountedData>>>,
@@ -163,10 +164,11 @@ impl<T> std::fmt::Debug for ResolvedTokens<T> {
     }
 }
 
-/// A value the calling component builds from the tokens its element sees, kept current by the
-/// host: `read` runs after every resolved frame from the element's mount on, and the value
-/// changes (re-rendering the component) only when what `read` returns does. `None` until the
-/// first frame after mount; the caller keeps its shipped value until then.
+/// A value the calling component builds from the tokens its element sees, kept current by the host.
+///
+/// `read` runs after every resolved frame from the element's mount on, and the value changes
+/// (re-rendering the component) only when what `read` returns does. `None` until the first frame
+/// after mount; the caller keeps its shipped value until then.
 pub fn use_resolved<T: PartialEq + Clone + 'static>(read: fn(&Lookup) -> T) -> ResolvedTokens<T> {
     ResolvedTokens {
         value: use_signal(|| None),

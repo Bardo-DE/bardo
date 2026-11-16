@@ -134,8 +134,9 @@ pub fn is_agent_action(action: &ActionRef) -> bool {
 }
 
 /// The call a performed permission request approves, once: an edit or a move approves the next
-/// write of those files; an execute approves the next command of that line in that directory. A
-/// permission request is the person's yes to the thing it names, so the matching call does not
+/// write of those files; an execute approves the next command of that line in that directory.
+///
+/// A permission request is the person's yes to the thing it names, so the matching call does not
 /// ask again; every other check still runs on it. Nothing else approves anything.
 #[must_use]
 pub fn approves(permission: &CallFacts) -> Option<CallFacts> {

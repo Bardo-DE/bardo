@@ -1,10 +1,12 @@
 //! The indicator's tuned token as the layer maths reads it: `--osd-margin`
 //! (`shell_kit::tokens::osd::OsdToken`), the card's gap from the bar's reserve and from the
-//! output's right edge. The surface's margin is needed before the first layout, so
-//! [`OsdTokens::read`] takes the resolved length of a custom property
-//! (`ui_blitz::Resolved::length` on the surface's document, read again when the `Styles` signal
-//! changes) and a token a sheet does not write, or writes as `calc()`, is [`MARGIN`]. The
-//! constant and the token's default are the only two copies; a test compares them.
+//! output's right edge.
+//!
+//! The surface's margin is needed before the first layout, so [`OsdTokens::read`] takes the
+//! resolved length of a custom property (`ui_blitz::Resolved::length` on the surface's document,
+//! read again when the `Styles` signal changes) and a token a sheet does not write, or writes as
+//! `calc()`, is [`MARGIN`]. The constant and the token's default are the only two copies; a test
+//! compares them.
 
 use shell_kit::tokens::osd::OsdToken;
 use ui_components::prelude::Px;

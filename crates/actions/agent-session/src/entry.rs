@@ -191,11 +191,12 @@ pub struct CompactedBy {
     pub model: Option<String>,
 }
 
-/// The oldest turns and steps of the session were summarised. The entries they cover stay in the
-/// log, whole and in place: this is a note on top of them, never a deletion, so restore points,
-/// undo, export and fork see the full history. A fold reads it as the summary the planner is
-/// shown in their place. It is cumulative: `covers` counts from the first turn and the first step,
-/// so the latest one stands for everything an earlier one did.
+/// The oldest turns and steps of the session were summarised.
+///
+/// The entries they cover stay in the log, whole and in place: this is a note on top of them, never
+/// a deletion, so restore points, undo, export and fork see the full history. A fold reads it as
+/// the summary the planner is shown in their place. It is cumulative: `covers` counts from the
+/// first turn and the first step, so the latest one stands for everything an earlier one did.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Compacted {
     /// The turns and steps it stands for, counted from the start.
@@ -210,8 +211,10 @@ pub struct Compacted {
 }
 
 /// An entry of a kind this build does not know, as a newer build wrote it: read, kept for the
-/// export, and ignored by every fold. It is never written, and nothing treats it as a taint, a
-/// close or anything else it might have been.
+/// export, and ignored by every fold.
+///
+/// It is never written, and nothing treats it as a taint, a close or anything else it might have
+/// been.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct UnknownEntry {
     /// The kind tag's slug, as stored.

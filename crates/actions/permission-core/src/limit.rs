@@ -287,8 +287,10 @@ pub enum Limited {
 }
 
 /// What `held` (the person's and the assistant's limits) and `locked` (the administrator's) say
-/// about `call`: the strongest covering limit wins, and the administrator's wins a tie, so its
-/// reason is the one shown. The person's own grants never enter: no always-allow outranks a limit.
+/// about `call`.
+///
+/// The strongest covering limit wins, and the administrator's wins a tie, so its reason is the one
+/// shown. The person's own grants never enter: no always-allow outranks a limit.
 #[must_use]
 pub fn limited(held: &[Limit], locked: &[Limit], call: &LimitCall<'_>) -> Limited {
     // `max_by_key` keeps the last of equal keys, so the locked entries go last.

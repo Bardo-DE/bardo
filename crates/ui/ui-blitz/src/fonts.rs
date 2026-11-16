@@ -30,9 +30,10 @@ fn faces() -> FontFaces {
     FontFaces(FACES.iter().map(|face| face.bytes).collect())
 }
 
-/// A font context with the system fonts and every quire face registered: what `launch`,
-/// `snapshot` and `Harness` hand their documents. Clones share one collection and one source
-/// cache, so the faces are registered once per process.
+/// A font context with the system fonts and every quire face registered: what `launch`, `snapshot`
+/// and `Harness` hand their documents.
+///
+/// Clones share one collection and one source cache, so the faces are registered once per process.
 pub fn font_context() -> parley::FontContext {
     BASE.for_document()
 }

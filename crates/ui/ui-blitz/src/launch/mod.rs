@@ -1,6 +1,8 @@
-//! Running a quire app on Blitz: the document, the font registration, the input modality
-//! (`ui_components::prelude::HostSignals`), a `data:` net provider for mask and background images (spike S7/S8),
-//! and a redraw when a timer or an image lands.
+//! Running a quire app on Blitz.
+//!
+//! The document, the font registration, the input modality (`ui_components::prelude::HostSignals`),
+//! a `data:` net provider for mask and background images (spike S7/S8), and a redraw when a timer
+//! or an image lands.
 //!
 //! The window is blitz's portable `dioxus-native` shell (winit), so an app runs the same on any
 //! OS; `crate::host` wraps the app to supply what quire needs on top of it. ui-blitz runs the
@@ -258,17 +260,20 @@ fn layered(
 }
 
 /// Run `app` in a first window until the app's [`LastWindowClosed`] policy ends the loop (by
-/// default, when the last window closes). Windows it opens with [`crate::open_window`] or an
-/// [`AppHandle`] are independent of the first: closing any one closes only it.
+/// default, when the last window closes).
+///
+/// Windows it opens with [`crate::open_window`] or an [`AppHandle`] are independent of the first:
+/// closing any one closes only it.
 pub fn launch(app: fn() -> Element, config: AppConfig) -> Result<(), LaunchError> {
     run(Some(app), config)
 }
 
-/// Run the event loop with no window: the app opens its windows through the
-/// [`AppHandle`] given to [`AppConfig::with_handle`] (the title and size of the `config` are
-/// not used; its application id, decorations and contexts are every window's defaults). It
-/// returns when the app's policy or `AppHandle::quit` ends the loop; with
-/// [`LastWindowClosed::StayFor`] the loop's linger counts from the start.
+/// Run the event loop with no window.
+///
+/// The app opens its windows through the [`AppHandle`] given to [`AppConfig::with_handle`] (the
+/// title and size of the `config` are not used; its application id, decorations and contexts are
+/// every window's defaults). It returns when the app's policy or `AppHandle::quit` ends the loop;
+/// with [`LastWindowClosed::StayFor`] the loop's linger counts from the start.
 pub fn launch_idle(config: AppConfig) -> Result<(), LaunchError> {
     run(None, config)
 }

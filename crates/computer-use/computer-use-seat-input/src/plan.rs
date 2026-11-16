@@ -15,9 +15,10 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 
 /// The points an action targets, with accessibility nodes already resolved by the caller to the
-/// centre of their bounds, clamped inside the window. A resolved point wins over the action's own
-/// `Target::Point`; `Target::Centre` is never resolved by the caller: `plan` takes the centre of
-/// the window it plans for.
+/// centre of their bounds, clamped inside the window.
+///
+/// A resolved point wins over the action's own `Target::Point`; `Target::Centre` is never resolved
+/// by the caller: `plan` takes the centre of the window it plans for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum ResolvedPoints {
@@ -269,10 +270,12 @@ fn type_ops(
     }
 }
 
-/// The operations that perform `action`: a click is move, down, gap, up (repeated for double and
-/// triple), a drag is move, down, moves, up, a chord is modifiers down, key down and up (repeated),
-/// modifiers up. Refuses a point outside the window. A `Target::Centre` is the centre of
-/// `action.window` (`centre_of`); a node is the point the caller resolved in `action.at`. Pure.
+/// The operations that perform `action`.
+///
+/// A click is move, down, gap, up (repeated for double and triple), a drag is move, down, moves,
+/// up, a chord is modifiers down, key down and up (repeated), modifiers up. Refuses a point outside
+/// the window. A `Target::Centre` is the centre of `action.window` (`centre_of`); a node is the
+/// point the caller resolved in `action.at`. Pure.
 pub fn plan(
     action: &PlannedAction,
     keymap: &Keymap,

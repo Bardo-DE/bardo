@@ -111,9 +111,11 @@ pub enum BackendChoice {
     Force(Backend),
 }
 
-/// The backends to try, best first. A forced backend is the only one; otherwise NVIDIA cards
-/// prefer CUDA, any card Vulkan, and the processor alone is the last resort. `ROCm` is only ever
-/// forced: it wants a matching system runtime that cannot be told from here.
+/// The backends to try, best first.
+///
+/// A forced backend is the only one; otherwise NVIDIA cards prefer CUDA, any card Vulkan, and the
+/// processor alone is the last resort. `ROCm` is only ever forced: it wants a matching system
+/// runtime that cannot be told from here.
 #[must_use]
 pub fn preference(gpus: &Gpus, choice: BackendChoice) -> Vec<Backend> {
     match choice {

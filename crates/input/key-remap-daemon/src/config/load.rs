@@ -11,11 +11,12 @@ use super::trusted::read_layer;
 /// The file name the machine and vendor layers are read from, in their directories.
 pub const FILE_NAME: &str = "key-remap.toml";
 
-/// The machine layer from `dir`, judged on the real file system. It is read only when it is
-/// root-only, by the check in `trusted.rs` that the vendor file shares. A missing file is an
-/// empty layer and no warning; a file anyone but root could change, or one that is unreadable
-/// or not TOML, is an empty layer and one warning, because the keyboard must keep working
-/// whatever the file says.
+/// The machine layer from `dir`, judged on the real file system.
+///
+/// It is read only when it is root-only, by the check in `trusted.rs` that the vendor file shares.
+/// A missing file is an empty layer and no warning; a file anyone but root could change, or one
+/// that is unreadable or not TOML, is an empty layer and one warning, because the keyboard must
+/// keep working whatever the file says.
 #[must_use]
 pub fn system(dir: &Path) -> (ConfigLayer, Vec<Warning>) {
     system_through(&RealProc::system(), dir)

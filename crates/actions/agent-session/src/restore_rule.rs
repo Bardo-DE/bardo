@@ -58,10 +58,12 @@ pub fn may_restore(claimant: Claimant<'_>, opener: Option<&AppName>) -> bool {
     }
 }
 
-/// [`may_restore`] for a whole opening: the opener rule, and for a terminal (the `cli` role) also
-/// a conversation a terminal started through the companion. Any terminal sees any such
-/// conversation, not only its own scope: terminal scopes are advisory and every one runs as the
-/// person. An editor, an app and the rest still see only what their own app opened.
+/// [`may_restore`] for a whole opening: the opener rule, and for a terminal (the `cli` role) also a
+/// conversation a terminal started through the companion.
+///
+/// Any terminal sees any such conversation, not only its own scope: terminal scopes are advisory
+/// and every one runs as the person. An editor, an app and the rest still see only what their own
+/// app opened.
 #[must_use]
 pub fn may_restore_opening(claimant: Claimant<'_>, opening: &Opening) -> bool {
     may_restore(claimant, opening.opener.as_ref())
@@ -69,11 +71,13 @@ pub fn may_restore_opening(claimant: Claimant<'_>, opening: &Opening) -> bool {
             && matches!(opening.started_from, Some(StartedFrom::Terminal(_))))
 }
 
-/// [`may_restore_opening`] for a whole plan, which also carries the helper seat: an editor may
-/// also restore a helper's conversation (a seat whose place is [`SeatPlace::Conversation`]),
-/// which the companion opened for the person to talk in. A helper's job (any other place) stays
-/// the companion's, and the other roles gain nothing. This is the one rule for a stored session
-/// read or resumed, and it agrees with the live one (`SessionRecord::is_conversation_for`).
+/// [`may_restore_opening`] for a whole plan, which also carries the helper seat.
+///
+/// An editor may also restore a helper's conversation (a seat whose place is
+/// [`SeatPlace::Conversation`]), which the companion opened for the person to talk in. A helper's
+/// job (any other place) stays the companion's, and the other roles gain nothing. This is the one
+/// rule for a stored session read or resumed, and it agrees with the live one
+/// (`SessionRecord::is_conversation_for`).
 ///
 /// A fork is not asked here: it copies the log, seat included, and would be a second
 /// conversation for the helper, so a fork keeps asking [`may_restore_opening`].

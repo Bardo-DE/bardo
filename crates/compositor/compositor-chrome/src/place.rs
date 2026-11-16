@@ -60,9 +60,10 @@ pub fn room(bar: u32, left: u32, right: u32) -> u32 {
     bar.saturating_sub(left.saturating_add(right))
 }
 
-/// Where a title `text` wide starts in a bar `bar` wide: centred, but never nearer the left
-/// edge than `left` and never so far right that it passes `bar - right`. A title as wide as the
-/// room (or wider) starts at `left`.
+/// Where a title `text` wide starts in a bar `bar` wide: centred, but never nearer the left edge
+/// than `left` and never so far right that it passes `bar - right`.
+///
+/// A title as wide as the room (or wider) starts at `left`.
 ///
 /// ```
 /// use compositor_chrome::place::left_edge;

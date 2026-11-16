@@ -32,10 +32,12 @@ const LOOK_MAX: Duration = Duration::from_secs(1);
 const BOUND: Duration = Duration::from_secs(300);
 
 /// Waits until `connection`'s object server answers method calls, starting the server if nothing
-/// has yet. The look is `org.freedesktop.DBus.Peer.Ping` to the connection itself (zbus answers
-/// `Peer` on every path), sent again after 50 ms, then at growing gaps up to a second, until one
-/// is answered. A look is never cancelled for the next: on a slow machine an answer can take
-/// longer than the gap, and a look dropped just before its answer would be asked again for ever.
+/// has yet.
+///
+/// The look is `org.freedesktop.DBus.Peer.Ping` to the connection itself (zbus answers `Peer` on
+/// every path), sent again after 50 ms, then at growing gaps up to a second, until one is answered.
+/// A look is never cancelled for the next: on a slow machine an answer can take longer than the
+/// gap, and a look dropped just before its answer would be asked again for ever.
 ///
 /// # Errors
 ///

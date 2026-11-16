@@ -36,11 +36,12 @@ fn fits_with(budget: &AssemblerBudget, sources: &Sources, covers: Covers) -> boo
     task_cost(&view).saturating_add(SUMMARY_RESERVE.0) <= budget.task.0
 }
 
-/// What a summary should newly stand for, when the task section is over its budget: the oldest
-/// whole steps (a step is a call and its result, never split), as few as make the rest fit beside
-/// a summary, never the newest `full_steps`. Only when every step that may be covered is not
-/// enough are older turns covered too, and the newest turn is never covered. `None` when the task
-/// fits, or when there is nothing left to cover (the loop then splits the task).
+/// What a summary should newly stand for, when the task section is over its budget.
+///
+/// The oldest whole steps (a step is a call and its result, never split), as few as make the rest
+/// fit beside a summary, never the newest `full_steps`. Only when every step that may be covered is
+/// not enough are older turns covered too, and the newest turn is never covered. `None` when the
+/// task fits, or when there is nothing left to cover (the loop then splits the task).
 #[must_use]
 pub fn compaction_due(budget: &AssemblerBudget, sources: &Sources) -> Option<Covers> {
     let now = covered_now(sources);

@@ -27,10 +27,12 @@ use serde::{Deserialize, Serialize};
 /// How many times a stale call is held back, with a note, before the turn stops: the second
 /// identical call is held, the third stops the turn.
 pub const HOLDS_BEFORE_STOP: u8 = 1;
-/// How many times a call whose answer is already held (a read that returned a handle, or a reader
-/// ask that was answered) is skipped, with a note, before the turn stops: the person asked for an
-/// answer, and a model that keeps asking for what it holds is told three times, then the turn
-/// ends in words the person can read.
+/// How many times a call whose answer is already held is skipped, with a note, before the turn
+/// stops.
+///
+/// A held answer is a read that returned a handle, or a reader ask that was answered. The person
+/// asked for an answer, and a model that keeps asking for what it holds is told three times, then
+/// the turn ends in words the person can read.
 pub const HOLDS_BEFORE_STOP_ANSWERED: u8 = 3;
 /// How many calls one turn may have held back, across all its calls, before it stops. This caps
 /// A,B,A,B and wider cycles whose every call is stale.

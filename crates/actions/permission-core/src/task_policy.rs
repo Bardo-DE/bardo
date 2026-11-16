@@ -131,10 +131,11 @@ pub struct SinkIntegrity {
     pub path: Integrity,
 }
 
-/// What a session has seen: computed by the router, never reported by a model. It only grows,
-/// and resets when the task ends. *Private* means the router delivered, plainly or as a handle
-/// the reader resolved, a value with `Private` or `Secret` confidentiality. *Untrusted* means a
-/// value with `Untrusted` integrity reached the planner or the reader.
+/// What a session has seen: computed by the router, never reported by a model.
+///
+/// It only grows, and resets when the task ends. *Private* means the router delivered, plainly or
+/// as a handle the reader resolved, a value with `Private` or `Secret` confidentiality. *Untrusted*
+/// means a value with `Untrusted` integrity reached the planner or the reader.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct SessionSaw {
     /// Private or secret data.
@@ -154,10 +155,11 @@ pub struct ArgLabels {
     pub saw: SessionSaw,
 }
 
-/// How a new policy compares with the old: pure and table-tested. It widens when it covers
-/// anything the old did not (the first such things are listed), narrows when only the old
-/// covered something, and is the same otherwise. The task, turns, rationale and state are
-/// not coverage.
+/// How a new policy compares with the old: pure and table-tested.
+///
+/// It widens when it covers anything the old did not (the first such things are listed), narrows
+/// when only the old covered something, and is the same otherwise. The task, turns, rationale and
+/// state are not coverage.
 #[must_use]
 pub fn compare(new: &TaskPolicy, old: &TaskPolicy) -> PolicyChange {
     let wider = widenings(new, old);
@@ -211,11 +213,12 @@ fn widenings(new: &TaskPolicy, old: &TaskPolicy) -> Vec<Widening> {
         .collect()
 }
 
-/// What both `a` and `b` allow, under `a`'s task, turns and rationale: the lower ceiling, count
-/// and expiry, the kinds both name, and the actions and trusted patterns each side holds that
-/// the other covers. It never covers more than either (`compare` says `Narrows` or `Same`
-/// against both), and a policy in another Space shares nothing: Spaces are walls. It is the
-/// derivation of a child task's policy from its parent's.
+/// What both `a` and `b` allow, under `a`'s task, turns and rationale.
+///
+/// The lower ceiling, count and expiry, the kinds both name, and the actions and trusted patterns
+/// each side holds that the other covers. It never covers more than either (`compare` says
+/// `Narrows` or `Same` against both), and a policy in another Space shares nothing: Spaces are
+/// walls. It is the derivation of a child task's policy from its parent's.
 #[must_use]
 pub fn intersection(a: &TaskPolicy, b: &TaskPolicy) -> TaskPolicy {
     let ceiling = a.ceiling.min(b.ceiling);
@@ -319,9 +322,10 @@ fn patterns_for(policy: &TaskPolicy, sink: ArgSink) -> &[TrustedPattern] {
     }
 }
 
-/// Whether the call is inside the task policy, judged from the manifest's declaration of the
-/// action (its effect and where each argument goes), the call and its labels: the policy is in
-/// force, the action's effect is within the ceiling and within the cap of an app-wide grant, the
+/// Whether the call is inside the task policy.
+///
+/// It is judged from the manifest's declaration of the action (its effect and where each argument
+/// goes), the call and its labels: the policy is in force, the action's effect is within the ceiling and within the cap of an app-wide grant, the
 /// action and every target kind are named, no more things are touched than allowed, and every
 /// argument that feeds a sink is either trusted or matches a trusted pattern for that sink. An
 /// argument the manifest does not declare is treated as a body. Expiry by the clock is the
@@ -336,11 +340,13 @@ pub fn covers(
     judge(policy, decl, call, labels, Judged::Task)
 }
 
-/// Whether the call is inside a helper's reach: as [`covers`], except that words feeding a body
-/// are inside, and so are the companion actions every helper keeps (handing a job on, suggesting
-/// a routine, loading a skill), which no card names. The person set on the card what the helper may change in each app; what it writes
-/// there stays in the app, and a session that has read untrusted content still asks by the taint
-/// rule. Where things go (recipients, destinations, paths) is judged as for any policy.
+/// Whether the call is inside a helper's reach.
+///
+/// As [`covers`], except that words feeding a body are inside, and so are the companion actions
+/// every helper keeps (handing a job on, suggesting a routine, loading a skill), which no card
+/// names. The person set on the card what the helper may change in each app; what it writes there
+/// stays in the app, and a session that has read untrusted content still asks by the taint rule.
+/// Where things go (recipients, destinations, paths) is judged as for any policy.
 #[must_use]
 pub fn covers_reach(
     reach: &TaskPolicy,

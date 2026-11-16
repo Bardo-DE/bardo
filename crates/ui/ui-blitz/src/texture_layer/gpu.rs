@@ -295,8 +295,9 @@ struct HandleInner {
     state: Mutex<HandleState>,
 }
 
-/// A texture an app shows, replaced or updated as often as it likes from any thread. Give it to
-/// a [`TextureLayer`](super::TextureLayer); every layer showing it, in any window the
+/// A texture an app shows, replaced or updated as often as it likes from any thread.
+///
+/// Give it to a [`TextureLayer`](super::TextureLayer); every layer showing it, in any window the
 /// handle's `Gpu` belongs to, draws what is in it at its next paint.
 ///
 /// Writing a new frame is: put the texture in (`replace`, `update`), or write into the one

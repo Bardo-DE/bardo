@@ -1,10 +1,13 @@
 //! Hot corners (design/20 §1.16; macOS's Hot Corners): a transparent square of
-//! `hot_corners.size_px` in each corner that has a binding, on every output. The pointer
-//! resting in one for `hot_corners.dwell_ms` fires it once; it fires again only after the
-//! pointer has left and `rearm_ms` has passed ([`ui_behaviour::hot_corner::Corner`], the machine the compositor runs too). A firing is written to the
-//! [`shell_ui_kit::links::CornerLink`]; the daemon carries out the action (`crates/shell/shell-app/src/corners.rs`), since
-//! opening the launcher, the notification center or the control center, locking, minimising
-//! windows and running a command are its links and services, not a surface's.
+//! `hot_corners.size_px` in each corner that has a binding, on every output.
+//!
+//! The pointer resting in one for `hot_corners.dwell_ms` fires it once; it fires again only after
+//! the pointer has left and `rearm_ms` has passed ([`ui_behaviour::hot_corner::Corner`], the
+//! machine the compositor runs too). A firing is written to the
+//! [`shell_ui_kit::links::CornerLink`]; the daemon carries out the action
+//! (`crates/shell/shell-app/src/corners.rs`), since opening the launcher, the notification center
+//! or the control center, locking, minimising windows and running a command are its links and
+//! services, not a surface's.
 //!
 //! Never painted: the root draws one transparent element that takes the pointer, no `Ds`, no
 //! material, no blur; the compositor still delivers pointer enter and leave to it.

@@ -1,6 +1,7 @@
-//! For tests only: a `SessionHost` over `FakeBackend`s and a shared `MemoryLog`. It writes the
-//! log the way a real host does (opening, turn, call, step, close, each before it answers) and
-//! hands each session the next scripted backend. Fork is not scripted.
+//! For tests only: a `SessionHost` over `FakeBackend`s and a shared `MemoryLog`.
+//!
+//! It writes the log the way a real host does (opening, turn, call, step, close, each before it
+//! answers) and hands each session the next scripted backend. Fork is not scripted.
 
 use crate::backend::{
     BackendEvent, CallEvent, HostFault, SessionBackend, SessionHost, SheetChoice, StartSession,

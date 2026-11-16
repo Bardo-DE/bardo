@@ -4,10 +4,11 @@ use crate::codec::{Logged, Read};
 use crate::entry::SessionEntry;
 use action_core::{CheckpointEvent, CheckpointNote, CheckpointRow, SavedState};
 
-/// The rows of a session's list, oldest first, from its log. Every saved point is `Available`
-/// here: what the store still holds is the router's to fill in. A restore is two rows, the safety
-/// point it saved first (a point like any other, so the restore can be undone) and the restore
-/// itself. Rows that cannot be read and other entries add nothing.
+/// The rows of a session's list, oldest first, from its log.
+///
+/// Every saved point is `Available` here: what the store still holds is the router's to fill in. A
+/// restore is two rows, the safety point it saved first (a point like any other, so the restore can
+/// be undone) and the restore itself. Rows that cannot be read and other entries add nothing.
 pub fn checkpoint_rows(rows: &[Logged]) -> Vec<CheckpointRow> {
     rows.iter()
         .filter_map(|row| match &row.read {

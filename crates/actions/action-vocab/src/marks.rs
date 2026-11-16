@@ -11,9 +11,11 @@ pub fn reorders(c: char) -> bool {
     matches!(c, '\u{202A}'..='\u{202E}' | '\u{2066}'..='\u{2069}')
 }
 
-/// A mark that draws nothing: zero-width space, word joiner and the invisible operators,
-/// the byte order mark and the soft hyphen. (The joiners, U+200C and U+200D, and the
-/// directional marks are left out: scripts and emoji sequences need them.)
+/// A mark that draws nothing: zero-width space, word joiner and the invisible operators, the byte
+/// order mark and the soft hyphen.
+///
+/// (The joiners, U+200C and U+200D, and the directional marks are left out: scripts and emoji
+/// sequences need them.)
 #[must_use]
 pub fn hides(c: char) -> bool {
     matches!(

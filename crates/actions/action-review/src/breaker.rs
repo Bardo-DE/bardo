@@ -107,9 +107,10 @@ fn probing(breaker: &Breaker, probing: Count) -> bool {
     })
 }
 
-/// Notes a decision and says whether the breaker trips. An allow resets the consecutive count
-/// but not the recent window. When several limits hold, probing is reported first (the most
-/// specific signal), then consecutive, then recent.
+/// Notes a decision and says whether the breaker trips.
+///
+/// An allow resets the consecutive count but not the recent window. When several limits hold,
+/// probing is reported first (the most specific signal), then consecutive, then recent.
 #[must_use]
 pub fn note(
     breaker: Breaker,

@@ -44,9 +44,11 @@ thread_local! {
     static ENTRY: RefCell<Entry> = RefCell::new(Entry::default());
 }
 
-/// Enter a runtime owned by the calling thread (built on the first call on the thread). The
-/// caller holds the returned guard for as long as a spawned task must keep working there. Guards
-/// may drop in any order; the runtime stays entered until the last one on the thread is gone.
+/// Enter a runtime owned by the calling thread (built on the first call on the thread).
+///
+/// The caller holds the returned guard for as long as a spawned task must keep working there.
+/// Guards may drop in any order; the runtime stays entered until the last one on the thread is
+/// gone.
 pub fn enter_runtime() -> std::io::Result<RuntimeGuard> {
     ENTRY.with(|entry| {
         let mut entry = entry.borrow_mut();

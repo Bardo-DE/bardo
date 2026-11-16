@@ -7,10 +7,12 @@ use ui_components::style::kit::Fingerprint;
 /// How many starts in a row, with the same sheets, must fail before the guard steps in.
 pub const FAILED_STARTS: usize = 2;
 
-/// Whether the program loads the look and the person's sheets: `false` when each of the last
-/// [`FAILED_STARTS`] records is a start with `now` that never got `good` (two crashes, or no
-/// first frame within ten seconds), and the program starts without them and says so. A record of
-/// other sheets, or a good one, breaks the run: a changed sheet gets a fresh try.
+/// Whether the program loads the look and the person's sheets.
+///
+/// `false` when each of the last [`FAILED_STARTS`] records is a start with `now` that never got
+/// `good` (two crashes, or no first frame within ten seconds), and the program starts without them
+/// and says so. A record of other sheets, or a good one, breaks the run: a changed sheet gets a
+/// fresh try.
 #[must_use]
 pub fn decide(records: &[Record], now: Fingerprint) -> bool {
     let tail = records.len().saturating_sub(FAILED_STARTS);

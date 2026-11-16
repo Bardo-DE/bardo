@@ -1,9 +1,10 @@
-//! The Force Quit Applications panel (Option+Command+Escape, `bardo-shell force-quit`): a sheet
-//! centred on one output listing the running apps with their icons, "(not responding)" beside
-//! the ones that do not answer the desktop's pings, and a Force Quit button that asks "Do you want
-//! to force quit "App"? You will lose any unsaved changes." before it ends the app's
-//! processes. A hung app starts selected. The shell itself is not an app of the desktop's list,
-//! so it is not offered; the Mac lists Finder with Relaunch, this desktop has no counterpart.
+//! The Force Quit Applications panel (Option+Command+Escape, `bardo-shell force-quit`).
+//!
+//! A sheet centred on one output listing the running apps with their icons, "(not responding)"
+//! beside the ones that do not answer the desktop's pings, and a Force Quit button that asks "Do
+//! you want to force quit "App"? You will lose any unsaved changes." before it ends the app's
+//! processes. A hung app starts selected. The shell itself is not an app of the desktop's list, so
+//! it is not offered; the Mac lists Finder with Relaunch, this desktop has no counterpart.
 //!
 //! The panel lists the apps of the compositor's `DesktopView`, which `ForceQuitLink` follows; the
 //! daemon writes the opening; the confirmed app goes back on the link and the daemon sends

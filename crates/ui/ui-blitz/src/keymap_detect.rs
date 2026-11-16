@@ -33,11 +33,12 @@ pub(crate) fn detected_key_source(var: &impl Fn(&str) -> Option<String>) -> KeyS
     system_key_source(platform_of(var), var)
 }
 
-/// The desktop's own shortcut settings for `platform`, under the config directory the lookup
-/// names (`XDG_CONFIG_HOME`, else `~/.config`): what a launch that names no source uses, for an
-/// app that builds a keymap of its own on the system's outside any window. The returned source
-/// is watched for changes; on GNOME the dconf database is read when the source is made and again
-/// on the watch's thread, never during a load.
+/// The desktop's own shortcut settings for `platform`, under the config directory the lookup names
+/// (`XDG_CONFIG_HOME`, else `~/.config`).
+///
+/// What a launch that names no source uses, for an app that builds a keymap of its own on the
+/// system's outside any window. The returned source is watched for changes; on GNOME the dconf
+/// database is read when the source is made and again on the watch's thread, never during a load.
 pub fn system_key_source(platform: Platform, var: &impl Fn(&str) -> Option<String>) -> KeySource {
     source_for(platform, config_dir(var), Arc::new(run_dconf_dump))
 }

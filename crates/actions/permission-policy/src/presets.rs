@@ -5,9 +5,11 @@ use crate::layers::{Layer, PolicySource};
 use crate::pdp::{Pdp, PolicyError, SCHEMA};
 use std::path::PathBuf;
 
-/// The policy set that rules every call. It is the core, the preset folder and the person's,
-/// assistant's and administrator's layers; the preset stays a folder the person can copy and
-/// edit. One grid serves both modes: the call's rows (`context.rows`) pick the rules that apply.
+/// The policy set that rules every call.
+///
+/// It is the core, the preset folder and the person's, assistant's and administrator's layers; the
+/// preset stays a folder the person can copy and edit. One grid serves both modes: the call's rows
+/// (`context.rows`) pick the rules that apply.
 #[derive(Debug)]
 pub struct Presets {
     /// The set.

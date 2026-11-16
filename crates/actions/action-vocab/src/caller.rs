@@ -60,11 +60,12 @@ impl CallerRole {
     ];
 }
 
-/// Who made a call or recorded a turn: a role, and the app behind the connection for the roles
-/// that act for an app (a prompt field, an editor, an agent host). Other types that name a
-/// caller derive from this one: `GrantCaller` (permission-core) is the key a grant is
-/// stored under and `Speaker` (companion-core) is the policy subject of the companion's bus; both
-/// are different facts with more or other data, filled from the connection.
+/// Who made a call or recorded a turn: a role, and the app behind the connection for the roles that
+/// act for an app (a prompt field, an editor, an agent host).
+///
+/// Other types that name a caller derive from this one: `GrantCaller` (permission-core) is the key
+/// a grant is stored under and `Speaker` (companion-core) is the policy subject of the companion's
+/// bus; both are different facts with more or other data, filled from the connection.
 ///
 /// A caller records a turn as the launcher, a terminal, a field, an editor or an agent host; the
 /// constructors build only those, so the stored form below always reads back as the same caller.

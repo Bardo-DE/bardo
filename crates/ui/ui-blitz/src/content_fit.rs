@@ -33,13 +33,14 @@ impl ContentFit {
     }
 }
 
-/// Size the window the calling component renders in to one element's height: `width` across
-/// (the content's own width is the window's, so it cannot be measured), and as tall as the
-/// element's bottom edge, rounded up. The size is capped to 85% of the screen's work area
-/// ([`Extent::fit`]) and never below `least`. Asked again whenever layout moves the edge or
-/// `width` changes, and not at all once the person has resized the window. A window opens at its
-/// [`WindowSpec`](crate::WindowSpec) size, so give that a fair estimate: the fit follows the
-/// first layout.
+/// Size the window the calling component renders in to one element's height.
+///
+/// `width` across (the content's own width is the window's, so it cannot be measured), and as tall
+/// as the element's bottom edge, rounded up. The size is capped to 85% of the screen's work area
+/// ([`Extent::fit`]) and never below `least`. Asked again whenever layout moves the edge or `width`
+/// changes, and not at all once the person has resized the window. A window opens at its
+/// [`WindowSpec`](crate::WindowSpec) size, so give that a fair estimate: the fit follows the first
+/// layout.
 ///
 /// Outside a window that can be resized (a server render, a snapshot) this measures nothing.
 #[must_use]

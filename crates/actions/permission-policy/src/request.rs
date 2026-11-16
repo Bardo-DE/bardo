@@ -105,8 +105,9 @@ impl From<&permission_core::Coverage> for CoverageState {
 }
 
 /// Whether the person gave a standing grant for this action from the terminal ("allow from the
-/// terminal: this action, until logout"). The router reads it from the terminal session's task
-/// policy; only a `bardo-do` call has one.
+/// terminal: this action, until logout").
+///
+/// The router reads it from the terminal session's task policy; only a `bardo-do` call has one.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum TerminalGrant {
@@ -151,9 +152,10 @@ pub enum LimitFact {
     Never,
 }
 
-/// Whether the person already allowed the screen run this step belongs to: by the sheet that
-/// opened the run ("Let it use this app"), or by a standing grant for the app. Every call that
-/// is not a screen step is `NotAsked`.
+/// Whether the person already allowed the screen run this step belongs to: by the sheet that opened
+/// the run ("Let it use this app"), or by a standing grant for the app.
+///
+/// Every call that is not a screen step is `NotAsked`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum RunFact {

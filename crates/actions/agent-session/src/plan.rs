@@ -36,9 +36,10 @@ pub enum Standing {
     Blocked(Blocker),
 }
 
-/// A call the crash cut off: it ends interrupted and is never run again. Whether an undoable
-/// effect happened is for the journal to say; a destructive one with no journal row is reported
-/// as "unknown whether it ran".
+/// A call the crash cut off: it ends interrupted and is never run again.
+///
+/// Whether an undoable effect happened is for the journal to say; a destructive one with no journal
+/// row is reported as "unknown whether it ran".
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Interrupted {
     /// The call.

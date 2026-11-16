@@ -9,10 +9,12 @@ use ui_components::components::content::image_source::ImageSize;
 use ui_components::components::content::pdf_thumb::{PdfPage, PdfTrouble};
 use ui_components::prelude::*;
 
-/// `bytes`' first page fitted into `fit`, on white. An empty file, or a document with no
-/// pages, is [`PdfPage::Empty`]; a file that is not a PDF or will not draw is
-/// [`PdfTrouble::Unreadable`]; one that needs a password is [`PdfTrouble::Locked`]. A panic in
-/// the reader on hostile bytes is caught and reads as unreadable.
+/// `bytes`' first page fitted into `fit`, on white.
+///
+/// An empty file, or a document with no pages, is [`PdfPage::Empty`]; a file that is not a PDF or
+/// will not draw is [`PdfTrouble::Unreadable`]; one that needs a password is
+/// [`PdfTrouble::Locked`]. A panic in the reader on hostile bytes is caught and reads as
+/// unreadable.
 #[must_use]
 pub fn pdf_thumb_bytes(bytes: Vec<u8>, fit: DeviceBox) -> PdfPage {
     rasterise(bytes, fit)

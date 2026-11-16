@@ -1,10 +1,12 @@
 //! Frames (`<iframe>` sub-documents) get their own providers from birth: the net policy's frame
-//! provider and the frame-link navigation (`crate::frame_links`). Blitz builds a frame's
-//! document by handing the parent's parser a `DocumentConfig` that inherits the parent's net
-//! provider (`blitz-dom/src/iframe.rs`), so a mail body inside a frame would be served `file:`
-//! like the app. Wrapping the parser is the one place that sees every frame document before it
-//! exists (a `srcdoc`, a `src` load, a frame nested in a frame): it swaps the inherited provider
-//! for the frame one before the document parses, and so before its first image is asked for.
+//! provider and the frame-link navigation (`crate::frame_links`).
+//!
+//! Blitz builds a frame's document by handing the parent's parser a `DocumentConfig` that inherits
+//! the parent's net provider (`blitz-dom/src/iframe.rs`), so a mail body inside a frame would be
+//! served `file:` like the app. Wrapping the parser is the one place that sees every frame document
+//! before it exists (a `srcdoc`, a `src` load, a frame nested in a frame): it swaps the inherited
+//! provider for the frame one before the document parses, and so before its first image is asked
+//! for.
 //!
 //! The app names a frame by putting `data-frame-tag` on its `iframe`; a request or a link click
 //! from that frame arrives carrying the name (`NetRequest::frame_tag`, `FrameLink::tag`).
@@ -39,7 +41,10 @@ impl FrameParser {
     ) -> Arc<dyn HtmlParserProvider> {
         // Blitz's `DocumentConfig` holds the parser as an `Arc` though parsers are not `Send`;
         // it never leaves the document's thread.
-        #[expect(clippy::arc_with_non_send_sync, reason = "the parser never leaves the document thread; Blitz asks for an Arc")]
+        #[expect(
+            clippy::arc_with_non_send_sync,
+            reason = "the parser never leaves the document thread; Blitz asks for an Arc"
+        )]
         let parser = Arc::new(FrameParser { inner, net, nav });
         parser
     }

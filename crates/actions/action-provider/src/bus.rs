@@ -172,9 +172,11 @@ where
     async fn index_stale(emitter: &SignalEmitter<'_>, epoch: u64) -> zbus::Result<()>;
 }
 
-/// Exports `provider` at `/org/bardo/IntentProvider1` on `connection` and claims the manifest's
-/// app as its bus name; only intentd's unit (`bardo-actiond.service`, by its main process, over the
-/// system's `/proc`) is answered. Returns once the name is ours; the connection keeps serving.
+/// Exports `provider` at `/org/bardo/IntentProvider1` on `connection` and claims the manifest's app
+/// as its bus name.
+///
+/// Only intentd's unit (`bardo-actiond.service`, by its main process, over the system's `/proc`) is
+/// answered. Returns once the name is ours; the connection keeps serving.
 pub async fn serve_on<P, C, S>(
     connection: &BusConnection,
     provider: P,

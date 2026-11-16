@@ -47,9 +47,10 @@ impl Mode {
     }
 }
 
-/// What a row of a mode does: it goes ahead (`Runs`) or it asks (`Asks`). Used for changes it can
-/// undo within what the person asked, for mail and messages that leave this computer, and for
-/// things that cannot be brought back.
+/// What a row of a mode does: it goes ahead (`Runs`) or it asks (`Asks`).
+///
+/// Used for changes it can undo within what the person asked, for mail and messages that leave this
+/// computer, and for things that cannot be brought back.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum AskOrRun {

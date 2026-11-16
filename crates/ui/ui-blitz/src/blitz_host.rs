@@ -159,11 +159,13 @@ impl BlitzHost {
     }
 }
 
-/// Give the calling root the whole Blitz host: the focus, caret, geometry, edit and drop parts of
-/// [`ui_components::prelude::DocumentHost`] and the clipboard, together, so no root holds a subset. Call it at the top
-/// of a root `ui_blitz::launch` did not start (a shell's surface, a popup's document), before
-/// any quire component reads the document. A root that already has a host (a window's, the
-/// harness's) keeps it, so a component calling this under one takes what the window wired.
+/// Give the calling root the whole Blitz host.
+///
+/// The focus, caret, geometry, edit and drop parts of [`ui_components::prelude::DocumentHost`] and
+/// the clipboard, together, so no root holds a subset. Call it at the top of a root
+/// `ui_blitz::launch` did not start (a shell's surface, a popup's document), before any quire
+/// component reads the document. A root that already has a host (a window's, the harness's) keeps
+/// it, so a component calling this under one takes what the window wired.
 ///
 /// The host of a root like that has the window's click-focus part (a press on nothing focusable
 /// leaves the keyboard on the nearest focusable ancestor, so Escape still reaches the surface),

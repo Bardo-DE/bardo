@@ -102,10 +102,11 @@ fn handles_only(value: &Reveal<Value>) -> Option<Reveal<Value>> {
     }
 }
 
-/// The history with every step but the newest `keep_full` masked: a value that is anything but
-/// handles is dropped, and the line keeps what the app said, the undo row, the handles the call
-/// named and the handles it returned, so the model can still tell which result came from which
-/// call and the cached prefix stays stable until the task ends.
+/// The history with every step but the newest `keep_full` masked.
+///
+/// A value that is anything but handles is dropped, and the line keeps what the app said, the undo
+/// row, the handles the call named and the handles it returned, so the model can still tell which
+/// result came from which call and the cached prefix stays stable until the task ends.
 #[must_use]
 pub fn mask_history(history: &[StepLine], keep_full: Count) -> Vec<StepLine> {
     let cut = history.len().saturating_sub(keep_full.0 as usize);
@@ -206,9 +207,10 @@ pub(crate) fn view_of(
     }
 }
 
-/// Builds the planner's view inside the budget. What the summary covers is left out and the
-/// summary shown in its place. The person's turns are never cut; the oldest masked steps go first
-/// when the current task is over its budget.
+/// Builds the planner's view inside the budget.
+///
+/// What the summary covers is left out and the summary shown in its place. The person's turns are
+/// never cut; the oldest masked steps go first when the current task is over its budget.
 #[must_use]
 pub fn assemble(budget: &AssemblerBudget, sources: &Sources) -> PlannerView {
     let covers = sources.summary.as_ref().map_or(Covers::NONE, |s| s.covers);

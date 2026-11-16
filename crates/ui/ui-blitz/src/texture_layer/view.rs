@@ -14,9 +14,11 @@ use std::sync::Arc;
 use ui_components::prelude::Word;
 use ui_components::root::common::Common;
 
-/// The GPU of the window this component is in: the one device its renderer draws with, found
-/// where the renderer made it. The window provides one at its root; under a root that did not
-/// (a test document, a popup's), the first caller provides it for the components below it.
+/// The GPU of the window this component is in: the one device its renderer draws with, found where
+/// the renderer made it.
+///
+/// The window provides one at its root; under a root that did not (a test document, a popup's), the
+/// first caller provides it for the components below it.
 ///
 /// The device arrives with the window's first frame, so [`Gpu::device`] is `None` on the first
 /// render, and the component calling this re-renders once it is there (and again if the renderer

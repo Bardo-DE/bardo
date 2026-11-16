@@ -158,12 +158,14 @@ pub enum LoopEffect {
     CloseTask,
 }
 
-/// One transition. The router mints call ids, after the loop has asked for the call, so a
-/// batch's calls are named by their position in it (`CallId(0)`, `CallId(1)`, ...): the
-/// `Call` effects come out in that order, a batch is only issued with nothing pending, and
-/// companiond reports each end as `CallEnded` with the position. `Planned` is one output of the planner's reply; a reply is a run of `Say`s
-/// ending in `Calls`, `Read`, `Ask` or `Finish` (companiond sends `Finish` for a reply that
-/// only spoke). Inputs that do not fit the phase change nothing, so a late or duplicate event
+/// One transition.
+///
+/// The router mints call ids, after the loop has asked for the call, so a batch's calls are named
+/// by their position in it (`CallId(0)`, `CallId(1)`, ...): the `Call` effects come out in that
+/// order, a batch is only issued with nothing pending, and companiond reports each end as
+/// `CallEnded` with the position. `Planned` is one output of the planner's reply; a reply is a run
+/// of `Say`s ending in `Calls`, `Read`, `Ask` or `Finish` (companiond sends `Finish` for a reply
+/// that only spoke). Inputs that do not fit the phase change nothing, so a late or duplicate event
 /// is harmless.
 #[must_use]
 pub fn agent_step(state: LoopState, input: LoopInput) -> (LoopState, Vec<LoopEffect>) {

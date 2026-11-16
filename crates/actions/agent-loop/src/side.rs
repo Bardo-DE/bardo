@@ -145,8 +145,9 @@ fn side_id(conv: &SideConv) -> String {
 }
 
 /// The side episode of a finished conversation: the person's turns verbatim and the subagent's
-/// typed steps since, as a trusted skeleton with no narrative. `None` when the id would not be
-/// a valid episode id.
+/// typed steps since, as a trusted skeleton with no narrative.
+///
+/// `None` when the id would not be a valid episode id.
 #[must_use]
 pub fn side_episode(
     conv: &SideConv,

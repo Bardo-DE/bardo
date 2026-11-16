@@ -48,9 +48,11 @@ impl AppearanceSource {
     }
 }
 
-/// What a window starts from: where to look, the favourite places, the look, the time zone and
-/// the seams to the outside. Built once by the binary from the environment, handed to the window
-/// as a root context, and read by nothing else.
+/// What a window starts from: where to look, the favourite places, the look, the time zone and the
+/// seams to the outside.
+///
+/// Built once by the binary from the environment, handed to the window as a root context, and read
+/// by nothing else.
 #[derive(Debug, Clone)]
 pub struct Launch {
     /// The place the window opens on.

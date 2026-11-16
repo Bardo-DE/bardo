@@ -124,9 +124,11 @@ pub fn without_space(grants: Vec<ActionGrant>, gone: &SpaceId) -> Reconciled {
 #[error("{0}")]
 pub struct GrantListFault(pub String);
 
-/// The grants a file's text holds. An entry whose Space is not an id porter reads is dropped
-/// and counted (never read as "every Space"); an entry that is wrong in any other way makes
-/// the whole file a fault, so a damaged file is left alone and never rewritten.
+/// The grants a file's text holds.
+///
+/// An entry whose Space is not an id porter reads is dropped and counted (never read as "every
+/// Space"); an entry that is wrong in any other way makes the whole file a fault, so a damaged file
+/// is left alone and never rewritten.
 pub fn decode_grants(text: &str) -> Result<Reconciled, GrantListFault> {
     let entries: Vec<serde_json::Value> =
         serde_json::from_str(text).map_err(|why| GrantListFault(why.to_string()))?;

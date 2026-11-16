@@ -31,10 +31,11 @@ pub fn PdfFileThumb(path: PathBuf, size: Size, #[props(default)] label: Option<S
     }
 }
 
-/// The first page of the PDF at `path` for a `size` box, as `PdfFileThumb` reads it (cached, else
-/// asked of the worker, `Loading` until it lands), for a part that draws the page itself: the
-/// preview pane's `PaneContent::Pdf { page, name }` with `ui_components::components::lists::preview::content::PANE_MEDIA`. `None`
-/// for no path, so a pane that shows a PDF only some of the time calls the hook on every render
+/// The first page of the PDF at `path` for a `size` box, as `PdfFileThumb` reads it.
+///
+/// The page is cached, else asked of the worker (`Loading` until it lands), for a part that draws
+/// the page itself: the preview pane's `PaneContent::Pdf { page, name }` with
+/// `ui_components::components::lists::preview::content::PANE_MEDIA`. `None` for no path, so a pane that shows a PDF only some of the time calls the hook on every render
 /// (hooks keep their order) and passes the path only while it shows one; a path that goes away
 /// leaves a request already queued to finish into the cache.
 pub fn use_pdf_page(path: Option<PathBuf>, size: Size) -> Option<PdfPage> {

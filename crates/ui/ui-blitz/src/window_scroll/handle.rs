@@ -8,10 +8,11 @@ use dioxus::prelude::*;
 use super::state::WindowScroll;
 use crate::frame_tag::FrameTag;
 
-/// Scrolls the containers of the window the calling component renders in: `ScrollCmd::To`,
-/// `By` and `IntoView` run through the same engine as the wheel and the keys (smooth by the
-/// design/11 §11.3.11 rule, or at once), never through Blitz's own `scroll_to`, whose 300 ms
-/// animation would fight the engine. A command names its container by element `id`.
+/// Scrolls the containers of the window the calling component renders in.
+///
+/// `ScrollCmd::To`, `By` and `IntoView` run through the same engine as the wheel and the keys
+/// (smooth by the design/11 §11.3.11 rule, or at once), never through Blitz's own `scroll_to`,
+/// whose 300 ms animation would fight the engine. A command names its container by element `id`.
 #[derive(Clone)]
 pub struct ScrollHandle {
     scroll: WindowScroll,

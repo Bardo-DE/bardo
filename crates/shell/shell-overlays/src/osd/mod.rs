@@ -1,7 +1,8 @@
-//! The OSD (design/20 §1.7): the indicator that shows a new
-//! volume or brightness level, one Overlay surface per output, spawned hidden and kept warm
-//! (`set_visibility`, as the launcher's), mapped for a change and unmapped once quire's `Osd`
-//! card says its exit has faded out (`on_hidden`).
+//! The OSD (design/20 §1.7).
+//!
+//! The indicator that shows a new volume or brightness level, one Overlay surface per output,
+//! spawned hidden and kept warm (`set_visibility`, as the launcher's), mapped for a change and
+//! unmapped once quire's `Osd` card says its exit has faded out (`on_hidden`).
 //!
 //! The daemon writes each change to the shared [`shell_ui_kit::links::OsdLink`] (`links`): what moved, on which
 //! outputs, and where the level comes from. Each surface runs its own show-and-hold machine

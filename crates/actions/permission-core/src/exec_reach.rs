@@ -59,9 +59,11 @@ fn single_program(line: &str) -> bool {
     crate::standing::CommandPrefix::parse(line).is_ok()
 }
 
-/// Whether `line` (a command and its arguments) can send data out when it runs in a sandbox
-/// whose network is `network_open` (anything but no network at all; two sandboxes' worth of
-/// network is open when either is). With network open everything can. Otherwise the program is
+/// Whether `line` (a command and its arguments) can send data out when it runs in a sandbox whose
+/// network is `network_open`.
+///
+/// Network is open for anything but no network at all; two sandboxes' worth of network is open when
+/// either is. With network open everything can. Otherwise the program is
 /// looked up by the basename of its first word; a subcommand program (`git`, `npm`) reaches when
 /// any later word names one of its network subcommands (so `git -C dir push` does too). A wrapper
 /// (`sh -c`, `env`, `xargs`) or a line with a shell operator is searched word by word, so a
