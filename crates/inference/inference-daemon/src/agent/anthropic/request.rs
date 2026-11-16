@@ -20,9 +20,10 @@ fn image(block: &Value) -> Result<MessagePart, Unmapped> {
         Some("base64") => {
             let media = text_of(source, "media_type").unwrap_or_default().to_owned();
             let data = text_of(source, "data").unwrap_or_default().to_owned();
-            let bytes = serde_json::from_value::<Base64Bytes>(Value::String(data))
-                .ok()
-                .ok_or(Unmapped::of("an image whose data is not base64"))?;
+            let bytes =
+                serde_json::from_value::<Base64Bytes>(Value::String(data)).map_err(|error| {
+                    Unmapped::of(format!("an image whose data is not base64: {error}"))
+                })?;
             Ok(MessagePart::Image(ImagePart {
                 media_type: media,
                 source: ImageSource::Inline(bytes),
@@ -66,9 +67,10 @@ fn block(block: &Value) -> Result<MessagePart, Unmapped> {
         )),
         "image" => image(block),
         "tool_use" => {
-            let name = ToolName::new(text_of(block, "name").unwrap_or_default())
-                .ok()
-                .ok_or(Unmapped::of("a tool_use whose name is not a tool name"))?;
+            let name =
+                ToolName::new(text_of(block, "name").unwrap_or_default()).map_err(|error| {
+                    Unmapped::of(format!("a tool_use whose name is not a tool name: {error}"))
+                })?;
             let input = block
                 .get("input")
                 .cloned()
@@ -76,9 +78,9 @@ fn block(block: &Value) -> Result<MessagePart, Unmapped> {
             Ok(MessagePart::ToolCall(ToolCallPart {
                 id: ToolCallId(text_of(block, "id").unwrap_or_default().to_owned()),
                 name,
-                args: JsonText::new(input.to_string())
-                    .ok()
-                    .ok_or(Unmapped::of("a tool_use whose input is not JSON"))?,
+                args: JsonText::new(input.to_string()).map_err(|error| {
+                    Unmapped::of(format!("a tool_use whose input is not JSON: {error}"))
+                })?,
             }))
         }
         "tool_result" => Ok(MessagePart::ToolResult(ToolResultPart {
@@ -157,15 +159,13 @@ fn tools(value: Option<&Value>) -> Result<Vec<ToolDecl>, Unmapped> {
                 .cloned()
                 .unwrap_or_else(|| serde_json::json!({ "type": "object" }));
             Ok(ToolDecl {
-                name: ToolName::new(text_of(tool, "name").unwrap_or_default())
-                    .ok()
-                    .ok_or(Unmapped::of("a tool whose name is not a tool name"))?,
+                name: ToolName::new(text_of(tool, "name").unwrap_or_default()).map_err(
+                    |error| Unmapped::of(format!("a tool whose name is not a tool name: {error}")),
+                )?,
                 description: text_of(tool, "description").unwrap_or_default().to_owned(),
-                params: SchemaText(
-                    JsonText::new(schema.to_string())
-                        .ok()
-                        .ok_or(Unmapped::of("a tool whose schema is not JSON"))?,
-                ),
+                params: SchemaText(JsonText::new(schema.to_string()).map_err(|error| {
+                    Unmapped::of(format!("a tool whose schema is not JSON: {error}"))
+                })?),
             })
         })
         .collect()
@@ -189,9 +189,11 @@ fn choice(value: Option<&Value>) -> Result<(ToolChoice, ToolParallelism), Unmapp
         Some("any") => ToolChoice::Required,
         Some("none") => ToolChoice::Never,
         Some("tool") => ToolChoice::Named(
-            ToolName::new(text_of(choice, "name").unwrap_or_default())
-                .ok()
-                .ok_or(Unmapped::of("a tool_choice whose name is not a tool name"))?,
+            ToolName::new(text_of(choice, "name").unwrap_or_default()).map_err(|error| {
+                Unmapped::of(format!(
+                    "a tool_choice whose name is not a tool name: {error}"
+                ))
+            })?,
         ),
         Some(other) => return Err(Unmapped::of(format!("a tool_choice of type {other}"))),
     };
@@ -216,8 +218,7 @@ fn reasoning(value: Option<&Value>) -> Reasoning {
 /// Returns [`Unmapped`] when the body is not a request inferd can carry out.
 pub fn parse(body: &[u8], class: DataClass) -> Result<Parsed, Unmapped> {
     let root: Value = serde_json::from_slice(body)
-        .ok()
-        .ok_or(Unmapped::of("a body that is not JSON"))?;
+        .map_err(|error| Unmapped::of(format!("a body that is not JSON: {error}")))?;
     let model = text_of(&root, "model")
         .ok_or_else(|| Unmapped::of("a request with no model"))?
         .to_owned();

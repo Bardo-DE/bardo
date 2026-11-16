@@ -125,17 +125,15 @@ fn upstream(head: Option<&ResponseHead>) -> Failure {
 
 /// The body to send: as the agent wrote it, except that an `OpenAI` stream asks for its usage.
 fn body_for(request: &Request, shape: Shape, stream: bool) -> Result<String, Failure> {
-    let invalid = || Failure::new(Cause::Invalid, "the body is not JSON text");
+    let invalid =
+        |why: String| Failure::new(Cause::Invalid, format!("the body is not JSON text: {why}"));
     if shape == Shape::OpenAi && stream {
-        let mut root: Value = serde_json::from_slice(&request.body)
-            .ok()
-            .ok_or_else(invalid)?;
+        let mut root: Value =
+            serde_json::from_slice(&request.body).map_err(|error| invalid(error.to_string()))?;
         root["stream_options"] = serde_json::json!({ "include_usage": true });
         return Ok(root.to_string());
     }
-    String::from_utf8(request.body.clone())
-        .ok()
-        .ok_or_else(invalid)
+    String::from_utf8(request.body.clone()).map_err(|error| invalid(error.to_string()))
 }
 
 /// The headers the Anthropic API wants beside the key: the version the agent asked for, and its
@@ -250,16 +248,20 @@ pub async fn run<S: AsyncWrite + Unpin + Send>(
             "this route's provider speaks the other protocol; open the endpoint for that one",
         ));
     }
-    let model_id = ModelId::parse(&entry.id.0)
-        .ok()
-        .ok_or_else(|| Failure::new(Cause::Upstream, "the catalogue entry has no usable id"))?;
+    let model_id = ModelId::parse(&entry.id.0).map_err(|error| {
+        Failure::new(
+            Cause::Upstream,
+            format!("the catalogue entry has no usable id: {error}"),
+        )
+    })?;
     let body = body_for(request, shape, named.stream)?;
     let sent = u64::try_from(body.len()).unwrap_or(u64::MAX);
-    let key = cloud
-        .key(&grant)
-        .await
-        .ok()
-        .ok_or_else(|| Failure::new(Cause::Upstream, "the account's key could not be read"))?;
+    let key = cloud.key(&grant).await.map_err(|error| {
+        Failure::new(
+            Cause::Upstream,
+            format!("the account's key could not be read: {error}"),
+        )
+    })?;
     let extra = match shape {
         Shape::Anthropic => anthropic_headers(request),
         Shape::OpenAi => Vec::new(),
@@ -367,8 +369,9 @@ async fn finish<S: AsyncWrite + Unpin>(
             Ok(status) => {
                 http::write_json(out, status.0, &[], &String::from_utf8_lossy(&relay.body))
                     .await
-                    .ok()
-                    .ok_or_else(|| Failure::new(Cause::Upstream, "the client went away"))
+                    .map_err(|error| {
+                        Failure::new(Cause::Upstream, format!("the client went away: {error}"))
+                    })
             }
             Err(_) => Err(Failure::new(
                 Cause::Upstream,

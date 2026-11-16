@@ -119,10 +119,9 @@ impl BrokerServer for FakeBroker {
     )]
     async fn read_key(&self, Call { .. }: Call<'_>, grant: String) -> Result<OwnedFd, Fault> {
         match grant.as_str() {
-            "g.1" => account_secrets::sealed_key(KEY)
-                .map(OwnedFd::from)
-                .ok()
-                .ok_or(Fault::of("Unavailable")),
+            "g.1" => Ok(OwnedFd::from(
+                account_secrets::sealed_key(KEY).expect("seal the key"),
+            )),
             "g-off" => Err(Fault::of("Denied")),
             "g-sign-in" => Err(Fault::of("NeedsReauth")),
             _ => Err(Fault::of("UnknownGrant")),
@@ -180,10 +179,9 @@ impl BrokerServer for FakeBroker {
         account: String,
     ) -> Result<OwnedFd, Fault> {
         match account.as_str() {
-            "mine" => account_secrets::sealed_key(KEY)
-                .map(OwnedFd::from)
-                .ok()
-                .ok_or_else(|| Fault::of("Unavailable")),
+            "mine" => Ok(OwnedFd::from(
+                account_secrets::sealed_key(KEY).expect("seal the key"),
+            )),
             _ => Err(Fault::of("UnknownGrant")),
         }
     }

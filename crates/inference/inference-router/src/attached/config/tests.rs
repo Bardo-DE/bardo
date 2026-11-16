@@ -68,7 +68,10 @@ fn a_url_is_plain_http_on_loopback_and_nothing_else() {
         ),
         (
             "http://127.0.0.1:99999",
-            Err(AttachedError::BadUrl { id: "m".into() }),
+            Err(AttachedError::BadPort {
+                id: "m".into(),
+                source: "99999".parse::<u16>().expect_err("too large for a port"),
+            }),
         ),
         (
             "http://127.0.0.1:8000/v1",
@@ -160,10 +163,8 @@ fn a_socket_path_too_long_to_connect_to_is_refused() {
 #[test]
 fn a_table_whose_name_is_not_a_model_id_is_refused() {
     let one = entry("socket = \"/a.sock\"\nwhere = \"this-device\"");
-    assert_eq!(
+    assert!(matches!(
         one.check("Not A Model!"),
-        Err(AttachedError::BadId {
-            id: "Not A Model!".into()
-        })
-    );
+        Err(AttachedError::BadId { id, .. }) if id == "Not A Model!"
+    ));
 }

@@ -129,7 +129,7 @@ pub fn local_card(engines: &Engines, id: &str) -> Option<inference_core::ModelCa
         .find(|card| card.model.as_str() == id && !matches!(card.locality, Locality::Cloud { .. }))
 }
 
-fn refused(cause: Cause, text: &str) -> Refusal {
+fn refused(cause: Cause, text: impl Into<String>) -> Refusal {
     Refusal::new(cause, text)
 }
 
@@ -149,9 +149,9 @@ impl Agents {
                 "agent endpoints are off (ai.agents.endpoint)",
             ));
         }
-        let program = AgentProgram::parse(&request.program)
-            .ok()
-            .ok_or(Refusal::invalid("the program is not an agent program id"))?;
+        let program = AgentProgram::parse(&request.program).map_err(|error| {
+            Refusal::invalid(format!("the program is not an agent program id: {error}"))
+        })?;
         let class: DataClass = crate::settings::from_slug(&request.class)
             .ok_or_else(|| Refusal::invalid("the class is not a data class"))?;
         let protocols: Vec<AgentProtocol> = request
@@ -182,12 +182,10 @@ impl Agents {
             random_hex::<8>().ok_or_else(|| refused(Cause::Unavailable, "no randomness"))?;
         let listener = TcpListener::bind((Ipv4Addr::LOCALHOST, 0))
             .await
-            .ok()
-            .ok_or_else(|| refused(Cause::Unavailable, "no loopback port"))?;
+            .map_err(|error| refused(Cause::Unavailable, format!("no loopback port: {error}")))?;
         let port = listener
             .local_addr()
-            .ok()
-            .ok_or_else(|| refused(Cause::Unavailable, "no loopback port"))?
+            .map_err(|error| refused(Cause::Unavailable, format!("no loopback port: {error}")))?
             .port();
         let ctx = Ctx {
             program,

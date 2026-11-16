@@ -50,11 +50,9 @@ impl Route {
     pub fn parse(arg: RouteArg) -> Result<Self, Refusal> {
         let (kind, id, mode, listed) = arg;
         let target = match kind.as_str() {
-            ROUTE_ACCOUNT => Target::Account(
-                AccountId::parse(&id)
-                    .ok()
-                    .ok_or(Refusal::invalid("the route's account id is not an id"))?,
-            ),
+            ROUTE_ACCOUNT => Target::Account(AccountId::parse(&id).map_err(|error| {
+                Refusal::invalid(format!("the route's account id is not an id: {error}"))
+            })?),
             ROUTE_MODEL if !id.is_empty() => Target::Model(id),
             ROUTE_MODEL => return Err(Refusal::invalid("the route's model id is empty")),
             other => {

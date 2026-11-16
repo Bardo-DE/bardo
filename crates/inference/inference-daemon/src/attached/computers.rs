@@ -35,7 +35,7 @@ use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::os::unix::ffi::OsStrExt;
 use std::path::{Path, PathBuf};
-use std::sync::{Mutex, PoisonError};
+use std::sync::{Arc, Mutex, PoisonError};
 
 /// The most models one computer may have here.
 pub const MOST_MODELS: usize = 32;
@@ -209,11 +209,11 @@ fn tailnet_engines(
     node: &str,
     computer: &AddedComputer,
     sockets: &Path,
-) -> Result<Vec<Attached>, &'static str> {
-    let node = NodeId::parse(node)
-        .ok()
-        .ok_or("not a computer on Tailscale")?;
-    let socket = relay_socket(sockets, &node).ok_or("the way to it is too long")?;
+) -> Result<Vec<Attached>, String> {
+    let node =
+        NodeId::parse(node).map_err(|error| format!("not a computer on Tailscale: {error}"))?;
+    let socket =
+        relay_socket(sockets, &node).ok_or_else(|| "the way to it is too long".to_owned())?;
     Ok(computer
         .models
         .keys()
@@ -316,6 +316,26 @@ pub struct NewTailnetComputer {
     pub models: Vec<String>,
 }
 
+/// Why the file of added computers was not written. Two failures are equal when they are the
+/// same one.
+#[derive(Debug, Clone, thiserror::Error)]
+#[error(transparent)]
+pub struct SaveFailed(Arc<dyn std::error::Error + Send + Sync>);
+
+impl PartialEq for SaveFailed {
+    fn eq(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.0, &other.0)
+    }
+}
+
+impl Eq for SaveFailed {}
+
+impl ComputerError {
+    fn not_saved(cause: impl std::error::Error + Send + Sync + 'static) -> Self {
+        Self::NotSaved(SaveFailed(Arc::new(cause)))
+    }
+}
+
 /// Why a computer was not added or removed. `Display` is the plain sentence Settings shows.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum ComputerError {
@@ -350,7 +370,7 @@ pub enum ComputerError {
     BadKey(String),
     /// The new list could not be saved.
     #[error("The computer could not be saved.")]
-    NotSaved,
+    NotSaved(#[source] SaveFailed),
     /// There is no computer of that name.
     #[error("There is no computer with that name.")]
     NotThere,
@@ -425,7 +445,8 @@ fn refusal_of(why: &AttachedError, id: &str) -> ComputerError {
         }
         AttachedError::NoCapability { .. }
         | AttachedError::NotAttachable { .. }
-        | AttachedError::NoChatEngine { .. } => ComputerError::ModelNotUsable(id),
+        | AttachedError::NoChatEngine { .. }
+        | AttachedError::NoProgram { .. } => ComputerError::ModelNotUsable(id),
         AttachedError::RelativeKeyFile { .. } => ComputerError::BadKey(id),
         AttachedError::BadComputer { .. } => ComputerError::BadName,
         AttachedError::MissingWhere { .. }
@@ -434,6 +455,7 @@ fn refusal_of(why: &AttachedError, id: &str) -> ComputerError {
         | AttachedError::RelativeSocket { .. }
         | AttachedError::SocketPathTooLong { .. }
         | AttachedError::BadUrl { .. }
+        | AttachedError::BadPort { .. }
         | AttachedError::NotPlainHttp { .. }
         | AttachedError::NotLoopback { .. } => ComputerError::BadAddress(id),
     }
@@ -596,13 +618,10 @@ impl Computers {
     }
 
     fn save(&self, file: &AddedFile) -> Result<(), ComputerError> {
-        let text = toml::to_string_pretty(file)
-            .ok()
-            .ok_or(ComputerError::NotSaved)?;
+        let text = toml::to_string_pretty(file).map_err(ComputerError::not_saved)?;
         AtomicWrite::PRIVATE
             .write(&self.file, text.as_bytes())
-            .ok()
-            .ok_or(ComputerError::NotSaved)
+            .map_err(ComputerError::not_saved)
     }
 
     /// Adds a computer and its models: the checks of the hand-written file, then the keys, the

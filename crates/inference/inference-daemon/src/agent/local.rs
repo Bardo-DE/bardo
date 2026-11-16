@@ -149,11 +149,12 @@ pub async fn run<S: AsyncWrite + Unpin + Send>(
     if engines.readiness(&model) == Readiness::Unavailable {
         return Err(gone());
     }
-    engines
-        .want(model_ref.clone())
-        .await
-        .ok()
-        .ok_or_else(gone)?;
+    engines.want(model_ref.clone()).await.map_err(|failed| {
+        Failure::new(
+            Cause::Overloaded,
+            format!("the model is not available: {:?}", failed.cause),
+        )
+    })?;
     let served = ServedBy {
         account: card.account.clone(),
         model: card.model.clone(),
@@ -252,6 +253,5 @@ pub async fn run<S: AsyncWrite + Unpin + Send>(
     };
     http::write_json(out, 200, &[], &body.to_string())
         .await
-        .ok()
-        .ok_or_else(|| Failure::new(Cause::Upstream, "the client went away"))
+        .map_err(|error| Failure::new(Cause::Upstream, format!("the client went away: {error}")))
 }

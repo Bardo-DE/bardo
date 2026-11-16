@@ -146,7 +146,7 @@ impl Lender {
         });
         let request = match Box::pin(tokio::time::timeout(HEAD_WAIT, read)).await {
             Ok(Ok(request)) => request,
-            Err(_) | Ok(Err(ReadError::Closed)) => return,
+            Err(_) | Ok(Err(ReadError::Closed | ReadError::Io(_))) => return,
             Ok(Err(ReadError::Refused)) => {
                 let why = refused
                     .lock()
@@ -161,7 +161,7 @@ impl Lender {
                 fail(&mut stream, &failure).await;
                 return;
             }
-            Ok(Err(ReadError::Malformed)) => {
+            Ok(Err(ReadError::Malformed | ReadError::NotText(_) | ReadError::BadNumber(_))) => {
                 let failure = Failure::new(Cause::Invalid, "not an HTTP request");
                 fail(&mut stream, &failure).await;
                 return;
@@ -212,8 +212,9 @@ impl Lender {
         let hello = Hello::new(models, approval);
         http::write_json(out, 200, &[], &hello.to_json())
             .await
-            .ok()
-            .ok_or_else(|| Failure::new(Cause::Upstream, "the computer went away"))
+            .map_err(|error| {
+                Failure::new(Cause::Upstream, format!("the computer went away: {error}"))
+            })
     }
 
     async fn models<S: AsyncWrite + Unpin>(&self, out: &mut S) -> Result<(), Failure> {
@@ -227,8 +228,9 @@ impl Lender {
         let body = openai::models_json(&ids, self.clock.now().0);
         http::write_json(out, 200, &[], &body.to_string())
             .await
-            .ok()
-            .ok_or_else(|| Failure::new(Cause::Upstream, "the computer went away"))
+            .map_err(|error| {
+                Failure::new(Cause::Upstream, format!("the computer went away: {error}"))
+            })
     }
 
     async fn chat<S: AsyncWrite + Unpin + Send>(
@@ -254,9 +256,12 @@ impl Lender {
         })?;
         let unavailable = || Failure::new(Cause::Overloaded, "the model is not available");
         let ctx = Ctx {
-            program: AgentProgram::parse("computer")
-                .ok()
-                .ok_or_else(unavailable)?,
+            program: AgentProgram::parse("computer").map_err(|error| {
+                Failure::new(
+                    Cause::Overloaded,
+                    format!("the model is not available: {error}"),
+                )
+            })?,
             app: guest_app(node),
             route: Route {
                 target: Target::Model(id.clone()),

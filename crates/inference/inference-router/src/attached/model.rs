@@ -103,12 +103,14 @@ pub fn local_model(
     });
     let nothing =
         EnginePaths::new(PathBuf::new()).with_program(profile.kind, ProgramPath(PathBuf::new()));
-    let unit = command(entry, &profile, &nothing, &socket)
-        .ok()
-        .ok_or_else(no_chat)?;
+    let unit =
+        command(entry, &profile, &nothing, &socket).map_err(|source| AttachedError::NoProgram {
+            id: name.to_owned(),
+            source,
+        })?;
     Ok(LocalModel {
         card: ModelCard {
-            account: AccountId::parse(LOCAL_ACCOUNT).ok().ok_or_else(no_chat)?,
+            account: AccountId::parse(LOCAL_ACCOUNT).expect("LOCAL_ACCOUNT is an account id"),
             model: attached.id.clone(),
             locality: attached.place.locality(),
             billing: Billing::Free,

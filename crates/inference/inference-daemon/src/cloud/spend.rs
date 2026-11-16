@@ -104,14 +104,40 @@ impl Default for Document {
     }
 }
 
+/// Why a ledger file could not be used.
+#[derive(Debug, thiserror::Error)]
+enum LedgerFault {
+    /// The file could not be read.
+    #[error("the file could not be read")]
+    Read(#[source] ReadError),
+    /// The file is not a ledger.
+    #[error("the file is not a ledger")]
+    Json(#[source] serde_json::Error),
+    /// The file is a format this inferd does not know.
+    #[error("the file is in a format this inferd does not know")]
+    Format,
+}
+
+/// `error` and its causes, one after the other.
+fn chain(error: &dyn std::error::Error) -> String {
+    let mut text = error.to_string();
+    let mut next = error.source();
+    while let Some(cause) = next {
+        text.push_str(": ");
+        text.push_str(&cause.to_string());
+        next = cause.source();
+    }
+    text
+}
+
 /// What a ledger file holds.
-fn read_document(text: &str) -> Result<Document, ()> {
-    let document: Document = serde_json::from_str(text).ok().ok_or(())?;
+fn read_document(text: &str) -> Result<Document, LedgerFault> {
+    let document: Document = serde_json::from_str(text).map_err(LedgerFault::Json)?;
     // A format a later inferd wrote: not guessed at.
     if document.format == FORMAT {
         Ok(document)
     } else {
-        Err(())
+        Err(LedgerFault::Format)
     }
 }
 
@@ -164,13 +190,15 @@ impl Ledger {
         let read = match read_text_capped(&file, ReadCap::mib(8)) {
             Ok(text) => read_document(&text),
             Err(ReadError::NotFound { .. }) => Ok(Document::default()),
-            Err(_) => Err(()),
+            Err(error) => Err(LedgerFault::Read(error)),
         };
-        let (document, lost) = if let Ok(document) = read {
-            (document, false)
-        } else {
-            set_aside(&file, now);
-            (Document::default(), true)
+        let (document, lost) = match read {
+            Ok(document) => (document, false),
+            Err(fault) => {
+                eprintln!("inferd: spend: {}: {}", file.display(), chain(&fault));
+                set_aside(&file, now);
+                (Document::default(), true)
+            }
         };
         // A loss from an earlier run counts while its period lasts.
         let unknown = if lost {

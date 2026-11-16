@@ -22,6 +22,9 @@ pub enum KeyFileProblem {
     /// It could not be opened or read.
     #[error("the key file cannot be read: {0:?}")]
     Unreadable(std::io::ErrorKind),
+    /// It is not text.
+    #[error("the key file is not text")]
+    NotText(#[source] std::string::FromUtf8Error),
     /// It is not a regular file.
     #[error("the key file is not a regular file")]
     NotAFile,
@@ -86,9 +89,7 @@ impl KeyFile {
             .take(LONGEST + 1)
             .read_to_end(&mut bytes)
             .map_err(|e| KeyFileProblem::Unreadable(e.kind()))?;
-        let text = String::from_utf8(bytes)
-            .ok()
-            .ok_or(KeyFileProblem::Unusable)?;
+        let text = String::from_utf8(bytes).map_err(KeyFileProblem::NotText)?;
         let token = text.trim();
         let fits = !token.is_empty()
             && u64::try_from(token.len()).is_ok_and(|len| len <= LONGEST)

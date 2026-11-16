@@ -107,7 +107,7 @@ fn without_a_runtime_directory_or_a_home_there_is_nowhere_to_put_the_sockets() {
     );
     assert_eq!(
         Dirs::from_vars(vars(&[("XDG_RUNTIME_DIR", "/run")])),
-        Err(ConfigError::NoDirs)
+        Err(ConfigError::Xdg(base_xdg::PathError))
     );
 }
 

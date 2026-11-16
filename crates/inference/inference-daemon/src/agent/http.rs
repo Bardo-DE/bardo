@@ -26,15 +26,28 @@ pub struct Request {
 }
 
 /// Why a request could not be read.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, thiserror::Error)]
 pub enum ReadError {
     /// The peer closed before a request arrived.
+    #[error("the peer closed before a request arrived")]
     Closed,
+    /// The stream failed while it was read.
+    #[error("the stream could not be read")]
+    Io(#[source] std::io::Error),
     /// Not an HTTP/1.1 request.
+    #[error("not an HTTP/1.1 request")]
     Malformed,
+    /// A line of the request that must be text is not.
+    #[error("a line of the request is not text")]
+    NotText(#[source] std::str::Utf8Error),
+    /// A number of the request is not one.
+    #[error("a number of the request is not one")]
+    BadNumber(#[source] std::num::ParseIntError),
     /// The head or body is over the limit.
+    #[error("the request is over the limit")]
     TooLarge,
     /// The reader of the head would not have this request: its body was not read.
+    #[error("the request was refused before its body was read")]
     Refused,
 }
 
@@ -126,11 +139,7 @@ async fn fill<S: AsyncRead + Unpin>(
 ) -> Result<(), ReadError> {
     let mut chunk = [0_u8; 16 * 1024];
     while buffer.len() < want {
-        let n = stream
-            .read(&mut chunk)
-            .await
-            .ok()
-            .ok_or(ReadError::Closed)?;
+        let n = stream.read(&mut chunk).await.map_err(ReadError::Io)?;
         if n == 0 {
             return Err(if buffer.is_empty() {
                 ReadError::Closed
@@ -161,16 +170,13 @@ async fn read_chunked<S: AsyncRead + Unpin>(
             Box::pin(fill(stream, buffer, want)).await?;
         };
         let size_text = std::str::from_utf8(&buffer[..line_end])
-            .ok()
-            .ok_or(ReadError::Malformed)?
+            .map_err(ReadError::NotText)?
             .split(';')
             .next()
             .unwrap_or_default()
             .trim()
             .to_owned();
-        let size = usize::from_str_radix(&size_text, 16)
-            .ok()
-            .ok_or(ReadError::Malformed)?;
+        let size = usize::from_str_radix(&size_text, 16).map_err(ReadError::BadNumber)?;
         buffer.drain(..line_end + 2);
         if size == 0 {
             // Trailers, if any, end at a blank line; this client sends none that matter.
@@ -210,9 +216,7 @@ pub async fn read_request<S: AsyncRead + AsyncWrite + Unpin>(
         let want = buffer.len() + 1;
         Box::pin(fill(stream, &mut buffer, want)).await?;
     };
-    let head = std::str::from_utf8(&buffer[..head_end])
-        .ok()
-        .ok_or(ReadError::Malformed)?;
+    let head = std::str::from_utf8(&buffer[..head_end]).map_err(ReadError::NotText)?;
     let Head {
         method,
         target,
@@ -242,7 +246,7 @@ pub async fn read_request<S: AsyncRead + AsyncWrite + Unpin>(
     } else {
         let length = match named("content-length") {
             None => 0,
-            Some(text) => text.parse::<usize>().ok().ok_or(ReadError::Malformed)?,
+            Some(text) => text.parse::<usize>().map_err(ReadError::BadNumber)?,
         };
         if length > MAX_BODY {
             return Err(ReadError::TooLarge);
@@ -404,7 +408,7 @@ mod tests {
             head.header("x-api-key").is_some()
         }))
         .await;
-        assert_eq!(refused.err(), Some(ReadError::Refused));
+        assert!(matches!(refused.err(), Some(ReadError::Refused)));
     }
 
     #[tokio::test]
@@ -423,7 +427,12 @@ mod tests {
             ),
         ];
         for (bytes, want) in cases {
-            assert_eq!(Box::pin(read(bytes)).await.err(), Some(want), "{bytes:?}");
+            let got = Box::pin(read(bytes)).await.expect_err("a refused request");
+            assert_eq!(
+                std::mem::discriminant(&got),
+                std::mem::discriminant(&want),
+                "{bytes:?}"
+            );
         }
     }
 

@@ -29,6 +29,9 @@ pub enum ConfigError {
     /// Neither `$XDG_RUNTIME_DIR` nor a home to place the sockets in.
     #[error("no $XDG_RUNTIME_DIR and no $HOME")]
     NoDirs,
+    /// A directory has neither its variable nor a home to place it in.
+    #[error("a directory has no place to be")]
+    Xdg(#[source] base_xdg::PathError),
 }
 
 /// The file's contents. Every table is optional; a file that does not exist is the default.
@@ -112,8 +115,7 @@ impl Dirs {
     /// Returns a [`ConfigError`] when a variable the directories need is missing.
     pub fn from_vars(var: impl Fn(&str) -> Option<String>) -> Result<Self, ConfigError> {
         let xdg = Xdg::new(var);
-        let dir =
-            |name: &str, fallback: &str| xdg.dir(name, fallback).ok().ok_or(ConfigError::NoDirs);
+        let dir = |name: &str, fallback: &str| xdg.dir(name, fallback).map_err(ConfigError::Xdg);
         let config = dir("XDG_CONFIG_HOME", ".config")?;
         let data = dir("XDG_DATA_HOME", ".local/share")?;
         let state = dir("XDG_STATE_HOME", ".local/state")?;

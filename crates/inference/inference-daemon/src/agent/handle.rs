@@ -45,8 +45,7 @@ pub struct Peek {
 /// Returns a [`Failure`] when the body is not JSON or names no model.
 pub fn peek(body: &[u8]) -> Result<Peek, Failure> {
     let root: Value = serde_json::from_slice(body)
-        .ok()
-        .ok_or_else(|| Failure::new(Cause::Invalid, "the body is not JSON"))?;
+        .map_err(|error| Failure::new(Cause::Invalid, format!("the body is not JSON: {error}")))?;
     let model = root
         .get("model")
         .and_then(Value::as_str)
@@ -72,7 +71,7 @@ pub async fn serve(ctx: Arc<Ctx>, mut stream: TcpStream) {
     });
     let request = match Box::pin(tokio::time::timeout(wait, read)).await {
         Ok(Ok(request)) => request,
-        Err(_) | Ok(Err(ReadError::Closed)) => return,
+        Err(_) | Ok(Err(ReadError::Closed | ReadError::Io(_))) => return,
         Ok(Err(ReadError::Refused)) => {
             let failure = Failure::new(Cause::Unauthenticated, "the API key is not this session's");
             let shape = if speaks_anthropic.load(std::sync::atomic::Ordering::Relaxed) {
@@ -91,7 +90,7 @@ pub async fn serve(ctx: Arc<Ctx>, mut stream: TcpStream) {
             let _ = respond(&mut stream, Shape::OpenAi, &failure).await;
             return;
         }
-        Ok(Err(ReadError::Malformed)) => {
+        Ok(Err(ReadError::Malformed | ReadError::NotText(_) | ReadError::BadNumber(_))) => {
             let failure = Failure::new(Cause::Invalid, "not an HTTP request");
             let _ = respond(&mut stream, Shape::OpenAi, &failure).await;
             return;
@@ -217,8 +216,7 @@ async fn count_tokens<S: AsyncWrite + Unpin>(
 async fn reply_json<S: AsyncWrite + Unpin>(out: &mut S, body: &Value) -> Result<(), Failure> {
     http::write_json(out, 200, &[], &body.to_string())
         .await
-        .ok()
-        .ok_or_else(|| Failure::new(Cause::Upstream, "the client went away"))
+        .map_err(|error| Failure::new(Cause::Upstream, format!("the client went away: {error}")))
 }
 
 fn anthropic_model(id: &str) -> Value {

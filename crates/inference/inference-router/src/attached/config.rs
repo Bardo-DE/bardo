@@ -117,6 +117,9 @@ pub enum AttachedError {
     BadId {
         /// The name.
         id: String,
+        /// Why it is not one.
+        #[source]
+        source: base_ids::IdError,
     },
     /// `where` is missing: where the data goes is never assumed.
     #[error("engines.attached.{id}: `where` is required (\"this-device\" or \"my-network\")")]
@@ -166,6 +169,15 @@ pub enum AttachedError {
         /// The entry.
         id: String,
     },
+    /// A `url` whose port is not a number.
+    #[error("engines.attached.{id}: the port of `url` must be a number")]
+    BadPort {
+        /// The entry.
+        id: String,
+        /// Why it is not one.
+        #[source]
+        source: std::num::ParseIntError,
+    },
     /// An `https://` `url`: nothing here speaks TLS.
     #[error("engines.attached.{id}: `url` must be plain http (no TLS here); got https")]
     NotPlainHttp {
@@ -190,6 +202,9 @@ pub enum AttachedError {
         id: String,
         /// The name as written.
         name: String,
+        /// Why it is not one.
+        #[source]
+        source: account_core::CoreError,
     },
     /// An id the catalogue does not hold.
     #[error("engines.attached.{id}: no model of that id in the catalogue")]
@@ -218,6 +233,15 @@ pub enum AttachedError {
         /// The entry.
         id: String,
     },
+    /// The settings list no program for the entry's engine.
+    #[error("engines.attached.{id}: no program is listed for the entry's engine")]
+    NoProgram {
+        /// The entry.
+        id: String,
+        /// Which engine.
+        #[source]
+        source: engine_supervisor::MissingProgram,
+    },
 }
 
 impl AttachedEntry {
@@ -227,11 +251,10 @@ impl AttachedEntry {
     /// `AttachedError` when the id or computer name is invalid, the place is missing, the target is
     /// not exactly one valid socket or loopback address, or the key file path is relative.
     pub fn check(&self, name: &str) -> Result<Attached, AttachedError> {
-        let id = ModelId::parse(name)
-            .ok()
-            .ok_or_else(|| AttachedError::BadId {
-                id: name.to_owned(),
-            })?;
+        let id = ModelId::parse(name).map_err(|source| AttachedError::BadId {
+            id: name.to_owned(),
+            source,
+        })?;
         let here = || name.to_owned();
         let place = self
             .place
@@ -251,10 +274,11 @@ impl AttachedEntry {
         let computer =
             match &self.computer {
                 None => None,
-                Some(text) => Some(ComputerName::parse(text).ok().ok_or_else(|| {
+                Some(text) => Some(ComputerName::parse(text).map_err(|source| {
                     AttachedError::BadComputer {
                         id: here(),
                         name: text.clone(),
+                        source,
                     }
                 })?),
             };
@@ -305,7 +329,10 @@ pub fn url_reach(name: &str, url: &str) -> Result<Reach, AttachedError> {
         return Err(bad());
     }
     let (host, port) = authority.rsplit_once(':').ok_or_else(bad)?;
-    let port: u16 = port.parse().ok().ok_or_else(bad)?;
+    let port: u16 = port.parse().map_err(|source| AttachedError::BadPort {
+        id: name.to_owned(),
+        source,
+    })?;
     if port == 0 {
         return Err(bad());
     }
