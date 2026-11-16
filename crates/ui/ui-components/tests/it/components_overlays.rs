@@ -130,7 +130,7 @@ thread_local! {
 fn the_newest_layer_takes_the_escape() {
     // A peek, then a menu over it: one Escape names the menu, and with the menu gone the next
     // names the peek (design/06-INTERACTIONS.md section 18).
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
     fn Layered() -> Element {
         STACK.set(Some(use_context::<Signal<LayerStack>>()));
         rsx! {

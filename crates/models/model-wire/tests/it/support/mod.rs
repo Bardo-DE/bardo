@@ -1,6 +1,6 @@
 //! A scripted transport and a line codec for driving the `Driver` with no I/O.
 
-#![allow(dead_code)]
+#![allow(dead_code, reason = "shared test helpers, not every one is used by the cases that exist")]
 
 use std::ops::ControlFlow;
 use std::sync::Mutex;
@@ -199,11 +199,11 @@ impl ChatCodec for LineCodec {
     }
 
     fn parse_models(&self, body: &[u8]) -> Result<Vec<ModelInfo>, CodecError> {
-        let text = std::str::from_utf8(body).map_err(|_| CodecError::Unreadable)?;
+        let text = std::str::from_utf8(body).ok().ok_or(CodecError::Unreadable)?;
         text.lines()
             .map(|line| {
                 let (name, ctx) = line.split_once(' ').ok_or(CodecError::Unreadable)?;
-                let ctx: u32 = ctx.parse().map_err(|_| CodecError::Unreadable)?;
+                let ctx: u32 = ctx.parse().ok().ok_or(CodecError::Unreadable)?;
                 Ok(ModelInfo {
                     name: ModelName(name.to_owned()),
                     loaded_context: Tokens(ctx),
@@ -222,8 +222,8 @@ impl ChatDecoder for LineDecoder {
             Some(("usage", u)) => {
                 let (i, o) = u.split_once(',').ok_or(CodecError::Unreadable)?;
                 self.usage = TurnUsage {
-                    input: Tokens(i.parse().map_err(|_| CodecError::Unreadable)?),
-                    output: Tokens(o.parse().map_err(|_| CodecError::Unreadable)?),
+                    input: Tokens(i.parse().ok().ok_or(CodecError::Unreadable)?),
+                    output: Tokens(o.parse().ok().ok_or(CodecError::Unreadable)?),
                     ..TurnUsage::default()
                 };
                 Ok(vec![TurnEvent::Usage(self.usage)])
@@ -279,13 +279,13 @@ impl EmbedCodec for VecCodec {
     }
 
     fn decode_embed(&self, served: ModelName, body: &[u8]) -> Result<EmbedEnd, CodecError> {
-        let text = std::str::from_utf8(body).map_err(|_| CodecError::Unreadable)?;
+        let text = std::str::from_utf8(body).ok().ok_or(CodecError::Unreadable)?;
         let vectors = text
             .split(';')
             .filter(|v| !v.is_empty())
             .map(|v| {
                 v.split(',')
-                    .map(|n| n.parse::<f32>().map_err(|_| CodecError::Unreadable))
+                    .map(|n| n.parse::<f32>().ok().ok_or(CodecError::Unreadable))
                     .collect::<Result<Vec<f32>, _>>()
                     .map(EmbedVector)
             })

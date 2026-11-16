@@ -161,7 +161,7 @@ impl ToastHub {
             return;
         };
         if undo.is_some() {
-            self.undo();
+            let _ = self.undo(); // The token is also kept as the last undo, which is what watchers read.
             return;
         }
         self.hide();

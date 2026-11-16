@@ -33,14 +33,14 @@ fn back() -> Vec<ToolbarItem<u8>> {
     ]
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn Keyed() -> Element {
     page(rsx! {
         Toolbar::<u8> { leading: back(), room: ToolbarRoom::Fixed(Px(600.0)), onpick: |_| {} }
     })
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn Together() -> Element {
     page(rsx! {
         Toolbar::<u8> {
@@ -52,7 +52,7 @@ fn Together() -> Element {
     })
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn CentreAlone() -> Element {
     page(rsx! {
         Toolbar::<u8> {
@@ -63,7 +63,7 @@ fn CentreAlone() -> Element {
     })
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn Actions() -> Element {
     page(rsx! {
         SheetActions {

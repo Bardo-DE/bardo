@@ -57,6 +57,10 @@ impl DesktopId {
     /// `text`, when it ends in `.desktop` after a name, with no slash or white space: the strict
     /// reading, for ids that `mimeapps.list` and `mimeinfo.cache` name. [`DesktopId::parse`] is the
     /// lenient one.
+    ///
+    /// # Errors
+    /// [`DesktopIdError`] when `text` lacks the `.desktop` suffix or a name before it, or has a
+    /// slash or white space.
     pub fn new(text: &str) -> Result<DesktopId, DesktopIdError> {
         let Some(stem) = text.strip_suffix(".desktop") else {
             return Err(DesktopIdError::Suffix);

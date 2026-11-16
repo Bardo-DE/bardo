@@ -71,6 +71,9 @@ pub struct DataName {
 impl DataName {
     /// The name, checked: lowercase ASCII letters, digits and `-`, starting with a letter; not
     /// `ds-…`, and not a name quire uses itself.
+    ///
+    /// # Errors
+    /// [`PassThroughError`] when the name is not one a pass-through attribute may have.
     pub fn parse(name: &'static str) -> Result<Self, PassThroughError> {
         let shaped = name.starts_with(|c: char| c.is_ascii_lowercase())
             && name
@@ -159,6 +162,9 @@ impl ExtraClass {
     /// One class, or a space-separated list, checked: each token letters, digits, `-` and
     /// `_`, starting with a letter or `_`, none starting `ds-`. Runs of whitespace fold to one
     /// space.
+    ///
+    /// # Errors
+    /// [`PassThroughError`] when the name is not one a pass-through attribute may have.
     pub fn parse(class: &str) -> Result<Self, PassThroughError> {
         let tokens: Vec<&str> = class.split_ascii_whitespace().collect();
         let refuse = || PassThroughError::BadClass {
@@ -229,7 +235,7 @@ mod tests {
         for (given, want) in cases {
             let got = DataName::parse(given)
                 .map(DataName::attribute)
-                .map_err(|_| ());
+                .ok().ok_or(());
             assert_eq!(got, *want, "{given:?}");
         }
     }
@@ -260,7 +266,7 @@ mod tests {
         for (given, want) in cases {
             let got = ExtraClass::parse(given);
             assert_eq!(
-                got.as_ref().map(ExtraClass::as_str).map_err(|_| ()),
+                got.as_ref().map(ExtraClass::as_str).ok().ok_or(()),
                 *want,
                 "{given:?}"
             );

@@ -104,7 +104,7 @@ impl Session for FakeSession {
         // The same ceiling the real service applies.
         plan(request)
             .map(drop)
-            .map_err(|_| ClientError::Refused(Reason::BadCaps))?;
+            .ok().ok_or(ClientError::Refused(Reason::BadCaps))?;
         let device = DeviceId(state.next_id);
         state.next_id = state.next_id.wrapping_add(1);
         match request.kind().delivery() {

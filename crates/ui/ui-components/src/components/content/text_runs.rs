@@ -137,6 +137,9 @@ impl<'a> SuperFrom<&'a str, OptionalText> for Option<TextLine> {
 }
 
 /// `text` drawn: a bare text node when plain, else each run in its tone.
+///
+/// # Errors
+/// Never fails: [`Element`] is a `Result` only for the renderer.
 pub fn text(text: &TextLine) -> Element {
     match text {
         TextLine::Plain(plain) => rsx! { "{plain}" },

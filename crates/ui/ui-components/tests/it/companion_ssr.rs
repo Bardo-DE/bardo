@@ -222,7 +222,7 @@ struct Marked {
     outcome: Option<Outcome>,
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn MarkedStage(props: Marked) -> Element {
     let Marked { carrier, outcome } = props;
     match carrier {
@@ -285,7 +285,7 @@ struct Card {
     view: AnswerView,
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn CardStage(props: Card) -> Element {
     let view = props.view;
     root(rsx! { AnswerCard { view, focused: Some(0), on_action: |_| {} } })

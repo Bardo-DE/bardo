@@ -59,14 +59,14 @@ mod tests {
     use super::{Hung, PanelWidth};
     use ui_core::geometry::units::{Point, Px, Rect, Size};
 
-    fn field(width: f32) -> Option<Rect> {
-        Some(Rect {
+    fn field(width: f32) -> Rect {
+        Rect {
             origin: Point::default(),
             size: Size {
                 width: Px(width),
                 height: Px(28.0),
             },
-        })
+        }
     }
 
     #[test]
@@ -82,7 +82,7 @@ mod tests {
         ];
         for &(hung, width, want) in cases {
             assert_eq!(
-                hung.width_style(width.and_then(field)).as_deref(),
+                hung.width_style(width.map(field)).as_deref(),
                 want,
                 "{hung:?} {width:?}"
             );

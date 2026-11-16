@@ -38,6 +38,9 @@ fn px(token: impl Token) -> f32 {
 /// pitch is `thread_card_height(lines) + thread_card_gap()`. The height does not depend on the
 /// row's slots (`more`, `strip`, `star`): none of them makes the row taller. At a fractional
 /// device scale the border rounds to whole device pixels, and the height moves by under a pixel.
+///
+/// # Panics
+/// When the `--hair` pixel token is not a `px` length, which the token table rules out.
 #[must_use]
 pub fn thread_card_height(lines: ThreadLines) -> Px {
     let name = px(FontSize::Body) * ROOT_LINE;

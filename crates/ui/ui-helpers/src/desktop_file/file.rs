@@ -24,6 +24,9 @@ pub struct DesktopFile {
 impl DesktopFile {
     /// The file `text` holds; [`DesktopFileError`] when `text` is longer than `cap`
     /// ([`DESKTOP_ENTRY_CAP`] suits a desktop entry).
+    ///
+    /// # Errors
+    /// [`DesktopFileError`] when `text` is longer than `cap`.
     pub fn parse(text: &str, cap: ReadCap) -> Result<DesktopFile, DesktopFileError> {
         refuse_over(text.len(), cap)?;
         Ok(parse_text(text))
@@ -31,6 +34,9 @@ impl DesktopFile {
 
     /// The file `bytes` hold, with anything that is not UTF-8 replaced; refused over `cap` as
     /// [`DesktopFile::parse`] does.
+    ///
+    /// # Errors
+    /// [`DesktopFileError`] when `bytes` is longer than `cap`.
     pub fn from_bytes(bytes: &[u8], cap: ReadCap) -> Result<DesktopFile, DesktopFileError> {
         refuse_over(bytes.len(), cap)?;
         Ok(parse_text(&String::from_utf8_lossy(bytes)))

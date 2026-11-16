@@ -93,6 +93,10 @@ fn read(folder: &impl SkillFolder, dir: &Path, file: &'static str) -> Result<Str
 
 /// Loads the skill in `dir` through `folder` (`skill.toml` and `SKILL.md`; the directory name is
 /// its id).
+///
+/// # Errors
+/// [`SkillFault`] when `skill.toml` or `SKILL.md` cannot be read, or the two do not make a valid
+/// skill.
 pub fn load_dir(
     folder: &impl SkillFolder,
     dir: &Path,

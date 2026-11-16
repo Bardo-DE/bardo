@@ -74,6 +74,9 @@ impl Chord {
     }
 
     /// The shortcut the names write.
+    ///
+    /// # Errors
+    /// [`ChordError`] naming the first key name that is not a key.
     pub fn shortcut(&self) -> Result<Shortcut, ChordError> {
         self.0
             .iter()

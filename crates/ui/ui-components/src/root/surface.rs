@@ -38,7 +38,7 @@ pub fn Surface(
 ) -> Element {
     let env = scope(use_scope(), material, theme, accent, blur);
     let ground = on.unwrap_or_else(|| Ground::of(material));
-    use_scope_provider(env);
+    let _ = use_scope_provider(env); // Provided as context for the controls below; this root needs no handle.
     rsx! {
         div {
             class: "ds",
@@ -70,7 +70,7 @@ pub(crate) fn ClassedScope(
     children: Element,
 ) -> Element {
     let env = scope(use_scope(), material, None, None, None);
-    use_scope_provider(env);
+    let _ = use_scope_provider(env); // Provided as context for the controls below; this root needs no handle.
     rsx! {
         div {
             class: "ds {class}",

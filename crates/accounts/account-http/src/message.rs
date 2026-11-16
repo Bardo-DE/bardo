@@ -22,20 +22,31 @@ pub fn request(method: Method, url: &WebUrl) -> Builder {
 
 /// A web URL as the `http` crate's URI, for a builder that takes one. `Malformed` when the URL
 /// is not one the `http` crate takes as a URI.
+///
+/// # Errors
+/// [`HttpError::Malformed`] when the URL is not one the `http` crate takes as a URI.
 pub fn uri(url: &WebUrl) -> Result<Uri, HttpError> {
-    url.as_str().parse().map_err(|_| HttpError::Malformed)
+    url.as_str().parse().ok().ok_or(HttpError::Malformed)
 }
 
 /// A request to an endpoint's URL. A scheme that is not HTTP is `Malformed`, and plain `http`
 /// to another computer is `Tls`: no credential is sent in the clear.
+///
+/// # Errors
+/// [`HttpError::Malformed`] when the scheme is not HTTP; [`HttpError::Tls`] for plain `http` to
+/// another computer.
 pub fn request_to(method: Method, url: &EndpointUrl) -> Result<Builder, HttpError> {
     web_url(url).map(|web| request(method, &web))
 }
 
 /// An endpoint's URL as a web URL. A scheme that is not HTTP is `Malformed`, and plain `http`
 /// to another computer is `Tls`: no credential is sent in the clear.
+///
+/// # Errors
+/// [`HttpError::Malformed`] when the scheme is not HTTP; [`HttpError::Tls`] for plain `http` to
+/// another computer.
 pub fn web_url(url: &EndpointUrl) -> Result<WebUrl, HttpError> {
-    WebUrl::try_from(url).map_err(|_| match url.origin().scheme {
+    WebUrl::try_from(url).ok().ok_or_else(|| match url.origin().scheme {
         UrlScheme::Http => HttpError::Tls,
         _ => HttpError::Malformed,
     })

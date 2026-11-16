@@ -45,6 +45,9 @@ impl TileFace {
 }
 
 /// A tile face, drawn.
+///
+/// # Errors
+/// Never fails: [`Element`] is a `Result` only for the renderer.
 pub fn tile(tile: TileFace) -> Element {
     match tile {
         TileFace::Glyph(icon, colour) => rsx! {

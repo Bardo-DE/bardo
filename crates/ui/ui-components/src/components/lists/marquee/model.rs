@@ -144,7 +144,7 @@ pub(crate) fn edge_scroll(y: f32, height: f32) -> f32 {
 }
 
 #[cfg(test)]
-#[allow(clippy::single_range_in_vec_init)] // The tables spell expected selections as lists of ranges.
+#[expect(clippy::single_range_in_vec_init, reason = "the tables spell expected selections as lists of ranges")]
 mod tests {
     use super::{GridShape, MarqueeHow, band, edge_scroll, rows_in, selected, tiles_in};
     use dioxus::prelude::Modifiers;

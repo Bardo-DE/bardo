@@ -216,7 +216,7 @@ pub(crate) fn LinearSlider(
                 }
             },
             onpointerup: move |event| {
-                drag.up();
+                let _ = drag.up(); // Nothing here takes a drop: the pointer-up only ends the drag.
                 let velocity = meter.peek().released(ui_core::time::clock::now());
                 meter.set(VelocityMeter::default());
                 let width = track.peek().map_or(0.0, |rect| rect.size.width.0);

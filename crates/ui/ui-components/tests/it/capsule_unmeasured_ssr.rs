@@ -7,7 +7,7 @@ use ui_components::components::chrome::capsule::model::CapsuleSlot;
 use ui_components::components::chrome::capsule::view::Capsule;
 use ui_components::prelude::*;
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn Unmeasured() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, stylesheet: Inject::Host,

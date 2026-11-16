@@ -9,7 +9,7 @@ static ICON: GlobalSignal<Icon> = Signal::global(|| Icon::Trash);
 static EFFECT: GlobalSignal<SymbolEffect> = Signal::global(|| SymbolEffect::NONE);
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance { motion: MOTION(), ..Appearance::default() }, material: Material::Window,

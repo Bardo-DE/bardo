@@ -96,6 +96,7 @@ mod tests {
         (title.to_string(), GroupEntries::Grid(cells), None)
     }
 
+    #[expect(clippy::unnecessary_wraps, reason = "the cases table puts the same `Option` in every row, `None` where nothing resizes")]
     fn resize(title: &str, resize: Resize) -> Option<GroupResize> {
         Some(GroupResize {
             title: title.to_string(),

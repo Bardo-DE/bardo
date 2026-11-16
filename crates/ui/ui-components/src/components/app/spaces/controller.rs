@@ -236,6 +236,9 @@ impl<P: Clone + PartialEq + 'static, R: Clone + Default + PartialEq + 'static> S
     /// Delete `id` (never the last) and write the list. When it was the Space on screen, the one
     /// that takes its place is shown as a switch would: `arrived` hears it, sliding in from the
     /// left. The app also calls `TodayHandle::drop_space(id)`.
+    ///
+    /// # Errors
+    /// [`Refused`] when `id` is the last Space or is not one of them.
     pub fn delete(&self, id: SpaceId) -> Result<Removed<P>, Refused> {
         let was = self.current();
         let removed = self.spaces.write_unchecked().remove(id)?;

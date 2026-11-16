@@ -56,12 +56,18 @@ impl KeySource {
     }
 
     /// The keymap the source gives for its platform, before the app's overrides.
+    ///
+    /// # Errors
+    /// [`SourceError`] when the source's settings cannot be read.
     pub fn load(&self) -> Result<Keymap, SourceError> {
         self.source.load(self.platform)
     }
 
     /// Calls `on_change` whenever the source's settings change, until the `Watch` is dropped, so an
     /// app that builds a keymap of its own from this source can load it again.
+    ///
+    /// # Errors
+    /// [`SourceError`] when the source cannot be watched for changes.
     pub fn watch(&self, on_change: ChangeCallback) -> Result<Watch, SourceError> {
         self.source.watch(on_change)
     }

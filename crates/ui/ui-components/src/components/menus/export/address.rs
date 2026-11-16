@@ -36,6 +36,10 @@ impl AppMenuAddress {
     /// the id is made a legal bus-name element: other characters become `_`, an empty element
     /// is `_`, and one that starts with a digit gets a `_` before it. Ids that only differ in
     /// such characters share an address; apps of one id are one app.
+    ///
+    /// # Errors
+    /// [`AddressError::Empty`] for an empty id; [`AddressError::TooLong`] when the bus name would
+    /// pass 255 bytes.
     pub fn for_app_id(app_id: &str) -> Result<AppMenuAddress, AddressError> {
         if app_id.trim().is_empty() {
             return Err(AddressError::Empty);

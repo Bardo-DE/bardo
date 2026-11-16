@@ -104,7 +104,7 @@ pub(super) fn Field(
                 }
             },
             onpointerup: move |_| {
-                drag.up();
+                let _ = drag.up(); // Nothing here takes a drop: the pointer-up only ends the drag.
             },
             div { class: "ds-field-plane", style: "background-image:url({plane.colours})" }
             div { class: "ds-field-dots", style: "background-image:url({plane.dots})" }

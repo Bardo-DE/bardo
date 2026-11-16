@@ -18,5 +18,8 @@ pub trait SkillFolder {
     fn subdirs(&self, root: &Path) -> Vec<PathBuf>;
 
     /// The text of the file at `path`.
+    ///
+    /// # Errors
+    /// [`FolderError`] when the file cannot be read.
     fn read(&self, path: &Path) -> Result<String, FolderError>;
 }

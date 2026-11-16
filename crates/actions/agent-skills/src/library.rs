@@ -167,6 +167,10 @@ pub struct Loaded(Vec<(SkillId, usize)>);
 
 impl Loaded {
     /// Admits `id` whose body is `bytes` long, or refuses beyond the cap or the budget.
+    ///
+    /// # Errors
+    /// [`LoadRefusal::OverCap`] when the most skills that may be loaded already are;
+    /// [`LoadRefusal::OverBudget`] when the body would not fit what is left of the byte budget.
     pub fn admit(&mut self, id: &SkillId, bytes: usize) -> Result<(), LoadRefusal> {
         if self.0.iter().any(|(i, _)| i == id) {
             return Ok(());

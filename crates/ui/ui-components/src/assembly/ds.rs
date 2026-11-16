@@ -114,7 +114,7 @@ pub fn Ds(
     #[props(default)] tip_delay: TipDelay,
     children: Element,
 ) -> Element {
-    use_keys_provider();
+    let _ = use_keys_provider(); // Provided as context for the controls below; this root needs no handle.
     let signals = use_hook(try_consume_context::<HostSignals>);
     let scale = use_root_scale(scale, signals.map(|signals| (signals.scale)()));
     let chrome = chrome.unwrap_or_else(|| RootChrome::of(material));
@@ -134,12 +134,12 @@ pub fn Ds(
         modality,
         activity,
     });
-    use_space_look_provider(&look);
+    let _ = use_space_look_provider(&look); // Provided as context for the controls below; this root needs no handle.
     let hover = use_hover_hub_provider(env, tip_delay);
     use_title_tips_provider();
     let toasts = use_toast_hub_provider();
     use_context_provider(|| Signal::new(LayerStack::default()));
-    use_overlays_provider();
+    let _ = use_overlays_provider(); // Provided as context for the overlays below; this root needs no handle.
     let frame = FrameVars::of(&look, resolved.scheme);
     let layers = use_frame_layers(&frame.gradient);
     let corner = radius

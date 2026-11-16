@@ -423,6 +423,7 @@ async fn adding_an_account_that_is_already_here_tells_the_app_which_one_it_is() 
 struct NothingPublished;
 
 impl account_http::Http for NothingPublished {
+    #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async; this implementation has nothing to await")]
     async fn send(
         &self,
         _request: account_http::http::Request<Vec<u8>>,

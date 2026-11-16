@@ -183,6 +183,9 @@ fn muting_attr(muting: bool) -> Option<&'static str> {
 }
 
 /// An avatar's description, drawn.
+///
+/// # Errors
+/// Never fails: [`Element`] is a `Result` only for the renderer.
 pub fn face(face: AvatarFace) -> Element {
     rsx! {
         Avatar {

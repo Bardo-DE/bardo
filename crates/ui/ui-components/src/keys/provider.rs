@@ -48,6 +48,9 @@ pub fn use_platform() -> Platform {
 
 /// Declares `app`'s actions once, at its first render; the `Conflict` says why a chord was
 /// refused. Registered again by the keymap after each reload.
+///
+/// # Errors
+/// [`Conflict`] when a chord is refused, as [`Keys::register_actions`] reports it.
 pub fn use_register_actions(
     app: &AppId,
     actions: &[(AppAction, DefaultChord)],
@@ -58,6 +61,9 @@ pub fn use_register_actions(
 
 /// [`use_register_actions`] for an app that forgoes standard actions or gives fallbacks: declares
 /// `registration` (built for `app`) once, at its first render. See `Keys::register`.
+///
+/// # Errors
+/// [`Conflict`] when a row of `registration` is refused, as [`Keys::register`] reports it.
 pub fn use_register(app: &AppId, registration: &Registration) -> Result<(), Conflict> {
     let keys = use_keys();
     use_hook(|| keys.register(app, registration))

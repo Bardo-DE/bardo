@@ -28,6 +28,9 @@ impl NameError {
 
 impl CapabilityName {
     /// `name` as a capability.
+    ///
+    /// # Errors
+    /// [`NameError`] saying why `name` is not allowed.
     pub fn new(name: &str) -> Result<CapabilityName, NameError> {
         let legal = |c: char| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-';
         match (name.is_empty(), name.chars().all(legal)) {
@@ -66,6 +69,9 @@ pub struct PackageName(String);
 
 impl PackageName {
     /// `name` as a package name.
+    ///
+    /// # Errors
+    /// [`NameError`] saying why `name` is not allowed.
     pub fn new(name: &str) -> Result<PackageName, NameError> {
         let plain = |c: char| c.is_ascii_alphanumeric() || matches!(c, '+' | '.' | '_' | '-');
         let starts_plain = name.starts_with(|c: char| c.is_ascii_alphanumeric());
@@ -98,6 +104,9 @@ pub struct Executable(String);
 
 impl Executable {
     /// `name` as an executable file name.
+    ///
+    /// # Errors
+    /// [`NameError`] saying why `name` is not allowed.
     pub fn new(name: &str) -> Result<Executable, NameError> {
         if name.is_empty() || name.contains('/') || name.chars().any(char::is_whitespace) {
             return Err(NameError::new(

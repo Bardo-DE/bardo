@@ -28,7 +28,7 @@ fn Reads() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn Root(setup: Setup) -> Element {
     rsx! {
         Ds {

@@ -9,7 +9,7 @@ pub(crate) mod disclosure_button;
 pub(crate) mod leading;
 pub(crate) mod marks;
 pub mod motion;
-#[allow(clippy::module_inception)] // The layout names the file for its one concept.
+#[expect(clippy::module_inception, reason = "the layout names the file for its one concept")]
 pub mod row;
 pub mod shape;
 pub(crate) mod shape_view;

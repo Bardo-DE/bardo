@@ -39,6 +39,10 @@ pub struct WindowIcon {
 
 impl WindowIcon {
     /// The icon of `rgba` at `width` by `height`, or why the bytes do not fit.
+    ///
+    /// # Errors
+    /// [`IconError::Empty`] when `width` or `height` is zero; [`IconError::Size`] when `rgba` is
+    /// not `width * height` four-byte pixels.
     pub fn new(rgba: Vec<u8>, width: u32, height: u32) -> Result<Self, IconError> {
         if width == 0 || height == 0 {
             return Err(IconError::Empty);

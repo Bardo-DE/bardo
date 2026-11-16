@@ -57,6 +57,10 @@ pub enum FocusError {
 /// Await it from a task of a scope that outlives the ask (the window's shell, when the panel
 /// asking is closing): `spawn(async move { let _ = crate::focus::selector::focus_by_selector(".find input",
 /// Select::All).await; })`.
+///
+/// # Errors
+/// [`FocusError`] when the host has no document to search, cannot read `selector`, finds nothing in
+/// time, stays busy, or cannot focus the element.
 pub async fn focus_by_selector(
     selector: impl Into<String>,
     select: Select,

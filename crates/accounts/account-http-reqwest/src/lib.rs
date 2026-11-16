@@ -89,7 +89,6 @@ impl ReqwestHttp {
 
     /// The request as reqwest sends it, with the exchange's timeout.
     fn outgoing(
-        &self,
         request: Request<Vec<u8>>,
         timeout: Option<Duration>,
     ) -> Result<reqwest::Request, HttpError> {
@@ -112,10 +111,10 @@ impl ReqwestHttp {
         idle: Duration,
         sink: &mut S,
     ) -> Result<StatusCode, HttpError> {
-        let outgoing = self.outgoing(request, None)?;
+        let outgoing = Self::outgoing(request, None)?;
         let mut response = tokio::time::timeout(idle, self.client.execute(outgoing))
             .await
-            .map_err(|_| HttpError::TimedOut)?
+            .ok().ok_or(HttpError::TimedOut)?
             .map_err(fault)?;
         let status = response.status();
         if sink.head(status, response.headers()).is_break() {
@@ -124,7 +123,7 @@ impl ReqwestHttp {
         loop {
             let next = tokio::time::timeout(idle, response.chunk())
                 .await
-                .map_err(|_| HttpError::TimedOut)?
+                .ok().ok_or(HttpError::TimedOut)?
                 .map_err(fault)?;
             let Some(data) = next else {
                 return Ok(status);
@@ -136,7 +135,7 @@ impl ReqwestHttp {
     }
 
     async fn exchange(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
-        let outgoing = self.outgoing(request, Some(self.limits.timeout))?;
+        let outgoing = Self::outgoing(request, Some(self.limits.timeout))?;
         let mut response = self.client.execute(outgoing).await.map_err(fault)?;
         let mut bytes = Vec::new();
         while let Some(data) = response.chunk().await.map_err(fault)? {

@@ -120,6 +120,7 @@ impl<C: Service + 'static, H: RelayHost + 'static> ServerEdits for Hosted<C, H> 
 }
 
 impl<C: Service + 'static, H: RelayHost + 'static> GrantsLink for Hosted<C, H> {
+    #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async; this implementation has nothing to await")]
     async fn candidates(
         &self,
         need: &Need,
@@ -132,6 +133,7 @@ impl<C: Service + 'static, H: RelayHost + 'static> GrantsLink for Hosted<C, H> {
             .candidates(&self.app, need, class, usage))
     }
 
+    #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async; this implementation has nothing to await")]
     async fn availability(
         &self,
         need: &Need,
@@ -144,6 +146,7 @@ impl<C: Service + 'static, H: RelayHost + 'static> GrantsLink for Hosted<C, H> {
             .availability(&self.app, need, class, usage))
     }
 
+    #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async; this implementation has nothing to await")]
     async fn grants(&self) -> Result<Vec<Grant>, GrantsError> {
         Ok(self.service.grants_api().grants(&self.app))
     }
@@ -179,6 +182,7 @@ impl<C: Service + 'static, H: RelayHost + 'static> GrantsLink for Hosted<C, H> {
             .map_err(GrantsError::Refused)
     }
 
+    #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async; this implementation has nothing to await")]
     async fn accounts(&self) -> Result<Vec<ListedAccount>, GrantsError> {
         // No provider names are kept here: the labels are accountd's (`provider_names`).
         Ok(self
@@ -203,6 +207,7 @@ impl<C: Service + 'static, H: RelayHost + 'static> GrantsLink for Hosted<C, H> {
             .map_err(GrantsError::Refused)
     }
 
+    #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async; this implementation has nothing to await")]
     async fn asks_on_use(
         &self,
         provider: &ProviderId,

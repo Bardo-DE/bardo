@@ -27,6 +27,9 @@ impl Lang {
     /// A language from a dictionary name or a locale: `en_US`, `en-US`, `en_US.UTF-8`,
     /// `de_DE@euro` and `pt` all parse; `C`, `POSIX` and anything else without a language code
     /// are [`DsError::Language`].
+    ///
+    /// # Errors
+    /// [`DsError::Language`] when `value` has no language code.
     pub fn parse(value: &str) -> Result<Lang, DsError> {
         let refused = || DsError::Language {
             value: value.to_owned(),

@@ -26,27 +26,27 @@ fn page(chip: Element) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn Static() -> Element {
     page(rsx! { Chip { variant: ChipVariant::Accent, text: "Work" } })
 }
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn Off() -> Element {
     page(rsx! {
         Chip { variant: ChipVariant::Neutral, text: "Work", pressed: Check::Off, onpress: |_| {} }
     })
 }
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn On() -> Element {
     page(rsx! {
         Chip { variant: ChipVariant::Neutral, text: "Work", pressed: Check::On, onpress: |_| {} }
     })
 }
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn Action() -> Element {
     page(rsx! { Chip { variant: ChipVariant::Neutral, text: "Work", onpress: |_| {} } })
 }
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn Dotted() -> Element {
     page(rsx! {
         Chip {
@@ -56,13 +56,13 @@ fn Dotted() -> Element {
         }
     })
 }
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn TagDot() -> Element {
     page(rsx! {
         Chip { variant: ChipVariant::Neutral, text: "", dot: ChipDot::Tag(SystemHue::Red) }
     })
 }
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn NamedDot() -> Element {
     page(rsx! {
         Chip {
@@ -74,7 +74,7 @@ fn NamedDot() -> Element {
         }
     })
 }
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn Removable() -> Element {
     page(
         rsx! { Chip { variant: ChipVariant::Label(LabelHue::Blue), text: "Work", onremove: |()| {} } },

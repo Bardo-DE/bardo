@@ -59,7 +59,9 @@ pub fn use_swipe_glue(on: bool, metrics: SwipeMetrics, on_dismiss: EventHandler<
 
 impl std::fmt::Debug for SwipeGlue {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("SwipeGlue").field("on", &self.on).finish()
+        f.debug_struct("SwipeGlue")
+            .field("on", &self.on)
+            .finish_non_exhaustive()
     }
 }
 

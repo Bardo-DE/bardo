@@ -104,6 +104,9 @@ impl MimeDb {
     /// Reads `<data folder>/mime/{globs2,aliases,subclasses,icons,generic-icons}` for each data
     /// folder, `data_home` first. Missing files are fine; unreadable or over-8-MiB ones are
     /// skipped and counted.
+    ///
+    /// # Errors
+    /// [`LoadError`] when no data folder has a `globs2` file with a line in it.
     pub fn load(dirs: &XdgDirs) -> Result<Loaded<MimeDb>, LoadError> {
         let mut skipped = 0;
         let texts: Vec<LayerText> = dirs

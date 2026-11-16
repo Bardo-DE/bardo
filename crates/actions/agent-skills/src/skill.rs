@@ -103,17 +103,17 @@ fn use_ref(text: &str) -> Result<ActionRef, SkillFault> {
     let bad = || SkillFault::BadUse(text.to_owned());
     let (app, name) = text.split_once(':').ok_or_else(bad)?;
     Ok(ActionRef {
-        app: AppName::parse(app).map_err(|_| bad())?,
-        name: ActionName::parse(name).map_err(|_| bad())?,
+        app: AppName::parse(app).ok().ok_or_else(bad)?,
+        name: ActionName::parse(name).ok().ok_or_else(bad)?,
     })
 }
 
 fn kind(text: &str) -> Result<EntityKind, SkillFault> {
-    EntityKind::parse(text).map_err(|_| SkillFault::BadKind(text.to_owned()))
+    EntityKind::parse(text).ok().ok_or_else(|| SkillFault::BadKind(text.to_owned()))
 }
 
 fn id(text: &str) -> Result<SkillId, SkillFault> {
-    SkillId::parse(text).map_err(|_| SkillFault::BadId(text.to_owned()))
+    SkillId::parse(text).ok().ok_or_else(|| SkillFault::BadId(text.to_owned()))
 }
 
 /// What `skill.toml` says, checked.
@@ -132,6 +132,10 @@ pub struct Facts {
 }
 
 /// Parses `skill.toml`.
+///
+/// # Errors
+/// [`SkillFault`] when the text is not valid TOML, its `vocab` is not 1, or an id or action
+/// reference in it is not valid.
 pub fn parse_facts(text: &str) -> Result<Facts, SkillFault> {
     let raw: SkillToml = toml::from_str(text).map_err(|e| SkillFault::Toml(e.to_string()))?;
     if raw.vocab != 1 {
@@ -182,6 +186,10 @@ fn unquote(value: &str) -> &str {
 
 /// Parses `SKILL.md`: `---` front matter of `key: value` lines (other keys and indented lines
 /// are skipped, as the open Agent Skills layout allows), then the body.
+///
+/// # Errors
+/// [`SkillFault::NoFrontMatter`] when the text has no `---` front matter;
+/// [`SkillFault::MissingKey`] when it lacks `name` or `description`.
 pub fn parse_doc(text: &str) -> Result<Doc, SkillFault> {
     let text = text.strip_prefix('\u{feff}').unwrap_or(text);
     let mut rows = text.split_inclusive('\n');
@@ -221,6 +229,10 @@ pub fn parse_doc(text: &str) -> Result<Doc, SkillFault> {
 
 /// Joins the two files of the directory named `dir` into a skill, checking the rules of the
 /// format: ids agree, sizes, non-empty body.
+///
+/// # Errors
+/// [`SkillFault`] when the ids do not agree with `dir`, the description is too long, the body is
+/// empty or the body is too large.
 pub fn assemble(dir: &str, facts: Facts, doc: Doc, origin: Origin) -> Result<Skill, SkillFault> {
     if facts.id.as_str() != dir || doc.name != dir {
         return Err(SkillFault::IdMismatch {
@@ -252,6 +264,9 @@ pub fn assemble(dir: &str, facts: Facts, doc: Doc, origin: Origin) -> Result<Ski
 }
 
 /// Both files' text to a skill.
+///
+/// # Errors
+/// [`SkillFault`] from [`parse_facts`], [`parse_doc`] or [`assemble`].
 pub fn parse(dir: &str, toml: &str, md: &str, origin: Origin) -> Result<Skill, SkillFault> {
     assemble(dir, parse_facts(toml)?, parse_doc(md)?, origin)
 }

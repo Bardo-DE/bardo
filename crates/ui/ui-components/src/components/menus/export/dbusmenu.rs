@@ -288,6 +288,10 @@ impl MenuTree {
 
     /// What `Event(id, event_id)` asks of the app: a click on an enabled command item runs its
     /// command; opening, closing and hovering do nothing; a click on a submenu does nothing.
+    ///
+    /// # Errors
+    /// [`EventError`] when no item has `id`, the item is disabled, or the event is not one of the
+    /// protocol's.
     pub fn event(&self, id: NodeId, event_id: &str) -> Result<Dispatch, EventError> {
         let kind = EventKind::parse(event_id);
         let node = match id {

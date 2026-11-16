@@ -117,6 +117,9 @@ pub fn RichText(
 }
 
 /// `body` drawn: each run in its tone, each link as `a.ds-run-link` reporting to `on_link`.
+///
+/// # Errors
+/// Never fails: [`Element`] is a `Result` only for the renderer.
 pub fn rich(body: &Rich, on_link: Option<EventHandler<String>>) -> Element {
     let drawn: Vec<Element> = body
         .0

@@ -15,7 +15,7 @@ struct Setup {
     host: Option<Scale>,
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn Root(setup: Setup) -> Element {
     if let Some(scale) = setup.host {
         use_context_provider(|| HostSignals {

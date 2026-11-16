@@ -59,6 +59,10 @@ impl<T: Transport> Memory<T> {
     }
 
     /// Sends a request; a [`MemoryReply::Refused`] becomes [`ClientError::Refused`].
+    ///
+    /// # Errors
+    /// [`ClientError`] when the transport fails, or [`ClientError::Refused`] when the daemon
+    /// refuses the request.
     pub async fn ask(&self, request: MemoryRequest) -> Result<MemoryReply, ClientError> {
         match self.transport.call(request).await? {
             MemoryReply::Refused(refusal) => Err(ClientError::Refused(refusal)),
@@ -80,6 +84,10 @@ impl<T: Transport> Memory<T> {
     }
 
     /// Records one event.
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request or the transport fails; an absent daemon
+    /// is [`Recorded::NoMemory`], not an error.
     pub async fn record(&self, record: Record) -> Result<Recorded, ClientError> {
         self.write(MemoryRequest::Record(record)).await
     }
@@ -89,6 +97,9 @@ impl<T: Transport> Memory<T> {
     /// `Refused(SpaceLocked | SpaceFull | NotKept(_) | Unavailable)`, and an absent daemon is
     /// `Transport(Absent)`. A writer that must not act before the event is safe (a taint entry
     /// ahead of a reveal) fails closed on any `Err`.
+    ///
+    /// # Errors
+    /// [`ClientError`] on any failure, as described above; the event is durable only on `Ok`.
     pub async fn record_durable(&self, record: Record) -> Result<Ack, ClientError> {
         match self.ask(MemoryRequest::RecordDurable(record)).await? {
             MemoryReply::Durable(ack) => Ok(ack),
@@ -98,6 +109,10 @@ impl<T: Transport> Memory<T> {
 
     /// The next events of one stream in append order, with bodies when asked and a cursor to
     /// resume from (`page.next`, passed as the next query's `after`).
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request, the transport fails, or the reply is
+    /// not the one this request gets.
     pub async fn entries(
         &self,
         space: SpaceId,
@@ -110,21 +125,37 @@ impl<T: Transport> Memory<T> {
     }
 
     /// Records several events in order.
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request or the transport fails; an absent daemon
+    /// is [`Recorded::NoMemory`], not an error.
     pub async fn record_batch(&self, records: Vec<Record>) -> Result<Recorded, ClientError> {
         self.write(MemoryRequest::RecordBatch(records)).await
     }
 
     /// Says why a file changed.
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request or the transport fails; an absent daemon
+    /// is [`Recorded::NoMemory`], not an error.
     pub async fn explain_file(&self, claim: FileWhyClaim) -> Result<Recorded, ClientError> {
         self.write(MemoryRequest::ExplainFile(claim)).await
     }
 
     /// Marks or unmarks a thing.
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request or the transport fails; an absent daemon
+    /// is [`Recorded::NoMemory`], not an error.
     pub async fn mark(&self, mark: MarkRequest) -> Result<Recorded, ClientError> {
         self.write(MemoryRequest::Mark(mark)).await
     }
 
     /// Searches a Space.
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request, the transport fails, or the reply is
+    /// not the one this request gets.
     pub async fn search(&self, query: RecallQuery) -> Result<Vec<RecallHit>, ClientError> {
         match self.ask(MemoryRequest::Search(query)).await? {
             MemoryReply::Hits(hits) => Ok(hits),
@@ -133,6 +164,10 @@ impl<T: Transport> Memory<T> {
     }
 
     /// Automatic recall for one turn: ranked hits whose text costs at most the query's budget.
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request, the transport fails, or the reply is
+    /// not the one this request gets.
     pub async fn inject(&self, query: InjectQuery) -> Result<Vec<RecallHit>, ClientError> {
         match self.ask(MemoryRequest::Inject(query)).await? {
             MemoryReply::Hits(hits) => Ok(hits),
@@ -141,6 +176,10 @@ impl<T: Transport> Memory<T> {
     }
 
     /// Recent activity in a Space, newest first, with labels.
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request, the transport fails, or the reply is
+    /// not the one this request gets.
     pub async fn recent(
         &self,
         space: SpaceId,
@@ -153,6 +192,10 @@ impl<T: Transport> Memory<T> {
     }
 
     /// Lists facts.
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request, the transport fails, or the reply is
+    /// not the one this request gets.
     pub async fn facts(&self, query: FactQuery) -> Result<Vec<FactView>, ClientError> {
         match self.ask(MemoryRequest::Facts(query)).await? {
             MemoryReply::Facts(facts) => Ok(facts),
@@ -161,6 +204,10 @@ impl<T: Transport> Memory<T> {
     }
 
     /// Proposes a fact; it lands active or pending by its label.
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request, the transport fails, or the reply is
+    /// not the one this request gets.
     pub async fn propose(
         &self,
         space: SpaceId,
@@ -173,6 +220,10 @@ impl<T: Transport> Memory<T> {
     }
 
     /// The Spaces.
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request, the transport fails, or the reply is
+    /// not the one this request gets.
     pub async fn spaces(&self) -> Result<Vec<SpaceSummary>, ClientError> {
         match self.ask(MemoryRequest::Spaces).await? {
             MemoryReply::Spaces(spaces) => Ok(spaces),
@@ -181,6 +232,10 @@ impl<T: Transport> Memory<T> {
     }
 
     /// One Space's status.
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request, the transport fails, or the reply is
+    /// not the one this request gets.
     pub async fn status(&self, space: SpaceId) -> Result<SpaceStatus, ClientError> {
         match self.ask(MemoryRequest::Status(space)).await? {
             MemoryReply::Status(status) => Ok(status),
@@ -189,6 +244,10 @@ impl<T: Transport> Memory<T> {
     }
 
     /// A page of the timeline.
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request, the transport fails, or the reply is
+    /// not the one this request gets.
     pub async fn timeline(
         &self,
         space: SpaceId,
@@ -201,6 +260,10 @@ impl<T: Transport> Memory<T> {
     }
 
     /// What a forget would remove.
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request, the transport fails, or the reply is
+    /// not the one this request gets.
     pub async fn plan_forget(
         &self,
         space: SpaceId,
@@ -213,6 +276,10 @@ impl<T: Transport> Memory<T> {
     }
 
     /// Applies a plan.
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request, the transport fails, or the reply is
+    /// not the one this request gets.
     pub async fn forget(&self, token: PlanToken) -> Result<ForgetReport, ClientError> {
         match self.ask(MemoryRequest::Forget(token)).await? {
             MemoryReply::Forgot(report) => Ok(report),
@@ -221,6 +288,10 @@ impl<T: Transport> Memory<T> {
     }
 
     /// Pending facts.
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request, the transport fails, or the reply is
+    /// not the one this request gets.
     pub async fn pending(&self, space: SpaceId) -> Result<Vec<FactView>, ClientError> {
         match self.ask(MemoryRequest::Pending(space)).await? {
             MemoryReply::Pending(facts) => Ok(facts),
@@ -229,6 +300,10 @@ impl<T: Transport> Memory<T> {
     }
 
     /// Keeps or discards a pending fact.
+    ///
+    /// # Errors
+    /// [`ClientError`] when the daemon refuses the request, the transport fails, or the reply is
+    /// not the one this request gets.
     pub async fn settle(&self, fact: FactId, settlement: Settlement) -> Result<(), ClientError> {
         match self.ask(MemoryRequest::Settle(fact, settlement)).await? {
             MemoryReply::Ok => Ok(()),

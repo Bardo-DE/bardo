@@ -19,6 +19,9 @@ pub struct ImageSource(pub String);
 impl ImageSource {
     /// An absolute path as a percent-encoded `file://` URL. A relative path is refused: it has
     /// no meaning as a URL.
+    ///
+    /// # Errors
+    /// [`DsError`] when `path` is relative.
     pub fn file(path: &Path) -> Result<Self, DsError> {
         IconUrl::file(path).map(|url| ImageSource(url.as_str().to_owned()))
     }

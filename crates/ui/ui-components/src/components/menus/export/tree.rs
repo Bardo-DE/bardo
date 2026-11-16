@@ -74,6 +74,9 @@ pub struct MenuTree {
 impl MenuTree {
     /// The tree of `bar`. Ids follow the bar's order and the commands' own ids, so the same bar
     /// is the same tree.
+    ///
+    /// # Errors
+    /// [`TreeError::EmptyCommandId`] when a menu item's command has an empty id.
     pub fn from_bar<T: AppCommand + Clone>(bar: &MenuBarModel<T>) -> Result<MenuTree, TreeError> {
         let mut minter = Minter::default();
         let menus = bar

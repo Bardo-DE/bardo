@@ -13,6 +13,9 @@ impl MimeType {
     pub const FOLDER: &'static str = "inode/directory";
 
     /// `text`, lower-cased, when it is one `type/subtype` pair with no spaces.
+    ///
+    /// # Errors
+    /// [`MimeError`] when `text` is not one `type/subtype` pair without spaces.
     pub fn new(text: &str) -> Result<MimeType, MimeError> {
         let mut parts = text.split('/');
         let shaped = matches!(

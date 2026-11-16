@@ -23,6 +23,9 @@ impl UiManifest {
     /// The file for `app` from `rows`, in the order given. A command listed twice with the same
     /// source and key equivalent (a menu item that is in the bar and in a context menu) is one
     /// row; an interface-only command has one `ui_only` row however many places it is in.
+    ///
+    /// # Errors
+    /// [`UiManifestError::NoApp`] when the app name is blank.
     pub fn new(
         app: IntentsApp,
         rows: impl IntoIterator<Item = CommandRow>,
@@ -71,6 +74,9 @@ impl UiManifest {
     }
 
     /// The file's text, to write as `<AppName>.ui.toml` beside the app's intents manifest.
+    ///
+    /// # Errors
+    /// [`UiManifestError::Write`] when the file cannot be written as TOML.
     pub fn to_toml(&self) -> Result<String, UiManifestError> {
         toml::to_string(self).map_err(|error| UiManifestError::Write(error.to_string()))
     }

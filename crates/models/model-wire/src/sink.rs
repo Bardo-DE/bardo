@@ -61,7 +61,7 @@ impl Framer {
             Framer::Ndjson(decoder) => Ok(decoder.finish().into_iter().collect()),
             Framer::Whole(body) => String::from_utf8(body)
                 .map(|text| vec![text])
-                .map_err(|_| ProviderError::Unreadable("the reply is not UTF-8".into())),
+                .ok().ok_or_else(|| ProviderError::Unreadable("the reply is not UTF-8".into())),
         }
     }
 }

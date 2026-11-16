@@ -17,6 +17,10 @@ pub struct FileName(OsString);
 
 impl FileName {
     /// `name`, when it is a valid file name.
+    ///
+    /// # Errors
+    /// [`NameError`] when `name` is empty, is `.` or `..`, holds a slash or NUL, or is longer than
+    /// a file name may be.
     pub fn new(name: impl Into<OsString>) -> Result<FileName, NameError> {
         let name = name.into();
         let bytes = name.as_encoded_bytes();
@@ -70,6 +74,7 @@ impl FileName {
 
 /// `name` before and after the dot at byte `at`.
 #[cfg(unix)]
+#[expect(clippy::unnecessary_wraps, reason = "the non-Unix twin of this function can fail and the two share one signature")]
 fn halves(name: &OsStr, at: usize) -> Option<(&OsStr, &OsStr)> {
     use std::os::unix::ffi::OsStrExt;
     let bytes = name.as_bytes();

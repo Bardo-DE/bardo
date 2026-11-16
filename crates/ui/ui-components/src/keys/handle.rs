@@ -55,6 +55,9 @@ impl Keys {
 
     /// Declares `app`'s actions with their portable default chords. A thin wrapper over
     /// [`register`](Keys::register) for an app that forgoes nothing and has no fallbacks.
+    ///
+    /// # Errors
+    /// [`Conflict`] when a chord is refused; nothing is registered then.
     pub fn register_actions(
         &self,
         app: &AppId,
@@ -75,6 +78,9 @@ impl Keys {
     ///
     /// A registration replaces the app's earlier one, so an app may register changed defaults
     /// (and the same rows again is a no-op). It is made again after every reload.
+    ///
+    /// # Errors
+    /// [`Conflict`] when a row of `registration` is refused; nothing is registered then.
     pub fn register(&self, app: &AppId, registration: &Registration) -> Result<(), Conflict> {
         let registered = self.state.write_unchecked().register(app, registration);
         if registered.is_ok() {

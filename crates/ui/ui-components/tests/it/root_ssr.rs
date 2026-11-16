@@ -38,7 +38,7 @@ impl Default for Setup {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn Root(setup: Setup) -> Element {
     if setup.modality.is_some() || setup.activity.is_some() {
         use_context_provider(|| HostSignals {

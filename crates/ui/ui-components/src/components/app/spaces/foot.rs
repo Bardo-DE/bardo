@@ -76,7 +76,7 @@ where
                                 selection: id == current,
                                 shortcut: chord.shortcut(index),
                                 onclick: move |()| {
-                                    handle.switch(id);
+                                    let _ = handle.switch(id); // The switch is applied inside; what it returns is for callers that follow it.
                                 },
                             }
                         }

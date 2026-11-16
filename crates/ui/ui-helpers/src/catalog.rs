@@ -152,6 +152,10 @@ fn entry(capability: &str, raw: RawEntry) -> Result<Entry, CatalogError> {
 
 impl Catalog {
     /// Parse a helpers file.
+    ///
+    /// # Errors
+    /// [`CatalogError`] when the text is not TOML of the expected shape, a capability name is not
+    /// valid, or an entry lacks something it needs.
     pub fn parse(text: &str) -> Result<Catalog, CatalogError> {
         let raw: BTreeMap<String, RawEntry> = toml::from_str(text)?;
         let entries = raw
@@ -170,6 +174,10 @@ impl Catalog {
 
     /// The app's helpers file: the first `<dir>/bardo/helpers/<app>.toml` among `data_dirs`
     /// (an `XDG_DATA_DIRS` list, earlier entries first).
+    ///
+    /// # Errors
+    /// [`CatalogError`] when no file for `app` is found, it cannot be read, or it is not a valid
+    /// catalog.
     pub fn load(app: &str, data_dirs: &[PathBuf]) -> Result<Catalog, CatalogError> {
         let file = format!("{app}.toml");
         let found = data_dirs

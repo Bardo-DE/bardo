@@ -201,6 +201,7 @@ fn action(id: &str) -> AppAction {
     AppAction::new(id).expect("an action id")
 }
 
+#[expect(clippy::unnecessary_wraps, reason = "the result is compared with the `Option` that `resolve` returns")]
 fn app_action(id: &str) -> Option<Action> {
     Some(Action::App(action(id)))
 }

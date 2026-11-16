@@ -33,19 +33,19 @@ fn page(busy: BusyLook, availability: Availability, motion: Motion) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn Turning() -> Element {
     page(BusyLook::TurnIcon, Availability::Busy, Motion::Standard)
 }
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn TurningReduced() -> Element {
     page(BusyLook::TurnIcon, Availability::Busy, Motion::Reduced)
 }
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn Spinning() -> Element {
     page(BusyLook::Spinner, Availability::Busy, Motion::Standard)
 }
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
 fn Idle() -> Element {
     page(BusyLook::TurnIcon, Availability::Enabled, Motion::Standard)
 }

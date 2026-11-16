@@ -88,6 +88,7 @@ mod in_process {
 pub struct Absent;
 
 impl Transport for Absent {
+    #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async; this implementation has nothing to await")]
     async fn call(&self, _request: MemoryRequest) -> Result<MemoryReply, TransportError> {
         Err(TransportError::Absent)
     }
@@ -138,6 +139,9 @@ impl DbusTransport {
 
     /// Writes a tar export of `options` to `out` and answers its manifest. `Export` needs a
     /// stream, which `Transport::call` cannot carry, so it has this method of its own.
+    ///
+    /// # Errors
+    /// [`TransportError`] when the request cannot be encoded or sent, or the connection closes.
     pub async fn export(
         &self,
         options: memory_core::ExportOptions,

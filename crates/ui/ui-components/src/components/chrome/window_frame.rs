@@ -157,6 +157,9 @@ impl WindowFrame {
 
 /// The root's content under `frame`: the children alone, or the titlebar, the children in the
 /// window body, and the resize edges.
+///
+/// # Errors
+/// Never fails: [`Element`] is a `Result` only for the renderer.
 pub fn framed(frame: WindowFrame, children: Element) -> Element {
     match frame {
         WindowFrame::None => children,
