@@ -56,7 +56,6 @@ impl OneSwipe {
             (Self::Tracking(s), []) => (Self::Idle, judge(&s, now)),
             (_, []) => (Self::Idle, None),
             (_, _) if held => (Self::Void, None),
-            (Self::Void, _) => (Self::Void, None),
             (Self::Idle, [c]) => (
                 Self::Tracking(Stroke {
                     id: c.id,
@@ -71,6 +70,7 @@ impl OneSwipe {
             (Self::Tracking(s), [c]) if s.id == c.id => {
                 (Self::Tracking(s.moved(c.at, now)).locked(intent, now), None)
             }
+            // `Void` stays void until every finger lifts, as does anything else with fingers.
             _ => (Self::Void, None),
         }
     }
@@ -133,7 +133,10 @@ mod tests {
         for i in 0..n {
             let lock = (i >= 2).then_some(Intent::Scroll(Axis::X));
             let (next, fired) = s.step(
-                &at(dx * i as i32, dy * i as i32),
+                &at(
+                    dx * i32::try_from(i).unwrap(),
+                    dy * i32::try_from(i).unwrap(),
+                ),
                 lock,
                 Mono::from_millis(i * 10),
                 false,

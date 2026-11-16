@@ -59,7 +59,7 @@ impl TapG {
     /// Consumes one report's contacts; returns a double-tap when one completes.
     pub fn step(self, contacts: &[Sample], now: Mono, held: bool) -> (Self, Option<TapKind>) {
         match (self, contacts.is_empty()) {
-            (Self::Down { first, td }, true) => lift(first, td, now),
+            (Self::Down { first, td }, true) => lift(first, &td, now),
             (Self::Down { first, td }, false) => (
                 Self::Down {
                     first,
@@ -91,7 +91,7 @@ fn live(g: Gap, now: Mono) -> Option<Gap> {
     (now.since(g.lifted) <= GAP.duration()).then_some(g)
 }
 
-fn lift(first: Option<Gap>, td: Touchdown, now: Mono) -> (TapG, Option<TapKind>) {
+fn lift(first: Option<Gap>, td: &Touchdown, now: Mono) -> (TapG, Option<TapKind>) {
     if !td.is_tap(now) {
         return (TapG::Idle, None);
     }

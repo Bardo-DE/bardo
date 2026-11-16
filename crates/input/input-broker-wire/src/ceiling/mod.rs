@@ -1,8 +1,10 @@
 //! The allow-list: for each kind, the device the service makes and the ceiling every event of a
-//! proxied device passes. Palmrest's three kinds are proxied event by event; keycap's two are made
-//! to a fixed shape and handed over, because a uinput descriptor cannot be made write-only (the
-//! holder can destroy the device and set it up again with any capabilities), so for those the
-//! caller's identity is the gate and the ceiling only shapes the device the service itself makes.
+//! proxied device passes.
+//!
+//! Palmrest's three kinds are proxied event by event; keycap's two are made to a fixed shape and
+//! handed over, because a uinput descriptor cannot be made write-only (the holder can destroy the
+//! device and set it up again with any capabilities), so for those the caller's identity is the
+//! gate and the ceiling only shapes the device the service itself makes.
 
 mod filter;
 mod key_remap_daemon;
@@ -55,6 +57,9 @@ pub enum BadCaps {
 }
 
 /// Cuts `create` to the ceiling of its kind.
+///
+/// # Errors
+/// `BadCaps` when the capabilities asked for are outside the ceiling of the kind.
 pub fn plan(create: &Create) -> Result<Plan, BadCaps> {
     let maker = create.kind().maker();
     match create {

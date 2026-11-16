@@ -1,6 +1,8 @@
-//! The person's gesture settings over the machine's. palmrest is a system service and reads only
-//! `/etc/bardo/mouse-gestures/gestures.toml` itself; the shell sends the text of the person's own
-//! `~/.config/mouse-gestures/gestures.toml` (`ToDaemon::UserConfig`), and the two are merged as tables, key
+//! The person's gesture settings over the machine's.
+//!
+//! palmrest is a system service and reads only `/etc/bardo/mouse-gestures/gestures.toml` itself;
+//! the shell sends the text of the person's own `~/.config/mouse-gestures/gestures.toml`
+//! (`ToDaemon::UserConfig`), and the two are merged as tables, key
 //! by key, the person's value winning. What a person may not set is dropped with a warning, and
 //! what is too big is not read at all. Pure.
 
@@ -9,9 +11,10 @@ use super::lenient::Warning;
 use mouse_gestures_proto::{ACTION_WORD_MAX_BYTES, ACTION_WORDS_MAX, USER_CONFIG_MAX_BYTES};
 use toml::{Table, Value};
 
-/// The machine's settings text with the person's laid over it. `user` is the person's file as the
-/// shell sent it (`None` or blank: no layer). A person's text that is too large, or not TOML, is
-/// left out whole and the machine's settings stand.
+/// The machine's settings text with the person's laid over it.
+///
+/// `user` is the person's file as the shell sent it (`None` or blank: no layer). A person's text
+/// that is too large, or not TOML, is left out whole and the machine's settings stand.
 #[must_use]
 pub fn layered(system: &str, user: Option<&str>) -> (Config, Vec<Warning>) {
     let mut table: Table = system.parse().unwrap_or_default();

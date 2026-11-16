@@ -16,6 +16,12 @@ const FINGER_GAP: i32 = 400;
 /// `fingers` fingers moving `mm` along `axis` (negative: the other way) in `steps` reports
 /// `step_ms` apart from t = 1000 ms, then lifting. Every stroke starts where its first contact
 /// is neither in a side band nor in the rear band, and stays in 12-bit range.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss,
+    reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+)]
 pub fn stroke(fingers: u8, axis: Axis, mm: f64, steps: usize, step_ms: f64) -> Script {
     let (per_mm, start) = match (axis, mm > 0.0) {
         (Axis::X, true) => (X_PER_MM, -850),

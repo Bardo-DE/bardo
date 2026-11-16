@@ -32,6 +32,10 @@ impl UnitsPerMm {
     /// For any integer `u` well inside `i32`, `units(mm(u)) == u` exactly: the round trip is off
     /// by far less than half a unit, so the rounding restores it. That is what keeps the
     /// Magic Mouse bit for bit through the millimetre frame.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "a touchpad distance in units is far inside i32"
+    )]
     #[must_use]
     pub fn units(self, mm: Mm) -> i32 {
         (mm.0 * self.0).round() as i32

@@ -41,6 +41,10 @@ impl Mono {
     }
 
     /// The instant as float seconds.
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "a session's nanosecond count is far below 2^52, so the seconds are exact to the nanosecond"
+    )]
     #[must_use]
     pub fn secs(self) -> f64 {
         self.0 as f64 / 1e9

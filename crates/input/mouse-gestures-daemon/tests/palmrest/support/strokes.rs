@@ -5,6 +5,12 @@ use mouse_gestures_daemon::sensor::magic_mouse::report::{Buttons, Motion};
 use mouse_gestures_daemon::touch::RawTouch;
 
 /// A two-finger horizontal stroke: `steps` reports 12 ms apart moving `per` units each.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    clippy::cast_precision_loss,
+    reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+)]
 pub fn pair_stroke(
     s: Script,
     start: f64,
@@ -41,6 +47,13 @@ pub fn swipe_vertical_then_horizontal() -> Script {
 }
 
 /// A tap of `n` fingers from `start`, `down` ms long, reports every 10 ms.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss,
+    reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+)]
 pub fn tap(
     s: Script,
     start: f64,
@@ -74,6 +87,10 @@ pub fn taps(n: u8, gap: f64, first_moved: i32, first_buttons: Buttons) -> Script
     tap(s, 120.0 + gap, 120.0, n, -200, 0, Buttons::NONE)
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+)]
 pub fn one_finger_swipe(duration_ms: f64) -> Script {
     let steps = (duration_ms / 10.0) as i32;
     let s = (0..=steps).fold(Script::default(), |s, i| {

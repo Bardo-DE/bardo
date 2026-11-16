@@ -18,7 +18,7 @@ use mouse_gestures_proto::{Axis, Phase, ToHost};
 /// shell sees it as a gesture that opens and closes without ever beginning, as it always has,
 /// so its Began and Changed have no message while its `MayBegin` and Ended do.
 pub fn host_scroll(e: &StrokeEvent, speed: Count, now: Mono) -> Option<Out> {
-    let (phase, axis, (dx_px, dy_px)) = match e.moment {
+    let (phase, axis, (across, down)) = match e.moment {
         Moment::Announced => (Phase::MayBegin, None, (0.0, 0.0)),
         Moment::Began {
             intent: Intent::Scroll(axis),
@@ -47,8 +47,8 @@ pub fn host_scroll(e: &StrokeEvent, speed: Count, now: Mono) -> Option<Out> {
     Some(Out::Host(ToHost::Scroll {
         gesture: e.gesture,
         phase,
-        dx_px,
-        dy_px,
+        dx_px: across,
+        dy_px: down,
         fingers: e.fingers,
         axis,
         t_ns: now.0,
@@ -64,6 +64,10 @@ fn scroll_axis(intent: Option<Intent>) -> Option<Axis> {
 }
 
 /// The px a scroll's motion makes on its own axis.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a pixel step of one stroke is far inside f32's range and precision"
+)]
 fn scrolled(axis: Axis, motion: Motion, speed: Count, dt_s: f64) -> (f32, f32) {
     match axis {
         Axis::X => (shell::px(motion.x, Axis::X, speed, dt_s) as f32, 0.0),

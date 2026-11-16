@@ -28,7 +28,7 @@ const EMPTY: Slot = Slot {
 /// Everything between two `SYN_REPORT`s.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Slots {
-    slots: Vec<Slot>,
+    entries: Vec<Slot>,
     /// The slot position events apply to; `None` after a slot number out of range.
     current: Option<usize>,
     buttons: Buttons,
@@ -40,7 +40,7 @@ pub struct Slots {
 impl Slots {
     pub fn new(n: usize) -> Self {
         Self {
-            slots: vec![EMPTY; n],
+            entries: vec![EMPTY; n],
             current: Some(0),
             buttons: Buttons::NONE,
             motion: Motion::default(),
@@ -70,8 +70,8 @@ impl Slots {
 
     /// After a drop: every contact is taken as lifted and the next frame starts clean.
     fn resynced(self) -> Self {
-        let slots = self
-            .slots
+        let entries = self
+            .entries
             .iter()
             .map(|s| Slot {
                 tracking: None,
@@ -79,7 +79,7 @@ impl Slots {
             })
             .collect();
         Self {
-            slots,
+            entries,
             motion: Motion::default(),
             dropping: false,
             ..self
@@ -90,10 +90,10 @@ impl Slots {
         if code == ABS_MT_SLOT {
             self.current = usize::try_from(value)
                 .ok()
-                .filter(|&i| i < self.slots.len());
+                .filter(|&i| i < self.entries.len());
             return self;
         }
-        let Some(slot) = self.current.and_then(|i| self.slots.get_mut(i)) else {
+        let Some(slot) = self.current.and_then(|i| self.entries.get_mut(i)) else {
             return self;
         };
         match code {
@@ -135,11 +135,11 @@ impl Slots {
 
     fn frame(self, e: &TimedEvent, res: Resolution) -> (Self, Option<Frame>) {
         let contacts = self
-            .slots
+            .entries
             .iter()
             .filter_map(|s| {
                 s.tracking.map(|id| FrameContact {
-                    id: TouchId((id & 0xff) as u8),
+                    id: TouchId((id & 0xff).to_le_bytes()[0]),
                     at: res.point(s.x, s.y),
                     state: TouchState::Touching,
                     shape: None,

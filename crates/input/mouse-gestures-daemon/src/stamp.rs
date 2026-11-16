@@ -78,6 +78,11 @@ impl StampClock {
     /// Takes one frame's stamp and its arrival time; returns the event time. The Magic Mouse's
     /// ticks go through the fit; a kernel stamp is already on the monotonic clock and stands in
     /// for the arrival time; no stamp is the arrival time. Event time never runs backwards.
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "the prediction is clamped to be non-negative and is a nanosecond time far inside u64"
+    )]
     #[must_use]
     pub fn observe(self, stamp: Option<Stamp>, arrival: Mono) -> (Self, Mono) {
         let raw = match stamp {
@@ -102,6 +107,12 @@ impl StampClock {
 
     /// Unwraps an 18-bit reading: near the fitted prediction when there is a fit, else by
     /// counting wraps between consecutive reports.
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_precision_loss,
+        clippy::cast_sign_loss,
+        reason = "nanosecond times of a session are far below 2^52 and the tick estimate is clamped non-negative"
+    )]
     fn unwrap(&self, raw: u32, arrival: Mono) -> u64 {
         let raw = u64::from(raw) % TICK_SPAN;
         match (&self.fit, self.last_ticks) {
@@ -162,6 +173,10 @@ impl StampClock {
     }
 }
 
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "an unwrapped tick count is far below 2^52, so the float is exact"
+)]
 fn predict(fit: &Fit, ticks: u64) -> f64 {
     fit.k * ticks as f64 + fit.c
 }
@@ -183,6 +198,12 @@ fn nearest(raw: u64, expected: u64) -> u64 {
 
 /// Least-squares line through (ticks, arrival ns), with the p95 residual; `None` when the
 /// samples cannot determine a slope.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss,
+    reason = "sample counts and nanosecond offsets are far below 2^52, the p95 index is inside the residuals, and a residual is not negative"
+)]
 pub fn fit(samples: &[(u64, u64)]) -> Option<Fit> {
     if samples.len() < 2 {
         return None;
@@ -234,6 +255,10 @@ mod tests {
         (clock, out)
     }
 
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "test tick counts are small, exact in f64"
+    )]
     #[test]
     fn steady_ticks_are_trusted_after_ten_seconds() {
         let (clock, out) = run(|i| (i * 7919 % 5) * 100_000, 2000);

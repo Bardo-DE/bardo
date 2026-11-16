@@ -79,6 +79,9 @@ impl MagicMouseHid {
     }
 
     /// One read's bytes to the frames it completes: one or two whole reports.
+    ///
+    /// # Errors
+    /// `SensorError` when `bytes` are not one or two whole touch reports.
     pub fn decode(&mut self, bytes: &[u8]) -> Result<Vec<Frame>, SensorError> {
         Ok(decode::decode(bytes)?.iter().map(lift).collect())
     }

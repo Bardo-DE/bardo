@@ -1,5 +1,7 @@
-//! Where the file lives and how it is read: `/etc/bardo/mouse-gestures/gestures.toml` for the system service
-//! (its `ConfigurationDirectory=`), else `$XDG_CONFIG_HOME/mouse-gestures/gestures.toml` for a tool run
+//! Where the file lives and how it is read.
+//!
+//! `/etc/bardo/mouse-gestures/gestures.toml` for the system service (its
+//! `ConfigurationDirectory=`), else `$XDG_CONFIG_HOME/mouse-gestures/gestures.toml` for a tool run
 //! by a person (22-SETTINGS §2).
 
 use super::file::{Config, parse};
@@ -150,7 +152,11 @@ mod tests {
         assert_eq!(pipe.warnings.len(), 1, "{:?}", pipe.warnings);
 
         std::fs::remove_file(&file).unwrap();
-        std::fs::write(&file, vec![b'#'; FILE_MAX_BYTES as usize + 1]).unwrap();
+        std::fs::write(
+            &file,
+            vec![b'#'; usize::try_from(FILE_MAX_BYTES).unwrap() + 1],
+        )
+        .unwrap();
         let huge = load(Some(&dir));
         assert_eq!(huge.config, Config::default());
         assert_eq!(huge.warnings.len(), 1, "{:?}", huge.warnings);

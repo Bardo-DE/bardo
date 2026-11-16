@@ -58,7 +58,7 @@ impl<S: Session> UinputEmitter<S> {
         if events.is_empty() {
             return Ok(());
         }
-        let batch: Vec<Event> = events.iter().map(wire_event).collect();
+        let batch: Vec<Event> = events.iter().copied().map(wire_event).collect();
         match self.session.send(device, &batch) {
             Ok(Sent::Queued) => Ok(()),
             Ok(Sent::Dropped) => {
@@ -98,7 +98,7 @@ fn key_codes(combos: &[KeyCombo]) -> Vec<u16> {
     codes
 }
 
-fn wire_event(e: &InputEvent) -> Event {
+fn wire_event(e: InputEvent) -> Event {
     Event::new(e.kind, e.code, e.value)
 }
 
@@ -141,7 +141,7 @@ fn turned_away(reason: Reason) -> String {
         Reason::TooMany => "it already has as many input devices as it may have",
         Reason::BadCaps => "the device it asked for is not one it may add",
         Reason::Unavailable => "the system would not make the device",
-        _ => "it gave no reason",
+        Reason::Unknown => "it gave no reason",
     };
     format!("the input service turned palmrest away: {why}")
 }

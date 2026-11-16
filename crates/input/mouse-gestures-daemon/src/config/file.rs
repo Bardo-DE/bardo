@@ -13,9 +13,13 @@ pub struct Config {
 
 crate::serde_settings!(super::units::Count);
 
-/// Parses the file's text; an error means it is not TOML at all, and nothing in it can be trusted. Unknown keys are ignored (the Settings app owns preserving them, and
-/// a file written before a key was removed still loads); bad values fall back per key and are
-/// listed in the warnings.
+/// Parses the file's text; an error means it is not TOML at all, and nothing in it can be trusted.
+///
+/// Unknown keys are ignored (the Settings app owns preserving them, and a file written before a key
+/// was removed still loads); bad values fall back per key and are listed in the warnings.
+///
+/// # Errors
+/// `toml::de::Error` when `text` is not valid TOML or does not fit the settings.
 pub fn parse(text: &str) -> Result<(Config, Vec<Warning>), toml::de::Error> {
     let root: toml::Table = text.parse()?;
     Ok(parse_table(&root))

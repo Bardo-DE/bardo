@@ -300,13 +300,16 @@ impl Pad {
     fn intent(&self) -> Option<Intent> {
         match self {
             Pad::Up => None,
-            Pad::Down(down) => Some(down.intent),
-            Pad::Lifting { down, .. } => Some(down.intent),
+            Pad::Down(down) | Pad::Lifting { down, .. } => Some(down.intent),
         }
     }
 }
 
 /// Millimetres on the pad in whole pad units.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a touchpad distance in pad units is far inside i32"
+)]
 fn units(mm: f64) -> i32 {
     (mm * f64::from(UNITS_PER_MM)).round() as i32
 }

@@ -19,6 +19,14 @@ pub(super) const Y_MAX: i32 = 2800;
 const UNITS_PER_MM: i32 = 40;
 /// Contact slots (palmrest's `PAD_SLOTS`).
 pub(super) const SLOTS: usize = 5;
+
+/// The highest slot number, as the kernel's signed axis maximum.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    reason = "SLOTS is 5, far inside i32"
+)]
+const LAST_SLOT: i32 = SLOTS as i32 - 1;
 /// The largest tracking id palmrest registers.
 const TRACKING_MAX: i32 = 0xffff;
 
@@ -46,7 +54,7 @@ pub(super) fn plan(maker: Maker) -> Plan {
             abs: vec![
                 x,
                 y,
-                AbsAxis::range(ABS_MT_SLOT, 0, SLOTS as i32 - 1),
+                AbsAxis::range(ABS_MT_SLOT, 0, LAST_SLOT),
                 AbsAxis::range(ABS_MT_TRACKING_ID, 0, TRACKING_MAX),
                 AbsAxis {
                     code: ABS_MT_POSITION_X,

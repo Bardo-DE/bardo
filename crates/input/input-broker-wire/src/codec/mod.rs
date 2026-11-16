@@ -1,6 +1,8 @@
-//! Datagrams to messages and back. The first byte is [`PROTOCOL_VERSION`], the second the message
-//! tag; all integers are little endian. Every decoder is total: bad input is a [`WireError`],
-//! never a panic, and every count is checked against its cap before anything is allocated.
+//! Datagrams to messages and back.
+//!
+//! The first byte is [`PROTOCOL_VERSION`], the second the message tag; all integers are little
+//! endian. Every decoder is total: bad input is a [`WireError`], never a panic, and every count is
+//! checked against its cap before anything is allocated.
 
 mod create;
 mod reader;

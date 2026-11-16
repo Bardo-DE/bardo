@@ -96,6 +96,9 @@ pub const FILE_NAME: &str = "mouse-gestures.settings.toml";
 
 impl Schema {
     /// palmrest's schema: one key per setting of [`Config`].
+    ///
+    /// # Panics
+    /// never: every field of `Config` is a plain value or table.
     #[must_use]
     pub fn palmrest() -> Schema {
         let defaults = toml::Value::try_from(Config::default())
@@ -109,6 +112,9 @@ impl Schema {
     }
 
     /// The file's text.
+    ///
+    /// # Panics
+    /// never: a schema is strings, integers and tables.
     #[must_use]
     pub fn to_toml(&self) -> String {
         toml::to_string(self).expect("a schema is strings, integers and tables")

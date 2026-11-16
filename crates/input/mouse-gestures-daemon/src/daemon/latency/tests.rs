@@ -37,7 +37,7 @@ fn record(ns: u64, touches: Vec<RawTouch>) -> Record {
 }
 
 #[test]
-#[ignore]
+#[ignore = "a timing benchmark, run on demand"]
 fn ten_thousand_reports_stay_under_two_ms_at_p95() {
     // Strokes of one and two fingers, 11 ms apart, lifting every 60 reports.
     let records: Vec<Record> = (0..10_000u64)

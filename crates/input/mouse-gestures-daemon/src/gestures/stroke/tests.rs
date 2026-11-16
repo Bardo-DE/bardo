@@ -52,7 +52,7 @@ fn changes(events: &[Event]) -> Vec<Motion> {
 #[test]
 fn locking_drops_the_pending_motion_and_hands_it_on_as_the_lead() {
     let frames: Vec<_> = (0..10)
-        .map(|i| (10 + i * 8, one(0, i as i32 * 10)))
+        .map(|i| (10 + i * 8, one(0, i32::try_from(i).unwrap() * 10)))
         .collect();
     let (rec, events) = run(Recogniser::default(), &frames);
     assert_eq!(rec.intent(), Some(Intent::Scroll(Axis::Y)));
@@ -76,7 +76,9 @@ fn locking_drops_the_pending_motion_and_hands_it_on_as_the_lead() {
 
 #[test]
 fn two_fingers_sideways_are_a_space_swipe_and_two_fingers_up_and_down_scroll() {
-    let sideways: Vec<_> = (0..12).map(|i| (i * 8, two(i as i32 * 10, 0))).collect();
+    let sideways: Vec<_> = (0..12)
+        .map(|i| (i * 8, two(i32::try_from(i).unwrap() * 10, 0)))
+        .collect();
     let (rec, events) = run(Recogniser::default(), &sideways);
     assert_eq!(rec.intent(), Some(Intent::SpaceSwipe));
     let began = events
@@ -92,14 +94,18 @@ fn two_fingers_sideways_are_a_space_swipe_and_two_fingers_up_and_down_scroll() {
     assert!(!moved.is_empty());
     assert!(moved.iter().all(|m| m.x.0 > 0.0));
 
-    let down: Vec<_> = (0..12).map(|i| (i * 8, two(0, i as i32 * 10))).collect();
+    let down: Vec<_> = (0..12)
+        .map(|i| (i * 8, two(0, i32::try_from(i).unwrap() * 10)))
+        .collect();
     let (rec, _) = run(Recogniser::default(), &down);
     assert_eq!(rec.intent(), Some(Intent::Scroll(Axis::Y)));
 }
 
 #[test]
 fn one_finger_sideways_scrolls() {
-    let frames: Vec<_> = (0..12).map(|i| (i * 8, one(i as i32 * 10, 0))).collect();
+    let frames: Vec<_> = (0..12)
+        .map(|i| (i * 8, one(i32::try_from(i).unwrap() * 10, 0)))
+        .collect();
     let (rec, _) = run(Recogniser::default(), &frames);
     assert_eq!(rec.intent(), Some(Intent::Scroll(Axis::X)));
 }
@@ -125,9 +131,11 @@ fn a_pause_unlocks_on_the_next_delta() {
 #[test]
 fn a_pause_does_not_end_a_swipe() {
     let across = |i: i32| two(i * 10, 0);
-    let before: Vec<_> = (0..12).map(|i| (i as u64 * 8, across(i))).collect();
+    let before: Vec<_> = (0..12)
+        .map(|i| (u64::try_from(i).unwrap() * 8, across(i)))
+        .collect();
     let after: Vec<_> = (12..24)
-        .map(|i| (400 + i as u64 * 8, across(i)))
+        .map(|i| (400 + u64::try_from(i).unwrap() * 8, across(i)))
         .chain([(1000, vec![])])
         .collect();
     let (rec, first) = run(Recogniser::default(), &before);
@@ -185,9 +193,9 @@ fn three_contacts_end_the_stroke_once() {
 #[test]
 fn every_may_begin_is_closed_exactly_once() {
     let strokes: Vec<(u64, Vec<Sample>)> = (0..12)
-        .map(|i| (i * 8, one(0, i as i32 * 10)))
+        .map(|i| (i * 8, one(0, i32::try_from(i).unwrap() * 10)))
         .chain([(100, vec![])])
-        .chain((0..12).map(|i| (200 + i * 8, two(i as i32 * 10, 0))))
+        .chain((0..12).map(|i| (200 + i * 8, two(i32::try_from(i).unwrap() * 10, 0))))
         .chain([(400, vec![])])
         .collect();
     let (_, events) = run(Recogniser::default(), &strokes);
@@ -204,7 +212,9 @@ fn every_may_begin_is_closed_exactly_once() {
 
 #[test]
 fn a_cancel_keeps_the_fingers_and_the_next_decision_opens_a_new_gesture() {
-    let down: Vec<_> = (0..12).map(|i| (i * 8, one(0, i as i32 * 10))).collect();
+    let down: Vec<_> = (0..12)
+        .map(|i| (i * 8, one(0, i32::try_from(i).unwrap() * 10)))
+        .collect();
     let (rec, events) = run(Recogniser::default(), &down);
     let first = events[0].gesture;
     let (rec, cancelled) = rec.cancel();
@@ -221,7 +231,9 @@ fn a_cancel_keeps_the_fingers_and_the_next_decision_opens_a_new_gesture() {
     let (_, after) = rec.cancel();
     assert!(after.is_empty(), "a quiet stroke has nothing to cancel");
 
-    let more: Vec<_> = (12..24).map(|i| (i * 8, one(0, i as i32 * 10))).collect();
+    let more: Vec<_> = (12..24)
+        .map(|i| (i * 8, one(0, i32::try_from(i).unwrap() * 10)))
+        .collect();
     let (rec, _) = run(Recogniser::default(), &down);
     let (rec, _) = rec.cancel();
     let (_, events) = run(rec, &more);
@@ -231,7 +243,9 @@ fn a_cancel_keeps_the_fingers_and_the_next_decision_opens_a_new_gesture() {
 
 #[test]
 fn a_disconnect_cancels_and_forgets() {
-    let down: Vec<_> = (0..12).map(|i| (i * 8, one(0, i as i32 * 10))).collect();
+    let down: Vec<_> = (0..12)
+        .map(|i| (i * 8, one(0, i32::try_from(i).unwrap() * 10)))
+        .collect();
     let (rec, _) = run(Recogniser::default(), &down);
     let (rec, events) = rec.disconnect();
     assert_eq!(phases(&events), [Phase::Cancelled]);

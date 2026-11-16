@@ -1,7 +1,6 @@
 //! The pad session over short sequences: where it lands, how it follows, when it lifts.
 
 use super::*;
-use crate::sensor::units::Mm;
 use mouse_gestures_proto::Axis;
 
 const DOWN: Intent = Intent::Scroll(Axis::Y);
@@ -130,6 +129,10 @@ fn young_contacts_never_lift_to_land_again() {
     );
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "test positions of a few millimetres times 40 units fit i32"
+)]
 #[test]
 fn a_swipe_follows_x_only_and_stops_at_the_edge() {
     let row = |x_mm: f64| PadFrame::Move {

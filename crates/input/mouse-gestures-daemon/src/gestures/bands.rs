@@ -52,7 +52,6 @@ mod tests {
 
     #[test]
     fn band_edges_on_the_magic_mouse() {
-        let b = Bands::resolve(&magic_mouse::surface());
         const CASES: &[(i32, i32, bool)] = &[
             (-900, 0, false),
             (-901, 0, true),
@@ -62,6 +61,7 @@ mod tests {
             (0, 1502, true),
             (0, -1589, false),
         ];
+        let b = Bands::resolve(&magic_mouse::surface());
         for &(x, y, want) in CASES {
             assert_eq!(b.contains(Point::new(x, y)), want, "({x}, {y})");
         }

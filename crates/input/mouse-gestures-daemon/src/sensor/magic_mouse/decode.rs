@@ -34,6 +34,9 @@ pub enum DecodeError {
 }
 
 /// Decodes one hidraw read: a single 0x12 report, or an 0xF7 pair, in order.
+///
+/// # Errors
+/// `DecodeError` when `bytes` are not a touch report, or a pair of them.
 pub fn decode(bytes: &[u8]) -> Result<Vec<Report>, DecodeError> {
     match bytes.first() {
         None => Err(DecodeError::Empty),

@@ -41,6 +41,10 @@ fn recognise(frames: &[(u64, Vec<Sample>)]) -> (Recogniser, Vec<(Mono, StrokeEve
     )
 }
 
+#[expect(
+    clippy::cast_sign_loss,
+    reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+)]
 fn timed(
     n: i32,
     start_ms: u64,

@@ -123,18 +123,18 @@ fn valued<S: Serializer, T: Serialize + ?Sized>(
 }
 
 impl Serialize for Action {
-    fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
-            Self::None => bare(s, "none"),
-            Self::Back => bare(s, "back"),
-            Self::Forward => bare(s, "forward"),
-            Self::Workspace(Workspace::Prev) => bare(s, "workspace_prev"),
-            Self::Workspace(Workspace::Next) => bare(s, "workspace_next"),
-            Self::Workspace(Workspace::Overview) => bare(s, "workspace_overview"),
-            Self::SmartZoom => bare(s, "smart_zoom"),
-            Self::Keys(k) => valued(s, "keys", k),
-            Self::Command(argv) => valued(s, "command", argv),
-            Self::ShellIpc(line) => valued(s, "shell_ipc", line),
+            Self::None => bare(serializer, "none"),
+            Self::Back => bare(serializer, "back"),
+            Self::Forward => bare(serializer, "forward"),
+            Self::Workspace(Workspace::Prev) => bare(serializer, "workspace_prev"),
+            Self::Workspace(Workspace::Next) => bare(serializer, "workspace_next"),
+            Self::Workspace(Workspace::Overview) => bare(serializer, "workspace_overview"),
+            Self::SmartZoom => bare(serializer, "smart_zoom"),
+            Self::Keys(k) => valued(serializer, "keys", k),
+            Self::Command(argv) => valued(serializer, "command", argv),
+            Self::ShellIpc(line) => valued(serializer, "shell_ipc", line),
         }
     }
 }
@@ -199,8 +199,8 @@ impl Default for ActionMap {
 }
 
 impl Serialize for ActionMap {
-    fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
-        s.collect_map(
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        serializer.collect_map(
             Gesture::ALL
                 .iter()
                 .map(|&g| (g.row().0, self.action_for(g))),
@@ -281,9 +281,11 @@ impl Action {
     }
 }
 
-/// What `action` asks of the shell, if anything: the daemon is a system service, with no session
-/// of its own to run a program or a shell command in, so a workspace step, a shell line and a
-/// command all go to the shell, which knows its own desktop.
+/// What `action` asks of the shell, if anything.
+///
+/// The daemon is a system service, with no session of its own to run a program or a shell command
+/// in, so a workspace step, a shell line and a command all go to the shell, which knows its own
+/// desktop.
 pub fn plan(action: &Action) -> Option<HostAction> {
     match action {
         Action::Workspace(step) => Some(HostAction::Workspace(*step)),
@@ -306,7 +308,6 @@ mod tests {
 
     #[test]
     fn defaults_are_the_reference_mapping() {
-        let m = ActionMap::default();
         const CASES: &[(Gesture, Action)] = &[
             (Gesture::OneFingerSwipeRight, Action::Back),
             (Gesture::OneFingerSwipeLeft, Action::Forward),
@@ -324,6 +325,7 @@ mod tests {
             ),
             (Gesture::OneFingerDoubleTap, Action::SmartZoom),
         ];
+        let m = ActionMap::default();
         for (g, a) in CASES {
             assert_eq!(m.action_for(*g), a, "{g:?}");
         }

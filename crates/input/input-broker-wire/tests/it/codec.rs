@@ -28,7 +28,7 @@ fn pointer() -> PointerCaps {
 fn requests() -> Vec<Request> {
     let events = |n: usize| {
         (0..n)
-            .map(|i| Event::new(3, 0x35, i as i32 - 5))
+            .map(|i| Event::new(3, 0x35, i32::try_from(i).unwrap() - 5))
             .collect::<Vec<_>>()
     };
     vec![
@@ -179,7 +179,7 @@ fn a_pointer_label_must_be_short_plain_text() {
     let v = PROTOCOL_VERSION;
     // kind 17, then a label of the given bytes, then the rest of an empty pointer.
     let with_label = |label: &[u8]| {
-        let mut b = vec![v, 1, 17, label.len() as u8];
+        let mut b = vec![v, 1, 17, u8::try_from(label.len()).unwrap()];
         b.extend(label);
         b.extend([0, 0, 0, 0, 0, 0, 0, 0]);
         b
@@ -246,7 +246,7 @@ fn random_bytes_never_panic_either_decoder() {
     };
     for _ in 0..20_000 {
         let len = (next() % 200) as usize;
-        let mut bytes: Vec<u8> = (0..len).map(|_| next() as u8).collect();
+        let mut bytes: Vec<u8> = (0..len).map(|_| next().to_le_bytes()[0]).collect();
         // Half the inputs start like a real message so the bodies are reached.
         if len >= 2 && next() % 2 == 0 {
             bytes[0] = PROTOCOL_VERSION;

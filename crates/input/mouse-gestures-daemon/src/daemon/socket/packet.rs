@@ -40,6 +40,10 @@ pub(super) fn interpret(heard: Result<ToDaemon, String>, peer: Peer) -> Hearing 
 struct Heard {
     subscriber: Subscriber,
     /// The person's settings it sent (`None` inside: blank text takes the layer away).
+    #[expect(
+        clippy::option_option,
+        reason = "`None` is no settings sent, `Some(None)` is blank text taking the layer away"
+    )]
     settings: Option<Option<String>>,
     complaint: Option<String>,
 }

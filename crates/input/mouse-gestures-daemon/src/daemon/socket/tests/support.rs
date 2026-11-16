@@ -70,8 +70,8 @@ pub(super) fn connect(path: &Path) -> OwnedFd {
 }
 
 pub(super) fn recv(fd: &OwnedFd) -> ToHost {
-    let mut buf = [0u8; protocol::MAX_PACKET];
-    let (n, _) = rustix::net::recv(fd, &mut buf, RecvFlags::empty()).unwrap();
+    let mut buf = vec![0u8; protocol::MAX_PACKET];
+    let (n, _) = rustix::net::recv(fd, &mut buf[..], RecvFlags::empty()).unwrap();
     protocol::decode(&buf[..n]).unwrap()
 }
 
@@ -81,9 +81,9 @@ pub(super) fn send(fd: &OwnedFd, m: &ToDaemon) {
 
 /// Everything queued for a subscriber, decoded.
 pub(super) fn queued(fd: &OwnedFd) -> Vec<ToHost> {
-    let mut buf = [0u8; protocol::MAX_PACKET];
+    let mut buf = vec![0u8; protocol::MAX_PACKET];
     let mut out = Vec::new();
-    while let Ok((n, _)) = rustix::net::recv(fd, &mut buf, RecvFlags::DONTWAIT) {
+    while let Ok((n, _)) = rustix::net::recv(fd, &mut buf[..], RecvFlags::DONTWAIT) {
         if n == 0 {
             break;
         }

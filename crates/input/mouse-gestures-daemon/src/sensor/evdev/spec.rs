@@ -28,6 +28,9 @@ impl EvdevSpec {
     ///
     /// A node that does not state its resolution is refused: without it nothing can be said in
     /// millimetres, and guessing one would scale every threshold by the guess.
+    ///
+    /// # Errors
+    /// `EvdevError` when an axis states no resolution or the slot count is out of range.
     pub fn new(x: AbsAxis, y: AbsAxis, slot_max: i32) -> Result<Self, EvdevError> {
         if x.resolution <= 0 || y.resolution <= 0 {
             return Err(EvdevError::NoResolution);

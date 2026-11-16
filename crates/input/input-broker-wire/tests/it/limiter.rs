@@ -20,7 +20,7 @@ fn a_burst_passes_then_the_rate_applies() {
     let passed = verdicts.iter().filter(|v| **v == Admit::Pass).count();
     assert_eq!(passed as u64, EVENT_BURST);
     assert!(
-        verdicts[EVENT_BURST as usize..]
+        verdicts[usize::try_from(EVENT_BURST).unwrap()..]
             .iter()
             .all(|v| *v == Admit::Drop)
     );

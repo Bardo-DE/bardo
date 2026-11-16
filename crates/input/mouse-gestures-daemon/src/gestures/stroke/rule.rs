@@ -55,6 +55,10 @@ impl Params {
 }
 
 /// A threshold on the grid times the P5 multiplier, rounded as the reference feel rounds it.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a threshold in grid units is far inside i32"
+)]
 fn scaled(um: Um, axis: Axis, multiplier: f64) -> i32 {
     (f64::from(units(um, axis)) * multiplier).round() as i32
 }

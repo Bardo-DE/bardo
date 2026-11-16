@@ -7,6 +7,9 @@ use crate::limits::{MAX_DATAGRAM, MAX_EVENTS_PER_DATAGRAM, PROTOCOL_VERSION};
 use crate::message::{DeviceId, Request};
 
 /// Reads one datagram.
+///
+/// # Errors
+/// `WireError` when `bytes` are not a whole, valid request.
 pub fn decode_request(bytes: &[u8]) -> Result<Request, WireError> {
     let mut r = Reader::new(bytes);
     let request = match r.header()? {
@@ -28,6 +31,9 @@ pub fn decode_request(bytes: &[u8]) -> Result<Request, WireError> {
 }
 
 /// Writes one datagram; refuses what the other side would refuse.
+///
+/// # Errors
+/// `WireError` when the request does not fit the wire format.
 pub fn encode_request(request: &Request) -> Result<Vec<u8>, WireError> {
     let mut out = vec![PROTOCOL_VERSION];
     match request {

@@ -45,8 +45,6 @@ fn run(frames: &[(u64, Vec<FrameContact>)]) -> Vec<Vec<u8>> {
 
 #[test]
 fn nibble_table() {
-    let mut t = raw(1, 0, 0, 10, 20);
-    // Nibbles 1 to 4 (in range, making touch, touching) are contacts.
     const CASES: &[(u8, bool)] = &[
         (0, false),
         (1, true),
@@ -56,6 +54,8 @@ fn nibble_table() {
         (5, false),
         (7, false),
     ];
+    let mut t = raw(1, 0, 0, 10, 20);
+    // Nibbles 1 to 4 (in range, making touch, touching) are contacts.
     for &(n, counted) in CASES {
         t.state = TouchState::from_nibble(n);
         assert_eq!(is_contact(&t), counted, "nibble {n}");

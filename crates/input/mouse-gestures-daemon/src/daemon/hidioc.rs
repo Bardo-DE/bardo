@@ -4,7 +4,10 @@
 //! the only unsafety is the promise that the opcode and the argument type match the kernel's
 //! declaration. The block states which declaration it matches. The evdev and uinput ioctls are
 //! in `sys`, through `input-linux`, with no `unsafe`.
-#![allow(unsafe_code)]
+#![allow(
+    unsafe_code,
+    reason = "this module issues the one hidraw ioctl, and no other module may"
+)]
 
 use rustix::fd::AsFd;
 use rustix::ioctl::{self, Opcode, Updater, opcode};

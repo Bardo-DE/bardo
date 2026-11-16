@@ -109,15 +109,21 @@ pub fn encode_record(r: &Record) -> Vec<u8> {
 }
 
 /// Parses a Magic Mouse hidraw recording (v1, or v2 naming hidraw).
+///
+/// # Errors
+/// `RecordingError` when `bytes` are not a Magic Mouse hidraw recording.
 pub fn parse(bytes: &[u8]) -> Result<Vec<Record>, RecordingError> {
     let r = read(bytes)?;
     match r.source {
         RecordedSource::MagicMouseHid => Ok(r.records),
-        other => Err(RecordingError::NotHidraw(other)),
+        other @ RecordedSource::Evdev(_) => Err(RecordingError::NotHidraw(other)),
     }
 }
 
 /// Parses a recording of either version.
+///
+/// # Errors
+/// `RecordingError` when `bytes` are not a recording of either version.
 pub fn read(bytes: &[u8]) -> Result<Recording, RecordingError> {
     if let Some(body) = bytes.strip_prefix(MAGIC.as_slice()) {
         return Ok(Recording {
@@ -150,7 +156,7 @@ fn records(body: &[u8], offset: usize) -> Result<Vec<Record>, RecordingError> {
     while at < body.len() {
         let err = RecordingError::Truncated(offset + at);
         let head = body.get(at..at + 10).ok_or_else(|| err.clone())?;
-        let ns = u64::from_le_bytes(head[..8].try_into().map_err(|_| err.clone())?);
+        let ns = u64::from_le_bytes(head[..8].try_into().ok().ok_or_else(|| err.clone())?);
         let len = usize::from(u16::from_le_bytes([head[8], head[9]]));
         let data = body.get(at + 10..at + 10 + len).ok_or(err)?;
         records.push(Record {

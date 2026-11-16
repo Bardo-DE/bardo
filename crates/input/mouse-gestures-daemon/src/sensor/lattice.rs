@@ -130,6 +130,10 @@ mod tests {
     fn micrometres_round_trip_on_both_axes() {
         for axis in [Axis::X, Axis::Y] {
             for u in -5000..=5000 {
+                #[expect(
+                    clippy::cast_possible_truncation,
+                    reason = "the test steps are within ±5000 units, a few thousand micrometres"
+                )]
                 let um = Um((per_mm(axis).mm(u).0 * 1000.0).round() as i32);
                 assert_eq!(units(um, axis), u, "{u} {axis:?}");
             }

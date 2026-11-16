@@ -45,6 +45,9 @@ pub enum Filter {
 impl Filter {
     /// Judges one event and updates the state it tracks: the event to write (a position outside the
     /// range is clamped into it) or the reason it is not written.
+    ///
+    /// # Errors
+    /// `Denial` when `event` is outside the ceiling of the device or over its rate.
     pub fn check(&mut self, event: Event) -> Result<Event, Denial> {
         match self {
             Self::Touchpad(state) => state.check(event),

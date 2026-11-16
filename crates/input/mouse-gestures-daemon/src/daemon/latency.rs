@@ -74,6 +74,12 @@ pub fn measure(source: &RecordedSource, records: &[Record], cfg: Config) -> Late
 
 fn percentiles(mut v: Vec<Duration>) -> Percentiles {
     v.sort();
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        clippy::cast_precision_loss,
+        reason = "a sample count is far below 2^52 and `q` is in 0..=1, so the rounded index is exact and in range"
+    )]
     let at = |q: f64| {
         v.get(((v.len().max(1) - 1) as f64 * q).round() as usize)
             .copied()

@@ -2,7 +2,7 @@
 
 use super::*;
 use crate::keys::Key;
-use crate::outputs::pad::{CENTRE, PadFrame};
+use crate::outputs::pad::CENTRE;
 use input_broker_client::fake::{FakeSource, OpenMode, SendMode};
 
 const LAND: PadFrame = PadFrame::Land {
@@ -47,7 +47,7 @@ fn a_pad_frame_is_one_batch_of_its_encoded_events() {
     assert_eq!(state.sent.len(), 2, "one datagram per frame");
     assert_eq!(
         state.sent[0].1,
-        land.iter().map(wire_event).collect::<Vec<_>>()
+        land.iter().copied().map(wire_event).collect::<Vec<_>>()
     );
 }
 
@@ -58,7 +58,7 @@ fn a_key_combo_goes_out_whole_to_the_keyboard() {
     let mut e = emitter(&source, std::slice::from_ref(&back));
     e.key(&back).unwrap();
     let state = source.state();
-    let want: Vec<Event> = key_events(&back).iter().map(wire_event).collect();
+    let want: Vec<Event> = key_events(&back).iter().copied().map(wire_event).collect();
     assert_eq!(state.sent.len(), 1);
     assert_eq!(state.sent[0].1, want);
 }

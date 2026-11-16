@@ -69,6 +69,9 @@ impl EvdevMultitouch {
 
     /// One read's bytes to the frames it completes. Frames end at `SYN_REPORT` and may span
     /// reads, so the slot state is carried between calls.
+    ///
+    /// # Errors
+    /// `SensorError` when `bytes` are not whole events.
     pub fn decode(&mut self, bytes: &[u8]) -> Result<Vec<Frame>, SensorError> {
         let events = parse(bytes)?;
         let resolution = self.spec.resolution();

@@ -94,7 +94,9 @@ impl Lock {
                     decision: FREE,
                     last_motion: Some(now),
                 },
-                vec![Signal::Start { fingers: n as u8 }],
+                vec![Signal::Start {
+                    fingers: u8::try_from(n).unwrap_or(u8::MAX),
+                }],
             ),
             _ => (Self::default(), vec![Signal::Reset]),
         }

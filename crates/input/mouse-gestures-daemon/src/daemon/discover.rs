@@ -67,8 +67,8 @@ pub fn find(sys: &Path) -> Option<Found> {
         let info = DeviceInfo {
             name: id.name.clone(),
             path: node.display().to_string(),
-            vendor: id.vendor as u16,
-            product: id.product as u16,
+            vendor: u16::try_from(id.vendor).ok()?,
+            product: u16::try_from(id.product).ok()?,
         };
         Some(Found { node, info, device })
     });
@@ -117,11 +117,6 @@ mod tests {
 
     #[test]
     fn uevent_table() {
-        let mm = "DRIVER=magicmouse\nHID_ID=0005:0000004C:00000269\nHID_NAME=Someone's Magic Mouse\nHID_PHYS=aa\n";
-        let id = parse_uevent(mm).unwrap();
-        assert_eq!((id.bus, id.vendor, id.product), (5, 0x4c, 0x269));
-        assert_eq!(id.name, "Someone's Magic Mouse");
-        assert!(known_device(&id).is_some());
         const OTHERS: &[&str] = &[
             "HID_ID=0003:00000DB0:00000076\nHID_NAME=Lights 004c 0269",
             "HID_ID=0003:0000004C:00000265",
@@ -129,6 +124,11 @@ mod tests {
             "HID_NAME=no id",
             "HID_ID=zz:4c:269",
         ];
+        let mm = "DRIVER=magicmouse\nHID_ID=0005:0000004C:00000269\nHID_NAME=Someone's Magic Mouse\nHID_PHYS=aa\n";
+        let id = parse_uevent(mm).unwrap();
+        assert_eq!((id.bus, id.vendor, id.product), (5, 0x4c, 0x269));
+        assert_eq!(id.name, "Someone's Magic Mouse");
+        assert!(known_device(&id).is_some());
         for text in OTHERS {
             assert!(
                 parse_uevent(text).is_none_or(|i| known_device(&i).is_none()),

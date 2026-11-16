@@ -2,9 +2,10 @@
 
 use crate::gestures::Intent;
 
-/// The conditions under which an intent may be on the pad. The session asks `allows` before it
-/// lands anything and lifts whatever stops being allowed (`Pad::enforce`), so every rule about
-/// the pad being silent is here and nowhere else.
+/// The conditions under which an intent may be on the pad.
+///
+/// The session asks `allows` before it lands anything and lifts whatever stops being allowed
+/// (`Pad::enforce`), so every rule about the pad being silent is here and nowhere else.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Policy {
     /// Who holds the pointer: a scroll is silent on the pad while a host does. A Spaces swipe

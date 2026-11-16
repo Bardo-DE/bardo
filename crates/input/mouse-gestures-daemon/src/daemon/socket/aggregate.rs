@@ -12,5 +12,5 @@ pub(super) fn aggregate(overs: impl IntoIterator<Item = bool>) -> bool {
 /// a desktop command. Only a subscriber saying unlocked, with none saying locked, opens it.
 pub(super) fn aggregate_lock(locks: impl IntoIterator<Item = Option<bool>>) -> bool {
     let said: Vec<bool> = locks.into_iter().flatten().collect();
-    !(said.contains(&false) && !said.contains(&true))
+    !said.contains(&false) || said.contains(&true)
 }

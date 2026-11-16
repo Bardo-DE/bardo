@@ -26,7 +26,16 @@ pub enum OutputError {
 
 /// Where foreign-client frames go.
 pub trait Emitter {
+    /// Sends one frame of the virtual touchpad.
+    ///
+    /// # Errors
+    /// `OutputError` when the virtual device cannot be written.
     fn pad(&mut self, f: &PadFrame) -> Result<(), OutputError>;
+
+    /// Presses and releases one key combination on the virtual keyboard.
+    ///
+    /// # Errors
+    /// `OutputError` when the virtual device cannot be written.
     fn key(&mut self, k: &KeyCombo) -> Result<(), OutputError>;
 }
 

@@ -19,7 +19,7 @@ pub fn encode(r: &Report) -> Vec<u8> {
     out[4..6].copy_from_slice(&r.motion.dy.to_le_bytes());
     if let Some(Stamp::Ticks(t)) = r.stamp {
         let t = t & 0x3ffff;
-        out[11] = ((t & 0x3) << 6) as u8;
+        out[11] = ((t & 0x3) << 6).to_le_bytes()[0];
         out[12] = ((t >> 2) & 0xff) as u8;
         out[13] = ((t >> 10) & 0xff) as u8;
     }
@@ -39,10 +39,12 @@ pub fn encode_double(first: &[u8], second: &[u8]) -> Vec<u8> {
 /// One 8-byte touch block in the kernel's layout.
 #[must_use]
 pub fn encode_touch(t: &RawTouch) -> [u8; 8] {
-    let x = (t.at.x & 0x0fff) as u16;
-    let y = ((-t.at.y) & 0x0fff) as u16;
+    // Masked to 12 bits, so the values are not negative and fit a u16.
+    let x = u16::try_from(t.at.x & 0x0fff).unwrap_or_default();
+    let y = u16::try_from((-t.at.y) & 0x0fff).unwrap_or_default();
     let id = t.id.0 & 0x0f;
-    let orientation = (i16::from(t.orientation) + 32).clamp(0, 63) as u8;
+    let orientation =
+        u8::try_from((i16::from(t.orientation) + 32).clamp(0, 63)).unwrap_or_default();
     [
         (x & 0xff) as u8,
         ((x >> 8) as u8 & 0x0f) | (((y & 0x0f) as u8) << 4),

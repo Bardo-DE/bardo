@@ -36,6 +36,9 @@ impl TimedEvent {
 }
 
 /// Splits one read into events. The kernel only ever returns whole events.
+///
+/// # Errors
+/// `EvdevError::Partial` when `bytes` are not a whole number of events.
 pub fn parse(bytes: &[u8]) -> Result<Vec<TimedEvent>, EvdevError> {
     if !bytes.len().is_multiple_of(EVENT_LEN) {
         return Err(EvdevError::Partial { len: bytes.len() });

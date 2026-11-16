@@ -84,6 +84,10 @@ pub(super) struct Subscribers {
     pub(super) told: Told,
     /// The person's settings to tell the reader at the next `Tick` (`None` inside: the layer is
     /// gone).
+    #[expect(
+        clippy::option_option,
+        reason = "`None` is nothing to tell, `Some(None)` tells that the layer is gone"
+    )]
     pub(super) config: Option<Option<String>>,
 }
 

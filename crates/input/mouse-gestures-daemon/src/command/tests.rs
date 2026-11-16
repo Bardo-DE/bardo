@@ -5,6 +5,10 @@ use crate::replay::Timing;
 use std::path::PathBuf;
 use std::time::Duration;
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "compared with the `Option<Command>` the parser returns in the same table"
+)]
 fn replay(report: ReplayReport, timing: Timing) -> Option<Command> {
     Some(Command::Replay {
         file: PathBuf::from("f"),

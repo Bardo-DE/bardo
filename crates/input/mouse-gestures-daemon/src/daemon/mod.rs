@@ -16,7 +16,7 @@ pub mod source;
 pub(crate) mod sys;
 pub mod uinput;
 
-use crate::config::{self, Loaded};
+use crate::config;
 use crate::error::Error;
 use crate::outputs::Emitter;
 use crate::tracker::Tracker;
@@ -28,7 +28,7 @@ use uinput::{LiveSource, Origin, UinputEmitter};
 /// Runs the daemon, making its virtual devices from `origin`: never returns unless setup fails.
 pub fn run(env: &Env, origin: Origin) -> Result<(), Error> {
     let dir = env.config_dir.clone();
-    let loaded: Loaded = config::load(dir.as_deref());
+    let loaded = config::load(dir.as_deref());
     loaded
         .warnings
         .iter()

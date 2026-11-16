@@ -16,37 +16,58 @@ impl Lcg {
     }
 
     /// An integer in `-k..=k`.
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_possible_wrap,
+        clippy::cast_sign_loss,
+        reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+    )]
     fn jitter(&mut self, k: i64) -> i32 {
         ((self.next() % (2 * k as u64 + 1)) as i64 - k) as i32
     }
 
     /// A report interval around 11 ms (the mouse's rate is unpublished; 90 Hz is assumed).
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+    )]
     fn interval(&mut self) -> f64 {
         9.0 + (self.next() % 5) as f64
     }
 }
 
 /// A one- or two-finger stroke with jittered timing, from `from` moving `v` units per report.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+)]
 fn stroke(
-    s: Script,
+    script: Script,
     rng: &mut Lcg,
     start: f64,
     n: usize,
     fingers: &[(u8, i32, i32)],
-    v: (i32, i32),
+    per_report: (i32, i32),
 ) -> (Script, f64) {
-    let mut t = start;
-    let mut s = s;
+    let mut clock = start;
+    let mut script = script;
     for i in 0..n {
         let i = i as i32;
         let touches = fingers
             .iter()
-            .map(|&(id, x, y)| finger(id, x + v.0 * i + rng.jitter(1), y + v.1 * i + rng.jitter(1)))
+            .map(|&(id, x, y)| {
+                finger(
+                    id,
+                    x + per_report.0 * i + rng.jitter(1),
+                    y + per_report.1 * i + rng.jitter(1),
+                )
+            })
             .collect();
-        s = s.at(t, touches);
-        t += rng.interval();
+        script = script.at(clock, touches);
+        clock += rng.interval();
     }
-    (s.lift(t), t)
+    (script.lift(clock), clock)
 }
 
 pub fn feel_slow() -> Script {
@@ -83,6 +104,10 @@ pub fn feel_fast() -> Script {
     })
 }
 
+#[expect(
+    clippy::cast_sign_loss,
+    reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+)]
 pub fn feel_flicks() -> Script {
     let mut rng = Lcg(3);
     let mut t = 1000.0;

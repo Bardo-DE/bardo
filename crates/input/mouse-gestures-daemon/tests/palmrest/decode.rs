@@ -78,6 +78,11 @@ fn goldens_decode_to_exact_fields_or_errors() {
 
 /// The reference parser's reading of the same bytes, from the frozen goldens
 /// (`tests/fixtures/reference`).
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+)]
 fn reference_touches(name: &str) -> Vec<(u8, i32, i32, u8, u8)> {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join(format!("tests/fixtures/reference/{name}.golden"));

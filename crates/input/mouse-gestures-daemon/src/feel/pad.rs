@@ -1,5 +1,7 @@
-//! Millimetres to the distance the virtual touchpad's fingers move, for every client outside
-//! the shell. libinput reads that pad as a real two-finger touchpad and owns the scroll feel
+//! Millimetres to the distance the virtual touchpad's fingers move, for every client outside the
+//! shell.
+//!
+//! libinput reads that pad as a real two-finger touchpad and owns the scroll feel
 //! (its scaling, its acceleration, its momentum), so the fingers move the same physical
 //! distance as the real fingers: 1:1 in millimetres, with no acceleration curve.
 //!

@@ -57,6 +57,9 @@ impl Sensor {
     }
 
     /// One read's bytes to the frames it completes, in order.
+    ///
+    /// # Errors
+    /// `SensorError` when `bytes` are not whole reports of the sensor.
     pub fn decode(&mut self, bytes: &[u8]) -> Result<Vec<Frame>, SensorError> {
         match self {
             Sensor::MagicMouse(sensor) => sensor.decode(bytes),

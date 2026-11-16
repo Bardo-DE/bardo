@@ -28,7 +28,9 @@ pub const GOLDEN_C: [u8; 8] = [0xff, 0x7f, 0x1e, 0x05, 0x04, 0x3f, 0xfb, 0x70];
 
 fn golden(touches: &[[u8; 8]]) -> Vec<u8> {
     let mut b = GOLDEN_HEADER.to_vec();
-    touches.iter().for_each(|t| b.extend(t));
+    for touch in touches {
+        b.extend(touch);
+    }
     b
 }
 
@@ -38,6 +40,10 @@ fn flick() -> Script {
 }
 
 /// Every fixture, by file name.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of named scenarios; each row is a short builder call"
+)]
 pub fn all() -> Vec<(&'static str, Vec<Record>)> {
     let s = Script::default;
     let one_vertical = drag(|i| vec![unsigned_finger(1, 1000, 1000 + i * 6)], 40);

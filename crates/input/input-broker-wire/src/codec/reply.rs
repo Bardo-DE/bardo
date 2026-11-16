@@ -8,6 +8,9 @@ use crate::limits::{MAX_DATAGRAM, MAX_FEEDBACK_EVENTS, PROTOCOL_VERSION};
 use crate::message::{DeviceId, Reason, Reply};
 
 /// Reads one datagram.
+///
+/// # Errors
+/// `WireError` when `bytes` are not a whole, valid reply.
 pub fn decode_reply(bytes: &[u8]) -> Result<Reply, WireError> {
     let mut r = Reader::new(bytes);
     let reply = match r.header()? {
@@ -34,6 +37,9 @@ fn read_feedback(r: &mut Reader<'_>) -> Result<Event, WireError> {
 }
 
 /// Writes one datagram.
+///
+/// # Errors
+/// `WireError` when the reply does not fit the wire format.
 pub fn encode_reply(reply: &Reply) -> Result<Vec<u8>, WireError> {
     let mut out = vec![PROTOCOL_VERSION];
     match reply {

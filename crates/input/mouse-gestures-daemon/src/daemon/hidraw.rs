@@ -50,7 +50,7 @@ pub fn enable_multitouch(fd: &OwnedFd) -> io::Result<()> {
 /// Waits up to `timeout` for one read of at most `len` bytes: `Ok(None)` when nothing came.
 pub fn read_up_to(fd: &OwnedFd, timeout: Duration, len: usize) -> io::Result<Option<Vec<u8>>> {
     let ts = Timespec {
-        tv_sec: timeout.as_secs() as i64,
+        tv_sec: i64::try_from(timeout.as_secs()).unwrap_or(i64::MAX),
         tv_nsec: i64::from(timeout.subsec_nanos()),
     };
     let mut fds = [PollFd::new(fd, PollFlags::IN)];

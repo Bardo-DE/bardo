@@ -52,6 +52,7 @@ impl Motion {
     }
 
     /// The same motion with each axis passed through `f`.
+    #[must_use]
     pub fn map(self, f: impl Fn(Mm) -> Mm) -> Self {
         Self {
             x: f(self.x),

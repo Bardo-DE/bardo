@@ -43,9 +43,11 @@ pub const MAX_CONNECTIONS_PER_USER: usize = 4;
 /// after a cut and may briefly hold the old and the new, so more than one; outside every other cap.
 pub const MAX_RESERVED_PER_CLIENT: usize = 4;
 
-/// Connections being identified at once from one user (NEW-FA-3): identification reads the peer's
-/// `/proc` entries and can wait on a program the peer controls, so each one has a thread of its own,
-/// and one account may hold two (a client that reconnects while it still has the old connection).
+/// Connections being identified at once from one user (NEW-FA-3).
+///
+/// Identification reads the peer's `/proc` entries and can wait on a program the peer controls, so
+/// each one has a thread of its own, and one account may hold two (a client that reconnects while
+/// it still has the old connection).
 pub const MAX_PENDING_PER_USER: usize = 2;
 /// Connections being identified at once in all: each is a thread beyond the 24 that can hold a slot,
 /// so this is what is left of the unit's thread limit after the accept loop and those 24.

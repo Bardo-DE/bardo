@@ -1,6 +1,7 @@
 //! The keys palmrest's keyboard may register: the name table of palmrest's `keys.rs` plus its four
-//! left-hand modifiers, with how each may be pressed. A test in this crate fails when palmrest's
-//! table has a code this one lacks.
+//! left-hand modifiers, with how each may be pressed.
+//!
+//! A test in this crate fails when palmrest's table has a code this one lacks.
 
 /// How a key may be pressed on palmrest's keyboard.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

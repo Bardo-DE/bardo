@@ -20,6 +20,9 @@ pub fn concerns_us(p: &Path) -> bool {
 
 /// Watches `dir` on a thread of its own and sends every settled reload to `out`. Returns the
 /// watcher, which must be kept alive; dropping it ends the thread.
+///
+/// # Errors
+/// `notify::Error` when `dir` cannot be created or watched.
 pub fn spawn(dir: PathBuf, out: Sender<Loaded>) -> notify::Result<notify::RecommendedWatcher> {
     std::fs::create_dir_all(&dir).map_err(notify::Error::io)?;
     let (tx, rx) = mpsc::channel::<()>();
@@ -42,7 +45,7 @@ fn debounce_loop(rx: &mpsc::Receiver<()>, dir: &Path, out: &Sender<Loaded>) {
     while rx.recv().is_ok() {
         loop {
             match rx.recv_timeout(DEBOUNCE) {
-                Ok(()) => continue,
+                Ok(()) => {}
                 Err(RecvTimeoutError::Timeout) => break,
                 Err(RecvTimeoutError::Disconnected) => return,
             }

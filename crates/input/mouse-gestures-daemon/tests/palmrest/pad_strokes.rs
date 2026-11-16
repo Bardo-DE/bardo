@@ -133,6 +133,10 @@ fn a_claim_silences_the_scroll_pad_but_not_the_shell_stream() {
 
 // ---- the live Spaces swipe ----------------------------------------------------------------
 
+#[expect(
+    clippy::float_cmp,
+    reason = "the pad never moves vertically, so every y is bit-identical to the landing y, not merely close"
+)]
 #[test]
 fn a_two_finger_horizontal_stroke_is_a_four_contact_swipe_that_follows_x_one_to_one() {
     let script = stroke(2, Axis::X, 45.0, 45, 12.0);
@@ -215,6 +219,11 @@ fn a_session_that_locks_mid_swipe_returns_and_lifts_it_at_once_and_the_rest_of_t
 }
 
 /// Two fingers `i` millimetres along a horizontal stroke.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+)]
 fn pair_at(i: usize) -> Vec<RawTouch> {
     let x = -850 + 26 * i as i32;
     vec![finger(1, x, 0), finger(2, x + 400, 0)]
@@ -238,6 +247,10 @@ fn a_swipe_that_pauses_is_still_one_swipe() {
     );
 }
 
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+)]
 #[test]
 fn a_click_during_a_swipe_returns_it_to_its_space_before_it_lifts() {
     let click = |i: usize| {
@@ -335,6 +348,11 @@ fn every_move_keeps_clear_of_the_pad_edges() {
     }
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+)]
 #[test]
 fn the_tool_changes_only_after_every_contact_lifted() {
     // A scroll, then a swipe 100 ms after: the pair is still waiting out its hold.

@@ -1,6 +1,9 @@
 //! Shared by the integration tests: building strokes as reports, the fixture files, and
 //! reading outputs back.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test binary uses a subset of the shared support"
+)]
 
 mod case_points;
 pub mod mm;
@@ -54,6 +57,11 @@ impl Script {
     }
 
     /// A report at `ms` with everything specified.
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+    )]
     pub fn report(
         mut self,
         ms: f64,
@@ -76,6 +84,11 @@ impl Script {
     }
 
     /// Raw bytes as read, at `ms`.
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+    )]
     pub fn raw(mut self, ms: f64, bytes: Vec<u8>) -> Self {
         self.records.push(Record {
             at: Mono((ms * 1e6).round() as u64),
@@ -90,6 +103,10 @@ impl Script {
     }
 
     /// `n + 1` reports from `start` every `step` ms, touches from `f(i)`.
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+    )]
     pub fn frames(
         self,
         start: f64,
@@ -101,6 +118,10 @@ impl Script {
     }
 
     /// The time of the last record, in ms.
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "test fixture values (small counts, millisecond times and micrometre offsets) are far inside the target types"
+    )]
     pub fn end_ms(&self) -> f64 {
         self.records.last().map_or(0.0, |r| r.at.0 as f64 / 1e6)
     }
