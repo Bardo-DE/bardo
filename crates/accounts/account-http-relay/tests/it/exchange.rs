@@ -45,10 +45,8 @@ impl Scripted {
     }
 }
 
-impl Dial for Scripted {
-    type Stream = DuplexStream;
-
-    async fn dial(&self) -> Result<DuplexStream, HttpError> {
+impl Scripted {
+    fn open(&self) -> Result<DuplexStream, HttpError> {
         self.counts.dialled.fetch_add(1, Ordering::SeqCst);
         let (answers, after) = self
             .connections
@@ -59,6 +57,14 @@ impl Dial for Scripted {
         let (end, peer) = tokio::io::duplex(64 * 1024);
         tokio::spawn(serve(peer, answers, after, Arc::clone(&self.counts.seen)));
         Ok(end)
+    }
+}
+
+impl Dial for Scripted {
+    type Stream = DuplexStream;
+
+    fn dial(&self) -> impl Future<Output = Result<DuplexStream, HttpError>> + Send {
+        std::future::ready(self.open())
     }
 }
 

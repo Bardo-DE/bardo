@@ -9,7 +9,6 @@ use hyper::body::{Body, Bytes, Incoming};
 use hyper::client::conn::http1::{self, SendRequest};
 use hyper_util::rt::TokioIo;
 use std::error::Error;
-use std::future::Future;
 use std::io;
 use std::pin::{Pin, pin};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
@@ -18,10 +17,11 @@ use std::time::Duration;
 use tokio::io::{AsyncRead, AsyncWrite, ReadBuf};
 use tokio::time::Instant;
 
-/// How long a relay may stay silent, once a request is waiting on it, before the exchange fails:
-/// the wait for a response head, and the wait between two pieces of a body. A server that stops
-/// answering (a half-open connection the far end never closes) would otherwise stall the dataset
-/// forever.
+/// How long a relay may stay silent, once a request is waiting on it, before the exchange fails.
+///
+/// That is the wait for a response head, and the wait between two pieces of a body. A server
+/// that stops answering (a half-open connection the far end never closes) would otherwise stall
+/// the dataset forever.
 pub const RELAY_IDLE: Duration = Duration::from_secs(60);
 
 type BoxError = Box<dyn Error + Send + Sync>;
@@ -125,9 +125,9 @@ impl<S: AsyncWrite + Unpin> AsyncWrite for Watched<S> {
     fn poll_write(
         mut self: Pin<&mut Self>,
         cx: &mut Context<'_>,
-        bytes: &[u8],
+        buf: &[u8],
     ) -> Poll<io::Result<usize>> {
-        let polled = Pin::new(&mut self.inner).poll_write(cx, bytes);
+        let polled = Pin::new(&mut self.inner).poll_write(cx, buf);
         if matches!(polled, Poll::Ready(Ok(n)) if n > 0) {
             self.progress.touch();
         }
@@ -179,8 +179,10 @@ impl Pool {
     }
 }
 
-/// An [`Http`](account_http::Http) over a [`Dial`]: connections are reused while the server keeps
-/// them open, and a request that finds a kept connection dead, or answered `401` (its credential
+/// An [`Http`](account_http::Http) over a [`Dial`], reusing connections while the server keeps
+/// them open.
+///
+/// A request that finds a kept connection dead, or answered `401` (its credential
 /// lapsed while it sat idle), is sent once more on a new one. A streamed request body is never
 /// sent twice, so [`send_streaming`](Self::send_streaming) always opens a new connection.
 pub struct RelayHttp<D> {
@@ -250,7 +252,7 @@ impl<D: Dial> RelayHttp<D> {
         });
         let (sender, connection) = within(&progress, self.limits.silence, http1::handshake(io))
             .await?
-            .map_err(fault)?;
+            .map_err(|error| fault(&error))?;
         tokio::spawn(async move {
             // The connection ends when the server closes it or the sender is dropped.
             let _ = connection.await;
@@ -270,7 +272,7 @@ impl<D: Dial> RelayHttp<D> {
             conn.sender.send_request(request),
         )
         .await?
-        .map_err(fault)
+        .map_err(|error| fault(&error))
     }
 
     /// The whole response, read from `incoming` within the cap.
@@ -348,7 +350,7 @@ impl RelayBody {
             let frame = within(&conn.progress, self.silence, incoming.frame()).await;
             match frame {
                 Err(timed_out) => return Err(self.broken(timed_out)),
-                Ok(Some(Err(error))) => return Err(self.broken(fault(error))),
+                Ok(Some(Err(error))) => return Err(self.broken(fault(&error))),
                 Ok(Some(Ok(frame))) => {
                     if let Ok(data) = frame.into_data() {
                         return Ok(Some(data));
@@ -390,9 +392,11 @@ fn prepare(request: Request<Outgoing>) -> Result<Request<Outgoing>, HttpError> {
         .uri
         .path_and_query()
         .map_or("/", |target| target.as_str());
-    parts.uri = target.parse::<Uri>().map_err(|_| HttpError::Malformed)?;
+    parts.uri = target.parse::<Uri>().ok().ok_or(HttpError::Malformed)?;
     if let (false, Some(authority)) = (parts.headers.contains_key(HOST), authority) {
-        let host = HeaderValue::from_str(&authority).map_err(|_| HttpError::Malformed)?;
+        let host = HeaderValue::from_str(&authority)
+            .ok()
+            .ok_or(HttpError::Malformed)?;
         parts.headers.insert(HOST, host);
     }
     parts
@@ -403,7 +407,7 @@ fn prepare(request: Request<Outgoing>) -> Result<Request<Outgoing>, HttpError> {
 }
 
 /// What a hyper error comes to: a connection that is gone, a stall, or garbage.
-fn fault(error: hyper::Error) -> HttpError {
+fn fault(error: &hyper::Error) -> HttpError {
     if error.is_timeout() {
         return HttpError::TimedOut;
     }

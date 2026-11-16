@@ -47,15 +47,15 @@ where
         }
     }
 
-    fn linked(&self, origin: Origin) -> Arc<L> {
+    fn linked(&self, origin: &Origin) -> Arc<L> {
         let mut linked = self.linked.lock().unwrap_or_else(PoisonError::into_inner);
-        if linked.len() >= KEPT && !linked.contains_key(&origin) {
+        if linked.len() >= KEPT && !linked.contains_key(origin) {
             linked.clear();
         }
         Arc::clone(
             linked
                 .entry(origin.clone())
-                .or_insert_with(|| Arc::new((self.make)(&origin))),
+                .or_insert_with(|| Arc::new((self.make)(origin))),
         )
     }
 }
@@ -69,28 +69,32 @@ where
     async fn send(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
         // The URI is a `WebUrl`'s text (account_http::request), so it reads back as one.
         let origin = WebUrl::parse(&request.uri().to_string())
-            .map_err(|_| HttpError::Malformed)?
+            .ok()
+            .ok_or(HttpError::Malformed)?
             .origin();
         if origin == self.home_origin {
             return self.home.send(request).await;
         }
-        self.linked(origin).send(request).await
+        self.linked(&origin).send(request).await
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_http::http::{Method, Response};
+    use account_http::http::Method;
     use std::sync::atomic::{AtomicUsize, Ordering};
 
     /// Answers with its own name.
     struct Named(&'static str, Arc<AtomicUsize>);
 
     impl Http for Named {
-        async fn send(&self, _: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
+        fn send(
+            &self,
+            _: Request<Vec<u8>>,
+        ) -> impl Future<Output = Result<Response<Vec<u8>>, HttpError>> + Send {
             self.1.fetch_add(1, Ordering::SeqCst);
-            Ok(Response::new(self.0.as_bytes().to_vec()))
+            std::future::ready(Ok(Response::new(self.0.as_bytes().to_vec())))
         }
     }
 

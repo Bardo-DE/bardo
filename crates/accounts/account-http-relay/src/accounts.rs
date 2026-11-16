@@ -10,11 +10,13 @@ use account_wire::Refusal;
 use base_url::{Origin, UrlScheme};
 use std::sync::Arc;
 
-/// Why a relay could not be had, as the client takes it: access the account has not given yet
-/// (`NeedsConsent`, a whole drive before the person turned it on) is its own error, so the
-/// dataset says so instead of retrying; anything else is a connection that did not open.
+/// Why a relay could not be had, as the client takes it.
+///
+/// Access the account has not given yet (`NeedsConsent`, a whole drive before the person turned
+/// it on) is its own error, so the dataset says so instead of retrying; anything else is a
+/// connection that did not open.
 #[must_use]
-pub fn dial_error(error: GrantsError) -> HttpError {
+pub fn dial_error(error: &GrantsError) -> HttpError {
     match error {
         GrantsError::Refused(Refusal::NeedsConsent) => HttpError::NotGranted,
         _ => HttpError::Unreachable,
@@ -96,8 +98,10 @@ impl<T: GrantsLink> Dial for RelayDial<T> {
                 self.accounts.open_linked(&self.grant, origin).await
             }
         }
-        .map_err(dial_error)?;
-        RelayStream::from_relay(stream).map_err(|_| HttpError::Unreachable)
+        .map_err(|error| dial_error(&error))?;
+        RelayStream::from_relay(stream)
+            .ok()
+            .ok_or(HttpError::Unreachable)
     }
 }
 
@@ -108,12 +112,12 @@ mod tests {
     #[test]
     fn access_not_given_reaches_the_client_as_its_own_error() {
         assert_eq!(
-            dial_error(GrantsError::Refused(Refusal::NeedsConsent)),
+            dial_error(&GrantsError::Refused(Refusal::NeedsConsent)),
             HttpError::NotGranted
         );
         for other in [Refusal::NeedsReauth, Refusal::Denied, Refusal::UnknownGrant] {
             assert_eq!(
-                dial_error(GrantsError::Refused(other)),
+                dial_error(&GrantsError::Refused(other)),
                 HttpError::Unreachable,
                 "{other:?}"
             );

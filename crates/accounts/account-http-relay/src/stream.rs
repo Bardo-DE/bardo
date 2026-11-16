@@ -75,12 +75,12 @@ impl AsyncWrite for RelayStream {
     fn poll_write(
         mut self: Pin<&mut Self>,
         cx: &mut Context<'_>,
-        bytes: &[u8],
+        buf: &[u8],
     ) -> Poll<io::Result<usize>> {
         match &mut self.0 {
             #[cfg(unix)]
-            End::Unix(stream) => Pin::new(stream).poll_write(cx, bytes),
-            End::Memory(end) => end.poll_write(cx, bytes),
+            End::Unix(stream) => Pin::new(stream).poll_write(cx, buf),
+            End::Memory(end) => end.poll_write(cx, buf),
         }
     }
 

@@ -27,12 +27,14 @@ impl Once {
 impl Dial for Once {
     type Stream = RelayStream;
 
-    async fn dial(&self) -> Result<RelayStream, HttpError> {
-        self.0
-            .lock()
-            .unwrap_or_else(PoisonError::into_inner)
-            .take()
-            .ok_or(HttpError::Unreachable)
+    fn dial(&self) -> impl Future<Output = Result<RelayStream, HttpError>> + Send {
+        std::future::ready(
+            self.0
+                .lock()
+                .unwrap_or_else(PoisonError::into_inner)
+                .take()
+                .ok_or(HttpError::Unreachable),
+        )
     }
 }
 
