@@ -54,7 +54,7 @@ recommended wireplumber   cmd:wireplumber
 recommended network-manager unit:NetworkManager.service
 recommended bluez         unit:bluetooth.service
 recommended upower        unit:upower.service
-recommended power-profiles unit:power-profiles-daemon.service
+recommended power-profiles unit:power-profiles-daemon.service file:/usr/share/dbus-1/system-services/org.freedesktop.UPower.PowerProfiles.service
 recommended accounts-service unit:accounts-daemon.service
 recommended ddcutil       cmd:ddcutil
 recommended at-spi        file:/usr/libexec/at-spi-bus-launcher /usr/libexec/at-spi2-core/at-spi-bus-launcher /usr/lib/at-spi-bus-launcher /usr/lib/at-spi2-core/at-spi-bus-launcher
