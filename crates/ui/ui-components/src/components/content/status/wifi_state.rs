@@ -96,10 +96,10 @@ impl Detailed for WifiState {
             (a, b) if a == b => Moment::Rest,
             (Off | Idle | Joining(_) | Joined { .. } | Failed(_), Joining(_)) => Moment::Pending,
             (Joining(_), Joined { .. }) => Moment::Success,
-            (Off | Idle | Joined { .. } | Failed(_), Joined { .. }) => Moment::Change,
+            (Off | Idle | Joined { .. } | Failed(_), Joined { .. })
+            | (Off | Idle | Joining(_) | Joined { .. } | Failed(_), Idle) => Moment::Change,
             (Off | Idle | Joining(_) | Joined { .. } | Failed(_), Failed(_)) => Moment::Failure,
             (Off | Idle | Joining(_) | Joined { .. } | Failed(_), Off) => Moment::Unavailable,
-            (Off | Idle | Joining(_) | Joined { .. } | Failed(_), Idle) => Moment::Change,
         }
     }
 

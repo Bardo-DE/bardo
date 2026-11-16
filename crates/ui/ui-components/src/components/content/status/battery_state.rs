@@ -132,12 +132,12 @@ mod tests {
 
     #[test]
     fn the_fill_is_drawn_in_steps_and_any_charge_shows() {
+        const CASES: &[(u16, u16)] = &[(0, 0), (5, 1), (500, 11), (1000, 22), (1400, 22)];
         let at = |level| BatteryState {
             level: Fraction(level),
             power: BatteryPower::Battery,
             low_at: LowAt::default(),
         };
-        const CASES: &[(u16, u16)] = &[(0, 0), (5, 1), (500, 11), (1000, 22), (1400, 22)];
         for &(level, step) in CASES {
             assert_eq!(at(level).look().step, step, "{level}");
         }

@@ -74,7 +74,8 @@ impl FrameTint {
     #[must_use]
     pub fn of(material: Material, chrome: RootChrome) -> Self {
         match (chrome, material) {
-            (RootChrome::Transparent, _) => FrameTint::None,
+            (RootChrome::Transparent, _)
+            | (RootChrome::Painted, Material::Sheet | Material::Toast) => FrameTint::None,
             (RootChrome::Painted, Material::Window) => FrameTint::Opaque,
             (
                 RootChrome::Painted,
@@ -84,7 +85,6 @@ impl FrameTint {
                 | Material::Osd
                 | Material::Widget,
             ) => FrameTint::Tinted,
-            (RootChrome::Painted, Material::Sheet | Material::Toast) => FrameTint::None,
         }
     }
 

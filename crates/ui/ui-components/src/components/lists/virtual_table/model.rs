@@ -3,6 +3,7 @@
 use crate::components::lists::list::keys::{ListKey, list_key};
 use crate::components::lists::virtual_list::model::roved;
 use crate::components::lists::virtual_table::outline::{ToggleReach, reach_of};
+use crate::host::narrow;
 use crate::stack::roving::{Rove, Step};
 use dioxus::prelude::{Key, Modifiers};
 use keymap::Platform;
@@ -99,7 +100,7 @@ pub(crate) fn key_how(modifiers: Modifiers) -> PickHow {
 /// How many whole rows of `pitch` the viewport `height` shows, at least one.
 pub(crate) fn page_rows(height: f32, pitch: f32) -> usize {
     if pitch > 0.0 && height.is_finite() {
-        ((height / pitch).floor() as usize).max(1)
+        narrow::whole_usize((height / pitch).floor()).max(1)
     } else {
         1
     }
@@ -115,13 +116,13 @@ mod tests {
 
     #[test]
     fn the_cursor_moves_by_a_row_an_end_or_a_page_and_stops_at_the_ends() {
+        // (cursor, rows, key, page, wanted)
+        type Case = (Option<usize>, usize, TableKey, usize, Option<usize>);
         let down = TableKey::Move(Rove::Step(Step::Down));
         let up = TableKey::Move(Rove::Step(Step::Up));
         let end = TableKey::Move(Rove::Edge(Edge::Last));
         let page_down = TableKey::Page(Step::Down);
         let page_up = TableKey::Page(Step::Up);
-        // (cursor, rows, key, page, wanted)
-        type Case = (Option<usize>, usize, TableKey, usize, Option<usize>);
         let cases: &[Case] = &[
             (None, 100, down, 10, Some(0)),
             (Some(5), 100, down, 10, Some(6)),

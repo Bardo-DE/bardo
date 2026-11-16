@@ -234,7 +234,7 @@ pub fn VirtualTable<C: Clone + PartialEq + 'static>(
         onselect,
         onopen,
     };
-    let row_drag = use_row_drag(marquee, scroller);
+    let row_drag = use_row_drag(&marquee, scroller);
     row_drag.aim(onrowdrop.map(|ondrop| RowDragSpec {
         platform: reach.platform,
         pitch,

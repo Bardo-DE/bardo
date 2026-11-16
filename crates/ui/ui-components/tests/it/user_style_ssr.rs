@@ -28,7 +28,14 @@ struct Setup {
     handle: Handle,
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a Dioxus component takes its props by value"
+)]
 fn Root(setup: Setup) -> Element {
     let styles = use_signal(|| Styles {
         desktop: UserStyle(setup.text.clone()),
@@ -128,7 +135,10 @@ fn a_changed_signal_redraws_the_text_and_emptying_it_removes_the_element() {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn Named() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Popover, surface: Some("bar-menu") }
@@ -144,7 +154,10 @@ fn a_named_root_carries_data_surface_and_an_unnamed_one_does_not() {
     assert!(!html("", Inject::Host).contains("data-surface"));
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn ThreeSheets() -> Element {
     let styles = use_signal(|| Styles {
         look: LookStyle(".look{}".to_owned()),
@@ -194,7 +207,10 @@ fn use_my_styles_off_draws_none_of_the_three() {
     assert!(!html.contains(".a{}"), "{html}");
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn Notice() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Popover, stylesheet: Inject::Host,

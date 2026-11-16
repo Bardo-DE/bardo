@@ -398,7 +398,7 @@ mod tests {
         let left = slots.iter().map(|s| s.rect.origin.x).min().unwrap_or(0);
         let right = slots
             .iter()
-            .map(|s| s.rect.origin.x + s.rect.size.w as i32)
+            .map(|s| s.rect.origin.x + i32::try_from(s.rect.size.w).unwrap_or(i32::MAX))
             .max()
             .unwrap_or(0);
         assert!(left >= side && right <= 1872 - side, "{left}..{right}");
@@ -408,7 +408,7 @@ mod tests {
         );
         let bottom = slots
             .iter()
-            .map(|s| s.icon.origin.y + s.icon.size.h as i32)
+            .map(|s| s.icon.origin.y + i32::try_from(s.icon.size.h).unwrap_or(i32::MAX))
             .max()
             .unwrap_or(0);
         assert!(bottom <= 24 + 860 - (860 - 112) * 5 / 100, "{bottom}");
@@ -418,7 +418,8 @@ mod tests {
             .collect();
         row.sort_by_key(|s| s.rect.origin.x);
         for pair in row.windows(2) {
-            let gap = pair[1].rect.origin.x - (pair[0].rect.origin.x + pair[0].rect.size.w as i32);
+            let gap = pair[1].rect.origin.x
+                - (pair[0].rect.origin.x + i32::try_from(pair[0].rect.size.w).unwrap_or(i32::MAX));
             assert!(gap >= 1872 * 20 / 1000, "{gap}");
         }
     }

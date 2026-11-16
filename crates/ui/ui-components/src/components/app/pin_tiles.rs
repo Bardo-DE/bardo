@@ -8,6 +8,7 @@ use crate::components::app::pin_tile::{PinFace, PinStatus, PinTile};
 use crate::components::content::provider_mark::MarkStyle;
 use crate::components::lists::order::moved;
 use crate::host::measure::client_rect;
+use crate::host::narrow;
 use crate::root::common::Common;
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
@@ -91,8 +92,8 @@ const ADD_KEY: &str = "add";
 fn point(event: &PointerEvent) -> Point {
     let at = event.client_coordinates();
     Point {
-        x: Px(at.x as f32),
-        y: Px(at.y as f32),
+        x: Px(narrow::f32_of(at.x)),
+        y: Px(narrow::f32_of(at.y)),
     }
 }
 
@@ -248,6 +249,12 @@ mod tests {
 
     #[test]
     fn a_live_drag_marks_its_source_and_its_target_only() {
+        // (tile key, tile index, state)
+        const CASES: &[(char, usize, DropState)] = &[
+            ('a', 0, DropState::Source),
+            ('b', 1, DropState::Idle),
+            ('c', 2, DropState::Target),
+        ];
         let at = Point {
             x: Px(0.0),
             y: Px(0.0),
@@ -257,12 +264,6 @@ mod tests {
             at,
             target: Some(2),
         };
-        // (tile key, tile index, state)
-        const CASES: &[(char, usize, DropState)] = &[
-            ('a', 0, DropState::Source),
-            ('b', 1, DropState::Idle),
-            ('c', 2, DropState::Target),
-        ];
         for &(key, index, want) in CASES {
             assert_eq!(drop_state(&live, &key, index), want, "{key}");
         }

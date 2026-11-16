@@ -89,20 +89,17 @@ pub(crate) async fn focus_selecting(
     landing: Option<InitialCaret>,
 ) -> Focused {
     let host = use_document_host();
-    match landing {
-        Some(caret) => {
-            let focused = retry_busy(|| host.focus().focus_placing(element, caret)).await;
-            land_owed_caret(element, focused, caret).await;
-            focused
-        }
-        None => {
-            let focused = focus_element(element).await;
-            // Focusing without a caret still leaves a field with text and no editor yet with its
-            // caret at the start once the editor is built, so the next key would land before the
-            // text: it owes the caret after the text, as a placed `End` does.
-            land_owed_caret(element, focused, InitialCaret::End).await;
-            focused
-        }
+    if let Some(caret) = landing {
+        let focused = retry_busy(|| host.focus().focus_placing(element, caret)).await;
+        land_owed_caret(element, focused, caret).await;
+        focused
+    } else {
+        let focused = focus_element(element).await;
+        // Focusing without a caret still leaves a field with text and no editor yet with its
+        // caret at the start once the editor is built, so the next key would land before the
+        // text: it owes the caret after the text, as a placed `End` does.
+        land_owed_caret(element, focused, InitialCaret::End).await;
+        focused
     }
 }
 

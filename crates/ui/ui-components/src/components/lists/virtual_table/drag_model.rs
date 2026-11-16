@@ -6,6 +6,7 @@
 //! rows in view.
 
 use crate::file_drop::drag::DropOperation;
+use crate::host::narrow;
 use dioxus::prelude::Modifiers;
 use keymap::Platform;
 use ui_core::selection::RowSelection;
@@ -68,11 +69,11 @@ pub(crate) fn drop_target(
         return None;
     }
     let at = y / pitch;
-    let row = at.floor() as usize;
+    let row = narrow::whole_usize(at.floor());
     if row >= len {
         return gaps.then_some(RowDropTarget::Between(len));
     }
-    let into = at - row as f32;
+    let into = at - narrow::count_f32(row);
     let nearest = RowDropTarget::Between(row + usize::from(into >= 0.5));
     match (kind(row), gaps) {
         (RowDropKind::Container, false) => Some(RowDropTarget::Onto(row)),

@@ -127,10 +127,11 @@ fn titles(items: &[MenuItem<SpacePick<u8>>]) -> Vec<String> {
     items
         .iter()
         .map(|item| match item {
-            MenuItem::Item { title, .. } | MenuItem::Submenu { title, .. } => title.clone(),
+            MenuItem::Item { title, .. }
+            | MenuItem::Submenu { title, .. }
+            | MenuItem::Header(title)
+            | MenuItem::Info { title, .. } => title.clone(),
             MenuItem::Separator => "-".to_owned(),
-            MenuItem::Header(title) => title.clone(),
-            MenuItem::Info { title, .. } => title.clone(),
             MenuItem::Swatches(row) => row.title.clone(),
         })
         .collect()
@@ -230,6 +231,7 @@ fn desktop() -> Vec<DesktopSpace> {
 
 #[test]
 fn link_rows_list_the_desktop_spaces_and_unlink_shows_only_while_linked() {
+    use ui_core::vocab::Check::{Off, On};
     let desktop = desktop();
     let unlinked = rows::<u8>(
         &SpaceLook::default(),
@@ -278,7 +280,6 @@ fn link_rows_list_the_desktop_spaces_and_unlink_shows_only_while_linked() {
             _ => None,
         })
         .collect();
-    use ui_core::vocab::Check::{Off, On};
     assert_eq!(
         checks,
         [Off, On, Off],

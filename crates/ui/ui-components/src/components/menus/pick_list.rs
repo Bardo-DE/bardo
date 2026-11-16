@@ -145,7 +145,7 @@ pub fn PickList<T: Clone + PartialEq + 'static>(
             action_ran: EventHandler::new(|()| {}),
             size: RowSize::Compact,
         };
-        draw_groups(&shown, current, events, &ListMotion { group: None })
+        draw_groups(&shown, current, &events, &ListMotion { group: None })
     };
     rsx! {
         Popover { anchor, placement, gap: Px(4.0), arrow, onclose, common,

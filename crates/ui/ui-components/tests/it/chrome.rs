@@ -22,7 +22,14 @@ struct Setup {
     radius: Option<Corner>,
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a Dioxus component takes its props by value"
+)]
 fn Root(setup: Setup) -> Element {
     let look = SpaceLook {
         dots: PRESETS[0].dots.to_vec(),

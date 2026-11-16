@@ -313,7 +313,7 @@ mod tests {
 
     #[component]
     fn Script(log: Log) -> Element {
-        let hub: ToastHub = use_toast_hub_provider();
+        let hub = use_toast_hub_provider();
         use_hook(move || {
             let heard = |log: Log| {
                 EventHandler::new(move |token: UndoToken| log.note(format!("heard {}", token.0)))

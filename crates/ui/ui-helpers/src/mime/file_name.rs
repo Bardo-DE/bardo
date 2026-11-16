@@ -74,7 +74,10 @@ impl FileName {
 
 /// `name` before and after the dot at byte `at`.
 #[cfg(unix)]
-#[expect(clippy::unnecessary_wraps, reason = "the non-Unix twin of this function can fail and the two share one signature")]
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "the non-Unix twin of this function can fail and the two share one signature"
+)]
 fn halves(name: &OsStr, at: usize) -> Option<(&OsStr, &OsStr)> {
     use std::os::unix::ffi::OsStrExt;
     let bytes = name.as_bytes();

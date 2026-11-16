@@ -56,8 +56,7 @@ pub(crate) fn hear(
     let bare = modifiers_of(modifiers).is_empty();
     match (key, bare, single_keys) {
         (Key::Escape, true, _) => Heard::Cancel,
-        (Key::Backspace, true, _) => Heard::Clear,
-        (Key::Delete, true, false) => Heard::Clear,
+        (Key::Backspace, true, _) | (Key::Delete, true, false) => Heard::Clear,
         (Key::Tab, true, _) => Heard::Leave,
         _ => match chord_of(platform, key, modifiers)
             .filter(|chord| is_shortcut(single_keys, chord))

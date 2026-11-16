@@ -14,7 +14,8 @@ use std::path::{Path, PathBuf};
 
 /// Every `.rs` file under `dir`, recursively.
 fn sources(dir: &Path) -> Vec<PathBuf> {
-    let entries = std::fs::read_dir(dir).unwrap_or_else(|error| panic!("{dir:?}: {error}"));
+    let entries =
+        std::fs::read_dir(dir).unwrap_or_else(|error| panic!("{}: {error}", dir.display()));
     entries
         .filter_map(Result::ok)
         .map(|entry| entry.path())
@@ -41,7 +42,8 @@ fn exempt(path: &Path) -> bool {
 
 /// The offending lines of one file's non-test code, as `path:line: text`.
 fn offences(path: &Path) -> Vec<String> {
-    let text = std::fs::read_to_string(path).unwrap_or_else(|error| panic!("{path:?}: {error}"));
+    let text =
+        std::fs::read_to_string(path).unwrap_or_else(|error| panic!("{}: {error}", path.display()));
     text.lines()
         .enumerate()
         .take_while(|(_, line)| !line.trim_start().starts_with("#[cfg(test)]"))
@@ -86,7 +88,7 @@ fn ds_reads_time_only_through_ds_time() {
 fn test_sources() -> Vec<PathBuf> {
     let crates = Path::new(env!("CARGO_MANIFEST_DIR")).join("..");
     let tests = std::fs::read_dir(&crates)
-        .unwrap_or_else(|error| panic!("{crates:?}: {error}"))
+        .unwrap_or_else(|error| panic!("{}: {error}", crates.display()))
         .filter_map(Result::ok)
         .map(|entry| entry.path())
         .filter(|path| path.file_name().is_some_and(|name| name != "ui-harness"))
@@ -184,7 +186,9 @@ fn chain_names_a_clock(text: &str, at: usize) -> bool {
 
 /// The calls in one file's code that leave the clock to the default, as `path:line: call`.
 fn clockless(path: &Path) -> Vec<String> {
-    let text = code_of(&std::fs::read_to_string(path).unwrap_or_else(|e| panic!("{path:?}: {e}")));
+    let text = code_of(
+        &std::fs::read_to_string(path).unwrap_or_else(|e| panic!("{}: {e}", path.display())),
+    );
     let place = |at: usize| {
         format!(
             "{}:{}",

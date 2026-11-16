@@ -17,6 +17,7 @@ use crate::components::lists::row::row::Row;
 use crate::components::lists::virtual_list::view::use_cursor_reveal;
 use crate::components::lists::virtual_table::row_pitch;
 use crate::focus::press_focus::on_click;
+use crate::host::narrow;
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use keymap::Platform;
@@ -64,7 +65,7 @@ pub(crate) fn BrowserColumnView<K: Clone + PartialEq + 'static>(
         scroller,
         selection.cursor().filter(|at| *at < rows.len()).map(|at| {
             let span = ScrollSpan {
-                start: at as f32 * pitch.0,
+                start: narrow::count_f32(at) * pitch.0,
                 length: pitch.0,
             };
             (at, span)
@@ -112,7 +113,7 @@ pub(crate) fn BrowserColumnView<K: Clone + PartialEq + 'static>(
                 "aria-hidden": "true",
                 onpointerdown: move |event: PointerEvent| {
                     event.stop_propagation();
-                    let from = Px(event.client_coordinates().x as f32);
+                    let from = Px(narrow::f32_of(event.client_coordinates().x));
                     let mut grab = hear.grab;
                     grab.set(Some(EdgeGrab::new(from, width)));
                 },

@@ -4,6 +4,7 @@
 
 use super::{Picker, dot_index, edit, field};
 use crate::host::measure::client_rect;
+use crate::host::narrow;
 use dioxus::prelude::*;
 use edit::Nudge;
 use std::rc::Rc;
@@ -24,8 +25,8 @@ const NO_THRESHOLD: Px = Px(0.0);
 fn handle_under(look: &SpaceLook, rect: Rect, at: Point) -> Option<usize> {
     look.dots.iter().position(|dot| {
         let (x, y) = field::place(*dot);
-        let cx = rect.left().0 + x as f32 * rect.size.width.0;
-        let cy = rect.top().0 + y as f32 * rect.size.height.0;
+        let cx = rect.left().0 + narrow::f32_of(x) * rect.size.width.0;
+        let cy = rect.top().0 + narrow::f32_of(y) * rect.size.height.0;
         (at.x.0 - cx).hypot(at.y.0 - cy) <= HANDLE_RADIUS
     })
 }
@@ -48,8 +49,8 @@ fn fractions(rect: Rect, at: Point) -> (f64, f64) {
 /// A dioxus client point as a layout point.
 fn point(at: dioxus::html::geometry::ClientPoint) -> Point {
     Point {
-        x: Px(at.x as f32),
-        y: Px(at.y as f32),
+        x: Px(narrow::f32_of(at.x)),
+        y: Px(narrow::f32_of(at.y)),
     }
 }
 

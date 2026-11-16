@@ -88,7 +88,10 @@ mod in_process {
 pub struct Absent;
 
 impl Transport for Absent {
-    #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async; this implementation has nothing to await")]
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn call(&self, _request: MemoryRequest) -> Result<MemoryReply, TransportError> {
         Err(TransportError::Absent)
     }

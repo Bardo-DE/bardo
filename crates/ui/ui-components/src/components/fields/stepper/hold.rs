@@ -79,14 +79,14 @@ impl Machine for StepHold {
         self,
         input: HoldIn,
         at: Stamp,
-        pace: &RepeatPace,
+        params: &RepeatPace,
         &(): &(),
     ) -> (StepHold, Vec<StepDirection>) {
         match (self, input) {
             (_, HoldIn::Press(direction)) => (
                 StepHold::Held {
                     direction,
-                    due: at.after_span(pace.start),
+                    due: at.after_span(params.start),
                 },
                 vec![direction],
             ),
@@ -94,7 +94,7 @@ impl Machine for StepHold {
             (StepHold::Held { direction, due }, HoldIn::Elapsed) if at >= due => (
                 StepHold::Held {
                     direction,
-                    due: at.after_span(pace.every),
+                    due: at.after_span(params.every),
                 },
                 vec![direction],
             ),

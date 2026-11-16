@@ -171,13 +171,16 @@ impl<T: Clone> MenuBarModel<T> {
     /// The Help menu keeps its search first, so the app's items follow its help.
     #[must_use]
     pub fn with_items(self, section: BarSection, items: Vec<MenuItem<T>>) -> Self {
+        let mut items = Some(items).filter(|items| !items.is_empty());
         let menus = self
             .menus
             .into_iter()
             .map(|mut menu| {
-                if menu.section == section && !items.is_empty() {
+                if menu.section == section
+                    && let Some(items) = items.take()
+                {
                     menu.items.push(MenuItem::Separator);
-                    menu.items.extend(items.clone());
+                    menu.items.extend(items);
                 }
                 menu
             })

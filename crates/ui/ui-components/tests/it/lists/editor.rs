@@ -57,6 +57,11 @@ fn the_field_colours_are_the_prototypes_hue_by_chroma_plane() {
         assert_eq!((image.width, image.height), (60, 39), "{scheme:?}");
         assert_eq!((image.depth, image.colour_type), (8, 2), "8-bit RGB");
         for (x, y) in [(0, 0), (30, 19), (59, 38)] {
+            #[expect(
+                clippy::cast_possible_truncation,
+                clippy::cast_precision_loss,
+                reason = "the sample cell is under 60 by 39 and the colour coordinates are small"
+            )]
             let dot = Dot {
                 hue: ((x as f64 + 0.5) / 60.0 * 360.0) as f32,
                 chroma: (1.0 - (y as f64 + 0.5) / 39.0) as f32,

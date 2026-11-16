@@ -104,7 +104,8 @@ impl Session for FakeSession {
         // The same ceiling the real service applies.
         plan(request)
             .map(drop)
-            .ok().ok_or(ClientError::Refused(Reason::BadCaps))?;
+            .ok()
+            .ok_or(ClientError::Refused(Reason::BadCaps))?;
         let device = DeviceId(state.next_id);
         state.next_id = state.next_id.wrapping_add(1);
         match request.kind().delivery() {
@@ -119,7 +120,7 @@ impl Session for FakeSession {
                 state.handed_peers.push(theirs);
                 Ok(Made::Handed { device, fd: ours })
             }
-            _ => Ok(Made::Proxied(device)),
+            Delivery::Proxied => Ok(Made::Proxied(device)),
         }
     }
 

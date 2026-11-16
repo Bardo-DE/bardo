@@ -100,14 +100,14 @@ pub(crate) fn showing(part: Part, glyph: LevelGlyph, value: Fraction) -> bool {
             _,
         ) => true,
         (Part::Slash, LevelGlyph::Volume(muting)) => muting,
-        (Part::Wave1 | Part::Wave2 | Part::Wave3, LevelGlyph::Volume(true)) => false,
-        (Part::Wave1, LevelGlyph::Volume(false)) => waves(value) >= 1,
-        (Part::Wave2, LevelGlyph::Volume(false)) => waves(value) >= 2,
-        (Part::Wave3, LevelGlyph::Volume(false)) => waves(value) >= 3,
-        (
+        (Part::Wave1 | Part::Wave2 | Part::Wave3, LevelGlyph::Volume(true))
+        | (
             Part::Slash | Part::Wave1 | Part::Wave2 | Part::Wave3,
             LevelGlyph::Brightness | LevelGlyph::KeyboardBrightness,
         ) => false,
+        (Part::Wave1, LevelGlyph::Volume(false)) => waves(value) >= 1,
+        (Part::Wave2, LevelGlyph::Volume(false)) => waves(value) >= 2,
+        (Part::Wave3, LevelGlyph::Volume(false)) => waves(value) >= 3,
     }
 }
 

@@ -5,6 +5,7 @@ use crate::components::content::icon_view::IconView;
 use crate::components::lists::collection_view::item::{CollectionItem, Thumbnail};
 use crate::components::lists::collection_view::size::{CollectionSize, ThumbAspect};
 use crate::focus::click::kept_click;
+use crate::host::narrow;
 use dioxus::prelude::*;
 use ui_core::text::clip::Truncate;
 use ui_style::icon::render::{IconPx, IconSize};
@@ -18,13 +19,13 @@ fn picture(thumbnail: &Thumbnail, size: CollectionSize, aspect: ThumbAspect) -> 
         Thumbnail::Icon(source) => rsx! {
             IconView {
                 source: source.clone(),
-                size: IconSize::Px(IconPx(aspect.height(size.thumb()).0 as u8)),
+                size: IconSize::Px(IconPx(narrow::whole_u8(aspect.height(size.thumb()).0))),
             }
         },
         Thumbnail::FileIcon(choice) => rsx! {
             FileIcon {
                 choice: choice.clone(),
-                size: IconSize::Px(IconPx(aspect.height(size.thumb()).0 as u8)),
+                size: IconSize::Px(IconPx(narrow::whole_u8(aspect.height(size.thumb()).0))),
             }
         },
     }

@@ -30,6 +30,10 @@ impl PartialEq for HostProps {
 /// Renders a case inside a scope, so its handlers have a runtime to attach to and a component
 /// that reads the scope (a text field) draws instead of panicking, which dioxus-ssr renders as
 /// nothing: the four text-field goldens were once blessed as one blank line that way.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a Dioxus component takes its props by value"
+)]
 fn host(props: HostProps) -> Element {
     let case = (props.make)();
     rsx! { Scoped { {case} } }

@@ -27,6 +27,7 @@ use crate::components::controls::scrubber::Scrubber;
 use crate::components::controls::slider::Slider;
 use crate::components::controls::slider_model::SliderLook;
 use crate::host::measure::use_rect;
+use crate::host::narrow;
 use crate::root::common::Common;
 use crate::root::surface::ClassedScope;
 use dioxus::prelude::*;
@@ -124,7 +125,7 @@ fn drawn<T>(slots: &[RankedSlot<T>], stage: Option<u32>) -> Vec<&CapsuleSlot<T>>
 
 /// The whole pixels of width the capsule's stage has, once measured.
 fn stage_width(rect: Option<Rect>) -> Option<u32> {
-    rect.map(|rect| rect.size.width.0.floor().max(0.0) as u32)
+    rect.map(|rect| narrow::whole_u32(rect.size.width.0.floor().max(0.0)))
         .filter(|width| *width > 0)
 }
 

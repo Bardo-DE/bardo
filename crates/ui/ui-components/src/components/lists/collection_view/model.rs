@@ -48,8 +48,7 @@ pub(crate) fn collection_key(
         Key::ArrowDown => Some(CollectionKey::Arrow(GridStep::Down)),
         _ => match list_key(key, modifiers)? {
             ListKey::Move(Rove::Edge(edge)) => Some(CollectionKey::Edge(edge)),
-            ListKey::Move(Rove::Step(_)) => None,
-            ListKey::Pick => None,
+            ListKey::Move(Rove::Step(_)) | ListKey::Pick => None,
             ListKey::Jump(text) => Some(CollectionKey::Jump(text)),
         },
     }

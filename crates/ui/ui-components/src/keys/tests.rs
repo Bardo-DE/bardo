@@ -201,7 +201,10 @@ fn action(id: &str) -> AppAction {
     AppAction::new(id).expect("an action id")
 }
 
-#[expect(clippy::unnecessary_wraps, reason = "the result is compared with the `Option` that `resolve` returns")]
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "the result is compared with the `Option` that `resolve` returns"
+)]
 fn app_action(id: &str) -> Option<Action> {
     Some(Action::App(action(id)))
 }
@@ -365,7 +368,7 @@ fn the_handle_sets_overrides_in_a_running_app() {
 #[test]
 fn a_probe_registers_with_forgo_through_the_handle() {
     thread_local! {
-        static TAKEN: RefCell<Option<Option<Action>>> = const { RefCell::new(None) };
+        static TAKEN: RefCell<Vec<Option<Action>>> = const { RefCell::new(Vec::new()) };
     }
     fn forgoing() -> Element {
         let keys = use_keys_provider();
@@ -380,12 +383,12 @@ fn a_probe_registers_with_forgo_through_the_handle() {
                 Modifiers::META,
                 Context::Normal,
             );
-            TAKEN.with(|seen| *seen.borrow_mut() = Some(taken));
+            TAKEN.with(|seen| seen.borrow_mut().push(taken));
         });
         rsx! {}
     }
     let mut dom = VirtualDom::new(forgoing);
     dom.rebuild_in_place();
     let seen = TAKEN.with(|seen| seen.borrow().clone());
-    assert_eq!(seen, Some(app_action("mail.tab")));
+    assert_eq!(seen, vec![app_action("mail.tab")]);
 }

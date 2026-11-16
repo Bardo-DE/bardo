@@ -10,6 +10,7 @@
 //! ground with a round hole at its centre, tiled, so every dot stays round at any width and
 //! shows the colour of its own place on the field.
 
+use crate::host::narrow;
 use std::sync::LazyLock;
 use ui_core::base64;
 use ui_core::png::{self, Channels, Deflate, Raster};
@@ -42,8 +43,8 @@ fn ground(scheme: Scheme) -> [u8; 3] {
 /// The dot a point of the field stands for: hue across, chroma down, both clamped.
 pub(super) fn dot_at(x: f64, y: f64) -> Dot {
     Dot {
-        hue: (x.clamp(0.0, 1.0) * 360.0) as f32,
-        chroma: (1.0 - y.clamp(0.0, 1.0)) as f32,
+        hue: narrow::f32_of(x.clamp(0.0, 1.0) * 360.0),
+        chroma: narrow::f32_of(1.0 - y.clamp(0.0, 1.0)),
     }
 }
 
@@ -65,12 +66,12 @@ fn coverage(x: usize, y: usize, cx: f64, cy: f64) -> f64 {
     let n = SUBSAMPLES;
     let inside = (0..n * n)
         .filter(|k| {
-            let sx = x as f64 + (f64::from(k % n) + 0.5) / f64::from(n);
-            let sy = y as f64 + (f64::from(k / n) + 0.5) / f64::from(n);
+            let sx = narrow::count_f64(x) + (f64::from(k % n) + 0.5) / f64::from(n);
+            let sy = narrow::count_f64(y) + (f64::from(k / n) + 0.5) / f64::from(n);
             (sx - cx).hypot(sy - cy) <= RADIUS
         })
         .count();
-    inside as f64 / f64::from(n * n)
+    narrow::count_f64(inside) / f64::from(n * n)
 }
 
 /// The colour plane's pixels, rows top to bottom: each the colour at its own centre.
@@ -78,8 +79,8 @@ fn colours(scheme: Scheme) -> Vec<[u8; 3]> {
     (0..ROWS)
         .flat_map(|y| (0..COLUMNS).map(move |x| (x, y)))
         .map(|(x, y)| {
-            let across = (x as f64 + 0.5) / COLUMNS as f64;
-            let down = (y as f64 + 0.5) / ROWS as f64;
+            let across = (narrow::count_f64(x) + 0.5) / narrow::count_f64(COLUMNS);
+            let down = (narrow::count_f64(y) + 0.5) / narrow::count_f64(ROWS);
             colour_at(across, down, scheme)
         })
         .collect()
@@ -88,12 +89,12 @@ fn colours(scheme: Scheme) -> Vec<[u8; 3]> {
 /// The tile's pixels: the ground, opaque, with a hole where the cell's dot is.
 fn tile(scheme: Scheme) -> Vec<[u8; 4]> {
     let [r, g, b] = ground(scheme);
-    let centre = STEP as f64 / 2.0;
+    let centre = narrow::count_f64(STEP) / 2.0;
     (0..STEP)
         .flat_map(|y| (0..STEP).map(move |x| (x, y)))
         .map(|(x, y)| {
             // The coverage is 0 to 1, so the alpha stays within 0..=255.
-            let alpha = ((1.0 - coverage(x, y, centre, centre)) * 255.0).round() as u8;
+            let alpha = narrow::byte_of(((1.0 - coverage(x, y, centre, centre)) * 255.0).round());
             [r, g, b, alpha]
         })
         .collect()

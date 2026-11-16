@@ -188,7 +188,11 @@ fn a_symlinked_file_is_written_through_and_stays_a_link() {
         b"new"
     );
     assert!(
-        !scratch.names().iter().any(|name| name.ends_with(".tmp")),
+        !scratch.names().iter().any(|name| {
+            std::path::Path::new(name)
+                .extension()
+                .is_some_and(|ext| ext.eq_ignore_ascii_case("tmp"))
+        }),
         "{:?}",
         scratch.names()
     );

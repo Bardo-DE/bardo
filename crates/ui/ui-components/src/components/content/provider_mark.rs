@@ -118,7 +118,7 @@ fn folder_glyph(size: ControlSize) -> IconSize {
 
 /// A local account's mark: the folder in the neutral grey, whatever `style` asks for, since
 /// there is no provider whose favicon an app could hold.
-fn local_mark(size: ControlSize, common: Common, tip: Tip) -> Element {
+fn local_mark(size: ControlSize, common: Common, tip: &Tip) -> Element {
     let colour = MarkProvider::Local.colour();
     let class = common.class("ds-provider");
     let data = common.data_attributes();
@@ -142,7 +142,7 @@ fn local_mark(size: ControlSize, common: Common, tip: Tip) -> Element {
 }
 
 /// A face's mark: the letter in its chosen ink on the face's colour.
-fn face_mark(drawn: DrawnFace, size: ControlSize, common: Common, tip: Tip) -> Element {
+fn face_mark(drawn: DrawnFace, size: ControlSize, common: Common, tip: &Tip) -> Element {
     let class = common.class("ds-provider");
     let data = common.data_attributes();
     let DrawnFace {
@@ -186,10 +186,10 @@ pub fn ProviderMark(
 ) -> Element {
     let tip = use_tip(Some(TipText::new(provider.name())));
     if let (Some(drawn), MarkStyle::Letter) = (face.as_ref().and_then(MarkFace::drawn), &style) {
-        return face_mark(drawn, size, common, tip);
+        return face_mark(drawn, size, common, &tip);
     }
     if provider == MarkProvider::Local {
-        return local_mark(size, common, tip);
+        return local_mark(size, common, &tip);
     }
     let class = common.class("ds-provider");
     let data = common.data_attributes();

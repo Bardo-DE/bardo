@@ -96,7 +96,10 @@ mod tests {
         (title.to_string(), GroupEntries::Grid(cells), None)
     }
 
-    #[expect(clippy::unnecessary_wraps, reason = "the cases table puts the same `Option` in every row, `None` where nothing resizes")]
+    #[expect(
+        clippy::unnecessary_wraps,
+        reason = "the cases table puts the same `Option` in every row, `None` where nothing resizes"
+    )]
     fn resize(title: &str, resize: Resize) -> Option<GroupResize> {
         Some(GroupResize {
             title: title.to_string(),
@@ -106,6 +109,12 @@ mod tests {
 
     #[test]
     fn only_one_group_growing_or_shrinking_at_its_end_is_a_resize() {
+        type Case<'a> = (
+            &'a str,
+            &'a GroupsKey<u8>,
+            &'a GroupsKey<u8>,
+            Option<GroupResize>,
+        );
         let short: GroupsKey<u8> =
             vec![rows("Apps", &[1, 2], "Show More"), rows("Files", &[9], "")];
         let long: GroupsKey<u8> = vec![
@@ -126,12 +135,6 @@ mod tests {
         ];
         let fewer: GroupsKey<u8> = vec![rows("Apps", &[1, 2, 3, 4], "Show Less")];
         let emoji: GroupsKey<u8> = vec![grid("Emoji")];
-        type Case<'a> = (
-            &'a str,
-            &'a GroupsKey<u8>,
-            &'a GroupsKey<u8>,
-            Option<GroupResize>,
-        );
         let cases: &[Case<'_>] = &[
             (
                 "more",

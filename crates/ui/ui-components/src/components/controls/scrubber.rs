@@ -14,6 +14,7 @@ use crate::components::controls::scrubber_machine::{Jump, Pointer, ScrubInput, S
 use crate::components::controls::scrubber_model::BufferedRange;
 use crate::host::captured::{CapturedPointer, PointerPhase};
 use crate::host::measure::client_rect;
+use crate::host::narrow;
 use crate::host::pointer_capture::use_pointer_capture;
 use crate::root::common::Common;
 use dioxus::prelude::*;
@@ -37,7 +38,7 @@ fn jump(key: &Key, modifiers: Modifiers) -> Option<Jump> {
 
 /// The pointer's place along the page, in logical pixels.
 fn at_x(event: &PointerEvent) -> Px {
-    Px(event.client_coordinates().x as f32)
+    Px(narrow::f32_of(event.client_coordinates().x))
 }
 
 /// A recording's progress bar: `position` of the way through `length`, with `buffered` stretches

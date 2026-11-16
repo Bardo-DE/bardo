@@ -69,12 +69,12 @@ fn skill_toml_table() {
     for (text, want) in cases {
         let got = parse_facts(&text);
         match (&got, want) {
-            (Ok(_), Ok(())) => {}
-            (Err(SkillFault::Vocab(_)), Err("vocab")) => {}
-            (Err(SkillFault::BadId(_)), Err("bad id")) => {}
-            (Err(SkillFault::Toml(_)), Err("toml")) => {}
-            (Err(SkillFault::BadUse(_)), Err("bad use")) => {}
-            (Err(SkillFault::BadKind(_)), Err("bad kind")) => {}
+            (Ok(_), Ok(()))
+            | (Err(SkillFault::Vocab(_)), Err("vocab"))
+            | (Err(SkillFault::BadId(_)), Err("bad id"))
+            | (Err(SkillFault::Toml(_)), Err("toml"))
+            | (Err(SkillFault::BadUse(_)), Err("bad use"))
+            | (Err(SkillFault::BadKind(_)), Err("bad kind")) => {}
             _ => panic!("{text}\n=> {got:?}, wanted {want:?}"),
         }
     }

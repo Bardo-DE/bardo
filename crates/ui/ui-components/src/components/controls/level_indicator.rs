@@ -108,7 +108,7 @@ pub fn LevelIndicator(
             onmounted: move |event| common.mounted(event),
             ..data,
             {leading}
-            div { class: "ds-level-indicator-rail", {body(drawn)} }
+            div { class: "ds-level-indicator-rail", {body(&drawn)} }
         }
     }
 }
@@ -120,11 +120,6 @@ mod tests {
 
     #[test]
     fn a_level_falls_into_the_lowest_band_it_reaches() {
-        let bands = Bands {
-            warning: Fraction(200),
-            critical: Fraction(100),
-        };
-        // (value, band)
         const CASES: &[(u16, Band)] = &[
             (1000, Band::Normal),
             (201, Band::Normal),
@@ -133,6 +128,11 @@ mod tests {
             (100, Band::Critical),
             (0, Band::Critical),
         ];
+        let bands = Bands {
+            warning: Fraction(200),
+            critical: Fraction(100),
+        };
+        // (value, band)
         for &(value, want) in CASES {
             assert_eq!(bands.of(Fraction(value)), want, "{value}");
         }

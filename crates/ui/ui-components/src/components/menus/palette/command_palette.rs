@@ -263,7 +263,7 @@ pub fn CommandPalette<T: Clone + PartialEq + 'static>(
         draw_groups(
             &shown_groups,
             current,
-            StopEvents {
+            &StopEvents {
                 alive: alive.clone(),
                 pick: EventHandler::new(run),
                 point: EventHandler::new({
@@ -353,7 +353,7 @@ pub fn CommandPalette<T: Clone + PartialEq + 'static>(
             {side}
         }
     };
-    hosted(host, float, card, showing.shown, onclose)
+    hosted(host, &float, card, showing.shown, onclose)
 }
 
 /// A stop's element mounted: book it, report it if it is the selected one, and keep it in view.

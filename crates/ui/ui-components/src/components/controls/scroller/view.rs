@@ -3,6 +3,7 @@
 
 use crate::components::controls::scroller::handle::ScrollerRef;
 use crate::host::measure::MountedRef;
+use crate::host::narrow;
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use ui_core::geometry::units::Px;
@@ -26,7 +27,7 @@ pub fn Scroller(
                 scroller.attach(MountedRef(event.data()));
                 mounted.mounted(event);
             },
-            onscroll: move |event: ScrollEvent| scroller.heard(Px(event.scroll_top() as f32)),
+            onscroll: move |event: ScrollEvent| scroller.heard(Px(narrow::f32_of(event.scroll_top()))),
             ..data,
             {children}
         }

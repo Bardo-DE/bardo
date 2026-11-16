@@ -56,7 +56,7 @@ fn scene(usable: LogicalRect, draws: &[Draw], spaces: usize, shown: usize) -> Sc
             app: app("test"),
             placement: d.placement.clone(),
             limits: d.limits,
-            stack: compositor_layout::StackIndex(n as u32),
+            stack: compositor_layout::StackIndex(u32::try_from(n).expect("a few windows")),
             reserve_top: 0,
         });
     }

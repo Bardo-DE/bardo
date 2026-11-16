@@ -75,6 +75,10 @@ pub(crate) fn aria_placeholder(placeholder: &str) -> Option<String> {
 
 /// The field's text as it draws: a line (text, a search or a secret; a secure field writes no
 /// `value`) or, for a multi-line field, a `textarea`.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one `rsx!` tree whose handlers are written where they apply"
+)]
 pub(crate) fn line(field: Field, kind: FieldKind, value: String) -> Element {
     let keys = use_keys();
     if kind == FieldKind::Multiline {

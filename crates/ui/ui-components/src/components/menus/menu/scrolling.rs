@@ -9,6 +9,7 @@ use crate::components::menus::menu::drift::{Drift, DriftIn, Edge};
 use crate::components::menus::menu::placement::MENU_INSET;
 use crate::components::menus::menu::tracker::Tracker;
 use crate::host::measure::MountedRef;
+use crate::host::narrow;
 use dioxus::prelude::*;
 use ui_core::geometry::scroll::Scroll;
 use ui_core::geometry::units::Px;
@@ -71,7 +72,8 @@ pub(crate) fn use_scrolling() -> Scrolling {
 
 impl Scrolling {
     /// The panel's `rows`, in the list that scrolls, between the strips that show.
-    pub(crate) fn frame(self, tracker: Tracker, rows: Element) -> Element {
+    pub(crate) fn frame(self, tracker: &Tracker, rows: Element) -> Element {
+        let tracker = *tracker;
         let Cues { start, end } = *self.cues.read();
         let scroller = self.scroller;
         rsx! {
@@ -85,7 +87,7 @@ impl Scrolling {
                     scroller.attach(element.clone());
                     tracker.list_mounted(element);
                 },
-                onscroll: move |event: ScrollEvent| scroller.heard(Px(event.scroll_top() as f32)),
+                onscroll: move |event: ScrollEvent| scroller.heard(Px(narrow::f32_of(event.scroll_top()))),
                 {rows}
             }
             if end {
@@ -118,10 +120,11 @@ impl Scrolling {
 /// Bring the highlighted row into view when it moves, unless the pointer is on it already (the
 /// row under the pointer is where it was put, and scrolling would slide the next one under it).
 pub(crate) fn use_in_view(
-    tracker: Tracker,
+    tracker: &Tracker,
     highlighted: Option<usize>,
     pointed: CopyValue<Option<usize>>,
 ) {
+    let tracker = *tracker;
     use_effect(use_reactive((&highlighted,), move |(highlighted,)| {
         if let Some(index) = highlighted
             && *pointed.peek() != Some(index)

@@ -62,12 +62,12 @@ impl Machine for RowPointer {
     type Params = Duration;
     type Ctx = ();
 
-    fn step(self, input: RowIn, at: Stamp, grace: &Duration, &(): &()) -> (RowPointer, Vec<()>) {
+    fn step(self, input: RowIn, at: Stamp, params: &Duration, &(): &()) -> (RowPointer, Vec<()>) {
         match input {
             RowIn::Crossed(on_row) => (RowPointer { on_row, wait: None }, Vec::new()),
             RowIn::PartLeft => (
                 RowPointer {
-                    wait: Some(at.after_span(*grace)),
+                    wait: Some(at.after_span(*params)),
                     ..self
                 },
                 Vec::new(),

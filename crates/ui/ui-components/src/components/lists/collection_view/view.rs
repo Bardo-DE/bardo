@@ -161,7 +161,7 @@ pub fn CollectionView<K: Clone + Eq + Hash + 'static>(
     let mut memory = use_hook(|| CopyValue::new(Memory::new(keys.clone())));
     let drawn = {
         let mut state = memory.write();
-        reconcile(&mut state, &keys, change, &layout, roster);
+        reconcile(&mut state, &keys, change, &layout, &roster);
         roster.list_from_render(keys[window.clone()].to_vec());
         shown(&mut state, &roster.entries(), &items, window, size, aspect)
     };

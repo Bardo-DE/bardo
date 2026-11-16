@@ -3,6 +3,7 @@
 //! `ProviderError` that carries no body.
 
 use crate::support;
+use std::fmt::Write as _;
 use std::ops::ControlFlow;
 
 use model_http::{BodyKind, Framing, HttpError, HttpStatus};
@@ -14,7 +15,12 @@ use model_wire::Driver;
 use support::*;
 
 fn sse(frames: &[&str]) -> String {
-    frames.iter().map(|f| format!("data: {f}\n\n")).collect()
+    let mut body = String::new();
+    for frame in frames {
+        // Writing to a `String` cannot fail.
+        let _ = write!(body, "data: {frame}\n\n");
+    }
+    body
 }
 
 fn driver(framing: Framing, script: Vec<Canned>) -> Driver<LineCodec, Scripted> {

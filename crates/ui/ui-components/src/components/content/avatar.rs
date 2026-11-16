@@ -6,6 +6,7 @@
 //! is [`AvatarFace`].
 
 use crate::components::content::muted::muted;
+use crate::host::narrow;
 use dioxus::prelude::*;
 use ui_core::word::Word;
 use ui_style::tokens::hex::{Colour, Hex};
@@ -92,7 +93,7 @@ fn hsl_to_hex(hue: f64, saturation: f64, lightness: f64) -> Hex {
         let k = (n + hue / 30.0) % 12.0;
         let value = lightness - a * (k - 3.0).min(9.0 - k).clamp(-1.0, 1.0);
         // Rounded and clamped to 0..=255 first, so the cast cannot truncate.
-        (value * 255.0).round().clamp(0.0, 255.0) as u8
+        narrow::byte_of((value * 255.0).round().clamp(0.0, 255.0))
     };
     Hex([channel(0.0), channel(8.0), channel(4.0)])
 }

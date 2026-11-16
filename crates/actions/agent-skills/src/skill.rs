@@ -109,11 +109,15 @@ fn use_ref(text: &str) -> Result<ActionRef, SkillFault> {
 }
 
 fn kind(text: &str) -> Result<EntityKind, SkillFault> {
-    EntityKind::parse(text).ok().ok_or_else(|| SkillFault::BadKind(text.to_owned()))
+    EntityKind::parse(text)
+        .ok()
+        .ok_or_else(|| SkillFault::BadKind(text.to_owned()))
 }
 
 fn id(text: &str) -> Result<SkillId, SkillFault> {
-    SkillId::parse(text).ok().ok_or_else(|| SkillFault::BadId(text.to_owned()))
+    SkillId::parse(text)
+        .ok()
+        .ok_or_else(|| SkillFault::BadId(text.to_owned()))
 }
 
 /// What `skill.toml` says, checked.

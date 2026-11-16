@@ -34,7 +34,7 @@ pub(crate) struct DotView<'a> {
 pub(crate) fn swatches(title: &str, dots: Vec<(usize, DotView<'_>, RowEvents)>) -> Element {
     let drawn: Vec<(usize, Element)> = dots
         .into_iter()
-        .map(|(at, view, events)| (at, dot(view, events)))
+        .map(|(at, view, events)| (at, dot(&view, events)))
         .collect();
     rsx! {
         div { class: "ds-menu-swatches", role: "group", "aria-label": "{title}",
@@ -46,7 +46,7 @@ pub(crate) fn swatches(title: &str, dots: Vec<(usize, DotView<'_>, RowEvents)>) 
 }
 
 /// One dot, reporting through `events` as an item does.
-fn dot(view: DotView<'_>, events: RowEvents) -> Element {
+fn dot(view: &DotView<'_>, events: RowEvents) -> Element {
     let RowEvents {
         pick: onpick,
         point: onpoint,

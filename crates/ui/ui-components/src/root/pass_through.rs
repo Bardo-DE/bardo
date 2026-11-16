@@ -235,7 +235,8 @@ mod tests {
         for (given, want) in cases {
             let got = DataName::parse(given)
                 .map(DataName::attribute)
-                .ok().ok_or(());
+                .ok()
+                .ok_or(());
             assert_eq!(got, *want, "{given:?}");
         }
     }

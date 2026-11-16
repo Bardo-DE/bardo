@@ -35,7 +35,7 @@ impl Minter {
     /// collision) is hashed again with its attempt number, so ids are unique and still depend
     /// only on the tree's order.
     pub(super) fn mint(&mut self, key: &str) -> NodeId {
-        let id = (0u32..)
+        let id = (0..=u32::MAX)
             .map(|attempt| match attempt {
                 0 => NodeId::hashed(key),
                 n => NodeId::hashed(&format!("{key}#{n}")),

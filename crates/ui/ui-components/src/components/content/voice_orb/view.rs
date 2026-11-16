@@ -3,6 +3,7 @@
 use super::io::use_turn;
 use super::model::{OrbColour, OrbColours, OrbMask, OrbMetrics, Turn};
 use dioxus::prelude::*;
+use std::fmt::Write as _;
 use std::time::Duration;
 use ui_core::geometry::units::Px;
 use ui_core::vocab::activity_word;
@@ -87,7 +88,8 @@ pub(super) fn style_attr(
         number(turn.degrees()),
     );
     if let OrbMask::Radius(radius) = metrics.mask {
-        out.push_str(&format!("{}:{}%;", vars::MASK.as_str(), radius.0));
+        // Writing to a `String` cannot fail.
+        let _ = write!(out, "{}:{}%;", vars::MASK.as_str(), radius.0);
     }
     for (token, colour) in [
         (ColourToken::OrbBg, colours.bg),
@@ -96,7 +98,8 @@ pub(super) fn style_attr(
         (ColourToken::OrbC3, colours.c3),
     ] {
         if let OrbColour::Custom(hex) = colour {
-            out.push_str(&format!("{}:{};", token.var().as_str(), hex.css()));
+            // Writing to a `String` cannot fail.
+            let _ = write!(out, "{}:{};", token.var().as_str(), hex.css());
         }
     }
     out

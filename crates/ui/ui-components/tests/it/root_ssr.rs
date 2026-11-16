@@ -38,7 +38,14 @@ impl Default for Setup {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a Dioxus component takes its props by value"
+)]
 fn Root(setup: Setup) -> Element {
     if setup.modality.is_some() || setup.activity.is_some() {
         use_context_provider(|| HostSignals {
@@ -101,10 +108,11 @@ fn expected(pairs: &[(&str, String)]) -> BTreeMap<String, String> {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of cases and one scenario, read top to bottom"
+)]
 fn the_root_stamps_exactly_its_attributes() {
-    let dark_reduced = SystemPrefs::default()
-        .with_scheme(Scheme::Dark)
-        .with_reduced_motion(true);
     struct Case {
         name: &'static str,
         setup: Setup,
@@ -120,6 +128,9 @@ fn the_root_stamps_exactly_its_attributes() {
         /// The root chrome's attributes: `data-chrome`, `data-frame`, `data-ground`.
         chrome: &'static [(&'static str, &'static str)],
     }
+    let dark_reduced = SystemPrefs::default()
+        .with_scheme(Scheme::Dark)
+        .with_reduced_motion(true);
     let cases = [
         Case {
             name: "standard motion and a system theme resolve against a dark, reduced desktop",

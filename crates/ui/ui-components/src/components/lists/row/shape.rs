@@ -4,6 +4,7 @@
 //! (design/30 section 2.4, absorbed from the menu's row shapes). Drawn by `shape_view`.
 
 use crate::components::content::image_source::{ImageSize, ImageSource};
+use crate::host::narrow;
 use ui_core::word::Word;
 
 /// How near a Today tab is to going (design/30 section 2.11).
@@ -100,7 +101,7 @@ pub(crate) fn clip_lines(lines: u8) -> u8 {
 pub(crate) fn clip_box(size: ImageSize) -> (f32, f32) {
     let ratio = match (size.width, size.height) {
         (0, _) | (_, 0) => 1.0,
-        (width, height) => width as f32 / height as f32,
+        (width, height) => narrow::u32_f32(width) / narrow::u32_f32(height),
     };
     let width = CLIP_IMAGE_HEIGHT * ratio;
     if width <= CLIP_IMAGE_WIDTH {

@@ -32,7 +32,7 @@ pub(crate) fn card_corner(corner: Corner) -> String {
 /// closes the palette on a pointer down outside the card while it is the topmost layer.
 pub(crate) fn hosted(
     host: CommandPaletteHost,
-    float: Float,
+    float: &Float,
     card: Element,
     shown: bool,
     onclose: EventHandler<PaletteClose>,

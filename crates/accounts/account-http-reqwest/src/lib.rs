@@ -54,13 +54,13 @@ impl ReqwestHttp {
     /// A client trusting the platform's roots.
     #[must_use]
     pub fn new() -> Self {
-        Self::with_extra_roots(Vec::new())
+        Self::with_extra_roots(&[])
     }
 
     /// A client trusting the platform's roots and these DER certificates (a private CA).
     /// A certificate that is not one is skipped.
     #[must_use]
-    pub fn with_extra_roots(extra: Vec<Vec<u8>>) -> Self {
+    pub fn with_extra_roots(extra: &[Vec<u8>]) -> Self {
         // reqwest's rustls takes the process's provider: ring, installed once (a second install, or one
         // another crate made first, is refused and harmless).
         let _ = rustls::crypto::ring::default_provider().install_default();
@@ -93,7 +93,7 @@ impl ReqwestHttp {
         timeout: Option<Duration>,
     ) -> Result<reqwest::Request, HttpError> {
         in_the_clear_only_here(request.uri())?;
-        let mut outgoing = reqwest::Request::try_from(request).map_err(fault)?;
+        let mut outgoing = reqwest::Request::try_from(request).map_err(|error| fault(&error))?;
         *outgoing.timeout_mut() = timeout;
         Ok(outgoing)
     }
@@ -114,8 +114,9 @@ impl ReqwestHttp {
         let outgoing = Self::outgoing(request, None)?;
         let mut response = tokio::time::timeout(idle, self.client.execute(outgoing))
             .await
-            .ok().ok_or(HttpError::TimedOut)?
-            .map_err(fault)?;
+            .ok()
+            .ok_or(HttpError::TimedOut)?
+            .map_err(|error| fault(&error))?;
         let status = response.status();
         if sink.head(status, response.headers()).is_break() {
             return Ok(status);
@@ -123,8 +124,9 @@ impl ReqwestHttp {
         loop {
             let next = tokio::time::timeout(idle, response.chunk())
                 .await
-                .ok().ok_or(HttpError::TimedOut)?
-                .map_err(fault)?;
+                .ok()
+                .ok_or(HttpError::TimedOut)?
+                .map_err(|error| fault(&error))?;
             let Some(data) = next else {
                 return Ok(status);
             };
@@ -136,9 +138,13 @@ impl ReqwestHttp {
 
     async fn exchange(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
         let outgoing = Self::outgoing(request, Some(self.limits.timeout))?;
-        let mut response = self.client.execute(outgoing).await.map_err(fault)?;
+        let mut response = self
+            .client
+            .execute(outgoing)
+            .await
+            .map_err(|error| fault(&error))?;
         let mut bytes = Vec::new();
-        while let Some(data) = response.chunk().await.map_err(fault)? {
+        while let Some(data) = response.chunk().await.map_err(|error| fault(&error))? {
             if bytes.len() + data.len() > self.limits.max_body {
                 return Err(HttpError::TooLarge);
             }
@@ -196,8 +202,8 @@ fn in_the_clear_only_here(uri: &Uri) -> Result<(), HttpError> {
 
 /// What a reqwest error comes to: a timeout, a certificate or handshake refusal, no route, or
 /// garbage.
-fn fault(error: reqwest::Error) -> HttpError {
-    match (error.is_timeout(), is_tls(&error), error.is_connect()) {
+fn fault(error: &reqwest::Error) -> HttpError {
+    match (error.is_timeout(), is_tls(error), error.is_connect()) {
         (true, _, _) => HttpError::TimedOut,
         (false, true, _) => HttpError::Tls,
         (false, false, true) => HttpError::Unreachable,

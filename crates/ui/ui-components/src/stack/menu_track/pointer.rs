@@ -94,7 +94,7 @@ fn retarget<K: Clone>(
         }
         MenuTarget::Item {
             pickable: false, ..
-        } => (None, close_sub(session.sub, &mut effects)),
+        } => (None, close_sub(&session.sub, &mut effects)),
         MenuTarget::Outside if left => (None, Submenu::None),
         _ => (session.hot.clone(), session.sub),
     };
@@ -133,18 +133,18 @@ fn select<K>(
             Submenu::Pending { item, until }
         }
         (sub, Branch::Submenu) => {
-            let _ = close_sub(sub, effects);
+            let _ = close_sub(&sub, effects);
             effects.push(MenuTrackEffect::Prepare(path.clone()));
             Submenu::Pending {
                 item: path.clone(),
                 until: now.after_span(timing.submenu_delay),
             }
         }
-        (sub, Branch::Leaf) => close_sub(sub, effects),
+        (sub, Branch::Leaf) => close_sub(&sub, effects),
     }
 }
 
-pub(super) fn close_sub<K>(sub: Submenu, effects: &mut Effects<K>) -> Submenu {
+pub(super) fn close_sub<K>(sub: &Submenu, effects: &mut Effects<K>) -> Submenu {
     if matches!(sub, Submenu::Open { .. }) {
         effects.push(MenuTrackEffect::CloseSub);
     }

@@ -8,6 +8,7 @@
 //! something to say.
 
 use crate::host::measure::use_rect;
+use crate::host::narrow;
 use dioxus::prelude::*;
 use ui_core::geometry::units::Px;
 use ui_core::text::clip::clip_middle;
@@ -57,8 +58,8 @@ fn fitted(title: &str, room: Option<Px>, whole: Option<Px>) -> String {
     if whole.0 <= room.0 || whole.0 <= 0.0 {
         return title.to_owned();
     }
-    let count = title.chars().count() as f32;
-    let share = (count * FILL * room.0.max(0.0) / whole.0).floor() as usize;
+    let count = narrow::count_f32(title.chars().count());
+    let share = narrow::whole_usize((count * FILL * room.0.max(0.0) / whole.0).floor());
     clip_middle(title, share)
 }
 

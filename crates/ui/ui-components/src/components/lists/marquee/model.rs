@@ -2,6 +2,7 @@
 //! pointer is, which rows or tiles it touches, the selection that results and how far the edge of
 //! the view scrolls the content under a pointer held near it.
 
+use crate::host::narrow;
 use dioxus::prelude::Modifiers;
 use keymap::Platform;
 use std::ops::Range;
@@ -49,8 +50,8 @@ pub(crate) fn rows_in(band: Rect, pitch: Px, len: usize) -> Range<usize> {
     if pitch.0 <= 0.0 || !band.top().0.is_finite() || !band.bottom().0.is_finite() {
         return 0..0;
     }
-    let first = (band.top().0.max(0.0) / pitch.0).floor() as usize;
-    let end = (band.bottom().0.max(0.0) / pitch.0).ceil() as usize;
+    let first = narrow::whole_usize((band.top().0.max(0.0) / pitch.0).floor());
+    let end = narrow::whole_usize((band.bottom().0.max(0.0) / pitch.0).ceil());
     first.min(len)..end.min(len)
 }
 
@@ -73,14 +74,14 @@ impl GridShape {
     /// The columns whose tile the band's horizontal extent touches.
     fn columns_in(self, band: Rect) -> Range<usize> {
         let columns = self.columns.max(1);
-        let cell = (self.width.0 - 2.0 * self.inset.0) / columns as f32;
+        let cell = (self.width.0 - 2.0 * self.inset.0) / narrow::count_f32(columns);
         if cell <= 0.0 {
             return 0..0;
         }
         let hit = cell.min(self.tile.0);
         let margin = (cell - hit) / 2.0;
         let touches = |column: usize| {
-            let left = self.inset.0 + column as f32 * cell + margin;
+            let left = self.inset.0 + narrow::count_f32(column) * cell + margin;
             left < band.right().0 && left + hit > band.left().0
         };
         let first = (0..columns).find(|column| touches(*column));
@@ -144,7 +145,10 @@ pub(crate) fn edge_scroll(y: f32, height: f32) -> f32 {
 }
 
 #[cfg(test)]
-#[expect(clippy::single_range_in_vec_init, reason = "the tables spell expected selections as lists of ranges")]
+#[expect(
+    clippy::single_range_in_vec_init,
+    reason = "the tables spell expected selections as lists of ranges"
+)]
 mod tests {
     use super::{GridShape, MarqueeHow, band, edge_scroll, rows_in, selected, tiles_in};
     use dioxus::prelude::Modifiers;

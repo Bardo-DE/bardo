@@ -1,6 +1,7 @@
 //! The voice orb's data: its colours, how far round it has turned, and the look values that
 //! follow from its size.
 
+use crate::host::narrow;
 use ui_core::geometry::units::Px;
 use ui_core::vocab::Percent;
 use ui_style::tokens::hex::Hex;
@@ -41,7 +42,7 @@ impl Turn {
     /// The angle in degrees (a float because CSS angles are).
     #[must_use]
     pub fn degrees(self) -> f32 {
-        self.0 as f32 * 360.0 / Self::FULL as f32
+        narrow::u32_f32(self.0) * 360.0 / narrow::u32_f32(Self::FULL)
     }
 }
 

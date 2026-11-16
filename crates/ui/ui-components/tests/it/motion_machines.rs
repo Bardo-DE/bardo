@@ -75,6 +75,10 @@ fn then(mut steps: Vec<Step>, more: impl IntoIterator<Item = Step>) -> Vec<Step>
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of cases and one scenario, read top to bottom"
+)]
 fn hover_intent_sequences() {
     use HoverEvent::*;
     let cases: Vec<(&str, Vec<Step>)> = vec![

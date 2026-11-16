@@ -107,7 +107,12 @@ pub(crate) fn step(
             },
             None,
         ),
-        (Pointer::Away | Pointer::Over { .. }, ScrubInput::Dragged { .. }) => (pointer, None),
+        (
+            Pointer::Away | Pointer::Over { .. },
+            ScrubInput::Dragged { .. } | ScrubInput::Up { .. } | ScrubInput::Cancel,
+        )
+        | (Pointer::Away | Pointer::Held { .. }, ScrubInput::Left)
+        | (Pointer::Held { .. }, ScrubInput::Key(_)) => (pointer, None),
         (_, ScrubInput::Down { track, x }) => {
             let at = fraction_at(track, x);
             (Pointer::Held { track, at }, Some(ScrubOut::Start(at)))
@@ -116,14 +121,10 @@ pub(crate) fn step(
             let at = fraction_at(track, x);
             (Pointer::Over { track, at }, Some(ScrubOut::End(at)))
         }
-        (Pointer::Away | Pointer::Over { .. }, ScrubInput::Up { .. }) => (pointer, None),
         (Pointer::Held { track, at }, ScrubInput::Cancel) => {
             (Pointer::Over { track, at }, Some(ScrubOut::Cancel))
         }
-        (Pointer::Away | Pointer::Over { .. }, ScrubInput::Cancel) => (pointer, None),
         (Pointer::Over { .. }, ScrubInput::Left) => (Pointer::Away, None),
-        (Pointer::Away | Pointer::Held { .. }, ScrubInput::Left) => (pointer, None),
-        (Pointer::Held { .. }, ScrubInput::Key(_)) => (pointer, None),
         (Pointer::Away | Pointer::Over { .. }, ScrubInput::Key(jump)) => {
             let to = jumped(position, jump);
             (
@@ -202,6 +203,10 @@ mod tests {
     );
 
     #[test]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "a table of cases and one scenario, read top to bottom"
+    )]
     fn each_input_has_its_next_pointer_and_report() {
         // (name, from, position, input, to, report)
         let cases: Vec<Case> = vec![

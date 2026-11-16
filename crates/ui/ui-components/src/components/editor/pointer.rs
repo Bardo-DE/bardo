@@ -9,6 +9,7 @@ use crate::components::editor::focus::focus_surface;
 use crate::edit::clicks::Clicks;
 use crate::edit::pointer::{EditPointer, Extend};
 use crate::host::captured::{CapturedPointer, PointerPhase};
+use crate::host::narrow;
 use crate::host::probe::Probe;
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
@@ -115,8 +116,8 @@ fn report(ctx: &SurfaceCtx, at: Point, modifiers: Modifiers, phase: PointerPhase
 fn point_of(event: &PointerEvent) -> Point {
     let at = event.client_coordinates();
     Point {
-        x: Px(at.x as f32),
-        y: Px(at.y as f32),
+        x: Px(narrow::f32_of(at.x)),
+        y: Px(narrow::f32_of(at.y)),
     }
 }
 
@@ -124,7 +125,7 @@ fn point_of(event: &PointerEvent) -> Point {
 pub(crate) fn point_of_mouse(event: &MouseEvent) -> Point {
     let at = event.client_coordinates();
     Point {
-        x: Px(at.x as f32),
-        y: Px(at.y as f32),
+        x: Px(narrow::f32_of(at.x)),
+        y: Px(narrow::f32_of(at.y)),
     }
 }

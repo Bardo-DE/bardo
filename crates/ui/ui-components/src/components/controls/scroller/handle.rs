@@ -8,6 +8,7 @@
 
 use crate::host::document::{DocumentHost, use_document_host};
 use crate::host::measure::MountedRef;
+use crate::host::narrow;
 use crate::host::phase::{Observe, Observed, PhaseWrite, Watch};
 use dioxus::prelude::*;
 use std::rc::Rc;
@@ -134,7 +135,7 @@ impl ScrollerRef {
     /// Scroll the least that shows row `index` of rows `pitch` apart.
     pub fn reveal_row(&self, index: usize, pitch: Px) {
         self.reveal(ScrollSpan {
-            start: index as f32 * pitch.0,
+            start: narrow::count_f32(index) * pitch.0,
             length: pitch.0,
         });
     }

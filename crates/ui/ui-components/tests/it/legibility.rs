@@ -242,12 +242,17 @@ fn over(tint: &str, backdrop: [u8; 3]) -> String {
     let [r, g, b, a] = parts[..] else {
         panic!("{tint}: four components")
     };
-    let mix = |channel: f64, under: u8| (channel * a + f64::from(under) * (1.0 - a)).round();
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "a blend of a fraction of one byte and the rest of another, rounded, is within 0..=255"
+    )]
+    let mix = |channel: f64, under: u8| (channel * a + f64::from(under) * (1.0 - a)).round() as u8;
     format!(
         "#{:02x}{:02x}{:02x}",
-        mix(r, backdrop[0]) as u8,
-        mix(g, backdrop[1]) as u8,
-        mix(b, backdrop[2]) as u8
+        mix(r, backdrop[0]),
+        mix(g, backdrop[1]),
+        mix(b, backdrop[2])
     )
 }
 

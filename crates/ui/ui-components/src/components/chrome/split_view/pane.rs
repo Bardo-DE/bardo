@@ -42,7 +42,12 @@ pub(crate) fn PaneBox(
     let target = if shown { width.0 } else { 0.0 };
     let motion = use_spring_motion(target, PxPerUnit(1.0));
     let mut seen = use_hook(|| CopyValue::new(target));
-    if *seen.peek() != target {
+    #[expect(
+        clippy::float_cmp,
+        reason = "the target is only ever set from a width or zero, so an unchanged one is bit-equal"
+    )]
+    let moved = *seen.peek() != target;
+    if moved {
         seen.set(target);
         queue_effect(move || match mover {
             Mover::Hand => motion.track(target),

@@ -33,6 +33,7 @@ use crate::components::lists::column_browser::model::{
     BrowserKey, active, browser_key, cursor, leaf_selected, target,
 };
 use crate::components::lists::virtual_table::model::key_how;
+use crate::host::narrow;
 use crate::keys::use_platform;
 use crate::root::common::Common;
 use crate::stack::typeahead::Typeahead;
@@ -90,7 +91,6 @@ pub fn ColumnBrowser<K: Clone + PartialEq + 'static>(
                         onopen.call(pick);
                     }
                 }
-                (BrowserKey::Open, None) => {}
                 (_, Some(pick)) => {
                     if let Some(onpick) = onpick {
                         event.prevent_default();
@@ -119,7 +119,7 @@ pub fn ColumnBrowser<K: Clone + PartialEq + 'static>(
             onkeydown,
             onpointermove: move |event: PointerEvent| {
                 if let Some(edge) = grab() {
-                    let next = edge.size_at(Px(event.client_coordinates().x as f32));
+                    let next = edge.size_at(Px(narrow::f32_of(event.client_coordinates().x)));
                     width.set(Px(next.0.max(LEAST_WIDTH)));
                 }
             },

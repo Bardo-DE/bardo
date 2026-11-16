@@ -1,6 +1,8 @@
 //! Matching a title against the typed query: the command palette's fuzzy ranker
 //! (design/06-INTERACTIONS.md section 11.2).
 
+use crate::host::narrow;
+
 /// A fuzzy match: its score and the matched characters of the text, by char index.
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) struct Match {
@@ -26,7 +28,7 @@ pub(crate) fn fuzzy(query: &str, text: &str) -> Option<Match> {
     if let Some(at) = t.windows(q.len()).position(|window| window == q.as_slice()) {
         let bonus = if word_start(&t, at) { 40.0 } else { 20.0 };
         return Some(Match {
-            score: 100.0 + bonus - 0.5 * at as f32,
+            score: 100.0 + bonus - 0.5 * narrow::count_f32(at),
             marks: (at..at + q.len()).collect(),
         });
     }
@@ -41,7 +43,7 @@ fn subsequence(q: &[char], t: &[char]) -> Option<Match> {
         if q.get(next) == Some(c) {
             run += 1;
             let start = if word_start(t, index) { 6.0 } else { 0.0 };
-            score += 2.0 + 2.0 * run as f32 + start;
+            score += 2.0 + 2.0 * narrow::u32_f32(run) + start;
             marks.push(index);
             next += 1;
         } else {
@@ -52,7 +54,7 @@ fn subsequence(q: &[char], t: &[char]) -> Option<Match> {
         return None;
     }
     let spread = match (marks.first(), marks.last()) {
-        (Some(first), Some(last)) => (last - first) as f32,
+        (Some(first), Some(last)) => narrow::count_f32(last - first),
         _ => 0.0,
     };
     Some(Match {

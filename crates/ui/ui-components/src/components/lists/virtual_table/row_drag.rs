@@ -15,6 +15,7 @@ use crate::components::lists::virtual_table::drag_model::{
     RowDrop, RowDropKind, RowDropTarget, allowed, dragged_rows, drop_target, operation_of,
 };
 use crate::host::event_point::pointer_point;
+use crate::host::narrow;
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
 use keymap::Platform;
@@ -65,11 +66,11 @@ pub(crate) struct RowDrag {
 }
 
 /// The row drag of the calling table, over the box its rubber band is measured in.
-pub(crate) fn use_row_drag(marquee: Marquee, scroller: ScrollerRef) -> RowDrag {
+pub(crate) fn use_row_drag(marquee: &Marquee, scroller: ScrollerRef) -> RowDrag {
     RowDrag {
         phase: use_signal(|| Phase::Idle),
         spec: use_hook(|| CopyValue::new(None)),
-        marquee,
+        marquee: *marquee,
         scroller,
     }
 }
@@ -193,8 +194,12 @@ pub(crate) fn RowDropMark(drag: RowDrag, pitch: Px) -> Element {
         return rsx! {};
     };
     let (kind, top, height) = match target {
-        RowDropTarget::Onto(row) => ("onto", row as f32 * pitch.0, pitch.0),
-        RowDropTarget::Between(gap) => ("between", gap as f32 * pitch.0 - LINE / 2.0, LINE),
+        RowDropTarget::Onto(row) => ("onto", narrow::count_f32(row) * pitch.0, pitch.0),
+        RowDropTarget::Between(gap) => (
+            "between",
+            narrow::count_f32(gap) * pitch.0 - LINE / 2.0,
+            LINE,
+        ),
     };
     rsx! {
         div { class: "ds-vtable-drop-layer",

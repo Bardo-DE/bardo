@@ -214,6 +214,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "a table of cases and one scenario, read top to bottom"
+    )]
     fn a_drag_ends_as_its_inputs_say() {
         use FileDragInput::{Entered, Left, Moved, Offered};
         let cases: Vec<(&str, Vec<FileDragInput>, DragTrack, Vec<FileDrop>)> = vec![

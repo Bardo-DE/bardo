@@ -64,6 +64,10 @@ pub fn use_file_drop(ondrop: impl FnMut(FileDrop) + 'static) -> FileDropHandle {
 
 impl FileDropHandle {
     /// Bind the target's element: its `onmounted` handler.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "the handler gets the event by value from every `onmounted` closure that calls it, in this crate and in its consumers"
+    )]
     pub fn mounted(&self, event: MountedEvent) {
         if let Some(host) = self.host.peek().as_ref() {
             host.enter(DropTarget {

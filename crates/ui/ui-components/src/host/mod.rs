@@ -14,6 +14,7 @@ pub mod hand_back;
 pub mod ime;
 pub mod layout;
 pub mod measure;
+pub(crate) mod narrow;
 pub mod no_host;
 pub mod parts;
 pub mod pasted;

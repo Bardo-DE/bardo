@@ -11,6 +11,7 @@
 //! drag.
 
 use crate::components::controls::press::button_of;
+use crate::host::narrow;
 use dioxus::core::queue_effect;
 use dioxus::html::geometry::WheelDelta;
 use dioxus::html::input_data::MouseButton;
@@ -125,7 +126,7 @@ impl SwipeGlue {
     pub fn down(&self, event: &PointerEvent) {
         let primary = button_of(event.trigger_button()) == Some(PointerButton::Primary);
         if let (Some(swiper), true) = (self.live(), primary) {
-            let x = Px(event.client_coordinates().x as f32);
+            let x = Px(narrow::f32_of(event.client_coordinates().x));
             let mut meter = self.meter;
             meter.set(VelocityMeter::default().moved(x, ui_core::time::clock::now()));
             swiper.feed(SwipeInput::Down { x });
@@ -140,7 +141,7 @@ impl SwipeGlue {
             } else {
                 PressPhase::Idle
             };
-            let x = Px(event.client_coordinates().x as f32);
+            let x = Px(narrow::f32_of(event.client_coordinates().x));
             let mut meter = self.meter;
             let measured = meter.peek().moved(x, ui_core::time::clock::now());
             meter.set(measured);
@@ -186,5 +187,5 @@ fn pixels(delta: WheelDelta) -> (Px, Px) {
         WheelDelta::Lines(v) => (v.x * LINE_PX, v.y * LINE_PX),
         WheelDelta::Pages(_) => (0.0, 0.0),
     };
-    (Px(x as f32), Px(y as f32))
+    (Px(narrow::f32_of(x)), Px(narrow::f32_of(y)))
 }

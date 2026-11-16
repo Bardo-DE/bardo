@@ -20,6 +20,7 @@ use crate::components::menus::palette::palette_group::GroupsKey;
 use crate::components::menus::palette::palette_reveal::Reveal as Stops;
 use crate::components::menus::palette::palette_stops::ShownGroup;
 use crate::host::measure::{BUSY_ATTEMPTS, laid_out_rect};
+use crate::host::narrow;
 use dioxus::core::{current_scope_id, queue_effect};
 use dioxus::prelude::*;
 use ui_core::geometry::units::Px;
@@ -259,7 +260,7 @@ fn use_group_motion<T>(
             .iter()
             .find(|group| group.group.title == resize.title)
             .map(|group| group.first);
-        start(resize, first, timers)
+        start(resize, first, &timers)
     });
     if next.is_none() {
         queue_effect(move || {
@@ -285,7 +286,7 @@ struct Timers {
 /// Start `resize`'s motion (its group's first stop `first`): the added rows rise, and their span
 /// is measured once they are laid out; or what follows the rows kept heals by the span last
 /// measured for this group (none measured: no heal, the list just closes up).
-fn start(resize: GroupResize, first: Option<usize>, timers: Timers) -> Option<GroupMotion> {
+fn start(resize: GroupResize, first: Option<usize>, timers: &Timers) -> Option<GroupMotion> {
     match resize.resize {
         Resize::Grew { kept, added } if added > 0 => {
             let rise = timers.rise;
@@ -316,19 +317,21 @@ fn start(resize: GroupResize, first: Option<usize>, timers: Timers) -> Option<Gr
 /// The height `removed` rows of `title` took, from the span last measured for it.
 fn healed_by(span: Option<&Span>, title: &str, removed: usize) -> Option<Px> {
     let span = span.filter(|span| span.title == title && span.rows > 0)?;
-    Some(Px(span.height.0 * removed as f32 / span.rows as f32))
+    Some(Px(
+        span.height.0 * narrow::count_f32(removed) / narrow::count_f32(span.rows)
+    ))
 }
 
 /// Read, once laid out, how tall the `rows` added rows from stop `from` are, and keep it for
 /// `title`'s Show Less.
-fn measure(title: &str, from: usize, rows: usize, timers: Timers) {
+fn measure(title: &str, from: usize, rows: usize, timers: &Timers) {
     let title = title.to_string();
     let Timers {
         stops,
         mut spans,
         scope,
         ..
-    } = timers;
+    } = *timers;
     queue_effect(move || {
         spawn_in(scope, async move {
             if let Some(height) = span(stops, from, from + rows - 1).await {

@@ -9,7 +9,10 @@ pub(crate) mod drift;
 pub(crate) mod hand_back;
 pub mod hung;
 pub(crate) mod keys;
-#[expect(clippy::module_inception, reason = "the layout names the file for its one concept")]
+#[expect(
+    clippy::module_inception,
+    reason = "the layout names the file for its one concept"
+)]
 pub(crate) mod menu;
 pub(crate) mod panel;
 pub(crate) mod pick;

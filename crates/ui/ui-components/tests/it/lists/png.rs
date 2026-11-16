@@ -12,7 +12,8 @@ pub fn unbase64(text: &str) -> Vec<u8> {
             ALPHABET
                 .iter()
                 .position(|a| *a == byte)
-                .unwrap_or_else(|| panic!("{byte} is not base64")) as u32
+                .and_then(|at| u32::try_from(at).ok())
+                .unwrap_or_else(|| panic!("{byte} is not base64"))
         })
         .collect();
     values
@@ -22,7 +23,8 @@ pub fn unbase64(text: &str) -> Vec<u8> {
                 .iter()
                 .enumerate()
                 .fold(0u32, |n, (i, v)| n | v << (18 - 6 * i));
-            (0..chunk.len() - 1).map(move |i| (n >> (16 - 8 * i)) as u8)
+            (0..chunk.len() - 1)
+                .map(move |i| u8::try_from((n >> (16 - 8 * i)) & 0xff).expect("masked to a byte"))
         })
         .collect()
 }
@@ -46,8 +48,8 @@ impl Image {
     pub fn hex(&self, x: usize, y: usize) -> String {
         let row = &self.rows[y];
         let at = x * self.channels();
-        let [r, g, b] = [row[at], row[at + 1], row[at + 2]];
-        format!("#{r:02x}{g:02x}{b:02x}")
+        let [red, green, blue] = [row[at], row[at + 1], row[at + 2]];
+        format!("#{red:02x}{green:02x}{blue:02x}")
     }
 
     /// The alpha at `(x, y)`: 255 for an RGB image.
@@ -177,7 +179,7 @@ pub fn inflate(data: &[u8]) -> Vec<u8> {
             1 => loop {
                 let symbol = reader.literal();
                 match symbol {
-                    0..=255 => out.push(symbol as u8),
+                    0..=255 => out.push(u8::try_from(symbol).expect("in 0..=255")),
                     256 => break,
                     _ => {
                         let i = (symbol - 257) as usize;

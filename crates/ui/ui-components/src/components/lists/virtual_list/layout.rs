@@ -3,6 +3,7 @@
 //! which rows the viewport shows, where a row starts and how tall it is, how long the whole
 //! list is and how far from its end counts as near.
 
+use crate::host::narrow;
 use std::ops::Range;
 use std::rc::Rc;
 use ui_core::geometry::scroll::{Scroll, ScrollSpan};
@@ -65,7 +66,7 @@ impl Layout {
     /// Where row `index` starts; the list's length for `len()`, and past it clamped there.
     pub(crate) fn top(&self, index: usize) -> Px {
         match self {
-            Layout::Even { pitch, len } => Px(index.min(*len) as f32 * pitch.0),
+            Layout::Even { pitch, len } => Px(narrow::count_f32(index.min(*len)) * pitch.0),
             Layout::Uneven(Tops(tops)) => Px(tops[index.min(tops.len() - 1)]),
         }
     }
@@ -92,7 +93,7 @@ impl Layout {
     /// How much of the list lies below rows `..end`.
     pub(crate) fn below(&self, end: usize) -> Px {
         match self {
-            Layout::Even { pitch, len } => Px(len.saturating_sub(end) as f32 * pitch.0),
+            Layout::Even { pitch, len } => Px(narrow::count_f32(len.saturating_sub(end)) * pitch.0),
             Layout::Uneven(_) => Px(self.total().0 - self.top(end).0),
         }
     }
@@ -133,17 +134,17 @@ impl Layout {
             return rows;
         }
         let len = self.len();
-        let average = self.total().0 / len.max(1) as f32;
+        let average = self.total().0 / narrow::count_f32(len.max(1));
         if len == 0 || !average.is_finite() || average <= 0.0 || !viewport.0.is_finite() {
             return least;
         }
-        ((viewport.0.max(0.0) / average).ceil() as usize).max(least)
+        narrow::whole_usize((viewport.0.max(0.0) / average).ceil()).max(least)
     }
 
     /// The distance from the list's end that is near: the height of its last `rows` rows.
     pub(crate) fn page(&self, rows: usize) -> Px {
         match self {
-            Layout::Even { pitch, .. } => Px(rows as f32 * pitch.0),
+            Layout::Even { pitch, .. } => Px(narrow::count_f32(rows) * pitch.0),
             Layout::Uneven(_) => Px(self.total().0 - self.top(self.len().saturating_sub(rows)).0),
         }
     }

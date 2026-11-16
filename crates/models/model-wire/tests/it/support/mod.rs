@@ -1,6 +1,9 @@
 //! A scripted transport and a line codec for driving the `Driver` with no I/O.
 
-#![allow(dead_code, reason = "shared test helpers, not every one is used by the cases that exist")]
+#![allow(
+    dead_code,
+    reason = "shared test helpers, not every one is used by the cases that exist"
+)]
 
 use std::ops::ControlFlow;
 use std::sync::Mutex;
@@ -199,7 +202,9 @@ impl ChatCodec for LineCodec {
     }
 
     fn parse_models(&self, body: &[u8]) -> Result<Vec<ModelInfo>, CodecError> {
-        let text = std::str::from_utf8(body).ok().ok_or(CodecError::Unreadable)?;
+        let text = std::str::from_utf8(body)
+            .ok()
+            .ok_or(CodecError::Unreadable)?;
         text.lines()
             .map(|line| {
                 let (name, ctx) = line.split_once(' ').ok_or(CodecError::Unreadable)?;
@@ -279,7 +284,9 @@ impl EmbedCodec for VecCodec {
     }
 
     fn decode_embed(&self, served: ModelName, body: &[u8]) -> Result<EmbedEnd, CodecError> {
-        let text = std::str::from_utf8(body).ok().ok_or(CodecError::Unreadable)?;
+        let text = std::str::from_utf8(body)
+            .ok()
+            .ok_or(CodecError::Unreadable)?;
         let vectors = text
             .split(';')
             .filter(|v| !v.is_empty())

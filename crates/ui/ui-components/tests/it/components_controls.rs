@@ -35,6 +35,10 @@ impl PartialEq for HostProps {
 
 /// Renders a case inside a scope, so its handlers have a runtime to attach to and a component
 /// that reads the scope (a text field) draws instead of panicking.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a Dioxus component takes its props by value"
+)]
 fn host(props: HostProps) -> Element {
     let case = (props.make)();
     rsx! { Scoped { {case} } }
@@ -136,6 +140,10 @@ fn a_glyph_is_stroked_and_sized_by_its_attributes() {
         struct At {
             size: IconSize,
         }
+        #[expect(
+            clippy::needless_pass_by_value,
+            reason = "a Dioxus component takes its props by value"
+        )]
         fn glyph(props: At) -> Element {
             rsx! { Glyph { icon: Icon::Wifi, size: props.size, style: GlyphStyle::Outline } }
         }

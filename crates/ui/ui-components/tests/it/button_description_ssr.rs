@@ -31,14 +31,20 @@ fn icon_only() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn Titled() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, {icon_only()} }
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn Wrapped() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

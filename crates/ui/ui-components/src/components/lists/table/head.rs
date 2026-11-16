@@ -5,6 +5,7 @@
 use crate::components::controls::edge_grab::EdgeGrab;
 use crate::components::lists::table::model::{CellAlign, Sort, SortDirection, TableColumn};
 use crate::components::lists::table::widths::Widths;
+use crate::host::narrow;
 use dioxus::prelude::*;
 use std::ops::Range;
 use std::rc::Rc;
@@ -58,7 +59,7 @@ impl Resize {
     /// The pointer moved: a column edge being dragged follows it.
     pub(crate) fn drag<C>(&self, columns: &[TableColumn<C>], event: &PointerEvent) {
         if let Some((at, held)) = (self.grab)() {
-            let width = held.size_at(Px(event.client_coordinates().x as f32));
+            let width = held.size_at(Px(narrow::f32_of(event.client_coordinates().x)));
             let next = self.widths.peek().clone().dragged(columns, at, width);
             let mut widths = self.widths;
             widths.set(next);
@@ -132,7 +133,7 @@ impl Resize {
                                 "aria-hidden": "true",
                                 onpointerdown: move |event: PointerEvent| {
                                     event.stop_propagation();
-                                    let from = Px(event.client_coordinates().x as f32);
+                                    let from = Px(narrow::f32_of(event.client_coordinates().x));
                                     let mut grab = grab;
                                     grab.set(Some((at, EdgeGrab::new(from, width))));
                                 },

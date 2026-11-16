@@ -30,7 +30,10 @@ async fn absent_transport_is_noop() {
 struct Canned(MemoryReply);
 
 impl Transport for Canned {
-    #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async; this implementation has nothing to await")]
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn call(&self, _request: MemoryRequest) -> Result<MemoryReply, TransportError> {
         Ok(self.0.clone())
     }

@@ -23,19 +23,31 @@ fn page(popup: Option<HasPopup>) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn Menu() -> Element {
     page(Some(HasPopup::Menu))
 }
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn Dialog() -> Element {
     page(Some(HasPopup::Dialog))
 }
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn Listbox() -> Element {
     page(Some(HasPopup::Listbox))
 }
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn Plain() -> Element {
     page(None)
 }

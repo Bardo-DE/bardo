@@ -162,13 +162,14 @@ fn icon_at(source: IconSource, side: u8, plate: Option<PlateFamily>) -> Element 
 /// The caption under the media: a title and a line, and a list of facts.
 pub(crate) fn caption(content: &PaneContent) -> Element {
     let (title, line): (Option<&str>, Option<&str>) = match content {
-        PaneContent::Image { .. } | PaneContent::Text { .. } => (None, None),
-        PaneContent::Pdf { name, .. } => (Some(name), None),
+        PaneContent::Image { .. } | PaneContent::Text { .. } | PaneContent::Slot { .. } => {
+            (None, None)
+        }
+        PaneContent::Pdf { name, .. }
+        | PaneContent::Emoji { name, .. }
+        | PaneContent::Facts { title: name, .. } => (Some(name), None),
         PaneContent::App { name, detail, .. } => (Some(name), detail.as_deref()),
-        PaneContent::Facts { title, .. } => (Some(title), None),
-        PaneContent::Emoji { name, .. } => (Some(name), None),
         PaneContent::Web { host, url } => (Some(host), Some(url)),
-        PaneContent::Slot { .. } => (None, None),
     };
     let facts = match content {
         PaneContent::Facts { rows, .. } => rows.clone(),

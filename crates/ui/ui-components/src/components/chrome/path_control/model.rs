@@ -2,6 +2,7 @@
 //! band when the path is long.
 
 use crate::components::menus::item::item::{MenuImage, MenuItem};
+use crate::components::menus::item::text::ItemText;
 use std::ops::Range;
 use ui_core::vocab::{Availability, DropState};
 use ui_style::icon::Icon;
@@ -86,7 +87,7 @@ pub(crate) fn rows(segments: &[PathSegment], first: usize) -> Vec<MenuItem<usize
             check: None,
             availability: Availability::Enabled,
             keep_open: false,
-            text: Default::default(),
+            text: ItemText::default(),
         })
         .collect()
 }

@@ -1,5 +1,6 @@
 //! How big a collection's tiles are, and how many sit in a row.
 
+use crate::host::narrow;
 use ui_core::geometry::units::Px;
 use ui_core::word::Word;
 
@@ -93,7 +94,7 @@ impl CollectionSize {
     /// of narrow letters is cut a little early, one of wide letters a little late.
     #[must_use]
     pub fn caption_chars(self) -> usize {
-        (self.tile().0 / 6.5).floor() as usize
+        narrow::whole_usize((self.tile().0 / 6.5).floor())
     }
 
     /// The inline style that hands the stylesheet the size's three numbers, for a thumbnail box
@@ -132,7 +133,7 @@ impl Flow {
         match (self, width) {
             (Flow::Columns(count), _) => usize::from(count.max(1)),
             (Flow::Fit, Some(width)) if tile.0 > 0.0 && width.0.is_finite() => {
-                ((width.0 / tile.0).floor() as usize).max(1)
+                narrow::whole_usize((width.0 / tile.0).floor()).max(1)
             }
             (Flow::Fit, _) => 1,
         }

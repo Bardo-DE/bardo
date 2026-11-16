@@ -4,6 +4,7 @@
 //! pixels (an `svg`'s width and height are presentation attributes in Blitz).
 
 use crate::components::content::image_source::ImageSource;
+use crate::host::narrow;
 use dioxus::prelude::*;
 use ui_style::icon::Icon;
 use ui_style::icon::file_kind::{ExtLabel, FileKind, FolderKind};
@@ -34,7 +35,7 @@ fn folder_box(px: u8) -> (f32, f32) {
 
 /// A glyph `side` px square, solid, for a mark.
 fn mark_glyph(icon: Icon, side: f32) -> Element {
-    let side = side.round().clamp(6.0, 255.0) as u8;
+    let side = narrow::whole_u8(side.round().clamp(6.0, 255.0));
     rsx! { Glyph { icon, size: IconSize::Px(IconPx(side)), style: GlyphStyle::Solid } }
 }
 
@@ -61,16 +62,16 @@ fn layer(
 /// The standard page: shadow, paper, fold, hairline edge, the kind's mark and the label.
 pub(crate) fn page(kind: FileKind, label: Option<&ExtLabel>, px: u8, fit: bool) -> Element {
     let size = page_box(px);
-    let side = f32::from(px);
+    let edge = f32::from(px);
     let label = label.filter(|_| fit);
     let mark_side = match label {
-        Some(_) => side * 0.30,
-        None => side * 0.5,
+        Some(_) => edge * 0.30,
+        None => edge * 0.5,
     };
     // The label of a markless kind is the page's only mark, so it is larger and centred.
     let label_size = match kind {
-        FileKind::Other => side * 0.2,
-        _ => side * 0.15,
+        FileKind::Other => edge * 0.2,
+        _ => edge * 0.15,
     };
     let slot = match label {
         Some(_) => "labelled",

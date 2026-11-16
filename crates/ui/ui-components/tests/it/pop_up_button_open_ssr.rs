@@ -15,7 +15,10 @@ fn items() -> Vec<MenuItem<u8>> {
     ]
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn Closed() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -24,7 +27,10 @@ fn Closed() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn NoAnchor() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -33,7 +39,10 @@ fn NoAnchor() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn Open() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

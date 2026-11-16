@@ -96,6 +96,10 @@ impl RectProbe {
     /// rect from then on ([`use_layout`](crate::host::layout::use_layout)).
     /// An event queued before its owner went (a surface hidden before the event was delivered)
     /// keeps nothing.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "the handler gets the event by value from every `onmounted` closure that calls it, in this crate and in its consumers"
+    )]
     pub fn on_mounted(&self, event: Event<MountedData>) {
         let _ = ui_style::task::try_set(self.mounted, Some(MountedRef(event.data())));
     }

@@ -6,6 +6,7 @@
 
 use crate::focus::click::kept_click;
 use crate::focus::press_focus::on_click;
+use crate::host::narrow;
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
 use ui_core::geometry::units::{Point, Px};
@@ -19,8 +20,8 @@ pub(crate) fn press_of(event: &MouseEvent, button: PointerButton) -> Press {
         button,
         modifiers: event.modifiers(),
         at: Point {
-            x: Px(at.x as f32),
-            y: Px(at.y as f32),
+            x: Px(narrow::f32_of(at.x)),
+            y: Px(narrow::f32_of(at.y)),
         },
     }
 }

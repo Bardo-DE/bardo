@@ -468,7 +468,6 @@ fn a_closed_tracker_ignores_everything_but_a_press_on_a_title() {
 
 #[test]
 fn the_triangle_test_is_a_sign_test_either_winding() {
-    let (a, b, c) = (pt(0.0, 0.0), pt(100.0, -10.0), pt(100.0, 110.0));
     const CASES: &[((f32, f32), bool)] = &[
         ((50.0, 50.0), true),
         ((10.0, 0.0), true),
@@ -477,6 +476,7 @@ fn the_triangle_test_is_a_sign_test_either_winding() {
         ((120.0, 50.0), false),
         ((-1.0, 0.0), false),
     ];
+    let (a, b, c) = (pt(0.0, 0.0), pt(100.0, -10.0), pt(100.0, 110.0));
     for &((x, y), want) in CASES {
         assert_eq!(inside(pt(x, y), a, b, c), want, "({x}, {y})");
         assert_eq!(inside(pt(x, y), a, c, b), want, "({x}, {y}) reversed");

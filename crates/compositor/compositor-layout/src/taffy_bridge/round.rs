@@ -25,11 +25,19 @@ pub(crate) fn rect_of(layout: &Layout, origin: LogicalPoint) -> LogicalRect {
 }
 
 /// Logical pixels as Taffy's float (exact below 2^24, far beyond any output).
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "logical pixel sizes are far under 2^24, where f32 is exact"
+)]
 pub(super) fn to_float(value: u32) -> f32 {
     value as f32
 }
 
 /// `value` rounded to a whole logical pixel (saturating; NaN is 0).
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a saturating cast on purpose: out-of-range values clamp and NaN is 0"
+)]
 fn whole(value: f32) -> i32 {
     value.round() as i32
 }

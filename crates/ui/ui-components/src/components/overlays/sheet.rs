@@ -122,7 +122,7 @@ pub fn Sheet(
                 common.mounted(event);
             },
             onkeydown: move |event| {
-                escape_closes(float, &event, onclose);
+                escape_closes(&float, &event, onclose);
                 if let Some(press) = on_return
                     && event.key() == Key::Enter
                 {

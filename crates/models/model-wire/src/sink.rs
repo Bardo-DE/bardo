@@ -28,8 +28,8 @@ impl Framer {
         match framing {
             Framing::Sse => Framer::Sse(SseDecoder::new()),
             Framing::Ndjson => Framer::Ndjson(NdjsonDecoder::new()),
-            // Whole, and any framing this build does not know: read the body as one frame.
-            _ => Framer::Whole(Vec::new()),
+            // The body is read as one frame.
+            Framing::Whole => Framer::Whole(Vec::new()),
         }
     }
 
@@ -61,7 +61,8 @@ impl Framer {
             Framer::Ndjson(decoder) => Ok(decoder.finish().into_iter().collect()),
             Framer::Whole(body) => String::from_utf8(body)
                 .map(|text| vec![text])
-                .ok().ok_or_else(|| ProviderError::Unreadable("the reply is not UTF-8".into())),
+                .ok()
+                .ok_or_else(|| ProviderError::Unreadable("the reply is not UTF-8".into())),
         }
     }
 }
@@ -243,8 +244,8 @@ impl<'a, C: ChatCodec, K: TurnSink> ChatSink<'a, C, K> {
         result: Result<HttpStatus, HttpError>,
     ) -> Result<TurnEnd, ProviderError> {
         let reached = match (&self.mode, &result) {
-            (Mode::Failing(_), _) => Reached::Nothing,
-            (
+            (Mode::Failing(_), _)
+            | (
                 Mode::Head(_) | Mode::Done,
                 Err(
                     HttpError::Connect
@@ -303,8 +304,8 @@ impl<'a, C: ChatCodec, K: TurnSink> ChatSink<'a, C, K> {
         mut decoder: C::Decoder,
         framer: Framer,
     ) -> Result<TurnEnd, ProviderError> {
-        let frames = framer.finish()?;
-        if self.decode(&mut decoder, frames)? == ControlFlow::Break(()) {
+        let last_frames = framer.finish()?;
+        if self.decode(&mut decoder, last_frames)? == ControlFlow::Break(()) {
             return Ok(TurnEnd {
                 stop: StopReason::EndTurn,
                 usage: self.usage,

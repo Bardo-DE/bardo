@@ -161,6 +161,10 @@ impl Transaction {
         self.calls.with(|r| r.cancelled += 1);
     }
 
+    #[expect(
+        clippy::used_underscore_binding,
+        reason = "the zbus interface macro reads the argument by this name"
+    )]
     async fn resolve(
         &self,
         _filter: u64,

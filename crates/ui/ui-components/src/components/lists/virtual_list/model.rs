@@ -112,10 +112,8 @@ pub(crate) fn anchored<K: Eq + Hash>(
 pub(crate) fn roved(at: Option<usize>, len: usize, rove: Rove) -> Option<usize> {
     let last = len.checked_sub(1)?;
     Some(match (rove, at) {
-        (Rove::Edge(Edge::First), _) => 0,
-        (Rove::Edge(Edge::Last), _) => last,
-        (Rove::Step(Step::Down), None) => 0,
-        (Rove::Step(Step::Up), None) => last,
+        (Rove::Edge(Edge::First), _) | (Rove::Step(Step::Down), None) => 0,
+        (Rove::Edge(Edge::Last), _) | (Rove::Step(Step::Up), None) => last,
         (Rove::Step(Step::Down), Some(at)) => (at + 1).min(last),
         (Rove::Step(Step::Up), Some(at)) => at.saturating_sub(1).min(last),
     })

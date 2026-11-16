@@ -42,6 +42,10 @@ fn get(url: &WebUrl) -> http::Request<Vec<u8>> {
     request(Method::GET, url).body(Vec::new()).expect("request")
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "the request is handed to the fake server's handler by value"
+)]
 fn echo(request: Request) -> Response {
     let seen = format!(
         "{} {} {}|{}",
@@ -155,7 +159,7 @@ async fn a_certificate_is_checked_against_the_roots_and_a_private_ca_must_be_add
         "the scratch CA is not a platform root"
     );
 
-    let trusting = ReqwestHttp::with_extra_roots(vec![tls::ca_der().to_vec()]);
+    let trusting = ReqwestHttp::with_extra_roots(&[tls::ca_der().to_vec()]);
     let response = trusting
         .send(get(&target))
         .await
@@ -163,7 +167,7 @@ async fn a_certificate_is_checked_against_the_roots_and_a_private_ca_must_be_add
     assert_eq!(response.body(), b"secure");
 
     let wrong_name = url("https", "127.0.0.1", server.port, "/");
-    let outcome = ReqwestHttp::with_extra_roots(vec![tls::ca_der().to_vec()])
+    let outcome = ReqwestHttp::with_extra_roots(&[tls::ca_der().to_vec()])
         .send(get(&wrong_name))
         .await;
     assert!(

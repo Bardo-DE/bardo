@@ -361,7 +361,7 @@ fn AlertBody(words: Words, children: Element) -> Element {
             if count > 0 {
                 div { class: "ds-alert-footer", "data-layout": FooterLayout::of(count).slug(),
                     for (index , button) in words.buttons.iter().enumerate() {
-                        {slot(Slot { index, count, button, default, availability, answer, elements })}
+                        {slot(&Slot { index, count, button, default, availability, answer, elements })}
                     }
                 }
             }
@@ -382,7 +382,7 @@ struct Slot<'a> {
 
 /// One button in its slot: the slot takes Space for the button inside it and Tab to the next
 /// button, and the default button takes the keyboard as it mounts.
-fn slot(slot: Slot<'_>) -> Element {
+fn slot(slot: &Slot<'_>) -> Element {
     let Slot {
         index,
         count,
@@ -391,7 +391,7 @@ fn slot(slot: Slot<'_>) -> Element {
         availability,
         answer,
         mut elements,
-    } = slot;
+    } = *slot;
     let is_default = default == Some(index);
     let (answers, destructive) = face(button.role, is_default);
     rsx! {

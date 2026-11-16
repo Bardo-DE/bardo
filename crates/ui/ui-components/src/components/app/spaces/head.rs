@@ -2,6 +2,7 @@
 
 use super::controller::SpacesHandle;
 use crate::components::content::label::{Label, LabelRole, LabelStyle};
+use crate::host::narrow;
 use crate::root::common::Common;
 use crate::root::pass_through::ExtraClass;
 use dioxus::prelude::*;
@@ -26,7 +27,7 @@ where
             oncontextmenu: move |event: MouseEvent| {
                 event.prevent_default();
                 let at = event.client_coordinates();
-                handle.open_menu(id, Point { x: Px(at.x as f32), y: Px(at.y as f32) });
+                handle.open_menu(id, Point { x: Px(narrow::f32_of(at.x)), y: Px(narrow::f32_of(at.y)) });
             },
             Label {
                 text: name.clone(),

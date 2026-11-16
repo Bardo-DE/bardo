@@ -70,7 +70,7 @@ pub(crate) fn reconcile<K: Clone + Eq + Hash + 'static>(
     keys: &[K],
     change: Change,
     layout: &Layout,
-    roster: Roster<K>,
+    roster: &Roster<K>,
 ) {
     if state.keys == keys {
         return;

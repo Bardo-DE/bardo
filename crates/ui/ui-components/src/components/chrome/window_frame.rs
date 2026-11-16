@@ -13,6 +13,7 @@
 use crate::components::chrome::resize_edges::ResizeEdges;
 use crate::components::chrome::titlebar_parts::{TitleArea, TitleParts};
 use crate::components::chrome::traffic_lights::TrafficLightGroup;
+use crate::host::narrow;
 use crate::root::common::Common;
 use crate::window::grab::{Grab, GrabEffect};
 use crate::window::host::{WindowHost, use_window_host, use_window_state};
@@ -280,7 +281,7 @@ fn step(mut grab: CopyValue<Grab>, host: Option<&WindowHost>, at: Point, thresho
 fn point_of(event: &PointerEvent) -> Point {
     let at = event.client_coordinates();
     Point {
-        x: Px(at.x as f32),
-        y: Px(at.y as f32),
+        x: Px(narrow::f32_of(at.x)),
+        y: Px(narrow::f32_of(at.y)),
     }
 }

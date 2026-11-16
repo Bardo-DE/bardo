@@ -68,6 +68,10 @@ pub fn use_pointer_capture(on_pointer: impl FnMut(CapturedPointer) + 'static) ->
 impl PointerCapture {
     /// Remember the element a press will capture the pointer for: wire it to the element's
     /// `onmounted`.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "the handler gets the event by value from every `onmounted` closure that calls it, in this crate and in its consumers"
+    )]
     pub fn on_mounted(&self, event: MountedEvent) {
         let mut element = self.element;
         element.set(Some(event.data()));

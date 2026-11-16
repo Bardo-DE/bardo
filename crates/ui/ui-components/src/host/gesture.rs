@@ -74,9 +74,12 @@ impl Magnification {
     /// The change winit reports (a fraction of the scale, positive growing) in thousandths,
     /// rounded; zero for a value that is not a number.
     #[must_use]
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "bounded by the clamp to a thousand either way just before the cast"
+    )]
     pub fn from_fraction(delta: f64) -> Self {
         if delta.is_finite() {
-            // Bounded by the clamp, so the cast cannot truncate.
             Magnification((delta * 1000.0).round().clamp(-1000.0, 1000.0) as i32)
         } else {
             Magnification(0)

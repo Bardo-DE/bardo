@@ -30,6 +30,7 @@ use crate::components::lists::marquee::band::MarqueeBand;
 use crate::components::lists::marquee::hook::Marquee;
 use crate::components::lists::virtual_table::outline::OutlineRow;
 use crate::components::lists::virtual_table::row_drag::{RowDrag, RowDropMark};
+use crate::host::narrow;
 use dioxus::prelude::*;
 use ui_core::geometry::units::Px;
 
@@ -100,6 +101,10 @@ pub(super) struct Panes {
 
 /// The body of a table that holds columns: the two headers, then the `Scroller` of the two
 /// panes.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one `rsx!` tree whose handlers are written where they apply"
+)]
 pub(super) fn body(panes: Panes) -> Element {
     let Panes {
         held,
@@ -171,7 +176,7 @@ pub(super) fn body(panes: Panes) -> Element {
                         id: columns,
                         style: "--table-cols:{side_template}",
                         onscroll: move |event: ScrollEvent| {
-                            let to = Px(event.scroll_left() as f32);
+                            let to = Px(narrow::f32_of(event.scroll_left()));
                             if *across.peek() != to {
                                 across.set(to);
                             }

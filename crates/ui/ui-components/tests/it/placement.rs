@@ -55,6 +55,10 @@ struct Case {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of cases and one scenario, read top to bottom"
+)]
 fn placement_flips_and_clamps() {
     let cases = [
         Case {

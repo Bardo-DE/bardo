@@ -15,6 +15,7 @@ use memory_seal::{
     Aad, KeyError, KeyStore, Nonce, Purpose, SpaceKey, SubKey, derive, seal, unseal,
 };
 use std::collections::BTreeMap;
+use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
@@ -63,10 +64,12 @@ fn parse(text: &str) -> Result<Table, KeyError> {
 }
 
 fn render(table: &Table) -> String {
-    table
-        .iter()
-        .map(|(id, key)| format!("{} {}\n", id.as_str(), const_hex::encode(key.expose())))
-        .collect()
+    let mut text = String::new();
+    for (id, key) in table {
+        // Writing to a `String` cannot fail.
+        let _ = writeln!(text, "{} {}", id.as_str(), const_hex::encode(key.expose()));
+    }
+    text
 }
 
 impl FileKeys {
@@ -116,12 +119,18 @@ impl FileKeys {
 }
 
 impl KeyStore for FileKeys {
-    #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async; this implementation has nothing to await")]
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn get(&self, space: &SpaceId) -> Result<SpaceKey, KeyError> {
         self.with(|t| Ok((t.get(space).cloned().ok_or(KeyError::Missing)?, false)))
     }
 
-    #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async; this implementation has nothing to await")]
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn create(&self, space: &SpaceId) -> Result<SpaceKey, KeyError> {
         self.with(|t| {
             if t.contains_key(space) {
@@ -133,7 +142,10 @@ impl KeyStore for FileKeys {
         })
     }
 
-    #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async; this implementation has nothing to await")]
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn destroy(&self, space: &SpaceId) -> Result<(), KeyError> {
         self.with(|t| t.remove(space).map(|_| ((), true)).ok_or(KeyError::Missing))
     }

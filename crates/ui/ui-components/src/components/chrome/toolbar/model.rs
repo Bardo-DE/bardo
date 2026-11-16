@@ -2,6 +2,7 @@
 //! the rest go behind the overflow chevron.
 
 use crate::host::measure::Anchor;
+use crate::host::narrow;
 use ui_core::geometry::units::Px;
 use ui_core::vocab::{Availability, Check, Shortcut};
 use ui_style::icon::Icon;
@@ -114,10 +115,10 @@ impl Kept {
     pub fn fitting(leading: usize, trailing: usize, room: Px) -> Kept {
         let available = room.0 - TITLE_ROOM.0 - 2.0 * BAND_PADDING.0;
         let total = leading + trailing;
-        let kept = if (total as f32) * ITEM_PITCH.0 <= available {
+        let kept = if (narrow::count_f32(total)) * ITEM_PITCH.0 <= available {
             total
         } else {
-            (((available - ITEM_PITCH.0) / ITEM_PITCH.0).floor().max(0.0)) as usize
+            narrow::whole_usize(((available - ITEM_PITCH.0) / ITEM_PITCH.0).floor().max(0.0))
         };
         Kept {
             leading: kept.min(leading),

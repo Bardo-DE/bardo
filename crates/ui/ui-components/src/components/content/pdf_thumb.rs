@@ -14,6 +14,7 @@ use crate::components::content::icon_source::IconSource;
 use crate::components::content::icon_view::IconView;
 use crate::components::content::image_source::{ImageSize, ImageSource};
 use crate::components::content::picture_fit::picture_style;
+use crate::host::narrow;
 use dioxus::prelude::*;
 use ui_core::geometry::units::{Point, Px, Rect, Size};
 use ui_core::word::Word;
@@ -129,9 +130,11 @@ fn sheet(room: Size, shape: ImageSize, image: Option<ImageSource>) -> Element {
 
 /// The file-type glyph on a red plate, two fifths of the room's shorter side (16 to 96 px).
 fn plate(trouble: PdfTrouble, room: Size) -> Element {
-    let side = (room.width.0.min(room.height.0) * 0.4)
-        .clamp(16.0, 96.0)
-        .round() as u8;
+    let side = narrow::whole_u8(
+        (room.width.0.min(room.height.0) * 0.4)
+            .clamp(16.0, 96.0)
+            .round(),
+    );
     rsx! {
         div { class: "ds-pdf-thumb-plate", "data-trouble": trouble.slug(),
             IconView {
@@ -149,7 +152,7 @@ pub fn sheet_rect(room: Size, shape: ImageSize) -> Rect {
     let size = match (shape.width, shape.height) {
         (0, _) | (_, 0) => room,
         (width, height) => {
-            let ratio = height as f32 / width as f32;
+            let ratio = narrow::u32_f32(height) / narrow::u32_f32(width);
             if room.width.0 * ratio <= room.height.0 {
                 Size {
                     width: room.width,

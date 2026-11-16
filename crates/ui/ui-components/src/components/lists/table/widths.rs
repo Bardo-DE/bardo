@@ -2,6 +2,7 @@
 //! grid template that lays the header and every row out by them.
 
 use crate::components::lists::table::model::TableColumn;
+use crate::host::narrow;
 use std::ops::Range;
 use ui_core::geometry::units::Px;
 
@@ -17,7 +18,7 @@ const CELL_PADDING: f32 = 16.0;
 /// width, padding left out) in full: the widest of them, and the cells' padding. The title's
 /// width is estimated from its characters; the cells' are the caller's.
 pub(crate) fn fit_width(title: &str, cells: impl IntoIterator<Item = Px>) -> Px {
-    let title = title.chars().count() as f32 * TITLE_GLYPH + SORT_ROOM;
+    let title = narrow::count_f32(title.chars().count()) * TITLE_GLYPH + SORT_ROOM;
     let widest = cells.into_iter().map(|cell| cell.0).fold(title, f32::max);
     Px((widest + CELL_PADDING).ceil())
 }
@@ -72,8 +73,8 @@ impl Widths {
         let last = columns.len().saturating_sub(1);
         span.map(|at| {
             if at == last {
-                let least = columns.get(at).map_or(0.0, |column| column.min_width.0);
-                format!("minmax({least}px, 1fr)")
+                let floor = columns.get(at).map_or(0.0, |column| column.min_width.0);
+                format!("minmax({floor}px, 1fr)")
             } else {
                 format!("{}px", self.of(columns, at).0)
             }

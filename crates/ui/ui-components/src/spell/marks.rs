@@ -10,6 +10,7 @@
 use super::words::{WordSpan, joined_at, word_at};
 use crate::host::position::{EditNode, TextPosition, TextRange};
 use std::collections::HashSet;
+use std::hash::BuildHasher;
 
 /// A word no dictionary accepted, where it is.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -60,11 +61,11 @@ pub struct Typing {
 
 /// The misspellings of one paragraph: its `words` that are in `wrong`.
 #[must_use]
-pub fn marks_for(
+pub fn marks_for<S: BuildHasher>(
     node: &EditNode,
     text: &str,
     words: &[WordSpan],
-    wrong: &HashSet<String>,
+    wrong: &HashSet<String, S>,
 ) -> Vec<Misspelt> {
     words
         .iter()
@@ -85,7 +86,7 @@ pub fn marks_for(
 /// in length (an edit before it) moves with it; any other is dropped until the next check.
 #[must_use]
 pub fn reconcile(marks: Vec<Misspelt>, before: &str, after: &str) -> Vec<Misspelt> {
-    let delta = after.len() as isize - before.len() as isize;
+    let delta = after.len().cast_signed() - before.len().cast_signed();
     marks
         .into_iter()
         .filter_map(|mark| {

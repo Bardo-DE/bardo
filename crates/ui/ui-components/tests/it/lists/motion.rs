@@ -50,6 +50,10 @@ fn a_live_list_moves_its_items_through_the_exit() {
 }
 
 #[derive(Props, Clone, PartialEq)]
+#[expect(
+    clippy::empty_structs_with_brackets,
+    reason = "the `Props` derive takes named fields only"
+)]
 struct NoProps {}
 
 /// A drag of thread 7 over one registered place, drawn as the consumer draws it: the ghost only

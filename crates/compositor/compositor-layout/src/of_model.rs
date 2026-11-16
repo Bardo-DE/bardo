@@ -261,12 +261,12 @@ mod tests {
 
     #[test]
     fn spaces_become_arrangements() {
+        use compositor_core::space::TaskToken;
         let pair = SplitPair {
             leading: WindowId(1),
             trailing: WindowId(2),
             divider: Fraction(500),
         };
-        use compositor_core::space::TaskToken;
         let cases = [
             ("desktop", SpaceContent::Desktop, SpaceArrangement::Desktop),
             (

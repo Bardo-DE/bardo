@@ -20,6 +20,7 @@ use crate::components::content::text_runs::{TextLine, text};
 use crate::components::controls::button::Button;
 use crate::components::controls::button_model::{Bezel, ImagePosition};
 use crate::components::menus::item::item::{MenuImage, MenuItem};
+use crate::components::menus::item::text::ItemText;
 use crate::components::menus::menu::menu::Menu;
 use crate::components::menus::menu::placement::MenuPlacement;
 use crate::host::measure::{Anchor, MountedRef, use_rect};
@@ -84,7 +85,7 @@ fn hidden_rows<T: Clone>(items: &[&ToolbarItem<T>]) -> Vec<MenuItem<T>> {
             check: item.check,
             availability: item.availability,
             keep_open: false,
-            text: Default::default(),
+            text: ItemText::default(),
         })
         .collect()
 }

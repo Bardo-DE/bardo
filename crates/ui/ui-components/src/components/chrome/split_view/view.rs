@@ -32,6 +32,7 @@ use crate::components::chrome::split_view::model::{
 use crate::components::chrome::split_view::pane::{Mover, PaneBox};
 use crate::components::controls::edge_grab::EdgeGrab;
 use crate::host::measure::use_rect;
+use crate::host::narrow;
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use ui_core::geometry::units::Px;
@@ -70,10 +71,10 @@ impl Splits {
     /// Where the pointer is along the axis.
     fn along(self, event: &PointerEvent) -> Px {
         let at = event.client_coordinates();
-        Px(match self.axis {
+        Px(narrow::f32_of(match self.axis {
             SplitAxis::Row => at.x,
             SplitAxis::Column => at.y,
-        } as f32)
+        }))
     }
 }
 

@@ -71,12 +71,12 @@ impl Machine for Drift {
     type Params = Duration;
     type Ctx = ();
 
-    fn step(self, input: DriftIn, at: Stamp, every: &Duration, &(): &()) -> (Drift, Vec<Edge>) {
+    fn step(self, input: DriftIn, at: Stamp, params: &Duration, &(): &()) -> (Drift, Vec<Edge>) {
         match (self, input) {
             (_, DriftIn::Over(edge)) => (
                 Drift::Toward {
                     edge,
-                    due: at.after_span(*every),
+                    due: at.after_span(*params),
                 },
                 vec![edge],
             ),
@@ -84,7 +84,7 @@ impl Machine for Drift {
             (Drift::Toward { edge, due }, DriftIn::Elapsed) if at >= due => (
                 Drift::Toward {
                     edge,
-                    due: at.after_span(*every),
+                    due: at.after_span(*params),
                 },
                 vec![edge],
             ),

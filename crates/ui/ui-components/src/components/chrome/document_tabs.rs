@@ -25,6 +25,7 @@ use crate::components::content::tip_text::TipText;
 use crate::components::content::title_tip::use_tip;
 use crate::focus::click::kept_click;
 use crate::host::measure::client_rect;
+use crate::host::narrow;
 use crate::keys::use_keys;
 use crate::root::common::Common;
 use crate::stack::roving::Rove;
@@ -61,8 +62,8 @@ impl DocumentTab {
 fn point(event: &PointerEvent) -> Point {
     let at = event.client_coordinates();
     Point {
-        x: Px(at.x as f32),
-        y: Px(at.y as f32),
+        x: Px(narrow::f32_of(at.x)),
+        y: Px(narrow::f32_of(at.y)),
     }
 }
 

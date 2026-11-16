@@ -77,10 +77,10 @@ pub fn IconView(
 
 /// The plate's inline custom properties: its size, and its tinted paint when it has one.
 fn plate_style(size: IconSize, family: PlateFamily, tint: Option<PlateTint>) -> String {
-    let side = format!("--ic-size:{}px", size.px());
+    let style = format!("--ic-size:{}px", size.px());
     match tint {
-        Some(tint) => format!("{side};{}", tint_style(family, tint)),
-        None => side,
+        Some(tint) => format!("{style};{}", tint_style(family, tint)),
+        None => style,
     }
 }
 

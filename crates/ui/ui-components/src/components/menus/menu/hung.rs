@@ -29,7 +29,7 @@ pub enum Hung {
 impl Hung {
     /// What the outside-press catcher leaves alone: the field's rect, and until it is laid out the
     /// catcher waits rather than cover the field.
-    pub(crate) fn catcher(self, float: Float, anchor: &Anchor) -> Catcher {
+    pub(crate) fn catcher(self, float: &Float, anchor: &Anchor) -> Catcher {
         match self {
             // Until the anchor is measured the menu is not drawn: a press then closes nothing.
             Hung::Free => float

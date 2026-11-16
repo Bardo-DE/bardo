@@ -43,9 +43,9 @@ impl Machine for HoldFor {
     type Params = Duration;
     type Ctx = ();
 
-    fn step(self, input: HoldForIn, at: Stamp, delay: &Duration, &(): &()) -> (HoldFor, Vec<()>) {
+    fn step(self, input: HoldForIn, at: Stamp, params: &Duration, &(): &()) -> (HoldFor, Vec<()>) {
         let next = match (self, input) {
-            (_, HoldForIn::Start) => HoldFor::Held(at.after_span(*delay)),
+            (_, HoldForIn::Start) => HoldFor::Held(at.after_span(*params)),
             (HoldFor::Held(until), HoldForIn::Elapsed) if at >= until => HoldFor::Done,
             (state, HoldForIn::Elapsed) => state,
         };
@@ -91,10 +91,10 @@ mod tests {
 
     #[test]
     fn a_start_holds_for_the_delay_then_it_is_done() {
-        let delay = Duration::from_millis(5000);
-        let held = |at| HoldFor::Held(Stamp(at));
         /// Name, state before, input, time, state after, next wake.
         type Case = (&'static str, HoldFor, HoldForIn, u64, HoldFor, Option<u64>);
+        let delay = Duration::from_millis(5000);
+        let held = |at| HoldFor::Held(Stamp(at));
         #[rustfmt::skip]
         let cases: &[Case] = &[
             ("a start from rest holds", HoldFor::Rest, HoldForIn::Start, 100, held(5100), Some(5100)),

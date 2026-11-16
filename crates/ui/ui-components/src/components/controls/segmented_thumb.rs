@@ -1,6 +1,8 @@
 //! The pure half of the segmented control's selection thumb (design/30 section 2.3): where the
 //! thumb stands, which labels it covers, and the inline style that places it.
 
+use crate::host::narrow;
+
 /// About how wide a segment draws, in pixels: what one of the thumb's units is when a hand's
 /// speed is scaled into it and when it is close enough to rest.
 pub(crate) const SEGMENT_PX: f32 = 64.0;
@@ -13,13 +15,13 @@ const IN_CELL: f32 = 0.01;
 /// more than half of it and the label takes the thumb's ink (`data-thumb="under"`; otherwise
 /// `"clear"`, the label stands on the track).
 pub(crate) fn thumb_over(position: f32, index: usize) -> bool {
-    (position - index as f32).abs() < 0.5
+    (position - narrow::count_f32(index)).abs() < 0.5
 }
 
 /// The group's inline style: `count` segments, the thumb's home cell (`at`, 1-based for
 /// `grid-column`) and how far it stands from it, in segments.
 pub(crate) fn group_style(count: usize, at: usize, position: f32) -> String {
-    let shift = position - at as f32;
+    let shift = position - narrow::count_f32(at);
     let shift = if shift.abs() < IN_CELL { 0.0 } else { shift };
     format!("--seg-n:{count};--seg-col:{};--seg-dx:{shift:.3}", at + 1)
 }
@@ -70,8 +72,8 @@ mod tests {
 
     #[test]
     fn the_thumb_stands_on_the_value_or_the_first() {
-        let values = [1, 2, 3];
         const CASES: &[(i32, usize)] = &[(1, 0), (3, 2), (9, 0)];
+        let values = [1, 2, 3];
         for &(value, want) in CASES {
             assert_eq!(index_of(&values, &value), want, "{value}");
         }

@@ -53,10 +53,13 @@ impl Walk {
         if !self.entered.insert(real.clone()) {
             return;
         }
-        let Ok(read) = std::fs::read_dir(&real) else {
+        let Ok(listing) = std::fs::read_dir(&real) else {
             return;
         };
-        let mut names: Vec<_> = read.filter_map(Result::ok).map(|e| e.file_name()).collect();
+        let mut names: Vec<_> = listing
+            .filter_map(Result::ok)
+            .map(|e| e.file_name())
+            .collect();
         names.sort_unstable();
         let (folders, files): (Vec<_>, Vec<_>) =
             names.into_iter().partition(|name| real.join(name).is_dir());

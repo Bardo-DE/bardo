@@ -38,12 +38,12 @@ pub(crate) struct StopEvents {
 pub(crate) fn draw_groups<T>(
     shown: &[ShownGroup<'_, T>],
     current: usize,
-    events: StopEvents,
+    events: &StopEvents,
     motion: &ListMotion,
 ) -> Element {
     let drawn: Vec<Element> = shown
         .iter()
-        .map(|group| draw_group(group, current, events.clone(), motion))
+        .map(|group| draw_group(group, current, events, motion))
         .collect();
     rsx! {
         for (key , group) in drawn.into_iter().enumerate() {
@@ -53,10 +53,14 @@ pub(crate) fn draw_groups<T>(
 }
 
 /// One group: its header, then its rows or its grid.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one `rsx!` tree whose handlers are written where they apply"
+)]
 fn draw_group<T>(
     shown: &ShownGroup<'_, T>,
     current: usize,
-    events: StopEvents,
+    events: &StopEvents,
     motion: &ListMotion,
 ) -> Element {
     let first = shown.first;

@@ -21,7 +21,7 @@ use ui_style::icon::Icon;
 use ui_style::tokens::control_size::SidebarSize;
 
 /// How little time a tab has left before it is drawn quieter.
-const SOON: Duration = Duration::from_secs(30 * 60);
+const SOON: Duration = Duration::from_mins(30);
 
 /// The longest the expiry clock sleeps: the "left" words are minutes, so a minute is fine.
 const LONGEST_WAIT: Duration = Duration::from_secs(60);

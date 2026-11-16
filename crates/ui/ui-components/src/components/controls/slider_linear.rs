@@ -9,6 +9,7 @@
 use crate::components::controls::slider_model::{SliderLook, key_step, marks, snap};
 use crate::components::controls::track::fraction_at;
 use crate::host::measure::client_rect;
+use crate::host::narrow;
 use crate::root::common::Common;
 use dioxus::core::queue_effect;
 use dioxus::html::geometry::ClientPoint;
@@ -43,7 +44,9 @@ fn thrown_to(value: Fraction, velocity: Velocity, width: f32) -> Option<Fraction
     }
     let from = Px(f32::from(value.clamped().0) * width / 1000.0);
     let landed = Throw { from, velocity }.projected().0 / width * 1000.0;
-    Some(Fraction(landed.clamp(0.0, 1000.0).round() as u16))
+    Some(Fraction(narrow::whole_u16(
+        landed.clamp(0.0, 1000.0).round(),
+    )))
 }
 
 /// The thumb's spring for this render: it follows `value`, 1:1 while a drag holds it.
@@ -51,7 +54,7 @@ fn follow(
     knob: SpringMotion,
     mut seen: CopyValue<Fraction>,
     value: Fraction,
-    phase: DragPhase<()>,
+    phase: &DragPhase<()>,
 ) {
     if *seen.peek() == value {
         return;
@@ -118,8 +121,8 @@ fn percent(value: Fraction) -> u16 {
 /// A dioxus client point as a layout point.
 fn point(at: ClientPoint) -> Point {
     Point {
-        x: Px(at.x as f32),
-        y: Px(at.y as f32),
+        x: Px(narrow::f32_of(at.x)),
+        y: Px(narrow::f32_of(at.y)),
     }
 }
 
@@ -152,9 +155,9 @@ pub(crate) fn LinearSlider(
         .map_or(UNMEASURED_WIDTH, |rect| rect.size.width.0);
     let knob = use_spring_motion(f32::from(value.0), PxPerUnit(width / 1000.0));
     let mut seen = use_hook(|| CopyValue::new(value));
-    follow(knob, seen, value, drag.phase());
+    follow(knob, seen, value, &drag.phase());
     let shown = knob.frame().position().clamp(0.0, 1000.0);
-    let fill = Fraction(shown.round() as u16).css();
+    let fill = Fraction(narrow::whole_u16(shown.round())).css();
     let now = percent(value);
     let pressed = match drag.phase() {
         DragPhase::Idle => PressPhase::Idle,

@@ -37,14 +37,14 @@ struct Hooks {
 
 impl Hooks {
     /// The target's element mounted: kept, to measure where the card goes.
-    fn mounted(&self, event: MountedEvent) {
+    fn mounted(&self, event: &MountedEvent) {
         let mut element = self.element;
         element.set(Some(MountedRef(event.data())));
     }
 
     /// The pointer came over the target. The innermost target wins (`S:1787-1788`): it handles
     /// the pointer and stops it.
-    fn over(&self, event: MouseEvent) {
+    fn over(&self, event: &MouseEvent) {
         event.stop_propagation();
         let anchor = self
             .element
@@ -97,8 +97,8 @@ pub fn HoverTarget(
                 "data-hover-key": "{hover_key.0}",
                 "data-kind": slug,
                 "data-hint": hint,
-                onmounted: move |event| mount.mounted(event),
-                onmouseover: move |event| over.over(event),
+                onmounted: move |event| mount.mounted(&event),
+                onmouseover: move |event| over.over(&event),
                 onmouseleave: move |_| out.out(),
                 onpointerdown: move |_| down.down(),
                 {children}
@@ -111,8 +111,8 @@ pub fn HoverTarget(
                 "data-kind": slug,
                 "data-hint": hint,
                 "data-as": "div",
-                onmounted: move |event| mount.mounted(event),
-                onmouseover: move |event| over.over(event),
+                onmounted: move |event| mount.mounted(&event),
+                onmouseover: move |event| over.over(&event),
                 onmouseleave: move |_| out.out(),
                 onpointerdown: move |_| down.down(),
                 {children}
@@ -125,8 +125,8 @@ pub fn HoverTarget(
                 "data-kind": slug,
                 "data-hint": hint,
                 "data-as": "li",
-                onmounted: move |event| mount.mounted(event),
-                onmouseover: move |event| over.over(event),
+                onmounted: move |event| mount.mounted(&event),
+                onmouseover: move |event| over.over(&event),
                 onmouseleave: move |_| out.out(),
                 onpointerdown: move |_| down.down(),
                 {children}

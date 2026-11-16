@@ -66,8 +66,8 @@ impl Tiled {
 }
 
 impl FromIterator<TileEdge> for Tiled {
-    fn from_iter<I: IntoIterator<Item = TileEdge>>(edges: I) -> Self {
-        edges.into_iter().fold(Tiled::NONE, Tiled::with)
+    fn from_iter<I: IntoIterator<Item = TileEdge>>(iter: I) -> Self {
+        iter.into_iter().fold(Tiled::NONE, Tiled::with)
     }
 }
 

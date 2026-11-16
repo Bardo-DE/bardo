@@ -194,7 +194,7 @@ pub fn Menu<T: Clone + PartialEq + 'static>(
         alive: alive.clone(),
     };
     follow_active(active, panel.current(), reported, on_active);
-    use_in_view(tracker, panel.current(), hovered);
+    use_in_view(&tracker, panel.current(), hovered);
     panel.onrelease = Some(released(picks, panel.onpick, fade_out, gesture, on_release));
     let onkey = {
         let (panel, alive) = (panel.clone(), alive.clone());
@@ -205,14 +205,14 @@ pub fn Menu<T: Clone + PartialEq + 'static>(
                         handed.call(());
                         fade_out.call(());
                     });
-                    escape_closes(float, &event, close);
+                    escape_closes(&float, &event, close);
                 }
             });
         }
     };
     let (opened, pressed, released_on) = (alive.clone(), alive.clone(), alive.clone());
     let body = match flow {
-        Flow::Floating => scrolling.frame(tracker, panel.body(&items)),
+        Flow::Floating => scrolling.frame(&tracker, panel.body(&items)),
         Flow::Inline => panel.body(&items),
     };
     let child = panel.submenu(timing);
@@ -221,7 +221,7 @@ pub fn Menu<T: Clone + PartialEq + 'static>(
     let hover = panel.clone();
     let leave = panel.clone();
     let presence = if closing() { "leaving" } else { "present" };
-    let surface = Surface::of(flow, float, &anchor, placement, hung);
+    let surface = Surface::of(flow, &float, &anchor, placement, hung);
     let data = common.data_attributes();
     let mounted = common.clone();
     let menu = rsx! {
@@ -277,7 +277,7 @@ pub fn Menu<T: Clone + PartialEq + 'static>(
     };
     match flow {
         Flow::Floating => {
-            float.show_around(menu, fade_out, hung.catcher(float, &anchor));
+            float.show_around(menu, fade_out, hung.catcher(&float, &anchor));
             rsx! {
                 {child}
             }

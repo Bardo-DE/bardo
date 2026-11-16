@@ -25,7 +25,7 @@ fn divider(lead: SizeLimits, trail: SizeLimits) -> DividerTarget {
         window(1, WindowPlacement::FullScreen, lead),
         window(2, WindowPlacement::FullScreen, trail),
     ];
-    let mut spec: SceneSpec = crate::support::scene::one_desktop(full, windows);
+    let mut spec = crate::support::scene::one_desktop(full, windows);
     spec.outputs[0].spaces[0].kind = SpaceArrangement::Split(SplitPair {
         leading: WindowId(1),
         trailing: WindowId(2),

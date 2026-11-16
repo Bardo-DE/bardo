@@ -210,7 +210,7 @@ fn cells() -> Vec<EmojiCell<u8>> {
         ])
         .enumerate()
         .map(|(value, (glyph, name))| EmojiCell {
-            value: value as u8,
+            value: u8::try_from(value).expect("a handful of emoji"),
             glyph: (*glyph).to_owned(),
             name: name.to_owned(),
         })

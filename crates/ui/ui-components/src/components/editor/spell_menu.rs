@@ -210,7 +210,7 @@ pub(crate) fn SpellLayer(
     rsx! {
         SpellMarks { boxes: boxes(), onmounted: mounted }
         if let Some(opened) = opened {
-            {spell_menu(&link, menu, opened)}
+            {spell_menu(&link, menu, &opened)}
         }
     }
 }
@@ -240,8 +240,8 @@ pub fn SpellMarks(
     }
 }
 
-fn spell_menu(link: &SpellLink, mut menu: Signal<Option<Opened>>, opened: Opened) -> Element {
-    let entries = entries(&opened, link.on_replace.is_some());
+fn spell_menu(link: &SpellLink, mut menu: Signal<Option<Opened>>, opened: &Opened) -> Element {
+    let entries = entries(opened, link.on_replace.is_some());
     let (picking, closing) = (link.clone(), link.clone());
     let mark = opened.mark.clone();
     rsx! {

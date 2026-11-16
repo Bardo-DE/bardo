@@ -89,18 +89,18 @@ impl Machine for Hold {
     /// A press that ends its wait opens the menu and swallows the click that will end it; a rest
     /// that ends its wait opens it and leaves the click a zoom. A wake before the wait's end, or
     /// after it was replaced, changes nothing.
-    fn step(self, input: HoldIn, at: Stamp, timing: &HoldTiming, &(): &()) -> (Hold, Vec<HoldOut>) {
+    fn step(self, input: HoldIn, at: Stamp, params: &HoldTiming, &(): &()) -> (Hold, Vec<HoldOut>) {
         match (input, self.waiting) {
             (HoldIn::Wait(Wait::Press), _) => (
                 Hold {
-                    waiting: Waiting::Press(at.after_span(timing.press)),
+                    waiting: Waiting::Press(at.after_span(params.press)),
                     swallow_click: false,
                 },
                 Vec::new(),
             ),
             (HoldIn::Wait(Wait::Hover), _) => (
                 Hold {
-                    waiting: Waiting::Hover(at.after_span(timing.hover)),
+                    waiting: Waiting::Hover(at.after_span(params.hover)),
                     ..self
                 },
                 Vec::new(),

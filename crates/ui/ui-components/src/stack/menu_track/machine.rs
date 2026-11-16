@@ -75,14 +75,14 @@ impl<K: Clone + PartialEq + 'static> Machine for MenuTrack<K> {
     /// [`MenuTrackEvent::Tick`] that comes before its deadline changes nothing.
     fn step(
         self,
-        event: MenuTrackEvent<K>,
+        input: MenuTrackEvent<K>,
         at: Stamp,
-        timing: &MenuTiming,
+        params: &MenuTiming,
         &(): &(),
     ) -> (Self, Effects<K>) {
         let (phase, effects) = match self.phase {
-            MenuPhase::Closed => closed(event),
-            MenuPhase::Tracking(session) => tracking(session, event, at, *timing),
+            MenuPhase::Closed => closed(input),
+            MenuPhase::Tracking(session) => tracking(session, input, at, *params),
         };
         (MenuTrack { phase }, effects)
     }
@@ -185,7 +185,7 @@ fn selected<K>(session: Session<K>, path: ItemPath) -> (MenuPhase<K>, Effects<K>
     let mut effects = Vec::new();
     let sub = match session.sub {
         Submenu::Open { item, guard } if item == path => Submenu::Open { item, guard },
-        other => close_sub(other, &mut effects),
+        other => close_sub(&other, &mut effects),
     };
     if session.hot.as_ref() != Some(&path) {
         effects.insert(0, MenuTrackEffect::Highlight(Some(path.clone())));
@@ -210,7 +210,7 @@ fn expanded<K>(session: Session<K>, path: ItemPath) -> (MenuPhase<K>, Effects<K>
     let sub = match session.sub {
         Submenu::Open { item, guard } if item == path => Submenu::Open { item, guard },
         other => {
-            let _ = close_sub(other, &mut effects);
+            let _ = close_sub(&other, &mut effects);
             effects.push(MenuTrackEffect::OpenSub(path.clone()));
             Submenu::Open {
                 item: path.clone(),

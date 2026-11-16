@@ -26,27 +26,42 @@ fn page(chip: Element) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn Static() -> Element {
     page(rsx! { Chip { variant: ChipVariant::Accent, text: "Work" } })
 }
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn Off() -> Element {
     page(rsx! {
         Chip { variant: ChipVariant::Neutral, text: "Work", pressed: Check::Off, onpress: |_| {} }
     })
 }
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn On() -> Element {
     page(rsx! {
         Chip { variant: ChipVariant::Neutral, text: "Work", pressed: Check::On, onpress: |_| {} }
     })
 }
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn Action() -> Element {
     page(rsx! { Chip { variant: ChipVariant::Neutral, text: "Work", onpress: |_| {} } })
 }
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn Dotted() -> Element {
     page(rsx! {
         Chip {
@@ -56,13 +71,19 @@ fn Dotted() -> Element {
         }
     })
 }
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn TagDot() -> Element {
     page(rsx! {
         Chip { variant: ChipVariant::Neutral, text: "", dot: ChipDot::Tag(SystemHue::Red) }
     })
 }
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn NamedDot() -> Element {
     page(rsx! {
         Chip {
@@ -74,7 +95,10 @@ fn NamedDot() -> Element {
         }
     })
 }
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn Removable() -> Element {
     page(
         rsx! { Chip { variant: ChipVariant::Label(LabelHue::Blue), text: "Work", onremove: |()| {} } },

@@ -86,6 +86,7 @@ pub(crate) fn held_to(at: Point, rects: &[Rect]) -> Point {
 #[cfg(test)]
 mod tests {
     use super::{Dragged, held_to, stand};
+    use crate::host::narrow;
     use ui_core::geometry::units::{Point, Px, Rect, Size};
     use ui_motion::drag::DragPhase;
 
@@ -97,7 +98,7 @@ mod tests {
     fn rows() -> Vec<Rect> {
         (0..4)
             .map(|n| Rect {
-                origin: point(0.0, 100.0 + 40.0 * n as f32),
+                origin: point(0.0, 100.0 + 40.0 * narrow::i32_f32(n)),
                 size: Size {
                     width: Px(300.0),
                     height: Px(40.0),

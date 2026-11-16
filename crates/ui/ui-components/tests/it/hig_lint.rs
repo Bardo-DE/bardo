@@ -338,7 +338,11 @@ fn quires_goldens_warn_only_where_reviewed() {
     const REVIEWED: &[(&str, Rule)] = &[("controls/edit_surface/empty.html", Rule::UnnamedControl)];
     let left: Vec<String> = golden::all_in("")
         .into_iter()
-        .filter(|(name, _)| name.ends_with(".html"))
+        .filter(|(name, _)| {
+            std::path::Path::new(name)
+                .extension()
+                .is_some_and(|ext| ext.eq_ignore_ascii_case("html"))
+        })
         .flat_map(|(name, html)| {
             markup_warnings(&html, &strict())
                 .into_iter()

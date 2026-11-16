@@ -83,14 +83,14 @@ pub(crate) struct Drawn {
 }
 
 /// The rail's contents for `drawn.shape`.
-pub(crate) fn body(drawn: Drawn) -> Element {
+pub(crate) fn body(drawn: &Drawn) -> Element {
     match drawn.shape {
-        Shape::Capsule => capsule(&drawn, Inside::Glyph),
+        Shape::Capsule => capsule(drawn, Inside::Glyph),
         Shape::Level => rsx! {
-            {capsule(&drawn, Inside::Nothing)}
-            div { class: drawn.parts.knob, {in_knob(&drawn)} }
+            {capsule(drawn, Inside::Nothing)}
+            div { class: drawn.parts.knob, {in_knob(drawn)} }
         },
-        Shape::Segments => segments(&drawn),
+        Shape::Segments => segments(drawn),
     }
 }
 

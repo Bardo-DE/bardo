@@ -16,6 +16,7 @@ use crate::components::lists::list::reorder::{held_to, stand};
 use crate::components::lists::order::moved as reordered;
 use crate::focus::soon::focus_soon;
 use crate::host::measure::client_rect;
+use crate::host::narrow;
 use crate::root::common::Common;
 use crate::stack::typeahead::Typeahead;
 use dioxus::html::input_data::MouseButton;
@@ -199,8 +200,8 @@ pub fn List<K: Clone + PartialEq + Hash + 'static>(
 fn point(event: &PointerEvent) -> Point {
     let at = event.client_coordinates();
     Point {
-        x: Px(at.x as f32),
-        y: Px(at.y as f32),
+        x: Px(narrow::f32_of(at.x)),
+        y: Px(narrow::f32_of(at.y)),
     }
 }
 

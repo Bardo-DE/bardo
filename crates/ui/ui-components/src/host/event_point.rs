@@ -1,5 +1,6 @@
 //! Where a mouse or pointer event happened, in the client coordinates every quire rect is read in.
 
+use crate::host::narrow;
 use dioxus::prelude::*;
 use ui_core::geometry::units::{Point, Px};
 
@@ -7,8 +8,8 @@ use ui_core::geometry::units::{Point, Px};
 pub(crate) fn client_point(event: &MouseEvent) -> Point {
     let at = event.client_coordinates();
     Point {
-        x: Px(at.x as f32),
-        y: Px(at.y as f32),
+        x: Px(narrow::f32_of(at.x)),
+        y: Px(narrow::f32_of(at.y)),
     }
 }
 
@@ -16,7 +17,7 @@ pub(crate) fn client_point(event: &MouseEvent) -> Point {
 pub(crate) fn pointer_point(event: &PointerEvent) -> Point {
     let at = event.client_coordinates();
     Point {
-        x: Px(at.x as f32),
-        y: Px(at.y as f32),
+        x: Px(narrow::f32_of(at.x)),
+        y: Px(narrow::f32_of(at.y)),
     }
 }

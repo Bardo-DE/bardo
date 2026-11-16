@@ -215,6 +215,10 @@ async fn revoking_a_grant_ends_it() {
 /// app's own call, then granted, then signed in again: the whole path of `AddAccount` and
 /// `Reauthenticate` over the in-process carrier.
 #[tokio::test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario of the whole flow, read top to bottom"
+)]
 async fn an_app_adds_an_account_through_a_family_is_granted_it_and_signs_it_in_again() {
     use account_capability::KindToggle;
     use account_capability::{Access, Delta};
@@ -423,7 +427,10 @@ async fn adding_an_account_that_is_already_here_tells_the_app_which_one_it_is() 
 struct NothingPublished;
 
 impl account_http::Http for NothingPublished {
-    #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async; this implementation has nothing to await")]
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn send(
         &self,
         _request: account_http::http::Request<Vec<u8>>,
@@ -438,6 +445,10 @@ impl account_http::Http for NothingPublished {
 /// POP3 account typed there is added, then found by a mail need with its POP3 and SMTP
 /// endpoints and a login name that is not the address.
 #[tokio::test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario of the whole flow, read top to bottom"
+)]
 async fn a_typed_pop3_server_is_added_through_the_sheet_and_found_by_a_mail_need() {
     use account_capability::KindToggle;
     use account_core::ProviderId;

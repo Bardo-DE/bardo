@@ -40,7 +40,7 @@ impl Drop for Scratch {
     }
 }
 
-fn paths(dirs: Vec<PathBuf>) -> Vec<String> {
+fn paths(dirs: &[PathBuf]) -> Vec<String> {
     dirs.iter().map(|dir| dir.display().to_string()).collect()
 }
 
@@ -90,7 +90,7 @@ fn the_folders_searched_follow_the_xdg_rules_and_add_the_stores_once() {
         let mut want: Vec<String> = first.iter().map(|dir| (*dir).to_owned()).collect();
         want.extend(user_store.map(str::to_owned));
         want.extend(stores.map(str::to_owned));
-        assert_eq!(paths(env.applications_dirs()), want, "{name}");
+        assert_eq!(paths(&env.applications_dirs()), want, "{name}");
     }
 
     let listed = env(
@@ -98,7 +98,7 @@ fn the_folders_searched_follow_the_xdg_rules_and_add_the_stores_once() {
         Some("/var/lib/flatpak/exports/share:/usr/share"),
         None,
     );
-    let got = paths(listed.applications_dirs());
+    let got = paths(&listed.applications_dirs());
     let flatpak = "/var/lib/flatpak/exports/share/applications";
     assert_eq!(got.iter().filter(|dir| *dir == flatpak).count(), 1);
     assert_eq!(

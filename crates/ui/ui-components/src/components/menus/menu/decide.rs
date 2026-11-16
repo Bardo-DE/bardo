@@ -106,9 +106,8 @@ pub(crate) fn decide<T: Clone>(
         },
         KeyAct::Back | KeyAct::Close if child_open => Decision::CloseSub,
         KeyAct::Back | KeyAct::Close if level == Level::Sub => Decision::Back,
-        KeyAct::Back => Decision::Nothing,
+        KeyAct::Back | KeyAct::Jump(_) => Decision::Nothing,
         KeyAct::Close => Decision::CloseMenu,
-        KeyAct::Jump(_) => Decision::Nothing,
     }
 }
 

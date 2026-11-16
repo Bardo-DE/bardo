@@ -19,6 +19,6 @@ pub(crate) fn use_turn(activity: bool, period: Duration) -> Turn {
     glow.send_from_render(GlowIn::Spin(moving.then_some(period)));
     match level.now() {
         MotionLevel::Reduced => Turn::default(),
-        _ => glow.state().read().turn,
+        MotionLevel::Standard => glow.state().read().turn,
     }
 }

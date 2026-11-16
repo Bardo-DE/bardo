@@ -222,7 +222,14 @@ struct Marked {
     outcome: Option<Outcome>,
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a Dioxus component takes its props by value"
+)]
 fn MarkedStage(props: Marked) -> Element {
     let Marked { carrier, outcome } = props;
     match carrier {
@@ -285,7 +292,10 @@ struct Card {
     view: AnswerView,
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component is a function named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component is a function named in CamelCase"
+)]
 fn CardStage(props: Card) -> Element {
     let view = props.view;
     root(rsx! { AnswerCard { view, focused: Some(0), on_action: |_| {} } })

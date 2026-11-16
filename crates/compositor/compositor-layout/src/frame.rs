@@ -191,7 +191,7 @@ fn rgb(value: Hex) -> FrameColour {
 
 /// A hue's hairline: the hue at about four fifths.
 fn darker(of: FrameColour) -> FrameColour {
-    let shade = |channel: u8| (u16::from(channel) * 4 / 5) as u8;
+    let shade = |channel: u8| u8::try_from(u16::from(channel) * 4 / 5).unwrap_or(u8::MAX);
     FrameColour {
         r: shade(of.r),
         g: shade(of.g),

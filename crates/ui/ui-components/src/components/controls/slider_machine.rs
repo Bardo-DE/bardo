@@ -81,7 +81,7 @@ pub(crate) fn step(state: Hold, value: Fraction, input: LevelInput) -> Stepped {
         value: reported(fraction_at(track, x)),
     };
     match (state, input) {
-        (_, LevelInput::Down { x }) => Stepped {
+        (_, LevelInput::Down { x }) | (Hold::Pressing { .. }, LevelInput::Move { x }) => Stepped {
             state: Hold::Pressing { x },
             value: None,
         },
@@ -92,10 +92,6 @@ pub(crate) fn step(state: Hold, value: Fraction, input: LevelInput) -> Stepped {
         (Hold::Pressing { x }, LevelInput::Measured { track, .. })
         | (Hold::Held { .. }, LevelInput::Measured { x, track })
         | (Hold::Held { track }, LevelInput::Move { x }) => held(track, x),
-        (Hold::Pressing { .. }, LevelInput::Move { x }) => Stepped {
-            state: Hold::Pressing { x },
-            value: None,
-        },
         (Hold::Idle, LevelInput::Move { .. }) => Stepped { state, value: None },
         (_, LevelInput::Up) => Stepped {
             state: Hold::Idle,
@@ -116,8 +112,10 @@ pub(crate) fn keyed(value: Fraction, nudge: Nudge, step: KeyStep) -> Fraction {
         KeyStep::Fine => FINE,
     };
     let now = value.clamped().0;
-    let point =
-        |k: u16| Fraction(((u32::from(k) * 1000 + u32::from(steps) / 2) / u32::from(steps)) as u16);
+    let point = |k: u16| {
+        let thousandths = (u32::from(k) * 1000 + u32::from(steps) / 2) / u32::from(steps);
+        Fraction(u16::try_from(thousandths).unwrap_or(u16::MAX))
+    };
     let found = match nudge {
         Nudge::Up => (0..=steps).map(point).find(|p| p.0 > now),
         Nudge::Down => (0..=steps).rev().map(point).find(|p| p.0 < now),

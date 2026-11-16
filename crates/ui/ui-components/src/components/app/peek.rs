@@ -55,7 +55,7 @@ pub fn Peek(
                 "data-presence": presence.slug(),
                 role: "dialog",
                 "aria-label": "{label}",
-                onkeydown: move |event| escape_closes(float, &event, onclose),
+                onkeydown: move |event| escape_closes(&float, &event, onclose),
                 div { class: "ds-peek-tools",
                     Button {
                         bezel: Bezel::Toolbar, size: ControlSize::Large, image: ImagePosition::Only,

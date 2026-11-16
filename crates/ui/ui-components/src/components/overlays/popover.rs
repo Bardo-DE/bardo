@@ -260,7 +260,7 @@ impl Float {
             .size;
         let room = |side: Side| room_on_side(anchor, bounds, side, gap);
         let wanted = room(want.side);
-        let side = if want.flip && size.height.0 + 0.5 >= wanted.0 {
+        let facing = if want.flip && size.height.0 + 0.5 >= wanted.0 {
             let other = opposite(want.side);
             if room(other).0 > wanted.0 {
                 other
@@ -270,12 +270,15 @@ impl Float {
         } else {
             want.side
         };
-        let room = Px(room(side).0.max(floor.0));
+        let room = Px(room(facing).0.max(floor.0));
         let content = Size {
             width: size.width,
             height: Px(size.height.0.min(room.0)),
         };
-        let landed = Placement { side, ..want };
+        let landed = Placement {
+            side: facing,
+            ..want
+        };
         let at = place(anchor, content, bounds, landed.no_flip(), gap).origin;
         Some((at, room))
     }
@@ -316,7 +319,7 @@ impl Float {
         catcher: Catcher,
     ) {
         let float = *self;
-        let catches = matches!(self.stacking, Stacking::Layer(Dismiss::Transient));
+        let takes_clicks = matches!(self.stacking, Stacking::Layer(Dismiss::Transient));
         let bounds = self.bounds;
         let outside = EventHandler::new(move |()| {
             if float.outside_click_closes() {
@@ -328,7 +331,7 @@ impl Float {
                 class: "ds-overlay",
                 "data-layer": layer_slug(self.layer),
                 onmounted: move |event| bounds.on_mounted(event),
-                if catches {
+                if takes_clicks {
                     {catcher.draw(outside)}
                 }
                 {surface}
@@ -392,7 +395,7 @@ fn px(length: Px) -> String {
 
 /// Close on Escape when this surface is the topmost layer that takes it; stop the key there so
 /// one Escape closes one layer (design/06-INTERACTIONS.md section 18).
-pub(crate) fn escape_closes(float: Float, event: &KeyboardEvent, onclose: EventHandler<()>) {
+pub(crate) fn escape_closes(float: &Float, event: &KeyboardEvent, onclose: EventHandler<()>) {
     if event.key() == Key::Escape && float.takes_escape() {
         event.stop_propagation();
         event.prevent_default();
@@ -409,24 +412,24 @@ const ARROW_INSET: Px = Px(24.0);
 
 /// The arrow's `data-side` and `left`/`top`: on the side of the popover that faces the anchor,
 /// centred on the anchor's middle, kept `ARROW_INSET` from the corners.
-fn arrow_at(side: Side, anchor: Rect, at: Point, size: Size) -> (&'static str, String) {
+fn arrow_at(side: Side, anchor: Rect, at: Point, panel: Size) -> (&'static str, String) {
     let clamp = |along: f32, extent: f32| {
         along.clamp(ARROW_INSET.0, (extent - ARROW_INSET.0).max(ARROW_INSET.0))
     };
     match side {
         Side::Bottom | Side::Top => {
-            let x = anchor.origin.x.0 + anchor.size.width.0 / 2.0 - at.x.0;
+            let x = anchor.origin.x.0 + anchor.panel.width.0 / 2.0 - at.x.0;
             let word = if side == Side::Bottom {
                 "top"
             } else {
                 "bottom"
             };
-            (word, format!("left:{}px", clamp(x, size.width.0)))
+            (word, format!("left:{}px", clamp(x, panel.width.0)))
         }
         Side::Left | Side::Right => {
-            let y = anchor.origin.y.0 + anchor.size.height.0 / 2.0 - at.y.0;
+            let y = anchor.origin.y.0 + anchor.panel.height.0 / 2.0 - at.y.0;
             let word = if side == Side::Right { "left" } else { "right" };
-            (word, format!("top:{}px", clamp(y, size.height.0)))
+            (word, format!("top:{}px", clamp(y, panel.height.0)))
         }
     }
 }
@@ -505,7 +508,7 @@ pub fn Popover(
                     common.mounted(event.clone());
                     probe.on_mounted(event);
                 },
-                onkeydown: move |event| escape_closes(float, &event, close),
+                onkeydown: move |event| escape_closes(&float, &event, close),
                 ..data,
                 if let Some((side, along)) = pointer {
                     span { class: "ds-popover-arrow", "data-side": side, style: along }

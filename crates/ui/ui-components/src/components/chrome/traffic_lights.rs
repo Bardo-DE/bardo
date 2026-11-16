@@ -10,6 +10,7 @@
 
 use crate::components::chrome::light_mark::{LightMark, Mark};
 use crate::components::menus::item::item::{MenuImage, MenuItem};
+use crate::components::menus::item::text::ItemText;
 use crate::components::menus::menu::menu::Menu;
 use crate::components::menus::menu::placement::MenuPlacement;
 use crate::host::measure::{Anchor, MountedRef};
@@ -200,7 +201,7 @@ fn entries(support: [bool; 4]) -> Vec<MenuItem<WindowTile>> {
             hint: None,
             check: None,
             keep_open: false,
-            text: Default::default(),
+            text: ItemText::default(),
             availability: if support {
                 Availability::Enabled
             } else {

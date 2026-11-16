@@ -23,6 +23,7 @@ use crate::components::controls::glyph::glyph_size;
 use crate::components::controls::press::{ActivationKeys, activates, disabled, use_pressing};
 use crate::components::controls::segmented_thumb::{SEGMENT_PX, group_style, index_of, thumb_over};
 use crate::focus::press_focus::on_click;
+use crate::host::narrow;
 use crate::root::common::Common;
 use crate::stack::roving::{Rove, Roving};
 use dioxus::prelude::*;
@@ -122,7 +123,7 @@ pub fn SegmentedControl<T: Clone + PartialEq + 'static>(
         Some(_) | None => Touch::Remote,
     };
     let spec = SpringSpec::for_touch(touch).response(SpringResponse::Quick);
-    let thumb = use_spring(at as f32, spec, PxPerUnit(SEGMENT_PX));
+    let thumb = use_spring(narrow::count_f32(at), spec, PxPerUnit(SEGMENT_PX));
     let one = matches!(tracking, Tracking::SelectOne(_));
     let live = availability == Availability::Enabled;
     let class = common.class("ds-segmented");

@@ -10,6 +10,7 @@ use crate::components::controls::level_draw::{Drawn, GlyphAt, SLIDER, Shape, bod
 use crate::components::controls::slider_machine::{Hold, KeyStep, LevelInput, Nudge, step};
 use crate::components::controls::slider_model::SliderLook;
 use crate::host::measure::client_rect;
+use crate::host::narrow;
 use crate::root::common::Common;
 use dioxus::prelude::*;
 use std::rc::Rc;
@@ -83,7 +84,7 @@ pub(crate) fn BezelSlider(
                 if !takes_input {
                     return;
                 }
-                let x = Px(event.client_coordinates().x as f32);
+                let x = Px(narrow::f32_of(event.client_coordinates().x));
                 apply(LevelInput::Down { x }, value);
                 // The press focuses the control (Blitz focuses only text inputs on click, spike
                 // S12) and measures the rail after layout, never in `onmounted` (spike S9); the
@@ -103,7 +104,7 @@ pub(crate) fn BezelSlider(
             },
             onpointermove: move |event| {
                 if takes_input {
-                    apply(LevelInput::Move { x: Px(event.client_coordinates().x as f32) }, value);
+                    apply(LevelInput::Move { x: Px(narrow::f32_of(event.client_coordinates().x)) }, value);
                 }
             },
             onpointerup: move |_| apply(LevelInput::Up, value),
@@ -119,7 +120,7 @@ pub(crate) fn BezelSlider(
             div {
                 class: "ds-slider-rail",
                 onmounted: move |event| rail.set(Some(event.data())),
-                {body(drawn)}
+                {body(&drawn)}
                 if takes_input {
                     div { class: "ds-slider-hit" }
                 }

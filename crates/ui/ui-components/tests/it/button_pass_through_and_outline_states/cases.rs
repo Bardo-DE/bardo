@@ -24,7 +24,10 @@ fn folder(path: &str) -> Vec<DataAttr> {
 }
 
 /// A consumer class, checked.
-#[expect(clippy::unnecessary_wraps, reason = "the result fills `Common::extra_class`, which is an `Option`")]
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "the result fills `Common::extra_class`, which is an `Option`"
+)]
 fn class(list: &str) -> Option<ExtraClass> {
     match ExtraClass::parse(list) {
         Ok(class) => Some(class),

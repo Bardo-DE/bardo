@@ -33,7 +33,7 @@ pub(crate) struct Surface {
 impl Surface {
     pub(crate) fn of(
         flow: Flow,
-        float: Float,
+        float: &Float,
         anchor: &Anchor,
         placement: MenuPlacement,
         hung: Hung,

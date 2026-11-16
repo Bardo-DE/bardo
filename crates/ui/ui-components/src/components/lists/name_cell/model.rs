@@ -1,5 +1,6 @@
 //! How many characters of a name fit in the room a Name cell has, pure.
 
+use crate::host::narrow;
 use ui_core::geometry::units::Px;
 
 /// The icon's side: `IconSize::Base`.
@@ -19,7 +20,7 @@ const ADVANCE: f32 = 7.0;
 #[must_use]
 pub fn name_chars(room: Px) -> usize {
     if room.0.is_finite() {
-        (((room.0 - ICON - GAP) / ADVANCE).floor().max(1.0)) as usize
+        narrow::whole_usize(((room.0 - ICON - GAP) / ADVANCE).floor().max(1.0))
     } else {
         1
     }

@@ -82,8 +82,8 @@ pub(crate) fn SubMenu<T: Clone + PartialEq + 'static>(
             }
         }
     }));
-    use_in_view(tracker, panel.current(), pointed);
-    let body = scrolling.frame(tracker, panel.body(&items));
+    use_in_view(&tracker, panel.current(), pointed);
+    let body = scrolling.frame(&tracker, panel.body(&items));
     let child = panel.submenu(timing);
     let probe = float.surface();
     let key_panel = panel.clone();
