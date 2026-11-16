@@ -24,9 +24,6 @@ caller-identity-linux = {path = "../../identity/caller-identity-linux"}
 service-locator = {features = ["guard"], path = "../../platform/service-locator"}
 caller-identity-core = {features = ["desktop"], path = "../../identity/caller-identity-core"}
 
-# Temporary: moves the pre-bardo config folder once at start; delete with the crate.
-old-folders = {path = "../../platform/old-folders"}
-
 [dev-dependencies]
 input-broker-client = {features = ["fake"], path = "../input-broker-client"}
 # A held process that is only a claim, for tests of who the socket's peer is; never in a shipped build.

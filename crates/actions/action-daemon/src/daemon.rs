@@ -541,37 +541,6 @@ fn placed_by<S: Seams>(router: &Router<S>, record: &AuditRecord) -> Option<Space
     }
 }
 
-/// Temporary: delete with the old-folders crate in the release after everyone has started once.
-///
-/// Moves what the earlier release kept under `quire/` and `docket/` (configuration, data) to the
-/// `bardo` folders, before anything is read. The folders other programs read by contract
-/// (`intents`, `skills`) are moved here too: whoever starts first does it, and it never overwrites.
-fn move_pre_bardo_folders(env: &impl Fn(&str) -> Option<String>) {
-    use action_dbus::pre_bardo::{config_base, data_base, move_callers, move_dir, move_file};
-    const WHO: &str = "bardo-actiond";
-    let config = config_base(env);
-    let actions = config.join("bardo").join("actions");
-    move_file(
-        WHO,
-        &config.join("quire").join("intentd.toml"),
-        &actions.join("actiond.toml"),
-    );
-    move_callers(WHO, "intentd-callers.toml", "actiond-callers.toml", env);
-    move_dir(
-        WHO,
-        &config.join("quire").join("permissions"),
-        &actions.join("permissions"),
-    );
-    move_dir(WHO, &config.join("docket"), &actions);
-    let data = data_base(env);
-    let (old, new) = (data.join("quire"), data.join("bardo"));
-    move_dir(WHO, &old.join("intents"), &new.join("intents"));
-    move_dir(WHO, &old.join("skills"), &new.join("skills"));
-    for name in ["checkpoints", "search", "permissions"] {
-        move_dir(WHO, &old.join(name), &new.join("actions").join(name));
-    }
-}
-
 /// The daemon: the session bus, the system bus for logind (absent, it is not watched), the
 /// files `env` names (the process's environment, which its `main` passes in). Returns when the bus
 /// closes.
@@ -584,7 +553,6 @@ pub async fn run_with(
     seams: HarnessSeams,
     env: &impl Fn(&str) -> Option<String>,
 ) -> Result<(), DaemonFault> {
-    move_pre_bardo_folders(env);
     let mut setup = Setup::from_env(env)?;
     setup.proc_root = seams.proc_root;
     setup.trace = seams.trace;

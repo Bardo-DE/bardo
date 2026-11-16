@@ -5,7 +5,7 @@
 
 pub use base_xdg::PathError;
 use base_xdg::Xdg;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::time::Duration;
 
 /// Every path the daemon uses.
@@ -183,123 +183,10 @@ pub fn rescan(build: Build, value: Option<String>, default: Duration) -> Duratio
     }
 }
 
-/// Temporary: delete with the old-folders crate in the release after everyone has started once.
-///
-/// Moves what syncd kept under its pre-bardo folders into the ones [`Paths::resolve`] names, once,
-/// before anything is read: the journals (`$XDG_STATE_HOME/porter/sync` and
-/// `$XDG_STATE_HOME/quire/syncd`), the mirrors, app folders and photo libraries
-/// (`$XDG_DATA_HOME/porter/{vdir,storage,photos}`), the drives' cache
-/// (`$XDG_CACHE_HOME/porter/drives`) and its settings file (`$XDG_CONFIG_HOME/porter/syncd`).
-/// What moved is said on standard error.
-///
-/// # Errors
-/// There is no home to resolve the folders in.
-pub fn move_pre_bardo_folders(var: impl Fn(&str) -> Option<String>) -> Result<(), PathError> {
-    let xdg = Xdg::new(var);
-    move_under(
-        &xdg.dir("XDG_STATE_HOME", ".local/state")?,
-        &xdg.dir("XDG_CONFIG_HOME", ".config")?,
-        &xdg.dir("XDG_DATA_HOME", ".local/share")?,
-        &xdg.dir("XDG_CACHE_HOME", ".cache")?,
-    );
-    Ok(())
-}
-
-/// [`move_pre_bardo_folders`] over the four base directories.
-fn move_under(state: &Path, config: &Path, data: &Path, cache: &Path) {
-    let folders = [
-        (state.join("porter/sync"), state.join("bardo/sync")),
-        (state.join("quire/syncd"), state.join("bardo/sync")),
-        (data.join("porter/vdir"), data.join("bardo/sync/vdir")),
-        (data.join("porter/storage"), data.join("bardo/sync/storage")),
-        (data.join("porter/photos"), data.join("bardo/sync/photos")),
-        (cache.join("porter/drives"), cache.join("bardo/sync/drives")),
-    ];
-    for (old, new) in &folders {
-        match old_folders::move_once(old, new) {
-            Ok(done) if done.moved > 0 => eprintln!(
-                "syncd: moved {} from {} to {}",
-                done.moved,
-                old.display(),
-                new.display()
-            ),
-            Ok(_) => {}
-            Err(why) => eprintln!(
-                "syncd: could not move {} to {}: {why}",
-                old.display(),
-                new.display()
-            ),
-        }
-    }
-    let (old, new) = (
-        config.join("porter/syncd/syncd.toml"),
-        config.join("bardo/sync/syncd.toml"),
-    );
-    match old_folders::move_file_once(&old, &new) {
-        Ok(true) => eprintln!("syncd: moved {} to {}", old.display(), new.display()),
-        Ok(false) => {}
-        Err(why) => eprintln!(
-            "syncd: could not move {} to {}: {why}",
-            old.display(),
-            new.display()
-        ),
-    }
-    // What is left empty is not worth keeping; a folder with anything in it stays.
-    for old in [
-        config.join("porter/syncd"),
-        state.join("quire"),
-        data.join("porter"),
-        cache.join("porter"),
-    ] {
-        let _ = std::fs::remove_dir(old);
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::path::Path;
-
-    #[test]
-    fn the_pre_bardo_folders_move_once_and_accountds_files_stay() {
-        let scratch = base_testkit::Scratch::new("syncd-old-folders");
-        let (state, config, data, cache) = (
-            scratch.join("state"),
-            scratch.join("config"),
-            scratch.join("data"),
-            scratch.join("cache"),
-        );
-        let write = |path: PathBuf| {
-            std::fs::create_dir_all(path.parent().expect("parent")).expect("dir");
-            std::fs::write(path, "x").expect("file");
-        };
-        write(state.join("porter/sync/a1/files.sqlite"));
-        write(state.join("porter/registry.json"));
-        write(state.join("quire/syncd/old.json"));
-        write(data.join("porter/vdir/a1/cal/one.ics"));
-        write(data.join("porter/providers/mine.toml"));
-        write(cache.join("porter/drives/a1/file"));
-        write(config.join("porter/syncd/syncd.toml"));
-        write(config.join("porter/callers.toml"));
-        move_under(&state, &config, &data, &cache);
-        move_under(&state, &config, &data, &cache);
-        for new in [
-            state.join("bardo/sync/a1/files.sqlite"),
-            state.join("bardo/sync/old.json"),
-            data.join("bardo/sync/vdir/a1/cal/one.ics"),
-            cache.join("bardo/sync/drives/a1/file"),
-            config.join("bardo/sync/syncd.toml"),
-            state.join("porter/registry.json"),
-            data.join("porter/providers/mine.toml"),
-            config.join("porter/callers.toml"),
-        ] {
-            assert!(new.exists(), "{}", new.display());
-        }
-        assert!(!state.join("porter/sync").exists());
-        assert!(!state.join("quire").exists());
-        assert!(!config.join("porter/syncd").exists());
-        assert!(!cache.join("porter").exists());
-    }
 
     #[test]
     fn the_rescan_variable_is_read_by_a_test_build_only_and_never_shortens_the_default() {

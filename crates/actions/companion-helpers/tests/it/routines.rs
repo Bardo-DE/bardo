@@ -352,14 +352,3 @@ fn the_unit_directory_is_made_to_hold_exactly_the_wanted_units() {
         "not ours, not removed"
     );
 }
-
-#[test]
-fn a_routine_unit_of_the_earlier_release_is_removed_with_the_others() {
-    let scratch = tempfile::tempdir().expect("scratch dir");
-    let dir = UnitDir::new(scratch.path().join("systemd/user"));
-    std::fs::create_dir_all(dir.path()).expect("dir");
-    std::fs::write(dir.path().join("quire-routine-7.timer"), "old").expect("old unit");
-    let changed = dir.install(&[]).expect("install");
-    assert_eq!(changed, ["quire-routine-7.timer"]);
-    assert!(!dir.path().join("quire-routine-7.timer").exists());
-}

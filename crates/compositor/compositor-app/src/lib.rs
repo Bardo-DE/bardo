@@ -59,7 +59,6 @@ pub mod lock_marker;
 pub mod log;
 pub mod notify;
 pub mod open_files;
-pub mod pre_bardo;
 pub mod privacy;
 #[cfg(feature = "testing")]
 pub mod relax;

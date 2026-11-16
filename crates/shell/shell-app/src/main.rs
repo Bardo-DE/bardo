@@ -9,8 +9,6 @@ use std::process::ExitCode;
 use shell_app::cli;
 
 fn main() -> ExitCode {
-    // Temporary: delete with the old-folders crate in the release after everyone has started once.
-    shell_app::pre_bardo::move_from_env();
     let cli = match cli::parse_args() {
         Ok(cli) => cli,
         Err(code) => return code,

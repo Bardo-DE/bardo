@@ -25,7 +25,6 @@ mod lenient;
 #[cfg(feature = "live")]
 pub mod live;
 mod portal;
-pub mod pre_bardo;
 mod preserve;
 pub mod published_parts;
 mod region;

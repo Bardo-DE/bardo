@@ -25,11 +25,6 @@ fn main() -> ExitCode {
             }
         },
         Ok(Command::Run(start)) => {
-            if start.backend != compositor_backend::BackendChoice::Headless {
-                compositor_app::pre_bardo::move_pre_bardo_folders(
-                    &compositor_app::pre_bardo::Bases::from_env(),
-                );
-            }
             let config = run_config(*start);
             #[cfg(feature = "debug-inject")]
             let config = match debug_peer_units::from_env() {

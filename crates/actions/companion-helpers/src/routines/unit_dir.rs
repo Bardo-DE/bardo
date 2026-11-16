@@ -6,12 +6,6 @@ use companion_core::{UNIT_PREFIX, UnitFile};
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
-/// Temporary: delete with the old-folders crate in the release after everyone has started once.
-///
-/// The prefix of the routine units of the earlier release: they are removed with the others, and
-/// the routines come back under [`UNIT_PREFIX`] in the same call.
-const PRE_BARDO_PREFIX: &str = "quire-routine-";
-
 /// A directory the units are written into (`~/.config/systemd/user`).
 #[derive(Debug, Clone)]
 pub struct UnitDir {
@@ -50,9 +44,7 @@ impl UnitDir {
         };
         for entry in listing.flatten() {
             let name = entry.file_name().to_string_lossy().into_owned();
-            if (name.starts_with(UNIT_PREFIX) || name.starts_with(PRE_BARDO_PREFIX))
-                && !wanted.contains(name.as_str())
-            {
+            if name.starts_with(UNIT_PREFIX) && !wanted.contains(name.as_str()) {
                 std::fs::remove_file(entry.path())?;
                 changed.push(name);
             }

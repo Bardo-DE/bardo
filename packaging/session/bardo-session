@@ -154,13 +154,7 @@ read_settings() {
         esac
     done <"$file"
 }
-# Temporary: delete in the release after everyone has logged in once. The settings file used to live in
-# ~/.config/desktop-session/; it moves to ~/.config/bardo/session/ unless the new one is already there.
 config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/bardo/session"
-old_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/desktop-session"
-if [ -f "$old_config_dir/session.env" ] && [ ! -e "$config_dir/session.env" ]; then
-    mkdir -p "$config_dir" && mv -n -- "$old_config_dir/session.env" "$config_dir/session.env" && rmdir "$old_config_dir" 2>/dev/null || true
-fi
 read_settings "$config_dir/session.env"
 
 nested="${BARDO_SESSION_NESTED:-}"

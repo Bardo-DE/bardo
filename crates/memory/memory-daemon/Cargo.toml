@@ -20,7 +20,6 @@ test-keys = ["dep:memory-keyfile"]
 test-proc-root = ["account-callers/test-proc-root"]
 
 [dependencies]
-old-folders = {path = "../../platform/old-folders"}
 base-fs = { path = "../../base/base-fs" }
 base-time = { path = "../../base/base-time" }
 base-xdg = { path = "../../base/base-xdg" }

@@ -34,12 +34,8 @@ UnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT GCONV_PATH GIO_EXTRA_MODULE
 # that refuses private namespaces for user units.
 RestrictAddressFamilies=AF_UNIX
 # The consent file's directory is made before the sandbox is set up (`+`: outside it), because a
-# read-write path that does not exist stops the unit; the path itself is in the drop-in. An earlier
-# release kept it in `quire/intents` and its configuration in `quire/actiond.toml`; they move once, here,
-# because the sandbox leaves the home folder read-only for the daemon (`mv -n` never replaces a new one).
+# read-write path that does not exist stops the unit; the path itself is in the drop-in.
 ExecStartPre=+/usr/bin/mkdir -p %h/.local/share/bardo %E/bardo/actions
-ExecStartPre=-+/usr/bin/mv -nT %h/.local/share/quire/intents %h/.local/share/bardo/intents
-ExecStartPre=-+/usr/bin/mv -n %E/quire/intentd.toml %E/bardo/actions/actiond.toml
 ExecStartPre=+/usr/bin/mkdir -p %h/.local/share/bardo/intents
 # No setuid gain, no writable-and-executable memory (no JIT, no injected code).
 NoNewPrivileges=yes

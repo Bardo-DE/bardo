@@ -15,7 +15,6 @@ pub mod feel;
 pub mod gestures;
 pub mod keys;
 pub mod outputs;
-pub mod pre_bardo;
 pub mod recording;
 pub mod replay;
 pub mod sensor;

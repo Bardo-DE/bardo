@@ -95,7 +95,7 @@ EDGES=(
   "ui-behaviour: ui-core"
   "ui-components: ui-core ui-intents ui-motion ui-style"
   "ui-shell: ui-components ui-core ui-motion ui-style"
-  "ui-settings: old-folders ui-core ui-helpers ui-peer ui-style ui-settings-derive"
+  "ui-settings: ui-core ui-helpers ui-peer ui-style ui-settings-derive"
   "ui-extensions: ui-core ui-helpers ui-settings ui-style"
   "ui-peer:"
   "ui-helpers: ui-peer"

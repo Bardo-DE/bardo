@@ -31,7 +31,6 @@ async fn main() -> ExitCode {
             return ExitCode::FAILURE;
         }
     };
-    move_pre_bardo_folders();
     let parts = Parts::real(
         FileStore::new(state_file()),
         DesktopAppearance::at(appearance_file()),
@@ -106,27 +105,6 @@ fn state_dir() -> PathBuf {
 /// Where restore tokens are kept: `restore` in the state folder.
 fn state_file() -> PathBuf {
     state_dir().join("restore")
-}
-
-/// Temporary: delete with the old-folders crate in the release after everyone has started once.
-///
-/// Moves the portal's pre-bardo state folder (`$XDG_STATE_HOME/transom`) to `state_dir()`, before
-/// anything is read.
-fn move_pre_bardo_folders() {
-    let new = state_dir();
-    let Some(base) = new.parent().and_then(|bardo| bardo.parent()) else {
-        return;
-    };
-    let old = base.join("transom");
-    match old_folders::move_once(&old, &new) {
-        Ok(moved) if moved.moved > 0 => {
-            tracing::info!(from = %old.display(), to = %new.display(), entries = moved.moved, "moved the pre-bardo state folder");
-        }
-        Ok(_) => {}
-        Err(error) => {
-            tracing::warn!(%error, from = %old.display(), "could not move the pre-bardo state folder");
-        }
-    }
 }
 
 /// Where an app's own name is found: the desktop entries in the data directories (the person's, the

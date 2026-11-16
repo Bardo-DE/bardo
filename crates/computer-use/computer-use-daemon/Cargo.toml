@@ -48,7 +48,6 @@ action-dbus = {path = "../../actions/action-dbus"}
 provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}
 account-daemon-support = {path = "../../accounts/account-daemon-support"}
-old-folders = {path = "../../platform/old-folders"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 toml = { workspace = true }

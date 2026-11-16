@@ -15,7 +15,6 @@ mod launcher;
 mod opener;
 mod places;
 mod port;
-mod pre_bardo;
 mod session;
 mod state;
 mod thumbnails;
@@ -41,8 +40,6 @@ use crate::session::{Role, join, launch_token};
 use crate::volumes::DesktopVolumes;
 
 fn main() -> ExitCode {
-    // Temporary: delete with the old-folders crate in the release after everyone has started once.
-    pre_bardo::move_from_env();
     let argv: Vec<OsString> = std::env::args_os().skip(1).collect();
     if let Some(asked) = args::schema_dir(&argv) {
         return write_schema(asked);

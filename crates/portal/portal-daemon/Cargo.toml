@@ -26,7 +26,6 @@ base-fs = { path = "../../base/base-fs" }
 base-time = { path = "../../base/base-time" }
 base-xdg = { path = "../../base/base-xdg" }
 portal-core = {path = "../portal-core"}
-old-folders = {path = "../../platform/old-folders"}
 thiserror = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 caller-identity-dbus = {default-features = false, features = ["tokio", "desktop"], path = "../../identity/caller-identity-dbus"}

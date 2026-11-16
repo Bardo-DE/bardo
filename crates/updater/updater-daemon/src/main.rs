@@ -5,7 +5,7 @@ use std::process::ExitCode;
 use updater_daemon::bootstrap::production;
 use updater_daemon::cli::{Command, Exit, Reply, USAGE, dispatch, parse, recover, vouch};
 use updater_daemon::config::{Config, SYSTEM_CONFIG_PATH};
-use updater_daemon::dirs::{Dirs, move_pre_bardo_folders};
+use updater_daemon::dirs::Dirs;
 use updater_daemon::elevate::{Helpers, Pkexec};
 use updater_daemon::service::run;
 use updater_daemon::state::StateStore;
@@ -29,7 +29,6 @@ fn main() -> ExitCode {
         eprintln!("bardo-updater: cannot tell where your settings are (no home folder)");
         return exit(Exit::Failed);
     };
-    move_pre_bardo_folders(&dirs);
     let config = match Config::load_layered(Path::new(SYSTEM_CONFIG_PATH), &dirs.config_file) {
         Ok(config) => config,
         Err(e) => {

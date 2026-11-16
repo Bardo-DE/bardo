@@ -13,8 +13,6 @@ base-time = { path = "../../base/base-time" }
 base-fs = { path = "../../base/base-fs" }
 base-xdg = { path = "../../base/base-xdg" }
 ui-core = {path = "../ui-core"}
-# Temporary: the one-time move of the folders the desktop shares (`pre_bardo`); deleted with it.
-old-folders = {path = "../../platform/old-folders"}
 # The capped reader and the durable atomic writer every file here goes through (UI-free).
 ui-peer = {path = "../ui-peer"}
 ui-style = {path = "../ui-style", default-features = false}

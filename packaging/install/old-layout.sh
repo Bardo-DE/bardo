@@ -16,8 +16,8 @@
 #     /etc/porter and /etc/xdg/quire;
 #   - <prefix>/share/quire (the earlier data folder) and the emoji font folder fonts/quire are removed.
 #
-# Nothing named bardo-* or org.bardo.* is touched, and neither is anything in a home folder (the services move their
-# own folders the first time they start). /opt/quire (an earlier release tree) is left alone: the update service
+# Nothing named bardo-* or org.bardo.* is touched, and neither is anything in a home folder (old home folders are not
+# read). /opt/quire (an earlier release tree) is left alone: the update service
 # bootstraps /opt/bardo (see release/README.md). Never runs sudo: a place you cannot write stops it with the command
 # to run as root. Safe to run again: what is already gone is not mentioned.
 # Exit: 0 done, 1 something failed or a place is not writable, 2 bad usage.

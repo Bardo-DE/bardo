@@ -3,7 +3,6 @@
 mod cli;
 mod dev_callers;
 mod dirs;
-mod pre_bardo;
 mod service;
 
 use clap::Parser;
@@ -42,8 +41,6 @@ fn window_size(wanted: Option<&PageSlug>) -> WindowSize {
 }
 
 fn main() -> ExitCode {
-    // Temporary: delete with the old-folders crate in the release after everyone has started once.
-    pre_bardo::move_from_env();
     let cli = cli::Cli::parse();
     if let Err(code) = dev_callers::take_up(cli.dev_callers()) {
         return code;

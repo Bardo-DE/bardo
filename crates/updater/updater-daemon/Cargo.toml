@@ -18,7 +18,6 @@ base-time = { path = "../../base/base-time" }
 base-xdg = { path = "../../base/base-xdg" }
 updater-core = {path = "../updater-core"}
 updater-root = {path = "../updater-root"}
-old-folders = {path = "../../platform/old-folders"}
 thiserror = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 toml = { workspace = true }

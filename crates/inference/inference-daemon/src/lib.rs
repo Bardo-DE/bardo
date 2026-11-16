@@ -30,7 +30,6 @@ pub mod hosts;
 pub mod installed;
 pub mod peers;
 pub mod pipeline;
-pub mod pre_bardo;
 pub mod probe;
 pub mod probed;
 pub mod replay;

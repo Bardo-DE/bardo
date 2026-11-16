@@ -129,7 +129,6 @@ fn replay_report(flags: &[&str]) -> Option<ReplayReport> {
 pub fn run(args: impl IntoIterator<Item = String>) -> ExitCode {
     let args: Vec<String> = args.into_iter().skip(1).collect();
     let args: Vec<&str> = args.iter().map(String::as_str).collect();
-    crate::pre_bardo::move_pre_bardo_folders(|k| std::env::var(k).ok());
     let env = Env::from_lookup(|k| std::env::var(k).ok());
     let result = match parse(&args) {
         None => Err(Error::Usage(USAGE)),

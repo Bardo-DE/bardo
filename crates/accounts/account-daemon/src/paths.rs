@@ -4,7 +4,7 @@
 use account_families::set::Layer;
 pub use base_xdg::PathError;
 use base_xdg::{Xdg, absolute};
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 /// Every path the daemon uses.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -107,140 +107,10 @@ impl Paths {
     }
 }
 
-/// Temporary: delete with the old-folders crate in the release after everyone has started once.
-///
-/// Moves what accountd kept under its pre-bardo folders into the ones [`Paths::resolve`] names,
-/// once, before anything is read: the registry and its neighbours (`$XDG_STATE_HOME/porter`, but
-/// not syncd's `sync` folder there), the audit file (`$XDG_STATE_HOME/quire/accountd`), the caller
-/// table and the clients file (`$XDG_CONFIG_HOME/porter`) and the person's provider files
-/// (`$XDG_DATA_HOME/porter/providers`). What moved is said on standard error.
-///
-/// # Errors
-/// There is no home to resolve the folders in.
-pub fn move_pre_bardo_folders(var: impl Fn(&str) -> Option<String>) -> Result<(), PathError> {
-    let xdg = Xdg::new(var);
-    move_under(
-        &xdg.dir("XDG_STATE_HOME", ".local/state")?,
-        &xdg.dir("XDG_CONFIG_HOME", ".config")?,
-        &xdg.dir("XDG_DATA_HOME", ".local/share")?,
-    );
-    Ok(())
-}
-
-/// [`move_pre_bardo_folders`] over the three base directories.
-fn move_under(state: &Path, config: &Path, data: &Path) {
-    let new_state = state.join("bardo/accounts");
-    // The registry's folder is shared with syncd's journals (`sync`), which are syncd's to move.
-    let old_state = state.join("porter");
-    if let Ok(entries) = std::fs::read_dir(&old_state) {
-        let names: Vec<_> = entries
-            .filter_map(Result::ok)
-            .map(|entry| entry.file_name())
-            .filter(|name| name != "sync")
-            .collect();
-        for name in names {
-            let (old, new) = (old_state.join(&name), new_state.join(&name));
-            if old.is_dir() {
-                moved(
-                    &old,
-                    &new,
-                    old_folders::move_once(&old, &new).map(|m| m.moved),
-                );
-            } else {
-                moved(
-                    &old,
-                    &new,
-                    old_folders::move_file_once(&old, &new).map(usize::from),
-                );
-            }
-        }
-        let _ = std::fs::remove_dir(&old_state);
-    }
-    let audit = state.join("quire/accountd");
-    moved(
-        &audit,
-        &new_state,
-        old_folders::move_once(&audit, &new_state).map(|m| m.moved),
-    );
-    let _ = std::fs::remove_dir(state.join("quire"));
-    for file in ["callers.toml", "clients.toml"] {
-        let (old, new) = (
-            config.join("porter").join(file),
-            config.join("bardo/accounts").join(file),
-        );
-        moved(
-            &old,
-            &new,
-            old_folders::move_file_once(&old, &new).map(usize::from),
-        );
-    }
-    let providers = data.join("porter/providers");
-    let new = data.join("bardo/accounts/providers");
-    moved(
-        &providers,
-        &new,
-        old_folders::move_once(&providers, &new).map(|m| m.moved),
-    );
-    let _ = std::fs::remove_dir(data.join("porter"));
-}
-
-/// Says on standard error what a move did.
-fn moved(old: &Path, new: &Path, done: std::io::Result<usize>) {
-    match done {
-        Ok(0) => {}
-        Ok(count) => eprintln!(
-            "accountd: moved {count} from {} to {}",
-            old.display(),
-            new.display()
-        ),
-        Err(why) => eprintln!(
-            "accountd: could not move {} to {}: {why}",
-            old.display(),
-            new.display()
-        ),
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::path::Path;
-
-    #[test]
-    fn the_pre_bardo_folders_move_once_and_syncds_journals_stay() {
-        let scratch = base_testkit::Scratch::new("accountd-old-folders");
-        let (state, config, data) = (
-            scratch.join("state"),
-            scratch.join("config"),
-            scratch.join("data"),
-        );
-        let write = |path: PathBuf| {
-            std::fs::create_dir_all(path.parent().expect("parent")).expect("dir");
-            std::fs::write(path, "x").expect("file");
-        };
-        write(state.join("porter/registry.json"));
-        write(state.join("porter/sync/a1/files.sqlite"));
-        write(state.join("quire/accountd/audit.jsonl"));
-        write(config.join("porter/clients.toml"));
-        write(config.join("porter/syncd/syncd.toml"));
-        write(data.join("porter/providers/mine.toml"));
-        move_under(&state, &config, &data);
-        move_under(&state, &config, &data);
-        for new in [
-            state.join("bardo/accounts/registry.json"),
-            state.join("bardo/accounts/audit.jsonl"),
-            config.join("bardo/accounts/clients.toml"),
-            data.join("bardo/accounts/providers/mine.toml"),
-            state.join("porter/sync/a1/files.sqlite"),
-            config.join("porter/syncd/syncd.toml"),
-        ] {
-            assert!(new.exists(), "{}", new.display());
-        }
-        assert!(!state.join("porter/registry.json").exists());
-        assert!(!state.join("quire").exists());
-        assert!(!config.join("porter/clients.toml").exists());
-        assert!(!data.join("porter").exists());
-    }
 
     #[test]
     fn the_provider_layers_are_the_system_the_person_then_the_named() {

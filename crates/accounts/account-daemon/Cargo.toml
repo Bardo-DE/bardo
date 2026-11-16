@@ -24,7 +24,6 @@ base-fs = {path = "../../base/base-fs"}
 account-callers = {path = "../account-callers", features = ["file"]}
 account-dbus = {path = "../account-dbus"}
 account-families = {path = "../account-families", features = ["set"]}
-old-folders = {path = "../../platform/old-folders"}
 account-family-oauth = {path = "../account-family-oauth"}
 account-provider = {path = "../account-provider"}
 account-proxy = {path = "../account-proxy", features = ["tls"]}

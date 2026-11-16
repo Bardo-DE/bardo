@@ -53,7 +53,7 @@ Workspace crates (`crates/<name>`), plus one sibling repo (`blitz-embed`) and on
 | `ui-behaviour` | `ui-core` |
 | `ds` | `ui-intents`, `ui-motion`, `ui-style`, `ui-core` |
 | `ui-shell` | `ds`, `ui-motion`, `ui-style`, `ui-core` |
-| `ui-settings` | `ui-style` (system prefs, appearance enums), `ui-core`, `ui-helpers` (the capped reader and durable writer, `files`), `ui-settings-derive`, `ui-peer` (the deadline on each call to a daemon or the portal), `old-folders` (temporary: the one-time move of the shared `quire` folders to `bardo`, `pre_bardo`; deleted with that crate) |
+| `ui-settings` | `ui-style` (system prefs, appearance enums), `ui-core`, `ui-helpers` (the capped reader and durable writer, `files`), `ui-settings-derive`, `ui-peer` (the deadline on each call to a daemon or the portal) |
 | `ui-extensions` | `ui-core`, `ui-settings` (the `Provided` kind and the schema'd `extensions.toml`), `ui-helpers` (the capped reader for a look's stylesheet, the atomic writer for Your changes, the MIME database the resolver reads), `ui-style` (the file kinds, folder kinds, extension label and `kind_for_mime` the standard set is; `ds` is above it, so the resolver answers in its own `IconPick` and the app maps it to `ds::FileIconChoice`); bayonet (a git dependency) for manifests, the folder scan and the registry. `ui-settings` never names it |
 | `ui-peer` | nothing of ours |
 | `ui-helpers` | `ui-peer` |

@@ -27,7 +27,6 @@ serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 thiserror = { workspace = true }
-old-folders = {path = "../../platform/old-folders"}
 
 [features]
 # `inferd_transport`: the one place a daemon makes its inferd link (intentd, companiond, readerd),

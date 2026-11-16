@@ -36,10 +36,6 @@ fn fail(why: impl std::fmt::Display) -> ExitCode {
 #[tokio::main]
 async fn main() -> ExitCode {
     let args = Args::parse();
-    for line in inference_daemon::pre_bardo::move_pre_bardo_folders(|name| std::env::var(name).ok())
-    {
-        eprintln!("{line}");
-    }
     // Listening starts before anything else: a signal during start-up is kept, not fatal.
     let signals = match Signals::listen() {
         Ok(signals) => signals,
