@@ -110,7 +110,7 @@ fn short_buffers_and_bad_geometry_are_refused() {
     let buf = flat(8, 4, 32, [0; 4]);
     let m = map((8, 4), (8, 4));
     let short = &buf[..buf.len() - 1];
-    assert_eq!(
+    assert!(matches!(
         prepare(
             frame(short, 8, 4, 32, PixelFormat::Xrgb8888),
             &m,
@@ -118,9 +118,9 @@ fn short_buffers_and_bad_geometry_are_refused() {
         )
         .unwrap_err(),
         PrepError::ShortBuffer
-    );
+    ));
     // A stride narrower than a row.
-    assert_eq!(
+    assert!(matches!(
         prepare(
             frame(&buf, 8, 4, 16, PixelFormat::Xrgb8888),
             &m,
@@ -128,10 +128,10 @@ fn short_buffers_and_bad_geometry_are_refused() {
         )
         .unwrap_err(),
         PrepError::ShortBuffer
-    );
+    ));
     // A frame whose shape is not the window's.
     let wide = flat(16, 4, 64, [0; 4]);
-    assert_eq!(
+    assert!(matches!(
         prepare(
             frame(&wide, 16, 4, 64, PixelFormat::Xrgb8888),
             &m,
@@ -139,8 +139,8 @@ fn short_buffers_and_bad_geometry_are_refused() {
         )
         .unwrap_err(),
         PrepError::SizeMismatch
-    );
-    assert_eq!(
+    ));
+    assert!(matches!(
         prepare(
             frame(&[], 0, 0, 0, PixelFormat::Xrgb8888),
             &m,
@@ -148,7 +148,7 @@ fn short_buffers_and_bad_geometry_are_refused() {
         )
         .unwrap_err(),
         PrepError::SizeMismatch
-    );
+    ));
 }
 
 #[test]

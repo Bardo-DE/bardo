@@ -92,14 +92,21 @@ impl core::fmt::Debug for PreparedImage {
 }
 
 /// Why a frame could not be prepared.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum PrepError {
     #[error("the buffer is shorter than its size and stride say")]
     ShortBuffer,
     #[error("the frame's size does not match the map's window")]
     SizeMismatch,
+    #[cfg(feature = "pixels")]
+    #[error("the pixels do not make an image of that size")]
+    Image(#[source] fast_image_resize::ImageBufferError),
+    #[cfg(feature = "pixels")]
+    #[error("the frame could not be resized")]
+    Resize(#[source] fast_image_resize::ResizeError),
+    #[cfg(feature = "pixels")]
     #[error("the encoder failed")]
-    Encode,
+    Encode(#[source] image::ImageError),
 }
 
 /// Resizes once and encodes once, from the frame's pixel format to `enc`.
@@ -194,14 +201,11 @@ fn to_rgb(raw: &RawFrame<'_>) -> Vec<u8> {
 #[cfg(feature = "pixels")]
 fn resize_rgb(rgb: Vec<u8>, from: DeviceSize, to: (u32, u32)) -> Result<Vec<u8>, PrepError> {
     use fast_image_resize::{PixelType, Resizer, images::Image};
-    let src = Image::from_vec_u8(from.w, from.h, rgb, PixelType::U8x3)
-        .ok()
-        .ok_or(PrepError::ShortBuffer)?;
+    let src = Image::from_vec_u8(from.w, from.h, rgb, PixelType::U8x3).map_err(PrepError::Image)?;
     let mut dst = Image::new(to.0, to.1, PixelType::U8x3);
     Resizer::new()
         .resize(&src, &mut dst, None)
-        .ok()
-        .ok_or(PrepError::Encode)?;
+        .map_err(PrepError::Resize)?;
     Ok(dst.into_vec())
 }
 
@@ -225,6 +229,6 @@ fn encode(
                 .write_image(rgb, w, h, color),
         ),
     };
-    result.ok().ok_or(PrepError::Encode)?;
+    result.map_err(PrepError::Encode)?;
     Ok((media, out))
 }
