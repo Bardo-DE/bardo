@@ -41,7 +41,9 @@ pub fn kind_name(sniffed: &Sniffed) -> String {
         (FormatKind::PlainText, _) => "Plain text".to_owned(),
         (FormatKind::Table, FormatDetail::Table(Delimiter::Comma)) => "CSV table".to_owned(),
         (FormatKind::Table, FormatDetail::Table(Delimiter::Tab)) => "TSV table".to_owned(),
-        (FormatKind::Table, FormatDetail::Office(format)) => office(*format).to_owned(),
+        (FormatKind::Table | FormatKind::Office, FormatDetail::Office(format)) => {
+            office(*format).to_owned()
+        }
         (FormatKind::Table, _) => "Table".to_owned(),
         (FormatKind::Tree, FormatDetail::Tree(TreeFormat::Json)) => "JSON document".to_owned(),
         (FormatKind::Tree, FormatDetail::Tree(TreeFormat::JsonLines)) => {
@@ -55,10 +57,8 @@ pub fn kind_name(sniffed: &Sniffed) -> String {
         (FormatKind::Book, FormatDetail::Book(BookFormat::Epub)) => "EPUB book".to_owned(),
         (FormatKind::Book, FormatDetail::Book(BookFormat::Cbz)) => "Comic book archive".to_owned(),
         (FormatKind::Book, _) => "Book".to_owned(),
-        (FormatKind::Office, FormatDetail::Office(format)) => office(*format).to_owned(),
-        (FormatKind::Office, _) => "Document".to_owned(),
+        (FormatKind::Office | FormatKind::Other, _) => "Document".to_owned(),
         (FormatKind::Folder, _) => "Folder".to_owned(),
-        (FormatKind::Other, _) => "Document".to_owned(),
     }
 }
 

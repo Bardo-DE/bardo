@@ -175,11 +175,11 @@ pub fn fits(value: &Value, ty: &ParamType) -> bool {
         | (Value::DateTime(_), ParamType::DateTime)
         | (Value::Duration(_), ParamType::Duration)
         | (Value::File(_), ParamType::File)
-        | (Value::Url(_), ParamType::Url) => true,
+        | (Value::Url(_), ParamType::Url)
+        | (Value::Choice(_) | Value::Entity(_), ParamType::Dynamic(_)) => true,
         (Value::Choice(id), ParamType::Choice(options)) => options.iter().any(|o| &o.id == id),
         (Value::Entity(e), ParamType::Entity(kind)) => &e.kind == kind,
         (Value::Entities(es), ParamType::Entities(kind)) => es.iter().all(|e| &e.kind == kind),
-        (Value::Choice(_) | Value::Entity(_), ParamType::Dynamic(_)) => true,
         // An offered key comes back as the text it is (`args.rs` reads a dynamic parameter so), and
         // a key outside the offer is still read as text: the app decides what it names.
         (Value::Text(t), ParamType::Dynamic(_)) => {

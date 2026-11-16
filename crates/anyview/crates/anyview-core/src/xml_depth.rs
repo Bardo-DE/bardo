@@ -64,10 +64,9 @@ fn tag_end(bytes: &[u8]) -> usize {
     for (offset, byte) in bytes.iter().enumerate().skip(1) {
         match (quote, *byte) {
             (Some(open), b) if b == open => quote = None,
-            (Some(_), _) => {}
             (None, b'"' | b'\'') => quote = Some(*byte),
             (None, b'>') => return offset + 1,
-            (None, _) => {}
+            (Some(_) | None, _) => {}
         }
     }
     bytes.len()

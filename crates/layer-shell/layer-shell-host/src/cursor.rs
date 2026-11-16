@@ -39,6 +39,10 @@ impl Cursor {
 /// The `wp_cursor_shape_device_v1` shape for `icon`, or `Shape::Default` for a `dnd-ask`/
 /// `all-resize` icon on a v1 device (those shapes need `since="2"`) or for a `CursorIcon`
 /// variant added after this table was written (`CursorIcon` is `#[non_exhaustive]`).
+#[expect(
+    clippy::match_same_arms,
+    reason = "the wildcard is the fallback for shapes this table does not know; naming `Default` beside it keeps the table whole"
+)]
 fn shape_for(icon: CursorIcon, version: u32) -> Shape {
     match icon {
         CursorIcon::Default => Shape::Default,

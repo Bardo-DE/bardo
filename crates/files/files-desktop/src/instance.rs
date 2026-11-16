@@ -104,8 +104,9 @@ async fn ask_for(connection: &Connection, name: &'static str) -> Result<bool, zb
         .await
     {
         Ok(RequestNameReply::PrimaryOwner | RequestNameReply::AlreadyOwner) => Ok(true),
-        Ok(RequestNameReply::Exists | RequestNameReply::InQueue) => Ok(false),
-        Err(zbus::Error::NameTaken) => Ok(false),
+        Ok(RequestNameReply::Exists | RequestNameReply::InQueue) | Err(zbus::Error::NameTaken) => {
+            Ok(false)
+        }
         Err(error) => Err(error),
     }
 }

@@ -91,8 +91,8 @@ fn failed_turn(reply: InferReply, blind: Option<&str>) -> CuaModelError {
         InferReply::Refused(InferRefusal::Unavailable) | InferReply::Cancelled => {
             CuaModelError::Transient
         }
-        InferReply::Refused(_) => CuaModelError::Fatal,
-        InferReply::CuaStep(_)
+        InferReply::Refused(_)
+        | InferReply::CuaStep(_)
         | InferReply::Chat(_)
         | InferReply::Embed(_)
         | InferReply::Transcribed(_)

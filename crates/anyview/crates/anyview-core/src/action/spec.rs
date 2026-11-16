@@ -37,8 +37,11 @@ pub(super) fn spec_of(action: FileAction) -> ActionSpec {
             Reach::Both,
             Binding::Own("anyview.copy-path", "Primary+Alt+C"),
         ),
-        FileAction::Share => spec(Reach::Both, Binding::Unbound),
-        FileAction::Rename => spec(Reach::Both, Binding::Unbound),
+        FileAction::Share
+        | FileAction::Rename
+        | FileAction::PlayInBackground
+        | FileAction::PlayInMiniWindow
+        | FileAction::ConvertTo => spec(Reach::Both, Binding::Unbound),
         FileAction::Duplicate => spec(Reach::Both, Binding::Own("anyview.duplicate", "Primary+D")),
         FileAction::MoveToTrash => {
             spec(Reach::Both, Binding::Standard(StandardAction::MoveToTrash))
@@ -49,7 +52,9 @@ pub(super) fn spec_of(action: FileAction) -> ActionSpec {
             Binding::Own("anyview.export", "Primary+Shift+E"),
         ),
         FileAction::SaveCopy => spec(Reach::Viewer, Binding::Standard(StandardAction::SaveAs)),
-        FileAction::RevertTo => spec(Reach::Viewer, Binding::Unbound),
+        FileAction::RevertTo | FileAction::FlipHorizontal | FileAction::FlipVertical => {
+            spec(Reach::Viewer, Binding::Unbound)
+        }
         FileAction::RotateLeft => spec(
             Reach::Viewer,
             Binding::Own("anyview.rotate-left", "Primary+["),
@@ -58,11 +63,6 @@ pub(super) fn spec_of(action: FileAction) -> ActionSpec {
             Reach::Viewer,
             Binding::Own("anyview.rotate-right", "Primary+]"),
         ),
-        FileAction::FlipHorizontal => spec(Reach::Viewer, Binding::Unbound),
-        FileAction::FlipVertical => spec(Reach::Viewer, Binding::Unbound),
         FileAction::Trim => spec(Reach::Viewer, Binding::Own("anyview.trim", "Primary+T")),
-        FileAction::PlayInBackground => spec(Reach::Both, Binding::Unbound),
-        FileAction::PlayInMiniWindow => spec(Reach::Both, Binding::Unbound),
-        FileAction::ConvertTo => spec(Reach::Both, Binding::Unbound),
     }
 }
