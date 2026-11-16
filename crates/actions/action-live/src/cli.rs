@@ -121,7 +121,7 @@ pub enum UsageError {
     Unknown(String),
     /// A number is not one.
     #[error("{0} takes a whole number, not {1:?}")]
-    Number(String, String),
+    Number(String, String, #[source] std::num::ParseIntError),
     /// `--engine` is missing or wrong.
     #[error("{0}")]
     Engine(String),
@@ -145,10 +145,12 @@ impl From<SpecFault> for UsageError {
     }
 }
 
-fn number<T: std::str::FromStr>(flag: &str, text: &str) -> Result<T, UsageError> {
+fn number<T: std::str::FromStr<Err = std::num::ParseIntError>>(
+    flag: &str,
+    text: &str,
+) -> Result<T, UsageError> {
     text.parse()
-        .ok()
-        .ok_or_else(|| UsageError::Number(flag.to_owned(), text.to_owned()))
+        .map_err(|error| UsageError::Number(flag.to_owned(), text.to_owned(), error))
 }
 
 fn engine(text: Option<String>) -> Result<Engine, UsageError> {

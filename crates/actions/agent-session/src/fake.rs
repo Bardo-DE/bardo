@@ -10,7 +10,7 @@ use crate::plan::ResumePlan;
 use action_core::UserTurn;
 use provenance::SessionId;
 use std::collections::{BTreeMap, VecDeque};
-use std::sync::Mutex;
+use std::sync::{Mutex, PoisonError};
 
 /// What the fake backend is doing.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -218,7 +218,7 @@ impl SessionLog for MemoryLog {
             *left -= 1;
         }
         let encoded = encode(seq, entry).ok().ok_or(LogFault::Encode)?;
-        let mut all = self.bodies.lock().ok().ok_or(LogFault::Unavailable)?;
+        let mut all = self.bodies.lock().unwrap_or_else(PoisonError::into_inner);
         let rows = all.entry(session.clone()).or_default();
         let expected = Seq(rows.len() as u64);
         if seq != expected {
@@ -234,7 +234,7 @@ impl SessionLog for MemoryLog {
         from: Option<Seq>,
         size: PageSize,
     ) -> Result<LogPage, LogFault> {
-        let all = self.bodies.lock().ok().ok_or(LogFault::Unavailable)?;
+        let all = self.bodies.lock().unwrap_or_else(PoisonError::into_inner);
         let rows = all.get(session).map(Vec::as_slice).unwrap_or_default();
         let start = from
             .map_or(0, |s| usize::try_from(s.0).unwrap_or(usize::MAX))
@@ -254,7 +254,7 @@ impl SessionLog for MemoryLog {
     }
 
     async fn sessions(&self) -> Result<Vec<SessionId>, LogFault> {
-        let all = self.bodies.lock().ok().ok_or(LogFault::Unavailable)?;
+        let all = self.bodies.lock().unwrap_or_else(PoisonError::into_inner);
         Ok(all
             .iter()
             .filter(|(_, rows)| {

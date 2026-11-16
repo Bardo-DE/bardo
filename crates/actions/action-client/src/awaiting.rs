@@ -2,6 +2,7 @@
 //! `org.bardo.Confirm1` share. The method returns the path of an object at once; the answer is
 //! its `Response(code, body)` signal, sent to the caller alone.
 
+use crate::bus::fault_of;
 use crate::transport::TransportError;
 use action_dbus::BusConnection;
 use futures_util::StreamExt;
@@ -25,8 +26,7 @@ async fn owner_of(connection: &BusConnection, service: &str) -> Result<String, T
     dbus.get_name_owner(name)
         .await
         .map(|owner| owner.to_string())
-        .ok()
-        .ok_or(TransportError::Closed)
+        .map_err(|error| fault_of(error.into()))
 }
 
 /// Starts a request with `start` and waits for its `Response`: `Ok(Ok((code, body)))`, or

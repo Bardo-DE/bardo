@@ -28,8 +28,8 @@ pub enum ExportFault {
     #[error("the entry at {0:?} cannot be read")]
     Unreadable(Seq),
     /// The document is not valid JSON of this form.
-    #[error("the document is not a session export")]
-    Malformed,
+    #[error("the document is not a session export: {0}")]
+    Malformed(String),
     /// A document version this crate does not know.
     #[error("unknown export version {0}")]
     UnknownVersion(u32),
@@ -63,9 +63,7 @@ pub fn export(session: &SessionId, rows: &[Logged]) -> Result<SessionExport, Exp
 ///
 /// Returns `ExportFault` when the document cannot be written as JSON.
 pub fn to_json(export: &SessionExport) -> Result<String, ExportFault> {
-    serde_json::to_string_pretty(export)
-        .ok()
-        .ok_or(ExportFault::Malformed)
+    serde_json::to_string_pretty(export).map_err(|error| ExportFault::Malformed(error.to_string()))
 }
 
 /// The export in `json`; the version is read before the rest, so a newer document is
@@ -76,18 +74,15 @@ pub fn to_json(export: &SessionExport) -> Result<String, ExportFault> {
 /// Returns `ExportFault::UnknownVersion` for a document version this crate does not know, and
 /// `ExportFault::Malformed` when `json` is not a valid document of this form.
 pub fn from_json(json: &str) -> Result<SessionExport, ExportFault> {
-    let doc: serde_json::Value = serde_json::from_str(json)
-        .ok()
-        .ok_or(ExportFault::Malformed)?;
+    let doc: serde_json::Value =
+        serde_json::from_str(json).map_err(|error| ExportFault::Malformed(error.to_string()))?;
     let version = doc
         .get("export_version")
         .and_then(serde_json::Value::as_u64)
         .and_then(|v| u32::try_from(v).ok())
-        .ok_or(ExportFault::Malformed)?;
+        .ok_or_else(|| ExportFault::Malformed("no export_version".to_owned()))?;
     if version != EXPORT_VERSION {
         return Err(ExportFault::UnknownVersion(version));
     }
-    serde_json::from_value(doc)
-        .ok()
-        .ok_or(ExportFault::Malformed)
+    serde_json::from_value(doc).map_err(|error| ExportFault::Malformed(error.to_string()))
 }

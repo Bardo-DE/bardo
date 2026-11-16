@@ -56,7 +56,11 @@ fn the_command_line_table() {
         ),
         (
             "smoke --engine scripted --patience-s soon",
-            UsageError::Number("--patience-s".to_owned(), "soon".to_owned()),
+            UsageError::Number(
+                "--patience-s".to_owned(),
+                "soon".to_owned(),
+                "soon".parse::<u64>().unwrap_err(),
+            ),
         ),
         ("run --engine scripted", UsageError::Subcommand),
         (

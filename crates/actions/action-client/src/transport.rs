@@ -130,8 +130,7 @@ impl DbusTransport {
                     &(action_dbus::INTENTS_BUS, 0u32),
                 )
                 .await
-                .ok()
-                .ok_or(TransportError::Closed)?;
+                .map_err(crate::bus::fault_of)?;
         }
         Ok(Self::new(connection))
     }

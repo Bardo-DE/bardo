@@ -3,6 +3,7 @@
 //! `Close` are calls on the same object. The signals are subscribed to before the method that
 //! starts the request, so nothing quicker than its reply is lost.
 
+use crate::bus::fault_of;
 use crate::transport::TransportError;
 use crate::watch::{Boxed, Events, Said, Steering, Watched};
 use action_core::CallProgress;
@@ -130,8 +131,7 @@ pub(crate) async fn watching(
         .get_name_owner(name)
         .await
         .map(|owner| owner.to_string())
-        .ok()
-        .ok_or(TransportError::Closed)?;
+        .map_err(|error| fault_of(error.into()))?;
     let rule = MatchRule::builder()
         .msg_type(Type::Signal)
         .interface("org.bardo.Intents1.Request")

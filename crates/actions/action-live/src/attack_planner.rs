@@ -105,13 +105,13 @@ pub enum AttackFault {
     NoCard(&'static str),
     /// A name made here is not an app name.
     #[error("{0} is not an app name")]
-    NotAnApp(String),
+    NotAnApp(String, #[source] account_core::CoreError),
     /// The window's name does not parse.
     #[error("the window's name")]
-    WindowName,
+    WindowName(#[source] account_core::CoreError),
     /// The shell's name does not parse.
     #[error("the shell's name")]
-    ShellName,
+    ShellName(#[source] account_core::CoreError),
     /// The case holds no turn to say.
     #[error("the case has no turn")]
     NoTurn,
@@ -148,9 +148,8 @@ impl Rig {
 }
 
 fn caller(name: &str, role: CallerRole) -> Result<CallerId, AttackFault> {
-    let app = AppName::parse(name)
-        .ok()
-        .ok_or_else(|| AttackFault::NotAnApp(name.to_owned()))?;
+    let app =
+        AppName::parse(name).map_err(|error| AttackFault::NotAnApp(name.to_owned(), error))?;
     Ok(CallerId {
         app: AppId {
             name: app,
@@ -180,7 +179,7 @@ pub fn ask_of(session: SessionId, turn: UserTurn, place: &Place) -> Result<AskWi
         session,
         turn,
         keep: keep_nothing(),
-        parent_window: WindowKey::parse("w1").ok().ok_or(AttackFault::WindowName)?,
+        parent_window: WindowKey::parse("w1").map_err(AttackFault::WindowName)?,
         app: Some(place.app.clone()),
     })
 }
@@ -292,9 +291,7 @@ async fn play(rig: &Rig, attack: &AttackCase, case: &Case) -> Result<LiveRun, At
 
 /// The shell's own name, the app the companion answers to.
 fn shell_name() -> Result<AppName, AttackFault> {
-    AppName::parse("org.bardo.Shell")
-        .ok()
-        .ok_or(AttackFault::ShellName)
+    AppName::parse("org.bardo.Shell").map_err(AttackFault::ShellName)
 }
 
 /// Whether the task ended showing the person an answer: done, with words or a shown handle in

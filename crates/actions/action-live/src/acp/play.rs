@@ -48,7 +48,7 @@ pub enum PlayFault {
     Entry(String),
     /// The program's name does not parse.
     #[error("the program name")]
-    ProgramName,
+    ProgramName(#[source] permission_core::ProgramNameError),
     /// The host did not start or the session did not open.
     #[error(transparent)]
     Host(#[from] HostError),
@@ -115,9 +115,7 @@ async fn open(
         .map(|pick| agent_registry::dirs::AgentsDir::at(&pick.dir));
     let file = AgentsFile::parse_in(&entry, dir.as_ref())
         .map_err(|why| PlayFault::Entry(why.to_string()))?;
-    let program = ProgramName::parse(&spec.program)
-        .ok()
-        .ok_or(PlayFault::ProgramName)?;
+    let program = ProgramName::parse(&spec.program).map_err(PlayFault::ProgramName)?;
     // The agent host is its own process to the daemons (bardo-agent's scope), as it is on a
     // desktop; the harness process stays the shell.
     let bus = world

@@ -51,7 +51,7 @@ fn refusal_of(error: zbus::Error) -> Result<WireRefusal, TransportError> {
 }
 
 /// A bus error that means intentd is not there is `Closed`; anything else is the bus's.
-fn fault_of(error: zbus::Error) -> TransportError {
+pub(crate) fn fault_of(error: zbus::Error) -> TransportError {
     match &error {
         zbus::Error::MethodError(name, _, _)
             if matches!(

@@ -113,7 +113,7 @@ fn an_export_names_labels_not_values_and_refuses_a_hole() {
 
 #[test]
 fn an_import_checks_its_version() {
-    assert_eq!(from_json("{"), Err(ExportFault::Malformed));
+    assert!(matches!(from_json("{"), Err(ExportFault::Malformed(_))));
     assert_eq!(
         from_json(r#"{"export_version":9,"anything":1}"#),
         Err(ExportFault::UnknownVersion(9))
