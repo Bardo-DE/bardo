@@ -62,8 +62,8 @@ impl Provides for Provision {
     fn parse(entry: Entry) -> Result<Provision, Refusal<Fault>> {
         let head = entry.clone().read::<Head, Fault>()?;
         match Capability::parse(&head.capability) {
-            Some(Capability::FileIcons) => IconFolder::from_entry(entry).map(Provision::FileIcons),
-            Some(Capability::Look) => Look::from_entry(entry).map(Provision::Look),
+            Some(Capability::FileIcons) => IconFolder::from_entry(&entry).map(Provision::FileIcons),
+            Some(Capability::Look) => Look::from_entry(&entry).map(Provision::Look),
             None => Err(Refusal::Fault(Fault::NotOwned {
                 word: head.capability,
             })),

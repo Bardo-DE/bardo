@@ -72,6 +72,6 @@ pub(crate) fn sentence(refusal: &Refusal) -> String {
 }
 
 /// The helper reply that says no, in plain words.
-pub(crate) fn refused(refusal: Refusal) -> HelperReply {
-    HelperReply::Refused(sentence(&refusal))
+pub(crate) fn refused(refusal: &Refusal) -> HelperReply {
+    HelperReply::Refused(sentence(refusal))
 }

@@ -110,7 +110,7 @@ impl FixtureProc {
 
     /// Adds the process `process`.
     #[must_use]
-    pub fn process(mut self, process: FixtureProcess<'_>) -> FixtureProc {
+    pub fn process(mut self, process: &FixtureProcess<'_>) -> FixtureProc {
         let base = format!("{PROC}/{}", process.pid);
         self = self.file(
             &format!("{base}/cgroup"),

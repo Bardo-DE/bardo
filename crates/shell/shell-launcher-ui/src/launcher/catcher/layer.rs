@@ -15,9 +15,9 @@ use shell_ui_kit::surface::namespace;
 /// card, or the whole panel), so a click on the panel reaches the panel whichever of the two
 /// Overlay surfaces the compositor stacks on top, and a click under a short card reaches the
 /// catcher.
-pub fn input(output: &OutputInfo, tokens: &LauncherTokens, hit: PanelHit) -> RegionSpec {
+pub fn input(output: &OutputInfo, tokens: LauncherTokens, hit: PanelHit) -> RegionSpec {
     let (w, h) = (output.logical.width, output.logical.height);
-    let whole = panel_rect(output, tokens);
+    let whole = panel_rect(output, &tokens);
     let inset = i32::try_from(CARD_INSET).unwrap_or(0);
     let panel = match hit {
         PanelHit::Whole => whole,
@@ -122,7 +122,7 @@ mod tests {
             },
             "the card's and the pane's room, centred on 1920 x 1080"
         );
-        let RegionSpec::Rects(bands) = input(&out, &tokens, PanelHit::Whole) else {
+        let RegionSpec::Rects(bands) = input(&out, tokens, PanelHit::Whole) else {
             panic!("the catcher's region is a set of rects");
         };
         let area: i64 = bands
@@ -142,7 +142,7 @@ mod tests {
         assert!(!inside(440, 202) && !inside(1479, 661) && !inside(960, 400));
         // A 140 px card: the catcher takes everything under it too.
         let card = PanelHit::Card { height: 140 };
-        let RegionSpec::Rects(bands) = input(&out, &tokens, card) else {
+        let RegionSpec::Rects(bands) = input(&out, tokens, card) else {
             panic!("the catcher's region is a set of rects");
         };
         let inside = |x: i32, y: i32| {

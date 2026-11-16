@@ -119,13 +119,13 @@ mod tests {
     use super::*;
     use serde_json::json;
 
-    fn ids(want: Json) -> Result<Json, ReadFault> {
-        settle_want(&want)
+    fn ids(want: &Json) -> Result<Json, ReadFault> {
+        settle_want(want)
     }
 
     #[test]
     fn options_written_as_words_become_the_ids_they_name() {
-        let got = ids(json!({ "kind": "choice", "v": ["Option A", "skip"] }));
+        let got = ids(&json!({ "kind": "choice", "v": ["Option A", "skip"] }));
         assert_eq!(
             got,
             Ok(json!({ "kind": "choice", "v": ["option_a", "skip"] }))
@@ -134,7 +134,7 @@ mod tests {
 
     #[test]
     fn a_choice_inside_a_record_or_a_list_is_read_the_same_way() {
-        let got = ids(json!({ "kind": "record", "v": [
+        let got = ids(&json!({ "kind": "record", "v": [
             ["kind", { "kind": "choice", "v": ["Not A"] }],
             ["rest", { "kind": "list", "v": { "of": { "kind": "choice", "v": ["A b"] }, "max": 3 } }],
         ] }))
@@ -145,14 +145,14 @@ mod tests {
 
     #[test]
     fn two_options_that_name_one_id_are_refused() {
-        let got = ids(json!({ "kind": "choice", "v": ["Option A", "option-a!", "option_a"] }));
+        let got = ids(&json!({ "kind": "choice", "v": ["Option A", "option-a!", "option_a"] }));
         let clash = ChoiceId::parse("option_a").expect("id");
         assert_eq!(got, Err(ReadFault::WantClash(clash)));
     }
 
     #[test]
     fn an_option_with_nothing_to_make_an_id_of_is_named() {
-        let got = ids(json!({ "kind": "choice", "v": ["forward", "???"] }));
+        let got = ids(&json!({ "kind": "choice", "v": ["forward", "???"] }));
         assert_eq!(got, Err(ReadFault::WantOption("???".to_owned())));
     }
 
@@ -200,7 +200,7 @@ mod tests {
             ),
         ];
         for (row, input, at, expected) in cases {
-            let got = ids(input).expect("ids");
+            let got = ids(&input).expect("ids");
             assert_eq!(got.pointer(at), Some(&expected), "{row}");
         }
     }
@@ -216,7 +216,7 @@ mod tests {
             json!({ "max": -4 }),
         ] {
             assert_eq!(
-                ids(json!({ "kind": "text", "v": v })),
+                ids(&json!({ "kind": "text", "v": v })),
                 Err(ReadFault::WantText),
                 "{v}"
             );

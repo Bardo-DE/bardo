@@ -84,7 +84,7 @@ pub fn spawn_outbox(rt: &Handle, links: &Links, host: HostHandle<ShellMsg>) {
             let latest = feed.borrow_and_update().clone();
             let (next, commands) = {
                 let view = desktop.borrow_and_update();
-                outgoing(outbox, &latest.layouts, &view, &latest.pictures)
+                outgoing(&outbox, &latest.layouts, &view, &latest.pictures)
             };
             outbox = next;
             for command in commands {

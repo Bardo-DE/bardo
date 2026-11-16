@@ -72,10 +72,10 @@ fn run() -> Result<(), String> {
     host.run(move |ctx, event| match event {
         HostEvent::Started => {
             for output in ctx.outputs() {
-                spawn_launcher(ctx, output, &mut demo);
+                spawn_launcher(ctx, &output, &mut demo);
             }
         }
-        HostEvent::OutputAdded(output) => spawn_launcher(ctx, output, &mut demo),
+        HostEvent::OutputAdded(output) => spawn_launcher(ctx, &output, &mut demo),
         HostEvent::KeyboardFocus { id, focus } if demo.panels.iter().any(|(_, p)| *p == id) => {
             demo.link.focus(focus);
         }
@@ -87,7 +87,7 @@ fn run() -> Result<(), String> {
 }
 
 /// The catcher, then the panel, on `output`, both hidden at once (the daemon's order).
-fn spawn_launcher(ctx: &mut HostCtx<DemoMsg>, output: OutputInfo, demo: &mut Demo) {
+fn spawn_launcher(ctx: &mut HostCtx<DemoMsg>, output: &OutputInfo, demo: &mut Demo) {
     if demo.panels.iter().any(|(id, _)| *id == output.id) {
         return;
     }
@@ -102,8 +102,8 @@ fn spawn_launcher(ctx: &mut HostCtx<DemoMsg>, output: OutputInfo, demo: &mut Dem
         mount::<LauncherCatcher>,
         MountProps::<LauncherCatcher>::new(output.clone(), ()),
     ));
-    spawn_hidden(ctx, LauncherCatcher::layer(&output, &file, ()), catcher);
-    let config = Launcher::layer(&output, &file, ());
+    spawn_hidden(ctx, LauncherCatcher::layer(output, &file, ()), catcher);
+    let config = Launcher::layer(output, &file, ());
     let panel = root(HostRoot::with_props(
         mount::<Launcher>,
         MountProps::<Launcher>::new(output.clone(), ()),

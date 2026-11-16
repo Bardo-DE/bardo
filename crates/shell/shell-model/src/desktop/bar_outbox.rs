@@ -18,7 +18,7 @@ pub struct Outbox {
 /// with them.
 #[must_use]
 pub fn outgoing(
-    outbox: Outbox,
+    outbox: &Outbox,
     layouts: &BarLayouts,
     view: &DesktopView,
     pictures: &BarPictures,

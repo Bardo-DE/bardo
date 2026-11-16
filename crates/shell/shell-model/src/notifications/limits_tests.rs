@@ -40,9 +40,9 @@ fn critical() -> Hints {
 fn post(
     state: NotesState,
     note: Notification,
-    policy: &NotificationsPolicy,
+    policy: NotificationsPolicy,
 ) -> (NotesState, Vec<NotificationsEffect>) {
-    step(state, NotificationsEvent::Posted(Box::new(note)), policy)
+    step(state, NotificationsEvent::Posted(Box::new(note)), &policy)
 }
 
 fn banner_ids(state: &NotesState) -> Vec<u32> {
@@ -56,11 +56,11 @@ fn one_apps_flood_keeps_its_newest_banners_and_tells_it_about_the_rest() {
     let mut state = NotesState::default();
     let mut told = Vec::new();
     for id in 1..=over {
-        let (next, effects) = post(state, note(id, "chatty", None, transient()), &policy);
+        let (next, effects) = post(state, note(id, "chatty", None, transient()), policy);
         state = next;
         told.extend(effects);
     }
-    let (other, _) = post(state, note(over + 1, "quiet", None, transient()), &policy);
+    let (other, _) = post(state, note(over + 1, "quiet", None, transient()), policy);
     let kept: Vec<u32> = (3..=over).rev().collect();
     let want: Vec<u32> = std::iter::once(over + 1).chain(kept).collect();
     assert_eq!(banner_ids(&other), want, "the oldest two of the flood left");
@@ -77,11 +77,11 @@ fn one_apps_flood_keeps_its_newest_banners_and_tells_it_about_the_rest() {
 fn many_apps_cannot_push_the_live_banners_past_the_total_or_push_out_the_shells_notice() {
     let policy = NotificationsPolicy::default();
     let shell = note(1, "Keycap", Some("shell-keycap"), Hints::default());
-    let (mut state, _) = post(NotesState::default(), shell, &policy);
+    let (mut state, _) = post(NotesState::default(), shell, policy);
     let total = u32::try_from(LIVE_BANNERS_MAX).unwrap_or(0) + 20;
     for id in 2..=total {
         let app = format!("app-{id}");
-        state = post(state, note(id, &app, None, Hints::default()), &policy).0;
+        state = post(state, note(id, &app, None, Hints::default()), policy).0;
     }
     assert_eq!(state.live.banners.len(), LIVE_BANNERS_MAX);
     assert!(
@@ -113,9 +113,9 @@ fn an_apps_critical_notice_gives_way_to_do_not_disturb_and_leaves_after_its_hold
     let (state, _) = post(
         NotesState::default(),
         note(1, "app", None, critical()),
-        &policy,
+        policy,
     );
-    let (state, _) = post(state, shell, &policy);
+    let (state, _) = post(state, shell, policy);
     assert_eq!(banner_ids(&state), vec![2, 1], "both persist at first");
 
     let held_for = APP_CRITICAL_HOLD_MS;

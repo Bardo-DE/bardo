@@ -10,7 +10,7 @@
 use shell_launcher::{Choice, ProviderKind};
 
 /// What the panel is showing.
-#[derive(Debug, Clone, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct LauncherState {
     /// The selected row, an index into the visible results.
     pub selected: usize,

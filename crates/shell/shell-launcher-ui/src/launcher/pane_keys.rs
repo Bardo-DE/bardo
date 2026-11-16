@@ -80,7 +80,7 @@ impl PanelCtx {
             return;
         };
         if let Some(action) = item.actions.get(index) {
-            self.pick(RowRef::of(&item), Choice::Action(action.id.clone()));
+            self.pick(&RowRef::of(&item), Choice::Action(action.id.clone()));
         }
     }
 
@@ -161,7 +161,7 @@ impl PanelCtx {
         };
         match action_for_key(&item, action) {
             Some(id) => {
-                self.pick(RowRef::of(&item), Choice::Action(id.clone()));
+                self.pick(&RowRef::of(&item), Choice::Action(id.clone()));
                 true
             }
             None => false,

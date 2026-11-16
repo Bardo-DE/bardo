@@ -41,7 +41,7 @@ impl Surface for Launcher {
     fn layer(output: &OutputInfo, _settings: &ShellFile, (): ()) -> LayerConfig {
         // The shipped tokens: the surface has no document yet; `launcher` follows its margin
         // with the resolved ones once it is mounted.
-        layer(output, &LauncherTokens::default())
+        layer(output, LauncherTokens::default())
     }
 
     fn root(output: OutputInfo, (): ()) -> Element {

@@ -187,17 +187,17 @@ fn kinds_held(handles: &[HandleCard]) -> Vec<&EntityKind> {
     kinds
 }
 
-fn kind_word(kind: &MessageKind) -> String {
+fn kind_word(kind: MessageKind) -> String {
     match kind {
         MessageKind::Note => "note".to_owned(),
         MessageKind::Request => "request".to_owned(),
         MessageKind::Report {
             status: status @ (ReportStatus::Failed | ReportStatus::Cancelled),
         } => {
-            format!("report {}, not done", json(status).trim_matches('"'))
+            format!("report {}, not done", json(&status).trim_matches('"'))
         }
         MessageKind::Report { status } => {
-            format!("report {}", json(status).trim_matches('"'))
+            format!("report {}", json(&status).trim_matches('"'))
         }
     }
 }
@@ -223,7 +223,7 @@ fn inbound_line(line: &InboundLine) -> String {
         line.id,
         agent(&line.from.agent),
         line.from.space,
-        kind_word(&line.kind),
+        kind_word(line.kind),
         parts.join(" ")
     )
 }

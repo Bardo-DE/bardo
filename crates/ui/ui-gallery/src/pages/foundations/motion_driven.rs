@@ -168,7 +168,7 @@ fn DockCell() -> Element {
     let mut meters = use_signal(|| (VelocityMeter::default(), VelocityMeter::default()));
     rsx! {
         Cell { name: "Dock drag return", code: "use_drag_return, DragReturn",
-            controls: rsx! { {mini("Nudge", move |_| nudge(drag))} },
+            controls: rsx! { {mini("Nudge", move |_| nudge(&drag))} },
             div {
                 class: "g-detail",
                 onpointerdown: move |event| {
@@ -204,7 +204,6 @@ fn DockCell() -> Element {
     }
 }
 
-/// Knock the tile off its place and let it spring home, as a drop that missed does.
 /// A pointer position in logical pixels as a point.
 #[expect(
     clippy::cast_possible_truncation,
@@ -217,7 +216,9 @@ fn point_at(x: f64, y: f64) -> Point {
     }
 }
 
-fn nudge(drag: DragReturn) {
+/// Knock the tile off its place and let it spring home, as a drop that missed does.
+fn nudge(drag: &DragReturn) {
+    let drag = *drag;
     drag.follow(Point {
         x: Px(-40.0),
         y: Px(-24.0),

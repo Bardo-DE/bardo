@@ -32,7 +32,7 @@ where
     let taken = slots.take(bucket);
     drop(ticket);
     if let Ok(slot) = taken {
-        serve_caller(conn, caller, slot.bucket().handshake_ms(), ctx);
+        serve_caller(&conn, &caller, slot.bucket().handshake_ms(), ctx);
     } else {
         journal::note(
             "refused",

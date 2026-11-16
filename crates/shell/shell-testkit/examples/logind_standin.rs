@@ -50,6 +50,10 @@ impl Manager {
         session_path()
     }
 
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "a zbus method receives its arguments by value"
+    )]
     fn inhibit(
         &self,
         what: String,
@@ -69,6 +73,10 @@ impl Manager {
         say(&format!("suspend interactive={interactive}"));
     }
 
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "a zbus method receives its arguments by value"
+    )]
     fn lock_session(&self, id: String) {
         say(&format!("lock-session {id}"));
     }

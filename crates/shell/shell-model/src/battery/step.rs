@@ -5,6 +5,10 @@ use crate::units::Percent;
 
 /// `battery` after `event`.
 #[must_use]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a reducer takes the state and the event and returns the next state"
+)]
 pub fn step(battery: Battery, event: BatteryEvent) -> Battery {
     match event {
         BatteryEvent::Presence(presence) => Battery {

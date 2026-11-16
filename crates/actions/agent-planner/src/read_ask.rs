@@ -81,19 +81,19 @@ mod tests {
     use super::*;
     use serde_json::json;
 
-    fn asked(want: Json) -> ModelOutput {
+    fn asked(want: &Json) -> ModelOutput {
         read_output(&json!({ "inputs": [1], "task": "summarise", "want": want }))
     }
 
     #[test]
     fn a_text_want_with_a_bad_v_gets_the_precise_fault_not_the_generic_one() {
-        let out = asked(json!({ "kind": "text", "v": { "max": "lots" } }));
+        let out = asked(&json!({ "kind": "text", "v": { "max": "lots" } }));
         assert_eq!(
             out,
             ModelOutput::Unread(ReplyFault::Read(ReadFault::WantText))
         );
         assert!(read_fault_text(&ReadFault::WantText).starts_with("text needs v: {\"max\": N}"));
-        let nothing = asked(json!({ "kind": "bogus" }));
+        let nothing = asked(&json!({ "kind": "bogus" }));
         assert_eq!(
             nothing,
             ModelOutput::Unread(ReplyFault::Read(ReadFault::Want))

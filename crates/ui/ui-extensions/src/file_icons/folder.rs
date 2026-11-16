@@ -34,7 +34,7 @@ pub struct IconFolder {
 impl IconFolder {
     /// Reads the entry. The folder path is made absolute inside the Extension's folder
     /// (`Entry::resolve`): an absolute path or a `..` is refused.
-    pub(crate) fn from_entry(entry: Entry) -> Result<IconFolder, Refusal<Fault>> {
+    pub(crate) fn from_entry(entry: &Entry) -> Result<IconFolder, Refusal<Fault>> {
         let wire: Wire = entry.clone().read::<Wire, Fault>()?;
         let dir = entry.resolve::<Fault>(wire.dir)?;
         let folder = entry.resolve::<Fault>(PathBuf::from("."))?;

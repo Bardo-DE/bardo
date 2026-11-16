@@ -22,14 +22,26 @@ struct Stub;
 
 #[interface(name = "org.freedesktop.FileManager1")]
 impl Stub {
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "a zbus method receives its arguments by value"
+    )]
     fn show_items(&self, uris: Vec<String>, startup_id: String) {
         record("ShowItems", &uris, &startup_id);
     }
 
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "a zbus method receives its arguments by value"
+    )]
     fn show_folders(&self, uris: Vec<String>, startup_id: String) {
         record("ShowFolders", &uris, &startup_id);
     }
 
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "a zbus method receives its arguments by value"
+    )]
     fn show_item_properties(&self, uris: Vec<String>, startup_id: String) {
         record("ShowItemProperties", &uris, &startup_id);
     }

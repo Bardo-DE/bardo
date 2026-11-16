@@ -45,7 +45,7 @@ pub struct Look {
 impl Look {
     /// Reads the entry. The stylesheet path is made absolute inside the Extension's folder
     /// (`Entry::resolve`): an absolute path or a `..` is refused.
-    pub(crate) fn from_entry(entry: Entry) -> Result<Look, Refusal<Fault>> {
+    pub(crate) fn from_entry(entry: &Entry) -> Result<Look, Refusal<Fault>> {
         let wire: Wire = entry.clone().read::<Wire, Fault>()?;
         if wire.stylesheet.extension().is_none_or(|ext| ext != "css") {
             return Err(Refusal::Fault(Fault::NotCss {

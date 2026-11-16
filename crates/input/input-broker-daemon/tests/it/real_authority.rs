@@ -92,7 +92,7 @@ fn authority(
     cgroup: &str,
     image: FixtureImage<'_>,
 ) -> PeepholeAuthority<FixtureProc> {
-    let tree = tree.process(FixtureProcess {
+    let tree = tree.process(&FixtureProcess {
         pid: me(),
         cgroup,
         image,

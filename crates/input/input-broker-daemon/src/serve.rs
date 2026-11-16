@@ -37,7 +37,7 @@ where
     C: Monotonic + 'static,
 {
     if let Some(caller) = identify(&conn, &ctx.authority) {
-        serve_caller(conn, caller, HANDSHAKE_TIMEOUT_MS, ctx);
+        serve_caller(&conn, &caller, HANDSHAKE_TIMEOUT_MS, ctx);
     }
 }
 
@@ -56,8 +56,8 @@ pub fn identify<A: Authority>(conn: &OwnedFd, authority: &A) -> Option<Caller> {
 /// Serves `conn`, whose peer is `caller`, until it ends; a connection that makes no device within
 /// `handshake_ms` is closed. Never panics on what the peer sends.
 pub fn serve_caller<B, A, S, C>(
-    conn: OwnedFd,
-    caller: Caller,
+    conn: &OwnedFd,
+    caller: &Caller,
     handshake_ms: u64,
     ctx: &Context<B, A, S, C>,
 ) where
@@ -67,7 +67,7 @@ pub fn serve_caller<B, A, S, C>(
     C: Monotonic + 'static,
 {
     let admission = CallerAdmission {
-        caller: &caller,
+        caller,
         seat: &ctx.seat,
     };
     let mut session = Session::new(&ctx.backend, &admission);
@@ -78,16 +78,16 @@ pub fn serve_caller<B, A, S, C>(
             .in_handshake()
             .then(|| Duration::from_millis(handshake_ms));
         if want != waiting {
-            if link::set_receive_timeout(&conn, want).is_err() {
+            if link::set_receive_timeout(conn, want).is_err() {
                 return;
             }
             waiting = want;
         }
-        let request = match inbox.receive(&conn) {
+        let request = match inbox.receive(conn) {
             Incoming::Datagram(len) => decode_request(inbox.datagram(len)),
             Incoming::Closed => break,
             Incoming::Oversize | Incoming::TimedOut => {
-                let _ = link::send_reply(&conn, &Reply::Refused(Reason::Unknown));
+                let _ = link::send_reply(conn, &Reply::Refused(Reason::Unknown));
                 break;
             }
         };
@@ -98,11 +98,11 @@ pub fn serve_caller<B, A, S, C>(
                     "refused",
                     &[kv("caller", &caller.describe()), kv("why", &why)],
                 );
-                let _ = link::send_reply(&conn, &Reply::Refused(Reason::Unknown));
+                let _ = link::send_reply(conn, &Reply::Refused(Reason::Unknown));
                 break;
             }
         };
-        if deliver(&conn, &caller, handled).is_break() {
+        if deliver(conn, caller, handled).is_break() {
             break;
         }
     }

@@ -18,14 +18,14 @@ use shell_ui_kit::links::LauncherLink;
 use shell_ui_kit::root::use_root_style;
 
 /// The catcher on `output`.
-pub(super) fn catcher(output: OutputInfo) -> Element {
+pub(super) fn catcher(output: &OutputInfo) -> Element {
     let link = use_context::<LauncherLink>();
     let shown = use_shown(&link);
     use_follow_visibility(shown, output.id);
     let hit = use_watch(link.subscribe_hit());
     let place = use_watch(link.subscribe_place());
     let tokens = place().map_or_else(LauncherTokens::default, LauncherTokens::from);
-    follow_input(input(&output, &tokens, hit()));
+    follow_input(input(output, tokens, hit()));
     let surface = use_root_style().surface;
     rsx! {
         AppStyle { css: LAUNCHER_CSS }

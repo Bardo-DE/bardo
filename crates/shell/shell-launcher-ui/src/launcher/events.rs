@@ -307,7 +307,7 @@ impl PanelCtx {
         let selected = shown.row(session.keys.selected);
         let actions = selected.as_ref().map_or(0, |item| item.actions.len());
         let was = session.keys.filter;
-        let (keys, outs) = step(session.keys.clone(), key, shown.len(), actions);
+        let (keys, outs) = step(session.keys, key, shown.len(), actions);
         let keys = match key {
             LauncherKey::Tab | LauncherKey::ShiftTab if keys.actions == ActionsMenu::Closed => {
                 let ring = match was {
@@ -369,7 +369,7 @@ impl PanelCtx {
     /// Run line `index` of `shown` (a debug Enter; the palette's own Enter comes as a pick).
     pub(crate) fn run_line(&self, shown: &View, index: usize, choice: Choice) {
         match shown.row(index) {
-            Some(item) => self.pick(RowRef::of(&item), choice),
+            Some(item) => self.pick(&RowRef::of(&item), choice),
             None => {
                 if let Some(section) = shown.lines().get(index).and_then(|line| match line {
                     crate::launcher::view::Line::More { section, .. } => Some(*section),
@@ -458,7 +458,7 @@ impl PanelCtx {
     /// A row (or one of its actions) was chosen: count it, carry out what its provider says,
     /// then close. With the preview pane's control `n` holding the keyboard, Enter runs that
     /// control's action.
-    pub fn pick(&self, row: RowRef, choice: Choice) {
+    pub fn pick(&self, row: &RowRef, choice: Choice) {
         let Some(session) = self.current() else {
             return;
         };

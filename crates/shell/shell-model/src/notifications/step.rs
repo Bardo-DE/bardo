@@ -73,7 +73,7 @@ pub fn step(
     policy: &NotificationsPolicy,
 ) -> (NotesState, Vec<NotificationsEffect>) {
     match event {
-        NotificationsEvent::Posted(note) => rules::post(state, *note, policy),
+        NotificationsEvent::Posted(note) => rules::post(state, &note, *policy),
         NotificationsEvent::ClosedByApp(id) => rules::close(state, id, CloseReason::ClosedByCall),
         NotificationsEvent::Dismissed(id) => rules::close(state, id, CloseReason::Dismissed),
         NotificationsEvent::SwipedAway(id) => match policy.swipe {
@@ -93,7 +93,7 @@ pub fn step(
             rules::dismiss_each(state, ids)
         }
         NotificationsEvent::Swept(now) => rules::sweep(state, now),
-        NotificationsEvent::Loaded(stored) => rules::load(state, stored, policy),
+        NotificationsEvent::Loaded(stored) => rules::load(state, stored, *policy),
         NotificationsEvent::Server(status) => {
             let mut state = state;
             state.live.server = status;

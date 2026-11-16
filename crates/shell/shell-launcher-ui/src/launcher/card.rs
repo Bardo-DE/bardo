@@ -39,22 +39,22 @@ pub(crate) struct Foot(Signal<Option<Rc<MountedData>>>);
 
 impl Foot {
     /// Keep the foot element to read it later.
-    pub fn on_mounted(mut self, event: Event<MountedData>) {
+    pub fn on_mounted(mut self, event: &Event<MountedData>) {
         self.0.set(Some(event.data()));
     }
 }
 
 /// Measure the card again whenever `key` changes, publish what the panel takes on `link`, and
 /// keep this surface's input region on it.
-pub(crate) fn use_card_hit(link: &LauncherLink, key: CardKey) -> Foot {
+pub(crate) fn use_card_hit(link: &LauncherLink, key: &CardKey) -> Foot {
     let foot = Foot(use_signal(|| None));
     let host = use_hook(use_document_host);
     let mut last = use_hook(|| CopyValue::new(None::<CardKey>));
-    let actions = match &key {
+    let actions = match key {
         CardKey::Shown { actions, .. } => *actions,
         CardKey::Hidden => ActionsShown::Closed,
     };
-    if last.peek().as_ref() != Some(&key) {
+    if last.peek().as_ref() != Some(key) {
         last.set(Some(key.clone()));
         match key {
             CardKey::Hidden

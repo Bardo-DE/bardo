@@ -41,7 +41,7 @@ pub struct Refused {
 }
 
 impl Refused {
-    fn new(reason: Reason, kind: Option<Kind>, why: impl ToString) -> Self {
+    fn new(reason: Reason, kind: Option<Kind>, why: &impl ToString) -> Self {
         Self {
             reason,
             note: Note {
@@ -133,7 +133,7 @@ impl<'a, B: Backend, A: Admission> Session<'a, B, A> {
     fn create(&mut self, now: Millis, create: &Create) -> Handled {
         let kind = Some(create.kind());
         if let Err(why) = self.admission.admit(create.kind()) {
-            return Err(Refused::new(Reason::NotAllowed, kind, why));
+            return Err(Refused::new(Reason::NotAllowed, kind, &why));
         }
         let delivery = create.kind().delivery();
         let over = self.created >= MAX_CREATES_PER_CONNECTION
@@ -145,16 +145,16 @@ impl<'a, B: Backend, A: Admission> Session<'a, B, A> {
             return Err(Refused::new(
                 Reason::TooMany,
                 kind,
-                "too many devices on one connection",
+                &"too many devices on one connection",
             ));
         }
         let planned = match plan(create) {
             Ok(planned) => planned,
-            Err(why) => return Err(Refused::new(Reason::BadCaps, kind, why)),
+            Err(why) => return Err(Refused::new(Reason::BadCaps, kind, &why)),
         };
         let device = match self.backend.create(&planned.spec) {
             Ok(device) => device,
-            Err(why) => return Err(Refused::new(Reason::Unavailable, kind, why)),
+            Err(why) => return Err(Refused::new(Reason::Unavailable, kind, &why)),
         };
         // `created` is at most 64, so the id never wraps and is never reused on a connection.
         let id = DeviceId(self.created);
@@ -194,7 +194,7 @@ impl<'a, B: Backend, A: Admission> Session<'a, B, A> {
             return Err(Refused::new(
                 Reason::Unknown,
                 None,
-                "events for a device that is not there",
+                &"events for a device that is not there",
             ));
         };
         match slot.limiter.admit(now) {
@@ -207,7 +207,7 @@ impl<'a, B: Backend, A: Admission> Session<'a, B, A> {
                 return Err(Refused::new(
                     Reason::TooMany,
                     None,
-                    "events arrive faster than any device sends them",
+                    &"events arrive faster than any device sends them",
                 ));
             }
         }
@@ -218,7 +218,7 @@ impl<'a, B: Backend, A: Admission> Session<'a, B, A> {
             return Err(Refused::new(
                 Reason::NotAllowed,
                 None,
-                "too many events outside the ceiling",
+                &"too many events outside the ceiling",
             ));
         }
         if filtered.pass.is_empty() {
@@ -226,7 +226,7 @@ impl<'a, B: Backend, A: Admission> Session<'a, B, A> {
         }
         match slot.device.write(&filtered.pass) {
             Ok(()) => Ok(None),
-            Err(why) => Err(Refused::new(Reason::Unavailable, None, why)),
+            Err(why) => Err(Refused::new(Reason::Unavailable, None, &why)),
         }
     }
 }

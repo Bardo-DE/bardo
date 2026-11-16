@@ -56,7 +56,7 @@ where
     pub(super) async fn open_terminal_for(&self, helper: HelperId) -> HelperReply {
         match self.try_open_terminal(helper).await {
             Ok(reply) => reply,
-            Err(why) => refused(why),
+            Err(why) => refused(&why),
         }
     }
 
@@ -108,7 +108,7 @@ where
     pub(super) async fn bring_back_for(&self, helper: HelperId) -> HelperReply {
         match self.try_bring_back(helper).await {
             Ok(reply) => reply,
-            Err(why) => refused(why),
+            Err(why) => refused(&why),
         }
     }
 

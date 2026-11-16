@@ -313,7 +313,7 @@ fn a_laid_out_bar_gets_its_targets_and_a_request_per_space_and_nothing_again_unt
     let layout = layouts("DP-1", &[id("ws-1")]);
     let seen = view("ws-1", 0);
     let none = BarPictures::default();
-    let (outbox, commands) = outgoing(Outbox::default(), &layout, &seen, &none);
+    let (outbox, commands) = outgoing(&Outbox::default(), &layout, &seen, &none);
     assert!(
         matches!(
             commands.as_slice(),
@@ -327,10 +327,10 @@ fn a_laid_out_bar_gets_its_targets_and_a_request_per_space_and_nothing_again_unt
         ),
         "{commands:?}"
     );
-    let (outbox, again) = outgoing(outbox, &layout, &seen, &none);
+    let (outbox, again) = outgoing(&outbox, &layout, &seen, &none);
     assert!(again.is_empty(), "{again:?}");
     // The bar goes: the targets are cleared and nothing is asked for.
-    let (_, gone) = outgoing(outbox, &BarLayouts::default(), &seen, &none);
+    let (_, gone) = outgoing(&outbox, &BarLayouts::default(), &seen, &none);
     assert_eq!(
         gone,
         [

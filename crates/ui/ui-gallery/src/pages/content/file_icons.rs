@@ -34,7 +34,7 @@ fn example(kind: FileKind) -> &'static str {
 }
 
 /// One row of `choice` at every size, bottom-aligned.
-fn ladder(choice: FileIconChoice, style: FileIconStyle) -> Element {
+fn ladder(choice: &FileIconChoice, style: FileIconStyle) -> Element {
     rsx! {
         div { class: "g-row",
             for px in SIZES {
@@ -50,8 +50,8 @@ fn kinds(style: FileIconStyle) -> Element {
         div { class: "g-row g-row-top g-stage-pad",
             for kind in FileKind::ALL.iter().copied() {
                 Specimen { name: kind.slug().to_owned(),
-                    {ladder(FileIconChoice::Standard { kind, label: ExtLabel::from_extension(example(kind)) }, style)}
-                    {ladder(FileIconChoice::Standard { kind, label: None }, style)}
+                    {ladder(&FileIconChoice::Standard { kind, label: ExtLabel::from_extension(example(kind)) }, style)}
+                    {ladder(&FileIconChoice::Standard { kind, label: None }, style)}
                 }
             }
         }
@@ -63,7 +63,7 @@ fn folders(style: FileIconStyle) -> Element {
     rsx! {
         div { class: "g-row g-row-top g-stage-pad",
             for kind in FolderKind::ALL.iter().copied() {
-                Specimen { name: kind.slug().to_owned(), {ladder(FileIconChoice::Folder(kind), style)} }
+                Specimen { name: kind.slug().to_owned(), {ladder(&FileIconChoice::Folder(kind), style)} }
             }
         }
     }
@@ -85,14 +85,14 @@ pub fn FileIconsPage() -> Element {
         Section { title: "Picture", note: "FileIcon {{ choice: Picture(source) }}: the file's own thumbnail cropped to a page-shaped frame with the page's edge and shadow.",
             Surface { material: Material::Popover, theme: Some(Scheme::Light),
                 div { class: "g-row g-row-top g-stage-pad",
-                    {ladder(FileIconChoice::Picture(wide_image()), FileIconStyle::Colour)}
+                    {ladder(&FileIconChoice::Picture(wide_image()), FileIconStyle::Colour)}
                 }
             }
         }
         Section { title: "Artwork", note: "FileIcon {{ choice: Artwork(source) }}: a finished icon from a chosen set of file icons, or one the person set for a type (Your changes), drawn whole in the square: contained, never cropped, no page frame. Which choice a file gets is the resolver's (ds-extensions' FileIcons::of, which reads the Extensions folders), so this page shows the drawing only.",
             Surface { material: Material::Popover, theme: Some(Scheme::Light),
                 div { class: "g-row g-row-top g-stage-pad",
-                    {ladder(FileIconChoice::Artwork(wide_image()), FileIconStyle::Colour)}
+                    {ladder(&FileIconChoice::Artwork(wide_image()), FileIconStyle::Colour)}
                 }
             }
         }

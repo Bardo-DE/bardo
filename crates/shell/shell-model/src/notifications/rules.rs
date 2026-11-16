@@ -29,7 +29,7 @@ pub(super) fn find(state: &NotesState, id: NotificationId) -> Option<&Notificati
 }
 
 /// A posting, or a replacement of a held one (removed silently first).
-pub(super) fn post(state: NotesState, note: Notification, policy: &NotificationsPolicy) -> Step {
+pub(super) fn post(state: NotesState, note: &Notification, policy: NotificationsPolicy) -> Step {
     let id = note.id;
     let (mut state, replaced) = remove_everywhere(state, id);
     if replaced.is_none() {
@@ -47,7 +47,7 @@ pub(super) fn post(state: NotesState, note: Notification, policy: &Notifications
     if had_kept || kept {
         effects.push(NotificationsEffect::SaveHistory);
     }
-    if let Presented::Banner(life) = presented(&note, policy) {
+    if let Presented::Banner(life) = presented(note, &policy) {
         state.live.banners.insert(
             0,
             LiveBanner {
@@ -55,9 +55,9 @@ pub(super) fn post(state: NotesState, note: Notification, policy: &Notifications
                 life,
             },
         );
-        effects.extend(enforce_banner_limits(&mut state, &note));
+        effects.extend(enforce_banner_limits(&mut state, note));
     }
-    if let Chime::Play(sound) = chime(&note, policy) {
+    if let Chime::Play(sound) = chime(note, &policy) {
         effects.push(NotificationsEffect::Sound(sound));
     }
     (state, effects)
@@ -245,7 +245,7 @@ pub(super) fn invoke(
 pub(super) fn load(
     mut state: NotesState,
     stored: StoredHistory,
-    policy: &NotificationsPolicy,
+    policy: NotificationsPolicy,
 ) -> Step {
     state.history = cap(stored.history, policy.history_cap);
     state.last_id = state.last_id.max(stored.last_id);

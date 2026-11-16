@@ -36,7 +36,7 @@ fn shell() -> RoleName {
 fn tree() -> FixtureProc {
     FixtureProc::new()
         .file(FRAGMENT, "", FileTrust::RootOnly)
-        .process(FixtureProcess {
+        .process(&FixtureProcess {
             pid: me(),
             cgroup: CGROUP,
             image: FixtureImage::Present(IMAGE, FileTrust::RootOnly),
@@ -190,7 +190,7 @@ fn a_manager_that_disagrees_leaves_the_shell_at_exe() {
 fn a_user_writable_image_is_unverified_whatever_the_manager_says() {
     let fs = FixtureProc::new()
         .file(FRAGMENT, "", FileTrust::RootOnly)
-        .process(FixtureProcess {
+        .process(&FixtureProcess {
             pid: me(),
             cgroup: CGROUP,
             image: FixtureImage::Present(IMAGE, FileTrust::Writable(Writer::Owner(Uid::new(1000)))),

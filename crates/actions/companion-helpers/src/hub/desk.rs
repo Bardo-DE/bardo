@@ -66,7 +66,7 @@ where
     async fn sign_in_with(&self, helper: HelperId, way: String) -> HelperReply {
         match self.try_sign_in(helper, &way).await {
             Ok(reply) => reply,
-            Err(why) => refused(why),
+            Err(why) => refused(&why),
         }
     }
 
@@ -105,10 +105,10 @@ where
     /// The person signed out of the app the helper runs; every helper that runs it is signed out.
     async fn sign_out_of(&self, helper: HelperId) -> HelperReply {
         let Some(card) = self.board().card(&helper).cloned() else {
-            return refused(Refusal::Job(JobRefusal::NoSuchHelper));
+            return refused(&Refusal::Job(JobRefusal::NoSuchHelper));
         };
         let (Some(program), Some(agents)) = (card.kind.program().cloned(), self.agents()) else {
-            return refused(Refusal::NotAnApp(AppStep::SignOut));
+            return refused(&Refusal::NotAnApp(AppStep::SignOut));
         };
         match agents.sign_out(&card).await {
             SignOutOutcome::SignedOut => {
@@ -118,14 +118,14 @@ where
                 });
                 HelperReply::Done
             }
-            SignOutOutcome::Failed => refused(Refusal::SignOutFailed),
+            SignOutOutcome::Failed => refused(&Refusal::SignOutFailed),
         }
     }
 
     async fn make(&self, form: HelperForm) -> HelperReply {
         match self.try_make(form).await {
             Ok(id) => HelperReply::Made(id),
-            Err(why) => refused(why),
+            Err(why) => refused(&why),
         }
     }
 
@@ -140,7 +140,7 @@ where
     async fn change(&self, helper: HelperId, form: HelperForm) -> HelperReply {
         match self.try_change(helper, form).await {
             Ok(()) => HelperReply::Done,
-            Err(why) => refused(why),
+            Err(why) => refused(&why),
         }
     }
 
@@ -163,7 +163,7 @@ where
     async fn give(&self, ask: PostFromPerson) -> HelperReply {
         match self.try_give(ask).await {
             Ok(id) => HelperReply::Posted(id),
-            Err(why) => refused(why),
+            Err(why) => refused(&why),
         }
     }
 
@@ -196,7 +196,7 @@ where
     async fn give_for_planner(&self, ask: PostFromPlanner) -> HelperReply {
         match self.try_give_for_planner(ask).await {
             Ok(id) => HelperReply::Posted(id),
-            Err(why) => refused(why),
+            Err(why) => refused(&why),
         }
     }
 
@@ -217,7 +217,7 @@ where
 
     /// Keeps a proposed routine for the person to accept. Nothing is made: the goal, the time and
     /// the why are a model's words, shown to the person as data.
-    fn routine_proposed(&self, ask: RoutineAsk) -> HelperReply {
+    fn routine_proposed(&self, ask: &RoutineAsk) -> HelperReply {
         let who = match &ask.helper {
             RoutineFor::Named(name) => RoutineWho::Named(name, &ask.space),
             RoutineFor::Itself(id) => RoutineWho::Itself(id),
@@ -230,14 +230,14 @@ where
         };
         let (form, why) = match routine_wish(&self.board(), wish) {
             Ok(proposal) => proposal,
-            Err(why) => return refused(why),
+            Err(why) => return refused(&why),
         };
         match self.with_state(|state| state.proposals.add(form, why)) {
             Some(_) => {
                 self.changed();
                 HelperReply::Done
             }
-            None => refused(Refusal::TooManyWaiting),
+            None => refused(&Refusal::TooManyWaiting),
         }
     }
 
@@ -251,7 +251,7 @@ where
         );
         match form {
             Ok(form) => self.make(form).await,
-            Err(why) => refused(why),
+            Err(why) => refused(&why),
         }
     }
 }
@@ -350,7 +350,7 @@ where
     }
 
     fn propose_routine(&self, ask: RoutineAsk) -> Pending<'_, HelperReply> {
-        Box::pin(async move { self.routine_proposed(ask) })
+        Box::pin(async move { self.routine_proposed(&ask) })
     }
 
     fn routine_proposals(&self) -> Vec<RoutineProposal> {

@@ -170,9 +170,9 @@ pub(crate) fn launcher(output: OutputInfo) -> Element {
     // draws nothing and has no token scope of its own.
     let tokens = resolved.get();
     link.set_place(tokens.into());
-    let place = layer(&output, &tokens);
+    let place = layer(&output, tokens);
     use_follow_place(place.size, place.margin);
-    let foot = use_card_hit(&link, card_key(shown.as_ref(), aside.as_ref()));
+    let foot = use_card_hit(&link, &card_key(shown.as_ref(), aside.as_ref()));
     let (width, inset) = match aside {
         Some(_) => (PANEL_ROOM_WIDTH, 0),
         None => (PANEL_WIDTH, CARD_INSET),
@@ -310,6 +310,7 @@ fn card_key(shown: Option<&Shown>, aside: Option<&Aside>) -> CardKey {
 }
 
 /// Where the palette's rows get their pictures: a file's thumbnail, a clipboard item's image.
+#[derive(Clone, Copy)]
 struct Images<'a> {
     thumb_of: &'a dyn Fn(&str, &std::path::Path) -> Option<ImageSource>,
     clip_image: &'a dyn Fn(ClipKey) -> Option<ImageSource>,
@@ -378,7 +379,7 @@ fn palette(
             groups,
             empty: empty_text(&session.query),
             oninput: move |text: String| input.typed(text),
-            onpick: move |row: RowRef| pick.pick(row, shell_launcher::Choice::Primary),
+            onpick: move |row: RowRef| pick.pick(&row, shell_launcher::Choice::Primary),
             onclose: move |_| close.dismissed(),
             host: CommandPaletteHost::Surface,
             id: CARD_ID.to_owned(),
@@ -401,7 +402,7 @@ fn palette(
         }
         div {
             class: "shell-launcher-foot",
-            onmounted: move |event| foot.on_mounted(event),
+            onmounted: move |event| foot.on_mounted(&event),
         }
         if let (Some(entries), Some(row)) = (actions, selected) {
             Menu::<ActionId> {
@@ -412,7 +413,7 @@ fn palette(
                 // The first action starts highlighted, so Return runs it at once.
                 start: Some(0),
                 onpick: move |action: ActionId| {
-                    action_pick.pick(row.clone(), shell_launcher::Choice::Action(action));
+                    action_pick.pick(&row, shell_launcher::Choice::Action(action));
                 },
                 onclose: move |()| action_close.actions_closed(),
             }

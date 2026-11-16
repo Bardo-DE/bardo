@@ -79,7 +79,7 @@ mod tests {
     const MANAGER_1000: &str = "/user.slice/user-1000.slice/user@1000.service";
 
     fn check(cgroup: &str, image: FixtureImage<'_>) -> ShellCheck<FixtureProc> {
-        let proc = FixtureProc::new().process(FixtureProcess {
+        let proc = FixtureProc::new().process(&FixtureProcess {
             pid: Pid::new(PID).unwrap(),
             cgroup: &format!("0::{cgroup}\n"),
             image,

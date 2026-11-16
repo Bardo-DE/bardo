@@ -261,7 +261,7 @@ struct Shared {
 }
 
 impl Shared {
-    fn say(&self, line: Value) {
+    fn say(&self, line: &Value) {
         // Nobody listening is fine: the stream is for whoever watches.
         let _ = self.news.send(format!("{line}\n"));
     }
@@ -432,9 +432,9 @@ impl LocalApiHandle {
             }
             inner.daemon = daemon;
         };
-        self.shared.say(line);
+        self.shared.say(&line);
         if running {
-            self.shared.say(json!({"NetMap": {}}));
+            self.shared.say(&json!({"NetMap": {}}));
         }
     }
 
@@ -449,7 +449,7 @@ impl LocalApiHandle {
             _ => false,
         };
         if changed {
-            self.shared.say(json!({"NetMap": {}}));
+            self.shared.say(&json!({"NetMap": {}}));
         }
     }
 
@@ -563,7 +563,7 @@ fn answer(shared: &Shared, request: &Request) -> Answer {
                     }
                 };
                 if let Some(url) = url {
-                    shared.say(json!({"BrowseToURL": url}));
+                    shared.say(&json!({"BrowseToURL": url}));
                 }
                 plain(Response::new(204))
             }

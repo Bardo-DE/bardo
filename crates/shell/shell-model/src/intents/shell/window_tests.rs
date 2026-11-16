@@ -233,8 +233,8 @@ fn desk() -> WindowModel {
     }
 }
 
-fn commands_of(ask: WindowAsk) -> Result<Vec<WlCommand>, WindowFault> {
-    plan(&ask, &desk()).map(|answer| match answer {
+fn commands_of(ask: &WindowAsk) -> Result<Vec<WlCommand>, WindowFault> {
+    plan(ask, &desk()).map(|answer| match answer {
         WindowAnswer::Commands(commands) => commands,
         WindowAnswer::Listing(text) => panic!("a listing: {text}"),
     })
@@ -322,7 +322,7 @@ fn a_window_action_sends_the_commands_of_the_menus_own_rows() {
         ),
     ];
     for (name, ask, want) in cases {
-        assert_eq!(commands_of(ask), want, "{name}");
+        assert_eq!(commands_of(&ask), want, "{name}");
     }
 }
 
@@ -371,7 +371,7 @@ fn an_unknown_id_is_a_fault_and_never_a_guess() {
         ),
     ];
     for (name, ask, want) in cases {
-        assert_eq!(commands_of(ask), Err(want), "{name}");
+        assert_eq!(commands_of(&ask), Err(want), "{name}");
     }
     assert_eq!(
         plan(&WindowAsk::Hide { app: None }, &WindowModel::default()),

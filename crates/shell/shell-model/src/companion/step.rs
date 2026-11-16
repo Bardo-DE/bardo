@@ -34,13 +34,13 @@ pub fn step(
             let (tap, taps) = state.tap.step(TapIn::Tap, at, &params.tap, &());
             let state = Companion { tap, ..state };
             match taps.as_slice() {
-                [TapOut::Summon] => summoned(state, SummonIn::Summon(facts), at, params),
+                [TapOut::Summon] => summoned(state, SummonIn::Summon(facts), at, *params),
                 _ => (state, Vec::new()),
             }
         }
-        CompanionEvent::Summoned(facts) => summoned(state, SummonIn::Summon(facts), at, params),
+        CompanionEvent::Summoned(facts) => summoned(state, SummonIn::Summon(facts), at, *params),
         CompanionEvent::AppAnswered(serial, answer) => {
-            summoned(state, SummonIn::AppAnswered(serial, answer), at, params)
+            summoned(state, SummonIn::AppAnswered(serial, answer), at, *params)
         }
         CompanionEvent::Elapsed => {
             let (tap, _) = state.tap.step(TapIn::from(Elapsed), at, &params.tap, &());
@@ -48,7 +48,7 @@ pub fn step(
                 Companion { tap, ..state },
                 SummonIn::from(Elapsed),
                 at,
-                params,
+                *params,
             )
         }
         CompanionEvent::LauncherClosed => {
@@ -56,9 +56,9 @@ pub fn step(
                 memory_notice: None,
                 ..state
             };
-            summoned(state, SummonIn::LauncherClosed, at, params)
+            summoned(state, SummonIn::LauncherClosed, at, *params)
         }
-        CompanionEvent::Dismissed => summoned(state, SummonIn::Dismiss, at, params),
+        CompanionEvent::Dismissed => summoned(state, SummonIn::Dismiss, at, *params),
         CompanionEvent::Helpers(msg) => helped(state, *msg),
         CompanionEvent::Terminals(msg) => in_terminals(state, msg),
         CompanionEvent::Mode(msg) => update_mode(state, msg),
@@ -102,7 +102,7 @@ fn summoned(
     state: Companion,
     input: SummonIn,
     at: Stamp,
-    params: &CompanionParams,
+    params: CompanionParams,
 ) -> (Companion, Vec<CompanionEffect>) {
     let cx = SummonCx {
         next: action_wire::SummonSerial(state.asked_serial + 1),

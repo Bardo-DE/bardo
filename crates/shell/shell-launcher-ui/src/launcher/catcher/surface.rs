@@ -35,6 +35,6 @@ impl Surface for LauncherCatcher {
     }
 
     fn root(output: OutputInfo, (): ()) -> Element {
-        catcher(output)
+        catcher(&output)
     }
 }
