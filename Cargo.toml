@@ -308,7 +308,7 @@ members = [
     "crates/models/model-provider",
     "crates/models/model-replay",
     "crates/models/model-wire",
-    "crates/speech/bardo-speech-host",
+    "crates/speech/speech-host",
     "crates/speech/speech-host-client",
     "crates/speech/speech-provider",
     "crates/speech/speech-vad",

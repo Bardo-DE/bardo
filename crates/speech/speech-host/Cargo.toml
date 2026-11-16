@@ -3,7 +3,7 @@
 # native engine is the sibling crate `speech-host-sherpa` (excluded; it links sherpa-onnx and
 # carries the `bardo-speech-host` binary).
 [package]
-name = "bardo-speech-host"
+name = "speech-host"
 description = "The speech-to-text engine process, protocol half: arguments, the Recognizer seam and the host_wire serve loop over a Unix socket."
 version = "0.1.0"
 edition = "2024"

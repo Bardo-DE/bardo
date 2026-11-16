@@ -23,7 +23,7 @@ name = "bardo-speech-host"
 path = "src/main.rs"
 
 [dependencies]
-bardo-speech-host = { path = "../bardo-speech-host" }
+speech-host = { path = "../speech-host" }
 speech-provider = { path = "../speech-provider" }
 model-provider = { path = "../../models/model-provider" }
 sherpa-onnx = { version = "=1.13.8", default-features = false, features = ["shared"] }
