@@ -40,6 +40,10 @@ fn lock(shared: &Shared) -> MutexGuard<'_, Heard> {
 struct Manager;
 
 #[interface(name = "org.freedesktop.UPower")]
+#[expect(
+    clippy::unused_self,
+    reason = "zbus interface methods take `&self` whatever the stand-in does with it"
+)]
 impl Manager {
     fn get_display_device(&self) -> OwnedObjectPath {
         OwnedObjectPath::try_from(DISPLAY).unwrap_or_else(|e| panic!("{e}"))
@@ -49,6 +53,10 @@ impl Manager {
 struct Device;
 
 #[interface(name = "org.freedesktop.UPower.Device")]
+#[expect(
+    clippy::unused_self,
+    reason = "zbus interface methods take `&self` whatever the stand-in does with it"
+)]
 impl Device {
     fn refresh(&self) {}
 
@@ -81,6 +89,10 @@ impl Device {
 struct Keyboard(Shared);
 
 #[interface(name = "org.freedesktop.UPower.KbdBacklight")]
+#[expect(
+    clippy::unused_self,
+    reason = "zbus interface methods take `&self` whatever the stand-in does with it"
+)]
 impl Keyboard {
     fn get_brightness(&self) -> i32 {
         1
@@ -98,6 +110,10 @@ impl Keyboard {
 struct Profiles;
 
 #[interface(name = "org.freedesktop.UPower.PowerProfiles")]
+#[expect(
+    clippy::unused_self,
+    reason = "zbus interface methods take `&self` whatever the stand-in does with it"
+)]
 impl Profiles {
     #[zbus(property)]
     fn active_profile(&self) -> String {

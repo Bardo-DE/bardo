@@ -42,6 +42,10 @@ struct Player {
 }
 
 #[interface(name = "org.mpris.MediaPlayer2.Player")]
+#[expect(
+    clippy::unused_self,
+    reason = "zbus interface methods take `&self` whatever the stand-in does with it"
+)]
 impl Player {
     #[zbus(property)]
     fn playback_status(&self) -> String {

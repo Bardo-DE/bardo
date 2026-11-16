@@ -115,10 +115,10 @@ async fn the_property_answers_and_a_change_is_announced() {
     // The stream may first hand over the value it already had; the change is the one with two.
     let seen = tokio::time::timeout(SETTLE, async {
         loop {
-            let changed = std::future::poll_fn(|cx| std::pin::Pin::new(&mut changes).poll_next(cx))
+            let latest = std::future::poll_fn(|cx| std::pin::Pin::new(&mut changes).poll_next(cx))
                 .await
                 .unwrap_or_else(|| panic!("the stream ended"));
-            let value = changed.get().await.unwrap_or_else(|e| panic!("{e}"));
+            let value = latest.get().await.unwrap_or_else(|e| panic!("{e}"));
             if value.len() == 2 {
                 return value;
             }

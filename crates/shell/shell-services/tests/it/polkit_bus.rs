@@ -59,7 +59,11 @@ fn heard(verb: &'static str, (kind, details): Subject, path: String) -> Heard {
 
 #[interface(name = "org.freedesktop.PolicyKit1.Authority")]
 impl StandIn {
-    async fn register_authentication_agent(
+    #[expect(
+        clippy::used_underscore_binding,
+        reason = "zbus passes the locale argument by position; the stand-in ignores it"
+    )]
+    fn register_authentication_agent(
         &self,
         #[zbus(header)] header: Header<'_>,
         subject: Subject,
@@ -73,7 +77,7 @@ impl StandIn {
         Ok(())
     }
 
-    async fn unregister_authentication_agent(
+    fn unregister_authentication_agent(
         &self,
         subject: Subject,
         object_path: String,
@@ -99,7 +103,10 @@ async fn until(rx: &mut watch::Receiver<Polkit>, what: &str, ok: impl FnMut(&Pol
     match waited {
         Ok(Ok(())) => {}
         Ok(Err(e)) => panic!("{what}: {e}"),
-        Err(_) => panic!("timed out waiting for {what}: {:?}", rx.borrow()),
+        Err(elapsed) => panic!(
+            "timed out ({elapsed}) waiting for {what}: {:?}",
+            rx.borrow()
+        ),
     }
 }
 
@@ -170,6 +177,10 @@ fn answer(control: &shell_services::Control<PolkitCommand>, cookie: &str, text: 
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario on one private bus: register, answer, fail, cancel"
+)]
 fn the_agent_registers_answers_fails_and_cancels_on_a_private_bus() {
     let helper = helper_program();
     let Some(bus) = PrivateBus::start() else {

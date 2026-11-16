@@ -48,6 +48,12 @@ fn path(text: &str) -> OwnedObjectPath {
 struct Manager(Shared);
 
 #[interface(name = "org.freedesktop.NetworkManager")]
+#[expect(
+    clippy::unused_self,
+    clippy::needless_pass_by_value,
+    clippy::used_underscore_binding,
+    reason = "zbus interface methods take `&self`, owned arguments and the wire names of unused arguments, whatever the stand-in does with them"
+)]
 impl Manager {
     fn get_all_devices(&self) -> Vec<OwnedObjectPath> {
         vec![path(DEVICE)]
@@ -99,6 +105,10 @@ impl Manager {
 struct Active;
 
 #[interface(name = "org.freedesktop.NetworkManager.Connection.Active")]
+#[expect(
+    clippy::unused_self,
+    reason = "zbus interface methods take `&self` whatever the stand-in does with it"
+)]
 impl Active {
     #[zbus(property)]
     fn state(&self) -> u32 {
@@ -119,6 +129,10 @@ impl Active {
 struct Device(Shared);
 
 #[interface(name = "org.freedesktop.NetworkManager.Device")]
+#[expect(
+    clippy::unused_self,
+    reason = "zbus interface methods take `&self` whatever the stand-in does with it"
+)]
 impl Device {
     fn disconnect(&self) {
         lock(&self.0).calls.push("Disconnect".to_owned());
@@ -138,6 +152,11 @@ impl Device {
 struct Wireless(Shared);
 
 #[interface(name = "org.freedesktop.NetworkManager.Device.Wireless")]
+#[expect(
+    clippy::unused_self,
+    clippy::used_underscore_binding,
+    reason = "zbus interface methods take `&self`, owned arguments and the wire names of unused arguments, whatever the stand-in does with them"
+)]
 impl Wireless {
     fn request_scan(&self, _options: HashMap<String, OwnedValue>) {
         lock(&self.0).calls.push("RequestScan".to_owned());
@@ -162,6 +181,10 @@ impl Wireless {
 struct AccessPoint;
 
 #[interface(name = "org.freedesktop.NetworkManager.AccessPoint")]
+#[expect(
+    clippy::unused_self,
+    reason = "zbus interface methods take `&self` whatever the stand-in does with it"
+)]
 impl AccessPoint {
     #[zbus(property)]
     fn ssid(&self) -> Vec<u8> {
@@ -192,6 +215,10 @@ impl AccessPoint {
 struct Settings;
 
 #[interface(name = "org.freedesktop.NetworkManager.Settings")]
+#[expect(
+    clippy::unused_self,
+    reason = "zbus interface methods take `&self` whatever the stand-in does with it"
+)]
 impl Settings {
     #[zbus(property)]
     fn connections(&self) -> Vec<OwnedObjectPath> {
@@ -202,6 +229,10 @@ impl Settings {
 struct Saved;
 
 #[interface(name = "org.freedesktop.NetworkManager.Settings.Connection")]
+#[expect(
+    clippy::unused_self,
+    reason = "zbus interface methods take `&self` whatever the stand-in does with it"
+)]
 impl Saved {
     fn get_settings(&self) -> HashMap<String, HashMap<String, OwnedValue>> {
         let ssid =

@@ -4,6 +4,7 @@
 //! Never the person's session bus; a test skips, saying so, without a `dbus-daemon`. The same chain
 //! against the real intentd binary is `dev/accept/confirm.sh`.
 
+use std::collections::HashMap;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -85,12 +86,12 @@ struct StandInControl(Arc<Mutex<Held>>);
 
 #[interface(name = "org.bardo.Intents1.Control")]
 impl StandInControl {
-    async fn terminal_grants(&self) -> fdo::Result<String> {
+    fn terminal_grants(&self) -> fdo::Result<String> {
         let held = self.0.lock().unwrap_or_else(|e| panic!("{e}"));
         serde_json::to_string(&held.grants).map_err(|e| fdo::Error::Failed(e.to_string()))
     }
 
-    async fn revoke_terminal_grant(&self, action: String) -> fdo::Result<()> {
+    fn revoke_terminal_grant(&self, action: String) -> fdo::Result<()> {
         let grant: ActionRef =
             serde_json::from_str(&action).map_err(|e| fdo::Error::InvalidArgs(e.to_string()))?;
         let mut held = self.0.lock().unwrap_or_else(|e| panic!("{e}"));
@@ -99,7 +100,7 @@ impl StandInControl {
         Ok(())
     }
 
-    async fn revoke_standing_grant(&self, id: String) -> fdo::Result<()> {
+    fn revoke_standing_grant(&self, id: String) -> fdo::Result<()> {
         let id: StandingGrantId =
             serde_json::from_str(&id).map_err(|e| fdo::Error::InvalidArgs(e.to_string()))?;
         self.0
@@ -110,7 +111,7 @@ impl StandInControl {
         Ok(())
     }
 
-    async fn resume(&self, scope: String) -> fdo::Result<()> {
+    fn resume(&self, scope: String) -> fdo::Result<()> {
         self.0
             .lock()
             .unwrap_or_else(|e| panic!("{e}"))
@@ -247,7 +248,10 @@ async fn until(rx: &mut watch::Receiver<Intents>, what: &str, ok: impl FnMut(&In
     match waited {
         Ok(Ok(())) => {}
         Ok(Err(e)) => panic!("{what}: {e}"),
-        Err(_) => panic!("timed out waiting for {what}: {:?}", rx.borrow()),
+        Err(elapsed) => panic!(
+            "timed out ({elapsed}) waiting for {what}: {:?}",
+            rx.borrow()
+        ),
     }
 }
 
@@ -712,7 +716,7 @@ async fn intentd_performs_a_shell_action_through_the_provider() {
         desk
     });
     let reply = proxy
-        .perform(&invocation("shell.lock"), &Default::default())
+        .perform(&invocation("shell.lock"), &HashMap::default())
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     let outcome: Result<action_core::Outcome, action_core::AppRefusal> =
@@ -725,7 +729,7 @@ async fn intentd_performs_a_shell_action_through_the_provider() {
     let desk = doer.await.unwrap_or_else(|e| panic!("{e}"));
     // An action the shell does not declare is the app's own refusal, not a bus error.
     let reply = proxy
-        .perform(&invocation("shell.reboot"), &Default::default())
+        .perform(&invocation("shell.reboot"), &HashMap::default())
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     let refused: Result<action_core::Outcome, action_core::AppRefusal> =
@@ -742,7 +746,7 @@ async fn intentd_performs_a_shell_action_through_the_provider() {
     let stranger = connect(&desk.bus.address).await;
     let refused = provider(&stranger)
         .await
-        .perform(&invocation("shell.lock"), &Default::default())
+        .perform(&invocation("shell.lock"), &HashMap::default())
         .await;
     assert!(
         matches!(&refused, Err(zbus::Error::MethodError(name, _, _)) if name.as_str().ends_with("AccessDenied")),
@@ -769,7 +773,7 @@ async fn a_failed_action_is_the_providers_refusal_with_the_daemons_words() {
         desk
     });
     let reply = proxy
-        .perform(&invocation("shell.lock"), &Default::default())
+        .perform(&invocation("shell.lock"), &HashMap::default())
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     let refused: Result<action_core::Outcome, action_core::AppRefusal> =
@@ -825,7 +829,7 @@ async fn performed(
     call: &str,
 ) -> Result<action_core::Outcome, action_core::AppRefusal> {
     let reply = proxy
-        .perform(call, &Default::default())
+        .perform(call, &HashMap::default())
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     serde_json::from_str(&reply).unwrap_or_else(|e| panic!("{reply}: {e}"))

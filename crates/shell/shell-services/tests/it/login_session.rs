@@ -26,16 +26,28 @@ impl Fake {
 }
 
 impl SessionLookup for Fake {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; the fake answers from memory"
+    )]
     async fn by_pid(&self) -> Option<OwnedObjectPath> {
         self.ask("pid");
         self.pid.map(path)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; the fake answers from memory"
+    )]
     async fn by_id(&self, _id: &str) -> Option<OwnedObjectPath> {
         self.ask("id");
         self.id.map(path)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; the fake answers from memory"
+    )]
     async fn display(&self) -> Option<OwnedObjectPath> {
         self.ask("display");
         self.display.map(path)

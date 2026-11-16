@@ -27,6 +27,11 @@ fn lock(heard: &Heard) -> MutexGuard<'_, Vec<String>> {
 struct Controller(Heard);
 
 #[interface(name = "org.fcitx.Fcitx.Controller1")]
+#[expect(
+    clippy::unused_self,
+    clippy::used_underscore_binding,
+    reason = "zbus interface methods take `&self`, owned arguments and the wire names of unused arguments, whatever the stand-in does with them"
+)]
 impl Controller {
     fn current_input_method(&self) -> String {
         "pinyin".to_owned()
@@ -65,6 +70,10 @@ fn engine(name: &str) -> Value<'static> {
 }
 
 #[interface(name = "org.freedesktop.IBus")]
+#[expect(
+    clippy::unused_self,
+    reason = "zbus interface methods take `&self` whatever the stand-in does with it"
+)]
 impl Ibus {
     fn list_active_engines(&self) -> Vec<Value<'static>> {
         vec![engine("xkb:us::eng"), engine("pinyin"), engine("mozc-jp")]

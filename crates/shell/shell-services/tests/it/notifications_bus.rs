@@ -13,7 +13,7 @@ use shell_model::notifications::{
 };
 use shell_services::control::Control;
 use shell_services::env::{BusRoute, Buses, Env};
-use shell_services::notifications::{self, BUS_NAME, NotificationsService};
+use shell_services::notifications::{self, Answers, BUS_NAME, NotificationsService};
 use shell_services::service::spawn;
 use shell_testkit::{Heard, PrivateBus, Signals, TempDir};
 use tokio::sync::watch;
@@ -60,7 +60,7 @@ fn start(
         buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
         ..Env::isolated(scratch.path())
     };
-    let service = spawn::<NotificationsService>(runtime.handle(), &env, Default::default());
+    let service = spawn::<NotificationsService>(runtime.handle(), &env, Answers::default());
     (service.state, service.control)
 }
 

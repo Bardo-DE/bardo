@@ -56,7 +56,7 @@ struct Manager(Shared);
 
 #[interface(name = "org.freedesktop.systemd1.Manager")]
 impl Manager {
-    fn get_unit(&self, name: String) -> Result<OwnedObjectPath, SystemdError> {
+    fn get_unit(&self, name: &str) -> Result<OwnedObjectPath, SystemdError> {
         let mut held = lock(&self.0);
         held.calls.push(format!("GetUnit({name})"));
         if held.loaded && name == "bardo-key-remap.service" {
@@ -66,11 +66,11 @@ impl Manager {
         }
     }
 
-    fn reset_failed_unit(&self, name: String) {
+    fn reset_failed_unit(&self, name: &str) {
         lock(&self.0).calls.push(format!("ResetFailedUnit({name})"));
     }
 
-    fn restart_unit(&self, name: String, mode: String) -> OwnedObjectPath {
+    fn restart_unit(&self, name: &str, mode: &str) -> OwnedObjectPath {
         lock(&self.0)
             .calls
             .push(format!("RestartUnit({name}, {mode})"));

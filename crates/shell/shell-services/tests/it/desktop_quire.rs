@@ -249,6 +249,10 @@ fn the_view_names_apps_windows_spaces_and_the_active_pair() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of commands (or events) and the expected result for each, read top to bottom"
+)]
 fn the_shells_commands_become_quire_requests() {
     let mut arm = shell_arm();
     let sent = |arm: &mut QuireArm<FakeDesktop, Vec<ShellNote>>, command: DesktopCommand| {
@@ -523,6 +527,10 @@ fn a_client_without_the_shell_role_cannot_send_the_shells_commands() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of commands (or events) and the expected result for each, read top to bottom"
+)]
 fn the_shell_protocols_events_become_notes_in_order() {
     let mut arm = shell_arm();
     let _settled = arm.sync();

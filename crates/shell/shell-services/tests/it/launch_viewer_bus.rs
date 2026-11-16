@@ -17,10 +17,10 @@ use anyview_platform::{
 use shell_launcher::{Generation, OpenTarget, ViewerOpen};
 use shell_model::apps::AppIndex;
 use shell_model::launch::{LaunchCommand, OpenRequest};
-use shell_services::NotificationsService;
 use shell_services::env::{BusRoute, Buses, Env, RecordedChildren};
 use shell_services::launch::{LaunchLinks, LaunchService};
 use shell_services::service::spawn;
+use shell_services::{Answers, NotificationsService};
 use shell_testkit::{PrivateBus, TempDir};
 use tokio::sync::watch;
 
@@ -55,7 +55,7 @@ fn launcher(
     env.children = Arc::<RecordedChildren>::clone(&children);
     let (_apps, apps) = watch::channel(AppIndex::default());
     let rt = tokio::runtime::Handle::current();
-    let notifications = spawn::<NotificationsService>(&rt, &env, Default::default()).control;
+    let notifications = spawn::<NotificationsService>(&rt, &env, Answers::default()).control;
     let links = LaunchLinks {
         apps,
         notifications,
