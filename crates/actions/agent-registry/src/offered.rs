@@ -18,7 +18,9 @@
 //! The record is the agent's own words, shown to the person and trusted for nothing: the ids the
 //! person picks are checked again by the agent when the next session opens.
 
+use crate::slug::SlugRefused;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 /// The file name of the record, inside the agent's state directory.
 pub const FILE: &str = "offered.toml";
@@ -62,15 +64,16 @@ pub struct Offered {
     pub ways: Vec<Named>,
 }
 
-/// Why a record was not read or written.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+/// Why a record was not read or written. Two faults are equal when they are the same kind of
+/// failure.
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum OfferedFault {
     /// The id is not a name docket keeps agents under.
     #[error("the agent's name is not one docket keeps records under")]
-    Name,
+    Name(#[source] SlugRefused),
     /// The file could not be read or written.
     #[error("the record could not be read or written")]
-    Io,
+    Io(#[source] Arc<std::io::Error>),
     /// The file is not a record.
     #[error("the record is damaged")]
     Damaged(#[source] toml::de::Error),
@@ -78,6 +81,14 @@ pub enum OfferedFault {
     #[error("the record cannot be written as TOML")]
     Unwritable(#[source] toml::ser::Error),
 }
+
+impl PartialEq for OfferedFault {
+    fn eq(&self, other: &Self) -> bool {
+        std::mem::discriminant(self) == std::mem::discriminant(other)
+    }
+}
+
+impl Eq for OfferedFault {}
 
 impl Offered {
     /// Reads the text of `offered.toml`.

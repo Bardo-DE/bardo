@@ -10,6 +10,7 @@ use agent_registry::offered::{Offered, OfferedFault};
 use agent_registry::record::{FILE, Record, RecordFault};
 use agent_registry::slug::Slug;
 use std::path::Path;
+use std::sync::Arc;
 
 /// Writes the record into `dir`, the version's directory.
 ///
@@ -28,8 +29,7 @@ pub fn write_record(record: &Record, dir: &Path) -> std::io::Result<()> {
 /// Returns [`RecordFault`] when the record could not be read.
 pub fn read_record(dir: &Path) -> Result<Record, RecordFault> {
     let text = std::fs::read_to_string(dir.join(FILE))
-        .ok()
-        .ok_or(RecordFault::Missing)?;
+        .map_err(|error| RecordFault::Missing(Arc::new(error)))?;
     Record::parse(&text)
 }
 
@@ -78,8 +78,8 @@ pub fn versions(dir: &AgentsDir, id: &Slug) -> Vec<Slug> {
 ///
 /// Returns [`OfferedFault`] when the record could not be read or written.
 pub fn read_offered(dir: &AgentsDir, id: &str) -> Result<Option<Offered>, OfferedFault> {
-    let path = dir.offered(&Slug::parse(id).ok().ok_or(OfferedFault::Name)?);
-    let text = read_optional(&path).ok().ok_or(OfferedFault::Io)?;
+    let path = dir.offered(&Slug::parse(id).map_err(OfferedFault::Name)?);
+    let text = read_optional(&path).map_err(|error| OfferedFault::Io(Arc::new(error)))?;
     text.map(|t| Offered::parse(&t)).transpose()
 }
 
@@ -90,11 +90,10 @@ pub fn read_offered(dir: &AgentsDir, id: &str) -> Result<Option<Offered>, Offere
 ///
 /// Returns [`OfferedFault`] when the record could not be read or written.
 pub fn write_offered(dir: &AgentsDir, id: &str, offered: Offered) -> Result<Offered, OfferedFault> {
-    let path = dir.offered(&Slug::parse(id).ok().ok_or(OfferedFault::Name)?);
+    let path = dir.offered(&Slug::parse(id).map_err(OfferedFault::Name)?);
     let before = read_offered(dir, id).ok().flatten();
     let next = offered.after(before.as_ref());
     write_atomic(&path, next.render()?.as_bytes())
-        .ok()
-        .ok_or(OfferedFault::Io)?;
+        .map_err(|error| OfferedFault::Io(Arc::new(error)))?;
     Ok(next)
 }

@@ -6,6 +6,7 @@ use crate::slug::Slug;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::path::{Component, Path, PathBuf};
+use std::sync::Arc;
 
 /// How the install was checked.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -43,12 +44,12 @@ pub struct Record {
     pub check: Check,
 }
 
-/// Why a record was not read.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+/// Why a record was not read. Two faults are equal when they are the same kind of failure.
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum RecordFault {
-    /// Nothing installed there.
+    /// Nothing installed there, or the file could not be read.
     #[error("that agent is not installed")]
-    Missing,
+    Missing(#[source] Arc<std::io::Error>),
     /// The text is not a record.
     #[error("the install record is damaged")]
     Damaged(#[source] toml::de::Error),
@@ -56,6 +57,14 @@ pub enum RecordFault {
     #[error("the install record names something it may not")]
     Invalid,
 }
+
+impl PartialEq for RecordFault {
+    fn eq(&self, other: &Self) -> bool {
+        std::mem::discriminant(self) == std::mem::discriminant(other)
+    }
+}
+
+impl Eq for RecordFault {}
 
 /// The file name of the record.
 pub const FILE: &str = "installed.toml";
