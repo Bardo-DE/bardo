@@ -392,11 +392,11 @@ fn prepare(request: Request<Outgoing>) -> Result<Request<Outgoing>, HttpError> {
         .uri
         .path_and_query()
         .map_or("/", |target| target.as_str());
-    parts.uri = target.parse::<Uri>().ok().ok_or(HttpError::Malformed)?;
+    parts.uri = target
+        .parse::<Uri>()
+        .map_err(account_http::http::Error::from)?;
     if let (false, Some(authority)) = (parts.headers.contains_key(HOST), authority) {
-        let host = HeaderValue::from_str(&authority)
-            .ok()
-            .ok_or(HttpError::Malformed)?;
+        let host = HeaderValue::from_str(&authority).map_err(account_http::http::Error::from)?;
         parts.headers.insert(HOST, host);
     }
     parts

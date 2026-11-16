@@ -164,7 +164,7 @@ pub enum Next {
 }
 
 /// Why a reply ended the walk.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum Error {
     /// The server refused the credential (401 or 403).
     #[error("the server refused the account")]
@@ -174,7 +174,7 @@ pub enum Error {
     Status(u16),
     /// A success whose body was not a multistatus.
     #[error("the server's answer could not be read")]
-    Unreadable,
+    Unreadable(#[source] crate::Error),
 }
 
 /// The discovery state machine.
@@ -426,9 +426,9 @@ fn origin(uri: &Uri) -> Option<(String, String, u16)> {
 fn read(reply: &Response<Vec<u8>>) -> Result<Multistatus, Error> {
     match reply.status().as_u16() {
         401 | 403 => Err(Error::Unauthorized),
-        200..=299 => parse_multistatus(&String::from_utf8_lossy(reply.body()))
-            .ok()
-            .ok_or(Error::Unreadable),
+        200..=299 => {
+            parse_multistatus(&String::from_utf8_lossy(reply.body())).map_err(Error::Unreadable)
+        }
         other => Err(Error::Status(other)),
     }
 }

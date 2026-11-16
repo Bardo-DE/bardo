@@ -9,8 +9,7 @@ use serde_json::{Value, json};
 
 fn json_body(request: &Request) -> Result<Value, Response> {
     serde_json::from_slice(&request.body)
-        .ok()
-        .ok_or_else(|| refused(400, "the body is not JSON"))
+        .map_err(|error| refused(400, &format!("the body is not JSON: {error}")))
 }
 
 /// The value of query parameter `name`, or the `400` that says it is missing.

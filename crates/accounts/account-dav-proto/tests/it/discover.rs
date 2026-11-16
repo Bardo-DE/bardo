@@ -303,12 +303,12 @@ fn a_server_without_a_principal_is_read_as_a_home_and_a_collection_as_its_own_me
 #[test]
 fn a_refusal_a_status_and_a_body_that_is_not_a_multistatus_are_told_apart() {
     let cases = [
-        (401, String::new(), Error::Unauthorized),
-        (403, String::new(), Error::Unauthorized),
-        (404, String::new(), Error::Status(404)),
-        (500, String::new(), Error::Status(500)),
-        (207, "nope".to_owned(), Error::Unreadable),
-        (200, "<html/>".to_owned(), Error::Unreadable),
+        (401, String::new(), Some(Error::Unauthorized)),
+        (403, String::new(), Some(Error::Unauthorized)),
+        (404, String::new(), Some(Error::Status(404))),
+        (500, String::new(), Some(Error::Status(500))),
+        (207, "nope".to_owned(), None),
+        (200, "<html/>".to_owned(), None),
     ];
     for (status, body, want) in cases {
         let (found, _) = run(
@@ -318,7 +318,11 @@ fn a_refusal_a_status_and_a_body_that_is_not_a_multistatus_are_told_apart() {
             Scope::SameOrigin,
             &[("/dav/", status, body)],
         );
-        assert_eq!(found.unwrap_err(), want, "{status}");
+        let got = found.unwrap_err();
+        match want {
+            Some(want) => assert_eq!(got, want, "{status}"),
+            None => assert!(matches!(got, Error::Unreadable(_)), "{status}"),
+        }
     }
 }
 
