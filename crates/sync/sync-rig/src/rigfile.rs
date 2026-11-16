@@ -34,9 +34,7 @@ impl RigFile {
     /// Writes the file under `dir` whole.
     pub fn write(&self, dir: &Path) -> std::io::Result<()> {
         let text = serde_json::to_string_pretty(self).map_err(std::io::Error::other)?;
-        let temp = dir.join(format!(".{FILE}.tmp"));
-        std::fs::write(&temp, text)?;
-        std::fs::rename(&temp, Self::path(dir))
+        base_fs::atomic::AtomicWrite::SHARED.write(&Self::path(dir), text.as_bytes())
     }
 
     /// Reads the file under `dir`.

@@ -30,7 +30,7 @@ use base_time::SystemClock;
 use base_xdg::PathError;
 use drive_fuse::Mounter;
 use std::future::Future;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::watch;
 use tokio::task::JoinHandle;
@@ -142,8 +142,9 @@ impl Config {
         // sees), or by syncd itself through `fusermount3` when no helper listens (syncd run by
         // hand); its cache keeps what `syncd.toml` says.
         let mounter = Mounter {
-            mountd: std::env::var_os("XDG_RUNTIME_DIR")
-                .map(|runtime| drive_fuse::mountd::wire::socket_in(Path::new(&runtime))),
+            mountd: base_xdg::Xdg::process()
+                .runtime_dir()
+                .map(|runtime| drive_fuse::mountd::wire::socket_in(&runtime)),
             ..Mounter::new("fusermount3")
         };
         let storage = StorageConfig {

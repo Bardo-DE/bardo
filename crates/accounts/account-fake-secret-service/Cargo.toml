@@ -11,6 +11,7 @@ rust-version.workspace = true
 repository.workspace = true
 
 [dependencies]
+base-time = { path = "../../base/base-time" }
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}

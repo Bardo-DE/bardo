@@ -465,9 +465,7 @@ fn reconcile(dir: &Path, index: &mut Index) -> std::io::Result<bool> {
 
 /// Seconds since the epoch, now.
 fn now_secs() -> i64 {
-    std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map_or(0, |d| i64::try_from(d.as_secs()).unwrap_or(i64::MAX))
+    base_time::Clock::now(&base_time::SystemClock).0
 }
 
 fn held<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {

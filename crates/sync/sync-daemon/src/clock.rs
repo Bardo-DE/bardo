@@ -1,7 +1,7 @@
 //! What time it is, as a seam: the engine dates tombstones, anchors and conflicts by it.
 //!
 //! `ManualClock` is here because a test shares it through an `Arc` and sets it with `&self`,
-//! which account_core's `FixedClock` (set with `&mut self`) cannot do.
+//! which `base_time::FixedClock` (set with `&mut self`) cannot do.
 
 use base_time::{Clock, SystemClock};
 

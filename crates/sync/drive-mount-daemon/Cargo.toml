@@ -14,6 +14,7 @@ name = "bardo-drive-mount"
 path = "src/main.rs"
 
 [dependencies]
+base-xdg = { path = "../../base/base-xdg" }
 listenfd = { workspace = true }
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
 

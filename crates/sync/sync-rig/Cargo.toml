@@ -17,6 +17,7 @@ name = "sync-rig-client"
 path = "src/bin/sync-rig-client.rs"
 
 [dependencies]
+base-fs = { path = "../../base/base-fs" }
 sync-bus = {path = "../sync-bus"}
 sync-fake-graph = {path = "../sync-fake-graph"}
 account-dbus = {path = "../../accounts/account-dbus"}

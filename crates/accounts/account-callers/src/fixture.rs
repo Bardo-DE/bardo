@@ -22,7 +22,7 @@ use caller_identity_core::{
 };
 use caller_identity_dbus::{BusPeers, ManagerCheck, UnitError, UnitSource};
 use caller_identity_linux::{Follow, Pinned, Prober, ProcFs};
-use std::io::{self, Read};
+use std::io;
 use std::path::{Path, PathBuf};
 use zbus::Connection as BusConnection;
 
@@ -82,14 +82,14 @@ impl ProcFs for DirProc {
     }
 
     fn read_capped(&self, path: &Path, cap: u64) -> io::Result<Vec<u8>> {
-        let mut bytes = Vec::new();
-        std::fs::File::open(path)?
-            .take(cap.saturating_add(1))
-            .read_to_end(&mut bytes)?;
-        match u64::try_from(bytes.len()).is_ok_and(|n| n > cap) {
-            true => Err(io::Error::new(io::ErrorKind::InvalidData, "over the cap")),
-            false => Ok(bytes),
-        }
+        base_fs::read_capped(path, base_fs::ReadCap::bytes(cap)).map_err(|e| match e {
+            base_fs::ReadError::NotFound { .. } => io::ErrorKind::NotFound.into(),
+            base_fs::ReadError::TooBig { .. } | base_fs::ReadError::NotRegular { .. } => {
+                io::Error::new(io::ErrorKind::InvalidData, "over the cap")
+            }
+            base_fs::ReadError::Io { source, .. } => source,
+            other => io::Error::other(other),
+        })
     }
 
     fn read_link(&self, path: &Path) -> io::Result<PathBuf> {

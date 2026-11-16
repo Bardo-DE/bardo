@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-fs = { path = "../../base/base-fs" }
 account-core = {path = "../account-core"}
 caller-identity-linux = {path = "../../identity/caller-identity-linux"}
 caller-identity-core = {default-features = false, features = ["toml"], path = "../../identity/caller-identity-core"}

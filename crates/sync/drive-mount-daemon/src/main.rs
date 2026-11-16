@@ -1,20 +1,21 @@
 //! bardo-drive-mount: listens on its socket (passed by `bardo-drive-mount.socket`, or bound at
 //! `$XDG_RUNTIME_DIR/bardo/drive-mount.sock` when started by hand) and shows drives in `~/Cloud`.
 
+use base_xdg::Xdg;
 use drive_mount_daemon::server::{self, Fusermount, Helper};
 use rustix::fs::{FileType, fstat};
 use rustix::io::{FdFlags, fcntl_setfd};
 use std::io;
 use std::os::unix::net::UnixListener;
-use std::path::PathBuf;
 use std::process::ExitCode;
 
 fn main() -> ExitCode {
-    let Some(home) = std::env::var_os("HOME").filter(|home| !home.is_empty()) else {
+    let xdg = Xdg::process();
+    let Some(home) = xdg.home() else {
         eprintln!("bardo-drive-mount: there is no home folder (HOME)");
         return ExitCode::FAILURE;
     };
-    let runtime = std::env::var_os("XDG_RUNTIME_DIR").map(PathBuf::from);
+    let runtime = xdg.runtime_dir();
     let activated = match activated() {
         Ok(activated) => activated,
         Err(why) => {
@@ -29,10 +30,7 @@ fn main() -> ExitCode {
             return ExitCode::FAILURE;
         }
     };
-    let helper = Helper::new(
-        PathBuf::from(home).join("Cloud"),
-        Fusermount::new("fusermount3"),
-    );
+    let helper = Helper::new(home.join("Cloud"), Fusermount::new("fusermount3"));
     helper.serve(&listener)
 }
 

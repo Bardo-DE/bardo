@@ -85,9 +85,8 @@ pub enum Error {
 }
 
 fn now() -> u64 {
-    std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map_or(0, |d| d.as_secs())
+    use base_time::Clock as _;
+    u64::try_from(base_time::SystemClock.now().0).unwrap_or(0)
 }
 
 fn path(text: &str) -> OwnedObjectPath {
