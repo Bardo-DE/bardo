@@ -21,10 +21,7 @@ pub(crate) async fn userinfo_address<H: Http>(
 ) -> Result<String, ProviderError> {
     let answer = get(http, userinfo.as_str(), token).await?;
     let info: UserInfo = match answer.status().as_u16() {
-        200..=299 => serde_json::from_slice(answer.body()).map_err(|error| {
-            tracing::warn!(%error, "the userinfo answer is not json");
-            ProviderError::Unreadable
-        })?,
+        200..=299 => serde_json::from_slice(answer.body()).map_err(ProviderError::garbled)?,
         status => return Err(fault(status)),
     };
     info.email
@@ -46,11 +43,11 @@ pub(crate) fn fault(status: u16) -> ProviderError {
 pub(crate) fn failure(failure: Failure) -> ProviderError {
     match failure {
         Failure::Status(status) => fault(status),
-        Failure::Unreadable
-        | Failure::Address(_)
+        Failure::Unreadable => ProviderError::Unreadable,
+        cause @ (Failure::Address(_)
         | Failure::Token(_)
         | Failure::Request(_)
-        | Failure::Json(_) => ProviderError::Unreadable,
+        | Failure::Json(_)) => ProviderError::garbled(cause),
     }
 }
 
@@ -61,10 +58,7 @@ pub(crate) async fn get<H: Http>(
     token: &str,
 ) -> Result<Response<Vec<u8>>, ProviderError> {
     let request = bearer_get(url, token).map_err(failure)?;
-    http.send(request).await.map_err(|error| {
-        tracing::warn!(%error, "the userinfo request failed");
-        ProviderError::Unreachable
-    })
+    http.send(request).await.map_err(ProviderError::down)
 }
 
 #[cfg(test)]

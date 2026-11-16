@@ -33,9 +33,9 @@ fn http_fault(error: HttpError) -> ProviderError {
         HttpError::Unreachable(..)
         | HttpError::Tls(..)
         | HttpError::TimedOut
-        | HttpError::NotGranted => ProviderError::Unreachable,
+        | HttpError::NotGranted => ProviderError::down(error),
         // too large, malformed, and a failure a later account-http adds
-        _ => ProviderError::Unreadable,
+        _ => ProviderError::garbled(error),
     }
 }
 
