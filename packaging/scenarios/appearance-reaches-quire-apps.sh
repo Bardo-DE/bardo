@@ -30,7 +30,7 @@ export SILL_COMPOSITOR=casement SILL_PREBUILT=1 SILL_PROFILE=debug
 export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" CASEMENT_TOOLS="$SCEN_TOOLS"
 floor_shim appearance-quire casementctl detent casement   # casementctl shot watches the screen; detent is the Settings app (both run from build/)
 # shellcheck source=/dev/null
-source "$SCEN_SIB/sill/dev/lib/all.sh"
+source "$SCEN_SIB/shell/dev/lib/all.sh"
 OUT_DIR=$(scenario_out appearance-quire)
 DETENT_PID=
 BASE_LUM=

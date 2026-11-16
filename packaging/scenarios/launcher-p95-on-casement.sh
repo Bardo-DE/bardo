@@ -24,7 +24,7 @@ floor_shim launcher-p95   # no program here takes a power a floor row can allow:
 OUT_DIR=$(scenario_out launcher-p95)
 
 rc=0
-"$SCEN_SIB/sill/dev/accept/launcher.sh" --only toggle >"$OUT_DIR/launcher.log" 2>&1 </dev/null || rc=$?
+"$SCEN_SIB/shell/dev/accept/launcher.sh" --only toggle >"$OUT_DIR/launcher.log" 2>&1 </dev/null || rc=$?
 cat "$OUT_DIR/launcher.log"
 
 p95=$(sed -n 's/.*p50 [0-9.]* ms, p95 \([0-9.]*\) ms, max .*/\1/p' "$OUT_DIR/launcher.log" | tail -n 1)

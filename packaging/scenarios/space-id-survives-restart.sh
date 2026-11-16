@@ -18,10 +18,10 @@ source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
 scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/casement-probe" "$SCEN_TOOLS/bin/fake-logind"
 
-export CASEMENT_TOOLS="$SCEN_TOOLS" CASEMENT_REPO="$SCEN_SIB/casement"
+export CASEMENT_TOOLS="$SCEN_TOOLS" CASEMENT_REPO="$SCEN_SIB/compositor"
 floor_make space-id-survives-restart casement-probe   # the probe lists the workspaces (ext_workspace_manager): a floor row for the built probe
 # shellcheck source=/dev/null
-source "$SCEN_SIB/casement/dev/lib/compositor.sh"
+source "$SCEN_SIB/compositor/dev/lib/compositor.sh"
 OUT_DIR=$(scenario_out space-id-survives-restart)
 OUTPUTS='HEADLESS-1:1280x720@60000:120:0,0;HEADLESS-2:1280x720@60000:120:1280,0'
 PROBE="$SCEN_TOOLS/bin/casement-probe"

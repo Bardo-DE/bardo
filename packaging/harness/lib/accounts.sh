@@ -29,7 +29,7 @@ acc_need() {
     "$SCEN_BUILD/sill-probe-target/debug/sill" "$ARIG/accountd" "$AFER/syncd" "$ASTW/inferd" \
     "$ARIG/porter-rig-servers" "$ARIG/porter-rig-client" "$ARIG/porter-rig-secrets" "$ASTW/steward-rig-client" \
     "$AFER/ferry-rig-servers" "$AFER/ferry-rig-client" \
-    "$SCEN_SIB/porter/providers/microsoft.toml" "$SCEN_SIB/porter/dist/callers.toml" "$@"
+    "$SCEN_SIB/accounts/providers/microsoft.toml" "$SCEN_SIB/accounts/dist/callers.toml" "$@"
 }
 
 # acc_env: the variables every accounts scenario sets before sourcing sill's lib (CASEMENT_REPO and CASEMENT_DIR
@@ -165,8 +165,8 @@ secrets_start() {
 # acc_config: the system caller table (porter's own, read through PORTER_SYSTEM_CALLERS), the shipped provider
 # files, and the person's clients file (acc_clients_for_issuer writes the shipped one).
 acc_config() {
-  cp "$SCEN_SIB/porter/dist/callers.toml" "$ACC_SYSTEM_CALLERS"
-  cp "$SCEN_SIB"/porter/providers/*.toml "$PROV/"
+  cp "$SCEN_SIB/accounts/dist/callers.toml" "$ACC_SYSTEM_CALLERS"
+  cp "$SCEN_SIB"/accounts/providers/*.toml "$PROV/"
 }
 
 # acc_clients_for_issuer: the shipped clients.toml (/usr/share/porter, the jail's throwaway overlay) pointing the
@@ -189,7 +189,7 @@ EOF
 
 # acc_provider_microsoft_on_rig: the shipped microsoft.toml with Graph at ferry's rig drive.
 acc_provider_microsoft_on_rig() {
-  sed -e "s#https://graph.microsoft.com#$(frigj graph.url)#g" "$SCEN_SIB/porter/providers/microsoft.toml" >"$PROV/microsoft.toml"
+  sed -e "s#https://graph.microsoft.com#$(frigj graph.url)#g" "$SCEN_SIB/accounts/providers/microsoft.toml" >"$PROV/microsoft.toml"
 }
 
 # acc_providers_only ID...: leaves only the named provider files (so the sheet's list is short).
@@ -262,7 +262,7 @@ inferd_start() { # needs $CONFIG/inferd/inferd.toml and $INFERD_SYSTEM_CALLERS (
   # The model catalog of this tree's stoker, where inferd reads it ($XDG_DATA_HOME/stoker/catalog): without
   # it no hosted model is known, so a turn on an AI key is refused before the key is ever read.
   mkdir -p "$DATA/stoker/catalog"
-  cp "$SCEN_SIB"/stoker/catalog/*.toml "$DATA/stoker/catalog/"
+  cp "$SCEN_SIB"/models/catalog/*.toml "$DATA/stoker/catalog/"
   local ca; ca=$(acc_ca_env)
   acc_ship_providers
   acc_bg "$OUT_DIR/inferd.log" env INFERD_PROC_ROOT="$PROC" PORTER_INFERD_CALLERS="$INFERD_SYSTEM_CALLERS" ${ca:+"$ca"} "$ASTW/inferd"
@@ -685,7 +685,7 @@ detent_start() {
   # The programs' schemas, as detent's own tests seed them (its pages are made of schemas: without them the sidebar
   # lists only Accounts).
   mkdir -p "$data/quire/settings" "$STATE/detent"
-  cp "$SCEN_SIB"/detent/fixtures/schemas/*.toml "$data/quire/settings/"
+  cp "$SCEN_SIB"/settings-app/fixtures/schemas/*.toml "$data/quire/settings/"
   # --first-run is skipped: the mark says it ran.
   echo ran >"$STATE/detent/first-run"
   # Not through `nested` (a function: the background job would be its subshell, not detent, and the identity written
@@ -790,7 +790,7 @@ sheet_settled() {
 
 # acc_provider_openai_on_rig: the shipped openai.toml with its API at the rig's LLM API fake (needs --llm-api).
 acc_provider_openai_on_rig() {
-  sed -e "s#https://api.openai.com/v1#$(rigj llm_api.api_url)#" "$SCEN_SIB/porter/providers/openai.toml" >"$PROV/openai.toml"
+  sed -e "s#https://api.openai.com/v1#$(rigj llm_api.api_url)#" "$SCEN_SIB/accounts/providers/openai.toml" >"$PROV/openai.toml"
 }
 
 # sheet_click X Y: a click at surface coordinates (the sheet is drawn at the output's size) through `sill debug click`.

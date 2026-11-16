@@ -61,7 +61,7 @@ built_at() {
 }
 
 build_casement() {
-  (cd "$SCEN_SIB/casement" && CARGO_TARGET_DIR="$SCEN_BUILD/casement-target" CASEMENT_TOOLS="$SCEN_BUILD/tools" \
+  (cd "$SCEN_SIB/compositor" && CARGO_TARGET_DIR="$SCEN_BUILD/casement-target" CASEMENT_TOOLS="$SCEN_BUILD/tools" \
     dev/bootstrap.sh --build-only) && built_at casement-target
 }
 

@@ -27,7 +27,7 @@ export SILL_COMPOSITOR=casement SILL_PREBUILT=1 SILL_PROFILE=debug
 export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" CASEMENT_TOOLS="$SCEN_TOOLS"
 floor_shim appearance-reaches-apps sill   # sill takes no power a floor row can allow (no rows, nothing waits on a question); the caller list names it as the shell
 # shellcheck source=/dev/null
-source "$SCEN_SIB/sill/dev/lib/all.sh"
+source "$SCEN_SIB/shell/dev/lib/all.sh"
 OUT_DIR=$(scenario_out appearance-reaches-apps)
 CHANGED=0.004 SETTLED=0.002
 SURFACES=() DAEMON_PID=

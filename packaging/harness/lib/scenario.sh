@@ -2,7 +2,7 @@
 # jail). Sourced by scenario-build.sh and by the scenarios that run real consumers; needs nothing else.
 #
 #   SCEN_ROOT   this packaging folder    SCEN_TREE   the bardo tree it is in
-#   SCEN_SIB    the tree's crates/ (crates/<name> is each component: SCEN_SIB/sill, SCEN_SIB/casement, ...)
+#   SCEN_SIB    the tree's crates/ (crates/<domain> holds each component: SCEN_SIB/shell, SCEN_SIB/compositor, ...)
 #   SCEN_BUILD  where the build went     SCEN_TOOLS  casement's tools (bin/casement, casementctl, ...)
 SCEN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SCEN_TREE="$(cd "$SCEN_ROOT/.." && pwd)"

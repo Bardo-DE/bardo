@@ -20,7 +20,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
 
 SCRIPTS=(hover scroll modifiers swipe drag ime lock popup-keyboard)
-SH="$SCEN_SIB/shell-host"
+SH="$SCEN_SIB/layer-shell"
 # The demos were built into build/shell-host-target (scenario-build.sh); the accept scripts find them through CARGO_TARGET_DIR.
 export CARGO_TARGET_DIR="$SCEN_BUILD/shell-host-target"
 EXAMPLES="$CARGO_TARGET_DIR/debug/examples"

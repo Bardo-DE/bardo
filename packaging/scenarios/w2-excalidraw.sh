@@ -72,15 +72,15 @@ print_build() {
 harness/scenario-build.sh --w2
 # which builds, one at a time, into $SCEN_BUILD:
 # 1. casement with its test features (headless output, the test control), casementctl and fake-logind
-(cd $SCEN_SIB/casement && CARGO_TARGET_DIR=$SCEN_BUILD/casement-target CASEMENT_TOOLS=$SCEN_BUILD/tools nice dev/bootstrap.sh --build-only)
+(cd $SCEN_SIB/compositor && CARGO_TARGET_DIR=$SCEN_BUILD/casement-target CASEMENT_TOOLS=$SCEN_BUILD/tools nice dev/bootstrap.sh --build-only)
 # 2. private checkouts of the shell and its host library (the scenarios run sill's scripts from there)
-#    sill (scenario-build.sh: checkouts) at $SCEN_SIB/sill
+#    sill (scenario-build.sh: checkouts) at $SCEN_SIB/shell
 # 3. the shell with its test features (the stand-in screen-brightness file)
-(cd $SCEN_SIB/sill && CARGO_TARGET_DIR=$SCEN_BUILD/sill-target nice cargo build -p shell-app --features debug)
+(cd $SCEN_SIB/shell && CARGO_TARGET_DIR=$SCEN_BUILD/sill-target nice cargo build -p shell-app --features debug)
 # 4. the screen helper with the fixture caller table (a plain build identifies nobody)
-(cd $SCEN_SIB/cua && CARGO_TARGET_DIR=$SCEN_BUILD/cua-target nice cargo build -p computer-use-daemon --features fixture-callers)
+(cd $SCEN_SIB/computer-use && CARGO_TARGET_DIR=$SCEN_BUILD/cua-target nice cargo build -p computer-use-daemon --features fixture-callers)
 # 5. the assistant's services, the bring-up tool and the terminal command (action-accept: test builds)
-(cd $SCEN_SIB/docket && CARGO_TARGET_DIR=$SCEN_BUILD/docket-target nice cargo build -p action-accept --bins)
+(cd $SCEN_SIB/actions && CARGO_TARGET_DIR=$SCEN_BUILD/docket-target nice cargo build -p action-accept --bins)
 # and, once, the offline drawing app (needs node and npm; changes nothing outside its folder):
 $WF/fixtures/w2/build-excalidraw.sh
 EOF
@@ -161,7 +161,7 @@ export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" CASEMENT_TOOLS="$SCEN_TOOLS"
 # the floor allows exactly the programs this run starts that take those powers: cuad and casementctl (the pictures).
 floor_shim w2-excalidraw sill cuad casementctl || die "could not write the permission floor"
 # shellcheck source=/dev/null
-source "$SCEN_SIB/sill/dev/lib/all.sh"
+source "$SCEN_SIB/shell/dev/lib/all.sh"
 OUT_DIR=$(scenario_out w2-excalidraw)
 RUN=$OUT_DIR
 OUT=$RUN/out
@@ -241,7 +241,7 @@ check_model() {
 
 PLANNER_SERVED="" SCREEN_SERVED=""
 prepare_models() {
-  local catalog=$RUN/catalog src=${W2_STOKER_CATALOG:-$SCEN_SIB/stoker/catalog}
+  local catalog=$RUN/catalog src=${W2_STOKER_CATALOG:-$SCEN_SIB/models/catalog}
   [ -d "$src" ] || { note "No model catalogue at $src (set W2_STOKER_CATALOG)."; return 3; }
   mkdir -p "$catalog" "$AGENTS/config/inferd"
   cp "$src"/*.toml "$catalog/"
@@ -353,12 +353,12 @@ step_models() {
 }
 
 step_stack() {
-  local providers=${W2_PROVIDERS:-$SCEN_SIB/porter/providers} extra=()
+  local providers=${W2_PROVIDERS:-$SCEN_SIB/accounts/providers} extra=()
   [ ! -d "$providers" ] || extra+=(--providers "$providers")
   # The screen helper's action, installed where the router reads apps' actions (as cua's installer does under
   # <prefix>/share/quire/intents): without it the assistant has no way to use an app on the screen.
   mkdir -p "$AGENTS/data/quire/intents"
-  cp "$SCEN_SIB/cua/manifests/org.quire.Cua.toml" "$AGENTS/data/quire/intents/" || return 1
+  cp "$SCEN_SIB/computer-use/manifests/org.quire.Cua.toml" "$AGENTS/data/quire/intents/" || return 1
   env -u DBUS_SESSION_BUS_ADDRESS -u DBUS_SYSTEM_BUS_ADDRESS "$BRINGUP" up --bus "$BUS" --root "$AGENTS" \
     --shell-pid "$SILL_PID" --catalog "$RUN/catalog" "${extra[@]}" >"$RUN/bringup.log" 2>&1 \
     || { tail -8 "$RUN/bringup.log" >&2; return 1; }

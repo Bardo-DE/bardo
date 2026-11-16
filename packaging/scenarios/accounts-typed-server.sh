@@ -34,14 +34,14 @@ require_jail
 acc_need
 acc_env
 # shellcheck source=/dev/null
-source "$SCEN_SIB/sill/dev/lib/all.sh"
+source "$SCEN_SIB/shell/dev/lib/all.sh"
 OUT_DIR=$(scenario_out accounts-typed-server)
 
 cleanup() { acc_stop_all; stop_daemon; stop_compositor; scratch_drop; }
 trap cleanup EXIT
 
 # The porter in the build has the form.
-grep -q 'Protocol,' "$SCEN_SIB/porter/crates/porter-sheet/src/fields.rs" || {
+grep -q 'Protocol,' "$SCEN_SIB/accounts/account-sheet/src/fields.rs" || {
   echo "SKIP accounts-typed-server: porter has no typed mail server form (FieldKind::Protocol)" >&2; exit 2; }
 
 # Where the form's controls are (sheet coordinates): pop-ups, their items below them, text fields, Continue.

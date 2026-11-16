@@ -169,7 +169,7 @@ floor_sill_callers() {
 
 # floor_shim NAME [TOOL...]: floor_make, then the stand-in checkout (see the top of this file).
 floor_shim() {
-  local real="${SCEN_SIB:?floor_shim: scenario.sh is not sourced}/casement" repo
+  local real="${SCEN_SIB:?floor_shim: scenario.sh is not sourced}/compositor" repo
   floor_make "$@" || return 1
   repo="$FLOOR_DIR.repo"
   rm -rf "$repo" && mkdir -p "$repo/dev" || return 1

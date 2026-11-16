@@ -30,7 +30,7 @@ require_jail
 acc_need
 acc_env
 # shellcheck source=/dev/null
-source "$SCEN_SIB/sill/dev/lib/all.sh"
+source "$SCEN_SIB/shell/dev/lib/all.sh"
 OUT_DIR=$(scenario_out accounts-reauth)
 
 cleanup() { acc_stop_all; stop_daemon; stop_compositor; scratch_drop; }

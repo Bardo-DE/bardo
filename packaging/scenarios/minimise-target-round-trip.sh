@@ -30,14 +30,14 @@ require_jail
 scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/casementctl" "$SCEN_TOOLS/bin/casement-probe" \
   "$SCEN_TOOLS/bin/fake-logind"
 
-export CASEMENT_TOOLS="$SCEN_TOOLS" CASEMENT_REPO="$SCEN_SIB/casement"
+export CASEMENT_TOOLS="$SCEN_TOOLS" CASEMENT_REPO="$SCEN_SIB/compositor"
 floor_make minimise-target-round-trip   # the probes take no power: an empty floor, so nothing waits on a question
 # shellcheck source=/dev/null
-source "$SCEN_SIB/casement/dev/lib/compositor.sh"
+source "$SCEN_SIB/compositor/dev/lib/compositor.sh"
 # shellcheck source=/dev/null
-source "$SCEN_SIB/casement/dev/lib/probe.sh"
+source "$SCEN_SIB/compositor/dev/lib/probe.sh"
 # shellcheck source=/dev/null
-source "$SCEN_SIB/casement/dev/lib/wait.sh"
+source "$SCEN_SIB/compositor/dev/lib/wait.sh"
 OUT_DIR=$(scenario_out minimise-target-round-trip)
 CTL="$SCEN_TOOLS/bin/casementctl"
 APP_A=org.example.minimise.a
