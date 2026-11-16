@@ -179,6 +179,7 @@ async fn a_refusal_is_a_typed_error_and_a_key_is_never_part_of_it() {
 
 #[test]
 fn a_child_key_error_names_what_went_wrong_without_the_key() {
-    let text = ChildKeyError::NotText(std::str::from_utf8(&[0xff]).unwrap_err()).to_string();
+    let invalid = vec![0xff_u8];
+    let text = ChildKeyError::NotText(std::str::from_utf8(&invalid).unwrap_err()).to_string();
     assert!(!text.contains("sk-"));
 }

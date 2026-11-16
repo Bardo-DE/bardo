@@ -4,9 +4,10 @@
 use crate::event::{ClientFrame, InferEvent};
 use std::sync::Arc;
 
-/// Why a session could not carry a frame. Two faults are equal when they are the same failure:
-/// the same kind, with the same words for a malformed frame and the same kind of operating system
-/// error for a broken socket.
+/// Why a session could not carry a frame.
+///
+/// Two faults are equal when they are the same failure: the same kind, with the same words for a
+/// malformed frame and the same kind of operating system error for a broken socket.
 #[derive(Debug, Clone, thiserror::Error)]
 pub enum SessionError {
     /// The other side closed the session.

@@ -18,6 +18,10 @@ mod sign_in;
 
 /// What a account-generic-proto error means for a sign-in. Plain `http` to another computer is a
 /// server that cannot be reached safely.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 fn fault(error: account_generic_proto::Error) -> account_sheet::SignInFault {
     use account_sheet::SignInFault;
     match error {

@@ -237,6 +237,10 @@ fn trace(session: &SessionRecord, value: &Value) -> Label {
         Value::Entities(es) if !es.is_empty() && es.iter().all(|e| session.known.contains(e)) => {
             app_label(&es[0].app)
         }
+        #[expect(
+            clippy::match_same_arms,
+            reason = "these only get here after the known-entity arms above failed; merged into the first `model_label()` arm they would skip those checks"
+        )]
         Value::Entity(_) | Value::Entities(_) => model_label(),
         Value::Integer(_)
         | Value::Decimal(_)

@@ -62,6 +62,10 @@ impl Manager {
         unused_variables,
         reason = "the argument is named for the D-Bus method's wire signature, and this stand-in ignores it"
     )]
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "a `zbus` interface method: the D-Bus signature fixes the owned argument"
+    )]
     fn get_session(&self, id: String) -> fdo::Result<OwnedObjectPath> {
         session_path()
     }

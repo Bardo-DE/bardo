@@ -39,6 +39,10 @@ pub struct Workdir(AbsPath);
 
 /// A folder that cannot be looked at is not one the session may use; what the file system said
 /// goes to the log.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 fn not_folder(error: std::io::Error) -> WorkdirFault {
     tracing::debug!(%error, "the folder cannot be looked at");
     WorkdirFault::NotFolder

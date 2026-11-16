@@ -22,8 +22,7 @@ use serde::Deserialize;
 use std::sync::Arc;
 use sync_core::{Clock, DELETED};
 use sync_core::{
-    ItemKind, ItemPath, More, RemoteId, RemoteItem, RemoteVersion, ReplicaError, RetryAfter,
-    Tombstone,
+    ItemKind, ItemPath, More, RemoteId, RemoteItem, RemoteVersion, ReplicaError, Tombstone,
 };
 
 /// How many tasks a page asks for (Google's most).

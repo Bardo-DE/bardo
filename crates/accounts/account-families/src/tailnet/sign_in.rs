@@ -43,7 +43,7 @@ pub struct Waiting {
 }
 
 /// The sheet's word for why Tailscale could not be asked.
-fn fault_of(error: TailscaleError) -> SignInFault {
+fn fault_of(error: &TailscaleError) -> SignInFault {
     match error {
         TailscaleError::NotInstalled => SignInFault::NotInstalled,
         TailscaleError::NotRunning | TailscaleError::Transport(_) | TailscaleError::TimedOut => {
@@ -101,7 +101,7 @@ impl TailnetFlow {
     /// Nobody is signed in: Tailscale is asked to start its own sign-in, and gives the page.
     async fn ask_for_the_page(&self) -> Move<Waiting> {
         if let Err(error) = self.api.start_login().await {
-            return Move::Fail(fault_of(error));
+            return Move::Fail(fault_of(&error));
         }
         for look in 0..SETTLE_LOOKS {
             match self.api.status().await {
@@ -120,7 +120,7 @@ impl TailnetFlow {
                         return self.signed_in(&status);
                     }
                 }
-                Err(error) => return Move::Fail(fault_of(error)),
+                Err(error) => return Move::Fail(fault_of(&error)),
             }
             if look + 1 < SETTLE_LOOKS {
                 self.sleep.sleep(LOOK_EVERY / 4).await;
@@ -145,7 +145,7 @@ impl TailnetFlow {
                 Move::Next(SignInStep::Waiting, waiting)
             }
             Ok(_) => Move::Fail(SignInFault::NotRunning),
-            Err(error) => Move::Fail(fault_of(error)),
+            Err(error) => Move::Fail(fault_of(&error)),
         }
     }
 }
@@ -156,7 +156,7 @@ impl Flow for TailnetFlow {
     async fn start(&mut self) -> Move<Waiting> {
         let status = match self.settled().await {
             Ok(status) => status,
-            Err(error) => return Move::Fail(fault_of(error)),
+            Err(error) => return Move::Fail(fault_of(&error)),
         };
         match status.standing() {
             Standing::Ready => self.signed_in(&status),
@@ -190,7 +190,7 @@ mod tests {
         ];
         for (error, fault) in table {
             let label = format!("{error:?}");
-            assert_eq!(fault_of(error), fault, "{label}");
+            assert_eq!(fault_of(&error), fault, "{label}");
         }
     }
 }

@@ -19,7 +19,7 @@ fn pattern(program: &str, list: &'static str, entry: &str) -> Result<HostPattern
         program: program.to_owned(),
         list,
         entry: entry.to_owned(),
-        why,
+        why: Box::new(why),
     })
 }
 

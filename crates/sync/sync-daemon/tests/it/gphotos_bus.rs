@@ -185,6 +185,10 @@ async fn a_new_file_uploads_once_a_duplicate_does_not_and_the_album_is_the_apps_
 }
 
 #[tokio::test(flavor = "multi_thread")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario read top to bottom: start, poll, import, delete; split up it would lose its thread"
+)]
 async fn the_picker_starts_a_session_polls_it_imports_what_was_picked_and_deletes_it() {
     let mut rig = rig(PhotosGrant::Granted).await;
     rig.supervisor.tick().await;

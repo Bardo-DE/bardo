@@ -27,6 +27,10 @@ struct Flight {
 }
 
 /// The router's refusal, with what it said in the log.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 fn refused(error: ClientError) -> CourtFault {
     tracing::debug!(%error, "the router refused the call");
     CourtFault::Refused

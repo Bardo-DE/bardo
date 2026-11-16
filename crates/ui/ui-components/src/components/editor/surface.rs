@@ -129,8 +129,8 @@ pub fn EditSurface(
         use_effect(use_reactive!(|caret| {
             checker.state.caret.replace(caret);
             touch(&checker);
-        }))
-    };
+        }));
+    }
     {
         let state = Rc::clone(&state);
         use_drop(move || {

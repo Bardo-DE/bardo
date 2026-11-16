@@ -2,9 +2,10 @@
 
 use std::io;
 
-/// Why a change to the files failed, as the kind the words a person reads are chosen by. It is a
-/// code that carries no cause: the failures it stands for (an I/O error's kind, a Trash error)
-/// are classed where they are met.
+/// Why a change to the files failed, as the kind the person's words are chosen by.
+///
+/// It is a code that carries no cause: the failures it stands for (an I/O error's kind, a Trash
+/// error) are classed where they are met.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 pub enum OpFailure {
     /// An item is gone.

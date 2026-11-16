@@ -40,6 +40,10 @@ impl std::fmt::Debug for DbusAccounts {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 fn fault(error: LauncherError) -> AccountFault {
     let cause = AccountFault::source_of(error.clone());
     match error {

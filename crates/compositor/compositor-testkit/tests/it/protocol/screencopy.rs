@@ -524,7 +524,8 @@ fn a_client_with_copies_held_for_the_answer_is_cut_at_the_cap() {
         let Ok(mut copy) = ScreenCopy::start(fixture.client(client).globals()) else {
             break;
         };
-        if pile_one(&mut fixture, &mut copy).is_err() {
+        if let Err(cut) = pile_one(&mut fixture, &mut copy) {
+            eprintln!("the copy ended the pile: {cut}");
             break;
         }
         piled.push(copy);
@@ -554,6 +555,15 @@ enum Cut {
     Client(ClientError),
     /// The compositor offered nothing to copy.
     NoOffer,
+}
+
+impl std::fmt::Display for Cut {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Client(error) => write!(f, "the client failed: {error}"),
+            Self::NoOffer => f.write_str("the compositor offered nothing to copy"),
+        }
+    }
 }
 
 /// [`settle`], except that a connection the compositor closed ends it with [`Cut`].

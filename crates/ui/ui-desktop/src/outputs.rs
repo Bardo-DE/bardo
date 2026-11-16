@@ -34,11 +34,14 @@ pub struct OutputArea {
 
 /// The most rows read from the wire. A desk has a handful of outputs; a longer list is not one,
 /// and a process squatting the shell's name cannot make us hold or draw an unbounded one.
+#[cfg(any(feature = "dbus", test))]
 const MAX_ROWS: usize = 16;
 
 /// The wire row, `(us(iiuu)(iiuu)u)`.
+#[cfg(any(feature = "dbus", test))]
 pub(crate) type Wire = (u32, String, (i32, i32, u32, u32), (i32, i32, u32, u32), u32);
 
+#[cfg(any(feature = "dbus", test))]
 fn rect((x, y, width, height): (i32, i32, u32, u32)) -> OutputRect {
     OutputRect {
         x,
@@ -48,6 +51,7 @@ fn rect((x, y, width, height): (i32, i32, u32, u32)) -> OutputRect {
     }
 }
 
+#[cfg(any(feature = "dbus", test))]
 impl OutputRect {
     fn has_size(&self) -> bool {
         self.width > 0 && self.height > 0
@@ -56,6 +60,7 @@ impl OutputRect {
 
 impl OutputArea {
     /// Whether the frame and the work area have a size and the scale is not zero.
+    #[cfg(any(feature = "dbus", test))]
     fn has_size(&self) -> bool {
         self.frame.has_size() && self.work.has_size() && self.scale > 0
     }
@@ -87,6 +92,7 @@ impl Outputs {
     /// Outputs from the property's wire rows: at most [`MAX_ROWS`] of them, and a row with a
     /// frame or work area of no size, or a scale of zero, is dropped (windows fitted into
     /// nothing are worse than no answer: the caller then keeps the window system's own size).
+    #[cfg(any(feature = "dbus", test))]
     pub(crate) fn of_wire(rows: Vec<Wire>) -> Outputs {
         Outputs {
             areas: rows

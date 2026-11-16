@@ -39,6 +39,10 @@ use speech_wire::{
 use std::os::fd::OwnedFd;
 use zbus::object_server::SignalEmitter;
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 pub(crate) fn fault_of(error: DeviceError) -> VoiceFault {
     tracing::warn!(?error, "microphone fault");
     match error {

@@ -187,7 +187,7 @@ impl<T: Transport> CuaModel for InferdCuaModel<T> {
             )
             .await;
         if let Err(error) = sent {
-            return Err(self.lost(error));
+            return Err(self.lost(&error));
         }
         loop {
             let event = match self.session.as_mut() {
@@ -207,7 +207,7 @@ impl<T: Transport> CuaModel for InferdCuaModel<T> {
                 Ok(InferEvent::Finished(InferReply::CuaStep(reply))) => return Ok(reply),
                 Ok(InferEvent::Finished(other)) => return Err(self.ended(&other)),
                 Ok(_) => {}
-                Err(error) => return Err(self.lost(error)),
+                Err(error) => return Err(self.lost(&error)),
             }
         }
     }
@@ -269,7 +269,7 @@ impl<T: Transport> InferdCuaModel<T> {
     }
 
     /// The session broke: it is gone, and so is the history the model was pinned to.
-    fn lost(&mut self, error: SessionError) -> CuaModelError {
+    fn lost(&mut self, error: &SessionError) -> CuaModelError {
         tracing::warn!(%error, "the model session broke");
         self.session = None;
         CuaModelError::Fatal

@@ -34,6 +34,10 @@ pub(super) async fn session(
 }
 
 /// What a session document the discovery step could not use means for a sign-in.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 fn discover_fault(fault: DiscoverFault) -> SignInFault {
     match fault {
         DiscoverFault::Unreachable | DiscoverFault::Transport(_) => SignInFault::Unreachable,

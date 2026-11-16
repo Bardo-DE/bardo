@@ -41,6 +41,10 @@ impl Controller {
         "Default".to_owned()
     }
 
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "a `zbus` interface method: the D-Bus signature fixes the owned argument"
+    )]
     fn input_method_group_info(&self, group: String) -> (String, Vec<(String, String)>) {
         let entry = |name: &str| (name.to_owned(), String::new());
         (

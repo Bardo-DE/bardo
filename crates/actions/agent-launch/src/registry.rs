@@ -9,18 +9,26 @@ use agent_registry::slug::Slug;
 use std::sync::Arc;
 
 /// How to start `id` at `version`; makes its home when it is not there yet.
-pub fn launch(dir: &AgentsDir, id: &str, version: &str) -> Result<Launch, LaunchFault> {
-    let (slug, pinned) = (Slug::parse(id)?, Slug::parse(version)?);
+///
+/// # Errors
+///
+/// Returns the [`LaunchFault`] (boxed, as it is large) when `id` or `version` is not a name agents
+/// are kept under, the record is missing or damaged, or the home cannot be made.
+pub fn launch(dir: &AgentsDir, id: &str, version: &str) -> Result<Launch, Box<LaunchFault>> {
+    let slug = Slug::parse(id).map_err(|e| Box::new(LaunchFault::from(e)))?;
+    let pinned = Slug::parse(version).map_err(|e| Box::new(LaunchFault::from(e)))?;
     let at = dir.installed(&slug, &pinned);
     let record = std::fs::read_to_string(at.join(FILE))
         .map_err(|error| RecordFault::Missing(Arc::new(error)))
         .and_then(|text| Record::parse(&text))
-        .map_err(|why| LaunchFault::Record {
-            id: id.to_owned(),
-            version: version.to_owned(),
-            why,
+        .map_err(|why| {
+            Box::new(LaunchFault::Record {
+                id: id.to_owned(),
+                version: version.to_owned(),
+                why,
+            })
         })?;
     let home = dir.home(&slug);
-    std::fs::create_dir_all(&home).map_err(|error| LaunchFault::Home(Arc::new(error)))?;
+    std::fs::create_dir_all(&home).map_err(|error| Box::new(LaunchFault::Home(Arc::new(error))))?;
     Ok(Launch::of(&record, &at, home))
 }

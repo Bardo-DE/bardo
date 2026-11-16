@@ -158,6 +158,10 @@ struct Wireless(Shared);
     reason = "zbus interface methods take `&self`, owned arguments and the wire names of arguments the stand-in ignores, whatever the stand-in does with them"
 )]
 impl Wireless {
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "a `zbus` interface method: the D-Bus signature fixes the owned argument"
+    )]
     fn request_scan(&self, options: HashMap<String, OwnedValue>) {
         lock(&self.0).calls.push("RequestScan".to_owned());
     }

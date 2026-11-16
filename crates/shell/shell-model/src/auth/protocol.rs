@@ -198,12 +198,14 @@ mod tests {
             let bytes = encode_request(&request(secret));
             assert_eq!(decode_request(&bytes), Ok(request(secret)), "{secret:?}");
         }
+        let invalid = vec![0xff_u8];
+        let not_utf8 = std::str::from_utf8(&invalid).expect_err("not UTF-8");
         let bad: [(&[u8], ProtocolError); 3] = [
             (b"bardo-shell\0ada\0", ProtocolError::Fields),
             (b"bardo-shell\0ada\0pw", ProtocolError::Fields),
             (
                 b"bardo-shell\0\xff\0pw\0",
-                ProtocolError::Encoding(std::str::from_utf8(b"\xff").expect_err("not UTF-8")),
+                ProtocolError::Encoding(not_utf8),
             ),
         ];
         for (bytes, want) in bad {

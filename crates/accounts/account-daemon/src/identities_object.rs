@@ -86,6 +86,10 @@ fn identity_arg(text: &str) -> Result<IdentityId, RefusedError> {
 }
 
 /// What a use that could not be saved is told, in plain words.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 fn unsaved(why: Unsaved) -> RefusedError {
     RefusedError::failed(format!(
         "The list of apps could not be saved: {}",

@@ -80,6 +80,10 @@ fn get(path: &str) -> Exchange {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 fn codec_error(error: AudioCodecError) -> ProviderError {
     ProviderError::BadRequest(match error {
         AudioCodecError::UnsupportedFormat => "this server cannot take the audio format".into(),

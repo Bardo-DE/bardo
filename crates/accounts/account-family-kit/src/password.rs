@@ -58,6 +58,10 @@ pub fn typed_password(answers: &[FieldAnswer]) -> Option<SecretText> {
 
 /// What a request that went nowhere says about the sign-in.
 #[must_use]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 pub fn fault_of(error: HttpError) -> SignInFault {
     match error {
         HttpError::Unreachable(..)

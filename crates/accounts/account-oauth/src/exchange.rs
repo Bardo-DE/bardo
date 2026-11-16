@@ -326,7 +326,7 @@ fn unreached(error: HttpError) -> ExchangeFailure {
         | HttpError::TimedOut
         | HttpError::NotGranted
         | HttpError::Malformed(..) => ExchangeFault::Unreachable,
-        _ => ExchangeFault::Unreadable,
+        HttpError::TooLarge => ExchangeFault::Unreadable,
     };
     ExchangeFailure {
         fault,
@@ -340,7 +340,6 @@ mod tests {
     use super::*;
     use crate::issuer::SAYS_MAX_CHARS;
     use crate::scripted::{Scripted, answer};
-    use account_http::HttpError;
     use account_provider::{ClientChannel, ClientId, Issuer};
 
     fn client(secret: Option<&str>) -> ClientEntry {

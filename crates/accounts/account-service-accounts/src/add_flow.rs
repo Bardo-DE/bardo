@@ -375,7 +375,7 @@ impl Job for EditServers {
 }
 
 /// A sign-in that fails before it starts or answers.
-fn fault_of(error: ProviderError) -> SignInFault {
+fn fault_of(error: &ProviderError) -> SignInFault {
     match error {
         ProviderError::Unauthorized => SignInFault::Refused,
         ProviderError::Forbidden => SignInFault::Forbidden,
@@ -636,15 +636,15 @@ impl<E: Ports> Accounts<'_, E> {
             _ => return person(link.input().await),
         };
         run.polling = false;
-        Self::settled(job, run, polled)
+        Self::settled(job, run, &polled)
     }
 
     /// What a sign-in's step is to the machine. A sign-in that skipped the consent screen
     /// (`signed_in_before`) and ended `Unreadable` (the provider handed back nothing to keep) is a
     /// fact of its own, told once: whether it is tried again is the machine's to say.
-    fn settled<J: Job>(job: &J, run: &mut RunOf<E, J>, step: SignInStep) -> SheetEvent {
+    fn settled<J: Job>(job: &J, run: &mut RunOf<E, J>, step: &SignInStep) -> SheetEvent {
         let before = matches!(
-            (&step, job.adds(), &run.identity),
+            (step, job.adds(), &run.identity),
             (
                 SignInStep::Failed(SignInFault::Unreadable),
                 true,
@@ -658,7 +658,7 @@ impl<E: Ports> Accounts<'_, E> {
             identity.signed_in_before = false;
             return SheetEvent::SignedInBefore;
         }
-        said(run, &step)
+        said(run, step)
     }
 
     /// Starts the sign-in of the sheet's provider again, as a first sign-in, in place of the one
@@ -675,7 +675,7 @@ impl<E: Ports> Accounts<'_, E> {
             Some(Ok(mut signin)) => {
                 let first = signin.next(SignInInput::Start).await;
                 run.signin = Some(signin);
-                Self::settled(job, run, first)
+                Self::settled(job, run, &first)
             }
             Some(Err(_)) | None => SheetEvent::SignIn(Progress::Failed(SignInFault::Unreadable)),
         }
@@ -744,7 +744,7 @@ impl<E: Ports> Accounts<'_, E> {
                 let mut signin = match started {
                     Some(Ok(signin)) => signin,
                     Some(Err(error)) => {
-                        return Some(SheetEvent::SignIn(Progress::Failed(fault_of(error))));
+                        return Some(SheetEvent::SignIn(Progress::Failed(fault_of(&error))));
                     }
                     None => {
                         return Some(SheetEvent::SignIn(Progress::Failed(
@@ -754,7 +754,7 @@ impl<E: Ports> Accounts<'_, E> {
                 };
                 let first = signin.next(SignInInput::Start).await;
                 run.signin = Some(signin);
-                Some(Self::settled(job, run, first))
+                Some(Self::settled(job, run, &first))
             }
             other => {
                 let signin = run.signin.as_mut()?;
@@ -776,7 +776,7 @@ impl<E: Ports> Accounts<'_, E> {
                     }
                     return Some(SheetEvent::Duplicate);
                 }
-                Some(Self::settled(job, run, step))
+                Some(Self::settled(job, run, &step))
             }
         }
     }
@@ -832,6 +832,10 @@ fn finish<J: Job>(
 
 /// What a sheet that could not go on answers: one its host closed or left with is the person
 /// leaving, as [`person`] reads it; no host at all is nobody to ask.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 fn left(fault: SheetFault) -> Refusal {
     match fault {
         SheetFault::Closed | SheetFault::Refused(_) => Refusal::Dismissed,

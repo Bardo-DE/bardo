@@ -95,13 +95,13 @@ impl<E: Ports> Ctx<E> {
     ) -> Result<(IssuedToken, Option<Credential>), Refusal> {
         let session = match provider.open(&account.id, presented).await {
             Ok(session) => session,
-            Err(error) => return Err(self.refused_refresh(&account.id, error).await),
+            Err(error) => return Err(self.refused_refresh(&account.id, &error).await),
         };
         // The grant's kind and reach, so the token reaches that kind's service alone, as far as
         // the grant does.
         let token = match session.access_token_for(audience, kind, reach).await {
             Ok(token) => token,
-            Err(error) => return Err(self.refused_refresh(&account.id, error).await),
+            Err(error) => return Err(self.refused_refresh(&account.id, &error).await),
         };
         let renewed = session.renewed();
         if let Some(renewed) = &renewed {
@@ -115,7 +115,7 @@ impl<E: Ports> Ctx<E> {
 
     /// A refresh the provider refused (`Unauthorized`) leaves the account `NeedsReauth`, which
     /// the host announces; every other error is only the app's refusal.
-    pub async fn refused_refresh(&self, account: &AccountId, error: ProviderError) -> Refusal {
+    pub async fn refused_refresh(&self, account: &AccountId, error: &ProviderError) -> Refusal {
         let refusal = provider_refusal(error);
         if refusal == Refusal::NeedsReauth {
             // The app is refused either way; a state that could not be saved is set again by the

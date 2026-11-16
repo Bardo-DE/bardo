@@ -231,14 +231,14 @@ impl Inner {
 
     /// Ends `transfer` with `error`: when it is still its item's transfer, the item says why
     /// (a transfer cancelled or replaced says nothing of the one after it).
-    fn failed(&self, transfer: &Arc<Transfer>, error: ReadError) {
+    fn failed(&self, transfer: &Arc<Transfer>, error: &ReadError) {
         transfer.fail(error.clone());
         let mut transfers = held(&self.transfers);
         if !Self::current_in(&transfers, transfer) {
             return;
         }
         transfers.remove(&transfer.id);
-        if error == ReadError::Offline {
+        if *error == ReadError::Offline {
             self.offline.store(true, Ordering::SeqCst);
         }
         held(&self.errors).insert(
@@ -405,7 +405,7 @@ async fn run(weak: Weak<Inner>, transfer: Arc<Transfer>, background: bool) {
                 inner.emit(vec![NodeId::Remote(transfer.id.clone())]);
             }
             Err(error) => {
-                inner.failed(&transfer, error);
+                inner.failed(&transfer, &error);
                 inner.emit(vec![NodeId::Remote(transfer.id.clone())]);
                 return;
             }

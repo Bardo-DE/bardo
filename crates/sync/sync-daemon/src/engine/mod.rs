@@ -101,6 +101,10 @@ impl From<DatasetError> for Halt {
 }
 
 /// A replica read that failed, as the cycle's end.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 pub(crate) fn halt(error: ReplicaError) -> Halt {
     Halt::Stop(match error {
         ReplicaError::Unauthorized => Outcome::Unauthorized,

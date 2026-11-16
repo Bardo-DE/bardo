@@ -28,6 +28,10 @@ pub use sign_in::NextcloudFlow;
 
 /// What a account-nextcloud-proto error means for a sign-in. Plain `http` to another computer is a
 /// server that cannot be reached safely.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 fn fault(error: account_nextcloud_proto::Error) -> SignInFault {
     match error {
         account_nextcloud_proto::Error::Refused => SignInFault::Refused,

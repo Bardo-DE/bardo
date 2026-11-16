@@ -7,7 +7,7 @@ use account_wire::Refusal;
 
 /// What the app is told when the provider fails.
 #[must_use]
-pub fn provider_refusal(error: ProviderError) -> Refusal {
+pub fn provider_refusal(error: &ProviderError) -> Refusal {
     match error {
         ProviderError::Unauthorized => Refusal::NeedsReauth,
         ProviderError::Forbidden => Refusal::Denied,
@@ -22,6 +22,10 @@ pub fn provider_refusal(error: ProviderError) -> Refusal {
 
 /// What the app is told when the secret store fails: a missing secret means signing in again.
 #[must_use]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 pub fn secrets_refusal(error: SecretsError) -> Refusal {
     match error {
         SecretsError::Missing | SecretsError::Unreadable(_) => Refusal::NeedsReauth,
@@ -66,7 +70,7 @@ mod tests {
         ];
         for (error, want) in cases {
             let label = format!("{error:?}");
-            assert_eq!(provider_refusal(error), want, "{label}");
+            assert_eq!(provider_refusal(&error), want, "{label}");
         }
     }
 

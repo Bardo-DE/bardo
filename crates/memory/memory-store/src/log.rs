@@ -76,10 +76,10 @@ impl PartialEq for LogError {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (Self::Corrupt { at: a }, Self::Corrupt { at: b })
-            | (Self::Unreadable { at: a, .. }, Self::Unreadable { at: b, .. }) => a == b,
+            | (Self::Unreadable { at: a, .. }, Self::Unreadable { at: b, .. })
+            | (Self::NoSuchEntry(a), Self::NoSuchEntry(b)) => a == b,
             (Self::Sqlite(a), Self::Sqlite(b)) => a == b,
             (Self::Schema { found: a }, Self::Schema { found: b }) => a == b,
-            (Self::NoSuchEntry(a), Self::NoSuchEntry(b)) => a == b,
             _ => std::mem::discriminant(self) == std::mem::discriminant(other),
         }
     }

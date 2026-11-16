@@ -5,7 +5,7 @@ use account_capability::LlmFeature;
 use account_core::AccountId;
 use account_fake_servers::{FakeModels, ModelDef, Wire, net::Bind};
 use account_http_reqwest::ReqwestHttp;
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 
 fn up(runtime: Runtime, port: u16) -> Found {
     found(

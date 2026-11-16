@@ -20,6 +20,7 @@ static LEVEL: GlobalSignal<Percent> = Signal::global(|| Percent(60));
 static PHASE: GlobalSignal<IdleDimPhase> = Signal::global(|| IdleDimPhase::Awake);
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
+#[expect(non_snake_case, reason = "a Dioxus component is named in CamelCase")]
 fn Overlay() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance { motion: MOTION(), ..Appearance::default() }, material: Material::Window,

@@ -40,6 +40,10 @@ fn http_fault(error: HttpError) -> ProviderError {
 }
 
 /// What a request that could not be built or an answer that could not be read says about it.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 fn proto_fault(error: Error) -> ProviderError {
     match error {
         Error::Unreachable => ProviderError::Unreachable,

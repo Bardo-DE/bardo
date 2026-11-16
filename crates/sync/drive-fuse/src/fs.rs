@@ -60,6 +60,10 @@ pub struct Space {
 
 /// The errno a failed read answers.
 #[must_use]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 pub fn errno_of(error: ReadError) -> Errno {
     match error {
         ReadError::Offline => Errno::ENETDOWN,
@@ -71,6 +75,10 @@ pub fn errno_of(error: ReadError) -> Errno {
 
 /// The errno a listing that could not be read answers; the cause goes to standard error, where the
 /// mount's other problems go.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 fn listing_errno(error: DriveError) -> Errno {
     eprintln!("ferry-drive-fuse: the listing could not be read: {error}");
     Errno::EIO

@@ -31,6 +31,9 @@ pub fn engine_id(id: &str) -> EngineId {
 /// # Errors
 /// `AttachedError` when the catalogue has no entry for the attached id, or the entry has no `OpenAI`-
 /// compatible chat engine.
+///
+/// # Panics
+/// When `LOCAL_ACCOUNT` is not a valid account id, which it is by construction.
 pub fn local_model(
     attached: &Attached,
     entries: &[ModelEntry],

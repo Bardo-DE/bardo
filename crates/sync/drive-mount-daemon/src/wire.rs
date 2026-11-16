@@ -453,6 +453,8 @@ mod tests {
 
     #[test]
     fn a_request_out_of_the_format_is_refused() {
+        let invalid = b"1\0mount\0\xff\0ro\0".to_vec();
+        let not_text = std::str::from_utf8(&invalid).expect_err("not text");
         let cases: [(&[u8], BadMessage); 7] = [
             (b"2\0mount\0OneDrive\0ro\0", BadMessage::Version("2".into())),
             (
@@ -466,12 +468,7 @@ mod tests {
             (b"1\0mount\0..\0ro\0", BadMessage::Name(BadName::NotOneName)),
             (b"1\0unmount\0", BadMessage::Unknown("unmount".into())),
             (b"1\0mount\0OneDrive\0ro", BadMessage::NotFields),
-            (
-                b"1\0mount\0\xff\0ro\0",
-                BadMessage::NotText(
-                    std::str::from_utf8(b"1\0mount\0\xff\0ro\0").expect_err("not text"),
-                ),
-            ),
+            (b"1\0mount\0\xff\0ro\0", BadMessage::NotText(not_text)),
         ];
         for (bytes, why) in cases {
             assert_eq!(Request::decode(bytes), Err(why), "{bytes:?}");

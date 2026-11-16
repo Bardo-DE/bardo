@@ -94,11 +94,11 @@ impl<E: Ports> Accounts<'_, E> {
             .map_err(account_service_core::refusal::secrets_refusal)?;
         let claims = match provider.discover(&account, &presented).await {
             Ok(claims) => claims,
-            Err(error) => return Err(self.ctx.refused_refresh(&account.id, error).await),
+            Err(error) => return Err(self.ctx.refused_refresh(&account.id, &error).await),
         };
         let session = match provider.open(&account.id, presented).await {
             Ok(session) => session,
-            Err(error) => return Err(self.ctx.refused_refresh(&account.id, error).await),
+            Err(error) => return Err(self.ctx.refused_refresh(&account.id, &error).await),
         };
         if let (Some(renewed), Some(purpose)) = (session.renewed(), account.auth.facts().secret) {
             let key = SecretKey {

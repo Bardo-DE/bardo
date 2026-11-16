@@ -192,7 +192,7 @@ pub enum ConfigFault {
         /// The entry as written.
         entry: String,
         /// What is wrong with it.
-        why: HostFault,
+        why: Box<HostFault>,
     },
     /// Two entries for one program.
     #[error("agent `{0}` is listed twice")]
@@ -203,7 +203,7 @@ pub enum ConfigFault {
         /// The program as written.
         program: String,
         /// What is wrong.
-        why: LaunchFault,
+        why: Box<LaunchFault>,
     },
 }
 

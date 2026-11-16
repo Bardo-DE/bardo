@@ -88,6 +88,6 @@ fn utc_instants_are_rfc3339() {
 
 #[test]
 fn an_offset_without_its_colon_is_refused() {
-    assert!(when::instant("2026-10-03T09:30:00+0200").is_err());
-    assert!(when::date("2026-10-03T09:30:00+0200").is_err());
+    when::instant("2026-10-03T09:30:00+0200").unwrap_err();
+    when::date("2026-10-03T09:30:00+0200").unwrap_err();
 }

@@ -36,6 +36,10 @@ fn authorship(at: i64) -> Vec<(String, String)> {
 
 /// A failure once files are being written leaves the folder part-way, whatever it was; the
 /// command that failed has told the log already.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 fn part_way(fault: StoreFault) -> StoreFault {
     tracing::warn!(%fault, "the restore stopped part-way");
     StoreFault::Partial

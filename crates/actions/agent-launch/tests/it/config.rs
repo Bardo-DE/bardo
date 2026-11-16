@@ -480,7 +480,7 @@ fn site(list: &'static str, text: &str, why: HostFault) -> ConfigFault {
         program: "x".to_owned(),
         list,
         entry: text.to_owned(),
-        why,
+        why: Box::new(why),
     }
 }
 

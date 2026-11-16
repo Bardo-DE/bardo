@@ -294,7 +294,7 @@ mod tests {
                         .await
                         .expect_err("fails")
                 ),
-                std::mem::discriminant(&*want)
+                std::mem::discriminant(want)
             );
         }
         let unreachable = Script {

@@ -54,6 +54,10 @@ impl RealCaptureGpu {
 }
 
 /// The error of a renderer or store that is in use.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 fn busy(error: std::cell::BorrowMutError) -> BackendError {
     BackendError::from(RenderError::Renderer(format!(
         "the display renderer is busy: {error}"

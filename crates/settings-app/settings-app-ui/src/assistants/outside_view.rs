@@ -80,7 +80,7 @@ pub(super) fn OutsideAssistants(pane: AccountsPane) -> Element {
             };
             removing.set(None);
             if remove && let Err(fault) = remove_agent(&env.config_home, &question.program) {
-                toasts.push(coding_agents::remove_refusal(fault).to_owned(), None);
+                toasts.push(coding_agents::remove_refusal(&fault).to_owned(), None);
             }
             now.set(shown(&env));
         }

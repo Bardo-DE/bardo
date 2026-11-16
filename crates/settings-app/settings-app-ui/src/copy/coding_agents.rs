@@ -65,7 +65,7 @@ fn add_fault(fault: &AddFault) -> &'static str {
 }
 
 /// The sentence for why an assistant was not removed.
-pub(crate) fn remove_refusal(fault: ChoiceFault) -> &'static str {
+pub(crate) fn remove_refusal(fault: &ChoiceFault) -> &'static str {
     match fault {
         ChoiceFault::NoSuchAgent => "That coding assistant isn\u{2019}t on the list any more.",
         ChoiceFault::Unreadable | ChoiceFault::Syntax(_) => {
@@ -126,7 +126,7 @@ mod tests {
             .chain(
                 removes
                     .into_iter()
-                    .map(|fault| remove_refusal(fault).to_owned()),
+                    .map(|fault| remove_refusal(&fault).to_owned()),
             );
         for words in sentences {
             assert!(words.ends_with('.'), "{words}");
