@@ -3,7 +3,7 @@
 use serde_json::Value;
 
 use super::{ANNOTATIONS, Found, Node, Refused, read};
-use crate::{FieldName, Shape, Variant, VariantName};
+use crate::{FieldName, IdentError, Shape, Variant, VariantName};
 
 /// One property of a tagged arm: its name, the one string it allows (if it is a one-string
 /// enum) and its schema.
@@ -94,14 +94,14 @@ pub(super) fn tagged(node: &mut Node, key: &str, items: &[Value]) -> Found<Shape
         .map(|(i, a)| {
             let at = [key, &i.to_string(), "properties", content];
             let shape = read(node.child(a[1 - tag_at].schema, &at)?)?;
-            let name = a[tag_at].only.map(VariantName::new);
-            let name = name.and_then(Result::ok).ok_or_else(|| bad(node))?;
+            let only = a[tag_at].only.ok_or_else(|| bad(node))?;
+            let name = VariantName::new(only).map_err(|IdentError| bad(node))?;
             Ok(Variant { name, shape })
         })
         .collect::<Found<Vec<_>>>()?;
     Ok(Shape::Tagged {
-        tag: FieldName::new(tag).ok().ok_or_else(|| bad(node))?,
-        content: FieldName::new(content).ok().ok_or_else(|| bad(node))?,
+        tag: FieldName::new(tag).map_err(|IdentError| bad(node))?,
+        content: FieldName::new(content).map_err(|IdentError| bad(node))?,
         variants,
     })
 }
