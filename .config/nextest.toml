@@ -1,0 +1,40 @@
+# The one nextest configuration of the workspace (nextest reads only this file, at the root).
+# `cargo xtask gate` runs the tests with the `gate` profile; a plain `cargo nextest run` uses `default`.
+#
+# Every test is presumed able to hang, leak or reach outside itself until it shows otherwise:
+# - a test still running after 30 s is reported, and killed (and failed) after 2 minutes;
+# - a test that leaves a child process holding its output open past 1 s fails;
+# - nothing is retried: a flaky test is a bug to fix, not to hide;
+# - each test process runs under xtask/test-env.sh (the gate sets it as the target runner), which
+#   gives it a throwaway HOME and XDG folders and no session or system bus.
+# A test that truly needs longer gets an override below with the reason, never a wider default.
+
+[profile.default]
+slow-timeout = { period = "30s", terminate-after = 4, grace-period = "5s" }
+leak-timeout = { period = "1s", result = "fail" }
+retries = 0
+fail-fast = false
+failure-output = "immediate-final"
+status-level = "fail"
+final-status-level = "fail"
+
+[profile.gate]
+slow-timeout = { period = "30s", terminate-after = 4, grace-period = "5s" }
+leak-timeout = { period = "1s", result = "fail" }
+retries = 0
+fail-fast = false
+failure-output = "immediate-final"
+status-level = "fail"
+final-status-level = "slow"
+
+[test-groups]
+# agent-live's hostile worlds each start a sandbox, a private bus and a fake model server.
+hostile-worlds = { max-threads = 6 }
+
+[[profile.default.overrides]]
+filter = "package(agent-live) & test(/^hostile::/)"
+test-group = "hostile-worlds"
+
+[[profile.gate.overrides]]
+filter = "package(agent-live) & test(/^hostile::/)"
+test-group = "hostile-worlds"
